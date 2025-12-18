@@ -9,8 +9,8 @@ public interface IClientStatusStore
     /// Adds or updates the status of a client in the system.
     /// If the client already exists, their status will be updated; otherwise, a new status will be created.
     /// </summary>
-    /// <param name="clientStatusDto">The client status to be added or updated.</param>
-    Task AddOrUpdateStatusAsync(ClientStatusDto clientStatusDto);
+    /// <param name="clientDataStore">The client status to be added or updated.</param>
+    Task AddOrUpdateStatusAsync(ClientDataStore clientDataStore);
 
     /// <summary>
     /// Removes a client from the connection store using their connection identifier.
@@ -25,7 +25,7 @@ public interface IClientStatusStore
     /// </summary>
     /// <param name="connectionId">The connection identifier of the client whose status is being queried.</param>
     /// <returns>A task representing the asynchronous operation, containing the client status or null.</returns>
-    Task<ClientStatusDto?> GetStatusByConnectionIdAsync(string connectionId);
+    Task<ClientDataStore?> GetStatusByConnectionIdAsync(string connectionId);
 
     /// <summary>
     /// Retrieves the status of a client based on their unique client identifier.
@@ -33,7 +33,7 @@ public interface IClientStatusStore
     /// </summary>
     /// <param name="clientId">The unique identifier of the client whose status is being queried.</param>
     /// <returns>A task representing the asynchronous operation, containing the client's status (as a <see cref="ClientStatusDto"/>) or null if no status is found.</returns>
-    Task<ClientStatusDto?> GetStatusByClientIdAsync(Guid clientId);
+    Task<ClientDataStore?> GetStatusByClientIdAsync(Guid clientId);
 
     /// <summary>
     /// Retrieves the status information of a client based on their unique client identifier.
@@ -41,7 +41,7 @@ public interface IClientStatusStore
     /// </summary>
     /// <param name="clientId">The unique client identifier of the client whose status is being retrieved.</param>
     /// <returns>A task representing the asynchronous operation, containing the client's status details or null if no status is available for the given client ID.</returns>
-    Task<ClientStatusDto?> GetClientByIdAsync(Guid clientId);
+    Task<ClientDataStore?> GetClientByIdAsync(Guid clientId);
 
     /// <summary>
     /// Retrieves a list of machine status entries for a specific tenant.
@@ -49,7 +49,7 @@ public interface IClientStatusStore
     /// </summary>
     /// <param name="tenantId">The identifier of the tenant whose machine statuses are being retrieved.</param>
     /// <returns>A task representing the asynchronous operation, containing a list of machine status entries.</returns>
-    Task<IEnumerable<ClientStatusDto>> GetMachineStatusesAsync(Guid tenantId);
+    Task<IEnumerable<ClientDataStore>> GetMachineStatusesAsync(Guid tenantId);
 
     /// <summary>
     /// Retrieves a list of user status entries for a specific tenant.
@@ -57,12 +57,12 @@ public interface IClientStatusStore
     /// </summary>
     /// <param name="tenantId">The identifier of the tenant whose user statuses are being retrieved.</param>
     /// <returns>A task representing the asynchronous operation, containing a list of user status entries.</returns>
-    Task<IEnumerable<ClientStatusDto>> GetUserStatusesAsync(Guid tenantId);
+    Task<IEnumerable<ClientDataStore>> GetUserStatusesAsync(Guid tenantId);
 
     /// <summary>
     /// Updates the operational status of a client in the system.
     /// This method ensures that the client's status information is kept current.
     /// </summary>
-    /// <param name="clientStatusDto">The client status with the updated information to be applied.</param>
-    Task UpdateClientStatusAsync(ClientStatusDto clientStatusDto);
+    /// <param name="clientDataStore">The client status with the updated information to be applied.</param>
+    Task UpdateClientStatusAsync(ClientDataStore clientDataStore);
 }

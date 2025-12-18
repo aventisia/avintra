@@ -3,7 +3,7 @@ namespace WorkspaceAPIs.DTOs;
 /// <summary>
 /// Represents the status information of a machine, including its unique identifiers, client type, current operational status, and the timestamp of the last status update.
 /// </summary>
-public class ClientStatusDto
+public class ClientDataStore
 {
     /// <summary>
     /// Gets or sets the unique connection identifier for the client.
@@ -39,4 +39,9 @@ public class ClientStatusDto
     /// Gets or sets the timestamp of the last update to the machine's status.
     /// </summary>
     public DateTimeOffset LastSeen { get; set; }
+
+    /// <summary>
+    /// Gets or sets the job Id associated with the machine. This property is nullable.
+    /// </summary>
+    public Guid? JobId { get; set; }
 }

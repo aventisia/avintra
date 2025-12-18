@@ -75,7 +75,7 @@ public class OrchestratorHub : Hub
 
             // Prepare the client status object with initial values
             var connectionId = Context.ConnectionId;
-            var clientStatusDto = new ClientStatusDto
+            var clientDataStore = new ClientDataStore
             {
                 TenantId = tenantId,
                 ClientId = clientId,
@@ -86,7 +86,7 @@ public class OrchestratorHub : Hub
             };
 
             // Add or update the client status in the store
-            await _clientStatusStore.AddOrUpdateStatusAsync(clientStatusDto);
+            await _clientStatusStore.AddOrUpdateStatusAsync(clientDataStore);
 
             // Add client to group based on their type (WebBrowser or DesktopApp)
             if (clientType == ClientTypesEnum.WebBrowser || clientType == ClientTypesEnum.WorcDesktopApp)
@@ -117,9 +117,10 @@ public class OrchestratorHub : Hub
                     await _workspaceInternalDbContext.SaveChangesAsync();
 
                     // Update the machine status to 'Running' as it is now working on the job
-                    clientStatusDto.AgentId = job.FlowVersionId;
-                    clientStatusDto.Status = MachineStatusTypeEnum.Running;
-                    await _clientStatusStore.AddOrUpdateStatusAsync(clientStatusDto);
+                    clientDataStore.AgentId = job.FlowVersionId;
+                    clientDataStore.JobId = job.Id;
+                    clientDataStore.Status = MachineStatusTypeEnum.Running;
+                    await _clientStatusStore.AddOrUpdateStatusAsync(clientDataStore);
 
                     _logger.LogInformation("Assigned job {JobId} to machine {ClientId}.", job.Id, clientId);
 
@@ -166,28 +167,28 @@ public class OrchestratorHub : Hub
             _logger.LogInformation("Client {ConnectionId} disconnected.", connectionId);
 
             // Retrieve client status from the store based on the connectionId
-            var clientStatusDto = await _clientStatusStore.GetStatusByConnectionIdAsync(connectionId);
+            var clientDataStore = await _clientStatusStore.GetStatusByConnectionIdAsync(connectionId);
 
             // If client is found in the status store
-            if (clientStatusDto != null)
+            if (clientDataStore != null)
             {
-                _logger.LogInformation("Client {ConnectionId} found in status store. TenantId: {TenantId}, ClientId: {ClientId}.", connectionId, clientStatusDto.TenantId, clientStatusDto.ClientId);
+                _logger.LogInformation("Client {ConnectionId} found in status store. TenantId: {TenantId}, ClientId: {ClientId}.", connectionId, clientDataStore.TenantId, clientDataStore.ClientId);
 
                 // Remove the client's status from the store
                 await _clientStatusStore.RemoveClientByConnectionAsync(connectionId);
 
                 // Handle machine disconnection
-                if (clientStatusDto.Type == ClientTypesEnum.WorcMachine)
+                if (clientDataStore.Type == ClientTypesEnum.WorcMachine)
                 {
                     // Notify the tenant group about the machine going offline
-                    await Clients.Group($"TENANT_{clientStatusDto.TenantId}").SendAsync("machine_status_update", "A machine is offline now.");
-                    _logger.LogInformation("Machine {ClientId} offline. Notified tenant group {TenantId}.", clientStatusDto.ClientId, clientStatusDto.TenantId);
+                    await Clients.Group($"TENANT_{clientDataStore.TenantId}").SendAsync("machine_status_update", "A machine is offline now.");
+                    _logger.LogInformation("Machine {ClientId} offline. Notified tenant group {TenantId}.", clientDataStore.ClientId, clientDataStore.TenantId);
                 }
                 else
                 {
                     // Remove non-machine clients from their tenant group
-                    await Groups.RemoveFromGroupAsync(clientStatusDto.ConnectionId, $"TENANT_{clientStatusDto.TenantId}");
-                    _logger.LogInformation("Client {ConnectionId} removed from group TENANT_{TenantId}.", clientStatusDto.ConnectionId, clientStatusDto.TenantId);
+                    await Groups.RemoveFromGroupAsync(clientDataStore.ConnectionId, $"TENANT_{clientDataStore.TenantId}");
+                    _logger.LogInformation("Client {ConnectionId} removed from group TENANT_{TenantId}.", clientDataStore.ConnectionId, clientDataStore.TenantId);
                 }
             }
 
@@ -227,7 +228,7 @@ public class OrchestratorHub : Hub
             }
 
             // Initialize variable to hold machine status
-            ClientStatusDto? clientStatusDto = null;
+            ClientDataStore? clientDataStore = null;
 
             // If no machine ID is provided, attempt to find an available online machine
             if (machineId == null || machineId == Guid.Empty)
@@ -241,17 +242,17 @@ public class OrchestratorHub : Hub
                 var machines = await _clientStatusStore.GetMachineStatusesAsync(agent.TenantId);
 
                 // Attempt to find an online machine from the list of assigned machines
-                clientStatusDto = machines.FirstOrDefault(m =>
+                clientDataStore = machines.FirstOrDefault(m =>
                     availableMachineIds.Contains(m.ClientId) && m.Status == MachineStatusTypeEnum.Online);
 
                 // If no machine found in assigned list, search for any available online machine
-                if (clientStatusDto == null)
+                if (clientDataStore == null)
                 {
-                    clientStatusDto = machines.FirstOrDefault(m => m.Status == MachineStatusTypeEnum.Online);
+                    clientDataStore = machines.FirstOrDefault(m => m.Status == MachineStatusTypeEnum.Online);
                 }
 
                 // If no valid machine is found, return an error message
-                if (clientStatusDto == null)
+                if (clientDataStore == null)
                 {
                     _logger.LogWarning("No available online machine found for agent {AgentId}.", agentId);
                     await Clients.Caller.SendAsync("error", "No available online machine found.");
@@ -259,7 +260,7 @@ public class OrchestratorHub : Hub
                 }
 
                 // Update machineId with the found machine and log the assignment
-                machineId = clientStatusDto.ClientId;
+                machineId = clientDataStore.ClientId;
                 _logger.LogInformation("Assigned machine {MachineId} to agent {AgentId}.", machineId, agentId);
             }
 
@@ -282,10 +283,10 @@ public class OrchestratorHub : Hub
             };
 
             // Retrieve the machine status from the client status store
-            clientStatusDto = await _clientStatusStore.GetClientByIdAsync(machineId.Value);
+            clientDataStore = await _clientStatusStore.GetClientByIdAsync(machineId.Value);
 
             // If the machine can't be found, return an error message
-            if (clientStatusDto == null)
+            if (clientDataStore == null)
             {
                 _logger.LogWarning("Machine {MachineId} not found.", machineId);
                 await Clients.Caller.SendAsync("error", "Machine not found.");
@@ -293,7 +294,7 @@ public class OrchestratorHub : Hub
             }
 
             // If the machine is not online, return an error
-            if (clientStatusDto.Status != MachineStatusTypeEnum.Online)
+            if (clientDataStore.Status != MachineStatusTypeEnum.Online)
             {
                 _logger.LogWarning("Machine {MachineId} is not online or unavailable.", machineId);
                 await Clients.Caller.SendAsync("error", "Machine is not online or unavailable.");
@@ -301,18 +302,19 @@ public class OrchestratorHub : Hub
             }
 
             // If the machine is not running an agent, proceed to execute the agent
-            if (clientStatusDto.Status != MachineStatusTypeEnum.Running)
+            if (clientDataStore.Status != MachineStatusTypeEnum.Running)
             {
                 // Update machine status to "Running" to indicate the agent execution is in progress
-                clientStatusDto.Status = MachineStatusTypeEnum.Running;
-                clientStatusDto.LastSeen = DateTimeOffset.UtcNow;
-                clientStatusDto.AgentId = agentId;
+                clientDataStore.Status = MachineStatusTypeEnum.Running;
+                clientDataStore.LastSeen = DateTimeOffset.UtcNow;
+                clientDataStore.AgentId = agentId;
+                clientDataStore.JobId = job.Id;
 
                 // Save the updated machine status
-                await _clientStatusStore.UpdateClientStatusAsync(clientStatusDto);
+                await _clientStatusStore.UpdateClientStatusAsync(clientDataStore);
 
                 // Trigger the agent execution on the assigned machine
-                if (!string.IsNullOrEmpty(clientStatusDto.ConnectionId))
+                if (!string.IsNullOrEmpty(clientDataStore.ConnectionId))
                 {
                     var executionRequest = new ExecutionCommandDto()
                     {
@@ -323,7 +325,7 @@ public class OrchestratorHub : Hub
                         TenantId = tenantId,
                     };
 
-                    await Clients.Client(clientStatusDto.ConnectionId).SendAsync("trigger_agent", executionRequest);
+                    await Clients.Client(clientDataStore.ConnectionId).SendAsync("trigger_agent", executionRequest);
                     _logger.LogInformation("Agent {AgentId} triggered on machine {MachineId}.", agentId, machineId);
                 }
                 else
@@ -356,7 +358,7 @@ public class OrchestratorHub : Hub
     //         _logger.LogInformation("Attempting to execute agent {AgentId} on machine {MachineId}.", executionCommandDto.AgentId, executionCommandDto.MachineId);
 
     //         // Initialize variable to hold machine status
-    //         ClientStatusDto? clientStatusDto = null;
+    //         ClientStatusDto? clientDataStore = null;
 
     //         // Retrieve user identity and tenant ID from the HTTP context
     //         var httpContext = Context.GetHttpContext();
@@ -364,10 +366,10 @@ public class OrchestratorHub : Hub
     //         var tenantId = Guid.Parse(Context?.User?.FindFirstValue("tntid") ?? Guid.Empty.ToString());
 
     //         // Fetch the machine status from the client status store
-    //         clientStatusDto = await _clientStatusStore.GetClientByIdAsync(executionCommandDto.MachineId);
+    //         clientDataStore = await _clientStatusStore.GetClientByIdAsync(executionCommandDto.MachineId);
 
     //         // If the machine cannot be found, return an error message
-    //         if (clientStatusDto == null)
+    //         if (clientDataStore == null)
     //         {
     //             _logger.LogWarning("Machine {MachineId} not found.", executionCommandDto.MachineId);
     //             await Clients.Caller.SendAsync("error", "Machine not found.");
@@ -375,7 +377,7 @@ public class OrchestratorHub : Hub
     //         }
 
     //         // If the machine is offline or unavailable, return an error
-    //         if (clientStatusDto.Status != MachineStatusTypeEnum.Online)
+    //         if (clientDataStore.Status != MachineStatusTypeEnum.Online)
     //         {
     //             _logger.LogWarning("Machine {MachineId} is not online or unavailable.", executionCommandDto.MachineId);
     //             await Clients.Caller.SendAsync("error", "Machine is not online or unavailable.");
@@ -383,20 +385,20 @@ public class OrchestratorHub : Hub
     //         }
 
     //         // If the machine is not running an agent, proceed with agent execution
-    //         if (clientStatusDto.Status != MachineStatusTypeEnum.Running)
+    //         if (clientDataStore.Status != MachineStatusTypeEnum.Running)
     //         {
     //             // Update machine status to "Running" to indicate the agent execution is in progress
-    //             clientStatusDto.Status = MachineStatusTypeEnum.Running;
-    //             clientStatusDto.LastSeen = DateTimeOffset.UtcNow;
-    //             clientStatusDto.AgentId = executionCommandDto.AgentId;
+    //             clientDataStore.Status = MachineStatusTypeEnum.Running;
+    //             clientDataStore.LastSeen = DateTimeOffset.UtcNow;
+    //             clientDataStore.AgentId = executionCommandDto.AgentId;
 
     //             // Save the updated machine status
-    //             await _clientStatusStore.UpdateClientStatusAsync(clientStatusDto);
+    //             await _clientStatusStore.UpdateClientStatusAsync(clientDataStore);
 
     //             // Trigger the agent execution on the assigned machine
-    //             if (!string.IsNullOrEmpty(clientStatusDto.ConnectionId))
+    //             if (!string.IsNullOrEmpty(clientDataStore.ConnectionId))
     //             {
-    //                 await Clients.Client(clientStatusDto.ConnectionId).SendAsync("trigger_agent", executionCommandDto);
+    //                 await Clients.Client(clientDataStore.ConnectionId).SendAsync("trigger_agent", executionCommandDto);
     //                 _logger.LogInformation("Agent {AgentId} triggered on machine {MachineId}.", executionCommandDto.AgentId, executionCommandDto.MachineId);
     //             }
     //             else
