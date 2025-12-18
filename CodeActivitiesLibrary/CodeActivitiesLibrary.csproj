@@ -453,6 +453,7 @@
     <Compile Include="Activities\AppIntegrations\WindowsServiceActivities\_WindowsServiceCategoryMetaData.cs" />
     <Compile Include="Activities\AppIntegrations\WordActivities\AttachToRunningWordActivity.cs" />
     <Compile Include="Activities\AppIntegrations\WordActivities\CloseWordActivity.cs" />
+    <Compile Include="Activities\AppIntegrations\WordActivities\Enum\RetrieveOptionEnum.cs" />
     <Compile Include="Activities\AppIntegrations\WordActivities\Enum\SaveFormatEnum.cs" />
     <Compile Include="Activities\AppIntegrations\WordActivities\ExtractTextFromDocxFileActivity.cs" />
     <Compile Include="Activities\AppIntegrations\WordActivities\FindAndReplaceInDocxFileActivity.cs" />

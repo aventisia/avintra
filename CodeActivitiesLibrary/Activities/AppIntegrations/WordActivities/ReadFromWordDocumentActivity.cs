@@ -1,4 +1,5 @@
-﻿using CodeActivitiesLibrary.Extensions;
+﻿using CodeActivitiesLibrary.AppIntegrations.WordActivities.Enum;
+using CodeActivitiesLibrary.Extensions;
 using Microsoft.Office.Interop.Word;
 using System;
 using System.Activities;
@@ -89,16 +90,4 @@ namespace CodeActivitiesLibrary.AppIntegrations.WordActivities
             }
         }
     }
-    public enum RetrieveOptionEnum
-    {
-        [Display(Name = "Whole Document", Description = "Retrieves the entire content of the document.")]
-        WholeDocument,
-
-        [Display(Name = "Pages", Description = "Retrieves content based on specified page numbers.")]
-        Pages,
-
-        [Display(Name = "Bookmark", Description = "Retrieves content located within a specific bookmark.")]
-        Bookmark
-    }
-
 }

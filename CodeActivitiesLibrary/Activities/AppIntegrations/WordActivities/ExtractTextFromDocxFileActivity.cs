@@ -1,4 +1,5 @@
-﻿using CodeActivitiesLibrary.Extensions;
+﻿using CodeActivitiesLibrary.AppIntegrations.WordActivities.Enum;
+using CodeActivitiesLibrary.Extensions;
 using DocumentFormat.OpenXml.Packaging;
 using DocumentFormat.OpenXml.Wordprocessing;
 using System;
