@@ -106,6 +106,50 @@ function getNodeOutputSchema(field: DCPFieldSchemaType): ZodTypeAny {
   });
 }
 
+function getModelConfigSchema(field: DCPFieldSchemaType): ZodTypeAny {
+  // Start by defining the schema without default values
+  const isByokEnabledSchema = z.boolean();
+  const providerSchema = z.string();
+  const credentialsSchema = z.string().optional();
+  const modelSchema = z.string();
+  const temperatureSchema = z.number();
+  const topPSchema = z.number();
+  const vioceSchema = z.string().optional();
+
+  // Check if field.defaultValue is an object and contains all expected properties
+  if (field.defaultValue && typeof field.defaultValue === "object") {
+    // If the structure is valid, apply default values to the schema
+
+    if ("isByokEnabled" in field.defaultValue) {
+      isByokEnabledSchema.default(
+        field?.defaultValue?.isByokEnabled as boolean,
+      );
+    }
+    if ("provider" in field.defaultValue) {
+      providerSchema.default(field?.defaultValue?.provider as string);
+    }
+    if ("model" in field.defaultValue) {
+      modelSchema.default(field?.defaultValue?.model as string);
+    }
+    if ("temperature" in field.defaultValue) {
+      temperatureSchema.default(field?.defaultValue?.temperature as number);
+    }
+    if ("topP" in field.defaultValue) {
+      topPSchema.default(field?.defaultValue?.topP as number);
+    }
+  }
+
+  // Return the schema at the end
+  return z.object({
+    isByokEnabled: isByokEnabledSchema,
+    provider: providerSchema,
+    credentials: credentialsSchema,
+    model: modelSchema,
+    temperature: temperatureSchema,
+    topP: topPSchema,
+    voice: vioceSchema,
+  });
+}
 function getConditionSchema(field: DCPFieldSchemaType): ZodTypeAny {
   // Recursively generate schema for array items
   if (Array.isArray(field.conditionSchema)) {
@@ -136,6 +180,8 @@ function getZodType(field: DCPFieldSchemaType): ZodTypeAny {
       return getConditionSchema(field);
     case "config-panel-output":
       return getNodeOutputSchema(field);
+    case "model-config-select":
+      return getModelConfigSchema(field);
     default:
       return applyFieldOptions(z.string(), field); // Fallback to string
   }
