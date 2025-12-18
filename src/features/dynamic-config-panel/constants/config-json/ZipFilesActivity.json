@@ -1,173 +1,185 @@
-[
-  {
-    "direction": "Input",
-    "type": "text",
-    "name": "SourcePaths",
-    "label": "Source Paths",
-    "description": "Accepts: string[], List\u003Cstring\u003E, or comma-separated string of file/folder paths.",
-    "defaultValue": "",
-    "required": true
-  },
-  {
-    "direction": "Input",
-    "type": "select",
-    "name": "TypeOfCompression",
-    "label": "Type of Compression",
-    "description": "The type of compression to use for the zip archive.",
-    "defaultValue": "Deflate",
-    "required": false,
-    "selectOptions": [
-      {
-        "label": "None",
-        "value": "None",
-        "description": ""
-      },
-      {
-        "label": "GZip",
-        "value": "GZip",
-        "description": ""
-      },
-      {
-        "label": "BZip2",
-        "value": "BZip2",
-        "description": ""
-      },
-      {
-        "label": "PPMd",
-        "value": "PPMd",
-        "description": ""
-      },
-      {
-        "label": "Deflate",
-        "value": "Deflate",
-        "description": ""
-      },
-      {
-        "label": "Rar",
-        "value": "Rar",
-        "description": ""
-      },
-      {
-        "label": "LZMA",
-        "value": "LZMA",
-        "description": ""
-      },
-      {
-        "label": "BCJ",
-        "value": "BCJ",
-        "description": ""
-      },
-      {
-        "label": "BCJ2",
-        "value": "BCJ2",
-        "description": ""
-      },
-      {
-        "label": "LZip",
-        "value": "LZip",
-        "description": ""
-      },
-      {
-        "label": "Xz",
-        "value": "Xz",
-        "description": ""
-      },
-      {
-        "label": "Unknown",
-        "value": "Unknown",
-        "description": ""
-      },
-      {
-        "label": "Deflate64",
-        "value": "Deflate64",
-        "description": ""
-      },
-      {
-        "label": "Shrink",
-        "value": "Shrink",
-        "description": ""
-      },
-      {
-        "label": "Lzw",
-        "value": "Lzw",
-        "description": ""
-      },
-      {
-        "label": "Reduce1",
-        "value": "Reduce1",
-        "description": ""
-      },
-      {
-        "label": "Reduce2",
-        "value": "Reduce2",
-        "description": ""
-      },
-      {
-        "label": "Reduce3",
-        "value": "Reduce3",
-        "description": ""
-      },
-      {
-        "label": "Reduce4",
-        "value": "Reduce4",
-        "description": ""
-      },
-      {
-        "label": "Explode",
-        "value": "Explode",
-        "description": ""
-      },
-      {
-        "label": "Squeezed",
-        "value": "Squeezed",
-        "description": ""
-      },
-      {
-        "label": "RLE90",
-        "value": "RLE90",
-        "description": ""
-      },
-      {
-        "label": "Crunched",
-        "value": "Crunched",
-        "description": ""
-      },
-      {
-        "label": "Squashed",
-        "value": "Squashed",
-        "description": ""
-      },
-      {
-        "label": "Crushed",
-        "value": "Crushed",
-        "description": ""
-      },
-      {
-        "label": "Distilled",
-        "value": "Distilled",
-        "description": ""
-      }
-    ]
-  },
-  {
-    "direction": "Input",
-    "type": "text",
-    "name": "OutputZipPath",
-    "label": "Output Zip Path",
-    "description": "Full path where the ZIP file will be saved (e.g., C:\\temp\\archive.zip).",
-    "defaultValue": "",
-    "required": true
-  },
-  {
-    "direction": "Output",
-    "type": "config-panel-output",
-    "name": "OutputZipFullPath",
-    "label": "Output Zip Full Path",
-    "description": "Returns the full path of the created ZIP file.",
-    "defaultValue": {
-      "value": "OutputZipFullPath",
-      "enabled": true
+{
+  "name": "ZipFiles",
+  "label": "Zip Files",
+  "discription": "Compress one or more files or folders into a zip archive.",
+  "version": "1.0.0",
+  "auther": "@aventisia",
+  "supportedPlatforms": [
+    "desktop"
+  ],
+  "errorHandling": "standard",
+  "testScreenType": "standard",
+  "fields": [
+    {
+      "direction": "Input",
+      "type": "text",
+      "name": "SourcePaths",
+      "label": "Source Paths",
+      "description": "Accepts: string[], List\u003Cstring\u003E, or comma-separated string of file/folder paths.",
+      "defaultValue": "",
+      "required": true
     },
-    "required": false
-  }
-]
+    {
+      "direction": "Input",
+      "type": "select",
+      "name": "TypeOfCompression",
+      "label": "Type of Compression",
+      "description": "The type of compression to use for the zip archive.",
+      "defaultValue": "Deflate",
+      "required": false,
+      "selectOptions": [
+        {
+          "label": "None",
+          "value": "None",
+          "description": ""
+        },
+        {
+          "label": "GZip",
+          "value": "GZip",
+          "description": ""
+        },
+        {
+          "label": "BZip2",
+          "value": "BZip2",
+          "description": ""
+        },
+        {
+          "label": "PPMd",
+          "value": "PPMd",
+          "description": ""
+        },
+        {
+          "label": "Deflate",
+          "value": "Deflate",
+          "description": ""
+        },
+        {
+          "label": "Rar",
+          "value": "Rar",
+          "description": ""
+        },
+        {
+          "label": "LZMA",
+          "value": "LZMA",
+          "description": ""
+        },
+        {
+          "label": "BCJ",
+          "value": "BCJ",
+          "description": ""
+        },
+        {
+          "label": "BCJ2",
+          "value": "BCJ2",
+          "description": ""
+        },
+        {
+          "label": "LZip",
+          "value": "LZip",
+          "description": ""
+        },
+        {
+          "label": "Xz",
+          "value": "Xz",
+          "description": ""
+        },
+        {
+          "label": "Unknown",
+          "value": "Unknown",
+          "description": ""
+        },
+        {
+          "label": "Deflate64",
+          "value": "Deflate64",
+          "description": ""
+        },
+        {
+          "label": "Shrink",
+          "value": "Shrink",
+          "description": ""
+        },
+        {
+          "label": "Lzw",
+          "value": "Lzw",
+          "description": ""
+        },
+        {
+          "label": "Reduce1",
+          "value": "Reduce1",
+          "description": ""
+        },
+        {
+          "label": "Reduce2",
+          "value": "Reduce2",
+          "description": ""
+        },
+        {
+          "label": "Reduce3",
+          "value": "Reduce3",
+          "description": ""
+        },
+        {
+          "label": "Reduce4",
+          "value": "Reduce4",
+          "description": ""
+        },
+        {
+          "label": "Explode",
+          "value": "Explode",
+          "description": ""
+        },
+        {
+          "label": "Squeezed",
+          "value": "Squeezed",
+          "description": ""
+        },
+        {
+          "label": "RLE90",
+          "value": "RLE90",
+          "description": ""
+        },
+        {
+          "label": "Crunched",
+          "value": "Crunched",
+          "description": ""
+        },
+        {
+          "label": "Squashed",
+          "value": "Squashed",
+          "description": ""
+        },
+        {
+          "label": "Crushed",
+          "value": "Crushed",
+          "description": ""
+        },
+        {
+          "label": "Distilled",
+          "value": "Distilled",
+          "description": ""
+        }
+      ]
+    },
+    {
+      "direction": "Input",
+      "type": "text",
+      "name": "OutputZipPath",
+      "label": "Output Zip Path",
+      "description": "Full path where the ZIP file will be saved (e.g., C:\\temp\\archive.zip).",
+      "defaultValue": "",
+      "required": true
+    },
+    {
+      "direction": "Output",
+      "type": "config-panel-output",
+      "name": "OutputZipFullPath",
+      "label": "Output Zip Full Path",
+      "description": "Returns the full path of the created ZIP file.",
+      "defaultValue": {
+        "value": "OutputZipFullPath",
+        "enabled": true
+      },
+      "required": false
+    }
+  ]
+}

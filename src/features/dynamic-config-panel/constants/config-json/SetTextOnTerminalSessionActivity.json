@@ -1,20 +1,32 @@
-[
-  {
-    "direction": "Input",
-    "type": "text",
-    "name": "SessionId",
-    "label": "SessionId",
-    "description": "The session ID of the terminal session.",
-    "defaultValue": "",
-    "required": true
-  },
-  {
-    "direction": "Input",
-    "type": "text",
-    "name": "Text",
-    "label": "Text",
-    "description": "The text to set on the terminal session.",
-    "defaultValue": "",
-    "required": true
-  }
-]
+{
+  "name": "SetTextOnTerminalSession",
+  "label": "Set Text on Terminal Session",
+  "discription": "Set text on a terminal session.",
+  "version": "1.0.0",
+  "auther": "@aventisia",
+  "supportedPlatforms": [
+    "desktop"
+  ],
+  "errorHandling": "standard",
+  "testScreenType": "standard",
+  "fields": [
+    {
+      "direction": "Input",
+      "type": "text",
+      "name": "SessionId",
+      "label": "SessionId",
+      "description": "The session ID of the terminal session.",
+      "defaultValue": "",
+      "required": true
+    },
+    {
+      "direction": "Input",
+      "type": "text",
+      "name": "Text",
+      "label": "Text",
+      "description": "The text to set on the terminal session.",
+      "defaultValue": "",
+      "required": true
+    }
+  ]
+}

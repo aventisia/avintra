@@ -1,93 +1,105 @@
-[
-  {
-    "direction": "Input",
-    "type": "text",
-    "name": "WebBrowserInstance",
-    "label": "Web Browser Instance",
-    "description": "The WebDriver instance containing browser session.",
-    "defaultValue": "",
-    "required": true
-  },
-  {
-    "direction": "Input",
-    "type": "select",
-    "name": "CloseMode",
-    "label": "Close Mode",
-    "description": "Specifies how to close the tab(s): Current, By Title/URL, All Except Main, or After Timeout.",
-    "defaultValue": "Current",
-    "required": false,
-    "selectOptions": [
-      {
-        "label": "Current",
-        "value": "Current",
-        "description": "Closes the currently active tab."
-      },
-      {
-        "label": "By Title or URL",
-        "value": "ByTitleOrUrl",
-        "description": "Closes tab(s) whose title or URL contains the specified text."
-      },
-      {
-        "label": "All Except Main",
-        "value": "AllExceptMain",
-        "description": "Closes all tabs except the main one."
-      },
-      {
-        "label": "After Timeout",
-        "value": "AfterTimeout",
-        "description": "Closes the tab after a certain period."
+{
+  "name": "CloseWebBrowserTab",
+  "label": "Close Web Browser Tab",
+  "discription": "Closes web browser tabs based on various conditions (current, by title/URL, all except main, timeout-based).",
+  "version": "1.0.0",
+  "auther": "@aventisia",
+  "supportedPlatforms": [
+    "desktop"
+  ],
+  "errorHandling": "standard",
+  "testScreenType": "standard",
+  "fields": [
+    {
+      "direction": "Input",
+      "type": "text",
+      "name": "WebBrowserInstance",
+      "label": "Web Browser Instance",
+      "description": "The WebDriver instance containing browser session.",
+      "defaultValue": "",
+      "required": true
+    },
+    {
+      "direction": "Input",
+      "type": "select",
+      "name": "CloseMode",
+      "label": "Close Mode",
+      "description": "Specifies how to close the tab(s): Current, By Title/URL, All Except Main, or After Timeout.",
+      "defaultValue": "Current",
+      "required": false,
+      "selectOptions": [
+        {
+          "label": "Current",
+          "value": "Current",
+          "description": "Closes the currently active tab."
+        },
+        {
+          "label": "By Title or URL",
+          "value": "ByTitleOrUrl",
+          "description": "Closes tab(s) whose title or URL contains the specified text."
+        },
+        {
+          "label": "All Except Main",
+          "value": "AllExceptMain",
+          "description": "Closes all tabs except the main one."
+        },
+        {
+          "label": "After Timeout",
+          "value": "AfterTimeout",
+          "description": "Closes the tab after a certain period."
+        }
+      ]
+    },
+    {
+      "direction": "Input",
+      "type": "text",
+      "name": "MatchType",
+      "label": "Match Type",
+      "description": "Select whether to match by URL or Title when using \u0027ByTitleOrUrl\u0027 mode.",
+      "defaultValue": "",
+      "required": false,
+      "renderIf": {
+        "conditions": [
+          {
+            "field": "CloseMode",
+            "equals": "ByTitleOrUrl"
+          }
+        ]
       }
-    ]
-  },
-  {
-    "direction": "Input",
-    "type": "text",
-    "name": "MatchType",
-    "label": "Match Type",
-    "description": "Select whether to match by URL or Title when using \u0027ByTitleOrUrl\u0027 mode.",
-    "defaultValue": "",
-    "required": false,
-    "renderIf": {
-      "conditions": [
-        {
-          "field": "CloseMode",
-          "equals": "ByTitleOrUrl"
-        }
-      ]
+    },
+    {
+      "direction": "Input",
+      "type": "text",
+      "name": "MatchCriteria",
+      "label": "Match Criteria",
+      "description": "Enter the URL or Title to match when using \u0027ByTitleOrUrl\u0027 mode.",
+      "defaultValue": "",
+      "required": false,
+      "renderIf": {
+        "conditions": [
+          {
+            "field": "CloseMode",
+            "equals": "ByTitleOrUrl"
+          }
+        ]
+      }
+    },
+    {
+      "direction": "Input",
+      "type": "text",
+      "name": "TimeoutSeconds",
+      "label": "Timeout Seconds",
+      "description": "Maximum time in seconds before closing the tab automatically.",
+      "defaultValue": 60,
+      "required": false,
+      "renderIf": {
+        "conditions": [
+          {
+            "field": "CloseMode",
+            "equals": "AfterTimeout"
+          }
+        ]
+      }
     }
-  },
-  {
-    "direction": "Input",
-    "type": "text",
-    "name": "MatchCriteria",
-    "label": "Match Criteria",
-    "description": "Enter the URL or Title to match when using \u0027ByTitleOrUrl\u0027 mode.",
-    "defaultValue": "",
-    "required": false,
-    "renderIf": {
-      "conditions": [
-        {
-          "field": "CloseMode",
-          "equals": "ByTitleOrUrl"
-        }
-      ]
-    }
-  },
-  {
-    "direction": "Input",
-    "type": "text",
-    "name": "TimeoutSeconds",
-    "label": "Timeout Seconds",
-    "description": "Maximum time in seconds before closing the tab automatically.",
-    "defaultValue": 60,
-    "required": false,
-    "renderIf": {
-      "conditions": [
-        {
-          "field": "CloseMode",
-          "equals": "AfterTimeout"
-        }
-      ]
-    }
-  }
-]
+  ]
+}

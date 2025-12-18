@@ -1,14 +1,26 @@
-[
-  {
-    "direction": "Output",
-    "type": "config-panel-output",
-    "name": "TempFile",
-    "label": "Temporary File",
-    "description": "The FileInfo object representing the temporary file created on disk.",
-    "defaultValue": {
-      "value": "TempFile",
-      "enabled": true
-    },
-    "required": false
-  }
-]
+{
+  "name": "GetTemporaryFile",
+  "label": "Get Temporary File",
+  "discription": "Creates a uniquely named empty temporary file on disk and returns its FileInfo object.",
+  "version": "1.0.0",
+  "auther": "@aventisia",
+  "supportedPlatforms": [
+    "desktop"
+  ],
+  "errorHandling": "standard",
+  "testScreenType": "standard",
+  "fields": [
+    {
+      "direction": "Output",
+      "type": "config-panel-output",
+      "name": "TempFile",
+      "label": "Temporary File",
+      "description": "The FileInfo object representing the temporary file created on disk.",
+      "defaultValue": {
+        "value": "TempFile",
+        "enabled": true
+      },
+      "required": false
+    }
+  ]
+}

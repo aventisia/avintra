@@ -1,121 +1,133 @@
-[
-  {
-    "direction": "Input",
-    "type": "text",
-    "name": "WebBrowserInstance",
-    "label": "Web Browser Instance",
-    "description": "Enter or choose the variable that contains the web browser instance to work with.",
-    "defaultValue": "",
-    "required": true
-  },
-  {
-    "direction": "Input",
-    "type": "select",
-    "name": "SwitchMode",
-    "label": "Switch Mode",
-    "description": "Specifies how to locate the tab: by index, title, or URL fragment.",
-    "defaultValue": "ByIndex",
-    "required": true,
-    "selectOptions": [
-      {
-        "label": "By Index",
-        "value": "ByIndex",
-        "description": "Switch to tab by its position (1-based)."
-      },
-      {
-        "label": "By Title",
-        "value": "ByTitle",
-        "description": "Switch to tab by its full or partial title."
-      },
-      {
-        "label": "By URL Fragment",
-        "value": "ByUrlFragment",
-        "description": "Switch to tab whose URL contains the specified text."
+{
+  "name": "SwitchToTab",
+  "label": "Switch To Tab",
+  "discription": "Switches control to a browser tab using index, title, or partial URL.",
+  "version": "1.0.0",
+  "auther": "@aventisia",
+  "supportedPlatforms": [
+    "desktop"
+  ],
+  "errorHandling": "standard",
+  "testScreenType": "standard",
+  "fields": [
+    {
+      "direction": "Input",
+      "type": "text",
+      "name": "WebBrowserInstance",
+      "label": "Web Browser Instance",
+      "description": "Enter or choose the variable that contains the web browser instance to work with.",
+      "defaultValue": "",
+      "required": true
+    },
+    {
+      "direction": "Input",
+      "type": "select",
+      "name": "SwitchMode",
+      "label": "Switch Mode",
+      "description": "Specifies how to locate the tab: by index, title, or URL fragment.",
+      "defaultValue": "ByIndex",
+      "required": true,
+      "selectOptions": [
+        {
+          "label": "By Index",
+          "value": "ByIndex",
+          "description": "Switch to tab by its position (1-based)."
+        },
+        {
+          "label": "By Title",
+          "value": "ByTitle",
+          "description": "Switch to tab by its full or partial title."
+        },
+        {
+          "label": "By URL Fragment",
+          "value": "ByUrlFragment",
+          "description": "Switch to tab whose URL contains the specified text."
+        }
+      ]
+    },
+    {
+      "direction": "Input",
+      "type": "text",
+      "name": "TabIndex",
+      "label": "Tab Index",
+      "description": "The index (1-based) of the tab to switch to.",
+      "defaultValue": "",
+      "required": false,
+      "renderIf": {
+        "conditions": [
+          {
+            "field": "SwitchMode",
+            "equals": "ByIndex"
+          }
+        ]
       }
-    ]
-  },
-  {
-    "direction": "Input",
-    "type": "text",
-    "name": "TabIndex",
-    "label": "Tab Index",
-    "description": "The index (1-based) of the tab to switch to.",
-    "defaultValue": "",
-    "required": false,
-    "renderIf": {
-      "conditions": [
-        {
-          "field": "SwitchMode",
-          "equals": "ByIndex"
-        }
-      ]
-    }
-  },
-  {
-    "direction": "Input",
-    "type": "text",
-    "name": "TabTitle",
-    "label": "Tab Title",
-    "description": "The title of the tab to switch to.",
-    "defaultValue": "",
-    "required": false,
-    "renderIf": {
-      "conditions": [
-        {
-          "field": "SwitchMode",
-          "equals": "ByTitle"
-        }
-      ]
-    }
-  },
-  {
-    "direction": "Input",
-    "type": "text",
-    "name": "UrlFragment",
-    "label": "URL Fragment",
-    "description": "A partial URL (e.g., \u0027example.com\u0027) to match the tab.",
-    "defaultValue": "",
-    "required": false,
-    "renderIf": {
-      "conditions": [
-        {
-          "field": "SwitchMode",
-          "equals": "ByUrlFragment"
-        }
-      ]
-    }
-  },
-  {
-    "direction": "Input",
-    "type": "text",
-    "name": "TimeoutSeconds",
-    "label": "Timeout Seconds",
-    "description": "Maximum time in seconds to wait for the tab to become available.",
-    "defaultValue": 60,
-    "required": false
-  },
-  {
-    "direction": "Output",
-    "type": "config-panel-output",
-    "name": "CurrentTabTitle",
-    "label": "Current Tab Title",
-    "description": "Returns the title of the tab after switching.",
-    "defaultValue": {
-      "value": "CurrentTabTitle",
-      "enabled": true
     },
-    "required": false
-  },
-  {
-    "direction": "Output",
-    "type": "config-panel-output",
-    "name": "CurrentTabUrl",
-    "label": "Current Tab URL",
-    "description": "Returns the current URL after switching tabs.",
-    "defaultValue": {
-      "value": "CurrentTabUrl",
-      "enabled": true
+    {
+      "direction": "Input",
+      "type": "text",
+      "name": "TabTitle",
+      "label": "Tab Title",
+      "description": "The title of the tab to switch to.",
+      "defaultValue": "",
+      "required": false,
+      "renderIf": {
+        "conditions": [
+          {
+            "field": "SwitchMode",
+            "equals": "ByTitle"
+          }
+        ]
+      }
     },
-    "required": false
-  }
-]
+    {
+      "direction": "Input",
+      "type": "text",
+      "name": "UrlFragment",
+      "label": "URL Fragment",
+      "description": "A partial URL (e.g., \u0027example.com\u0027) to match the tab.",
+      "defaultValue": "",
+      "required": false,
+      "renderIf": {
+        "conditions": [
+          {
+            "field": "SwitchMode",
+            "equals": "ByUrlFragment"
+          }
+        ]
+      }
+    },
+    {
+      "direction": "Input",
+      "type": "text",
+      "name": "TimeoutSeconds",
+      "label": "Timeout Seconds",
+      "description": "Maximum time in seconds to wait for the tab to become available.",
+      "defaultValue": 60,
+      "required": false
+    },
+    {
+      "direction": "Output",
+      "type": "config-panel-output",
+      "name": "CurrentTabTitle",
+      "label": "Current Tab Title",
+      "description": "Returns the title of the tab after switching.",
+      "defaultValue": {
+        "value": "CurrentTabTitle",
+        "enabled": true
+      },
+      "required": false
+    },
+    {
+      "direction": "Output",
+      "type": "config-panel-output",
+      "name": "CurrentTabUrl",
+      "label": "Current Tab URL",
+      "description": "Returns the current URL after switching tabs.",
+      "defaultValue": {
+        "value": "CurrentTabUrl",
+        "enabled": true
+      },
+      "required": false
+    }
+  ]
+}

@@ -1,187 +1,199 @@
-[
-  {
-    "direction": "Input",
-    "type": "text",
-    "name": "WebBrowserInstance",
-    "label": "Web Browser Instance",
-    "description": "Enter or choose the variable that contains the web browser instance to work with.",
-    "defaultValue": "",
-    "required": true
-  },
-  {
-    "direction": "Input",
-    "type": "select",
-    "name": "FindType",
-    "label": "Find Type",
-    "description": "Specifies how to find the element (e.g., ID, XPath, CssSelector).",
-    "defaultValue": "XPath",
-    "required": true,
-    "selectOptions": [
-      {
-        "label": "XPath",
-        "value": "XPath",
-        "description": "Find by XPath expression"
-      },
-      {
-        "label": "Id",
-        "value": "Id",
-        "description": "Find by HTML ID attribute"
-      },
-      {
-        "label": "Css Selector",
-        "value": "CssSelector",
-        "description": "Find by CSS selector"
-      },
-      {
-        "label": "Name",
-        "value": "Name",
-        "description": "Find by HTML name attribute"
-      },
-      {
-        "label": "Class Name",
-        "value": "ClassName",
-        "description": "Find by HTML class name"
-      },
-      {
-        "label": "Tag Name",
-        "value": "TagName",
-        "description": "Find by HTML tag name"
-      },
-      {
-        "label": "Link Text",
-        "value": "LinkText",
-        "description": "Find by link text (exact match)"
-      },
-      {
-        "label": "Partial Link Text",
-        "value": "PartialLinkText",
-        "description": "Find by partial link text"
-      },
-      {
-        "label": "Inner Text",
-        "value": "InnerText",
-        "description": "Find by element\u0027s inner text"
-      },
-      {
-        "label": "Title",
-        "value": "Title",
-        "description": "Find by element\u0027s title attribute"
-      },
-      {
-        "label": "Value",
-        "value": "Value",
-        "description": "Find by element\u0027s value attribute"
-      },
-      {
-        "label": "Placeholder",
-        "value": "Placeholder",
-        "description": "Find by element\u0027s placeholder attribute"
-      },
-      {
-        "label": "Type",
-        "value": "Type",
-        "description": "Find by element\u0027s type attribute"
-      },
-      {
-        "label": "Data Test Id",
-        "value": "DataTestId",
-        "description": "Find by element\u0027s data-testid attribute"
-      },
-      {
-        "label": "Aria Label",
-        "value": "AriaLabel",
-        "description": "Find by element\u0027s aria-label attribute"
-      },
-      {
-        "label": "Role",
-        "value": "Role",
-        "description": "Find by element\u0027s role attribute"
-      },
-      {
-        "label": "JavaScript",
-        "value": "JavaScript",
-        "description": "Find by JavaScript expression"
-      },
-      {
-        "label": "Sizzle",
-        "value": "Sizzle",
-        "description": "Find by Sizzle selector (jQuery-style)"
-      },
-      {
-        "label": "Relative",
-        "value": "Relative",
-        "description": "Find by relative position to another element"
-      },
-      {
-        "label": "Automation Id",
-        "value": "AutomationId",
-        "description": "Find by element\u0027s automation ID (for WPF/UWP apps)"
-      }
-    ]
-  },
-  {
-    "direction": "Input",
-    "type": "text",
-    "name": "ValueToFind",
-    "label": "Value To Find",
-    "description": "The value used to locate the element (e.g., \u0027username\u0027, \u0027//input[@id=\u0027email\u0027]\u0027).",
-    "defaultValue": "",
-    "required": true
-  },
-  {
-    "direction": "Input",
-    "type": "select",
-    "name": "StateToCheck",
-    "label": "State To Check",
-    "description": "Specifies which state to verify: Visible, Enabled, Selected.",
-    "defaultValue": "Visible",
-    "required": true,
-    "selectOptions": [
-      {
-        "label": "Visible",
-        "value": "Visible",
-        "description": "Checks if the element is displayed on the page."
-      },
-      {
-        "label": "Enabled",
-        "value": "Enabled",
-        "description": "Checks if the element is enabled (clickable/interactable)."
-      },
-      {
-        "label": "Selected",
-        "value": "Selected",
-        "description": "Checks if the element is selected (e.g., checkbox/radio button)."
-      }
-    ]
-  },
-  {
-    "direction": "Input",
-    "type": "switch",
-    "name": "WaitForElement",
-    "label": "Wait For Element",
-    "description": "If true, waits for the element to appear before checking its state.",
-    "defaultValue": "",
-    "required": false
-  },
-  {
-    "direction": "Input",
-    "type": "text",
-    "name": "TimeoutSeconds",
-    "label": "Timeout Seconds",
-    "description": "Maximum time in seconds to wait for the element before failing.",
-    "defaultValue": 60,
-    "required": false
-  },
-  {
-    "direction": "Output",
-    "type": "config-panel-output",
-    "name": "IsStateMet",
-    "label": "Is State Met",
-    "description": "Returns true if the element meets the specified state condition.",
-    "defaultValue": {
-      "value": "IsStateMet",
-      "enabled": true
+{
+  "name": "CheckElementState",
+  "label": "Check Element State",
+  "discription": "Verifies if an element is visible, enabled, or selected.",
+  "version": "1.0.0",
+  "auther": "@aventisia",
+  "supportedPlatforms": [
+    "desktop"
+  ],
+  "errorHandling": "standard",
+  "testScreenType": "standard",
+  "fields": [
+    {
+      "direction": "Input",
+      "type": "text",
+      "name": "WebBrowserInstance",
+      "label": "Web Browser Instance",
+      "description": "Enter or choose the variable that contains the web browser instance to work with.",
+      "defaultValue": "",
+      "required": true
     },
-    "required": false
-  }
-]
+    {
+      "direction": "Input",
+      "type": "select",
+      "name": "FindType",
+      "label": "Find Type",
+      "description": "Specifies how to find the element (e.g., ID, XPath, CssSelector).",
+      "defaultValue": "XPath",
+      "required": true,
+      "selectOptions": [
+        {
+          "label": "XPath",
+          "value": "XPath",
+          "description": "Find by XPath expression"
+        },
+        {
+          "label": "Id",
+          "value": "Id",
+          "description": "Find by HTML ID attribute"
+        },
+        {
+          "label": "Css Selector",
+          "value": "CssSelector",
+          "description": "Find by CSS selector"
+        },
+        {
+          "label": "Name",
+          "value": "Name",
+          "description": "Find by HTML name attribute"
+        },
+        {
+          "label": "Class Name",
+          "value": "ClassName",
+          "description": "Find by HTML class name"
+        },
+        {
+          "label": "Tag Name",
+          "value": "TagName",
+          "description": "Find by HTML tag name"
+        },
+        {
+          "label": "Link Text",
+          "value": "LinkText",
+          "description": "Find by link text (exact match)"
+        },
+        {
+          "label": "Partial Link Text",
+          "value": "PartialLinkText",
+          "description": "Find by partial link text"
+        },
+        {
+          "label": "Inner Text",
+          "value": "InnerText",
+          "description": "Find by element\u0027s inner text"
+        },
+        {
+          "label": "Title",
+          "value": "Title",
+          "description": "Find by element\u0027s title attribute"
+        },
+        {
+          "label": "Value",
+          "value": "Value",
+          "description": "Find by element\u0027s value attribute"
+        },
+        {
+          "label": "Placeholder",
+          "value": "Placeholder",
+          "description": "Find by element\u0027s placeholder attribute"
+        },
+        {
+          "label": "Type",
+          "value": "Type",
+          "description": "Find by element\u0027s type attribute"
+        },
+        {
+          "label": "Data Test Id",
+          "value": "DataTestId",
+          "description": "Find by element\u0027s data-testid attribute"
+        },
+        {
+          "label": "Aria Label",
+          "value": "AriaLabel",
+          "description": "Find by element\u0027s aria-label attribute"
+        },
+        {
+          "label": "Role",
+          "value": "Role",
+          "description": "Find by element\u0027s role attribute"
+        },
+        {
+          "label": "JavaScript",
+          "value": "JavaScript",
+          "description": "Find by JavaScript expression"
+        },
+        {
+          "label": "Sizzle",
+          "value": "Sizzle",
+          "description": "Find by Sizzle selector (jQuery-style)"
+        },
+        {
+          "label": "Relative",
+          "value": "Relative",
+          "description": "Find by relative position to another element"
+        },
+        {
+          "label": "Automation Id",
+          "value": "AutomationId",
+          "description": "Find by element\u0027s automation ID (for WPF/UWP apps)"
+        }
+      ]
+    },
+    {
+      "direction": "Input",
+      "type": "text",
+      "name": "ValueToFind",
+      "label": "Value To Find",
+      "description": "The value used to locate the element (e.g., \u0027username\u0027, \u0027//input[@id=\u0027email\u0027]\u0027).",
+      "defaultValue": "",
+      "required": true
+    },
+    {
+      "direction": "Input",
+      "type": "select",
+      "name": "StateToCheck",
+      "label": "State To Check",
+      "description": "Specifies which state to verify: Visible, Enabled, Selected.",
+      "defaultValue": "Visible",
+      "required": true,
+      "selectOptions": [
+        {
+          "label": "Visible",
+          "value": "Visible",
+          "description": "Checks if the element is displayed on the page."
+        },
+        {
+          "label": "Enabled",
+          "value": "Enabled",
+          "description": "Checks if the element is enabled (clickable/interactable)."
+        },
+        {
+          "label": "Selected",
+          "value": "Selected",
+          "description": "Checks if the element is selected (e.g., checkbox/radio button)."
+        }
+      ]
+    },
+    {
+      "direction": "Input",
+      "type": "switch",
+      "name": "WaitForElement",
+      "label": "Wait For Element",
+      "description": "If true, waits for the element to appear before checking its state.",
+      "defaultValue": "",
+      "required": false
+    },
+    {
+      "direction": "Input",
+      "type": "text",
+      "name": "TimeoutSeconds",
+      "label": "Timeout Seconds",
+      "description": "Maximum time in seconds to wait for the element before failing.",
+      "defaultValue": 60,
+      "required": false
+    },
+    {
+      "direction": "Output",
+      "type": "config-panel-output",
+      "name": "IsStateMet",
+      "label": "Is State Met",
+      "description": "Returns true if the element meets the specified state condition.",
+      "defaultValue": {
+        "value": "IsStateMet",
+        "enabled": true
+      },
+      "required": false
+    }
+  ]
+}

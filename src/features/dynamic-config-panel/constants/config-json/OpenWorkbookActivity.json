@@ -1,62 +1,74 @@
-[
-  {
-    "direction": "Input",
-    "type": "text",
-    "name": "FilePath",
-    "label": "File Path",
-    "description": "The full path to the Excel file (.xlsx or .xls) that needs to be opened.",
-    "defaultValue": "",
-    "required": true
-  },
-  {
-    "direction": "Input",
-    "type": "switch",
-    "name": "Visible",
-    "label": "Visible",
-    "description": "Set to true if you want the Excel application to be visible during automation.",
-    "defaultValue": false,
-    "required": true
-  },
-  {
-    "direction": "Input",
-    "type": "switch",
-    "name": "OpenAsReadOnly",
-    "label": "Open as ReadOnly",
-    "description": "If true, opens the workbook in read-only mode.",
-    "defaultValue": false,
-    "required": false
-  },
-  {
-    "direction": "Input",
-    "type": "text",
-    "name": "ReadProtectionPassword",
-    "label": "Read Protection Password",
-    "description": "Password to open the workbook if it is protected.",
-    "defaultValue": "",
-    "required": false
-  },
-  {
-    "direction": "Output",
-    "type": "config-panel-output",
-    "name": "WorkbookInstance",
-    "label": "Workbook Instance",
-    "description": "The opened Excel Workbook object.",
-    "defaultValue": {
-      "value": "WorkbookInstance",
-      "enabled": true
+{
+  "name": "OpenWorkbook",
+  "label": "Open Excel Workbook",
+  "discription": "Opens an existing Excel workbook from the specified file path and reports success or failure.",
+  "version": "1.0.0",
+  "auther": "@aventisia",
+  "supportedPlatforms": [
+    "desktop"
+  ],
+  "errorHandling": "standard",
+  "testScreenType": "standard",
+  "fields": [
+    {
+      "direction": "Input",
+      "type": "text",
+      "name": "FilePath",
+      "label": "File Path",
+      "description": "The full path to the Excel file (.xlsx or .xls) that needs to be opened.",
+      "defaultValue": "",
+      "required": true
     },
-    "required": false
-  },
-  {
-    "direction": "Output",
-    "type": "config-panel-output",
-    "name": "ExcelApp",
-    "label": "Excel Application",
-    "description": "The Excel Application instance (used for later operations or close).",
-    "defaultValue": {
-      "value": "ExcelApp",
-      "enabled": true
+    {
+      "direction": "Input",
+      "type": "switch",
+      "name": "Visible",
+      "label": "Visible",
+      "description": "Set to true if you want the Excel application to be visible during automation.",
+      "defaultValue": false,
+      "required": true
     },
-    "required": false
-  }
-]
+    {
+      "direction": "Input",
+      "type": "switch",
+      "name": "OpenAsReadOnly",
+      "label": "Open as ReadOnly",
+      "description": "If true, opens the workbook in read-only mode.",
+      "defaultValue": false,
+      "required": false
+    },
+    {
+      "direction": "Input",
+      "type": "text",
+      "name": "ReadProtectionPassword",
+      "label": "Read Protection Password",
+      "description": "Password to open the workbook if it is protected.",
+      "defaultValue": "",
+      "required": false
+    },
+    {
+      "direction": "Output",
+      "type": "config-panel-output",
+      "name": "WorkbookInstance",
+      "label": "Workbook Instance",
+      "description": "The opened Excel Workbook object.",
+      "defaultValue": {
+        "value": "WorkbookInstance",
+        "enabled": true
+      },
+      "required": false
+    },
+    {
+      "direction": "Output",
+      "type": "config-panel-output",
+      "name": "ExcelApp",
+      "label": "Excel Application",
+      "description": "The Excel Application instance (used for later operations or close).",
+      "defaultValue": {
+        "value": "ExcelApp",
+        "enabled": true
+      },
+      "required": false
+    }
+  ]
+}

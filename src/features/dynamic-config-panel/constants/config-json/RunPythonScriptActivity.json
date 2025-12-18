@@ -1,23 +1,35 @@
-[
-  {
-    "direction": "Input",
-    "type": "text",
-    "name": "ScriptCode",
-    "label": "Python Script Code",
-    "description": "The Python script code to execute.",
-    "defaultValue": "",
-    "required": true
-  },
-  {
-    "direction": "Output",
-    "type": "config-panel-output",
-    "name": "ScriptOutput",
-    "label": "Script Output",
-    "description": "Returns the output of the script.",
-    "defaultValue": {
-      "value": "ScriptOutput",
-      "enabled": true
+{
+  "name": "RunPythonScript",
+  "label": "Run Python Script",
+  "discription": "Executes some custom Python script and retrieves its output into a variable.",
+  "version": "1.0.0",
+  "auther": "@aventisia",
+  "supportedPlatforms": [
+    "desktop"
+  ],
+  "errorHandling": "standard",
+  "testScreenType": "standard",
+  "fields": [
+    {
+      "direction": "Input",
+      "type": "text",
+      "name": "ScriptCode",
+      "label": "Python Script Code",
+      "description": "The Python script code to execute.",
+      "defaultValue": "",
+      "required": true
     },
-    "required": false
-  }
-]
+    {
+      "direction": "Output",
+      "type": "config-panel-output",
+      "name": "ScriptOutput",
+      "label": "Script Output",
+      "description": "Returns the output of the script.",
+      "defaultValue": {
+        "value": "ScriptOutput",
+        "enabled": true
+      },
+      "required": false
+    }
+  ]
+}

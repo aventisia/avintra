@@ -1,23 +1,35 @@
-[
-  {
-    "direction": "Input",
-    "type": "text",
-    "name": "ConnectionString",
-    "label": "Connection String",
-    "description": "The connection string to the database.",
-    "defaultValue": "",
-    "required": true
-  },
-  {
-    "direction": "Output",
-    "type": "config-panel-output",
-    "name": "SqlConnection",
-    "label": "SQL Connection",
-    "description": "The opened SQL connection.",
-    "defaultValue": {
-      "value": "SqlConnection",
-      "enabled": true
+{
+  "name": "OpenSqlConnection",
+  "label": "Open SQL Connection",
+  "discription": "Open a new connection to a database",
+  "version": "1.0.0",
+  "auther": "@aventisia",
+  "supportedPlatforms": [
+    "desktop"
+  ],
+  "errorHandling": "standard",
+  "testScreenType": "standard",
+  "fields": [
+    {
+      "direction": "Input",
+      "type": "text",
+      "name": "ConnectionString",
+      "label": "Connection String",
+      "description": "The connection string to the database.",
+      "defaultValue": "",
+      "required": true
     },
-    "required": false
-  }
-]
+    {
+      "direction": "Output",
+      "type": "config-panel-output",
+      "name": "SqlConnection",
+      "label": "SQL Connection",
+      "description": "The opened SQL connection.",
+      "defaultValue": {
+        "value": "SqlConnection",
+        "enabled": true
+      },
+      "required": false
+    }
+  ]
+}
