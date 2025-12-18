@@ -33,7 +33,7 @@ export const onErrorFieldsJson = [
     direction: "Input",
     type: "text",
     name: "WaitBetweenTires",
-    label: "WaitBetweenTires",
+    label: "Wait Between Tires",
     description: "The waiting time between two tries.",
     defaultValue: "",
     required: false,
