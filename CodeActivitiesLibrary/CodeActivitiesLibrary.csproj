@@ -155,6 +155,7 @@
     <Compile Include="Activities\AppIntegrations\ExcelActivities\GetColumnNameOnExcelWorksheetActivity.cs" />
     <Compile Include="Activities\AppIntegrations\ExcelActivities\GetFirstFreeColumnRowFromExcelWorksheetActivity.cs" />
     <Compile Include="Activities\AppIntegrations\ExcelActivities\GetFirstFreeRowOnColumnFromExcelWorksheetActivity.cs" />
+    <Compile Include="Activities\AppIntegrations\ExcelActivities\GetFirstFreeRowOrColumnRowIndexActivity.cs" />
     <Compile Include="Activities\AppIntegrations\ExcelActivities\GetSelectedCellRangeFromExcelWorksheetActivity.cs" />
     <Compile Include="Activities\AppIntegrations\ExcelActivities\GetTableRangeFromExcelWorksheetActivity.cs" />
     <Compile Include="Activities\AppIntegrations\ExcelActivities\InsertColumnToExcelWorksheetActivity.cs" />
@@ -568,6 +569,7 @@
     <Compile Include="Activities\DataTransformations\VariablesActivities\GenerateRandomNumberActivity.cs" />
     <Compile Include="Activities\DataTransformations\VariablesActivities\IncreaseVariableActivity.cs" />
     <Compile Include="Activities\DataTransformations\VariablesActivities\MergeListsActivity.cs" />
+    <Compile Include="Activities\DataTransformations\VariablesActivities\ParseFragmentedJsonListActivity.cs" />
     <Compile Include="Activities\DataTransformations\VariablesActivities\RemoveDuplicateItemsFromListActivity.cs" />
     <Compile Include="Activities\DataTransformations\VariablesActivities\RemoveItemFromListActivity.cs" />
     <Compile Include="Activities\DataTransformations\VariablesActivities\RetrieveDataTableColumnIntoListActivity.cs" />
