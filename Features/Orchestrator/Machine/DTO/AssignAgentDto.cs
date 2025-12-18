@@ -27,6 +27,26 @@ public class AssignAgentDto
     public string? Name { get; set; }
 
     /// <summary>
+    /// Gets or sets the version number of a flow version record
+    /// </summary>
+    public int VersionNumber { get; set; }
+
+    /// <summary>
+    /// Gets or sets a value indicating whether the flow version is assigned.
+    /// </summary>
+    public bool IsAssigned { get; set; }
+
+    /// <summary>
+    /// Represents the status of the agent. Possible values are: CreatingJob, LaunchingExecutor, Executing, Paused, Stopped
+    /// </summary>
+    public AgentExecutionStatus Status { get; set; } = AgentExecutionStatus.Stopped;
+
+    /// <summary>
+    /// Gets or sets the job Id associated with the machine. This property is nullable.
+    /// </summary>
+    public Guid? JobId { get; set; }
+
+    /// <summary>
     /// Gets or sets a flag indicating whether the user record is disabled.
     /// </summary>
     /// <remarks>
@@ -62,19 +82,4 @@ public class AssignAgentDto
     /// Gets or sets initials of the user who created the record
     /// </summary>
     public string? CreatedByUserInitials { get; set; }
-
-    /// <summary>
-    /// Gets or sets the version number of a flow version record
-    /// </summary>
-    public int VersionNumber { get; set; }
-
-    /// <summary>
-    /// Gets or sets a value indicating whether the flow version is assigned.
-    /// </summary>
-    public bool IsAssigned { get; set; }
-
-    /// <summary>
-    /// Represents the status of the agent. Possible values are: CreatingJob, LaunchingExecutor, Executing, Paused, Stopped
-    /// </summary>
-    public AgentExecutionStatus Status { get; set; } = AgentExecutionStatus.Stopped;
 }

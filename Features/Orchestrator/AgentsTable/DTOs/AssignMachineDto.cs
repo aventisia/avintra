@@ -37,6 +37,16 @@ public class AssignMachineDto
     public string? OSId { get; set; }
 
     /// <summary>
+    /// Gets or sets a value indicating whether the flow version is assigned.
+    /// </summary>
+    public bool IsAssigned { get; set; }
+
+    /// <summary>
+    /// Gets or sets the job Id associated with the machine. This property is nullable.
+    /// </summary>
+    public Guid? JobId { get; set; }
+
+    /// <summary>
     /// Gets or sets a flag indicating whether the user record is disabled.
     /// </summary>
     /// <remarks>
@@ -67,9 +77,4 @@ public class AssignMachineDto
     /// This property is intended for use in responses only and should not be included in requests.
     /// </summary>
     public DateTimeOffset? LastModifiedOn { get; set; }
-
-    /// <summary>
-    /// Gets or sets a value indicating whether the flow version is assigned.
-    /// </summary>
-    public bool IsAssigned { get; set; }
 }

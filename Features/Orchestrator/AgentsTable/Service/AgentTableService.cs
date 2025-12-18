@@ -438,16 +438,17 @@ public class AgentTableService : IAgentTableService
                 .ProjectToType<AssignMachineDto>()
                 .ToListAsync();
 
-            var clientStatusDtos = await _clientStatusStore.GetMachineStatusesAsync(_currentTenantService.CurrentTenantId);
+            var clientDataStores = await _clientStatusStore.GetMachineStatusesAsync(_currentTenantService.CurrentTenantId);
 
             // Iterate through each machine in the 'machines' collection
             foreach (var machine in machines)
             {
                 // Find the status of the machine by matching its ClientId with the current machine's Id
-                var clientStatusDto = clientStatusDtos.FirstOrDefault(status => status.ClientId == machine.Id);
+                var clientDataStore = clientDataStores.FirstOrDefault(status => status.ClientId == machine.Id);
 
                 // Set the machine's status based on whether a matching status was found
-                machine.Status = clientStatusDto != null ? clientStatusDto.Status : MachineStatusTypeEnum.Offline;
+                machine.Status = clientDataStore != null ? clientDataStore.Status : MachineStatusTypeEnum.Offline;
+                machine.JobId = (clientDataStore?.Status == MachineStatusTypeEnum.Running) ? clientDataStore.JobId : null;
             }
 
             // Return the machines along with their assignment status.
