@@ -6,7 +6,6 @@ import DCPDialogHeader from "./DCPDialogHeader";
 import CallAgentConfigForm from "@/features/call-agent/components/CallAgentConfigForm";
 import CallBlockConfigForm from "@/features/call-block/components/CallBlockConfigForm";
 import ModelConfigForm from "@/features/call-model/components/ModelConfigForm";
-import { LLMConfigForm } from "@/features/create-model/components/llm-config/LLMConfigForm";
 
 export const DCPDialog = ({ children }: React.PropsWithChildren) => {
   // Get state and actions from the DynamicConfigPanel store
@@ -26,19 +25,11 @@ export const DCPDialog = ({ children }: React.PropsWithChildren) => {
       case "blockNode":
         return <CallBlockConfigForm />;
       case "aiNode":
-        return <ModelConfigForm />;
-      default:
-        return <DCPForm />;
-    }
-  };
-
-  // Function to render create AI agent form component based on nodeData.name
-  const renderCreateAIAgentForm = () => {
-    switch (nodeData?.name) {
-      case "Text/CreateAIAgent":
-        return <LLMConfigForm />;
-      case "Vision/CreateAIAgent":
-        return <LLMConfigForm />;
+        return nodeData.name.includes("CreateAIAgent") ? (
+          <DCPForm />
+        ) : (
+          <ModelConfigForm />
+        );
       default:
         return <DCPForm />;
     }
@@ -62,9 +53,7 @@ export const DCPDialog = ({ children }: React.PropsWithChildren) => {
       >
         <DCPDialogHeader />
 
-        {nodeData?.name.includes("CreateAIAgent")
-          ? renderCreateAIAgentForm()
-          : renderFormComponent()}
+        {renderFormComponent()}
       </DialogContent>
     </DialogWrapper>
   );
