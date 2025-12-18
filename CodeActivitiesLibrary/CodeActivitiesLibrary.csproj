@@ -454,6 +454,7 @@
     <Compile Include="Activities\AppIntegrations\WordActivities\AttachToRunningWordActivity.cs" />
     <Compile Include="Activities\AppIntegrations\WordActivities\CloseWordActivity.cs" />
     <Compile Include="Activities\AppIntegrations\WordActivities\Enum\SaveFormatEnum.cs" />
+    <Compile Include="Activities\AppIntegrations\WordActivities\ExtractTextFromDocxFileActivity.cs" />
     <Compile Include="Activities\AppIntegrations\WordActivities\FindAndReplaceInDocxFileActivity.cs" />
     <Compile Include="Activities\AppIntegrations\WordActivities\FindAndReplaceWordsInWordDocumentActivity.cs" />
     <Compile Include="Activities\AppIntegrations\WordActivities\InsertImageInWordDocumentActivity.cs" />

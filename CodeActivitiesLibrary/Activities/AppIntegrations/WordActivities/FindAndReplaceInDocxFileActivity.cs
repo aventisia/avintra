@@ -11,7 +11,7 @@ using Text = DocumentFormat.OpenXml.Wordprocessing.Text;
 
 namespace CodeActivitiesLibrary.AppIntegrations.WordActivities
 {
-    [DisplayName("Find and Replace Words in Word Document")]
+    [DisplayName("Find and Replace in DOCX file")]
     [Description("Finds text and replaces it with another in a .docx document using Open XML SDK.")]
     [ActivityMetaData(nodeImg: "/assets/Word.svg")]
     public class FindAndReplaceInDocxFileActivity : BaseCodeActivity
