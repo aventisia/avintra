@@ -41,7 +41,9 @@ export const JobsTable = () => {
 
   // Create a React table for Jobs data
   const table = useDataTable(
-    jobsTableColumns,
+    jobsTableColumns.filter(
+      (col) => !(col.id === "actions" && tabValue === "History"), // Exclude "actions" when tab is "History"
+    ),
     data?.data || [],
     columnVisibility,
     sortState,
