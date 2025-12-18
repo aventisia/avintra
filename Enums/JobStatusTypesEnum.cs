@@ -9,16 +9,22 @@ public enum JobStatusTypesEnum
     Created,
 
     /// <summary>
-    /// Indicates that the job is currently running.
+    /// Indicates that the job is currently in the process of running.
     /// </summary>
     [Description("Running")]
     Running,
 
     /// <summary>
-    /// Indicates that the job has been completed successfully.
+    /// Indicates that the job has been successfully completed.
     /// </summary>
     [Description("Completed")]
     Completed,
+
+    /// <summary>
+    /// Immediately terminates the job and processes.
+    /// </summary>
+    [Description("Aborted")]
+    Abort,
 
     /// <summary>
     /// Indicates that the job failed during execution.
@@ -30,5 +36,29 @@ public enum JobStatusTypesEnum
     /// Indicates that the job was canceled before completion.
     /// </summary>
     [Description("Canceled")]
-    Canceled
+    Canceled,
+
+    /// <summary>
+    /// Indicates that the job is paused temporarily and can be resumed later.
+    /// </summary>
+    [Description("Paused")]
+    Paused,
+
+    /// <summary>
+    /// Indicates that the job has resumed after a pause or interruption.
+    /// </summary>
+    [Description("Resumed")]
+    Resumed,
+
+    /// <summary>
+    /// Indicates that the job has been marked for cleanup and is being finalized.
+    /// </summary>
+    [Description("Cleanup")]
+    Cleanup,
+
+    /// <summary>
+    /// Indicates that the job is in a state where it is being retried after a failure.
+    /// </summary>
+    [Description("Retrying")]
+    Retrying,
 }

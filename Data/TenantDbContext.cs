@@ -29,4 +29,5 @@ public class TenantDbContext : DbContext
     /// Tenant existance/activeness/Db config at the time of api request.
     /// </summary>
     public DbSet<TenantReadOnly> ReadOnlyTenants { get; set; }
+    public DbSet<ActiveSessionReadOnly> ReadOnlyActiveSessions { get; set; }
 }

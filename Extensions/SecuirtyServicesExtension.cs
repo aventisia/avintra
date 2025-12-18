@@ -85,7 +85,7 @@ public static class SecurityServicesExtension
                 ValidAudience = jwtConfig.Audience,
                 IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(jwtConfig.SecretKey))
             };
-            options.SaveToken = true;
+            options.SaveToken = false;
             options.RequireHttpsMetadata = true;
             options.Events = new JwtBearerEvents
             {
