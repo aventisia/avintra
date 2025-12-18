@@ -57,7 +57,7 @@ namespace CodeActivitiesLibrary.AppIntegrations.WordActivities
                 switch (closeOption)
                 {
                     case CloseOption.DoNotSaveDocument:
-                      // Close without saving
+                        // Close without saving
                         wordApp.Quit(WdSaveOptions.wdDoNotSaveChanges);
                         break;
 
@@ -126,5 +126,5 @@ namespace CodeActivitiesLibrary.AppIntegrations.WordActivities
 
         [Display(Name = "Save document as", Description = "Saves the document with a new name before closing.")]
         SaveDocumentAs
-    }  
+    }
 }

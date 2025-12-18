@@ -36,6 +36,13 @@ namespace CodeActivitiesLibrary.AppIntegrations.WordActivities
         [DefaultValue(WriteLocation.BeginningOfWordFile)]
         public InArgument<WriteLocation> WriteTextTo { get; set; }
 
+        [DisplayName("Bookmark Name")]
+        [Description("The name of the bookmark to use when writing before or after a bookmark.")]
+        [RenderIfCondition(nameof(WriteTextTo), WriteLocation.BeforeBookmark)]
+        [RenderIfOperator("OR")]
+        [RenderIfCondition(nameof(WriteTextTo), WriteLocation.AfterBookmark)]
+        public InArgument<string> BookmarkName { get; set; }
+        
         protected override void Execute(CodeActivityContext context)
         {
             try
@@ -45,11 +52,19 @@ namespace CodeActivitiesLibrary.AppIntegrations.WordActivities
                 var textToWrite = context.GetValue(TextToWrite);
                 var appendNewLine = context.GetValue(AppendNewLine);
                 var writeLocation = context.GetValue(WriteTextTo);
+                var bookmarkName = context.GetValue(BookmarkName);
 
                 // Ensure Word is open and has at least one document
                 if (wordApp == null || wordApp.Documents.Count == 0)
                 {
                     throw new InvalidOperationException("No active Word document found.");
+                }
+
+                // Validate bookmark name when required
+                if ((writeLocation == WriteLocation.BeforeBookmark || writeLocation == WriteLocation.AfterBookmark) &&
+                    string.IsNullOrWhiteSpace(bookmarkName))
+                {
+                    throw new ArgumentException("Bookmark Name is required when writing before or after a bookmark.");
                 }
 
                 // Get the active document
@@ -67,11 +82,11 @@ namespace CodeActivitiesLibrary.AppIntegrations.WordActivities
                         break;
 
                     case WriteLocation.BeforeBookmark:
-                        InsertBeforeBookmark(activeDocument, textToWrite, appendNewLine);
+                        InsertBeforeBookmark(activeDocument, bookmarkName, textToWrite, appendNewLine);
                         break;
 
                     case WriteLocation.AfterBookmark:
-                        InsertAfterBookmark(activeDocument, textToWrite, appendNewLine);
+                        InsertAfterBookmark(activeDocument, bookmarkName, textToWrite, appendNewLine);
                         break;
 
                     default:
@@ -109,21 +124,20 @@ namespace CodeActivitiesLibrary.AppIntegrations.WordActivities
                 document.Content.InsertAfter("\r\n");
             }
         }
-
-        private void InsertBeforeBookmark(_Document document, string text, bool appendNewLine)
+        private void InsertBeforeBookmark(_Document document, string bookmarkName, string text, bool appendNewLine)
         {
-            // Find the first bookmark in the document
-            object bookmarkName = "_DefaultBookmark"; // Example bookmark name
-            Range bookmarkRange = document.Bookmarks[bookmarkName].Range;
+            if (!document.Bookmarks.Exists(bookmarkName))
+                throw new ArgumentException($"Bookmark '{bookmarkName}' not found in the document.");
 
-            // Insert text before the bookmark
+            Range bookmarkRange = document.Bookmarks[bookmarkName].Range;
             bookmarkRange.Text = text + (appendNewLine ? "\r\n" : "");
         }
 
-        private void InsertAfterBookmark(_Document document, string text, bool appendNewLine)
+        private void InsertAfterBookmark(_Document document, string bookmarkName, string text, bool appendNewLine)
         {
-            // Find the first bookmark in the document
-            object bookmarkName = "_DefaultBookmark"; // Example bookmark name
+            if (!document.Bookmarks.Exists(bookmarkName))
+                throw new ArgumentException($"Bookmark '{bookmarkName}' not found in the document.");
+
             Range bookmarkRange = document.Bookmarks[bookmarkName].Range;
 
             // Insert text after the bookmark

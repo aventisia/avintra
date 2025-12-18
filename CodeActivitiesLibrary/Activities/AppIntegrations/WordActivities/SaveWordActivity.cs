@@ -41,7 +41,7 @@ namespace CodeActivitiesLibrary.AppIntegrations.WordActivities
         {
             try
             {
-               // Retrieve input values
+                // Retrieve input values
                 var wordApp = context.GetValue(WordInstance);
                 var saveMode = context.GetValue(SaveMode);
                 var savePath = context.GetValue(SavePath);
