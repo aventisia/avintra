@@ -14,14 +14,14 @@ import { useAssignMachineStore } from "../../stores/assign-machine-store";
 type ExecutionActionProps = {
   rowId: string;
   isDisabled?: boolean;
-  osId?: string;
+  jobId?: string;
   executionState: MachineStatusTypesEnum;
 };
 
 export const ExecutionAction = ({
   rowId,
   executionState,
-  osId,
+  jobId,
 }: ExecutionActionProps) => {
   const { flowVersionId } = useAssignMachineStore(
     useShallow((s) => ({
@@ -43,11 +43,7 @@ export const ExecutionAction = ({
             size="icon7"
             className="hover:bg-slate-200"
             onClick={() => {
-              if (osId)
-                abortJobMutation({
-                  versionId: flowVersionId,
-                  osId,
-                });
+              if (jobId) abortJobMutation(jobId);
             }}
           >
             <StopIcon className="h-[1.125rem] w-[1.125rem] text-red-500/80" />

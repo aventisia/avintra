@@ -72,7 +72,7 @@ const MachinesList = () => {
                         executionState={val.status}
                         isDisabled={false}
                         rowId={val.id}
-                        osId={val.osId || ""}
+                        jobId={val.jobId}
                       />
                       <MachinesListItemActions id={val.id} />
                     </div>

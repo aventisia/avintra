@@ -67,6 +67,7 @@ const AgentsList = () => {
                         executionState={val.status}
                         isDisabled={false}
                         rowId={val.id}
+                        jobId={val.jobId}
                       />
                       <AgentsListItemActions id={val.id} />
                     </div>

@@ -79,4 +79,6 @@ export interface SelectAgentTableDto {
   isAssigned: boolean;
 
   status: string;
+
+  jobId?: string;
 }

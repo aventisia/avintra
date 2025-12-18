@@ -32,4 +32,6 @@ export interface AssignMachineDto {
    * Gets or sets the status of the machine. Max-100
    */
   status: MachineStatusTypesEnum;
+
+  jobId?: string;
 }
