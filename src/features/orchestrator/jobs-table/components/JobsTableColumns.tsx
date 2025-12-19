@@ -118,9 +118,7 @@ export const jobsTableColumns: ColumnDef<JobsTableDto>[] = [
     ),
     cell: ({ row }) => (
       <div className="w-auto truncate font-medium">
-        {Number(row.getValue("duration")).toLocaleString("en-US", {
-          maximumFractionDigits: 2,
-        }) ?? "-"}
+        {Math.round(row.getValue("duration") ?? 0) ?? "--"}
       </div>
     ),
   },
