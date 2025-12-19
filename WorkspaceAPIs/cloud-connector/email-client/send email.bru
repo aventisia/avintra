@@ -1,0 +1,35 @@
+meta {
+  name: send email
+  type: http
+  seq: 1
+}
+
+post {
+  url: {{WORC_APIS_BASE_URL}}/cloud-connector/email-client/invoke
+  body: json
+  auth: none
+}
+
+body:json {
+  {
+    "agentId": "00000000-0000-0000-0000-000000000000",
+    "agentName": "Test",
+    "provider": "EmailClient",
+    "action": "SendEmailThroughEmailClient",
+    "credentialId": "",
+    "payload": {
+      "to": "mayuri@aventisia.com",
+      "from": "mayuri@aventisia.com",
+      "subject": "Test the sendGrid: ",
+      "body": "Hello, I am from aventisia",
+      "cc": "",
+      "bcc": "",
+      "isHtml": false,
+      "attachments": "",
+      "securityProtocol": "Auto",
+      "smtpNeedsAuth": false,
+      "acceptUntrustedCertificates": false,
+      "timeoutSeconds": 60
+    }
+  }
+}

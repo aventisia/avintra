@@ -1,0 +1,26 @@
+meta {
+  name: process email messages
+  type: http
+  seq: 2
+}
+
+post {
+  url: {{WORC_APIS_BASE_URL}}/cloud-connector/email-client/invoke
+  body: json
+  auth: none
+}
+
+body:json {
+  {
+    "agentId": "00000000-0000-0000-0000-000000000000",
+    "agentName": "Test",
+    "provider": "EmailClient",
+    "action": "ProcessEmailMessages",
+    "credentialId": "",
+    "payload": {
+      "operation": "MoveToFolder",
+      "messageIds": "",
+      "acceptUntrustedCertificates": false
+    }
+  }
+}
