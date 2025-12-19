@@ -7,17 +7,21 @@ export const DCPTabsContent = ({
   children,
   footer,
   className,
+  hasFooter = true,
 }: {
   tabValue: string;
   className?: string;
   children: React.ReactNode;
   footer?: React.ReactNode;
+  hasFooter?: boolean;
 }) => {
   return (
     <TabsContent className="mt-0" value={tabValue}>
       <ScrollArea
         className={cn(
-          "h-[calc(100vh-3*4rem-var(--header-height)-3*var(--header-padding))] px-3 pb-2",
+          "h-[calc(100vh-2*4rem-var(--header-height)-3*var(--header-padding))] px-3 pb-2",
+          hasFooter &&
+            "h-[calc(100vh-3*4rem-var(--header-height)-3*var(--header-padding))]",
           className,
         )}
       >
