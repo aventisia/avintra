@@ -65,11 +65,11 @@ public class TimeTriggerService(
 
         try
         {
-            // Convert the effective date to UTC based on the given timezone
-            var triggerEffectiveUtc = CronScheduleUtil.ConvertLocalTimeToUtc(triggerDto.Timezone, triggerDto.EffectiveDate);
+            // // Convert the effective date to UTC based on the given timezone
+            // var triggerEffectiveUtc = CronScheduleUtil.ConvertLocalTimeToUtc(triggerDto.Timezone, triggerDto.EffectiveDate);
 
             // Check if the effective date has already passed
-            if (DateTimeOffset.UtcNow > triggerEffectiveUtc)
+            if (DateTimeOffset.UtcNow > triggerDto.EffectiveDate)
             {
                 serviceResponse.Message = "The effective date has already passed. Please provide a future date.";
                 return serviceResponse;
