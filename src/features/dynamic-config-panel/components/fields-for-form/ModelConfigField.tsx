@@ -200,7 +200,7 @@ const ModelConfigField = ({ name }: ModelConfigFieldProps) => {
         <CredentialsSelectField
           name={credentialsFieldName}
           size="sm"
-          label={`${currentProvider?.label} Credentials`}
+          label={`${currentProvider?.label ? currentProvider?.label : ""} Credentials`}
           modelProvider={providerField.value}
         />
       )}
