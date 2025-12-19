@@ -1,5 +1,3 @@
-using System.Diagnostics;
-
 namespace WorkspaceAPIs.Services;
 
 public class TimeTriggerService(
