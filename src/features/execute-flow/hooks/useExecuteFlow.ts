@@ -10,6 +10,7 @@ import { getMySession } from "@/react-toolkit/apis/accounts-me-apis";
 import { CURRENT_VERSION_ID_KEY } from "../constants/constants";
 import { JobDetailsDto } from "../dtos/job-details-dto";
 import { useCurrentFlowStore } from "../stores/current-flow-store";
+import { useJobDataStore } from "../stores/job-data-store";
 import { deepParse } from "../utils/deepParse";
 import { clearNodeExecutionLog } from "../utils/save-node-execution-log";
 
@@ -22,6 +23,11 @@ export default function useExecuteFlow() {
       executionState: state.executionState,
       setExecutionState: state.setExecutionState,
       setCurrentFlow: state.setCurrentFlow,
+    })),
+  );
+  const { updateField } = useJobDataStore(
+    useShallow((state) => ({
+      updateField: state.updateField,
     })),
   );
 
@@ -111,6 +117,8 @@ export default function useExecuteFlow() {
         accessToken,
       });
       console.log("Executor launched successfully:", res);
+
+      updateField("startTime", new Date());
 
       // Set versionId, nodes and edges in local storage for executor
       localStorage.setItem(CURRENT_VERSION_ID_KEY, versionId || "");

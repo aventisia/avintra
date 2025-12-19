@@ -68,10 +68,6 @@ export default function useWebSocket() {
           }),
         );
 
-        if (command === "start") {
-          updateField("startTime", new Date());
-        }
-
         if (
           command === "abort" ||
           command === "complete" ||
@@ -201,11 +197,16 @@ export default function useWebSocket() {
 
         // Handle Credit Consumption
         if (currExecCommand) {
+          const duration = Math.round(
+            (endTime.getTime() - startTime.getTime()) / 1000,
+          );
+
           await updateJobData({
             flowId: currentFlow.id,
             flowVersionId: currentFlow.versionId,
             id: currentFlow.jobId,
             machineId: currentFlow.machineId,
+            duration,
             status,
             startTime,
             endTime,
@@ -215,7 +216,7 @@ export default function useWebSocket() {
           await postCreditConsumption([
             {
               serviceType: CreditServiceTypesEnum.AgentExecutionTime,
-              consumedUnit: (endTime.getTime() - startTime.getTime()) / 1000,
+              consumedUnit: duration,
               refType: UsageSourceTypesEnum.Agent,
               refId: currentFlow.id,
               refName: currentFlow.name,
