@@ -42,7 +42,6 @@ export const DCPForm = () => {
     selectedTab,
     setSelectedTab,
     tabKeys,
-    fields,
   } = useDefineDCPForm();
 
   // Watch all form values
@@ -53,14 +52,14 @@ export const DCPForm = () => {
 
   // Check if output fields should be shown based on node configuration and watched values
   useEffect(() => {
-    const renderedOutputFields = fields?.filter((field) =>
+    const renderedOutputFields = nodeConfig?.fields?.filter((field) =>
       shouldRenderField("Output", field, watchedValues),
     );
 
     setShowOutputFields(
       Number(renderedOutputFields?.map((field) => field.name)?.length) > 0,
     );
-  }, [fields, isFormReady, nodeConfig, watchedValues]);
+  }, [nodeConfig?.fields, isFormReady, nodeConfig, watchedValues]);
 
   // Define submit handler
   const onSubmit = (formData: z.infer<typeof nodeConfigZodSchema>) => {
@@ -132,7 +131,7 @@ export const DCPForm = () => {
               <DCPTabsContent tabValue={tab}>
                 {/* Input fields */}
                 <div className="space-y-3.5">
-                  {fields
+                  {nodeConfig?.fields
                     ?.filter((field) => (field.category ?? "Inputs") == tab)
                     ?.map((field) => {
                       // Check if the field should be rendered based on direction and renderIf conditions
@@ -155,14 +154,15 @@ export const DCPForm = () => {
                 {tabNo == 0 &&
                 showOuputFields &&
                 Number(
-                  fields?.filter((field) => field.direction == "Output")
-                    ?.length,
+                  nodeConfig?.fields?.filter(
+                    (field) => field.direction == "Output",
+                  )?.length,
                 ) > 0 ? (
                   <>
                     <h3
                       className={cn(
                         "!mt-6 flex items-center gap-1 text-xs font-medium",
-                        fields?.filter(
+                        nodeConfig?.fields?.filter(
                           (field) =>
                             (field.category ?? "Inputs") == tab &&
                             field.direction == "Input",
@@ -176,7 +176,7 @@ export const DCPForm = () => {
                     </h3>
 
                     <div className="mb-1 mt-3 space-y-3 rounded-lg border bg-slate-50 px-3.5 py-3">
-                      {fields?.map((field) => {
+                      {nodeConfig?.fields?.map((field) => {
                         // Check if the field should be rendered based on direction and renderIf conditions
                         if (
                           !shouldRenderField("Output", field, watchedValues)
@@ -214,13 +214,7 @@ export const DCPForm = () => {
               </DCPTabsFooterWrapper>
             )}
           </Form>
-          <TestTabContent
-            type={
-              Array.isArray(nodeConfig)
-                ? "standard"
-                : (nodeConfig?.testScreenType ?? "standard")
-            }
-          />
+          <TestTabContent type={nodeConfig?.testScreenType ?? "standard"} />
         </DCPTabsWrapper>
       )}
     </>

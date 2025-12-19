@@ -9,9 +9,9 @@ import {
 import { SliderField } from "@/components/Slider/SliderField";
 import { useMemo } from "react";
 import {
-  aiProviders,
+  modelProviders,
   getSpecialtyFromNode,
-} from "@/features/create-model/constants/llm-providers";
+} from "@/features/dynamic-config-panel/constants/model-providers";
 import { Popover, PopoverContent, PopoverTrigger } from "@aventisia/ui/popover";
 import { Settings2Icon } from "lucide-react";
 import { cn } from "@aventisia/ui/lib";
@@ -65,7 +65,7 @@ const ModelConfigField = ({ name }: ModelConfigFieldProps) => {
 
   // 1. Get filtered providers based on BYOK and Specialty
   const filteredProviders = useMemo(() => {
-    return aiProviders
+    return modelProviders
       .filter((p) => p.isEnabled !== false) // Only enabled providers
       .map((p) => ({
         ...p,

@@ -11,6 +11,7 @@ import {
   useDynamicConfigPanelStore,
 } from "..";
 import { onErrorFieldsJson } from "../constants/OnErrorFields";
+import { NodeConfigSchemaType } from "../types/node-config-schema-type";
 
 export const useDefineDCPForm = () => {
   // Get node unique name state (required to get config panel data)
@@ -30,16 +31,9 @@ export const useDefineDCPForm = () => {
   const outputs = nodeData?.outputs ?? [];
 
   // Local state for node config and zod schema
-  const [nodeConfig, setNodeConfig] = useState<
-    | {
-        errorHandling?: "standard" | "none";
-        testScreenType?: "standard" | "none" | "llmGenerateRequest";
-        fields: DCPFieldSchemaType[];
-      }
-    | DCPFieldSchemaType[]
-  >({ fields: [] });
-
-  const [fields, setFields] = useState<DCPFieldSchemaType[]>();
+  const [nodeConfig, setNodeConfig] = useState<NodeConfigSchemaType>({
+    fields: [],
+  });
 
   const [isLoading, setIsLoading] = useState(false);
 
@@ -59,36 +53,28 @@ export const useDefineDCPForm = () => {
 
     setIsLoading(true);
 
+    const getErrorFieldJson = (
+      errorHandling?: string,
+    ): DCPFieldSchemaType[] => {
+      if (errorHandling == "standard") return onErrorFieldsJson;
+      //TODO: Add other errorFieldsJson if more
+      else return [];
+    };
+
     // Get node config from API and Set node config and zod schema
     getNodeConfig(nodeUniqueName, nodeData?.type)
-      .then((config) => {
+      .then((config: NodeConfigSchemaType) => {
         if (config) {
-          const fields = Array.isArray(config) ? config : config.fields;
-          const hasOnError = !Array.isArray(config) && config?.errorHandling;
-
-          const getErrorFieldJson = (errorHandling: string) => {
-            if (errorHandling == "standard") return onErrorFieldsJson;
-            else return [];
+          const updatedConfig = {
+            ...config,
+            fields: [
+              ...config.fields,
+              ...getErrorFieldJson(config?.errorHandling),
+            ],
           };
-
-          setNodeConfig(
-            hasOnError
-              ? {
-                  ...config,
-                  fields: [
-                    ...config.fields,
-                    ...getErrorFieldJson(config.errorHandling),
-                  ],
-                }
-              : config,
-          );
-          setNodeConfigZodSchema(
-            generateZodSchema(
-              hasOnError
-                ? [...fields, ...getErrorFieldJson(config.errorHandling)]
-                : fields,
-            ),
-          );
+          console.log(updatedConfig.fields);
+          setNodeConfig(updatedConfig);
+          setNodeConfigZodSchema(generateZodSchema(updatedConfig.fields));
         }
       })
       .finally(() => {
@@ -98,15 +84,11 @@ export const useDefineDCPForm = () => {
   }, [nodeUniqueName, nodeId]);
 
   // Get input and output keys (required at the time of form submission)
-  const inputKeys: string[] = (
-    Array.isArray(nodeConfig) ? nodeConfig : nodeConfig?.fields
-  )
+  const inputKeys: string[] = nodeConfig?.fields
     ?.filter((f) => f.direction === "Input")
     .map((f) => f.name);
 
-  const outputKeys: string[] = (
-    Array.isArray(nodeConfig) ? nodeConfig : nodeConfig?.fields
-  )
+  const outputKeys: string[] = nodeConfig?.fields
     ?.filter((f) => f.direction === "Output")
     .map((f) => f.name);
 
@@ -117,21 +99,21 @@ export const useDefineDCPForm = () => {
 
   // Reset form values when nodeConfig or inputs/outputs change
   useEffect(() => {
-    const fields = Array.isArray(nodeConfig) ? nodeConfig : nodeConfig?.fields;
-
     if (
-      fields.length > 0 &&
+      nodeConfig.fields.length > 0 &&
       Object.keys(nodeConfigZodSchema.shape).length > 0
     ) {
-      setFields(fields);
-
-      form.reset(getDefaultValuesForForm(fields, inputs, outputs));
+      form.reset(getDefaultValuesForForm(nodeConfig.fields, inputs, outputs));
       setIsFormReady(true); // Set form ready to true after resetting the form
     }
 
     // generate tabs list form fields category
     const uniqueTabKeys = [
-      ...new Set(fields?.map((item) => (item?.category ?? "Inputs") as string)),
+      ...new Set(
+        nodeConfig.fields?.map(
+          (item) => (item?.category ?? "Inputs") as string,
+        ),
+      ),
     ].filter(Boolean);
 
     // Move "Inputs" to the front if it exists
@@ -151,7 +133,6 @@ export const useDefineDCPForm = () => {
     form,
     watch,
     nodeConfig,
-    fields,
     isFormReady,
     nodeConfigZodSchema,
     nodeId,

@@ -1,4 +1,6 @@
-export const onErrorFieldsJson = [
+import { DCPFieldSchemaType } from "../types/dcp-field-schema-type";
+
+export const onErrorFieldsJson: DCPFieldSchemaType[] = [
   {
     direction: "Input",
     type: "switch",
