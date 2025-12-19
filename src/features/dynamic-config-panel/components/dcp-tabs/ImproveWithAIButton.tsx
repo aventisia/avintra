@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import { useGenerateInstructionMutation } from "@/features/save-as-template/hooks/useGenerateInstructionMutation";
 import { useCurrentFlowStore } from "@/stores/current-flow-store";
 import { Button } from "@aventisia/ui/buttons";
@@ -5,14 +6,18 @@ import { cn } from "@aventisia/ui/lib";
 import { SparklesIcon } from "lucide-react";
 import { useEffect } from "react";
 import { UseFormReturn } from "react-hook-form";
-import { z } from "zod";
 import { useShallow } from "zustand/react/shallow";
-import { llmConfigZodSchema } from "../../constants/llm-config-zod-schema";
 
 const ImproveWithAIButton = ({
   form,
 }: {
-  form: UseFormReturn<z.infer<typeof llmConfigZodSchema>>;
+  form: UseFormReturn<
+    {
+      [x: string]: any;
+    },
+    any,
+    undefined
+  >;
 }) => {
   const { currentFlow } = useCurrentFlowStore(
     useShallow((state) => ({
@@ -29,7 +34,7 @@ const ImproveWithAIButton = ({
 
   useEffect(() => {
     if (data?.data) {
-      form.setValue("input", data?.data);
+      form.setValue("prompt", data?.data);
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [data?.data]);

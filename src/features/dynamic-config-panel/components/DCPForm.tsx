@@ -12,7 +12,6 @@ import {
 } from "..";
 import { LoadingSpinner } from "@aventisia/ui";
 import { refineSubmittedIO } from "../utils/refine-submitted-io";
-import TestContent from "@/features/create-model/components/test/Test";
 import { DCPTabsContent } from "./dcp-tabs/DCPTabsContent";
 import { DCPTabsTrigger } from "./dcp-tabs/DCPTabsTrigger";
 import { DCPTabsList } from "./dcp-tabs/DCPTabsList";
@@ -20,6 +19,8 @@ import { cn } from "@aventisia/ui/lib";
 import { DCPTabsWrapper } from "./dcp-tabs/DCPTabsWrapper";
 import { DCPTabsFooterWrapper } from "./dcp-tabs/DCPTabsFooterWrapper";
 import { DCPTabsListWrapper } from "./dcp-tabs/DCPTabsListWrapper";
+import ImproveWithAIButton from "@/features/dynamic-config-panel/components/dcp-tabs/ImproveWithAIButton";
+import TestTabContent from "./dcp-tabs/test-tab/TestTabContent";
 
 export const DCPForm = () => {
   const [showOuputFields, setShowOutputFields] = useState(false);
@@ -203,14 +204,23 @@ export const DCPForm = () => {
 
             {/* Save button */}
             {selectedTab !== "Test" && (
-              <DCPTabsFooterWrapper>
+              <DCPTabsFooterWrapper
+                className={cn(selectedTab == "Prompt" && "justify-between")}
+              >
+                {selectedTab == "Prompt" && <ImproveWithAIButton form={form} />}
                 <Button size={"sm"} type="submit" className="min-w-[5rem]">
                   Save
                 </Button>
               </DCPTabsFooterWrapper>
             )}
           </Form>
-          <TestContent />
+          <TestTabContent
+            type={
+              Array.isArray(nodeConfig)
+                ? "standard"
+                : (nodeConfig?.testScreenType ?? "standard")
+            }
+          />
         </DCPTabsWrapper>
       )}
     </>
