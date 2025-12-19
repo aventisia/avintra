@@ -1,4 +1,9 @@
-import { InputField, SelectField, SwitchField } from "@aventisia/ui/form";
+import {
+  InputField,
+  SelectField,
+  SwitchField,
+  TextareaField,
+} from "@aventisia/ui/form";
 import {
   ConditionGroupsField,
   ConfigPanelAutosizeTextareaField,
@@ -61,6 +66,15 @@ export const RenderField = (field: DCPFieldSchemaType) => {
       return <ConfigPanelModelOutputField {...baseProps} />;
     case "model-config-select":
       return <ModelConfigField name={field.name} />;
+    case "prompt-input":
+      return (
+        <TextareaField
+          name={field.name}
+          label={field.label}
+          rows={field.min ?? 5}
+        />
+      );
+
     default:
       return null;
   }
