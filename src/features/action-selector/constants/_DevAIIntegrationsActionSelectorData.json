@@ -32,39 +32,75 @@
           },
           {
             "type": "aiNode",
-            "name": "Text/CreateAIAgent",
-            "label": "Text Model",
-            "description": "Create and configure a text-based AI model for tasks like classification and text generation.",
-            "docsLink": null,
-            "icon": "",
-            "img": "/assets/InferencingModel.svg"
-          },
-          {
-            "type": "aiNode",
-            "name": "Vision/CreateAIAgent",
+            "name": "Vision_CreateAIAgent",
             "label": "Vision Model",
-            "description": "Use AI for OCR to extract text from PDF documents.",
+            "description": "Analyzes visual data to extract structured information, such as identifying objects, reading text, or detecting anomalies.",
+            "docsLink": null,
+            "icon": "",
+            "img": "/assets/VisionModel.svg"
+          },
+          {
+            "type": "aiNode",
+            "name": "Inferencing_CreateAIAgent",
+            "label": "Inferencing Model",
+            "description": "Performs high-speed reasoning and logic checks on incoming data to provide instant predictions or route tasks.",
             "docsLink": null,
             "icon": "",
             "img": "/assets/InferencingModel.svg"
           },
           {
             "type": "aiNode",
-            "name": "STT/CreateAIAgent",
+            "name": "Conversational_CreateAIAgent",
+            "label": "Conversational Model",
+            "description": "Manages multi-turn interactions with human-like understanding and memory to guide users through complex tasks.",
+            "docsLink": null,
+            "icon": "",
+            "img": "/assets/ConversationModel.svg"
+          },
+          {
+            "type": "aiNode",
+            "name": "STT_CreateAIAgent",
             "label": "Speech To Text Model",
             "description": "Convert spoken language into written text using AI.",
             "docsLink": null,
             "icon": "",
-            "img": "/assets/SpeechToText.svg"
+            "img": "/assets/SpeechToTextModel.svg"
           },
           {
             "type": "aiNode",
-            "name": "TTS/CreateAIAgent",
+            "name": "TTS_CreateAIAgent",
             "label": "Text To Speech Model",
             "description": "Convert text into natural-sounding speech using AI.",
             "docsLink": null,
             "icon": "",
-            "img": "/assets/TextToSpeech.svg"
+            "img": "/assets/TextToSpeechModel.svg"
+          },
+          {
+            "type": "aiNode",
+            "name": "Image_CreateAIAgent",
+            "label": "Image Model",
+            "description": "Generates new visual assets or modifies existing images based on precise descriptive text instructions.",
+            "docsLink": null,
+            "icon": "",
+            "img": "/assets/ImageModel.svg"
+          },
+          {
+            "type": "aiNode",
+            "name": "Video_CreateAIAgent",
+            "label": "Video Model",
+            "description": "Creates high-fidelity video footage or applies cinematic edits to existing clips for dynamic content pipelines.",
+            "docsLink": null,
+            "icon": "",
+            "img": "/assets/VideoModel.svg"
+          },
+          {
+            "type": "aiNode",
+            "name": "DeepResearch_CreateAIAgent",
+            "label": "Deep Research Model",
+            "description": "An autonomous agent that plans and executes multi-step web searches to synthesize cited, evidence-based reports.",
+            "docsLink": null,
+            "icon": "",
+            "img": "/assets/DeepSearchModel.svg"
           }
         ]
       }
