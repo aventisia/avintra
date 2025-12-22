@@ -1,5 +1,6 @@
 import {
   InputField,
+  MultiSelectField,
   SelectField,
   SwitchField,
   TextareaField,
@@ -75,7 +76,13 @@ export const RenderField = (field: DCPFieldSchemaType) => {
           rows={field.min ?? 5}
         />
       );
-
+    case "multi-selector":
+      return (
+        <MultiSelectField
+          {...baseProps}
+          selectOptions={field.selectOptions || []}
+        />
+      );
     case "slider":
       return (
         <SliderField
