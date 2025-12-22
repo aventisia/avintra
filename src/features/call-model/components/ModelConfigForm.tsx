@@ -14,8 +14,17 @@ import { modelFormData } from "../constants/model-config-zod-schema";
 import { ConfigPanelModelOutputField } from "@/features/dynamic-config-panel/components/fields-for-form/ConfigPanelModelOutputField";
 import { useUserSessionStore } from "@/react-toolkit/stores/user-session-store";
 import { useShallow } from "zustand/react/shallow";
+import { DCPTabsWrapper } from "@/features/dynamic-config-panel/components/dcp-tabs/DCPTabsWrapper";
+import { DCPTabsListWrapper } from "@/features/dynamic-config-panel/components/dcp-tabs/DCPTabsListWrapper";
+import { DCPTabsList } from "@/features/dynamic-config-panel/components/dcp-tabs/DCPTabsList";
+import { DCPTabsTrigger } from "@/features/dynamic-config-panel/components/dcp-tabs/DCPTabsTrigger";
+import { useState } from "react";
+import { DCPTabsContent } from "@/features/dynamic-config-panel/components/dcp-tabs/DCPTabsContent";
+import { DCPTabsFooterWrapper } from "@/features/dynamic-config-panel/components/dcp-tabs/DCPTabsFooterWrapper";
 
 export default function ModelConfigForm() {
+  const [selectedTab, setSelectedTab] = useState("Inputs");
+
   // Get handlers to update node inputs and outputs
   const { updateNodeDataIO, updateFlowVariablesObject } = useUpdateNodeDataIO();
   const { control, form, nodeId, setShowDialog, aiModelResultDescription } =
@@ -107,67 +116,84 @@ export default function ModelConfigForm() {
   } = useSearchModel();
 
   return (
-    <Form
-      methods={form}
-      onSubmit={form.handleSubmit(onSubmit)}
-      //  disabled={isSubmitting}
-      // className="space-y-4"
-    >
-      <Controller
-        name="MLModel"
-        control={control}
-        render={({ field }) => (
-          <ModelSelector
-            selectedItem={field.value || null}
-            searchResults={searchData?.data || []}
-            onItemSelect={(item) => field.onChange(item)}
-            onItemClear={() => field.onChange(null)}
-            onSearchChange={setSearchTerm}
-            searchQuery={searchTerm}
-            isLoading={isUserLoading}
-            isError={isError}
-            placeholder="Search Model"
+    <DCPTabsWrapper setTabValue={setSelectedTab} tabValue={selectedTab}>
+      <DCPTabsListWrapper>
+        <DCPTabsList>
+          <DCPTabsTrigger
+            tabValue={"Inputs"}
+            children={"Inputs".replace(/([a-z])([A-Z])/g, "$1 $2")}
           />
-        )}
-      />
-      <ConfigPanelAutosizeTextareaField
-        minHeight={0}
-        name="inputText"
-        label="Input Text"
-        description="Enter the text to be processed."
-      />
-      <ConfigPanelAutosizeTextareaField
-        minHeight={0}
-        name="modelApiKey"
-        label="Model API Key"
-        description="Enter the API key required to authenticate requests to the selected ML model."
-      />
+        </DCPTabsList>
+      </DCPTabsListWrapper>
+      <Form
+        methods={form}
+        onSubmit={form.handleSubmit(onSubmit)}
+        //  disabled={isSubmitting}
+        // className="space-y-4"
+      >
+        <DCPTabsContent tabValue={"Inputs"}>
+          <div className="space-y-3.5">
+            <Controller
+              name="MLModel"
+              control={control}
+              render={({ field }) => (
+                <ModelSelector
+                  selectedItem={field.value || null}
+                  searchResults={searchData?.data || []}
+                  onItemSelect={(item) => field.onChange(item)}
+                  onItemClear={() => field.onChange(null)}
+                  onSearchChange={setSearchTerm}
+                  searchQuery={searchTerm}
+                  isLoading={isUserLoading}
+                  isError={isError}
+                  placeholder="Search Model"
+                />
+              )}
+            />
+            <ConfigPanelAutosizeTextareaField
+              minHeight={0}
+              name="inputText"
+              label="Input Text"
+              description="Enter the text to be processed."
+            />
+            <ConfigPanelAutosizeTextareaField
+              minHeight={0}
+              name="modelApiKey"
+              label="Model API Key"
+              description="Enter the API key required to authenticate requests to the selected ML model."
+            />
 
-      <InputField
-        name="llm"
-        label="LLM"
-        description="LLM used for selected model"
-        fieldSize="sm"
-        disabled
-      />
+            <InputField
+              name="llm"
+              label="LLM"
+              description="LLM used for selected model"
+              fieldSize="sm"
+              disabled
+            />
 
-      <h3 className="!mt-6 flex items-center gap-1 text-sm font-medium">
-        <span className="rounded-full bg-accent px-1.5 text-indigo-600">
-          Outputs
-        </span>
-        <span className="h-[0.06rem] flex-grow rounded bg-accent"></span>
-      </h3>
+            <h3 className="!mt-6 flex items-center gap-1 text-sm font-medium">
+              <span className="rounded-full bg-accent px-1.5 text-indigo-600">
+                Outputs
+              </span>
+              <span className="h-[0.06rem] flex-grow rounded bg-accent"></span>
+            </h3>
 
-      <div className="space-y-2 rounded-lg border bg-slate-50 px-3.5 py-3">
-        <ConfigPanelOuputField
-          name="ResponseCode"
-          description="Response code"
-        />
-        <ConfigPanelModelOutputField {...resultProps} />
-      </div>
-      <div className="flex w-full items-center justify-end pb-4">
-        <Button type="submit">Save</Button>
-      </div>
-    </Form>
+            <div className="space-y-2 rounded-lg border bg-slate-50 px-3.5 py-3">
+              <ConfigPanelOuputField
+                name="ResponseCode"
+                description="Response code"
+              />
+              <ConfigPanelModelOutputField {...resultProps} />
+            </div>
+          </div>
+        </DCPTabsContent>
+
+        <DCPTabsFooterWrapper>
+          <Button size={"sm"} type="submit" className="min-w-[5rem]">
+            Save
+          </Button>
+        </DCPTabsFooterWrapper>
+      </Form>
+    </DCPTabsWrapper>
   );
 }
