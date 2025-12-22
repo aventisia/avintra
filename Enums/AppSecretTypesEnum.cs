@@ -36,17 +36,50 @@ public enum AppSecretTypesEnum
     GitHub,
 
     /// <summary>
-    /// Represents the credentials or configuration necessary to integrate with Microsoft 365 services.
+    /// Represents the credentials required for Microsoft 365 services.
     /// </summary>
     [Description("M365 Credentials")]
     M365,
 
+    /// <summary>
+    /// Represents general credentials used for various services.
+    /// </summary>
     [Description("General Credentials")]
     GeneralCredentials,
 
-    // TODO: implement additional secret types below
+    /// <summary>
+    /// Represents the credentials needed for integrating with Anthropic services.
+    /// </summary>
+    [Description("Anthropic Credentials")]
     Anthropic,
+
+    /// <summary>
+    /// Represents the credentials required for Google Gemini API integration.
+    /// </summary>
+    [Description("Google Gemini Credentials")]
     GoogleGemini,
+
+    /// <summary>
+    /// Represents the credentials needed for integrating with Google Workspace services.
+    /// </summary>
+    [Description("Google Workspace Credentials")]
     GoogleWorkspace,
-    AzureOpenAI
+
+    /// <summary>
+    /// Represents the credentials required for Azure OpenAI API integration.
+    /// </summary>
+    [Description("Azure OpenAI Credentials")]
+    AzureOpenAI,
+
+    /// <summary>
+    /// Represents the credentials required for integrating with ElevenLabs API.
+    /// </summary>
+    [Description("ElevenLabs Credentials")]
+    ElevenLabs,
+
+    /// <summary>
+    /// Represents the credentials required for integrating with OpenRouter API.
+    /// </summary>
+    [Description("OpenRouter Credentials")]
+    OpenRouter
 }
