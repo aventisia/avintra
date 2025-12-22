@@ -38,13 +38,14 @@ export const getNodeConfig = async (
   if (nodeUniqueName.length > 9 && nodeUniqueName.slice(-9) === "Connector") {
     try {
       const connectorConfig = await axiosInstance
-        .get(`${import.meta.env.VITE_WORC_API_URL}/cloud-connector/config-file/${nodeUniqueName}.json`)
+        .get(
+          `${import.meta.env.VITE_WORC_API_URL}/cloud-connector/config-file/${nodeUniqueName}.json`,
+        )
         .then((res) => res.data);
       if (connectorConfig) {
-        const connectorFields = connectorConfig.fields as DCPFieldSchemaType[];
         // Cache the fetched config
-        nodeConfigCache[nodeUniqueName] = connectorFields;
-        return connectorFields;
+        nodeConfigCache[nodeUniqueName] = connectorConfig;
+        return connectorConfig;
       }
     } catch (error) {
       console.error(`Cloud Connector ${nodeUniqueName} fetch error:`, error);
