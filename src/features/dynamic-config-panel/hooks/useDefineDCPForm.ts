@@ -72,7 +72,7 @@ export const useDefineDCPForm = () => {
               ...getErrorFieldJson(config?.errorHandling),
             ],
           };
-          console.log(updatedConfig.fields);
+
           setNodeConfig(updatedConfig);
           setNodeConfigZodSchema(generateZodSchema(updatedConfig.fields));
         }
