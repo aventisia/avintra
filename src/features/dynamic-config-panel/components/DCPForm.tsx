@@ -102,22 +102,32 @@ export const DCPForm = () => {
         <DCPTabsWrapper setTabValue={setSelectedTab} tabValue={selectedTab}>
           <DCPTabsListWrapper>
             <DCPTabsList>
-              {tabKeys?.map((key) => (
+              {tabKeys
+                ?.filter((key) => {
+                  if (import.meta.env.MODE === "production") {
+                    return key !== "OnError";
+                  }
+                  return true;
+                })
+
+                ?.map((key) => (
+                  <DCPTabsTrigger
+                    tabValue={key}
+                    children={key.replace(/([a-z])([A-Z])/g, "$1 $2")}
+                  />
+                ))}
+            </DCPTabsList>
+            {import.meta.env.MODE !== "production" ? (
+              <DCPTabsList>
                 <DCPTabsTrigger
-                  tabValue={key}
-                  children={key.replace(/([a-z])([A-Z])/g, "$1 $2")}
-                />
-              ))}
-            </DCPTabsList>
-            <DCPTabsList>
-              <DCPTabsTrigger
-                tabValue="Test"
-                className="flex items-center gap-1 text-primary hover:text-primary"
-              >
-                <PlayIcon className="h-3 w-3" />
-                <span> Test</span>
-              </DCPTabsTrigger>
-            </DCPTabsList>
+                  tabValue="Test"
+                  className="flex items-center gap-1 text-primary hover:text-primary"
+                >
+                  <PlayIcon className="h-3 w-3" />
+                  <span> Test</span>
+                </DCPTabsTrigger>
+              </DCPTabsList>
+            ) : null}
           </DCPTabsListWrapper>
 
           <Form
