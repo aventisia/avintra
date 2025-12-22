@@ -1,4 +1,4 @@
-import { FormLabelExt, SelectField, SwitchField } from "@aventisia/ui/form";
+import { SelectField, SwitchField } from "@aventisia/ui/form";
 import {
   Controller,
   FieldPath,
@@ -132,53 +132,33 @@ const ModelConfigField = ({ name }: ModelConfigFieldProps) => {
             <Controller
               {...temperatureField}
               render={({ field }) => (
-                <div>
-                  <FormLabelExt
-                    label="Temperature"
-                    description="Controls randomness of responses. Lower values produce more deterministic outputs."
-                  />
-                  <div className="mt-1 grid grid-cols-[auto_1fr_auto_auto] items-center gap-2 rounded-lg border p-2.5">
-                    <span className="text-sm">0</span>
-                    <SliderField
-                      name={field.name}
-                      value={[field.value ?? 0.6]}
-                      onValueChange={(val) => field.onChange(val[0])}
-                      onValueCommit={field.onBlur}
-                      trackColor="bg-muted"
-                      min={0}
-                      max={1.2}
-                      step={0.1}
-                      className="resize-none text-sm"
-                    />
-                    <span className="text-sm">1.2</span>
-                  </div>
-                </div>
+                <SliderField
+                  name={field.name}
+                  value={[field.value ?? 0.6]}
+                  onValueChange={(val) => field.onChange(val[0])}
+                  onValueCommit={field.onBlur}
+                  trackColor="bg-muted"
+                  min={0}
+                  max={1.2}
+                  step={0.1}
+                  className="resize-none text-sm"
+                />
               )}
             />
             <Controller
               {...topPField}
               render={({ field }) => (
-                <div>
-                  <FormLabelExt
-                    label="Top P"
-                    description="Controls diversity via nucleus sampling. Lower values limit the selection to more likely tokens."
-                  />
-                  <div className="mt-1 grid grid-cols-[auto_1fr_auto_auto] items-center gap-2 rounded-lg border p-2.5">
-                    <span className="text-sm">0</span>
-                    <SliderField
-                      name={field.name}
-                      value={[field.value ?? 0.6]}
-                      onValueChange={(val) => field.onChange(val[0])}
-                      onValueCommit={field.onBlur}
-                      trackColor="bg-muted"
-                      min={0}
-                      max={1.2}
-                      step={0.1}
-                      className="resize-none text-sm"
-                    />
-                    <span className="text-sm">1.2</span>
-                  </div>
-                </div>
+                <SliderField
+                  name={field.name}
+                  value={[field.value ?? 0.6]}
+                  onValueChange={(val) => field.onChange(val[0])}
+                  onValueCommit={field.onBlur}
+                  trackColor="bg-muted"
+                  min={0}
+                  max={1.2}
+                  step={0.1}
+                  className="resize-none text-sm"
+                />
               )}
             />
           </PopoverContent>

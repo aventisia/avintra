@@ -14,6 +14,7 @@ import { ModelSelectField } from "./fields-for-form/ModelSelectField";
 import { CredentialsSelectField } from "./fields-for-form/CredentialsSelectField";
 import { ConfigPanelModelOutputField } from "./fields-for-form/ConfigPanelModelOutputField";
 import { ModelConfigField } from "./fields-for-form/ModelConfigField";
+import { SliderField } from "@/components/Slider/SliderField";
 
 // Helper to render the correct field type
 export const RenderField = (field: DCPFieldSchemaType) => {
@@ -75,6 +76,17 @@ export const RenderField = (field: DCPFieldSchemaType) => {
         />
       );
 
+    case "slider":
+      return (
+        <SliderField
+          {...baseProps}
+          defaultValue={field.defaultValue as number[]}
+          min={field.min}
+          max={field.max}
+          step={0.1}
+          className="resize-none text-sm"
+        />
+      );
     default:
       return null;
   }
