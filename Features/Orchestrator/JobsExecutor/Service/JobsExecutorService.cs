@@ -187,10 +187,17 @@ public class JobsExecutorService : IJobsExecutorService
             // Search for an active job associated with the machine if it's idle or online
             if (clientDataStore.Status == MachineStatusTypeEnum.Online || clientDataStore.Status == MachineStatusTypeEnum.Idle)
             {
+                // Retrieve all FlowVersionIds associated with the current machine from the MachineFlow table
+                var flowVersionIds = await _unitOfWork.MachineFlowRepo
+                    .GetByConditionAsync(w => w.FlowVersionId == executionCommandDto.AgentId && w.TenantId == executionCommandDto.TenantId)
+                    .Select(s => s.FlowVersionId)
+                    .ToListAsync();
+
                 var job = await _unitOfWork.JobRepo
                     .GetByConditionAsync(w =>
                         w.TenantId == executionCommandDto.TenantId &&
                         w.Status == JobStatusTypesEnum.Created &&
+                        flowVersionIds.Contains(w.FlowVersionId) &&
                         (w.MachineId == null || w.MachineId == executionCommandDto.MachineId)
                     )
                     .OrderByDescending(o => o.CreatedOn)

@@ -98,11 +98,19 @@ public class OrchestratorHub : Hub
             // If the client is a machine, handle machine-specific logic
             if (clientType == ClientTypesEnum.WorcMachine)
             {
-                // Search for an active job associated with the machine
+                // Retrieve all FlowVersionIds associated with the current machine from the MachineFlow table
+                var flowVersionIds = await _workspaceInternalDbContext.MachineFlow
+                    .Where(w => w.MachineId == clientId && w.TenantId == tenantId)
+                    .Select(s => s.FlowVersionId)
+                    .ToListAsync();
+
+                // Search for an active job that is associated with the machine's FlowVersionIds
+                // The job should be in 'Created' status, and either not assigned to a machine or assigned to the current machine
                 var job = await _workspaceInternalDbContext.Jobs
                     .Where(w =>
                         w.TenantId == tenantId &&
                         w.Status == JobStatusTypesEnum.Created &&
+                        flowVersionIds.Contains(w.FlowVersionId) &&
                         (w.MachineId == null || w.MachineId == clientId)
                     )
                     .OrderByDescending(o => o.CreatedOn)
