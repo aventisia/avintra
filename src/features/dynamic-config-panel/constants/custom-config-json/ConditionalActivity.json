@@ -1,23 +1,33 @@
-[
-  {
-    "direction": "Input",
-    "type": "select",
-    "name": "ConditionalMode",
-    "label": "Conditional Mode",
-    "description": "Trigger execution for the first match or all matching branches, depending on the evaluation mode.",
-    "defaultValue": "SwitchCase",
-    "required": true,
-    "selectOptions": [
-      {
-        "label": "Execute only the first branch where the condition matches",
-        "value": "SwitchCase",
-        "description": "Execute only the first branch where the condition matches."
-      },
-      {
-        "label": "Execute all branches where the condition matches",
-        "value": "NestedIfElse",
-        "description": "Execute all branches where the condition matches."
-      }
-    ]
-  }
-]
+{
+  "name": "ConditionalActivity",
+  "label": "Router",
+  "description": "Use conditions to decide which direction the flow should take",
+  "version": "1.0.0",
+  "auther": "@aventisia",
+  "supportedPlatforms": ["cloud", "desktop"],
+  "errorHandling": "none",
+  "testScreenType": "standard",
+  "fields": [
+    {
+      "direction": "Input",
+      "type": "select",
+      "name": "ConditionalMode",
+      "label": "Conditional Mode",
+      "description": "Trigger execution for the first match or all matching branches, depending on the evaluation mode.",
+      "defaultValue": "SwitchCase",
+      "required": true,
+      "selectOptions": [
+        {
+          "label": "Execute only the first branch where the condition matches",
+          "value": "SwitchCase",
+          "description": "Execute only the first branch where the condition matches."
+        },
+        {
+          "label": "Execute all branches where the condition matches",
+          "value": "NestedIfElse",
+          "description": "Execute all branches where the condition matches."
+        }
+      ]
+    }
+  ]
+}
