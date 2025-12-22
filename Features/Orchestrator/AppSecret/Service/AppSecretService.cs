@@ -715,6 +715,7 @@ public class AppSecretService : IAppSecretService
                     }
                     break;
                 }
+
             case nameof(AppSecretTypesEnum.GitHub):
                 {
                     var gitHubCredentials = System.Text.Json.JsonSerializer.Deserialize<GitHubCredentialsDto>(rawJson, jsonOptions);
@@ -734,6 +735,7 @@ public class AppSecretService : IAppSecretService
                     }
                     break;
                 }
+
             case nameof(AppSecretTypesEnum.M365):
                 {
                     var m365Credentials = System.Text.Json.JsonSerializer.Deserialize<M365CredentialsDto>(rawJson, jsonOptions);
@@ -750,6 +752,7 @@ public class AppSecretService : IAppSecretService
                     }
                     break;
                 }
+
             case nameof(AppSecretTypesEnum.GeneralCredentials):
                 {
                     var generalCredential = System.Text.Json.JsonSerializer.Deserialize<GeneralCredentialsDto>(rawJson, jsonOptions);
@@ -768,7 +771,7 @@ public class AppSecretService : IAppSecretService
                     }
                     break;
                 }
-            
+
             case nameof(AppSecretTypesEnum.Anthropic):
                 {
                     // Deserialize JSON into AnthropicCredentialsDto
@@ -795,7 +798,6 @@ public class AppSecretService : IAppSecretService
 
                         validationResult.EncryptedValues["ApiKey"] = _encryptionService.EncryptString(googleGeminiCredentials.ApiKey);
                         googleGeminiCredentials.ApiKey = string.Empty;
-                        googleGeminiCredentials.Host = string.Empty;
                         sanitizedDataJson = System.Text.Json.JsonSerializer.Serialize(googleGeminiCredentials, jsonOptions);
                     }
                     else
@@ -804,6 +806,7 @@ public class AppSecretService : IAppSecretService
                     }
                     break;
                 }
+
             case nameof(AppSecretTypesEnum.GoogleWorkspace):
                 {
                     // Deserialize JSON into GoogleWorkspaceCredentialsDto
@@ -813,8 +816,6 @@ public class AppSecretService : IAppSecretService
 
                         validationResult.EncryptedValues["ClientSecret"] = _encryptionService.EncryptString(googleWorkspaceCredentials.ClientSecret);
                         googleWorkspaceCredentials.ClientSecret = string.Empty;
-                        googleWorkspaceCredentials.OAuthRedirectURL = string.Empty;
-                        googleWorkspaceCredentials.ClientID = string.Empty;
 
                         sanitizedDataJson = System.Text.Json.JsonSerializer.Serialize(googleWorkspaceCredentials, jsonOptions);
                     }
@@ -834,9 +835,6 @@ public class AppSecretService : IAppSecretService
                     {
                         validationResult.EncryptedValues["ApiKey"] = _encryptionService.EncryptString(azureOpenAiCredentials.ApiKey);
                         azureOpenAiCredentials.ApiKey = string.Empty;
-                        azureOpenAiCredentials.ResourceName = string.Empty;
-                        azureOpenAiCredentials.APIVersion = string.Empty;
-                        azureOpenAiCredentials.Endpoint = string.Empty;
                     }
                     else
                     {
@@ -845,6 +843,40 @@ public class AppSecretService : IAppSecretService
                     break;
                 }
 
+            case nameof(AppSecretTypesEnum.ElevenLabs):
+                {
+                    // Deserialize JSON into ElevenLabsCredentialsDto
+                    var elevenLabsCredentials = System.Text.Json.JsonSerializer.Deserialize<ElevenLabsCredentialsDto>(rawJson, jsonOptions);
+                    if (elevenLabsCredentials != null)
+                    {
+                        validationResult.EncryptedValues["ApiKey"] = _encryptionService.EncryptString(elevenLabsCredentials.ApiKey);
+                        elevenLabsCredentials.ApiKey = string.Empty;
+                        sanitizedDataJson =
+                            System.Text.Json.JsonSerializer.Serialize(elevenLabsCredentials, jsonOptions);
+                    }
+                    else
+                    {
+                        validationResult.Remark = "Invalid ElevenLabs credentials: required fields missing or format incorrect.";
+                    }
+                    break;
+                }
+
+            case nameof(AppSecretTypesEnum.OpenRouter):
+                {
+                    // Deserialize JSON into OpenRouterCredentialsDto
+                    var openRouterCredentials = System.Text.Json.JsonSerializer.Deserialize<OpenRouterCredentialsDto>(rawJson, jsonOptions);
+                    if (openRouterCredentials != null)
+                    {
+                        validationResult.EncryptedValues["ApiKey"] = _encryptionService.EncryptString(openRouterCredentials.ApiKey);
+                        openRouterCredentials.ApiKey = string.Empty;
+                        sanitizedDataJson = System.Text.Json.JsonSerializer.Serialize(openRouterCredentials, jsonOptions);
+                    }
+                    else
+                    {
+                        validationResult.Remark = "Invalid OpenRouter credentials: required fields missing or format incorrect.";
+                    }
+                    break;
+                }
 
             // Default case for unsupported credential types
             default:
