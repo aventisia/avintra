@@ -133,6 +133,7 @@ const ModelConfigField = ({ name }: ModelConfigFieldProps) => {
               {...temperatureField}
               render={({ field }) => (
                 <SliderField
+                  label="Temperature"
                   name={field.name}
                   value={[field.value ?? 0.6]}
                   onValueChange={(val) => field.onChange(val[0])}
@@ -149,6 +150,7 @@ const ModelConfigField = ({ name }: ModelConfigFieldProps) => {
               {...topPField}
               render={({ field }) => (
                 <SliderField
+                  label="TopP"
                   name={field.name}
                   value={[field.value ?? 0.6]}
                   onValueChange={(val) => field.onChange(val[0])}
