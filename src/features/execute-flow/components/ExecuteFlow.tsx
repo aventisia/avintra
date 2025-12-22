@@ -17,6 +17,7 @@ import { getAvailableCredits } from "@/features/available-credits/available-cred
 import { extractUniqueConfigKeys } from "../utils/config-key-utils";
 import { Node } from "@xyflow/react";
 import { NodeDataType } from "@/types/node-data-type";
+import { useJobDataStore } from "../stores/job-data-store";
 
 const ExecuteFlow = ({
   isAssist = false,
@@ -34,6 +35,12 @@ const ExecuteFlow = ({
         setExecutionState: state.setExecutionState,
       })),
     );
+
+  const { updateField } = useJobDataStore(
+    useShallow((state) => ({
+      updateField: state.updateField,
+    })),
+  );
 
   // Get nodes and edges from ReactFlowExt store
   const { nodes, edges } = useReactFlowExtStore(
@@ -106,6 +113,9 @@ const ExecuteFlow = ({
         accessToken,
       });
       console.log("Executor launched successfully:", res);
+
+      //Set start time for the execution
+      updateField("startTime", new Date());
 
       // Set versionId, nodes and edges in local storage for executor
       localStorage.setItem(CURRENT_VERSION_ID_KEY, currentFlow.versionId || "");

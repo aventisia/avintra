@@ -13,10 +13,11 @@ import {
   WebSocketMessageType,
 } from "..";
 import { usePostCreditConsumptionMutation } from "@/features/credits-management/hooks/usePostCreditConsumptionMutation";
-import { generateCreditConsumptionList } from "@/features/credits-management/utils/generateCreditConsumptionList";
-import { getLocalExecutionLog } from "@/features/flow-execution-log/apis/get-version-execution-log";
-import { Execution } from "@/features/flow-execution-log/types/execution-types";
-import { useUserSessionStore } from "@/react-toolkit/stores/user-session-store";
+import { JobStatusTypesEnum } from "../enums/job-status-type-enum";
+import { useJobDataStore } from "../stores/job-data-store";
+import { CreditServiceTypesEnum } from "@/features/credits-management/constants/credit-service-type-enum";
+import { UsageSourceTypesEnum } from "@/features/credits-management/constants/usage-source-types-enum";
+import { ActionTypesEnum } from "@/features/credits-management/constants/action-types-enum";
 
 export default function useWebSocket() {
   const socketRef = useRef<WebSocket | null>(null);
@@ -29,17 +30,19 @@ export default function useWebSocket() {
     })),
   );
 
-  // Get user session state and actions
-  const { userSession } = useUserSessionStore(
+  const { startTime, endTime, updateField } = useJobDataStore(
     useShallow((state) => ({
-      userSession: state.userSession,
+      updateField: state.updateField,
+      startTime: state.startTime,
+      endTime: state.endTime,
+      status: state.status,
     })),
   );
 
   const { postCreditConsumption } = usePostCreditConsumptionMutation();
 
-  const [pendingPostCommand, setPendingPostCommand] = useState<
-    "abort" | "complete" | null
+  const [currExecCommand, setCurrExecCommand] = useState<
+    "abort" | "complete" | "error" | null
   >(null);
 
   // Function to send command to web socket
@@ -58,8 +61,23 @@ export default function useWebSocket() {
           }),
         );
 
-        if (command === "abort" || command === "complete") {
-          setPendingPostCommand(command); // for credits
+        if (
+          command === "abort" ||
+          command === "complete" ||
+          command == "error"
+        ) {
+          const endTime = new Date();
+          const status =
+            command === "complete"
+              ? JobStatusTypesEnum.Completed
+              : command === "abort"
+                ? JobStatusTypesEnum.Abort
+                : JobStatusTypesEnum.Failed;
+
+          updateField("endTime", endTime);
+          updateField("status", status);
+
+          setCurrExecCommand(command); // for credits and job data
         }
 
         // Update the execution state based on the command
@@ -68,6 +86,7 @@ export default function useWebSocket() {
         console.warn("WebSocket not connected");
       }
     },
+    // eslint-disable-next-line react-hooks/exhaustive-deps
     [setExecutionState],
   );
 
@@ -148,33 +167,33 @@ export default function useWebSocket() {
         socketRef.current.close(1000, "Component unmounted");
       }
     };
-  }, [sendCommand, setExecutionState]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [sendCommand]);
 
   useEffect(() => {
     // Only run if one of the commands is pending
-    if (!pendingPostCommand) return;
+    if (!currExecCommand) return;
 
     const handleExecutionData = async () => {
       try {
-        // Fetch execution logs for the current flow version
-        const localLogs = await getLocalExecutionLog(currentFlow.versionId);
-        const executionData: Execution[] = localLogs ?? [];
-
         // Handle Credit Consumption
-        if (pendingPostCommand) {
-          const consumptionList = generateCreditConsumptionList(
-            executionData,
-            currentFlow.id,
-            currentFlow.name,
-            pendingPostCommand,
+        if (currExecCommand) {
+          const duration = Math.round(
+            (endTime.getTime() - startTime.getTime()) / 1000,
           );
 
-          if (consumptionList) {
-            await postCreditConsumption(consumptionList); // Post the consumption data
-            console.log("Credit consumption posted successfully.");
-          } else {
-            console.warn("No credit consumption data generated.");
-          }
+          await postCreditConsumption([
+            {
+              serviceType: CreditServiceTypesEnum.AgentExecutionTime,
+              consumedUnit: duration,
+              refType: UsageSourceTypesEnum.Agent,
+              refId: currentFlow.id,
+              refName: currentFlow.name,
+              action: ActionTypesEnum.AgentExecution,
+              triggeredByAgent: currentFlow.name,
+            },
+          ]); // Post the consumption data
+          console.log("Credit consumption posted successfully.");
         }
       } catch (error) {
         // Log any errors that occur during the process
@@ -184,22 +203,14 @@ export default function useWebSocket() {
         );
       } finally {
         // Reset both commands after execution is done
-        setPendingPostCommand(null);
+        setCurrExecCommand(null);
       }
     };
 
     // Run the function to handle both tasks
     handleExecutionData();
-  }, [
-    currentFlow.id,
-    currentFlow.name,
-    currentFlow.versionId,
-    currentFlow.versionNumber,
-    pendingPostCommand,
-    postCreditConsumption,
-    userSession?.firstName,
-    userSession?.lastName,
-  ]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [currExecCommand]);
 
   return { sendCommand };
 }
