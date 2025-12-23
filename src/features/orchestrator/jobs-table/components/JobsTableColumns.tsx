@@ -1,5 +1,4 @@
 import { DTColumnHeader } from "@aventisia/ui/data-table";
-import { dateFormatter } from "@aventisia/ui/utils";
 import { ColumnDef } from "@tanstack/react-table";
 import { format } from "date-fns";
 
@@ -118,7 +117,7 @@ export const jobsTableColumns: ColumnDef<JobsTableDto>[] = [
     ),
     cell: ({ row }) => (
       <div className="w-auto truncate font-medium">
-        {Math.round(row.getValue("duration") ?? 0) ?? "--"}
+        {row.getValue("duration") ? Math.round(row.getValue("duration")) : "NA"}
       </div>
     ),
   },
@@ -150,7 +149,7 @@ export const jobsTableColumns: ColumnDef<JobsTableDto>[] = [
     ),
     cell: ({ row }) => (
       <div className="w-auto truncate font-medium">
-        {row.getValue("executedBy")}
+        {row.getValue("executedBy") ? row.getValue("executedBy") : "NA"}
       </div>
     ),
   },
@@ -166,7 +165,27 @@ export const jobsTableColumns: ColumnDef<JobsTableDto>[] = [
     ),
     cell: ({ row }) => (
       <div className="w-auto truncate font-medium">
-        {dateFormatter(row.getValue("executedOn"))}
+        {row.getValue("executedOn")
+          ? format(row.getValue("executedOn"), "dd MMM yyyy, h:mm:ss a")
+          : "NA"}
+      </div>
+    ),
+  },
+  {
+    accessorKey: "createdOn",
+    header: ({ column }) => (
+      <DTColumnHeader
+        tableKey={TABLE_KEY}
+        className="w-[7rem]"
+        column={column}
+        title={getColumnName("createdOn")}
+      />
+    ),
+    cell: ({ row }) => (
+      <div className="w-auto truncate font-medium">
+        {row.getValue("createdOn")
+          ? format(row.getValue("createdOn"), "dd MMM yyyy, h:mm:ss a")
+          : "NA"}
       </div>
     ),
   },

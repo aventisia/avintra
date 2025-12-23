@@ -12,6 +12,7 @@ export const columnDisplayNames: KeyValueLookupType[] = [
   { key: "versionNumber", value: "Version" },
   { key: "executedBy", value: "Executed By" },
   { key: "executedOn", value: "Executed On" },
+  { key: "createdOn", value: "Created On" },
 ];
 
 // Get the column display name for the given column key.
