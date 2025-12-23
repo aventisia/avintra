@@ -9,13 +9,16 @@ public class DesktopAppController : BaseApiController
 {
     private readonly FileUploadConfig _fileUploadConfig;
     private readonly GeneralConfig _generalConfig;
+    private readonly IWebHostEnvironment _webHostEnvironment;
 
     public DesktopAppController(
         FileUploadConfig fileUploadConfig,
-        GeneralConfig generalConfig)
+        GeneralConfig generalConfig,
+        IWebHostEnvironment webHostEnvironment)
     {
         _fileUploadConfig = fileUploadConfig;
         _generalConfig = generalConfig;
+        _webHostEnvironment = webHostEnvironment;
     }
 
     // GET: /desktop-app/download/
@@ -94,6 +97,15 @@ public class DesktopAppController : BaseApiController
     // Helper to get the latest version from a file or database
     private (string?, string?, string?, string) GetLatestVersion(string? version = null)
     {
+        // Set WorcDesktopApp base name based on environment
+        var appName = "WorcDesktopApp";
+        if (_webHostEnvironment.IsEnvironment("Development"))
+            appName += "_DEV";
+        else if (_webHostEnvironment.IsEnvironment("UAT"))
+            appName += "_UAT";
+        else
+            appName += "";
+        
         // Get base path
         var basePath = Path.Combine(_fileUploadConfig.UploadDirectory, "binaries");
 
@@ -106,9 +118,9 @@ public class DesktopAppController : BaseApiController
 
         // Set search pattern based on version
         if (!string.IsNullOrEmpty(version))
-            searchPattern = $"WorcDesktopApp_{version}_x64-setup.exe";
+            searchPattern = $"{appName}_{version}_x64-setup.exe";
         else
-            searchPattern = "WorcDesktopApp_*_x64-setup.exe";
+            searchPattern = $"{appName}_*_x64-setup.exe";
 
         // Get files matching the search pattern
         var files = Directory.GetFiles(basePath, searchPattern);
