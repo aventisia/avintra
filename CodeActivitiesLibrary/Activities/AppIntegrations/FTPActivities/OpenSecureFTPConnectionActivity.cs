@@ -49,6 +49,7 @@ namespace CodeActivitiesLibrary.AppIntegrations.FtpActivities
         [DisplayName("Password")]
         [Description(
             "The password for authentication (required if 'Authentication Method' is 'Username and password').")]
+        [FieldType(FieldType.Password)]
         [RenderIfCondition(nameof(AuthenticationMethod), AuthenticationMethodEnum.UsernameAndPassword)]
         public InArgument<string> Password { get; set; }
 

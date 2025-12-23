@@ -37,6 +37,7 @@ namespace CodeActivitiesLibrary.AppIntegrations.EmailActivities
         [RequiredArgument]
         [DisplayName("Password")]
         [Description("The password for authentication.")]
+        [FieldType(FieldType.Password)]
         public InArgument<string> Password { get; set; }
 
 

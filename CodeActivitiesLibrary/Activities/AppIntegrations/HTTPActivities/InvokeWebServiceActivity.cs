@@ -52,6 +52,7 @@ namespace CodeActivitiesLibrary.AppIntegrations.HttpActivities
 
         [DisplayName("Password")]
         [Description("Password for basic authentication.")]
+        [FieldType(FieldType.Password)]
         [RenderIfCondition(nameof(AuthenticationType), AuthenticationTypeEnum.Basic)]
         public InArgument<string> Password { get; set; }
 

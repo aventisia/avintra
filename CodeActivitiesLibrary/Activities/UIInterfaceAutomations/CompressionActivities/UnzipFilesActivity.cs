@@ -31,6 +31,7 @@ namespace CodeActivitiesLibrary.UiInterfaceAutomations.CompressionActivities
 
         [DisplayName("Password")]
         [Description("The password used for this archive, if any.")]
+        [FieldType(FieldType.Password)]
         public InArgument<string> Password { get; set; }
 
         [DisplayName("Include Mask")]

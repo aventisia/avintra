@@ -42,6 +42,7 @@ namespace CodeActivitiesLibrary.AppIntegrations.PdfActivities
 
         [DisplayName("Password")]
         [Description("Optional password for encrypted PDF files. Leave empty if not required.")]
+        [FieldType(FieldType.Password)]
         public InArgument<string> Password { get; set; }
 
         [DisplayName("Merge Tables Across Pages")]

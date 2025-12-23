@@ -28,6 +28,7 @@ namespace CodeActivitiesLibrary.AppIntegrations.M365ExcelActivities
         [RequiredArgument]
         [DisplayName("Client Secret")]
         [Description("The client secret (password) of the Azure AD application used for authentication.")]
+        [FieldType(FieldType.Password)]
         public InArgument<string> ClientSecret { get; set; }
 
         [RequiredArgument]

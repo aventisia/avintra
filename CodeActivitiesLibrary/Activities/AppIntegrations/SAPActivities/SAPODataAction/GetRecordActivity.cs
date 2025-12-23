@@ -38,6 +38,7 @@ namespace CodeActivitiesLibrary.Activities.AppIntegrations.SAPActivities
 
         [DisplayName("Password")]
         [Description("Password for Basic Authentication (if required).")]
+        [FieldType(FieldType.Password)]
         [DefaultValue("")]
         public InArgument<string> Password { get; set; }
 

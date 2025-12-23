@@ -55,6 +55,7 @@ namespace CodeActivitiesLibrary.AppIntegrations.EmailActivities
 
         [DisplayName("Password")]
         [Description("The password for the IMAP account.")]
+        [FieldType(FieldType.Password)]
         public InArgument<string> Password { get; set; }
 
 

@@ -49,6 +49,7 @@ namespace CodeActivitiesLibrary.AppIntegrations.ExcelActivities
         [DisplayName("Read Protection Password")]
         [Description("Optional password to protect the document from being modified.")]
         [RenderIfCondition(nameof(LaunchMode), ExcelLaunchModeEnum.OpenExisting)]
+        [FieldType(FieldType.Password)]
         public InArgument<string> ReadProtectionPassword { get; set; }
 
 

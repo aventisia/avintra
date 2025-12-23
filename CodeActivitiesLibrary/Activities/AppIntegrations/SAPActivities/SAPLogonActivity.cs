@@ -27,6 +27,7 @@ namespace CodeActivitiesLibrary.AppIntegrations.SAPActivities
         [RequiredArgument]
         [DisplayName("Password")]
         [Description("SAP Password. Will be hidden in UI.")]
+        [FieldType(FieldType.Password)]
         [EditorBrowsable(EditorBrowsableState.Never)]
         public InArgument<string> Password { get; set; }
 

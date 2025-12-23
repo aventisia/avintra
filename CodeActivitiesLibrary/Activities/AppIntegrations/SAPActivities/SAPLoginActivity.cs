@@ -24,6 +24,7 @@ namespace CodeActivitiesLibrary.AppIntegrations.SAPActivities
         [RequiredArgument]
         [DisplayName("Secure Password")]
         [Description("SAP Secure Password")]
+        [FieldType(FieldType.Password)]
         public InArgument<string> Password { get; set; }
 
         [RequiredArgument]

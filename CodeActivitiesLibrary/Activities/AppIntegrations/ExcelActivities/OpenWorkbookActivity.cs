@@ -29,6 +29,7 @@ namespace CodeActivitiesLibrary.AppIntegrations.ExcelActivities
 
         [DisplayName("Read Protection Password")]
         [Description("Password to open the workbook if it is protected.")]
+        [FieldType(FieldType.Password)]
         public InArgument<string> ReadProtectionPassword { get; set; }
 
         [DisplayName("Workbook Instance")]

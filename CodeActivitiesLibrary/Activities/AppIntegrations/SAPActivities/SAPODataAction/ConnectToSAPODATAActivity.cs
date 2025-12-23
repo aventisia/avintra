@@ -35,6 +35,7 @@
 //        [RequiredArgument]
 //        [DisplayName("Password")]
 //        [Description("Password for SAP system authentication.")]
+//        [FieldType(FieldType.Password)]
 //        [EditorBrowsable(EditorBrowsableState.Never)]
 //        public InArgument<string> Password { get; set; }
 

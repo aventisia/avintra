@@ -30,6 +30,7 @@ namespace CodeActivitiesLibrary.AppIntegrations.ServiceNowActivities
 
         [DisplayName("Password")]
         [Description("Password for Basic Auth")]
+        [FieldType(FieldType.Password)]
         [RequiredArgument]
         [RenderIfCondition(nameof(ConnectUsing), "BasicAuth")]
         public InArgument<string> Password { get; set; }

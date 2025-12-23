@@ -32,6 +32,7 @@ namespace CodeActivitiesLibrary.AppIntegrations.PdfActivities
 
         [DisplayName("Password")]
         [Description("The password for the source PDF file, if it is encrypted. Leave empty if not applicable.")]
+        [FieldType(FieldType.Password)]
         public InArgument<string> Password { get; set; }
 
         [DisplayName("Page Number (for Single)")]
