@@ -1,14 +1,19 @@
 import ModelTestContent from "./llmGenerateRequest/ModelTestContent";
 import StandardTestContent from "./standard/StandardTestContent";
 
-const TestTabContent = ({ type }: { type: string }) => {
+const TestTabContent = ({
+  type,
+  formData,
+}: {
+  type: string;
+  formData: {
+    [x: string]: unknown;
+  };
+}) => {
   return (
     <div>
-      {type == "llmGenerateRequest" ? (
-        <ModelTestContent />
-      ) : (
-        <StandardTestContent />
-      )}
+      {type == "llmGenerateRequest" && <ModelTestContent formData={formData} />}
+      {type == "standard" && <StandardTestContent formData={formData} />}
     </div>
   );
 };

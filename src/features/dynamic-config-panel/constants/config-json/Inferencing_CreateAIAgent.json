@@ -45,7 +45,6 @@
       "type": "multi-selector",
       "name": "KnowledgeBase",
       "label": "Knowledge Base",
-      "defaultValue": "Knowledge Base 1",
       "selectOptions": [
         {
           "label": "Knowledge Base 1",

@@ -156,7 +156,7 @@ export const modelProviders: Provider[] = [
         value: "gpt-4o-mini",
         label: "GPT-4o Mini",
         available: true,
-        specialty: "vision",
+        specialty: "text",
       },
 
       {

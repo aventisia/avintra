@@ -47,35 +47,33 @@ export const JsonViewer = ({
   const parsed = safeParse(jsonData);
 
   return (
-    <ScrollArea className={cn("h-72 w-full p-1 pt-2", className)}>
-      <div className="relative">
-        {enableCopy && (
-          <div className="absolute right-1 top-1 z-10">
-            <Button
-              variant={"outline"}
-              size={"xs"}
-              type="button"
-              className="flex items-center gap-1 text-slate-600"
-              onClick={() => handleCopy()}
-            >
-              <CopyIcon className="h-3 w-3" />
-              Copy
-            </Button>
-          </div>
-        )}
-        <ReactJson
-          style={{
-            padding: "0.5rem",
-            fontSize: "0.7rem",
-          }}
-          enableClipboard={false}
-          groupArraysAfterLength={20}
-          displayDataTypes={false}
-          name={false}
-          quotesOnKeys={false}
-          src={parsed}
-        />
-      </div>
+    <ScrollArea className={cn("relative h-72 w-full p-1 pt-2", className)}>
+      {enableCopy && (
+        <div className="absolute right-2 top-2 z-10">
+          <Button
+            variant={"outline"}
+            size={"xs"}
+            type="button"
+            className="flex items-center gap-1 text-slate-600"
+            onClick={() => handleCopy()}
+          >
+            <CopyIcon className="h-3 w-3" />
+            Copy
+          </Button>
+        </div>
+      )}
+      <ReactJson
+        style={{
+          padding: "0.5rem",
+          fontSize: "0.7rem",
+        }}
+        enableClipboard={false}
+        groupArraysAfterLength={20}
+        displayDataTypes={false}
+        name={false}
+        quotesOnKeys={false}
+        src={parsed}
+      />
       <ScrollBar orientation="horizontal" />
     </ScrollArea>
   );
