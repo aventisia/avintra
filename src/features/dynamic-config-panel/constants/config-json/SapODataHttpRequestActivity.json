@@ -57,7 +57,7 @@
     },
     {
       "direction": "Input",
-      "type": "text",
+      "type": "password",
       "name": "Password",
       "label": "Password",
       "description": "Password for Basic Authentication (if required).",

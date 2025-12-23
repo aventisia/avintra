@@ -124,7 +124,7 @@
     },
     {
       "direction": "Input",
-      "type": "text",
+      "type": "password",
       "name": "Password",
       "label": "Password",
       "description": "Optional password for encrypted PDF files. Leave empty if not required.",

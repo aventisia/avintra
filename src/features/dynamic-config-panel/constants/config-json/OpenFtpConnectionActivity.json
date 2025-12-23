@@ -48,7 +48,7 @@
     },
     {
       "direction": "Input",
-      "type": "text",
+      "type": "password",
       "name": "Password",
       "label": "Password",
       "description": "The password for authentication.",

@@ -30,7 +30,7 @@
     },
     {
       "direction": "Input",
-      "type": "text",
+      "type": "password",
       "name": "ClientSecret",
       "label": "Client Secret",
       "description": "The client secret (password) of the Azure AD application used for authentication.",

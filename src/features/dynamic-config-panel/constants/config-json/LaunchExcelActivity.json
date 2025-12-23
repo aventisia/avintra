@@ -94,7 +94,7 @@
     },
     {
       "direction": "Input",
-      "type": "text",
+      "type": "password",
       "name": "ReadProtectionPassword",
       "label": "Read Protection Password",
       "description": "Optional password to protect the document from being modified.",

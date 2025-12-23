@@ -39,7 +39,7 @@
     },
     {
       "direction": "Input",
-      "type": "text",
+      "type": "password",
       "name": "ReadProtectionPassword",
       "label": "Read Protection Password",
       "description": "Password to open the workbook if it is protected.",
