@@ -30,7 +30,7 @@
     },
     {
       "direction": "Input",
-      "type": "text",
+      "type": "password",
       "name": "Password",
       "label": "Secure Password",
       "description": "SAP Secure Password",

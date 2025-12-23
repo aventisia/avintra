@@ -99,7 +99,7 @@
     },
     {
       "direction": "Input",
-      "type": "text",
+      "type": "password",
       "name": "Password",
       "label": "Password",
       "description": "The password for authentication (required if \u0027Authentication Method\u0027 is \u0027Username and password\u0027).",
