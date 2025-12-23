@@ -1,7 +1,7 @@
 import { Button } from "@aventisia/ui/buttons";
 import { Form } from "@aventisia/ui/form";
 import { toast } from "@aventisia/ui/sonner";
-import { PlayIcon, SearchCodeIcon } from "lucide-react";
+import { FlaskConical, PlayIcon, SearchCodeIcon } from "lucide-react";
 import { useEffect, useState } from "react";
 import { z } from "zod";
 import {
@@ -82,8 +82,10 @@ export const DCPForm = () => {
       console.error("Node id is undefined. Cannot update node data.");
     }
 
-    // Close the dialog
-    setShowDialog(false);
+    if (selectedTab !== "Test") {
+      // Close the dialog
+      setShowDialog(false);
+    }
   };
 
   // Return the form
@@ -102,31 +104,39 @@ export const DCPForm = () => {
         <DCPTabsWrapper setTabValue={setSelectedTab} tabValue={selectedTab}>
           <DCPTabsListWrapper>
             <DCPTabsList>
-              {tabKeys
-                ?.filter((key) => {
-                  if (import.meta.env.MODE === "production") {
-                    return key !== "OnError";
-                  }
-                  return true;
-                })
-
-                ?.map((key) => (
-                  <DCPTabsTrigger
-                    tabValue={key}
-                    children={key.replace(/([a-z])([A-Z])/g, "$1 $2")}
-                  />
-                ))}
+              {tabKeys?.map((key) => (
+                <DCPTabsTrigger
+                  tabValue={key}
+                  children={key.replace(/([a-z])([A-Z])/g, "$1 $2")}
+                />
+              ))}
             </DCPTabsList>
             {import.meta.env.MODE !== "production" ? (
-              <DCPTabsList>
-                <DCPTabsTrigger
-                  tabValue="Test"
-                  className="flex items-center gap-1 text-primary hover:text-primary"
-                >
-                  <PlayIcon className="h-3 w-3" />
-                  <span> Test</span>
-                </DCPTabsTrigger>
-              </DCPTabsList>
+              <>
+                {nodeConfig.testScreenType == "standard" && (
+                  <DCPTabsList>
+                    <DCPTabsTrigger
+                      tabValue="Test"
+                      className="flex items-center gap-1 text-primary hover:text-primary"
+                    >
+                      <PlayIcon className="h-3 w-3" />
+                      <span> Test</span>
+                    </DCPTabsTrigger>
+                  </DCPTabsList>
+                )}
+                {nodeConfig.testScreenType == "llmGenerateRequest" && (
+                  <DCPTabsList>
+                    <DCPTabsTrigger
+                      tabValue="Test"
+                      className="flex items-center gap-1 text-primary hover:text-primary"
+                      handleClick={() => onSubmit(form.getValues())}
+                    >
+                      <FlaskConical className="h-3.5 w-3.5" />
+                      <span> Test</span>
+                    </DCPTabsTrigger>
+                  </DCPTabsList>
+                )}
+              </>
             ) : null}
           </DCPTabsListWrapper>
 
@@ -224,7 +234,10 @@ export const DCPForm = () => {
               </DCPTabsFooterWrapper>
             )}
           </Form>
-          <TestTabContent type={nodeConfig?.testScreenType ?? "standard"} />
+          <TestTabContent
+            type={nodeConfig?.testScreenType ?? "standard"}
+            formData={form.getValues()}
+          />
         </DCPTabsWrapper>
       )}
     </>

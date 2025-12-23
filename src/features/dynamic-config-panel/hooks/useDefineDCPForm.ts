@@ -56,6 +56,7 @@ export const useDefineDCPForm = () => {
     const getErrorFieldJson = (
       errorHandling?: string,
     ): DCPFieldSchemaType[] => {
+      if (import.meta.env.MODE === "production") return [];
       if (errorHandling == "standard") return onErrorFieldsJson;
       //TODO: Add other errorFieldsJson if more
       else return [];
