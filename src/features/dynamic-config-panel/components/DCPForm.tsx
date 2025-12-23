@@ -21,6 +21,7 @@ import { DCPTabsFooterWrapper } from "./dcp-tabs/DCPTabsFooterWrapper";
 import { DCPTabsListWrapper } from "./dcp-tabs/DCPTabsListWrapper";
 import ImproveWithAIButton from "@/features/dynamic-config-panel/components/dcp-tabs/ImproveWithAIButton";
 import TestTabContent from "./dcp-tabs/test-tab/TestTabContent";
+import { getRenderItems } from "../utils/get-render-items";
 
 export const DCPForm = () => {
   const [showOuputFields, setShowOutputFields] = useState(false);
@@ -151,25 +152,39 @@ export const DCPForm = () => {
               <DCPTabsContent tabValue={tab}>
                 {/* Input fields */}
                 <div className="space-y-3.5">
-                  {nodeConfig?.fields
-                    ?.filter((field) => (field.category ?? "Inputs") == tab)
-                    ?.map((field) => {
-                      // Check if the field should be rendered based on direction and renderIf conditions
-                      if (!shouldRenderField("Input", field, watchedValues)) {
-                        //Remove the key from inputKeys if the field is not rendered
-                        if (inputKeys.includes(field.name))
-                          inputKeys.splice(inputKeys.indexOf(field.name), 1);
-                        return null;
-                      }
+                  {getRenderItems(
+                    nodeConfig.fields,
+                    tab,
+                    watchedValues,
+                    inputKeys,
+                  ).map((item, index) => {
+                    if (
+                      typeof item === "object" &&
+                      "groupName" in item &&
+                      "fields" in item
+                    ) {
+                      return (
+                        <div
+                          key={item.groupName + index}
+                          className="relative !mt-5 space-y-3 rounded-lg border p-3 first:!mt-1.5"
+                        >
+                          <div className="absolute -top-3 left-2.5">
+                            <span className="rounded-full bg-indigo-100 px-1.5 py-1 text-xs font-medium text-indigo-600">
+                              {item.groupName}
+                            </span>
+                          </div>
 
-                      // Add the field name to inputKeys if not already present
-                      if (!inputKeys.includes(field.name))
-                        inputKeys.push(field.name);
+                          {item.fields.map((field) => (
+                            <RenderField key={field.name} {...field} />
+                          ))}
+                        </div>
+                      );
+                    }
 
-                      // Render the field
-                      return <RenderField key={field.name} {...field} />;
-                    })}
+                    return <RenderField key={item.name} {...item} />;
+                  })}
                 </div>
+
                 {/* Output fields */}
                 {tabNo == 0 &&
                 showOuputFields &&
@@ -181,18 +196,19 @@ export const DCPForm = () => {
                   <>
                     <h3
                       className={cn(
-                        "!mt-6 flex items-center gap-1 text-xs font-medium",
+                        "relative !my-8 flex h-[0.06rem] items-center gap-1 border-[0.5px] border-x-0 border-t-0",
                         nodeConfig?.fields?.filter(
                           (field) =>
                             (field.category ?? "Inputs") == tab &&
                             field.direction == "Input",
-                        ).length == 0 && "!mt-0",
+                        ).length == 0 && "!mt-2",
                       )}
                     >
-                      <span className="rounded-full bg-accent px-1.5 py-0.5 text-indigo-600">
-                        Outputs
-                      </span>
-                      <span className="h-[0.075rem] flex-grow rounded bg-accent"></span>
+                      <div className="absolute -top-3">
+                        <span className="rounded-full bg-indigo-100 px-1.5 py-1 text-xs font-medium text-indigo-600">
+                          Outputs
+                        </span>
+                      </div>
                     </h3>
 
                     <div className="mb-1 mt-3 space-y-3 rounded-lg border bg-slate-50 px-3.5 py-3">
