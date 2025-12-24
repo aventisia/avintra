@@ -1,9 +1,17 @@
 import { DCPFieldSchemaType } from "../types/dcp-field-schema-type";
 import { RenderItem } from "../types/render-fields-type";
-import { shouldRenderField } from "./should-render-field";
+import { getRenderableFields } from "./get-renderable-fields";
+import { groupFields } from "./group-fields";
 
 /**
- * Returns an array of RenderItem (grouped and ungrouped fields) for a specific tab
+ * Returns renderable items for a tab.
+ *
+ * Runtime behavior:
+ * - If no field has `groupName` → returns flat field array
+ * - If grouping is detected → returns grouped RenderItems
+ *
+ * This keeps non-grouped forms on the fast path
+ * while enabling grouping where required.
  */
 export function getRenderItems(
   fields: DCPFieldSchemaType[],
@@ -11,38 +19,14 @@ export function getRenderItems(
   watchedValues: Record<string, unknown>,
   inputKeys: string[],
 ): RenderItem[] {
-  return (
-    fields
-      // get fields that belong to the specified tab
-      .filter((field) => (field.category ?? "Inputs") === tab)
-      .reduce<RenderItem[]>((acc, field) => {
-        // Skip fields that should not be rendered
-        if (!shouldRenderField("Input", field, watchedValues)) {
-          const idx = inputKeys.indexOf(field.name);
-          if (idx !== -1) inputKeys.splice(idx, 1);
-          return acc;
-        }
-
-        // Track field names for form values
-        if (!inputKeys.includes(field.name)) inputKeys.push(field.name);
-
-        // Handle grouped fields
-        if (field.groupName) {
-          const last = acc[acc.length - 1];
-          if (last && "fields" in last && last.groupName === field.groupName) {
-            last.fields.push(field);
-          } else {
-            acc.push({
-              groupName: field.groupName,
-              fields: [field],
-            });
-          }
-          return acc;
-        }
-
-        // Handle single/ungrouped fields
-        acc.push(field);
-        return acc;
-      }, [])
+  const renderableFields = getRenderableFields(
+    fields,
+    tab,
+    watchedValues,
+    inputKeys,
   );
+
+  const hasGrouping = renderableFields.some((field) => !!field.groupName);
+
+  return hasGrouping ? groupFields(renderableFields) : renderableFields;
 }

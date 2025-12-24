@@ -158,6 +158,7 @@ export const DCPForm = () => {
                     watchedValues,
                     inputKeys,
                   ).map((item, index) => {
+                    // Grouped block
                     if (
                       typeof item === "object" &&
                       "groupName" in item &&
@@ -181,6 +182,7 @@ export const DCPForm = () => {
                       );
                     }
 
+                    // Normal field
                     return <RenderField key={item.name} {...item} />;
                   })}
                 </div>
