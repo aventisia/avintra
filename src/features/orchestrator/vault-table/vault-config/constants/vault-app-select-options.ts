@@ -14,6 +14,16 @@ export const vaultAppsSelectOptions: Record<
     label: "General Credentials",
     value: "GeneralCredentials",
   },
+  [VaultAppsEnum.GoogleGemini]: {
+    label: "Google Gemini",
+    value: "GoogleGemini",
+  },
+  [VaultAppsEnum.GoogleWorkspace]: {
+    label: "Google Workspace",
+    value: "GoogleWorkspace",
+  },
+  [VaultAppsEnum.OpenRouter]: { label: "OpenRouter", value: "OpenRouter" },
+  [VaultAppsEnum.ElevenLabs]: { label: "ElevenLabs", value: "ElevenLabs" },
 };
 
 // export const appList = [

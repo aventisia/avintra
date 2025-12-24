@@ -8,4 +8,8 @@ export const appToCredentialNameMapper: Record<VaultAppsEnum, string> = {
   [VaultAppsEnum.GitHub]: "github_access_token",
   [VaultAppsEnum.M365]: "m365_credential",
   [VaultAppsEnum.GeneralCredentials]: "general_credentials",
+  [VaultAppsEnum.GoogleGemini]: "google_gemini",
+  [VaultAppsEnum.GoogleWorkspace]: "google_workspace",
+  [VaultAppsEnum.OpenRouter]: "open_router",
+  [VaultAppsEnum.ElevenLabs]: "eleven_labs",
 };

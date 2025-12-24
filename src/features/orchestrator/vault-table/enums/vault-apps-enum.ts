@@ -6,4 +6,8 @@ export enum VaultAppsEnum {
   GitHub,
   M365,
   GeneralCredentials,
+  GoogleGemini,
+  GoogleWorkspace,
+  ElevenLabs,
+  OpenRouter,
 }

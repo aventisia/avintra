@@ -11,7 +11,7 @@
   {
     "direction": "Input",
     "type": "password",
-    "name": "APIKey",
+    "name": "ApiKey",
     "label": "AIP Key",
     "description": "The Api key.",
     "defaultValue": "",
