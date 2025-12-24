@@ -81,7 +81,7 @@ export const jobsTableColumns: ColumnDef<JobsTableDto>[] = [
     cell: ({ row }) => (
       <div className="w-auto truncate font-medium">
         {row.getValue("startTime")
-          ? format(row.getValue("startTime"), "dd MMM yyyy, h:mm:ss a")
+          ? format(row.getValue("startTime"), "dd MMM yyyy h:mm:ss a")
           : "NA"}
       </div>
     ),
@@ -100,7 +100,7 @@ export const jobsTableColumns: ColumnDef<JobsTableDto>[] = [
     cell: ({ row }) => (
       <div className="w-auto truncate font-medium">
         {row.getValue("endTime")
-          ? format(row.getValue("endTime"), "dd MMM yyyy, h:mm:ss a")
+          ? format(row.getValue("endTime"), "dd MMM yyyy h:mm:ss a")
           : "NA"}
       </div>
     ),
@@ -166,7 +166,7 @@ export const jobsTableColumns: ColumnDef<JobsTableDto>[] = [
     cell: ({ row }) => (
       <div className="w-auto truncate font-medium">
         {row.getValue("executedOn")
-          ? format(row.getValue("executedOn"), "dd MMM yyyy, h:mm:ss a")
+          ? format(row.getValue("executedOn"), "dd MMM yyyy h:mm:ss a")
           : "NA"}
       </div>
     ),
@@ -184,7 +184,7 @@ export const jobsTableColumns: ColumnDef<JobsTableDto>[] = [
     cell: ({ row }) => (
       <div className="w-auto truncate font-medium">
         {row.getValue("createdOn")
-          ? format(row.getValue("createdOn"), "dd MMM yyyy, h:mm:ss a")
+          ? format(row.getValue("createdOn"), "dd MMM yyyy h:mm:ss a")
           : "NA"}
       </div>
     ),
