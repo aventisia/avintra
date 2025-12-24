@@ -25,8 +25,10 @@
         "provider": "openai",
         "credentials": "",
         "model": "gpt-4o-mini",
-        "temp": 1,
-        "topP": 1
+        "temperature": 1,
+        "topP": 1,
+        "isJsonOutput": true,
+        "maxOutputToken": 50
       },
       "required": false,
       "category": "Models"

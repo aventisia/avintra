@@ -15,8 +15,10 @@ interface ModelConfigType {
   provider: string;
   credentials: string;
   model: string;
-  temp: number;
+  temperature: number;
   topP: number;
+  isJsonOutput: boolean;
+  maxOutputToken: number;
 }
 
 interface ExecutionButtonProps {
@@ -78,12 +80,12 @@ const ExecuteButton = ({
       model: modelConfig.model,
       input: input, // The prompt value
       files: files,
-      is_json_output: true,
+      is_json_output: modelConfig.isJsonOutput,
       json_schema: null,
-      max_output_tokens: 50,
+      max_output_tokens: modelConfig.maxOutputToken,
       is_byok_enabled: modelConfig.isByokEnabled,
       credential_id: modelConfig.credentials || null,
-      temperature: modelConfig.temp,
+      temperature: modelConfig.temperature,
       top_p: modelConfig.topP,
       stream: false,
       ref_id: currentFlow.id, // Reference the currentFlow

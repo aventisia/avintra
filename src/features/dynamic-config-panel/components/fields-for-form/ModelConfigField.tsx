@@ -1,4 +1,4 @@
-import { SelectField, SwitchField } from "@aventisia/ui/form";
+import { InputField, SelectField, SwitchField } from "@aventisia/ui/form";
 import {
   Controller,
   FieldPath,
@@ -33,6 +33,10 @@ const ModelConfigField = ({ name }: ModelConfigFieldProps) => {
   const temperatureFieldName = `${name}.temperature` as FieldPath<FieldValues>;
   const topPFieldName = `${name}.topP` as FieldPath<FieldValues>;
   const voiceFieldName = `${name}.voice` as FieldPath<FieldValues>;
+  const isJsonOutputFieldName =
+    `${name}.isJsonOutput` as FieldPath<FieldValues>;
+  const maxOutputTokenFieldName =
+    `${name}.maxOutputToken` as FieldPath<FieldValues>;
 
   // Get the form context
   const { control } = useFormContext();
@@ -162,6 +166,20 @@ const ModelConfigField = ({ name }: ModelConfigFieldProps) => {
                   className="resize-none text-sm"
                 />
               )}
+            />
+            {/* JSONOutput Field */}
+            <SwitchField
+              size="sm"
+              name={isJsonOutputFieldName}
+              label="Is JSON Output"
+              description="Enable this if you want to output in Json format."
+            />
+
+            <InputField
+              name={maxOutputTokenFieldName}
+              type="number"
+              label="Max Output Token"
+              fieldSize="sm"
             />
           </PopoverContent>
         </Popover>
