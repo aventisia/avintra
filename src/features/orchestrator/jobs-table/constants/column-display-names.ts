@@ -1,5 +1,7 @@
 import { KeyValueLookupType } from "@aventisia/ui/types";
 
+import { JobStatusTypesEnum } from "../enums/job-status-type-enum";
+
 /** Array of column names and their corresponding display names. */
 export const columnDisplayNames: KeyValueLookupType[] = [
   { key: "id", value: "Select Row" },
@@ -19,4 +21,18 @@ export const columnDisplayNames: KeyValueLookupType[] = [
 export const getColumnName = (key: string): string => {
   const column = columnDisplayNames.find((column) => column.key === key);
   return column?.value ?? key;
+};
+
+export const statusColor: { [key in JobStatusTypesEnum]: string } = {
+  [JobStatusTypesEnum.Completed]: "bg-green-200 text-current",
+  [JobStatusTypesEnum.Running]: "bg-slate-200 text-current",
+  [JobStatusTypesEnum.Abort]: "bg-orange-200 text-current",
+  [JobStatusTypesEnum.Canceled]: "bg-orange-200 text-current",
+  [JobStatusTypesEnum.Cleanup]: "bg-slate-200 text-current",
+  [JobStatusTypesEnum.Paused]: "bg-slate-200 text-current",
+  [JobStatusTypesEnum.Resumed]: "bg-slate-200 text-current",
+  [JobStatusTypesEnum.Retrying]: "bg-slate-200 text-current",
+  [JobStatusTypesEnum.Created]: "bg-slate-200 text-current",
+
+  [JobStatusTypesEnum.Failed]: "bg-red-200 text-current",
 };

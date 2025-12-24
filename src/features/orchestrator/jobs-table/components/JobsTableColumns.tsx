@@ -1,9 +1,11 @@
+import { Badge } from "@aventisia/ui/badge";
 import { DTColumnHeader } from "@aventisia/ui/data-table";
+import { cn } from "@aventisia/ui/lib";
 import { ColumnDef } from "@tanstack/react-table";
 import { format } from "date-fns";
 
 import { TABLE_KEY } from "../constants";
-import { getColumnName } from "../constants/column-display-names";
+import { getColumnName, statusColor } from "../constants/column-display-names";
 import { JobsTableDto } from "../dtos/jobs-table-dto";
 
 import { JobRowActions } from "./jobs-row-actions/JobRowActions";
@@ -47,9 +49,14 @@ export const jobsTableColumns: ColumnDef<JobsTableDto>[] = [
       />
     ),
     cell: ({ row }) => (
-      <div className="w-auto truncate font-medium">
-        {row.getValue("status") ?? 0}
-      </div>
+      <Badge
+        className={cn(
+          "py-0.5 text-[0.65rem] font-semibold",
+          statusColor[row.original.status],
+        )}
+      >
+        {row.getValue("status")}
+      </Badge>
     ),
     filterFn: (row, columnId, filterValue) => {
       const status = row.getValue(columnId);
