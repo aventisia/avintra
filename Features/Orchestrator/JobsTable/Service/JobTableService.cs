@@ -43,6 +43,7 @@ public class JobTableService : IJobTableService
                                         .Include(i => i.FlowVersion)
                                             .ThenInclude(i2 => i2.Flow)
                                         .OrderByDescending(o => o.CreatedOn)
+                                        .Take(100)
                                         .ProjectToType<JobTableDto>()
                                         .ToListAsync();
 
