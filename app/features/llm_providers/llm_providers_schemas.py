@@ -20,7 +20,7 @@ class LLMRequest(BaseModel):
     files: Optional[List[str]] = None  # List of base64-encoded files for OCR/text extraction
     is_json_output: Optional[bool] = False # Try to extract JSON from response and sends no streaming response in one go even if streaming is true
     json_schema: Optional[str] = None
-    max_output_tokens: Optional[int] 
+    max_output_tokens: Optional[int] = None
     is_byok_enabled: Optional[bool] = False # TODO: Implement BYOK support
     credential_id: Optional[str] = None # TODO: Implement BYOK support
     temperature: Optional[float] = 1.0
