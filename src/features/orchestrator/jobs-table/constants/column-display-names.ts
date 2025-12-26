@@ -24,15 +24,14 @@ export const getColumnName = (key: string): string => {
 };
 
 export const statusColor: { [key in JobStatusTypesEnum]: string } = {
-  [JobStatusTypesEnum.Completed]: "bg-green-200 text-current",
-  [JobStatusTypesEnum.Running]: "bg-slate-200 text-current",
-  [JobStatusTypesEnum.Abort]: "bg-orange-200 text-current",
-  [JobStatusTypesEnum.Canceled]: "bg-orange-200 text-current",
-  [JobStatusTypesEnum.Cleanup]: "bg-slate-200 text-current",
-  [JobStatusTypesEnum.Paused]: "bg-slate-200 text-current",
-  [JobStatusTypesEnum.Resumed]: "bg-slate-200 text-current",
-  [JobStatusTypesEnum.Retrying]: "bg-slate-200 text-current",
-  [JobStatusTypesEnum.Created]: "bg-slate-200 text-current",
-
-  [JobStatusTypesEnum.Failed]: "bg-red-200 text-current",
+  [JobStatusTypesEnum.Completed]: "bg-green-200 text-green-700",
+  [JobStatusTypesEnum.Running]: "bg-slate-200 text-slate-600",
+  [JobStatusTypesEnum.Abort]: "bg-orange-200 text-orange-600",
+  [JobStatusTypesEnum.Canceled]: "bg-orange-200 text-orange-600",
+  [JobStatusTypesEnum.Cleanup]: "bg-slate-200 text-slate-600",
+  [JobStatusTypesEnum.Paused]: "bg-slate-200 text-slate-600",
+  [JobStatusTypesEnum.Resumed]: "bg-slate-200 text-slate-600",
+  [JobStatusTypesEnum.Retrying]: "bg-slate-200 text-slate-600",
+  [JobStatusTypesEnum.Created]: "bg-slate-200 text-slate-600",
+  [JobStatusTypesEnum.Failed]: "bg-red-200 text-red-600",
 };
