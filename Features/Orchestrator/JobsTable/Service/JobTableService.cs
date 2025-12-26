@@ -249,6 +249,14 @@ public class JobTableService : IJobTableService
             // Map the updated values from DTO to the job entity
             jobTableDto.Adapt(job);
 
+
+            // If the job status is "Running", set the StartTime to the current UTC time.
+            if (job.Status == JobStatusTypesEnum.Running)
+                job.StartTime = DateTimeOffset.UtcNow;
+
+            // If the job status is "Canceled", "Abort", "Completed", or "Failed", set the EndTime to the current UTC time.
+            if (job.Status == JobStatusTypesEnum.Canceled || job.Status == JobStatusTypesEnum.Abort || job.Status == JobStatusTypesEnum.Completed || job.Status == JobStatusTypesEnum.Failed)
+                job.EndTime = DateTimeOffset.UtcNow;
             // Update the job in the repository
             _unitOfWork.JobRepo.Update(job);
 
@@ -518,6 +526,7 @@ public class JobTableService : IJobTableService
 
             // Set job status to canceled
             job.Status = JobStatusTypesEnum.Canceled;
+            job.EndTime = DateTimeOffset.UtcNow;
 
             // Update job in the repository
             _unitOfWork.JobRepo.Update(job);
@@ -585,7 +594,7 @@ public class JobTableService : IJobTableService
 
             // Change the job status to "Abort" to indicate that it's being canceled.
             job.Status = JobStatusTypesEnum.Abort;
-            _unitOfWork.JobRepo.Update(job);
+            job.EndTime = DateTimeOffset.UtcNow;
 
             // Try to save the changes to the database.
             if (!await _unitOfWork.SaveAsync())
