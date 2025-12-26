@@ -1,0 +1,16 @@
+meta {
+  name: Search onprem tenants
+  type: http
+  seq: 8
+}
+
+get {
+  url: {{GLOBAL_ADMIN_BASE_URL}}/onprem/instance/search/{{ON_PREM_TENANT_NAME}}
+  body: none
+  auth: inherit
+}
+
+settings {
+  encodeUrl: true
+  timeout: 0
+}

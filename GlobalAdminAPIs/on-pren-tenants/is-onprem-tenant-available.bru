@@ -1,0 +1,22 @@
+meta {
+  name: Is onprem tenant available
+  type: http
+  seq: 1
+}
+
+post {
+  url: {{GLOBAL_ADMIN_BASE_URL}}/onprem-tenant/is-available
+  body: json
+  auth: inherit
+}
+
+body:json {
+  {
+    "userInput": "tenant_name"
+  }
+}
+
+settings {
+  encodeUrl: true
+  timeout: 0
+}
