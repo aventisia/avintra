@@ -172,7 +172,14 @@ public class CreditUsageService : ICreditUsageService
                             Username = user.UserName,
                             FirstName = user.FirstName,
                             LastName = user.LastName,
-                            TotalTransactions = creditUsages.Where(w => w.ServiceType == CreditServiceTypesEnum.AIModelExecutionTime || w.ServiceType == CreditServiceTypesEnum.AgentExecutionTime).Count(),
+                            TotalTransactions = creditUsages
+                                .Where(w =>
+                                    w.UsedByUserId == user.Id &&
+                                    (
+                                        w.ServiceType == CreditServiceTypesEnum.AIModelExecutionTime ||
+                                        w.ServiceType == CreditServiceTypesEnum.AgentExecutionTime
+                                    )
+                                ).Count(),
                             TotalCredits = s.Sum(sm => sm.CreditsUsed)
                         };
                     })
