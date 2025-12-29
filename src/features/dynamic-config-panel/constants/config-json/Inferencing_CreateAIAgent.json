@@ -45,99 +45,26 @@
     },
     {
       "direction": "Input",
-      "type": "multi-selector",
-      "name": "KnowledgeBase",
+      "type": "knowledge-base-config",
+      "name": "KnowledgeBaseConfig",
       "label": "Knowledge Base",
-      "selectOptions": [
-        {
-          "label": "Knowledge Base 1",
-          "value": "Knowledge Base 1",
-          "description": ""
-        },
-        {
-          "label": "Knowledge Base 2",
-          "value": "Knowledge Base 2",
-          "description": ""
-        }
-      ],
+      "defaultValue": {
+        "knowledgeBase": "",
+        "retrievalType": "Basic",
+        "sourceThreshold": 1,
+        "numberOfChunks": 10
+      },
       "required": false,
       "category": "Memory"
     },
     {
       "direction": "Input",
-      "type": "number",
-      "name": "NumberOfChunks",
-      "label": "Number Of Chunks",
-
-      "required": false,
-      "category": "Memory"
-    },
-    {
-      "direction": "Input",
-      "type": "select",
-      "name": "RetrievalType",
-      "label": "Retrieval Type",
-      "description": "",
-      "defaultValue": "Basic",
-      "required": false,
-      "selectOptions": [
-        {
-          "label": "Basic",
-          "value": "Basic",
-          "description": ""
-        },
-        {
-          "label": "Advance",
-          "value": "Advance",
-          "description": ""
-        }
-      ],
-      "category": "Memory"
-    },
-    {
-      "direction": "Input",
-      "type": "slider",
-      "name": "SourceThreshold",
-      "label": "Source Threshold",
-      "min": 0,
-      "max": 1.2,
-      "defaultValue": [0.6],
-
-      "required": false,
-      "category": "Memory"
-    },
-
-    {
-      "direction": "Input",
-      "type": "select",
-      "name": "MemoryProvider",
-      "label": "Memory Provider",
-      "description": "",
-      "defaultValue": "Memory Provider 1",
-      "required": false,
-      "selectOptions": [
-        {
-          "label": "Memory Provider 1",
-          "value": "Memory Provider 1",
-          "description": ""
-        },
-        {
-          "label": "Memory Provider 2",
-          "value": "Memory Provider 2",
-          "description": ""
-        }
-      ],
-      "category": "Memory"
-    },
-    {
-      "direction": "Input",
-      "type": "slider",
-      "name": "MaxDataStored",
-      "label": "Max. messages stored as Short-term Memory",
-      "min": 0,
-      "max": 10,
-      "defaultValue": [1],
-
+      "type": "memory-config",
+      "name": "MemoryConfig",
+      "defaultValue": {
+        "memoryProvider": "Memory Provider 1",
+        "maxDataStored": 4
+      },
       "required": false,
       "category": "Memory"
     },
