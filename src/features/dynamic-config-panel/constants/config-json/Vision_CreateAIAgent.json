@@ -39,7 +39,8 @@
       "type": "prompt-input",
       "name": "prompt",
       "required": false,
-      "min": 25,
+      "min": 22,
+      "defaultValue": "",
       "category": "Prompt"
     },
 
