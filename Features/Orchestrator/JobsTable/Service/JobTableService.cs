@@ -24,20 +24,19 @@ public class JobTableService : IJobTableService
         _jobsExecutorService = jobsExecutorService;
     }
 
-    // Retrieves a list of jobs associated with the current user.
+    // Retrieves a list of active jobs (either created or running).
     public async Task<ServiceResponse<IEnumerable<JobTableDto>>> GetJobsAsync()
     {
         // Initialize ServiceResponse with an error message.
         var serviceResponse = new ServiceResponse<IEnumerable<JobTableDto>>
         {
             Data = null,
-            Message = "Failed to retrieve jobs. Please try again."
+            Message = "Failed to retrieve jobs. Please try again later."
         };
 
         try
         {
-
-            // Fetch jobs created by the current user
+            // Fetch jobs 
             var jobs = await _unitOfWork.JobRepo
                                         .GetAllAsync()
                                         .Include(i => i.FlowVersion)
@@ -47,15 +46,55 @@ public class JobTableService : IJobTableService
                                         .ProjectToType<JobTableDto>()
                                         .ToListAsync();
 
-
-            // Success - set the response with retrieved jobs
+            // If jobs are retrieved successfully, update the response.
             serviceResponse.Data = jobs;
             serviceResponse.StatusCode = 200;
             serviceResponse.Message = "Jobs retrieved successfully.";
+            _logger.LogInformation("Successfully retrieved {JobCount} jobs.", jobs.Count); // Log success
         }
         catch (Exception ex)
         {
-            _logger.LogError(ex.ToString());
+            _logger.LogError("Error retrieving jobs: {ErrorMessage}", ex.ToString()); // Log error with detailed message
+            return serviceResponse;
+        }
+
+        return serviceResponse;
+    }
+
+    // Retrieves a list of completed or failed job logs (excluding 'Created' or 'Running' statuses).
+    public async Task<ServiceResponse<IEnumerable<JobExecutionLogDto>>> GetJobLogsAsync()
+    {
+        // Initialize ServiceResponse with an error message.
+        var serviceResponse = new ServiceResponse<IEnumerable<JobExecutionLogDto>>
+        {
+            Data = null,
+            Message = "Unable to retrieve job logs. Please try again later."
+        };
+
+        try
+        {
+            // Fetch job logs where the status is neither 'Created' nor 'Running'.
+            var jobLogs = await _unitOfWork.JobRepo
+                                            .GetByConditionAsync(w =>
+                                                w.Status != JobStatusTypesEnum.Created &&
+                                                w.Status != JobStatusTypesEnum.Running
+                                            )
+                                            .Include(i => i.FlowVersion)
+                                                .ThenInclude(i2 => i2.Flow)
+                                            .OrderByDescending(o => o.CreatedOn)
+                                            .Take(100)
+                                            .ProjectToType<JobExecutionLogDto>()
+                                            .ToListAsync();
+
+            // If job logs are retrieved successfully, update the response.
+            serviceResponse.Data = jobLogs;
+            serviceResponse.StatusCode = 200;
+            serviceResponse.Message = "Job logs retrieved successfully.";
+            _logger.LogInformation("Successfully retrieved {JobLogCount} job logs.", jobLogs.Count);
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError("Error retrieving job logs: {ErrorMessage}", ex.ToString());
             return serviceResponse;
         }
 
@@ -212,7 +251,7 @@ public class JobTableService : IJobTableService
     }
 
     // Updates an existing job.
-    public async Task<ServiceResponse<JobTableDto>> UpdateJobAsync(JobTableDto jobTableDto)
+    public async Task<ServiceResponse<JobTableDto>> UpdateJobAsync(JobExecutionDto jobTableDto)
     {
         // Initialize ServiceResponse with an error message.
         var serviceResponse = new ServiceResponse<JobTableDto>

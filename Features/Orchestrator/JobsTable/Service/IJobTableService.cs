@@ -6,10 +6,16 @@ namespace WorkspaceAPIs.Services;
 public interface IJobTableService
 {
     /// <summary>
-    /// Fetches all jobs associated with the current user.
+    /// Retrieves a list of all jobs.
     /// </summary>
-    /// <returns>A task representing the service response containing a list of job details.</returns>
+    /// <returns>A task representing the service response with the job details.</returns>
     Task<ServiceResponse<IEnumerable<JobTableDto>>> GetJobsAsync();
+
+    /// <summary>
+    /// Retrieves a list of all job logs.
+    /// </summary>
+    /// <returns>A task representing the service response with the job log details.</returns>
+    Task<ServiceResponse<IEnumerable<JobExecutionLogDto>>> GetJobLogsAsync();
 
     /// <summary>
     /// Fetches a job by its unique identifier.
@@ -37,7 +43,7 @@ public interface IJobTableService
     /// </summary>
     /// <param name="jobTableDto">The data required to update the job.</param>
     /// <returns>A task representing the service response containing the updated job details.</returns>
-    Task<ServiceResponse<JobTableDto>> UpdateJobAsync(JobTableDto jobTableDto);
+    Task<ServiceResponse<JobTableDto>> UpdateJobAsync(JobExecutionDto jobTableDto);
 
     /// <summary>
     /// Removes a job by its identifier.

@@ -17,6 +17,12 @@ public class JobController : BaseApiController
         return ResultHelper(await _jobTableService.GetJobsAsync());
     }
 
+    [HttpGet("logs/list")]
+    public async Task<ActionResult<ServiceResponse<IEnumerable<JobExecutionLogDto>>>> GetJobLogs()
+    {
+        return ResultHelper(await _jobTableService.GetJobLogsAsync());
+    }
+
     [HttpGet("{jobId}")]
     public async Task<ActionResult<ServiceResponse<JobTableDto>>> GetJob(Guid jobId)
     {
@@ -36,7 +42,7 @@ public class JobController : BaseApiController
     }
 
     [HttpPut]
-    public async Task<ActionResult<ServiceResponse<JobTableDto>>> UpdateJobAsync([FromBody] JobTableDto jobTableDto)
+    public async Task<ActionResult<ServiceResponse<JobTableDto>>> UpdateJobAsync([FromBody] JobExecutionDto jobTableDto)
     {
         return ResultHelper(await _jobTableService.UpdateJobAsync(jobTableDto));
     }
