@@ -10,4 +10,5 @@ export enum VaultAppsEnum {
   GoogleWorkspace,
   ElevenLabs,
   OpenRouter,
+  AzureStorage,
 }

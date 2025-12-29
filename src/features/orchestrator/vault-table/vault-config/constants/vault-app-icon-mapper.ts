@@ -12,4 +12,5 @@ export const vaultAppIconMapper: Record<VaultAppsEnum, string> = {
   [VaultAppsEnum.GoogleWorkspace]: "/assets/GoogleWorkspace.svg",
   [VaultAppsEnum.OpenRouter]: "/brand-img/openrouter.svg",
   [VaultAppsEnum.ElevenLabs]: "/brand-img/elevenlabs.svg",
+  [VaultAppsEnum.AzureStorage]: "/assets/Azure.svg",
 };

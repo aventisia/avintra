@@ -24,6 +24,10 @@ export const vaultAppsSelectOptions: Record<
   },
   [VaultAppsEnum.OpenRouter]: { label: "OpenRouter", value: "OpenRouter" },
   [VaultAppsEnum.ElevenLabs]: { label: "ElevenLabs", value: "ElevenLabs" },
+  [VaultAppsEnum.AzureStorage]: {
+    label: "Azure Storage",
+    value: "AzureStorage",
+  },
 };
 
 // export const appList = [
