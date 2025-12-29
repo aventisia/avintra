@@ -52,6 +52,7 @@ public class TimeTriggerExecutionJob : IJob
                 {
                     var jobToCreate = new Job()
                     {
+                        Id = Guid.NewGuid(),
                         TenantId = timeTriggerflowVersion.TenantId,
                         FlowVersionId = timeTriggerflowVersion.FlowVersionId,
                         TriggerType = TriggerTypesEnum.TimeTrigger,
@@ -88,6 +89,9 @@ public class TimeTriggerExecutionJob : IJob
             {
                 // Insert the created jobs into the database asynchronously using the repository's InsertAsync method.
                 await _workspaceInternalDbContext.Jobs.AddRangeAsync(createdJobs);
+
+                // Save changes to the database
+                await _workspaceInternalDbContext.SaveChangesAsync();
             }
 
             // Check if there are any triggers that need to be executed
@@ -104,6 +108,8 @@ public class TimeTriggerExecutionJob : IJob
             if (createdJobs.Any())
             {
                 var jobIds = createdJobs.Select(s => s.Id).ToList();
+
+                // Log the job IDs
                 if (jobIds.Count != 0)
                     await _jobsExecutorService.ExecuteCommanByIdsdAsync(jobIds);
             }

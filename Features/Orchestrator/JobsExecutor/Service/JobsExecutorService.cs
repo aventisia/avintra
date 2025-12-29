@@ -4,6 +4,7 @@ public class JobsExecutorService : IJobsExecutorService
 {
     private readonly ILogger<IJobsExecutorService> _logger;
     private readonly IUnitOfWork _unitOfWork;
+    private readonly WorkspaceInternalDbContext _workspaceInternalDbContext;
     private readonly IHubContext<OrchestratorHub> _hubContext;
     private readonly IClientStatusStore _clientStatusStore;
 
@@ -15,7 +16,8 @@ public class JobsExecutorService : IJobsExecutorService
         IUnitOfWork unitOfWork,
         IHttpContextAccessor httpContextAccessor,
         IHubContext<OrchestratorHub> hubContext,
-        IClientStatusStore clientStatusStore)
+        IClientStatusStore clientStatusStore,
+        WorkspaceInternalDbContext workspaceInternalDbContext)
     {
         _userId = Guid.Parse(httpContextAccessor.HttpContext?.User?.FindFirstValue("uid") ?? Guid.Empty.ToString());
 
@@ -23,6 +25,7 @@ public class JobsExecutorService : IJobsExecutorService
         _unitOfWork = unitOfWork;
         _hubContext = hubContext;
         _clientStatusStore = clientStatusStore;
+        _workspaceInternalDbContext = workspaceInternalDbContext;
     }
 
     // Method to execute a job command
@@ -258,17 +261,22 @@ public class JobsExecutorService : IJobsExecutorService
     {
         try
         {
-            // Retrieve job details, including FlowVersion, from the database and group by TenantId
-            var jobsGroupedByTenant = await _unitOfWork.JobRepo
-                .GetByConditionAsync(w => jobIds.Contains(w.Id))
+            _logger.LogInformation("Executing jobs with the following IDs: {JobIds}", string.Join(", ", jobIds));
+
+            // Retrieve the jobs based on the jobIds
+            var jobsGroupedByTenantId = await _workspaceInternalDbContext.Jobs
+                .Where(w => jobIds.Contains(w.Id))
                 .Include(i => i.FlowVersion)
                     .ThenInclude(i2 => i2.MachineFlows)
                 .GroupBy(g => g.TenantId)
                 .ToListAsync();
 
-            if (jobsGroupedByTenant.Count == 0)
+            // Log the number of jobs retrieved
+            _logger.LogInformation("Retrieved {JobCount} job(s) with the provided job IDs.", jobsGroupedByTenantId.Count);
+
+            if (jobsGroupedByTenantId.Count == 0)
             {
-                _logger.LogWarning("No jobs found with the provided job IDs.");
+                _logger.LogWarning("No jobs found with the provided job IDs: {JobIds}.", string.Join(", ", jobIds));
                 return;
             }
 
@@ -276,7 +284,7 @@ public class JobsExecutorService : IJobsExecutorService
             List<Job> jobsNeedToUpdate = new List<Job>();
 
             // Process each tenant's jobs independently
-            foreach (var tenantGroup in jobsGroupedByTenant)
+            foreach (var tenantGroup in jobsGroupedByTenantId)
             {
                 var tenantId = tenantGroup.Key;
 
@@ -299,9 +307,14 @@ public class JobsExecutorService : IJobsExecutorService
                             continue;  // Skip this job and move to the next one
                         }
 
-                        // Find the first machine from machineList that is online and is in the machineFlows
+                        // Find the first machine from machineList that is online or idle and is in the machineFlows
                         var onlineMachine = machineList
-                            .Where(w => machineFlows.Any(flow => flow.MachineId == w.ClientId) && w.Status == MachineStatusTypeEnum.Online)
+                            .Where(w =>
+                                machineFlows.Any(flow => flow.MachineId == w.ClientId) &&
+                                (
+                                    w.Status == MachineStatusTypeEnum.Online ||
+                                    w.Status == MachineStatusTypeEnum.Idle)
+                                )
                             .FirstOrDefault();
 
                         // If an online machine is found, assign it to the job and add to update list
@@ -344,14 +357,11 @@ public class JobsExecutorService : IJobsExecutorService
                 // Log the successful execution trigger
                 _logger.LogInformation("Job {JobId} execution successfully triggered.", job.Id);
 
-                // Update the job status in the repository to reflect it's been initiated
-                _unitOfWork.JobRepo.Update(job);
+                // Update the job
+                _workspaceInternalDbContext.Update(job);
 
                 // Save changes asynchronously
-                if (!await _unitOfWork.SaveAsync())
-                {
-                    _logger.LogError("Failed to save changes for Job ID: {JobId}.", job.Id);
-                }
+                await _workspaceInternalDbContext.SaveChangesAsync();
             }
         }
         catch (Exception ex)
