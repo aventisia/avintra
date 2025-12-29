@@ -4,11 +4,13 @@ public class TimeTriggerExecutionJob : IJob
 {
     private readonly WorkspaceInternalDbContext _workspaceInternalDbContext;
     private readonly ILogger<TimeTriggerExecutionJob> _logger;
+    private readonly IJobsExecutorService _jobsExecutorService;
 
-    public TimeTriggerExecutionJob(WorkspaceInternalDbContext workspaceInternalDbContext, ILogger<TimeTriggerExecutionJob> logger)
+    public TimeTriggerExecutionJob(WorkspaceInternalDbContext workspaceInternalDbContext, ILogger<TimeTriggerExecutionJob> logger, IJobsExecutorService jobsExecutorService)
     {
         _workspaceInternalDbContext = workspaceInternalDbContext;
         _logger = logger;
+        _jobsExecutorService = jobsExecutorService;
     }
 
     // Main method for Quartz job execution
@@ -45,7 +47,6 @@ public class TimeTriggerExecutionJob : IJob
             {
                 // Log trigger execution start
                 _logger.LogInformation($"Executing Trigger: {trigger.Name} (ID: {trigger.Id})");
-
 
                 foreach (var timeTriggerflowVersion in trigger.TimeTriggerFlowVersions)
                 {
@@ -97,6 +98,15 @@ public class TimeTriggerExecutionJob : IJob
             }
 
             _logger.LogInformation($"Job completed successfully at {currentUtcTime:O}");
+
+            // Now execute the jobs based on their IDs
+            // Execute job commands for all created jobs
+            if (createdJobs.Any())
+            {
+                var jobIds = createdJobs.Select(s => s.Id).ToList();
+                if (jobIds.Count != 0)
+                    await _jobsExecutorService.ExecuteCommanByIdsdAsync(jobIds);
+            }
         }
         catch (Exception ex)
         {
