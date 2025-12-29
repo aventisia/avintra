@@ -253,4 +253,110 @@ public class JobsExecutorService : IJobsExecutorService
             _logger.LogError(ex, "An error occurred while executing job {JobId}.", executionCommandDto?.JobId);
         }
     }
+
+    public async Task ExecuteCommanByIdsdAsync(List<Guid> jobIds)
+    {
+        try
+        {
+            // Retrieve job details, including FlowVersion, from the database and group by TenantId
+            var jobsGroupedByTenant = await _unitOfWork.JobRepo
+                .GetByConditionAsync(w => jobIds.Contains(w.Id))
+                .Include(i => i.FlowVersion)
+                    .ThenInclude(i2 => i2.MachineFlows)
+                .GroupBy(g => g.TenantId)
+                .ToListAsync();
+
+            if (jobsGroupedByTenant.Count == 0)
+            {
+                _logger.LogWarning("No jobs found with the provided job IDs.");
+                return;
+            }
+
+            // List of jobs that need to be updated
+            List<Job> jobsNeedToUpdate = new List<Job>();
+
+            // Process each tenant's jobs independently
+            foreach (var tenantGroup in jobsGroupedByTenant)
+            {
+                var tenantId = tenantGroup.Key;
+
+                // Fetch machine statuses for the tenant
+                var machineList = await _clientStatusStore.GetMachineStatusesAsync(tenantId);
+
+                // Process each job within this tenant group
+                foreach (var job in tenantGroup)
+                {
+                    // If the job doesn't have a valid MachineId, we need to find one
+                    if (job.MachineId == null || job.MachineId == Guid.Empty)
+                    {
+                        _logger.LogInformation("Machine ID is null for Job ID: {JobId} in Tenant ID: {TenantId}, attempting to find an online machine.", job.Id, tenantId);
+
+                        // Ensure machineFlows exists and is not empty
+                        var machineFlows = job.FlowVersion?.MachineFlows?.Where(w => w != null).ToList();
+                        if (machineFlows == null || !machineFlows.Any())
+                        {
+                            _logger.LogWarning("No valid machine flows found for Job ID: {JobId} in Tenant ID: {TenantId}.", job.Id, tenantId);
+                            continue;  // Skip this job and move to the next one
+                        }
+
+                        // Find the first machine from machineList that is online and is in the machineFlows
+                        var onlineMachine = machineList
+                            .Where(w => machineFlows.Any(flow => flow.MachineId == w.ClientId) && w.Status == MachineStatusTypeEnum.Online)
+                            .FirstOrDefault();
+
+                        // If an online machine is found, assign it to the job and add to update list
+                        if (onlineMachine != null && !jobsNeedToUpdate.Any(j => j.MachineId == onlineMachine.ClientId))
+                        {
+                            job.MachineId = onlineMachine.ClientId;
+                            jobsNeedToUpdate.Add(job);
+                            _logger.LogInformation("Assigned Machine ID: {MachineId} to Job ID: {JobId} in Tenant ID: {TenantId}.", onlineMachine.ClientId, job.Id, tenantId);
+                        }
+                        else
+                        {
+                            _logger.LogWarning("No available online machine found for Job ID: {JobId} in Tenant ID: {TenantId}.", job.Id, tenantId);
+                        }
+                    }
+                }
+            }
+
+            if (jobsNeedToUpdate.Count == 0)
+            {
+                _logger.LogInformation("No jobs need to be updated for execution.");
+                return;
+            }
+
+            // Process jobs that need to be updated
+            foreach (var job in jobsNeedToUpdate)
+            {
+                // Create an ExecutionCommandDto to trigger the job execution
+                var executionCommandDto = new ExecutionCommandDto
+                {
+                    JobId = job.Id,
+                    Command = ExecutionCommandTypesEnum.Initiate,
+                    AgentId = job.FlowVersionId,
+                    MachineId = job.MachineId ?? Guid.Empty,
+                    TenantId = job.TenantId
+                };
+
+                // Delegate the actual execution to the TriggerExecutionAsync method
+                await TriggerExecutionAsync(executionCommandDto);
+
+                // Log the successful execution trigger
+                _logger.LogInformation("Job {JobId} execution successfully triggered.", job.Id);
+
+                // Update the job status in the repository to reflect it's been initiated
+                _unitOfWork.JobRepo.Update(job);
+
+                // Save changes asynchronously
+                if (!await _unitOfWork.SaveAsync())
+                {
+                    _logger.LogError("Failed to save changes for Job ID: {JobId}.", job.Id);
+                }
+            }
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex, "Error executing job command.");
+        }
+    }
 }
