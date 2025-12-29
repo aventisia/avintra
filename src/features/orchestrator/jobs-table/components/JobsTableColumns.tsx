@@ -9,6 +9,7 @@ import { getColumnName, statusColor } from "../constants/column-display-names";
 import { JobsTableDto } from "../dtos/jobs-table-dto";
 
 import { JobRowActions } from "./jobs-row-actions/JobRowActions";
+import { JobsTableCellLink } from "./JobsTableCellLink";
 
 export const jobsTableColumns: ColumnDef<JobsTableDto>[] = [
   {
@@ -20,9 +21,24 @@ export const jobsTableColumns: ColumnDef<JobsTableDto>[] = [
         title={getColumnName("name")}
       />
     ),
-    cell: ({ row }) => (
-      <div className="w-auto truncate font-medium">{row.getValue("name")}</div>
-    ),
+    cell: ({ row }) => {
+      const isHistoryTab = !["Running", "Created"].includes(
+        row.getValue("status"),
+      );
+      if (isHistoryTab)
+        return (
+          <JobsTableCellLink
+            rowId={row.original.id ?? ""}
+            cellValue={row.getValue("name")}
+          />
+        );
+      else
+        return (
+          <div className="w-auto truncate font-medium">
+            {row.getValue("name")}
+          </div>
+        );
+    },
   },
   {
     accessorKey: "versionNumber",
@@ -49,12 +65,7 @@ export const jobsTableColumns: ColumnDef<JobsTableDto>[] = [
       />
     ),
     cell: ({ row }) => (
-      <Badge
-        className={cn(
-          "py-0.5 text-[0.65rem] font-semibold",
-          statusColor[row.original.status],
-        )}
-      >
+      <Badge className={cn(statusColor[row.original.status])}>
         {row.getValue("status")}
       </Badge>
     ),
