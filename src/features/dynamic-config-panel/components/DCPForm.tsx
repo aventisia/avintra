@@ -21,7 +21,6 @@ import { DCPTabsFooterWrapper } from "./dcp-tabs/DCPTabsFooterWrapper";
 import { DCPTabsListWrapper } from "./dcp-tabs/DCPTabsListWrapper";
 import ImproveWithAIButton from "@/features/dynamic-config-panel/components/dcp-tabs/ImproveWithAIButton";
 import TestTabContent from "./dcp-tabs/test-tab/TestTabContent";
-import { getRenderItems } from "../utils/get-render-items";
 
 export const DCPForm = () => {
   const [showOuputFields, setShowOutputFields] = useState(false);
@@ -152,39 +151,24 @@ export const DCPForm = () => {
               <DCPTabsContent tabValue={tab}>
                 {/* Input fields */}
                 <div className="space-y-3.5">
-                  {getRenderItems(
-                    nodeConfig.fields,
-                    tab,
-                    watchedValues,
-                    inputKeys,
-                  ).map((item, index) => {
-                    // Grouped block
-                    if (
-                      typeof item === "object" &&
-                      "groupName" in item &&
-                      "fields" in item
-                    ) {
-                      return (
-                        <div
-                          key={item.groupName + index}
-                          className="relative !mt-5 space-y-3 rounded-lg border p-3 first:!mt-1.5"
-                        >
-                          <div className="absolute -top-3 left-2.5">
-                            <span className="rounded-full bg-indigo-100 px-1.5 py-1 text-xs font-medium text-indigo-600">
-                              {item.groupName}
-                            </span>
-                          </div>
+                  {nodeConfig?.fields
+                    ?.filter((field) => (field.category ?? "Inputs") == tab)
+                    ?.map((field) => {
+                      // Check if the field should be rendered based on direction and renderIf conditions
+                      if (!shouldRenderField("Input", field, watchedValues)) {
+                        //Remove the key from inputKeys if the field is not rendered
+                        if (inputKeys.includes(field.name))
+                          inputKeys.splice(inputKeys.indexOf(field.name), 1);
+                        return null;
+                      }
 
-                          {item.fields.map((field) => (
-                            <RenderField key={field.name} {...field} />
-                          ))}
-                        </div>
-                      );
-                    }
+                      // Add the field name to inputKeys if not already present
+                      if (!inputKeys.includes(field.name))
+                        inputKeys.push(field.name);
 
-                    // Normal field
-                    return <RenderField key={item.name} {...item} />;
-                  })}
+                      // Render the field
+                      return <RenderField key={field.name} {...field} />;
+                    })}
                 </div>
 
                 {/* Output fields */}

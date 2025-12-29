@@ -61,8 +61,7 @@
         }
       ],
       "required": false,
-      "category": "Memory",
-      "groupName": "Configure Knowledge Base"
+      "category": "Memory"
     },
     {
       "direction": "Input",
@@ -71,8 +70,7 @@
       "label": "Number Of Chunks",
 
       "required": false,
-      "category": "Memory",
-      "groupName": "Configure Knowledge Base"
+      "category": "Memory"
     },
     {
       "direction": "Input",
@@ -94,8 +92,7 @@
           "description": ""
         }
       ],
-      "category": "Memory",
-      "groupName": "Configure Knowledge Base"
+      "category": "Memory"
     },
     {
       "direction": "Input",
@@ -107,8 +104,7 @@
       "defaultValue": [0.6],
 
       "required": false,
-      "category": "Memory",
-      "groupName": "Configure Knowledge Base"
+      "category": "Memory"
     },
 
     {
@@ -131,8 +127,7 @@
           "description": ""
         }
       ],
-      "category": "Memory",
-      "groupName": "Configure Memory"
+      "category": "Memory"
     },
     {
       "direction": "Input",
@@ -144,8 +139,7 @@
       "defaultValue": [1],
 
       "required": false,
-      "category": "Memory",
-      "groupName": "Configure Memory"
+      "category": "Memory"
     },
     {
       "direction": "Input",
