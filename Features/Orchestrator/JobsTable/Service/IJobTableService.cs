@@ -22,7 +22,7 @@ public interface IJobTableService
     /// </summary>
     /// <param name="jobId">The identifier of the job to retrieve.</param>
     /// <returns>A task representing the service response containing the details of the job.</returns>
-    Task<ServiceResponse<JobTableDto>> GetJobByIdAsync(Guid jobId);
+    Task<ServiceResponse<JobExecutionLogDto>> GetJobByIdAsync(Guid jobId);
 
     /// <summary>
     /// Fetches a job detail by its unique identifier.

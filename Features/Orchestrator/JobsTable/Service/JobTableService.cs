@@ -102,10 +102,10 @@ public class JobTableService : IJobTableService
     }
 
     // Retrieves a specific job by its ID for the current user.
-    public async Task<ServiceResponse<JobTableDto>> GetJobByIdAsync(Guid jobId)
+    public async Task<ServiceResponse<JobExecutionLogDto>> GetJobByIdAsync(Guid jobId)
     {
         // Initialize ServiceResponse with an error message.
-        var serviceResponse = new ServiceResponse<JobTableDto>
+        var serviceResponse = new ServiceResponse<JobExecutionLogDto>
         {
             Data = null,
             Message = "Failed to retrieve the job. Please try again."
@@ -118,8 +118,7 @@ public class JobTableService : IJobTableService
                                         .GetByConditionAsync(w =>
                                             w.Id == jobId
                                         )
-                                        .OrderByDescending(w => w.CreatedOn)
-                                        .ProjectToType<JobTableDto>()
+                                        .ProjectToType<JobExecutionLogDto>()
                                         .FirstOrDefaultAsync();
 
             // Success - set the response with retrieved job
