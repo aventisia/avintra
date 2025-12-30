@@ -5,12 +5,14 @@ public class InstanceUsageStartupService : IHostedService
     private readonly IInstanceService _instanceService;
     private readonly ILogger<InstanceUsageStartupService> _logger;
     private readonly IHostEnvironment _hostEnvironment;
+    private readonly AppRuntimeSettings _appRuntimeSettings;
 
-    public InstanceUsageStartupService(IInstanceService instanceService, ILogger<InstanceUsageStartupService> logger, IHostEnvironment hostEnvironment)
+    public InstanceUsageStartupService(IInstanceService instanceService, ILogger<InstanceUsageStartupService> logger, IHostEnvironment hostEnvironment, AppRuntimeSettings appRuntimeSettings)
     {
         _instanceService = instanceService;
         _logger = logger;
         _hostEnvironment = hostEnvironment;
+        _appRuntimeSettings = appRuntimeSettings;
     }
 
     // This method will be called when the application starts. It collects metrics and posts them to the external API.
@@ -33,18 +35,31 @@ public class InstanceUsageStartupService : IHostedService
             // Collect metrics such as user count and job stats from the instance service
             var serviceResponse = await _instanceService.CollectMetricsAsync("StartupService");
 
-            if (serviceResponse.Data != null && serviceResponse.StatusCode == 200)
+            // Check if data is retrieved successfully
+            if (serviceResponse.Data == null || serviceResponse.StatusCode != 200)
             {
-                // Post the collected metrics to the external API for processing
-                await _instanceService.PostMetricsToApiAsync(serviceResponse.Data);
-
-                // Log successful completion of the startup task
-                _logger.LogInformation($"Instance usage startup task completed successfully at {currentDateTime:O}");
+                _logger.LogError("Failed to retrieve instance metrics data. Startup cannot continue. Please contact the support team. Message: {Message}", serviceResponse.Message);
+                throw new InvalidOperationException($"Failed to retrieve instance metrics data. Please contact the support team. Message: {serviceResponse.Message}");
             }
-            else
+
+            // Post the collected metrics to the external API for processing
+            await _instanceService.PostMetricsToApiAsync(serviceResponse.Data);
+
+            // Log successful completion of the startup task
+            _logger.LogInformation($"Instance usage startup task completed successfully at {currentDateTime:O}");
+
+            // Fail if contract expired
+            if (_appRuntimeSettings.IsContractExpired)
             {
-                // Log failure if the metrics collection was unsuccessful
-                _logger.LogWarning($"Metrics collection failed with message: {serviceResponse.Message}");
+                _logger.LogError("Contract has expired. Startup cannot continue. Please contact the support team.");
+                throw new InvalidOperationException("Contract has expired. Please contact the support team.");
+            }
+
+            // Fail if login is disabled
+            if (_appRuntimeSettings.IsLoginDisabled)
+            {
+                _logger.LogError("Login is disabled. Startup cannot continue. Please contact the support team.");
+                throw new InvalidOperationException("Login is disabled. Please contact the support team.");
             }
         }
         catch (Exception ex)
