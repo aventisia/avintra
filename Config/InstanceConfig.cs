@@ -12,10 +12,10 @@ public class InstanceConfig
     public required string TenantId { get; set; }
 
     /// <summary>
-    /// Gets or sets the unique identifier for the instance.
+    /// Gets or sets the unique key for the instance.
     /// </summary>
     [Required]
-    public required string InstanceId { get; set; }
+    public required string InstanceKey { get; set; }
 
     /// <summary>
     /// Gets or sets the type of the instance (e.g., "Production", "Test").

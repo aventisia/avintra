@@ -114,7 +114,7 @@ public class InstanceService : IInstanceService
 
             // Add the API Key and Instance details to the headers for authentication
             httpClient.DefaultRequestHeaders.Add("X-OnPrem-Tenant-Id", $"{_instanceConfig.TenantId}");
-            httpClient.DefaultRequestHeaders.Add("X-OnPrem-Instance-Key", $"{_instanceConfig.InstanceId}");
+            httpClient.DefaultRequestHeaders.Add("X-OnPrem-Instance-Key", $"{_instanceConfig.InstanceKey}");
 
             // Serialize the InstanceRequestDto to JSON for the POST body
             var jsonContent = new StringContent(
