@@ -9,13 +9,13 @@ public class InstanceConfig
     /// Gets or sets the unique identifier for the tenant associated with the instance.
     /// </summary>
     [Required]
-    public Guid TenantId { get; set; }
+    public required string TenantId { get; set; }
 
     /// <summary>
     /// Gets or sets the unique identifier for the instance.
     /// </summary>
     [Required]
-    public Guid InstanceId { get; set; }
+    public required string InstanceId { get; set; }
 
     /// <summary>
     /// Gets or sets the type of the instance (e.g., "Production", "Test").
