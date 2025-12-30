@@ -86,6 +86,7 @@ public static class AppServicesExtension
         services.AddSingleton(Guard.Against.Null(config.GetSection("VerificationCodeConfig").Get<VerificationCodeConfig>(), "VerificationCodeConfig cannot be null"));
         services.AddSingleton(Guard.Against.Null(config.GetSection("ExternalAPIsConfig").Get<ExternalAPIsConfig>(), "ExternalAPIsConfig cannot be null"));
         services.AddSingleton(Guard.Against.Null(config.GetSection("DefaultTenantConfig").Get<DefaultTenantConfig>(), message: "DefaultTenantConfig cannot be null"));
+        services.AddSingleton(Guard.Against.Null(config.GetSection("InstanceConfig").Get<InstanceConfig>(), message: "InstanceConfig cannot be null"));
 
         // Feature services
         services.AddScoped<ICreateAccountService, CreateAccountService>();
@@ -116,6 +117,7 @@ public static class AppServicesExtension
         services.AddScoped<ITopUpService, TopUpService>();
         services.AddScoped<IPaymentTrackerService, PaymentTrackerService>();
         services.AddScoped<IAITaskService, AITaskService>();
+        services.AddScoped<IInstanceService, InstanceService>();
 
         // Register Razorpay related services for customer, plan, and subscription management
         services.AddScoped<ICustomerService, CustomerService>();
@@ -128,6 +130,9 @@ public static class AppServicesExtension
         services.AddScoped<IUnitOfWork, UnitOfWork>();
         services.AddScoped<IAuthHelperService, AuthHelperService>();
         services.AddScoped<IAuthService, AuthService>();
+
+        // Register your hosted service
+        services.AddHostedService<InstanceUsageStartupService>();
     }
 
     /// <summary>
@@ -152,28 +157,51 @@ public static class AppServicesExtension
         // Optionally, register RazorpayConfig itself for further use
         services.AddSingleton(razorpayConfig);
     }
-
-    // Method to configure and register Quartz jobs along with their triggers
+    // Extension method to configure and register Quartz jobs and their triggers
     public static void AddQuartzJobs(this IServiceCollection services)
     {
+        // Configure Quartz scheduler
         services.AddQuartz(quartz =>
         {
-            // Register the TenantCreditAllocationJob and its trigger
+            // -----------------------------
+            // TenantCreditAllocationJob
+            // -----------------------------
+            // Define a unique JobKey for the job
             var tenantCreditAllocationJobKey = new JobKey("TenantCreditAllocationJob");
+
+            // Register the TenantCreditAllocationJob with Quartz
             quartz.AddJob<TenantCreditAllocationJob>(opts => opts.WithIdentity(tenantCreditAllocationJobKey));
 
+            // Define a trigger for the job to run daily at 12:00 AM UTC
             quartz.AddTrigger(opts => opts
                 .ForJob(tenantCreditAllocationJobKey)
                 .WithIdentity("TenantCreditAllocationJob-trigger")
                 .StartNow()
-                .WithCronSchedule("0 0 0 * * ? *", x => x.InTimeZone(TimeZoneInfo.Utc)) // Runs daily at 12:00 AM UTC
-                .WithDescription("Trigger for Tenant Credit Update Job - Runs at 12:00 AM UTC daily"));
+                .WithCronSchedule("0 0 0 * * ? *", x => x.InTimeZone(TimeZoneInfo.Utc)) // Cron expression: daily at 12:00 AM UTC
+                .WithDescription("Trigger for Tenant Credit Allocation Job - runs daily at 12:00 AM UTC"));
+
+            // -----------------------------
+            // InstanceUsageJob
+            // -----------------------------
+            var instanceUsageJobKey = new JobKey("InstanceUsageJob");
+
+            // Register the InstanceUsageJob with Quartz
+            quartz.AddJob<InstanceUsageJob>(opts => opts.WithIdentity(instanceUsageJobKey));
+
+            // Define a trigger for the job to run daily at 12:30 AM UTC
+            quartz.AddTrigger(opts => opts
+                .ForJob(instanceUsageJobKey)
+                .WithIdentity("InstanceUsageJob-trigger")
+                .StartNow()
+                .WithCronSchedule("0 30 0 * * ? *", x => x.InTimeZone(TimeZoneInfo.Utc)) // Cron expression: daily at 12:30 AM UTC
+                .WithDescription("Trigger for Instance Usage Job - runs daily at 12:30 AM UTC"));
         });
 
-        // Register Quartz hosted service to ensure jobs run in the background
+        // Register Quartz hosted service to run jobs in the background and wait for job completion on shutdown
         services.AddQuartzHostedService(q => q.WaitForJobsToComplete = true);
 
-        // Register the jobs with the DI container so they can be injected
+        // Register job classes with DI container so they can receive dependencies via constructor injection
         services.AddTransient<TenantCreditAllocationJob>();
+        services.AddTransient<InstanceUsageJob>();
     }
 }

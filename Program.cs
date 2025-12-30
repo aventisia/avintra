@@ -147,7 +147,7 @@ app.UseAuthentication();
 
 app.UseAuthorization();
 
-app.UseRateLimiter(); 
+app.UseRateLimiter();
 
 app.UseMiddleware<SessionValidator>();
 
