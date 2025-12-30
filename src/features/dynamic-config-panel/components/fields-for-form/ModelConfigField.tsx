@@ -66,22 +66,30 @@ const ModelConfigField = ({ name }: ModelConfigFieldProps) => {
     name: isByokEnabledFieldName,
     control,
   });
-
-  // 1. Get filtered providers based on BYOK and Specialty
+  // 1. Get filtered providers based on BYOK and Node specialty
   const filteredProviders = useMemo(() => {
+    // eslint-disable-next-line no-debugger
+    debugger
+    const requiredSpecialties = getSpecialtyFromNode(
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      name.replace("__ModelConfig__", "") as any,
+    );
+
     return modelProviders
-      .filter((p) => p.isEnabled !== false) // Only enabled providers
+      .filter((p) => p.isEnabled !== false)
       .map((p) => ({
         ...p,
         models: p.models.filter((m) => {
-          const specialtyMatch =
-            m.specialty ===
-            getSpecialtyFromNode(name.replace("__ModelConfig__", ""));
+          const specialtyMatch = requiredSpecialties.every((req) =>
+            m.specialty.includes(req),
+          );
+
           const availabilityMatch = is_byok_enabled.value ? true : m.available;
+
           return specialtyMatch && availabilityMatch;
         }),
       }))
-      .filter((p) => p.models.length > 0); // Prune empty providers
+      .filter((p) => p.models.length > 0);
   }, [is_byok_enabled.value, name]);
 
   // 2. Get models for the currently selected provider
