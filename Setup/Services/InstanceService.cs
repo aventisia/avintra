@@ -122,7 +122,7 @@ public class InstanceService : IInstanceService
             );
 
             // Call the external API to post the metrics
-            var httpResponse = await httpClient.PostAsync("http://localhost:4004/api/onprem/instance/validate", jsonContent);
+            var httpResponse = await httpClient.PostAsync("https://globaladmin.aventisia.com/api/onprem/instance/validate", jsonContent);
 
             // Check if the response was successful
             if (!httpResponse.IsSuccessStatusCode)
