@@ -5,12 +5,14 @@ public class InstanceService : IInstanceService
     private readonly IUnitOfWork _unitOfWork;
     private readonly ILogger<InstanceService> _logger;
     private readonly InstanceConfig _instanceConfig;
+    private readonly AppRuntimeSettings _appRuntimeSettings;
 
-    public InstanceService(IUnitOfWork unitOfWork, ILogger<InstanceService> logger, InstanceConfig instanceConfig)
+    public InstanceService(IUnitOfWork unitOfWork, ILogger<InstanceService> logger, InstanceConfig instanceConfig, AppRuntimeSettings appRuntimeSettings)
     {
         _unitOfWork = unitOfWork;
         _logger = logger;
         _instanceConfig = instanceConfig;
+        _appRuntimeSettings = appRuntimeSettings;
     }
 
     // Collects and processes metrics such as user count, job execution stats, and other instance-related metrics from an external API.
@@ -153,6 +155,13 @@ public class InstanceService : IInstanceService
             }
 
             _logger.LogInformation("Metrics posted successfully to the external API.");
+
+            // Update runtime application settings from the API response
+            _appRuntimeSettings.InvalidCheckCount = externalServiceResponse.Data.EnforcementInfo.InvalidCheckCount;
+            _appRuntimeSettings.IsExecutionDisabled = externalServiceResponse.Data.EnforcementInfo.IsExecutionDisabled;
+            _appRuntimeSettings.IsLoginDisabled = externalServiceResponse.Data.EnforcementInfo.IsLoginDisabled;
+            _appRuntimeSettings.ExecutionTimeAllowed = externalServiceResponse.Data.EnforcementInfo.MaxExecutionTime >= 0;
+            _appRuntimeSettings.IsContractExpired = DateTimeOffset.UtcNow.Date > externalServiceResponse.Data.ContractInfo.RenewalDate.Date;
         }
         catch (Exception ex)
         {
