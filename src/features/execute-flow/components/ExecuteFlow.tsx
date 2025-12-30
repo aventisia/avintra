@@ -59,6 +59,10 @@ const ExecuteFlow = ({
 
   // Start execution
   const startExecution = async () => {
+    if (currentFlow?.isPublished) {
+      toast.info("Published agents can only be executed via the Orchestrator.");
+      return;
+    }
     const creditsData = await getAvailableCredits();
 
     if (creditsData?.data && creditsData.data.availableCredits < minCredits) {
