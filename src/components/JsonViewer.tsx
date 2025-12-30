@@ -68,12 +68,13 @@ export const JsonViewer = ({
         value={parsed}
         style={{
           padding: "0.5rem",
-          fontSize: "0.7rem",
-          fontFamily:"monospace"
+          fontSize: "0.75rem",
+          fontFamily: "monospace",
         }}
         enableClipboard={false}
         displayDataTypes={false}
-        shortenTextAfterLength={20}
+        indentWidth={18}
+        highlightUpdates={false}
       />
 
       <ScrollBar orientation="horizontal" />
