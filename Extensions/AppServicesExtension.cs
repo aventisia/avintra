@@ -119,6 +119,9 @@ public static class AppServicesExtension
         services.AddScoped<IAITaskService, AITaskService>();
         services.AddScoped<IInstanceService, InstanceService>();
 
+        // Register AppRuntimeSettings as a singleton so that a single instance is shared across the application
+        services.AddSingleton<AppRuntimeSettings>();
+
         // Register Razorpay related services for customer, plan, and subscription management
         services.AddScoped<ICustomerService, CustomerService>();
         services.AddScoped<IPlanService, PlanService>();
