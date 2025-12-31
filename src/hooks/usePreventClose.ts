@@ -18,6 +18,8 @@ export const usePreventClose = (isProcessing: boolean) => {
   }, [isProcessing]);
 
   useEffect(() => {
+    if (import.meta.env.MODE === "production") return;
+
     if (!IS_TAURI) return;
 
     const appWindow = getCurrentWindow();
