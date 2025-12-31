@@ -191,13 +191,13 @@ public static class AppServicesExtension
             // Register the InstanceUsageJob with Quartz
             quartz.AddJob<InstanceUsageJob>(opts => opts.WithIdentity(instanceUsageJobKey));
 
-            // Define a trigger for the job to run daily at 12:30 AM UTC
+            // Define a trigger for the job to run daily at 12:01 AM UTC
             quartz.AddTrigger(opts => opts
                 .ForJob(instanceUsageJobKey)
                 .WithIdentity("InstanceUsageJob-trigger")
                 .StartNow()
-                .WithCronSchedule("0 30 0 * * ? *", x => x.InTimeZone(TimeZoneInfo.Utc)) // Cron expression: daily at 12:30 AM UTC
-                .WithDescription("Trigger for Instance Usage Job - runs daily at 12:30 AM UTC"));
+                .WithCronSchedule("1 0 0 * * ? *", x => x.InTimeZone(TimeZoneInfo.Utc)) // Cron expression: daily at 12:01 AM UTC
+                .WithDescription("Trigger for Instance Usage Job - runs daily at 12:01 AM UTC"));
         });
 
         // Register Quartz hosted service to run jobs in the background and wait for job completion on shutdown
