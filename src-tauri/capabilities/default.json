@@ -11,6 +11,8 @@
     "process:default",
     "store:default",
     "os:default",
+    "core:window:allow-destroy", 
+    "core:window:allow-close",
     {
       "identifier": "shell:allow-execute",
       "allow": [
