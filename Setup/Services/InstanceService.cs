@@ -135,6 +135,8 @@ public class InstanceService : IInstanceService
                     httpResponse.StatusCode,
                     httpResponse.ReasonPhrase
                 );
+                // Update runtime application settings from the API response
+                _appRuntimeSettings.IsLoginDisabled = true;
                 return;
             }
 
