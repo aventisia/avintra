@@ -8,6 +8,7 @@ public class UserRegistrationService : IUserRegistrationService
     private readonly IUnitOfWork _unitOfWork;
     private readonly IAuthHelperService _authHelperService;
     private readonly GeneralConfig _generalConfig;
+    private readonly AppRuntimeSettings _appRuntimeSettings;
     private readonly Guid _userId;
     private readonly Guid _tenantId;
     private readonly string _username;
@@ -19,7 +20,8 @@ public class UserRegistrationService : IUserRegistrationService
         IUnitOfWork unitOfWork,
         IAuthHelperService authHelperService,
         GeneralConfig generalConfig,
-        IHttpContextAccessor httpContextAccessor)
+        IHttpContextAccessor httpContextAccessor,
+        AppRuntimeSettings appRuntimeSettings)
     {
         _userManager = userManager;
         _emailService = emailService;
@@ -32,6 +34,7 @@ public class UserRegistrationService : IUserRegistrationService
         _userId = Guid.Parse(httpContextAccessor.HttpContext?.User?.FindFirstValue("uid") ?? Guid.Empty.ToString());
         _tenantId = Guid.Parse(httpContextAccessor.HttpContext?.User?.FindFirstValue("tntid") ?? Guid.Empty.ToString());
         _username = httpContextAccessor.HttpContext?.User?.FindFirstValue("uname") ?? string.Empty;
+        _appRuntimeSettings = appRuntimeSettings;
     }
 
     // Creates a new account for an individual user (IU) or Aventisia employee.
@@ -46,6 +49,15 @@ public class UserRegistrationService : IUserRegistrationService
 
         try
         {
+            // Check if authentication-related operations are globally disabled.
+            // This can be due to maintenance, security incidents, or temporary administrative restrictions.
+            if (_appRuntimeSettings.IsLoginDisabled)
+            {
+                serviceResponse.StatusCode = 401;
+                serviceResponse.Message = "Authentication services are currently unavailable. Please contact Aventiisia Support for assistance.";
+                return serviceResponse;
+            }
+
             // Get user (Includes Tenant and Roles)
             var user = await _unitOfWork.AccountUserRepo
                     .GetByConditionAsync(w => EF.Functions.ILike(createAccountDto.Email, w.UserName))

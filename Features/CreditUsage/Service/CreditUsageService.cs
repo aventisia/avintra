@@ -5,10 +5,11 @@ public class CreditUsageService : ICreditUsageService
     private readonly IUnitOfWork _unitOfWork;
     private readonly ILogger<CreditUsageService> _logger;
     private readonly DefaultTenantConfig _defaultTenantConfig;
+    private readonly AppRuntimeSettings _appRuntimeSettings;
     private readonly Guid _userId;
     private readonly Guid _tenantId;
 
-    public CreditUsageService(IUnitOfWork unitOfWork, ILogger<CreditUsageService> logger, IHttpContextAccessor httpContextAccessor, DefaultTenantConfig defaultTenantConfig)
+    public CreditUsageService(IUnitOfWork unitOfWork, ILogger<CreditUsageService> logger, IHttpContextAccessor httpContextAccessor, DefaultTenantConfig defaultTenantConfig, AppRuntimeSettings appRuntimeSettings)
     {
         _unitOfWork = unitOfWork;
         _logger = logger;
@@ -19,6 +20,7 @@ public class CreditUsageService : ICreditUsageService
 
         // Extract tenant ID from JWT token claims
         _tenantId = Guid.Parse(httpContextAccessor.HttpContext?.User?.FindFirstValue("tntid") ?? Guid.Empty.ToString());
+        _appRuntimeSettings = appRuntimeSettings;
     }
 
     // Retrieves the credit usage for a given user or service.
@@ -682,6 +684,15 @@ public class CreditUsageService : ICreditUsageService
 
         try
         {
+            // Check if authentication-related operations are globally disabled.
+            // This can be due to maintenance, security incidents, or temporary administrative restrictions.
+            if (_appRuntimeSettings.IsLoginDisabled)
+            {
+                serviceResponse.StatusCode = 401;
+                serviceResponse.Message = "Authentication services are currently unavailable. Please contact Aventiisia Support for assistance.";
+                return serviceResponse;
+            }
+
             // Log the start of the credit retrieval process
             _logger.LogInformation("Starting credit retrieval for user: {UserId}", _userId);
 

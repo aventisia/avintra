@@ -11,7 +11,7 @@ public class AuthService : IAuthService
     private readonly ILogger<AuthService> _logger;
     private readonly IUnitOfWork _unitOfWork;
     private readonly IAuthHelperService _authHelperService;
-    private readonly DefaultTenantConfig _defaultTenantConfig;
+    private readonly AppRuntimeSettings _appRuntimeSettings;
 
     public AuthService(
         UserManager<AccountUser> userManager,
@@ -23,7 +23,7 @@ public class AuthService : IAuthService
         IdentityConfig identityConfig,
         JwtConfig jwtConfig,
         VerificationCodeConfig verificationCodeConfig,
-        DefaultTenantConfig defaultTenantConfig)
+        AppRuntimeSettings appRuntimeSettings)
     {
         _userManager = userManager;
         _emailService = emailService;
@@ -34,7 +34,7 @@ public class AuthService : IAuthService
         _identityConfig = identityConfig;
         _jwtConfig = jwtConfig;
         _verificationCodeConfig = verificationCodeConfig;
-        _defaultTenantConfig = defaultTenantConfig;
+        _appRuntimeSettings = appRuntimeSettings;
     }
 
     // Checks the availability of a email.
@@ -121,6 +121,14 @@ public class AuthService : IAuthService
 
         try
         {
+            // Check if authentication-related operations are globally disabled.
+            // This can be due to maintenance, security incidents, or temporary administrative restrictions.
+            if (_appRuntimeSettings.IsLoginDisabled)
+            {
+                serviceResponse.StatusCode = 401;
+                serviceResponse.Message = "Authentication services are currently unavailable. Please contact Aventiisia Support for assistance.";
+                return serviceResponse;
+            }
             // Try to get user (Includes Tenant and Roles)
             var user = await _unitOfWork.AccountUserRepo
                     .GetByConditionAsync(w => EF.Functions.ILike(emailDto.Email, w.UserName))

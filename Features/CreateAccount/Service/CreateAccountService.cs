@@ -9,6 +9,7 @@ public class CreateAccountService : ICreateAccountService
     private readonly IUnitOfWork _unitOfWork;
     private readonly IAuthHelperService _authHelperService;
     private readonly GeneralConfig _generalConfig;
+    private readonly AppRuntimeSettings _appRuntimeSettings;
 
     public CreateAccountService(
         UserManager<AccountUser> userManager,
@@ -16,7 +17,8 @@ public class CreateAccountService : ICreateAccountService
         ILogger<CreateAccountService> logger,
         IUnitOfWork unitOfWork,
         IAuthHelperService authHelperService,
-        GeneralConfig generalConfig)
+        GeneralConfig generalConfig,
+        AppRuntimeSettings appRuntimeSettings)
     {
         _userManager = userManager;
         _emailService = emailService;
@@ -24,6 +26,7 @@ public class CreateAccountService : ICreateAccountService
         _unitOfWork = unitOfWork;
         _authHelperService = authHelperService;
         _generalConfig = generalConfig;
+        _appRuntimeSettings = appRuntimeSettings;
     }
 
     // Creates a new account for an individual user (IU) or Aventisia employee.
@@ -38,6 +41,14 @@ public class CreateAccountService : ICreateAccountService
 
         try
         {
+            // Check if authentication-related operations are globally disabled.
+            // This can be due to maintenance, security incidents, or temporary administrative restrictions.
+            if (_appRuntimeSettings.IsLoginDisabled)
+            {
+                serviceResponse.StatusCode = 401;
+                serviceResponse.Message = "Authentication services are currently unavailable. Please contact Aventiisia Support for assistance.";
+                return serviceResponse;
+            }
             // Get user (Includes Tenant and Roles)
             var user = await _unitOfWork.AccountUserRepo
                     .GetByConditionAsync(w => EF.Functions.ILike(createAccountDto.Email, w.UserName))
