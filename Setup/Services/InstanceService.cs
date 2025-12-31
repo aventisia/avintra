@@ -6,13 +6,15 @@ public class InstanceService : IInstanceService
     private readonly ILogger<InstanceService> _logger;
     private readonly InstanceConfig _instanceConfig;
     private readonly AppRuntimeSettings _appRuntimeSettings;
+    private readonly HttpClientUrlConfig _httpClientUrlConfig;
 
-    public InstanceService(IUnitOfWork unitOfWork, ILogger<InstanceService> logger, InstanceConfig instanceConfig, AppRuntimeSettings appRuntimeSettings)
+    public InstanceService(IUnitOfWork unitOfWork, ILogger<InstanceService> logger, InstanceConfig instanceConfig, AppRuntimeSettings appRuntimeSettings, HttpClientUrlConfig httpClientUrlConfig)
     {
         _unitOfWork = unitOfWork;
         _logger = logger;
         _instanceConfig = instanceConfig;
         _appRuntimeSettings = appRuntimeSettings;
+        _httpClientUrlConfig = httpClientUrlConfig;
     }
 
     // Collects and processes metrics such as user count, job execution stats, and other instance-related metrics from an external API.
@@ -49,7 +51,7 @@ public class InstanceService : IInstanceService
             // Fetch metrics from the external API
             HttpResponseMessage httpResponse = await RequestExternalAPIUtil.RequestExternalAPI(
                 CrudTypesEnum.Read,
-                $"http://localhost:4001/api/project/usage",
+                $"{_httpClientUrlConfig.WorkspaceApisBaseUrl}/project/usage",
                 null);
 
             // Handle unsuccessful API response
@@ -124,7 +126,7 @@ public class InstanceService : IInstanceService
             );
 
             // Call the external API to post the metrics
-            var httpResponse = await httpClient.PostAsync("https://globaladmin.aventisia.com/api/onprem/instance/validate", jsonContent);
+            var httpResponse = await httpClient.PostAsync($"{_httpClientUrlConfig.GlobalAdminApisBaseUrl}/onprem/instance/validate", jsonContent);
 
             // Check if the response was successful
             if (!httpResponse.IsSuccessStatusCode)
