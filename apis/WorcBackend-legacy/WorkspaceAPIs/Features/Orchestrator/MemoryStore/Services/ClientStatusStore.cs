@@ -1,0 +1,124 @@
+using System.Collections.Concurrent;
+
+namespace WorkspaceAPIs.Services;
+
+public class ClientStatusStore : IClientStatusStore
+{
+    // Thread-safe dictionary to store client statuses, with the clientId as the key.
+    private readonly ConcurrentDictionary<Guid, ClientDataStore> ClientStore = new ConcurrentDictionary<Guid, ClientDataStore>();
+
+    // Adds or updates the client's status in the store.
+    public Task AddOrUpdateStatusAsync(ClientDataStore clientDataStore)
+    {
+        // Set the last seen timestamp to the current time (UTC).
+        clientDataStore.LastSeen = DateTimeOffset.UtcNow;
+
+        // Add or update the client status in the dictionary using clientId as the key.
+        ClientStore.AddOrUpdate(
+            clientDataStore.ClientId,
+            clientDataStore,
+            (_, existing) =>
+            {
+                // Update the existing client status.
+                existing.ConnectionId = clientDataStore.ConnectionId;
+                existing.TenantId = clientDataStore.TenantId;
+                existing.ClientId = clientDataStore.ClientId;
+                existing.Type = clientDataStore.Type;
+                existing.Status = clientDataStore.Status;
+                existing.LastSeen = clientDataStore.LastSeen;
+                return existing;
+            });
+
+        return Task.CompletedTask;
+    }
+
+    // Removes a client from the store by its connection identifier (we'll update this to use clientId).
+    public Task RemoveClientByConnectionAsync(string connectionId)
+    {
+        // Find the client by its connection ID.
+        var clientToRemove = ClientStore.Values
+            .FirstOrDefault(c => c.ConnectionId == connectionId);
+
+        // If found, remove the client from the store.
+        if (clientToRemove != null)
+        {
+            ClientStore.TryRemove(clientToRemove.ClientId, out _);
+        }
+
+        return Task.CompletedTask;
+    }
+
+    // Retrieves the status of a client by their client ID.
+    public Task<ClientDataStore?> GetStatusByConnectionIdAsync(string connectionId)
+    {
+        // Find the client by its connection ID.
+        var clientData = ClientStore.Values
+            .FirstOrDefault(c => c.ConnectionId == connectionId);
+
+        // Return the client status by clientId if found.
+        if (clientData != null && ClientStore.TryGetValue(clientData.ClientId, out var clientDataStore))
+        {
+            return Task.FromResult<ClientDataStore?>(clientDataStore);
+        }
+
+        // Return null if no client found with the given connection ID.
+        return Task.FromResult<ClientDataStore?>(null);
+    }
+    
+    // Retrieves the status of a client by their client ID.
+    public Task<ClientDataStore?> GetStatusByClientIdAsync(Guid clientId)
+    {
+        // Find the client by its client ID.
+        if (ClientStore.TryGetValue(clientId, out var clientDataStore))
+        {
+            // Return the client status if found.
+            return Task.FromResult<ClientDataStore?>(clientDataStore);
+        }
+
+        // Return null if no client found with the given client ID.
+        return Task.FromResult<ClientDataStore?>(null);
+    }
+
+    // Retrieves a list of machine clients for a specific tenant.
+    public Task<IEnumerable<ClientDataStore>> GetMachineStatusesAsync(Guid tenantId)
+    {
+        var machines = ClientStore.Values
+            .Where(w => w.TenantId == tenantId && w.Type == ClientTypesEnum.WorcMachine)
+            .ToList();
+
+        return Task.FromResult<IEnumerable<ClientDataStore>>(machines);
+    }
+
+    // Retrieves a client based on the unique client identifier (clientId) for the WorcMachine type.
+    public Task<ClientDataStore?> GetClientByIdAsync(Guid clientId)
+    {
+        var machine = ClientStore.Values
+            .FirstOrDefault(w => w.ClientId == clientId && w.Type == ClientTypesEnum.WorcMachine);
+
+        return Task.FromResult<ClientDataStore?>(machine);
+    }
+
+    // Retrieves a list of user clients for a specific tenant.
+    public Task<IEnumerable<ClientDataStore>> GetUserStatusesAsync(Guid tenantId)
+    {
+        var users = ClientStore.Values
+            .Where(c => c.TenantId == tenantId &&
+                (c.Type == ClientTypesEnum.WebBrowser || c.Type == ClientTypesEnum.WorcDesktopApp))
+            .ToList();
+
+        return Task.FromResult<IEnumerable<ClientDataStore>>(users);
+    }
+
+    // Updates the status of a client by their clientId.
+    public Task UpdateClientStatusAsync(ClientDataStore clientDataStore)
+    {
+        // Attempt to find and update the client's status by clientId.
+        if (ClientStore.TryGetValue(clientDataStore.ClientId, out var existingClient))
+        {
+            existingClient.Status = clientDataStore.Status;
+            existingClient.LastSeen = DateTimeOffset.UtcNow;
+        }
+
+        return Task.CompletedTask;
+    }
+}

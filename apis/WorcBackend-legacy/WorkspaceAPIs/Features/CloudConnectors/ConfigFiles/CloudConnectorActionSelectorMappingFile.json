@@ -1,0 +1,178 @@
+[
+  {
+    "label": "Data Transformations",
+    "description": "Clean, transform, and structure your data with ease",
+    "icon": "DataTransformationsIcon",
+    "img": null,
+    "actionCategories": []
+  },
+  {
+    "label": "UI Interface Automations",
+    "description": "Automate your desktop with actions that mimic user interactions, from mouse clicks to keyboard entries",
+    "icon": "UIAutomationAndUserActionsIcon",
+    "img": null,
+    "actionCategories": []
+  },
+  {
+    "label": "App Integrations",
+    "description": "Seamlessly integrate with apps and services such as Twilio, Slack, and more",
+    "icon": "AppIntegrationsIcon",
+    "img": null,
+    "actionCategories": [
+      {
+        "label": "SendGrid",
+        "description": "Send, receive, and manage emails.",
+        "icon": null,
+        "img": "/assets/SendGrid.svg",
+        "listType": null,
+        "actions": [
+          {
+            "type": "cloudConnectorNode",
+            "name": "SendGrid/SendEmailThroughSendGridConnector",
+            "label": "Send email",
+            "description": "Sends an email using SendGrid's API.",
+            "docsLink": "https://docs.aventisia.com",
+            "icon": null,
+            "img": "/assets/SendGrid.svg"
+          }
+        ]
+      },
+      {
+        "label": "M365",
+        "description": "Work with Microsoft 365 services",
+        "icon": null,
+        "img": "/assets/M365.svg",
+        "listType": null,
+        "actions": [
+          {
+            "type": "cloudConnectorNode",
+            "name": "M365/GetFileDriveAndItemIdConnector",
+            "label": "Get file's Drive and Item ID",
+            "description": "Retrieves the Drive ID and Item ID of a file stored in OneDrive or SharePoint.",
+            "docsLink": "https://docs.aventisia.com",
+            "icon": null,
+            "img": "/assets/M365.svg"
+          }
+        ]
+      },
+      {
+        "label": "M365 Excel",
+        "description": "Read and write data to Excel files stored in OneDrive or SharePoint.",
+        "icon": null,
+        "img": "/assets/M365.svg",
+        "listType": null,
+        "actions": [
+          {
+            "type": "cloudConnectorNode",
+            "name": "M365/Excel/AddNewWorksheetConnector",
+            "label": "Add new worksheet",
+            "description": "Adds a new worksheet to an Excel file stored in OneDrive or SharePoint.",
+            "docsLink": "https://docs.aventisia.com",
+            "icon": null,
+            "img": "/assets/M365.svg"
+          },
+          {
+            "type": "cloudConnectorNode",
+            "name": "M365/Excel/GetWorksheetNamesConnector",
+            "label": "Get worksheet names",
+            "description": "Retrieves the list of worksheet names from an Excel file stored in OneDrive or SharePoint.",
+            "docsLink": "https://docs.aventisia.com",
+            "icon": null,
+            "img": "/assets/M365.svg"
+          },
+          {
+            "type": "cloudConnectorNode",
+            "name": "M365/Excel/ReadValueFromRangeConnector",
+            "label": "Read value from range",
+            "description": "Reads one or more values from a specified range in a worksheet of an Excel file stored in OneDrive or SharePoint.",
+            "docsLink": "https://docs.aventisia.com",
+            "icon": null,
+            "img": "/assets/M365.svg"
+          },
+          {
+            "type": "cloudConnectorNode",
+            "name": "M365/Excel/WriteValueToRangeConnector",
+            "label": "Write value to range",
+            "description": "Writes one or more values to a specified range in a worksheet of an Excel file stored in OneDrive or SharePoint.",
+            "docsLink": "https://docs.aventisia.com",
+            "icon": null,
+            "img": "/assets/M365.svg"
+          },
+          {
+            "type": "cloudConnectorNode",
+            "name": "M365/Excel/RenameWorksheetConnector",
+            "label": "Rename Worksheet",
+            "description": "Rename worksheet of an Excel file stored in OneDrive or SharePoint.",
+            "docsLink": "https://docs.aventisia.com",
+            "icon": null,
+            "img": "/assets/M365.svg"
+          },
+          {
+            "type": "cloudConnectorNode",
+            "name": "M365/Excel/DeleteWorksheetConnector",
+            "label": "Delete Worksheet",
+            "description": "Delete worksheet of an Excel file stored in OneDrive or SharePoint.",
+            "docsLink": "https://docs.aventisia.com",
+            "icon": null,
+            "img": "/assets/M365.svg"
+          },
+          {
+            "type": "cloudConnectorNode",
+            "name": "M365/Excel/SetColorInExcelWorksheetConnector",
+            "label": "Set Color In Excel Worksheet",
+            "description": "Set color in excel worksheet of an Excel file stored in OneDrive or SharePoint.",
+            "docsLink": "https://docs.aventisia.com",
+            "icon": null,
+            "img": "/assets/M365.svg"
+          },
+          {
+            "type": "cloudConnectorNode",
+            "name": "M365/Excel/LookupRangeInExcelWorksheetConnector",
+            "label": "Lookup Range In Excel Worksheet",
+            "description": "Lookup Range In Excel Worksheet of an Excel file stored in OneDrive or SharePoint.",
+            "docsLink": "https://docs.aventisia.com",
+            "icon": null,
+            "img": "/assets/M365.svg"
+          },
+          {
+            "type": "cloudConnectorNode",
+            "name": "M365/Excel/SelectRangeInExcelWorksheetConnector",
+            "label": "Select Range In Excel Worksheet",
+            "description": "Select range in excel worksheet of an Excel file stored in OneDrive or SharePoint.",
+            "docsLink": "https://docs.aventisia.com",
+            "icon": null,
+            "img": "/assets/M365.svg"
+          }
+
+        ]
+      },
+      {
+        "label": "Twilio",
+        "description": "Work with Twilio services",
+        "icon": null,
+        "img": "/assets/Twilio.svg",
+        "listType": null,
+        "actions": [
+            {
+              "type": "cloudConnectorNode",
+              "name": "Twilio/SendTextSmsConnector",
+              "label": "Send Text Sms",
+              "description": "Send text message using an twilio service ",
+              "docsLink": "https://docs.aventisia.com",
+              "icon": null,
+              "img": "/assets/Twilio.svg"
+            },
+            {
+              "type": "cloudConnectorNode",
+              "name": "Twilio/SendWhatsappMessageConnector",
+              "label": "Send Whatsapp Message",
+              "description": "Send whatsapp message using an twilio service ",
+              "docsLink": "https://docs.aventisia.com",
+              "icon": null,
+               "img": "/assets/Twilio.svg"
+            }         
+          ]
+      }
+    ]
+  }
+]

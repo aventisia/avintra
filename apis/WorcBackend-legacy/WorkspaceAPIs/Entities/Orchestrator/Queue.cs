@@ -1,0 +1,75 @@
+namespace WorkspaceAPIs.Entities;
+
+/// <summary>
+/// Represents an entity that holds data related to a queue.
+/// </summary>
+[Table("Queues")]
+public class Queue : BaseEntity, IMustHaveTenant
+{
+    /// <summary>
+    /// Gets or sets the unique identifier for the tenant, used for global filtering in a multi-tenant architecture.
+    /// </summary>
+    public Guid TenantId { get; set; }
+
+    /// <summary>
+    /// Gets or sets the name of the queue.
+    /// This is a required field with a maximum length of 256 characters.
+    /// </summary>
+    [MaxLength(256)]
+    public required string Name { get; set; }
+
+    /// <summary>
+    /// Gets or sets the description of the queue.
+    /// This field is optional and can contain a maximum of 500 characters.
+    /// </summary>
+    [MaxLength(500)]
+    public string? Description { get; set; }
+
+    /// <summary>
+    /// Gets or sets a value indicating whether to enforce unique references in the queue.
+    /// </summary>
+    public bool IsUniqueReferencesEnforced { get; set; }
+
+    /// <summary>
+    /// Gets or sets a value indicating whether to store items in encrypted format.
+    /// </summary>
+    public bool IsStoredEncrypted { get; set; }
+
+    /// <summary>
+    /// Gets or sets a value indicating whether to retry processing failed items.
+    /// </summary>
+    public bool ShouldRetryFailedItems { get; set; }
+
+    /// <summary>
+    /// Gets or sets a value indicating whether to retry processing abandoned items.
+    /// </summary>
+    public bool ShouldRetryAbandonedItems { get; set; }
+
+    /// <summary>
+    /// Gets or sets the maximum number of retry attempts for processing items.
+    /// This value must be non-negative.
+    /// </summary>
+    [Required]
+    [Range(0, int.MaxValue)]
+    public int MaximumRetryAttempts { get; set; }
+
+    /// <summary>
+    /// Gets or sets the input data schema in JSON format.
+    /// </summary>
+    public string? InputSchema { get; set; }
+
+    /// <summary>
+    /// Gets or sets the output data schema in JSON format.
+    /// </summary>
+    public string? OutputSchema { get; set; }
+
+    /// <summary>
+    /// Configures the many-to-many relationship between queue transactions and queues.
+    /// </summary>
+    public virtual ICollection<QueueTransaction>? QueueTransactions { get; set; }
+
+    /// <summary>
+    /// Configures the many-to-many relationship between machine flow and flow versions.
+    /// </summary>   
+    public virtual ICollection<QueueFlowVersion>? QueueFlowVersions { get; set; }
+}

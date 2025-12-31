@@ -1,0 +1,51 @@
+{
+  "name": "ReadValueFromRange",
+  "description": "Reads one or more values from a specified range in a worksheet of an Excel file stored in OneDrive or SharePoint using the Microsoft 365 Excel API. Provide valid M365 credentials, the target Excel file's Drive and Item ID, worksheet name, and range address. The connector will return the values read from the specified range, along with the status code and message from the API.",
+  "version": "1.0.0",
+  "author": "@gaurav",
+  "fields": [
+    {
+      "direction": "Input",
+      "type": "credentials-select",
+      "name": "__CredentialId__M365",
+      "label": "M365 Excel API Credential",
+      "description": "Credential for authenticating with Microsoft 365 Excel API (requires tenant ID, client ID, and client secret).",
+      "defaultValue": ""
+    },
+    {
+      "direction": "Input",
+      "type": "text",
+      "name": "DriveAndItemId",
+      "label": "Excel File (Drive and Item ID)",
+      "description": "The Drive ID and Item ID of the Excel file in OneDrive or SharePoint to read the value from. Format: driveId/items/itemId.",
+      "defaultValue": ""
+    },
+    {
+      "direction": "Input",
+      "type": "text",
+      "name": "WorksheetName",
+      "label": "Worksheet Name",
+      "description": "The name of the worksheet in the Excel file to read the value from (e.g., 'Sheet1').",
+      "defaultValue": "Sheet1"
+    },
+    {
+      "direction": "Input",
+      "type": "text",
+      "name": "RangeAddress",
+      "label": "Range Address",
+      "description": "The address of the range in the worksheet to read the value from (e.g., 'A1' or 'A1:B10').",
+      "defaultValue": "A1"
+    },
+    {
+      "direction": "Output",
+      "type": "config-panel-output",
+      "name": "Result",
+      "label": "Read Result",
+      "description": "Returns the value(s) read from the specified range in the worksheet.",
+      "defaultValue": {
+        "value": "Result",
+        "enabled": true
+      }
+    }
+  ]
+}

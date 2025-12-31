@@ -1,0 +1,51 @@
+{
+    "name": "SendTextSms",
+    "description": "Sends an SMS using Twilio service",
+    "version": "1.0.0",
+    "author": "@gaurav",
+    "fields": [
+      {
+        "direction": "Input",
+        "type": "credentials-select",
+        "name": "__CredentialId__Twilio",
+        "label": "Twilio Credential",
+        "description": "The Twilio credential containing valid auth token and accountsId which is used to authenticate API requests.",
+        "defaultValue": ""
+      },
+      {
+        "direction": "Input",
+        "type": "text",
+        "name": "FromPhoneNumber",
+        "label": "From Phone Number",
+        "description": "The phone number to send the message from (Twilio number).",
+        "defaultValue": ""
+      },
+      {
+        "direction": "Input",
+        "type": "text",
+        "name": "ToNumber",
+        "label": "To Number",
+        "description": "The phone number to send the message to the number (Twilio number).",
+        "defaultValue": ""
+      },
+      {
+        "direction": "Input",
+        "type": "text",
+        "name": "MessageBody",
+        "label": "Message Body",
+        "description": "The body of the SMS message.",
+        "defaultValue": ""
+      },
+      {
+        "direction": "Output",
+        "type": "config-panel-output",
+        "name": "Result",
+        "label": "Result",
+        "description": "Returns the response data from twilio after sending the text sms.",
+        "defaultValue": {
+          "value": "Result",
+          "enabled": true
+        }
+      }
+    ]
+}

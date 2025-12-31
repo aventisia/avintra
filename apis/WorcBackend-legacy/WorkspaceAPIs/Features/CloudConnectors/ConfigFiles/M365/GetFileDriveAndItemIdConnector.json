@@ -1,0 +1,35 @@
+{
+  "name": "GetFileDriveAndItemId",
+  "description": "Retrieves the Drive ID and Item ID for a specified file in OneDrive or SharePoint using the Microsoft 365 API. Provide valid M365 credentials and the file URL. The connector will return the Drive ID and Item ID, along with the status code and message from the API.",
+  "version": "1.0.0",
+  "author": "@gaurav",
+  "fields": [
+    {
+      "direction": "Input",
+      "type": "credentials-select",
+      "name": "__CredentialId__M365",
+      "label": "M365 Credential",
+      "description": "The M365 credential containing valid tenant ID, client ID, and client secret which is used to authenticate API requests.",
+      "defaultValue": ""
+    },
+    {
+      "direction": "Input",
+      "type": "text",
+      "name": "FileUrl",
+      "label": "File URL",
+      "description": "The URL of the file in OneDrive or SharePoint.",
+      "defaultValue": ""
+    },
+    {
+      "direction": "Output",
+      "type": "config-panel-output",
+      "name": "Result",
+      "label": "Result",
+      "description": "Returns the Drive ID and Item ID of the specified file.",
+      "defaultValue": {
+        "value": "Result",
+        "enabled": true
+      }
+    }
+  ]
+}

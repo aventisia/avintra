@@ -1,0 +1,22 @@
+namespace WorkspaceAPIs.Enums;
+
+/// <summary>
+/// Defines the types of project templates available in the workspace.
+/// </summary>
+public enum ProjectTemplateTypesEnum
+{
+    /// <summary>
+    /// A project template managed by an agent.
+    /// </summary>
+    Agent,
+
+    /// <summary>
+    /// A modular or block-based project template.
+    /// </summary>
+    Block,
+
+    /// <summary>
+    /// A general AI-driven project template not specific to agents or block structures.
+    /// </summary>
+    AIProject
+}

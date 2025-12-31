@@ -1,0 +1,35 @@
+{
+  "name": "GetWorksheetNames",
+  "description": "Retrieves the list of worksheet names from a specified Excel file stored in OneDrive or SharePoint using the Microsoft 365 Excel API. Provide valid M365 credentials and the target Excel file's Drive and Item ID. The connector will return the worksheet names, along with the status code and message from the API.",
+  "version": "1.0.0",
+  "author": "@gaurav",
+  "fields": [
+    {
+      "direction": "Input",
+      "type": "credentials-select",
+      "name": "__CredentialId__M365",
+      "label": "M365 Excel API Credential",
+      "description": "Credential for authenticating with Microsoft 365 Excel API (requires tenant ID, client ID, and client secret).",
+      "defaultValue": ""
+    },
+    {
+      "direction": "Input",
+      "type": "text",
+      "name": "DriveAndItemId",
+      "label": "Excel File (Drive and Item ID)",
+      "description": "The Drive ID and Item ID of the Excel file in OneDrive or SharePoint to retrieve worksheet names from. Format: driveId/items/itemId.",
+      "defaultValue": ""
+    },
+    {
+      "direction": "Output",
+      "type": "config-panel-output",
+      "name": "Result",
+      "label": "Worksheet Names Result",
+      "description": "Returns the list of worksheet names from the specified Excel file.",
+      "defaultValue": {
+        "value": "Result",
+        "enabled": true
+      }
+    }
+  ]
+}
