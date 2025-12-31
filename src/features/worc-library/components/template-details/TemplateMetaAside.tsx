@@ -51,12 +51,14 @@ export function TemplateMetaAside({ template }: { template: UseTemplateDTO }) {
           </div>
           <Separator />
           <div className="flex flex-wrap gap-2">
-            {template.icons?.length ? (
-              template.icons.map((icon, idx) => (
-                <div key={icon || idx} className="rounded-lg bg-accent p-2">
-                  <img src={icon} alt="icon" className="h-6 w-6" />
-                </div>
-              ))
+            {template?.icons?.length ? (
+              template?.icons
+                ?.filter((icon) => icon !== "/function.png")
+                .map((icon, idx) => (
+                  <div key={icon || idx} className="rounded-lg bg-accent p-2">
+                    <img src={icon} alt="icon" className="h-6 w-6" />
+                  </div>
+                ))
             ) : (
               // Fallback icon
               <div className="rounded-lg bg-accent p-2">
