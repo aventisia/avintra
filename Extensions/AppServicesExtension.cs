@@ -118,7 +118,6 @@ public static class AppServicesExtension
         services.AddScoped<IPaymentTrackerService, PaymentTrackerService>();
         services.AddScoped<IAITaskService, AITaskService>();
         services.AddScoped<IInstanceService, InstanceService>();
-        services.AddScoped<IHostedService, InstanceUsageStartupService>();
 
         // Register AppRuntimeSettings as a singleton so that a single instance is shared across the application
         services.AddSingleton<AppRuntimeSettings>();
