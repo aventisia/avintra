@@ -97,6 +97,14 @@ export function TemplateHeader({ template }: { template: UseTemplateDTO }) {
                   "AI Model",
                 )}
               </Badge>
+              <Badge
+                variant="outline"
+                className="flex items-center gap-1 bg-slate-100"
+              >
+                <Tag className="h-3 w-3" />
+
+                {template?.accessType == "Public" ? "Public" : "Tenant"}
+              </Badge>
 
               {/* Tags */}
               {template?.tags
