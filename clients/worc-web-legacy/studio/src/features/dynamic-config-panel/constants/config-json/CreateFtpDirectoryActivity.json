@@ -1,0 +1,32 @@
+{
+  "name": "CreateFtpDirectory",
+  "label": "Create FTP Directory",
+  "discription": "Creates a directory on an FTP server.",
+  "version": "1.0.0",
+  "auther": "@aventisia",
+  "supportedPlatforms": [
+    "desktop"
+  ],
+  "errorHandling": "standard",
+  "testScreenType": "standard",
+  "fields": [
+    {
+      "direction": "Input",
+      "type": "text",
+      "name": "FtpConnection",
+      "label": "FTP Connection",
+      "description": "The FTP connection object.",
+      "defaultValue": "",
+      "required": true
+    },
+    {
+      "direction": "Input",
+      "type": "text",
+      "name": "DirectoryName",
+      "label": "Directory Name",
+      "description": "The name of the directory to create.",
+      "defaultValue": "",
+      "required": true
+    }
+  ]
+}

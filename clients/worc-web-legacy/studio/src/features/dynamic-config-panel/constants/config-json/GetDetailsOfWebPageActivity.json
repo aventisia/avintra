@@ -1,0 +1,76 @@
+{
+  "name": "GetDetailsOfWebPage",
+  "label": "Get Details of Web Page",
+  "discription": "Retrieves specific information about a web page such as title, description, URL, or source code.",
+  "version": "1.0.0",
+  "auther": "@aventisia",
+  "supportedPlatforms": [
+    "desktop"
+  ],
+  "errorHandling": "standard",
+  "testScreenType": "standard",
+  "fields": [
+    {
+      "direction": "Input",
+      "type": "text",
+      "name": "WebBrowserInstance",
+      "label": "Web Browser Instance",
+      "description": "Enter or choose the variable that contains the web browser instance to work with.",
+      "defaultValue": "",
+      "required": true
+    },
+    {
+      "direction": "Input",
+      "type": "select",
+      "name": "DetailType",
+      "label": "Detail Type",
+      "description": "Specifies which detail to retrieve from the web page.",
+      "defaultValue": "WebPageTitle",
+      "required": true,
+      "selectOptions": [
+        {
+          "label": "Web Page Description",
+          "value": "WebPageDescription",
+          "description": "Gets the meta description of the web page."
+        },
+        {
+          "label": "Web Page Meta Keywords",
+          "value": "WebPageMetaKeywords",
+          "description": "Gets the meta keywords of the web page."
+        },
+        {
+          "label": "Web Page Title",
+          "value": "WebPageTitle",
+          "description": "Gets the title of the web page."
+        },
+        {
+          "label": "Web Page Text",
+          "value": "WebPageText",
+          "description": "Gets the visible text content of the web page."
+        },
+        {
+          "label": "Web Page Source",
+          "value": "WebPageSource",
+          "description": "Gets the full HTML source of the web page."
+        },
+        {
+          "label": "Current URL Address",
+          "value": "CurrentUrlAddress",
+          "description": "Gets the current URL address of the browser."
+        }
+      ]
+    },
+    {
+      "direction": "Output",
+      "type": "config-panel-output",
+      "name": "OWebPagePropertyOutput",
+      "label": "Web Page Property",
+      "description": "The value retrieved from the web page based on the selected detail type.",
+      "defaultValue": {
+        "value": "OWebPagePropertyOutput",
+        "enabled": true
+      },
+      "required": false
+    }
+  ]
+}

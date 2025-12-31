@@ -1,0 +1,117 @@
+{
+  "name": "SendTextSms",
+  "label": "Send SMS (Twilio)",
+  "discription": "Sends an SMS using Twilio service.",
+  "version": "1.0.0",
+  "auther": "@aventisia",
+  "supportedPlatforms": [
+    "desktop"
+  ],
+  "errorHandling": "standard",
+  "testScreenType": "standard",
+  "fields": [
+    {
+      "direction": "Input",
+      "type": "text",
+      "name": "AccountSid",
+      "label": "Account SID",
+      "description": "Twilio Account SID",
+      "defaultValue": "",
+      "required": true
+    },
+    {
+      "direction": "Input",
+      "type": "text",
+      "name": "AuthToken",
+      "label": "Auth Token",
+      "description": "Twilio Auth Token",
+      "defaultValue": "",
+      "required": true
+    },
+    {
+      "direction": "Input",
+      "type": "select",
+      "name": "SenderType",
+      "label": "Sender Type",
+      "description": "Choose whether to send from a Phone Number or Messaging Service.",
+      "defaultValue": "",
+      "required": true,
+      "selectOptions": [
+        {
+          "label": "Phone Number",
+          "value": "PhoneNumber",
+          "description": "Send SMS using a specific phone number."
+        },
+        {
+          "label": "Messaging Service",
+          "value": "MessagingService",
+          "description": "Send SMS using a Twilio Messaging Service."
+        }
+      ]
+    },
+    {
+      "direction": "Input",
+      "type": "text",
+      "name": "FromPhoneNumber",
+      "label": "From Phone Number",
+      "description": "The phone number to send the message from (Twilio number).",
+      "defaultValue": "",
+      "required": false,
+      "renderIf": {
+        "conditions": [
+          {
+            "field": "SenderType",
+            "equals": "PhoneNumber"
+          }
+        ]
+      }
+    },
+    {
+      "direction": "Input",
+      "type": "text",
+      "name": "MessagingServiceSid",
+      "label": "Messaging Service SID",
+      "description": "Select a Messaging Service to send the message from.",
+      "defaultValue": "",
+      "required": false,
+      "renderIf": {
+        "conditions": [
+          {
+            "field": "SenderType",
+            "equals": "MessagingService"
+          }
+        ]
+      }
+    },
+    {
+      "direction": "Input",
+      "type": "text",
+      "name": "ToNumber",
+      "label": "To Number",
+      "description": "The phone number to send the message to",
+      "defaultValue": "",
+      "required": true
+    },
+    {
+      "direction": "Input",
+      "type": "text",
+      "name": "MessageBody",
+      "label": "Message Body",
+      "description": "The body/content of the SMS message",
+      "defaultValue": "",
+      "required": true
+    },
+    {
+      "direction": "Output",
+      "type": "config-panel-output",
+      "name": "Result",
+      "label": "Result Output",
+      "description": "Output result: Success or Error message",
+      "defaultValue": {
+        "value": "Result",
+        "enabled": true
+      },
+      "required": false
+    }
+  ]
+}

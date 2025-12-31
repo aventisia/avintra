@@ -1,0 +1,59 @@
+{
+  "name": "FillUltraTaxForm",
+  "label": "Fill UltraTax Form",
+  "discription": "Fill an UltraTax CS form by inspecting UI elements and mapping them to a JSON content",
+  "version": "1.0.0",
+  "auther": "@aventisia",
+  "supportedPlatforms": [
+    "desktop"
+  ],
+  "errorHandling": "standard",
+  "testScreenType": "standard",
+  "fields": [
+    {
+      "direction": "Input",
+      "type": "text",
+      "name": "IdentificationObjectPath",
+      "label": "Form Element",
+      "description": "The form element to inspect.",
+      "defaultValue": "",
+      "required": true
+    },
+    {
+      "direction": "Input",
+      "type": "text",
+      "name": "MaxWaitTime",
+      "label": "Max Wait Time (seconds)",
+      "description": "Maximum time to wait to find the form element (in seconds).",
+      "defaultValue": 5,
+      "required": true
+    },
+    {
+      "direction": "Input",
+      "type": "text",
+      "name": "NoOfFieldsToInspect",
+      "label": "Number of Fields to Inspect",
+      "description": "Specify the number of fields to inspect",
+      "defaultValue": "",
+      "required": true
+    },
+    {
+      "direction": "Input",
+      "type": "text",
+      "name": "FormJsonFieldsMappingFilePath",
+      "label": "Form Fields to JSON Fields Mapping File Path",
+      "description": "The full path to the JSON file where the mapping of form fields to JSON fields is written.",
+      "defaultValue": "",
+      "required": true
+    },
+    {
+      "direction": "Input",
+      "type": "text",
+      "name": "JsonDataToFill",
+      "label": "JSON data to fill the form",
+      "description": "The JSON data that will be used to fill the form fields.",
+      "defaultValue": "",
+      "required": true
+    }
+  ]
+}

@@ -1,0 +1,65 @@
+{
+  "name": "CopyFile",
+  "label": "Copy File(s)",
+  "discription": "Copies one or more files into a destination folder.",
+  "version": "1.0.0",
+  "auther": "@aventisia",
+  "supportedPlatforms": [
+    "desktop"
+  ],
+  "errorHandling": "standard",
+  "testScreenType": "standard",
+  "fields": [
+    {
+      "direction": "Input",
+      "type": "text",
+      "name": "SourceFiles",
+      "label": "File(s) to copy",
+      "description": "The path(s) of the file(s) to copy. Supports wildcards like *.txt.",
+      "defaultValue": "",
+      "required": true
+    },
+    {
+      "direction": "Input",
+      "type": "text",
+      "name": "DestinationFolder",
+      "label": "Destination folder",
+      "description": "The destination folder where the files will be copied.",
+      "defaultValue": "",
+      "required": true
+    },
+    {
+      "direction": "Input",
+      "type": "select",
+      "name": "IfExistsAction",
+      "label": "If file exists",
+      "description": "Specifies the behavior when a file already exists in the destination folder.",
+      "defaultValue": "DoNothing",
+      "required": true,
+      "selectOptions": [
+        {
+          "label": "Do nothing",
+          "value": "DoNothing",
+          "description": "Skips the file if it already exists."
+        },
+        {
+          "label": "Overwrite",
+          "value": "Overwrite",
+          "description": "Deletes the existing file and moves the new file."
+        }
+      ]
+    },
+    {
+      "direction": "Output",
+      "type": "config-panel-output",
+      "name": "CopiedFiles",
+      "label": "Copied Files",
+      "description": "Returns the list of successfully copied files.",
+      "defaultValue": {
+        "value": "CopiedFiles",
+        "enabled": true
+      },
+      "required": false
+    }
+  ]
+}

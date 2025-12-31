@@ -1,0 +1,164 @@
+{
+  "name": "Inferencing_CreateAIAgent",
+  "label": "Inferencing Model",
+  "description": "Inferencing Model.",
+  "version": "1.0.0",
+  "auther": "@aventisia",
+  "supportedPlatforms": ["cloud", "desktop"],
+  "errorHandling": "standard",
+  "testScreenType": "llmGenerateRequest",
+  "fields": [
+    {
+      "direction": "Input",
+      "type": "prompt-input",
+      "name": "prompt",
+      "required": false,
+      "min": 19,
+      "category": "Prompt"
+    },
+    {
+      "direction": "Input",
+      "type": "model-config-select",
+      "name": "__ModelConfig__Inferencing",
+      "defaultValue": {
+        "isByokEnabled": false,
+        "provider": "openai",
+        "credentials": "",
+        "model": "gpt-4o-mini",
+        "temp": 1,
+        "topP": 1
+      },
+      "required": false,
+      "category": "Models"
+    },
+    {
+      "direction": "Input",
+      "type": "text",
+      "name": "Files",
+      "label": "Files",
+
+      "required": false,
+      "category": "Models"
+    },
+    {
+      "direction": "Input",
+      "type": "multi-selector",
+      "name": "KnowledgeBase",
+      "label": "Knowledge Base",
+      "selectOptions": [
+        {
+          "label": "Knowledge Base 1",
+          "value": "Knowledge Base 1",
+          "description": ""
+        },
+        {
+          "label": "Knowledge Base 2",
+          "value": "Knowledge Base 2",
+          "description": ""
+        }
+      ],
+      "required": false,
+      "category": "Memory"
+    },
+    {
+      "direction": "Input",
+      "type": "number",
+      "name": "NumberOfChunks",
+      "label": "Number Of Chunks",
+
+      "required": false,
+      "category": "Memory"
+    },
+    {
+      "direction": "Input",
+      "type": "select",
+      "name": "RetrievalType",
+      "label": "Retrieval Type",
+      "description": "",
+      "defaultValue": "Basic",
+      "required": false,
+      "selectOptions": [
+        {
+          "label": "Basic",
+          "value": "Basic",
+          "description": ""
+        },
+        {
+          "label": "Advance",
+          "value": "Advance",
+          "description": ""
+        }
+      ],
+      "category": "Memory"
+    },
+    {
+      "direction": "Input",
+      "type": "slider",
+      "name": "SourceThreshold",
+      "label": "Source Threshold",
+      "min": 0,
+      "max": 1.2,
+      "defaultValue": [0.6],
+
+      "required": false,
+      "category": "Memory"
+    },
+
+    {
+      "direction": "Input",
+      "type": "select",
+      "name": "MemoryProvider",
+      "label": "Memory Provider",
+      "description": "",
+      "defaultValue": "Memory Provider 1",
+      "required": false,
+      "selectOptions": [
+        {
+          "label": "Memory Provider 1",
+          "value": "Memory Provider 1",
+          "description": ""
+        },
+        {
+          "label": "Memory Provider 2",
+          "value": "Memory Provider 2",
+          "description": ""
+        }
+      ],
+      "category": "Memory"
+    },
+    {
+      "direction": "Input",
+      "type": "slider",
+      "name": "MaxDataStored",
+      "label": "Max. messages stored as Short-term Memory",
+      "min": 0,
+      "max": 10,
+      "defaultValue": [1],
+
+      "required": false,
+      "category": "Memory"
+    },
+    {
+      "direction": "Input",
+      "type": "text",
+      "name": "Tools",
+      "label": "Tools",
+
+      "required": false,
+      "category": "Tools"
+    },
+    {
+      "direction": "Output",
+      "type": "config-panel-output",
+      "name": "AIModelResult",
+      "label": "Button Clicked Successfully",
+      "description": "AI Model Result.",
+      "defaultValue": {
+        "value": "AIModelResult",
+        "enabled": true
+      },
+      "required": false,
+      "category": "Prompt"
+    }
+  ]
+}

@@ -1,0 +1,254 @@
+{
+  "name": "ExtractDataFromWebPage",
+  "label": "Extract Data From Web Page",
+  "discription": "Extracts data from a specified UI element on a web page using configurable parameters.",
+  "version": "1.0.0",
+  "auther": "@aventisia",
+  "supportedPlatforms": [
+    "desktop"
+  ],
+  "errorHandling": "standard",
+  "testScreenType": "standard",
+  "fields": [
+    {
+      "direction": "Input",
+      "type": "text",
+      "name": "WebBrowserInstance",
+      "label": "Web Browser Instance",
+      "description": "Enter or choose the variable that contains the web browser instance to work with.",
+      "defaultValue": "",
+      "required": true
+    },
+    {
+      "direction": "Input",
+      "type": "select",
+      "name": "FindType",
+      "label": "Find Type",
+      "description": "Specifies how to find the element (e.g., ID, XPath, CssSelector).",
+      "defaultValue": "XPath",
+      "required": false,
+      "selectOptions": [
+        {
+          "label": "XPath",
+          "value": "XPath",
+          "description": "Find by XPath expression"
+        },
+        {
+          "label": "Id",
+          "value": "Id",
+          "description": "Find by HTML ID attribute"
+        },
+        {
+          "label": "Css Selector",
+          "value": "CssSelector",
+          "description": "Find by CSS selector"
+        },
+        {
+          "label": "Name",
+          "value": "Name",
+          "description": "Find by HTML name attribute"
+        },
+        {
+          "label": "Class Name",
+          "value": "ClassName",
+          "description": "Find by HTML class name"
+        },
+        {
+          "label": "Tag Name",
+          "value": "TagName",
+          "description": "Find by HTML tag name"
+        },
+        {
+          "label": "Link Text",
+          "value": "LinkText",
+          "description": "Find by link text (exact match)"
+        },
+        {
+          "label": "Partial Link Text",
+          "value": "PartialLinkText",
+          "description": "Find by partial link text"
+        },
+        {
+          "label": "Inner Text",
+          "value": "InnerText",
+          "description": "Find by element\u0027s inner text"
+        },
+        {
+          "label": "Title",
+          "value": "Title",
+          "description": "Find by element\u0027s title attribute"
+        },
+        {
+          "label": "Value",
+          "value": "Value",
+          "description": "Find by element\u0027s value attribute"
+        },
+        {
+          "label": "Placeholder",
+          "value": "Placeholder",
+          "description": "Find by element\u0027s placeholder attribute"
+        },
+        {
+          "label": "Type",
+          "value": "Type",
+          "description": "Find by element\u0027s type attribute"
+        },
+        {
+          "label": "Data Test Id",
+          "value": "DataTestId",
+          "description": "Find by element\u0027s data-testid attribute"
+        },
+        {
+          "label": "Aria Label",
+          "value": "AriaLabel",
+          "description": "Find by element\u0027s aria-label attribute"
+        },
+        {
+          "label": "Role",
+          "value": "Role",
+          "description": "Find by element\u0027s role attribute"
+        },
+        {
+          "label": "JavaScript",
+          "value": "JavaScript",
+          "description": "Find by JavaScript expression"
+        },
+        {
+          "label": "Sizzle",
+          "value": "Sizzle",
+          "description": "Find by Sizzle selector (jQuery-style)"
+        },
+        {
+          "label": "Relative",
+          "value": "Relative",
+          "description": "Find by relative position to another element"
+        },
+        {
+          "label": "Automation Id",
+          "value": "AutomationId",
+          "description": "Find by element\u0027s automation ID (for WPF/UWP apps)"
+        }
+      ]
+    },
+    {
+      "direction": "Input",
+      "type": "text",
+      "name": "ValueToFind",
+      "label": "Value To Find",
+      "description": "The selector used to locate the link or button on the web page.",
+      "defaultValue": "",
+      "required": false
+    },
+    {
+      "direction": "Input",
+      "type": "select",
+      "name": "ExtractionMode",
+      "label": "Extraction Mode",
+      "description": "Specifies what type of data to extract (e.g., single value, list, table).",
+      "defaultValue": "SingleValue",
+      "required": false,
+      "selectOptions": [
+        {
+          "label": "Single Value",
+          "value": "SingleValue",
+          "description": "Extracts a single text value from the web page."
+        },
+        {
+          "label": "Handpicked Values",
+          "value": "HandpickedValues",
+          "description": "Extracts manually selected values from multiple elements."
+        },
+        {
+          "label": "List",
+          "value": "List",
+          "description": "Extracts a list of items from repeated elements."
+        },
+        {
+          "label": "Table",
+          "value": "Table",
+          "description": "Extracts tabular data from a web table."
+        },
+        {
+          "label": "Entire HTML Table",
+          "value": "EntireHtmlTable",
+          "description": "Extracts the complete HTML table structure."
+        }
+      ]
+    },
+    {
+      "direction": "Input",
+      "type": "switch",
+      "name": "UsePaging",
+      "label": "Use Paging",
+      "description": "If true, processes multiple pages by navigating through pagination.",
+      "defaultValue": "",
+      "required": false
+    },
+    {
+      "direction": "Input",
+      "type": "switch",
+      "name": "GetAllWebPages",
+      "label": "Get All Web Pages",
+      "description": "If true, extracts data from all available pages. Otherwise, only the first page is used.",
+      "defaultValue": "",
+      "required": false
+    },
+    {
+      "direction": "Input",
+      "type": "text",
+      "name": "MaxWebPagesToProcess",
+      "label": "Max Web Pages To Process",
+      "description": "The maximum number of web pages to process when using \u0027Use Paging\u0027.",
+      "defaultValue": 10,
+      "required": false
+    },
+    {
+      "direction": "Input",
+      "type": "text",
+      "name": "PageCssSelector",
+      "label": "Page CSS Selector",
+      "description": "CSS selector used to locate the next page navigation element.",
+      "defaultValue": "",
+      "required": false
+    },
+    {
+      "direction": "Input",
+      "type": "switch",
+      "name": "SendPhysicalClickForNextPage",
+      "label": "Send Physical Click for Next Page",
+      "description": "If true, simulates physical mouse click to navigate to the next page.",
+      "defaultValue": "",
+      "required": false
+    },
+    {
+      "direction": "Input",
+      "type": "switch",
+      "name": "ProcessDataUponExtraction",
+      "label": "Process Data Upon Extraction",
+      "description": "If true, processes the data to match visual display (e.g., handles hidden elements). Not recommended for large datasets.",
+      "defaultValue": "",
+      "required": false
+    },
+    {
+      "direction": "Input",
+      "type": "text",
+      "name": "Timeout",
+      "label": "Timeout Seconds",
+      "description": "Maximum time in seconds to wait for an element before failing.",
+      "defaultValue": 60,
+      "required": false
+    },
+    {
+      "direction": "Output",
+      "type": "config-panel-output",
+      "name": "DataFromWebPageOutput",
+      "label": "Data From Web Page Output",
+      "description": "Returns the extracted data as a single value, list, data row, or data table.",
+      "defaultValue": {
+        "value": "DataFromWebPageOutput",
+        "enabled": true
+      },
+      "required": false
+    }
+  ]
+}

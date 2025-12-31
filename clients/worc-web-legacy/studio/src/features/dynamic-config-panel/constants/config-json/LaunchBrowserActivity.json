@@ -1,0 +1,98 @@
+{
+  "name": "LaunchBrowser",
+  "label": "Launch Browser",
+  "discription": "Launches a web browser instance of Microsoft Edge or Google Chrome.",
+  "version": "1.0.0",
+  "auther": "@aventisia",
+  "supportedPlatforms": [
+    "desktop"
+  ],
+  "errorHandling": "standard",
+  "testScreenType": "standard",
+  "fields": [
+    {
+      "direction": "Input",
+      "type": "select",
+      "name": "BrowserType",
+      "label": "Browser Type",
+      "description": "Specifies which browser to launch (Microsoft Edge, Google Chrome).",
+      "defaultValue": "MicrosoftEdge",
+      "required": true,
+      "selectOptions": [
+        {
+          "label": "Microsoft Edge",
+          "value": "MicrosoftEdge",
+          "description": "Launches Microsoft Edge browser."
+        },
+        {
+          "label": "Google Chrome",
+          "value": "GoogleChrome",
+          "description": "Launches Google Chrome browser."
+        }
+      ]
+    },
+    {
+      "direction": "Input",
+      "type": "text",
+      "name": "LaunchUrl",
+      "label": "Launch Url",
+      "description": "The URL to launch the browser with. If empty, the browser will launch without navigating to a specific page.",
+      "defaultValue": "",
+      "required": false
+    },
+    {
+      "direction": "Input",
+      "type": "select",
+      "name": "BrowsingMode",
+      "label": "Browsing Mode",
+      "description": "Specifies whether to open in normal or private mode.",
+      "defaultValue": "Normal",
+      "required": false,
+      "selectOptions": [
+        {
+          "label": "Normal",
+          "value": "Normal",
+          "description": "Opens browser in normal mode."
+        },
+        {
+          "label": "Private",
+          "value": "Private",
+          "description": "Opens browser in private/incognito mode."
+        }
+      ]
+    },
+    {
+      "direction": "Input",
+      "type": "select",
+      "name": "WindowState",
+      "label": "Window State",
+      "description": "Specifies the initial browser window state.",
+      "defaultValue": "Maximized",
+      "required": false,
+      "selectOptions": [
+        {
+          "label": "Maximized",
+          "value": "Maximized",
+          "description": "Launches browser in maximized window state."
+        },
+        {
+          "label": "Minimized",
+          "value": "Minimized",
+          "description": "Launches browser in minimized window state."
+        }
+      ]
+    },
+    {
+      "direction": "Output",
+      "type": "config-panel-output",
+      "name": "WebBrowserInstance",
+      "label": "Web Browser",
+      "description": "Returns the Web browser instance.",
+      "defaultValue": {
+        "value": "WebBrowserInstance",
+        "enabled": true
+      },
+      "required": false
+    }
+  ]
+}

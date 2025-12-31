@@ -1,0 +1,97 @@
+{
+  "name": "CreateNewTab",
+  "label": "Create New Tab",
+  "discription": "Creates a new tab in the web browser and optionally navigates to a specified URL.",
+  "version": "1.0.0",
+  "auther": "@aventisia",
+  "supportedPlatforms": [
+    "desktop"
+  ],
+  "errorHandling": "standard",
+  "testScreenType": "standard",
+  "fields": [
+    {
+      "direction": "Input",
+      "type": "text",
+      "name": "WebBrowserInstance",
+      "label": "Web Browser Instance",
+      "description": "Enter or choose the variable that contains the web browser instance to work with.",
+      "defaultValue": "",
+      "required": true
+    },
+    {
+      "direction": "Input",
+      "type": "text",
+      "name": "UrlToNavigateTo",
+      "label": "URL to Navigate To",
+      "description": "The URL to navigate to after creating the new tab.",
+      "defaultValue": "",
+      "required": false
+    },
+    {
+      "direction": "Input",
+      "type": "switch",
+      "name": "WaitForPageToLoad",
+      "label": "Wait for Page to Load",
+      "description": "If true, waits for the page to fully load before continuing.",
+      "defaultValue": true,
+      "required": false
+    },
+    {
+      "direction": "Input",
+      "type": "text",
+      "name": "TimeoutForWebpageToLoad",
+      "label": "Timeout for Page Load",
+      "description": "Maximum time (in seconds) to wait for the page to load.",
+      "defaultValue": 60,
+      "required": false
+    },
+    {
+      "direction": "Input",
+      "type": "select",
+      "name": "IfAPopUpDialogAppears",
+      "label": "Handle Dialog",
+      "description": "Specifies what to do if a dialog appears after navigating.",
+      "defaultValue": "DoNothing",
+      "required": false,
+      "selectOptions": [
+        {
+          "label": "Do Nothing",
+          "value": "DoNothing",
+          "description": "Ignore any pop-up dialog."
+        },
+        {
+          "label": "Close It",
+          "value": "CloseIt",
+          "description": "Closes any pop-up dialog automatically."
+        },
+        {
+          "label": "Press a Button",
+          "value": "PressAButton",
+          "description": "Presses a specified button on the dialog."
+        }
+      ]
+    },
+    {
+      "direction": "Input",
+      "type": "text",
+      "name": "DialogButtonToPress",
+      "label": "Dialog Button to Press",
+      "description": "The button to press if a dialog appears (e.g., \u0027OK\u0027, \u0027Cancel\u0027).",
+      "defaultValue": "OK",
+      "required": false
+    },
+    {
+      "direction": "Output",
+      "type": "config-panel-output",
+      "name": "NewBrowserInstance",
+      "label": "New Browser Instance",
+      "description": "Returns the newly created browser tab/window as an IWebDriver instance.",
+      "defaultValue": {
+        "value": "NewBrowserInstance",
+        "enabled": true
+      },
+      "required": false
+    }
+  ]
+}

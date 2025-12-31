@@ -1,0 +1,23 @@
+{
+  "name": "CloseOutlook",
+  "label": "Close Outlook Application",
+  "discription": "Closes an Outlook application instance and releases COM resources.",
+  "version": "1.0.0",
+  "auther": "@aventisia",
+  "supportedPlatforms": [
+    "desktop"
+  ],
+  "errorHandling": "standard",
+  "testScreenType": "standard",
+  "fields": [
+    {
+      "direction": "Input",
+      "type": "text",
+      "name": "OutlookApplication",
+      "label": "Outlook Application",
+      "description": "The Outlook Application object to close.",
+      "defaultValue": "",
+      "required": true
+    }
+  ]
+}

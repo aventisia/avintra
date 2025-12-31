@@ -1,0 +1,23 @@
+{
+  "name": "CloseSqlConnection",
+  "label": "Close SQL Connection",
+  "discription": "Close an open connection to a database",
+  "version": "1.0.0",
+  "auther": "@aventisia",
+  "supportedPlatforms": [
+    "desktop"
+  ],
+  "errorHandling": "standard",
+  "testScreenType": "standard",
+  "fields": [
+    {
+      "direction": "Input",
+      "type": "text",
+      "name": "SqlConnection",
+      "label": "SQL Connection",
+      "description": "The SQL connection to close.",
+      "defaultValue": "",
+      "required": true
+    }
+  ]
+}
