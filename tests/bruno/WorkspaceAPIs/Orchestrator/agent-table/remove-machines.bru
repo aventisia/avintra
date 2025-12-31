@@ -1,0 +1,18 @@
+meta {
+  name: Remove machines
+  type: http
+  seq: 10
+}
+
+post {
+  url: {{WORC_APIS_BASE_URL}}/agent/{{FLOW_VERSION_ID}}/remove-machines
+  body: none
+  auth: none
+}
+
+script:pre-request {
+  // Set machineId in request body
+  req.setBody(
+    JSON.parse(`["${bru.getGlobalEnvVar("MACHINE_ID")}"]`)
+  )
+}

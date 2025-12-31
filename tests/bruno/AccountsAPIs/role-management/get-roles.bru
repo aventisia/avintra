@@ -1,0 +1,15 @@
+meta {
+  name: Get roles
+  type: http
+  seq: 6
+}
+
+get {
+  url: {{ACCOUNTS_APIS_BASE_URL}}/manage-role/list?tenantId={{TENANT_ID}}
+  body: none
+  auth: none
+}
+
+params:query {
+  tenantId: {{TENANT_ID}}
+}

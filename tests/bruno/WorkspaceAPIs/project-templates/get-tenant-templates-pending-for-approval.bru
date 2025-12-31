@@ -1,0 +1,11 @@
+meta {
+  name: Get tenant templates pending for approval
+  type: http
+  seq: 8
+}
+
+get {
+  url: {{WORC_APIS_BASE_URL}}/project-template/pending-approval
+  body: none
+  auth: none
+}

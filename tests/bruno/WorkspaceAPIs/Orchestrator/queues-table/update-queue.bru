@@ -1,0 +1,24 @@
+meta {
+  name: Update queue
+  type: http
+  seq: 3
+}
+
+put {
+  url: {{WORC_APIS_BASE_URL}}/queue
+  body: multipartForm
+  auth: none
+}
+
+body:multipart-form {
+  name: test
+  description: This is test
+  isUniqueReferencesEnforced: true
+  isStoredEncrypted: true
+  shouldRetryFailedItems: true
+  shouldRetryAbandonedItems: true
+  maximumRetryAttempts: 15
+  id: {{QUEUE_ID}}
+  specificDataSchemaFile: @file()
+  outputDataSchemaFile: @file()
+}

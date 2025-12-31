@@ -1,0 +1,27 @@
+meta {
+  name: Disable mutiple users
+  type: http
+  seq: 7
+}
+
+post {
+  url: {{ACCOUNTS_APIS_BASE_URL}}/user/disable-multiple
+  body: none
+  auth: none
+}
+
+script:pre-request {
+  // Set userIds in request body
+  req.setBody(
+    JSON.parse(`["${bru.getGlobalEnvVar("ACCOUNT_USER_ID")}"]`)
+  )
+}
+
+script:post-response {
+  if(res.getStatus() == 200){
+      bru.setGlobalEnvVar(
+        "ACCOUNT_USER_ID", 
+        "00000000-0000-0000-0000-000000000000"
+      );
+  }
+}

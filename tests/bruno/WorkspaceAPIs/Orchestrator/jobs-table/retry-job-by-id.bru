@@ -1,0 +1,20 @@
+meta {
+  name: Retry job by id
+  type: http
+  seq: 11
+}
+
+post {
+  url: {{WORC_APIS_BASE_URL}}/job/{{JOB_ID}}/retry
+  body: none
+  auth: none
+}
+
+script:pre-request {
+  const { faker } = require('@faker-js/faker');
+  
+  req.setBody({
+    id: bru.getGlobalEnvVar("JOB_ID"),
+    flowVersionId: bru.getGlobalEnvVar("FLOW_VERSION_ID")
+  })
+}

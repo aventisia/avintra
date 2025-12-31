@@ -1,0 +1,11 @@
+meta {
+  name: Get machines
+  type: http
+  seq: 9
+}
+
+get {
+  url: {{WORC_APIS_BASE_URL}}/agent/{{FLOW_VERSION_ID}}/machines
+  body: none
+  auth: none
+}

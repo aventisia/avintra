@@ -1,0 +1,24 @@
+meta {
+  name: Get sharepoint file drive Id and item Id
+  type: http
+  seq: 1
+}
+
+post {
+  url: {{WORC_APIS_BASE_URL}}/cloud-connector/m365/invoke
+  body: json
+  auth: none
+}
+
+body:json {
+  {
+    "agentId": "00000000-0000-0000-0000-000000000000",
+    "agentName": "Test",
+    "provider": "M365ExcelTEST",
+    "action": "GetFileDriveAndItemId",
+    "credentialId": "DUMMY",
+    "payload": {
+      "fileUrl": "https://aventisia.sharepoint.com/sites/AventisiasProducts/Shared%20Documents/m365_connectors_test_files/m365_excel_actions.xlsx"
+    }
+  }
+}

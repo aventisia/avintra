@@ -1,0 +1,11 @@
+meta {
+  name: Delete execution log
+  type: http
+  seq: 7
+}
+
+delete {
+  url: {{WORC_APIS_BASE_URL}}/action-execution-log/delete/{{LOG_ID}}
+  body: none
+  auth: none
+}

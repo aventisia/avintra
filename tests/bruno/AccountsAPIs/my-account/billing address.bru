@@ -1,0 +1,11 @@
+meta {
+  name: billing address
+  type: http
+  seq: 13
+}
+
+get {
+  url: {{ACCOUNTS_APIS_BASE_URL}}/me/billing-address
+  body: json
+  auth: none
+}

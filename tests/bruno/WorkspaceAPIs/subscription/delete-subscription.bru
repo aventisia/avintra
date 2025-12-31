@@ -1,0 +1,19 @@
+meta {
+  name: Delete subscription
+  type: http
+  seq: 4
+}
+
+delete {
+  url: {{WORC_APIS_BASE_URL}}/subscription/
+  body: none
+  auth: none
+}
+
+script:pre-request {
+  const { faker } = require('@faker-js/faker');
+  
+  req.setBody({
+    id: bru.getGlobalEnvVar("SUBSCRIPTION_ID"),
+  })
+}

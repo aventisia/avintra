@@ -1,0 +1,17 @@
+meta {
+  name: Select space options
+  type: http
+  seq: 1
+}
+
+get {
+  url: {{ACCOUNTS_APIS_BASE_URL}}/space/option-to-select
+  body: none
+  auth: none
+}
+
+body:json {
+  {
+    "name": "{{$randomCompanyName}}"
+  }
+}

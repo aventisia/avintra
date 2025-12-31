@@ -1,0 +1,19 @@
+meta {
+  name: Prompt to Ollama
+  type: http
+  seq: 3
+}
+
+post {
+  url: https://llm.aventisia.com/api/generate
+  body: json
+  auth: none
+}
+
+body:json {
+  {
+    "prompt": "Hello",
+    "model": "deepseek-r1:7b",
+    "stream": false
+  }
+}

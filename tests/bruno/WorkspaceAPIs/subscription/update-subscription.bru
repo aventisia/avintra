@@ -1,0 +1,34 @@
+meta {
+  name: Update subscription
+  type: http
+  seq: 2
+}
+
+put {
+  url: {{WORC_APIS_BASE_URL}}/subscription/
+  body: none
+  auth: none
+}
+
+script:pre-request {
+  const { faker } = require('@faker-js/faker');
+  
+  req.setBody({
+    id: bru.getGlobalEnvVar("SUBSCRIPTION_ID"),
+    startDate: new Date(),
+    dueDate: new Date(),
+    planId: bru.getGlobalEnvVar("PLAN_ID")
+  })
+}
+
+script:post-response {
+  if(res.getStatus() == 200){
+      bru.setGlobalEnvVar(
+          "SUBSCRIPTION_ID",
+          res.getBody().data.id
+      );
+     bru.setGlobalEnvVar(
+          "USER_ID", 
+          res.getBody().data.createdByUserId)
+  }
+}

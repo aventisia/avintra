@@ -1,0 +1,11 @@
+meta {
+  name: Get payment methods
+  type: http
+  seq: 1
+}
+
+get {
+  url: {{ACCOUNTS_APIS_BASE_URL}}/payment-methods/list
+  body: none
+  auth: inherit
+}

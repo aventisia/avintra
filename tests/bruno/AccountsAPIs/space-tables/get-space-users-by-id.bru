@@ -1,0 +1,11 @@
+meta {
+  name: Get space users by id
+  type: http
+  seq: 6
+}
+
+get {
+  url: {{ACCOUNTS_APIS_BASE_URL}}/space/users/{{SPACE_ID}}
+  body: none
+  auth: none
+}

@@ -1,0 +1,20 @@
+meta {
+  name: Delete flow user
+  type: http
+  seq: 6
+}
+
+delete {
+  url: {{WORC_APIS_BASE_URL}}/flow-user/{{FLOW_USER_ID}}
+  body: none
+  auth: none
+}
+
+script:post-response {
+  if(res.getStatus() == 200){
+      bru.setGlobalEnvVar(
+        "FLOW_USER_ID", 
+        "00000000-0000-0000-0000-000000000000"
+      );
+  }
+}

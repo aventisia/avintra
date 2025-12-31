@@ -1,0 +1,33 @@
+meta {
+  name: deepinfra - simple response with default options
+  type: http
+  seq: 5
+}
+
+post {
+  url: {{LLM_PIPELINE_APIS_BASE_URL}}/llm/generate
+  body: json
+  auth: inherit
+}
+
+body:json {
+  {
+    "provider": "deepinfra",
+    "model": "allenai/olmOCR-2-7B-1025",
+    "input": "Give me top 3 benefits of daily exercise",
+    "files": null,
+    "is_json_output": false,
+    "json_schema": null,
+    "max_output_tokens": null,
+    "is_byok_enabled": false,
+    "credential_id": null,
+    "temperature": "1.0",
+    "top_p": "1.0",
+    "stream": false
+  }
+}
+
+settings {
+  encodeUrl: true
+  timeout: 0
+}

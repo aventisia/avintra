@@ -1,0 +1,27 @@
+meta {
+  name: create issue
+  type: http
+  seq: 3
+}
+
+post {
+  url: https://localhost:4001/cloud-connectors/github/create-issue
+  body: none
+  auth: none
+}
+
+script:pre-request {
+  const { faker } = require('@faker-js/faker');
+  
+  req.setBody({
+    credentialId:"DUMMY",
+     orgUrl: "",
+    repoName: "Mayuri-git",
+    issueTitle : "mayuri-test",
+    bodyText:"this is a new pr for testing the github action ",
+    labels:["TESTING",""],
+    assignees: [
+      "Mayuri"
+    ] 
+  })
+}

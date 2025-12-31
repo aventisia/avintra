@@ -1,0 +1,28 @@
+meta {
+  name: Delete multiple onprem tenant
+  type: http
+  seq: 10
+}
+
+post {
+  url: {{GLOBAL_ADMIN_BASE_URL}}/onprem-tenant/delete-multiple
+  body: json
+  auth: inherit
+}
+
+body:json {
+  ["{{ON_PREM_TENANT_ID}}"]
+}
+
+script:post-response {
+  if(res.getStatus() == 200){
+      bru.setGlobalEnvVar(
+          "ON_PREM_TENANT_ID","00000000-0000-0000-0000-000000000000"
+      );
+  }
+}
+
+settings {
+  encodeUrl: true
+  timeout: 0
+}

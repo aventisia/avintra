@@ -1,0 +1,22 @@
+meta {
+  name: Delete multiple subscription plans
+  type: http
+  seq: 10
+}
+
+post {
+  url: {{ACCOUNTS_APIS_BASE_URL}}/subscription-plans/delete-multiple
+  body: json
+  auth: none
+}
+
+body:json {
+  ["{{SUBSCRIPTION_PLAN_ID}}"]
+}
+
+script:post-response {
+  if (res.getBody().message === "TwoFA is enabled") {
+      bru.setGlobalEnvVar("APP_INTEGRATION_ID", "00000000000000000000000000");
+      }
+  
+}

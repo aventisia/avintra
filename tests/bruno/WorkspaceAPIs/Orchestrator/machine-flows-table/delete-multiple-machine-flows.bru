@@ -1,0 +1,37 @@
+meta {
+  name: Delete multiple machine flows
+  type: http
+  seq: 9
+}
+
+post {
+  url: {{WORC_APIS_BASE_URL}}/machine-flow/delete-multiple
+  body: none
+  auth: none
+}
+
+body:json {
+  {
+      
+  }
+}
+
+script:pre-request {
+  // Set machineFlowIds in request body
+  req.setBody(
+    JSON.parse(`["${bru.getGlobalEnvVar("MACHINE_FLOW_ID")}"]`)
+  )
+}
+
+script:post-response {
+  if(res.getStatus() == 200){
+      bru.setGlobalEnvVar(
+        "MACHINE_FLOW_ID", 
+        "00000000-0000-0000-0000-000000000000"
+      );
+  }
+}
+
+docs {
+  > TODO: Implement functionality to delete multiple projects only if the user provides an OTP or password, especially when the projects are linked to other sub-content.
+}

@@ -1,0 +1,28 @@
+meta {
+  name: Insert credit plan
+  type: http
+  seq: 2
+}
+
+post {
+  url: {{ACCOUNTS_APIS_BASE_URL}}/credit-plans
+  body: json
+  auth: none
+}
+
+body:json {
+  {
+    "serviceType": "OnPremGpuText",
+    "unitType": "Seconds",
+    "oneUnit": "30",
+    "credits": "15"
+  }
+  
+}
+
+script:post-response {
+  if(res.getStatus() == 200)
+  {
+    bru.setGlobalEnvVar("CREDIT_PLAN_ID", res.getBody().data.id);
+  }
+}

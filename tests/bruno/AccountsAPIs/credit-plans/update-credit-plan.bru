@@ -1,0 +1,23 @@
+meta {
+  name: Update credit plan
+  type: http
+  seq: 5
+}
+
+put {
+  url: {{ACCOUNTS_APIS_BASE_URL}}/credit-plans
+  body: json
+  auth: none
+}
+
+body:json {
+  {
+    "id":"{{CREDIT_PLAN_ID}}",
+    "serviceType": "OnPremGpuText",
+    "unitType": "Seconds",
+    "oneUnit": "30",
+    "credits": "15",
+    "isDisabled": false
+  }
+  
+}

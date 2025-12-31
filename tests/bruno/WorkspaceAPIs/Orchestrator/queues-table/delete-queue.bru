@@ -1,0 +1,20 @@
+meta {
+  name: Delete queue
+  type: http
+  seq: 4
+}
+
+delete {
+  url: {{WORC_APIS_BASE_URL}}/queue/{{QUEUE_ID}}
+  body: none
+  auth: none
+}
+
+script:post-response {
+  if(res.getStatus() == 200){
+      bru.setGlobalEnvVar(
+        "FLOW_ID", 
+        "00000000-0000-0000-0000-000000000000"
+      );
+  }
+}

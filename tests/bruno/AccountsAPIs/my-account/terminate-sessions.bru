@@ -1,0 +1,19 @@
+meta {
+  name: Terminate sessions
+  type: http
+  seq: 16
+}
+
+post {
+  url: {{ACCOUNTS_APIS_BASE_URL}}/me/terminate-sessions
+  body: json
+  auth: none
+}
+
+body:json {
+  {
+    "howSessionEnded": "SessionHasExpired",
+    "sessionIdList": ["{{SESSION_ID}}"]
+  }
+  
+}

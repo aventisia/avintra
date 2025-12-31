@@ -1,0 +1,17 @@
+meta {
+  name: Get credit plan by id
+  type: http
+  seq: 6
+}
+
+get {
+  url: {{ACCOUNTS_APIS_BASE_URL}}/credit-plans/{{CREDIT_PLAN_ID}}
+  body: none
+  auth: none
+}
+
+body:json {
+  {
+    "name": "{{$randomCompanyName}}"
+  }
+}

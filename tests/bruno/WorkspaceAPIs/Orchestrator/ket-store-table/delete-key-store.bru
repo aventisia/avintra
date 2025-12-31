@@ -1,0 +1,20 @@
+meta {
+  name: Delete key store
+  type: http
+  seq: 7
+}
+
+delete {
+  url: {{WORC_APIS_BASE_URL}}/key-store/{{CONFIG_ITEM_ID}}
+  body: none
+  auth: none
+}
+
+script:post-response {
+  if(res.getStatus() == 200){
+      bru.setGlobalEnvVar(
+        "CONFIG_ITEM_ID", 
+        "00000000-0000-0000-0000-000000000000"
+      );
+  }
+}

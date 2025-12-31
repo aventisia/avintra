@@ -1,0 +1,29 @@
+meta {
+  name: Update flow
+  type: http
+  seq: 4
+}
+
+put {
+  url: {{WORC_APIS_BASE_URL}}/flow
+  body: none
+  auth: none
+}
+
+body:json {
+  {
+      
+  }
+}
+
+script:pre-request {
+  const { faker } = require('@faker-js/faker');
+  
+  req.setBody({
+    id: bru.getGlobalEnvVar("FLOW_ID"),
+    type: "AutomationAgent",
+    name: faker.commerce.product(),
+    description: faker.lorem.paragraph(),
+    isDisabled: true
+  })
+}

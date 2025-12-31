@@ -1,0 +1,27 @@
+meta {
+  name: Synthesize audio with options
+  type: http
+  seq: 3
+}
+
+post {
+  url: {{LLM_PIPELINE_APIS_BASE_URL}}/kokoro-tts/synthesize
+  body: json
+  auth: inherit
+}
+
+body:json {
+  {
+    "text": "I completely understand where you’re coming from. Let’s break it down into smaller parts so that it feels more manageable, and I’ll make sure to explain each step clearly along the way.",
+    "voice": "af_heart",
+    "lang_code": "a",
+    "speed": 1,
+    "output_format": "mp3",
+    "return_base64": false,
+    "use_gpu": false
+  }
+}
+
+settings {
+  encodeUrl: true
+}

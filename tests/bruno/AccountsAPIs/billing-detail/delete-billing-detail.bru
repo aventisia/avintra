@@ -1,0 +1,11 @@
+meta {
+  name: Delete billing detail
+  type: http
+  seq: 5
+}
+
+delete {
+  url: {{ACCOUNTS_APIS_BASE_URL}}/billing-detail/{{BILLING_ACCOUNT_ID}}
+  body: none
+  auth: none
+}

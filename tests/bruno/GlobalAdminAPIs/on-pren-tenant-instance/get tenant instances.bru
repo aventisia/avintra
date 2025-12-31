@@ -1,0 +1,16 @@
+meta {
+  name: get tenant instances
+  type: http
+  seq: 4
+}
+
+get {
+  url: {{GLOBAL_ADMIN_BASE_URL}}/onprem/instance/{{ON_PREM_TENANT_ID}}/list
+  body: none
+  auth: inherit
+}
+
+settings {
+  encodeUrl: true
+  timeout: 0
+}

@@ -1,0 +1,24 @@
+meta {
+  name: update billing address
+  type: http
+  seq: 14
+}
+
+put {
+  url: {{ACCOUNTS_APIS_BASE_URL}}/my-company/update-billing-address
+  body: json
+  auth: none
+}
+
+script:pre-request {
+  const {faker} = require('@faker-js/faker');
+  
+  req.setBody({ 
+    addressLine1:faker.location.streetAddress(),
+    addressLine2:faker.location.streetAddress(),
+    country:faker.location.country(),
+    stateOrProvince:faker.location.state(),
+    city:faker.location.city(),
+    zipOrPostalCode:faker.location.zipCode(),
+  })
+}

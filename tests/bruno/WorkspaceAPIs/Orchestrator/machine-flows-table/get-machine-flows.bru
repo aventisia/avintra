@@ -1,0 +1,11 @@
+meta {
+  name: Get machine flows
+  type: http
+  seq: 6
+}
+
+get {
+  url: {{WORC_APIS_BASE_URL}}/machine-flow/list/{{MACHINE_ID}}
+  body: none
+  auth: none
+}

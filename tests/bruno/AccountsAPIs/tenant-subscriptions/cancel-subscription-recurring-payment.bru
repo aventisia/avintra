@@ -1,0 +1,18 @@
+meta {
+  name: Cancel subscription recurring payment
+  type: http
+  seq: 12
+}
+
+put {
+  url: {{ACCOUNTS_APIS_BASE_URL}}/tenant-subscriptions/cancel-recurring-payment
+  body: json
+  auth: none
+}
+
+body:json {
+  {
+    "subscriptionId":"{{TENANT_SUBSCRIPTION_ID}}"
+  }
+  
+}

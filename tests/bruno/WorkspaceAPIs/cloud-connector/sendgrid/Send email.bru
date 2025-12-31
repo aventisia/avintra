@@ -1,0 +1,31 @@
+meta {
+  name: Send email
+  type: http
+  seq: 1
+}
+
+post {
+  url: {{WORC_APIS_BASE_URL}}/cloud-connector/sendgrid/invoke
+  body: json
+  auth: none
+}
+
+body:json {
+  {
+    "agentId": "00000000-0000-0000-0000-000000000000",
+    "agentName": "Test",
+    "provider": "SendGrid",
+    "action": "SendEmailThroughSendGrid",
+    "credentialId":  "DUMMY",
+    "payload": {
+      "to":"mayuri@aventisia.com",
+      "from":"mayuri@aventisia.com",
+      "subject": "Test the sendGrid: ",
+      "body": "Hello, I am from aventisia",
+      "fromName": "mayuri narayankar",
+      "cc": "",
+      "bcc": ""   
+    }
+  }
+  // dev  "credentialId":  "DUMMY",
+}

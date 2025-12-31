@@ -1,0 +1,11 @@
+meta {
+  name: Get time trigger agent by id
+  type: http
+  seq: 8
+}
+
+get {
+  url: {{WORC_APIS_BASE_URL}}/time-trigger/{{TIME_TRIGGER_ID}}/agents
+  body: none
+  auth: none
+}

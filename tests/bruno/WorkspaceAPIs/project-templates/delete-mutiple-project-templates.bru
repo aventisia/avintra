@@ -1,0 +1,15 @@
+meta {
+  name: Delete mutiple project templates
+  type: http
+  seq: 14
+}
+
+post {
+  url: {{WORC_APIS_BASE_URL}}/project-template/delete-multiple
+  body: json
+  auth: none
+}
+
+body:json {
+  ["{{PROJECT_TEMPLATE_ID}}"]
+}

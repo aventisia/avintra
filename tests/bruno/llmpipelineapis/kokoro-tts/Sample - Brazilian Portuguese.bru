@@ -1,0 +1,23 @@
+meta {
+  name: Sample - Brazilian Portuguese
+  type: http
+  seq: 16
+}
+
+post {
+  url: {{LLM_PIPELINE_APIS_BASE_URL}}/kokoro-tts/generate
+  body: json
+  auth: inherit
+}
+
+body:json {
+  {
+    "text": "Entendo perfeitamente o que você quer dizer. Vamos dividir em partes menores para que fique mais fácil de gerenciar, e vou me certificar de explicar cada etapa claramente ao longo do caminho.",
+    "voice": "pf_dora",
+    "lang_code": "p"
+  }
+}
+
+settings {
+  encodeUrl: true
+}

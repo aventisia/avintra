@@ -1,0 +1,37 @@
+meta {
+  name: Insert billing detail
+  type: http
+  seq: 2
+}
+
+post {
+  url: {{ACCOUNTS_APIS_BASE_URL}}/billing-detail
+  body: json
+  auth: none
+}
+
+body:json {
+  {
+    "frequency": "Monthly",
+    "addressLine1": "123 Main Street",
+    "addressLine2": "Apt 4B",
+    "city": "Okhala",
+    "postalCode": "123456",
+    "state": "Delhi",
+    "country": "India",
+    "isWillingToFileGst": true,
+    "gstNumber": "GST1234567890",
+    "amount": 24,
+    "taxRate": 18,
+    "planId": "bd93aa99-205a-4e42-95e8-0788889a6ccb"
+  }
+}
+
+script:post-response {
+  if(res.getStatus() == 200){
+      bru.setGlobalEnvVar(
+          "BILLING_ACCOUNT_ID",
+          res.getBody().data.id
+      );
+  }
+}

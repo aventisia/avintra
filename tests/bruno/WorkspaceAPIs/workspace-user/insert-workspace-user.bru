@@ -1,0 +1,45 @@
+meta {
+  name: Insert workspace user
+  type: http
+  seq: 2
+}
+
+post {
+  url: {{WORC_APIS_BASE_URL}}/user
+  body: none
+  auth: none
+}
+
+body:json {
+  {
+    
+  }
+}
+
+script:pre-request {
+  const { faker } = require('@faker-js/faker');
+  
+  req.setBody({
+    id: bru.getGlobalEnvVar("ACCOUNT_USER_ID"),
+    userName: faker.internet.email(),
+    firstName: faker.person.firstName(),
+    lastName: faker.person.lastName(),
+    avatarSrc: faker.image.url()
+  })
+  
+  
+    
+}
+
+script:post-response {
+  if(res.getStatus() == 200){
+      bru.setGlobalEnvVar(
+          "WORKSPACE_USER_ID",
+          res.getBody().data.id
+      );
+  }
+}
+
+docs {
+  > DO NOT directly call this endpoint to insert workspace users into the production database. This endpoint is intended to be invoked only through AccountsAPIs endpoints
+}

@@ -1,0 +1,29 @@
+meta {
+  name: Update flow user
+  type: http
+  seq: 4
+}
+
+put {
+  url: {{WORC_APIS_BASE_URL}}/flow-user
+  body: none
+  auth: none
+}
+
+body:json {
+  {
+    
+  }
+}
+
+script:pre-request {
+  const { faker } = require('@faker-js/faker');
+  
+  req.setBody({
+    id: bru.getGlobalEnvVar("FLOW_USER_ID"),
+    flowId: bru.getGlobalEnvVar("FLOW_ID"),
+    userId: bru.getGlobalEnvVar("USER_ID"),
+    type: "View",
+    isDisabled: false  
+  })
+}

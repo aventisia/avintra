@@ -1,0 +1,27 @@
+meta {
+  name: send text sms
+  type: http
+  seq: 1
+}
+
+post {
+  url: {{WORC_APIS_BASE_URL}}/cloud-connector/twilio/invoke
+  body: json
+  auth: none
+}
+
+body:json {
+  {
+    "agentId": "00000000-0000-0000-0000-000000000000",
+    "agentName": "Test",
+    "provider": "Twilio",
+    "action": "SendTextSms",
+    "credentialId": "b1702907-6d5e-4034-b9f4-695570ead53d", //"c6c0bfea-257a-42fb-a43f-14e6fbbd98fa",
+    "payload": {
+      "fromPhoneNumber": "+15076077445", //"+19207646943",
+      "toNumber": "+919049107094",
+      "messageBody": "Hello, test the sms code"
+    }
+  }
+  // dev "b1702907-6d5e-4034-b9f4-695570ead53d",
+}

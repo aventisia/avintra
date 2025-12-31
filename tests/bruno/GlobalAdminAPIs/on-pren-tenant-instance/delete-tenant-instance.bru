@@ -1,0 +1,24 @@
+meta {
+  name: Delete tenant instance
+  type: http
+  seq: 9
+}
+
+delete {
+  url: {{GLOBAL_ADMIN_BASE_URL}}/onprem/instance/{{TENANT_INSTANCE_ID}}
+  body: json
+  auth: inherit
+}
+
+script:post-response {
+  if(res.getStatus() == 200){
+      bru.setGlobalEnvVar(
+          "TENANT_INSTANCE_ID","00000000-0000-0000-0000-000000000000"
+      );
+  }
+}
+
+settings {
+  encodeUrl: true
+  timeout: 0
+}

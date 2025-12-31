@@ -1,0 +1,28 @@
+meta {
+  name: Insert multiple queue transactions
+  type: http
+  seq: 2
+}
+
+post {
+  url: {{WORC_APIS_BASE_URL}}/queue-transaction/multiple-data
+  body: json
+  auth: bearer
+}
+
+body:json {
+  {
+    "queueId": "{{QUEUE_ID}}",
+    "queueName": "",
+    "payloadData": "[\n    { \"Id\": 1, \"Name\": \"Alice\", \"Date\": \"2025-08-01\", \"Location\": \"New York\" },\n    { \"Id\": 2, \"Name\": \"Bob\", \"Date\": \"2025-08-02\", \"Location\": \"Los Angeles\" },\n    { \"Id\": 3, \"Name\": \"Charlie\", \"Date\": \"2025-08-03\", \"Location\": \"Chicago\" },\n    { \"Id\": 4, \"Name\": \"David\", \"Date\": \"2025-08-04\", \"Location\": \"Miami\" },\n    { \"Id\": 5, \"Name\": \"Eva\", \"Date\": \"2025-08-05\", \"Location\": \"San Francisco\" },\n    { \"Id\": 6, \"Name\": \"Frank\", \"Date\": \"2025-08-06\", \"Location\": \"Seattle\" },\n    { \"Id\": 7, \"Name\": \"Grace\", \"Date\": \"2025-08-07\", \"Location\": \"Boston\" },\n    { \"Id\": 8, \"Name\": \"Henry\", \"Date\": \"2025-08-08\", \"Location\": \"Dallas\" },\n    { \"Id\": 9, \"Name\": \"Ivy\", \"Date\": \"2025-08-09\", \"Location\": \"Austin\" },\n    { \"Id\": 10, \"Name\": \"Jack\", \"Date\": \"2025-08-10\", \"Location\": \"Washington\" }\n]"
+  }
+}
+
+script:post-response {
+  if(res.getStatus() == 200){
+      bru.setGlobalEnvVar(
+          "QUEUE_TRANSACTION_ID",
+          res.getBody().data.id
+      );
+  }
+}
