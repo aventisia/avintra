@@ -6,7 +6,7 @@ Analyze the input text and classify it into the given categories based on conten
 Multiple classification allowed: false
 
 Categories:
-["Positive", "Neutral", "Negative"]
+Positive, Neutral, Negative,...
 
 Instructions:
 - Use only the provided categories

@@ -11,7 +11,7 @@ Context:
 "The following text is from a customer feedback email."
 
 Categories to be evaluated:
-["Positive", "Neutral", "Negative"]
+Positive, Neutral, Negative,...
 
 Instructions:
 - Use categories exactly as provided

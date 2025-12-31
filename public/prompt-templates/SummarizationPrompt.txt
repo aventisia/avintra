@@ -10,6 +10,7 @@ Be objective and factual — do not add opinions or assumptions.
 
 Context:
 "This is a transcript of the team meeting."
+...
 
 Length Limits:
 - Min: 50 words
@@ -22,7 +23,7 @@ Instructions:
 - Preserve original meaning exactly
 
 Output format:
-{"summary": "The team discussed delivery delays, support issues, and action items to resolve them."}
+{"summary": "..."}
 
 ---
 

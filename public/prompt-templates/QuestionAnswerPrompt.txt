@@ -13,15 +13,15 @@ Keep answers concise and accurate.
 
 Extra context:
 "The document is a customer support log."
+...
 
 FileContent:
 {{FileContent}}
 
 Questions with instructions:
-[
-  {"question": "What was the issue reported by the customer?", "instructions": "Answer in one sentence."},
-  {"question": "What was the delivery status?", "instructions": "Answer with status only."}
-]
+What was the issue reported by the customer?
+What was the delivery status?
+...
 
 Output format:
 [

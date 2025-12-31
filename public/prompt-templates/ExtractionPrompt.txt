@@ -9,12 +9,10 @@ If a field is not present, return null or an empty string ("").
 ---
 
 Extraction Fields:
-["InvoiceNumber", "InvoiceDate", "TotalAmount"]
+InvoiceNumber, InvoiceDate, TotalAmount,...
 
 Table Instructions:
-{
-  "Transactions": ["Date", "Description", "Amount"]
-}
+table columns and rows instruction
 
 Rules:
 - Do not infer or guess — extract only what is explicitly present
