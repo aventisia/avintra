@@ -1,0 +1,34 @@
+{
+  "editor.fontVariations": false,
+  "editor.tokenColorCustomizations": {
+    "textMateRules": [
+      {
+        "scope": "comment",
+        "settings": {
+          "fontStyle": "italic"
+        }
+      }
+    ]
+  },
+  "rest-client.environmentVariables": {
+    "$shared": {
+      "contentType": "application/json"
+    },
+    "local": {
+      "host": "http://localhost:4003/api",
+      "testFilesPath": "../assets"
+    },
+    "dev": {
+      "host": "https://dev-llmpipeline.aventisia.com/api",
+      "testFilesPath": "https://gitea.aventisia.com/aventisia-public/assets/raw/branch/main/test-files"
+    },
+    "uat": {
+      "host": "https://uat-llmpipeline.aventisia.com/api",
+      "testFilesPath": "https://gitea.aventisia.com/aventisia-public/assets/raw/branch/main/test-files"
+    },
+    "prod": {
+      "host": "https://llmpipeline.aventisia.com/api",
+      "testFilesPath": "https://gitea.aventisia.com/aventisia-public/assets/raw/branch/main/test-files"
+    }
+  }
+}

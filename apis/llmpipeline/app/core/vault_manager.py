@@ -1,0 +1,57 @@
+import requests
+from app.core.logger import logger
+from typing import Dict, Any
+import uuid
+
+class VaultManager:
+    # Constructor: To initialize API URL and key (if any)
+    # TODO: Remove default URL or connect to database to do these operations
+    def __init__(self, api_url: str = "http://localhost:4001/api/app-secret"):
+        self.api_url = api_url
+
+    def get_vault_secret_by_id(self, vault_secret_id: str, jwt: str = None) -> Dict[str, Any]:
+        """
+        Fetches vault secret details by its ID from the API.
+
+        :param vault_secret_id: The GUID of the vault secret to retrieve.
+        :param jwt: Optional JWT token for authorization.
+        :return: A dictionary containing vault secret data or an error message.
+        """
+        try:
+            # Validate if the vault_secret_id is a valid UUID
+            try:
+                uuid.UUID(vault_secret_id)
+            except ValueError:
+                return {"error": "Invalid vaultSecretId. Must be a valid GUID."}
+
+            # Prepare request headers
+            headers = {"Content-Type": "application/json"}
+            
+            # Include Authorization header if JWT is provided
+            if jwt:
+                headers["Authorization"] = f"Bearer {jwt}"
+
+            # Make the request to fetch vault secret data
+            response = requests.get(f"{self.api_url}/decrypted-data/{vault_secret_id}", headers=headers, timeout=60)
+            
+            # Handle non-successful response
+            if not response.ok:
+                logger.error(f"Failed to fetch vault secret. Status code: {response.status_code}. Message: {response.text}")
+                return None
+            
+            # Parse the response JSON
+            vault_secret_data = response.json()
+
+            # Check if 'data' is present in the response
+            if not vault_secret_data.get("data"):
+                logger.warning(f"No data found for vaultSecretId: {vault_secret_id}")
+                return None
+            
+            # Successful retrieval of vault secret data
+            logger.info(f"Successfully retrieved vault secret for vaultSecretId: {vault_secret_id}")
+            return vault_secret_data.get("data", {})
+        
+        except Exception as ex:
+            # Log the exception if something goes wrong
+            logger.error(f"Error retrieving vault secret for vaultSecretId {vault_secret_id}: {ex}")
+            return {"error": f"An error occurred: {str(ex)}"}
