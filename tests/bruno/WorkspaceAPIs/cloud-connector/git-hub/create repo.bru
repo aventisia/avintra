@@ -1,0 +1,23 @@
+meta {
+  name: create repo
+  type: http
+  seq: 1
+}
+
+post {
+  url: https://localhost:4001/cloud-connectors/github/create-repo
+  body: none
+  auth: none
+}
+
+script:pre-request {
+  const { faker } = require('@faker-js/faker');
+  
+  req.setBody({
+    credentialId:"DUMMY",
+     orgUrl: "",
+    repoName: "Mayuri-git",
+    description : "",
+    isPrivate: true, 
+  })
+}

@@ -1,0 +1,17 @@
+meta {
+  name: Required - Is credit plan available
+  type: http
+  seq: 1
+}
+
+post {
+  url: {{ACCOUNTS_APIS_BASE_URL}}/credit-plans/is-available
+  body: json
+  auth: none
+}
+
+body:json {
+  {
+    "userInput": "OnPremGpuText"
+  }
+}

@@ -1,0 +1,11 @@
+meta {
+  name: Get roles to select
+  type: http
+  seq: 1
+}
+
+get {
+  url: {{ACCOUNTS_APIS_BASE_URL}}/manage-role/option-to-select/{{TENANT_ID}}
+  body: none
+  auth: none
+}

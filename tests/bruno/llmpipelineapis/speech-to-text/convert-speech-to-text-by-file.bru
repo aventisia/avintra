@@ -1,0 +1,17 @@
+meta {
+  name: Convert speech to text by file
+  type: http
+  seq: 2
+}
+
+post {
+  url: {{LLM_PIPELINE_APIS_BASE_URL}}/transcriptions/upload
+  body: multipartForm
+  auth: none
+}
+
+body:multipart-form {
+  file: @file(/home/rahmat15/Gitea/Test/06-17 Prac 4 Part1 Car Trouble.mp3)
+  lang_code: en
+  use_gpu: false
+}

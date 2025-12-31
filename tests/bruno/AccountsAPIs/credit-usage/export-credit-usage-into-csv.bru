@@ -1,0 +1,22 @@
+meta {
+  name: Export credit usage into CSV
+  type: http
+  seq: 4
+}
+
+post {
+  url: {{ACCOUNTS_APIS_BASE_URL}}/credit-usage/export
+  body: json
+  auth: none
+}
+
+body:json {
+  {
+    "serviceTypes": [],
+    "UserIds": [],
+    "AIModelIds": [],
+    "AgentIds": [],
+    "StartDate": null,
+    "endDate": null
+  } 
+}

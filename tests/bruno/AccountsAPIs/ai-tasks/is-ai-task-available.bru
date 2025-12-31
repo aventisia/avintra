@@ -1,0 +1,17 @@
+meta {
+  name: Is ai task available
+  type: http
+  seq: 1
+}
+
+post {
+  url: {{ACCOUNTS_APIS_BASE_URL}}/ai-task/is-available
+  body: json
+  auth: none
+}
+
+body:json {
+  {
+    "userInput": "search_key"
+  }
+}

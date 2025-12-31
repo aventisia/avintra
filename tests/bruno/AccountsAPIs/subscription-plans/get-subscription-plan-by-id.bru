@@ -1,0 +1,17 @@
+meta {
+  name: Get subscription plan by id
+  type: http
+  seq: 7
+}
+
+get {
+  url: {{ACCOUNTS_APIS_BASE_URL}}/subscription-plans/{{SUBSCRIPTION_PLAN_ID}}
+  body: none
+  auth: none
+}
+
+body:json {
+  {
+    "name": "{{$randomCompanyName}}"
+  }
+}

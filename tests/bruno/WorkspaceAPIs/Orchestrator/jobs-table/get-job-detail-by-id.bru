@@ -1,0 +1,11 @@
+meta {
+  name: Get job detail by id
+  type: http
+  seq: 10
+}
+
+get {
+  url: {{WORC_APIS_BASE_URL}}/job/detail/{{JOB_ID}}
+  body: none
+  auth: none
+}

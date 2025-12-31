@@ -1,0 +1,25 @@
+meta {
+  name: Delete tenant subscription
+  type: http
+  seq: 13
+}
+
+delete {
+  url: {{ACCOUNTS_APIS_BASE_URL}}/tenant-subscriptions/{{TENANT_SUBSCRIPTION_ID}}
+  body: none
+  auth: none
+}
+
+body:json {
+  {
+    "name": "{{$randomCompanyName}}"
+  }
+}
+
+script:post-response {
+  if (res.getStatus() == 200)
+  {
+      bru.setGlobalEnvVar("TENANT_SUBSCRIPTION_ID", "00000000000000000000000000");
+  }
+  
+}

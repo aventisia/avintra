@@ -1,0 +1,22 @@
+meta {
+  name: Create speech
+  type: http
+  seq: 2
+}
+
+post {
+  url: {{LLM_PIPELINE_APIS_BASE_URL}}/elevenlabs_tts/synthesize
+  body: json
+  auth: inherit
+}
+
+body:json {
+  {
+    "text": "Hello! This is a test of the ElevenLabs text-to-speech API.",
+    "voice_id": "21m00Tcm4TlvDq8ikWAM",
+    "model_id": "eleven_multilingual_v2",
+    "output_format": "mp3_22050_32",
+    "return_base64": true
+  }
+  
+}

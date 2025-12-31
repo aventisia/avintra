@@ -1,0 +1,16 @@
+meta {
+  name: Get credit plan list
+  type: http
+  seq: 3
+}
+
+get {
+  url: {{ACCOUNTS_APIS_BASE_URL}}/credit-usage/summary?startDate=2025-08-15&endDate=2025-09-30
+  body: none
+  auth: none
+}
+
+params:query {
+  startDate: 2025-08-15
+  endDate: 2025-09-30
+}

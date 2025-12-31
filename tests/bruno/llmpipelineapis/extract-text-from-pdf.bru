@@ -1,0 +1,18 @@
+meta {
+  name: Extract text from pdf
+  type: http
+  seq: 1
+}
+
+post {
+  url: {{LLM_PIPELINE_APIS_BASE_URL}}/extract-pdf-text/
+  body: json
+  auth: none
+}
+
+body:json {
+  {
+    "pdf_url": "test.pdf",
+    "download": false
+  }
+}

@@ -1,0 +1,23 @@
+meta {
+  name: Sample - Hindi
+  type: http
+  seq: 14
+}
+
+post {
+  url: {{LLM_PIPELINE_APIS_BASE_URL}}/kokoro-tts/generate
+  body: json
+  auth: inherit
+}
+
+body:json {
+  {
+    "text": "मैं आपकी बात पूरी तरह समझ रहा हूँ। चलिए इसे छोटे-छोटे हिस्सों में बाँटते हैं ताकि यह आसान लगे, और मैं हर चरण को स्पष्ट रूप से समझाऊँगा।",
+    "voice": "hf_alpha",
+    "lang_code": "h"
+  }
+}
+
+settings {
+  encodeUrl: true
+}

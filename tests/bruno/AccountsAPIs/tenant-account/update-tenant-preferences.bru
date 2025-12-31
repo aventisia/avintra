@@ -1,0 +1,25 @@
+meta {
+  name: Update tenant preferences
+  type: http
+  seq: 7
+}
+
+put {
+  url: {{ACCOUNTS_APIS_BASE_URL}}/tenant-account/preferences
+  body: json
+  auth: none
+}
+
+body:json {
+  {
+    "id": "{{TENANT_ID}}",
+    "tenantName": "Individual Users",
+    "isSSOEnabled": false,
+    "isPwdEnabled": true,
+    "isPwdNeverExpiresEnabled": true,
+    "daysBeforePwdExpires": 730,
+    "isIdleSessionTimeoutEnabled": true,
+    "idleSessionTimeoutMinutes": 10,
+    "isTwoFAEnabled": false
+  }
+}

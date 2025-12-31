@@ -1,0 +1,21 @@
+meta {
+  name: upload multiple
+  type: http
+  seq: 3
+}
+
+post {
+  url: {{WORC_APIS_BASE_URL}}/upload-file/multiple
+  body: multipartForm
+  auth: none
+}
+
+body:multipart-form {
+  : @file(/home/nikhil20/Documents/employee.json)
+  : @file(/home/nikhil20/Documents/Text File.txt)
+}
+
+script:pre-request {
+  
+   
+}

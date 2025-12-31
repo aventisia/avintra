@@ -1,0 +1,20 @@
+meta {
+  name: Get subscription list
+  type: http
+  seq: 3
+}
+
+get {
+  url: {{WORC_APIS_BASE_URL}}/subscription/
+  body: none
+  auth: none
+}
+
+script:pre-request {
+  const { faker } = require('@faker-js/faker');
+  
+  req.setBody({
+    planId: bru.getGlobalEnvVar("PLAN_ID"),
+    userId: bru.getGlobalEnvVar("USER_ID")
+  })
+}

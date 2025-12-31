@@ -1,0 +1,17 @@
+meta {
+  name: Extract file text
+  type: http
+  seq: 2
+}
+
+post {
+  url: {{LLM_PIPELINE_APIS_BASE_URL}}/extract-file-text
+  body: json
+  auth: none
+}
+
+body:json {
+  {
+    "file_url": "/home/gaurav/gitea/aventisia/assets/demo-files/extract_text_from_files/general_excel_xlsx.xlsx"
+  }
+}

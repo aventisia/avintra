@@ -1,0 +1,11 @@
+meta {
+  name: Delete project template by id
+  type: http
+  seq: 12
+}
+
+delete {
+  url: {{WORC_APIS_BASE_URL}}/project-template/{{PROJECT_TEMPLATE_ID}}
+  body: none
+  auth: none
+}

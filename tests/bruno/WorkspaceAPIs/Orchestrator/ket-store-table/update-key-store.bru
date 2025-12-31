@@ -1,0 +1,26 @@
+meta {
+  name: Update key store
+  type: http
+  seq: 3
+}
+
+put {
+  url: {{WORC_APIS_BASE_URL}}/key-store
+  body: none
+  auth: none
+}
+
+script:pre-request {
+  const { faker } = require('@faker-js/faker');
+  
+  req.setBody({
+    id: bru.getGlobalEnvVar("CONFIG_ITEM_ID"),
+    name: faker.commerce.product(),
+    description: faker.lorem.paragraph(),
+    isDisabled: false,
+    type: "TEXT",
+    value: faker.lorem.paragraph(),
+    isEncrypted: false,
+    accessLevel: "PUBLIC"
+  })
+}

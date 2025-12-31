@@ -1,0 +1,20 @@
+meta {
+  name: Update a LLM
+  type: http
+  seq: 3
+}
+
+put {
+  url: {{AI_STUDIO_APIS_BASE_URL}}/llm
+  body: none
+  auth: none
+}
+
+script:pre-request {
+  const { faker } = require('@faker-js/faker');
+  
+  req.setBody({
+    id: bru.getGlobalEnvVar("LLM_ID"),
+    name: faker.person.jobType(),
+  })
+}

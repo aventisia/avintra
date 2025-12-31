@@ -1,0 +1,37 @@
+meta {
+  name: Delete multiple flow blocks
+  type: http
+  seq: 8
+}
+
+post {
+  url: {{WORC_APIS_BASE_URL}}/block/delete-multiple
+  body: none
+  auth: none
+}
+
+body:json {
+  {
+      
+  }
+}
+
+script:pre-request {
+  // Set flowBlockIds in request body
+  req.setBody(
+    JSON.parse(`["${bru.getGlobalEnvVar("FLOW_BLOCK_ID")}"]`)
+  )
+}
+
+script:post-response {
+  if(res.getStatus() == 200){
+      bru.setGlobalEnvVar(
+        "FLOW_BLOCK_ID", 
+        "00000000-0000-0000-0000-000000000000"
+      );
+  }
+}
+
+docs {
+  > TODO: Implement functionality to delete multiple flows only if the user provides an OTP or password, especially when the flows are linked to other sub-content.
+}

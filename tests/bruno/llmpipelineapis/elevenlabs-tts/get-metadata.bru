@@ -1,0 +1,11 @@
+meta {
+  name: Get metadata
+  type: http
+  seq: 1
+}
+
+get {
+  url: {{LLM_PIPELINE_APIS_BASE_URL}}/elevenlabs_tts/metadata
+  body: none
+  auth: inherit
+}

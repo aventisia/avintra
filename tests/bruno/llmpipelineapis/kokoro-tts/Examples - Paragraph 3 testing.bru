@@ -1,0 +1,23 @@
+meta {
+  name: Examples - Paragraph 3 testing
+  type: http
+  seq: 7
+}
+
+post {
+  url: {{LLM_PIPELINE_APIS_BASE_URL}}/kokoro-tts/synthesize
+  body: json
+  auth: inherit
+}
+
+body:json {
+  {
+    "text": "--- \n\n **Paragraph 3:** \n And yes, there’s a party tonight 🎊🎶🍹🔥✨💃🕺, so bring your energy. Just make sure to double-check the notes — they say (Note: see section (3)(b)(iv)) which sounds way too legal. Then I scribbled a TODO list: \n\n 1. Fix the bug \n 2. Push to GitHub \n 3. <li>oh no, wrong HTML tag  \n 4. Celebrate with cake \n\n And finally... wait... what?!?!?!?! \n\n ---",
+    "voice": "af_heart",
+    "lang_code": "a"
+  }
+}
+
+settings {
+  encodeUrl: true
+}

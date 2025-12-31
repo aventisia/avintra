@@ -1,0 +1,28 @@
+meta {
+  name: Delete time trigger by id
+  type: http
+  seq: 6
+}
+
+delete {
+  url: {{WORC_APIS_BASE_URL}}/time-trigger/{{TIME_TRIGGER_ID}}
+  body: none
+  auth: none
+}
+
+script:pre-request {
+  const { faker } = require('@faker-js/faker');
+  
+  req.setBody({
+    id: bru.getGlobalEnvVar("TIME_TRIGGER_ID"),
+  })
+}
+
+script:post-response {
+  if(res.getStatus() == 200){
+      bru.setGlobalEnvVar(
+        "TIME_TRIGGER_ID", 
+        "00000000-0000-0000-0000-000000000000"
+      );
+  }
+}

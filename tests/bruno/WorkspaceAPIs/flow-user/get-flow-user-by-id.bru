@@ -1,0 +1,11 @@
+meta {
+  name: Get flow user by id
+  type: http
+  seq: 5
+}
+
+get {
+  url: {{WORC_APIS_BASE_URL}}/flow-user/{{FLOW_USER_ID}}
+  body: none
+  auth: none
+}

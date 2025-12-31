@@ -1,0 +1,11 @@
+meta {
+  name: Get active sessions
+  type: http
+  seq: 9
+}
+
+get {
+  url: {{ACCOUNTS_APIS_BASE_URL}}/me/active-sessions
+  body: none
+  auth: none
+}

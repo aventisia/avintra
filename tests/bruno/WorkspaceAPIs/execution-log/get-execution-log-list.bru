@@ -1,0 +1,11 @@
+meta {
+  name: Get execution log list
+  type: http
+  seq: 6
+}
+
+get {
+  url: {{WORC_APIS_BASE_URL}}/execution-log/list/{{EXECUTION_LOG_ID}}
+  body: none
+  auth: none
+}

@@ -1,0 +1,22 @@
+meta {
+  name: Delete multiple credit plans
+  type: http
+  seq: 9
+}
+
+post {
+  url: {{ACCOUNTS_APIS_BASE_URL}}/credit-plans/delete-multiple
+  body: json
+  auth: none
+}
+
+body:json {
+  ["{{CREDIT_PLAN_ID}}"]
+}
+
+script:post-response {
+  if (res.getBody().message === "TwoFA is enabled") {
+      bru.setGlobalEnvVar("APP_INTEGRATION_ID", "00000000000000000000000000");
+      }
+  
+}

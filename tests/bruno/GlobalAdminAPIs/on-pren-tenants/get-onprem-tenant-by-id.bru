@@ -1,0 +1,16 @@
+meta {
+  name: Get onprem tenant by id
+  type: http
+  seq: 5
+}
+
+get {
+  url: {{GLOBAL_ADMIN_BASE_URL}}/onprem-tenant/{{ON_PREM_TENANT_ID}}
+  body: none
+  auth: inherit
+}
+
+settings {
+  encodeUrl: true
+  timeout: 0
+}

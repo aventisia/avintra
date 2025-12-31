@@ -1,0 +1,23 @@
+meta {
+  name: Examples - Paragraph 2 testing
+  type: http
+  seq: 6
+}
+
+post {
+  url: {{LLM_PIPELINE_APIS_BASE_URL}}/kokoro-tts/synthesize
+  body: json
+  auth: inherit
+}
+
+body:json {
+  {
+    "text": "--- \n\n **Paragraph 2:** \n So, about the project update... the equation is x squared plus y squared equals z squared, which sounds more complicated than it is. The weather outside is sunny, muy caliente today. Honestly, I feel like this sometimes: ¯\\*(ツ)*/¯. Anyway, User: hi. Bot: hello there! ...umm, let me think 🤔. Oh, and I accidentally left a heading in the notes, it just says: # This is a title. Funny thing, the capital of France is Paris \\[1] — as if we needed a citation for that. I even tested some code: print('Hello, World!'). Looks fine, but my notes got weird: <div>unfinished tag and ThIs Is So WeIrD. \n\n Here’s the unordered list I wrote while distracted: \n * apples \n * bananas \n * oranges \n * \\*\\*half-finished \\*italic \n\n ---",
+    "voice": "af_heart",
+    "lang_code": "a"
+  }
+}
+
+settings {
+  encodeUrl: true
+}

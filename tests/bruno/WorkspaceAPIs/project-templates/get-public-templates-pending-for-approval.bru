@@ -1,0 +1,11 @@
+meta {
+  name: Get public templates pending for approval
+  type: http
+  seq: 9
+}
+
+get {
+  url: {{WORC_APIS_BASE_URL}}/project-template/shared/pending-approval
+  body: none
+  auth: none
+}

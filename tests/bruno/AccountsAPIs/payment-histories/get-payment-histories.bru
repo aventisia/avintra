@@ -1,0 +1,11 @@
+meta {
+  name: Get payment histories
+  type: http
+  seq: 1
+}
+
+get {
+  url: {{ACCOUNTS_APIS_BASE_URL}}/payment-histories/list
+  body: none
+  auth: inherit
+}

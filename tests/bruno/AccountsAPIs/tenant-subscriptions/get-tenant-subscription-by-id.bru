@@ -1,0 +1,17 @@
+meta {
+  name: Get tenant subscription by id
+  type: http
+  seq: 4
+}
+
+get {
+  url: {{ACCOUNTS_APIS_BASE_URL}}/tenant-subscriptions/{{TENANT_SUBSCRIPTION_ID}}
+  body: none
+  auth: none
+}
+
+body:json {
+  {
+    "name": "{{$randomCompanyName}}"
+  }
+}

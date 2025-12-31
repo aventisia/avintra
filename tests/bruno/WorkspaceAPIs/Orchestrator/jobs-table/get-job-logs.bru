@@ -1,0 +1,11 @@
+meta {
+  name: Get job logs
+  type: http
+  seq: 8
+}
+
+get {
+  url: {{WORC_APIS_BASE_URL}}/job/logs/list
+  body: none
+  auth: none
+}

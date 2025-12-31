@@ -1,0 +1,22 @@
+meta {
+  name: Convert speech to text by url
+  type: http
+  seq: 1
+}
+
+post {
+  url: {{LLM_PIPELINE_APIS_BASE_URL}}/transcriptions/from-url
+  body: none
+  auth: none
+}
+
+script:pre-request {
+  const { faker } = require('@faker-js/faker');
+  
+  req.setBody({
+    //file_url: "/files/default-files/7ae210ad-78ad-4661-b014-7dbdfa376590.mp3",
+    download: false,
+    lang_code: "en",
+    use_gpu: true
+  })
+}

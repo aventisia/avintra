@@ -1,0 +1,27 @@
+meta {
+  name: Delete mutiple jobs
+  type: http
+  seq: 15
+}
+
+post {
+  url: {{WORC_APIS_BASE_URL}}/job/delete-multiple
+  body: none
+  auth: none
+}
+
+script:pre-request {
+  // Set jobIds in request body
+  req.setBody(
+    JSON.parse(`["${bru.getGlobalEnvVar("JOB_ID")}"]`)
+  )
+}
+
+script:post-response {
+  if(res.getStatus() == 200){
+      bru.setGlobalEnvVar(
+        "JOB_ID", 
+        "00000000-0000-0000-0000-000000000000"
+      );
+  }
+}

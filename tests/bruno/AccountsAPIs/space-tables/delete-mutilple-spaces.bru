@@ -1,0 +1,18 @@
+meta {
+  name: Delete mutilple spaces
+  type: http
+  seq: 9
+}
+
+post {
+  url: {{ACCOUNTS_APIS_BASE_URL}}/space/delete-multiple
+  body: json
+  auth: none
+}
+
+body:json {
+  [
+    "{{SPACE_ID}}"
+  ]
+  
+}
