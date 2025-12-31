@@ -1,0 +1,349 @@
+namespace AccountsAPIs.Services;
+
+public class UserRegistrationService : IUserRegistrationService
+{
+    private readonly UserManager<AccountUser> _userManager;
+    private readonly IEmailService _emailService;
+    private readonly ILogger<UserRegistrationService> _logger;
+    private readonly IUnitOfWork _unitOfWork;
+    private readonly IAuthHelperService _authHelperService;
+    private readonly GeneralConfig _generalConfig;
+    private readonly Guid _userId;
+    private readonly Guid _tenantId;
+    private readonly string _username;
+
+    public UserRegistrationService(
+        UserManager<AccountUser> userManager,
+        IEmailService emailService,
+        ILogger<UserRegistrationService> logger,
+        IUnitOfWork unitOfWork,
+        IAuthHelperService authHelperService,
+        GeneralConfig generalConfig,
+        IHttpContextAccessor httpContextAccessor)
+    {
+        _userManager = userManager;
+        _emailService = emailService;
+        _logger = logger;
+        _unitOfWork = unitOfWork;
+        _authHelperService = authHelperService;
+        _generalConfig = generalConfig;
+
+        // Extract user ID from the claims
+        _userId = Guid.Parse(httpContextAccessor.HttpContext?.User?.FindFirstValue("uid") ?? Guid.Empty.ToString());
+        _tenantId = Guid.Parse(httpContextAccessor.HttpContext?.User?.FindFirstValue("tntid") ?? Guid.Empty.ToString());
+        _username = httpContextAccessor.HttpContext?.User?.FindFirstValue("uname") ?? string.Empty;
+    }
+
+    // Creates a new account for an individual user (IU) or Aventisia employee.
+    public async Task<ServiceResponse<AccountUser>> CreateAccountAsync(CreateAccountDto createAccountDto)
+    {
+        // Initialize ServiceResponse with failed response
+        var serviceResponse = new ServiceResponse<AccountUser>()
+        {
+            Data = null,
+            Message = "Failed to create your account. Please try again later"
+        };
+
+        try
+        {
+            // Get user (Includes Tenant and Roles)
+            var user = await _unitOfWork.AccountUserRepo
+                    .GetByConditionAsync(w => EF.Functions.ILike(createAccountDto.Email, w.UserName))
+                    .AsNoTracking()
+                    .SingleOrDefaultAsync();
+
+            // User already exists
+            if (user != null)
+            {
+                _logger.LogInformation($"User account already exists for email {createAccountDto.Email}");
+                serviceResponse.Message = "User account already exists";
+                return serviceResponse;
+            }
+
+            // Get Verification secret code
+            var verificationCode = await _unitOfWork.VerificationCodeRepo
+                       .GetByConditionAsync(w => w.Id == createAccountDto.VerificationCodeId)
+                       .SingleOrDefaultAsync();
+
+            // Verification secret code not found
+            if (verificationCode == null)
+            {
+                _logger.LogInformation($"Verification code not found for email {createAccountDto.Email}");
+                serviceResponse.Message = "Failed to verify code. Please try again";
+                return serviceResponse;
+            }
+
+            // Match Verification secret code
+            var verificationCodeMatches = verificationCode.SecretCode.Equals(createAccountDto.SecretCode)
+                && DateTimeOffset.UtcNow < verificationCode.ExpiresOn;
+
+            // Delete Verification secret Code
+            _unitOfWork.VerificationCodeRepo.Delete(verificationCode);
+            await _unitOfWork.SaveAsync();
+
+            // Secret code did not match
+            if (!verificationCodeMatches)
+            {
+                _logger.LogInformation($"Invalid verification code for email {createAccountDto.Email}");
+                serviceResponse.Message = "Failed to verify code. Please try again";
+                return serviceResponse;
+            }
+
+            // Create a new user object using the provided account details
+            var newPwdSetOn = DateTimeOffset.UtcNow;
+            var newUserId = Guid.NewGuid();
+            var newUser = new AccountUser()
+            {
+                Id = newUserId,
+                UserName = createAccountDto.Email.ToLower(),
+                EmailConfirmed = true,
+                Email = createAccountDto.Email.ToLower(),
+                FirstName = CapitalizeFirstLetterUtil.CapitalizeFirstLetter(createAccountDto.FirstName),
+                LastName = CapitalizeFirstLetterUtil.CapitalizeFirstLetter(createAccountDto.LastName),
+                CreatedByUserId = newUserId,
+                LastModifiedByUserId = newUserId,
+                PwdSetOn = newPwdSetOn,
+                IsDefault = false, // DO NOT CHANGE THIS
+                IsEditable = true, // DO NOT CHANGE THIS
+            };
+
+            // Create new user in AccountsDb
+            var createUserResult = await _userManager.CreateAsync(newUser, createAccountDto.Pwd);
+
+            // New user creation failed
+            if (!createUserResult.Succeeded)
+            {
+                // Log create user errors
+                foreach (var error in createUserResult.Errors)
+                    _logger.LogError($"New user creation failed. ErrorCode: {error.Code}, Description: {error.Description}");
+
+                // Return common error for both
+                serviceResponse.Message = "Failed to create your account. Please try again later";
+                return serviceResponse;
+            }
+
+            // Initialize user roles for tenant admin assignment
+            var userRoles = Enum.GetValues(typeof(CustomRolesEnum))
+                                .Cast<CustomRolesEnum>()
+                                .Where(w => w != CustomRolesEnum.SA)
+                                .Select(r => r.ToString())
+                                .ToList();
+
+            // Assign roles to user
+            var addToRolesResult = await _userManager.AddToRolesAsync(newUser, userRoles);
+
+            // Log errors if role assignment fails
+            if (!addToRolesResult.Succeeded)
+            {
+                foreach (var error in addToRolesResult.Errors)
+                {
+                    _logger.LogError("Role assignment failed for user ID {UserId}. Error Code: {Code}, Description: {Description}",
+                        user.Id, error.Code, error.Description);
+                }
+
+                serviceResponse.Message = "Failed to assign roles to user. Please try again later.";
+                return serviceResponse;
+            }
+
+            // Saving pwd (if available) in ObsoletePwd failed
+            if (!await _authHelperService.SavePwdInObsoletePwdList(newUser, createAccountDto.Pwd, newPwdSetOn))
+            {
+                _logger.LogInformation($"Not able to save new pwd in ObsoletePwd list. Tried to create account for email {createAccountDto.Email}");
+                return serviceResponse;
+            }
+
+            // Create placeholder values for email template
+            var placeholderValues = new Dictionary<string, string>() { { "{{userFirstName}}", newUser.FirstName } };
+
+            // Failed to send AccountCreated email
+            if (!await _emailService.SendEmailUsingTemplate(emailType: EmailTypesEnum.AccountCreated, toEmailAddress: createAccountDto.Email, placeholderValues: placeholderValues,
+                bccEmailAddresses: _generalConfig.SalesEmails))
+            {
+                _logger.LogError($"Error occurred while sending account creation confirmation email to {createAccountDto.Email}");
+                /*Still moving forward as account is already saved in the database*/
+            }
+
+            // Create a new tenant entity for the newly created user
+            var userTenant = new Tenant
+            {
+                Id = Guid.NewGuid(),
+                Name = newUser.Email,
+                Domain = string.Empty,
+                Type = TenantTypesEnum.Unspecified,
+                ResourceType = TenantResourceTypesEnum.Shared,
+                Currency = CurrencyTypesEnum.USD,
+                ExpiresOn = DateTimeOffset.UtcNow.AddYears(1),
+                Role = string.Empty,
+                CreatedByUserId = newUser.Id,
+                LastModifiedByUserId = newUser.Id
+            };
+
+            // Insert the new tenant into the repository
+            await _unitOfWork.TenantRepo.InsertAsync(userTenant);
+
+            // Save changes and check if the tenant creation was successful
+            if (!await _unitOfWork.SaveAsync())
+            {
+                _logger.LogWarning("Failed to save new tenant '{TenantName}' (ID: {TenantId}).", userTenant.Name, userTenant.Id);
+                return serviceResponse;
+            }
+
+            // Link the new tenant to the user
+            newUser.TenantId = userTenant.Id;
+
+            // Update the user with the new tenant details
+            _unitOfWork.AccountUserRepo.Update(newUser);
+
+            // Save changes to link the user and tenant in the database
+            if (!await _unitOfWork.SaveAsync())
+            {
+                _logger.LogWarning("Failed to update user with tenant details. User ID: {UserId}, Tenant ID: {TenantId}.", newUser.Id, userTenant.Id);
+                return serviceResponse;
+            }
+
+            // Log successful account creation
+            _logger.LogInformation($"Account successfully created for {createAccountDto.Email}");
+
+            // Fetch the newly created user with their tenant details
+            var newlyAddedUser = await _unitOfWork.AccountUserRepo
+                .GetByConditionAsync(w => EF.Functions.ILike(createAccountDto.Email, w.UserName))
+                .AsSplitQuery()
+                .Include(i => i.Tenant)
+                .Include(i => i.UserRoles)
+                        .ThenInclude(i1 => i1.Role)
+                            .ThenInclude(i2 => i2.RolePermissions)
+                                .ThenInclude(i3 => i3.Permission)
+                .AsNoTracking()
+                .SingleOrDefaultAsync();
+
+            // Set the response data and success message
+            serviceResponse.Data = newlyAddedUser;
+            serviceResponse.StatusCode = 200;
+            serviceResponse.Message = "New user has been created successfully";
+        }
+        catch (Exception ex)
+        {
+            // Log any unexpected errors and return the failure response
+            _logger.LogError(ex.ToString());
+            return serviceResponse;
+        }
+
+        return serviceResponse;
+    }
+
+    // Updates the tenant organization details for a specified user.
+    public async Task<ServiceResponse<AccountUser>> UpdateTenantOrganizationAsync(TenantOrganizationDto tenantOrganizationDto)
+    {
+        // Initialize default failure response
+        var serviceResponse = new ServiceResponse<AccountUser>
+        {
+            Data = null,
+            Message = "Failed to update tenant organization. Please try again later."
+        };
+
+        try
+        {
+            // Validate required fields: Domain and OrganizationName must not be empty or whitespace if the tenant is an organization
+            if (tenantOrganizationDto.Type == TenantTypesEnum.Organization &&
+                (string.IsNullOrWhiteSpace(tenantOrganizationDto.Domain) ||
+                 string.IsNullOrWhiteSpace(tenantOrganizationDto.OrganizationName)))
+            {
+                serviceResponse.Message = "Organization name and domain are required for organizations.";
+                return serviceResponse;
+            }
+
+            // Check if the tenant type is NOT 'Individual'
+            if (tenantOrganizationDto.Type != TenantTypesEnum.Individual)
+            {
+                _logger.LogInformation("Validating organization name for tenant type: {TenantType}", tenantOrganizationDto.Type);
+
+                // Retrieve any existing tenant with the same organization name (case-insensitive)
+                var existingTenant = await _unitOfWork.TenantRepo
+                    .GetByConditionAsync(w => w.Name.ToLower() == tenantOrganizationDto.OrganizationName.ToLower())
+                    .FirstOrDefaultAsync();
+
+                if (existingTenant != null)
+                {
+                    _logger.LogWarning("Organization name '{OrganizationName}' already exists for TenantId: {TenantId}",
+                        tenantOrganizationDto.OrganizationName, existingTenant.Id);
+
+                    serviceResponse.Message = $"Organization name '{tenantOrganizationDto.OrganizationName}' already exists.";
+                    return serviceResponse;
+                }
+            }
+
+            // Define regex pattern to validate domain format (e.g., example.com, www.example.org)
+            var domainPattern = @"^(www\.)?([a-zA-Z0-9-]+\.)+[a-zA-Z]{2,}$";
+
+            // Normalize domain input to lowercase and trim whitespace
+            var domain = tenantOrganizationDto.Domain.Trim().ToLower();
+
+            // Check if the domain matches the required pattern
+            if (!Regex.IsMatch(domain, domainPattern))
+            {
+                serviceResponse.Message = "Invalid domain format. Example: 'example.com' or 'www.example.org'.";
+                return serviceResponse;
+            }
+
+            // Clean domain by removing 'www.' prefix if present
+            var cleanDomain = domain.StartsWith("www.") ? domain.Substring(4) : domain;
+
+            // Retrieve the tenant for this user (assuming tenantId is already associated with the user)
+            var tenant = await _unitOfWork.TenantRepo.GetByConditionAsync(w => w.Id == _tenantId).FirstOrDefaultAsync();
+            if (tenant == null)
+            {
+                serviceResponse.Message = "Tenant not found for this user.";
+                return serviceResponse;
+            }
+
+            // Check if the tenant type is individual or organization
+            bool isIndividualUser = tenantOrganizationDto.Type == TenantTypesEnum.Individual;
+
+            // Update tenant details
+            tenant.Name = isIndividualUser ? _username : tenantOrganizationDto.OrganizationName;
+            tenant.Domain = isIndividualUser ? _username : cleanDomain;
+            tenant.Type = tenantOrganizationDto.Type;
+            tenant.Role = tenantOrganizationDto.Role;
+            tenant.NumberOfEmployees = tenantOrganizationDto.NumberOfEmployees;
+            tenant.Industry = tenantOrganizationDto.Industry;
+            tenant.Currency = tenantOrganizationDto.Country == CountriesEnum.India ? CurrencyTypesEnum.INR : CurrencyTypesEnum.USD;
+            tenant.Country = tenantOrganizationDto.Country;
+            tenant.LastModifiedByUserId = _userId;
+
+            // Update the tenant in the repository
+            _unitOfWork.TenantRepo.Update(tenant);
+
+            // Save changes and verify tenant update success
+            if (!await _unitOfWork.SaveAsync())
+            {
+                _logger.LogWarning("Failed to update tenant details for tenant ID {TenantId}.", tenant.Id);
+                return serviceResponse;
+            }
+
+            _logger.LogInformation("Tenant details successfully updated for tenant ID {TenantId} (Organization: {TenantName}).", tenant.Id, tenant.Name);
+
+            // Retrieve the updated user with tenant details for the response
+            var updatedUser = await _unitOfWork.AccountUserRepo
+                .GetByConditionAsync(w => w.Id == _userId)
+                .AsSplitQuery()
+                .Include(i => i.Tenant)
+                .Include(i => i.UserRoles)
+                        .ThenInclude(i1 => i1.Role)
+                            .ThenInclude(i2 => i2.RolePermissions)
+                                .ThenInclude(i3 => i3.Permission)
+                .AsNoTracking()
+                .SingleOrDefaultAsync();
+
+            // Prepare success response with updated user data
+            serviceResponse.Data = updatedUser;
+            serviceResponse.StatusCode = 200;
+            serviceResponse.Message = "Tenant organization details updated successfully.";
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex, "An unexpected error occurred while updating tenant organization details for user ID {UserId}.", _userId);
+        }
+
+        return serviceResponse;
+    }
+}

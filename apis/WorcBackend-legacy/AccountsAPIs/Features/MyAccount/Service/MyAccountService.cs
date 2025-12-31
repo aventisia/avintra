@@ -1,0 +1,1440 @@
+using System.Runtime.CompilerServices;
+using Npgsql.EntityFrameworkCore.PostgreSQL.Query.ExpressionTranslators.Internal;
+using Npgsql.EntityFrameworkCore.PostgreSQL.Storage.Internal.Mapping;
+
+namespace AccountsAPIs.Services;
+
+public class MyAccountService(
+    UserManager<AccountUser> userManager,
+    SignInManager<AccountUser> signInManager,
+    IHttpContextAccessor httpContextAccessor,
+    ILogger<AuthService> logger,
+    IUnitOfWork unitOfWork,
+    IAuthHelperService authHelperService,
+    IAuthService authService,
+    JwtConfig jwtConfig,
+    IdentityConfig identityConfig,
+    IEmailService emailService) : IMyAccountService
+{
+    private readonly UserManager<AccountUser> _userManager = userManager;
+    private readonly SignInManager<AccountUser> _signInManager = signInManager;
+    private readonly HttpContext _httpContext = Guard.Against.Null(httpContextAccessor.HttpContext, message: "HttpContext cannot be null");
+    private readonly ILogger<AuthService> _logger = logger;
+    private readonly IUnitOfWork _unitOfWork = unitOfWork;
+    private readonly IAuthService _authService = authService;
+    private readonly IAuthHelperService _authHelperService = authHelperService;
+    private readonly IEmailService _emailService = emailService;
+    private readonly IdentityConfig _identityConfig = identityConfig;
+    private readonly JwtConfig _jwtConfig = jwtConfig;
+    private readonly string _jwt = GetJwtOfRequestUtil.GetJwtOfRequest(httpContextAccessor.HttpContext) ?? "jwt-not-found";
+    private readonly string _userName = httpContextAccessor.HttpContext?.User?.FindFirstValue("uname") ?? "Unknown";
+    private readonly Guid _sessionId = Guid.Parse(httpContextAccessor.HttpContext?.User?.FindFirstValue("sid") ?? Guid.Empty.ToString());
+    private readonly Guid _userId = Guid.Parse(httpContextAccessor.HttpContext?.User?.FindFirstValue("uid") ?? Guid.Empty.ToString());
+
+    const string invalidcredentials = "Invalid credentials";
+    const string userDoesNotExists = "User does not exists";
+    const string userNotFoundTemplate = "{methodName}: User not found for username {_userName}";
+
+    // Gets user's current session without JWT to view latest user's info
+    public async Task<ServiceResponse<UserSessionDto>> GetMySessionAsync()
+    {
+        // Initialize ServiceResponse with failed response
+        var serviceResponse = new ServiceResponse<UserSessionDto>
+        {
+            Data = null,
+            StatusCode = 400
+        };
+
+        try
+        {
+            // Try to get user
+            var user = await _unitOfWork.AccountUserRepo
+                    .GetByConditionAsync(w => w.UserName == _userName)
+                    .Include(i => i.UserRoles)
+                        .ThenInclude(i1 => i1.Role)
+                            .ThenInclude(i2 => i2.RolePermissions)
+                                .ThenInclude(i3 => i3.Permission)
+                    .AsNoTracking()
+                    .AsSplitQuery()
+                    .SingleOrDefaultAsync();
+
+            // User doesn't exist
+            if (user == null)
+            {
+                _logger.LogInformation("User not found for username {_userName}", _userName);
+                serviceResponse.Message = userDoesNotExists;
+                return serviceResponse;
+            }
+
+            // Try to get user session
+            var session = await _unitOfWork.ActiveSessionRepo
+                .GetByConditionAsync(w => w.Id == _sessionId && w.UserId == user.Id)
+                .SingleOrDefaultAsync();
+
+            // User session doesn't exist
+            if (session == null)
+            {
+                _logger.LogInformation("User session not found for session Id {_sessionId} and {Id}", _sessionId, user.Id);
+                serviceResponse.Message = "User session does not exist";
+                return serviceResponse;
+            }
+
+            // Try to retrieve the access token from the request cookies
+            _httpContext.Request.Cookies.TryGetValue(CookieNamesEnum.AccessToken.ToString(), out var accessToken);
+
+            // Try to retrieve the tenant by id
+            var tenant = await _unitOfWork.TenantRepo.GetByConditionAsync(w => w.Id == user.TenantId).FirstOrDefaultAsync();
+
+            var userSessionDto = new UserSessionDto()
+            {
+                TenantName = user.Tenant.Name,
+                FirstName = user.FirstName,
+                LastName = user.LastName,
+                UserInitials = GetUserInitialsUtil.GetUserInitials(user.FirstName, user.LastName),
+                AccessToken = accessToken,
+                RefreshToken = session.RefreshToken,
+                RTExpiresOn = session.SessionExpiresOn,
+                Country = tenant != null ? tenant.Country.ToString() : "NA"
+            };
+
+            // Task successful
+            serviceResponse.Data = userSessionDto;
+            serviceResponse.StatusCode = 200;
+            serviceResponse.Message = "Session retrieved successfully";
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex, Constants.ERROR_OCCURRED_MESSAGE_TEMPLATE, ex.TargetSite.Name);
+            return serviceResponse;
+        }
+
+        return serviceResponse;
+    }
+
+    public async Task<ServiceResponse<bool>> LogOffFromCurrentSessionAsync()
+    {
+        // Initialize ServiceResponse with Failed response
+        var serviceResponse = new ServiceResponse<bool>()
+        {
+            Data = false,
+            Message = "Failed to logoff. Please try again later"
+        };
+
+        try
+        {
+            // Set method name
+            var methodName = nameof(LogOffFromCurrentSessionAsync);
+
+            // Get current active session
+            var currentSession = await _unitOfWork.ActiveSessionRepo
+                .GetByConditionAsync(w => w.Id == _sessionId && w.UserId == _userId)
+                .SingleOrDefaultAsync();
+
+            // Session not found
+            if (currentSession == null)
+            {
+                _logger.LogInformation($"Active session not found for account {_userName} for session Id {_sessionId}");
+                return serviceResponse;
+            }
+
+            // Get user request's deviceId
+            var userAgent = _httpContext.Request.Headers["User-Agent"].ToString();
+
+            // DeviceId did not match
+            if (currentSession.DeviceId != userAgent)
+            {
+                _logger.LogInformation($"DeviceId did not match for session {_sessionId} and account {_userName}");
+                return serviceResponse;
+            }
+
+            // Add sessionId to list (TerminateUserSessionsAsync accepts list of sessionId)
+            var sessionIds = new List<Guid> { _sessionId };
+
+            // Terminate current sessions
+            var terminateSessionResult = await _authService.TerminateUserSessionsAsync(_userId, _userName, TerminateSessionReasonsEnum.SessionTerminatedByUser, sessionIds);
+
+            // TerminateSession job failed
+            if (terminateSessionResult.StatusCode != 200)
+            {
+                _logger.LogError($"{methodName}: Not able to terminate current active sessions for session Id {_sessionId} and account {_userName}");
+                return serviceResponse;
+            }
+
+            // Signout using SignInManager
+            await _signInManager.SignOutAsync();
+
+            // Set all cookies to blank
+            _authHelperService.RemoveCookie(CookieNamesEnum.SessionId.ToString());
+            _authHelperService.RemoveCookie(CookieNamesEnum.AccessToken.ToString());
+            _authHelperService.RemoveCookie(CookieNamesEnum.RefreshToken.ToString());
+            _authHelperService.RemoveCookie(CookieNamesEnum.UserName.ToString());
+
+            // Task successful
+            _logger.LogInformation("User has logged off successfully. Session Id - {_sessionId}, username - {_userName} and device Id - {userAgent}", _sessionId, _userName, userAgent);
+            serviceResponse.Data = true;
+            serviceResponse.StatusCode = 200;
+            serviceResponse.Message = "You have been logged off successfully";
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex, "Error occured while performing {Name}", ex.TargetSite.Name);
+
+            return serviceResponse;
+        }
+
+        return serviceResponse;
+    }
+
+    // Refreshes the user's session for the requested device.
+    public async Task<ServiceResponse<UserSessionDto>> RefreshUserSessionAsync()
+    {
+        // Initialize ServiceResponse with failed response
+        var serviceResponse = new ServiceResponse<UserSessionDto>
+        {
+            Data = null,
+            StatusCode = 401,
+            Message = "Unable to refresh the session"
+        };
+
+        try
+        {
+            // Get SessionId, Username, RefreshToken and User-Agent
+            _httpContext.Request.Cookies.TryGetValue(CookieNamesEnum.SessionId.ToString(), out var sessionIdString);
+            _httpContext.Request.Cookies.TryGetValue(CookieNamesEnum.UserName.ToString(), out var userName);
+            _httpContext.Request.Cookies.TryGetValue(CookieNamesEnum.RefreshToken.ToString(), out var refreshToken);
+            var userAgent = _httpContext.Request.Headers["User-Agent"].ToString();
+
+            // Set all cookies to blank
+            _authHelperService.RemoveCookie(CookieNamesEnum.SessionId.ToString());
+            _authHelperService.RemoveCookie(CookieNamesEnum.AccessToken.ToString());
+            _authHelperService.RemoveCookie(CookieNamesEnum.RefreshToken.ToString());
+            _authHelperService.RemoveCookie(CookieNamesEnum.UserName.ToString());
+
+            // Something is missing
+            if (sessionIdString == null || userName == null || userAgent == null)
+            {
+                _logger.LogInformation("{SessionId} or {UserName} or User-Agent not found", CookieNamesEnum.SessionId, CookieNamesEnum.UserName);
+                serviceResponse.Message = "Unable to refresh the session";
+                return serviceResponse;
+            }
+
+            // RefreshToken not found
+            if (refreshToken == null)
+            {
+                // Expired sessions will be deleted once user try to create new session via logging in
+                _logger.LogInformation($"Session has expired for {sessionIdString} because {CookieNamesEnum.RefreshToken} not found");
+                serviceResponse.Message = "Session has expired";
+                return serviceResponse;
+            }
+
+            // Get user (Includes Tenant and Roles)
+            var user = await _unitOfWork.AccountUserRepo
+                .GetByConditionAsync(w => EF.Functions.ILike(userName, w.UserName))
+                .Include(i => i.UserRoles)
+                        .ThenInclude(i1 => i1.Role)
+                            .ThenInclude(i2 => i2.RolePermissions)
+                                .ThenInclude(i3 => i3.Permission)
+                    .AsNoTracking()
+                    .AsSplitQuery()
+                    .SingleOrDefaultAsync();
+
+            // User doesn't exist
+            if (user == null)
+            {
+                _logger.LogInformation("{UserName} account not found", userName);
+                serviceResponse.Message = invalidcredentials;
+                return serviceResponse;
+            }
+
+            // Tenant is null/disabled/expired
+            if (!_authHelperService.IsUserTenantValid(user.Tenant, user.UserName))
+            {
+                serviceResponse.Message = "Not able to retrieve your tenant's details. Please contact support adminstrator";
+                return serviceResponse;
+            }
+
+            // Account is locked
+            if (user.LockoutEnd > DateTimeOffset.UtcNow)
+            {
+                _logger.LogInformation("{UserName} account is locked", userName);
+                serviceResponse.Message = "Your account is locked. Please contact support adminstrator";
+                return serviceResponse;
+            }
+
+            // Account is disabled
+            if (user.IsDisabled)
+            {
+                _logger.LogInformation("{UserName} account is disabled", userName);
+                serviceResponse.Message = "Your account is disabled. Please contact support adminstrator";
+                return serviceResponse;
+            }
+
+            // Password has expired
+            if (!user.Tenant.IsPwdNeverExpiresEnabled && (DateTimeOffset.UtcNow - user.PwdSetOn)?.Days > user.Tenant.DaysBeforePwdExpires)
+            {
+                _logger.LogInformation("{UserName} account's password has been expired", userName);
+                /********IMPORTANCT NOTE********
+                DO NOT CHANGE the message's part "Your password has
+                been expired" as it has to match on frontend side
+                ********IMPORTANCT NOTE********/
+                serviceResponse.Message = "Your password has been expired. Please reset it to use your account";
+                return serviceResponse;
+            }
+
+            // Get session
+            var sessionId = new Guid(sessionIdString);
+            var activeSession = await _unitOfWork.ActiveSessionRepo
+                .GetByConditionAsync(w => w.Id == sessionId && w.UserId == user.Id)
+                .SingleOrDefaultAsync();
+
+            // Session not found
+            if (activeSession == null)
+            {
+                _logger.LogInformation($"Active session not found for account {userName}");
+                serviceResponse.Message = invalidcredentials;
+                return serviceResponse;
+            }
+
+            // DeviceId did not match
+            if (activeSession.DeviceId != userAgent)
+            {
+                _logger.LogInformation($"DeviceId did not match for session {activeSession.Id} and account {userName}");
+                serviceResponse.Message = invalidcredentials;
+                return serviceResponse;
+            }
+
+            // RefreshToken did not match
+            if (activeSession.RefreshToken != refreshToken)
+            {
+                _logger.LogInformation($"RefreshToken did not match for session {activeSession.Id} and account {userName}");
+                serviceResponse.Message = invalidcredentials;
+                return serviceResponse;
+            }
+
+            /*No need to check refreshToken expiry bcz 
+            cookie won't exist if refreshToken is expired*/
+
+            // Get Jwt and RefreshToken validity config
+            var jwtExpiresOn = DateTimeOffset.UtcNow.AddMinutes(_jwtConfig.AuthJwtValidityInMinutes);
+            var refreshTokenExpiresOn = DateTimeOffset.UtcNow.AddDays(_jwtConfig.RefreshTokenValidityInDays);
+
+
+            // Retrieve the tenant's subscription along with the associated plan details.
+            var tenantSubscription = await _unitOfWork.TenantSubscriptionRepo
+                 .GetByConditionAsync(w => w.TenantId == user.TenantId && w.IsActive)
+                 .Include(i => i.Plan)
+                 .FirstOrDefaultAsync();
+
+            // Extract the current plan type from the subscription, if available.
+            string? currentPlan = tenantSubscription?.Plan?.Type.ToString();
+
+            // Create new Jwt string
+            var jwt = _authHelperService.CreateJwt(user, jwtExpiresOn, false, sessionId, currentPlan);
+
+            // Create new RefreshToken
+            var newRefreshToken = _authHelperService.CreateRefreshToken();
+
+            // Update info of activeSession instance
+            activeSession.RefreshToken = newRefreshToken;
+            activeSession.SessionExpiresOn = refreshTokenExpiresOn;
+            activeSession.LastRefreshOn = DateTimeOffset.UtcNow;
+
+            // Update ActiveSession
+            _unitOfWork.ActiveSessionRepo.Update(activeSession);
+
+            // Update-ActiveSession job failed
+            if (!await _unitOfWork.SaveAsync())
+            {
+                _logger.LogInformation($"Context SaveChanges failed while refreshing active session for {user.UserName} and sessionId {sessionIdString}");
+                serviceResponse.Message = "Something went wrong while refreshing session. Please try again later";
+                return serviceResponse;
+            }
+
+            // Append SessionId, Jwt/AccessToken, RefreshToken and Username to cookies
+            _authHelperService.SetCookie(CookieNamesEnum.SessionId.ToString(), activeSession.Id.ToString(), refreshTokenExpiresOn);
+            _authHelperService.SetCookie(CookieNamesEnum.AccessToken.ToString(), jwt, jwtExpiresOn);
+            _authHelperService.SetCookie(CookieNamesEnum.RefreshToken.ToString(), newRefreshToken, refreshTokenExpiresOn);
+            _authHelperService.SetCookie(CookieNamesEnum.UserName.ToString(), user.UserName, refreshTokenExpiresOn);
+
+            // Try to retrieve the tenant by id
+            var tenant = await _unitOfWork.TenantRepo.GetByConditionAsync(w => w.Id == user.TenantId).FirstOrDefaultAsync();
+
+            // Create UserSessionDto
+            var userSessionDto = new UserSessionDto()
+            {
+                TenantName = user.Tenant.Name,
+                FirstName = user.FirstName,
+                LastName = user.LastName,
+                UserInitials = GetUserInitialsUtil.GetUserInitials(user.FirstName, user.LastName),
+                AccessToken = jwt,
+                RefreshToken = refreshToken,
+                RTExpiresOn = refreshTokenExpiresOn,
+                Country = tenant != null ? tenant.Country.ToString() : "NA"
+            };
+
+            // Check if the user is associated with an organization (tenant)
+            if (user.Tenant == null || user.Tenant.Type == TenantTypesEnum.Unspecified)
+            {
+                serviceResponse.Message = "Complete organization setup to continue.";
+            }
+            else
+            {
+                // Query the current tenant's subscription, including related plan and creator details
+                var subscription = await _unitOfWork.TenantSubscriptionRepo
+                    .GetByConditionAsync(w =>
+                        w.TenantId == user.TenantId && w.IsActive
+                    )
+                    .SingleOrDefaultAsync(); // @rahmat Since tenant should have only one active subscription at max so using SingleOrDefaultAsync() instead of FirstOrDefaultAsync()
+
+                // IMPORTANT NOTE: Once user has completed onboarding, then there will always be an 1 active subscription at 
+                // any point of time even that subscription's status is expired. Users will be able to login even if subscription 
+                // is expired they won't be able to access any paid features. In future, we may downgrade user's subscription to 
+                // free Starter plan automatically once subscription is expired. In that case also there will be always one active subscription.
+
+                // Check if a valid subscription was found
+                if (subscription == null || subscription.Status == SubscriptionStatusTypesEnum.Initiated)
+                {
+                    _logger.LogWarning("No active subscription found for user {UserId} in tenant {TenantId}.", user.Id, user.TenantId);
+                    serviceResponse.Message = "Tenant has no active subscription.";
+                }
+                else
+                {
+                    serviceResponse.Message = "Session has been refreshed successfully.";
+                }
+            }
+
+            // UserSessionDto is ready
+            _logger.LogInformation($"Session has been refreshed successfully for {user.UserName} and session Id {sessionIdString}");
+            serviceResponse.Data = userSessionDto;
+            serviceResponse.StatusCode = 200;
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex, "Error occured while performing {Name}", ex.TargetSite.Name);
+
+            return serviceResponse;
+        }
+
+        return serviceResponse;
+    }
+
+    // Update user's passwrod after checking old password.
+    public async Task<ServiceResponse<bool>> UpdatePwdAsync(PwdUpdateDto pwdUpdateDto)
+    {
+        // Initialize ServiceResponse with Failed response
+        var serviceResponse = new ServiceResponse<bool>()
+        {
+            Data = false,
+            Message = "Failed to update your password. Please try again later"
+        };
+
+        try
+        {
+            // Set method name
+            var methodName = nameof(UpdatePwdAsync);
+
+            // Get user
+            var user = await _userManager.FindByNameAsync(_userName);
+
+            // User doesn't exist
+            if (user == null)
+            {
+                _logger.LogInformation(userNotFoundTemplate, methodName, _userName);
+                serviceResponse.Message = userDoesNotExists;
+                return serviceResponse;
+            }
+
+            // Check if old password is correct
+            var result = await _userManager.CheckPasswordAsync(user, pwdUpdateDto.OldPwd);
+
+            // Old password is incorrect
+            if (!result)
+            {
+                // Increase lockout count
+                user.AccessFailedCount++;
+                user.LockoutEnd = user.AccessFailedCount >= _identityConfig.LockoutMaxFailedAccessAttempts
+                    ? DateTimeOffset.UtcNow.AddMinutes(_identityConfig.DefaultLockoutTimeSpanInMinutes)
+                    : user.LockoutEnd;
+
+                // Update user
+                await _userManager.UpdateAsync(user);
+
+                // log and return
+                _logger.LogInformation($"{methodName}: Old password is incorrect for username {_userName}");
+                serviceResponse.Message = "Old password is incorrect";
+                return serviceResponse;
+            }
+
+            // User is disabled
+            if (user.IsDisabled)
+            {
+                _logger.LogInformation($"{methodName}: User account is disabled for username {_userName}");
+                serviceResponse.Message = "Your account is disabled. Please contact support adminstrator";
+                return serviceResponse;
+            }
+
+            // User is locked
+            if (user.LockoutEnd > DateTimeOffset.UtcNow)
+            {
+                _logger.LogInformation($"{methodName}: User account is locked for username {_userName}");
+                serviceResponse.Message = "Your account is locked. Please contact support adminstrator";
+                return serviceResponse;
+            }
+
+            // Match found in ObsoletePwd table
+            if (!await _authHelperService.DoesNewPwdPassObsoletePwdPolicy(pwdUpdateDto.NewPwd, user))
+            {
+                _logger.LogInformation($"{methodName}: A match found in obsolete passwords list for account {_userName}");
+                serviceResponse.Message = "New password does not meet all the requirements. Please try again";
+                return serviceResponse;
+            }
+
+            // Update password
+            var pwdRemoveResult = await _userManager.RemovePasswordAsync(user);
+            var addNewPwdResult = await _userManager.AddPasswordAsync(user, pwdUpdateDto.NewPwd);
+
+            // Reset-NewPwd job failed
+            if (!pwdRemoveResult.Succeeded || !addNewPwdResult.Succeeded)
+            {
+                _logger.LogError($"{methodName}: Usermanager is not able to set new password for account {_userName}");
+                return serviceResponse;
+            }
+
+            // Set new password set on date
+            var newPwdSetOn = DateTimeOffset.UtcNow;
+
+            // Save old password in ObsoletePwds table
+            if (!await _authHelperService.SavePwdInObsoletePwdList(user, pwdUpdateDto.NewPwd, newPwdSetOn))
+            {
+                _logger.LogError($"{methodName}: Not able to save new pwd in ObsoletePwd list for account {_userName}");
+                return serviceResponse;
+            }
+
+            // Update last password change date
+            user.PwdSetOn = newPwdSetOn;
+            await _userManager.UpdateAsync(user);
+
+            // User asked to logoff from all sessions
+            if (pwdUpdateDto.LogoffFromOtherSessions)
+            {
+                // Get all ActiveSessions for user except current session
+                var sessionIds = await _unitOfWork.ActiveSessionRepo
+                    .GetByConditionAsync(w => w.UserId == user.Id && w.Id != _sessionId)
+                    .Select(s => s.Id)
+                    .ToListAsync();
+
+                // Terminate all sessions
+                var terminateSessionsResult = await _authService.TerminateUserSessionsAsync(user.Id, _userName, TerminateSessionReasonsEnum.SessionTerminatedByUser, sessionIds);
+
+                // TerminateSessions job failed
+                if (terminateSessionsResult.StatusCode != 200)
+                {
+                    _logger.LogError($"{methodName}: Not able to terminate all sessions for account {_userName}");
+                    return serviceResponse;
+                }
+            }
+
+            // Context SaveChanges job failed
+            if (!await _unitOfWork.SaveAsync(true))
+            {
+                _logger.LogError($"{methodName}: Context SaveChanges failed. While updating user passwrod for username - {_userName}");
+                return serviceResponse;
+            }
+
+            // Create placeholder values for email template
+            var placeholderValues = new Dictionary<string, string>() { { "{{userFirstName}}", user.FirstName } };
+
+            // Failed to send PwdReset email
+            if (!await _emailService.SendEmailUsingTemplate(EmailTypesEnum.PwdUpdated, user.Email, placeholderValues))
+            {
+                _logger.LogError($"{methodName}: Error occurred while sending password has been updated email to {user.Email}");
+                /*Still moving forward as new password is already saved in the database*/
+            }
+
+            // Task successful
+            _logger.LogInformation($"{methodName}: Password has been updated for account {_userName}");
+            serviceResponse.Data = true;
+            serviceResponse.StatusCode = 200;
+            serviceResponse.Message = "Your password has been updated successfully";
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex, "Error occured while performing {Name}", ex.TargetSite.Name);
+
+            return serviceResponse;
+        }
+
+        return serviceResponse;
+    }
+
+    //Update user's first and last name
+    public async Task<ServiceResponse<NameUpdateDto>> UpdateNameAsync(NameUpdateDto nameUpdateDto)
+    {
+        //Initialize ServiceResponse with Failed response
+        var serviceResponse = new ServiceResponse<NameUpdateDto>()
+        {
+            Data = null,
+            Message = "Failed to update your name. Please try again later"
+        };
+
+        try
+        {
+            //set method name
+            var methodName = nameof(UpdateNameAsync);
+
+            // Get user
+            var user = await _userManager.FindByNameAsync(_userName);
+
+            // User doesn't exist
+            if (user == null)
+            {
+                _logger.LogInformation(userNotFoundTemplate, methodName, _userName);
+                serviceResponse.Message = userDoesNotExists;
+                return serviceResponse;
+            }
+
+            // Update account User using UserManager
+            user.FirstName = nameUpdateDto.FirstName;
+            user.LastName = nameUpdateDto.LastName;
+            var updateUserResult = await _userManager.UpdateAsync(user);
+
+            // User Update-Job failed
+            if (!updateUserResult.Succeeded)
+            {
+                _logger.LogInformation("Failed while updating user");
+                serviceResponse.Message = "User's name update failed";
+                return serviceResponse;
+            }
+
+            //Update user in other databases
+            var response = await _authHelperService.CreateOrUpdateUserInOtherDbsAsync(user, CrudTypesEnum.Update, _jwt);
+
+            if (!response)
+            {
+                _logger.LogInformation("Failed while updating user in other databases");
+                serviceResponse.Message = "User's name update failed in other databases";
+                return serviceResponse;
+            }
+
+            // Task successful
+            _logger.LogInformation($"{methodName}: Name has been updated for account {_userName}");
+            serviceResponse.Data = nameUpdateDto;
+            serviceResponse.StatusCode = 200;
+            serviceResponse.Message = "Your name has been updated successfully";
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex, "Error occured while performing {Name}", ex.TargetSite.Name);
+
+            return serviceResponse;
+        }
+        return serviceResponse;
+    }
+
+    //Update user's email
+    public async Task<ServiceResponse<EmailUpdateDto>> UpdateEmailAsync(EmailUpdateDto emailUpdateDto)
+    {
+        //Initialize ServiceResponse with Failed response
+        var serviceResponse = new ServiceResponse<EmailUpdateDto>()
+        {
+            Data = null,
+            Message = "Failed to update your email. Please try again later"
+        };
+
+        try
+        {
+            //set method name
+            var methodName = nameof(UpdateEmailAsync);
+
+            // Get user
+            var user = await _userManager.FindByNameAsync(_userName);
+
+            // User doesn't exist
+            if (user == null)
+            {
+                _logger.LogInformation(userNotFoundTemplate, methodName, _userName);
+                serviceResponse.Message = userDoesNotExists;
+                return serviceResponse;
+            }
+
+            //Check if user is an Aventisia employee
+            var isAE = ExtractDomainFromEmailUtil.ExtractDomainFromEmail(user.Email) == "aventisia.com";
+
+            //if user is an Aventisia employee
+            if (isAE)
+            {
+                _logger.LogInformation("Failed to update email for Aventesia employee");
+                serviceResponse.Message = "Unable to update email for Aventesia employee";
+                return serviceResponse;
+            }
+
+            // Get Verification secret code
+            var verificationCode = await _unitOfWork.VerificationCodeRepo
+            .GetByConditionAsync(w => w.Id == emailUpdateDto.VerificationCodeId)
+            .SingleOrDefaultAsync();
+
+            // Verification secret code not found
+            if (verificationCode == null)
+            {
+                _logger.LogInformation($"Verification code not found for email {emailUpdateDto.Email}");
+                serviceResponse.Message = "Failed to verify code. Please try again";
+                return serviceResponse;
+            }
+
+            // Match Verification secret code
+            var verificationCodeMatches = verificationCode.SecretCode.Equals(emailUpdateDto.SecretCode)
+                && DateTimeOffset.UtcNow < verificationCode.ExpiresOn;
+
+            // Delete Verification secret Code
+            _unitOfWork.VerificationCodeRepo.Delete(verificationCode);
+            await _unitOfWork.SaveAsync();
+
+            // Secret code did not match
+            if (!verificationCodeMatches)
+            {
+                _logger.LogInformation($"Invalid verification code for email {emailUpdateDto.Email}");
+                serviceResponse.Message = "Failed to verify code. Please try again";
+                return serviceResponse;
+            }
+
+            // Update account User using UserManager
+            user.Email = emailUpdateDto.Email;
+
+            var token = await _userManager.GenerateChangeEmailTokenAsync(user, emailUpdateDto.Email);
+            var identityResult = await _userManager.ChangeEmailAsync(user, emailUpdateDto.Email, token);
+
+            // User Update-Job failed
+            if (!identityResult.Succeeded)
+            {
+                _logger.LogInformation("Failed while updating user");
+                serviceResponse.Message = "User's email update failed";
+                return serviceResponse;
+            }
+
+            // Update the security stamp to invalidate old cookies
+            await _userManager.UpdateSecurityStampAsync(user);
+
+            // Re-sign the user in to refresh the authentication cookie
+            await _signInManager.RefreshSignInAsync(user);
+
+            // Task successful
+            _logger.LogInformation($"{methodName}: Email has been updated for account {_userName}");
+            serviceResponse.Data = emailUpdateDto;
+            serviceResponse.StatusCode = 200;
+            serviceResponse.Message = "Your email has been updated successfully";
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex, "Error occured while performing {Name}", ex.TargetSite.Name);
+
+            return serviceResponse;
+        }
+        return serviceResponse;
+    }
+
+    //Update user's two factor authentication
+    public async Task<ServiceResponse<Toggle2FADto>> Toggle2FAAsync(Toggle2FADto toggle2FADto)
+    {
+        //Initialize ServiceResponse with Failed response
+        var serviceResponse = new ServiceResponse<Toggle2FADto>()
+        {
+            Data = null,
+            Message = "Failed to update two factor aunthentication. Please try again later"
+        };
+
+        try
+        {
+            var methodName = nameof(UpdateEmailAsync);
+
+            // Get user
+            var user = await _userManager.FindByNameAsync(_userName);
+
+            // User doesn't exist
+            if (user == null)
+            {
+                _logger.LogInformation(userNotFoundTemplate, methodName, _userName);
+                serviceResponse.Message = userDoesNotExists;
+                return serviceResponse;
+            }
+
+            // Verifty email to disable two factor authentication
+            if (!toggle2FADto.TwoFactorEnabled)
+            {
+                // Get Verification secret code
+                var verificationCode = await _unitOfWork.VerificationCodeRepo
+                           .GetByConditionAsync(w => w.Id == toggle2FADto.VerificationCodeId)
+                           .SingleOrDefaultAsync();
+
+                // Verification secret code not found
+                if (verificationCode == null)
+                {
+                    _logger.LogInformation($"Verification code not found for email {user.Email}");
+                    serviceResponse.Message = "Failed to verify code. Please try again";
+                    return serviceResponse;
+                }
+
+                // Match Verification secret code
+                var verificationCodeMatches = verificationCode.SecretCode.Equals(toggle2FADto.SecretCode)
+                    && DateTimeOffset.UtcNow < verificationCode.ExpiresOn;
+
+                // Delete Verification secret Code
+                _unitOfWork.VerificationCodeRepo.Delete(verificationCode);
+                await _unitOfWork.SaveAsync();
+
+                // Secret code did not match
+                if (!verificationCodeMatches)
+                {
+                    _logger.LogInformation($"Invalid verification code for email {user.Email}");
+                    serviceResponse.Message = "Failed to verify code. Please try again";
+                    return serviceResponse;
+                }
+            }
+
+            // Update account User using UserManager
+            user.TwoFactorEnabled = toggle2FADto.TwoFactorEnabled;
+            var updateUserResult = await _userManager.UpdateAsync(user);
+
+            // User Update-Job failed
+            if (!updateUserResult.Succeeded)
+            {
+                _logger.LogInformation("Failed while updating 2FA for the user");
+                serviceResponse.Message = "User's two factor authentication update failed";
+                return serviceResponse;
+            }
+
+            // Task successful
+            _logger.LogInformation($"{methodName}: Two factor authentication has been updated for account {_userName}");
+            serviceResponse.Data = toggle2FADto;
+            serviceResponse.StatusCode = 200;
+            serviceResponse.Message = "Your two factor authentication has been updated successfully";
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex, "Error occured while performing {Name}", ex.TargetSite.Name);
+
+            return serviceResponse;
+        }
+        return serviceResponse;
+    }
+
+    // Gets user's active sessions to view latest user's info
+    public async Task<ServiceResponse<IEnumerable<ActiveSessionDto>>> GetAllActiveSessionsAsync()
+    {
+        // Initialize ServiceResponse with failed response
+        var serviceResponse = new ServiceResponse<IEnumerable<ActiveSessionDto>>
+        {
+            Data = null,
+            Message = "An error occurred while retrieving active sessions",
+
+        };
+
+        try
+        {
+            // Fetch all active sessions for the user that have not expired yet
+            var activeSessions = await _unitOfWork.ActiveSessionRepo
+                .GetByConditionAsync(w => w.UserId == _userId && w.SessionExpiresOn > DateTimeOffset.UtcNow)
+                .ToListAsync();
+
+            // Check condition if no active session
+            if (!activeSessions.Any())
+            {
+                _logger.LogInformation("No active sessions found.");
+                serviceResponse.Message = "No active sessions found for the specified user.";
+                serviceResponse.StatusCode = 404;
+                return serviceResponse;
+            }
+
+            // Map the ActiveSession entities to ActiveSessionDto using Mapster
+            serviceResponse.Data = activeSessions
+                .Adapt<IEnumerable<ActiveSessionDto>>();
+            serviceResponse.StatusCode = 200;
+            serviceResponse.Message = "Active sessions retrieved successfully.";
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex, "Error occured while performing {Name}", ex.TargetSite.Name);
+
+            return serviceResponse;
+        }
+
+        return serviceResponse;
+    }
+
+    // Gets user's 2fa-status to view latest user's info
+    public async Task<ServiceResponse<bool>> GetCurrent2FAStatusAsync()
+    {
+        // Initialize ServiceResponse with failed response
+        var serviceResponse = new ServiceResponse<bool>
+        {
+            Data = false,
+            Message = "An error occurred while retrieving Two-factor authentication status"
+        };
+
+        try
+        {
+            // Fetch the user from the database using userId
+            var user = await _unitOfWork.AccountUserRepo.GetByConditionAsync(w => w.Id == _userId).FirstOrDefaultAsync();
+
+            // If the user is not found, return an error response
+            if (user == null)
+            {
+                serviceResponse.Message = "User not found";
+                serviceResponse.StatusCode = 404;
+                return serviceResponse;
+            }
+
+            // If the user is found, set the Data property to the TwoFactorEnabled value
+            serviceResponse.Data = user.TwoFactorEnabled;
+
+            // Set success message and status code
+            serviceResponse.StatusCode = 200;
+            serviceResponse.Message = "Two-factor authentication status retrieved successfully";
+        }
+        catch (Exception ex)
+        {
+
+            _logger.LogError(ex, "Error occured while performing {Name}", ex.TargetSite.Name);
+
+            return serviceResponse;
+        }
+
+        return serviceResponse;
+    }
+
+    //Delete user account 
+    public async Task<ServiceResponse<bool>> DeleteUserAccountAsync(DeleteUserAccountDto deleteUserAccountDto)
+    {
+        var serviceResponse = new ServiceResponse<bool>
+        {
+            Data = false,
+            Message = "Failed to delete user. Please try again"
+        };
+
+        try
+        {
+            // Get User By Name
+            var user = await _userManager.FindByNameAsync(_userName);
+
+            // User not found
+            if (user == null)
+            {
+                _logger.LogInformation("User not found");
+                serviceResponse.Message = "User not found";
+                return serviceResponse;
+            }
+
+            var isAE = ExtractDomainFromEmailUtil.ExtractDomainFromEmail(user.Email) == "aventisia.com";
+            if (isAE)
+            {
+                _logger.LogInformation("Failed to delete Aventisia user");
+                serviceResponse.Message = "Unable to delete Aventisia user";
+                return serviceResponse;
+            }
+
+            // Get Verification secret code
+            var verificationCode = await _unitOfWork.VerificationCodeRepo
+            .GetByConditionAsync(w => w.Id == deleteUserAccountDto.VerificationCodeId)
+            .SingleOrDefaultAsync();
+
+            // Verification secret code not found
+            if (verificationCode == null)
+            {
+                _logger.LogInformation($"Verification code not found for email {user.Email}");
+                serviceResponse.Message = "Failed to verify code. Please try again";
+                return serviceResponse;
+            }
+
+            // Match Verification secret code
+            var verificationCodeMatches = verificationCode.SecretCode.Equals(deleteUserAccountDto.SecretCode)
+                && DateTimeOffset.UtcNow < verificationCode.ExpiresOn;
+
+            // Delete Verification secret Code
+            _unitOfWork.VerificationCodeRepo.Delete(verificationCode);
+            await _unitOfWork.SaveAsync();
+
+            // Secret code did not match
+            if (!verificationCodeMatches)
+            {
+                _logger.LogInformation($"Invalid verification code for email {user.Email}");
+                serviceResponse.Message = "Failed to verify code. Please try again";
+                return serviceResponse;
+            }
+            // Delete active sessions
+            var activeSessions = await _unitOfWork.ActiveSessionRepo
+                .GetByConditionAsync(w => w.UserId == user.Id && w.SessionExpiresOn > DateTimeOffset.UtcNow)
+                .ToListAsync();
+
+            if (activeSessions.Any())
+                _unitOfWork.ActiveSessionRepo.Delete(activeSessions);
+
+            // Delete obsolete password record
+            var obsoletePwd = await _unitOfWork.ObsoletePwdRepo
+                .GetByConditionAsync(w => w.UserId == user.Id)
+                .FirstOrDefaultAsync();
+
+            if (obsoletePwd != null)
+                _unitOfWork.ObsoletePwdRepo.Delete(obsoletePwd);
+
+            // Delete session logs
+            var sessionLogs = await _unitOfWork.SessionLogRepo.GetByConditionAsync(w => w.UserId == user.Id).ToListAsync();
+            if (sessionLogs.Any())
+                _unitOfWork.SessionLogRepo.Delete(sessionLogs);
+
+            // Delete user
+            var deleteUserResult = await _userManager.DeleteAsync(user);
+            if (!deleteUserResult.Succeeded)
+            {
+                _logger.LogInformation("Failed to delete user");
+                return serviceResponse;
+            }
+
+            // Try to delete user in other databases
+            var deleteUserInOtherDbsResult = await _authHelperService.DeleteUserInOtherDbsAsync(user.Id, _jwt);
+            if (!deleteUserInOtherDbsResult)
+            {
+                _logger.LogInformation("Failed to delete user in other databases");
+                return serviceResponse;
+            }
+            // Task successful
+            serviceResponse.Data = true;
+            serviceResponse.StatusCode = 200;
+            serviceResponse.Message = "User deleted successfully";
+        }
+
+        catch (Exception ex)
+        {
+            _logger.LogError(ex, "An error occurred while deleting the user");
+            serviceResponse.Message = "An error occurred while deleting the user";
+        }
+        return serviceResponse;
+    }
+
+    //Update user's profile details updateUserProfileDto
+    public async Task<ServiceResponse<UserProfileDto>> UpdateUserProfileAsync(UserProfileDto userProfileDto)
+    {
+        //Initialize ServiceResponse with Failed response
+        var serviceResponse = new ServiceResponse<UserProfileDto>()
+        {
+            Data = null,
+            Message = "Failed to update your profile. Please try again later"
+        };
+
+        try
+        {
+            //set method name
+            var methodName = nameof(UpdateUserProfileAsync);
+
+            // Get user
+            var user = await _userManager.FindByNameAsync(_userName);
+
+            // User doesn't exist
+            if (user == null)
+            {
+                _logger.LogInformation(userNotFoundTemplate, methodName, _userName);
+                serviceResponse.Message = userDoesNotExists;
+                return serviceResponse;
+            }
+
+            user.FirstName = userProfileDto.FirstName;
+            user.LastName = userProfileDto.LastName;
+            user.DateOfBirth = userProfileDto.DateOfBirth;
+            user.PhoneNumber = userProfileDto.PhoneNumber;
+            user.Gender = userProfileDto.Gender;
+            user.Country = userProfileDto.Country;
+            var updateUserResult = await _userManager.UpdateAsync(user);
+
+            // User Update-Job failed
+            if (!updateUserResult.Succeeded)
+            {
+                _logger.LogInformation("Failed while updating user's profile");
+                serviceResponse.Message = "User's profile update failed";
+                return serviceResponse;
+            }
+
+            // Task successful
+            _logger.LogInformation("{MethodName}: profile has been updated for account {_UserName}", methodName, _userName);
+            serviceResponse.Data = userProfileDto;
+            serviceResponse.StatusCode = 200;
+            serviceResponse.Message = "Your profile has been updated successfully";
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex, "Error occured while performing {Name}", ex.TargetSite.Name);
+            return serviceResponse;
+        }
+        return serviceResponse;
+    }
+
+    //Update user's profile details updateUserProfileDto
+    public async Task<ServiceResponse<UserProfileDto>> GetUserProfileAsync()
+    {
+        //Initialize ServiceResponse with Failed response
+        var serviceResponse = new ServiceResponse<UserProfileDto>()
+        {
+            Data = null,
+            Message = "Failed to get your profile. Please try again later"
+        };
+
+        try
+        {
+
+            // Get user
+            var user = await _userManager.FindByNameAsync(_userName);
+
+            // User doesn't exist
+            if (user == null)
+            {
+                _logger.LogInformation(userNotFoundTemplate, "GetUserProfileAsync()", _userName);
+                serviceResponse.Message = userDoesNotExists;
+                return serviceResponse;
+            }
+            var userProfileDetails = new UserProfileDto
+            {
+                AvatarSrc = user.AvatarSrc,
+                FirstName = user.FirstName,
+                LastName = user.LastName,
+                DateOfBirth = user.DateOfBirth,
+                PhoneNumber = user.PhoneNumber,
+                Gender = user.Gender,
+                Country = user.Country
+            };
+
+            // Task successful
+            _logger.LogInformation("{MethodName}: profile has been fetched for account {_UserName}", "GetUserProfileAsync()", _userName);
+            serviceResponse.Data = userProfileDetails;
+            serviceResponse.StatusCode = 200;
+            serviceResponse.Message = "Your profile has been fetched successfully";
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex, "Error occured while performing {Name}", ex.TargetSite.Name);
+            return serviceResponse;
+        }
+        return serviceResponse;
+    }
+
+    // acccounts-api/tenant/user/
+    public async Task<ServiceResponse<UserBillingAddressDto>> GetUserBillingAddressAsync()
+    {
+        //Initialize ServiceResponse with Failed response
+        var serviceResponse = new ServiceResponse<UserBillingAddressDto>()
+        {
+            Data = null,
+            Message = "Failed to fetch your tenant profile. Please try again later"
+        };
+
+        try
+        {
+            //set method name
+            var methodName = nameof(GetUserBillingAddressAsync);
+
+            // Get user
+            var user = await _userManager.FindByNameAsync(_userName);
+
+            // User doesn't exist
+            if (user == null)
+            {
+                _logger.LogInformation(userNotFoundTemplate, methodName, _userName);
+                serviceResponse.Message = userDoesNotExists;
+                return serviceResponse;
+            }
+
+            // Decide tenant name basis "@aventisia.com"
+            var tenantName = ExtractDomainFromEmailUtil.ExtractDomainFromEmail(user.Email) == "aventisia.com"
+                                ? GetEnumDescriptionUtil.GetEnumDescription(DefaultTenantsEnum.Aventisia)
+                                : GetEnumDescriptionUtil.GetEnumDescription(DefaultTenantsEnum.IndividualUsers);
+
+            // Get default Tenant 
+            var defaultTenant = await _unitOfWork.TenantRepo
+                                        .GetByConditionAsync(w => w.IsDefault && w.Name == tenantName)
+                                        .SingleOrDefaultAsync();
+
+            UserBillingAddressDto getUserTenantInfoDto;
+            if (defaultTenant.Name.Equals(GetEnumDescriptionUtil.GetEnumDescription(DefaultTenantsEnum.IndividualUsers)))
+            {
+                _logger.LogInformation("{_UserName} user is individual", _userName);
+
+                //if the use is individual then get the billing address of the user
+                var userBillingAddress = await _unitOfWork.BillingDetailRepo
+                .GetByConditionAsync(w => w.CreatedByUserId == user.Id)
+                .FirstOrDefaultAsync();
+
+                getUserTenantInfoDto = new()
+                {
+                    IsIndividual = true,
+                    AddressType = AddressTypeEnum.Official,
+                    AddressLine1 = userBillingAddress?.AddressLine1,
+                    AddressLine2 = userBillingAddress?.AddressLine2,
+                    City = userBillingAddress?.City,
+                    Country = userBillingAddress?.Country.ToString(),
+                    StateOrProvince = userBillingAddress?.State,
+                    //no designation and tenant for indi user
+                };
+                serviceResponse.Message = userBillingAddress is null ? "Please add the address of billing." : "tenant info fetched succesfully.";
+            }
+            else
+            {
+                var addressOfTenant = await _unitOfWork.BillingDetailRepo
+                .GetAllAsync()
+                .FirstOrDefaultAsync();
+                getUserTenantInfoDto = new()
+                {
+                    IsIndividual = false,
+                    AddressType = AddressTypeEnum.Official,
+                    AddressLine1 = addressOfTenant?.AddressLine1,
+                    AddressLine2 = addressOfTenant?.AddressLine2,
+                    City = addressOfTenant?.City,
+                    Country = addressOfTenant?.Country.ToString(),
+                    StateOrProvince = addressOfTenant?.State,
+                    //TODO change when the designation when data is availabl
+                    Designation = string.Empty,
+                    TenantName = defaultTenant.Name
+                };
+
+                serviceResponse.Message = addressOfTenant is null ? "Please add the address of tenant." : "tenant info fetched succesfully.";
+            }
+            serviceResponse.Data = getUserTenantInfoDto;
+            serviceResponse.StatusCode = 200;
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex, "Error occured while performing {Name}", ex.TargetSite.Name);
+            return serviceResponse;
+        }
+        return serviceResponse;
+    }
+
+    // acccounts-api/tenant/update-user/
+    public async Task<ServiceResponse<UserBillingAddressDto>> UpdateUserBillingAddressAsync(UserBillingAddressDto userTenantInfoDto)
+    {
+        //Initialize ServiceResponse with Failed response
+        var serviceResponse = new ServiceResponse<UserBillingAddressDto>()
+        {
+            Data = null,
+            Message = "Failed to update your tenant profile. Please try again later"
+        };
+
+        try
+        {
+            //set method name
+            var methodName = nameof(UpdateUserBillingAddressAsync);
+
+            // Get user
+            var user = await _userManager.FindByNameAsync(_userName);
+
+            // User doesn't exist
+            if (user == null)
+            {
+                _logger.LogInformation(userNotFoundTemplate, methodName, _userName);
+                serviceResponse.Message = userDoesNotExists;
+                return serviceResponse;
+            }
+
+            if (userTenantInfoDto is null)
+            {
+                _logger.LogInformation("parameter is null while updating in method {MethodName}", methodName);
+                serviceResponse.Message = "Please provide proper details to update the tenant account";
+                serviceResponse.StatusCode = 400;
+                return serviceResponse;
+            }
+
+            // Decide tenant name basis "@aventisia.com"
+            var tenantName = ExtractDomainFromEmailUtil.ExtractDomainFromEmail(user.Email) == "aventisia.com"
+                                ? GetEnumDescriptionUtil.GetEnumDescription(DefaultTenantsEnum.Aventisia)
+                                : GetEnumDescriptionUtil.GetEnumDescription(DefaultTenantsEnum.IndividualUsers);
+
+            // Get default Tenant 
+            var defaultTenant = await _unitOfWork.TenantRepo
+                                        .GetByConditionAsync(w => w.IsDefault && w.Name == tenantName)
+                                        .SingleOrDefaultAsync();
+
+            var isIndie = defaultTenant?.Name.Equals(GetEnumDescriptionUtil.GetEnumDescription(DefaultTenantsEnum.IndividualUsers));
+
+            if (isIndie != null && !isIndie.Value)
+            {
+                _logger.LogInformation("billing address of the tenant must updated by authorized user {MethodName}", methodName);
+                serviceResponse.Message = "Billing address of tenant must be update by the authorized user. ";
+                serviceResponse.StatusCode = 400;
+                return serviceResponse;
+            }
+
+            serviceResponse.Message = "tenant info updated succesfully.";
+            serviceResponse.Data = userTenantInfoDto;
+            serviceResponse.StatusCode = 200;
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex, "Error occured while performing {Name}", ex.TargetSite.Name);
+            return serviceResponse;
+        }
+        return serviceResponse;
+    }
+
+    // acccounts-api/tenant/deactivate/
+    public async Task<ServiceResponse<bool>> DeactivateAccountAsync(DeactivateUserAccountDto deactivateUserAccountDto)
+    {
+        //Initialize ServiceResponse with Failed response
+        var serviceResponse = new ServiceResponse<bool>()
+        {
+            Data = false,
+            Message = "Failed to deactivate your account. Please try again later"
+        };
+
+        try
+        {
+            //set method name
+            var methodName = nameof(DeactivateAccountAsync);
+
+            // Get user
+            var user = await _userManager.FindByNameAsync(_userName);
+
+            // User doesn't exist
+            if (user == null)
+            {
+                _logger.LogInformation(userNotFoundTemplate, methodName, _userName);
+                serviceResponse.Message = userDoesNotExists;
+                return serviceResponse;
+            }
+
+            //Check if user is an Aventisia employee
+            var IsAE = ExtractDomainFromEmailUtil.ExtractDomainFromEmail(user.Email) == "aventisia.com";
+
+            //if user is an Aventisia employee
+            if (IsAE)
+            {
+                _logger.LogInformation("Failed to deactivate Aventesia employee");
+                serviceResponse.Message = "Unable to deactivate Aventesia employee";
+                return serviceResponse;
+            }
+
+            // Get Verification secret code
+            var verificationCode = await _unitOfWork.VerificationCodeRepo
+            .GetByConditionAsync(w => w.Id == deactivateUserAccountDto.VerificationCodeId)
+            .SingleOrDefaultAsync();
+
+            // Verification secret code not found
+            if (verificationCode == null)
+            {
+                _logger.LogInformation($"Verification code not found for email {user.Email}");
+                serviceResponse.Message = "Failed to verify code. Please try again";
+                return serviceResponse;
+            }
+
+            // check the user password
+            var isCorrectPWD = await _userManager.CheckPasswordAsync(user, deactivateUserAccountDto.Password);
+
+
+            // return if the user password is not correct
+            if (!isCorrectPWD)
+            {
+                _logger.LogInformation($"Incorrect password while deactivation of account of email {user.Email}");
+                serviceResponse.Message = "Password is incorrect. Please try again";
+                return serviceResponse;
+            }
+
+            // Match Verification secret code
+            var verificationCodeMatches = verificationCode.SecretCode.Equals(deactivateUserAccountDto.SecretCode)
+                && DateTimeOffset.UtcNow < verificationCode.ExpiresOn;
+
+            // Delete Verification secret Code
+            _unitOfWork.VerificationCodeRepo.Delete(verificationCode);
+            await _unitOfWork.SaveAsync();
+
+            // Secret code did not match
+            if (!verificationCodeMatches)
+            {
+                _logger.LogInformation($"Invalid verification code for email {user.Email}");
+                serviceResponse.Message = "Failed to verify code. Please try again";
+                return serviceResponse;
+            }
+
+            // Get all ActiveSessions for user
+            var sessionIds = await _unitOfWork.ActiveSessionRepo
+                .GetByConditionAsync(w => w.UserId == user.Id)
+                .Select(s => s.Id)
+                .ToListAsync();
+
+            //check if the user is asking for deactivation
+            if (deactivateUserAccountDto.Deactivate)
+            {
+                // Terminate all sessions
+                var terminateSessionsResult = await _authService.TerminateUserSessionsAsync(user.Id, _userName, TerminateSessionReasonsEnum.SessionTerminatedByUser, sessionIds);
+
+                // TerminateSessions job failed
+                if (terminateSessionsResult.StatusCode != 200)
+                {
+                    _logger.LogError($"{methodName}: Not able to terminate all sessions for account {_userName}");
+                    return serviceResponse;
+                }
+            }
+
+            user.DeactivatedOn = deactivateUserAccountDto.Deactivate ? DateOnly.FromDateTime(DateTime.UtcNow).AddDays(10).ToDateTime(TimeOnly.MinValue).ToUniversalTime() : DateTime.MaxValue.ToUniversalTime();
+            var updateUserResult = await _userManager.UpdateAsync(user);
+
+            // User Update-Job failed
+            if (!updateUserResult.Succeeded)
+            {
+                _logger.LogInformation("Failed while deactivation the user {_userName}", _userName);
+                serviceResponse.Message = "User's account deactivation failed";
+                return serviceResponse;
+            }
+
+            // Task successful
+            _logger.LogInformation($"{methodName}: account has been deactivating of {_userName}");
+            serviceResponse.Data = true;
+            serviceResponse.StatusCode = 200;
+            serviceResponse.Message = "Your account will be deactivated in 10 days.";
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex, "Error occured while performing {Name}", ex.TargetSite.Name);
+
+            return serviceResponse;
+        }
+        return serviceResponse;
+    }
+
+    // Gets user's deactivation-status to view latest user's info
+    public async Task<ServiceResponse<DeactivationStatusDto>> GetDeactivationStatusAsync()
+    {
+        // Initialize ServiceResponse with failed response
+        var serviceResponse = new ServiceResponse<DeactivationStatusDto>
+        {
+            Data = null,
+            Message = "An error occurred while retrieving deactivation status"
+        };
+
+        try
+        {
+            // Fetch the user from the database using userId
+            var user = await _unitOfWork.AccountUserRepo.GetByConditionAsync(w => w.Id == _userId).FirstOrDefaultAsync();
+
+            // If the user is not found, return an error response
+            if (user == null)
+            {
+                serviceResponse.Message = "User not found";
+                serviceResponse.StatusCode = 404;
+                return serviceResponse;
+            }
+
+            // If the user is found, set the Data property to the TwoFactorEnabled value
+            serviceResponse.Data = new DeactivationStatusDto()
+            {
+                TimeRemains = user.DeactivatedOn,
+                Deactivating = user.DeactivatedOn.ToUniversalTime() < DateTime.MaxValue.ToUniversalTime() && user.DeactivatedOn.ToUniversalTime() != DateTime.MinValue.ToUniversalTime() && user.DeactivatedOn.ToUniversalTime() != DateTime.MaxValue.ToUniversalTime()
+            };
+
+            // Set success message and status code
+            serviceResponse.StatusCode = 200;
+            serviceResponse.Message = "deactivation status retrieved successfully";
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex, "Error occured while performing {Name}", ex.TargetSite.Name);
+            return serviceResponse;
+        }
+
+        return serviceResponse;
+    }
+
+}
