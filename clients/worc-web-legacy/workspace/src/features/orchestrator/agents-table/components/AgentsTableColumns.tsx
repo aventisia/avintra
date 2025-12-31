@@ -1,0 +1,180 @@
+import { Checkbox } from "@aventisia/ui";
+import { Badge } from "@aventisia/ui/badge";
+import { DTColumnHeader } from "@aventisia/ui/data-table";
+import { dateFormatter } from "@aventisia/ui/utils";
+import { ColumnDef } from "@tanstack/react-table";
+
+import { TABLE_KEY } from "../constants";
+import { getColumnName } from "../constants/column-display-names";
+import { AgentsTableDto } from "../dtos/agents-table-dto";
+
+import { TableActions } from "./table-actions/TableActions";
+import { TableCellLink } from "./TableCellLink";
+
+/**
+ * Array of table columns for the agents table.
+ * Each column object contains an accessorKey, header component, and cell component.
+ */
+export const agentsTableColumns: ColumnDef<AgentsTableDto>[] = [
+  {
+    accessorKey: "id",
+    header: ({ table }) => (
+      <Checkbox
+        checked={
+          table.getIsAllPageRowsSelected() ||
+          (table.getIsSomePageRowsSelected() && "indeterminate")
+        }
+        onCheckedChange={(value) => table.toggleAllPageRowsSelected(!!value)}
+        aria-label="Select all"
+        className="translate-y-[2px]"
+      />
+    ),
+    cell: ({ row }) => (
+      <Checkbox
+        checked={row.getIsSelected()}
+        onCheckedChange={(value) => row.toggleSelected(!!value)}
+        aria-label="Select row"
+        className="translate-y-[2px]"
+      />
+    ),
+    enableSorting: false,
+  },
+  {
+    accessorKey: "name",
+    header: ({ column }) => (
+      <DTColumnHeader
+        tableKey={TABLE_KEY}
+        column={column}
+        title={getColumnName("name")}
+      />
+    ),
+    cell: ({ row }) => (
+      <TableCellLink
+        rowId={row.original.refId || "rowId"}
+        versionId={row.original.id || "rowId"}
+        cellValue={row.getValue("name")}
+        type={row.original.type || ""}
+      />
+    ),
+  },
+  // {
+  //   accessorKey: "type",
+  //   header: ({ column }) => (
+  //     <DTColumnHeader
+  //       tableKey={TABLE_KEY}
+  //       column={column}
+  //       title={getColumnName("type")}
+  //     />
+  //   ),
+  //   cell: ({ row }) => (
+  //     <div className="w-auto truncate font-medium">{row.getValue("type")}</div>
+  //   ),
+  // },
+  {
+    accessorKey: "machineCount",
+    header: ({ column }) => (
+      <DTColumnHeader
+        tableKey={TABLE_KEY}
+        column={column}
+        title={getColumnName("machineCount")}
+      />
+    ),
+    cell: ({ row }) => (
+      <div className="w-auto truncate font-medium">
+        {row.original.type == "Agent" ? row.getValue("machineCount") : "NA"}
+      </div>
+    ),
+  },
+  {
+    accessorKey: "versionNumber",
+    header: ({ column }) => (
+      <DTColumnHeader
+        tableKey={TABLE_KEY}
+        column={column}
+        title={getColumnName("versionNumber")}
+      />
+    ),
+    cell: ({ row }) => (
+      <div className="w-auto truncate font-medium">
+        {"v" + row.getValue("versionNumber")}
+      </div>
+    ),
+  },
+  {
+    accessorKey: "status",
+    header: ({ column }) => (
+      <DTColumnHeader
+        tableKey={TABLE_KEY}
+        column={column}
+        title={getColumnName("status")}
+      />
+    ),
+    cell: ({ row }) => {
+      const { isDisabled, machineCount } = row.original;
+
+      const statusColor: {
+        Deployed: string;
+        Disabled: string;
+        Published: string;
+      } = {
+        Deployed: "bg-green-100 text-green-800",
+        Disabled: "bg-gray-100 text-gray-800",
+        Published: "bg-blue-100 text-blue-800",
+      };
+
+      let status: "Disabled" | "Deployed" | "Published" = "Published";
+      const count = machineCount ?? 0; // fallback to 0 if undefined
+
+      if (isDisabled) {
+        status = "Disabled";
+      } else if (count > 0) {
+        status = "Deployed";
+      } else {
+        status = "Published";
+      }
+
+      return <Badge className={statusColor[status]}>{status}</Badge>;
+    },
+  },
+  {
+    accessorKey: "createdBy",
+    header: ({ column }) => (
+      <DTColumnHeader
+        tableKey={TABLE_KEY}
+        column={column}
+        title={getColumnName("createdBy")}
+      />
+    ),
+    cell: ({ row }) => (
+      <div className="w-auto truncate font-medium">
+        {row.getValue("createdBy")}
+      </div>
+    ),
+  },
+  {
+    accessorKey: "createdOn",
+    header: ({ column }) => (
+      <DTColumnHeader
+        tableKey={TABLE_KEY}
+        column={column}
+        title={getColumnName("createdOn")}
+      />
+    ),
+    cell: ({ row }) => (
+      <div className="w-auto truncate font-medium">
+        {dateFormatter(row.getValue("createdOn"))}
+      </div>
+    ),
+  },
+  {
+    id: "actions",
+    cell: ({ row }) => (
+      // Render the agents row actions component
+      <TableActions
+        count={row.original.machineCount || 0}
+        rowId={row.original.id}
+        isDisabled={row.original.isDisabled}
+      />
+    ),
+  },
+];

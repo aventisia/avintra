@@ -1,0 +1,41 @@
+.minimal-tiptap-editor .ProseMirror .heading-node {
+  position: relative;
+  font-weight: 600;
+}
+
+.minimal-tiptap-editor .ProseMirror .heading-node:first-child {
+  margin-top: 0;
+}
+
+.minimal-tiptap-editor .ProseMirror h1 {
+  margin-bottom: 4px;
+  margin-top: 46px;
+  font-size: 1.375rem;
+  line-height: 1.4;
+  letter-spacing: -0.004375rem;
+}
+
+.minimal-tiptap-editor .ProseMirror h2 {
+  margin-bottom: 3.5px;
+  margin-top: 8px;
+  font-size: 1.1875rem;
+  line-height: 1.4;
+  letter-spacing: 0.003125rem;
+}
+
+.minimal-tiptap-editor .ProseMirror h3 {
+  margin-bottom: 3px;
+  margin-top: 6px;
+  font-size: 1.0625rem;
+  line-height: 1.4;
+  letter-spacing: 0.00625rem;
+}
+
+.minimal-tiptap-editor .ProseMirror a.link {
+  cursor: pointer;
+  color: var(--primary-color);
+}
+
+.minimal-tiptap-editor .ProseMirror a.link:hover {
+  text-decoration: underline;
+}

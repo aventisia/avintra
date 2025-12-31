@@ -1,0 +1,9 @@
+export enum VaultAppsEnum {
+  OpenAI,
+  AWS,
+  Twilio,
+  SendGrid,
+  GitHub,
+  M365,
+  GeneralCredentials,
+}

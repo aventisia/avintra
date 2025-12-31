@@ -1,0 +1,64 @@
+import { DTColumnHeader } from "@aventisia/ui/data-table";
+import { dateFormatter } from "@aventisia/ui/utils";
+import { ColumnDef } from "@tanstack/react-table";
+
+import { TABLE_KEY } from "../constants";
+import { QueueWorkItemDto } from "../dtos/queue-work-item-dto";
+
+/**
+ * Array of table columns for the WorkItems table.
+ * Each column object contains an accessorKey, header component, and cell component.
+ */
+export const workItemsTableColumns: ColumnDef<QueueWorkItemDto>[] = [
+  {
+    accessorKey: "id",
+    header: ({ column }) => (
+      <DTColumnHeader tableKey={TABLE_KEY} column={column} title={"Id"} />
+    ),
+    cell: ({ row }) => (
+      <div className="w-auto truncate font-medium">{row.getValue("id")}</div>
+    ),
+    enableSorting: false,
+  },
+  {
+    accessorKey: "status",
+    header: ({ column }) => (
+      <DTColumnHeader tableKey={TABLE_KEY} column={column} title={"Status"} />
+    ),
+    cell: ({ row }) => (
+      <div className="w-auto truncate font-medium">
+        {row.getValue("status")}
+      </div>
+    ),
+  },
+  {
+    accessorKey: "createdBy",
+    header: ({ column }) => (
+      <DTColumnHeader
+        tableKey={TABLE_KEY}
+        column={column}
+        title={"Created By"}
+      />
+    ),
+    cell: ({ row }) => (
+      <div className="w-auto truncate font-medium">
+        {row.getValue("createdBy")}
+      </div>
+    ),
+  },
+  {
+    accessorKey: "createdOn",
+    header: ({ column }) => (
+      <DTColumnHeader
+        tableKey={TABLE_KEY}
+        column={column}
+        title={"Created On"}
+      />
+    ),
+    cell: ({ row }) => (
+      <div className="w-auto truncate font-medium">
+        {dateFormatter(row.getValue("createdOn"))}
+      </div>
+    ),
+  },
+];
