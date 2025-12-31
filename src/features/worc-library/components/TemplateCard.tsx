@@ -27,6 +27,10 @@ type TemplateCardProps = {
 export const TemplateCard = ({ template }: TemplateCardProps) => {
   const handleViewTemplate = useViewTemplate();
 
+  const templateIcons = template?.icons?.filter(
+    (icon) => icon !== "/function.png",
+  );
+
   return (
     <Card
       key={template.id}
@@ -35,9 +39,9 @@ export const TemplateCard = ({ template }: TemplateCardProps) => {
     >
       <CardHeader className="pb-4">
         <div className="flex flex-wrap items-center gap-2 md:gap-4">
-          {template.icons?.length ? (
+          {templateIcons?.length ? (
             <>
-              {template.icons.slice(0, 4).map((icon, idx) => (
+              {templateIcons.slice(0, 4).map((icon, idx) => (
                 <div
                   key={icon || idx}
                   className="rounded-lg bg-accent p-1.5 md:p-2"
@@ -46,17 +50,17 @@ export const TemplateCard = ({ template }: TemplateCardProps) => {
                 </div>
               ))}
 
-              {template.icons.length > 5 && (
+              {templateIcons.length > 5 && (
                 <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-accent p-1.5 md:p-2">
                   <span className="text-sm font-medium">
-                    +{template.icons.length - 4}
+                    +{templateIcons.length - 4}
                   </span>
                 </div>
               )}
 
-              {template.icons.length === 5 && (
+              {templateIcons.length === 5 && (
                 <div className="rounded-lg bg-accent p-1.5 md:p-2">
-                  <img src={template.icons[4]} alt="icon" className="h-6 w-6" />
+                  <img src={templateIcons[4]} alt="icon" className="h-6 w-6" />
                 </div>
               )}
             </>

@@ -4,7 +4,7 @@ import { useShallow } from "zustand/react/shallow";
 
 import { IS_TAURI } from "@/constants/constants";
 import { JobStatusTypesEnum } from "@/features/orchestrator/jobs-table/enums/job-status-type-enum";
-import { Execution } from "@/types/execution-types";
+import { ExecutionNode } from "@/types/execution-types";
 
 import {
   getExecutionState,
@@ -193,7 +193,16 @@ export default function useWebSocket() {
       try {
         // Fetch execution logs for the current flow version
         const localLogs = await getLocalExecutionLog(currentFlow.versionId);
-        const executionData: Execution[] = localLogs ?? [];
+        let executionData: ExecutionNode[] = [];
+
+        if (
+          localLogs &&
+          typeof localLogs == "object" &&
+          "nodes" in localLogs &&
+          localLogs.length > 0
+        ) {
+          executionData = localLogs[0]?.nodes;
+        }
 
         // Handle Credit Consumption
         if (currExecCommand) {

@@ -1,0 +1,20 @@
+[
+  {
+    "direction": "Input",
+    "type": "text",
+    "name": "host",
+    "label": "Host",
+    "description": "Override the default base URL for the API.",
+    "defaultValue": "https://api.elevenlabs.io",
+    "required": true
+  },
+  {
+    "direction": "Input",
+    "type": "password",
+    "name": "ApiKey",
+    "label": "API Key",
+    "description": "The Api key.",
+    "defaultValue": "",
+    "required": true
+  }
+]

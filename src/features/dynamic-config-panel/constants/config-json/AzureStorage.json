@@ -1,0 +1,20 @@
+[
+  {
+    "direction": "Input",
+    "type": "text",
+    "name": "Account",
+    "label": "Account",
+    "description": "Your Azure storage account name.",
+    "defaultValue": "",
+    "required": true
+  },
+  {
+    "direction": "Input",
+    "type": "password",
+    "name": "Key",
+    "label": "Key",
+    "description": "The key.",
+    "defaultValue": "",
+    "required": true
+  }
+]
