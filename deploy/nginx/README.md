@@ -11,11 +11,21 @@ This directory contains the Nginx configuration and Dockerfile for containerized
 
 ## Usage
 
-1. **Build the Docker image:**
+1. **Build the Docker image (build from project root):**
 
-   ```sh
-   sudo docker build -t worc/nginx .
-   ```
+```sh
+# Build
+sudo docker build -f deploy/nginx/Dockerfile -t worc/nginx:latest .
+
+# Test run locally (ensure SSL certs are available at /etc/ssl/aventisia and localhost is set up in server_name temporarily for testing)
+sudo docker run -d --name nginx-test -p 80:80 -p 443:443 -v /etc/ssl/aventisia:/etc/ssl/aventisia:ro worc/nginx:latest
+
+# Check logs
+sudo docker logs -f nginx-test
+
+# Stop and remove test container
+sudo docker stop nginx-test && sudo docker rm nginx-test
+```
 
 2. **Run with Docker Compose (recommended) or Docker CLI:**
 
