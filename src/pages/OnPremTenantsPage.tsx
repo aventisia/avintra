@@ -3,11 +3,11 @@ import { lazy, Suspense } from "react";
 
 // Lazy load the OnPremTenantsTable component.
 const OnPremTenantsTable = lazy(() =>
-  import("@/features/on-prem-tenant/components/OnPremTenantsTable").then(
-    (module) => ({
-      default: module.OnPremTenantsTable,
-    }),
-  ),
+  import(
+    "@/features/global-admin/on-prem-tenant/components/OnPremTenantsTable"
+  ).then((module) => ({
+    default: module.OnPremTenantsTable,
+  })),
 );
 
 /**
