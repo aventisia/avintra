@@ -15,5 +15,8 @@ COPY deploy/nginx/common_ssl.conf /etc/nginx/conf.d/common_ssl.conf
 # In Docker, Nginx loads configs from conf.d/ (not sites-available/sites-enabled as on VPS). Copy site config directly:
 COPY deploy/nginx/sites-available/accounts.aventisia.com /etc/nginx/conf.d/accounts.aventisia.com.conf
 
-# Copy static files for accounts client if needed
+# Copy static files for reactjs clients
 COPY clients/worc-web-legacy/accounts/dist /usr/share/nginx/html/accounts
+COPY clients/worc-web-legacy/workspace/dist /usr/share/nginx/html/worc
+COPY clients/worc-web-legacy/studio/dist /usr/share/nginx/html/agentbuilder
+COPY clients/worc-web-legacy/ml-model-builder/dist /usr/share/nginx/html/aistudio
