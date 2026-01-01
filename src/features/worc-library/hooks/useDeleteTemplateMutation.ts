@@ -29,6 +29,7 @@ export const useDeleteTemplateMutation = () => {
 
       queryClient.invalidateQueries({
         queryKey: ["PROJECT_TEMPLATE"],
+        exact: true,
       });
 
       navigate("/library");

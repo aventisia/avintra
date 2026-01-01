@@ -31,7 +31,6 @@ export function TemplateHeader({ template }: { template: UseTemplateDTO }) {
     (isSA && template?.accessType === "Public") ||
     (isTA && template?.accessType === "TenantLevel");
 
-  console.log({ isSA, isTA, canDeleteTemplate, level: template.accessType });
   // Handles the action to apply the selected template
   const handleUseTemplate = async () => {
     try {
