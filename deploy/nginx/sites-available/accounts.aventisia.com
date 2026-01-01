@@ -7,7 +7,8 @@ server
 
 server
 {
-	listen 443 ssl http2;
+	listen 443 ssl;
+	http2 on;
 	server_name accounts.aventisia.com dev-accounts.aventisia.com uat-accounts.aventisia.com;
 	
 	# Include common config
@@ -29,7 +30,7 @@ server
 
 	# Client (second)
 	location / {
-		root /var/www/aventisia.com/clients/accounts;
+		root /usr/share/nginx/html/accounts;
 		try_files $uri $uri.html $uri/ /index.html =404;
 	}
 }
