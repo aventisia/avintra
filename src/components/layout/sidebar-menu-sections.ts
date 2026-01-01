@@ -223,6 +223,21 @@ const sidebarMenuSections: SidebarMenuSectionType[] = [
       },
     ],
   },
+  {
+    sectionName: "Global Admin",
+    menuItems: [
+      ...(import.meta.env.MODE !== "production"
+        ? [
+            {
+              permissions: ["SA"],
+              Icon: IdentificationIcon,
+              name: "On-prem Tenants",
+              route: "/on-prem/tenant",
+            },
+          ]
+        : []),
+    ],
+  },
 ];
 
 // TODO: Refactor this function to use a more efficient method of checking permissions
