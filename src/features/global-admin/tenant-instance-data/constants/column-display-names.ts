@@ -2,7 +2,7 @@ import { KeyValueLookupType } from "@aventisia/ui/types";
 
 /** Array of column names and their corresponding display names. */
 export const columnDisplayNames: KeyValueLookupType[] = [
-  { key: "id", value: "Select Row" },
+  { key: "id", value: "ID" },
   { key: "validatedOn", value: "Validated On" },
   { key: "executionTime", value: "Execution Time" },
   { key: "executedJobs", value: "Executed Jobs" },
