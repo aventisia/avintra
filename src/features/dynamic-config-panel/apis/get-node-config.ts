@@ -63,6 +63,10 @@ export const getNodeConfig = async (
     path = `../constants/custom-config-json/${nodeUniqueName}.json`;
   }
 
+  if (nodeUniqueName.includes("AIAgent")) {
+    path = `../constants/custom-config-json/ai-nodes/${nodeUniqueName}.json`;
+  }
+
   // Set the path to the JSON file
   const loader = modules[path];
 

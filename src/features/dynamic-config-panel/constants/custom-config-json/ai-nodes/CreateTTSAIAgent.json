@@ -1,0 +1,60 @@
+{
+  "name": "CreateTTSAIAgent",
+  "label": "Text To Speech Model",
+  "description": "Convert text into natural-sounding speech using AI.",
+  "version": "1.0.0",
+  "auther": "@aventisia",
+  "supportedPlatforms": ["cloud", "desktop"],
+  "errorHandling": "standard",
+  "testScreenType": "llmGenerateRequest",
+  "fields": [
+    {
+      "direction": "Input",
+      "type": "model-config-select",
+      "name": "__ModelConfig__TextToSpeech",
+      "defaultValue": {
+        "isByokEnabled": false,
+        "provider": "openai",
+        "credentials": "",
+        "model": "gpt-4o-mini",
+        "temperature": 1,
+        "topP": 1,
+        "isJsonOutput": true,
+        "maxOutputToken": 50
+      },
+      "required": false,
+      "category": "Models"
+    },
+    {
+      "direction": "Input",
+      "type": "text",
+      "name": "files",
+      "label": "Files",
+
+      "required": false,
+      "category": "Models"
+    },
+    {
+      "direction": "Input",
+      "type": "prompt-input",
+      "name": "prompt",
+      "required": false,
+      "min": 22,
+      "defaultValue": "",
+      "category": "Prompt"
+    },
+    {
+      "direction": "Output",
+      "type": "config-panel-output",
+      "name": "AIModelResult",
+      "label": "Button Clicked Successfully",
+      "description": "AI Model Result.",
+      "defaultValue": {
+        "value": "AIModelResult",
+        "enabled": true
+      },
+      "required": false,
+      "category": "Models"
+    }
+  ]
+}
