@@ -81,12 +81,32 @@ export const onPremTenantsTableColumns: ColumnDef<OnPremTenantDto>[] = [
     ),
     cell: ({ row }) => (
       <div className="w-auto truncate font-medium">
-        {Number(row.getValue("executionTimeAllowed") ?? 0)?.toLocaleString(
+        {`${Number(row.getValue("executionTimeAllowed") ?? 0)?.toLocaleString(
           "en-US",
           {
             maximumFractionDigits: 2,
           },
-        )}
+        )} Hours`}
+      </div>
+    ),
+  },
+  {
+    accessorKey: "executionTimeConsumed",
+    header: ({ column }) => (
+      <DTColumnHeader
+        tableKey={TABLE_KEY}
+        column={column}
+        title={getColumnName("executionTimeConsumed")}
+      />
+    ),
+    cell: ({ row }) => (
+      <div className="w-auto truncate font-medium">
+        {`${Number(row.getValue("executionTimeConsumed") ?? 0)?.toLocaleString(
+          "en-US",
+          {
+            maximumFractionDigits: 2,
+          },
+        )} Hours`}
       </div>
     ),
   },
@@ -170,7 +190,10 @@ export const onPremTenantsTableColumns: ColumnDef<OnPremTenantDto>[] = [
     id: "actions",
     cell: ({ row }) => (
       // Render the tenant row actions component
-      <OnPremTenantRowAction rowId={row.original.id || "rowId"} />
+      <OnPremTenantRowAction
+        rowId={row.original.id || "rowId"}
+        name={row.original.name}
+      />
     ),
   },
 ];

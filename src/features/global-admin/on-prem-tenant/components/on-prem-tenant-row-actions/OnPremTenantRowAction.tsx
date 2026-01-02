@@ -6,16 +6,18 @@ import { TenantInstanceOpenAction } from "./TenantInstanceOpenAction";
 
 interface OnPremTenantRowActionProps {
   rowId: string;
+  name: string;
 }
 
 export const OnPremTenantRowAction = ({
   rowId,
+  name,
 }: OnPremTenantRowActionProps) => {
   return (
     // Dropdown menu for tenant table row action */}
     <DataTableRowActions>
       {/* To open tenant in studio */}
-      <TenantInstanceOpenAction rowId={rowId} />
+      <TenantInstanceOpenAction rowId={rowId} cellValue={name} />
 
       {/* View the tenant details */}
       <DTRowAction rowId={rowId} crudAction="read" />
