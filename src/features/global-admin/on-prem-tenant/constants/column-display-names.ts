@@ -6,6 +6,7 @@ export const columnDisplayNames: KeyValueLookupType[] = [
   { key: "name", value: "Name" },
   { key: "type", value: "Type" },
   { key: "executionTimeAllowed", value: "Execution Time Allowed" },
+  { key: "executionTimeConsumed", value: "Execution Time Consumed" },
   { key: "contractStartDate", value: "Contract Start Date" },
   { key: "contractRenewalDate", value: "Contract Renewal Date" },
   { key: "lastAuthStatus", value: "Last Authentication Status" },
