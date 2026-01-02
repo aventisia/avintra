@@ -142,6 +142,12 @@ const sidebarMenuSections: SidebarMenuSectionType[] = [
               name: "integrations",
               route: "/integrations",
             },
+            {
+              permissions: ["TA"],
+              Icon: ServerIcon,
+              name: "on-prem LLMs",
+              route: "/on-prem-llms",
+            },
           ]
         : []),
       {
@@ -205,12 +211,6 @@ const sidebarMenuSections: SidebarMenuSectionType[] = [
       },
       {
         permissions: ["SA"],
-        Icon: ServerIcon,
-        name: "on-prem LLMs",
-        route: "sa/on-prem-llms",
-      },
-      {
-        permissions: ["SA"],
         Icon: BanknotesIcon,
         name: "Credit Plans",
         route: "sa/credit-plans",
@@ -232,7 +232,7 @@ const sidebarMenuSections: SidebarMenuSectionType[] = [
               permissions: ["SA"],
               Icon: IdentificationIcon,
               name: "On-prem Tenants",
-              route: "/on-prem/tenant",
+              route: "ga/on-prem-tenants",
             },
           ]
         : []),
