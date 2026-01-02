@@ -9,7 +9,7 @@ server
 {
 	listen 443 ssl;
 	http2 on;
-	server_name aistudio.aventisia.com dev-aistudio.aventisia.com uat-aistudio.aventisia.com;
+	server_name aistudio.aventisia.com uat-aistudio.aventisia.com dev-aistudio.aventisia.com docker-aistudio.aventisia.com;
 	
 	# Include common config
 	include /etc/nginx/conf.d/common_ssl.conf;

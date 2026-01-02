@@ -1,7 +1,7 @@
 server
 {
 	listen 80;
-	server_name llmpipeline.aventisia.com dev-llmpipeline.aventisia.com uat-llmpipeline.aventisia.com;
+	server_name llmpipeline.aventisia.com uat-llmpipeline.aventisia.com dev-llmpipeline.aventisia.com docker-llmpipeline.aventisia.com;
 	return 301 https://$host$request_uri;
 }
 

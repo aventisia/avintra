@@ -1,7 +1,7 @@
 server
 {
 	listen 80;
-	server_name worc.aventisia.com dev-worc.aventisia.com uat-worc.aventisia.com;
+	server_name worc.aventisia.com uat-worc.aventisia.com dev-worc.aventisia.com docker-worc.aventisia.com;
 	return 301 https://$host$request_uri;
 }
 
