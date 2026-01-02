@@ -394,8 +394,7 @@ namespace WorkspaceAPIs.Services
                 // Query for existing template by ID, tenant, user, including related resources
                 var existingTemplate = await _unitOfWork.ProjectTemplateRepo
                     .GetByConditionAsync(w =>
-                        w.Id == projectTemplateId &&
-                        w.CreatedByUserId == _userId
+                        w.Id == projectTemplateId
                     )
                     .Include(i => i.TemplateResources)
                     .AsNoTracking()
@@ -409,14 +408,26 @@ namespace WorkspaceAPIs.Services
                     return serviceResponse;
                 }
 
-                // Delete the template entity
-                _unitOfWork.ProjectTemplateRepo.Delete(existingTemplate);
-
-                // Save changes and check success
-                if (!await _unitOfWork.SaveAsync())
+                // Check if the user is allowed to delete the template
+                if ((existingTemplate.CreatedByUserId == _userId && existingTemplate.Status != ProjectTemplateStatusesEnum.Approved) ||
+                    (existingTemplate.Status == ProjectTemplateStatusesEnum.Approved && existingTemplate.AccessType == TemplateAccessTypesEnum.TenantLevel && _userManagementGuardService.HasRole("TA")) ||
+                    (existingTemplate.Status == ProjectTemplateStatusesEnum.Approved && _userManagementGuardService.HasRole("SA")))
                 {
-                    _logger.LogInformation("SaveChanges failed when deleting project template with ID {ProjectTemplateId}.", projectTemplateId);
-                    return serviceResponse;
+                    // Delete the template entity
+                    _unitOfWork.ProjectTemplateRepo.Delete(existingTemplate);
+
+                    // Save changes and check success
+                    if (!await _unitOfWork.SaveAsync())
+                    {
+                        _logger.LogInformation("SaveChanges failed when deleting project template with ID {ProjectTemplateId}.", projectTemplateId);
+                        return serviceResponse;
+                    }
+                }
+                else
+                {
+                    // If none of the conditions match, return an error message
+                    _logger.LogWarning("User does not have permission to delete project template with ID {ProjectTemplateId}.", projectTemplateId);
+                    serviceResponse.Message = "You do not have permission to delete this project template.";
                 }
 
                 // Set success response
@@ -464,6 +475,23 @@ namespace WorkspaceAPIs.Services
                 {
                     _logger.LogWarning("No project templates found for deletion with provided IDs.");
                     serviceResponse.Message = "No project templates found for deletion.";
+                    return serviceResponse;
+                }
+
+                // Check if any template meets the deletion conditions
+                var templatesToActuallyDelete = templatesToDelete
+                    .Where(template =>
+                        (template.CreatedByUserId == _userId && template.Status != ProjectTemplateStatusesEnum.Approved) ||
+                        (template.Status != ProjectTemplateStatusesEnum.Approved && template.AccessType == TemplateAccessTypesEnum.TenantLevel && _userManagementGuardService.HasRole("TA")) ||
+                        (template.Status != ProjectTemplateStatusesEnum.Approved && _userManagementGuardService.HasRole("SA"))
+                    )
+                    .ToList();
+
+                // If no templates are eligible for deletion, return error message
+                if (!templatesToActuallyDelete.Any())
+                {
+                    _logger.LogWarning("User does not have permission to delete any of the provided project templates.");
+                    serviceResponse.Message = "You do not have permission to delete any of the provided project templates.";
                     return serviceResponse;
                 }
 
