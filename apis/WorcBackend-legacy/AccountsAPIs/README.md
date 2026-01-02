@@ -1,5 +1,62 @@
 # AccountsAPIs
 
+This directory contains the AccountsAPIs .NET service, including Dockerfile and configuration for containerized deployment.
+
+## Files
+
+- `AccountsAPIs.csproj`: Project file for the AccountsAPIs service
+- `Dockerfile`: Multi-stage build for .NET 8.0
+- `appsettings.json`, `appsettings.Development.json`: Application configuration
+- `AspNetToolkit/`: Project dependency (ensure not excluded in Docker build)
+
+## Usage
+
+### 1. Build the Docker image (from project root):
+
+```sh
+# Build
+sudo docker build -f apis/WorcBackend-legacy/AccountsAPIs/Dockerfile -t worc/accounts-apis:latest .
+
+# Test run locally (assuming postgresql is running on localhost)
+sudo docker run -d --name accounts-apis-test --network host -p 4000:4000 -e ASPNETCORE_ENVIRONMENT=Localhost worc/accounts-apis:latest
+
+# Check logs
+sudo docker logs -f accounts-apis-test
+
+# Stop and remove test container
+sudo docker stop accounts-apis-test && sudo docker rm accounts-apis-test
+
+# Push to private registry (optional)
+sudo docker tag worc/accounts-apis:latest hub.aventisia.com/worc/accounts-apis:latest
+sudo docker push hub.aventisia.com/worc/accounts-apis:latest
+
+# Login to private registry (if needed)
+sudo docker login hub.aventisia.com
+```
+
+### 2. Environment variables
+
+- `ASPNETCORE_URLS` (default: `http://+:4000`)
+- `ASPNETCORE_ENVIRONMENT` (default: `Development`)
+
+Override these at runtime as needed:
+
+```sh
+sudo docker run -d --name accounts-apis -p 4000:4000 \
+	-e ASPNETCORE_ENVIRONMENT=Production \
+	worc/accounts-apis:latest
+```
+
+### 3. WSL2/PostgreSQL connectivity notes
+
+- If running Docker Desktop on Windows and PostgreSQL in WSL2, containers cannot reach localhost in WSL2 by default.
+- Find your WSL2 IP address (in WSL2: `hostname -I`), and use it in your connection string:
+  - Example: `"Host=WSL2_IP_HERE; Port=5432;"`
+- Ensure PostgreSQL is listening on `0.0.0.0` and `pg_hba.conf` allows connections from the Docker subnet.
+- The WSL2 IP may change after a reboot.
+
+---
+
 # Troubleshooting
 
 On error `net::ERR_CERT_AUTHORITY_INVALID`
