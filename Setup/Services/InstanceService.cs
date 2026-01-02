@@ -7,14 +7,16 @@ public class InstanceService : IInstanceService
     private readonly InstanceConfig _instanceConfig;
     private readonly AppRuntimeSettings _appRuntimeSettings;
     private readonly HttpClientUrlConfig _httpClientUrlConfig;
+    private readonly IHostEnvironment _hostEnvironment;
 
-    public InstanceService(IUnitOfWork unitOfWork, ILogger<InstanceService> logger, InstanceConfig instanceConfig, AppRuntimeSettings appRuntimeSettings, HttpClientUrlConfig httpClientUrlConfig)
+    public InstanceService(IUnitOfWork unitOfWork, ILogger<InstanceService> logger, InstanceConfig instanceConfig, AppRuntimeSettings appRuntimeSettings, HttpClientUrlConfig httpClientUrlConfig, IHostEnvironment hostEnvironment)
     {
         _unitOfWork = unitOfWork;
         _logger = logger;
         _instanceConfig = instanceConfig;
         _appRuntimeSettings = appRuntimeSettings;
         _httpClientUrlConfig = httpClientUrlConfig;
+        _hostEnvironment = hostEnvironment;
     }
 
     // Collects and processes metrics such as user count, job execution stats, and other instance-related metrics from an external API.
@@ -31,7 +33,7 @@ public class InstanceService : IInstanceService
         serviceResponse.Data = new InstanceRequestDto()
         {
             Version = _instanceConfig.Version,
-            Type = _instanceConfig.Type,
+            Type = string.Equals(_hostEnvironment.EnvironmentName, _instanceConfig.Type, StringComparison.OrdinalIgnoreCase) ? "Prod" : "NonProd",
             Source = source,
             Usage = new ProjectUsageMetricDto()
         };
