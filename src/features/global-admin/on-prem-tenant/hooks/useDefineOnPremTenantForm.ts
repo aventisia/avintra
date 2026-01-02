@@ -53,11 +53,13 @@ export const useDefineOnPremTenantForm = () => {
     resolver: zodResolver(onPremTenantZodSchema),
     defaultValues: {
       id: "",
-      type: "",
+      type: "Enterprise",
       name: "",
       executionTimeAllowed: 0,
       contractStartDate: currDate,
       contractRenewalDate: currDate,
+      ourEmails: "",
+      tenantEmails: "",
       isExecutionDisabled: false,
       isLoginDisabled: false,
       createdByUser: userSession?.firstName + " " + userSession?.lastName,
@@ -90,9 +92,11 @@ export const useDefineOnPremTenantForm = () => {
     // Set flow data to form
     form.reset({
       id: rowId,
-      type: onPremTenantData?.type ?? "",
+      type: onPremTenantData?.type ?? "Enterprise",
       name: onPremTenantData?.name ?? "",
       executionTimeAllowed: onPremTenantData?.executionTimeAllowed ?? 0,
+      ourEmails: onPremTenantData?.ourEmails ?? "",
+      tenantEmails: onPremTenantData?.tenantEmails ?? "",
       contractStartDate: onPremTenantData?.contractStartDate
         ? new Date(onPremTenantData?.contractStartDate)
         : currDate,
@@ -144,8 +148,6 @@ export const useDefineOnPremTenantForm = () => {
       ...formData,
       lastModifiedByUser: userSession?.email ?? "",
       lastModifiedOn: currDate.toISOString(),
-      outEmails: "",
-      tenantEmails: "",
     };
   };
 

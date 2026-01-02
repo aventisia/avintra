@@ -23,6 +23,8 @@ import {
   contractRenewalDateProps,
   isExecutionDisabledProps,
   isLoginDisabledProps,
+  ourEmailsProps,
+  tenantEmailsProps,
 } from "../../constants/on-prem-tenant-field-props";
 import { onPremTenantZodSchema } from "../../constants/on-prem-tenant-zod-schema";
 import { OnPremTenantDto } from "../../dtos/on-prem-tenant-dto";
@@ -103,6 +105,10 @@ export const OnPremTenantCrudForm = () => {
       <DatePickerField {...contractStartDateProps} />
 
       <DatePickerField {...contractRenewalDateProps} />
+
+      <InputField {...ourEmailsProps} />
+
+      <InputField {...tenantEmailsProps} />
 
       {/* Disable Execution */}
       {crudAction !== "create" && <SwitchField {...isExecutionDisabledProps} />}

@@ -52,6 +52,22 @@ const contractRenewalDateProps: DatePickerFieldProps = {
   isRequired: true,
 };
 
+// Name
+const ourEmailsProps: InputFieldProps = {
+  name: "ourEmails",
+  label: "Aventisia Emails",
+  description: "Enter one or more email addresses separated by semicolons (;)",
+  isRequired: true,
+};
+
+// Name
+const tenantEmailsProps: InputFieldProps = {
+  name: "tenantEmails",
+  label: "Client Emails",
+  description: "Enter one or more email addresses separated by semicolons (;)",
+  isRequired: true,
+};
+
 // Disable Execution
 const isExecutionDisabledProps: SwitchFieldProps = {
   name: "isExecutionDisabled",
@@ -75,4 +91,6 @@ export {
   contractRenewalDateProps,
   isExecutionDisabledProps,
   isLoginDisabledProps,
+  ourEmailsProps,
+  tenantEmailsProps,
 };
