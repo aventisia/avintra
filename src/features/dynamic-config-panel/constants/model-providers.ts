@@ -471,7 +471,7 @@ export const googleModelList: Model[] = [
   {
     label: "Gemini 2.5 Flash",
     value: "gemini-2.5-flash",
-    available: false,
+    available: true,
     specialty: ["text", "vision", "realtime"],
   },
   {
@@ -591,7 +591,7 @@ export const openRouterModelList: Model[] = [
   {
     label: "Claude 4.5 Sonnet",
     value: "anthropic/claude-4.5-sonnet",
-    available: false,
+    available: true,
     specialty: ["text", "vision", "deep-search"],
   },
   {
@@ -609,7 +609,7 @@ export const openRouterModelList: Model[] = [
   {
     label: "Grok Code Fast 1",
     value: "x-ai/grok-code-fast-1",
-    available: false,
+    available: true,
     specialty: ["text", "deep-search"],
   },
 
@@ -617,19 +617,19 @@ export const openRouterModelList: Model[] = [
   {
     label: "DeepSeek V3.2 Speciale",
     value: "deepseek/deepseek-v3.2-speciale",
-    available: false,
+    available: true,
     specialty: ["text", "vision"],
   },
   {
     label: "Qwen 3 VL (72B)",
     value: "qwen/qwen-3-vl-72b",
-    available: false,
+    available: true,
     specialty: ["vision", "text"],
   },
   {
     label: "Llama 3.3 Nemotron Super",
     value: "nvidia/llama-3.3-nemotron-super-49b",
-    available: false,
+    available: true,
     specialty: ["text", "vision"],
   },
   {
@@ -655,7 +655,7 @@ export const openRouterModelList: Model[] = [
   {
     label: "DeepSeek R1T2 Chimera",
     value: "tngtech/deepseek-r1t2-chimera",
-    available: false,
+    available: true,
     specialty: ["text"],
   },
 
@@ -675,7 +675,7 @@ export const openRouterModelList: Model[] = [
   {
     label: "Claude 4.5 Haiku",
     value: "anthropic/claude-4.5-haiku",
-    available: false,
+    available: true,
     specialty: ["text", "realtime"],
   },
   {
@@ -699,6 +699,8 @@ export const openRouterModelList: Model[] = [
     specialty: ["video"],
   },
 ];
+
+//caluude 4.5
 export const modelProviders: Provider[] = [
   {
     value: "openai",
