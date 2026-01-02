@@ -1,7 +1,7 @@
 server
 {
 	listen 80;
-	server_name accounts.aventisia.com dev-accounts.aventisia.com uat-accounts.aventisia.com;
+	server_name accounts.aventisia.com uat-accounts.aventisia.com dev-accounts.aventisia.com docker-accounts.aventisia.com;
 	return 301 https://$host$request_uri;
 }
 

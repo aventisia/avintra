@@ -25,6 +25,13 @@ sudo docker logs -f nginx-test
 
 # Stop and remove test container
 sudo docker stop nginx-test && sudo docker rm nginx-test
+
+# Push to private registry (optional)
+sudo docker tag worc/nginx:latest hub.aventisia.com/worc/nginx:latest
+sudo docker push hub.aventisia.com/worc/nginx:latest
+
+# Login to private registry (if needed)
+sudo docker login hub.aventisia.com
 ```
 
 2. **Run with Docker Compose (recommended) or Docker CLI:**
