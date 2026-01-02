@@ -37,6 +37,9 @@ class Settings(BaseSettings):
     GEMINI_API_URL: str
     GEMINI_API_KEY: str
     
+    OPENROUTER_API_URL: str
+    OPENROUTER_API_KEY: str
+
     ANTHROPIC_API_URL: str
     ANTHROPIC_API_KEY: str
     
