@@ -23,6 +23,7 @@ import { CreditsUsagePage } from "./pages/CreditsUsagePage";
 import { FlowsPage } from "./pages/FlowsPage";
 import { GetDesktopPage } from "./pages/GetDesktopPage";
 import { OnPremTenantsPage } from "./pages/global-admin/OnPremTenantsPage";
+import { TenantInstanceDataPage } from "./pages/global-admin/TenantInstanceDataPage";
 import { TenantInstancePage } from "./pages/global-admin/TenantInstancePage";
 import { AppIntegrationsPage } from "./pages/IntegrationsPage";
 import { LibraryPage } from "./pages/LibraryPage";
@@ -265,9 +266,10 @@ const routerConfig: RouteObject[] = [
                   {
                     path: ":id",
                     element: (
-                      <>
-                        <h1>Instance Detail</h1>
-                      </>
+                      <ProtectedRoute
+                        persmissions={["SA"]}
+                        page={<TenantInstanceDataPage />}
+                      />
                     ),
                   },
                 ],
