@@ -2,7 +2,7 @@ import { DTColumnHeader } from "@aventisia/ui/data-table";
 import { dateFormatter, getEnumValueByKey } from "@aventisia/ui/utils";
 import { ColumnDef } from "@tanstack/react-table";
 
-import { TABLE_KEY } from "../constants";
+import { formatNumber, TABLE_KEY } from "../constants";
 import { getColumnName } from "../constants/column-display-names";
 import { OnPremInstanceDataDto } from "../dtos/tenant-instance-dto";
 import { ValidationSourceTypesEnum } from "../enums/validation-source-type-enum";
@@ -68,7 +68,7 @@ export const instanceDataTableColumns: ColumnDef<OnPremInstanceDataDto>[] = [
     ),
     cell: ({ row }) => (
       <div className="w-auto truncate font-medium">
-        {row.getValue("executionTime")}
+        {formatNumber(row.getValue("executionTime") || 0)}
       </div>
     ),
   },
@@ -83,7 +83,7 @@ export const instanceDataTableColumns: ColumnDef<OnPremInstanceDataDto>[] = [
     ),
     cell: ({ row }) => (
       <div className="w-auto truncate font-medium">
-        {row.getValue("executedJobs")}
+        {formatNumber(row.getValue("executedJobs") || 0)}
       </div>
     ),
   },
@@ -98,7 +98,7 @@ export const instanceDataTableColumns: ColumnDef<OnPremInstanceDataDto>[] = [
     ),
     cell: ({ row }) => (
       <div className="w-auto truncate font-medium">
-        {row.getValue("publishedAgents")}
+        {formatNumber(row.getValue("publishedAgents") || 0)}
       </div>
     ),
   },
@@ -112,7 +112,9 @@ export const instanceDataTableColumns: ColumnDef<OnPremInstanceDataDto>[] = [
       />
     ),
     cell: ({ row }) => (
-      <div className="w-auto truncate font-medium">{row.getValue("users")}</div>
+      <div className="w-auto truncate font-medium">
+        {formatNumber(row.getValue("users") || 0)}
+      </div>
     ),
   },
 ];
