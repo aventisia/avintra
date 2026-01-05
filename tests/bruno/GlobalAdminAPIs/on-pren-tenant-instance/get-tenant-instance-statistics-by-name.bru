@@ -1,0 +1,16 @@
+meta {
+  name: Get tenant instance statistics by name
+  type: http
+  seq: 10
+}
+
+get {
+  url: {{GLOBAL_ADMIN_BASE_URL}}/onprem/instance/statistics/by-name/{{TENANT_INSTANCE_NAME}}
+  body: none
+  auth: inherit
+}
+
+settings {
+  encodeUrl: true
+  timeout: 0
+}

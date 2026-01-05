@@ -5,7 +5,7 @@ meta {
 }
 
 post {
-  url: {{GLOBAL_ADMIN_BASE_URL}}/onprem/instance/is-available
+  url: {{GLOBAL_ADMIN_BASE_URL}}/onprem/instance/{{ON_PREM_TENANT_ID}}/is-available
   body: json
   auth: inherit
 }
