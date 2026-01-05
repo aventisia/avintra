@@ -14,15 +14,19 @@ public class HttpClientUrlConfig
     /// WorkspaceApis base url for registering HttpClient with the
     /// </summary>
     public required string WorkspaceApisBaseUrl { get; set; }
-    
+
     /// <summary>
     /// AccountsApis base url for registering HttpClient with the
     /// </summary>
     public required string AccountsApisBaseUrl { get; set; }
-    
+
     /// <summary>
     /// LlmPipelineApis base url for registering HttpClient with the
     /// </summary>
     public required string LlmPipelineApisBaseUrl { get; set; }
-    
+
+    /// <summary>
+    /// GlobalAdminApis base url for registering HttpClient with.
+    /// </summary>
+    public required string GlobalAdminApisBaseUrl { get; set; }
 }

@@ -5,19 +5,22 @@ public class LLMDataExtractionService : ILLMDataExtractionService
     private readonly ILogger<LLMDataExtractionService> _logger;
     private readonly ExtractViaLLMConfig _extractViaLLMConfig;
     private readonly OpenAIConfig _openAIConfig;
+    private readonly HttpClientUrlConfig _httpClientUrlConfig;
     private readonly string _jwt;
 
     public LLMDataExtractionService(
         ILogger<LLMDataExtractionService> logger,
         ExtractViaLLMConfig extractViaLLMConfig,
         OpenAIConfig openAIConfig,
-        IHttpContextAccessor httpContextAccessor)
+        IHttpContextAccessor httpContextAccessor,
+        HttpClientUrlConfig httpClientUrlConfig)
     {
         _jwt = httpContextAccessor.HttpContext?.Request.Cookies["AccessToken"] ?? httpContextAccessor.HttpContext?.Request.Headers["Authorization"].ToString().Replace("Bearer ", "") ?? "";
 
         _logger = logger;
         _extractViaLLMConfig = extractViaLLMConfig;
         _openAIConfig = openAIConfig;
+        _httpClientUrlConfig = httpClientUrlConfig;
     }
 
     // To check if credits are available to continue.
@@ -34,7 +37,7 @@ public class LLMDataExtractionService : ILLMDataExtractionService
         try
         {
             // Create credits usage in AccountsDb database
-            var response = await RequestExternalAPIUtil.RequestExternalAPI(CrudTypesEnum.Read, "http://localhost:4000/api/credit-usage/available-credits", _jwt);
+            var response = await RequestExternalAPIUtil.RequestExternalAPI(CrudTypesEnum.Read, $"{_httpClientUrlConfig.AccountsApisBaseUrl}/credit-usage/available-credits", _jwt);
             var responseContent = await response.Content.ReadAsStringAsync();
 
             // Failed to get available credits
@@ -409,7 +412,7 @@ public class LLMDataExtractionService : ILLMDataExtractionService
             _logger.LogInformation("Credits usage details prepared: {creditsUsageList}", JsonConvert.SerializeObject(creditsUsageList));
 
             // Create credits usage in AccountsDb database
-            HttpResponseMessage creditUsagesResponse = await RequestExternalAPIUtil.RequestExternalAPI(CrudTypesEnum.Create, "http://localhost:4000/api/credit-usage/bulk", _jwt, creditsUsageList);
+            HttpResponseMessage creditUsagesResponse = await RequestExternalAPIUtil.RequestExternalAPI(CrudTypesEnum.Create, $"{_httpClientUrlConfig.AccountsApisBaseUrl}/credit-usage/bulk", _jwt, creditsUsageList);
 
             // Failed to add credit usage
             if (!creditUsagesResponse.IsSuccessStatusCode)
