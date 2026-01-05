@@ -6,8 +6,8 @@ export const columnDisplayNames: KeyValueLookupType[] = [
   { key: "name", value: "Name" },
   { key: "type", value: "Type" },
   { key: "platformVersion", value: "Platform Version" },
-  { key: "deployedOn", value: "Deployed On" },
-  { key: "lastValidatedOn", value: "Last Validated On" },
+  { key: "deployedOn", value: "Deployed At" },
+  { key: "lastValidatedOn", value: "Last Validated At" },
   { key: "noOfInvalidCheck", value: "Invalid Checks Count" },
 ];
 

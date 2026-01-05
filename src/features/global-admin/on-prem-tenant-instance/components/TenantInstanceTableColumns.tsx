@@ -1,7 +1,8 @@
 import { Checkbox } from "@aventisia/ui";
 import { DTColumnHeader } from "@aventisia/ui/data-table";
-import { dateFormatter, getEnumValueByKey } from "@aventisia/ui/utils";
+import { getEnumValueByKey } from "@aventisia/ui/utils";
 import { ColumnDef } from "@tanstack/react-table";
+import { format } from "date-fns";
 
 import { TABLE_KEY } from "../constants";
 import { getColumnName } from "../constants/column-display-names";
@@ -100,7 +101,7 @@ export const tenantInstanceTableColumns: ColumnDef<OnPremInstanceDto>[] = [
     cell: ({ row }) => (
       <div className="w-auto truncate font-medium">
         {row.getValue("deployedOn")
-          ? dateFormatter(row.getValue("deployedOn"))
+          ? format(row.getValue("deployedOn"), "dd MMM yyyy h:mm a")
           : "--"}
       </div>
     ),
@@ -117,7 +118,7 @@ export const tenantInstanceTableColumns: ColumnDef<OnPremInstanceDto>[] = [
     cell: ({ row }) => (
       <div className="w-auto truncate font-medium">
         {row.getValue("lastValidatedOn")
-          ? dateFormatter(row.getValue("lastValidatedOn"))
+          ? format(row.getValue("lastValidatedOn"), "dd MMM yyyy h:mm a")
           : "--"}
       </div>
     ),
