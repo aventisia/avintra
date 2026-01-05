@@ -135,11 +135,7 @@ public class JobTableService : IJobTableService
         return serviceResponse;
     }
 
-    /// <summary>
-    /// Retrieves the details of a specific job by its ID for the current user.
-    /// </summary>
-    /// <param name="jobId">The unique identifier of the job to retrieve.</param>
-    /// <returns>A service response containing the job details or an error message.</returns>
+    // Retrieves the details of a specific job by its ID for the current user.
     public async Task<ServiceResponse<JobDetailDto>> GetJobDetailByIdAsync(Guid jobId)
     {
         var serviceResponse = new ServiceResponse<JobDetailDto>
@@ -250,7 +246,7 @@ public class JobTableService : IJobTableService
     }
 
     // Updates an existing job.
-    public async Task<ServiceResponse<JobTableDto>> UpdateJobAsync(JobExecutionDto jobTableDto)
+    public async Task<ServiceResponse<JobTableDto>> UpdateJobAsync(JobExecutionLogDto jobExecutionLogDto)
     {
         // Initialize ServiceResponse with an error message.
         var serviceResponse = new ServiceResponse<JobTableDto>
@@ -265,8 +261,8 @@ public class JobTableService : IJobTableService
             // Fetch the job that needs to be updated
             var job = await _unitOfWork.JobRepo
                                         .GetByConditionAsync(w =>
-                                            w.Id == jobTableDto.Id &&
-                                            w.FlowVersionId == jobTableDto.FlowVersionId
+                                            w.Id == jobExecutionLogDto.Id &&
+                                            w.FlowVersionId == jobExecutionLogDto.FlowVersionId
                                         )
                                         .SingleOrDefaultAsync();
 
@@ -279,13 +275,13 @@ public class JobTableService : IJobTableService
             }
 
             // Checks if the job status is the same as the stored status (no change).
-            bool isStatusUnchanged = job.Status == jobTableDto.Status;
+            bool isStatusUnchanged = job.Status == jobExecutionLogDto.Status;
 
             // Trim the string properties in the DTO
-            jobTableDto = TrimDtoStringPropsUtil.TrimDtoStringProps(jobTableDto);
+            jobExecutionLogDto = TrimDtoStringPropsUtil.TrimDtoStringProps(jobExecutionLogDto);
 
             // Map the updated values from DTO to the job entity
-            jobTableDto.Adapt(job);
+            jobExecutionLogDto.Adapt(job);
 
 
             // If the job status is "Running", set the StartTime to the current UTC time.

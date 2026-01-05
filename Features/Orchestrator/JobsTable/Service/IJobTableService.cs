@@ -41,9 +41,9 @@ public interface IJobTableService
     /// <summary>
     /// Modifies an existing job with the provided data.
     /// </summary>
-    /// <param name="jobTableDto">The data required to update the job.</param>
+    /// <param name="jobExecutionLogDto">The data required to update the job.</param>
     /// <returns>A task representing the service response containing the updated job details.</returns>
-    Task<ServiceResponse<JobTableDto>> UpdateJobAsync(JobExecutionDto jobTableDto);
+    Task<ServiceResponse<JobTableDto>> UpdateJobAsync(JobExecutionLogDto jobExecutionLogDto);
 
     /// <summary>
     /// Removes a job by its identifier.
