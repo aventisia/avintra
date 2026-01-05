@@ -15,23 +15,20 @@ This directory contains the WorcAPIs .NET service, including Dockerfile and conf
 
 ```sh
 # Build
-sudo docker build -f apis/WorcBackend-legacy/WorkspaceAPIs/Dockerfile -t worc/worc-apis:latest .
+sudo docker build -f apis/WorcBackend-legacy/WorkspaceAPIs/Dockerfile -t hub.aventisia.com/worc/worc-apis:0.1.0 .
 
 # Test run locally (assumeing postgresql is running on localhost)
-sudo docker run -d --name worc-apis-test --network host -p 4001:4001 -e ASPNETCORE_ENVIRONMENT=Localhost worc/worc-apis:latest
+sudo docker run -d --name worc-apis --network host -p 4001:4001 -e ASPNETCORE_ENVIRONMENT=Localhost hub.aventisia.com/worc/worc-apis:0.1.0
 
 # Check logs
-sudo docker logs -f worc-apis-test
+sudo docker logs -f worc-apis
 
 # Stop and remove test container
-sudo docker stop worc-apis-test && sudo docker rm worc-apis-test
+sudo docker stop worc-apis && sudo docker rm worc-apis
 
-# Push to private registry (optional)
-sudo docker tag worc/worc-apis:latest hub.aventisia.com/worc/worc-apis:latest
-sudo docker push hub.aventisia.com/worc/worc-apis:latest
+# Push to private registry
+sudo docker push hub.aventisia.com/worc/worc-apis:0.1.0
 
-# Login to private registry (if needed)
-sudo docker login hub.aventisia.com
 ```
 
 ### 2. Environment variables
