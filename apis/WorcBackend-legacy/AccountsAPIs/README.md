@@ -15,20 +15,19 @@ This directory contains the AccountsAPIs .NET service, including Dockerfile and 
 
 ```sh
 # Build
-sudo docker build -f apis/WorcBackend-legacy/AccountsAPIs/Dockerfile -t worc/accounts-apis:latest .
+sudo docker build -f apis/WorcBackend-legacy/AccountsAPIs/Dockerfile -t hub.aventisia.com/worc/accounts-apis:0.1.0 .
 
 # Test run locally (assuming postgresql is running on localhost)
-sudo docker run -d --name accounts-apis-test --network host -p 4000:4000 -e ASPNETCORE_ENVIRONMENT=Localhost worc/accounts-apis:latest
+sudo docker run -d --name worc-accounts-apis --network host -p 4000:4000 -e ASPNETCORE_ENVIRONMENT=Localhost hub.aventisia.com/worc/accounts-apis:0.1.0
 
 # Check logs
-sudo docker logs -f accounts-apis-test
+sudo docker logs -f worc-accounts-apis
 
 # Stop and remove test container
-sudo docker stop accounts-apis-test && sudo docker rm accounts-apis-test
+sudo docker stop worc-accounts-apis && sudo docker rm worc-accounts-apis
 
-# Push to private registry (optional)
-sudo docker tag worc/accounts-apis:latest hub.aventisia.com/worc/accounts-apis:latest
-sudo docker push hub.aventisia.com/worc/accounts-apis:latest
+# Push to private registry
+sudo docker push hub.aventisia.com/worc/accounts-apis:0.1.0
 
 # Login to private registry (if needed)
 sudo docker login hub.aventisia.com
