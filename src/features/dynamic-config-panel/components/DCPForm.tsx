@@ -104,12 +104,18 @@ export const DCPForm = () => {
         <DCPTabsWrapper setTabValue={setSelectedTab} tabValue={selectedTab}>
           <DCPTabsListWrapper>
             <DCPTabsList>
-              {tabKeys?.map((key) => (
-                <DCPTabsTrigger
-                  tabValue={key}
-                  children={key.replace(/([a-z])([A-Z])/g, "$1 $2")}
-                />
-              ))}
+              {tabKeys
+                ?.filter(
+                  (key) =>
+                    import.meta.env.MODE !== "production" ||
+                    (key !== "Memory" && key !== "Tools"),
+                )
+                ?.map((key) => (
+                  <DCPTabsTrigger
+                    tabValue={key}
+                    children={key.replace(/([a-z])([A-Z])/g, "$1 $2")}
+                  />
+                ))}
             </DCPTabsList>
             {import.meta.env.MODE !== "production" ? (
               <>
@@ -137,7 +143,20 @@ export const DCPForm = () => {
                   </DCPTabsList>
                 )}
               </>
-            ) : null}
+            ) : (
+              nodeConfig.testScreenType == "llmGenerateRequest" && (
+                <DCPTabsList>
+                  <DCPTabsTrigger
+                    tabValue="Test"
+                    className="flex items-center gap-1 text-primary hover:text-primary"
+                    handleClick={() => onSubmit(form.getValues())}
+                  >
+                    <FlaskConical className="h-3.5 w-3.5" />
+                    <span> Test</span>
+                  </DCPTabsTrigger>
+                </DCPTabsList>
+              )
+            )}
           </DCPTabsListWrapper>
 
           <Form
