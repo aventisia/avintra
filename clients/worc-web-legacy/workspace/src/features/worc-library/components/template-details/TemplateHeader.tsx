@@ -3,14 +3,33 @@ import { Badge } from "@aventisia/ui/badge";
 import { Button } from "@aventisia/ui/buttons";
 import { dateFormatter } from "@aventisia/ui/utils";
 import { Clock, Download, Tag, User2 } from "lucide-react";
+import { useShallow } from "zustand/react/shallow";
+
+import { useUserSessionStore } from "@/react-toolkit/stores/user-session-store";
 
 import { ProjectTemplateTypesEnum } from "../../constants/template-types-enum";
 import { UseTemplateDTO } from "../../dtos/use-template-dto";
 import { useCloneTemplateMutation } from "../../hooks/useCloneTemplateMutation";
 
+import { DeleteTemplateButton } from "./DeleteTemplateButton";
+
 export function TemplateHeader({ template }: { template: UseTemplateDTO }) {
   const { mutateAsync: cloneTemplateMutation, isPending } =
     useCloneTemplateMutation();
+
+  // Access the current user session from the store
+  const { userSession } = useUserSessionStore(
+    useShallow((state) => ({
+      userSession: state.userSession,
+    })),
+  );
+
+  const isSA = userSession?.userRoles.includes("SA");
+  const isTA = userSession?.userRoles.includes("TA");
+
+  const canDeleteTemplate =
+    (isSA && template?.accessType === "Public") ||
+    (isTA && template?.accessType === "TenantLevel");
 
   // Handles the action to apply the selected template
   const handleUseTemplate = async () => {
@@ -77,6 +96,14 @@ export function TemplateHeader({ template }: { template: UseTemplateDTO }) {
                   "AI Model",
                 )}
               </Badge>
+              <Badge
+                variant="outline"
+                className="flex items-center gap-1 bg-slate-100"
+              >
+                <Tag className="h-3 w-3" />
+
+                {template?.accessType == "Public" ? "Public" : "Tenant"}
+              </Badge>
 
               {/* Tags */}
               {template?.tags
@@ -97,15 +124,19 @@ export function TemplateHeader({ template }: { template: UseTemplateDTO }) {
           </div>
 
           {/* Right side: Button */}
-          <Button
-            id="get-started"
-            className="flex items-center gap-2"
-            disabled={template.status !== "Approved" || isPending}
-            onClick={handleUseTemplate}
-          >
-            {isPending && <LoadingSpinner className="h-4 w-4 animate-spin" />}
-            {isPending ? "Cloning..." : "Clone this template"}
-          </Button>
+
+          <div className="flex items-center gap-3">
+            <Button
+              id="get-started"
+              className="flex items-center gap-2"
+              disabled={template.status !== "Approved" || isPending}
+              onClick={handleUseTemplate}
+            >
+              {isPending && <LoadingSpinner className="h-4 w-4 animate-spin" />}
+              {isPending ? "Cloning..." : "Clone this template"}
+            </Button>
+            {canDeleteTemplate && <DeleteTemplateButton id={template.id} />}
+          </div>
         </div>
 
         {/* Separator */}

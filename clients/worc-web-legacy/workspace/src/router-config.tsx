@@ -22,10 +22,14 @@ import ComingSoon from "./pages/CommingSoon";
 import { CreditsUsagePage } from "./pages/CreditsUsagePage";
 import { FlowsPage } from "./pages/FlowsPage";
 import { GetDesktopPage } from "./pages/GetDesktopPage";
+import { OnPremTenantsPage } from "./pages/global-admin/OnPremTenantsPage";
+import { TenantInstanceDataPage } from "./pages/global-admin/TenantInstanceDataPage";
+import { TenantInstancePage } from "./pages/global-admin/TenantInstancePage";
 import { AppIntegrationsPage } from "./pages/IntegrationsPage";
 import { LibraryPage } from "./pages/LibraryPage";
 import { ModelsPage } from "./pages/ModelsPage";
 import MyAccountPage from "./pages/MyAccountPage";
+import { ExecutionLogsPage } from "./pages/orchestrator/ExecutionLogsPage";
 import { JobsPage } from "./pages/orchestrator/JobsPage";
 import { KeystorePage } from "./pages/orchestrator/KeystorePage";
 import { MachinesPage } from "./pages/orchestrator/MachinesPage";
@@ -134,6 +138,12 @@ const routerConfig: RouteObject[] = [
         ),
       },
       {
+        path: "/on-prem-llms",
+        element: (
+          <ProtectedRoute persmissions={["TA"]} page={<OnPremLLMPage />} />
+        ),
+      },
+      {
         path: "/credits-usage",
         element: (
           <ProtectedRoute persmissions={["TA"]} page={<CreditsUsagePage />} />
@@ -192,9 +202,18 @@ const routerConfig: RouteObject[] = [
             ),
           },
           {
-            path: "/orchestrator/jobs/:id?/:a?",
+            path: "/orchestrator/jobs",
             element: (
               <ProtectedRoute persmissions={["OM"]} page={<JobsPage />} />
+            ),
+          },
+          {
+            path: "/orchestrator/jobs/:id",
+            element: (
+              <ProtectedRoute
+                persmissions={["OM"]}
+                page={<ExecutionLogsPage />}
+              />
             ),
           },
           {
@@ -214,6 +233,48 @@ const routerConfig: RouteObject[] = [
             element: (
               <ProtectedRoute persmissions={["OM"]} page={<VaultPage />} />
             ),
+          },
+        ],
+      },
+      {
+        path: "/ga",
+        children: [
+          {
+            path: "on-prem-tenants",
+            children: [
+              {
+                index: true,
+                element: (
+                  <ProtectedRoute
+                    persmissions={["SA"]}
+                    page={<OnPremTenantsPage />}
+                  />
+                ),
+              },
+              {
+                path: ":tid",
+                children: [
+                  {
+                    index: true,
+                    element: (
+                      <ProtectedRoute
+                        persmissions={["SA"]}
+                        page={<TenantInstancePage />}
+                      />
+                    ),
+                  },
+                  {
+                    path: ":id",
+                    element: (
+                      <ProtectedRoute
+                        persmissions={["SA"]}
+                        page={<TenantInstanceDataPage />}
+                      />
+                    ),
+                  },
+                ],
+              },
+            ],
           },
         ],
       },
@@ -247,12 +308,7 @@ const routerConfig: RouteObject[] = [
             ),
             index: true,
           },
-          {
-            path: "/sa/on-prem-llms",
-            element: (
-              <ProtectedRoute persmissions={["SA"]} page={<OnPremLLMPage />} />
-            ),
-          },
+
           {
             path: "/sa/credit-plans",
             element: (

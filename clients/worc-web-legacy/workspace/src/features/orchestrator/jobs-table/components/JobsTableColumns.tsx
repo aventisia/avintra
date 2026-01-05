@@ -1,13 +1,15 @@
+import { Badge } from "@aventisia/ui/badge";
 import { DTColumnHeader } from "@aventisia/ui/data-table";
-import { dateFormatter } from "@aventisia/ui/utils";
+import { cn } from "@aventisia/ui/lib";
 import { ColumnDef } from "@tanstack/react-table";
 import { format } from "date-fns";
 
 import { TABLE_KEY } from "../constants";
-import { getColumnName } from "../constants/column-display-names";
+import { getColumnName, statusColor } from "../constants/column-display-names";
 import { JobsTableDto } from "../dtos/jobs-table-dto";
 
 import { JobRowActions } from "./jobs-row-actions/JobRowActions";
+import { JobsTableCellLink } from "./JobsTableCellLink";
 
 export const jobsTableColumns: ColumnDef<JobsTableDto>[] = [
   {
@@ -19,9 +21,24 @@ export const jobsTableColumns: ColumnDef<JobsTableDto>[] = [
         title={getColumnName("name")}
       />
     ),
-    cell: ({ row }) => (
-      <div className="w-auto truncate font-medium">{row.getValue("name")}</div>
-    ),
+    cell: ({ row }) => {
+      const isHistoryTab = !["Running", "Created"].includes(
+        row.getValue("status"),
+      );
+      if (isHistoryTab)
+        return (
+          <JobsTableCellLink
+            rowId={row.original.id ?? ""}
+            cellValue={row.getValue("name")}
+          />
+        );
+      else
+        return (
+          <div className="w-auto truncate font-medium">
+            {row.getValue("name")}
+          </div>
+        );
+    },
   },
   {
     accessorKey: "versionNumber",
@@ -48,9 +65,9 @@ export const jobsTableColumns: ColumnDef<JobsTableDto>[] = [
       />
     ),
     cell: ({ row }) => (
-      <div className="w-auto truncate font-medium">
-        {row.getValue("status") ?? 0}
-      </div>
+      <Badge className={cn(statusColor[row.original.status])}>
+        {row.getValue("status")}
+      </Badge>
     ),
     filterFn: (row, columnId, filterValue) => {
       const status = row.getValue(columnId);
@@ -82,7 +99,7 @@ export const jobsTableColumns: ColumnDef<JobsTableDto>[] = [
     cell: ({ row }) => (
       <div className="w-auto truncate font-medium">
         {row.getValue("startTime")
-          ? format(row.getValue("startTime"), "dd MMM yyyy, h:mm:ss a")
+          ? format(row.getValue("startTime"), "dd MMM yyyy h:mm:ss a")
           : "NA"}
       </div>
     ),
@@ -101,7 +118,7 @@ export const jobsTableColumns: ColumnDef<JobsTableDto>[] = [
     cell: ({ row }) => (
       <div className="w-auto truncate font-medium">
         {row.getValue("endTime")
-          ? format(row.getValue("endTime"), "dd MMM yyyy, h:mm:ss a")
+          ? format(row.getValue("endTime"), "dd MMM yyyy h:mm:ss a")
           : "NA"}
       </div>
     ),
@@ -118,7 +135,7 @@ export const jobsTableColumns: ColumnDef<JobsTableDto>[] = [
     ),
     cell: ({ row }) => (
       <div className="w-auto truncate font-medium">
-        {Math.round(row.getValue("duration") ?? 0) ?? "--"}
+        {row.getValue("duration") ? Math.round(row.getValue("duration")) : "NA"}
       </div>
     ),
   },
@@ -150,7 +167,7 @@ export const jobsTableColumns: ColumnDef<JobsTableDto>[] = [
     ),
     cell: ({ row }) => (
       <div className="w-auto truncate font-medium">
-        {row.getValue("executedBy")}
+        {row.getValue("executedBy") ? row.getValue("executedBy") : "NA"}
       </div>
     ),
   },
@@ -166,7 +183,27 @@ export const jobsTableColumns: ColumnDef<JobsTableDto>[] = [
     ),
     cell: ({ row }) => (
       <div className="w-auto truncate font-medium">
-        {dateFormatter(row.getValue("executedOn"))}
+        {row.getValue("executedOn")
+          ? format(row.getValue("executedOn"), "dd MMM yyyy h:mm:ss a")
+          : "NA"}
+      </div>
+    ),
+  },
+  {
+    accessorKey: "createdOn",
+    header: ({ column }) => (
+      <DTColumnHeader
+        tableKey={TABLE_KEY}
+        className="w-[7rem]"
+        column={column}
+        title={getColumnName("createdOn")}
+      />
+    ),
+    cell: ({ row }) => (
+      <div className="w-auto truncate font-medium">
+        {row.getValue("createdOn")
+          ? format(row.getValue("createdOn"), "dd MMM yyyy h:mm:ss a")
+          : "NA"}
       </div>
     ),
   },
