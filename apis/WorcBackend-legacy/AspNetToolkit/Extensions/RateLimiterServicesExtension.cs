@@ -15,9 +15,9 @@ public static class RateLimiterServicesExtension
                 PartitionedRateLimiter.Create<HttpContext, string>(context =>
                 {
                     // Get client IP address
-                    var ip = context.Request.Headers["X-Forwarded-For"].FirstOrDefault() 
+                    var ip = context.Request.Headers["X-Forwarded-For"].FirstOrDefault()
                                 ?? context.Connection.RemoteIpAddress?.ToString();
-                    
+
                     // Get user ID if the user is authenticated
                     var userId = context.User?.Identity?.IsAuthenticated == true
                         ? context.User?.FindFirstValue("uid")
@@ -32,10 +32,9 @@ public static class RateLimiterServicesExtension
                     var clientId = !string.IsNullOrEmpty(userId)
                         ? $"{ip ?? host}:{userId}"
                         : $"{ip ?? host ?? "unknown-client"}";
-                    
+
                     // Get request path (ensure lowercase for consistent matching)
                     var path = context?.Request.Path.Value?.ToLowerInvariant() ?? string.Empty;
-                    Console.WriteLine($"Request from Client ID: {clientId}, for path {path}");
 
                     // Find endpoint-specific rate limiting configuration
                     var endpoint = rateLimiterConfig.Endpoints
@@ -45,7 +44,6 @@ public static class RateLimiterServicesExtension
                     // - If endpoint config exists: use clientId + endpoint path
                     // - Otherwise: use clientId + "default"
                     var rateLimitKey = endpoint != null ? $"{clientId}:{endpoint.Path}" : $"{clientId}:default";
-                    Console.WriteLine($"Rate Limit Key: {rateLimitKey}");
 
                     // If there is an endpoint-specific configuration, use its rules
                     if (endpoint != null)
