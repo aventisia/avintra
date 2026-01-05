@@ -2,6 +2,7 @@ import { IHttpResponse } from "@aventisia/ui/dtos";
 
 import { axiosInstance } from "@/react-toolkit/lib/axios-instance";
 
+import { JobDetailsDto } from "../dtos/job-details-dto";
 import { JobsTableDto } from "../dtos/jobs-table-dto";
 
 const baseAPIURL: string = `${import.meta.env.VITE_WORC_API_URL}/job`;
@@ -12,6 +13,15 @@ const baseAPIURL: string = `${import.meta.env.VITE_WORC_API_URL}/job`;
 export const getJobs = () => {
   return axiosInstance
     .get<IHttpResponse<JobsTableDto[]>>(`${baseAPIURL}/list`)
+    .then((res) => res.data);
+};
+
+/**
+ * Retrieves Job data.
+ */
+export const getJobById = (id?: string) => {
+  return axiosInstance
+    .get<IHttpResponse<JobDetailsDto>>(`${baseAPIURL}/${id}`)
     .then((res) => res.data);
 };
 

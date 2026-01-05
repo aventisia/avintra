@@ -117,9 +117,9 @@ export const agentsTableColumns: ColumnDef<AgentsTableDto>[] = [
         Disabled: string;
         Published: string;
       } = {
-        Deployed: "bg-green-100 text-green-800",
-        Disabled: "bg-gray-100 text-gray-800",
-        Published: "bg-blue-100 text-blue-800",
+        Deployed: "bg-green-200 text-green-700",
+        Disabled: "bg-muted text-muted-foreground",
+        Published: "bg-blue-200 text-blue-700",
       };
 
       let status: "Disabled" | "Deployed" | "Published" = "Published";

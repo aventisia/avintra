@@ -36,9 +36,22 @@ const downloadTemplateResource = (path: string) => {
     .then((res) => res.data);
 };
 
+/**
+ * Delete a template by its ID.
+ *
+ * @param id - ID of the template to delete.
+ * @returns Boolean indicating success of the deletion.
+ */
+const deleteTemplate = (id: string) => {
+  return axiosInstance
+    .delete<IHttpResponse<boolean>>(`${baseAPIURL_WORC}/${id}`)
+    .then((res) => res.data);
+};
+
 export {
   getAgentTemplates,
   applyAgentTemplate,
   getTemplateById,
   downloadTemplateResource,
+  deleteTemplate,
 };
