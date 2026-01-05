@@ -226,16 +226,12 @@ const sidebarMenuSections: SidebarMenuSectionType[] = [
   {
     sectionName: "Global Admin",
     menuItems: [
-      ...(import.meta.env.MODE !== "production"
-        ? [
-            {
-              permissions: ["SA"],
-              Icon: IdentificationIcon,
-              name: "On-prem Tenants",
-              route: "ga/on-prem-tenants",
-            },
-          ]
-        : []),
+      {
+        permissions: ["SA"],
+        Icon: IdentificationIcon,
+        name: "On-prem Tenants",
+        route: "ga/on-prem-tenants",
+      },
     ],
   },
 ];
