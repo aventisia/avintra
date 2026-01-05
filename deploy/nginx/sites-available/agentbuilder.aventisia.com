@@ -1,7 +1,7 @@
 server
 {
 	listen 80;
-	server_name agentbuilder.aventisia.com dev-agentbuilder.aventisia.com uat-agentbuilder.aventisia.com;
+	server_name agentbuilder.aventisia.com uat-agentbuilder.aventisia.com dev-agentbuilder.aventisia.com docker-agentbuilder.aventisia.com;
 	return 301 https://$host$request_uri;
 }
 

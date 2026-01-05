@@ -1,7 +1,7 @@
 server
 {
 	listen 80;
-	server_name aistudio.aventisia.com dev-aistudio.aventisia.com uat-aistudio.aventisia.com;
+	server_name aistudio.aventisia.com uat-aistudio.aventisia.com dev-aistudio.aventisia.com docker-aistudio.aventisia.com;
 	return 301 https://$host$request_uri;
 }
 
@@ -17,7 +17,7 @@ server
 
 	# API (first)
 	location /api/ {
-		proxy_pass http://localhost:4002;
+		proxy_pass http://worc-aistudio-apis:4002;
 		include /etc/nginx/conf.d/common_api_config.conf;
 	}
 

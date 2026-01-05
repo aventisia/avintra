@@ -15,23 +15,19 @@ This directory contains the Nginx configuration and Dockerfile for containerized
 
 ```sh
 # Build
-sudo docker build -f deploy/nginx/Dockerfile -t worc/nginx:latest .
+sudo docker build -f deploy/nginx/Dockerfile -t hub.aventisia.com/worc/nginx:v0.0.1 .
 
 # Test run locally (ensure SSL certs are available at /etc/ssl/aventisia and localhost is set up in server_name temporarily for testing)
-sudo docker run -d --name nginx-test -p 80:80 -p 443:443 -v /etc/ssl/aventisia:/etc/ssl/aventisia:ro worc/nginx:latest
+sudo docker run -d --name worc-nginx --network worc-net -p 80:80 -p 443:443 -v /etc/ssl/aventisia:/etc/ssl/aventisia:ro hub.aventisia.com/worc/nginx:v0.0.1
 
 # Check logs
-sudo docker logs -f nginx-test
+sudo docker logs -f worc-nginx
 
 # Stop and remove test container
-sudo docker stop nginx-test && sudo docker rm nginx-test
+sudo docker stop worc-nginx && sudo docker rm worc-nginx
 
-# Push to private registry (optional)
-sudo docker tag worc/nginx:latest hub.aventisia.com/worc/nginx:latest
-sudo docker push hub.aventisia.com/worc/nginx:latest
-
-# Login to private registry (if needed)
-sudo docker login hub.aventisia.com
+# Push to private registry
+sudo docker push hub.aventisia.com/worc/nginx:v0.0.1
 ```
 
 2. **Run with Docker Compose (recommended) or Docker CLI:**

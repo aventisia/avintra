@@ -9,7 +9,7 @@ server
 {
 	listen 443 ssl;
 	http2 on;
-	server_name llmpipeline.aventisia.com dev-llmpipeline.aventisia.com uat-llmpipeline.aventisia.com;
+	server_name llmpipeline.aventisia.com uat-llmpipeline.aventisia.com dev-llmpipeline.aventisia.com docker-llmpipeline.aventisia.com;
 	
 	# Include common config
 	include /etc/nginx/conf.d/common_ssl.conf;
@@ -17,7 +17,7 @@ server
 
 	# API (first)
 	location /api/ {
-		proxy_pass http://localhost:4003;
+		proxy_pass http://worc-llmpipeline-apis:4003;
 		include /etc/nginx/conf.d/common_api_config.conf;
 	}
 
