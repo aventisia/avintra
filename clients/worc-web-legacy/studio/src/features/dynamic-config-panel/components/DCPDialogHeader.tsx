@@ -98,7 +98,7 @@ const DCPDialogHeader = () => {
               nodeData?.name === "ConditionalBranchActivity" &&
                 "!max-w-[35rem]",
               nodeData?.name === "LoopActivity" && "!max-w-[35rem]",
-              nodeData?.name.includes("CreateAIAgent") &&
+              nodeData?.name.includes("AIAgent") &&
                 "!max-w-[calc(((100vw-(2*var(--header-padding)))/2)-8rem)]",
             )}
             title={nodeData?.description}

@@ -32,6 +32,24 @@
           },
           {
             "type": "aiNode",
+            "name": "CreateVisionAIAgent",
+            "label": "Vision Model",
+            "description": "Analyzes visual data to extract structured information, such as identifying objects, reading text, or detecting anomalies.",
+            "docsLink": null,
+            "icon": "",
+            "img": "/assets/VisionModel.svg"
+          },
+          {
+            "type": "aiNode",
+            "name": "CreateInferencingAIAgent",
+            "label": "Inferencing Model",
+            "description": "Performs high-speed reasoning and logic checks on incoming data to provide instant predictions or route tasks.",
+            "docsLink": null,
+            "icon": "",
+            "img": "/assets/InferencingModel.svg"
+          },
+          {
+            "type": "aiNode",
             "name": "AIModel",
             "label": "Conversation Model",
             "description": "Enable natural, AI-powered conversational experiences",

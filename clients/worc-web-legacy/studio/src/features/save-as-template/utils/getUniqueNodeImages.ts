@@ -1,14 +1,14 @@
 import { NodeDataType } from "@/types/node-data-type";
 import { Node } from "@xyflow/react";
 
-const DEFAULT_IMAGE = "/function.svg";
+const DEFAULT_IMAGE = "/function.png";
 const TRIGGER_ICON = "ManualTriggerIcon";
 /**
  * Returns a list of unique image paths used in the flow.
  *
  * - Picks `icon` first (added Icon in assets of worc ).
  * - Falls back to `img` if no icon is set.
- * - Skips the default `/function.svg` image.
+ * - Skips the default `/function.png` image.
  */
 export function getUniqueFlowImages(nodes: Node<NodeDataType>[]): string[] {
   const imageSet = new Set<string>();

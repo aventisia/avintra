@@ -12,7 +12,7 @@ export type Model = {
   voices?: { label: string; value: string }[];
 
   /* Specialty of the model*/
-  specialty:
+  specialty: (
     | "text"
     | "vision"
     | "image"
@@ -20,7 +20,8 @@ export type Model = {
     | "stt"
     | "video"
     | "realtime"
-    | "deep-search";
+    | "deep-search"
+  )[];
 };
 
 export type Provider = {
@@ -39,516 +40,686 @@ export type Provider = {
 
 // Mark available for the models that are provided on the platform
 //open ai , deep infra, gemini
+
+const openAIVoices = [
+  { label: "Alloy", value: "alloy" },
+  { label: "Echo", value: "echo" },
+  { label: "Fable", value: "fable" },
+  { label: "Onyx", value: "onyx" },
+  { label: "Nova", value: "nova" },
+  { label: "Shimmer", value: "shimmer" },
+];
+
+export const openAiModelList: Model[] = [
+  // --- GPT-5 Frontier Series (Released Aug-Dec 2025) ---
+  {
+    label: "gpt-5.2",
+    value: "gpt-5.2",
+    available: false,
+    specialty: ["text", "vision"],
+    voices: openAIVoices,
+  },
+  {
+    label: "gpt-5.1",
+    value: "gpt-5.1",
+    available: false,
+    specialty: ["text", "vision"],
+  },
+  {
+    label: "gpt-5",
+    value: "gpt-5",
+    available: false,
+    specialty: ["text", "vision"],
+  },
+  {
+    label: "gpt-5-mini",
+    value: "gpt-5-mini",
+    available: false,
+    specialty: ["text", "vision"],
+  },
+  {
+    label: "gpt-5-nano",
+    value: "gpt-5-nano",
+    available: false,
+    specialty: ["text"],
+  },
+
+  // --- Sora Video Series ---
+  { label: "sora-2", value: "sora-2", available: false, specialty: ["video"] },
+  {
+    label: "sora-2-pro",
+    value: "sora-2-pro",
+    available: false,
+    specialty: ["video"],
+  },
+
+  // --- Image Generation (GPT-Image replaces DALL-E) ---
+  {
+    label: "gpt-image-1.5",
+    value: "gpt-image-1.5",
+    available: false,
+    specialty: ["image"],
+  },
+  {
+    label: "chatgpt-image-latest",
+    value: "chatgpt-image-latest",
+    available: false,
+    specialty: ["image"],
+  },
+  {
+    label: "gpt-image-1",
+    value: "gpt-image-1",
+    available: false,
+    specialty: ["image"],
+  },
+  {
+    label: "gpt-image-1-mini",
+    value: "gpt-image-1-mini",
+    available: false,
+    specialty: ["image"],
+  },
+
+  // --- Deep Research & Advanced Reasoning (o-series) ---
+  {
+    label: "o3-deep-research",
+    value: "o3-deep-research",
+    available: false,
+    specialty: ["text", "deep-search"],
+  },
+  {
+    label: "o4-mini-deep-research",
+    value: "o4-mini-deep-research",
+    available: false,
+    specialty: ["text", "deep-search"],
+  },
+  {
+    label: "o3-pro",
+    value: "o3-pro",
+    available: false,
+    specialty: ["text", "vision"],
+  },
+  { label: "o3", value: "o3", available: false, specialty: ["text", "vision"] },
+  {
+    label: "o4-mini",
+    value: "o4-mini",
+    available: false,
+    specialty: ["text", "vision"],
+  },
+
+  // --- Audio & Realtime ---
+  {
+    label: "gpt-audio",
+    value: "gpt-audio",
+    available: false,
+    specialty: ["tts", "stt"],
+    voices: openAIVoices,
+  },
+  {
+    label: "gpt-realtime",
+    value: "gpt-realtime",
+    available: false,
+    specialty: ["realtime", "tts", "stt"],
+    voices: openAIVoices,
+  },
+  {
+    label: "gpt-realtime-mini",
+    value: "gpt-realtime-mini",
+    available: false,
+    specialty: ["realtime", "tts", "stt"],
+    voices: openAIVoices,
+  },
+  {
+    label: "gpt-audio-mini",
+    value: "gpt-audio-mini",
+    available: false,
+    specialty: ["tts", "stt"],
+    voices: openAIVoices,
+  },
+
+  // --- GPT-4.1 Architecture (Non-Reasoning Optimization) ---
+  {
+    label: "gpt-4.1",
+    value: "gpt-4.1",
+    available: false,
+    specialty: ["text", "vision"],
+  },
+  {
+    label: "gpt-4.1-mini",
+    value: "gpt-4.1-mini",
+    available: false,
+    specialty: ["text", "vision"],
+  },
+  {
+    label: "gpt-4.1-nano",
+    value: "gpt-4.1-nano",
+    available: false,
+    specialty: ["text"],
+  },
+
+  // --- Special Purpose & Preview Models ---
+  {
+    label: "o1-pro",
+    value: "o1-pro",
+    available: false,
+    specialty: ["text", "vision"],
+  },
+  {
+    label: "computer-use-preview",
+    value: "computer-use-preview",
+    available: false,
+    specialty: ["vision", "text"],
+  },
+  {
+    label: "gpt-4o-mini-search-preview",
+    value: "gpt-4o-mini-search-preview",
+    available: false,
+    specialty: ["text", "deep-search"],
+  },
+  {
+    label: "gpt-4o-search-preview",
+    value: "gpt-4o-search-preview",
+    available: false,
+    specialty: ["text", "deep-search"],
+  },
+  {
+    label: "gpt-4.5-preview",
+    value: "gpt-4.5-preview",
+    available: false,
+    specialty: ["text"],
+  }, // Deprecated July 2025
+  {
+    label: "o3-mini",
+    value: "o3-mini",
+    available: false,
+    specialty: ["text", "vision"],
+  },
+  { label: "o1", value: "o1", available: false, specialty: ["text", "vision"] },
+  {
+    label: "omni-moderation-latest",
+    value: "omni-moderation-latest",
+    available: false,
+    specialty: ["text"],
+  },
+  { label: "o1-mini", value: "o1-mini", available: false, specialty: ["text"] }, // Replaced by o4-mini
+  {
+    label: "o1-preview",
+    value: "o1-preview",
+    available: false,
+    specialty: ["text"],
+  }, // Replaced by o3
+
+  // --- Omni Series ---
+  {
+    label: "gpt-4o",
+    value: "gpt-4o",
+    available: true,
+    specialty: ["text", "vision", "realtime"],
+  },
+  {
+    label: "gpt-4o-audio-preview",
+    value: "gpt-4o-audio-preview",
+    available: false,
+    specialty: ["tts", "stt"],
+  }, // Succeeded by gpt-audio
+  {
+    label: "gpt-4o-mini",
+    value: "gpt-4o-mini",
+    available: true,
+    specialty: ["text", "vision"],
+  },
+  {
+    label: "gpt-4o-mini-audio-preview",
+    value: "gpt-4o-mini-audio-preview",
+    available: false,
+    specialty: ["tts", "stt"],
+  },
+  {
+    label: "gpt-4o-mini-realtime-preview",
+    value: "gpt-4o-mini-realtime-preview",
+    available: false,
+    specialty: ["realtime"],
+  },
+  {
+    label: "gpt-4o-realtime-preview",
+    value: "gpt-4o-realtime-preview",
+    available: false,
+    specialty: ["realtime"],
+  },
+
+  // --- Turbo & Legacy Legacy ---
+  {
+    label: "gpt-4-turbo",
+    value: "gpt-4-turbo",
+    available: false,
+    specialty: ["text", "vision"],
+  },
+  {
+    label: "chatgpt-4o-latest",
+    value: "chatgpt-4o-latest",
+    available: false,
+    specialty: ["text", "vision"],
+  },
+  {
+    label: "gpt-4-turbo-preview",
+    value: "gpt-4-turbo-preview",
+    available: false,
+    specialty: ["text"],
+  },
+
+  // --- Audio Specialized Transcribe/TTS ---
+  {
+    label: "gpt-4o-mini-transcribe",
+    value: "gpt-4o-mini-transcribe",
+    available: false,
+    specialty: ["stt"],
+  },
+  {
+    label: "gpt-4o-mini-tts",
+    value: "gpt-4o-mini-tts",
+    available: false,
+    specialty: ["tts"],
+    voices: openAIVoices,
+  },
+  {
+    label: "gpt-4o-transcribe",
+    value: "gpt-4o-transcribe",
+    available: false,
+    specialty: ["stt"],
+  },
+  {
+    label: "gpt-4o-transcribe-diarize",
+    value: "gpt-4o-transcribe-diarize",
+    available: false,
+    specialty: ["stt"],
+  },
+
+  // --- ChatGPT Product Variants ---
+  {
+    label: "gpt-5.2-chat-latest",
+    value: "gpt-5.2-chat-latest",
+    available: false,
+    specialty: ["text", "vision"],
+  },
+  {
+    label: "gpt-5.1-chat-latest",
+    value: "gpt-5.1-chat-latest",
+    available: false,
+    specialty: ["text", "vision"],
+  },
+  {
+    label: "gpt-5-chat-latest",
+    value: "gpt-5-chat-latest",
+    available: false,
+    specialty: ["text", "vision"],
+  },
+
+  // --- Open Weights (GPT-OSS) ---
+  {
+    label: "gpt-oss-120b",
+    value: "gpt-oss-120b",
+    available: false,
+    specialty: ["text"],
+  },
+  {
+    label: "gpt-oss-20b",
+    value: "gpt-oss-20b",
+    available: false,
+    specialty: ["text"],
+  },
+
+  // --- Embeddings & Moderation ---
+  {
+    label: "text-embedding-3-large",
+    value: "text-embedding-3-large",
+    available: false,
+    specialty: ["text"],
+  },
+  {
+    label: "text-embedding-3-small",
+    value: "text-embedding-3-small",
+    available: false,
+    specialty: ["text"],
+  },
+  {
+    label: "text-embedding-ada-002",
+    value: "text-embedding-ada-002",
+    available: false,
+    specialty: ["text"],
+  },
+  {
+    label: "text-moderation-latest",
+    value: "text-moderation-latest",
+    available: false,
+    specialty: ["text"],
+  },
+  {
+    label: "text-moderation-stable",
+    value: "text-moderation-stable",
+    available: false,
+    specialty: ["text"],
+  },
+
+  // --- Legacy Audio/Image ---
+  {
+    label: "tts-1",
+    value: "tts-1",
+    available: false,
+    specialty: ["tts"],
+    voices: openAIVoices,
+  },
+  {
+    label: "tts-1-hd",
+    value: "tts-1-hd",
+    available: false,
+    specialty: ["tts"],
+    voices: openAIVoices,
+  },
+  {
+    label: "whisper-1",
+    value: "whisper-1",
+    available: false,
+    specialty: ["stt"],
+  },
+  {
+    label: "dall-e-3",
+    value: "dall-e-3",
+    available: false,
+    specialty: ["image"],
+  },
+];
+
+// Official Google Gemini Live / TTS Voices (2025)
+const googleVoices = [
+  { label: "Journey", value: "journey" },
+  { label: "Horizon", value: "horizon" },
+  { label: "Lyra", value: "lyra" },
+  { label: "Charon", value: "charon" },
+  { label: "Kore", value: "kore" },
+  { label: "Puck", value: "puck" },
+  { label: "Fenrir", value: "fenrir" },
+];
+
+export const googleModelList: Model[] = [
+  // --- Gemini 3 Frontier Series (Released Nov-Dec 2025) ---
+  {
+    label: "Gemini 3 Pro",
+    value: "gemini-3-pro-preview",
+    available: false,
+    specialty: ["text", "vision", "deep-search"],
+    voices: googleVoices,
+  },
+  {
+    label: "Gemini 3 Flash",
+    value: "gemini-3-flash-preview",
+    available: false,
+    specialty: ["text", "vision", "realtime"],
+  },
+  {
+    label: "Gemini 3 Pro Image (Nano Banana Pro)",
+    value: "gemini-3-pro-image-preview",
+    available: false,
+    specialty: ["image"],
+  },
+
+  // --- Gemini 2.5 Stable Series ---
+  {
+    label: "Gemini 2.5 Pro",
+    value: "gemini-2.5-pro",
+    available: false,
+    specialty: ["text", "vision", "deep-search"],
+  },
+  {
+    label: "Gemini 2.5 Flash",
+    value: "gemini-2.5-flash",
+    available: true,
+    specialty: ["text", "vision", "realtime"],
+  },
+  {
+    label: "Gemini 2.5 Flash-Lite",
+    value: "gemini-2.5-flash-lite",
+    available: true,
+    specialty: ["text", "vision"],
+  },
+  {
+    label: "Gemini 2.5 Flash Image",
+    value: "gemini-2.5-flash-image",
+    available: false,
+    specialty: ["image"],
+  },
+
+  // --- Audio & Voice Specialized ---
+  {
+    label: "Gemini 2.5 Pro TTS",
+    value: "gemini-2.5-pro-tts",
+    available: false,
+    specialty: ["tts"],
+    voices: googleVoices,
+  },
+  {
+    label: "Gemini Live 2.5 Flash (Audio)",
+    value: "gemini-live-2.5-flash-native-audio",
+    available: false,
+    specialty: ["realtime", "tts", "stt"],
+    voices: googleVoices,
+  },
+  {
+    label: "Gemini 2.5 Flash TTS Preview",
+    value: "gemini-2.5-flash-preview-tts",
+    available: false,
+    specialty: ["tts"],
+  },
+
+  // --- Video & Robotics ---
+  {
+    label: "Veo 3.1",
+    value: "veo-3.1",
+    available: false,
+    specialty: ["video"],
+  },
+  {
+    label: "Gemini Robotics-ER 1.5",
+    value: "gemini-robotics-er-1.5",
+    available: false,
+    specialty: ["vision", "text"],
+  },
+
+  // --- Legacy & Retired (Available for 2025 Migration) ---
+  {
+    label: "Gemini 2.0 Flash",
+    value: "gemini-2.0-flash-001",
+    available: false,
+    specialty: ["text", "vision"],
+  },
+  {
+    label: "Gemini 2.0 Flash-Lite",
+    value: "gemini-2.0-flash-lite-001",
+    available: false,
+    specialty: ["text", "vision"],
+  },
+  {
+    label: "Gemini 1.5 Pro (Legacy)",
+    value: "gemini-1.5-pro-002",
+    available: false, // Retired Sep 2025
+    specialty: ["text", "vision"],
+  },
+
+  // --- Image Generation (Imagen Series) ---
+  {
+    label: "Imagen 3.0 Generate",
+    value: "imagen-3.0-generate-002",
+    available: false,
+    specialty: ["image"],
+  },
+  {
+    label: "Imagen 3.0 Fast",
+    value: "imagen-3.0-fast-001",
+    available: false,
+    specialty: ["image"],
+  },
+
+  // --- Open Models (Gemma) ---
+  {
+    label: "Gemma 3 27B IT",
+    value: "gemma-3-27b-it",
+    available: false,
+    specialty: ["text", "image"],
+  },
+  {
+    label: "Gemma 2 9B",
+    value: "gemma-2-9b",
+    available: false,
+    specialty: ["text"],
+  },
+
+  // --- Embeddings ---
+  {
+    label: "Gemini Embedding 001",
+    value: "gemini-embedding-001",
+    available: false,
+    specialty: ["text"],
+  },
+  {
+    label: "Text Embedding 005",
+    value: "text-embedding-005",
+    available: false,
+    specialty: ["text"],
+  },
+];
+
+export const openRouterModelList: Model[] = [
+  // --- Trending Reasoning & Frontier Models ---
+  {
+    label: "Claude 4.5 Sonnet",
+    value: "anthropic/claude-4.5-sonnet",
+    available: true,
+    specialty: ["text", "vision", "deep-search"],
+  },
+  {
+    label: "GPT-5.2 (OpenAI)",
+    value: "openai/gpt-5.2",
+    available: false,
+    specialty: ["text", "vision", "realtime"],
+  },
+  {
+    label: "Gemini 3 Pro Preview",
+    value: "google/gemini-3-pro-preview",
+    available: false,
+    specialty: ["text", "vision", "deep-search"],
+  },
+  {
+    label: "Grok Code Fast 1",
+    value: "x-ai/grok-code-fast-1",
+    available: true,
+    specialty: ["text", "deep-search"],
+  },
+
+  // --- High-Performance Open Weights ---
+  {
+    label: "DeepSeek V3.2 Speciale",
+    value: "deepseek/deepseek-v3.2-speciale",
+    available: true,
+    specialty: ["text", "vision"],
+  },
+  {
+    label: "Qwen 3 VL (72B)",
+    value: "qwen/qwen-3-vl-72b",
+    available: true,
+    specialty: ["vision", "text"],
+  },
+  {
+    label: "Llama 3.3 Nemotron Super",
+    value: "nvidia/llama-3.3-nemotron-super-49b",
+    available: true,
+    specialty: ["text", "vision"],
+  },
+  {
+    label: "MiMo-V2-Flash (Xiaomi)",
+    value: "xiaomi/mimo-v2-flash",
+    available: false,
+    specialty: ["text", "deep-search"],
+  },
+
+  // --- Specialized & Agentic Models ---
+  {
+    label: "Devstral 2 (Mistral Coding)",
+    value: "mistralai/devstral-2-2512",
+    available: false,
+    specialty: ["text"],
+  },
+  {
+    label: "KAT-Coder-Pro V1",
+    value: "kwaipilot/kat-coder-pro-v1",
+    available: false,
+    specialty: ["text"],
+  },
+  {
+    label: "DeepSeek R1T2 Chimera",
+    value: "tngtech/deepseek-r1t2-chimera",
+    available: true,
+    specialty: ["text"],
+  },
+
+  // --- Efficient / High-Throughput (Nitro) ---
+  {
+    label: "GPT-5 Mini",
+    value: "openai/gpt-5-mini",
+    available: false,
+    specialty: ["text", "vision"],
+  },
+  {
+    label: "Gemini 2.5 Flash (Nitro)",
+    value: "google/gemini-2.5-flash:nitro",
+    available: false,
+    specialty: ["text", "vision", "realtime"],
+  },
+  {
+    label: "Claude 4.5 Haiku",
+    value: "anthropic/claude-4.5-haiku",
+    available: true,
+    specialty: ["text", "realtime"],
+  },
+  {
+    label: "Nova Micro 1.0 (Amazon)",
+    value: "amazon/nova-micro-1.0",
+    available: false,
+    specialty: ["text"],
+  },
+
+  // --- Image & Video ---
+  {
+    label: "Flux 2 Dev (Z-Image)",
+    value: "black-forest-labs/flux-2-dev",
+    available: false,
+    specialty: ["image"],
+  },
+  {
+    label: "Sora 2 (API Access)",
+    value: "openai/sora-2",
+    available: false,
+    specialty: ["video"],
+  },
+];
+
+//caluude 4.5
 export const modelProviders: Provider[] = [
   {
     value: "openai",
     label: "OpenAI",
     isEnabled: true,
-    models: [
-      /* ================= TEXT ================= */
-      {
-        value: "gpt-5.2",
-        label: "GPT-5.2",
-        available: true,
-        specialty: "text",
-      },
-      {
-        value: "gpt-5.2-pro",
-        label: "GPT-5.2 Pro",
-        available: true,
-        specialty: "text",
-      },
-
-      {
-        value: "gpt-5.1",
-        label: "GPT-5.1",
-        available: true,
-        specialty: "text",
-      },
-      { value: "gpt-5", label: "GPT-5", available: true, specialty: "text" },
-
-      {
-        value: "gpt-5-mini",
-        label: "GPT-5 Mini",
-        available: true,
-        specialty: "text",
-      },
-      {
-        value: "gpt-5-nano",
-        label: "GPT-5 Nano",
-        available: true,
-        specialty: "text",
-      },
-
-      {
-        value: "gpt-5-pro",
-        label: "GPT-5 Pro",
-        available: true,
-        specialty: "text",
-      },
-
-      {
-        value: "gpt-5.1-codex",
-        label: "GPT-5.1 Codex",
-        available: true,
-        specialty: "text",
-      },
-      {
-        value: "gpt-5.1-codex-max",
-        label: "GPT-5.1 Codex Max",
-        available: true,
-        specialty: "text",
-      },
-      {
-        value: "gpt-5.1-codex-mini",
-        label: "GPT-5.1 Codex Mini",
-        available: true,
-        specialty: "text",
-      },
-      {
-        value: "gpt-5-codex",
-        label: "GPT-5 Codex",
-        available: true,
-        specialty: "text",
-      },
-
-      { value: "o3", label: "o3", available: true, specialty: "text" },
-      { value: "o3-pro", label: "o3 Pro", available: true, specialty: "text" },
-      {
-        value: "o3-mini",
-        label: "o3 Mini",
-        available: true,
-        specialty: "text",
-      },
-
-      {
-        value: "o4-mini",
-        label: "o4 Mini",
-        available: true,
-        specialty: "text",
-      },
-
-      { value: "o1", label: "o1", available: true, specialty: "text" },
-      { value: "o1-pro", label: "o1 Pro", available: true, specialty: "text" },
-
-      /* ================= DEEP SEARCH ================= */
-      {
-        value: "o3-deep-research",
-        label: "o3 Deep Research",
-        available: true,
-        specialty: "deep-search",
-      },
-      {
-        value: "o4-mini-deep-research",
-        label: "o4 Mini Deep Research",
-        available: true,
-        specialty: "deep-search",
-      },
-
-      /* ================= VISION / OCR ================= */
-      {
-        value: "gpt-4o",
-        label: "GPT-4o",
-        available: true,
-        specialty: "vision",
-      },
-      {
-        value: "gpt-4o-mini",
-        label: "GPT-4o Mini",
-        available: true,
-        specialty: "text",
-      },
-
-      {
-        value: "gpt-4.1",
-        label: "GPT-4.1",
-        available: true,
-        specialty: "vision",
-      },
-      {
-        value: "gpt-4.1-mini",
-        label: "GPT-4.1 Mini",
-        available: true,
-        specialty: "vision",
-      },
-      {
-        value: "gpt-4.1-nano",
-        label: "GPT-4.1 Nano",
-        available: true,
-        specialty: "vision",
-      },
-
-      /* ================= IMAGE ================= */
-      {
-        value: "gpt-image-1.5",
-        label: "GPT Image 1.5",
-        available: true,
-        specialty: "image",
-      },
-      {
-        value: "gpt-image-1",
-        label: "GPT Image 1",
-        available: true,
-        specialty: "image",
-      },
-      {
-        value: "gpt-image-1-mini",
-        label: "GPT Image 1 Mini",
-        available: true,
-        specialty: "image",
-      },
-      {
-        value: "chatgpt-image-latest",
-        label: "ChatGPT Image (Latest)",
-        available: true,
-        specialty: "image",
-      },
-
-      /* ================= VIDEO ================= */
-      { value: "sora-2", label: "Sora 2", available: true, specialty: "video" },
-      {
-        value: "sora-2-pro",
-        label: "Sora 2 Pro",
-        available: true,
-        specialty: "video",
-      },
-
-      /* ================= REALTIME ================= */
-      {
-        value: "gpt-realtime",
-        label: "GPT Realtime",
-        available: true,
-        specialty: "realtime",
-      },
-      {
-        value: "gpt-realtime-mini",
-        label: "GPT Realtime Mini",
-        available: true,
-        specialty: "realtime",
-      },
-      {
-        value: "gpt-4o-realtime-preview",
-        label: "GPT-4o Realtime",
-        available: true,
-        specialty: "realtime",
-      },
-      {
-        value: "gpt-4o-mini-realtime-preview",
-        label: "GPT-4o Mini Realtime",
-        available: true,
-        specialty: "realtime",
-      },
-
-      /* ================= AUDIO (MULTIMODAL) ================= */
-      {
-        value: "gpt-audio",
-        label: "GPT Audio",
-        available: true,
-        specialty: "realtime",
-      },
-      {
-        value: "gpt-audio-mini",
-        label: "GPT Audio Mini",
-        available: true,
-        specialty: "realtime",
-      },
-      {
-        value: "gpt-4o-audio-preview",
-        label: "GPT-4o Audio",
-        available: true,
-        specialty: "realtime",
-      },
-      {
-        value: "gpt-4o-mini-audio-preview",
-        label: "GPT-4o Mini Audio",
-        available: true,
-        specialty: "realtime",
-      },
-
-      /* ================= SPEECH → TEXT ================= */
-      {
-        value: "whisper-1",
-        label: "Whisper",
-        available: true,
-        specialty: "stt",
-      },
-      {
-        value: "gpt-4o-transcribe",
-        label: "GPT-4o Transcribe",
-        available: true,
-        specialty: "stt",
-      },
-      {
-        value: "gpt-4o-mini-transcribe",
-        label: "GPT-4o Mini Transcribe",
-        available: true,
-        specialty: "stt",
-      },
-      {
-        value: "gpt-4o-transcribe-diarize",
-        label: "GPT-4o Transcribe Diarize",
-        available: true,
-        specialty: "stt",
-      },
-
-      /* ================= TEXT → SPEECH (VOICES) ================= */
-      {
-        value: "tts-1",
-        label: "TTS-1",
-        available: true,
-        specialty: "tts",
-        voices: [
-          { label: "Alloy", value: "alloy" },
-          { label: "Echo", value: "echo" },
-          { label: "Fable", value: "fable" },
-          { label: "Nova", value: "nova" },
-          { label: "Onyx", value: "onyx" },
-          { label: "Shimmer", value: "shimmer" },
-        ],
-      },
-      {
-        value: "tts-1-hd",
-        label: "TTS-1 HD",
-        available: true,
-        specialty: "tts",
-        voices: [
-          { label: "Alloy", value: "alloy" },
-          { label: "Echo", value: "echo" },
-          { label: "Fable", value: "fable" },
-          { label: "Nova", value: "nova" },
-          { label: "Onyx", value: "onyx" },
-          { label: "Shimmer", value: "shimmer" },
-        ],
-      },
-      {
-        value: "gpt-4o-mini-tts",
-        label: "GPT-4o Mini TTS",
-        available: true,
-        specialty: "tts",
-        voices: [
-          { label: "Alloy", value: "alloy" },
-          { label: "Echo", value: "echo" },
-          { label: "Fable", value: "fable" },
-          { label: "Nova", value: "nova" },
-          { label: "Onyx", value: "onyx" },
-          { label: "Shimmer", value: "shimmer" },
-        ],
-      },
-
-      /* ================= EMBEDDINGS ================= */
-      {
-        value: "text-embedding-3-large",
-        label: "Text Embedding 3 Large",
-        available: true,
-        specialty: "text",
-      },
-      {
-        value: "text-embedding-3-small",
-        label: "Text Embedding 3 Small",
-        available: true,
-        specialty: "text",
-      },
-
-      /* ================= OPEN WEIGHT ================= */
-      {
-        value: "gpt-oss-120b",
-        label: "GPT-OSS-120B",
-        available: true,
-        specialty: "text",
-      },
-      {
-        value: "gpt-oss-20b",
-        label: "GPT-OSS-20B",
-        available: true,
-        specialty: "text",
-      },
-
-      /* ================= TOOLS ================= */
-      {
-        value: "computer-use-preview",
-        label: "Computer Use Preview",
-        available: true,
-        specialty: "text",
-      },
-    ],
+    models: openAiModelList,
   },
   {
     value: "google",
     label: "Google Gemini",
     isEnabled: true,
-    models: [
-      /* ================= TEXT ================= */
-      {
-        value: "gemini-2.5-pro",
-        label: "Gemini 2.5 Pro",
-        available: true,
-        specialty: "text",
-      },
-      {
-        value: "gemini-2.5-flash",
-        label: "Gemini 2.5 Flash",
-        available: true,
-        specialty: "text",
-      },
-
-      {
-        value: "gemini-2.0-pro",
-        label: "Gemini 2.0 Pro",
-        available: true,
-        specialty: "text",
-      },
-      {
-        value: "gemini-2.0-flash",
-        label: "Gemini 2.0 Flash",
-        available: true,
-        specialty: "text",
-      },
-
-      {
-        value: "gemini-1.5-pro",
-        label: "Gemini 1.5 Pro",
-        available: true,
-        specialty: "text",
-      },
-      {
-        value: "gemini-1.5-flash",
-        label: "Gemini 1.5 Flash",
-        available: true,
-        specialty: "text",
-      },
-
-      /* ================= VISION / OCR ================= */
-      {
-        value: "gemini-pro-vision",
-        label: "Gemini Pro Vision",
-        available: true,
-        specialty: "vision",
-      },
-
-      /* ================= IMAGE / AUDIO / VIDEO ================= */
-      // ❌ Gemini image/audio/video generation is API-feature based, not separate model IDs
-    ],
+    models: googleModelList,
   },
 
   {
-    value: "deepinfra",
-    label: "Deep Infra",
+    value: "openrouter",
+    label: "OpenRouter",
     isEnabled: true,
-    models: [
-      /* ================= META LLAMA ================= */
-      {
-        value: "meta-llama/Llama-3-8B-Instruct",
-        label: "Llama 3 8B Instruct",
-        available: true,
-        specialty: "text",
-      },
-      {
-        value: "meta-llama/Llama-3-70B-Instruct",
-        label: "Llama 3 70B Instruct",
-        available: true,
-        specialty: "text",
-      },
-
-      {
-        value: "meta-llama/Llama-4-Scout-17B-16E-Instruct",
-        label: "Llama 4 Scout",
-        available: true,
-        specialty: "vision",
-      },
-      {
-        value: "meta-llama/Llama-4-Maverick-17B-128E-Instruct",
-        label: "Llama 4 Maverick",
-        available: true,
-        specialty: "vision",
-      },
-
-      /* ================= MISTRAL ================= */
-      {
-        value: "mistralai/Mistral-7B-Instruct-v0.3",
-        label: "Mistral 7B Instruct",
-        available: true,
-        specialty: "text",
-      },
-      {
-        value: "mistralai/Mixtral-8x7B-Instruct-v0.1",
-        label: "Mixtral 8x7B",
-        available: true,
-        specialty: "text",
-      },
-      {
-        value: "mistralai/Mixtral-8x22B-Instruct-v0.1",
-        label: "Mixtral 8x22B",
-        available: true,
-        specialty: "text",
-      },
-
-      /* ================= DEEPSEEK ================= */
-      {
-        value: "deepseek-ai/DeepSeek-V3",
-        label: "DeepSeek V3",
-        available: true,
-        specialty: "text",
-      },
-      {
-        value: "deepseek-ai/DeepSeek-Coder-V2",
-        label: "DeepSeek Coder V2",
-        available: true,
-        specialty: "text",
-      },
-
-      /* ================= QWEN ================= */
-      {
-        value: "qwen/Qwen2.5-7B-Instruct",
-        label: "Qwen 2.5 7B",
-        available: true,
-        specialty: "text",
-      },
-      {
-        value: "qwen/Qwen2.5-72B-Instruct",
-        label: "Qwen 2.5 72B",
-        available: true,
-        specialty: "text",
-      },
-
-      /* ================= GOOGLE GEMMA ================= */
-      {
-        value: "google/gemma-2-9b-it",
-        label: "Gemma 2 9B IT",
-        available: true,
-        specialty: "text",
-      },
-      {
-        value: "google/gemma-2-27b-it",
-        label: "Gemma 2 27B IT",
-        available: true,
-        specialty: "text",
-      },
-
-      /* ================= NVIDIA ================= */
-      {
-        value: "nvidia/Nemotron-3-Nano-30B-A3B",
-        label: "Nemotron 3 Nano",
-        available: true,
-        specialty: "text",
-      },
-
-      /* ================= SPEECH (STT) ================= */
-      {
-        value: "openai/whisper-large-v3",
-        label: "Whisper Large v3",
-        available: true,
-        specialty: "stt",
-      },
-      {
-        value: "mistralai/Voxtral-Small-24B",
-        label: "Voxtral Small",
-        available: true,
-        specialty: "stt",
-      },
-
-      /* ================= IMAGE / VIDEO / REALTIME ================= */
-      // ❌ DeepInfra currently does NOT expose stable video or realtime models
-    ],
+    models: openRouterModelList,
   },
 ];
 
@@ -578,9 +749,9 @@ export type Specialty = (typeof NODE_REGISTRY)[UINodeName];
 export const getSpecialtyFromNode = (nodeName: string): Model["specialty"] => {
   // Check if the provided string is a valid key in our registry
   if (nodeName in NODE_REGISTRY) {
-    return NODE_REGISTRY[nodeName as UINodeName];
+    return [NODE_REGISTRY[nodeName as UINodeName]];
   }
 
   // Default fallback to 'text' specialty
-  return "text";
+  return ["text"];
 };

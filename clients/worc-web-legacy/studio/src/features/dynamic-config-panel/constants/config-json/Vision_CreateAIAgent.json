@@ -17,8 +17,10 @@
         "provider": "openai",
         "credentials": "",
         "model": "gpt-4o-mini",
-        "temp": 1,
-        "topP": 1
+        "temperature": 1,
+        "topP": 1,
+        "isJsonOutput": true,
+        "maxOutputToken": 50
       },
       "required": false,
       "category": "Models"
@@ -37,7 +39,8 @@
       "type": "prompt-input",
       "name": "prompt",
       "required": false,
-      "min": 25,
+      "min": 22,
+      "defaultValue": "",
       "category": "Prompt"
     },
 

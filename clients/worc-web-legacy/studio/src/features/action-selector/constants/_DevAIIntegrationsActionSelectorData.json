@@ -32,7 +32,7 @@
           },
           {
             "type": "aiNode",
-            "name": "Vision_CreateAIAgent",
+            "name": "CreateVisionAIAgent",
             "label": "Vision Model",
             "description": "Analyzes visual data to extract structured information, such as identifying objects, reading text, or detecting anomalies.",
             "docsLink": null,
@@ -41,7 +41,7 @@
           },
           {
             "type": "aiNode",
-            "name": "Inferencing_CreateAIAgent",
+            "name": "CreateInferencingAIAgent",
             "label": "Inferencing Model",
             "description": "Performs high-speed reasoning and logic checks on incoming data to provide instant predictions or route tasks.",
             "docsLink": null,
@@ -50,7 +50,7 @@
           },
           {
             "type": "aiNode",
-            "name": "Conversational_CreateAIAgent",
+            "name": "CreateConversationalAIAgent",
             "label": "Conversational Model",
             "description": "Manages multi-turn interactions with human-like understanding and memory to guide users through complex tasks.",
             "docsLink": null,
@@ -59,7 +59,7 @@
           },
           {
             "type": "aiNode",
-            "name": "STT_CreateAIAgent",
+            "name": "CreateSTTAIAgent",
             "label": "Speech To Text Model",
             "description": "Convert spoken language into written text using AI.",
             "docsLink": null,
@@ -68,7 +68,7 @@
           },
           {
             "type": "aiNode",
-            "name": "TTS_CreateAIAgent",
+            "name": "CreateTTSAIAgent",
             "label": "Text To Speech Model",
             "description": "Convert text into natural-sounding speech using AI.",
             "docsLink": null,
@@ -77,7 +77,7 @@
           },
           {
             "type": "aiNode",
-            "name": "Image_CreateAIAgent",
+            "name": "CreateImageAIAgent",
             "label": "Image Model",
             "description": "Generates new visual assets or modifies existing images based on precise descriptive text instructions.",
             "docsLink": null,
@@ -86,7 +86,7 @@
           },
           {
             "type": "aiNode",
-            "name": "Video_CreateAIAgent",
+            "name": "CreateVideoAIAgent",
             "label": "Video Model",
             "description": "Creates high-fidelity video footage or applies cinematic edits to existing clips for dynamic content pipelines.",
             "docsLink": null,
@@ -95,7 +95,7 @@
           },
           {
             "type": "aiNode",
-            "name": "DeepResearch_CreateAIAgent",
+            "name": "CreateDeepResearchAIAgent",
             "label": "Deep Research Model",
             "description": "An autonomous agent that plans and executes multi-step web searches to synthesize cited, evidence-based reports.",
             "docsLink": null,

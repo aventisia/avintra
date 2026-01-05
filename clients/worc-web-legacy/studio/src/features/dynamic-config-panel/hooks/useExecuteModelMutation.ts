@@ -12,8 +12,7 @@ export const useExecuteModelMutation = () => {
   const { isPending, mutate, isSuccess, data } = useMutation({
     mutationFn: generateLLMResponse,
 
-    onSuccess: (response) => {
-      toast.success(response?.message, { className: "sonner-toaster-sm" });
+    onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["available-credits"] });
     },
 
