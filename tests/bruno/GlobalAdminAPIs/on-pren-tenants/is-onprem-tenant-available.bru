@@ -7,7 +7,11 @@ meta {
 post {
   url: {{GLOBAL_ADMIN_BASE_URL}}/onprem-tenant/is-available
   body: json
-  auth: inherit
+  auth: bearer
+}
+
+auth:bearer {
+  token: ***REMOVED***
 }
 
 body:json {
