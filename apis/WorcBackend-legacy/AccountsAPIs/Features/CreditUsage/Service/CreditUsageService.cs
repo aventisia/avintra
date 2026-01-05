@@ -172,19 +172,26 @@ public class CreditUsageService : ICreditUsageService
                             Username = user.UserName,
                             FirstName = user.FirstName,
                             LastName = user.LastName,
-                            TotalTransactions = creditUsages.Where(w => w.ServiceType == CreditServiceTypesEnum.AIModelExecutionTime || w.ServiceType == CreditServiceTypesEnum.AgentExecutionTime).Count(),
+                            TotalTransactions = creditUsages
+                                .Where(w =>
+                                    w.UsedByUserId == user.Id &&
+                                    (
+                                        w.ServiceType == CreditServiceTypesEnum.AIModelExecutionTime ||
+                                        w.ServiceType == CreditServiceTypesEnum.AgentExecutionTime
+                                    )
+                                ).Count(),
                             TotalCredits = s.Sum(sm => sm.CreditsUsed)
                         };
                     })
                     .ToList(),
                 AiModels = creditUsages
-                    .Where(w => w.RefId != null)
+                    .Where(w => w.RefId != null && w.RefType == UsageSourceTypesEnum.AIModel)
                     .GroupBy(g => g.RefId).Select(s =>
                     {
                         return new AiModelUsageDto
                         {
                             ModelName = s.First().RefName,
-                            TotalTransactions = creditUsages.Where(w => w.ServiceType == CreditServiceTypesEnum.AIModelExecutionTime && w.RefId == s.First().RefId).Count(),
+                            TotalTransactions = creditUsages.Where(w => w.ServiceType == CreditServiceTypesEnum.AIModelExecutionTime && w.RefType == UsageSourceTypesEnum.AIModel && w.RefId == s.First().RefId).Count(),
                             TotalCredits = s.Sum(sm => sm.CreditsUsed)
                         };
                     })
@@ -192,6 +199,7 @@ public class CreditUsageService : ICreditUsageService
                 Agents = creditUsages
                     .Where(w =>
                         w.RefId != null &&
+                        w.RefType == UsageSourceTypesEnum.Agent &&
                         !string.IsNullOrEmpty(w.TriggeredByAgent)
                     )
                     .GroupBy(g => g.RefId).Select(s =>
@@ -199,7 +207,7 @@ public class CreditUsageService : ICreditUsageService
                         return new AgentUsageDto
                         {
                             AgentName = s.First().RefName,
-                            TotalTransactions = creditUsages.Where(w => w.ServiceType == CreditServiceTypesEnum.AgentExecutionTime && w.RefId == s.First().RefId).Count(),
+                            TotalTransactions = creditUsages.Where(w => w.ServiceType == CreditServiceTypesEnum.AgentExecutionTime && w.RefType == UsageSourceTypesEnum.Agent && w.RefId == s.First().RefId).Count(),
                             TotalCredits = s.Sum(sm => sm.CreditsUsed)
                         };
                     })
