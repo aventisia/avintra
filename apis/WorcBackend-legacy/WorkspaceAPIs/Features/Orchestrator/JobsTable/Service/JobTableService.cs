@@ -24,37 +24,77 @@ public class JobTableService : IJobTableService
         _jobsExecutorService = jobsExecutorService;
     }
 
-    // Retrieves a list of jobs associated with the current user.
+    // Retrieves a list of active jobs (either created or running).
     public async Task<ServiceResponse<IEnumerable<JobTableDto>>> GetJobsAsync()
     {
         // Initialize ServiceResponse with an error message.
         var serviceResponse = new ServiceResponse<IEnumerable<JobTableDto>>
         {
             Data = null,
-            Message = "Failed to retrieve jobs. Please try again."
+            Message = "Failed to retrieve jobs. Please try again later."
         };
 
         try
         {
-
-            // Fetch jobs created by the current user
+            // Fetch jobs 
             var jobs = await _unitOfWork.JobRepo
                                         .GetAllAsync()
                                         .Include(i => i.FlowVersion)
                                             .ThenInclude(i2 => i2.Flow)
                                         .OrderByDescending(o => o.CreatedOn)
+                                        .Take(100)
                                         .ProjectToType<JobTableDto>()
                                         .ToListAsync();
 
-
-            // Success - set the response with retrieved jobs
+            // If jobs are retrieved successfully, update the response.
             serviceResponse.Data = jobs;
             serviceResponse.StatusCode = 200;
             serviceResponse.Message = "Jobs retrieved successfully.";
+            _logger.LogInformation("Successfully retrieved {JobCount} jobs.", jobs.Count); // Log success
         }
         catch (Exception ex)
         {
-            _logger.LogError(ex.ToString());
+            _logger.LogError("Error retrieving jobs: {ErrorMessage}", ex.ToString()); // Log error with detailed message
+            return serviceResponse;
+        }
+
+        return serviceResponse;
+    }
+
+    // Retrieves a list of completed or failed job logs (excluding 'Created' or 'Running' statuses).
+    public async Task<ServiceResponse<IEnumerable<JobExecutionLogDto>>> GetJobLogsAsync()
+    {
+        // Initialize ServiceResponse with an error message.
+        var serviceResponse = new ServiceResponse<IEnumerable<JobExecutionLogDto>>
+        {
+            Data = null,
+            Message = "Unable to retrieve job logs. Please try again later."
+        };
+
+        try
+        {
+            // Fetch job logs where the status is neither 'Created' nor 'Running'.
+            var jobLogs = await _unitOfWork.JobRepo
+                                            .GetByConditionAsync(w =>
+                                                w.Status != JobStatusTypesEnum.Created &&
+                                                w.Status != JobStatusTypesEnum.Running
+                                            )
+                                            .Include(i => i.FlowVersion)
+                                                .ThenInclude(i2 => i2.Flow)
+                                            .OrderByDescending(o => o.CreatedOn)
+                                            .Take(100)
+                                            .ProjectToType<JobExecutionLogDto>()
+                                            .ToListAsync();
+
+            // If job logs are retrieved successfully, update the response.
+            serviceResponse.Data = jobLogs;
+            serviceResponse.StatusCode = 200;
+            serviceResponse.Message = "Job logs retrieved successfully.";
+            _logger.LogInformation("Successfully retrieved {JobLogCount} job logs.", jobLogs.Count);
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError("Error retrieving job logs: {ErrorMessage}", ex.ToString());
             return serviceResponse;
         }
 
@@ -62,10 +102,10 @@ public class JobTableService : IJobTableService
     }
 
     // Retrieves a specific job by its ID for the current user.
-    public async Task<ServiceResponse<JobTableDto>> GetJobByIdAsync(Guid jobId)
+    public async Task<ServiceResponse<JobExecutionLogDto>> GetJobByIdAsync(Guid jobId)
     {
         // Initialize ServiceResponse with an error message.
-        var serviceResponse = new ServiceResponse<JobTableDto>
+        var serviceResponse = new ServiceResponse<JobExecutionLogDto>
         {
             Data = null,
             Message = "Failed to retrieve the job. Please try again."
@@ -78,8 +118,7 @@ public class JobTableService : IJobTableService
                                         .GetByConditionAsync(w =>
                                             w.Id == jobId
                                         )
-                                        .OrderByDescending(w => w.CreatedOn)
-                                        .ProjectToType<JobTableDto>()
+                                        .ProjectToType<JobExecutionLogDto>()
                                         .FirstOrDefaultAsync();
 
             // Success - set the response with retrieved job
@@ -211,7 +250,7 @@ public class JobTableService : IJobTableService
     }
 
     // Updates an existing job.
-    public async Task<ServiceResponse<JobTableDto>> UpdateJobAsync(JobTableDto jobTableDto)
+    public async Task<ServiceResponse<JobTableDto>> UpdateJobAsync(JobExecutionDto jobTableDto)
     {
         // Initialize ServiceResponse with an error message.
         var serviceResponse = new ServiceResponse<JobTableDto>
@@ -248,6 +287,14 @@ public class JobTableService : IJobTableService
             // Map the updated values from DTO to the job entity
             jobTableDto.Adapt(job);
 
+
+            // If the job status is "Running", set the StartTime to the current UTC time.
+            if (job.Status == JobStatusTypesEnum.Running)
+                job.StartTime = DateTimeOffset.UtcNow;
+
+            // If the job status is "Canceled", "Abort", "Completed", or "Failed", set the EndTime to the current UTC time.
+            if (job.Status == JobStatusTypesEnum.Canceled || job.Status == JobStatusTypesEnum.Abort || job.Status == JobStatusTypesEnum.Completed || job.Status == JobStatusTypesEnum.Failed)
+                job.EndTime = DateTimeOffset.UtcNow;
             // Update the job in the repository
             _unitOfWork.JobRepo.Update(job);
 
@@ -517,6 +564,7 @@ public class JobTableService : IJobTableService
 
             // Set job status to canceled
             job.Status = JobStatusTypesEnum.Canceled;
+            job.EndTime = DateTimeOffset.UtcNow;
 
             // Update job in the repository
             _unitOfWork.JobRepo.Update(job);
@@ -584,7 +632,7 @@ public class JobTableService : IJobTableService
 
             // Change the job status to "Abort" to indicate that it's being canceled.
             job.Status = JobStatusTypesEnum.Abort;
-            _unitOfWork.JobRepo.Update(job);
+            job.EndTime = DateTimeOffset.UtcNow;
 
             // Try to save the changes to the database.
             if (!await _unitOfWork.SaveAsync())

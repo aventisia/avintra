@@ -4,11 +4,13 @@ public class TimeTriggerExecutionJob : IJob
 {
     private readonly WorkspaceInternalDbContext _workspaceInternalDbContext;
     private readonly ILogger<TimeTriggerExecutionJob> _logger;
+    private readonly IJobsExecutorService _jobsExecutorService;
 
-    public TimeTriggerExecutionJob(WorkspaceInternalDbContext workspaceInternalDbContext, ILogger<TimeTriggerExecutionJob> logger)
+    public TimeTriggerExecutionJob(WorkspaceInternalDbContext workspaceInternalDbContext, ILogger<TimeTriggerExecutionJob> logger, IJobsExecutorService jobsExecutorService)
     {
         _workspaceInternalDbContext = workspaceInternalDbContext;
         _logger = logger;
+        _jobsExecutorService = jobsExecutorService;
     }
 
     // Main method for Quartz job execution
@@ -46,11 +48,11 @@ public class TimeTriggerExecutionJob : IJob
                 // Log trigger execution start
                 _logger.LogInformation($"Executing Trigger: {trigger.Name} (ID: {trigger.Id})");
 
-
                 foreach (var timeTriggerflowVersion in trigger.TimeTriggerFlowVersions)
                 {
                     var jobToCreate = new Job()
                     {
+                        Id = Guid.NewGuid(),
                         TenantId = timeTriggerflowVersion.TenantId,
                         FlowVersionId = timeTriggerflowVersion.FlowVersionId,
                         TriggerType = TriggerTypesEnum.TimeTrigger,
@@ -87,6 +89,9 @@ public class TimeTriggerExecutionJob : IJob
             {
                 // Insert the created jobs into the database asynchronously using the repository's InsertAsync method.
                 await _workspaceInternalDbContext.Jobs.AddRangeAsync(createdJobs);
+
+                // Save changes to the database
+                await _workspaceInternalDbContext.SaveChangesAsync();
             }
 
             // Check if there are any triggers that need to be executed
@@ -97,6 +102,17 @@ public class TimeTriggerExecutionJob : IJob
             }
 
             _logger.LogInformation($"Job completed successfully at {currentUtcTime:O}");
+
+            // Now execute the jobs based on their IDs
+            // Execute job commands for all created jobs
+            if (createdJobs.Any())
+            {
+                var jobIds = createdJobs.Select(s => s.Id).ToList();
+
+                // Log the job IDs
+                if (jobIds.Count != 0)
+                    await _jobsExecutorService.ExecuteCommanByIdsdAsync(jobIds);
+            }
         }
         catch (Exception ex)
         {

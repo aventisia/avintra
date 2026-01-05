@@ -878,6 +878,23 @@ public class AppSecretService : IAppSecretService
                     break;
                 }
 
+            case nameof(AppSecretTypesEnum.AzureStorage):
+                {
+                    // Deserialize JSON into AzureStorageCredentialsDto
+                    var azureStorageCredentials = System.Text.Json.JsonSerializer.Deserialize<AzureStorageCredentialsDto>(rawJson, jsonOptions);
+                    if (azureStorageCredentials != null)
+                    {
+                        validationResult.EncryptedValues["Key"] = _encryptionService.EncryptString(azureStorageCredentials.Key);
+                        azureStorageCredentials.Key = string.Empty;
+                        sanitizedDataJson = System.Text.Json.JsonSerializer.Serialize(azureStorageCredentials, jsonOptions);
+                    }
+                    else
+                    {
+                        validationResult.Remark = "Invalid Azure Storage credentials: required fields missing or format incorrect.";
+                    }
+                    break;
+                }
+
             // Default case for unsupported credential types
             default:
                 // Log an error for unsupported credential types and set an error remark
