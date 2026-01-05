@@ -114,7 +114,9 @@ function getModelConfigSchema(field: DCPFieldSchemaType): ZodTypeAny {
   const modelSchema = z.string();
   const temperatureSchema = z.number();
   const topPSchema = z.number();
-  const vioceSchema = z.string().optional();
+  const voiceSchema = z.string().optional();
+  const isJsonOutputSchema = z.boolean();
+  const maxOutputTokenSchema = z.number();
 
   // Check if field.defaultValue is an object and contains all expected properties
   if (field.defaultValue && typeof field.defaultValue === "object") {
@@ -137,6 +139,15 @@ function getModelConfigSchema(field: DCPFieldSchemaType): ZodTypeAny {
     if ("topP" in field.defaultValue) {
       topPSchema.default(field?.defaultValue?.topP as number);
     }
+    if ("isJsonOutput" in field.defaultValue) {
+      isJsonOutputSchema.default(field?.defaultValue?.isJsonOutput as boolean);
+    }
+
+    if ("maxOutputToken" in field.defaultValue) {
+      maxOutputTokenSchema.default(
+        field?.defaultValue?.maxOutputToken as number,
+      );
+    }
   }
 
   // Return the schema at the end
@@ -147,9 +158,76 @@ function getModelConfigSchema(field: DCPFieldSchemaType): ZodTypeAny {
     model: modelSchema,
     temperature: temperatureSchema,
     topP: topPSchema,
-    voice: vioceSchema,
+    voice: voiceSchema,
+    isJsonOutput: isJsonOutputSchema,
+    maxOutputToken: maxOutputTokenSchema,
   });
 }
+
+function getKnowledgeBaseConfigSchema(field: DCPFieldSchemaType): ZodTypeAny {
+  // Start by defining the schema without default values
+  const knowledgeBaseSchema = z.string();
+  const retrievalTypeSchema = z.string();
+  const sourceThresholdSchema = z.number();
+  const numberOfChunksSchema = z.number();
+
+  // Check if field.defaultValue is an object and contains all expected properties
+  if (field.defaultValue && typeof field.defaultValue === "object") {
+    // If the structure is valid, apply default values to the schema
+
+    if ("knowledgeBase" in field.defaultValue) {
+      knowledgeBaseSchema.default(field?.defaultValue?.knowledgeBase as string);
+    }
+    if ("retrievalType" in field.defaultValue) {
+      retrievalTypeSchema.default(field?.defaultValue?.retrievalType as string);
+    }
+    if ("sourceThreshold" in field.defaultValue) {
+      sourceThresholdSchema.default(
+        field?.defaultValue?.sourceThreshold as number,
+      );
+    }
+    if ("numberOfChunks" in field.defaultValue) {
+      numberOfChunksSchema.default(
+        field?.defaultValue?.numberOfChunks as number,
+      );
+    }
+  }
+
+  // Return the schema at the end
+  return z.object({
+    knowledgeBase: knowledgeBaseSchema,
+    numberOfChunks: numberOfChunksSchema,
+    retrievalType: retrievalTypeSchema,
+    sourceThreshold: sourceThresholdSchema,
+  });
+}
+
+function getMemoryConfigSchema(field: DCPFieldSchemaType): ZodTypeAny {
+  // Start by defining the schema without default values
+  const memoryProviderSchema = z.string();
+  const maxDataStoredSchema = z.number();
+
+  // Check if field.defaultValue is an object and contains all expected properties
+  if (field.defaultValue && typeof field.defaultValue === "object") {
+    // If the structure is valid, apply default values to the schema
+
+    if ("memoryProvider" in field.defaultValue) {
+      memoryProviderSchema.default(
+        field?.defaultValue?.memoryProvider as string,
+      );
+    }
+    if ("maxDataStored" in field.defaultValue) {
+      maxDataStoredSchema.default(field?.defaultValue?.maxDataStored as number);
+    }
+  }
+
+  // Return the schema at the end
+  return z.object({
+    memoryProvider: memoryProviderSchema,
+    maxDataStored: maxDataStoredSchema,
+  });
+}
+
 function getConditionSchema(field: DCPFieldSchemaType): ZodTypeAny {
   // Recursively generate schema for array items
   if (Array.isArray(field.conditionSchema)) {
@@ -182,6 +260,10 @@ function getZodType(field: DCPFieldSchemaType): ZodTypeAny {
       return getNodeOutputSchema(field);
     case "model-config-select":
       return getModelConfigSchema(field);
+    case "knowledge-base-config":
+      return getKnowledgeBaseConfigSchema(field);
+    case "memory-config":
+      return getMemoryConfigSchema(field);
     default:
       return applyFieldOptions(z.string(), field); // Fallback to string
   }

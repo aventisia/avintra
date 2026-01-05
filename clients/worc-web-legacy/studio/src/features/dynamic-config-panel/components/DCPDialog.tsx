@@ -25,7 +25,7 @@ export const DCPDialog = ({ children }: React.PropsWithChildren) => {
       case "blockNode":
         return <CallBlockConfigForm />;
       case "aiNode":
-        return nodeData.name.includes("CreateAIAgent") ? (
+        return nodeData.name.includes("AIAgent") ? (
           <DCPForm />
         ) : (
           <ModelConfigForm />
@@ -47,7 +47,7 @@ export const DCPDialog = ({ children }: React.PropsWithChildren) => {
           "right-2 mt-[calc(var(--header-height)+2*var(--header-padding))] h-[calc(100vh-var(--header-height)-3*var(--header-padding))] !max-w-[32rem] rounded-e-xl",
           nodeData?.name === "ConditionalBranchActivity" && "!max-w-[40rem]",
           nodeData?.name === "LoopActivity" && "!max-w-[40rem]",
-          nodeData?.name.includes("CreateAIAgent") &&
+          nodeData?.name.includes("AIAgent") &&
             "!max-w-[calc((100vw-(2*var(--header-padding)))/2)]",
         )}
       >

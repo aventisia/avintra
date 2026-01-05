@@ -1,4 +1,4 @@
-import { SelectField, SwitchField } from "@aventisia/ui/form";
+import { InputField, SelectField, SwitchField } from "@aventisia/ui/form";
 import {
   Controller,
   FieldPath,
@@ -33,6 +33,10 @@ const ModelConfigField = ({ name }: ModelConfigFieldProps) => {
   const temperatureFieldName = `${name}.temperature` as FieldPath<FieldValues>;
   const topPFieldName = `${name}.topP` as FieldPath<FieldValues>;
   const voiceFieldName = `${name}.voice` as FieldPath<FieldValues>;
+  const isJsonOutputFieldName =
+    `${name}.isJsonOutput` as FieldPath<FieldValues>;
+  const maxOutputTokenFieldName =
+    `${name}.maxOutputToken` as FieldPath<FieldValues>;
 
   // Get the form context
   const { control } = useFormContext();
@@ -62,22 +66,30 @@ const ModelConfigField = ({ name }: ModelConfigFieldProps) => {
     name: isByokEnabledFieldName,
     control,
   });
-
-  // 1. Get filtered providers based on BYOK and Specialty
+  // 1. Get filtered providers based on BYOK and Node specialty
   const filteredProviders = useMemo(() => {
+    // eslint-disable-next-line no-debugger
+    debugger
+    const requiredSpecialties = getSpecialtyFromNode(
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      name.replace("__ModelConfig__", "") as any,
+    );
+
     return modelProviders
-      .filter((p) => p.isEnabled !== false) // Only enabled providers
+      .filter((p) => p.isEnabled !== false)
       .map((p) => ({
         ...p,
         models: p.models.filter((m) => {
-          const specialtyMatch =
-            m.specialty ===
-            getSpecialtyFromNode(name.replace("__ModelConfig__", ""));
+          const specialtyMatch = requiredSpecialties.every((req) =>
+            m.specialty.includes(req),
+          );
+
           const availabilityMatch = is_byok_enabled.value ? true : m.available;
+
           return specialtyMatch && availabilityMatch;
         }),
       }))
-      .filter((p) => p.models.length > 0); // Prune empty providers
+      .filter((p) => p.models.length > 0);
   }, [is_byok_enabled.value, name]);
 
   // 2. Get models for the currently selected provider
@@ -162,6 +174,20 @@ const ModelConfigField = ({ name }: ModelConfigFieldProps) => {
                   className="resize-none text-sm"
                 />
               )}
+            />
+            {/* JSONOutput Field */}
+            <SwitchField
+              size="sm"
+              name={isJsonOutputFieldName}
+              label="Is JSON Output"
+              description="Enable this if you want to output in Json format."
+            />
+
+            <InputField
+              name={maxOutputTokenFieldName}
+              type="number"
+              label="Max Output Token"
+              fieldSize="sm"
             />
           </PopoverContent>
         </Popover>

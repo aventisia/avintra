@@ -214,7 +214,7 @@ export interface LLMResponseDto {
   /**
    * Flag to indicate if the output is expected to be in JSON format.
    */
-  isJsonOutput?: boolean;
+  is_json_output?: boolean;
 
   /**
    * Flag to indicate if BYOK is enabled.

@@ -3,7 +3,6 @@ import {
   MultiSelectField,
   SelectField,
   SwitchField,
-  TextareaField,
 } from "@aventisia/ui/form";
 import {
   ConditionGroupsField,
@@ -16,6 +15,9 @@ import { CredentialsSelectField } from "./fields-for-form/CredentialsSelectField
 import { ConfigPanelModelOutputField } from "./fields-for-form/ConfigPanelModelOutputField";
 import { ModelConfigField } from "./fields-for-form/ModelConfigField";
 import { SliderField } from "@/components/Slider/SliderField";
+import { PromptConfigField } from "./fields-for-form/prompt-field/PromptField";
+import { KnowledgeBaseConfigField } from "./fields-for-form/KnowledgeBaseConfigField";
+import { MemoryConfigField } from "./fields-for-form/MemoryConfigField";
 
 // Helper to render the correct field type
 export const RenderField = (field: DCPFieldSchemaType) => {
@@ -69,13 +71,7 @@ export const RenderField = (field: DCPFieldSchemaType) => {
     case "model-config-select":
       return <ModelConfigField name={field.name} />;
     case "prompt-input":
-      return (
-        <TextareaField
-          name={field.name}
-          label={field.label}
-          rows={field.min ?? 5}
-        />
-      );
+      return <PromptConfigField {...baseProps} rows={field.min ?? 5} />;
     case "multi-selector":
       return (
         <MultiSelectField
@@ -94,6 +90,11 @@ export const RenderField = (field: DCPFieldSchemaType) => {
           className="resize-none text-sm"
         />
       );
+    case "knowledge-base-config":
+      return <KnowledgeBaseConfigField name={field.name} />;
+
+    case "memory-config":
+      return <MemoryConfigField name={field.name} />;
     default:
       return null;
   }

@@ -4,7 +4,7 @@ import { generateOutputConfigFromData } from "../utils/generate-ai-config";
 
 const modules = {
   ...import.meta.glob("../constants/config-json/*.json"),
-  ...import.meta.glob("../constants/custom-config-json/*.json"),
+  ...import.meta.glob("../constants/custom-config-json/**/*.json"),
 };
 
 // In-memory cache for node configs
@@ -61,6 +61,10 @@ export const getNodeConfig = async (
     nodeUniqueName === "LoopActivity"
   ) {
     path = `../constants/custom-config-json/${nodeUniqueName}.json`;
+  }
+
+  if (nodeUniqueName.includes("AIAgent")) {
+    path = `../constants/custom-config-json/ai-config-json/${nodeUniqueName}.json`;
   }
 
   // Set the path to the JSON file

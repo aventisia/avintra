@@ -104,12 +104,18 @@ export const DCPForm = () => {
         <DCPTabsWrapper setTabValue={setSelectedTab} tabValue={selectedTab}>
           <DCPTabsListWrapper>
             <DCPTabsList>
-              {tabKeys?.map((key) => (
-                <DCPTabsTrigger
-                  tabValue={key}
-                  children={key.replace(/([a-z])([A-Z])/g, "$1 $2")}
-                />
-              ))}
+              {tabKeys
+                ?.filter(
+                  (key) =>
+                    import.meta.env.MODE !== "production" ||
+                    (key !== "Memory" && key !== "Tools"),
+                )
+                ?.map((key) => (
+                  <DCPTabsTrigger
+                    tabValue={key}
+                    children={key.replace(/([a-z])([A-Z])/g, "$1 $2")}
+                  />
+                ))}
             </DCPTabsList>
             {import.meta.env.MODE !== "production" ? (
               <>
@@ -137,7 +143,20 @@ export const DCPForm = () => {
                   </DCPTabsList>
                 )}
               </>
-            ) : null}
+            ) : (
+              nodeConfig.testScreenType == "llmGenerateRequest" && (
+                <DCPTabsList>
+                  <DCPTabsTrigger
+                    tabValue="Test"
+                    className="flex items-center gap-1 text-primary hover:text-primary"
+                    handleClick={() => onSubmit(form.getValues())}
+                  >
+                    <FlaskConical className="h-3.5 w-3.5" />
+                    <span> Test</span>
+                  </DCPTabsTrigger>
+                </DCPTabsList>
+              )
+            )}
           </DCPTabsListWrapper>
 
           <Form
@@ -170,6 +189,7 @@ export const DCPForm = () => {
                       return <RenderField key={field.name} {...field} />;
                     })}
                 </div>
+
                 {/* Output fields */}
                 {tabNo == 0 &&
                 showOuputFields &&
@@ -181,18 +201,19 @@ export const DCPForm = () => {
                   <>
                     <h3
                       className={cn(
-                        "!mt-6 flex items-center gap-1 text-xs font-medium",
+                        "relative !my-8 flex h-[0.06rem] items-center gap-1 border-[0.5px] border-x-0 border-t-0",
                         nodeConfig?.fields?.filter(
                           (field) =>
                             (field.category ?? "Inputs") == tab &&
                             field.direction == "Input",
-                        ).length == 0 && "!mt-0",
+                        ).length == 0 && "!mt-2",
                       )}
                     >
-                      <span className="rounded-full bg-accent px-1.5 py-0.5 text-indigo-600">
-                        Outputs
-                      </span>
-                      <span className="h-[0.075rem] flex-grow rounded bg-accent"></span>
+                      <div className="absolute -top-3">
+                        <span className="rounded-full bg-indigo-100 px-1.5 py-1 text-xs font-medium text-indigo-600">
+                          Outputs
+                        </span>
+                      </div>
                     </h3>
 
                     <div className="mb-1 mt-3 space-y-3 rounded-lg border bg-slate-50 px-3.5 py-3">

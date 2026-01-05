@@ -1,5 +1,4 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
-import { useGenerateInstructionMutation } from "@/features/save-as-template/hooks/useGenerateInstructionMutation";
 import { useCurrentFlowStore } from "@/stores/current-flow-store";
 import { Button } from "@aventisia/ui/buttons";
 import { cn } from "@aventisia/ui/lib";
@@ -7,6 +6,10 @@ import { SparklesIcon } from "lucide-react";
 import { useEffect } from "react";
 import { UseFormReturn } from "react-hook-form";
 import { useShallow } from "zustand/react/shallow";
+import { useImproveWithAIMutation } from "../../hooks/useImproveWithAIMutation";
+import { getAITasksByName } from "@/features/ai-tasks/apis/ai-tasks-apis";
+import { LLMResponseDto, ProviderLiteral } from "../../dtos/llm-providers-dto";
+import { LoadingSpinner } from "@aventisia/ui";
 
 const ImproveWithAIButton = ({
   form,
@@ -26,43 +29,93 @@ const ImproveWithAIButton = ({
   );
 
   // Mutation hook to generate the template instruction
-  const {
-    mutate: improveWithAI,
-    data,
-    isPending,
-  } = useGenerateInstructionMutation();
+  const { mutate: improveWithAI, data, isPending } = useImproveWithAIMutation();
 
   useEffect(() => {
-    if (data?.data) {
-      form.setValue("prompt", data?.data);
+    if (data) {
+      const improvedPrompt = data as unknown as LLMResponseDto;
+      form.setValue("prompt", improvedPrompt?.output);
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [data?.data]);
+  }, [data]);
+
+  const handleImproveWithAI = async () => {
+    if (isPending) return;
+
+    try {
+      const res = await getAITasksByName("ImproveWithAI");
+
+      if (!res?.data) {
+        console.warn("ImproveWithAI task not found");
+        return;
+      }
+
+      const {
+        modelProvider,
+        model,
+        systemInput,
+        userInput,
+        isJsonOutput,
+        maxOutputTokens,
+        temperature,
+        topP,
+      } = res.data;
+
+      const userPrompt = form.getValues("prompt") ?? "";
+
+      improveWithAI({
+        provider: (modelProvider ?? "") as ProviderLiteral,
+        model: model ?? "",
+        input: [
+          {
+            role: "system",
+            content: systemInput ?? "",
+          },
+          {
+            role: "user",
+            content: (userInput ?? "").replace("{{userText}}", userPrompt),
+          },
+        ],
+        is_json_output: Boolean(isJsonOutput),
+        max_output_tokens: maxOutputTokens ?? undefined,
+        is_byok_enabled: false,
+        credential_id: null,
+        temperature: temperature ?? 0.7,
+        top_p: topP ?? 1,
+        stream: false,
+        ref_id: currentFlow.id,
+        ref_name: currentFlow.name,
+        ref_type: "Agent",
+        action: "AgentExecution",
+      });
+    } catch (error) {
+      console.error("ImproveWithAI failed:", error);
+    }
+  };
 
   return (
     <Button
       variant="outline"
       size="sm"
-      disabled={form.watch("input") == ""}
-      className={cn(
-        "flex items-center gap-2 rounded-full border-primary text-primary transition-all duration-200 hover:bg-primary hover:text-white",
-        isPending && "cursor-wait",
-      )}
       type="button"
-      onClick={() => {
-        if (!isPending)
-          // Trigger mutation with serialized prompt data extracted from nodes
-          improveWithAI({
-            refType: "Platform",
-            refId: currentFlow.versionId,
-            refName: currentFlow.name,
-            payload: form.getValues("input"),
-          });
-      }}
+      disabled={isPending || !form.watch("prompt")}
+      className={cn(
+        "flex w-36 items-center gap-2 rounded-full border-primary text-primary transition-all duration-200",
+        isPending ? "cursor-wait" : "hover:bg-primary hover:text-white",
+      )}
+      onClick={handleImproveWithAI}
     >
-      {/* Icon with pulse animation while generating */}
-      <SparklesIcon className={cn("h-4 w-4", isPending && "animate-pulse")} />
-      Improve with AI
+      {isPending ? (
+        <>
+          <LoadingSpinner className="h-4 w-4 animate-spin" />
+          Improving…
+        </>
+      ) : (
+        <>
+          <SparklesIcon className="h-4 w-4" />
+          Improve with AI
+        </>
+      )}
     </Button>
   );
 };

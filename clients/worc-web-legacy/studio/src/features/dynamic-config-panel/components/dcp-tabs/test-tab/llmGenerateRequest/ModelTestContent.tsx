@@ -3,6 +3,8 @@ import { DCPTabsContent } from "@/features/dynamic-config-panel/components/dcp-t
 import { JsonViewer } from "@/components/json-viewer/JsonViewer";
 import { useExecuteModelMutation } from "@/features/dynamic-config-panel/hooks/useExecuteModelMutation";
 import JsonViewerSkeleton from "@/components/json-viewer/JsonViewerSkeleton";
+import { LLMResponseDto } from "@/features/dynamic-config-panel/dtos/llm-providers-dto";
+import { Textarea } from "@aventisia/ui";
 
 const ModelTestContent = ({
   formData,
@@ -12,6 +14,8 @@ const ModelTestContent = ({
   };
 }) => {
   const { mutate, isPending, data } = useExecuteModelMutation();
+
+  const testD = data as unknown as LLMResponseDto;
 
   return (
     <DCPTabsContent
@@ -27,13 +31,19 @@ const ModelTestContent = ({
       <div className="border-dividers overflow-hidden rounded-lg border border-solid">
         {isPending ? (
           <JsonViewerSkeleton />
-        ) : (
+        ) : testD?.is_json_output ? (
           <JsonViewer
             jsonData={
-              data ? JSON.stringify(data) : (JSON.stringify(formData) ?? "")
+              testD ? (testD?.output ?? "{}") : (JSON.stringify(formData) ?? "")
             }
             className="h-[calc(64vh)]"
             enableCopy
+          />
+        ) : (
+          <Textarea
+            rows={25}
+            value={testD?.output ?? JSON.stringify(formData, null, 2)}
+            disabled
           />
         )}
       </div>
