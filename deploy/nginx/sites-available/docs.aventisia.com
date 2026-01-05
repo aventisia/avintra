@@ -9,7 +9,7 @@ server
 {
 	listen 443 ssl;
 	http2 on;
-	server_name docs.aventisia.com dev-docs.aventisia.com uat-docs.aventisia.com;
+	server_name docs.aventisia.com uat-docs.aventisia.com dev-docs.aventisia.com docker-docs.aventisia.com;
 	
 	# Include common config
 	include /etc/nginx/conf.d/common_ssl.conf;

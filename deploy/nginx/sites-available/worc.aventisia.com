@@ -9,7 +9,7 @@ server
 {
 	listen 443 ssl;
 	http2 on;
-	server_name worc.aventisia.com dev-worc.aventisia.com uat-worc.aventisia.com;
+	server_name worc.aventisia.com uat-worc.aventisia.com dev-worc.aventisia.com docker-worc.aventisia.com;
 	
 	# Include common config
 	include /etc/nginx/conf.d/common_ssl.conf;
@@ -18,13 +18,13 @@ server
 	# Sensitive endpoints — TURN OFF compression
     location ~ ^/api/(app-secret) {
         gzip off;
-		proxy_pass http://localhost:4001;
+		proxy_pass http://worc-apis:4001;
 		include /etc/nginx/conf.d/common_api_config.conf;
     }
 	
 	# API (first)
 	location /api/ {
-		proxy_pass http://localhost:4001;
+		proxy_pass http://worc-apis:4001;
 		include /etc/nginx/conf.d/common_api_config.conf;
 	}
 

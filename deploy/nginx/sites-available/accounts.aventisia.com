@@ -9,7 +9,7 @@ server
 {
 	listen 443 ssl;
 	http2 on;
-	server_name accounts.aventisia.com dev-accounts.aventisia.com uat-accounts.aventisia.com;
+	server_name accounts.aventisia.com uat-accounts.aventisia.com dev-accounts.aventisia.com docker-accounts.aventisia.com;
 	
 	# Include common config
 	include /etc/nginx/conf.d/common_ssl.conf;
@@ -18,13 +18,13 @@ server
 	# Sensitive endpoints — TURN OFF compression
     location ~ ^/api/(auth|me) {
         gzip off;
-		proxy_pass http://localhost:4000;
+		proxy_pass http://worc-accounts-apis:4000;
 		include /etc/nginx/conf.d/common_api_config.conf;
     }
 	
 	# API (first)
 	location /api/ {
-		proxy_pass http://localhost:4000;
+		proxy_pass http://worc-accounts-apis:4000;
 		include /etc/nginx/conf.d/common_api_config.conf;
 	}
 
