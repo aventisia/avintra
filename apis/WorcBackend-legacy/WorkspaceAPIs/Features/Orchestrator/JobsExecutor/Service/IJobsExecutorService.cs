@@ -23,4 +23,13 @@ public interface IJobsExecutorService
     /// <param name="executionCommandDto">The details of the command to be executed. This includes the job ID, machine ID, and command type (e.g., execute, pause, etc.).</param>
     /// <returns>A task representing the asynchronous operation.</returns>
     Task TriggerExecutionAsync(ExecutionCommandDto executionCommandDto);
+
+    /// <summary>
+    /// Executes commands for multiple jobs by their IDs asynchronously.
+    /// This method is responsible for retrieving the jobs based on the provided IDs, 
+    /// validating each job's details, and triggering the execution for all valid jobs.
+    /// </summary>
+    /// <param name="jobIds">A list of job IDs that should be executed. The method will fetch and execute commands for each job asynchronously.</param>
+    /// <returns>A task representing the asynchronous operation. The task completes when all valid jobs have been processed and execution commands have been triggered.</returns>
+    Task ExecuteCommanByIdsdAsync(List<Guid> jobIds);
 }

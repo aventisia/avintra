@@ -378,3 +378,20 @@ public class OpenRouterCredentialsDto
     /// </summary>
     public string ApiKey { get; set; } = string.Empty;
 }
+
+/// <summary>
+/// Represents the necessary credentials and configuration for authenticating
+/// requests to Azure Storage services.
+/// </summary>
+public class AzureStorageCredentialsDto
+{
+    /// <summary>
+    /// Gets or sets the account name used to authenticate requests to Azure Storage.
+    /// </summary>
+    public string Account { get; set; } = string.Empty;
+
+    /// <summary>
+    /// Gets or sets the account key used to authenticate requests to Azure Storage.
+    /// </summary>
+    public string Key { get; set; } = string.Empty;
+}

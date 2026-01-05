@@ -1,12 +1,12 @@
-// Define a function to get the target server based on the branch name
-def getTargetServer(branchName) {
+// Define a function to get the target servers based on the branch name
+def getTargetServers(branchName) {
     switch(branchName) {
         case 'dev':
-            return 'avdev.aventisia.com'
+            return ['avdev.aventisia.com']
         case 'uat':
-            return 'avuat.aventisia.com'
+            return ['avuat.aventisia.com']
         case 'main':
-            return 'avweb.aventisia.com'
+            return ['avweb.aventisia.com']
         default:
             error "Unsupported branch: ${branchName}"
     }
@@ -42,24 +42,22 @@ pipeline {
             steps {
                 script {
                     sshagent(credentials: ['aventisia_vps_ssh']) {
-                        // Set target server based on branch
-                        def targetServer = getTargetServer(env.BRANCH_NAME)
-                        
-                        echo "Fetching env from ${targetServer}..."
-
-                        // Fetch the environment variables from the target server
-                        sh "ssh -o StrictHostKeyChecking=no admin@${targetServer} 'cat /etc/environment' > remote_env_vars"
-                        
-                        // Read the fetched environment variables into a list
-                        def envVars = readFile('remote_env_vars').split('\n').findAll { it.contains('=') }
-                        
-                        // Export the variables in the current Jenkins environment
-                        withEnv(envVars) {
-                            echo 'Migrating database schema...'
-                            sh '''
-                                export ASPNETCORE_ENVIRONMENT=Production
-                                dotnet ef database update --context=WorkspaceDbContext
-                            '''
+                        // Set target servers based on branch
+                        def targetServers = getTargetServers(env.BRANCH_NAME)
+                        for (server in targetServers) {
+                            echo "Fetching env from ${server}..."
+                            // Fetch the environment variables from the target server
+                            sh "ssh -o StrictHostKeyChecking=no admin@${server} 'cat /etc/environment' > remote_env_vars"
+                            // Read the fetched environment variables into a list
+                            def envVars = readFile('remote_env_vars').split('\n').findAll { it.contains('=') }
+                            // Export the variables in the current Jenkins environment
+                            withEnv(envVars) {
+                                echo "Migrating database schema on ${server}..."
+                                sh '''
+                                    export ASPNETCORE_ENVIRONMENT=Production
+                                    dotnet ef database update --context=WorkspaceDbContext
+                                '''
+                            }
                         }
                     }
                 }
@@ -75,14 +73,14 @@ pipeline {
             steps {
                 script {
                     sshagent(credentials: ['aventisia_vps_ssh']) {
-                        // Set target server based on branch
-                        def targetServer = getTargetServer(env.BRANCH_NAME)
-                        
-                        echo "Deploying to ${targetServer}..."
-                        
-                        // Deploy and restart service
-                        sh "rsync -avz --delete ${WORKSPACE}/Published/* admin@${targetServer}:/var/www/aventisia.com/apis/worc/"
-                        sh "ssh admin@${targetServer} 'sudo systemctl restart worc_apis.service'"
+                        // Set target servers based on branch
+                        def targetServers = getTargetServers(env.BRANCH_NAME)
+                        for (server in targetServers) {
+                            echo "Deploying to ${server}..."
+                            // Deploy and restart service
+                            sh "rsync -avz --delete ${WORKSPACE}/Published/* admin@${server}:/var/www/aventisia.com/apis/worc/"
+                            sh "ssh admin@${server} 'sudo systemctl restart worc_apis.service'"
+                        }
                     }
                 }
             }

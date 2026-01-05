@@ -92,14 +92,15 @@ public static class AppServicesExtension
         services.AddSingleton<IClientStatusStore, ClientStatusStore>();
         services.AddScoped<IJobsExecutorService, JobsExecutorService>();
         services.AddScoped<IAITaskService, AITaskService>();
+        services.AddScoped<IProjectUsageService, ProjectUsageService>();
 
         // Cloud Connectors feature
         services.AddScoped<ICloudConnectorsVaultService, CloudConnectorsVaultService>();
         services.AddScoped<IM365ConnectorsService, M365ConnectorsService>();
         services.AddScoped<IM365ExcelConnectorsService, M365ExcelConnectorsService>();
         services.AddScoped<ISendGridConnectorsService, SendGridConnectorsService>();
-        services.AddScoped<ITwilioConnectorsService,TwilioConnectorsService>();
-        services.AddScoped<ILLMProviderConnectorsService,LLMProviderConnectorsService>();
+        services.AddScoped<ITwilioConnectorsService, TwilioConnectorsService>();
+        services.AddScoped<ILLMProviderConnectorsService, LLMProviderConnectorsService>();
         // Common services
         services.AddScoped<IUnitOfWork, UnitOfWork>();
     }

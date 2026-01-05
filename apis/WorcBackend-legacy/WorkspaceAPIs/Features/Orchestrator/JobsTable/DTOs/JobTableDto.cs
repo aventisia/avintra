@@ -82,11 +82,6 @@ public class JobTableDto
     public string? InputArguments { get; set; }
 
     /// <summary>
-    /// Gets or sets the logs of node executions within the job's flow/agent, stored as a JSON string.
-    /// </summary>
-    public string? NodeExecutionLogs { get; set; }
-
-    /// <summary>
     /// Gets or sets the identifier that uniquely represents the operating system.
     /// </summary>
     public string? OSId { get; set; }
