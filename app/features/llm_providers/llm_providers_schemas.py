@@ -9,7 +9,7 @@ ProviderLiteral: TypeAlias = Literal['openai', 'ollama', 'deepinfra', 'gemini', 
 
 # LLM message structure for chat-based models
 class LLMMessage(BaseModel):
-    role: Literal['system', 'developer', 'user', 'assistant']
+    role: Literal['system', 'developer', 'user', 'assistant', 'model']
     content: str
 
 # Request schema to generate LLM response
