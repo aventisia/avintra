@@ -101,7 +101,7 @@ const sidebarMenuSections: SidebarMenuSectionType[] = [
     sectionName: "Assist",
     menuItems: [
       // Add Assist my agents only if not production
-      ...(import.meta.env.MODE !== "production" && IS_TAURI
+      ...(IS_TAURI
         ? [
             {
               permissions: ["TU"],

@@ -97,7 +97,7 @@ export const onPremTenantZodSchema = z
   .refine(
     (data) =>
       data.contractRenewalDate !== undefined &&
-      data.contractRenewalDate.getDate() > data?.contractStartDate.getDate(),
+      data.contractRenewalDate > data?.contractStartDate,
     {
       message: "Contract renewal date must be after start date",
       path: ["contractRenewalDate"],
