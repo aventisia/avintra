@@ -68,8 +68,6 @@ const ModelConfigField = ({ name }: ModelConfigFieldProps) => {
   });
   // 1. Get filtered providers based on BYOK and Node specialty
   const filteredProviders = useMemo(() => {
-    // eslint-disable-next-line no-debugger
-    debugger
     const requiredSpecialties = getSpecialtyFromNode(
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
       name.replace("__ModelConfig__", "") as any,
@@ -209,7 +207,11 @@ const ModelConfigField = ({ name }: ModelConfigFieldProps) => {
           name={credentialsFieldName}
           size="sm"
           label={`${currentProvider?.label ? currentProvider?.label : ""} Credentials`}
-          modelProvider={providerField.value}
+          modelProvider={
+            providerField.value == "google"
+              ? "googlegemini"
+              : providerField.value
+          }
         />
       )}
     </div>
