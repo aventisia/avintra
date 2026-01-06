@@ -8,7 +8,7 @@ from app.core.logger import log_exception, logger
 from app.core.vault_manager import VaultManager
 from app.core.credit_manager import CreditManagerService
 from app.core.security import get_jwt
-
+from app.features.llm_providers.llm_providers_utils import extract_json_from_llm_response
 from app.features.llm_providers.llm_providers_schemas import (
     LLMChunkResponse,
     LLMRequest,
@@ -72,17 +72,17 @@ class OpenRouterProvider(BaseLLMProvider):
                 response.raise_for_status()
                 response_data = response.json()
                 
-                text_output = (
+                content = (
                     response_data.get("choices", [{}])[0]
                     .get("message", {})
                     .get("content", "")
                 )
-
-                output = (
-                    json.loads(text_output)
-                    if llm_request.is_json_output
-                    else text_output
-                )
+                
+                # Handle is_json_output if requested
+                if llm_request.is_json_output:
+                    output = extract_json_from_llm_response(content)
+                else:
+                    output = content
 
                 return self.create_final_llm_response(
                     llm_request,
@@ -160,14 +160,16 @@ class OpenRouterProvider(BaseLLMProvider):
                             .get("content")
                         )
 
-                        if not delta:
-                            continue
+                    buffer_output += delta
 
-                        buffer_output += delta
-
-                        if not llm_request.is_json_output:
-                            chunk_response.output = delta
-                            yield chunk_response.model_dump_json() + "\n"
+                    if not llm_request.is_json_output:
+                        # If the output is not JSON, use the method to refine the output
+                        refined_output = self.extract_json_from_llm_response(buffer_output)
+                        chunk_response.output = refined_output
+                        yield chunk_response.model_dump_json() + "\n"
+                    else:
+                        chunk_response.output = delta
+                        yield chunk_response.model_dump_json() + "\n"
 
                     final_output = (
                         json.loads(buffer_output)
@@ -190,18 +192,25 @@ class OpenRouterProvider(BaseLLMProvider):
             log_exception(logger, e, "OpenRouter streaming failed")
             yield f"Failed to stream response: {e}"
 
-
     # Function to build OpenRouter request payload and headers
     def create_request_payload_and_headers(self, llm_request: LLMRequest):
+         # Initialize the messages list as an empty list
+        messages = []
+
         # Handling dynamic input for the 'messages' list
         if isinstance(llm_request.input, str):
-            messages = [{"role": "user", "content": llm_request.input}]
+            # If the input is a string, treat it as a user message
+            messages.append({"role": "user", "content": llm_request.input})
+        elif isinstance(llm_request.input, list):
+            # If the input is a list of messages, iterate and extract role and content
+            for msg in llm_request.input:
+                if hasattr(msg, "role") and hasattr(msg, "content"):
+                    # Assign role based on condition: if it's 'user', use 'user', else 'assistance'
+                    role = "user" if msg.role == "user" else "assistance"
+                    messages.append({"role": role, "content": msg.content})
         else:
-            messages = [
-                {"role": msg.role, "content": msg.content}
-                for msg in llm_request.input
-            ]
-        
+            raise ValueError("Input must be a string or a list of messages.")
+
         # Add base64 files if provided
         if llm_request.files:
             for b64_file in llm_request.files:
@@ -340,11 +349,11 @@ class OpenRouterProvider(BaseLLMProvider):
     def map_openrouter_finish_reason_to_finish_reason(self, finish_reason: str) -> str:
         # Define mapping for OpenRouter finish reasons to OpenAI-compatible finish reasons
         mapping = {
-            "length": "max_output_tokens",   # Token limit exceeded
-            "stop": "stop",                  # Normal completion
-            "error": "error",                # Error encountered
-            "tool_calls": "tool_calls",      # Model generated tool calls
-            "content_filter": "content_filter",  # Filtered due to content
+            "length": "max_output_tokens",
+            "stop": "stop",
+            "error": "error",
+            "tool_calls": "tool_calls",
+            "content_filter": "content_filter",
         }
         
         # Return the mapped finish_reason or None if not found
@@ -354,11 +363,11 @@ class OpenRouterProvider(BaseLLMProvider):
     def map_openrouter_finish_reason_to_status(self, finish_reason: str) -> str:
         # Define mapping for OpenRouter finish reasons
         mapping = {
-            "stop": "completed",         # Normal completion
-            "length": "incomplete",      # Exceeded token limit
-            "error": "failed",           # Error occurred
-            "tool_calls": "tool_calls",  # Model made tool calls
-            "content_filter": "content_filter",  # Blocked due to content filter
+            "stop": "completed",
+            "length": "incomplete",
+            "error": "failed",
+            "tool_calls": "tool_calls",
+            "content_filter": "content_filter",
         }
         
         # Try to get mapped status

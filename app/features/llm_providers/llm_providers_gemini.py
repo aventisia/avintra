@@ -220,34 +220,45 @@ class GeminiProvider(BaseLLMProvider):
 
     # Build Gemini request payload and authentication headers
     def create_request_payload_and_headers(self, llm_request: LLMRequest):
-        # Initialize parts array to store content
-        parts = []
-
-        # Handle input type (string or list of messages)
+        # Initialize contents list
+        contents = []
+        
+         # Process input: string or list of messages
         if isinstance(llm_request.input, str):
-            parts.append({"text": llm_request.input})
+            # If input is a string, treat it as a "text" message
+            contents.append({
+                "parts": [{"text": llm_request.input}]
+            })
         elif isinstance(llm_request.input, list):
-            # Handle list of messages
+            # If input is a list of messages, group by role
             for msg in llm_request.input:
-                # Support objects or dicts
-                if hasattr(msg, "content"):
-                    parts.append({"text": msg.content})
+                if hasattr(msg, "role") and hasattr(msg, "content"):
+                    # Assign role based on condition: if it's 'user', use 'user', else 'model'
+                    role = "user" if msg.role == "user" else "model"                    
+                    contents.append({
+                        "role": role,
+                        "parts": [{"text": msg.content}]
+                    })
         else:
-            raise ValueError("Invalid input format. Must be string or list of messages.")
+            raise ValueError("Input must be a string or a list of messages.")
 
         # Add base64 files if any are provided (Gemini 'inline_data')
         if llm_request.files:
             for b64_file in llm_request.files:
-                parts.append({
-                    "inline_data": {
-                        "mime_type": "image/png",
-                        "data": b64_file
-                    }
+                contents.append({
+                    "parts": [
+                        {
+                            "inline_data": {
+                                "mime_type": "image/png",  # Set MIME type based on the file type
+                                "data": b64_file
+                            }
+                        }
+                    ]
                 })
 
         # Create the payload base
         payload = {
-            "contents": [{"parts": parts}],
+            "contents": contents,
             "generationConfig": {
                 "temperature": llm_request.temperature,
                 "topP": llm_request.top_p,
@@ -401,35 +412,37 @@ class GeminiProvider(BaseLLMProvider):
     def map_gemini_finish_reason_to_status(self, finish_reason: str) -> str:
         # Define mapping for Gemini finish reasons
         mapping = {
-            "STOP": "completed", 
-            "MAX_TOKENS": "incomplete",  
+            "STOP": "completed",
+            "MAX_TOKENS": "incomplete",
             "SAFETY": "content_filter",  
             "RECITATION": "content_filter",  
             "LANGUAGE": "content_filter",  
-            "OTHER": "failed",  
             "BLOCKLIST": "content_filter",  
             "PROHIBITED_CONTENT": "content_filter",  
             "SPII": "content_filter",  
-            "MALFORMED_FUNCTION_CALL": "failed",  
             "IMAGE_SAFETY": "content_filter",  
             "IMAGE_PROHIBITED_CONTENT": "content_filter",  
-            "IMAGE_OTHER": "failed",  
-            "NO_IMAGE": "failed",  
-            "IMAGE_RECITATION": "content_filter",  
+            "IMAGE_RECITATION": "content_filter",
             "UNEXPECTED_TOOL_CALL": "failed",  
             "TOO_MANY_TOOL_CALLS": "failed",  
-            "MISSING_THOUGHT_SIGNATURE": "failed",  
+            "MISSING_THOUGHT_SIGNATURE": "failed", 
+            "IMAGE_OTHER": "failed",  
+            "NO_IMAGE": "failed",  
+            "OTHER": "failed",  
+            "MALFORMED_FUNCTION_CALL": "failed",  
+            "tool_calls": "tool_calls",
+            "cancelled": "cancelled"
         }
         
-        # Try to get mapped status
+        # First try to get mapped status
         mapped_status = mapping.get(finish_reason)
         
-        # Return mapped status if found, otherwise log and return unknown
+        # Return mapped status if found
         if mapped_status:
             return mapped_status
-        
+
         # Log the raw finish_reason if not mapped
-        logger.info(f"Raw Gemini finish_reason: {finish_reason}")
+        logger.info(f"Raw DeepInfra finish_reason: {finish_reason}")
         return "unknown"
 
     # Helper: Map Gemini finish_reason to OpenAI-compatible finish_reason
