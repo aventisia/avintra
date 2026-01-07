@@ -60,6 +60,8 @@ export const VaultTable = () => {
     true,
   );
 
+  const basePath = import.meta.env.VITE_WORC_PATH.replace(/\/$/, "");
+
   // Return the rendered DataTable component.
   return (
     <>
@@ -108,6 +110,7 @@ export const VaultTable = () => {
                     <div>
                       <img
                         src={
+                          basePath +
                           vaultAppIconMapper[
                             VaultAppsEnum[
                               row.getValue("type") as keyof typeof VaultAppsEnum
