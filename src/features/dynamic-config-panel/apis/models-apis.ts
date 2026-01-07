@@ -3,7 +3,7 @@ import { IHttpResponse } from "@aventisia/ui/dtos";
 import { ModelsListDto } from "../dtos/models-table-dto";
 import { ModelSetupDto } from "../dtos/model-setup-dto";
 
-const baseAPIURL: string = `${import.meta.env.VITE_AISTUDIO_API_URL}/ai-models`;
+const baseAPIURL: string = `${import.meta.env.VITE_AISTUDIO_API_PATH}/ai-models`;
 
 /**
  * Retrieves all ai models created by user

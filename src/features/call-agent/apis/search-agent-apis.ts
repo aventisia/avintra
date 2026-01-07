@@ -3,7 +3,7 @@ import { axiosInstance } from "@/react-toolkit/lib/axios-instance";
 import { SearchAgentsDto } from "../dtos/search-agent-dto";
 
 // Base API URL from environment variables
-const baseAPIURL: string = `${import.meta.env.VITE_WORC_API_URL}`;
+const baseAPIURL: string = `${import.meta.env.VITE_WORC_API_PATH}`;
 
 /**
  * Fetch a list of agents matching the search term.

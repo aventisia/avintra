@@ -4,7 +4,7 @@ import { axiosInstance } from "@/react-toolkit/lib/axios-instance";
 
 import { AITaskDto } from "../dtos/ai-tasks-dto";
 
-const baseAPIURL: string = `${import.meta.env.VITE_ACCOUNTS_API_URL}/ai-task`;
+const baseAPIURL: string = `${import.meta.env.VITE_ACCOUNTS_API_PATH}/ai-task`;
 
 /**
  * Retrieves all ai tasks created by user

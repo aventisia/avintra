@@ -104,7 +104,7 @@ const ModelSelectField = ({
                   size={"sm"}
                   onClick={() => {
                     window.open(
-                      `${import.meta.env.VITE_WORC_URL}/ai-models`,
+                      `${import.meta.env.VITE_WORC_PATH}ai-models`,
                       "_blank",
                     );
                   }}

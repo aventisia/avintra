@@ -35,7 +35,7 @@ const AppHeader: React.FC = () => {
   const isAssist = useIsAgentsAssist();
 
   const goBack = () => {
-    window.location.href = `${import.meta.env.VITE_WORC_URL}`;
+    window.location.href = `${import.meta.env.VITE_WORC_PATH}`;
   };
 
   return (

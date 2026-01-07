@@ -11,7 +11,7 @@ import { FlowsTableDto } from "../dtos/flows-table-dto";
   So, we just need to replace the file in future.
 */
 
-const baseAPIURL: string = `${import.meta.env.VITE_WORC_API_URL}/flow`;
+const baseAPIURL: string = `${import.meta.env.VITE_WORC_API_PATH}/flow`;
 
 /**
  * Retrieves all flows created by the user

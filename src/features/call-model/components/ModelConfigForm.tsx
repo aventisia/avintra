@@ -54,7 +54,7 @@ export default function ModelConfigForm() {
       { key: "ModelApiKey", value: data.modelApiKey },
       {
         key: "EndpointUrl",
-        value: `${import.meta.env.VITE_AISTUDIO_API_URL}/ai-models/execute`,
+        value: `${import.meta.env.VITE_AISTUDIO_API_PATH}/ai-models/execute`,
       },
       { key: "RequestBody", value: JSON.stringify(RequestBody) },
       {

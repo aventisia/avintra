@@ -12,7 +12,7 @@ export const usePostCreditConsumptionMutation = () => {
   const { mutateAsync: postCreditConsumption, isPending } = useMutation({
     mutationFn: (postObj: CreditConsumptionDto[]) => {
       return axiosInstance.post(
-        `${import.meta.env.VITE_ACCOUNTS_API_URL}/credit-usage/bulk`,
+        `${import.meta.env.VITE_ACCOUNTS_API_PATH}/credit-usage/bulk`,
         postObj,
       );
     },

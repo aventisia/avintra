@@ -47,7 +47,8 @@ const UserAccountModal = ({
       if (httpResponse.data) {
         setUserSession(null);
         navigate(
-          "/redirect?msg=Logging out...&url=" + import.meta.env.VITE_LOGIN_URL,
+          "/redirect?msg=Logging out...&url=" +
+            import.meta.env.VITE_ACCOUNTS_PATH,
         );
       } else toast.error(httpResponse.message);
     },

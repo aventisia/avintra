@@ -37,7 +37,7 @@ const DCPDialogHeader = () => {
     switch (nodeData.type) {
       case "callAgentNode":
         if (nodeData?.selectedAgent) {
-          href = `${import.meta.env.VITE_AGENTBUILDER_URL}/agent?f=${nodeData.selectedAgent?.flowId}&v=${nodeData.selectedAgent?.id}`;
+          href = `${import.meta.env.VITE_AGENTBUILDER_PATH}agent?f=${nodeData.selectedAgent?.flowId}&v=${nodeData.selectedAgent?.id}`;
           label = "Open Agent";
         } else {
           return null; // Don't render anything if there's no agent

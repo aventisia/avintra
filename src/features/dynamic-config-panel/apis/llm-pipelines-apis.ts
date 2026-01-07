@@ -2,7 +2,7 @@ import { axiosInstance } from "@/react-toolkit/lib/axios-instance";
 import { IHttpResponse } from "@aventisia/ui/dtos";
 import { LLMRequestDto, LLMResponseDto } from "../dtos/llm-providers-dto";
 
-const baseAPIURL: string = `${import.meta.env.VITE_LLM_PIPELINE_APIS_BASE_URL}/llm`;
+const baseAPIURL: string = `${import.meta.env.VITE_LLMPIPELINE_API_PATH}/llm`;
 
 /**
  * Retrieves all ai models created by user
