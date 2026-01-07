@@ -5,7 +5,7 @@ import { axiosInstance } from "@/react-toolkit/lib/axios-instance";
 
 import { UsersTableDto } from "../dtos/users-table-dto";
 
-const baseAPIURL: string = `${import.meta.env.VITE_ACCOUNTS_API_URL}/user`;
+const baseAPIURL: string = `${import.meta.env.VITE_ACCOUNTS_API_PATH}/user`;
 
 /**
  * Retrieves a list of users.

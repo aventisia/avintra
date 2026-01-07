@@ -7,7 +7,7 @@ import { CurrentPlanDto } from "../dtos/current-plan-dto";
 import { PaymentMethodDTO } from "../dtos/payment-methods-dto";
 import { TenantPreferencesDto } from "../dtos/tenant-prefrences-dto";
 
-const baseAPIURL: string = `${import.meta.env.VITE_ACCOUNTS_API_URL}/tenant-account`;
+const baseAPIURL: string = `${import.meta.env.VITE_ACCOUNTS_API_PATH}/tenant-account`;
 
 const getCompanyDetails = () =>
   axiosInstance
@@ -33,14 +33,14 @@ const getTenantCurrentPlan = () =>
   axiosInstance
     .get<
       IHttpResponse<CurrentPlanDto>
-    >(`${import.meta.env.VITE_ACCOUNTS_API_URL}/tenant-subscriptions/current-plan`)
+    >(`${import.meta.env.VITE_ACCOUNTS_API_PATH}/tenant-subscriptions/current-plan`)
     .then((res) => res.data);
 
 const getPaymentMethods = () =>
   axiosInstance
     .get<
       IHttpResponse<PaymentMethodDTO[]>
-    >(`${import.meta.env.VITE_ACCOUNTS_API_URL}/payment-methods/list`)
+    >(`${import.meta.env.VITE_ACCOUNTS_API_PATH}/payment-methods/list`)
     .then((res) => res.data);
 
 export {

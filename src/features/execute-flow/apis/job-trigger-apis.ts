@@ -4,7 +4,7 @@ import { axiosInstance } from "@/react-toolkit/lib/axios-instance";
 
 import { JobDetailsDto } from "../dtos/job-details-dto";
 
-const baseAPIURL: string = `${import.meta.env.VITE_WORC_API_URL}/job`;
+const baseAPIURL: string = `${import.meta.env.VITE_WORC_API_PATH}/job`;
 
 /**
  * Retrieves Job data.

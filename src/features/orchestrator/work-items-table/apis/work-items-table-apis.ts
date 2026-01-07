@@ -4,7 +4,7 @@ import { axiosInstance } from "@/react-toolkit/lib/axios-instance";
 
 import { QueueWorkItemDto } from "../dtos/queue-work-item-dto";
 
-const baseAPIURL: string = `${import.meta.env.VITE_WORC_API_URL}/queue-transaction`;
+const baseAPIURL: string = `${import.meta.env.VITE_WORC_API_PATH}/queue-transaction`;
 
 /**
  * Retrieves list of queues work items by the queue id.

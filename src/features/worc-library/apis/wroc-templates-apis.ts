@@ -5,7 +5,7 @@ import { axiosInstance } from "@/react-toolkit/lib/axios-instance";
 import { UseTemplateDTO } from "../dtos/use-template-dto";
 import { WorcTemplatesDto } from "../dtos/worc-templates-dtos";
 
-const baseAPIURL_WORC: string = `${import.meta.env.VITE_WORC_API_URL}/project-template`;
+const baseAPIURL_WORC: string = `${import.meta.env.VITE_WORC_API_PATH}/project-template`;
 
 /**
  * Retrieves list of templates.
@@ -30,9 +30,12 @@ const getTemplateById = (id: string) => {
 
 const downloadTemplateResource = (path: string) => {
   return axiosInstance
-    .get(`${import.meta.env.VITE_WORC_API_URL}/file/download?fileUrl=${path}`, {
-      responseType: "blob",
-    })
+    .get(
+      `${import.meta.env.VITE_WORC_API_PATH}/file/download?fileUrl=${path}`,
+      {
+        responseType: "blob",
+      },
+    )
     .then((res) => res.data);
 };
 

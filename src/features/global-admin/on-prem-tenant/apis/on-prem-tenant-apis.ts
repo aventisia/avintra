@@ -9,7 +9,7 @@ import { axiosInstance } from "@/react-toolkit/lib/axios-instance";
 
 import { OnPremTenantDto } from "../dtos/on-prem-tenant-dto";
 
-const baseAPIURL: string = `${import.meta.env.VITE_GLOBAL_ADMIN_BASE_URL}/onprem-tenant`;
+const baseAPIURL: string = `${import.meta.env.VITE_GLOBALADMIN_API_URL}/onprem-tenant`;
 
 /**
  * Retrieves all OnPremTenants created by user

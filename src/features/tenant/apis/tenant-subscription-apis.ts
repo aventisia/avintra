@@ -5,7 +5,7 @@ import { axiosInstance } from "@/react-toolkit/lib/axios-instance";
 import { PaymentInfoDto } from "../dtos/payment-info-dto";
 import { PurchasePlanDto } from "../dtos/purchase-plan-dto";
 
-const baseAPIURL: string = `${import.meta.env.VITE_ACCOUNTS_API_URL}/tenant-subscriptions`;
+const baseAPIURL: string = `${import.meta.env.VITE_ACCOUNTS_API_PATH}/tenant-subscriptions`;
 
 export const upgradePlan = (postObj: PurchasePlanDto) =>
   axiosInstance

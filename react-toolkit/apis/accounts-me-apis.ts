@@ -5,7 +5,7 @@ import { UserSessionDto } from "@/react-toolkit/dtos/response/user-session-dto";
 import { axiosInstance } from "@/react-toolkit/lib/axios-instance";
 import { redirectToLoginOn401Util } from "@/react-toolkit/utils/redirect-util";
 
-const baseAPIURL: string = `${import.meta.env.VITE_ACCOUNTS_API_URL}/me`;
+const baseAPIURL: string = `${import.meta.env.VITE_ACCOUNTS_API_PATH}/me`;
 
 /** Gets user's current session to view latest user's info */
 const getMySession = () => {

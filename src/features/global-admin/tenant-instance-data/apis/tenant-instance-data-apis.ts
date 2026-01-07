@@ -5,7 +5,7 @@ import { axiosInstance } from "@/react-toolkit/lib/axios-instance";
 import { OnPremInstanceDataDto } from "../dtos/tenant-instance-dto";
 import { OnpremTenantStaticDto } from "../dtos/tenant-statistics-dto";
 
-const baseAPIURL: string = `${import.meta.env.VITE_GLOBAL_ADMIN_BASE_URL}/onprem/instance-data`;
+const baseAPIURL: string = `${import.meta.env.VITE_GLOBALADMIN_API_URL}/onprem/instance-data`;
 
 /**
  * Retrieves all TenantInstances Data
@@ -38,7 +38,7 @@ const getTenantInstanceStatistics = (id: string) => {
   return axiosInstance
     .get<
       IHttpResponse<OnpremTenantStaticDto>
-    >(`${import.meta.env.VITE_GLOBAL_ADMIN_BASE_URL}/onprem/instance/${id}/statistics`)
+    >(`${import.meta.env.VITE_GLOBALADMIN_API_URL}/onprem/instance/${id}/statistics`)
     .then((res) => res.data);
 };
 

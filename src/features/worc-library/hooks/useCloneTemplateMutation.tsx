@@ -32,10 +32,10 @@ export const useCloneTemplateMutation = () => {
     // On success, open Agent Builder with the applied template
     onSuccess: (data) => {
       if (data?.data?.type == "AIProject") {
-        window.location.href = `${import.meta.env.VITE_AISTUDIO_URL}${data.data.accessPath}`;
+        window.location.href = `${import.meta.env.VITE_AISTUDIO_PATH}${data.data.accessPath}`;
       }
       if (data?.data?.type == "Agent" || data?.data?.type == "Block") {
-        window.location.href = `${import.meta.env.VITE_AGENTBUILDER_URL}${data.data.accessPath}`;
+        window.location.href = `${import.meta.env.VITE_AGENTBUILDER_PATH}${data.data.accessPath}`;
       }
     },
   });

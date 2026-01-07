@@ -9,7 +9,7 @@ import { axiosInstance } from "@/react-toolkit/lib/axios-instance";
 
 import { FlowsTableDto } from "../dtos/flows-table-dto";
 
-const baseAPIURL: string = `${import.meta.env.VITE_WORC_API_URL}/flow`;
+const baseAPIURL: string = `${import.meta.env.VITE_WORC_API_PATH}/flow`;
 
 /**
  * Retrieves all flows created by user

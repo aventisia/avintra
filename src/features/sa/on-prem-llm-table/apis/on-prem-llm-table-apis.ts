@@ -4,7 +4,7 @@ import { axiosInstance } from "@/react-toolkit/lib/axios-instance";
 
 import { OnPremLLMTableDTO } from "../dtos/on-prem-llm-table-dto";
 
-const baseAPIURL: string = `${import.meta.env.VITE_WORC_API_URL}/on-prem-llm`;
+const baseAPIURL: string = `${import.meta.env.VITE_WORC_API_PATH}/on-prem-llm`;
 
 /**
  * Retrieves all On Prem LLM

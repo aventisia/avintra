@@ -9,7 +9,7 @@ import { CreatedVerificationCodeDto } from "@/react-toolkit/dtos/response/create
 import { TenantInfoDto } from "@/react-toolkit/dtos/response/tenant-info-dto";
 import { axiosInstance } from "@/react-toolkit/lib/axios-instance";
 
-const baseAPIURL: string = `${import.meta.env.VITE_ACCOUNTS_API_URL}/auth`;
+const baseAPIURL: string = `${import.meta.env.VITE_ACCOUNTS_API_PATH}/auth`;
 
 /** Checks the availability of a email. */
 const isEmailAvailable = (postObj: CheckAvailabilityDto) => {
