@@ -105,7 +105,13 @@ axiosInstance.interceptors.response.use(
         toast.error(errorMessage);
 
         // Redirect to login page if error is not "Invalid credentials"
-        if (errorMessage !== INVALID_CREDS) redirectToLoginOn401Util();
+        if (errorMessage !== INVALID_CREDS) {
+          if (import.meta.env.MODE == "production") {
+            // Redirect to login page after 2 seconds
+            redirectToLoginOn401Util();
+          }
+          console.log(error);
+        }
         break;
       case 403:
         toast.error(errorMessage);
