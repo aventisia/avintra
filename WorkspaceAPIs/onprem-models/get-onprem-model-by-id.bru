@@ -1,0 +1,11 @@
+meta {
+  name: Get onprem model by id
+  type: http
+  seq: 5
+}
+
+get {
+  url: {{WORC_APIS_BASE_URL}}/onprem-model/{{ON_PREM_MODEL_ID}}
+  body: none
+  auth: none
+}
