@@ -45,7 +45,7 @@ public class WorkspaceDbContext : DbContext
         modelBuilder.Entity<TimeTrigger>().HasQueryFilter(qf => qf.TenantId == CurrentTenantId);
         modelBuilder.Entity<TimeTriggersFlowVersion>().HasQueryFilter(qf => qf.TenantId == CurrentTenantId);
         modelBuilder.Entity<Job>().HasQueryFilter(qf => qf.TenantId == CurrentTenantId);
-        modelBuilder.Entity<OllamaModel>().HasQueryFilter(qf => qf.TenantId == CurrentTenantId);
+        modelBuilder.Entity<OnPremModel>().HasQueryFilter(qf => qf.TenantId == CurrentTenantId);
 
         // Unique property
         modelBuilder.Entity<WorkspaceUser>().HasIndex(index => index.UserName).IsUnique();
@@ -72,7 +72,8 @@ public class WorkspaceDbContext : DbContext
         modelBuilder.Entity<Job>().Property(e => e.Status).HasConversion(new EnumToStringConverter<JobStatusTypesEnum>());
         modelBuilder.Entity<Job>().Property(e => e.Priority).HasConversion(new EnumToStringConverter<JobPriorityTypesEnum>());
         modelBuilder.Entity<Job>().Property(e => e.TriggerType).HasConversion(new EnumToStringConverter<TriggerTypesEnum>());
-        modelBuilder.Entity<OllamaModel>().Property(e => e.Type).HasConversion(new EnumToStringConverter<OllamaModelTypeEnum>());
+        modelBuilder.Entity<OnPremModel>().Property(e => e.ProviderType).HasConversion(new EnumToStringConverter<OnPremModelProviderEnum>());
+        modelBuilder.Entity<OnPremModel>().Property(e => e.Status).HasConversion(new EnumToStringConverter<OnPremModelStatusEnum>());
 
         // Configure One-to-One relationship between Notification and WorkspaceUser
         modelBuilder.Entity<Notification>().HasOne(one => one.CreatedByUser).WithMany().HasForeignKey(f => f.CreatedByUserId).OnDelete(DeleteBehavior.Restrict);
@@ -175,5 +176,5 @@ public class WorkspaceDbContext : DbContext
     public DbSet<AppSecret> AppSecrets { get; set; }
     public DbSet<EncryptedKeyValue> EncryptedKeyValues { get; set; }
     public DbSet<AITask> AITasks { get; set; }
-    public DbSet<OllamaModel> OllamaModels { get; set; }
+    public DbSet<OnPremModel> OnPremModels { get; set; }
 }

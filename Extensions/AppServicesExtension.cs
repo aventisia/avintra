@@ -46,7 +46,7 @@ public static class AppServicesExtension
         config.Apply(new AppSecretMappingProfile());
         config.Apply(new TimeTriggerMappingProfile());
         config.Apply(new AITaskMappingProfile());
-        config.Apply(new OllamaModelMappingProfile());
+        config.Apply(new OnPremModelMappingProfile());
 
         services.AddSingleton(config);
     }
@@ -94,7 +94,7 @@ public static class AppServicesExtension
         services.AddScoped<IJobsExecutorService, JobsExecutorService>();
         services.AddScoped<IAITaskService, AITaskService>();
         services.AddScoped<IProjectUsageService, ProjectUsageService>();
-        services.AddScoped<IOllamaModelService, OllamaModelService>();
+        services.AddScoped<IOnPremModelService, OnPremModelService>();
 
         // Cloud Connectors feature
         services.AddScoped<ICloudConnectorsVaultService, CloudConnectorsVaultService>();
