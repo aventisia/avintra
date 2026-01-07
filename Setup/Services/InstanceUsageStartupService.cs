@@ -18,13 +18,6 @@ public class InstanceUsageStartupService : IHostedService
     // This method will be called when the application starts. It collects metrics and posts them to the external API.
     public async Task StartAsync(CancellationToken cancellationToken)
     {
-        // Skip processing if running in Localhost environment
-        if (_hostEnvironment.EnvironmentName.Equals("Localhost", StringComparison.OrdinalIgnoreCase))
-        {
-            _logger.LogInformation("InstanceUsageStartupService skipped in Localhost environment.");
-            return;
-        }
-
         var currentDateTime = DateTimeOffset.UtcNow;
 
         // Log that the job started
