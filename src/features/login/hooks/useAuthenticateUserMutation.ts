@@ -70,23 +70,21 @@ export const useAuthenticateUserMutation = () => {
         // Check if backend message indicates incomplete tenant setup
         if (message.includes(ADD_TENANT)) {
           window.location.href =
-            import.meta.env.VITE_ACCOUNTS_URL + "/onboarding";
+            import.meta.env.VITE_ACCOUNTS_PATH + "onboarding";
         } else if (message.includes(NO_ACTIVE_SUBSCRIPTION)) {
           window.location.href =
-            import.meta.env.VITE_ACCOUNTS_URL + "/onboarding";
+            import.meta.env.VITE_ACCOUNTS_PATH + "onboarding";
         } else {
           // Reset login process
           resetLoginProcess();
 
           // Set authenticated user locally
-          const userSessionStoreObj = setUserSessionLocally(data);
+          setUserSessionLocally(data);
 
-          // TODO: Route as per user type (internal or external)
+          // Redirect to worc app
           navigate(
             "/redirect?msg=Logging in...&url=" +
-              (userSessionStoreObj.isAE
-                ? import.meta.env.VITE_WORC_URL
-                : import.meta.env.VITE_WORC_URL),
+              import.meta.env.VITE_WORC_PATH,
           );
         }
       },

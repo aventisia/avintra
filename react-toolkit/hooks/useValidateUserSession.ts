@@ -64,7 +64,8 @@ export const useValidateUserSession = () => {
       } else {
         //User already onboarded
         navigate(
-          "/redirect?msg=Logging in...&url=" + import.meta.env.VITE_WORC_URL,
+          "/redirect?msg=Logging in...&url=" +
+            import.meta.env.VITE_WORC_PATH,
         );
       }
     },

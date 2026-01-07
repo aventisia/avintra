@@ -5,6 +5,7 @@ import eslint from "vite-plugin-eslint2";
 
 // https://vite.dev/config/
 export default defineConfig({
+  base: "/accounts/",
   plugins: [
     react(),
     eslint({

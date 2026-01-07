@@ -4,7 +4,7 @@ import { axiosInstance } from "@/react-toolkit/lib/axios-instance";
 
 import { TenantInfoDto } from "../dtos/tenant-info-dto";
 
-const baseAPIURL: string = `${import.meta.env.VITE_ACCOUNTS_API_URL}/auth`;
+const baseAPIURL: string = `${import.meta.env.VITE_ACCOUNTS_API_PATH}/auth`;
 
 /** Update Tenant information*/
 const updateTenantInfo = (postObj: TenantInfoDto) => {
