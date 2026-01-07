@@ -66,7 +66,7 @@ const APIKeysDialog = () => {
                   <Input
                     name="api-url"
                     className="py-6 pr-32 truncate text-muted-foreground"
-                    value={`${import.meta.env.VITE_AISTUDIO_API_URL}/v1/model/${modelId}`}
+                    value={`${import.meta.env.VITE_AISTUDIO_API_PATH}/v1/model/${modelId}`}
                     disabled={true}
                   />
                   <Button
@@ -74,7 +74,7 @@ const APIKeysDialog = () => {
                     className="flex gap-1.5 bg-[#F3F2FF] text-primary absolute right-2 top-1"
                     onClick={() => {
                       navigator.clipboard.writeText(
-                        `${import.meta.env.VITE_AISTUDIO_API_URL}/model/${modelId}`,
+                        `${import.meta.env.VITE_AISTUDIO_API_PATH}/model/${modelId}`,
                       );
                       toast.success("API URL Copied");
                     }}

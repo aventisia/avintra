@@ -4,7 +4,7 @@ import { IHttpResponse } from "@aventisia/ui/dtos";
 
 import { GenerativeModelOutputDTO } from "../dtos/generative-model-output-dto";
 
-const baseAPIURL: string = `${import.meta.env.VITE_AISTUDIO_API_URL}/conversation-history`;
+const baseAPIURL: string = `${import.meta.env.VITE_AISTUDIO_API_PATH}/conversation-history`;
 
 /**
  * Get Form Data History by id.

@@ -68,7 +68,7 @@ function LLMChat() {
     if (!token) return;
 
     const socket = new WebSocket(
-      `${import.meta.env.VITE_AISTUDIO_API_URL}/chatHub`,
+      `${import.meta.env.VITE_AISTUDIO_API_PATH}/chatHub`,
     );
 
     socketRef.current = socket;

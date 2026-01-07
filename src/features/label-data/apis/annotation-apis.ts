@@ -5,7 +5,7 @@ import { IOptimisticMutation } from "@aventisia/ui/dtos";
 
 import { AnnotationDataDto } from "../dtos/annotation-data-dtos";
 
-const baseAPIURL: string = `${import.meta.env.VITE_AISTUDIO_API_URL}/extracted-data`;
+const baseAPIURL: string = `${import.meta.env.VITE_AISTUDIO_API_PATH}/extracted-data`;
 
 /**
  * Retrieves list of annotations.

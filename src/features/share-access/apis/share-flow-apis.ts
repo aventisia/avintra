@@ -5,8 +5,8 @@ import { IHttpResponse } from "@aventisia/ui/dtos";
 import { FlowUserDto } from "../dtos/flow-user-dto";
 import { WorkspaceUserDto } from "../dtos/workspace-user-dto";
 
-const flowUserApiUrl: string = `${import.meta.env.VITE_AISTUDIO_API_URL}/ai-model-user`;
-const workspaceUserApiUrl: string = `${import.meta.env.VITE_AISTUDIO_API_URL}/user`;
+const flowUserApiUrl: string = `${import.meta.env.VITE_AISTUDIO_API_PATH}/ai-model-user`;
+const workspaceUserApiUrl: string = `${import.meta.env.VITE_AISTUDIO_API_PATH}/user`;
 
 /**
  * Retrieves all flows users of a flow.

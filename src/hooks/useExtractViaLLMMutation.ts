@@ -53,7 +53,7 @@ export const useExtractViaLLMMutation = () => {
   const { mutate: updateCreditsUsed } = useMutation({
     mutationFn: (postObj: unknown) => {
       return axiosInstance.post(
-        `${import.meta.env.VITE_ACCOUNTS_API_URL}/credit-usage`,
+        `${import.meta.env.VITE_ACCOUNTS_API_PATH}/credit-usage`,
         postObj,
       );
     },

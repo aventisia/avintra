@@ -182,7 +182,7 @@ function AIPersonaTestForm() {
     if (!token) return;
 
     const socket = new WebSocket(
-      `${import.meta.env.VITE_LLMPIPELINE_API_URL}/chat?token=${token}`,
+      `${import.meta.env.VITE_LLMPIPELINE_API_PATH}/chat?token=${token}`,
     );
 
     socketRef.current = socket;

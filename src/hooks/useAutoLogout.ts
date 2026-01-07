@@ -32,7 +32,8 @@ export function useAutoLogout() {
       localStorage.setItem("logout", "true");
       setUserSession(null);
       navigate(
-        "/redirect?msg=Logging out...&url=" + import.meta.env.VITE_LOGIN_URL,
+        "/redirect?msg=Logging out...&url=" +
+          import.meta.env.VITE_ACCOUNTS_PATH,
       );
     } catch (err) {
       console.error("Error during logout:", err);

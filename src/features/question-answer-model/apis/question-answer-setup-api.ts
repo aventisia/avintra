@@ -4,7 +4,7 @@ import { IHttpResponse } from "@aventisia/ui/dtos";
 
 import { QuestionAnswersSetupDTO } from "../dtos/question-answer-setup-dto";
 
-const baseAPIURL: string = `${import.meta.env.VITE_AISTUDIO_API_URL}/question-answer`;
+const baseAPIURL: string = `${import.meta.env.VITE_AISTUDIO_API_PATH}/question-answer`;
 
 /**
  * Get Form Data by id.

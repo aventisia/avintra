@@ -5,7 +5,7 @@ import { IHttpResponse } from "@aventisia/ui/dtos";
 import { ExtractRequestDto } from "../features/pdf-previewer/dtos/extract-request-dto";
 import { ExtractedDataResponseDto } from "../features/pdf-previewer/dtos/extract-response-dto";
 
-const baseAPIURL: string = `${import.meta.env.VITE_AISTUDIO_API_URL}`;
+const baseAPIURL: string = `${import.meta.env.VITE_AISTUDIO_API_PATH}`;
 
 /**
  * Extract data fields from a PDF file via LLM.

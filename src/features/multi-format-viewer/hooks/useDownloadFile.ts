@@ -7,7 +7,7 @@ import { useFileListStore } from "../store/file-list-store";
 // Custom hook for downloading Files
 export const useDownloadFile = () => {
   const setFileUrl = useFileListStore((state) => state.setFileUrl);
-  const baseAPIURL: string = `${import.meta.env.VITE_AISTUDIO_API_URL}/upload-doc`;
+  const baseAPIURL: string = `${import.meta.env.VITE_AISTUDIO_API_PATH}/upload-doc`;
 
   return useMutation({
     mutationFn: async (path: string) => {

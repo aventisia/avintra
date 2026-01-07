@@ -11,7 +11,7 @@ interface DataResponseWithController {
   controller: AbortController;
 }
 
-const baseAPIURL: string = `${import.meta.env.VITE_AISTUDIO_API_URL}/upload-doc`;
+const baseAPIURL: string = `${import.meta.env.VITE_AISTUDIO_API_PATH}/upload-doc`;
 
 const getUploadedFiles = (versionId: string) => {
   return axiosInstance

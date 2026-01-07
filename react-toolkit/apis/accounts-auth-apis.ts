@@ -9,7 +9,7 @@ import { CheckAvailabilityDto } from "@aventisia/ui/dtos";
 import { TrueFalseResultDto } from "@aventisia/ui/dtos";
 import { IHttpResponse } from "@aventisia/ui/dtos";
 
-const baseAPIURL: string = `${import.meta.env.VITE_ACCOUNTS_API_URL}/auth`;
+const baseAPIURL: string = `${import.meta.env.VITE_ACCOUNTS_API_PATH}/auth`;
 
 /** Checks the availability of a email. */
 const isEmailAvailable = (postObj: CheckAvailabilityDto) => {
