@@ -346,7 +346,7 @@ public class GenerativeModelService : IGenerativeModelService
             // Execute prompt via LLM
             var llmResponse = await _llmDataExtractionService.ExtractDataAsync(
                 versionTask.GeneratedPrompt,
-                versionTask.LLM,
+                versionTask.Model,
                 versionTask.Temperature,
                 UsageSourceTypesEnum.AIModel,
                 generativeModelDto.AIProjectVersionId,
@@ -354,7 +354,7 @@ public class GenerativeModelService : IGenerativeModelService
                 ActionTypesEnum.AIModelExecution,
                 null, // This will never be triggered by an agent
                 null // No ollama output schema needed
-                // isJsonOutput is by default true
+                     // isJsonOutput is by default true
             );
 
             // Create conversation history from LLM output

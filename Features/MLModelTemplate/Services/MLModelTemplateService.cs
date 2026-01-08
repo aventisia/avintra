@@ -295,7 +295,7 @@ public class MLModelTemplateService : IMLModelTemplateService
                         Name = summarizationTask.Name,
                         NodePrompt = summarizationTask.SystemPrompt,
                         GeneratedPrompt = summarizationTask.GeneratedPrompt,
-                        LLM = summarizationTask.LLM,
+                        LLM = summarizationTask.Model,
                         Temperature = summarizationTask.Temperature,
                         IsBYOKEnabled = summarizationTask.IsBYOKEnabled,
                         SetupObject = JsonSerializer.Deserialize<SummarizationTemplateConfigDetailsDto>(summarizationTask.SetupObject, options),
@@ -308,7 +308,7 @@ public class MLModelTemplateService : IMLModelTemplateService
                         Name = extractionTask.Name,
                         NodePrompt = extractionTask.SystemPrompt,
                         GeneratedPrompt = extractionTask.GeneratedPrompt,
-                        LLM = extractionTask.LLM,
+                        LLM = extractionTask.Model,
                         Temperature = extractionTask.Temperature,
                         IsBYOKEnabled = extractionTask.IsBYOKEnabled,
                         SetupObject = JsonSerializer.Deserialize<DataExtractionTemplateConfigDetailsDto>(extractionTask.SetupObject, options),
@@ -321,7 +321,7 @@ public class MLModelTemplateService : IMLModelTemplateService
                         Name = classificationTask.Name,
                         NodePrompt = classificationTask.SystemPrompt,
                         GeneratedPrompt = classificationTask.GeneratedPrompt,
-                        LLM = classificationTask.LLM,
+                        LLM = classificationTask.Model,
                         Temperature = classificationTask.Temperature,
                         IsBYOKEnabled = classificationTask.IsBYOKEnabled,
                         SetupObject = JsonSerializer.Deserialize<ClassificationTemplateConfigDetailsDto>(classificationTask.SetupObject, options),
@@ -334,7 +334,7 @@ public class MLModelTemplateService : IMLModelTemplateService
                         Name = sentimentAnalyticsTask.Name,
                         NodePrompt = sentimentAnalyticsTask.SystemPrompt,
                         GeneratedPrompt = sentimentAnalyticsTask.GeneratedPrompt,
-                        LLM = sentimentAnalyticsTask.LLM,
+                        LLM = sentimentAnalyticsTask.Model,
                         Temperature = sentimentAnalyticsTask.Temperature,
                         IsBYOKEnabled = sentimentAnalyticsTask.IsBYOKEnabled,
                         SetupObject = JsonSerializer.Deserialize<SentimentAnalysisTemplateConfigDetailsDto>(sentimentAnalyticsTask.SetupObject, options),
@@ -347,7 +347,7 @@ public class MLModelTemplateService : IMLModelTemplateService
                         Name = questionAnswerTask.Name,
                         NodePrompt = questionAnswerTask.SystemPrompt,
                         GeneratedPrompt = questionAnswerTask.GeneratedPrompt,
-                        LLM = questionAnswerTask.LLM,
+                        LLM = questionAnswerTask.Model,
                         Temperature = questionAnswerTask.Temperature,
                         IsBYOKEnabled = questionAnswerTask.IsBYOKEnabled,
                         SetupObject = JsonSerializer.Deserialize<QuestionAnsweringTemplateConfigDetailsDto>(questionAnswerTask.SetupObject, options),
@@ -727,7 +727,7 @@ public class MLModelTemplateService : IMLModelTemplateService
                 _logger.LogError("Failed to save the AI project version when creating a new model from template.");
                 return serviceResponse;
             }
-            
+
             aiModelTemplateSchemaDto.Id = aiProject.Id;
             aiModelTemplateSchemaDto.VersionId = aiProjectVersion.Id;
             aiModelTemplateSchemaDto.VersionNumber = aiProjectVersion.VersionNumber;
@@ -803,7 +803,7 @@ public class MLModelTemplateService : IMLModelTemplateService
                 Name = taskType.ToString(),
                 SetupObject = JsonSerializer.Serialize(taskConfig.SetupObject, new JsonSerializerOptions { PropertyNameCaseInsensitive = true }),
                 Temperature = taskConfig.Temperature,
-                LLM = taskConfig.LLM,
+                Model = taskConfig.LLM,
                 IsBYOKEnabled = taskConfig.IsBYOKEnabled,
                 SystemPrompt = taskConfig.NodePrompt,
                 GeneratedPrompt = taskConfig.GeneratedPrompt,

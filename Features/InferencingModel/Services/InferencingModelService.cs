@@ -1403,7 +1403,7 @@ public class InferencingModelService : IInferencingModelService
         // Call the LLM service to extract data
         var llmResponse = await _llmDataExtractionService.ExtractDataAsync(
             prompt,
-            versionTask.LLM,
+            versionTask.Model,
             versionTask.Temperature,
             UsageSourceTypesEnum.AIModel,
             versionTask.AIProjectVersionId,
@@ -1411,7 +1411,7 @@ public class InferencingModelService : IInferencingModelService
             actionType, // this will be AgentExecution or AIModelExecution
             triggeredByAgent, // triggered by an agent
             ollamaOutputFormatSchema // ollama output schema needed
-            // isJsonOutput is by default true
+                                     // isJsonOutput is by default true
             );
 
         var endTime = DateTime.UtcNow;
@@ -2200,11 +2200,16 @@ public class InferencingModelService : IInferencingModelService
                     {
                         Id = mlTask.Id,
                         Name = mlTask.Name,
-                        SetupObject = JsonSerializer.Deserialize<ExtractionTaskSetupDto>(mlTask.SetupObject ?? null, jsonOptions),
-                        LLM = mlTask.LLM,
-                        ConfigurationType = mlTask.IsBYOKEnabled ? LLMConfigurationTypesEnum.Cloud : LLMConfigurationTypesEnum.OnPrem,
+                        Model = mlTask.Model,
+                        Provider = mlTask.Provider,
+                        IsBYOKEnabled = mlTask.IsBYOKEnabled,
+                        CredentialId = mlTask.CredentialId,
+                        IsJsonOutput = mlTask.IsJsonOutput,
+                        Temperature = mlTask.Temperature,
+                        TopP = mlTask.TopP,
+                        MaxOutputToken = mlTask.MaxOutputToken,
                         NodePrompt = mlTask.SystemPrompt,
-                        Temperature = mlTask.Temperature
+                        SetupObject = JsonSerializer.Deserialize<ExtractionTaskSetupDto>(mlTask.SetupObject ?? null, jsonOptions),
                     };
                     inferencingModelDto.Extraction = extractionDto;
                     break;
@@ -2214,11 +2219,16 @@ public class InferencingModelService : IInferencingModelService
                     {
                         Id = mlTask.Id,
                         Name = mlTask.Name,
-                        SetupObject = JsonSerializer.Deserialize<ClassificationTaskSetupDto>(mlTask.SetupObject ?? null, jsonOptions),
-                        LLM = mlTask.LLM,
-                        ConfigurationType = mlTask.IsBYOKEnabled ? LLMConfigurationTypesEnum.Cloud : LLMConfigurationTypesEnum.OnPrem,
+                        Model = mlTask.Model,
+                        Provider = mlTask.Provider,
+                        IsBYOKEnabled = mlTask.IsBYOKEnabled,
+                        CredentialId = mlTask.CredentialId,
+                        IsJsonOutput = mlTask.IsJsonOutput,
+                        Temperature = mlTask.Temperature,
+                        TopP = mlTask.TopP,
+                        MaxOutputToken = mlTask.MaxOutputToken,
                         NodePrompt = mlTask.SystemPrompt,
-                        Temperature = mlTask.Temperature
+                        SetupObject = JsonSerializer.Deserialize<ClassificationTaskSetupDto>(mlTask.SetupObject ?? null, jsonOptions),
                     };
                     inferencingModelDto.Classification = classificationDto;
                     break;
@@ -2228,11 +2238,16 @@ public class InferencingModelService : IInferencingModelService
                     {
                         Id = mlTask.Id,
                         Name = mlTask.Name,
-                        SetupObject = JsonSerializer.Deserialize<SentimentAnalyticsTaskSetupDto>(mlTask.SetupObject ?? null, jsonOptions),
-                        LLM = mlTask.LLM,
-                        ConfigurationType = mlTask.IsBYOKEnabled ? LLMConfigurationTypesEnum.Cloud : LLMConfigurationTypesEnum.OnPrem,
+                        Model = mlTask.Model,
+                        Provider = mlTask.Provider,
+                        IsBYOKEnabled = mlTask.IsBYOKEnabled,
+                        CredentialId = mlTask.CredentialId,
+                        IsJsonOutput = mlTask.IsJsonOutput,
+                        Temperature = mlTask.Temperature,
+                        TopP = mlTask.TopP,
+                        MaxOutputToken = mlTask.MaxOutputToken,
                         NodePrompt = mlTask.SystemPrompt,
-                        Temperature = mlTask.Temperature
+                        SetupObject = JsonSerializer.Deserialize<SentimentAnalyticsTaskSetupDto>(mlTask.SetupObject ?? null, jsonOptions),
                     };
                     inferencingModelDto.SentimentAnalytics = sentimentDto;
                     break;
@@ -2242,11 +2257,16 @@ public class InferencingModelService : IInferencingModelService
                     {
                         Id = mlTask.Id,
                         Name = mlTask.Name,
-                        SetupObject = JsonSerializer.Deserialize<QuestionAnswerTaskSetupDto>(mlTask.SetupObject ?? null, jsonOptions),
-                        LLM = mlTask.LLM,
-                        ConfigurationType = mlTask.IsBYOKEnabled ? LLMConfigurationTypesEnum.Cloud : LLMConfigurationTypesEnum.OnPrem,
+                        Model = mlTask.Model,
+                        Provider = mlTask.Provider,
+                        IsBYOKEnabled = mlTask.IsBYOKEnabled,
+                        CredentialId = mlTask.CredentialId,
+                        IsJsonOutput = mlTask.IsJsonOutput,
+                        Temperature = mlTask.Temperature,
+                        TopP = mlTask.TopP,
+                        MaxOutputToken = mlTask.MaxOutputToken,
                         NodePrompt = mlTask.SystemPrompt,
-                        Temperature = mlTask.Temperature
+                        SetupObject = JsonSerializer.Deserialize<QuestionAnswerTaskSetupDto>(mlTask.SetupObject ?? null, jsonOptions),
                     };
                     inferencingModelDto.QuestionAnswer = questionAnswerDto;
                     break;
@@ -2256,11 +2276,16 @@ public class InferencingModelService : IInferencingModelService
                     {
                         Id = mlTask.Id,
                         Name = mlTask.Name,
-                        SetupObject = JsonSerializer.Deserialize<SummarizationTaskSetupDto>(mlTask.SetupObject ?? null, jsonOptions),
-                        LLM = mlTask.LLM,
-                        ConfigurationType = mlTask.IsBYOKEnabled ? LLMConfigurationTypesEnum.Cloud : LLMConfigurationTypesEnum.OnPrem,
+                        Model = mlTask.Model,
+                        Provider = mlTask.Provider,
+                        IsBYOKEnabled = mlTask.IsBYOKEnabled,
+                        CredentialId = mlTask.CredentialId,
+                        IsJsonOutput = mlTask.IsJsonOutput,
+                        Temperature = mlTask.Temperature,
+                        TopP = mlTask.TopP,
+                        MaxOutputToken = mlTask.MaxOutputToken,
                         NodePrompt = mlTask.SystemPrompt,
-                        Temperature = mlTask.Temperature
+                        SetupObject = JsonSerializer.Deserialize<SummarizationTaskSetupDto>(mlTask.SetupObject ?? null, jsonOptions),
                     };
                     inferencingModelDto.Summarization = summarizationDto;
                     break;
