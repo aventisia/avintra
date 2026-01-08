@@ -56,8 +56,7 @@ export const aiPersonaSetupFormZodSchema = z.object({
   id: z.string().readonly(),
   aiPersona: z.object({
     name: z.string().readonly().default("AIPersona"),
-    configurationType: z.enum(["OnPrem", "Cloud"]).default("OnPrem"),
-    llm: z
+    model: z
       .string()
       .min(1, { message: reqError("Base LLM") })
       .default("gemma"),
