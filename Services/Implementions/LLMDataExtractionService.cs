@@ -4,14 +4,12 @@ public class LLMDataExtractionService : ILLMDataExtractionService
 {
     private readonly ILogger<LLMDataExtractionService> _logger;
     private readonly ExtractViaLLMConfig _extractViaLLMConfig;
-    private readonly OpenAIConfig _openAIConfig;
     private readonly HttpClientUrlConfig _httpClientUrlConfig;
     private readonly string _jwt;
 
     public LLMDataExtractionService(
         ILogger<LLMDataExtractionService> logger,
         ExtractViaLLMConfig extractViaLLMConfig,
-        OpenAIConfig openAIConfig,
         IHttpContextAccessor httpContextAccessor,
         HttpClientUrlConfig httpClientUrlConfig)
     {
@@ -19,7 +17,6 @@ public class LLMDataExtractionService : ILLMDataExtractionService
 
         _logger = logger;
         _extractViaLLMConfig = extractViaLLMConfig;
-        _openAIConfig = openAIConfig;
         _httpClientUrlConfig = httpClientUrlConfig;
     }
 
@@ -71,7 +68,7 @@ public class LLMDataExtractionService : ILLMDataExtractionService
     }
 
     // Extracts structured data from a document by retrieving its text and passing it to an LLM for processing.
-    public async Task<ServiceResponse<string>> ExtractDataAsync(string prompt, string llmModel, double modelTemperature, UsageSourceTypesEnum refType, Guid refId, string refName, ActionTypesEnum actionType, string? triggeredByAgent, object? ollamaOutputFormatSchema = null, bool isJsonOutput = true)
+    public async Task<ServiceResponse<string>> ExtractDataAsync(LLMRequest llmRequest)
     {
         var serviceResponse = new ServiceResponse<string>()
         {
@@ -90,8 +87,6 @@ public class LLMDataExtractionService : ILLMDataExtractionService
             { "llama3.2", "llama3.2:3b" },
             { "mistral", "mistral:7b" },
             { "gemma", "gemma3:12b" },
-            { "gpt-4o-mini", "gpt-4o-mini" },
-            { "gpt-4o", "gpt-4o" },
         };
 
         var startTime = DateTime.UtcNow;
@@ -106,14 +101,17 @@ public class LLMDataExtractionService : ILLMDataExtractionService
         try
         {
             // Step 1: Validate input parameters
-            if (string.IsNullOrEmpty(prompt))
+            if (
+                llmRequest.Input == null ||
+                (llmRequest.Input is string strInput && string.IsNullOrWhiteSpace(strInput)) ||
+                (llmRequest.Input is List<LLMMessage> messages && messages.Count == 0))
             {
-                serviceResponse.Message = "Prompt is required.";
-                _logger.LogWarning("Prompt is missing or empty.");
+                serviceResponse.Message = "Prompt or messages are required.";
+                _logger.LogWarning("LLMRequest.Input is missing, empty string, or empty list of messages.");
                 return serviceResponse;
             }
 
-            if (string.IsNullOrEmpty(llmModel))
+            if (string.IsNullOrEmpty(llmRequest.Model))
             {
                 serviceResponse.Message = "LLM model is required.";
                 _logger.LogWarning("LLM model identifier is missing or empty.");
@@ -124,13 +122,13 @@ public class LLMDataExtractionService : ILLMDataExtractionService
             string llmResponse = string.Empty;
 
             // Step 2: Map the provided model identifier to the actual model version
-            string? mappedModel = llmModelMapper.GetValueOrDefault(llmModel);
+            string? mappedModel = llmModelMapper.GetValueOrDefault(llmRequest.Model);
 
             // If the model identifier is unrecognized, return an error
             if (string.IsNullOrEmpty(mappedModel))
             {
-                serviceResponse.Message = $"Unrecognized model identifier: {llmModel}";
-                _logger.LogWarning("Invalid model identifier: {llmModel}", llmModel);
+                serviceResponse.Message = $"Unrecognized model identifier: {llmRequest.Model}";
+                _logger.LogWarning("Invalid model identifier: {llmModel}", llmRequest.Model);
                 return serviceResponse;
             }
 
@@ -144,106 +142,46 @@ public class LLMDataExtractionService : ILLMDataExtractionService
                     // Set timeout to 3 minutes
                     client.Timeout = TimeSpan.FromMinutes(3);
 
-                    if (mappedModel == "gpt-4o-mini" || mappedModel == "gpt-4o")
+                    // Check if the requested model is in the Ollama list
+                    bool isOllamaModel = llmModelMapper.ContainsKey(llmRequest.Model);
+
+                    if (!isOllamaModel)
                     {
-                        // Validate the API key
-                        if (string.IsNullOrWhiteSpace(_openAIConfig.OpenAIApiKey))
+                        if (llmRequest.Model == "gpt-4o-mini" || llmRequest.Model == "gpt-4o")
                         {
-                            serviceResponse.Message = "API key is required.";
-                            _logger.LogWarning("API key is missing or empty.");
-
-                            // Exit early if API URL is invalid
-                            return serviceResponse;
+                            llmRequest.Provider = LLMProviderLiteral.OpenAI.ToString().ToLower();
                         }
 
-                        // Validate the API URL
-                        if (string.IsNullOrWhiteSpace(_openAIConfig.OpenAIApiUrl) || !Uri.IsWellFormedUriString(_openAIConfig.OpenAIApiUrl, UriKind.Absolute))
-                        {
-                            serviceResponse.Message = "A valid API URL is required.";
-                            _logger.LogWarning("API URL is invalid or not well-formed.");
+                        // Send request to LLM Pipeline API and get chat completion
+                        var apiResponse = await GetChatCompletionAsync(client, llmRequest);
 
-                            // Exit early if API URL is invalid
-                            return serviceResponse;
-                        }
+                        // Extract the model's generated output
+                        llmResponse = apiResponse.Output;
 
-                        // Prepare the message list: system prompt (optional) + user input
-                        prompt = isJsonOutput ?
-                            prompt + " Please provide the response in JSON format only." + System.Text.Json.JsonSerializer.Serialize(ollamaOutputFormatSchema) :
-                            prompt;
-                        var messageList = new List<Dictionary<string, string>>()
-                        {
-                            // The system prompt could be included if needed, for example:
-                            // new Dictionary<string, string> { { "role", "system" }, { "content", system_prompt } },
+                        // Log successful receipt of response
+                        _logger.LogInformation("Successfully received response from LLM Pipeline API: {LLMResponse}", llmResponse
+                        );
 
-                            // User message to be processed by the OpenAI model
-                            new Dictionary<string, string>
-                            {
-                                { "role", "user" },
-                                { "content", prompt}
-                            }
-                        };
+                        // Capture token usage metrics if available
+                        inputTokens = apiResponse.InputTokens;
+                        outputTokens = apiResponse.OutputTokens;
+                        inputCachedTokens = apiResponse.InputCachedTokens;
+                        outputReasoningTokens = apiResponse.OutputReasoningTokens;
 
-                        _logger.LogInformation("Prepared openai or gemini OutputFormatSchema: {ollamaOutputFormatSchema}", System.Text.Json.JsonSerializer.Serialize(ollamaOutputFormatSchema));
+                        // Log token usage for monitoring
+                        _logger.LogInformation(
+                            "LLM Pipeline API token usage - Input: {InputTokens}, Output: {OutputTokens}, " +
+                            "Cached Input: {InputCachedTokens}, Reasoning: {OutputReasoningTokens}",
+                            inputTokens, outputTokens, inputCachedTokens, outputReasoningTokens
+                        );
 
-                        // Proceed to fetch chat completion from the OpenAI API
-                        var openaiRawResponse = await GetChatCompletionAsync(messageList, mappedModel, client, modelTemperature, ollamaOutputFormatSchema);
-
-                        // Parse the response string into a JsonDocument for easier manipulation of JSON data.
-                        using var jsonDoc = JsonDocument.Parse(openaiRawResponse);
-
-                        // Extract the assistant's reply text from the parsed JSON
-                        llmResponse = jsonDoc.RootElement
-                            .GetProperty("choices")[0]
-                            .GetProperty("message")
-                            .GetProperty("content")
-                            .GetString() ?? "";
-
-                        // Log the successful completion of the request
-                        _logger.LogInformation("Successfully received response from OpenAI.{llmResponse}", llmResponse);
-
-                        // Get token usage details if available
-                        if (jsonDoc.RootElement.TryGetProperty("usage", out JsonElement usageElement))
-                        {
-                            inputTokens = usageElement.GetProperty("prompt_tokens").GetInt32();
-                            outputTokens = usageElement.GetProperty("completion_tokens").GetInt32();
-                            inputCachedTokens = usageElement.GetProperty("prompt_tokens_details").GetProperty("cached_tokens").GetInt32();
-                            outputReasoningTokens = usageElement.GetProperty("completion_tokens_details").GetProperty("reasoning_tokens").GetInt32();
-                        }
-
-                        // Get total execution time
+                        // Calculate total execution time
                         totalExecutionTime = (DateTime.UtcNow - startTime).TotalSeconds;
 
-                        // Add input tokens usage to the credits usage list
-                        if (inputTokens > 0)
-                        {
-                            creditsUsageList.Add(new
-                            {
-                                serviceType = "Gpt4oMiniInput",
-                                consumedUnit = inputTokens,
-                                refType = refType.ToString(),
-                                refId = refId.ToString(),
-                                refName = refName,
-                                actionType = actionType.ToString(),
-                                triggeredByAgent = triggeredByAgent
-                            });
-                        }
+                        _logger.LogInformation("Total execution time for LLM Pipeline API request: {ExecutionTimeSeconds} seconds", totalExecutionTime);
 
-                        // Add output tokens usage to the credits usage list
-                        if (outputTokens > 0)
-                        {
-                            creditsUsageList.Add(new
-                            {
-                                serviceType = "Gpt4oMiniOutput",
-                                consumedUnit = outputTokens,
-                                refType = refType.ToString(),
-                                refId = refId.ToString(),
-                                refName = refName,
-                                actionType = actionType.ToString(),
-                                triggeredByAgent = triggeredByAgent
-                            });
-                        }
-
-                        break; // Exit retry loop if the extraction was successful
+                        // Exit retry loop after successful extraction
+                        break;
                     }
                     else
                     {
@@ -308,18 +246,18 @@ public class LLMDataExtractionService : ILLMDataExtractionService
 
                         // Step 5: Send the generation request to the model with the prompt and temperature
                         object requestDto;
-                        if (ollamaOutputFormatSchema == null)
+                        if (!llmRequest.IsJsonOutput)
                         {
                             requestDto = new
                             {
                                 stream = false,
-                                prompt,
+                                llmRequest.Input,
                                 //format = "json",
                                 model = mappedModel,
                                 options = new
                                 {
                                     // seed = 1452692,
-                                    temperature = modelTemperature
+                                    temperature = llmRequest.Temperature
                                 }
                             };
                         }
@@ -328,19 +266,18 @@ public class LLMDataExtractionService : ILLMDataExtractionService
                             requestDto = new
                             {
                                 stream = false,
-                                prompt,
-                                format = ollamaOutputFormatSchema ?? "json",
+                                llmRequest.Input,
+                                format = llmRequest.JsonSchema,
                                 model = mappedModel,
                                 options = new
                                 {
                                     // seed = 1452692,
-                                    temperature = modelTemperature
+                                    temperature = llmRequest.Temperature
                                 }
                             };
                         }
 
-
-                        _logger.LogInformation("Prepared ollamaOutputFormatSchema: {ollamaOutputFormatSchema}", System.Text.Json.JsonSerializer.Serialize(ollamaOutputFormatSchema));
+                        _logger.LogInformation("Prepared ollamaOutputFormatSchema: {ollamaOutputFormatSchema}", System.Text.Json.JsonSerializer.Serialize(llmRequest.JsonSchema));
 
                         var content = new StringContent(System.Text.Json.JsonSerializer.Serialize(requestDto), Encoding.UTF8, "application/json");
                         _logger.LogInformation("Sending request to LLM model: {MappedModel}", mappedModel);
@@ -477,68 +414,60 @@ public class LLMDataExtractionService : ILLMDataExtractionService
         }
     }
 
-    // Retrieves the chat completion from the OpenAI API based on the given list of messages and model.
-    public async Task<string> GetChatCompletionAsync(List<Dictionary<string, string>> messageList, string model, HttpClient client, double temperature, object? outputFormatSchema)
+    // Sends a list of messages and LLM configuration to the LLM Pipeline API and retrieves the generated response.
+    public async Task<LLMResponse> GetChatCompletionAsync(HttpClient client, LLMRequest lLMRequest)
     {
-        // Validate the input message list before proceeding
-        if (messageList == null || messageList.Count == 0)
-        {
-            _logger.LogWarning("The provided message list is empty.");
-            return "The message list is empty. Please provide valid input.";
-        }
-
         try
         {
-            // Log the start of the request
-            _logger.LogInformation("Starting request to OpenAI API...");
+            _logger.LogInformation("Starting request to LLM Pipeline API...");
 
-            // Add Authorization header with the API key for authentication
-            client.DefaultRequestHeaders.Add("Authorization", $"Bearer {_openAIConfig.OpenAIApiKey}");
+            // Add authorization header using the JWT
+            client.DefaultRequestHeaders.Add("Authorization", $"Bearer {_jwt}");
 
-            // Prepare the request body with necessary parameters (model, messages, etc.)
-            var requestBody = new
-            {
-                model = model, // Specify the model to use for the request (e.g., "gpt-4o-mini")
-                messages = messageList, // List of messages including user input and system prompts
-                temperature = temperature, // Controls the randomness of the output (0 to 1)
-                // response_format = outputFormatSchema != null ? new { type = "json_object" } : null, // Optional: Specify the response format (JSON object if defined)
+            // Log the request body for debugging
+            _logger.LogInformation("LLM Pipeline API request body: {RequestBody}",
+                JsonConvert.SerializeObject(lLMRequest));
 
-                // Optional parameters (commented out for now):
-                // max_tokens = 5000, // Max number of tokens to generate in the response
-                // top_p = 1.0f, // Nucleus sampling: the cumulative probability for token selection
-                // frequency_penalty = 0.0f, // Penalize new tokens based on their frequency in the text
-                // presence_penalty = 0.0f, // Penalize new tokens based on whether they appear in the text
-                // stop = new string[] { "\n" } // Optional: Stop sequence to end the response generation
-            };
+            // Serialize the request body
+            var content = new StringContent(
+                JsonConvert.SerializeObject(lLMRequest),
+                Encoding.UTF8,
+                "application/json"
+            );
 
-            _logger.LogInformation("Prepared request body for OpenAI API: {RequestBody}", JsonConvert.SerializeObject(requestBody));
+            // Construct the request URL
+            var requestUrl = $"{_httpClientUrlConfig.LlmPipelineApisBaseUrl.TrimEnd('/')}/llm/generate";
 
-            // Serialize the request body to JSON format for the POST request
-            var content = new StringContent(JsonConvert.SerializeObject(requestBody), Encoding.UTF8, "application/json");
+            // Send POST request to the LLM Pipeline API
+            var apiResponse = await client.PostAsync(requestUrl, content);
 
-            // Send the POST request to the OpenAI API asynchronously
-            var apiResponse = await client.PostAsync(_openAIConfig.OpenAIApiUrl, content);
-
-            // Check if the response status code is successful (200 OK)
+            // Handle non-successful HTTP responses
             if (!apiResponse.IsSuccessStatusCode)
             {
-                // If the response is not successful, log the error and return the status code
                 var errorResponse = await apiResponse.Content.ReadAsStringAsync();
-                _logger.LogError($"API request failed with status code {apiResponse.StatusCode}. Response: {errorResponse}");
-                return string.Empty;
+                _logger.LogError("LLM Pipeline API request failed. Status Code: {StatusCode}. Response: {Response}", apiResponse.StatusCode, errorResponse);
+                return new LLMResponse();
             }
 
-            // Read and process the response content from the OpenAI API
+            // Read the response content
             var responseString = await apiResponse.Content.ReadAsStringAsync();
 
-            // Return the chat completion text
-            return responseString;
+            // Deserialize JSON into LLMResponse
+            var llmResponse = System.Text.Json.JsonSerializer.Deserialize<LLMResponse>(
+                responseString,
+                new JsonSerializerOptions { PropertyNameCaseInsensitive = true }
+            ) ?? new LLMResponse();
+
+            _logger.LogInformation("Received response from LLM Pipeline API successfully.");
+
+            return llmResponse;
         }
         catch (Exception ex)
         {
-            // Log any exceptions that occur during the process
-            _logger.LogError($"An error occurred while processing the OpenAI API request: {ex.Message}", ex);
-            return string.Empty;
+            // Log any unexpected errors
+            _logger.LogError(ex, "An exception occurred while sending request to LLM Pipeline API: {Message}", ex.Message
+            );
+            return new LLMResponse();
         }
     }
 }
