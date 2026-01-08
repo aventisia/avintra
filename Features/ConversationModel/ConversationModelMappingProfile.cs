@@ -18,10 +18,7 @@ public class ConversationModelMappingProfile : IRegister
 
         config.NewConfig<VersionTask, ConversationModelSetupTaskDto>()
             .Map(dest => dest.Temperature, src => src.Temperature)
-            .Map(dest => dest.LLM, src => src.LLM)
             .Map(dest => dest.NodePrompt, src => src.SystemPrompt)
-            .Map(dest => dest.SecretKey, src => src.CloudLLMCredentialId)
-            .Map(dest => dest.ConfigurationType, src => src.IsBYOKEnabled ? LLMConfigurationTypesEnum.Cloud : LLMConfigurationTypesEnum.OnPrem)
             .Map(dest => dest.SetupObject, src => JsonSerializer.Deserialize<ConversationModelSetupDto>(
                 src.SetupObject, new JsonSerializerOptions
                 {
@@ -34,8 +31,6 @@ public class ConversationModelMappingProfile : IRegister
                 {
                     PropertyNameCaseInsensitive = true
                 }))
-            .Map(dest => dest.IsBYOKEnabled, src => src.ConfigurationType == LLMConfigurationTypesEnum.Cloud)
-            .Map(dest => dest.CloudLLMCredentialId, src => src.SecretKey)
             .Ignore(dest => dest.Id)
             .Ignore(dest => dest.CreatedByUserId)
             .Ignore(dest => dest.LastModifiedByUserId)

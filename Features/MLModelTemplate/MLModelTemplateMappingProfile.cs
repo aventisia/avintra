@@ -23,20 +23,20 @@ public class MLModelTemplateMappingProfile : IRegister
         config.NewConfig<InferencingModelDto, InferencingModelTemplateDto>()
             .AfterMapping((src, dest) =>
             {
-                if (dest.Summarization?.ConfigurationType == LLMConfigurationTypesEnum.Cloud)
-                    dest.Summarization.SecretKey = null;
+                if (!dest.Summarization.IsBYOKEnabled)
+                    dest.Summarization.CredentialId = null;
 
-                if (dest.Classification?.ConfigurationType == LLMConfigurationTypesEnum.Cloud)
-                    dest.Classification.SecretKey = null;
+                if (!dest.Classification.IsBYOKEnabled)
+                    dest.Summarization.CredentialId = null;
 
-                if (dest.SentimentAnalytics?.ConfigurationType == LLMConfigurationTypesEnum.Cloud)
-                    dest.SentimentAnalytics.SecretKey = null;
+                if (!dest.SentimentAnalytics.IsBYOKEnabled)
+                    dest.Summarization.CredentialId = null;
 
-                if (dest.Extraction?.ConfigurationType == LLMConfigurationTypesEnum.Cloud)
-                    dest.Extraction.SecretKey = null;
+                if (!dest.Extraction.IsBYOKEnabled)
+                    dest.Summarization.CredentialId = null;
 
-                if (dest.QuestionAnswer?.ConfigurationType == LLMConfigurationTypesEnum.Cloud)
-                    dest.QuestionAnswer.SecretKey = null;
+                if (!dest.QuestionAnswer.IsBYOKEnabled)
+                    dest.Summarization.CredentialId = null;
             });
 
 
