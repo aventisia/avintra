@@ -1242,19 +1242,36 @@ namespace WorkspaceAPIs.Services
                 // Log initiation of documentation generation using LLM
                 _logger.LogInformation("Starting instruction/documentation generation using LLM. Model: {Model}, Temperature: {Temperature}, {Prompt}", model, temperature, prompt);
 
-                // Call the LLM service to generate the documentation
-                var generatedOutput = await _llmDataExtractionService.ExtractDataAsync(
-                    prompt: prompt,
-                    llmModel: model,
-                    modelTemperature: temperature,
-                    genereateProjectInstructionRequestDto.RefType,
-                    genereateProjectInstructionRequestDto.RefId,
-                    genereateProjectInstructionRequestDto.RefName,
-                    ActionTypesEnum.TemplateDescriptionGeneration,
-                    null, // This will never be triggered by an agent
-                    null, // No ollama output schema needed
-                    false // No json output required
-                );
+                // // Call the LLM service to generate the documentation
+                // var generatedOutput = await _llmDataExtractionService.ExtractDataAsync(
+                //     prompt: prompt,
+                //     llmModel: model,
+                //     modelTemperature: temperature,
+                //     genereateProjectInstructionRequestDto.RefType,
+                //     genereateProjectInstructionRequestDto.RefId,
+                //     genereateProjectInstructionRequestDto.RefName,
+                //     ActionTypesEnum.TemplateDescriptionGeneration,
+                //     null, // This will never be triggered by an agent
+                //     null, // No ollama output schema needed
+                //     false // No json output required
+                // );
+
+                // Create a request object to send to the LLM service for data extraction
+                var llmRequest = new LLMRequest()
+                {
+                    Model = model,
+                    Input = prompt,
+                    IsJsonOutput = true,
+                    Temperature = temperature,
+                    Stream = false,
+                    RefType = genereateProjectInstructionRequestDto.RefType.ToString(),
+                    RefId = genereateProjectInstructionRequestDto.RefId.ToString(),
+                    RefName = genereateProjectInstructionRequestDto.RefName,
+                    Action = ActionTypesEnum.TemplateDescriptionGeneration.ToString(),
+                };
+
+                // Call the service to extract data asynchronously, passing in the LLM request
+                var generatedOutput = await _llmDataExtractionService.ExtractDataAsync(llmRequest);
 
                 // Handle null or empty response
                 if (generatedOutput.Data == null)
