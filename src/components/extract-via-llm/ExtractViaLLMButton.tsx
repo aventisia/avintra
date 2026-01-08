@@ -2,9 +2,10 @@ import { AC_QUERY_KEY } from "@/features/available-credits/available-credits-con
 import { AvailableCreditDto } from "@/features/available-credits/available-credits-dto";
 import { useTasksToExecuteStore } from "@/features/inferencing-model/store/tasks-to-execute";
 import { useFetchProjectMetaData } from "@/hooks/useFetchProjectMetaData";
-import { useExtractedDataStore } from "@/store/extract-via-llm-store";
+// import { useExtractedDataStore } from "@/store/extract-via-llm-store";
 import { useTabStore } from "@/store/tab-store";
-import { formatSeconds } from "@/utils/formatSeconds";
+
+// import { formatSeconds } from "@/utils/formatSeconds";
 
 // import { formatSeconds } from "@/utils/formatSeconds";
 
@@ -36,15 +37,15 @@ function ExtractViaLLMButton() {
   );
   const { activeTab } = useTabStore();
   const { isLoading: isModelLoading } = useFetchProjectMetaData();
-  const { extractedData } = useExtractedDataStore(
-    useShallow((state) => ({
-      extractedData: state.extractedData,
-    })),
-  );
+  // const { extractedData } = useExtractedDataStore(
+  //   useShallow((state) => ({
+  //     extractedData: state.extractedData,
+  //   })),
+  // );
   const { listOfTasksId } = useTasksToExecuteStore();
 
   // Get extract via LLM mutation and pending status
-  const { extractViaLLMMutation, isExtractionPending } =
+  const { extractViaLLMMutation, isExtractionPending, extractionTimeMs } =
     useExtractViaLLMMutation();
 
   const handleExtract = () => {
@@ -99,9 +100,7 @@ function ExtractViaLLMButton() {
           <>
             <Timer className="h-4 w-4" />
             <p className="text-sm">
-              {extractedData.executionTime
-                ? formatSeconds(extractedData.executionTime)
-                : "0s"}
+              {extractionTimeMs ? extractionTimeMs + "s" : "0s"}
             </p>
           </>
         </div>

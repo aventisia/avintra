@@ -6,7 +6,7 @@ import { useExtractedDataStore } from "@/store/extract-via-llm-store";
 
 import { toast } from "@aventisia/ui/sonner";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
-import { useMemo } from "react";
+import { useMemo, useState } from "react";
 import { useLocation } from "react-router-dom";
 import { useShallow } from "zustand/react/shallow";
 
@@ -21,14 +21,17 @@ export const useExtractViaLLMMutation = () => {
       extractedData: state.extractedData,
     })),
   );
+
   const { modelId: mlModelId } = useLabelDataStore();
   const location = useLocation();
   const queryParams = useMemo(
     () => new URLSearchParams(location.search),
     [location.search],
   );
+
   const modelId = queryParams.get("pid") || mlModelId || "";
   const queryClient = useQueryClient();
+
   const { data: setupFormData } = useFetchSetupFormData();
   const {
     classification,
@@ -37,6 +40,7 @@ export const useExtractViaLLMMutation = () => {
     sentimentAnalytics,
     summarization,
   } = setupFormData?.data || {};
+
   const models = [
     classification,
     extraction,
@@ -44,10 +48,10 @@ export const useExtractViaLLMMutation = () => {
     sentimentAnalytics,
     summarization,
   ];
-  const nonNullModelCount = Math.max(
-    1,
-    models.filter((model) => model !== null && model !== undefined).length,
-  );
+
+  const nonNullModelCount = Math.max(1, models.filter(Boolean).length);
+
+  const [extractionTimeMs, setExtractionTimeMs] = useState<number | null>(null);
 
   // TODO: Mutate credits/units used after successful extraction. For now we are making an api call due to database split but later we should update it from the backend itself
   const { mutate: updateCreditsUsed } = useMutation({
@@ -68,16 +72,26 @@ export const useExtractViaLLMMutation = () => {
   // Define mutation to extract via LLM
   const { mutate: extractViaLLMMutation, isPending: isExtractionPending } =
     useMutation({
-      mutationFn: ({ postObj }: { postObj: ExtractRequestDto }) =>
-        extractViaLLM(postObj, nonNullModelCount),
+      mutationFn: async ({ postObj }: { postObj: ExtractRequestDto }) => {
+        const startTime = performance.now();
+
+        const response = await extractViaLLM(postObj, nonNullModelCount);
+
+        const endTime = performance.now();
+        setExtractionTimeMs(Math.round((endTime - startTime) / 1000));
+
+        return response;
+      },
 
       onSuccess: (httpResponse) => {
         if (!httpResponse.data.extractedData.length) return;
 
         setExtractedData(httpResponse.data.extractedData[0]);
+
         queryClient.invalidateQueries({
           queryKey: ["model", modelId],
         });
+
         toast.success("Data extracted successfully");
 
         queryClient.invalidateQueries({ queryKey: ["available-credits"] });
@@ -88,5 +102,10 @@ export const useExtractViaLLMMutation = () => {
       },
     });
 
-  return { extractViaLLMMutation, updateCreditsUsed, isExtractionPending };
+  return {
+    extractViaLLMMutation,
+    updateCreditsUsed,
+    isExtractionPending,
+    extractionTimeMs,
+  };
 };
