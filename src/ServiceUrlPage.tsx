@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 
 const DEFAULT_BASE_URL = "https://worc.aventisia.com";
+
 const LS_BASE_URL_KEY = "aventisia:baseUrl";
 
 export default function ServiceUrlPage() {
@@ -19,9 +20,11 @@ export default function ServiceUrlPage() {
       if (url.protocol !== "https:") {
         return "Please enter a valid HTTPS service URL.";
       }
-      if (!url.hostname.includes("aventisia")) {
-        return "Please enter a URL for a valid WORC instance..";
-      }
+
+      //TODO: Add global admni api check to validate domain
+      // if (!url.hostname.includes("aventisia")) {
+      //   return "Please enter a URL for a valid WORC instance..";
+      // }
       return null;
     } catch {
       return "Please enter a valid service URL.";
@@ -29,19 +32,28 @@ export default function ServiceUrlPage() {
   };
 
   const handleContinue = () => {
-    const trimmed = serviceUrl.trim();
-    const validationError = validateBaseUrl(trimmed);
+    const raw = serviceUrl.trim();
 
+    let originOnly: string;
+    try {
+      const url = new URL(raw);
+      originOnly = url.origin; // to trim ( /path,  query)
+    } catch {
+      setError("Please enter a valid service URL.");
+      return;
+    }
+
+    const validationError = validateBaseUrl(originOnly);
     if (validationError) {
       setError(validationError);
       return;
     }
 
     setIsLoading(true);
-    localStorage.setItem(LS_BASE_URL_KEY, trimmed);
+    localStorage.setItem(LS_BASE_URL_KEY, originOnly);
 
     setTimeout(() => {
-      window.location.href = `${trimmed}/accounts/login`;
+      window.location.href = `${originOnly}/accounts/login`;
     }, 300);
   };
 
