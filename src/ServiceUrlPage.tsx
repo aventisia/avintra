@@ -1,0 +1,119 @@
+import { useEffect, useState } from "react";
+
+const DEFAULT_BASE_URL = "https://worc.aventisia.com";
+const LS_BASE_URL_KEY = "aventisia:baseUrl";
+
+export default function ServiceUrlPage() {
+  const [serviceUrl, setServiceUrl] = useState(DEFAULT_BASE_URL);
+  const [error, setError] = useState<string | null>(null);
+  const [isLoading, setIsLoading] = useState(false);
+
+  useEffect(() => {
+    const savedUrl = localStorage.getItem(LS_BASE_URL_KEY);
+    if (savedUrl) setServiceUrl(savedUrl);
+  }, []);
+
+  const validateBaseUrl = (value: string): string | null => {
+    try {
+      const url = new URL(value);
+      if (url.protocol !== "https:") {
+        return "Please enter a valid HTTPS service URL.";
+      }
+      if (!url.hostname.includes("aventisia")) {
+        return "Please enter a URL for a valid WORC instance..";
+      }
+      return null;
+    } catch {
+      return "Please enter a valid service URL.";
+    }
+  };
+
+  const handleContinue = () => {
+    const trimmed = serviceUrl.trim();
+    const validationError = validateBaseUrl(trimmed);
+
+    if (validationError) {
+      setError(validationError);
+      return;
+    }
+
+    setIsLoading(true);
+    localStorage.setItem(LS_BASE_URL_KEY, trimmed);
+
+    setTimeout(() => {
+      window.location.href = `${trimmed}/accounts/login`;
+    }, 300);
+  };
+
+  return (
+    <div className="service-url-root">
+      <div className="service-url-card">
+        <div className="service-url-logo">
+          <img src="/logo.svg" alt="Aventisia" />
+        </div>
+
+        <h1 className="service-url-title">Connect to Worc App</h1>
+
+        <div className="service-url-form">
+          <label className="service-url-label" htmlFor="service-url-input">
+            Service URL
+          </label>
+
+          <div className="service-url-input-wrapper">
+            <input
+              id="service-url-input"
+              type="url"
+              autoFocus
+              className={`ui-input `}
+              value={serviceUrl}
+              disabled={isLoading}
+              placeholder="https://worc.aventisia.com"
+              onChange={(e) => {
+                setServiceUrl(e.target.value);
+                setError(null);
+              }}
+              onKeyDown={(e) => e.key === "Enter" && handleContinue()}
+            />
+          </div>
+
+          {error ? (
+            <div className="service-url-error">
+              <span>{error}</span>
+            </div>
+          ) : (
+            <div className="service-url-helper">
+              Use the default Aventisia service, or provide a URL for a
+              self-hosted instance.
+            </div>
+          )}
+
+          <button
+            className="ui-button service-url-cta"
+            onClick={handleContinue}
+            disabled={isLoading}
+          >
+            {isLoading ? (
+              <>
+                <span className="service-url-spinner" />
+                Connecting...
+              </>
+            ) : (
+              <>
+                Continue
+                <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
+                  <path
+                    d="M6 3L11 8L6 13"
+                    stroke="currentColor"
+                    strokeWidth="2"
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                  />
+                </svg>
+              </>
+            )}
+          </button>
+        </div>
+      </div>
+    </div>
+  );
+}
