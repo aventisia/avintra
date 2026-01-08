@@ -799,14 +799,14 @@ namespace MLModelBuilderAPIs.Migrations
                     b.Property<Guid>("AIProjectVersionId")
                         .HasColumnType("uuid");
 
-                    b.Property<Guid?>("CloudLLMCredentialId")
-                        .HasColumnType("uuid");
-
                     b.Property<Guid>("CreatedByUserId")
                         .HasColumnType("uuid");
 
                     b.Property<DateTimeOffset>("CreatedOn")
                         .HasColumnType("timestamp with time zone");
+
+                    b.Property<Guid?>("CredentialId")
+                        .HasColumnType("uuid");
 
                     b.Property<string>("GeneratedPrompt")
                         .HasColumnType("text");
@@ -817,10 +817,8 @@ namespace MLModelBuilderAPIs.Migrations
                     b.Property<bool>("IsDisabled")
                         .HasColumnType("boolean");
 
-                    b.Property<string>("LLM")
-                        .IsRequired()
-                        .HasMaxLength(50)
-                        .HasColumnType("character varying(50)");
+                    b.Property<bool>("IsJsonOutput")
+                        .HasColumnType("boolean");
 
                     b.Property<Guid>("LastModifiedByUserId")
                         .HasColumnType("uuid");
@@ -828,10 +826,22 @@ namespace MLModelBuilderAPIs.Migrations
                     b.Property<DateTimeOffset>("LastModifiedOn")
                         .HasColumnType("timestamp with time zone");
 
+                    b.Property<int?>("MaxOutputToken")
+                        .HasColumnType("integer");
+
+                    b.Property<string>("Model")
+                        .IsRequired()
+                        .HasMaxLength(50)
+                        .HasColumnType("character varying(50)");
+
                     b.Property<string>("Name")
                         .IsRequired()
                         .HasMaxLength(255)
                         .HasColumnType("character varying(255)");
+
+                    b.Property<string>("Provider")
+                        .IsRequired()
+                        .HasColumnType("text");
 
                     b.Property<string>("SetupObject")
                         .HasColumnType("text");
@@ -845,6 +855,9 @@ namespace MLModelBuilderAPIs.Migrations
 
                     b.Property<Guid>("TenantId")
                         .HasColumnType("uuid");
+
+                    b.Property<double?>("TopP")
+                        .HasColumnType("double precision");
 
                     b.Property<uint>("Version")
                         .IsConcurrencyToken()
