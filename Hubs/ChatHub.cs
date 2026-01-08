@@ -83,19 +83,35 @@ public class ChatHub : Hub
 
             // Send the full prompt to the LLM for response
             // TODO: Remove this code or pass the correct parameters
-            var response = await _llmDataExtractionService.ExtractDataAsync(
-                                    prompt,
-                                    llmModel,
-                                    modelTemperature,
-                                    UsageSourceTypesEnum.AIModel,
-                                    Guid.Empty,
-                                    "ChatBot",
-                                    ActionTypesEnum.AIModelExecution,
-                                    null, // Not triggered by an agent
-                                    null // No specific ollama output schema
-                                    // isJsonOutput is by default true
-                                    );
+            // var response = await _llmDataExtractionService.ExtractDataAsync(
+            //                         prompt,
+            //                         llmModel,
+            //                         modelTemperature,
+            //                         UsageSourceTypesEnum.AIModel,
+            //                         Guid.Empty,
+            //                         "ChatBot",
+            //                         ActionTypesEnum.AIModelExecution,
+            //                         null, // Not triggered by an agent
+            //                         null // No specific ollama output schema
+            //                         // isJsonOutput is by default true
+            //                         );
 
+            // Create a request object to send to the LLM service for data extraction
+            var llmRequest = new LLMRequest()
+            {
+                Provider = string.Empty,
+                Model = llmModel,
+                Input = prompt,
+                IsJsonOutput = true,
+                Temperature = modelTemperature,
+                RefType = UsageSourceTypesEnum.AIModel.ToString(),
+                RefId = Guid.Empty.ToString(),
+                RefName = "ChatBot",
+                Action = ActionTypesEnum.AIModelExecution.ToString(),
+            };
+
+            // Call the service to extract data asynchronously, passing in the LLM request
+            var response = await _llmDataExtractionService.ExtractDataAsync(llmRequest);
             // Return the response to the client
             await Clients.Client(receiverConnection.Key)
                 .SendAsync("ReceiveMessage", "ChatBot", response.Data);

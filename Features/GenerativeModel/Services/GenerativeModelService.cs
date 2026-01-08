@@ -343,19 +343,41 @@ public class GenerativeModelService : IGenerativeModelService
 
             _logger.LogInformation("Generative model update successful | Project ID: {Id}", aiProject.Id);
 
-            // Execute prompt via LLM
-            var llmResponse = await _llmDataExtractionService.ExtractDataAsync(
-                versionTask.GeneratedPrompt,
-                versionTask.Model,
-                versionTask.Temperature,
-                UsageSourceTypesEnum.AIModel,
-                generativeModelDto.AIProjectVersionId,
-                generativeModelDto.Name,
-                ActionTypesEnum.AIModelExecution,
-                null, // This will never be triggered by an agent
-                null // No ollama output schema needed
-                     // isJsonOutput is by default true
-            );
+            // // Execute prompt via LLM
+            // var llmResponse = await _llmDataExtractionService.ExtractDataAsync(
+            //     versionTask.GeneratedPrompt,
+            //     versionTask.Model,
+            //     versionTask.Temperature,
+            //     UsageSourceTypesEnum.AIModel,
+            //     generativeModelDto.AIProjectVersionId,
+            //     generativeModelDto.Name,
+            //     ActionTypesEnum.AIModelExecution,
+            //     null, // This will never be triggered by an agent
+            //     null // No ollama output schema needed
+            //          // isJsonOutput is by default true
+            // );
+
+            // Create a request object to send to the LLM service for data extraction
+            var llmRequest = new LLMRequest()
+            {
+                Provider = versionTask.Provider,
+                Model = versionTask.Model,
+                Input = versionTask.GeneratedPrompt,
+                IsJsonOutput = true,
+                MaxOutputTokens = versionTask.MaxOutputToken,
+                IsBYOKEnabled = versionTask.IsBYOKEnabled,
+                CredentialId = versionTask.CredentialId,
+                Temperature = versionTask.Temperature,
+                TopP = versionTask.TopP ?? 0,
+                Stream = false,
+                RefType = UsageSourceTypesEnum.AIModel.ToString(),
+                RefId = versionTask.AIProjectVersionId.ToString(),
+                RefName = generativeModelDto.Name,
+                Action = ActionTypesEnum.AIModelExecution.ToString(),
+            };
+
+            // Call the service to extract data asynchronously, passing in the LLM request
+            var llmResponse = await _llmDataExtractionService.ExtractDataAsync(llmRequest);
 
             // Create conversation history from LLM output
             var conversationHistory = new ConversationHistory

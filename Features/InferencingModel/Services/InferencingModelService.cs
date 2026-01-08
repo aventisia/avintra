@@ -1400,19 +1400,43 @@ public class InferencingModelService : IInferencingModelService
                 .Include(i => i.AIProject)
                 .SingleOrDefaultAsync();
 
-        // Call the LLM service to extract data
-        var llmResponse = await _llmDataExtractionService.ExtractDataAsync(
-            prompt,
-            versionTask.Model,
-            versionTask.Temperature,
-            UsageSourceTypesEnum.AIModel,
-            versionTask.AIProjectVersionId,
-            aIProjectVersion.AIProject.Name,
-            actionType, // this will be AgentExecution or AIModelExecution
-            triggeredByAgent, // triggered by an agent
-            ollamaOutputFormatSchema // ollama output schema needed
-                                     // isJsonOutput is by default true
-            );
+        // // Call the LLM service to extract data
+        // var llmResponse = await _llmDataExtractionService.ExtractDataAsync(
+        //     prompt,
+        //     versionTask.Model,
+        //     versionTask.Temperature,
+        //     UsageSourceTypesEnum.AIModel,
+        //     versionTask.AIProjectVersionId,
+        //     aIProjectVersion.AIProject.Name,
+        //     actionType, // this will be AgentExecution or AIModelExecution
+        //     triggeredByAgent, // triggered by an agent
+        //     ollamaOutputFormatSchema // ollama output schema needed
+        //                              // isJsonOutput is by default true
+        //     );
+
+        // Create a request object to send to the LLM service for data extraction
+        var llmRequest = new LLMRequest()
+        {
+            Provider = versionTask.Provider,
+            Model = versionTask.Model,
+            Input = versionTask.GeneratedPrompt,
+            IsJsonOutput = ollamaOutputFormatSchema != null,
+            JsonSchema = ollamaOutputFormatSchema.ToString(),
+            MaxOutputTokens = versionTask.MaxOutputToken,
+            IsBYOKEnabled = versionTask.IsBYOKEnabled,
+            CredentialId = versionTask.CredentialId,
+            Temperature = versionTask.Temperature,
+            TopP = versionTask.TopP ?? 0,
+            Stream = false,
+            RefType = UsageSourceTypesEnum.AIModel.ToString(),
+            RefId = versionTask.AIProjectVersionId.ToString(),
+            RefName = aIProjectVersion.AIProject.Name,
+            Action = actionType.ToString(),
+            AgentName = triggeredByAgent
+        };
+
+        // Call the service to extract data asynchronously, passing in the LLM request
+        var llmResponse = await _llmDataExtractionService.ExtractDataAsync(llmRequest);
 
         var endTime = DateTime.UtcNow;
         var executionSeconds = (int)Math.Ceiling((endTime - startTime).TotalSeconds);
