@@ -1,16 +1,15 @@
 import { useEffect, useState } from "react";
 
-const DEFAULT_BASE_URL = "https://worc.aventisia.com";
-
 const LS_BASE_URL_KEY = "aventisia:baseUrl";
 
 export default function ServiceUrlPage() {
-  const [serviceUrl, setServiceUrl] = useState(DEFAULT_BASE_URL);
+  const [serviceUrl, setServiceUrl] = useState("");
   const [error, setError] = useState<string | null>(null);
   const [isLoading, setIsLoading] = useState(false);
 
   useEffect(() => {
-    const savedUrl = localStorage.getItem(LS_BASE_URL_KEY);
+    const savedUrl =
+      localStorage.getItem(LS_BASE_URL_KEY) || import.meta.env.VITE_BASE_URL;
     if (savedUrl) setServiceUrl(savedUrl);
   }, []);
 
