@@ -19,7 +19,7 @@ public class GenerativeModelDto
     /// Gets or sets the name of the generative model.
     /// </summary>
     [StringLength(255)]
-    public string Name { get; set; }
+    public required string Name { get; set; }
 
     /// <summary>
     /// Gets or sets the description of the generative model. 

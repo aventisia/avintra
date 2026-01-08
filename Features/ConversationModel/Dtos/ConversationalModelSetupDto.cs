@@ -16,27 +16,50 @@ public class ConversationalModelSetupDto
     public string Name { get; set; } = "AIPersona";
 
     /// <summary>
-    /// Gets or sets the configuration type of the conversational model.
+    /// Indicates whether the on-premises LLM (Large Language Model) is used.
     /// </summary>
-    public required LLMConfigurationTypesEnum ConfigurationType { get; set; }
+    /// <remarks>
+    /// If <see cref="IsBYOKEnabled"/> is false, the cloud provider LLM will be utilized for this task.
+    /// </remarks>
+    public bool IsBYOKEnabled { get; set; }
 
     /// <summary>
-    /// Gets or sets the node prompt used to guide the conversational model's behavior.
+    /// Gets or sets the identifier for the credential (saved in vault).
+    /// </summary>
+    public Guid? CredentialId { get; set; }
+
+    /// <summary>
+    /// Gets or sets the node prompt to guide the model's behavior.
     /// </summary>
     public required string NodePrompt { get; set; }
 
     /// <summary>
-    /// Gets or sets the specific model used for the conversation (e.g., GPT-3, GPT-4).
-    /// </summary>
-    public required string LLM { get; set; }
-
-    /// <summary>
-    /// Gets or sets the secret key string for securing API access or connections.
-    /// </summary>
-    public string? SecretKey { get; set; }
-
-    /// <summary>
-    /// Gets or sets the temperature setting, controlling the randomness of the model's responses.
+    /// Gets or sets the temperature setting for the model's randomness.
     /// </summary>
     public required double Temperature { get; set; }
+
+    /// <summary>
+    /// Gets or sets the underlying model name (e.g., gpt-4o-mini).
+    /// </summary>
+    public required string Model { get; set; }
+
+    /// <summary>
+    /// Gets or sets the provider of the model (e.g., OpenAI, AzureOpenAI).
+    /// </summary>
+    public string Provider { get; set; } = string.Empty;
+
+    /// <summary>
+    /// Gets or sets a value indicating whether the model output should be in JSON format.
+    /// </summary>
+    public bool IsJsonOutput { get; set; }
+
+    /// <summary>
+    /// Gets or sets the nucleus sampling value (top-p).
+    /// </summary>
+    public double? TopP { get; set; }
+
+    /// <summary>
+    /// Gets or sets the maximum number of tokens allowed in the model output.
+    /// </summary>
+    public int? MaxOutputToken { get; set; }
 }
