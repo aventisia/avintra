@@ -1,5 +1,5 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
-import { LLMsEnum, LLMsEnumForProduction } from "@/enums/llms-enum";
+import { LLMsEnumForProduction } from "@/enums/llms-enum";
 import {
   Select,
   SelectContent,
@@ -15,13 +15,23 @@ import {
 } from "@aventisia/ui/accordion";
 import { FormItem } from "@aventisia/ui/form";
 import { cn } from "@aventisia/ui/lib";
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@aventisia/ui/tabs";
 import { ChevronRight } from "lucide-react";
-import { useState } from "react";
-import { Controller, UseFormReturn } from "react-hook-form";
+import { useMemo, useState } from "react";
+import {
+  Controller,
+  FieldPath,
+  FieldValues,
+  UseFormReturn,
+  useController,
+  useFormContext,
+} from "react-hook-form";
 
+import {
+  AITask,
+  TASK_SPECIALTY_MAP,
+  modelProviders,
+} from "../constants/model-providers";
 import CloudConfig from "./CloudConfig";
-import OnPremConfig from "./OnPremConfig";
 
 interface LLMConfigurationProps {
   form: UseFormReturn<any>;
@@ -35,12 +45,55 @@ interface LLMConfigurationProps {
   className?: string;
 }
 
-const LLMConfiguration = ({
-  form,
-  modelType,
-  className,
-}: LLMConfigurationProps) => {
+const LLMConfiguration = ({ form, modelType }: LLMConfigurationProps) => {
   const [openItem, setOpenItem] = useState<string | undefined>("");
+
+  // Set names for the fields
+  const isByokEnabledFieldName =
+    `${modelType}.isByokEnabled` as FieldPath<FieldValues>;
+  const providerFieldName = `${modelType}.provider` as FieldPath<FieldValues>;
+
+  // Get the form context
+  const { control } = useFormContext();
+
+  // Use nested field names
+  const { field: providerField } = useController({
+    name: providerFieldName,
+    control,
+  });
+
+  const { field: is_byok_enabled } = useController({
+    name: isByokEnabledFieldName,
+    control,
+  });
+  // 1. Get filtered providers based on BYOK and Node specialty
+  const filteredProviders = useMemo(() => {
+    const task = modelType as AITask;
+    const allowedSpecialties = TASK_SPECIALTY_MAP[task];
+
+    return modelProviders
+      .filter((p) => p.isEnabled !== false)
+      .map((p) => ({
+        ...p,
+        models: p.models.filter((m) => {
+          // ✅ OR-based matching
+          const specialtyMatch = m.specialty.some((s) =>
+            allowedSpecialties.includes(s),
+          );
+
+          const availabilityMatch = is_byok_enabled.value ? true : m.available;
+
+          return specialtyMatch && availabilityMatch;
+        }),
+      }))
+      .filter((p) => p.models.length > 0);
+  }, [is_byok_enabled.value, modelType]);
+
+  // 2. Get models for the currently selected provider
+  const currentProvider = filteredProviders.find(
+    (p) => p.value === providerField.value,
+  );
+  const availableModels = currentProvider?.models || [];
 
   return (
     <>
@@ -52,7 +105,12 @@ const LLMConfiguration = ({
         className="w-full"
       >
         <AccordionItem value="item-1" className="!border-none">
-          <AccordionTrigger className="text-base flex justify-between items-center hover:no-underline [&>svg]:hidden group relative">
+          <AccordionTrigger
+            className={cn(
+              "text-base flex justify-between items-center hover:no-underline [&>svg]:hidden group relative ",
+              openItem && "pb-0",
+            )}
+          >
             <div className="mr-1">
               <ChevronRight className="h-4 w-4 transition-transform group-data-[state=open]:rotate-90" />
             </div>
@@ -65,22 +123,20 @@ const LLMConfiguration = ({
             {!openItem && (
               <Controller
                 control={form.control}
-                name={`${modelType}.llm`}
+                name={`${modelType}.model`}
                 render={({ field }) => (
-                  <FormItem className="absolute left-40 top-[50%] translate-y-[-50%] w-[125px]">
+                  <FormItem className="absolute left-40 top-[50%] translate-y-[-50%] w-40">
                     <Select value={field.value} onValueChange={field.onChange}>
                       <SelectTrigger className="text-primary rounded-full bg-slate-200 h-6 text-xs text-left">
                         <span className="w-full">
-                          {(field.value &&
-                            LLMsEnum[field.value as keyof typeof LLMsEnum]) ||
-                            "Select LLM"}
+                          {field.value || "Select LLM"}
                         </span>
                       </SelectTrigger>
                       <SelectContent>
                         {import.meta.env.MODE !== "production"
-                          ? Object.entries(LLMsEnum).map(([value, label]) => (
-                              <SelectItem key={value} value={value}>
-                                {label}
+                          ? availableModels.map((model) => (
+                              <SelectItem key={model.value} value={model.value}>
+                                {model.value}
                               </SelectItem>
                             ))
                           : Object.entries(LLMsEnumForProduction).map(
@@ -99,39 +155,7 @@ const LLMConfiguration = ({
           </AccordionTrigger>
 
           <AccordionContent className="flex flex-col gap-4 text-balance px-1 !border-none">
-            {import.meta.env.MODE !== "production" ? (
-              <Tabs defaultValue="OnPrem">
-                <TabsList
-                  className={cn(
-                    "grid grid-cols-2 rounded-none mb-4",
-                    className,
-                  )}
-                >
-                  <TabsTrigger
-                    value="OnPrem"
-                    className="border-b-slate-200 data-[state=active]:bg-transparent data-[state=active]:border-b data-[state=active]:border-b-black rounded-none"
-                  >
-                    Aventisia on-prem LLMs
-                  </TabsTrigger>
-                  <TabsTrigger
-                    value="Cloud"
-                    className="border-b-slate-200 data-[state=active]:bg-transparent data-[state=active]:border-b data-[state=active]:border-b-black rounded-none"
-                  >
-                    Connect to your cloud LLMs
-                  </TabsTrigger>
-                </TabsList>
-
-                <TabsContent value="OnPrem">
-                  <OnPremConfig form={form} modelType={modelType} />
-                </TabsContent>
-
-                <TabsContent value="Cloud">
-                  <CloudConfig form={form} modelType={modelType} />
-                </TabsContent>
-              </Tabs>
-            ) : (
-              <OnPremConfig form={form} modelType={modelType} />
-            )}
+            <CloudConfig form={form} modelType={modelType} />
           </AccordionContent>
         </AccordionItem>
       </Accordion>
