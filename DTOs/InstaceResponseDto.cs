@@ -49,7 +49,7 @@ public class TenantDto
     /// <summary>
     /// Gets or sets the type of the tenant (e.g., Enterprise).
     /// </summary>
-    public required string Type { get; set; }
+    public required OnPremTenantTypesEnum Type { get; set; }
 }
 
 /// <summary>
