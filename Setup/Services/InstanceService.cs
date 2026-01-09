@@ -25,7 +25,7 @@ public class InstanceService : IInstanceService
         // Initialize the service response with a success status and message
         var serviceResponse = new ServiceResponse<InstanceRequestDto>()
         {
-            StatusCode = 200,
+            Data = null,
             Message = "Metrics collected successfully."
         };
 
@@ -89,6 +89,9 @@ public class InstanceService : IInstanceService
 
             // Add the fetched usage data to the `Last7DayUsages` list in the response
             serviceResponse.Data.Last7DayUsages.AddRange(externalServiceResponse.Data);
+
+            serviceResponse.Message = "Project data collected successfully";
+            serviceResponse.StatusCode = 200;
 
             // Log the successful completion of data collection
             _logger.LogInformation("Metrics successfully collected for {Source}. Total metrics collected: {Count} entries.", source, externalServiceResponse.Data.Count);

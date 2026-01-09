@@ -36,8 +36,8 @@ public class InstanceUsageStartupService : IHostedService
                 // Check if data is retrieved successfully
                 if (serviceResponse.Data == null || serviceResponse.StatusCode != 200)
                 {
-                    _logger.LogError("Failed to retrieve instance metrics data. Startup cannot continue. Please contact the support team. Message: {Message}", serviceResponse.Message);
-                    throw new InvalidOperationException($"Failed to retrieve instance metrics data. Please contact the support team. Message: {serviceResponse.Message}");
+                    // Throw an exception with a more specific message
+                    throw new InvalidOperationException($"Workspace API is not responding or not running. Please contact the support team. Message: {serviceResponse.Message}");
                 }
 
                 // Post the collected metrics to the external API for processing
@@ -45,6 +45,13 @@ public class InstanceUsageStartupService : IHostedService
 
                 // Log successful completion of the startup task
                 _logger.LogInformation($"Instance usage startup task completed successfully at {currentDateTime:O}");
+
+                // Fail if contract has not started
+                if (!_appRuntimeSettings.IsContractStarted)
+                {
+                    _logger.LogError("Contract has not started. Startup cannot continue. Please contact the support team.");
+                    throw new InvalidOperationException("Contract has not started. Please contact the support team.");
+                }
 
                 // Fail if contract expired
                 if (_appRuntimeSettings.IsContractExpired)
