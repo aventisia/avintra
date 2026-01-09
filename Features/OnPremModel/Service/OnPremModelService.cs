@@ -686,9 +686,10 @@ public class OnPremModelService : IOnPremModelService
     {
         try
         {
+            // Log the incoming request details (model name, status, and provider URL)
             _logger.LogDebug("Ollama handler invoked. Model: {Model}, Status: {Status}, Url: {Url}", modelName, providerStatus, providerUrl);
 
-            // Create HttpClient scoped to this operation and BaseAddress allows relative endpoints to be used later
+            // Create HttpClient scoped to this operation and set BaseAddress for relative endpoint usage later
             using var httpClient = new HttpClient
             {
                 BaseAddress = new Uri(providerUrl)
@@ -697,51 +698,68 @@ public class OnPremModelService : IOnPremModelService
             // Declare variables that will be assigned based on the requested model status
             string endpoint;
             object payload;
+            HttpRequestMessage request;
 
-            // Decide which Ollama API endpoint and payload to use based on the requested model status
+            // Switch statement to decide the endpoint and payload based on model status
             switch (providerStatus)
             {
-                // Downloading and Installed both map to Ollama's pull operation
+                // Case for when the model is either being downloaded or installed Both actions map to the same Ollama 'pull' operation
                 case OnPremModelStatusEnum.Downloading:
                 case OnPremModelStatusEnum.Installed:
                     endpoint = "/api/pull";
                     payload = new { name = modelName, stream = true };
 
-                    _logger.LogInformation("Initiating Ollama model pull. Model: {Model}, Endpoint: {Endpoint}", modelName, endpoint);
+                    // Log the initiation of the pull operation
+                    _logger.LogInformation("Initiating ollama model pull. Model: {Model}, Endpoint: {Endpoint}", modelName, endpoint);
+
+                    request = new HttpRequestMessage(HttpMethod.Post, endpoint)
+                    {
+                        Content = JsonContent.Create(payload)
+                    };
                     break;
 
-                // Uninstalled maps to Ollama's delete operation
+                // Case for when the model is uninstalled, triggering the delete operation
                 case OnPremModelStatusEnum.Uninstalled:
                     endpoint = "/api/delete";
                     payload = new { name = modelName };
 
-                    _logger.LogInformation("Initiating Ollama model deletion. Model: {Model}, Endpoint: {Endpoint}", modelName, endpoint);
+                    // Log the initiation of the delete operation
+                    _logger.LogInformation("Initiating ollama model deletion. Model: {Model}, Endpoint: {Endpoint}", modelName, endpoint);
+
+                    request = new HttpRequestMessage(HttpMethod.Delete, endpoint)
+                    {
+                        Content = JsonContent.Create(payload)
+                    };
                     break;
 
-                // Guard clause for unexpected enum values
+                // Handle unexpected model statuses
                 default:
-                    _logger.LogWarning("Invalid model status received for Ollama. Model: {Model}, Status: {Status}", modelName, providerStatus);
+                    _logger.LogWarning("Invalid model status received for ollama. Model: {Model}, Status: {Status}", modelName, providerStatus);
                     throw new ArgumentOutOfRangeException(nameof(providerStatus));
             }
 
-            // Execute the HTTP POST request against Ollama
-            var response = await httpClient.PostAsJsonAsync(endpoint, payload, cancellationToken);
+            // Send the HTTP request to Ollama's API
+            var response = await httpClient.SendAsync(request, cancellationToken);
 
-            // Check whether the HTTP request was successful
+            // Check if the response is successful (status code 2xx)
             if (response.IsSuccessStatusCode)
             {
+                // Log the successful operation with response status
                 _logger.LogInformation("Ollama operation succeeded. Model: {Model}, Status: {Status}, HttpStatus: {HttpStatus}", modelName, providerStatus, response.StatusCode);
+
                 return true;
             }
 
-            // Read error content returned by Ollama for troubleshooting
+            // If response is not successful, read the error content for troubleshooting
             var error = await response.Content.ReadAsStringAsync(cancellationToken);
 
+            // Log the error details with the response content
             _logger.LogError("Ollama operation failed. Model: {Model}, Status: {Status}, HttpStatus: {HttpStatus}, Response: {Response}", modelName, providerStatus, response.StatusCode, error);
             return false;
         }
         catch (OperationCanceledException)
         {
+            // Log warning if the operation was canceled (e.g., due to timeout)
             _logger.LogWarning("Ollama operation was cancelled. Model: {Model}, Status: {Status}", modelName, providerStatus);
 
             return false;
