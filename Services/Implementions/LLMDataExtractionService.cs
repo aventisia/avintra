@@ -67,27 +67,16 @@ public class LLMDataExtractionService : ILLMDataExtractionService
         return serviceResponse;
     }
 
-    // Extracts structured data from a document by retrieving its text and passing it to an LLM for processing.
+    // Extracts structured data from a document by retrieving its text and passing it to an LLM (Large Language Model) for processing.
     public async Task<ServiceResponse<string>> ExtractDataAsync(LLMRequest llmRequest)
     {
         var serviceResponse = new ServiceResponse<string>()
         {
-            // Default failure message
-            Message = "Data extraction failed. Please try again."
+            // Default message when extraction fails
+            Message = "Data extraction failed. Please try again later."
         };
 
-        _logger.LogInformation("Initiating data extraction process.");
-
-        // Mapping model identifiers to the actual model versions
-        var llmModelMapper = new Dictionary<string, string>
-        {
-            { "deepseek-r1", "deepseek-r1:7b" },
-            { "phi4", "phi4:14b" },
-            { "llama3.1", "llama3.1:8b" },
-            { "llama3.2", "llama3.2:3b" },
-            { "mistral", "mistral:7b" },
-            { "gemma", "gemma3:12b" },
-        };
+        _logger.LogInformation("Starting data extraction process...");
 
         var startTime = DateTime.UtcNow;
         double totalExecutionTime = 0;
@@ -96,282 +85,117 @@ public class LLMDataExtractionService : ILLMDataExtractionService
         var outputTokens = 0;
         var outputReasoningTokens = 0;
 
-        List<object> creditsUsageList = new List<object>();
-
         try
         {
-            // Step 1: Validate input parameters
+            // Step 1: Validate the input request parameters
             if (
                 llmRequest.Input == null ||
                 (llmRequest.Input is string strInput && string.IsNullOrWhiteSpace(strInput)) ||
                 (llmRequest.Input is List<LLMMessage> messages && messages.Count == 0))
             {
                 serviceResponse.Message = "Prompt or messages are required.";
-                _logger.LogWarning("LLMRequest.Input is missing, empty string, or empty list of messages.");
+                _logger.LogWarning("Invalid LLMRequest.Input: Missing or empty prompt/messages.");
                 return serviceResponse;
             }
 
             if (string.IsNullOrEmpty(llmRequest.Model))
             {
-                serviceResponse.Message = "LLM model is required.";
-                _logger.LogWarning("LLM model identifier is missing or empty.");
+                serviceResponse.Message = "LLM model identifier is required.";
+                _logger.LogWarning("Missing or empty LLM model identifier.");
                 return serviceResponse;
             }
 
-            // Initialize llmResponse as an empty string
+            // Initialize LLM response to an empty string
             string llmResponse = string.Empty;
 
-            // Step 2: Map the provided model identifier to the actual model version
-            string? mappedModel = llmModelMapper.GetValueOrDefault(llmRequest.Model);
-
-            // If the model identifier is unrecognized, return an error
-            if (string.IsNullOrEmpty(mappedModel))
-            {
-                serviceResponse.Message = $"Unrecognized model identifier: {llmRequest.Model}";
-                _logger.LogWarning("Invalid model identifier: {llmModel}", llmRequest.Model);
-                return serviceResponse;
-            }
-
-            // Step 3: Attempt data extraction with retries (up to 3 attempts)
+            // Step 3: Attempt data extraction with retry logic (up to 3 attempts)
             for (int attempt = 1; attempt <= 3; attempt++)
             {
-                _logger.LogInformation("Attempt {Attempt} of 3 to process the LLM model.", attempt);
+                _logger.LogInformation("Attempt {Attempt} of 3 to process LLM model for data extraction.", attempt);
 
                 using (HttpClient client = new HttpClient())
                 {
-                    // Set timeout to 3 minutes
+                    // Set timeout to 3 minutes to ensure the process does not hang indefinitely
                     client.Timeout = TimeSpan.FromMinutes(3);
 
-                    // Check if the requested model is in the Ollama list
-                    bool isOllamaModel = llmModelMapper.ContainsKey(llmRequest.Model);
-
-                    if (!isOllamaModel)
+                    try
                     {
-                        if (llmRequest.Model == "gpt-4o-mini" || llmRequest.Model == "gpt-4o")
-                        {
-                            llmRequest.Provider = LLMProviderLiteral.OpenAI.ToString().ToLower();
-                        }
-
-                        // Send request to LLM Pipeline API and get chat completion
+                        // Send request to LLM API for chat completion and capture the response
                         var apiResponse = await GetChatCompletionAsync(client, llmRequest);
 
-                        // Extract the model's generated output
+                        // Store the model's output in the response
                         llmResponse = apiResponse.Output;
 
-                        // Log successful receipt of response
-                        _logger.LogInformation("Successfully received response from LLM Pipeline API: {LLMResponse}", llmResponse
-                        );
+                        // Log success after receiving the LLM response
+                        _logger.LogInformation("Received successful response from LLM Pipeline API: {LLMResponse}", llmResponse);
 
-                        // Capture token usage metrics if available
+                        // Capture token usage statistics if available
                         inputTokens = apiResponse.InputTokens;
                         outputTokens = apiResponse.OutputTokens;
                         inputCachedTokens = apiResponse.InputCachedTokens;
                         outputReasoningTokens = apiResponse.OutputReasoningTokens;
 
-                        // Log token usage for monitoring
+                        // Log token usage metrics for monitoring purposes
                         _logger.LogInformation(
-                            "LLM Pipeline API token usage - Input: {InputTokens}, Output: {OutputTokens}, " +
-                            "Cached Input: {InputCachedTokens}, Reasoning: {OutputReasoningTokens}",
+                            "LLM Token Usage - Input: {InputTokens}, Output: {OutputTokens}, Cached Input: {InputCachedTokens}, Reasoning: {OutputReasoningTokens}",
                             inputTokens, outputTokens, inputCachedTokens, outputReasoningTokens
                         );
 
-                        // Calculate total execution time
+                        // Calculate the total execution time for the API call
                         totalExecutionTime = (DateTime.UtcNow - startTime).TotalSeconds;
 
-                        _logger.LogInformation("Total execution time for LLM Pipeline API request: {ExecutionTimeSeconds} seconds", totalExecutionTime);
+                        _logger.LogInformation("Total execution time for LLM request: {ExecutionTimeSeconds} seconds", totalExecutionTime);
 
-                        // Exit retry loop after successful extraction
+                        // If the API response is successful, break the loop
                         break;
                     }
-                    else
+                    catch (Exception ex)
                     {
-
-                        client.DefaultRequestHeaders.Add("API_KEY", _extractViaLLMConfig.OllamaAPIKey);
-                        var baseUri = _extractViaLLMConfig.OllamaAPI; // Get the base URI for the API
-
-                        // Step 4: Get currently loaded models from the API
-                        var loadedModelsResponse = await client.GetAsync($"{baseUri}/{OllamaApiRoutes.GetLoadedModels}");
-                        if (!loadedModelsResponse.IsSuccessStatusCode)
-                        {
-                            // Log the full response details
-                            var responseContent = await loadedModelsResponse.Content.ReadAsStringAsync();
-                            _logger.LogWarning("Failed to get loaded models. StatusCode: {StatusCode}, Headers: {Headers}, Content: {ResponseContent}",
-                                loadedModelsResponse.StatusCode,
-                                loadedModelsResponse.Headers,
-                                responseContent);
-                            continue;
-                        }
-
-                        // Deserialize the list of loaded models from the response
-                        var loadedModels = System.Text.Json.JsonSerializer.Deserialize<OllamaModelResponse>(
-                            await loadedModelsResponse.Content.ReadAsStringAsync(), new JsonSerializerOptions
-                            {
-                                PropertyNameCaseInsensitive = true
-                            });
-
-                        _logger.LogInformation($"Loaded models: '{string.Join(", ", loadedModels?.Models.Select(s => s.Model) ?? Enumerable.Empty<string>())}'");
-
-                        if (loadedModels != null && !loadedModels.Models.Any(s => s.Model != null && s.Model.Contains(mappedModel)))
-                        {
-                            // No exact match found — proceed to unload all currently loaded models
-                            _logger.LogInformation($"No match found for model: '{mappedModel}'");
-
-                            // Unload any currently loaded models
-                            foreach (var modelDetail in loadedModels.Models)
-                            {
-                                var unloadRequest = new
-                                {
-                                    model = modelDetail.Model,
-                                    keep_alive = 0 // Indicate that the model should be unloaded
-                                };
-
-                                // Send the unload request
-                                var unloadContent = new StringContent(System.Text.Json.JsonSerializer.Serialize(unloadRequest), Encoding.UTF8, "application/json");
-                                var unloadResponse = await client.PostAsync($"{baseUri}/{OllamaApiRoutes.Generate}", unloadContent);
-
-                                if (!unloadResponse.IsSuccessStatusCode)
-                                {
-                                    _logger.LogWarning("Failed to unload model: {Model}", modelDetail.Model);
-                                }
-                                else
-                                {
-                                    _logger.LogInformation("Successfully unloaded model: {Model}", modelDetail.Model);
-                                }
-                            }
-                        }
-                        else
-                        {
-                            _logger.LogInformation($"Loaded models: '{string.Join(", ", loadedModels?.Models.Select(s => s.Model) ?? Enumerable.Empty<string>())}'");
-                        }
-
-                        // Step 5: Send the generation request to the model with the prompt and temperature
-                        object requestDto;
-                        if (!llmRequest.IsJsonOutput)
-                        {
-                            requestDto = new
-                            {
-                                stream = false,
-                                llmRequest.Input,
-                                //format = "json",
-                                model = mappedModel,
-                                options = new
-                                {
-                                    // seed = 1452692,
-                                    temperature = llmRequest.Temperature
-                                }
-                            };
-                        }
-                        else
-                        {
-                            requestDto = new
-                            {
-                                stream = false,
-                                llmRequest.Input,
-                                format = llmRequest.JsonSchema,
-                                model = mappedModel,
-                                options = new
-                                {
-                                    // seed = 1452692,
-                                    temperature = llmRequest.Temperature
-                                }
-                            };
-                        }
-
-                        _logger.LogInformation("Prepared ollamaOutputFormatSchema: {ollamaOutputFormatSchema}", System.Text.Json.JsonSerializer.Serialize(llmRequest.JsonSchema));
-
-                        var content = new StringContent(System.Text.Json.JsonSerializer.Serialize(requestDto), Encoding.UTF8, "application/json");
-                        _logger.LogInformation("Sending request to LLM model: {MappedModel}", mappedModel);
-
-                        // Step 6: Send POST request to generate the data from the LLM
-                        HttpResponseMessage response = await client.PostAsync($"{baseUri}/{OllamaApiRoutes.Generate}", content);
-
-                        // Step 7: Handle the response from the API
-                        if (!response.IsSuccessStatusCode)
-                        {
-                            _logger.LogError("Failed to get a valid response from LLM model. Status Code: {statusCode}", response.StatusCode);
-                            continue;
-                        }
-
-                        // Parse the LLM API response
-                        var ollamaResponse = await response.Content.ReadAsStringAsync();
-
-                        // Step 8: Ensure the response contains the expected "response" field
-                        if (!ollamaResponse.Contains("response"))
-                        {
-                            _logger.LogWarning("LLM response is missing the 'response' field.");
-                            continue;
-                        }
-
-                        // Step 9: Process and clean the LLM-generated content
-                        using JsonDocument doc = JsonDocument.Parse(ollamaResponse);
-                        llmResponse = doc.RootElement.GetProperty("response").GetString() ?? string.Empty;
+                        _logger.LogError("Attempt {Attempt} failed with error: {ErrorMessage}", attempt, ex.Message);
                     }
-
-                    _logger.LogInformation("Raw LLM response received: {llmResponse}", llmResponse);
-
-                    break; // Exit retry loop if the extraction was successful
                 }
             }
 
-            // Clean up known debug or formatting tags from the response
+            // Step 4: Clean up any unwanted debug or formatting tags from the response
             if (llmResponse.Contains("</think>"))
             {
-                // Remove <think> tags and content between them
+                // Remove <think> tags and their contents from the response
                 llmResponse = llmResponse.Remove(llmResponse.IndexOf("<think>"), llmResponse.IndexOf("</think>") - llmResponse.IndexOf("<think>") + 8);
-                _logger.LogInformation("Removed <think> tag content from response.");
+                _logger.LogInformation("Removed <think> tags and their contents from the response.");
             }
 
             if (llmResponse.Contains("```json"))
             {
                 // Remove the "```json" code block tag
                 llmResponse = llmResponse.Remove(llmResponse.IndexOf("```json"), 7);
-                _logger.LogInformation("Removed ```json tag from response.");
+                _logger.LogInformation("Removed ```json code block tag from the response.");
             }
 
             if (llmResponse.Contains("```"))
             {
-                // Remove any remaining "```" code block tag
+                // Remove any remaining "```" code block tags
                 llmResponse = llmResponse.Remove(llmResponse.IndexOf("```"), 3);
-                _logger.LogInformation("Removed ``` tag from response.");
+                _logger.LogInformation("Removed remaining ``` code block tags from the response.");
             }
 
-            llmResponse = llmResponse.Trim(); // Clean up any excess whitespace
-            serviceResponse.Data = llmResponse;
-            serviceResponse.StatusCode = 200;
+            llmResponse = llmResponse.Trim();
             serviceResponse.Data = llmResponse;
             serviceResponse.StatusCode = 200;
             serviceResponse.Message = "Data successfully extracted.";
             _logger.LogInformation("Final cleaned LLM response: {llmResponse}", llmResponse);
 
-            // Log token usage details
-            _logger.LogInformation("Token usage - Input Tokens: {inputTokens}, Input Cached Tokens: {inputCachedTokens}, Output Tokens: {outputTokens}, Output Reasoning Tokens: {outputReasoningTokens} ",
+            // Log detailed token usage for future analysis
+            _logger.LogInformation("Token Usage Details - Input Tokens: {inputTokens}, Cached Input Tokens: {inputCachedTokens}, Output Tokens: {outputTokens}, Output Reasoning Tokens: {outputReasoningTokens}",
                 inputTokens, inputCachedTokens, outputTokens, outputReasoningTokens);
-            _logger.LogInformation("Credits usage details prepared: {creditsUsageList}", JsonConvert.SerializeObject(creditsUsageList));
 
-            // Create credits usage in AccountsDb database
-            HttpResponseMessage creditUsagesResponse = await RequestExternalAPIUtil.RequestExternalAPI(CrudTypesEnum.Create, $"{_httpClientUrlConfig.AccountsApisBaseUrl}/credit-usage/bulk", _jwt, creditsUsageList);
-
-            // Failed to add credit usage
-            if (!creditUsagesResponse.IsSuccessStatusCode)
-            {
-                string errorContent = await creditUsagesResponse.Content.ReadAsStringAsync();
-                _logger.LogError($"Failed to create credit usage records. Response: {creditUsagesResponse.StatusCode} - {errorContent}");
-            }
-            else
-            {
-                _logger.LogInformation("Successfully created credit usage records.");
-            }
-
-            // Step 10: Return a successful response with the extracted data
+            // Step 10: Return a successful response with the cleaned extracted data
             _logger.LogInformation("Data extraction completed successfully.");
         }
         catch (Exception ex)
         {
-            // Step 11: Catch unexpected errors and log them
             _logger.LogError("An unexpected error occurred during the extraction process: {ErrorMessage}.", ex.Message);
         }
 
-        // Return the response, which may contain an error message if something went wrong
         return serviceResponse;
     }
 
