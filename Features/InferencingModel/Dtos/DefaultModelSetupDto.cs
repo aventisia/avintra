@@ -62,5 +62,13 @@ public class DefaultModelSetupDto
     /// Gets or sets the maximum number of tokens allowed in the model output.
     /// </summary>
     public int? MaxOutputToken { get; set; }
+
+    /// <summary>
+    /// Gets or sets a flag indicating whether the user record is disabled.
+    /// </summary>
+    /// <remarks>
+    /// Note: It's important to have this property nullable because we need to differentiate between true, false, and null.
+    /// </remarks>
+    public bool? IsDisabled { get; set; }
 }
 

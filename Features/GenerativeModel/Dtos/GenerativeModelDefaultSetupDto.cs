@@ -64,4 +64,12 @@ public class GenerativeModelDefaultSetupDto
     public int? MaxOutputToken { get; set; }
 
     public object? SetupObject { get; set; }
+
+    /// <summary>
+    /// Gets or sets a flag indicating whether the user record is disabled.
+    /// </summary>
+    /// <remarks>
+    /// Note: It's important to have this property nullable because we need to differentiate between true, false, and null.
+    /// </remarks>
+    public bool? IsDisabled { get; set; }
 }

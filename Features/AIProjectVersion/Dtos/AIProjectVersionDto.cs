@@ -67,6 +67,14 @@ public class AIProjectVersionDto
     public decimal? Accuracy { get; set; }
 
     /// <summary>
+    /// Gets or sets a flag indicating whether the user record is disabled.
+    /// </summary>
+    /// <remarks>
+    /// Note: It's important to have this property nullable because we need to differentiate between true, false, and null.
+    /// </remarks>
+    public bool? IsDisabled { get; set; }
+
+    /// <summary>
     /// Gets or sets the date and time when this model version was created.
     /// </summary>
     public DateTimeOffset CreatedOn { get; set; }
