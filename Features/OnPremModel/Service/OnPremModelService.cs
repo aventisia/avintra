@@ -89,10 +89,39 @@ public class OnPremModelService : IOnPremModelService
                 .Include(i => i.CreatedByUser)
                 .Include(i => i.LastModifiedByUser)
                 .OrderBy(o => o.CreatedOn)
+                .ProjectToType<OnPremModelDto>()
                 .ToListAsync();
 
+            // Loop through on-prem models grouped by provider type
+            foreach (var onPremModel in onPremModels.GroupBy(g => g.ProviderType).ToList())
+            {
+                // Check if the provider type is 'Ollama' to filter relevant models
+                if (onPremModel.Key == OnPremModelProviderEnum.Ollama)
+                {
+                    // Fetch the list of models from Ollama asynchronously based on the provider URL
+                    var ollamaModels = new List<OllamaModelDto>();
+
+                    // Loop through each on-prem model in the current group
+                    foreach (var modelDto in onPremModel)
+                    {
+                        if (ollamaModels.Count == 0)
+                            ollamaModels = await GetOllamaModelsAsync(modelDto.ProviderUrl, CancellationToken.None);
+
+                        // Attempt to find a matching Ollama model by comparing model names (case-insensitive)
+                        var ollamaModel = ollamaModels.FirstOrDefault(w => w.Name.Equals(modelDto.ModelName, StringComparison.InvariantCultureIgnoreCase));
+
+                        // If no match is found (i.e., the model is not present in Ollama), set the status to 'Uninstalled'
+                        if (ollamaModel == null)
+                            modelDto.Status = OnPremModelStatusEnum.Uninstalled;
+                        else
+                            // If a match is found, also set the status to 'Installed' (currently both conditions have the same action)
+                            modelDto.Status = OnPremModelStatusEnum.Installed;
+                    }
+                }
+            }
+
             // Map the models to the DTOs for return.
-            serviceResponse.Data = onPremModels.Adapt<IEnumerable<OnPremModelDto>>();
+            serviceResponse.Data = onPremModels;
             serviceResponse.StatusCode = 200;
             serviceResponse.Message = "On-prem models retrieved successfully.";
 
@@ -130,6 +159,23 @@ public class OnPremModelService : IOnPremModelService
                 _logger.LogWarning("On-prem model with ID {OnPremModelId} not found.", onPremModelId);
                 serviceResponse.Message = "On-prem model not found.";
                 return serviceResponse;
+            }
+
+            // Check if the provider type is 'Ollama' to filter relevant models
+            if (onPremModel.ProviderType == OnPremModelProviderEnum.Ollama)
+            {
+                // Fetch the list of models from Ollama asynchronously based on the provider URL
+                var ollamaModels = await GetOllamaModelsAsync(onPremModel.ProviderUrl, CancellationToken.None);
+
+                // Attempt to find a matching Ollama model by comparing model names (case-insensitive)
+                var ollamaModel = ollamaModels.FirstOrDefault(w => w.Name.Equals(onPremModel.ModelName, StringComparison.InvariantCultureIgnoreCase));
+
+                // If no match is found (i.e., the model is not present in Ollama), set the status to 'Uninstalled'
+                if (ollamaModel == null)
+                    onPremModel.Status = OnPremModelStatusEnum.Uninstalled;
+                else
+                    // If a match is found, also set the status to 'Uninstalled' (currently both conditions have the same action)
+                    onPremModel.Status = OnPremModelStatusEnum.Uninstalled;
             }
 
             // Convert the model to DTO and return the response.
@@ -180,6 +226,23 @@ public class OnPremModelService : IOnPremModelService
                 _logger.LogWarning("On-prem model with name '{OnPremModelName}' not found.", onPremModelName);
                 serviceResponse.Message = "On-prem model not found.";
                 return serviceResponse;
+            }
+
+            // Check if the provider type is 'Ollama' to filter relevant models
+            if (onPremModel.ProviderType == OnPremModelProviderEnum.Ollama)
+            {
+                // Fetch the list of models from Ollama asynchronously based on the provider URL
+                var ollamaModels = await GetOllamaModelsAsync(onPremModel.ProviderUrl, CancellationToken.None);
+
+                // Attempt to find a matching Ollama model by comparing model names (case-insensitive)
+                var ollamaModel = ollamaModels.FirstOrDefault(w => w.Name.Equals(onPremModel.ModelName, StringComparison.InvariantCultureIgnoreCase));
+
+                // If no match is found (i.e., the model is not present in Ollama), set the status to 'Uninstalled'
+                if (ollamaModel == null)
+                    onPremModel.Status = OnPremModelStatusEnum.Uninstalled;
+                else
+                    // If a match is found, also set the status to 'Uninstalled' (currently both conditions have the same action)
+                    onPremModel.Status = OnPremModelStatusEnum.Uninstalled;
             }
 
             // Convert the model entity to a DTO.
@@ -768,6 +831,77 @@ public class OnPremModelService : IOnPremModelService
         {
             _logger.LogError(ex, "Unexpected error during Ollama operation. Model: {Model}, Status: {Status}, Url: {Url}", modelName, providerStatus, providerUrl);
             return false;
+        }
+    }
+
+    // Retrieves the list of models from the Ollama provider.
+    private async Task<List<OllamaModelDto>> GetOllamaModelsAsync(string providerUrl, CancellationToken cancellationToken)
+    {
+        try
+        {
+            // Log the details of the request (provider URL)
+            _logger.LogDebug("Fetching models from Ollama provider. Provider URL: {Url}", providerUrl);
+
+            // Create a new HttpClient scoped to this operation, setting BaseAddress to allow relative endpoints
+            using var httpClient = new HttpClient
+            {
+                BaseAddress = new Uri(providerUrl)
+            };
+
+            // Define the endpoint for fetching the model list
+            string endpoint = "/api/tags";
+
+            // Log the initiation of the models retrieval process
+            _logger.LogInformation("Initiating request to retrieve models. Endpoint: {Endpoint}", endpoint);
+
+            // Send the GET request to fetch the model list
+            var response = await httpClient.GetAsync(endpoint, cancellationToken);
+
+            // Check if the response is successful (status code 2xx)
+            if (response.IsSuccessStatusCode)
+            {
+                // Read the JSON response containing the model list
+                var modelsJson = await response.Content.ReadAsStringAsync(cancellationToken);
+
+                // Log the raw response for debugging purposes
+                _logger.LogInformation("Received response from Ollama: {Response}", modelsJson);
+
+                // Configure JSON deserialization options for case-insensitive property matching
+                var options = new JsonSerializerOptions
+                {
+                    PropertyNameCaseInsensitive = true
+                };
+
+                // Deserialize the JSON response into a list of model DTOs
+                var modelListResponse = System.Text.Json.JsonSerializer.Deserialize<OllamaModelListResponse>(modelsJson, options);
+
+                // Check if the deserialization was successful and if models are present
+                if (modelListResponse != null && modelListResponse.Models.Any())
+                {
+                    // Log the successful retrieval of models
+                    _logger.LogInformation("Successfully retrieved {ModelCount} models from Ollama.", modelListResponse.Models);
+
+                    // Return the list of models
+                    return modelListResponse.Models;
+                }
+                else
+                {
+                    // Log a warning if no models were found in the response
+                    _logger.LogWarning("No models found in the response from Ollama.");
+                    return new List<OllamaModelDto>();
+                }
+            }
+
+            // If the response is not successful, log the status code and error details
+            var error = await response.Content.ReadAsStringAsync(cancellationToken);
+            _logger.LogError("Failed to retrieve models. HTTP Status: {HttpStatus}, Error: {ErrorResponse}", response.StatusCode, error);
+            return new List<OllamaModelDto>();
+        }
+        catch (Exception ex)
+        {
+            // Log unexpected errors that occur during the retrieval process
+            _logger.LogError(ex, "An unexpected error occurred while retrieving models from Ollama. Provider URL: {Url}", providerUrl);
+            return new List<OllamaModelDto>();
         }
     }
 }
