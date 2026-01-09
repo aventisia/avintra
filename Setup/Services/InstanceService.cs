@@ -35,20 +35,13 @@ public class InstanceService : IInstanceService
             Version = _instanceConfig.Version,
             Type = string.Equals(_hostEnvironment.EnvironmentName, _instanceConfig.Type, StringComparison.OrdinalIgnoreCase) ? "Prod" : "NonProd",
             Source = source,
-            Usage = new ProjectUsageMetricDto()
+            Last7DayUsages = new List<ProjectUsageMetricDto>()
         };
 
         try
         {
             // Log the start of the metric collection process
             _logger.LogInformation("Initiating metric collection for source: {Source}", source);
-
-            // Fetch the count of users registered on the previous day
-            serviceResponse.Data.Usage.Users = await _unitOfWork.AccountUserRepo
-                .GetByConditionAsync(w => w.CreatedOn.Date == DateTimeOffset.UtcNow.AddDays(-1).Date)
-                .CountAsync();
-
-            _logger.LogInformation("User count for the previous day: {UserCount}", serviceResponse.Data.Usage.Users);
 
             // Fetch metrics from the external API
             HttpResponseMessage httpResponse = await RequestExternalAPIUtil.RequestExternalAPI(
@@ -68,7 +61,7 @@ public class InstanceService : IInstanceService
 
             // Deserialize the response content from the external API
             var responseContent = await httpResponse.Content.ReadAsStringAsync();
-            var externalServiceResponse = Newtonsoft.Json.JsonConvert.DeserializeObject<ServiceResponse<ProjectUsageMetricDto>>(
+            var externalServiceResponse = Newtonsoft.Json.JsonConvert.DeserializeObject<ServiceResponse<List<ProjectUsageMetricDto>>>(
                 responseContent,
                 new Newtonsoft.Json.JsonSerializerSettings
                 {
@@ -84,17 +77,21 @@ public class InstanceService : IInstanceService
                 return serviceResponse;
             }
 
-            // Populate the InstanceRequestDto with the fetched data
-            serviceResponse.Data.Usage.PublishedAgents = externalServiceResponse.Data.PublishedAgents;
-            serviceResponse.Data.Usage.JobsExecuted = externalServiceResponse.Data.JobsExecuted;
-            serviceResponse.Data.Usage.TotalExecutionTime = externalServiceResponse.Data.TotalExecutionTime;
+            // Fetch all user data to calculate the user count for each day (up to today)
+            var userData = _unitOfWork.AccountUserRepo.GetAllAsync().AsQueryable();
 
-            // Log the collected metrics for auditing or debugging purposes
-            _logger.LogInformation("Metrics collected successfully: PublishedAgents={PublishedAgents}, JobsExecuted={JobsExecuted}, TotalExecutionTime={TotalExecutionTime}, UsersRegistered={UsersRegistered}",
-                serviceResponse.Data.Usage.PublishedAgents,
-                serviceResponse.Data.Usage.JobsExecuted,
-                serviceResponse.Data.Usage.TotalExecutionTime,
-                serviceResponse.Data.Usage.Users);
+            // For each day's metric, calculate the total number of users up until the given date
+            foreach (var data in externalServiceResponse.Data)
+            {
+                // Fetch the user count for each date (up to today for each date in the Last7DayUsages)
+                data.Users = await userData.Where(w => w.CreatedOn.Date <= data.Date).CountAsync();
+            }
+
+            // Add the fetched usage data to the `Last7DayUsages` list in the response
+            serviceResponse.Data.Last7DayUsages.AddRange(externalServiceResponse.Data);
+
+            // Log the successful completion of data collection
+            _logger.LogInformation("Metrics successfully collected for {Source}. Total metrics collected: {Count} entries.", source, externalServiceResponse.Data.Count);
         }
         catch (Exception ex)
         {
