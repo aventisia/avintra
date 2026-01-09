@@ -163,13 +163,13 @@ public class InstanceService : IInstanceService
             _logger.LogInformation("Metrics posted successfully to the external API.");
 
             // Update runtime application settings from the API response
-            _appRuntimeSettings.InvalidCheckCount = externalServiceResponse.Data.EnforcementInfo.InvalidCheckCount;
-            _appRuntimeSettings.IsExecutionDisabled = externalServiceResponse.Data.EnforcementInfo.IsExecutionDisabled;
-            _appRuntimeSettings.IsLoginDisabled = externalServiceResponse.Data.EnforcementInfo.IsLoginDisabled;
-            _appRuntimeSettings.ExecutionTimeAllowed = externalServiceResponse.Data.EnforcementInfo.MaxExecutionTime >= 0;
-            _appRuntimeSettings.Type = externalServiceResponse.Data.TenantInfo.Type;
-            _appRuntimeSettings.IsContractStarted = externalServiceResponse.Data.ContractInfo.StartDate.Date <= DateTimeOffset.UtcNow.Date;
-            _appRuntimeSettings.IsContractExpired = externalServiceResponse.Data.ContractInfo.RenewalDate.Date < DateTimeOffset.UtcNow.Date;
+            _appRuntimeSettings.InvalidCheckCount = externalServiceResponse.Data.Enforcement.NoOfInvalidCheck;
+            _appRuntimeSettings.IsExecutionDisabled = externalServiceResponse.Data.Enforcement.IsExecutionDisabled;
+            _appRuntimeSettings.IsLoginDisabled = externalServiceResponse.Data.Enforcement.IsLoginDisabled;
+            _appRuntimeSettings.ExecutionTimeAllowed = externalServiceResponse.Data.Enforcement.ExecutionTimeAllowed >= 0;
+            _appRuntimeSettings.Type = externalServiceResponse.Data.Tenant.Type;
+            _appRuntimeSettings.IsContractStarted = externalServiceResponse.Data.Contract.ContractStartDate.Date <= DateTimeOffset.UtcNow.Date;
+            _appRuntimeSettings.IsContractExpired = externalServiceResponse.Data.Contract.ContractRenewalDate.Date < DateTimeOffset.UtcNow.Date;
         }
         catch (Exception ex)
         {
