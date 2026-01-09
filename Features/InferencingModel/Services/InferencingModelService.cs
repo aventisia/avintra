@@ -1421,7 +1421,7 @@ public class InferencingModelService : IInferencingModelService
             Model = versionTask.Model,
             Input = versionTask.GeneratedPrompt,
             IsJsonOutput = ollamaOutputFormatSchema != null,
-            JsonSchema = ollamaOutputFormatSchema.ToString(),
+            JsonSchema = ollamaOutputFormatSchema != null ? ollamaOutputFormatSchema.ToString() : null,
             MaxOutputTokens = versionTask.MaxOutputToken,
             IsBYOKEnabled = versionTask.IsBYOKEnabled,
             CredentialId = versionTask.CredentialId,
