@@ -21,9 +21,9 @@ public class InstanceRequestDto
     public required string Source { get; set; }
 
     /// <summary>
-    /// Gets or sets the usage metrics for the on-prem instance.
+    /// Gets or sets the usage metrics for the last 7 days for the on-prem instance.
     /// </summary>
-    public required ProjectUsageMetricDto Usage { get; set; }
+    public required List<ProjectUsageMetricDto> Last7DayUsages { get; set; }
 }
 
 /// <summary>
@@ -31,6 +31,11 @@ public class InstanceRequestDto
 /// </summary>
 public class ProjectUsageMetricDto
 {
+    /// <summary>
+    /// Gets or sets the date of the usage metric (e.g., "2023-01-01").
+    /// </summary>
+    public DateTimeOffset Date { get; set; }
+
     /// <summary>
     /// Gets or sets the number of jobs executed on the instance.
     /// </summary>
