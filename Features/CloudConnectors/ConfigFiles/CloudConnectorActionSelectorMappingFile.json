@@ -164,13 +164,22 @@
             },
             {
               "type": "cloudConnectorNode",
-              "name": "Twilio/SendWhatsappMessageConnector",
+              "name": "Twilio/SendWhatsAppMessageConnector",
               "label": "Send Whatsapp Message",
               "description": "Send whatsapp message using an twilio service ",
               "docsLink": "https://docs.aventisia.com",
               "icon": null,
                "img": "/assets/Twilio.svg"
-            }         
+            },
+            {
+              "type": "cloudConnectorNode",
+              "name": "Twilio/SendWhatsAppTemplateMessageConnector",
+              "label": "Send Whatsapp Template Message",
+              "description": "Send whatsapp temtemplate message using an twilio service ",
+              "docsLink": "https://docs.aventisia.com",
+              "icon": null,
+               "img": "/assets/Twilio.svg"
+            }
           ]
       }
     ]

@@ -1,0 +1,79 @@
+{
+    "name": "SendWhatsAppMessage",
+    "description": "Sends an whatsapp message using Twilio service",
+    "version": "1.0.0",
+    "author": "@gaurav",
+    "fields": [
+      {
+        "direction": "Input",
+        "type": "credentials-select",
+        "name": "__CredentialId__Twilio",
+        "label": "Twilio Credential",
+        "description": "The Twilio credential containing valid auth token and accountsId which is used to authenticate API requests.",
+        "defaultValue": ""
+      },
+          {
+      "direction": "Input",
+      "type": "select",
+      "name": "RecipientType",
+      "label": "Recipient Identification Method",
+      "description": "Specify how to identify the recipient of the WhatsApp message: by phone number or by Messaging Service SID.",
+      "defaultValue": "PhoneNumber",
+      "selectOptions": [
+        {
+          "label": "Phone Number",
+          "value": "PhoneNumber",
+          "description": "Choose this option to identify the recipient using their phone number."
+        },
+        {
+          "label": "Messaging Service SID",
+          "value": "MessagingServiceSID",
+          "description": "Choose this option to identify the recipient using their unique Twilio Messaging Service SID."
+        }
+      ]
+    },
+    {
+      "direction": "Input",
+      "type": "text",
+      "name": "RecipientTypeValue",
+      "label": "Sender Phone Number / Messaging Service SID",
+      "description": "Enter the Twilio phone number or service identifier from which the WhatsApp message will be sent.",
+      "defaultValue": ""
+    },
+    {
+      "direction": "Input",
+      "type": "text",
+      "name": "ToNumber",
+      "label": "Recipient Phone Number",
+      "description": "Enter the recipient's phone number (must be a valid Twilio-supported number).",
+      "defaultValue": ""
+    },
+    {
+      "direction": "Input",
+      "type": "text",
+      "name": "ToNumber",
+      "label": "To Number",
+      "description": "The phone number to send the whatsapp message to the number (Twilio number).",
+      "defaultValue": ""
+    },
+    {
+      "direction": "Input",
+      "type": "text",
+      "name": "MessageBody",
+      "label": "Message Body",
+      "description": "The body content to send on the whatsapp message.",
+      "defaultValue": ""
+    },
+    {
+      "direction": "Output",
+      "type": "config-panel-output",
+      "name": "Result",
+      "label": "Result",
+      "description": "Returns the response data from twilio after sending the whatsapp message.",
+      "defaultValue": {
+        "value": "Result",
+        "enabled": true
+      }
+    }
+  ]
+}
