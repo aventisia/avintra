@@ -30,4 +30,14 @@ public class AppRuntimeSettings
     /// Gets or sets a value indicating whether the contract has expired.
     /// </summary>
     public bool IsContractExpired { get; set; }
+
+    /// <summary>
+    /// Gets or sets a value indicating whether the contract has started.
+    /// </summary>
+    public bool IsContractStarted { get; set; }
+
+    /// <summary>
+    /// Gets or sets the type of tenant. It can either be an Enterprise or Commercial tenant.
+    /// </summary>
+    public OnPremTenantTypesEnum Type { get; set; }
 }
