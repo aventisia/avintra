@@ -12,7 +12,7 @@
         "description": "The Twilio credential containing valid auth token and accountsId which is used to authenticate API requests.",
         "defaultValue": ""
       },
-          {
+      {
       "direction": "Input",
       "type": "select",
       "name": "RecipientType",
@@ -46,14 +46,6 @@
       "name": "ToNumber",
       "label": "Recipient Phone Number",
       "description": "Enter the recipient's phone number (must be a valid Twilio-supported number).",
-      "defaultValue": ""
-    },
-    {
-      "direction": "Input",
-      "type": "text",
-      "name": "ToNumber",
-      "label": "To Number",
-      "description": "The phone number to send the whatsapp message to the number (Twilio number).",
       "defaultValue": ""
     },
     {
