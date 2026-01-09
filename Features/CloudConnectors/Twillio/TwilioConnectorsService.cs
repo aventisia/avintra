@@ -150,9 +150,9 @@ public class TwilioConnectorsService : ITwilioConnectorsService
 
         // Extract optional fields
 
+        string? recipientType = dict.TryGetValue("recipientType", out var recipientTypeObj) ? recipientTypeObj?.ToString() : null;
         string? recipientTypeValue = dict.TryGetValue("recipientTypeValue", out var recipientTypeValueObj) ? recipientTypeValueObj?.ToString() : null;
         string? messagingServiceSid = dict.TryGetValue("messagingServiceSid", out var msgSvcObj) ? msgSvcObj?.ToString() : null;
-        string? templateLanguage = dict.TryGetValue("templateLanguage", out var langObj) ? langObj?.ToString() : null;
         string? templateId = dict.TryGetValue("templateId", out var templateIdObj) ? templateIdObj?.ToString() : null;
         string? templateParameters = dict.TryGetValue("templateParameters", out var paramsObj) ? paramsObj?.ToString() : null;
 
@@ -167,7 +167,7 @@ public class TwilioConnectorsService : ITwilioConnectorsService
                     }
 
                     // Determine the recipient type: PhoneNumber or MessagingServiceSID
-                    if (recipientTypeValue == "PhoneNumber")
+                    if (recipientType == "PhoneNumber")
                     {
                         // Use a phone number as the sender
                         var smsMsg = await MessageResource.CreateAsync(
@@ -179,12 +179,12 @@ public class TwilioConnectorsService : ITwilioConnectorsService
                         // Return the message SID and status
                         return new { MessageSid = smsMsg.Sid, Status = smsMsg.Status?.ToString() };
                     }
-                    else if (recipientTypeValue == "MessagingSID")
+                    else if (recipientType == "MessagingServiceSID")
                     {
                         // Use a Messaging Service SID as the sender
                         var smsMsg = await MessageResource.CreateAsync(
                             body: messageBody,
-                            messagingServiceSid: messagingServiceSid,
+                            messagingServiceSid: recipientTypeValue,
                             to: new PhoneNumber(toNumber)
                         );
 
@@ -194,15 +194,15 @@ public class TwilioConnectorsService : ITwilioConnectorsService
                     else
                     {
                         // Handle invalid recipient type
-                        throw new ArgumentException("Invalid recipient type. Must be 'PhoneNumber' or 'MessagingSID'.");
+                        throw new ArgumentException("Invalid recipient type. Must be 'PhoneNumber' or 'MessagingServiceSID'.");
                     }
 
                 case TwilioActionsEnum.SendWhatsAppMessage:
                     if (string.IsNullOrEmpty(recipientTypeValue))
                         return new { Error = "'recipientTypeValue' is required for WhatsApp template messages." };
 
-                    // Determine if recipientTypeValue is PhoneNumber or MessagingServiceSID
-                    if (recipientTypeValue == "PhoneNumber")
+                    // Determine if recipientType is PhoneNumber or MessagingServiceSID
+                    if (recipientType == "PhoneNumber")
                     {
                         // Use a phone number as the sender
                         var tmplMsg = await MessageResource.CreateAsync(
@@ -214,12 +214,12 @@ public class TwilioConnectorsService : ITwilioConnectorsService
                         // Return the message SID and status
                         return new { MessageSid = tmplMsg.Sid, Status = tmplMsg.Status?.ToString() };
                     }
-                    else if (recipientTypeValue == "MessagingSID")
+                    else if (recipientType == "MessagingServiceSID")
                     {
                         // Use a Messaging Service SID for the sender
                         var tmplMsg = await MessageResource.CreateAsync(
                             body: messageBody,
-                            messagingServiceSid: messagingServiceSid,
+                            messagingServiceSid: recipientTypeValue,
                             to: new PhoneNumber($"whatsapp:{toNumber}")
                         );
                         // Return the message SID and status
@@ -228,14 +228,14 @@ public class TwilioConnectorsService : ITwilioConnectorsService
                     else
                     {
                         // Handle invalid recipient type
-                        throw new ArgumentException("Invalid recipient type. Must be 'PhoneNumber' or 'MessagingSID'.");
+                        throw new ArgumentException("Invalid recipient type. Must be 'PhoneNumber' or 'MessagingServiceSID'.");
                     }
 
                 case TwilioActionsEnum.SendWhatsAppTemplateMessage:
                     if (string.IsNullOrEmpty(templateId))
-                        return new { Error = "'templateIdentifier' is required for WhatsApp template messages." };
+                        return new { Error = "'templateId' is required for WhatsApp template messages." };
                     if (string.IsNullOrEmpty(recipientTypeValue))
-                        return new { Error = "'recipientTypeValue' is required for WhatsApp template messages." };
+                        return new { Error = "'tecipientTypeValue' is required for WhatsApp template messages." };
 
                     string? contentVariables = null;
                     if (!string.IsNullOrEmpty(templateParameters))
@@ -247,8 +247,8 @@ public class TwilioConnectorsService : ITwilioConnectorsService
                             contentVariables = $"{{{variables}}}";
                         }
                     }
-                    // Determine if recipientTypeValue is PhoneNumber or MessagingServiceSID
-                    if (recipientTypeValue == "PhoneNumber")
+                    // Determine if recipientType is PhoneNumber or MessagingServiceSID
+                    if (recipientType == "PhoneNumber")
                     {
                         // Use a phone number as the sender
                         var tmplMsg = await MessageResource.CreateAsync(
@@ -262,11 +262,11 @@ public class TwilioConnectorsService : ITwilioConnectorsService
                         // Return the message SID and status
                         return new { MessageSid = tmplMsg.Sid, Status = tmplMsg.Status?.ToString() };
                     }
-                    else if (recipientTypeValue == "MessagingServiceSID")
+                    else if (recipientType == "MessagingServiceSID")
                     {
                         // Use a Messaging Service SID for the sender
                         var tmplMsg = await MessageResource.CreateAsync(
-                            messagingServiceSid: messagingServiceSid,
+                            messagingServiceSid: recipientTypeValue,
                             to: new PhoneNumber($"whatsapp:{toNumber}"),
                             contentSid: templateId,
                             contentVariables: contentVariables

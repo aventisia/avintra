@@ -15,7 +15,7 @@
       {
       "direction": "Input",
       "type": "select",
-      "name": "RecipientType",
+      "name": "recipientType",
       "label": "Recipient Identification Method",
       "description": "Specify how to identify the recipient of the WhatsApp message: by phone number or by Messaging Service SID.",
       "defaultValue": "PhoneNumber",
@@ -35,7 +35,7 @@
     {
       "direction": "Input",
       "type": "text",
-      "name": "RecipientTypeValue",
+      "name": "recipientTypeValue",
       "label": "Sender Phone Number / Messaging Service SID",
       "description": "Enter the Twilio phone number or service identifier from which the WhatsApp message will be sent.",
       "defaultValue": ""
@@ -43,7 +43,7 @@
     {
       "direction": "Input",
       "type": "text",
-      "name": "ToNumber",
+      "name": "toNumber",
       "label": "Recipient Phone Number",
       "description": "Enter the recipient's phone number (must be a valid Twilio-supported number).",
       "defaultValue": ""
@@ -51,7 +51,7 @@
     {
       "direction": "Input",
       "type": "text",
-      "name": "MessageBody",
+      "name": "messageBody",
       "label": "Message Body",
       "description": "The body content to send on the whatsapp message.",
       "defaultValue": ""
