@@ -239,7 +239,7 @@ public class LLMDataExtractionService : ILLMDataExtractionService
     }
 
     // Sends a list of messages and LLM configuration to the LLM Pipeline API and retrieves the generated response.
-    public async Task<LLMResponse> GetChatCompletionAsync(HttpClient client, LLMRequest lLMRequest)
+    public async Task<LLMResponse> GetChatCompletionAsync(HttpClient client, LLMRequest llmRequest)
     {
         try
         {
@@ -249,12 +249,33 @@ public class LLMDataExtractionService : ILLMDataExtractionService
             client.DefaultRequestHeaders.Add("Authorization", $"Bearer {_jwt}");
 
             // Log the request body for debugging
-            _logger.LogInformation("LLM Pipeline API request body: {RequestBody}",
-                JsonConvert.SerializeObject(lLMRequest));
+            _logger.LogInformation("LLM Pipeline API request body: {RequestBody}", JsonConvert.SerializeObject(llmRequest));
+
+            // Prepare the API request body (as per the API format)
+            var requestBody = new
+            {
+                provider = llmRequest.Provider,
+                model = llmRequest.Model,
+                input = llmRequest.Input,
+                files = llmRequest.Files,
+                isJsonOutput = llmRequest.IsJsonOutput,
+                jsonSchema = llmRequest.JsonSchema,
+                maxOutputTokens = llmRequest.MaxOutputTokens,
+                isBYOKEnabled = llmRequest.IsBYOKEnabled,
+                credentialId = llmRequest.CredentialId,
+                temperature = llmRequest.Temperature,
+                topP = llmRequest.TopP,
+                stream = llmRequest.Stream,
+                ref_type = llmRequest.RefType,
+                ref_id = llmRequest.RefId,
+                ref_name = llmRequest.RefName,
+                action = llmRequest.Action,
+                agentName = llmRequest.AgentName
+            };
 
             // Serialize the request body
             var content = new StringContent(
-                JsonConvert.SerializeObject(lLMRequest),
+                JsonConvert.SerializeObject(requestBody),
                 Encoding.UTF8,
                 "application/json"
             );
