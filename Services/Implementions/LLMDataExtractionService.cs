@@ -243,15 +243,10 @@ public class LLMDataExtractionService : ILLMDataExtractionService
     {
         try
         {
+            // Log start of the API request
             _logger.LogInformation("Starting request to LLM Pipeline API...");
 
-            // Add authorization header using the JWT
-            client.DefaultRequestHeaders.Add("Authorization", $"Bearer {_jwt}");
-
-            // Log the request body for debugging
-            _logger.LogInformation("LLM Pipeline API request body: {RequestBody}", JsonConvert.SerializeObject(llmRequest));
-
-            // Prepare the API request body (as per the API format)
+            // Log the input request body (for debugging)
             var requestBody = new
             {
                 provider = llmRequest.Provider,
@@ -273,7 +268,13 @@ public class LLMDataExtractionService : ILLMDataExtractionService
                 agentName = llmRequest.AgentName
             };
 
-            // Serialize the request body
+            // Log the request body before sending it
+            _logger.LogInformation("LLM Pipeline API request body: {RequestBody}", JsonConvert.SerializeObject(requestBody));
+
+            // Add authorization header using the JWT
+            client.DefaultRequestHeaders.Add("Authorization", $"Bearer {_jwt}");
+
+            // Serialize the request body into JSON and prepare the content
             var content = new StringContent(
                 JsonConvert.SerializeObject(requestBody),
                 Encoding.UTF8,
@@ -286,16 +287,16 @@ public class LLMDataExtractionService : ILLMDataExtractionService
             // Send POST request to the LLM Pipeline API
             var apiResponse = await client.PostAsync(requestUrl, content);
 
+            // Log the response status and body
+            var responseString = await apiResponse.Content.ReadAsStringAsync();
+
             // Handle non-successful HTTP responses
             if (!apiResponse.IsSuccessStatusCode)
             {
-                var errorResponse = await apiResponse.Content.ReadAsStringAsync();
-                _logger.LogError("LLM Pipeline API request failed. Status Code: {StatusCode}. Response: {Response}", apiResponse.StatusCode, errorResponse);
+                // Log error details for failed request
+                _logger.LogError("LLM Pipeline API request failed. Status Code: {StatusCode}. Response: {Response}", apiResponse.StatusCode, responseString);
                 return new LLMResponse();
             }
-
-            // Read the response content
-            var responseString = await apiResponse.Content.ReadAsStringAsync();
 
             // Deserialize JSON into LLMResponse
             var llmResponse = System.Text.Json.JsonSerializer.Deserialize<LLMResponse>(
@@ -310,8 +311,7 @@ public class LLMDataExtractionService : ILLMDataExtractionService
         catch (Exception ex)
         {
             // Log any unexpected errors
-            _logger.LogError(ex, "An exception occurred while sending request to LLM Pipeline API: {Message}", ex.Message
-            );
+            _logger.LogError(ex, "An exception occurred while sending request to LLM Pipeline API: {Message}", ex.Message);
             return new LLMResponse();
         }
     }

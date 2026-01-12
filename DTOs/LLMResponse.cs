@@ -10,7 +10,7 @@ public class LLMResponse
     /// <summary>
     /// Gets or sets the LLM provider (e.g., OpenAI, Ollama, etc.).
     /// </summary>
-    public LLMProviderLiteral Provider { get; set; }
+    public string Provider { get; set; } = string.Empty;
 
     /// <summary>
     /// Gets or sets the model name used for the LLM request (e.g., "gpt-4").
