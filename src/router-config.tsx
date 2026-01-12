@@ -7,6 +7,7 @@ import { CrudActionTypeLong } from "@/react-toolkit/constants";
 import { AppErrorPage } from "./components/layout/AppErrorPage";
 import { AppLayout } from "./components/layout/AppLayout";
 import { AppRedirectPage } from "./components/layout/AppRedirectPage";
+import GALayout from "./features/global-admin/on-prem-tenant/components/GALayout";
 import {
   AccountDeactivation,
   DeviceHistory,
@@ -238,6 +239,7 @@ const routerConfig: RouteObject[] = [
       },
       {
         path: "/ga",
+        element: <GALayout />,
         children: [
           {
             path: "on-prem-tenants",
