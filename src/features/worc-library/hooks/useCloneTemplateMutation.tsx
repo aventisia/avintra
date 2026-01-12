@@ -1,6 +1,8 @@
 import { toast } from "@aventisia/ui/sonner";
 import { useMutation } from "@tanstack/react-query";
 
+import { stripLeadingSlash } from "@/utils/strip-leading-slash";
+
 import { applyAgentTemplate } from "../apis/wroc-templates-apis";
 import { UseTemplateDTO } from "../dtos/use-template-dto";
 
@@ -32,10 +34,10 @@ export const useCloneTemplateMutation = () => {
     // On success, open Agent Builder with the applied template
     onSuccess: (data) => {
       if (data?.data?.type == "AIProject") {
-        window.location.href = `${import.meta.env.VITE_AISTUDIO_PATH}${data.data.accessPath}`;
+        window.location.href = `${import.meta.env.VITE_AISTUDIO_PATH}${stripLeadingSlash(data.data.accessPath)}`;
       }
       if (data?.data?.type == "Agent" || data?.data?.type == "Block") {
-        window.location.href = `${import.meta.env.VITE_AGENTBUILDER_PATH}${data.data.accessPath}`;
+        window.location.href = `${import.meta.env.VITE_AGENTBUILDER_PATH}${stripLeadingSlash(data.data.accessPath)}`;
       }
     },
   });

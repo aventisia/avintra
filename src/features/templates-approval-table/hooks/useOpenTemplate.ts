@@ -1,3 +1,5 @@
+import { stripLeadingSlash } from "@/utils/strip-leading-slash";
+
 /**
  * Custom hook to open the template's original flow in AgentBuilder.
  *
@@ -12,7 +14,7 @@ export const useOpenTemplate = () => {
   const handleOpenTemplate = (path: string) => {
     const url =
       window.location.origin +
-      `${import.meta.env.VITE_AGENTBUILDER_PATH}${path}`;
+      `${import.meta.env.VITE_AGENTBUILDER_PATH}${stripLeadingSlash(path)}`;
     window.open(url, "_blank");
   };
 
