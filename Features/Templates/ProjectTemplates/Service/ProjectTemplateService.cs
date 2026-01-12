@@ -7,6 +7,7 @@ namespace WorkspaceAPIs.Services
         private readonly IAutoNotificationService _autoNotificationService;
         private readonly IUserManagementGuardService _userManagementGuardService;
         private readonly ILLMDataExtractionService _llmDataExtractionService;
+        private readonly HttpClientUrlConfig _httpClientUrlConfig;
         private readonly Guid _userId;
         private readonly Guid _tenantId;
         private readonly Guid _spaceId;
@@ -18,7 +19,8 @@ namespace WorkspaceAPIs.Services
             IHttpContextAccessor httpContextAccessor,
             IAutoNotificationService autoNotificationService,
             IUserManagementGuardService userManagementGuardService,
-            ILLMDataExtractionService llmDataExtractionService)
+            ILLMDataExtractionService llmDataExtractionService,
+            HttpClientUrlConfig httpClientUrlConfig)
         {
             // Set _userId
             _userId = Guid.Parse(httpContextAccessor.HttpContext?.User?.FindFirstValue("uid") ?? Guid.Empty.ToString());
@@ -31,6 +33,7 @@ namespace WorkspaceAPIs.Services
             _autoNotificationService = autoNotificationService;
             _userManagementGuardService = userManagementGuardService;
             _llmDataExtractionService = llmDataExtractionService;
+            _httpClientUrlConfig = httpClientUrlConfig;
         }
 
         // Retrieve all project templates list
@@ -805,7 +808,7 @@ namespace WorkspaceAPIs.Services
                 else
                 {
                     // Get AI model template schema
-                    HttpResponseMessage httpResponse = await RequestExternalAPIUtil.RequestExternalAPI(CrudTypesEnum.Read, $"http://localhost:4002/api/ai-model-template/schema/{publishProjectTemplateDto.RefId}", _jwt);
+                    HttpResponseMessage httpResponse = await RequestExternalAPIUtil.RequestExternalAPI(CrudTypesEnum.Read, $"{_httpClientUrlConfig.ModelStudioApisBaseUrl}/ai-model-template/schema/{publishProjectTemplateDto.RefId}", _jwt);
 
                     // Read and validate the external API response
                     if (!httpResponse.IsSuccessStatusCode)
@@ -1123,7 +1126,7 @@ namespace WorkspaceAPIs.Services
                     };
 
                     // Create AI model by template schema
-                    HttpResponseMessage httpResponse = await RequestExternalAPIUtil.RequestExternalAPI(CrudTypesEnum.Create, "http://localhost:4002/api/ai-model-template/use", _jwt, aiProjectRequest);
+                    HttpResponseMessage httpResponse = await RequestExternalAPIUtil.RequestExternalAPI(CrudTypesEnum.Create, $"{_httpClientUrlConfig.ModelStudioApisBaseUrl}/ai-model-template/use", _jwt, aiProjectRequest);
 
                     // Read and validate the external API response
                     if (!httpResponse.IsSuccessStatusCode)
@@ -1235,6 +1238,7 @@ namespace WorkspaceAPIs.Services
 
             var prompt = promptTemplate.Replace("{{PAYLOAD_CONTENT}}", genereateProjectInstructionRequestDto.Payload);
             var model = "gpt-4o-mini";
+            var provider = "openai";
             var temperature = 1;
 
             try
@@ -1261,6 +1265,7 @@ namespace WorkspaceAPIs.Services
                 {
                     Model = model,
                     Input = prompt,
+                    Provider = provider,
                     IsJsonOutput = true,
                     Temperature = temperature,
                     Stream = false,
