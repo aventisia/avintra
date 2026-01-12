@@ -142,29 +142,26 @@ public class TwilioConnectorsService : ITwilioConnectorsService
 
         if (!dict.TryGetValue("toNumber", out var toObj) || toObj == null)
             return new { Error = "'toNumber' is required in payload." };
-        if (!dict.TryGetValue("messageBody", out var bodyObj) || bodyObj == null)
-            return new { Error = "'messageBody' is required in payload." };
-
         string toNumber = toObj?.ToString() ?? string.Empty;
-        string messageBody = bodyObj.ToString() ?? string.Empty;
 
         // Extract optional fields
-
         string? recipientType = dict.TryGetValue("recipientType", out var recipientTypeObj) ? recipientTypeObj?.ToString() : null;
         string? recipientTypeValue = dict.TryGetValue("recipientTypeValue", out var recipientTypeValueObj) ? recipientTypeValueObj?.ToString() : null;
         string? messagingServiceSid = dict.TryGetValue("messagingServiceSid", out var msgSvcObj) ? msgSvcObj?.ToString() : null;
         string? templateId = dict.TryGetValue("templateId", out var templateIdObj) ? templateIdObj?.ToString() : null;
         string? templateParameters = dict.TryGetValue("templateParameters", out var paramsObj) ? paramsObj?.ToString() : null;
+        string? messageBody = dict.TryGetValue("messageBody", out var messageBodyObj) ? messageBodyObj?.ToString() : null;
 
         try
         {
             switch (action)
             {
                 case TwilioActionsEnum.SendTextSms:
+
                     if (string.IsNullOrEmpty(recipientTypeValue))
-                    {
                         return new { Error = "'recipientTypeValue' is required for SMS messages." };
-                    }
+                    if (string.IsNullOrEmpty(messageBody))
+                        return new { Error = "'messageBody' is required in payload." };
 
                     // Determine the recipient type: PhoneNumber or MessagingServiceSID
                     if (recipientType == "PhoneNumber")
@@ -200,6 +197,8 @@ public class TwilioConnectorsService : ITwilioConnectorsService
                 case TwilioActionsEnum.SendWhatsAppMessage:
                     if (string.IsNullOrEmpty(recipientTypeValue))
                         return new { Error = "'recipientTypeValue' is required for WhatsApp template messages." };
+                    if (string.IsNullOrEmpty(messageBody))
+                        return new { Error = "'messageBody' is required in payload." };
 
                     // Determine if recipientType is PhoneNumber or MessagingServiceSID
                     if (recipientType == "PhoneNumber")
@@ -240,13 +239,16 @@ public class TwilioConnectorsService : ITwilioConnectorsService
                     string? contentVariables = null;
                     if (!string.IsNullOrEmpty(templateParameters))
                     {
+                        // Split the input templateParameters by commas and remove empty entries and trim spaces
                         var paramList = templateParameters.Split(',', StringSplitOptions.RemoveEmptyEntries | StringSplitOptions.TrimEntries);
                         if (paramList.Length > 0)
                         {
-                            var variables = string.Join(", ", paramList.Select((p, i) => $"\"{i + 1}\":\"{p}\""));
-                            contentVariables = $"{{{variables}}}";
+                            // Create a dictionary with parameter index as key and parameter value as the value
+                            var parametersDict = paramList.Select((param, index) => new KeyValuePair<string, string>((index + 1).ToString(), param)).ToDictionary(kv => kv.Key, kv => kv.Value);
+                            contentVariables = JsonConvert.SerializeObject(parametersDict, Formatting.Indented);
                         }
                     }
+
                     // Determine if recipientType is PhoneNumber or MessagingServiceSID
                     if (recipientType == "PhoneNumber")
                     {
