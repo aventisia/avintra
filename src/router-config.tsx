@@ -139,7 +139,7 @@ const routerConfig: RouteObject[] = [
         ),
       },
       {
-        path: "/on-prem-llms",
+        path: "/on-prem-models",
         element: (
           <ProtectedRoute persmissions={["TA"]} page={<OnPremLLMPage />} />
         ),

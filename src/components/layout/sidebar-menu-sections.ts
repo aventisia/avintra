@@ -145,8 +145,8 @@ const sidebarMenuSections: SidebarMenuSectionType[] = [
             {
               permissions: ["TA"],
               Icon: ServerIcon,
-              name: "on-prem LLMs",
-              route: "/on-prem-llms",
+              name: "on-prem models",
+              route: "/on-prem-models",
             },
           ]
         : []),
