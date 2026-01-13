@@ -31,7 +31,6 @@ export default function GALayout() {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
-  console.log(token);
   if (!token) return <div></div>;
 
   return <Outlet />;
