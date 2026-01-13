@@ -12,6 +12,12 @@ public class InstanceConfig
     public required string TenantId { get; set; }
 
     /// <summary>
+    /// Gets or sets the type of tenant (e.g., "Commercial", "Enterprise", etc.).
+    /// </summary>
+    [Required]
+    public required string TenantType { get; set; }
+
+    /// <summary>
     /// Gets or sets the unique key for the instance.
     /// </summary>
     [Required]
@@ -21,11 +27,11 @@ public class InstanceConfig
     /// Gets or sets the type of the instance (e.g., "Production", "Test").
     /// </summary>
     [Required]
-    public required string Type { get; set; }
+    public required string InstanceType { get; set; }
 
     /// <summary>
-    /// Gets or sets the version of the instance or its associated software.
+    /// Gets or sets the app version of the instance or its associated software.
     /// </summary>
     [Required]
-    public required string Version { get; set; }
+    public required string PlatformVersion { get; set; }
 }

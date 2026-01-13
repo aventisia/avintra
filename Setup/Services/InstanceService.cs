@@ -32,8 +32,8 @@ public class InstanceService : IInstanceService
         // Initialize the InstanceRequestDto using the configuration values and prepare for metric collection
         serviceResponse.Data = new InstanceRequestDto()
         {
-            Version = _instanceConfig.Version,
-            Type = string.Equals(_hostEnvironment.EnvironmentName, _instanceConfig.Type, StringComparison.OrdinalIgnoreCase) ? "Prod" : "NonProd",
+            PlatformVersion = _instanceConfig.PlatformVersion,
+            InstanceType = string.Equals(_hostEnvironment.EnvironmentName, _instanceConfig.InstanceType, StringComparison.OrdinalIgnoreCase) ? "Prod" : "NonProd",
             Source = source,
             Last7DayUsages = new List<ProjectUsageMetricDto>()
         };
@@ -167,7 +167,7 @@ public class InstanceService : IInstanceService
             _appRuntimeSettings.IsExecutionDisabled = externalServiceResponse.Data.Enforcement.IsExecutionDisabled;
             _appRuntimeSettings.IsLoginDisabled = externalServiceResponse.Data.Enforcement.IsLoginDisabled;
             _appRuntimeSettings.ExecutionTimeAllowed = externalServiceResponse.Data.Enforcement.ExecutionTimeAllowed >= 0;
-            _appRuntimeSettings.Type = externalServiceResponse.Data.Tenant.Type;
+            _appRuntimeSettings.TenantType = externalServiceResponse.Data.Tenant.Type;
             _appRuntimeSettings.IsContractStarted = externalServiceResponse.Data.Contract.ContractStartDate.Date <= DateTimeOffset.UtcNow.Date;
             _appRuntimeSettings.IsContractExpired = externalServiceResponse.Data.Contract.ContractRenewalDate.Date < DateTimeOffset.UtcNow.Date;
         }

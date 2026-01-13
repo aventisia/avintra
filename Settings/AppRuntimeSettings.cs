@@ -39,5 +39,5 @@ public class AppRuntimeSettings
     /// <summary>
     /// Gets or sets the type of tenant. It can either be an Enterprise or Commercial tenant.
     /// </summary>
-    public OnPremTenantTypesEnum Type { get; set; }
+    public OnPremTenantTypesEnum TenantType { get; set; }
 }
