@@ -1,17 +1,33 @@
-import { IHttpResponse, IOptimisticMutation } from "@aventisia/ui/dtos";
+import {
+  CheckAvailabilityDto,
+  IHttpResponse,
+  IOptimisticMutation,
+  TrueFalseResultDto,
+} from "@aventisia/ui/dtos";
 
 import { axiosInstance } from "@/react-toolkit/lib/axios-instance";
 
-import { OnPremLLMTableDTO } from "../dtos/on-prem-llm-table-dto";
+import { OnPremModelDto } from "../dtos/on-prem-llm-table-dto";
 
-const baseAPIURL: string = `${import.meta.env.VITE_WORC_API_PATH}/on-prem-llm`;
+const baseAPIURL: string = `${import.meta.env.VITE_WORC_API_PATH}/onprem-model`;
 
 /**
  * Retrieves all On Prem LLM
  */
 const getOnPremLLMList = () => {
   return axiosInstance
-    .get<IHttpResponse<OnPremLLMTableDTO[]>>(`${baseAPIURL}/list`)
+    .get<IHttpResponse<OnPremModelDto[]>>(`${baseAPIURL}/list`)
+    .then((res) => res.data);
+};
+
+/**
+ * Checks the availability of a  name.
+ */
+const isModelNameAvailable = (postObj: CheckAvailabilityDto) => {
+  return axiosInstance
+    .post<
+      IHttpResponse<TrueFalseResultDto>
+    >(`${baseAPIURL}/is-available`, postObj)
     .then((res) => res.data);
 };
 
@@ -20,25 +36,25 @@ const getOnPremLLMList = () => {
  */
 const getOnPremLLM = (id: string) => {
   return axiosInstance
-    .get<IHttpResponse<OnPremLLMTableDTO>>(`${baseAPIURL}/${id}`)
+    .get<IHttpResponse<OnPremModelDto>>(`${baseAPIURL}/${id}`)
     .then((res) => res.data);
 };
 
 /**
  * Inserts a new COn Prem LLM
  */
-const insertOnPremLLM = (newOnPremLLM: OnPremLLMTableDTO) => {
+const insertOnPremLLM = (newOnPremLLM: OnPremModelDto) => {
   return axiosInstance
-    .post<IHttpResponse<OnPremLLMTableDTO>>(`${baseAPIURL}`, newOnPremLLM)
+    .post<IHttpResponse<OnPremModelDto>>(`${baseAPIURL}`, newOnPremLLM)
     .then((res) => res.data);
 };
 
 /**
  * Updates an existing On Prem LLM
  */
-const updateOnPremLLM = (updateOnPremLLM: OnPremLLMTableDTO) => {
+const updateOnPremLLM = (updateOnPremLLM: OnPremModelDto) => {
   return axiosInstance
-    .put<IHttpResponse<OnPremLLMTableDTO>>(`${baseAPIURL}`, updateOnPremLLM)
+    .put<IHttpResponse<OnPremModelDto>>(`${baseAPIURL}`, updateOnPremLLM)
     .then((res) => res.data);
 };
 
@@ -70,12 +86,12 @@ const uninstallOnPremLLMs = (ids: string[]) => {
 const onPremLLMOptimisticMutationFn = ({
   payload,
   crudAction,
-}: IOptimisticMutation<OnPremLLMTableDTO | string | string[]>) => {
+}: IOptimisticMutation<OnPremModelDto | string | string[]>) => {
   switch (crudAction) {
     case "create":
-      return insertOnPremLLM(payload as OnPremLLMTableDTO);
+      return insertOnPremLLM(payload as OnPremModelDto);
     case "update":
-      return updateOnPremLLM(payload as OnPremLLMTableDTO);
+      return updateOnPremLLM(payload as OnPremModelDto);
     case "delete":
       return uninstallOnPremLLM(payload as string);
     case "delete-multiple":
@@ -93,4 +109,5 @@ export {
   uninstallOnPremLLM,
   uninstallOnPremLLMs,
   onPremLLMOptimisticMutationFn,
+  isModelNameAvailable,
 };

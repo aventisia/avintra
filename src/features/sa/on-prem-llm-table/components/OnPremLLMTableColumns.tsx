@@ -4,7 +4,7 @@ import { ColumnDef } from "@tanstack/react-table";
 
 import { TABLE_KEY } from "../constants";
 import { getColumnName } from "../constants/column-display-names";
-import { OnPremLLMTableDTO } from "../dtos/on-prem-llm-table-dto";
+import { OnPremModelDto } from "../dtos/on-prem-llm-table-dto";
 
 import { OnPremLLMRowActions } from "./on-prem-llm-row-actions/OnPremLLMRowActions";
 
@@ -12,7 +12,7 @@ import { OnPremLLMRowActions } from "./on-prem-llm-row-actions/OnPremLLMRowActio
  * Array of table columns for the model table.
  * Each column object contains an accessorKey, header component, and cell component.
  */
-export const onPremLLMsTableColumns: ColumnDef<OnPremLLMTableDTO>[] = [
+export const onPremLLMsTableColumns: ColumnDef<OnPremModelDto>[] = [
   {
     accessorKey: "id",
     header: ({ table }) => (
@@ -36,54 +36,73 @@ export const onPremLLMsTableColumns: ColumnDef<OnPremLLMTableDTO>[] = [
     ),
     enableSorting: false,
   },
-  // LLM Name
+  //  Name
   {
-    accessorKey: "llm",
+    accessorKey: "name",
     header: ({ column }) => (
       <DTColumnHeader
         tableKey={TABLE_KEY}
         column={column}
-        title={getColumnName("llm")}
-      />
-    ),
-    cell: ({ row }) => {
-      return (
-        <div className="w-auto font-medium">{row.getValue("llm") || "N/A"}</div>
-      );
-    },
-  },
-  // Display Name
-  {
-    accessorKey: "displayName",
-    header: ({ column }) => (
-      <DTColumnHeader
-        tableKey={TABLE_KEY}
-        column={column}
-        title={getColumnName("displayName")}
+        title={getColumnName("name")}
       />
     ),
     cell: ({ row }) => {
       return (
         <div className="w-auto font-medium">
-          {row.getValue("displayName") || "N/A"}
+          {row.getValue("name") || "N/A"}
+        </div>
+      );
+    },
+  },
+  // Model Name
+  {
+    accessorKey: "modelName",
+    header: ({ column }) => (
+      <DTColumnHeader
+        tableKey={TABLE_KEY}
+        column={column}
+        title={getColumnName("modelName")}
+      />
+    ),
+    cell: ({ row }) => {
+      return (
+        <div className="w-auto font-medium">
+          {row.getValue("modelName") || "N/A"}
         </div>
       );
     },
   },
   // Description
   {
-    accessorKey: "description",
+    accessorKey: "providerType",
     header: ({ column }) => (
       <DTColumnHeader
         tableKey={TABLE_KEY}
         column={column}
-        title={getColumnName("description")}
+        title={getColumnName("providerType")}
       />
     ),
     cell: ({ row }) => {
       return (
         <div className="w-auto font-medium">
-          {row.getValue("description") || "N/A"}
+          {row.getValue("providerType") || "N/A"}
+        </div>
+      );
+    },
+  },
+  {
+    accessorKey: "providerUrl",
+    header: ({ column }) => (
+      <DTColumnHeader
+        tableKey={TABLE_KEY}
+        column={column}
+        title={getColumnName("providerUrl")}
+      />
+    ),
+    cell: ({ row }) => {
+      return (
+        <div className="w-auto font-medium">
+          {row.getValue("providerUrl") || "N/A"}
         </div>
       );
     },
