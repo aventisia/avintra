@@ -195,13 +195,8 @@ export default function useWebSocket() {
         const localLogs = await getLocalExecutionLog(currentFlow.versionId);
         let executionData: ExecutionNode[] = [];
 
-        if (
-          localLogs &&
-          typeof localLogs == "object" &&
-          "nodes" in localLogs &&
-          localLogs.length > 0
-        ) {
-          executionData = localLogs[0]?.nodes;
+        if (Array.isArray(localLogs) && localLogs.length > 0) {
+          executionData = localLogs[0].nodes ?? [];
         }
 
         // Handle Credit Consumption
