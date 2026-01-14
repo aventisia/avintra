@@ -4,16 +4,14 @@ public class CreditUsageService : ICreditUsageService
 {
     private readonly IUnitOfWork _unitOfWork;
     private readonly ILogger<CreditUsageService> _logger;
-    private readonly DefaultTenantConfig _defaultTenantConfig;
     private readonly AppRuntimeSettings _appRuntimeSettings;
     private readonly Guid _userId;
     private readonly Guid _tenantId;
 
-    public CreditUsageService(IUnitOfWork unitOfWork, ILogger<CreditUsageService> logger, IHttpContextAccessor httpContextAccessor, DefaultTenantConfig defaultTenantConfig, AppRuntimeSettings appRuntimeSettings)
+    public CreditUsageService(IUnitOfWork unitOfWork, ILogger<CreditUsageService> logger, IHttpContextAccessor httpContextAccessor, AppRuntimeSettings appRuntimeSettings)
     {
         _unitOfWork = unitOfWork;
         _logger = logger;
-        _defaultTenantConfig = defaultTenantConfig;
 
         // Extract user ID from JWT token in the HTTP context
         _userId = Guid.Parse(httpContextAccessor.HttpContext?.User?.FindFirstValue("uid") ?? Guid.Empty.ToString());
