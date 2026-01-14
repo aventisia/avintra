@@ -25,7 +25,7 @@ import { jobsTableColumns } from "./JobsTableColumns";
  * @returns The rendered JobsTable component.
  */
 export const JobsTable = () => {
-  const [tabValue, setTabValue] = useState<string>("Running");
+  const [tabValue, setTabValue] = useState<string>("History");
 
   // Set the document title
   useDocumentTitle(TABLE_HEADING);
