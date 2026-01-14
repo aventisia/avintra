@@ -21,7 +21,7 @@ var IsEnvironmentLocalhost = builder.Environment.IsEnvironment("Localhost");
 // Try to parse the TenantType from configuration
 var tenantTypeValue = builder.Configuration["InstanceConfig:TenantType"];
 
-if (Enum.TryParse(builder.Configuration["InstanceConfig:TenantType"], true, out OnPremTenantTypesEnum tenantType) && Enum.IsDefined(typeof(OnPremTenantTypesEnum), tenantType))
+if (Enum.TryParse(tenantTypeValue, true, out OnPremTenantTypesEnum tenantType) && Enum.IsDefined(typeof(OnPremTenantTypesEnum), tenantType))
 {
     // Valid tenant type - you can add logic here if needed.
 }
@@ -177,6 +177,8 @@ app.UseAuthentication();
 app.UseAuthorization();
 
 app.UseRateLimiter();
+
+app.UseMiddleware<TenantRouteAccessMiddleware>();
 
 app.UseMiddleware<SessionValidator>();
 
