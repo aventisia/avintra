@@ -51,26 +51,6 @@
           {
             "type": "aiNode",
             "name": "AIModel",
-            "label": "Conversation Model",
-            "description": "Enable natural, AI-powered conversational experiences",
-            "docsLink": null,
-            "icon": "",
-            "img": "/assets/ConversationModel.svg",
-            "disabled": true
-          },
-          {
-            "type": "aiNode",
-            "name": "AIModel",
-            "label": "Generative Model",
-            "description": "Generate content such as text, images, or code using AI",
-            "docsLink": null,
-            "icon": "",
-            "img": "/assets/GenerativeModel.svg",
-            "disabled": true
-          },
-          {
-            "type": "aiNode",
-            "name": "AIModel",
             "label": "Speech To Text (STT)",
             "description": "Convert spoken language into written text using AI",
             "docsLink": null,
