@@ -143,23 +143,29 @@ public static class AppServicesExtension
     /// </summary>
     /// <param name="services">The collection of services to register.</param>
     /// <param name="config">The configuration provider used to retrieve Razorpay settings.</param>
-    public static void AddRazorpayClient(this IServiceCollection services, IConfiguration config)
+    /// <param name="tenantType">The tenant type (e.g., Commercial, Enterprise) to determine if Razorpay should be enabled.</param>
+    public static void AddRazorpayClient(this IServiceCollection services, IConfiguration config, OnPremTenantTypesEnum tenantType)
     {
-        // Retrieve and validate the Razorpay configuration settings
-        var razorpayConfig = Guard.Against.Null(config.GetSection("RazorpayConfig").Get<RazorpayConfig>(), "RazorpayConfig cannot be null");
-
-        if (razorpayConfig == null || string.IsNullOrEmpty(razorpayConfig.KeyId) || string.IsNullOrEmpty(razorpayConfig.KeySecret))
+        // Check if the tenant type is Commercial, as Razorpay integration is only needed for Commercial tenants
+        if (tenantType == OnPremTenantTypesEnum.Commercial)
         {
-            throw new InvalidOperationException("Razorpay KeyId and KeySecret must be configured.");
+            // Retrieve the Razorpay configuration section from the configuration provider
+            var razorpayConfig = Guard.Against.Null(config.GetSection("RazorpayConfig").Get<RazorpayConfig>(), "RazorpayConfig cannot be null");
+
+            // Check if Razorpay KeyId and KeySecret are configured correctly
+            if (razorpayConfig == null || string.IsNullOrEmpty(razorpayConfig.KeyId) || string.IsNullOrEmpty(razorpayConfig.KeySecret))
+            {
+                throw new InvalidOperationException("Razorpay KeyId and KeySecret must be configured.");
+            }
+
+            services.AddSingleton<Razorpay.Api.RazorpayClient>(provider =>
+                new Razorpay.Api.RazorpayClient(razorpayConfig.KeyId, razorpayConfig.KeySecret));
+
+            services.AddSingleton(razorpayConfig);
         }
-
-        // Register the Razorpay client as a singleton service
-        services.AddSingleton<Razorpay.Api.RazorpayClient>(provider =>
-            new Razorpay.Api.RazorpayClient(razorpayConfig.KeyId, razorpayConfig.KeySecret));
-
-        // Optionally, register RazorpayConfig itself for further use
-        services.AddSingleton(razorpayConfig);
+        // If the tenant type is not Commercial, Razorpay integration is skipped (no further action is needed here)
     }
+
     // Extension method to configure and register Quartz jobs and their triggers
     public static void AddQuartzJobs(this IServiceCollection services)
     {

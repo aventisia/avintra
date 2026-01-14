@@ -18,6 +18,19 @@ var config = configurationBuilder.Build();
 
 var IsEnvironmentLocalhost = builder.Environment.IsEnvironment("Localhost");
 
+// Try to parse the TenantType from configuration
+var tenantTypeValue = builder.Configuration["InstanceConfig:TenantType"];
+
+if (Enum.TryParse(builder.Configuration["InstanceConfig:TenantType"], true, out OnPremTenantTypesEnum tenantType) && Enum.IsDefined(typeof(OnPremTenantTypesEnum), tenantType))
+{
+    // Valid tenant type - you can add logic here if needed.
+}
+else
+{
+    // Invalid tenant type - throw an exception
+    throw new InvalidOperationException($"Invalid Tenant Type in configuration: '{tenantTypeValue}'");
+}
+
 if (!IsEnvironmentLocalhost)
 {
     // Get sensitive data from environment variables
@@ -38,21 +51,26 @@ if (!IsEnvironmentLocalhost)
         message: "SMTP_API_KEY cannot be null"
     );
 
-    // Ensure all required Razorpay environment variables are present
-    var RAZORPAY_KEY_ID = Guard.Against.Null(
-        Environment.GetEnvironmentVariable("RAZORPAY_KEY_ID"),
-        message: "RAZORPAY_KEY_ID cannot be null"
-    );
+    string? RAZORPAY_KEY_ID = string.Empty;
+    string? RAZORPAY_KEY_SECRET = string.Empty;
+    string? RAZORPAY_WEBHOOK_SECRET = string.Empty;
 
-    var RAZORPAY_KEY_SECRET = Guard.Against.Null(
-        Environment.GetEnvironmentVariable("RAZORPAY_KEY_SECRET"),
-        message: "RAZORPAY_KEY_SECRET cannot be null"
-    );
-
-    var RAZORPAY_WEBHOOK_SECRET = Guard.Against.Null(
-        Environment.GetEnvironmentVariable("RAZORPAY_WEBHOOK_SECRET"),
-        message: "RAZORPAY_WEBHOOK_SECRET cannot be null"
-    );
+    // Only load Razorpay credentials if tenant type is 'Commercial'
+    if (tenantType == OnPremTenantTypesEnum.Commercial)
+    {
+        RAZORPAY_KEY_ID = Guard.Against.Null(
+            Environment.GetEnvironmentVariable("RAZORPAY_KEY_ID"),
+            message: "RAZORPAY_KEY_ID cannot be null"
+        );
+        RAZORPAY_KEY_SECRET = Guard.Against.Null(
+            Environment.GetEnvironmentVariable("RAZORPAY_KEY_SECRET"),
+            message: "RAZORPAY_KEY_SECRET cannot be null"
+        );
+        RAZORPAY_WEBHOOK_SECRET = Guard.Against.Null(
+            Environment.GetEnvironmentVariable("RAZORPAY_WEBHOOK_SECRET"),
+            message: "RAZORPAY_WEBHOOK_SECRET cannot be null"
+        );
+    }
 
     var ON_PREM_TENANT_ID = Guard.Against.Null(
         Environment.GetEnvironmentVariable("ON_PREM_TENANT_ID"),
@@ -110,7 +128,7 @@ builder.Services.AddAuthenticationConfig(config);
 builder.Services.AddDbContextConfig(config);
 
 // Razorpay client
-builder.Services.AddRazorpayClient(config);
+builder.Services.AddRazorpayClient(config, tenantType);
 
 // ASP.NET & App services
 builder.Services.AddHttpContextAccessor();
