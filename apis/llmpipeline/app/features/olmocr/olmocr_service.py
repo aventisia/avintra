@@ -5,8 +5,8 @@ import subprocess
 import json
 import uuid
 import httpx
-from olmocr.data.renderpdf import render_pdf_to_base64png
-from olmocr.prompts import build_no_anchoring_v4_yaml_prompt
+from .renderpdf import render_pdf_to_base64png
+from .prompts import build_no_anchoring_v4_yaml_prompt
 from fastapi import HTTPException, Request
 from app.core.security import get_jwt
 from .olmocr_schemas import OlmocrRequest, OlmocrResponse
