@@ -29,7 +29,7 @@ public class JobTableMappingProfile : IRegister
             .Ignore(dest => dest.CreatedOn)
             .IgnoreNullValues(true);
 
-        config.NewConfig<JobExecutionDto, Job>()
+        config.NewConfig<JobExecutionLogDto, Job>()
            .Ignore(dest => dest.Id)
            .Ignore(dest => dest.RetryCount)
            .Ignore(dest => dest.TenantId)

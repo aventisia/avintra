@@ -42,9 +42,9 @@ public class JobController : BaseApiController
     }
 
     [HttpPut]
-    public async Task<ActionResult<ServiceResponse<JobTableDto>>> UpdateJobAsync([FromBody] JobExecutionDto jobTableDto)
+    public async Task<ActionResult<ServiceResponse<JobTableDto>>> UpdateJobAsync([FromBody] JobExecutionLogDto jobExecutionLogDto)
     {
-        return ResultHelper(await _jobTableService.UpdateJobAsync(jobTableDto));
+        return ResultHelper(await _jobTableService.UpdateJobAsync(jobExecutionLogDto));
     }
 
     [HttpDelete("{jobId}")]
