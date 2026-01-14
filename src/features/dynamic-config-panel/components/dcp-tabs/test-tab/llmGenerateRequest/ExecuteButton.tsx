@@ -48,7 +48,11 @@ const ExecuteButton = ({
   function mapNodeDataToLLMRequest(data: {
     [x: string]: unknown;
   }): LLMRequestDto {
-    let input = "";
+    // Extract prompt from the form data.
+    const input = Object.keys(data).find((k) => k.includes("prompt"))
+      ? (data[Object.keys(data).find((k) => k.includes("prompt"))!] as string)
+      : "";
+
     let files: string[] | undefined;
     let modelConfig: ModelConfigType | null = null;
 
@@ -65,9 +69,6 @@ const ExecuteButton = ({
     if (!modelConfig) {
       throw new Error("Model configuration is missing");
     }
-
-    // Extract prompt from the main data.
-    input = (data.prompt as string) ?? "";
 
     // Check if any files are provided. Adjust as per your actual data structure.
     if (data.Files) {

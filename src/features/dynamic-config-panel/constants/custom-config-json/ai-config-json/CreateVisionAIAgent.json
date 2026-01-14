@@ -37,7 +37,7 @@
     {
       "direction": "Input",
       "type": "prompt-input",
-      "name": "prompt",
+      "name": "prompt_Vision",
       "required": false,
       "min": 22,
       "defaultValue": "",

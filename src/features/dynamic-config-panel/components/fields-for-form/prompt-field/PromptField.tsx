@@ -73,18 +73,20 @@ const PromptConfigField = ({
           style={{ minWidth: "var(--radix-dropdown-menu-trigger-width)" }}
         >
           <DropdownMenuGroup>
-            {promptTemplatesList.map((item) => (
-              <DropdownMenuItem
-                key={item.id}
-                onClick={() => handleOptionChange(item.value)}
-                className="cursor-pointer flex-col items-start gap-1 border-b last:border-b-0"
-              >
-                <h2 className="text-sm">{item.label}</h2>
-                <p className="truncate text-xs text-muted-foreground">
-                  {item.description}
-                </p>
-              </DropdownMenuItem>
-            ))}
+            {promptTemplatesList
+              .filter((item) => item.id == name)
+              .map((item) => (
+                <DropdownMenuItem
+                  key={item.label}
+                  onClick={() => handleOptionChange(item.value)}
+                  className="cursor-pointer flex-col items-start gap-1 border-b last:border-b-0"
+                >
+                  <h2 className="text-sm">{item.label}</h2>
+                  <p className="truncate text-xs text-muted-foreground">
+                    {item.description}
+                  </p>
+                </DropdownMenuItem>
+              ))}
           </DropdownMenuGroup>
         </DropdownMenuContent>
       </DropdownMenu>

@@ -11,7 +11,7 @@
     {
       "direction": "Input",
       "type": "prompt-input",
-      "name": "prompt",
+      "name": "prompt_Inferencing",
       "required": false,
       "min": 16,
       "defaultValue": "",
