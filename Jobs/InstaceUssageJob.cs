@@ -16,13 +16,6 @@ public class InstanceUsageJob : IJob
     // Main method for Quartz job execution. Collects metrics and posts them to the API.
     public async Task Execute(IJobExecutionContext context)
     {
-        // Skip processing if running in Localhost environment
-        if (_hostEnvironment.EnvironmentName.Equals("Localhost", StringComparison.OrdinalIgnoreCase))
-        {
-            _logger.LogInformation("InstanceUsageStartupService skipped in Localhost environment.");
-            return;
-        }
-
         // Record the current UTC time to log the job start and end times
         var currentDateTime = DateTimeOffset.UtcNow;
 
