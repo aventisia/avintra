@@ -67,4 +67,11 @@ public interface IOnPremModelService
     /// <param name="modelName">The name (or part of the name) of the OnPrem models to search for.</param>
     /// <returns>A ServiceResponse containing a collection of OnPrem model DTOs that match the search term.</returns>
     Task<ServiceResponse<IEnumerable<OnPremModelDto>>> SearchOnPremModelsByNameAsync(string modelName);
+
+    /// <summary>
+    /// Syncs on-prem models with an external provider (e.g., Ollama), updating or adding models as needed.
+    /// </summary>
+    /// <param name="syncOnPremModelsDto">The DTO containing the provider type and base URL for syncing models.</param>
+    /// <returns>A ServiceResponse indicating whether the sync was successful.</returns>
+    Task<ServiceResponse<bool>> SyncAllOnPremModelsAsync(SyncOnPremModelsDto syncOnPremModelsDto);
 }

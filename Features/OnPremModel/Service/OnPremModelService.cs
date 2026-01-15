@@ -904,4 +904,112 @@ public class OnPremModelService : IOnPremModelService
             return new List<OllamaModelDto>();
         }
     }
+
+    // Syncs on-prem models with the specified provider and base URL.
+    public async Task<ServiceResponse<bool>> SyncAllOnPremModelsAsync(SyncOnPremModelsDto syncOnPremModelsDto)
+    {
+        // Initialize ServiceResponse with failed response by default
+        var serviceResponse = new ServiceResponse<bool>
+        {
+            Data = false,
+            Message = "Failed to sync on-prem models. Please try again later."
+        };
+
+        try
+        {
+            // Query to fetch on-prem models created by the current user, filtered by the provider type
+            var onPremModels = await _unitOfWork.OnPremModelRepo
+                .GetByConditionAsync(w => w.ProviderType == syncOnPremModelsDto.ProviderType)
+                .AsNoTracking()
+                .ToListAsync();
+
+            // Lists to track models that need to be inserted or updated
+            var needToBeInserted = new List<OnPremModel>();
+            var needToBeUpdated = new List<OnPremModel>();
+
+            switch (syncOnPremModelsDto.ProviderType)
+            {
+                case OnPremModelProviderEnum.Ollama:
+                    // Fetch the list of models from Ollama asynchronously based on the provided URL
+                    var ollamaModels = await GetOllamaModelsAsync(syncOnPremModelsDto.ProviderUrl, CancellationToken.None);
+
+                    // Loop through each on-prem model retrieved from the database
+                    foreach (var modelDto in onPremModels)
+                    {
+                        // Skip iteration if there are no models from Ollama
+                        if (ollamaModels.Count == 0) continue;
+
+                        // Attempt to find a matching Ollama model by comparing model names (case-insensitive)
+                        var ollamaModel = ollamaModels
+                            .FirstOrDefault(w => w.Name.Equals(modelDto.ModelName, StringComparison.InvariantCultureIgnoreCase));
+
+                        if (ollamaModel != null)
+                        {
+                            // If a matching Ollama model is found and its status is not "installed", update it
+                            if (modelDto.Status != OnPremModelStatusEnum.Installed)
+                            {
+                                modelDto.Status = OnPremModelStatusEnum.Installed;
+                                needToBeUpdated.Add(modelDto);
+                            }
+                        }
+                        else
+                        {
+                            // If the Ollama model is not found in the database, create a new model entry
+                            var newOnPremModel = new OnPremModel
+                            {
+                                Name = modelDto.Name,
+                                ProviderUrl = syncOnPremModelsDto.ProviderUrl,
+                                ModelName = modelDto.ModelName,
+                                Status = OnPremModelStatusEnum.Installed,
+                                ProviderType = syncOnPremModelsDto.ProviderType,
+                                CreatedByUserId = _userId,
+                                LastModifiedByUserId = _userId,
+                            };
+
+                            needToBeInserted.Add(newOnPremModel);
+                        }
+                    }
+
+                    // If there are any new models to be inserted, perform the insert operation
+                    if (needToBeInserted.Any())
+                    {
+                        await _unitOfWork.OnPremModelRepo.InsertAsync(needToBeInserted);
+                    }
+
+                    // If there are any models that need to be updated, perform the update operation
+                    if (needToBeUpdated.Any())
+                    {
+                        _unitOfWork.OnPremModelRepo.Update(needToBeUpdated);
+                    }
+
+                    // Save changes to the database
+                    if (!await _unitOfWork.SaveAsync())
+                    {
+                        _logger.LogError("Failed to save changes when inserting on-prem model with name '{ModelName}'", onPremModels.FirstOrDefault()?.ModelName);
+                        return serviceResponse;
+                    }
+
+                    break;
+
+                default:
+                    // Handle other provider types if necessary
+                    break;
+            }
+
+            // Successfully synced models, update the service response with success status
+            serviceResponse.Data = true;
+            serviceResponse.StatusCode = 200;
+            serviceResponse.Message = "On-prem models synced successfully.";
+
+            // Log successful syncing of models
+            _logger.LogInformation("Successfully synced {ModelCount} on-prem models for user {UserId}.", onPremModels.Count, _userId);
+        }
+        catch (Exception ex)
+        {
+            // Catch any exceptions, log the error with a specific message, and include the user ID for better context
+            _logger.LogError(ex, "Error occurred while syncing on-prem models for user {UserId}.", _userId);
+        }
+
+        return serviceResponse;
+    }
 }

@@ -73,4 +73,12 @@ public class OnPremModelController : BaseApiController
     {
         return ResultHelper(await _onPremModelService.SearchOnPremModelsByNameAsync(modelName));
     }
+
+    // Sync OnPrem models with an external provider (e.g., Ollama)
+    [HttpPost("sync")]
+    public async Task<ActionResult<ServiceResponse<bool>>> SyncOnPremModels([FromBody] SyncOnPremModelsDto syncOnPremModelsDto)
+    {
+        return ResultHelper(await _onPremModelService.SyncAllOnPremModelsAsync(syncOnPremModelsDto));
+    }
+
 }
