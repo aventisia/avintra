@@ -2,7 +2,7 @@
   "$schema": "../node_modules/@tauri-apps/cli/config.schema.json",
   "mainBinaryName": "WorcDesktopApp_DEV",
   "productName": "WorcDesktopApp_DEV",
-  "version": "0.1.38",
+  "version": "0.1.39",
   "identifier": "com.aventisia.worc",
   "build": {
     "frontendDist": "../dist",
@@ -16,7 +16,7 @@
         "title": "WorcDesktopApp DEV",
         "resizable": true,
         "fullscreen": false,
-        "userAgent": "WorcDesktopApp/0.1.38"
+        "userAgent": "WorcDesktopApp/0.1.39"
       }
     ],
     "security": {
@@ -43,7 +43,7 @@
     "updater": {
       "pubkey": "dW50cnVzdGVkIGNvbW1lbnQ6IG1pbmlzaWduIHB1YmxpYyBrZXk6IEVGMjkwM0I1OEFFMzU5NTcKUldSWFdlT0t0UU1wN3o5TjMzTjNtdzFEWTdhUGJGdnV0ZFVaWWE2cDcwK2s5ZXNTYjBoVWFHeWwK",
       "endpoints": [
-        "https://dev-accounts.aventisia.com/api/desktop-app/update/{{target}}/{{arch}}/{{current_version}}"
+        "https://dev-worc.aventisia.com/accounts/api/desktop-app/update/{{target}}/{{arch}}/{{current_version}}"
       ],
       "dialog": false,
       "windows": {
