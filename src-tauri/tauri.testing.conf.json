@@ -1,0 +1,54 @@
+{
+  "$schema": "../node_modules/@tauri-apps/cli/config.schema.json",
+  "mainBinaryName": "WorcDesktopApp_DEV",
+  "productName": "WorcDesktopApp_DEV",
+  "version": "0.1.39",
+  "identifier": "com.aventisia.worc",
+  "build": {
+    "frontendDist": "../dist",
+    "devUrl": "http://localhost:2999",
+    "beforeDevCommand": "npm run dev",
+    "beforeBuildCommand": "npm run build -- --mode testing"
+  },
+  "app": {
+    "windows": [
+      {
+        "title": "WorcDesktopApp DEV",
+        "resizable": true,
+        "fullscreen": false,
+        "userAgent": "WorcDesktopApp/0.1.39"
+      }
+    ],
+    "security": {
+      "csp": null
+    }
+  },
+  "bundle": {
+    "active": true,
+    "targets": "all",
+    "icon": [
+      "icons/32x32.png",
+      "icons/128x128.png",
+      "icons/128x128@2x.png",
+      "icons/icon.icns",
+      "icons/icon.ico"
+    ],
+    "resources": [
+      "binaries/node-executor",
+      "binaries/ui-inspector"
+    ],
+    "createUpdaterArtifacts": true
+  },
+  "plugins": {
+    "updater": {
+      "pubkey": "dW50cnVzdGVkIGNvbW1lbnQ6IG1pbmlzaWduIHB1YmxpYyBrZXk6IEVGMjkwM0I1OEFFMzU5NTcKUldSWFdlT0t0UU1wN3o5TjMzTjNtdzFEWTdhUGJGdnV0ZFVaWWE2cDcwK2s5ZXNTYjBoVWFHeWwK",
+      "endpoints": [
+        "https://dev-worc.aventisia.com/accounts/api/desktop-app/update/{{target}}/{{arch}}/{{current_version}}"
+      ],
+      "dialog": false,
+      "windows": {
+        "installMode": "passive"
+      }
+    }
+  }
+}
