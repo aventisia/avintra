@@ -696,14 +696,11 @@ public class CreditUsageService : ICreditUsageService
 
             // Fetch available tenant credits for the current user
             var availableCreditsQuery = _unitOfWork.TenantCreditRepo
-                .GetByConditionAsync(w =>
-                    w.TenantId == _tenantId &&
-                    (
-                        (w.AvailableCredits > 0) ||
-                        (w.AvailableCredits < 0 && w.ExpiredOn.Date < DateTimeOffset.UtcNow.Date) ||
-                        (w.AvailableCredits < 0 && w.ExpiredOn >= DateTimeOffset.UtcNow.Date)
-                    )
-                );
+            .GetByConditionAsync(w =>
+                 w.TenantId == _tenantId &&
+                 w.AvailableCredits > 0 &&
+                 w.ExpiredOn.Date > DateTimeOffset.UtcNow.Date
+             );
 
             // Aggregate available credit data into the DTO
             var availableCreditDto = new AvailableCreditDto
