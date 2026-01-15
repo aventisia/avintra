@@ -57,19 +57,17 @@ export default function ServiceUrlPage() {
   };
 
   return (
-    <div className="service-url-root">
+    <main className="service-url-root">
       <div className="service-url-card">
         <div className="service-url-logo">
           <img src="/logo.svg" alt="Aventisia" />
         </div>
-
-        <h1 className="service-url-title">Connect to Worc App</h1>
+        <div className="service-url-title">
+          <h2>Connect to Worc</h2>
+          <p>Enter the Service URL to continue.</p>
+        </div>
 
         <div className="service-url-form">
-          <label className="service-url-label" htmlFor="service-url-input">
-            Service URL
-          </label>
-
           <div className="service-url-input-wrapper">
             <input
               id="service-url-input"
@@ -125,6 +123,6 @@ export default function ServiceUrlPage() {
           </button>
         </div>
       </div>
-    </div>
+    </main>
   );
 }
