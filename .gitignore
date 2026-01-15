@@ -32,6 +32,3 @@ sample-*
 
 # Ignore all user-stories* files
 user-stories*
-
-# Ignore all .bat files (tauri build scripts)
-*.bat
