@@ -134,7 +134,7 @@
 //                 case nameof(M365ActionsEnum.ClearRange):
 //                     m365Response = await ClearRangeAsync(httpClient, cloudConnectorReqDto.Payload);
 //                     break;
-                
+
 
 //                 default:
 //                     _logger.LogWarning("Unsupported M365 Connector: {Action}", cloudConnectorReqDto.Action);
@@ -194,9 +194,9 @@
 //             }
 
 //             // Step 2.3: Site path: from root to site name
-//             string sitePath = "/" + string.Join('/', segments.Take(siteRootIdx + 2)); // e.g., /sites/AventisiaTechnologiesPvtLtd
+//             string sitePath = "/" + string.Join('/', segments.Take(siteRootIdx + 2)); // e.g., /sites/YourCompanyName
 
-//             // Step 2.4: File path: everything after the site path (skip 'site root', 'site name' and 'Shared Documents' e.g. '/sites/AventisiaTechnologiesPvtLtd/Shared Documents')
+//             // Step 2.4: File path: everything after the site path (skip 'site root', 'site name' and 'Shared Documents' e.g. '/sites/YourCompanyName/Shared Documents')
 //             string relativeFilePath = string.Join('/', segments.Skip(siteRootIdx + 3)); // e.g., General/m365_connector_testing.xlsx
 //             relativeFilePath = Uri.UnescapeDataString(relativeFilePath);
 
@@ -491,7 +491,7 @@
 //         response.EnsureSuccessStatusCode();
 
 //         return JsonDocument.Parse(await response.Content.ReadAsStringAsync());
-   
+
 //     }
 
 
@@ -594,7 +594,7 @@
 //         var worksheetName = connectorRequestPayload["worksheetName"].ToString();
 //         var rangeAddress = connectorRequestPayload["rangeAddress"].ToString();
 //         var shiftTo = connectorRequestPayload.GetValueOrDefault("shiftTo", "Up").ToString(); // shiftTo: "Up", "Left"
-        
+
 //         shiftTo = char.ToUpper(shiftTo[0]) + shiftTo.Substring(1) ?? "Up";
 
 //         var payload = new
