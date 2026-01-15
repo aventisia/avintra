@@ -22,11 +22,10 @@ const refreshSession = () => {
     .catch((error) => {
       // Show error toast
       toast.error(error);
-      if (import.meta.env.MODE == "production") {
-        // Redirect to login page after 2 seconds
-        redirectToLoginOn401Util();
-      }
-      console.log(error);
+
+      // Redirect to login page after 2 seconds
+      redirectToLoginOn401Util();
+
       return null;
     });
 };
