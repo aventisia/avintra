@@ -4,6 +4,7 @@ import { useShallow } from "zustand/react/shallow";
 
 import { IS_TAURI } from "@/constants/constants";
 import { JobStatusTypesEnum } from "@/features/orchestrator/jobs-table/enums/job-status-type-enum";
+import { useUserSessionStore } from "@/react-toolkit/stores/user-session-store";
 import { ExecutionNode } from "@/types/execution-types";
 
 import {
@@ -43,6 +44,12 @@ export default function useWebSocket() {
       startTime: state.startTime,
       endTime: state.endTime,
       status: state.status,
+    })),
+  );
+
+  const { userSession } = useUserSessionStore(
+    useShallow((state) => ({
+      userSession: state.userSession,
     })),
   );
 
@@ -216,19 +223,20 @@ export default function useWebSocket() {
             endTime,
             nodeExecutionLogs: JSON.stringify(executionData),
           });
-
-          await postCreditConsumption([
-            {
-              serviceType: CreditServiceTypesEnum.AgentExecutionTime,
-              consumedUnit: duration,
-              refType: UsageSourceTypesEnum.Agent,
-              refId: currentFlow.id,
-              refName: currentFlow.name,
-              action: ActionTypesEnum.AgentExecution,
-              triggeredByAgent: currentFlow.name,
-            },
-          ]); // Post the consumption data
-          console.log("Credit consumption posted successfully.");
+          if (userSession?.deploymentType == "Commercial") {
+            await postCreditConsumption([
+              {
+                serviceType: CreditServiceTypesEnum.AgentExecutionTime,
+                consumedUnit: duration,
+                refType: UsageSourceTypesEnum.Agent,
+                refId: currentFlow.id,
+                refName: currentFlow.name,
+                action: ActionTypesEnum.AgentExecution,
+                triggeredByAgent: currentFlow.name,
+              },
+            ]); // Post the consumption data
+            console.log("Credit consumption posted successfully.");
+          }
         }
       } catch (error) {
         // Log any errors that occur during the process

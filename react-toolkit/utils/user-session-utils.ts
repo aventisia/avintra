@@ -39,6 +39,7 @@ const setUserSessionLocally = (
     userRoles: roles,
     expiresOn: new Date(decodedJwt.exp * 1000),
     planType: decodedJwt?.plan,
+    deploymentType: decodedJwt.type,
   };
 };
 

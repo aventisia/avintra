@@ -1,7 +1,7 @@
 import { DataTableSkeleton } from "@aventisia/ui/data-table";
 import { lazy, Suspense } from "react";
 
-// Lazy load the Credits Usage component.
+// Lazy load the Usage component.
 const CreditsUsage = lazy(() =>
   import("@/features/credits-usage/components/CreditsUsage").then((module) => ({
     default: module.CreditsUsage,
