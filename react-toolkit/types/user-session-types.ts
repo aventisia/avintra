@@ -1,3 +1,5 @@
+import { deploymentType } from "./sidebar-menu-types";
+
 interface IUserSessionStore {
   tenantId: string;
   tenantName: string;
@@ -6,6 +8,7 @@ interface IUserSessionStore {
   lastName: string;
   userInitials: string;
   planType?: string;
+  deploymentType: deploymentType;
 
   /** IsAventisiaEmployee */
   isAE: boolean;
@@ -37,6 +40,8 @@ interface IJwtPayload {
   "http://schemas.microsoft.com/ws/2008/06/identity/claims/role": string[];
 
   plan: string;
+
+  type: deploymentType;
 }
 
 export { type IUserSessionStore, type IJwtPayload };

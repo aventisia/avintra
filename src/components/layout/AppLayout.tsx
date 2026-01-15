@@ -20,13 +20,14 @@ import { useFetchPaymentStatus } from "@/features/tenant/hooks/useFetchPaymentSt
 import useTauriUserMetadata from "@/hooks/useTauriUserMetadata";
 import useWebSocket from "@/hooks/useWebSocket";
 import { useValidateUserSession } from "@/react-toolkit/hooks/useValidateUserSession";
+import { useAllowedRoutesStore } from "@/stores/allowed-routes-auth-store";
 import { useTuariUserMetadataStore } from "@/stores/tuari-user-metadata-store";
 import { getWebSocketUrl } from "@/utils/get-websocket-url";
 
 import AppBanner from "./AppBanner";
 import AppHeader from "./AppHeader";
 import { AppRedirectPage } from "./AppRedirectPage";
-import { getSidebarMenuBasedOnPersmissions } from "./sidebar-menu-sections";
+import { getSidebarMenuBasedOnPermissions } from "./sidebar-menu-sections";
 
 export const AppLayout = () => {
   const [connectWebsocket, setConnectWebsocket] = useState<boolean>(false);
@@ -46,6 +47,13 @@ export const AppLayout = () => {
       })),
     );
 
+  const { allowedRoutes, setAllowedRoutes } = useAllowedRoutesStore(
+    useShallow((state) => ({
+      allowedRoutes: state.allowedRoutes,
+      setAllowedRoutes: state.setAllowedRoutes,
+    })),
+  );
+
   const { osID, hostname, appVersion } = useTuariUserMetadataStore(
     useShallow((state) => ({
       osID: state.osID,
@@ -53,18 +61,6 @@ export const AppLayout = () => {
       appVersion: state.appVersion,
     })),
   );
-
-  // Get setExecutionState action from current flow store
-  // const { executionState } = useCurrentFlowStore(
-  //   useShallow((state) => ({
-  //     executionState: state.executionState,
-  //   })),
-  // );
-//comment usePreventClose until tuari is updated
-  // Prevent closing the Tauri app while an execution is in progress
-  // usePreventClose(
-  //   executionState === "executing" || executionState === "paused",
-  // );
 
   // Redirect to relaunch URL if available (if app is inside Tauri)
   useRedirectOnRelaunch();
@@ -107,14 +103,31 @@ export const AppLayout = () => {
       COMPANY_NAME: import.meta.env.VITE_COMPANY_NAME,
     });
 
-    const filteredSidebarMenu = getSidebarMenuBasedOnPersmissions(
+    const filteredSidebarMenu = getSidebarMenuBasedOnPermissions(
       userSession?.userRoles || [],
+      userSession?.deploymentType,
     );
     // Set the sidebar menu sections
     setSidebarMenuSections(filteredSidebarMenu);
 
+    //Get allowed routes
+    const allowedRoutes = filteredSidebarMenu.flatMap((section) =>
+      section.menuItems.flatMap((item) => [
+        item.route,
+        ...(item.subMenuItems?.map((sub) => sub.route) ?? []),
+      ]),
+    );
+
+    setAllowedRoutes([...allowedRoutes, "/account"]);
+
     setLandingUrl(filteredSidebarMenu[0]?.menuItems[0]?.route);
-  }, [isPending, setSidebarMenuSections, setViteEnvVars, userSession]);
+  }, [
+    isPending,
+    setAllowedRoutes,
+    setSidebarMenuSections,
+    setViteEnvVars,
+    userSession,
+  ]);
 
   useEffect(() => {
     //Navigate user to first option of filteredSidebarMenu
@@ -122,6 +135,21 @@ export const AppLayout = () => {
       navigate(landingUrl);
     }
   }, [landingUrl, location?.pathname, navigate]);
+
+  // Routes protection by getting allowed routes form side bar menu section
+  useEffect(() => {
+    if (!allowedRoutes.length) return;
+
+    const currentPath = location.pathname;
+
+    const hasAccess = allowedRoutes.some(
+      (route) => currentPath == route || currentPath == "/",
+    );
+
+    if (!hasAccess) {
+      navigate("/page-not-found", { replace: true });
+    }
+  }, [allowedRoutes, location.pathname, navigate]);
 
   useEffect(() => {
     // If the user session is still pending, do not proceed
@@ -145,11 +173,12 @@ export const AppLayout = () => {
     if (!IS_TAURI && hasSingleTU) {
       navigate("/assist");
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [isPending, osID, userSession]);
 
   return (
     <>
-      {isPending ? (
+      {isPending || !userSession ? (
         <AppRedirectPage />
       ) : (
         <div className="relative min-h-screen overflow-hidden">
