@@ -95,6 +95,7 @@ public static class AppServicesExtension
         services.AddScoped<IAITaskService, AITaskService>();
         services.AddScoped<IProjectUsageService, ProjectUsageService>();
         services.AddScoped<IOnPremModelService, OnPremModelService>();
+        services.AddScoped<ILLMProviderService, LLMProviderService>();
 
         // Cloud Connectors feature
         services.AddScoped<ICloudConnectorsVaultService, CloudConnectorsVaultService>();
