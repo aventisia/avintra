@@ -678,11 +678,8 @@ public class TenantSubscriptionService : ITenantSubscriptionService
             double availableCredits = await _unitOfWork.TenantCreditRepo
                 .GetByConditionAsync(w =>
                     w.TenantId == _tenantId &&
-                    (
-                        (w.AvailableCredits > 0) ||
-                        (w.AvailableCredits < 0 && w.ExpiredOn.Date < DateTimeOffset.UtcNow.Date) ||
-                        (w.AvailableCredits < 0 && w.ExpiredOn >= DateTimeOffset.UtcNow.Date)
-                    )
+                    w.AvailableCredits > 0 &&
+                    w.ExpiredOn.Date > DateTimeOffset.UtcNow.Date
                 )
                 .SumAsync(sm => sm.AvailableCredits);
 
