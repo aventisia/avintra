@@ -618,6 +618,8 @@
     <Compile Include="Activities\UIInterfaceAutomations\BrowserAutomationActivities\SetCheckboxStateOnWebPageActivity.cs" />
     <Compile Include="Activities\UIInterfaceAutomations\BrowserAutomationActivities\SetDropDownListValueOnWebPageActivity.cs" />
     <Compile Include="Activities\UIInterfaceAutomations\BrowserAutomationActivities\SetElementAttributeValueActivity.cs" />
+    <Compile Include="Activities\UIInterfaceAutomations\BrowserAutomationActivities\SwitchToDefaultContentActivity.cs" />
+    <Compile Include="Activities\UIInterfaceAutomations\BrowserAutomationActivities\SwitchToIframeActivity.cs" />
     <Compile Include="Activities\UIInterfaceAutomations\BrowserAutomationActivities\SwitchToTabActivity.cs" />
     <Compile Include="Activities\UIInterfaceAutomations\BrowserAutomationActivities\_BrowserAutomationCategoryMetaData.cs" />
     <Compile Include="Activities\UIInterfaceAutomations\ClipboardActivities\ClearClipboardContentsActivity.cs" />
