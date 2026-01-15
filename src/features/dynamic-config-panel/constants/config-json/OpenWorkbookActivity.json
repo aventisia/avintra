@@ -1,7 +1,7 @@
 {
   "name": "OpenWorkbook",
   "label": "Open Excel Workbook",
-  "discription": "Opens an existing Excel workbook from the specified file path and reports success or failure.",
+  "discription": "Opens or reuses an Excel workbook in an existing Excel instance by workbook name.",
   "version": "1.0.0",
   "auther": "@aventisia",
   "supportedPlatforms": [
@@ -13,19 +13,19 @@
     {
       "direction": "Input",
       "type": "text",
-      "name": "FilePath",
-      "label": "File Path",
-      "description": "The full path to the Excel file (.xlsx or .xls) that needs to be opened.",
+      "name": "ExcelInstance",
+      "label": "Excel Instance",
+      "description": "Existing Excel application instance.",
       "defaultValue": "",
       "required": true
     },
     {
       "direction": "Input",
-      "type": "switch",
-      "name": "Visible",
-      "label": "Visible",
-      "description": "Set to true if you want the Excel application to be visible during automation.",
-      "defaultValue": false,
+      "type": "text",
+      "name": "WorkbookName",
+      "label": "Workbook Name",
+      "description": "Workbook file name to open (example: Report.xlsx).",
+      "defaultValue": "",
       "required": true
     },
     {
@@ -33,8 +33,8 @@
       "type": "switch",
       "name": "OpenAsReadOnly",
       "label": "Open as ReadOnly",
-      "description": "If true, opens the workbook in read-only mode.",
-      "defaultValue": false,
+      "description": "If set to true, the workbook will be opened in read-only mode, preventing any changes from being saved.",
+      "defaultValue": "",
       "required": false
     },
     {
@@ -42,7 +42,7 @@
       "type": "password",
       "name": "ReadProtectionPassword",
       "label": "Read Protection Password",
-      "description": "Password to open the workbook if it is protected.",
+      "description": "Password required to open the workbook if it is protected with a read password.",
       "defaultValue": "",
       "required": false
     },
@@ -51,21 +51,9 @@
       "type": "config-panel-output",
       "name": "WorkbookInstance",
       "label": "Workbook Instance",
-      "description": "The opened Excel Workbook object.",
+      "description": "The Excel workbook instance that is opened or reused. This output can be used in subsequent Excel activities.",
       "defaultValue": {
         "value": "WorkbookInstance",
-        "enabled": true
-      },
-      "required": false
-    },
-    {
-      "direction": "Output",
-      "type": "config-panel-output",
-      "name": "ExcelApp",
-      "label": "Excel Application",
-      "description": "The Excel Application instance (used for later operations or close).",
-      "defaultValue": {
-        "value": "ExcelApp",
         "enabled": true
       },
       "required": false
