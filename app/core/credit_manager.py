@@ -1,10 +1,10 @@
 import requests
 from app.core.logger import logger
+from app.core.config import settings
 
 class CreditManagerService:
     # Constructor: To initialize API URL and key (if any)
-    # TODO: Remove default URL or connect to database to do these operations
-    def __init__(self, api_url: str = "http://localhost:4000/api/credit-usage"):
+    def __init__(self, api_url: str =  f"{settings.APP_BASE_URL}/accounts/api/credit-usage"):
         self.api_url = api_url
 
     # Check if user has sufficient credits
