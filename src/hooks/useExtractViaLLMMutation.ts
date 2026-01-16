@@ -2,6 +2,7 @@
 import { useFetchSetupFormData } from "@/features/inferencing-model/hooks/useFetchSetupFormData";
 import { useLabelDataStore } from "@/features/label-data/stores/label-data-store";
 import { axiosInstance } from "@/react-toolkit/lib/axios-instance";
+import { useUserSessionStore } from "@/react-toolkit/stores/user-session-store";
 import { useExtractedDataStore } from "@/store/extract-via-llm-store";
 
 import { toast } from "@aventisia/ui/sonner";
@@ -19,6 +20,13 @@ export const useExtractViaLLMMutation = () => {
     useShallow((state) => ({
       setExtractedData: state.setExtractedData,
       extractedData: state.extractedData,
+    })),
+  );
+
+  // Get user session state and actions
+  const { userSession } = useUserSessionStore(
+    useShallow((state) => ({
+      userSession: state.userSession,
     })),
   );
 
@@ -62,7 +70,8 @@ export const useExtractViaLLMMutation = () => {
       );
     },
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ["available-credits"] });
+      if (userSession?.deploymentType == "Commercial")
+        queryClient.invalidateQueries({ queryKey: ["available-credits"] });
     },
     onError: (error) => {
       toast.error(error.toString());
@@ -93,8 +102,8 @@ export const useExtractViaLLMMutation = () => {
         });
 
         toast.success("Data extracted successfully");
-
-        queryClient.invalidateQueries({ queryKey: ["available-credits"] });
+        if (userSession?.deploymentType == "Commercial")
+          queryClient.invalidateQueries({ queryKey: ["available-credits"] });
       },
 
       onError: (error) => {
