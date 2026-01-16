@@ -1,0 +1,28 @@
+meta {
+  name: Update ai task
+  type: http
+  seq: 3
+}
+
+put {
+  url: {{ACCOUNTS_APIS_BASE_URL}}/ai-task
+  body: json
+  auth: none
+}
+
+body:json {
+  {
+    "id": "{{AI_TASK_ID}}",
+    "name": "Example AI Task",
+    "systemInput": "The system-level input template for task execution.",
+    "userInput": "User-specific input data for the task.",
+    "modelProvider": "OpenAI",
+    "model": "GPT-4",
+    "isJsonOutput": true,
+    "jsonSchema": "{\"type\": \"object\", \"properties\": {\"output\": {\"type\": \"string\"}}}",
+    "maxOutputTokens": 100,
+    "temperature": 0.7,
+    "topP": 0.9,
+    "stream": true
+  }
+}

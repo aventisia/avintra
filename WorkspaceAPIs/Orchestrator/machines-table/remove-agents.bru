@@ -11,8 +11,8 @@ post {
 }
 
 script:pre-request {
-  // Set machineId in request body
+  // Set agentId in request body
   req.setBody(
-    JSON.parse(`["${bru.getGlobalEnvVar("MACHINE_ID")}"]`)
+    JSON.parse(`["${bru.getGlobalEnvVar("FLOW_VERSION_ID")}"]`)
   )
 }

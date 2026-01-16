@@ -1,0 +1,18 @@
+meta {
+  name: Sync onprem models
+  type: http
+  seq: 10
+}
+
+post {
+  url: {{WORC_APIS_BASE_URL}}/onprem-model/sync
+  body: json
+  auth: none
+}
+
+body:json {
+  {
+    "providerType": "Ollama",
+    "providerUrl": "https://api.ollama.com"
+  }
+}

@@ -1,0 +1,16 @@
+meta {
+  name: Get llm provider models
+  type: http
+  seq: 1
+}
+
+get {
+  url: {{WORC_APIS_BASE_URL}}/llm-provider/models/select-option?providerType=Gemini&credentialId=DUMMY
+  body: json
+  auth: none
+}
+
+params:query {
+  providerType: Gemini
+  credentialId: DUMMY
+}

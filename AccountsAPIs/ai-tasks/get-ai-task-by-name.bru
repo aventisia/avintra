@@ -1,0 +1,11 @@
+meta {
+  name: Get ai task by name
+  type: http
+  seq: 6
+}
+
+get {
+  url: {{ACCOUNTS_APIS_BASE_URL}}/ai-task/name/{{AI_TASK_NAME}}
+  body: none
+  auth: none
+}
