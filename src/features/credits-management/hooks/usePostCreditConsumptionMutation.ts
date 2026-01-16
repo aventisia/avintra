@@ -3,8 +3,17 @@ import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { axiosInstance } from "@/react-toolkit/lib/axios-instance";
 import { CreditConsumptionDto } from "../dtos/credit-consumption-dto";
 import { AC_QUERY_KEY } from "@/features/available-credits/available-credits-constants";
+import { useUserSessionStore } from "@/react-toolkit/stores/user-session-store";
+import { useShallow } from "zustand/react/shallow";
 
 export const usePostCreditConsumptionMutation = () => {
+  // Get user session state and actions
+  const { userSession } = useUserSessionStore(
+    useShallow((state) => ({
+      userSession: state.userSession,
+    })),
+  );
+
   // Get query client
   const queryClient = useQueryClient();
 
@@ -17,7 +26,8 @@ export const usePostCreditConsumptionMutation = () => {
       );
     },
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: AC_QUERY_KEY });
+      if (userSession?.deploymentType == "Commercial")
+        queryClient.invalidateQueries({ queryKey: AC_QUERY_KEY });
     },
     onError: (error) => {
       toast.error(error.toString());

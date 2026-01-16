@@ -65,7 +65,9 @@ const AppHeader: React.FC = () => {
           {!isAssist && <FlowVersions />}{" "}
         </div>
         <div className="flex w-1/5 justify-center">
-          <AvailableCredits />
+          {userSession?.deploymentType == "Commercial" ? (
+            <AvailableCredits />
+          ) : null}{" "}
         </div>
         <div className="flex w-2/5 justify-end">
           <div>
