@@ -16,21 +16,11 @@ import {
 import { FormItem } from "@aventisia/ui/form";
 import { cn } from "@aventisia/ui/lib";
 import { ChevronRight } from "lucide-react";
-import { useMemo, useState } from "react";
-import {
-  Controller,
-  FieldPath,
-  FieldValues,
-  UseFormReturn,
-  useController,
-  useFormContext,
-} from "react-hook-form";
+import { useState } from "react";
+import { Controller, UseFormReturn } from "react-hook-form";
+import { useShallow } from "zustand/react/shallow";
 
-import {
-  AITask,
-  TASK_SPECIALTY_MAP,
-  modelProviders,
-} from "../constants/model-providers";
+import { useModelProviderStore } from "../stores/model-provider-store";
 import CloudConfig from "./CloudConfig";
 
 interface LLMConfigurationProps {
@@ -48,52 +38,9 @@ interface LLMConfigurationProps {
 const LLMConfiguration = ({ form, modelType }: LLMConfigurationProps) => {
   const [openItem, setOpenItem] = useState<string | undefined>("");
 
-  // Set names for the fields
-  const isByokEnabledFieldName =
-    `${modelType}.isByokEnabled` as FieldPath<FieldValues>;
-  const providerFieldName = `${modelType}.provider` as FieldPath<FieldValues>;
-
-  // Get the form context
-  const { control } = useFormContext();
-
-  // Use nested field names
-  const { field: providerField } = useController({
-    name: providerFieldName,
-    control,
-  });
-
-  const { field: is_byok_enabled } = useController({
-    name: isByokEnabledFieldName,
-    control,
-  });
-  // 1. Get filtered providers based on BYOK and Node specialty
-  const filteredProviders = useMemo(() => {
-    const task = modelType as AITask;
-    const allowedSpecialties = TASK_SPECIALTY_MAP[task];
-
-    return modelProviders
-      .filter((p) => p.isEnabled !== false)
-      .map((p) => ({
-        ...p,
-        models: p.models.filter((m) => {
-          // ✅ OR-based matching
-          const specialtyMatch = m.specialty.some((s) =>
-            allowedSpecialties.includes(s),
-          );
-
-          const availabilityMatch = is_byok_enabled.value ? true : m.available;
-
-          return specialtyMatch && availabilityMatch;
-        }),
-      }))
-      .filter((p) => p.models.length > 0);
-  }, [is_byok_enabled.value, modelType]);
-
-  // 2. Get models for the currently selected provider
-  const currentProvider = filteredProviders.find(
-    (p) => p.value === providerField.value,
+  const { models } = useModelProviderStore(
+    useShallow((state) => ({ models: state.models })),
   );
-  const availableModels = currentProvider?.models || [];
 
   return (
     <>
@@ -134,7 +81,7 @@ const LLMConfiguration = ({ form, modelType }: LLMConfigurationProps) => {
                       </SelectTrigger>
                       <SelectContent>
                         {import.meta.env.MODE !== "production"
-                          ? availableModels.map((model) => (
+                          ? models.map((model) => (
                               <SelectItem key={model.value} value={model.value}>
                                 {model.value}
                               </SelectItem>

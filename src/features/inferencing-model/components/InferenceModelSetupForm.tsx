@@ -65,7 +65,7 @@ const InferenceModelSetupForm = () => {
             categories: [{ name: "", instructions: "", subCategories: [] }],
             allowMultipleClasses: false,
           },
-          isByokEnabled: false,
+          isBYOKEnabled: false,
           provider: "openai",
           model:
             import.meta.env.MODE !== "production"
@@ -86,7 +86,7 @@ const InferenceModelSetupForm = () => {
             totalMaximumWords: 0,
             totalMinimumWords: 0,
           },
-          isByokEnabled: false,
+          isBYOKEnabled: false,
           provider: "openai",
           model:
             import.meta.env.MODE !== "production"
@@ -105,7 +105,7 @@ const InferenceModelSetupForm = () => {
           setupObject: {
             categories: [{ name: "", instructions: "", subCategories: [] }],
           },
-          isByokEnabled: false,
+          isBYOKEnabled: false,
           provider: "openai",
           model:
             import.meta.env.MODE !== "production"
@@ -124,7 +124,7 @@ const InferenceModelSetupForm = () => {
           setupObject: {
             questionAnswers: [{ name: "", instructions: "" }],
           },
-          isByokEnabled: false,
+          isBYOKEnabled: false,
           provider: "openai",
           model:
             import.meta.env.MODE !== "production"
@@ -144,7 +144,7 @@ const InferenceModelSetupForm = () => {
             fields: [{ name: "", type: "", instructions: "" }],
             tables: null,
           },
-          isByokEnabled: false,
+          isBYOKEnabled: false,
           provider: "openai",
           model:
             import.meta.env.MODE !== "production"

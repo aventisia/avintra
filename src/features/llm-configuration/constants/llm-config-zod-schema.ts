@@ -14,7 +14,7 @@ export const llmConfigZodSchema = z.object({
     .string()
     .min(1, { message: reqError("Provider") })
     .default("openai"),
-  isByokEnabled: z.boolean().default(false),
+  isBYOKEnabled: z.boolean().default(false),
   isJsonOutput: z.boolean().default(false),
   maxOutputToken: z.number().default(50),
 });

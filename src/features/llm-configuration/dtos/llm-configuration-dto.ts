@@ -2,7 +2,7 @@ export interface ILLMConfiguration {
   nodePrompt: string;
   model: string;
   provider: string;
-  isByokEnabled?: boolean;
+  isBYOKEnabled?: boolean;
   credentialId?: string;
   isJsonOutput?: boolean;
   temperature: number;
