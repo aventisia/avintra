@@ -163,6 +163,7 @@ public class TenantSubscriptionService : ITenantSubscriptionService
             // Map DTO to entity
             var newSubscription = tenantSubscriptionDto.Adapt<TenantSubscription>();
             newSubscription.MaxCredits = subscriptionPlan.MaxCredits;
+            newSubscription.TenantId = _tenantId;
             newSubscription.MaxPublishedItems = subscriptionPlan.MaxPublishedItems;
             newSubscription.MaxSpaces = subscriptionPlan.MaxSpaces;
             newSubscription.MaxUsers = subscriptionPlan.MaxUsers;
@@ -428,6 +429,7 @@ public class TenantSubscriptionService : ITenantSubscriptionService
             tenantSubscription.Status = SubscriptionStatusTypesEnum.Initiated;
             tenantSubscription.PlanId = tenantSubscriptionPurchaseDto.PlanId;
             tenantSubscription.IsActive = false;
+            tenantSubscription.TenantId = _tenantId;
             tenantSubscription.NextBillingDate = DateTimeOffset.UtcNow.Date;
             tenantSubscription.MaxCredits = subscriptionPlan.MaxCredits;
             tenantSubscription.MaxPublishedItems = subscriptionPlan.MaxPublishedItems;
