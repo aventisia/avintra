@@ -1,0 +1,28 @@
+meta {
+  name: Delete multiple tenant instance
+  type: http
+  seq: 13
+}
+
+post {
+  url: {{GLOBAL_ADMIN_BASE_URL}}/onprem/instance/delete-multiple
+  body: json
+  auth: inherit
+}
+
+body:json {
+  ["{{TENANT_INSTANCE_ID}}"]
+}
+
+script:post-response {
+  if(res.getStatus() == 200){
+      bru.setGlobalEnvVar(
+          "TENANT_INSTANCE_ID","00000000-0000-0000-0000-000000000000"
+      );
+  }
+}
+
+settings {
+  encodeUrl: true
+  timeout: 0
+}

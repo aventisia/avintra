@@ -1,0 +1,31 @@
+meta {
+  name: Insert onprem model
+  type: http
+  seq: 2
+}
+
+post {
+  url: {{WORC_APIS_BASE_URL}}/onprem-model
+  body: json
+  auth: none
+}
+
+body:json {
+  {
+    "name": "Ollama Model",
+    "description": "Description for the ollama model.",
+    "modelName": "sample_model:1b",
+    "providerType": "Ollama",
+    "providerUrl": "https://api.ollama.com",
+    "status": "Downloading"
+  }
+  
+}
+
+script:post-response {
+  if(res.getStatus() == 200){
+      bru.setGlobalEnvVar("ON_PREM_MODEL_ID",res.getBody().data.id);
+      bru.setGlobalEnvVar("SEARCH_KEY",res.getBody().data.name);
+      bru.setGlobalEnvVar("ON_PREM_MODEL_NAME",res.getBody().data.name);
+  }
+}

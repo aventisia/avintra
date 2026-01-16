@@ -1,0 +1,29 @@
+meta {
+  name: Send whatsapp message
+  type: http
+  seq: 2
+}
+
+post {
+  url: {{WORC_APIS_BASE_URL}}/cloud-connector/twilio/invoke
+  body: json
+  auth: none
+}
+
+body:json {
+  {
+    "agentId": "00000000-0000-0000-0000-000000000000",
+    "agentName": "Test",
+    "provider": "Twilio",
+    "action": "SendWhatsAppMessage",
+    "credentialId": "DUMMY",
+    "payload": {  
+      //"recipientType": "PhoneNumber", // MessagingServiceSID
+      //"recipientTypeValue": "+14155238886",
+      "recipientType": "MessagingServiceSID", //"PhoneNumber"
+      "recipientTypeValue": "MG98ef2721dd9513223b48a75bb2278cb3",
+      "toNumber": "+918924033961",
+      "messageBody": "Hello, Test the Whatsapp message from the twilio service " 
+    }
+  }
+}
