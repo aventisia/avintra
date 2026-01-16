@@ -6,16 +6,20 @@ namespace WorkspaceAPIs.Services;
 public interface IJobTableService
 {
     /// <summary>
-    /// Retrieves a list of all jobs.
+    /// Retrieves a list of all jobs between optional start and end date filters.
     /// </summary>
+    /// <param name="startDate">The optional start date filter.</param>
+    /// <param name="endDate">The optional end date filter.</param>
     /// <returns>A task representing the service response with the job details.</returns>
-    Task<ServiceResponse<IEnumerable<JobTableDto>>> GetJobsAsync();
+    Task<ServiceResponse<IEnumerable<JobTableDto>>> GetJobsAsync(DateTimeOffset? startDate, DateTimeOffset? endDate);
 
     /// <summary>
-    /// Retrieves a list of all job logs.
+    /// Retrieves a list of all job logs between optional start and end date filters.
     /// </summary>
+    /// <param name="startDate">The optional start date filter.</param>
+    /// <param name="endDate">The optional end date filter.</param>
     /// <returns>A task representing the service response with the job log details.</returns>
-    Task<ServiceResponse<IEnumerable<JobExecutionLogDto>>> GetJobLogsAsync();
+    Task<ServiceResponse<IEnumerable<JobExecutionLogDto>>> GetJobLogsAsync(DateTimeOffset? startDate, DateTimeOffset? endDate);
 
     /// <summary>
     /// Fetches a job by its unique identifier.

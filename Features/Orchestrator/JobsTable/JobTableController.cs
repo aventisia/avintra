@@ -12,15 +12,19 @@ public class JobController : BaseApiController
     }
 
     [HttpGet("list")]
-    public async Task<ActionResult<ServiceResponse<IEnumerable<JobTableDto>>>> GetJobs()
+    public async Task<ActionResult<ServiceResponse<IEnumerable<JobTableDto>>>> GetJobs(
+        [FromQuery] DateTimeOffset? startDate,
+        [FromQuery] DateTimeOffset? endDate)
     {
-        return ResultHelper(await _jobTableService.GetJobsAsync());
+        return ResultHelper(await _jobTableService.GetJobsAsync(startDate, endDate));
     }
 
     [HttpGet("logs/list")]
-    public async Task<ActionResult<ServiceResponse<IEnumerable<JobExecutionLogDto>>>> GetJobLogs()
+    public async Task<ActionResult<ServiceResponse<IEnumerable<JobExecutionLogDto>>>> GetJobLogs(
+        [FromQuery] DateTimeOffset? startDate,
+        [FromQuery] DateTimeOffset? endDate)
     {
-        return ResultHelper(await _jobTableService.GetJobLogsAsync());
+        return ResultHelper(await _jobTableService.GetJobLogsAsync(startDate, endDate));
     }
 
     [HttpGet("{jobId}")]
