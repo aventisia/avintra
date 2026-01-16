@@ -49,12 +49,12 @@ public class ExportJobResponseDto
     /// <summary>
     /// Gets or sets the trigger type for the job (e.g., manual, API, event-based).
     /// </summary>
-    public TriggerTypesEnum TriggerType { get; set; } = TriggerTypesEnum.None;
+    public string? TriggerType { get; set; }
 
     /// <summary>
     /// Gets or sets the priority level of the job (e.g., Normal, High).
     /// </summary>
-    public JobPriorityTypesEnum Priority { get; set; } = JobPriorityTypesEnum.Normal;
+    public string? Priority { get; set; }
 
     /// <summary>
     /// Gets or sets the timestamp when the job execution started.
@@ -88,7 +88,7 @@ public class ExportJobResponseDto
     /// <summary>
     /// Gets or sets the current status of the job (e.g., Running, Completed, Failed, Canceled).
     /// </summary>
-    public JobStatusTypesEnum Status { get; set; }
+    public string? Status { get; set; }
 
     /// <summary>
     /// Gets or sets the unique identifier of the machine where the job is being executed.
