@@ -88,7 +88,6 @@ public static class AppServicesExtension
         services.AddSingleton(Guard.Against.Null(config.GetSection("InstanceConfig").Get<InstanceConfig>(), message: "InstanceConfig cannot be null"));
 
         // Feature services
-        services.AddScoped<ICreateAccountService, CreateAccountService>();
         services.AddScoped<IUserRegistrationService, UserRegistrationService>();
         services.AddScoped<IVerificationCodeService, VerificationCodeService>();
         services.AddScoped<IContactUsService, ContactUsService>();
