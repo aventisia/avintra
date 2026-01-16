@@ -10,7 +10,6 @@ import {
   ConfigPanelOuputField,
   DCPFieldSchemaType,
 } from "..";
-import { ModelSelectField } from "./fields-for-form/ModelSelectField";
 import { CredentialsSelectField } from "./fields-for-form/CredentialsSelectField";
 import { ConfigPanelModelOutputField } from "./fields-for-form/ConfigPanelModelOutputField";
 import { ModelConfigField } from "./fields-for-form/ModelConfigField";
@@ -62,8 +61,6 @@ export const RenderField = (field: DCPFieldSchemaType) => {
       return <ConditionGroupsField {...field} />;
     case "config-panel-output":
       return <ConfigPanelOuputField {...baseProps} />;
-    case "model-select":
-      return <ModelSelectField {...baseProps} />;
     case "credentials-select":
       return <CredentialsSelectField {...baseProps} />;
     case "config-panel-model-output":
