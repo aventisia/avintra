@@ -81,7 +81,7 @@ public static class AppServicesExtension
         // Signleton
         services.AddSingleton(Guard.Against.Null(config.GetSection("SmtpConfig").Get<SmtpConfig>(), "SmtpConfig cannot be null"));
         services.AddSingleton(Guard.Against.Null(config.GetSection("TenantDefaultConfig").Get<TenantDefaultConfig>(), "TenantDefaultConfig cannot be null"));
-        services.AddSingleton(Guard.Against.Null(config.GetSection("DefaultUsersConfig").Get<DefaultUsersConfig>(), "DefaultUsersConfig cannot be null"));
+        services.AddSingleton(Guard.Against.Null(config.GetSection("DefaultUserConfig").Get<DefaultUserConfig>(), "DefaultUserConfig cannot be null"));
         services.AddSingleton(Guard.Against.Null(config.GetSection("IdentityConfig").Get<IdentityConfig>(), "IdentityConfig cannot be null"));
         services.AddSingleton(Guard.Against.Null(config.GetSection("VerificationCodeConfig").Get<VerificationCodeConfig>(), "VerificationCodeConfig cannot be null"));
         services.AddSingleton(Guard.Against.Null(config.GetSection("ExternalAPIsConfig").Get<ExternalAPIsConfig>(), "ExternalAPIsConfig cannot be null"));
