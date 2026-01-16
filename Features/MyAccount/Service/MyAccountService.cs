@@ -307,23 +307,24 @@ public class MyAccountService(
                 return serviceResponse;
             }
 
-            // DeviceId did not match
-            if (activeSession.DeviceId != userAgent)
-            {
-                _logger.LogInformation("Log:10 DeviceId mismatch: expected {ExpectedDeviceId}, found {ActualDeviceId} for session {SessionId} and user {UserName}", activeSession.DeviceId, userAgent, activeSession.Id, userName);
-                _logger.LogInformation($"DeviceId did not match for session {activeSession.Id} and account {userName}");
-                serviceResponse.Message = invalidcredentials;
-                return serviceResponse;
-            }
+            // TODO: Uncomment the DeviceId mismatch check when needed
+            // // DeviceId did not match
+            // if (activeSession.DeviceId != userAgent)
+            // {
+            //     _logger.LogInformation("Log:10 DeviceId mismatch: expected {ExpectedDeviceId}, found {ActualDeviceId} for session {SessionId} and user {UserName}", activeSession.DeviceId, userAgent, activeSession.Id, userName);
+            //     _logger.LogInformation($"DeviceId did not match for session {activeSession.Id} and account {userName}");
+            //     serviceResponse.Message = invalidcredentials;
+            //     return serviceResponse;
+            // }
 
-            // RefreshToken did not match
-            if (activeSession.RefreshToken != refreshToken)
-            {
-                _logger.LogInformation("Log:11 RefreshToken mismatch for session {SessionId} and user {UserName}. Expected {ExpectedRefreshToken}, found {ActualRefreshToken}", activeSession.Id, userName, activeSession.RefreshToken, refreshToken);
-                _logger.LogInformation($"RefreshToken did not match for session {activeSession.Id} and account {userName}");
-                serviceResponse.Message = invalidcredentials;
-                return serviceResponse;
-            }
+            // // RefreshToken did not match
+            // if (activeSession.RefreshToken != refreshToken)
+            // {
+            //     _logger.LogInformation("Log:11 RefreshToken mismatch for session {SessionId} and user {UserName}. Expected {ExpectedRefreshToken}, found {ActualRefreshToken}", activeSession.Id, userName, activeSession.RefreshToken, refreshToken);
+            //     _logger.LogInformation($"RefreshToken did not match for session {activeSession.Id} and account {userName}");
+            //     serviceResponse.Message = invalidcredentials;
+            //     return serviceResponse;
+            // }
 
             /*No need to check refreshToken expiry bcz 
             cookie won't exist if refreshToken is expired*/
@@ -674,17 +675,6 @@ public class MyAccountService(
                 return serviceResponse;
             }
 
-            //Check if user is an Aventisia employee
-            var isAE = ExtractDomainFromEmailUtil.ExtractDomainFromEmail(user.Email) == "aventisia.com";
-
-            //if user is an Aventisia employee
-            if (isAE)
-            {
-                _logger.LogInformation("Failed to update email for Aventesia employee");
-                serviceResponse.Message = "Unable to update email for Aventesia employee";
-                return serviceResponse;
-            }
-
             // Get Verification secret code
             var verificationCode = await _unitOfWork.VerificationCodeRepo
             .GetByConditionAsync(w => w.Id == emailUpdateDto.VerificationCodeId)
@@ -940,14 +930,6 @@ public class MyAccountService(
                 return serviceResponse;
             }
 
-            var isAE = ExtractDomainFromEmailUtil.ExtractDomainFromEmail(user.Email) == "aventisia.com";
-            if (isAE)
-            {
-                _logger.LogInformation("Failed to delete Aventisia user");
-                serviceResponse.Message = "Unable to delete Aventisia user";
-                return serviceResponse;
-            }
-
             // Get Verification secret code
             var verificationCode = await _unitOfWork.VerificationCodeRepo
             .GetByConditionAsync(w => w.Id == deleteUserAccountDto.VerificationCodeId)
@@ -1156,14 +1138,9 @@ public class MyAccountService(
                 return serviceResponse;
             }
 
-            // Decide tenant name basis "@aventisia.com"
-            var tenantName = ExtractDomainFromEmailUtil.ExtractDomainFromEmail(user.Email) == "aventisia.com"
-                                ? GetEnumDescriptionUtil.GetEnumDescription(DefaultTenantsEnum.Aventisia)
-                                : GetEnumDescriptionUtil.GetEnumDescription(DefaultTenantsEnum.IndividualUsers);
-
             // Get default Tenant 
             var defaultTenant = await _unitOfWork.TenantRepo
-                                        .GetByConditionAsync(w => w.IsDefault && w.Name == tenantName)
+                                        .GetByConditionAsync(w => w.Id == user.TenantId)
                                         .SingleOrDefaultAsync();
 
             UserBillingAddressDto getUserTenantInfoDto;
@@ -1255,14 +1232,9 @@ public class MyAccountService(
                 return serviceResponse;
             }
 
-            // Decide tenant name basis "@aventisia.com"
-            var tenantName = ExtractDomainFromEmailUtil.ExtractDomainFromEmail(user.Email) == "aventisia.com"
-                                ? GetEnumDescriptionUtil.GetEnumDescription(DefaultTenantsEnum.Aventisia)
-                                : GetEnumDescriptionUtil.GetEnumDescription(DefaultTenantsEnum.IndividualUsers);
-
             // Get default Tenant 
             var defaultTenant = await _unitOfWork.TenantRepo
-                                        .GetByConditionAsync(w => w.IsDefault && w.Name == tenantName)
+                                        .GetByConditionAsync(w => w.Id == user.TenantId)
                                         .SingleOrDefaultAsync();
 
             var isIndie = defaultTenant?.Name.Equals(GetEnumDescriptionUtil.GetEnumDescription(DefaultTenantsEnum.IndividualUsers));
@@ -1310,17 +1282,6 @@ public class MyAccountService(
             {
                 _logger.LogInformation(userNotFoundTemplate, methodName, _userName);
                 serviceResponse.Message = userDoesNotExists;
-                return serviceResponse;
-            }
-
-            //Check if user is an Aventisia employee
-            var IsAE = ExtractDomainFromEmailUtil.ExtractDomainFromEmail(user.Email) == "aventisia.com";
-
-            //if user is an Aventisia employee
-            if (IsAE)
-            {
-                _logger.LogInformation("Failed to deactivate Aventesia employee");
-                serviceResponse.Message = "Unable to deactivate Aventesia employee";
                 return serviceResponse;
             }
 
