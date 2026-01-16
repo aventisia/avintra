@@ -179,7 +179,7 @@ export interface LLMResponseDto {
   /**
    * Top-p value used for the response generation.
    */
-  topP: number;
+  top_p: number;
 
   /**
    * Indicates if the response was streamed.
@@ -219,7 +219,7 @@ export interface LLMResponseDto {
   /**
    * Flag to indicate if BYOK is enabled.
    */
-  isByokEnabled?: boolean;
+  is_byok_enabled?: boolean;
 
   /**
    * Credential ID for BYOK.

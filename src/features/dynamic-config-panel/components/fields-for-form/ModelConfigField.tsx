@@ -33,15 +33,15 @@ const ModelConfigField = ({ name }: ModelConfigFieldProps) => {
 
   // ---------------- Field names ----------------
   const fieldNames = {
-    isByokEnabled: `${name}.isByokEnabled`,
-    credentials: `${name}.credentials`,
+    is_byok_enabled: `${name}.is_byok_enabled`,
+    credential_id: `${name}.credential_id`,
     provider: `${name}.provider`,
     model: `${name}.model`,
     temperature: `${name}.temperature`,
-    topP: `${name}.topP`,
+    top_p: `${name}.top_p`,
     voice: `${name}.voice`,
-    isJsonOutput: `${name}.isJsonOutput`,
-    maxOutputToken: `${name}.maxOutputToken`,
+    is_json_output: `${name}.is_json_output`,
+    max_output_tokens: `${name}.max_output_tokens`,
   } as const satisfies Record<string, FieldPath<FieldValues>>;
 
   // ---------------- Form context ----------------
@@ -64,23 +64,23 @@ const ModelConfigField = ({ name }: ModelConfigFieldProps) => {
   });
 
   const { field: topPField } = useController({
-    name: fieldNames.topP,
+    name: fieldNames.top_p,
     control,
   });
 
   const { field: isByokField } = useController({
-    name: fieldNames.isByokEnabled,
+    name: fieldNames.is_byok_enabled,
     control,
   });
 
   const { field: credentialsField } = useController({
-    name: fieldNames.credentials,
+    name: fieldNames.credential_id,
     control,
   });
 
   // ---------------- Derived values ----------------
   const providerValue = providerField.value;
-  const isByokEnabled = Boolean(isByokField.value);
+  const is_byok_enabled = Boolean(isByokField.value);
   const credentialsValue = credentialsField.value;
 
   // ---------------- 1. Non-BYOK providers ----------------
@@ -105,7 +105,7 @@ const ModelConfigField = ({ name }: ModelConfigFieldProps) => {
 
   // ---------------- 2. RESET on BYOK toggle OR provider change ----------------
   useEffect(() => {
-    setValue(fieldNames.credentials, undefined, { shouldDirty: true });
+    setValue(fieldNames.credential_id, undefined, { shouldDirty: true });
     setValue(fieldNames.model, undefined, { shouldDirty: true });
     
   }, [ providerValue]);
@@ -154,14 +154,14 @@ const ModelConfigField = ({ name }: ModelConfigFieldProps) => {
 
   // ---------------- 4. Available models ----------------
   const availableModels = useMemo(() => {
-    if (isByokEnabled) {
+    if (is_byok_enabled) {
       return byokModels;
     }
 
     const provider = filteredProviders.find((p) => p.value === providerValue);
 
     return provider?.models ?? [];
-  }, [isByokEnabled, byokModels, filteredProviders, providerValue]);
+  }, [is_byok_enabled, byokModels, filteredProviders, providerValue]);
 
   // ---------------- 5. Current model ----------------
   const currentModel = useMemo(() => {
@@ -179,7 +179,7 @@ const ModelConfigField = ({ name }: ModelConfigFieldProps) => {
     <div className="w-full space-y-3.5">
       <SwitchField
         size="sm"
-        name={fieldNames.isByokEnabled}
+        name={fieldNames.is_byok_enabled}
         label="Bring your own API key"
         description="Enable this if you want to use your own LLM provider API key instead of the platform-hosted models."
       />
@@ -191,9 +191,9 @@ const ModelConfigField = ({ name }: ModelConfigFieldProps) => {
         label="Model Provider"
       />
 
-      {isByokEnabled && (
+      {is_byok_enabled && (
         <CredentialsSelectField
-          name={fieldNames.credentials}
+          name={fieldNames.credential_id}
           size="sm"
           label={`${currentProvider?.label ?? ""} Credentials`}
           modelProvider={
@@ -257,13 +257,13 @@ const ModelConfigField = ({ name }: ModelConfigFieldProps) => {
 
             <SwitchField
               size="sm"
-              name={fieldNames.isJsonOutput}
+              name={fieldNames.is_json_output}
               label="Is JSON Output"
               description="Enable this if you want to output in Json format."
             />
 
             <InputField
-              name={fieldNames.maxOutputToken}
+              name={fieldNames.max_output_tokens}
               type="number"
               label="Max Output Token"
               fieldSize="sm"

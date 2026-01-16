@@ -11,14 +11,14 @@ import { UseMutateFunction } from "@tanstack/react-query";
 import { useShallow } from "zustand/react/shallow";
 
 interface ModelConfigType {
-  isByokEnabled: boolean;
+  is_byok_enabled: boolean;
   provider: string;
-  credentials: string;
+  credential_id: string;
   model: string;
   temperature: number;
-  topP: number;
-  isJsonOutput: boolean;
-  maxOutputToken: number;
+  top_p: number;
+  is_json_output: boolean;
+  max_output_tokens: number;
 }
 
 interface ExecutionButtonProps {
@@ -48,9 +48,11 @@ const ExecuteButton = ({
   function mapNodeDataToLLMRequest(data: {
     [x: string]: unknown;
   }): LLMRequestDto {
-    // Extract prompt from the form data.
-    const input = Object.keys(data).find((k) => k.includes("prompt"))
-      ? (data[Object.keys(data).find((k) => k.includes("prompt"))!] as string)
+    // Extract __Prompt__ from the form data.
+    const input = Object.keys(data).find((k) => k.includes("__Prompt__"))
+      ? (data[
+          Object.keys(data).find((k) => k.includes("__Prompt__"))!
+        ] as string)
       : "";
 
     let files: string[] | undefined;
@@ -79,15 +81,15 @@ const ExecuteButton = ({
     const requestDto: LLMRequestDto = {
       provider: modelConfig.provider as ProviderLiteral,
       model: modelConfig.model,
-      input: input, // The prompt value
+      input: input, // The __Prompt__ value
       files: files,
-      is_json_output: modelConfig.isJsonOutput,
+      is_json_output: modelConfig.is_json_output,
       json_schema: null,
-      max_output_tokens: modelConfig.maxOutputToken,
-      is_byok_enabled: modelConfig.isByokEnabled,
-      credential_id: modelConfig.credentials || null,
+      max_output_tokens: modelConfig.max_output_tokens,
+      is_byok_enabled: modelConfig.is_byok_enabled,
+      credential_id: modelConfig.credential_id || null,
       temperature: modelConfig.temperature,
-      top_p: modelConfig.topP,
+      top_p: modelConfig.top_p,
       stream: false,
       ref_id: currentFlow.id, // Reference the currentFlow
       ref_name: currentFlow.name, // Reference the currentFlow
