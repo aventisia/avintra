@@ -30,10 +30,15 @@ public class JobTableMappingProfile : IRegister
             .IgnoreNullValues(true);
 
         config.NewConfig<JobExecutionLogDto, Job>()
-           .Ignore(dest => dest.Id)
-           .Ignore(dest => dest.RetryCount)
-           .Ignore(dest => dest.TenantId)
-           .Ignore(dest => dest.CreatedOn)
-           .IgnoreNullValues(true);
+            .Ignore(dest => dest.Id)
+            .Ignore(dest => dest.RetryCount)
+            .Ignore(dest => dest.TenantId)
+            .Ignore(dest => dest.CreatedOn)
+            .IgnoreNullValues(true);
+
+        config.NewConfig<Job, ExportJobResponseDto>()
+            .Map(dest => dest.CreatedOn, src => src.CreatedOn.Date.ToString("dd/MM/yyyy"))
+            .Map(dest => dest.Name, src => src.FlowVersion != null && src.FlowVersion.Flow != null ? src.FlowVersion.Flow.Name : string.Empty)
+            .Map(dest => dest.MachineName, src => src.Machine != null ? src.Machine.Name : string.Empty);
     }
 }
