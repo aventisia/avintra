@@ -684,4 +684,108 @@ public class JobTableService : IJobTableService
         // Return the final response to the caller.
         return serviceResponse;
     }
+
+    public async Task<ServiceResponse<FileStreamResult>> ExportJobsAsync(ExportJobRequestDto exportJobRequestDto)
+    {
+        // Initialize ServiceResponse with a failure response
+        var serviceResponse = new ServiceResponse<FileStreamResult>
+        {
+            Data = null,
+            Message = "Failed to export job data. Please try again."
+        };
+
+        try
+        {
+            // Check if StartDate or EndDate are not provided (null)
+            if (!exportJobRequestDto.StartDate.HasValue || !exportJobRequestDto.EndDate.HasValue)
+            {
+                // Set default values if dates are missing
+                exportJobRequestDto.EndDate = DateTime.UtcNow.Date;
+                exportJobRequestDto.StartDate = DateTime.UtcNow.Date.AddDays(-6);
+            }
+
+            // Initialize the base query with date filter
+            var jobQuery = _unitOfWork.JobRepo
+                .GetByConditionAsync(w =>
+                    w.CreatedOn.Date >= exportJobRequestDto.StartDate.Value.Date &&
+                    w.CreatedOn.Date <= exportJobRequestDto.EndDate.Value.Date
+                )
+                .OrderByDescending(o => o.CreatedOn)
+                .AsQueryable();
+
+            // Apply filters based on optional criteria in the request DTO
+
+            // Filter by Job Status if specified
+            if (exportJobRequestDto.Status.HasValue)
+            {
+                jobQuery = jobQuery.Where(w => w.Status == exportJobRequestDto.Status.Value);
+            }
+
+            // Filter by Job Priority if specified
+            if (exportJobRequestDto.Priority.HasValue)
+            {
+                jobQuery = jobQuery.Where(w => w.Priority == exportJobRequestDto.Priority.Value);
+            }
+
+            // Filter by Machine IDs if provided
+            if (exportJobRequestDto.MachineIds?.Any() == true)
+            {
+                jobQuery = jobQuery.Where(w => w.MachineId != null && exportJobRequestDto.MachineIds.Contains(w.MachineId ?? Guid.Empty));
+            }
+
+            // Filter by Agent IDs if provided
+            if (exportJobRequestDto.AgentIds?.Any() == true)
+            {
+                jobQuery = jobQuery.Where(w => exportJobRequestDto.AgentIds.Contains(w.FlowVersionId));
+            }
+
+            // Fetch and map filtered jobs to DTOs for export
+            var jobs = await jobQuery
+                .Include(i => i.Machine)
+                .Include(i => i.FlowVersion)
+                    .ThenInclude(i2 => i2.Flow)
+                .ProjectToType<ExportJobResponseDto>()
+                .ToListAsync();
+
+            // Log the count of jobs being exported
+            _logger.LogInformation("Exporting {Count} job(s) based on applied filters.", jobs.Count);
+
+            // Convert the retrieved data to CSV byte array for file export
+            var csvBytes = CsvDataExporterUtil.ExportToCsvBytes(jobs, new List<string>
+            {
+                "Job Name",
+                "Priority",
+                "Trigger Type",
+                "Start Time",
+                "End Time",
+                "Duration",
+                "Retry",
+                "Current Status",
+                "Machine Name",
+                "Created On",
+            });
+
+            var stream = new MemoryStream(csvBytes);
+
+            // Prepare the file result for export
+            var fileResult = new FileStreamResult(stream, "text/csv")
+            {
+                FileDownloadName = $"job-data-{DateTime.UtcNow:dd-MM-yyyy}.csv"
+            };
+
+            // Update the service response with the file stream
+            serviceResponse.Data = fileResult;
+            serviceResponse.StatusCode = 200;
+            serviceResponse.Message = "Job data exported successfully.";
+
+            _logger.LogInformation("Job export completed. File generated: {FileName}", fileResult.FileDownloadName);
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex, "An error occurred while exporting job data.");
+            serviceResponse.Message = "An error occurred while processing the export. Please try again later.";
+        }
+
+        return serviceResponse;
+    }
 }

@@ -81,4 +81,16 @@ public class JobController : BaseApiController
     {
         return ResultHelper(await _jobTableService.AbortJobExecutionAsync(jobExecutionDto));
     }
+
+    // Exports jobs data into a CSV file
+    [HttpPost("export")]
+    public async Task<ActionResult> ExportJobs(ExportJobRequestDto exportJobRequestDto)
+    {
+        var exportedData = await _jobTableService.ExportJobsAsync(exportJobRequestDto);
+        if (exportedData.StatusCode == 200 && exportedData.Data != null)
+        {
+            return exportedData.Data;
+        }
+        return ResultHelper(exportedData);
+    }
 }

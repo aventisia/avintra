@@ -86,4 +86,11 @@ public interface IJobTableService
     /// <param name="jobExecutionDto">The details of the job execution, including the OS ID and flow version ID.</param>
     /// <returns>A service response that indicates whether the job abortion was successful or not.</returns>
     Task<ServiceResponse<bool>> AbortJobExecutionAsync(JobExecutionDto jobExecutionDto);
+
+    /// <summary>
+    /// Exports job data as a CSV file based on the filters specified in the provided request DTO.
+    /// </summary>
+    /// <param name="exportJobRequestDto">The DTO containing optional filters such as job priority, status, agent IDs, machine IDs, and date range to filter the job data.</param>
+    /// <returns>A service response containing the CSV file stream of the filtered job data.</returns>
+    Task<ServiceResponse<FileStreamResult>> ExportJobsAsync(ExportJobRequestDto exportJobRequestDto);
 }
