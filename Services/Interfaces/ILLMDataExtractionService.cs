@@ -15,13 +15,11 @@ public interface ILLMDataExtractionService
     Task<ServiceResponse<bool>> HasSufficientCreditsAsync();
 
     /// <summary>
-    /// Sends text to an LLM with a prompt and returns the result as plain text.
+    /// Sends a prompt to a large language model (LLM) and retrieves the generated output as plain text.
     /// </summary>
-    /// <param name="prompt">The prompt or question for the LLM.</param>
-    /// <param name="llmModel">The LLM model to use.</param>
-    /// <param name="modelTemperature">Controls how focused or creative the response is (0–1).</param>
-    /// <returns>The LLM’s response as text.</returns>
-    Task<ServiceResponse<string>> ExtractDataAsync(string prompt, string llmModel, double modelTemperature, UsageSourceTypesEnum refType, Guid refId, string refName, ActionTypesEnum actionType, string? triggeredByAgent, object? ollamaOutputFormatSchema = null, bool isJsonOutput = true);
+    /// <param name="llmRequest">The request containing the prompt, model details, and configuration settings for the LLM.</param>
+    /// <returns>A <see cref="ServiceResponse{string}"/> containing the LLM’s generated text response.</returns>
+    Task<ServiceResponse<string>> ExtractDataAsync(LLMRequest llmRequest);
 
     /// <summary>
     /// Extracts plain text from a file at the given URL.

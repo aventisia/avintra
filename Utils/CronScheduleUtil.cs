@@ -15,14 +15,24 @@ public static class CronScheduleUtil
     bool isLastWorkingDay = false)
     {
         // Convert local time → UTC
-        var tz = TimeZoneInfo.FindSystemTimeZoneById(timezone);
-        var localTime = localTimeOfDay ?? new TimeOnly(0, 0);
-        var localDateTime = DateTime.SpecifyKind(DateTime.Today.Add(localTime.ToTimeSpan()), DateTimeKind.Unspecified);
-        var localOffset = new DateTimeOffset(localDateTime, tz.GetUtcOffset(localDateTime));
-        var utcTime = localOffset.ToUniversalTime();
+        // var tz = TimeZoneInfo.FindSystemTimeZoneById(timezone);
+        // var localTime = localTimeOfDay ?? new TimeOnly(0, 0);
+        // var localDateTime = DateTime.SpecifyKind(DateTime.Today.Add(localTime.ToTimeSpan()), DateTimeKind.Unspecified);
+        // var localOffset = new DateTimeOffset(localDateTime, tz.GetUtcOffset(localDateTime));
+        // var utcTime = localOffset.ToUniversalTime();
 
-        int utcHour = utcTime.Hour;
-        int utcMinute = utcTime.Minute;
+        // Check if the provided time is already UTC (assumed from your note)
+        // localTimeOfDay is already in UTC, no need to convert
+        DateTime? utcDateTime = null;
+
+        // If localTimeOfDay is not null, it is in UTC and we don't need to convert
+        if (localTimeOfDay.HasValue)
+            utcDateTime = DateTime.SpecifyKind(DateTime.Today.Add(localTimeOfDay.Value.ToTimeSpan()), DateTimeKind.Utc);
+        else
+            utcDateTime = DateTime.UtcNow;
+
+        int utcHour = utcDateTime.Value.Hour;
+        int utcMinute = utcDateTime.Value.Minute;
 
         // Convert weekdays (1=MON ... 7=SUN) → CRON format
         string weekdayPart = "*";
