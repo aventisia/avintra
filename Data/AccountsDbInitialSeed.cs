@@ -13,7 +13,6 @@ public static class AccountsDbInitialSeed
             // Get DefaultUserConfig
             var defaultUserConfig = scope.ServiceProvider.GetRequiredService<DefaultUserConfig>();
             var instanceConfig = scope.ServiceProvider.GetRequiredService<InstanceConfig>();
-            var generalConfig = scope.ServiceProvider.GetRequiredService<GeneralConfig>();
 
             // Get accountsDbContext
             using var _accountsDbContext = scope.ServiceProvider.GetRequiredService<AccountsDbContext>();
@@ -29,7 +28,7 @@ public static class AccountsDbInitialSeed
                 if (!await IsSeedingRequired(_accountsDbContext)) return app;
 
                 // Seed Roles
-                if (!await SeedRolesAsync(_roleManager)) return app;
+                if (!await SeedDefaultRolesAsync(_roleManager)) return app;
 
                 // Seed Super User without tenant
                 var superUser = await SeedSuperUserAsync(_userManager, defaultUserConfig, instanceConfig);
@@ -41,7 +40,7 @@ public static class AccountsDbInitialSeed
                 if (!await SeedPermissionsAsync(_accountsDbContext, superUser)) return app;
 
                 // Seed default tenant
-                var defaultTenant = await SeedDefaultTenantAsync(_accountsDbContext, tenantDefaultConfig, instanceConfig, generalConfig, superUser.Id);
+                var defaultTenant = await SeedDefaultTenantAsync(_accountsDbContext, tenantDefaultConfig, instanceConfig, superUser.Id);
 
                 // Default tenant not seeded
                 if (defaultTenant == null) return app;
@@ -107,7 +106,7 @@ public static class AccountsDbInitialSeed
     }
 
     // Seed roles
-    private async static Task<bool> SeedRolesAsync(RoleManager<AccountRole> roleManager)
+    private async static Task<bool> SeedDefaultRolesAsync(RoleManager<AccountRole> roleManager)
     {
         try
         {
@@ -154,8 +153,10 @@ public static class AccountsDbInitialSeed
                 UserName = defaultUserConfig.Email,
                 Email = defaultUserConfig.Email,
                 EmailConfirmed = true,
-                FirstName = defaultUserConfig.FirstName,
-                LastName = defaultUserConfig.LastName,
+                FirstName = instanceConfig.TenantType.Equals(OnPremTenantTypesEnum.Enterprise.ToString(), StringComparison.InvariantCultureIgnoreCase)
+                        ? "Tenant"
+                        : "Super",
+                LastName = "Admin",
                 PwdSetOn = DateTimeOffset.UtcNow,
                 IsDefault = true,
                 IsEditable = false,
@@ -163,9 +164,22 @@ public static class AccountsDbInitialSeed
                 CreatedByUserId = superUserId,
                 LastModifiedByUserId = superUserId
             };
-            var roles = new List<string>() { nameof(CustomRolesEnum.TA), nameof(CustomRolesEnum.OM), nameof(CustomRolesEnum.TD), nameof(CustomRolesEnum.TU) };
-            if (instanceConfig.TenantType == OnPremTenantTypesEnum.Commercial.ToString())
+
+            // Create a list of default roles to be assigned to the super user.
+            var roles = new List<string>
+            {
+                nameof(CustomRolesEnum.TA),
+                nameof(CustomRolesEnum.OM),
+                nameof(CustomRolesEnum.TD),
+                nameof(CustomRolesEnum.TU)
+            };
+
+            // Check if the tenant type is 'Enterprise' (case-insensitive comparison)
+            if (instanceConfig.TenantType.Equals(OnPremTenantTypesEnum.Enterprise.ToString(), StringComparison.InvariantCultureIgnoreCase))
+            {
+                // For Enterprise tenants, add the 'SA' role - typically for a role "Super Admin"
                 roles.Add(nameof(CustomRolesEnum.SA));
+            }
 
             // Add supper user & its roles
             var createUserResult = await userManager.CreateAsync(superUser);
@@ -196,18 +210,23 @@ public static class AccountsDbInitialSeed
     }
 
     // Seed default tenants
-    private async static Task<Tenant?> SeedDefaultTenantAsync(AccountsDbContext accountsDbContext, TenantDefaultConfig tenantDefaultConfig, InstanceConfig instanceConfig, GeneralConfig generalConfig, Guid superUserId)
+    private async static Task<Tenant?> SeedDefaultTenantAsync(AccountsDbContext accountsDbContext, TenantDefaultConfig tenantDefaultConfig, InstanceConfig instanceConfig, Guid superUserId)
     {
         try
         {
+            // Attempt to parse the TenantId as a Guid
+            Guid tenantGuid;
+            bool isValidTenantId = Guid.TryParse(instanceConfig.TenantId, out tenantGuid);
+
             // Initialize default tenant
             var newTenant = new Tenant()
             {
+                Id = tenantGuid,
                 ResourceType = TenantResourceTypesEnum.Dedicated,
-                Type = instanceConfig.TenantType.Equals(OnPremTenantTypesEnum.Enterprise.ToString()) ? TenantTypesEnum.Individual : TenantTypesEnum.Organization,
+                Type = TenantTypesEnum.Organization,
                 Currency = CurrencyTypesEnum.USD,
-                Name = generalConfig.Company,
-                ExpiresOn = DateTimeOffset.UtcNow.AddDays(tenantDefaultConfig.InactiveDaysBeforeDataExpires),
+                Name = instanceConfig.TenantName,
+                ExpiresOn = DateTimeOffset.MaxValue,    // TODO: We need to remove or update it
                 IsSSOEnabled = false,
                 IsPwdEnabled = true,
                 IsPwdNeverExpiresEnabled = true,
@@ -218,7 +237,7 @@ public static class AccountsDbInitialSeed
                 IsDefault = true,
                 IsEditable = true,
                 SSOConfigJson = "",
-                DbOption = DatabaseOptionsEnum.Isolated,
+                DbOption = DatabaseOptionsEnum.DedicatedServer,
                 CreatedByUserId = superUserId,
                 LastModifiedByUserId = superUserId
             };
@@ -336,15 +355,20 @@ public static class AccountsDbInitialSeed
                 return true;
             }
 
+            // Prepare plan type based on tenant type
+            SubscriptionPlanTypeEnum planType = instanceConfig.TenantType.Equals(OnPremTenantTypesEnum.Commercial.ToString(), StringComparison.InvariantCultureIgnoreCase) ?
+                SubscriptionPlanTypeEnum.Pro :
+                SubscriptionPlanTypeEnum.None;
+
             // If the plan doesn't exist, create the default subscription plan
             var newSubscriptionPlan = new SubscriptionPlan
             {
                 Name = subscriptionPlanName,
-                Type = instanceConfig.TenantType.Equals(OnPremTenantTypesEnum.Commercial.ToString()) ? SubscriptionPlanTypeEnum.Commercial : SubscriptionPlanTypeEnum.Enterprise,
-                Currency = CurrencyTypesEnum.INR,
+                Type = planType,
+                Currency = CurrencyTypesEnum.USD,
                 Frequency = SubscriptionFrequenciesEnum.Yearly,
                 Status = PlanStatusTypesEnum.Custom,
-                UniqueName = $"{SubscriptionPlanTypeEnum.Enterprise}-{SubscriptionFrequenciesEnum.Yearly}-{CurrencyTypesEnum.INR}".ToLower(),
+                UniqueName = $"{planType}-{SubscriptionFrequenciesEnum.Yearly}-{CurrencyTypesEnum.INR}".ToLower(),
                 MaxPublishedItems = int.MaxValue,
                 MaxSpaces = int.MaxValue,
                 MaxUsers = int.MaxValue,
@@ -362,8 +386,6 @@ public static class AccountsDbInitialSeed
             // Save the changes to the database
             await accountsDbContext.SaveChangesAsync();
 
-            // Successfully seeded the subscription plan
-            Console.WriteLine("Default subscription plan seeded successfully.");
             return true;
         }
         catch (Exception ex)
@@ -425,7 +447,7 @@ public static class AccountsDbInitialSeed
                 Frequency = SubscriptionFrequenciesEnum.Yearly,
                 IsActive = true,
                 Status = SubscriptionStatusTypesEnum.Active,
-                NextBillingDate = DateTimeOffset.UtcNow.AddYears(1),
+                NextBillingDate = DateTimeOffset.MaxValue,
                 MaxCredits = ulong.MaxValue,
                 MaxPublishedItems = int.MaxValue,
                 MaxSpaces = int.MaxValue,
@@ -498,7 +520,7 @@ public static class AccountsDbInitialSeed
                 TenantId = defaultTenant.Id,
                 SubscriptionId = tenantSubscription.Id,
                 AvailableCredits = ulong.MaxValue,
-                ExpiredOn = DateTimeOffset.UtcNow.AddYears(1),
+                ExpiredOn = DateTimeOffset.MaxValue,
                 Type = CreditTypesEnum.Subscription,
                 CreatedByUserId = superUser.Id,
                 LastModifiedByUserId = superUser.Id
