@@ -95,6 +95,7 @@
     <Compile Include="Activities\AppIntegrations\AzureActivities\UploadFileToBlobStorageActivity.cs" />
     <Compile Include="Activities\AppIntegrations\AzureActivities\_AzureCategoryMetaData.cs" />
     <Compile Include="Activities\AppIntegrations\CloudConnectors\ProcessConnectorRequestActivity.cs" />
+    <Compile Include="Activities\AppIntegrations\CloudConnectors\ProcessLLMRequestActivity.cs" />
     <Compile Include="Activities\AppIntegrations\EmailActivities\ProcessEmailMessagesActivity.cs" />
     <Compile Include="Activities\AppIntegrations\EmailActivities\RetrieveEmailMessagesActivity.cs" />
     <Compile Include="Activities\AppIntegrations\EmailActivities\SendEmailActivity.cs" />

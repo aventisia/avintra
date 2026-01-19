@@ -1,5 +1,7 @@
-﻿using CodeActivitiesLibrary.WorkflowLogics.ConditionalsLoopsActivities;
+﻿using CodeActivitiesLibrary.AIIntegrations.AIStudioActivities;
 using CodeActivitiesLibrary.AppIntegrations.CloudConnectorsActivities;
+using CodeActivitiesLibrary.WorkflowLogics.ConditionalsLoopsActivities;
+using DynamicExpresso;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using NodeExecutor.Models;
@@ -14,7 +16,6 @@ using System.Linq.Expressions;
 using System.Reflection;
 using System.Text;
 using System.Text.RegularExpressions;
-using DynamicExpresso;
 
 namespace NodeExecutor.Services
 {
@@ -45,7 +46,7 @@ namespace NodeExecutor.Services
                     throw new InvalidOperationException("Deserialized ActivityNodeData is null.");
                 }
 
-                // If node Type is not CloundConnector then throw exception
+                // If node Type is CloundConnector then convert inputs accordingly
                 if (nodeData.Type == "cloudConnectorNode")
                 {
                     // Process nodeData's inputs to convert them for cloudConnectorNode
@@ -54,7 +55,7 @@ namespace NodeExecutor.Services
                     foreach (var input in nodeData.NodeInputs)
                     {
                         // If input is null or empty, skip
-                        if (string.IsNullOrEmpty(input.Value)) continue;
+                        if (string.IsNullOrEmpty(input.Value?.ToString())) continue;
 
                         // if input key is agentId, agentName, accessToken then skip
                         if (input.Key.Equals("AgentId", StringComparison.OrdinalIgnoreCase) ||
@@ -109,6 +110,77 @@ namespace NodeExecutor.Services
                     // Update nodeData
                     nodeData.NodeInputs = newNodeInputs;
                     nodeData.CodeActivityName = nameof(ProcessConnectorRequestActivity);
+                }
+
+                // If node Type is aiNode then convert inputs accordingly
+                if (nodeData.Type == "aiNode" && nodeData.CodeActivityName != nameof(InvokeInferenceModelWebServiceActivity) && nodeData.CodeActivityName != nameof(OlmOCRActivity))
+                {
+                    // Process nodeData's inputs to convert them for aiNode
+                    var newNodeInputs = new List<NodeInput>();
+                    foreach (var input in nodeData.NodeInputs)
+                    {
+                        // If input is null or empty, skip
+                        if (string.IsNullOrEmpty(input.Value?.ToString())) continue;
+
+                        // if input key is agentId, agentName, accessToken then skip
+                        if (input.Key.Equals("AgentId", StringComparison.OrdinalIgnoreCase) ||
+                            input.Key.Equals("AgentName", StringComparison.OrdinalIgnoreCase) ||
+                            input.Key.Equals("AccessToken", StringComparison.OrdinalIgnoreCase))
+                        {
+                            continue;
+                        }
+
+                        // ModelConfig
+                        if (input.Key.Contains("__ModelConfig__"))
+                        {
+                            input.Key = "ModelConfig";
+                            input.Value = JToken.Parse(input.Value.ToString());
+                        }
+
+                        // Prompt
+                        if (input.Key.Contains("__Prompt__"))
+                        {
+                            input.Key = "Prompt";
+                        }
+
+                        // KbConfig
+                        if (input.Key.Contains("__KbConfig__"))
+                        {
+                            input.Key = "KbConfig";
+                            input.Value = JToken.Parse(input.Value.ToString());
+                        }
+
+                        // MemoryConfig
+                        if (input.Key.Contains("__MemoryConfig__"))
+                        {
+                            input.Key = "MemoryConfig";
+                            input.Value = JToken.Parse(input.Value.ToString());
+                        }
+
+                        // ToolsConfig
+                        if (input.Key.Contains("__ToolsConfig__"))
+                        {
+                            input.Key = "ToolsConfig";
+                            input.Value = JToken.Parse(input.Value.ToString());
+                        }
+
+                        // Resolve template if input is string and contains {{ }}
+                        object inputValue = input.Value;
+                        if (input.Value is string strVal && strVal.Contains("{{") && strVal.Contains("}}"))
+                        {
+                            inputValue = ResolveTemplate(strVal, executionContext, interpreter);
+                        }
+
+                        // Convert the input value to string
+                        object convertedValue = ConvertArgument(inputValue, typeof(string));
+
+                        // Add to newNodeInputs
+                        newNodeInputs.Add(new NodeInput { Key = input.Key, Value = convertedValue?.ToString() });
+                    }
+
+                    // Update nodeData
+                    nodeData.NodeInputs = newNodeInputs;
+                    nodeData.CodeActivityName = nameof(ProcessLLMRequestActivity);
                 }
 
                 // Add agentId, agentName, accessToken as NodeInputs at the beginning
@@ -194,7 +266,7 @@ namespace NodeExecutor.Services
                 {
                     // TODO: if input does not have value return (in case of optional fields. all activity optional arugments should have default value)
                     // We can check using reflaction if the property has a default value or not and throw error later
-                    if (string.IsNullOrEmpty(input.Value)) continue;
+                    if (string.IsNullOrEmpty(input.Value?.ToString())) continue;
 
                     // Get the property info for the input key
                     var prop = activityType.GetProperty(input.Key, BindingFlags.Public | BindingFlags.Instance | BindingFlags.IgnoreCase);
@@ -494,10 +566,22 @@ namespace NodeExecutor.Services
                     return Enum.Parse(targetType, inputValue.ToString(), ignoreCase: true);
                 }
 
-                // Handle Dictionary<string, string> from JSON string
-                if (targetType == typeof(Dictionary<string, string>) && inputValue is string inputValueStr)
+                // Handle JToken from JSON string
+                if (targetType == typeof(JToken) && inputValue is string inputValueStr)
                 {
-                    return JsonConvert.DeserializeObject<Dictionary<string, string>>(inputValueStr);
+                    return JToken.Parse(inputValueStr);
+                }
+
+                // Handle JToken passthrough
+                if (targetType == typeof(JToken) && inputValue is JToken jToken)
+                {
+                    return jToken;
+                }
+
+                // Handle Dictionary<string, string> from JSON string
+                if (targetType == typeof(Dictionary<string, string>) && inputValue is string inputValueStr2)
+                {
+                    return JsonConvert.DeserializeObject<Dictionary<string, string>>(inputValueStr2);
                 }
 
                 // If targetType is string and inputValue type is DataTable
