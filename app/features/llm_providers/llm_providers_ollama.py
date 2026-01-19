@@ -78,6 +78,9 @@ class OllamaProvider(BaseLLMProvider):
                 response.raise_for_status()
                 response_data = response.json()
                 
+                # Log response data for debugging
+                logger.info(f"Ollama response data: {response_data}")
+                
                 # Handle is_json_output if requested
                 if llm_request.is_json_output:
                     output = extract_json_from_llm_response(response_data.get("message", {}).get("content", ""))

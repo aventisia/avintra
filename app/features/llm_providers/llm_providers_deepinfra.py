@@ -78,6 +78,9 @@ class DeepInfraProvider(BaseLLMProvider):
                 response.raise_for_status()
                 response_data = response.json()
                 
+                # Log response data for debugging
+                logger.info(f"DeepInfra response data: {response_data}")
+                
                 # Extract content from the first choice in the choices list
                 content = response_data.get("choices", [])[0].get("message", {}).get("content", "")
                 

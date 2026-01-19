@@ -1,6 +1,6 @@
 # Schemas for LLM Providers feature
 from pydantic import BaseModel
-from typing import Optional, Literal, TypeAlias
+from typing import Optional, Literal, TypeAlias, Any
 from datetime import datetime, timezone
 from typing import Union, List
 
@@ -36,13 +36,13 @@ class LLMRequest(BaseModel):
 class LLMChunkResponse(BaseModel):
     provider: ProviderLiteral
     model: str
-    output: str
+    output: Union[str, dict, list]  # String for text/markdown, dict/list for JSON responses
     
 # Response schema for LLM full response or last chunk in streaming
 class LLMResponse(BaseModel):
     provider: ProviderLiteral
     model: str
-    output: str
+    output: Union[str, dict, list]  # String for text/markdown, dict/list for JSON responses
     status: Optional[Literal['completed', 'failed', 'in_progress', 'cancelled', 'queued', 'incomplete']] = None
     finish_reason: Optional[str] = None
     created_on: datetime = datetime.now(timezone.utc)

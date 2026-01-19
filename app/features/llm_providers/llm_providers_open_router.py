@@ -72,6 +72,9 @@ class OpenRouterProvider(BaseLLMProvider):
                 response.raise_for_status()
                 response_data = response.json()
                 
+                # Log response data for debugging
+                logger.info(f"OpenRouter response data: {response_data}")
+                
                 content = (
                     response_data.get("choices", [{}])[0]
                     .get("message", {})
