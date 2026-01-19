@@ -709,7 +709,7 @@ export const modelProviders: Provider[] = [
     models: openAiModelList,
   },
   {
-    value: "google",
+    value: "gemini",
     label: "Google Gemini",
     isEnabled: true,
     models: googleModelList,
