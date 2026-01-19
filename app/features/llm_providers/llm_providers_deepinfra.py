@@ -2,6 +2,7 @@
 import json
 import time
 import httpx
+from datetime import datetime, timezone
 from app.core.config import settings
 from app.core.logger import log_exception, logger
 from app.features.llm_providers.llm_providers_schemas import LLMChunkResponse, LLMRequest, LLMResponse
@@ -295,7 +296,7 @@ class DeepInfraProvider(BaseLLMProvider):
         llm_response.output = output
         llm_response.status = self.map_deepinfra_finish_reason_to_status(finish_reason)
         llm_response.finish_reason = self.map_deepinfra_finish_reason_to_finish_reason(finish_reason)
-        llm_response.created_on = time.strftime('%Y-%m-%d %H:%M:%S', time.gmtime(response_data.get("created")))
+        llm_response.created_on = datetime.fromtimestamp(response_data.get("created", 0), tz=timezone.utc)
         llm_response.time_taken = round(end_time - start_time, 2)
         llm_response.input_tokens = usage.get("prompt_tokens", 0)
         llm_response.input_cached_tokens = 0 # DeepInfra does not provide cached tokens info

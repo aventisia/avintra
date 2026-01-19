@@ -1,6 +1,7 @@
 import json
 import time
 import httpx
+from datetime import datetime, timezone
 from fastapi import HTTPException, Request
 
 from app.core.config import settings
@@ -303,7 +304,7 @@ class OpenRouterProvider(BaseLLMProvider):
         llm_response.output = output
         llm_response.status = "success"  # Assuming success status for now, could be dynamic based on response_data
         llm_response.finish_reason = response_data.get("choices", [{}])[0].get("finish_reason", None) 
-        llm_response.created_on = time.strftime('%Y-%m-%d %H:%M:%S', time.gmtime(response_data.get("created", 0)))
+        llm_response.created_on = datetime.fromtimestamp(response_data.get("created", 0), tz=timezone.utc)
         llm_response.time_taken = round(end_time - start_time, 2)
         llm_response.input_tokens = usage.get("prompt_tokens", 0)
         llm_response.input_cached_tokens = usage.get("prompt_tokens_details", {}).get("cached_tokens", 0)
