@@ -9,6 +9,8 @@ import { Button } from "@aventisia/ui/buttons";
 import { IHttpResponse } from "@aventisia/ui/dtos";
 import { UseMutateFunction } from "@tanstack/react-query";
 import { useShallow } from "zustand/react/shallow";
+import { readFileAsBase64 } from "./readFileUsingTauri";
+import { IS_TAURI } from "@/constants";
 
 interface ModelConfigType {
   is_byok_enabled: boolean;
@@ -33,6 +35,7 @@ interface ExecutionButtonProps {
   };
   isPending: boolean;
 }
+
 const ExecuteButton = ({
   isPending,
   mutate,
@@ -45,44 +48,49 @@ const ExecuteButton = ({
     })),
   );
 
-  function mapNodeDataToLLMRequest(data: {
-    [x: string]: unknown;
-  }): LLMRequestDto {
-    // Extract __Prompt__ from the form data.
-    const input = Object.keys(data).find((k) => k.includes("__Prompt__"))
-      ? (data[
-          Object.keys(data).find((k) => k.includes("__Prompt__"))!
-        ] as string)
-      : "";
+  async function mapNodeDataToLLMRequest(
+    data: Record<string, unknown>,
+  ): Promise<LLMRequestDto> {
+    // -------- Prompt --------
+    const promptKey = Object.keys(data).find((k) => k.includes("__Prompt__"));
 
-    let files: string[] | undefined;
+    const input = promptKey ? (data[promptKey] as string) : "";
+
+    // -------- Model Config --------
     let modelConfig: ModelConfigType | null = null;
 
-    // Loop through the input object and check for a key that includes "__ModelConfig__".
     for (const key in data) {
-      // Check if the key includes "__ModelConfig__" and extract the model config.
       if (key.includes("__ModelConfig__")) {
         modelConfig = data[key] as ModelConfigType;
-        break; // We stop once we find the first match.
+        break;
       }
     }
 
-    // Validate that the model configuration is found.
     if (!modelConfig) {
       throw new Error("Model configuration is missing");
     }
 
-    // Check if any files are provided. Adjust as per your actual data structure.
-    if (data.Files) {
-      files = Array.isArray(data.Files) ? data.Files : undefined;
+    // -------- Files (paths → base64) --------
+    let files: string[] | undefined;
+
+    if (data.Files && IS_TAURI) {
+      const filePaths = Array.isArray(data.Files)
+        ? (data.Files as string[])
+        : (data.Files as string)?.split(",");
+
+      const base64Results = await Promise.all(
+        filePaths.map((path) => readFileAsBase64(path)),
+      );
+
+      files = base64Results?.filter((f): f is string => typeof f === "string");
     }
 
-    // Create the LLMRequestDto based on the extracted data.
-    const requestDto: LLMRequestDto = {
+    // -------- Build DTO --------
+    return {
       provider: modelConfig.provider as ProviderLiteral,
       model: modelConfig.model,
-      input: input, // The __Prompt__ value
-      files: files,
+      input,
+      files,
       is_json_output: modelConfig.is_json_output,
       json_schema: null,
       max_output_tokens: modelConfig.max_output_tokens,
@@ -91,22 +99,29 @@ const ExecuteButton = ({
       temperature: modelConfig.temperature,
       top_p: modelConfig.top_p,
       stream: false,
-      ref_id: currentFlow.id, // Reference the currentFlow
-      ref_name: currentFlow.name, // Reference the currentFlow
+      ref_id: currentFlow.id,
+      ref_name: currentFlow.name,
       ref_type: "Agent",
       action: "AgentExecution",
     };
-
-    return requestDto;
   }
+
+  const handleExecute = async () => {
+    if (!formData) return;
+
+    try {
+      const payload = await mapNodeDataToLLMRequest(formData);
+      mutate(payload);
+    } catch (err) {
+      console.error("Execution failed:", err);
+    }
+  };
 
   return (
     <DCPTabsFooterWrapper className="justify-start">
       <Button
-        onClick={() => {
-          if (formData) mutate(mapNodeDataToLLMRequest(formData));
-        }}
-        size={"sm"}
+        onClick={handleExecute}
+        size="sm"
         type="button"
         disabled={isPending}
       >
