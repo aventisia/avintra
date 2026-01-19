@@ -125,7 +125,7 @@ const ModelConfigField = ({ name }: ModelConfigFieldProps) => {
 
             const mapper: Record<string, string> = {
               openai: "OpenAI",
-              google: "Gemini",
+              googlegemini: "Gemini",
               openrouter: "OpenRouter",
             };
 
@@ -190,7 +190,7 @@ const ModelConfigField = ({ name }: ModelConfigFieldProps) => {
 
         const mapper: Record<string, string> = {
           openai: "OpenAI",
-          google: "Gemini",
+          googlegemini: "Gemini",
           openrouter: "OpenRouter",
         };
 
@@ -271,9 +271,7 @@ const ModelConfigField = ({ name }: ModelConfigFieldProps) => {
           name={fieldNames.credential_id}
           size="sm"
           label={`${currentProvider?.label ?? ""} Credentials`}
-          modelProvider={
-            providerValue === "google" ? "googlegemini" : providerValue
-          }
+          modelProvider={providerValue}
         />
       )}
 
