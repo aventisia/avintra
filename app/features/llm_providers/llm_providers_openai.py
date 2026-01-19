@@ -2,6 +2,7 @@
 import json
 import time
 import httpx
+from datetime import datetime, timezone
 from app.core.config import settings
 from app.core.logger import log_exception, logger
 from app.features.llm_providers.llm_providers_schemas import LLMChunkResponse, LLMRequest, LLMResponse
@@ -76,6 +77,9 @@ class OpenAIProvider(BaseLLMProvider):
                 # Handle response
                 response.raise_for_status()
                 response_data = response.json()
+                
+                # Log response data for debugging
+                logger.info(f"OpenAI response data: {response_data}")
                 
                 # Handle is_json_output if requested
                 if llm_request.is_json_output:
@@ -274,7 +278,7 @@ class OpenAIProvider(BaseLLMProvider):
         llm_response.output = output
         llm_response.status = response_data.get("status")
         llm_response.finish_reason = incomplete_details.get("reason", None)
-        llm_response.created_on = time.strftime('%Y-%m-%d %H:%M:%S', time.gmtime(response_data.get("created_at")))
+        llm_response.created_on = datetime.fromtimestamp(response_data.get("created_at"), tz=timezone.utc)
         llm_response.time_taken = round(end_time - start_time, 2)
         llm_response.input_tokens = usage.get("input_tokens", 0)
         llm_response.input_cached_tokens = usage.get("input_tokens_details", {}).get("cached_tokens", 0)
