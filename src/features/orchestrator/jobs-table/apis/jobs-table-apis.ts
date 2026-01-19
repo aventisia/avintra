@@ -10,9 +10,11 @@ const baseAPIURL: string = `${import.meta.env.VITE_WORC_API_PATH}/job`;
 /**
  * Retrieves list of Jobs.
  */
-export const getJobs = () => {
+export const getJobs = (startDate: string = "", endDate: string = "") => {
   return axiosInstance
-    .get<IHttpResponse<JobsTableDto[]>>(`${baseAPIURL}/list`)
+    .get<
+      IHttpResponse<JobsTableDto[]>
+    >(`${baseAPIURL}/list?startDate=${startDate}&endDate=${endDate}`)
     .then((res) => res.data);
 };
 
