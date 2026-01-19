@@ -49,6 +49,19 @@ public class UserRegistrationService : IUserRegistrationService
 
         try
         {
+            // Check if the tenant is of type Enterprise
+            if (_appRuntimeSettings.TenantType == OnPremTenantTypesEnum.Enterprise)
+            {
+                var appDomain = ExtractDomainFromEmailUtil.ExtractDomainFromUrl(_generalConfig.AppDomain);
+                var emailDomain = ExtractDomainFromEmailUtil.ExtractDomainFromEmail(createAccountDto.Email);
+                if (!appDomain.Equals(emailDomain, StringComparison.InvariantCultureIgnoreCase))
+                {
+                    serviceResponse.StatusCode = 400;
+                    serviceResponse.Message = "Email domain does not match the platform's domain.";
+                    return serviceResponse;
+                }
+            }
+
             // Check if authentication-related operations are globally disabled.
             // This can be due to maintenance, security incidents, or temporary administrative restrictions.
             if (_appRuntimeSettings.IsLoginDisabled)
@@ -134,12 +147,56 @@ public class UserRegistrationService : IUserRegistrationService
                 return serviceResponse;
             }
 
-            // Initialize user roles for tenant admin assignment
-            var userRoles = Enum.GetValues(typeof(CustomRolesEnum))
-                                .Cast<CustomRolesEnum>()
-                                .Where(w => w != CustomRolesEnum.SA)
-                                .Select(r => r.ToString())
-                                .ToList();
+            var tenantId = Guid.Empty;
+            var userRoles = new List<string>();
+
+            if (_appRuntimeSettings.TenantType == OnPremTenantTypesEnum.Enterprise)
+            {
+                userRoles = new List<string> { CustomRolesEnum.TD.ToString() };
+                tenantId = _appRuntimeSettings.TenantId;
+            }
+            else
+            {
+                // Create a new tenant entity for the newly created user
+                var userTenant = new Tenant
+                {
+                    Id = Guid.NewGuid(),
+                    Name = newUser.Email,
+                    Domain = string.Empty,
+                    Type = TenantTypesEnum.Unspecified,
+                    ResourceType = TenantResourceTypesEnum.Shared,
+                    Currency = CurrencyTypesEnum.USD,
+                    ExpiresOn = DateTimeOffset.UtcNow.AddYears(1),
+                    Role = string.Empty,
+                    CreatedByUserId = newUser.Id,
+                    LastModifiedByUserId = newUser.Id
+                };
+
+                // Insert the new tenant into the repository
+                await _unitOfWork.TenantRepo.InsertAsync(userTenant);
+
+                // Save changes and check if the tenant creation was successful
+                if (!await _unitOfWork.SaveAsync())
+                {
+                    _logger.LogWarning("Failed to save new tenant '{TenantName}' (ID: {TenantId}).", userTenant.Name, userTenant.Id);
+                    return serviceResponse;
+                }
+
+                tenantId = userTenant.Id;
+            }
+
+            // Link the new tenant to the user
+            newUser.TenantId = tenantId;
+
+            // Update the user with the new tenant details
+            _unitOfWork.AccountUserRepo.Update(newUser);
+
+            // Save changes to link the user and tenant in the database
+            if (!await _unitOfWork.SaveAsync())
+            {
+                _logger.LogWarning("Failed to update user with tenant details. User ID: {UserId}, Tenant ID: {TenantId}.", newUser.Id, tenantId);
+                return serviceResponse;
+            }
 
             // Assign roles to user
             var addToRolesResult = await _userManager.AddToRolesAsync(newUser, userRoles);
@@ -173,44 +230,6 @@ public class UserRegistrationService : IUserRegistrationService
             {
                 _logger.LogError($"Error occurred while sending account creation confirmation email to {createAccountDto.Email}");
                 /*Still moving forward as account is already saved in the database*/
-            }
-
-            // Create a new tenant entity for the newly created user
-            var userTenant = new Tenant
-            {
-                Id = Guid.NewGuid(),
-                Name = newUser.Email,
-                Domain = string.Empty,
-                Type = TenantTypesEnum.Unspecified,
-                ResourceType = TenantResourceTypesEnum.Shared,
-                Currency = CurrencyTypesEnum.USD,
-                ExpiresOn = DateTimeOffset.UtcNow.AddYears(1),
-                Role = string.Empty,
-                CreatedByUserId = newUser.Id,
-                LastModifiedByUserId = newUser.Id
-            };
-
-            // Insert the new tenant into the repository
-            await _unitOfWork.TenantRepo.InsertAsync(userTenant);
-
-            // Save changes and check if the tenant creation was successful
-            if (!await _unitOfWork.SaveAsync())
-            {
-                _logger.LogWarning("Failed to save new tenant '{TenantName}' (ID: {TenantId}).", userTenant.Name, userTenant.Id);
-                return serviceResponse;
-            }
-
-            // Link the new tenant to the user
-            newUser.TenantId = userTenant.Id;
-
-            // Update the user with the new tenant details
-            _unitOfWork.AccountUserRepo.Update(newUser);
-
-            // Save changes to link the user and tenant in the database
-            if (!await _unitOfWork.SaveAsync())
-            {
-                _logger.LogWarning("Failed to update user with tenant details. User ID: {UserId}, Tenant ID: {TenantId}.", newUser.Id, userTenant.Id);
-                return serviceResponse;
             }
 
             // Log successful account creation
