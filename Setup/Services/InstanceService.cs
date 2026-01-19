@@ -168,6 +168,7 @@ public class InstanceService : IInstanceService
             _appRuntimeSettings.IsLoginDisabled = externalServiceResponse.Data.Enforcement.IsLoginDisabled;
             _appRuntimeSettings.ExecutionTimeAllowed = externalServiceResponse.Data.Enforcement.ExecutionTimeAllowed >= 0;
             _appRuntimeSettings.TenantType = externalServiceResponse.Data.Tenant.Type;
+            _appRuntimeSettings.TenantId = externalServiceResponse.Data.Tenant.TenantId;
             _appRuntimeSettings.IsContractStarted = externalServiceResponse.Data.Contract.ContractStartDate.Date <= DateTimeOffset.UtcNow.Date;
             _appRuntimeSettings.IsContractExpired = externalServiceResponse.Data.Contract.ContractRenewalDate.Date < DateTimeOffset.UtcNow.Date;
         }
