@@ -12,6 +12,12 @@ public class InstanceConfig
     public required string TenantId { get; set; }
 
     /// <summary>
+    /// Gets or sets the name of the tenant associated with the instance.
+    /// </summary>
+    [Required]
+    public required string TenantName { get; set; }
+
+    /// <summary>
     /// Gets or sets the type of tenant (e.g., "Commercial", "Enterprise", etc.).
     /// </summary>
     [Required]
