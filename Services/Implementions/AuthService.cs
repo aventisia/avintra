@@ -337,7 +337,8 @@ public class AuthService : IAuthService
             {
                 serviceResponse.Message = "Complete organization setup to continue.";
             }
-            else
+
+            if (_appRuntimeSettings.TenantType == OnPremTenantTypesEnum.Commercial)
             {
                 // Query the current tenant's subscription, including related plan and creator details
                 var subscription = await _unitOfWork.TenantSubscriptionRepo
@@ -361,6 +362,10 @@ public class AuthService : IAuthService
                 {
                     serviceResponse.Message = "New session has been created successfully.";
                 }
+            }
+            else
+            {
+                serviceResponse.Message = "New session has been created successfully.";
             }
 
             // UserSessionDto is ready
