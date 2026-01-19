@@ -82,8 +82,8 @@ class GeminiProvider(BaseLLMProvider):
                 # Parse Gemini API response
                 response_data = response.json()
                 
-                # Log response data for debugging
-                logger.info(f"Gemini response data: {response_data}")
+                # Log response data for debugging (pretty-printed for readability)
+                logger.info(f"Gemini response data:\n{json.dumps(response_data, indent=2)}")
         
                 # Extract generated text from response structure
                 text_output = (

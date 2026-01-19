@@ -24,7 +24,6 @@ class DeepInfraProvider(BaseLLMProvider):
     async def generate_llm_response(self, llm_request: LLMRequest, request: Request):
         logger.info(f"[NO STREAMING] Prompt sent to DeepInfra provider with model: {llm_request.model}")
 
-        
         # Retrieve and validate the JWT token from the request
         jwt = get_jwt(request)
         if not jwt or jwt.strip() == "" or jwt.startswith("Error:"):
@@ -79,8 +78,8 @@ class DeepInfraProvider(BaseLLMProvider):
                 response.raise_for_status()
                 response_data = response.json()
                 
-                # Log response data for debugging
-                logger.info(f"DeepInfra response data: {response_data}")
+                # Log response data for debugging (pretty-printed for readability)
+                logger.info(f"DeepInfra response data:\n{json.dumps(response_data, indent=2)}")
                 
                 # Extract content from the first choice in the choices list
                 content = response_data.get("choices", [])[0].get("message", {}).get("content", "")

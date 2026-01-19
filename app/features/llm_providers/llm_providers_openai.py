@@ -78,8 +78,8 @@ class OpenAIProvider(BaseLLMProvider):
                 response.raise_for_status()
                 response_data = response.json()
                 
-                # Log response data for debugging
-                logger.info(f"OpenAI response data: {response_data}")
+                # Log response data for debugging (pretty-printed for readability)
+                logger.info(f"OpenAI response data:\n{json.dumps(response_data, indent=2)}")
                 
                 # Handle is_json_output if requested
                 if llm_request.is_json_output:
