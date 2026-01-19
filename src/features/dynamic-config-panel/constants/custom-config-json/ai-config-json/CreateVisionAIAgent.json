@@ -47,11 +47,11 @@
     {
       "direction": "Output",
       "type": "config-panel-output",
-      "name": "AIModelResult",
-      "label": "Button Clicked Successfully",
-      "description": "AI Model Result.",
+      "name": "Result",
+      "label": "Result",
+      "description": "AI Model Result",
       "defaultValue": {
-        "value": "AIModelResult",
+        "value": "Result",
         "enabled": true
       },
       "required": false,

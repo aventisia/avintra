@@ -80,11 +80,11 @@
     {
       "direction": "Output",
       "type": "config-panel-output",
-      "name": "Results",
-      "label": "Results",
+      "name": "Result",
+      "label": "Result",
       "description": "AI Model Result.",
       "defaultValue": {
-        "value": "Results",
+        "value": "Result",
         "enabled": true
       },
       "required": false,
