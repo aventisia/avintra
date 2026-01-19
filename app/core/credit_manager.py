@@ -4,7 +4,7 @@ from app.core.config import settings
 
 class CreditManagerService:
     # Constructor: To initialize API URL and key (if any)
-    def __init__(self, api_url: str =  f"{settings.APP_BASE_URL}/accounts/api/credit-usage"):
+    def __init__(self, api_url: str =  f"https://{settings.APP_BASE_URL}/accounts/api/credit-usage"):
         self.api_url = api_url
 
     # Check if user has sufficient credits
