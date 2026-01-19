@@ -39,7 +39,7 @@
       "type": "text",
       "name": "Files",
       "label": "Files",
-      "defaultValue": [],
+      "defaultValue": "",
       "required": false,
       "category": "Models"
     },
@@ -73,7 +73,7 @@
       "type": "text",
       "name": "__ToolsConfig__Inferencing",
       "label": "Tools",
-
+      "defaultValue": "",
       "required": false,
       "category": "Tools"
     },

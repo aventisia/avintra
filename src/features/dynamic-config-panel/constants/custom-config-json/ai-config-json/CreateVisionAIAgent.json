@@ -30,7 +30,7 @@
       "type": "text",
       "name": "files",
       "label": "Files",
-
+      "defaultValue": "",
       "required": false,
       "category": "Models"
     },
