@@ -166,13 +166,11 @@ public static class AccountsDbInitialSeed
             };
 
             // Create a list of default roles to be assigned to the super user.
-            var roles = new List<string>
-            {
-                nameof(CustomRolesEnum.TA),
-                nameof(CustomRolesEnum.OM),
-                nameof(CustomRolesEnum.TD),
-                nameof(CustomRolesEnum.TU)
-            };
+            var roles = Enum.GetValues(typeof(CustomRolesEnum))
+                                .Cast<CustomRolesEnum>()
+                                .Where(w => w != CustomRolesEnum.SA)
+                                .Select(r => r.ToString())
+                                .ToList();
 
             // Check if the tenant type is 'Enterprise' (case-insensitive comparison)
             if (instanceConfig.TenantType.Equals(OnPremTenantTypesEnum.Enterprise.ToString(), StringComparison.InvariantCultureIgnoreCase))

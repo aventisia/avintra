@@ -50,6 +50,28 @@ if (!IsEnvironmentLocalhost)
         Environment.GetEnvironmentVariable("SMTP_API_KEY"),
         message: "SMTP_API_KEY cannot be null"
     );
+    var APP_BASE_URL = Guard.Against.Null(
+        Environment.GetEnvironmentVariable("APP_BASE_URL"),
+        message: "APP_BASE_URL cannot be null"
+    );
+    var ADMIN_USER_EMAIL = Guard.Against.Null(
+        Environment.GetEnvironmentVariable("ADMIN_USER_EMAIL"),
+        message: "ADMIN_USER_EMAIL cannot be null"
+    );
+    var DEFAULT_TENANT_NAME = Guard.Against.Null(
+        Environment.GetEnvironmentVariable("DEFAULT_TENANT_NAME"),
+        message: "DEFAULT_TENANT_NAME cannot be null"
+    );
+
+    var ON_PREM_TENANT_ID = Guard.Against.Null(
+        Environment.GetEnvironmentVariable("ON_PREM_TENANT_ID"),
+        message: "ON_PREM_TENANT_ID cannot be null"
+    );
+
+    var ON_PREM_INSTANCE_KEY = Guard.Against.Null(
+        Environment.GetEnvironmentVariable("ON_PREM_INSTANCE_KEY"),
+        message: "ON_PREM_INSTANCE_KEY cannot be null"
+    );
 
     string? RAZORPAY_KEY_ID = string.Empty;
     string? RAZORPAY_KEY_SECRET = string.Empty;
@@ -72,16 +94,6 @@ if (!IsEnvironmentLocalhost)
         );
     }
 
-    var ON_PREM_TENANT_ID = Guard.Against.Null(
-        Environment.GetEnvironmentVariable("ON_PREM_TENANT_ID"),
-        message: "ON_PREM_TENANT_ID cannot be null"
-    );
-
-    var ON_PREM_INSTANCE_KEY = Guard.Against.Null(
-        Environment.GetEnvironmentVariable("ON_PREM_INSTANCE_KEY"),
-        message: "ON_PREM_INSTANCE_KEY cannot be null"
-    );
-
     // Update sensitive data in configuration
     config = new ConfigurationBuilder()
         .AddConfiguration(config)
@@ -99,6 +111,9 @@ if (!IsEnvironmentLocalhost)
                 { "RazorpayConfig:WebhookSecret", RAZORPAY_WEBHOOK_SECRET },
                 { "InstanceConfig:TenantId", ON_PREM_TENANT_ID },
                 { "InstanceConfig:InstanceKey", ON_PREM_INSTANCE_KEY },
+                { "InstanceConfig:TenantName", DEFAULT_TENANT_NAME },
+                { "GeneralConfig:AppDomain", APP_BASE_URL },
+                { "DefaultUserConfig:Email", ADMIN_USER_EMAIL },
             }
         )
         .Build();
