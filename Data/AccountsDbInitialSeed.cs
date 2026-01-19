@@ -48,6 +48,9 @@ public static class AccountsDbInitialSeed
                 // Update Super user tenant Id
                 if (!await UpdateSuperUserTenantId(_accountsDbContext, defaultTenant.Id, superUser.Id)) return app;
 
+                // Seed Permissions
+                if (!await SeedCreditPlansAsync(_accountsDbContext, superUser)) return app;
+
                 // Seed the default Subscription Plan (create or ensure the default subscription plan exists)
                 if (!await SeedSubscriptionPlanAsync(_accountsDbContext, instanceConfig, superUser))
                     return app;
@@ -332,6 +335,49 @@ public static class AccountsDbInitialSeed
             Console.WriteLine("Error: Error occurred while tyring to update super user tenant : " + ex.Message);
             return false;
         }
+    }
+
+
+    // Seed CreditPlans based on CreditServiceTypesEnum
+    private async static Task<bool> SeedCreditPlansAsync(AccountsDbContext dbContext, AccountUser superUser)
+    {
+        try
+        {
+            // Create a list to hold CreditPlan objects to be inserted in bulk
+            var creditPlans = new List<CreditPlan>();
+
+            // Iterate over each value in CreditServiceTypesEnum
+            foreach (var creditServiceType in Enum.GetValues(typeof(CreditServiceTypesEnum)))
+            {
+                var serviceType = (CreditServiceTypesEnum)creditServiceType;
+
+                // Directly create CreditPlan object and add it to the list
+                creditPlans.Add(new CreditPlan()
+                {
+                    ServiceType = serviceType,
+                    UnitType = UnitTypesEnum.Transactions, // Assuming a default, can be adjusted
+                    OneUnit = 1, // Default value for OneUnit
+                    Credits = 1, // Default value for Credits
+                    CreatedByUserId = superUser.Id,
+                    LastModifiedByUserId = superUser.Id
+                });
+            }
+
+            // Insert all CreditPlans at once
+            await dbContext.CreditPlans.AddRangeAsync(creditPlans);
+
+            // Commit changes to the database
+            await dbContext.SaveChangesAsync();
+        }
+        catch (Exception ex)
+        {
+            // Log detailed error information for debugging
+            Console.WriteLine($"Error: Error occurred while seeding credit plans. Exception: {ex.Message}");
+            return false;
+        }
+
+        // Credit plans seeded successfully
+        return true;
     }
 
     private static async Task<bool> SeedSubscriptionPlanAsync(AccountsDbContext accountsDbContext, InstanceConfig instanceConfig, AccountUser superUser)
