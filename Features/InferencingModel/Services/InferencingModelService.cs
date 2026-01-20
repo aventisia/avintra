@@ -1420,8 +1420,8 @@ public class InferencingModelService : IInferencingModelService
             Provider = versionTask.Provider,
             Model = versionTask.Model,
             Input = prompt,
-            IsJsonOutput = ollamaOutputFormatSchema != null,
-            JsonSchema = ollamaOutputFormatSchema != null ? ollamaOutputFormatSchema.ToString() : null,
+            IsJsonOutput = ollamaOutputFormatSchema != null ? true : versionTask.IsJsonOutput,
+            JsonSchema = ollamaOutputFormatSchema ?? null,
             MaxOutputTokens = versionTask.MaxOutputToken,
             IsBYOKEnabled = versionTask.IsBYOKEnabled,
             CredentialId = versionTask.CredentialId,
@@ -1434,6 +1434,7 @@ public class InferencingModelService : IInferencingModelService
             Action = actionType.ToString(),
             AgentName = triggeredByAgent
         };
+
 
         // Call the service to extract data asynchronously, passing in the LLM request
         var llmResponse = await _llmDataExtractionService.ExtractDataAsync(llmRequest);
@@ -1911,51 +1912,81 @@ public class InferencingModelService : IInferencingModelService
                 var extractionSetupObject = JsonSerializer.Deserialize<ExtractionTaskSetupDto>(versionTask.SetupObject ?? null, jsonOptions);
 
                 // Prepare the output format with extracted data, mapping from fields and tables
-                var extractionJsonObj = new
+                if (extractionSetupObject.Tables.Count() > 0)
                 {
-                    type = "object",
-                    properties = new
+                    return new
                     {
-                        fields = new
+                        type = "object",
+                        properties = new
                         {
-                            type = "object",
-                            properties = extractionSetupObject.Fields.ToDictionary(
+                            fields = new
+                            {
+                                type = "object",
+                                properties = extractionSetupObject.Fields.ToDictionary(
                                 f => f.JsonPropertyName,
                                 f => new { type = "string" }
                             ),
-                            required = extractionSetupObject.Fields.Select(f => f.JsonPropertyName).ToArray()
+                                required = extractionSetupObject.Fields.Select(f => f.JsonPropertyName).ToArray(),
+                                additionalProperties = false
+                            },
+                            tables = new
+                            {
+                                type = "array",
+                                items = new
+                                {
+                                    anyOf = extractionSetupObject.Tables.Select(table => new
+                                    {
+                                        type = "object",
+                                        properties = new
+                                        {
+                                            table_name = new { type = "string" },
+                                            rows = new
+                                            {
+                                                type = "array",
+                                                items = new
+                                                {
+                                                    type = "object",
+                                                    properties = table.TableHeaders.ToDictionary(
+                                                    h => h.JsonPropertyName,
+                                                    h => new { type = "string" }
+                                                ),
+                                                    required = table.TableHeaders.Select(h => h.JsonPropertyName).ToArray(),
+                                                    additionalProperties = false
+                                                }
+                                            }
+                                        },
+                                        required = new[] { "table_name", "rows" },
+                                        additionalProperties = false
+                                    }).ToArray(),
+                                }
+                            },
                         },
-                        tables = new
+                        required = new[] { "fields", "tables" },
+                        additionalProperties = false
+                    };
+                }
+                else
+                {
+                    return new
+                    {
+                        type = "object",
+                        properties = new
                         {
-                            type = "array",
-                            items = extractionSetupObject.Tables.Select(table => new
+                            fields = new
                             {
                                 type = "object",
-                                properties = new
-                                {
-                                    table_name = new { type = "string" },
-                                    rows = new
-                                    {
-                                        type = "array",
-                                        items = new
-                                        {
-                                            type = "object",
-                                            properties = table.TableHeaders.ToDictionary(
-                                                h => h.JsonPropertyName,
-                                                h => new { type = "string" }
-                                            ),
-                                            required = table.TableHeaders.Select(h => h.JsonPropertyName).ToArray()
-                                        }
-                                    }
-                                },
-                                required = new[] { "table_name", "rows" }
-                            }).ToArray()
-                        }
-                    }
-                };
-
-                // Return
-                return extractionJsonObj;
+                                properties = extractionSetupObject.Fields.ToDictionary(
+                                f => f.JsonPropertyName,
+                                f => new { type = "string" }
+                            ),
+                                required = extractionSetupObject.Fields.Select(f => f.JsonPropertyName).ToArray(),
+                                additionalProperties = false
+                            },
+                        },
+                        required = new[] { "fields" },
+                        additionalProperties = false
+                    };
+                }
 
             // Default case, if the model task name does not match any of the above
             default:
