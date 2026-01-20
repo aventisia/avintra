@@ -4,14 +4,14 @@ public class InstanceUsageStartupService : IHostedService
 {
     private readonly IServiceScopeFactory _serviceScopeFactory;
     private readonly ILogger<InstanceUsageStartupService> _logger;
-    private readonly IHostEnvironment _hostEnvironment;
+    private readonly InstanceConfig _instanceConfig;
     private readonly AppRuntimeSettings _appRuntimeSettings;
 
-    public InstanceUsageStartupService(IServiceScopeFactory serviceScopeFactory, ILogger<InstanceUsageStartupService> logger, IHostEnvironment hostEnvironment, AppRuntimeSettings appRuntimeSettings)
+    public InstanceUsageStartupService(IServiceScopeFactory serviceScopeFactory, ILogger<InstanceUsageStartupService> logger, InstanceConfig instanceConfig, AppRuntimeSettings appRuntimeSettings)
     {
         _serviceScopeFactory = serviceScopeFactory;
         _logger = logger;
-        _hostEnvironment = hostEnvironment;
+        _instanceConfig = instanceConfig;
         _appRuntimeSettings = appRuntimeSettings;
     }
 
@@ -44,6 +44,14 @@ public class InstanceUsageStartupService : IHostedService
 
                 // Post the collected metrics to the external API for processing
                 await instanceService.PostMetricsToApiAsync(serviceResponse.Data);
+
+                // Fail startup if the tenant configuration is invalid
+                if (!_instanceConfig.TenantType.Equals(_appRuntimeSettings.TenantType.ToString()))
+                {
+                    _logger.LogError("Startup aborted: invalid tenant configuration detected.");
+                    errorMessage = "The tenant type is invalid. Please contact the support team.";
+                    throw new InvalidOperationException(errorMessage);
+                }
 
                 // Fail if contract has not started
                 if (!_appRuntimeSettings.IsContractStarted)
