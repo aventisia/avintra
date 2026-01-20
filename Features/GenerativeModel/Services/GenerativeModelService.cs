@@ -368,7 +368,7 @@ public class GenerativeModelService : IGenerativeModelService
                 IsBYOKEnabled = versionTask.IsBYOKEnabled,
                 CredentialId = versionTask.CredentialId,
                 Temperature = versionTask.Temperature,
-                TopP = versionTask.TopP ?? 0,
+                TopP = versionTask.TopP ?? 1,
                 Stream = false,
                 RefType = UsageSourceTypesEnum.AIModel.ToString(),
                 RefId = versionTask.AIProjectVersionId.ToString(),
