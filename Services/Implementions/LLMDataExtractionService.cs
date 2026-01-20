@@ -124,7 +124,7 @@ public class LLMDataExtractionService : ILLMDataExtractionService
                         var apiResponse = await GetChatCompletionAsync(client, llmRequest);
 
                         // Store the model's output in the response
-                        llmResponse = apiResponse.Output;
+                        llmResponse = apiResponse.Output.ToString() ?? string.Empty;
 
                         // Log success after receiving the LLM response
                         _logger.LogInformation("Received successful response from LLM Pipeline API: {LLMResponse}", llmResponse);
@@ -253,19 +253,19 @@ public class LLMDataExtractionService : ILLMDataExtractionService
                 model = llmRequest.Model,
                 input = llmRequest.Input,
                 files = llmRequest.Files,
-                isJsonOutput = llmRequest.IsJsonOutput,
-                jsonSchema = llmRequest.JsonSchema,
-                maxOutputTokens = llmRequest.MaxOutputTokens,
-                isBYOKEnabled = llmRequest.IsBYOKEnabled,
-                credentialId = llmRequest.CredentialId,
+                is_json_output = llmRequest.IsJsonOutput,
+                json_schema = llmRequest.JsonSchema,
+                max_output_tokens = llmRequest.MaxOutputTokens,
+                is_byok_enabled = llmRequest.IsBYOKEnabled,
+                credential_id = llmRequest.CredentialId,
                 temperature = llmRequest.Temperature,
-                topP = llmRequest.TopP,
+                top_p = llmRequest.TopP,
                 stream = llmRequest.Stream,
                 ref_type = llmRequest.RefType,
                 ref_id = llmRequest.RefId,
                 ref_name = llmRequest.RefName,
                 action = llmRequest.Action,
-                agentName = llmRequest.AgentName
+                agent_name = llmRequest.AgentName
             };
 
             // Log the request body before sending it
