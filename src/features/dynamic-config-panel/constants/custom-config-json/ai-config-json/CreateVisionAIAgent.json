@@ -15,12 +15,12 @@
       "defaultValue": {
         "is_byok_enabled": false,
         "provider": "openai",
-        "credential_id": "",
+        "credential_id": "00000000-0000-0000-0000-000000000000",
         "model": "gpt-4o-mini",
         "temperature": 1,
         "top_p": 1,
         "is_json_output": true,
-        "max_output_tokens": 50
+        "max_output_tokens": 1000
       },
       "required": false,
       "category": "Models"
