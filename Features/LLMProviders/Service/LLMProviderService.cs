@@ -158,7 +158,10 @@ public class LLMProviderService : ILLMProviderService
             }
 
             // Create a list of SelectOptionDto objects from the JSON data
-            List<SelectOptionDto> models = dataArray.Select(item => MapToSelectOptionDto(item, providerType)).ToList();
+            List<SelectOptionDto> models = dataArray
+                .Select(item => MapToSelectOptionDto(item, providerType))
+                .OrderBy(o => o.Label)
+                .ToList();
 
             // Set the service response data and message
             serviceResponse.Data = models;
