@@ -69,27 +69,26 @@ public class LLMProviderService : ILLMProviderService
                 return serviceResponse;
             }
 
-            // Initialize HttpClient
-            var client = new HttpClient();
+            // Initialize RestClient based on provider
+            RestClient client;
 
-            // Set the base address and authorization header based on the provider type
             switch (requestDto.ProviderType)
             {
                 case LLMProviderTypesEnum.OpenAI:
-                    client.BaseAddress = new Uri("https://api.openai.com");
-                    client.DefaultRequestHeaders.Add("Authorization", $"Bearer {apiKey}");
+                    client = new RestClient("https://api.openai.com");
+                    client.AddDefaultHeader("Authorization", $"Bearer {apiKey}");
                     serviceResponse = await GetModelsAsync(requestDto.ProviderType, client);
                     break;
 
                 case LLMProviderTypesEnum.OpenRouter:
-                    client.BaseAddress = new Uri("https://openrouter.ai/api");
-                    client.DefaultRequestHeaders.Add("Authorization", $"Bearer {apiKey}");
+                    client = new RestClient("https://openrouter.ai/api");
+                    client.AddDefaultHeader("Authorization", $"Bearer {apiKey}");
                     serviceResponse = await GetModelsAsync(requestDto.ProviderType, client);
                     break;
 
                 case LLMProviderTypesEnum.Gemini:
-                    client.BaseAddress = new Uri("https://generativelanguage.googleapis.com");
-                    client.DefaultRequestHeaders.Add("x-goog-api-key", $"{apiKey}");
+                    client = new RestClient("https://generativelanguage.googleapis.com");
+                    client.AddDefaultHeader("x-goog-api-key", apiKey);
                     serviceResponse = await GetModelsAsync(requestDto.ProviderType, client);
                     break;
 
@@ -108,40 +107,40 @@ public class LLMProviderService : ILLMProviderService
             return serviceResponse;
         }
     }
-    private async Task<ServiceResponse<IEnumerable<SelectOptionDto>>> GetModelsAsync(LLMProviderTypesEnum providerType, HttpClient client)
+    private async Task<ServiceResponse<IEnumerable<SelectOptionDto>>> GetModelsAsync(LLMProviderTypesEnum providerType, RestClient client)
     {
         var serviceResponse = new ServiceResponse<IEnumerable<SelectOptionDto>>();
 
         try
         {
             // Define the API endpoint based on the provider type
+            // Select models endpoint based on provider
             string endpoint = providerType switch
             {
                 LLMProviderTypesEnum.OpenAI => "v1/models",
                 LLMProviderTypesEnum.OpenRouter => "v1/models",
                 LLMProviderTypesEnum.Gemini => "v1beta/models",
-                _ => throw new NotImplementedException("The provider does not have a configured endpoint.")
+                _ => throw new NotImplementedException("Unsupported provider")
             };
 
-            _logger.LogInformation("Sending request to {Provider} API at {Endpoint}", providerType, endpoint);
+            // Create GET request
+            var request = new RestRequest(endpoint, Method.Get);
 
-            // Call the API to get the models
-            var response = await client.GetAsync(endpoint);
+            // Call provider API
+            var response = await client.ExecuteAsync(request);
 
-            // Check if the response is successful
-            if (!response.IsSuccessStatusCode)
+            // Validate response
+            if (!response.IsSuccessful || string.IsNullOrWhiteSpace(response.Content))
             {
-                serviceResponse.Message = $"Failed to retrieve models from {providerType}. Status Code: {response.StatusCode}.";
-                _logger.LogWarning("API call to {Provider} failed with status code {StatusCode}", providerType, response.StatusCode);
+                serviceResponse.Message = $"Failed to retrieve models from {providerType}. Status: {response.StatusCode}";
                 return serviceResponse;
             }
 
             // Log success
             _logger.LogInformation("Successfully retrieved models from {Provider} API.", providerType);
 
-            // Deserialize the response into a JObject
-            string responseContent = await response.Content.ReadAsStringAsync();
-            JObject jsonResponse = JObject.Parse(responseContent);
+            // Parse JSON response body
+            JObject jsonResponse = JObject.Parse(response.Content);
 
             // Extract data based on provider type
             IEnumerable<JToken>? dataArray = providerType switch
