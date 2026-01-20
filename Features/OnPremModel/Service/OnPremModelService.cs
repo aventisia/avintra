@@ -274,15 +274,25 @@ public class OnPremModelService : IOnPremModelService
 
         try
         {
-            // Check if a model with the same name already exists.
+            // Check whether an on-prem model with the same name, provider type, and provider URL already exists.
             var existingModel = await _unitOfWork.OnPremModelRepo
-                .GetByConditionAsync(w => w.Name.ToLower() == onPremModelDto.Name.ToLower())
+                .GetByConditionAsync(w =>
+                    w.ModelName.ToLower() == onPremModelDto.ModelName.ToLower() &&
+                    w.ProviderType == onPremModelDto.ProviderType &&
+                    w.ProviderUrl == onPremModelDto.ProviderUrl
+                )
                 .FirstOrDefaultAsync();
 
             if (existingModel != null)
             {
-                _logger.LogWarning("Duplicate model name '{ModelName}' attempted for insertion.", onPremModelDto.Name);
-                serviceResponse.Message = "An on-prem model with the same name already exists.";
+                _logger.LogWarning(
+                    "Attempted to insert a duplicate on-prem model. ModelName: {ModelName}, ProviderType: {ProviderType}, ProviderUrl: {ProviderUrl}.",
+                    onPremModelDto.ModelName,
+                    onPremModelDto.ProviderType,
+                    onPremModelDto.ProviderUrl
+                );
+
+                serviceResponse.Message = "An on-prem model with the same name, provider type, and provider URL already exists.";
                 serviceResponse.StatusCode = 409;
                 return serviceResponse;
             }
@@ -411,17 +421,26 @@ public class OnPremModelService : IOnPremModelService
                 return serviceResponse;
             }
 
-            // Check for duplicate names if the name is changed.
+            // Check whether an on-prem model with the same name, provider type, and provider URL already exists.
             var duplicateOnPremModel = await _unitOfWork.OnPremModelRepo
                 .GetByConditionAsync(w =>
                     w.Id != onPremModelDto.Id &&
-                    w.Name.ToLower() == onPremModelDto.Name.ToLower())
+                    w.ModelName.ToLower() == onPremModelDto.ModelName.ToLower() &&
+                    w.ProviderType == onPremModelDto.ProviderType &&
+                    w.ProviderUrl == onPremModelDto.ProviderUrl
+                )
                 .FirstOrDefaultAsync();
 
             if (duplicateOnPremModel != null)
             {
-                _logger.LogWarning("Attempt to update on-prem model with duplicate name '{ModelName}'.", onPremModelDto.Name);
-                serviceResponse.Message = "An on-prem model with the same name already exists.";
+                _logger.LogWarning(
+                    "Attempted to insert a duplicate on-prem model. ModelName: {ModelName}, ProviderType: {ProviderType}, ProviderUrl: {ProviderUrl}.",
+                    onPremModelDto.ModelName,
+                    onPremModelDto.ProviderType,
+                    onPremModelDto.ProviderUrl
+                );
+
+                serviceResponse.Message = "An on-prem model with the same name, provider type, and provider URL already exists.";
                 serviceResponse.StatusCode = 409;
                 return serviceResponse;
             }
