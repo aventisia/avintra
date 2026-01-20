@@ -12,8 +12,3 @@ Rules:
 - Output must be plain text only — no explanations or extra formatting
 - If no text is detected, return an empty string ("")
 - Do not summarize or interpret the text
-
----
-
-Input image:
-{{FileContent}}

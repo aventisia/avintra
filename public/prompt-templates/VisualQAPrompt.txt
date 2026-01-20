@@ -11,10 +11,5 @@ Rules:
 - Do not add explanations or assumptions
 - Output plain text only
 
----
-
-Input image:
-{{FileContent}}
-
 Question:
 {{UserQuestion}}

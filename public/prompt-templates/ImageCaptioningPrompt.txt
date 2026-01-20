@@ -11,8 +11,3 @@ Rules:
 - Keep the caption concise and informative
 - Output a single paragraph of text only
 - Do not include explanations or metadata
-
----
-
-Input image:
-{{FileContent}}

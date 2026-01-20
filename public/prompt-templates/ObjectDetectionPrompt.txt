@@ -20,8 +20,3 @@ Rules:
 - Do not infer object purpose or usage
 - If no objects are detected, return an empty list
 - Output must be valid JSON only — no explanations or extra text
-
----
-
-Input image:
-{{FileContent}}

@@ -18,8 +18,3 @@ Rules:
 - Do not infer hidden intent or unseen events
 - If a field is not applicable, return an empty array or empty string
 - Output must be valid JSON only — no explanations or extra text
-
----
-
-Input image:
-{{FileContent}}
