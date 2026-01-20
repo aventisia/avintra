@@ -15,11 +15,14 @@ import {
 } from "@aventisia/ui/accordion";
 import { FormItem } from "@aventisia/ui/form";
 import { cn } from "@aventisia/ui/lib";
+import { toast } from "@aventisia/ui/sonner";
 import { ChevronRight } from "lucide-react";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { Controller, UseFormReturn } from "react-hook-form";
 import { useShallow } from "zustand/react/shallow";
 
+import { getProviderModels } from "../apis/llm-model-apis";
+import { Model, modelProviders } from "../constants/model-providers";
 import { useModelProviderStore } from "../stores/model-provider-store";
 import CloudConfig from "./CloudConfig";
 
@@ -38,9 +41,58 @@ interface LLMConfigurationProps {
 const LLMConfiguration = ({ form, modelType }: LLMConfigurationProps) => {
   const [openItem, setOpenItem] = useState<string | undefined>("");
 
+  const [initialModels, setInitialModels] = useState<Model[]>([]);
+
+  // Derived values
+  const provider = form.watch(`${modelType}.provider`);
+  const isBYOKEnabled = form.watch(`${modelType}.isBYOKEnabled`);
+  const credentialId = form.watch(`${modelType}.credentialId`);
+
   const { models } = useModelProviderStore(
     useShallow((state) => ({ models: state.models })),
   );
+
+  // 2. Initialize on mount (for saved data)
+  useEffect(() => {
+    const initializeModels = async () => {
+      if (!isBYOKEnabled) {
+        // Static models mode - no need to fetch
+        const provider = modelProviders.find(
+          (p) => p.value === form.watch(`${modelType}.provider`),
+        );
+
+        const m =
+          models.length > 0
+            ? models
+            : provider?.models.filter((m) => m.available);
+
+        setInitialModels(m || []);
+      } else {
+        // BYOK mode - need to fetch models if credential exists
+        if (credentialId && provider) {
+          try {
+            const mapper: Record<string, string> = {
+              openai: "OpenAI",
+              googlegemini: "Gemini",
+              openrouter: "OpenRouter",
+            };
+
+            const providerM = mapper[provider];
+            if (providerM) {
+              const models = await getProviderModels(providerM, credentialId);
+              setInitialModels(models?.data as Model[]);
+            }
+          } catch (err) {
+            toast.error(err as string);
+            setInitialModels([]);
+          }
+        }
+      }
+    };
+
+    initializeModels();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [models]);
 
   return (
     <>
@@ -64,7 +116,7 @@ const LLMConfiguration = ({ form, modelType }: LLMConfigurationProps) => {
 
             <div className="flex items-center w-full justify-start gap-2 group ">
               <span className="text-md group-hover:underline">
-                LLM Configuration
+                Model Configuration
               </span>
             </div>
             {!openItem && (
@@ -81,7 +133,7 @@ const LLMConfiguration = ({ form, modelType }: LLMConfigurationProps) => {
                       </SelectTrigger>
                       <SelectContent>
                         {import.meta.env.MODE !== "production"
-                          ? models.map((model) => (
+                          ? initialModels?.map((model) => (
                               <SelectItem key={model.value} value={model.value}>
                                 {model.value}
                               </SelectItem>

@@ -61,31 +61,31 @@ const googleVoices = [
 ];
 
 export const openAiModelList: Model[] = [
-  // --- GPT-5 Frontier Series ---
+  // --- GPT-5 Frontier Series (Released Aug-Dec 2025) ---
   {
     label: "gpt-5.2",
     value: "gpt-5.2",
     available: false,
-    specialty: ["text"],
+    specialty: ["text", "vision"],
     voices: openAIVoices,
   },
   {
     label: "gpt-5.1",
     value: "gpt-5.1",
     available: false,
-    specialty: ["text"],
+    specialty: ["text", "vision"],
   },
   {
     label: "gpt-5",
     value: "gpt-5",
     available: false,
-    specialty: ["text"],
+    specialty: ["text", "vision"],
   },
   {
     label: "gpt-5-mini",
     value: "gpt-5-mini",
     available: false,
-    specialty: ["text"],
+    specialty: ["text", "vision"],
   },
   {
     label: "gpt-5-nano",
@@ -103,7 +103,7 @@ export const openAiModelList: Model[] = [
     specialty: ["video"],
   },
 
-  // --- Image Generation ---
+  // --- Image Generation (GPT-Image replaces DALL-E) ---
   {
     label: "gpt-image-1.5",
     value: "gpt-image-1.5",
@@ -129,33 +129,31 @@ export const openAiModelList: Model[] = [
     specialty: ["image"],
   },
 
-  // --- Deep Research ---
+  // --- Deep Research & Advanced Reasoning (o-series) ---
   {
     label: "o3-deep-research",
     value: "o3-deep-research",
     available: false,
-    specialty: ["deep-search"],
+    specialty: ["text", "deep-search"],
   },
   {
     label: "o4-mini-deep-research",
     value: "o4-mini-deep-research",
     available: false,
-    specialty: ["deep-search"],
+    specialty: ["text", "deep-search"],
   },
-
-  // --- Reasoning / Planning ---
   {
     label: "o3-pro",
     value: "o3-pro",
     available: false,
-    specialty: ["text"],
+    specialty: ["text", "vision"],
   },
-  { label: "o3", value: "o3", available: false, specialty: ["text"] },
+  { label: "o3", value: "o3", available: false, specialty: ["text", "vision"] },
   {
     label: "o4-mini",
     value: "o4-mini",
     available: false,
-    specialty: ["text"],
+    specialty: ["text", "vision"],
   },
 
   // --- Audio & Realtime ---
@@ -163,43 +161,43 @@ export const openAiModelList: Model[] = [
     label: "gpt-audio",
     value: "gpt-audio",
     available: false,
-    specialty: ["tts"],
+    specialty: ["tts", "stt"],
     voices: openAIVoices,
   },
   {
     label: "gpt-realtime",
     value: "gpt-realtime",
     available: false,
-    specialty: ["realtime"],
+    specialty: ["realtime", "tts", "stt"],
     voices: openAIVoices,
   },
   {
     label: "gpt-realtime-mini",
     value: "gpt-realtime-mini",
     available: false,
-    specialty: ["realtime"],
+    specialty: ["realtime", "tts", "stt"],
     voices: openAIVoices,
   },
   {
     label: "gpt-audio-mini",
     value: "gpt-audio-mini",
     available: false,
-    specialty: ["tts"],
+    specialty: ["tts", "stt"],
     voices: openAIVoices,
   },
 
-  // --- GPT-4.x ---
+  // --- GPT-4.1 Architecture (Non-Reasoning Optimization) ---
   {
     label: "gpt-4.1",
     value: "gpt-4.1",
     available: false,
-    specialty: ["text"],
+    specialty: ["text", "vision"],
   },
   {
     label: "gpt-4.1-mini",
     value: "gpt-4.1-mini",
     available: false,
-    specialty: ["text"],
+    specialty: ["text", "vision"],
   },
   {
     label: "gpt-4.1-nano",
@@ -208,82 +206,82 @@ export const openAiModelList: Model[] = [
     specialty: ["text"],
   },
 
-  // --- Special / Preview ---
+  // --- Special Purpose & Preview Models ---
   {
     label: "o1-pro",
     value: "o1-pro",
     available: false,
-    specialty: ["text"],
+    specialty: ["text", "vision"],
   },
   {
     label: "computer-use-preview",
     value: "computer-use-preview",
     available: false,
-    specialty: ["vision"],
+    specialty: ["vision", "text"],
   },
   {
     label: "gpt-4o-mini-search-preview",
     value: "gpt-4o-mini-search-preview",
     available: false,
-    specialty: ["deep-search"],
+    specialty: ["text", "deep-search"],
   },
   {
     label: "gpt-4o-search-preview",
     value: "gpt-4o-search-preview",
     available: false,
-    specialty: ["deep-search"],
+    specialty: ["text", "deep-search"],
   },
   {
     label: "gpt-4.5-preview",
     value: "gpt-4.5-preview",
     available: false,
     specialty: ["text"],
-  },
+  }, // Deprecated July 2025
   {
     label: "o3-mini",
     value: "o3-mini",
     available: false,
-    specialty: ["text"],
+    specialty: ["text", "vision"],
   },
-  { label: "o1", value: "o1", available: false, specialty: ["text"] },
+  { label: "o1", value: "o1", available: false, specialty: ["text", "vision"] },
   {
     label: "omni-moderation-latest",
     value: "omni-moderation-latest",
     available: false,
     specialty: ["text"],
   },
-  { label: "o1-mini", value: "o1-mini", available: false, specialty: ["text"] },
+  { label: "o1-mini", value: "o1-mini", available: false, specialty: ["text"] }, // Replaced by o4-mini
   {
     label: "o1-preview",
     value: "o1-preview",
     available: false,
     specialty: ["text"],
-  },
+  }, // Replaced by o3
 
-  // --- Omni ---
+  // --- Omni Series ---
   {
     label: "gpt-4o",
     value: "gpt-4o",
     available: true,
-    specialty: ["realtime"],
+    specialty: ["text", "vision", "realtime"],
   },
   {
     label: "gpt-4o-audio-preview",
     value: "gpt-4o-audio-preview",
     available: false,
-    specialty: ["tts"],
-  },
+    specialty: ["tts", "stt"],
+  }, // Succeeded by gpt-audio
   {
     label: "gpt-4o-mini",
     value: "gpt-4o-mini",
     available: true,
-    specialty: ["text"],
+    specialty: ["text", "vision"],
   },
   {
     label: "gpt-4o-mini-audio-preview",
     value: "gpt-4o-mini-audio-preview",
     available: false,
-    specialty: ["tts"],
+    specialty: ["tts", "stt"],
   },
   {
     label: "gpt-4o-mini-realtime-preview",
@@ -298,18 +296,18 @@ export const openAiModelList: Model[] = [
     specialty: ["realtime"],
   },
 
-  // --- Turbo / Legacy ---
+  // --- Turbo & Legacy Legacy ---
   {
     label: "gpt-4-turbo",
     value: "gpt-4-turbo",
     available: false,
-    specialty: ["text"],
+    specialty: ["text", "vision"],
   },
   {
     label: "chatgpt-4o-latest",
     value: "chatgpt-4o-latest",
     available: false,
-    specialty: ["text"],
+    specialty: ["text", "vision"],
   },
   {
     label: "gpt-4-turbo-preview",
@@ -318,7 +316,7 @@ export const openAiModelList: Model[] = [
     specialty: ["text"],
   },
 
-  // --- Transcription / TTS ---
+  // --- Audio Specialized Transcribe/TTS ---
   {
     label: "gpt-4o-mini-transcribe",
     value: "gpt-4o-mini-transcribe",
@@ -345,7 +343,27 @@ export const openAiModelList: Model[] = [
     specialty: ["stt"],
   },
 
-  // --- Open Weights ---
+  // --- ChatGPT Product Variants ---
+  {
+    label: "gpt-5.2-chat-latest",
+    value: "gpt-5.2-chat-latest",
+    available: false,
+    specialty: ["text", "vision"],
+  },
+  {
+    label: "gpt-5.1-chat-latest",
+    value: "gpt-5.1-chat-latest",
+    available: false,
+    specialty: ["text", "vision"],
+  },
+  {
+    label: "gpt-5-chat-latest",
+    value: "gpt-5-chat-latest",
+    available: false,
+    specialty: ["text", "vision"],
+  },
+
+  // --- Open Weights (GPT-OSS) ---
   {
     label: "gpt-oss-120b",
     value: "gpt-oss-120b",
@@ -391,7 +409,7 @@ export const openAiModelList: Model[] = [
     specialty: ["text"],
   },
 
-  // --- Legacy ---
+  // --- Legacy Audio/Image ---
   {
     label: "tts-1",
     value: "tts-1",
@@ -421,138 +439,146 @@ export const openAiModelList: Model[] = [
 ];
 
 export const googleModelList: Model[] = [
+  // --- Gemini 3 Frontier Series (Released Nov-Dec 2025) ---
   {
-    label: "gemini-3-pro-preview",
+    label: "Gemini 3 Pro",
     value: "gemini-3-pro-preview",
     available: false,
-    specialty: ["text"],
+    specialty: ["text", "vision", "deep-search"],
     voices: googleVoices,
   },
   {
-    label: "gemini-3-flash-preview",
+    label: "Gemini 3 Flash",
     value: "gemini-3-flash-preview",
     available: false,
-    specialty: ["realtime"],
+    specialty: ["text", "vision", "realtime"],
   },
   {
-    label: "gemini-3-pro-image-preview",
+    label: "Gemini 3 Pro Image (Nano Banana Pro)",
     value: "gemini-3-pro-image-preview",
     available: false,
     specialty: ["image"],
   },
 
+  // --- Gemini 2.5 Stable Series ---
   {
-    label: "gemini-2.5-pro",
+    label: "Gemini 2.5 Pro",
     value: "gemini-2.5-pro",
     available: false,
-    specialty: ["text"],
+    specialty: ["text", "vision", "deep-search"],
   },
   {
-    label: "gemini-2.5-flash",
+    label: "Gemini 2.5 Flash",
     value: "gemini-2.5-flash",
     available: true,
-    specialty: ["realtime"],
+    specialty: ["text", "vision", "realtime"],
   },
   {
-    label: "gemini-2.5-flash-lite",
+    label: "Gemini 2.5 Flash-Lite",
     value: "gemini-2.5-flash-lite",
     available: true,
-    specialty: ["text"],
+    specialty: ["text", "vision"],
   },
   {
-    label: "gemini-2.5-flash-image",
+    label: "Gemini 2.5 Flash Image",
     value: "gemini-2.5-flash-image",
     available: false,
     specialty: ["image"],
   },
 
+  // --- Audio & Voice Specialized ---
   {
-    label: "gemini-2.5-pro-tts",
+    label: "Gemini 2.5 Pro TTS",
     value: "gemini-2.5-pro-tts",
     available: false,
     specialty: ["tts"],
     voices: googleVoices,
   },
   {
-    label: "gemini-live-2.5-flash-native-audio",
+    label: "Gemini Live 2.5 Flash (Audio)",
     value: "gemini-live-2.5-flash-native-audio",
     available: false,
-    specialty: ["realtime"],
+    specialty: ["realtime", "tts", "stt"],
     voices: googleVoices,
   },
   {
-    label: "gemini-2.5-flash-preview-tts",
+    label: "Gemini 2.5 Flash TTS Preview",
     value: "gemini-2.5-flash-preview-tts",
     available: false,
     specialty: ["tts"],
   },
 
+  // --- Video & Robotics ---
   {
-    label: "veo-3.1",
+    label: "Veo 3.1",
     value: "veo-3.1",
     available: false,
     specialty: ["video"],
   },
   {
-    label: "gemini-robotics-er-1.5",
+    label: "Gemini Robotics-ER 1.5",
     value: "gemini-robotics-er-1.5",
     available: false,
-    specialty: ["vision"],
+    specialty: ["vision", "text"],
   },
 
+  // --- Legacy & Retired (Available for 2025 Migration) ---
   {
-    label: "gemini-2.0-flash-001",
+    label: "Gemini 2.0 Flash",
     value: "gemini-2.0-flash-001",
     available: false,
-    specialty: ["text"],
+    specialty: ["text", "vision"],
   },
   {
-    label: "gemini-2.0-flash-lite-001",
+    label: "Gemini 2.0 Flash-Lite",
     value: "gemini-2.0-flash-lite-001",
     available: false,
-    specialty: ["text"],
+    specialty: ["text", "vision"],
   },
   {
-    label: "gemini-1.5-pro-002",
+    label: "Gemini 1.5 Pro (Legacy)",
     value: "gemini-1.5-pro-002",
-    available: false,
-    specialty: ["text"],
+    available: false, // Retired Sep 2025
+    specialty: ["text", "vision"],
   },
 
+  // --- Image Generation (Imagen Series) ---
   {
-    label: "imagen-3.0-generate-002",
+    label: "Imagen 3.0 Generate",
     value: "imagen-3.0-generate-002",
     available: false,
     specialty: ["image"],
   },
   {
-    label: "imagen-3.0-fast-001",
+    label: "Imagen 3.0 Fast",
     value: "imagen-3.0-fast-001",
     available: false,
     specialty: ["image"],
   },
 
+  // --- Open Models (Gemma) ---
   {
-    label: "gemma-3-27b-it",
+    label: "Gemma 3 27B IT",
     value: "gemma-3-27b-it",
     available: false,
-    specialty: ["text"],
+    specialty: ["text", "image"],
   },
   {
-    label: "gemma-2-9b",
+    label: "Gemma 2 9B",
     value: "gemma-2-9b",
     available: false,
     specialty: ["text"],
   },
 
+  // --- Embeddings ---
   {
-    label: "gemini-embedding-001",
+    label: "Gemini Embedding 001",
     value: "gemini-embedding-001",
     available: false,
     specialty: ["text"],
   },
   {
-    label: "text-embedding-005",
+    label: "Text Embedding 005",
     value: "text-embedding-005",
     available: false,
     specialty: ["text"],
@@ -560,108 +586,113 @@ export const googleModelList: Model[] = [
 ];
 
 export const openRouterModelList: Model[] = [
+  // --- Trending Reasoning & Frontier Models ---
   {
-    label: "anthropic/claude-4.5-sonnet",
+    label: "Claude 4.5 Sonnet",
     value: "anthropic/claude-4.5-sonnet",
     available: true,
-    specialty: ["text"],
+    specialty: ["text", "vision", "deep-search"],
   },
   {
-    label: "openai/gpt-5.2",
+    label: "GPT-5.2 (OpenAI)",
     value: "openai/gpt-5.2",
     available: false,
-    specialty: ["text"],
+    specialty: ["text", "vision", "realtime"],
   },
   {
-    label: "google/gemini-3-pro-preview",
+    label: "Gemini 3 Pro Preview",
     value: "google/gemini-3-pro-preview",
     available: false,
-    specialty: ["text"],
+    specialty: ["text", "vision", "deep-search"],
   },
   {
-    label: "x-ai/grok-code-fast-1",
+    label: "Grok Code Fast 1",
     value: "x-ai/grok-code-fast-1",
     available: true,
-    specialty: ["text"],
+    specialty: ["text", "deep-search"],
   },
 
+  // --- High-Performance Open Weights ---
   {
-    label: "deepseek/deepseek-v3.2-speciale",
+    label: "DeepSeek V3.2 Speciale",
     value: "deepseek/deepseek-v3.2-speciale",
     available: true,
-    specialty: ["vision"],
+    specialty: ["text", "vision"],
   },
   {
-    label: "qwen/qwen-3-vl-72b",
+    label: "Qwen 3 VL (72B)",
     value: "qwen/qwen-3-vl-72b",
     available: true,
-    specialty: ["vision"],
+    specialty: ["vision", "text"],
   },
   {
-    label: "nvidia/llama-3.3-nemotron-super-49b",
+    label: "Llama 3.3 Nemotron Super",
     value: "nvidia/llama-3.3-nemotron-super-49b",
     available: true,
-    specialty: ["vision"],
+    specialty: ["text", "vision"],
   },
   {
-    label: "xiaomi/mimo-v2-flash",
+    label: "MiMo-V2-Flash (Xiaomi)",
     value: "xiaomi/mimo-v2-flash",
     available: false,
-    specialty: ["text"],
+    specialty: ["text", "deep-search"],
   },
 
+  // --- Specialized & Agentic Models ---
   {
-    label: "mistralai/devstral-2-2512",
+    label: "Devstral 2 (Mistral Coding)",
     value: "mistralai/devstral-2-2512",
     available: false,
     specialty: ["text"],
   },
   {
-    label: "kwaipilot/kat-coder-pro-v1",
+    label: "KAT-Coder-Pro V1",
     value: "kwaipilot/kat-coder-pro-v1",
     available: false,
     specialty: ["text"],
   },
   {
-    label: "tngtech/deepseek-r1t2-chimera",
+    label: "DeepSeek R1T2 Chimera",
     value: "tngtech/deepseek-r1t2-chimera",
     available: true,
     specialty: ["text"],
   },
 
+  // --- Efficient / High-Throughput (Nitro) ---
   {
-    label: "openai/gpt-5-mini",
+    label: "GPT-5 Mini",
     value: "openai/gpt-5-mini",
     available: false,
-    specialty: ["text"],
+    specialty: ["text", "vision"],
   },
   {
-    label: "google/gemini-2.5-flash:nitro",
+    label: "Gemini 2.5 Flash (Nitro)",
     value: "google/gemini-2.5-flash:nitro",
     available: false,
-    specialty: ["realtime"],
+    specialty: ["text", "vision", "realtime"],
   },
   {
-    label: "anthropic/claude-4.5-haiku",
+    label: "Claude 4.5 Haiku",
     value: "anthropic/claude-4.5-haiku",
     available: true,
-    specialty: ["text"],
+    specialty: ["text", "realtime"],
   },
   {
-    label: "amazon/nova-micro-1.0",
+    label: "Nova Micro 1.0 (Amazon)",
     value: "amazon/nova-micro-1.0",
     available: false,
     specialty: ["text"],
   },
 
+  // --- Image & Video ---
   {
-    label: "black-forest-labs/flux-2-dev",
+    label: "Flux 2 Dev (Z-Image)",
     value: "black-forest-labs/flux-2-dev",
     available: false,
     specialty: ["image"],
   },
   {
-    label: "openai/sora-2",
+    label: "Sora 2 (API Access)",
     value: "openai/sora-2",
     available: false,
     specialty: ["video"],

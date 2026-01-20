@@ -9,7 +9,7 @@ export const llmConfigZodSchema = z.object({
   nodePrompt: z.string().min(1, { message: reqError("Node Prompt") }),
   temperature: z.number().default(0.2),
   topP: z.number().default(0.2),
-  credentialId: z.string().optional(),
+  credentialId: z.string().nullable().optional(),
   provider: z
     .string()
     .min(1, { message: reqError("Provider") })
