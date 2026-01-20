@@ -165,12 +165,16 @@ const ModelConfigField = ({ name }: ModelConfigFieldProps) => {
   // 3. Handle BYOK toggle (only after initialization)
   useEffect(() => {
     if (!isInitialized) return;
+
+    if (!isBYOKEnabled)
+      setValue(fieldNames.credentials, null, { shouldDirty: true });
+
     if (prevValues.current.isBYOKEnabled === isBYOKEnabled) return;
 
     prevValues.current.isBYOKEnabled = isBYOKEnabled;
 
     // Reset dependent fields
-    setValue(fieldNames.credentials, null, { shouldDirty: true });
+    setValue(fieldNames.credentials, "", { shouldDirty: true });
     setValue(fieldNames.model, "", { shouldDirty: true });
     setByokModels([]);
   }, [isBYOKEnabled, isInitialized, setValue, fieldNames]);
@@ -183,7 +187,7 @@ const ModelConfigField = ({ name }: ModelConfigFieldProps) => {
     prevValues.current.providerValue = providerValue;
 
     // Reset dependent fields
-    setValue(fieldNames.credentials, "", { shouldDirty: true });
+    setValue(fieldNames.credentials, null, { shouldDirty: true });
     setValue(fieldNames.model, "", { shouldDirty: true });
     setByokModels([]);
   }, [providerValue, isInitialized, setValue, fieldNames]);
