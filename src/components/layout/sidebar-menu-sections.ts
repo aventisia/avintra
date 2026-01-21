@@ -23,7 +23,7 @@ import {
 } from "lucide-react";
 import { AiOutlineThunderbolt } from "react-icons/ai";
 
-import { IS_TAURI } from "@/constants/constants";
+// import { IS_TAURI } from "@/constants/constants";
 import {
   deploymentType,
   SidebarMenuItemExtended,
@@ -119,18 +119,20 @@ const sidebarMenuSections: SidebarMenuSectionExtended[] = [
         Icon: BotIcon,
         name: "my agents",
         route: "/assist/my-agents",
+        type: ["Commercial", "Enterprise"],
       },
 
       // Add Assist my queue only if not production
-      ...(import.meta.env.MODE !== "production" && IS_TAURI
-        ? [
+      ...(import.meta.env.MODE !== "production"
+        ? ([
             {
               permissions: ["TU"],
               Icon: QueueListIcon,
               name: "my queue",
               route: "/assist/my-queue",
+              type: ["Commercial", "Enterprise"],
             },
-          ]
+          ] as SidebarMenuItemExtended[])
         : []),
     ],
   },
