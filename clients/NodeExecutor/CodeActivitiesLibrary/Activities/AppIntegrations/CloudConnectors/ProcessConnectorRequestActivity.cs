@@ -49,7 +49,7 @@ namespace CodeActivitiesLibrary.AppIntegrations.CloudConnectorsActivities
             var accessToken = AccessToken.Get(context);
 
             // Get api url from config
-            var apiUrl = $"{ConfigurationManager.AppSettings["WORC_API_URL"]}/cloud-connector/{connectorProvider.ToLower()}/invoke";
+            var apiUrl = $"{ConfigurationManager.AppSettings["APP_BASE_URL"]}/worc/api/cloud-connector/{connectorProvider.ToLower()}/invoke";
 
             // Declare task completion source
             var taskCompletionSource = new TaskCompletionSource<string>(state);
@@ -71,7 +71,7 @@ namespace CodeActivitiesLibrary.AppIntegrations.CloudConnectorsActivities
 
 
                     // Ensure camelCase serialization
-                    var json = JsonConvert.SerializeObject(requestObj, new JsonSerializerSettings
+                    var requestJson = JsonConvert.SerializeObject(requestObj, new JsonSerializerSettings
                     {
                         ContractResolver = new Newtonsoft.Json.Serialization.CamelCasePropertyNamesContractResolver()
                     });
@@ -85,7 +85,7 @@ namespace CodeActivitiesLibrary.AppIntegrations.CloudConnectorsActivities
                         client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", accessToken);
 
                         // Construct content
-                        var content = new StringContent(json, Encoding.UTF8, "application/json");
+                        var content = new StringContent(requestJson, Encoding.UTF8, "application/json");
 
                         // Post to API
                         var response = await client.PostAsync(apiUrl, content);
