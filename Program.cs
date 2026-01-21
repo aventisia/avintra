@@ -22,6 +22,7 @@ if (!builder.Environment.IsEnvironment("Localhost"))
     var OPENAI_API_KEY = Guard.Against.Null(Environment.GetEnvironmentVariable("OPENAI_API_KEY"), message: "OPENAI_API_KEY cannot be null");
     var AES_ENCRYPTION_KEY = Guard.Against.Null(Environment.GetEnvironmentVariable("AES_ENCRYPTION_KEY"), message: "AES_ENCRYPTION_KEY cannot be null");
     var AES_INITIALIZATION_VECTOR = Guard.Against.Null(Environment.GetEnvironmentVariable("AES_INITIALIZATION_VECTOR"), message: "AES_INITIALIZATION_VECTOR cannot be null");
+    var AZURE_BLOB_STORAGE_CONNECTION_STRING = Guard.Against.Null(Environment.GetEnvironmentVariable("AZURE_BLOB_STORAGE_CONNECTION_STRING"), message: "AZURE_BLOB_STORAGE_CONNECTION_STRING cannot be null");
 
     // Update sensitive data in configuration
     config = new ConfigurationBuilder().AddConfiguration(config).AddInMemoryCollection(new Dictionary<string, string?>
@@ -34,7 +35,8 @@ if (!builder.Environment.IsEnvironment("Localhost"))
         { "SmtpConfig:ApiKey", SMTP_API_KEY },
         { "OpenAIConfig:OpenAIApiKey", OPENAI_API_KEY },
         { "AesEncryptionConfig:AES_ENCRYPTION_KEY", AES_ENCRYPTION_KEY },
-        { "AesEncryptionConfig:AES_INITIALIZATION_VECTOR", AES_INITIALIZATION_VECTOR }
+        { "AesEncryptionConfig:AES_INITIALIZATION_VECTOR", AES_INITIALIZATION_VECTOR },
+        { "AzureBlobStorageConfig:ConnectionString", AZURE_BLOB_STORAGE_CONNECTION_STRING }
     }).Build();
 }
 
@@ -76,6 +78,7 @@ builder.Services.AddQuartzJobs();
 builder.Services.AddStringEncryptionService();
 builder.Services.AddUploadFileService();
 builder.Services.AddHttpClientService(config);
+builder.Services.AddAzureBlobStorageService(config);
 /*--Configure the HTTP request pipeline.--*/
 
 var app = builder.Build();
@@ -110,7 +113,7 @@ app.UseAuthentication();
 
 app.UseAuthorization();
 
-app.UseRateLimiter(); 
+app.UseRateLimiter();
 
 app.UseMiddleware<SessionValidator>();
 
