@@ -9,7 +9,7 @@ export default function CreateAccountPage() {
   useEffect(() => {
     if (IS_TAURI) {
       // Redirect to the login page.
-      window.location.assign(import.meta.env.VITE_LOGIN_URL);
+      window.location.assign(import.meta.env.VITE_ACCOUNTS_PATH);
     }
   }, []);
 

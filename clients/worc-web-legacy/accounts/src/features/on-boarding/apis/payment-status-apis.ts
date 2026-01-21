@@ -4,7 +4,7 @@ import { IHttpResponse } from "@aventisia/ui/dtos";
 
 import { PaymentStatusDto } from "../dtos/payment-status-dto";
 
-const baseAPIURL: string = `${import.meta.env.VITE_ACCOUNTS_API_URL}/payment-tracker`;
+const baseAPIURL: string = `${import.meta.env.VITE_ACCOUNTS_API_PATH}/payment-tracker`;
 
 export const getPaymentStatus = (paymentId: string) =>
   axiosInstance

@@ -72,7 +72,9 @@ export const useFetchPaymentStatus = () => {
             localStorage.clear(); // Clear payment info from LS
 
             setTimeout(() => {
-              window.location.assign(import.meta.env.VITE_WORC_URL + "/tenant");
+              window.location.assign(
+                import.meta.env.VITE_WORC_PATH + "tenant",
+              );
             }, 500); // Delay for a smooth transition
           }
         }, 1000); // Update every second

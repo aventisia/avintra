@@ -29,7 +29,7 @@ export const useValidateUserSessionForLoginPage = () => {
       if (!httpResponse) return;
 
       // Set authenticated user locally
-      const userSessionStoreObj = setUserSessionLocally(httpResponse.data);
+      setUserSessionLocally(httpResponse.data);
 
       // TODO: To be removed
       if (import.meta.env.DEV) {
@@ -42,15 +42,12 @@ export const useValidateUserSessionForLoginPage = () => {
         httpResponse.message.includes(NO_ACTIVE_SUBSCRIPTION)
       ) {
         window.location.href =
-          import.meta.env.VITE_ACCOUNTS_URL + "/onboarding";
+          import.meta.env.VITE_ACCOUNTS_PATH + "onboarding";
       } else {
-        //User already onboarded
-        // TODO: Route as per user type (internal or external)
+        //User already onboarded. Redirect to worc app
         navigate(
           "/redirect?msg=Loading...&url=" +
-            (userSessionStoreObj.isAE
-              ? import.meta.env.VITE_WORC_URL
-              : import.meta.env.VITE_WORC_URL),
+            import.meta.env.VITE_WORC_PATH,
         );
       }
     },
