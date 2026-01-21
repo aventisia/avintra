@@ -2,11 +2,11 @@ import requests
 from app.core.logger import logger
 from typing import Dict, Any
 import uuid
+from app.core.config import settings
 
 class VaultManager:
     # Constructor: To initialize API URL and key (if any)
-    # TODO: Remove default URL or connect to database to do these operations
-    def __init__(self, api_url: str = "http://localhost:4001/api/app-secret"):
+    def __init__(self, api_url: str =  f"https://{settings.APP_BASE_URL}/worc/api/app-secret"):
         self.api_url = api_url
 
     def get_vault_secret_by_id(self, vault_secret_id: str, jwt: str = None) -> Dict[str, Any]:

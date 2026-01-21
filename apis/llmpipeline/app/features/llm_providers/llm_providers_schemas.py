@@ -1,11 +1,11 @@
 # Schemas for LLM Providers feature
 from pydantic import BaseModel
-from typing import Optional, Literal, TypeAlias
+from typing import Optional, Literal, TypeAlias, Any
 from datetime import datetime, timezone
 from typing import Union, List
 
 # Centralized provider literal for all schemas
-ProviderLiteral: TypeAlias = Literal['openai', 'ollama', 'deepinfra', 'gemini', 'openrouter']
+ProviderLiteral: TypeAlias = Literal['openai', 'ollama', 'deepinfra', 'googlegemini', 'openrouter']
 
 # LLM message structure for chat-based models
 class LLMMessage(BaseModel):
@@ -19,7 +19,7 @@ class LLMRequest(BaseModel):
     input: Union[str, List[LLMMessage]]  # Accepts string or list of messages
     files: Optional[List[str]] = None  # List of base64-encoded files for OCR/text extraction
     is_json_output: Optional[bool] = False # Try to extract JSON from response and sends no streaming response in one go even if streaming is true
-    json_schema: Optional[str] = None
+    json_schema: Optional[Union[str, dict]] = None  # Can be JSON string or dict object
     max_output_tokens: Optional[int] = None
     is_byok_enabled: Optional[bool] = False # TODO: Implement BYOK support
     credential_id: Optional[str] = None # TODO: Implement BYOK support
@@ -36,13 +36,13 @@ class LLMRequest(BaseModel):
 class LLMChunkResponse(BaseModel):
     provider: ProviderLiteral
     model: str
-    output: str
+    output: Union[str, dict, list]  # String for text/markdown, dict/list for JSON responses
     
 # Response schema for LLM full response or last chunk in streaming
 class LLMResponse(BaseModel):
     provider: ProviderLiteral
     model: str
-    output: str
+    output: Union[str, dict, list]  # String for text/markdown, dict/list for JSON responses
     status: Optional[Literal['completed', 'failed', 'in_progress', 'cancelled', 'queued', 'incomplete']] = None
     finish_reason: Optional[str] = None
     created_on: datetime = datetime.now(timezone.utc)

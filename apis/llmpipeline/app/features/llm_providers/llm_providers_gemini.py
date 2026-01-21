@@ -1,6 +1,7 @@
 import json
 import time
 import httpx
+from datetime import datetime, timezone
 from fastapi import HTTPException, Request
 
 from app.core.config import settings
@@ -80,6 +81,9 @@ class GeminiProvider(BaseLLMProvider):
 
                 # Parse Gemini API response
                 response_data = response.json()
+                
+                # Log response data for debugging (pretty-printed for readability)
+                logger.info(f"Gemini response data:\n{json.dumps(response_data, indent=2)}")
         
                 # Extract generated text from response structure
                 text_output = (
@@ -351,7 +355,7 @@ class GeminiProvider(BaseLLMProvider):
         llm_response.finish_reason = self.map_gemini_finish_reason_to_finish_reason(candidates.get("finishReason", ""))
 
         # Timestamp when the response object is created
-        llm_response.created_on = time.strftime('%Y-%m-%d %H:%M:%S')
+        llm_response.created_on = datetime.now(timezone.utc)
         
         # Total time taken for the LLM call (in seconds)
         llm_response.time_taken = round(end_time - start_time, 2)

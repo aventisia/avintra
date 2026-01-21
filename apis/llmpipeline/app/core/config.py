@@ -12,6 +12,9 @@ class Settings(BaseSettings):
     PROJECT_DESCRIPTION: str = "APIs for managing LLM pipelines"
     PROJECT_VERSION: str = "0.1.0"
     
+    # App base url
+    APP_BASE_URL: str
+
     # Database
     APP_DB_CONNECTION_STRING: str
     TENANT_DB_CONNECTION_STRING: str
