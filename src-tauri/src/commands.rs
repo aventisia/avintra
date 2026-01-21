@@ -3,6 +3,7 @@ use serde::Serialize;
 
 #[tauri::command]
 pub fn launch_desktop_executor(
+    app_base_url: String,
     ws_port: u16,
     agent_id: String,
     agent_name: String,
@@ -28,6 +29,7 @@ pub fn launch_desktop_executor(
     }
 
     Command::new(desktop_executor_path)
+        .arg(app_base_url)
         .arg(ws_port.to_string())
         .arg(agent_id)
         .arg(agent_name)
