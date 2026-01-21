@@ -95,6 +95,7 @@
     <Compile Include="Activities\AppIntegrations\AzureActivities\UploadFileToBlobStorageActivity.cs" />
     <Compile Include="Activities\AppIntegrations\AzureActivities\_AzureCategoryMetaData.cs" />
     <Compile Include="Activities\AppIntegrations\CloudConnectors\ProcessConnectorRequestActivity.cs" />
+    <Compile Include="Activities\AppIntegrations\CloudConnectors\ProcessLLMRequestActivity.cs" />
     <Compile Include="Activities\AppIntegrations\EmailActivities\ProcessEmailMessagesActivity.cs" />
     <Compile Include="Activities\AppIntegrations\EmailActivities\RetrieveEmailMessagesActivity.cs" />
     <Compile Include="Activities\AppIntegrations\EmailActivities\SendEmailActivity.cs" />
@@ -618,6 +619,8 @@
     <Compile Include="Activities\UIInterfaceAutomations\BrowserAutomationActivities\SetCheckboxStateOnWebPageActivity.cs" />
     <Compile Include="Activities\UIInterfaceAutomations\BrowserAutomationActivities\SetDropDownListValueOnWebPageActivity.cs" />
     <Compile Include="Activities\UIInterfaceAutomations\BrowserAutomationActivities\SetElementAttributeValueActivity.cs" />
+    <Compile Include="Activities\UIInterfaceAutomations\BrowserAutomationActivities\SwitchToDefaultContentActivity.cs" />
+    <Compile Include="Activities\UIInterfaceAutomations\BrowserAutomationActivities\SwitchToIframeActivity.cs" />
     <Compile Include="Activities\UIInterfaceAutomations\BrowserAutomationActivities\SwitchToTabActivity.cs" />
     <Compile Include="Activities\UIInterfaceAutomations\BrowserAutomationActivities\_BrowserAutomationCategoryMetaData.cs" />
     <Compile Include="Activities\UIInterfaceAutomations\ClipboardActivities\ClearClipboardContentsActivity.cs" />

@@ -13,65 +13,42 @@ namespace CodeActivitiesLibrary.UiInterfaceAutomations.SystemActivities
     [ActivityMetaData(nodeImg: "/assets/System.svg")]
     public class RunApplicationActivity : BaseCodeActivity
     {
-        // ----------------------
-        // Input Arguments
-        // ----------------------
-
+       
         [RequiredArgument]
         [DisplayName("Application path")]
         [Description("The path to the application or document to execute.")]
         public InArgument<string> ApplicationPath { get; set; }
 
-
         [DisplayName("Command line arguments")]
-        [Description("Optional command-line arguments to pass to the application.")]
+        [Description("Optional parameters to control how the application starts (e.g., a file to open or a silent mode flag). Example: \"C:\\report.xlsx\" or \"--input=data.csv --quiet\".")]
         public InArgument<string> CommandLineArguments { get; set; }
 
-
-        [DisplayName("Working folder")]
-        [Description("The working directory for the application.")]
-        public InArgument<string> WorkingFolder { get; set; }
-
+        [DisplayName("Working Directory")]
+        [Description("The folder the application uses as its 'current location' when running. If left empty, it defaults to the application's own folder. Required only if the app needs to access files like config.json or data.csv relative to a specific path.")]
+        public InArgument<string> WorkingDirectory { get; set; }
 
         [DisplayName("Window style")]
         [Description("Specifies how the application window should be displayed.")]
         public InArgument<WindowStyleEnum> WindowStyle { get; set; }
 
-
         [DisplayName("After application launch")]
         [Description("Specifies the behavior after launching the application.")]
         public InArgument<AfterApplicationLaunchEnum> AfterApplicationLaunch { get; set; }
 
-
         [DisplayName("Timeout")]
         [Description("The maximum time (in seconds) to wait for the application to complete.")]
         [DefaultValue(0)]
-        [RenderIfCondition(nameof(AfterApplicationLaunch), AfterApplicationLaunchEnum.WaitForApplicationToComplete)]
+        [RenderIfCondition(nameof(AfterApplicationLaunch), AfterApplicationLaunchEnum.ContinueImmediately)]
         public InArgument<int> Timeout { get; set; }
-
-        // ----------------------
-        // Output Arguments
-        // ----------------------
-
 
         [DisplayName("AppProcessId")]
         [Description("The process ID of the launched application.")]
         public OutArgument<int> AppProcessId { get; set; }
 
-
         [DisplayName("AppExitCode")]
         [Description("The exit code of the application if it completes.")]
-        [RenderIfCondition(nameof(AfterApplicationLaunch), AfterApplicationLaunchEnum.WaitForApplicationToComplete)]
+        [RenderIfCondition(nameof(AfterApplicationLaunch), AfterApplicationLaunchEnum.ContinueImmediately)]
         public OutArgument<int> AppExitCode { get; set; }
-
-
-        [DisplayName("Status Message")]
-        [Description("Provides status information about the operation.")]
-        public OutArgument<string> StatusMessages { get; set; }
-
-        // ----------------------
-        // Execution Logic
-        // ----------------------
 
         protected override void Execute(CodeActivityContext context)
         {
@@ -80,74 +57,69 @@ namespace CodeActivitiesLibrary.UiInterfaceAutomations.SystemActivities
                 // Retrieve input arguments
                 var applicationPath = ApplicationPath.Get(context);
                 var commandLineArguments = CommandLineArguments.Get(context);
-                var workingFolder = WorkingFolder.Get(context);
+                var workingDirectory = WorkingDirectory.Get(context);
                 var windowStyle = WindowStyle.Get(context);
                 var afterApplicationLaunch = AfterApplicationLaunch.Get(context);
                 var timeout = Timeout.Get(context);
-
+                
                 // Validate input
                 if (string.IsNullOrWhiteSpace(applicationPath))
                     throw new ArgumentException("Application path cannot be empty.");
 
+                if (string.IsNullOrWhiteSpace(workingDirectory))
+                {
+                    // Only set if applicationPath is a valid file path 
+                    if (System.IO.File.Exists(applicationPath))
+                    {
+                        workingDirectory = System.IO.Path.GetDirectoryName(applicationPath);
+                    }
+                }
                 // Start the application
                 var startInfo = new ProcessStartInfo
                 {
                     FileName = applicationPath,
                     Arguments = commandLineArguments,
-                    WorkingDirectory = workingFolder,
+                    WorkingDirectory = workingDirectory,
                     WindowStyle = GetWindowStyle(windowStyle),
-                    CreateNoWindow = windowStyle == WindowStyleEnum.Hidden
+                    CreateNoWindow = windowStyle == WindowStyleEnum.Hidden,
+                    UseShellExecute = true
                 };
 
-                using (var process = new Process { StartInfo = startInfo })
+                var process = new Process { StartInfo = startInfo };
+                process.Start();
+                AppProcessId.Set(context, process.Id);
+
+               
+                switch (afterApplicationLaunch)
                 {
-                    process.Start();
-                    AppProcessId.Set(context, process.Id);
+                    case AfterApplicationLaunchEnum.ContinueImmediately:
+                        // Do nothing — let workflow continue
+                        break;
 
-                    switch (afterApplicationLaunch)
-                    {
-                        case AfterApplicationLaunchEnum.ContinueImmediately:
-                            // Do nothing, just continue
-                            break;
+                    case AfterApplicationLaunchEnum.WaitForApplicationToLoad:
+                        // For visible GUI apps, wait for app to be ready to accept input
+                        if (windowStyle != WindowStyleEnum.Hidden)
+                        {
+                            // Times out after 10 seconds to avoid hanging
+                            process.WaitForInputIdle(10000);
+                        }
+                        else
+                        {
+                            Thread.Sleep(500);
+                        }
+                        break;
 
-                        case AfterApplicationLaunchEnum.WaitForApplicationToLoad:
-                            // Wait for the application to load (simple sleep for demonstration)
-                            Thread.Sleep(5000); // Replace with actual loading detection logic
-                            break;
-
-                        case AfterApplicationLaunchEnum.WaitForApplicationToComplete:
-                            var completed = false;
-
-                            if (timeout > 0)
-                            {
-                                completed = process.WaitForExit(timeout * 1000); // Returns true if exited
-                            }
-                            else
-                            {
-                                process.WaitForExit(); // Waits indefinitely
-                                completed = true;
-                            }
-
-                            if (completed)
-                                AppExitCode.Set(context, process.ExitCode);
-                            else
-                                throw new TimeoutException(
-                                    $"Application '{applicationPath}' did not complete within {timeout} seconds.");
-                            break;
-
-                        default:
-                            throw new NotSupportedException(
-                                $"Unsupported after application launch option: {afterApplicationLaunch}");
-                    }
+                    default:
+                        throw new NotSupportedException(
+                            $"Unsupported after application launch option: {afterApplicationLaunch}");
                 }
 
-                // Set output arguments
-
-                StatusMessage.Set(context, $"Application '{applicationPath}' launched successfully.");
+                IsSuccess.Set(context, true);
+                StatusMessage.Set(context, $"Application launched successfully.");
             }
             catch (Exception ex)
             {
-
+                IsSuccess.Set(context, false);
                 StatusMessage.Set(context, $"Error launching application: {ex.Message}");
             }
         }
@@ -193,9 +165,6 @@ namespace CodeActivitiesLibrary.UiInterfaceAutomations.SystemActivities
         ContinueImmediately,
 
         [Display(Name = "Wait for Application to Load", Description = "Wait until the launched application has fully loaded before continuing.")]
-        WaitForApplicationToLoad,
-
-        [Display(Name = "Wait for Application to Complete", Description = "Wait until the launched application has exited before continuing.")]
-        WaitForApplicationToComplete
+        WaitForApplicationToLoad
     }
 }

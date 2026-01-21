@@ -4,99 +4,93 @@ using System;
 using System.Activities;
 using System.ComponentModel;
 using System.IO;
-using System.Reflection;
+using System.Linq;
 
 namespace CodeActivitiesLibrary.AppIntegrations.ExcelActivities
 {
     [DisplayName("Open Excel Workbook")]
-    [Description("Opens an existing Excel workbook from the specified file path and reports success or failure.")]
+    [Description("Opens or reuses an Excel workbook in an existing Excel instance by workbook name.")]
     [ActivityMetaData(nodeImg: "/assets/Excel.svg")]
     public class OpenWorkbookActivity : BaseCodeActivity
     {
         [RequiredArgument]
-        [DisplayName("File Path")]
-        [Description("The full path to the Excel file (.xlsx or .xls) that needs to be opened.")]
-        public InArgument<string> FilePath { get; set; }
+        [DisplayName("Excel Instance")]
+        [Description("Existing Excel application instance.")]
+        public InArgument<Application> ExcelInstance { get; set; }
 
         [RequiredArgument]
-        [DisplayName("Visible")]
-        [Description("Set to true if you want the Excel application to be visible during automation.")]
-        public InArgument<bool> Visible { get; set; } = new InArgument<bool>(false);
+        [DisplayName("Workbook Name")]
+        [Description("Workbook file name to open (example: Report.xlsx).")]
+        public InArgument<string> WorkbookName { get; set; }
 
         [DisplayName("Open as ReadOnly")]
-        [Description("If true, opens the workbook in read-only mode.")]
-        public InArgument<bool> OpenAsReadOnly { get; set; } = new InArgument<bool>(false);
+        [Description("If set to true, the workbook will be opened in read-only mode, preventing any changes from being saved.")]
+        public InArgument<bool> OpenAsReadOnly { get; set; }
 
         [DisplayName("Read Protection Password")]
-        [Description("Password to open the workbook if it is protected.")]
+        [Description("Password required to open the workbook if it is protected with a read password.")]
         [FieldType(FieldType.Password)]
         public InArgument<string> ReadProtectionPassword { get; set; }
 
         [DisplayName("Workbook Instance")]
-        [Description("The opened Excel Workbook object.")]
+        [Description("The Excel workbook instance that is opened or reused. This output can be used in subsequent Excel activities.")]
         public OutArgument<Workbook> WorkbookInstance { get; set; }
-
-        [DisplayName("Excel Application")]
-        [Description("The Excel Application instance (used for later operations or close).")]
-        public OutArgument<Application> ExcelApp { get; set; }
 
         protected override void Execute(CodeActivityContext context)
         {
-            string filePath = FilePath.Get(context);
-            bool visible = Visible.Get(context);
+            Application excelApp = ExcelInstance.Get(context);
+            string workbookName = WorkbookName.Get(context);
             bool readOnly = OpenAsReadOnly.Get(context);
             string password = ReadProtectionPassword.Get(context);
 
             bool isSuccess = false;
             string statusMessage;
-            Application excelApp = null;
             Workbook workbook = null;
 
             try
             {
-                // Validate file path
-                if (string.IsNullOrWhiteSpace(filePath))
-                    throw new ArgumentException("File path is not provided.");
+                if (excelApp == null)
+                    throw new ArgumentException("Excel instance is not provided.");
 
-                if (!File.Exists(filePath))
-                    throw new FileNotFoundException($"Excel file not found at: {filePath}");
+                if (string.IsNullOrWhiteSpace(workbookName))
+                    throw new ArgumentException("Workbook name is not provided.");
 
-                // Create Excel application
-                excelApp = new Application
+                // Validate if workbook already open
+                foreach (Workbook wb in excelApp.Workbooks)
                 {
-                    Visible = visible,
-                    DisplayAlerts = false
-                };
+                    if (string.Equals(
+                        Path.GetFileName(wb.FullName),
+                        workbookName,
+                        StringComparison.OrdinalIgnoreCase))
+                    {
+                        workbook = wb;
+                        isSuccess = true;
+                        statusMessage = "Workbook already open. Reused existing workbook.";
 
-                // Open workbook
+                        WorkbookInstance.Set(context, workbook);
+                        IsSuccess.Set(context, isSuccess);
+                        StatusMessage.Set(context, statusMessage);
+                        return;
+                    }
+                }
+
+                //Try to open workbook 
                 workbook = excelApp.Workbooks.Open(
-                    Filename: filePath,
+                    workbookName,
                     ReadOnly: readOnly,
                     Password: password
                 );
 
                 isSuccess = true;
-                statusMessage = $"Workbook '{Path.GetFileName(filePath)}' opened successfully.";
+                statusMessage = $"Workbook '{workbookName}' opened successfully.";
             }
             catch (Exception ex)
             {
-                statusMessage = $"Error opening workbook: {ex.Message}";
-
-                // Clean up if Excel failed
-                try
-                {
-                    workbook?.Close(false);
-                    excelApp?.Quit();
-                }
-                catch { /* Ignore cleanup errors */ }
-
+                statusMessage = $"Error opening workbook '{workbookName}': {ex.Message}";
                 workbook = null;
-                excelApp = null;
             }
 
-            // Set output arguments
             WorkbookInstance.Set(context, workbook);
-            ExcelApp.Set(context, excelApp);
             IsSuccess.Set(context, isSuccess);
             StatusMessage.Set(context, statusMessage);
         }
