@@ -2,9 +2,11 @@ import { AC_QUERY_KEY } from "@/features/available-credits/available-credits-con
 import { AvailableCreditDto } from "@/features/available-credits/available-credits-dto";
 import { useTasksToExecuteStore } from "@/features/inferencing-model/store/tasks-to-execute";
 import { useFetchProjectMetaData } from "@/hooks/useFetchProjectMetaData";
-import { useExtractedDataStore } from "@/store/extract-via-llm-store";
+import { useUserSessionStore } from "@/react-toolkit/stores/user-session-store";
+// import { useExtractedDataStore } from "@/store/extract-via-llm-store";
 import { useTabStore } from "@/store/tab-store";
-import { formatSeconds } from "@/utils/formatSeconds";
+
+// import { formatSeconds } from "@/utils/formatSeconds";
 
 // import { formatSeconds } from "@/utils/formatSeconds";
 
@@ -29,6 +31,13 @@ function ExtractViaLLMButton() {
   const modelId = queryParams.get("pid") || "";
   const versionID = queryParams.get("v") || "";
 
+  // Get user session state and actions
+  const { userSession } = useUserSessionStore(
+    useShallow((state) => ({
+      userSession: state.userSession,
+    })),
+  );
+
   const { selectedPdf } = useFileListStore(
     useShallow((state) => ({
       selectedPdf: state.selectedFile,
@@ -36,30 +45,31 @@ function ExtractViaLLMButton() {
   );
   const { activeTab } = useTabStore();
   const { isLoading: isModelLoading } = useFetchProjectMetaData();
-  const { extractedData } = useExtractedDataStore(
-    useShallow((state) => ({
-      extractedData: state.extractedData,
-    })),
-  );
+  // const { extractedData } = useExtractedDataStore(
+  //   useShallow((state) => ({
+  //     extractedData: state.extractedData,
+  //   })),
+  // );
   const { listOfTasksId } = useTasksToExecuteStore();
 
   // Get extract via LLM mutation and pending status
-  const { extractViaLLMMutation, isExtractionPending } =
+  const { extractViaLLMMutation, isExtractionPending, extractionTimeMs } =
     useExtractViaLLMMutation();
 
   const handleExtract = () => {
-    // Fetch available credits from dataquery cache
-    const availableCredits = queryClient.getQueryData<{
-      data: AvailableCreditDto;
-    }>(AC_QUERY_KEY);
+    if (userSession?.deploymentType == "Commercial") {
+      // Fetch available credits from dataquery cache
+      const availableCredits = queryClient.getQueryData<{
+        data: AvailableCreditDto;
+      }>(AC_QUERY_KEY);
 
-    // Check if available credits are more than zero
-    if (availableCredits && availableCredits?.data?.availableCredits <= 10) {
-      // Show toast notification for insufficient credits
-      toast.error("Insufficient credits. Please top up to continue.");
-      return;
+      // Check if available credits are more than zero
+      if (availableCredits && availableCredits?.data?.availableCredits <= 10) {
+        // Show toast notification for insufficient credits
+        toast.error("Insufficient credits. Please top up to continue.");
+        return;
+      }
     }
-
     extractViaLLMMutation({
       postObj: {
         modelId: modelId,
@@ -99,9 +109,7 @@ function ExtractViaLLMButton() {
           <>
             <Timer className="h-4 w-4" />
             <p className="text-sm">
-              {extractedData.executionTime
-                ? formatSeconds(extractedData.executionTime)
-                : "0s"}
+              {extractionTimeMs ? extractionTimeMs + "s" : "0s"}
             </p>
           </>
         </div>

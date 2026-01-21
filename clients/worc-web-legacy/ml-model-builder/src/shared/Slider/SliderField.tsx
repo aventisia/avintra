@@ -1,4 +1,4 @@
-import { FormControl } from "@aventisia/ui/form";
+import { FormControl, FormLabelExt } from "@aventisia/ui/form";
 import { FormField } from "@aventisia/ui/form";
 import { FormItem } from "@aventisia/ui/form";
 import { FormMessage } from "@aventisia/ui/form";
@@ -14,7 +14,9 @@ interface SliderFieldProps
   name: FieldPath<FieldValues>;
 
   /** Optional label displayed alongside the slider. */
-  label?: React.ReactNode;
+  label?: string;
+
+  description?: string;
 
   thumbColor?: string;
   trackColor?: string;
@@ -27,8 +29,11 @@ const SliderField = ({
   name,
   label,
   thumbColor,
-  trackColor,
+  trackColor = "bg-muted",
   disabled,
+  min,
+  max,
+  description,
   ...props
 }: SliderFieldProps) => {
   const { control } = useFormContext<FieldValues>();
@@ -38,19 +43,27 @@ const SliderField = ({
       {...{ name, control }}
       render={({ field }) => (
         <FormItem>
-          {label && <div className="mb-2 text-sm font-medium">{label}</div>}
+          <div>
+            {label && <FormLabelExt label={label} description={description} />}
+            <div className="mt-1 flex  items-center gap-2 rounded-lg border p-2.5 bg-background h-9">
+              <span className="text-sm">{min}</span>
 
-          <FormControl>
-            <Slider
-              disabled={disabled}
-              value={field.value ?? [0]}
-              onValueChange={field.onChange}
-              onValueCommit={field.onBlur}
-              thumbColor={thumbColor}
-              trackColor={trackColor}
-              {...props}
-            />
-          </FormControl>
+              <FormControl>
+                <Slider
+                  disabled={disabled}
+                  value={field.value ?? [0]}
+                  onValueChange={field.onChange}
+                  onValueCommit={field.onBlur}
+                  thumbColor={thumbColor}
+                  trackColor={trackColor}
+                  min={min}
+                  max={max}
+                  {...props}
+                />
+              </FormControl>
+              <span className="text-sm">{max}</span>
+            </div>
+          </div>
 
           <FormMessage />
         </FormItem>

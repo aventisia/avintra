@@ -4,7 +4,7 @@ import { IHttpResponse } from "@aventisia/ui/dtos";
 
 import { ClassficationModelSetupDTO } from "../dtos/classfication-model-setup-dto";
 
-const baseAPIURL: string = `${import.meta.env.VITE_AISTUDIO_API_URL}/classification`;
+const baseAPIURL: string = `${import.meta.env.VITE_AISTUDIO_API_PATH}/classification`;
 
 /**
  * Get Form Data by id.

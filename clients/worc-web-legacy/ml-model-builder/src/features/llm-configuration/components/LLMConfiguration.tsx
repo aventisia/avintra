@@ -1,5 +1,5 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
-import { LLMsEnum, LLMsEnumForProduction } from "@/enums/llms-enum";
+import { LLMsEnumForProduction } from "@/enums/llms-enum";
 import {
   Select,
   SelectContent,
@@ -15,13 +15,16 @@ import {
 } from "@aventisia/ui/accordion";
 import { FormItem } from "@aventisia/ui/form";
 import { cn } from "@aventisia/ui/lib";
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@aventisia/ui/tabs";
+import { toast } from "@aventisia/ui/sonner";
 import { ChevronRight } from "lucide-react";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { Controller, UseFormReturn } from "react-hook-form";
+import { useShallow } from "zustand/react/shallow";
 
+import { getProviderModels } from "../apis/llm-model-apis";
+import { Model, modelProviders } from "../constants/model-providers";
+import { useModelProviderStore } from "../stores/model-provider-store";
 import CloudConfig from "./CloudConfig";
-import OnPremConfig from "./OnPremConfig";
 
 interface LLMConfigurationProps {
   form: UseFormReturn<any>;
@@ -35,12 +38,61 @@ interface LLMConfigurationProps {
   className?: string;
 }
 
-const LLMConfiguration = ({
-  form,
-  modelType,
-  className,
-}: LLMConfigurationProps) => {
+const LLMConfiguration = ({ form, modelType }: LLMConfigurationProps) => {
   const [openItem, setOpenItem] = useState<string | undefined>("");
+
+  const [initialModels, setInitialModels] = useState<Model[]>([]);
+
+  // Derived values
+  const provider = form.watch(`${modelType}.provider`);
+  const isBYOKEnabled = form.watch(`${modelType}.isBYOKEnabled`);
+  const credentialId = form.watch(`${modelType}.credentialId`);
+
+  const { models } = useModelProviderStore(
+    useShallow((state) => ({ models: state.models })),
+  );
+
+  // 2. Initialize on mount (for saved data)
+  useEffect(() => {
+    const initializeModels = async () => {
+      if (!isBYOKEnabled) {
+        // Static models mode - no need to fetch
+        const provider = modelProviders.find(
+          (p) => p.value === form.watch(`${modelType}.provider`),
+        );
+
+        const m =
+          models.length > 0
+            ? models
+            : provider?.models.filter((m) => m.available);
+
+        setInitialModels(m || []);
+      } else {
+        // BYOK mode - need to fetch models if credential exists
+        if (credentialId && provider) {
+          try {
+            const mapper: Record<string, string> = {
+              openai: "OpenAI",
+              googlegemini: "Gemini",
+              openrouter: "OpenRouter",
+            };
+
+            const providerM = mapper[provider];
+            if (providerM) {
+              const models = await getProviderModels(providerM, credentialId);
+              setInitialModels(models?.data as Model[]);
+            }
+          } catch (err) {
+            toast.error(err as string);
+            setInitialModels([]);
+          }
+        }
+      }
+    };
+
+    initializeModels();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [models]);
 
   return (
     <>
@@ -52,35 +104,38 @@ const LLMConfiguration = ({
         className="w-full"
       >
         <AccordionItem value="item-1" className="!border-none">
-          <AccordionTrigger className="text-base flex justify-between items-center hover:no-underline [&>svg]:hidden group relative">
+          <AccordionTrigger
+            className={cn(
+              "text-base flex justify-between items-center hover:no-underline [&>svg]:hidden group relative ",
+              openItem && "pb-0",
+            )}
+          >
             <div className="mr-1">
               <ChevronRight className="h-4 w-4 transition-transform group-data-[state=open]:rotate-90" />
             </div>
 
             <div className="flex items-center w-full justify-start gap-2 group ">
               <span className="text-md group-hover:underline">
-                LLM Configuration
+                Model Configuration
               </span>
             </div>
             {!openItem && (
               <Controller
                 control={form.control}
-                name={`${modelType}.llm`}
+                name={`${modelType}.model`}
                 render={({ field }) => (
-                  <FormItem className="absolute left-40 top-[50%] translate-y-[-50%] w-[125px]">
+                  <FormItem className="absolute left-40 top-[50%] translate-y-[-50%] w-40">
                     <Select value={field.value} onValueChange={field.onChange}>
                       <SelectTrigger className="text-primary rounded-full bg-slate-200 h-6 text-xs text-left">
                         <span className="w-full">
-                          {(field.value &&
-                            LLMsEnum[field.value as keyof typeof LLMsEnum]) ||
-                            "Select LLM"}
+                          {field.value || "Select LLM"}
                         </span>
                       </SelectTrigger>
                       <SelectContent>
                         {import.meta.env.MODE !== "production"
-                          ? Object.entries(LLMsEnum).map(([value, label]) => (
-                              <SelectItem key={value} value={value}>
-                                {label}
+                          ? initialModels?.map((model) => (
+                              <SelectItem key={model.value} value={model.value}>
+                                {model.value}
                               </SelectItem>
                             ))
                           : Object.entries(LLMsEnumForProduction).map(
@@ -99,39 +154,7 @@ const LLMConfiguration = ({
           </AccordionTrigger>
 
           <AccordionContent className="flex flex-col gap-4 text-balance px-1 !border-none">
-            {import.meta.env.MODE !== "production" ? (
-              <Tabs defaultValue="OnPrem">
-                <TabsList
-                  className={cn(
-                    "grid grid-cols-2 rounded-none mb-4",
-                    className,
-                  )}
-                >
-                  <TabsTrigger
-                    value="OnPrem"
-                    className="border-b-slate-200 data-[state=active]:bg-transparent data-[state=active]:border-b data-[state=active]:border-b-black rounded-none"
-                  >
-                    Aventisia on-prem LLMs
-                  </TabsTrigger>
-                  <TabsTrigger
-                    value="Cloud"
-                    className="border-b-slate-200 data-[state=active]:bg-transparent data-[state=active]:border-b data-[state=active]:border-b-black rounded-none"
-                  >
-                    Connect to your cloud LLMs
-                  </TabsTrigger>
-                </TabsList>
-
-                <TabsContent value="OnPrem">
-                  <OnPremConfig form={form} modelType={modelType} />
-                </TabsContent>
-
-                <TabsContent value="Cloud">
-                  <CloudConfig form={form} modelType={modelType} />
-                </TabsContent>
-              </Tabs>
-            ) : (
-              <OnPremConfig form={form} modelType={modelType} />
-            )}
+            <CloudConfig form={form} modelType={modelType} />
           </AccordionContent>
         </AccordionItem>
       </Accordion>

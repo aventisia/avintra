@@ -4,7 +4,7 @@ import { IHttpResponse } from "@aventisia/ui/dtos";
 
 import { ExtractedDataDto } from "../dtos/ extracted-data-dto";
 
-const baseAPIURL: string = `${import.meta.env.VITE_AISTUDIO_API_URL}/extracted-data`;
+const baseAPIURL: string = `${import.meta.env.VITE_AISTUDIO_API_PATH}/extracted-data`;
 
 /**
  * Retrieves list of Extracted Data List.

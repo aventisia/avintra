@@ -144,20 +144,16 @@ const CloudConfig = ({ form }: CloudConfigProps) => {
                 name={``}
                 render={({ field }) => {
                   return (
-                    <div className="grid grid-cols-[auto_1fr_auto_auto] items-center gap-2">
-                      <span className="text-sm">0</span>
-                      <SliderField
-                        name={field.name}
-                        value={[field.value ?? 0]}
-                        onValueChange={(val) => field.onChange(val[0])}
-                        onValueCommit={field.onBlur}
-                        min={0}
-                        max={1.2}
-                        step={0.1}
-                        className="text-sm resize-none"
-                      />
-                      <span className="text-sm">1.2</span>
-                    </div>
+                    <SliderField
+                      name={field.name}
+                      value={[field.value ?? 0]}
+                      onValueChange={(val) => field.onChange(val[0])}
+                      onValueCommit={field.onBlur}
+                      min={0}
+                      max={1.2}
+                      step={0.1}
+                      className="text-sm resize-none"
+                    />
                   );
                 }}
               />

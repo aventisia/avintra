@@ -91,7 +91,7 @@ function AIPersonaTestForm() {
     if (personaData && personaData.data && personaData.data.aiPersona) {
       // Set chat config in temp chat store
       setChatConfig({
-        llm: personaData.data.aiPersona.llm,
+        llm: personaData.data.aiPersona.model,
         assistantName: personaData.data.aiPersona.setupObject.name,
         systemPrompt: generateSystemMessage(personaData.data),
         temperature: personaData.data.aiPersona.temperature,
@@ -182,7 +182,7 @@ function AIPersonaTestForm() {
     if (!token) return;
 
     const socket = new WebSocket(
-      `${import.meta.env.VITE_LLMPIPELINE_API_URL}/chat?token=${token}`,
+      `${import.meta.env.VITE_LLMPIPELINE_API_PATH}/chat?token=${token}`,
     );
 
     socketRef.current = socket;

@@ -4,7 +4,7 @@ import { IHttpResponse } from "@aventisia/ui/dtos";
 
 import { SummarizationSetupDTO } from "../dtos/summarization-setup-dto";
 
-const baseAPIURL: string = `${import.meta.env.VITE_AISTUDIO_API_URL}/summarization`;
+const baseAPIURL: string = `${import.meta.env.VITE_AISTUDIO_API_PATH}/summarization`;
 
 /**
  * Get Form Data by id.

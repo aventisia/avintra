@@ -5,7 +5,7 @@ import { IHttpResponse } from "@aventisia/ui/dtos";
 
 import { GenerativeModelSetupDTO } from "../dtos/generative-model-setup-dto";
 
-const baseAPIURL: string = `${import.meta.env.VITE_AISTUDIO_API_URL}/generative-model`;
+const baseAPIURL: string = `${import.meta.env.VITE_AISTUDIO_API_PATH}/generative-model`;
 
 /**
  * Get Form Data by id.

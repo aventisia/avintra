@@ -5,7 +5,7 @@ import { IHttpResponse, IOptimisticMutation } from "@aventisia/ui/dtos";
 import { FineTuneTableDTO } from "../dtos/fine-tune-table-dto";
 import { ScheduleFineTuneDTO } from "../dtos/schedule-fine-tune-dto";
 
-const baseAPIURL: string = `${import.meta.env.VITE_AISTUDIO_API_URL}`;
+const baseAPIURL: string = `${import.meta.env.VITE_AISTUDIO_API_PATH}`;
 
 /**
  * Retrieves all fine tune records

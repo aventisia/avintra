@@ -17,7 +17,7 @@ import HeaderMenuActions from "./header-menu-actions";
 export const MLModelBuilderLayout = () => {
   useClearQueryParamsOutsideView();
   // Validate user session
-  const { isPending } = useValidateUserSession();
+  const { isPending, userSession } = useValidateUserSession();
 
   return (
     <>
@@ -29,7 +29,9 @@ export const MLModelBuilderLayout = () => {
             extraContentRight={
               <>
                 <FlowParticipantsFacePile />
-                <AvailableCredits />
+                {userSession?.deploymentType == "Commercial" ? (
+                  <AvailableCredits />
+                ) : null}
                 <HeaderMenuActions />
               </>
             }
