@@ -14,19 +14,23 @@ body:json {
   {
     "id": "{{AI_PROJECT_ID}}",
     "aiProjectVersionId": "{{AI_PROJECT_VERSION_ID}}",
-    "businessContext":"test",
+    "businessContext":"summarize it",
     "summarization": {
       "setupObject": {
-        "totalMinimumWords": 200,
-        "totalMaximumWords": 250
+        "totalMinimumWords": 100,
+        "totalMaximumWords": 200
       },
-      "id": "01999961-1510-72fd-b24b-8dfeddda7cc1",
+      "id": "019b9d51-15c3-7723-b47d-568c445d6c5c",
       "name": "Summarization",
-      "configurationType": "OnPrem",
-      "llm": "gemma",
-      "secretKey": null,
+      "isBYOKEnabled": false,
+      "credentialId": null,
       "nodePrompt": "You are an expert summarisation assistant. Your task is to read the provided content and generate a clear, concise, and accurate summary that captures the key ideas, main points, and critical information, while removing redundant or unimportant details.\nFocus on preserving the original intent and tone of the content. The summary should be easily understandable and suitable for someone who has not read the full text.\nIf the content is structured (like emails, reports, meeting transcripts, articles), maintain the logical flow and structure in the summary.\nBe objective, factual, and avoid adding personal opinions or interpretations.",
-      "temperature": 0.2
+      "temperature": 0.2,
+      "model": "gpt-4o-mini",
+      "provider": "openai",
+      "isJsonOutput": true,
+      "topP": 1,
+      "maxOutputToken": 50
     }
   }
   
