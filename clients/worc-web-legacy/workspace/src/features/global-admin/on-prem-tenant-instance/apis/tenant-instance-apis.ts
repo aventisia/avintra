@@ -7,17 +7,20 @@ import {
 
 import { axiosInstance } from "@/react-toolkit/lib/axios-instance";
 
+import { appendAuthHeader } from "../../on-prem-tenant/utils/appendAuthHeader";
 import { OnPremInstanceDto } from "../dtos/tenant-instance-dto";
 import { OnpremTenantStaticDto } from "../dtos/tenant-statistics-dto";
 
-const baseAPIURL: string = `${import.meta.env.VITE_GLOBAL_ADMIN_BASE_URL}/onprem/instance`;
+const baseAPIURL: string = `${import.meta.env.VITE_GLOBALADMIN_API_URL}/onprem/instance`;
 
 /**
  * Retrieves all TenantInstances created by user
  */
 const getTenantInstances = (id: string) => {
   return axiosInstance
-    .get<IHttpResponse<OnPremInstanceDto[]>>(`${baseAPIURL}/${id}/list`)
+    .get<
+      IHttpResponse<OnPremInstanceDto[]>
+    >(`${baseAPIURL}/${id}/list`, appendAuthHeader())
     .then((res) => res.data);
 };
 
@@ -26,7 +29,9 @@ const getTenantInstances = (id: string) => {
  */
 const getTenantInstanceById = (id: string) => {
   return axiosInstance
-    .get<IHttpResponse<OnPremInstanceDto>>(`${baseAPIURL}/${id}`)
+    .get<
+      IHttpResponse<OnPremInstanceDto>
+    >(`${baseAPIURL}/${id}`, appendAuthHeader())
     .then((res) => res.data);
 };
 
@@ -37,7 +42,7 @@ const getTenantStatistics = (id: string) => {
   return axiosInstance
     .get<
       IHttpResponse<OnpremTenantStaticDto>
-    >(`${import.meta.env.VITE_GLOBAL_ADMIN_BASE_URL}/onprem-tenant/${id}/statistics`)
+    >(`${import.meta.env.VITE_GLOBALADMIN_API_URL}/onprem-tenant/${id}/statistics`, appendAuthHeader())
     .then((res) => res.data);
 };
 
@@ -51,7 +56,7 @@ const isTenantInstanceNameAvailable = (
   return axiosInstance
     .post<
       IHttpResponse<TrueFalseResultDto>
-    >(`${baseAPIURL}/${tenantId}/is-available`, postObj)
+    >(`${baseAPIURL}/${tenantId}/is-available`, postObj, appendAuthHeader())
     .then((res) => res.data);
 };
 
@@ -60,7 +65,9 @@ const isTenantInstanceNameAvailable = (
  */
 const insertTenantInstance = (newTenantInstance: OnPremInstanceDto) => {
   return axiosInstance
-    .post<IHttpResponse<OnPremInstanceDto>>(`${baseAPIURL}`, newTenantInstance)
+    .post<
+      IHttpResponse<OnPremInstanceDto>
+    >(`${baseAPIURL}`, newTenantInstance, appendAuthHeader())
     .then((res) => res.data);
 };
 
@@ -71,7 +78,7 @@ const updateTenantInstance = (updatedTenantInstance: OnPremInstanceDto) => {
   return axiosInstance
     .put<
       IHttpResponse<OnPremInstanceDto>
-    >(`${baseAPIURL}`, updatedTenantInstance)
+    >(`${baseAPIURL}`, updatedTenantInstance, appendAuthHeader())
     .then((res) => res.data);
 };
 
@@ -80,7 +87,7 @@ const updateTenantInstance = (updatedTenantInstance: OnPremInstanceDto) => {
  */
 const deleteTenantInstance = (id: string) => {
   return axiosInstance
-    .delete<IHttpResponse<boolean>>(`${baseAPIURL}/${id}`)
+    .delete<IHttpResponse<boolean>>(`${baseAPIURL}/${id}`, appendAuthHeader())
     .then((res) => res.data);
 };
 
@@ -89,7 +96,9 @@ const deleteTenantInstance = (id: string) => {
  */
 const deleteTenantInstances = (ids: string[]) => {
   return axiosInstance
-    .post<IHttpResponse<boolean>>(`${baseAPIURL}/delete-multiple`, ids)
+    .post<
+      IHttpResponse<boolean>
+    >(`${baseAPIURL}/delete-multiple`, ids, appendAuthHeader())
     .then((res) => res.data);
 };
 

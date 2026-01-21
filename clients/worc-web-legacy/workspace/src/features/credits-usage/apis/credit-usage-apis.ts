@@ -5,7 +5,7 @@ import { axiosInstance } from "@/react-toolkit/lib/axios-instance";
 import { AvailableCreditDto } from "../dtos/available-credits-dto";
 import { CreditUsageDTO } from "../dtos/credits-usage-dto";
 
-const baseAPIURL: string = `${import.meta.env.VITE_ACCOUNTS_API_URL}/credit-usage`;
+const baseAPIURL: string = `${import.meta.env.VITE_ACCOUNTS_API_PATH}/credit-usage`;
 
 const getCreditUsageSummary = (startDate: string = "", endDate: string = "") =>
   axiosInstance

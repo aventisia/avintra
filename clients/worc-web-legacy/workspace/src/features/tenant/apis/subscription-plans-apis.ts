@@ -4,7 +4,7 @@ import { axiosInstance } from "@/react-toolkit/lib/axios-instance";
 
 import { SubscriptionPlanDTO } from "../dtos/subscription-plans-dto";
 
-const baseAPIURL: string = `${import.meta.env.VITE_ACCOUNTS_API_URL}/subscription-plans`;
+const baseAPIURL: string = `${import.meta.env.VITE_ACCOUNTS_API_PATH}/subscription-plans`;
 
 export const getSubscriptionPlans = (query?: string) =>
   axiosInstance

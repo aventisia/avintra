@@ -1,5 +1,6 @@
 import { Input } from "@aventisia/ui";
 import { Button } from "@aventisia/ui/buttons";
+import { useDocumentTitle } from "@aventisia/ui/hooks";
 import { cn } from "@aventisia/ui/lib";
 import { SearchIcon } from "lucide-react";
 import { useState } from "react";
@@ -19,6 +20,8 @@ const WorcLibrary = () => {
 
   // State to track the currently selected template category filter
   const [selectedCategory, setSelectedCategory] = useState("All templates");
+  // Set the document title
+  useDocumentTitle("Library");
 
   // List of available template categories for filtering
   const categories = [

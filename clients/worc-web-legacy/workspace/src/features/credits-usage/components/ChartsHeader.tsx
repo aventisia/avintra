@@ -23,7 +23,7 @@ const ChartsHeader = () => {
   return (
     <div className="flex items-center justify-between">
       <div className="flex items-center gap-4">
-        <p className="text-lg font-medium">Credit Usage</p>
+        <p className="text-lg font-medium">Usage</p>
         <AvailableCredits />
       </div>
 

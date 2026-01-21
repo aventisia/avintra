@@ -10,7 +10,7 @@ import type { UserBillingAddressDto } from "../dtos/my-account-company-dto";
 import type { MyAccountPasswordDto } from "../dtos/my-account-password-dto";
 import type { MyAccountDto } from "../dtos/my-account-profile-dto";
 
-const baseAPIURL: string = `${import.meta.env.VITE_ACCOUNTS_API_URL}/me`;
+const baseAPIURL: string = `${import.meta.env.VITE_ACCOUNTS_API_PATH}/me`;
 
 export const getMyProfileInfo = () =>
   axiosInstance

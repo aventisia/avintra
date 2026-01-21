@@ -12,10 +12,10 @@ import { Table } from "@tanstack/react-table";
 
 import { onPremLLMOptimisticMutationFn } from "../apis/on-prem-llm-table-apis";
 import { ONPREM_LLM_QUERY_KEY } from "../constants";
-import { OnPremLLMTableDTO } from "../dtos/on-prem-llm-table-dto";
+import { OnPremModelDto } from "../dtos/on-prem-llm-table-dto";
 
 interface OnPremLLMBulkActionsProps {
-  table: Table<OnPremLLMTableDTO>;
+  table: Table<OnPremModelDto>;
 }
 
 export function OnPremLLMBulkActions({ table }: OnPremLLMBulkActionsProps) {
@@ -31,8 +31,8 @@ export function OnPremLLMBulkActions({ table }: OnPremLLMBulkActionsProps) {
   // Get mutation function to delete the credit
   const { mutate: deleteOnPremLLMs } = useListOptimisticMutation<
     string[],
-    OnPremLLMTableDTO | boolean,
-    OnPremLLMTableDTO
+    OnPremModelDto | boolean,
+    OnPremModelDto
   >(selectedRowIds, onPremLLMOptimisticMutationFn, ONPREM_LLM_QUERY_KEY);
 
   // TODO: Rollback selection if there is an error
@@ -58,7 +58,7 @@ export function OnPremLLMBulkActions({ table }: OnPremLLMBulkActionsProps) {
                   table.toggleAllRowsSelected(false);
                 },
                 alertType: "delete-multiple",
-                additionalText: `${selectedRowIds.length} ${selectedRowIds.length > 1 ? "LLMs" : "llm"}`,
+                additionalText: `${selectedRowIds.length} ${selectedRowIds.length > 1 ? "models" : "model"}`,
               });
             }}
           />

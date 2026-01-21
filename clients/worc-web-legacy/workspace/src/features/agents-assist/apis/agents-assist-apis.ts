@@ -5,7 +5,7 @@ import { axiosInstance } from "@/react-toolkit/lib/axios-instance";
 import { AgentsAssistDto } from "../dtos/agent-assist-dto";
 import { RemoveAgentsDto } from "../dtos/remove-agents-dto";
 
-const baseAPIURL: string = `${import.meta.env.VITE_WORC_API_URL}/machine`;
+const baseAPIURL: string = `${import.meta.env.VITE_WORC_API_PATH}/machine`;
 
 /**
  * Retrieves list of agents of machine.

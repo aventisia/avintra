@@ -6,6 +6,7 @@ import { useShallow } from "zustand/react/shallow";
 import { IS_TAURI } from "@/constants/constants";
 import { getAvailableCredits } from "@/features/available-credits/available-credits-apis";
 import { getMySession } from "@/react-toolkit/apis/accounts-me-apis";
+import { useUserSessionStore } from "@/react-toolkit/stores/user-session-store";
 
 import { CURRENT_VERSION_ID_KEY } from "../constants/constants";
 import { JobDetailsDto } from "../dtos/job-details-dto";
@@ -31,20 +32,28 @@ export default function useExecuteFlow() {
     })),
   );
 
+  const { userSession } = useUserSessionStore(
+    useShallow((state) => ({
+      userSession: state.userSession,
+    })),
+  );
+  const isCommercial = userSession?.deploymentType == "Commercial";
+
   const { sendCommand } = useWebSocket();
 
   const minCredits = 10;
 
   // Start execution
   const startExecution = async (data: JobDetailsDto) => {
-    const creditsData = await getAvailableCredits();
+    if (isCommercial) {
+      const creditsData = await getAvailableCredits();
 
-    if (creditsData?.data && creditsData.data.availableCredits < minCredits) {
-      // Show toast notification for insufficient credits
-      toast.error("Insufficient credits. Please top up to continue.");
-      return;
+      if (creditsData?.data && creditsData.data.availableCredits < minCredits) {
+        // Show toast notification for insufficient credits
+        toast.error("Insufficient credits. Please top up to continue.");
+        return;
+      }
     }
-
     if (!data) return;
 
     setCurrentFlow({

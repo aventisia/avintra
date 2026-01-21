@@ -216,7 +216,6 @@ export default function useWebSocket() {
             endTime,
             nodeExecutionLogs: JSON.stringify(executionData),
           });
-
           await postCreditConsumption([
             {
               serviceType: CreditServiceTypesEnum.AgentExecutionTime,
@@ -228,7 +227,6 @@ export default function useWebSocket() {
               triggeredByAgent: currentFlow.name,
             },
           ]); // Post the consumption data
-          console.log("Credit consumption posted successfully.");
         }
       } catch (error) {
         // Log any errors that occur during the process

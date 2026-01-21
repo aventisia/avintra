@@ -32,7 +32,7 @@ export const TemplatesApprovalTable = ({
   isSuperAdmin?: boolean;
 }) => {
   // Set browser tab title
-  useDocumentTitle(TABLE_HEADING);
+  useDocumentTitle("Approvals");
 
   // Get data-table preferences from local storage
   const { columnVisibility, sortState } = getDataTablePreferences(

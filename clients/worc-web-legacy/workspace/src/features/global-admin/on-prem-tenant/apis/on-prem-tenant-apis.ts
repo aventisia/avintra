@@ -8,15 +8,18 @@ import {
 import { axiosInstance } from "@/react-toolkit/lib/axios-instance";
 
 import { OnPremTenantDto } from "../dtos/on-prem-tenant-dto";
+import { appendAuthHeader } from "../utils/appendAuthHeader";
 
-const baseAPIURL: string = `${import.meta.env.VITE_GLOBAL_ADMIN_BASE_URL}/onprem-tenant`;
+const baseAPIURL: string = `${import.meta.env.VITE_GLOBALADMIN_API_URL}/onprem-tenant`;
 
 /**
  * Retrieves all OnPremTenants created by user
  */
 const getOnPremTenants = () => {
   return axiosInstance
-    .get<IHttpResponse<OnPremTenantDto[]>>(`${baseAPIURL}/list`)
+    .get<
+      IHttpResponse<OnPremTenantDto[]>
+    >(`${baseAPIURL}/list`, appendAuthHeader())
     .then((res) => res.data);
 };
 
@@ -25,7 +28,9 @@ const getOnPremTenants = () => {
  */
 const getOnPremTenantById = (id: string) => {
   return axiosInstance
-    .get<IHttpResponse<OnPremTenantDto>>(`${baseAPIURL}/${id}`)
+    .get<
+      IHttpResponse<OnPremTenantDto>
+    >(`${baseAPIURL}/${id}`, appendAuthHeader())
     .then((res) => res.data);
 };
 
@@ -36,7 +41,7 @@ const isOnPremTenantNameAvailable = (postObj: CheckAvailabilityDto) => {
   return axiosInstance
     .post<
       IHttpResponse<TrueFalseResultDto>
-    >(`${baseAPIURL}/is-available`, postObj)
+    >(`${baseAPIURL}/is-available`, postObj, appendAuthHeader())
     .then((res) => res.data);
 };
 
@@ -54,7 +59,9 @@ const insertOnPremTenant = (newOnPremTenant: OnPremTenantDto) => {
  */
 const updateOnPremTenant = (updatedOnPremTenant: OnPremTenantDto) => {
   return axiosInstance
-    .put<IHttpResponse<OnPremTenantDto>>(`${baseAPIURL}`, updatedOnPremTenant)
+    .put<
+      IHttpResponse<OnPremTenantDto>
+    >(`${baseAPIURL}`, updatedOnPremTenant, appendAuthHeader())
     .then((res) => res.data);
 };
 
@@ -63,7 +70,7 @@ const updateOnPremTenant = (updatedOnPremTenant: OnPremTenantDto) => {
  */
 const deleteOnPremTenant = (id: string) => {
   return axiosInstance
-    .delete<IHttpResponse<boolean>>(`${baseAPIURL}/${id}`)
+    .delete<IHttpResponse<boolean>>(`${baseAPIURL}/${id}`, appendAuthHeader())
     .then((res) => res.data);
 };
 
@@ -72,7 +79,9 @@ const deleteOnPremTenant = (id: string) => {
  */
 const deleteOnPremTenants = (ids: string[]) => {
   return axiosInstance
-    .post<IHttpResponse<boolean>>(`${baseAPIURL}/delete-multiple`, ids)
+    .post<
+      IHttpResponse<boolean>
+    >(`${baseAPIURL}/delete-multiple`, ids, appendAuthHeader())
     .then((res) => res.data);
 };
 

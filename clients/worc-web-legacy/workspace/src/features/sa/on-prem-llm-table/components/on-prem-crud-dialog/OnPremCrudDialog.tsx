@@ -6,7 +6,7 @@ import { useShallow } from "zustand/react/shallow";
 
 import { getDialogHeadingDescription } from "../../constants";
 
-import OnPremCrudForm from "./OnPremCrudForm";
+import { OnPremCrudForm } from "./OnPremCrudForm";
 
 export const OnPremCrudDialog = ({ children }: React.PropsWithChildren) => {
   // Get crud dialog store state

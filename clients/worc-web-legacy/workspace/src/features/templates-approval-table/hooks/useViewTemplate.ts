@@ -8,7 +8,7 @@
 export const useViewTemplate = () => {
   // Function to open the template
   const handleViewTemplate = (id: string) => {
-    const url = `/library?t=${id}`;
+    const url = `library?t=${id}`;
     window.open(url, "_blank");
   };
 

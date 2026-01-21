@@ -34,7 +34,7 @@ import { supportTicketsTableColumns } from "./SupportTicketsTableColumns";
  */
 export const SupportTicketsTable = () => {
   // Set the document title
-  useDocumentTitle(TABLE_HEADING);
+  useDocumentTitle("Support");
 
   // Get data-table preferences from local storage
   const { columnVisibility, sortState } = getDataTablePreferences(

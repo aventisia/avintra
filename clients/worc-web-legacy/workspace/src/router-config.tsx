@@ -7,6 +7,7 @@ import { CrudActionTypeLong } from "@/react-toolkit/constants";
 import { AppErrorPage } from "./components/layout/AppErrorPage";
 import { AppLayout } from "./components/layout/AppLayout";
 import { AppRedirectPage } from "./components/layout/AppRedirectPage";
+import GALayout from "./features/global-admin/on-prem-tenant/components/GALayout";
 import {
   AccountDeactivation,
   DeviceHistory,
@@ -39,6 +40,7 @@ import { QueuesPage } from "./pages/orchestrator/QueuesPage";
 import { QueuesWorkItemsPage } from "./pages/orchestrator/QueuesWorkItemsPage";
 import { TriggersPage } from "./pages/orchestrator/TriggersPage";
 import { VaultPage } from "./pages/orchestrator/VaultPage";
+import { PreferencesPage } from "./pages/PreferencesPage";
 import { PublicTemplatesApprovalPage } from "./pages/PublicTemplatesApprovalPage";
 import { CreditPlansPage } from "./pages/sa/CreditPlansPage";
 import { OnPremLLMPage } from "./pages/sa/OnPremLLMPage";
@@ -49,7 +51,6 @@ import { SupportTicketsReviewerPage } from "./pages/SupportTicketsReviewerPage";
 import { TenantPage } from "./pages/TenantPage";
 import { TenantTemplatesApprovalPage } from "./pages/TenantTemplatesApprovalPage";
 import { UsersPage } from "./pages/UsersPage";
-import { ProtectedRoute } from "./ProtectedRoute";
 
 const routerConfig: RouteObject[] = [
   {
@@ -59,27 +60,23 @@ const routerConfig: RouteObject[] = [
     children: [
       {
         path: "/agents",
-        element: <ProtectedRoute persmissions={["TD"]} page={<FlowsPage />} />,
+        element: <FlowsPage />,
       },
       {
         path: "/ai-models",
-        element: <ProtectedRoute persmissions={["TD"]} page={<ModelsPage />} />,
+        element: <ModelsPage />,
       },
       {
         path: "/library",
-        element: (
-          <ProtectedRoute persmissions={["TD"]} page={<LibraryPage />} />
-        ),
+        element: <LibraryPage />,
       },
       {
         path: "/home",
-        element: <ProtectedRoute persmissions={["SA"]} page={<ComingSoon />} />,
+        element: <ComingSoon />,
       },
       {
         path: "/assist/my-agents",
-        element: (
-          <ProtectedRoute persmissions={["TU"]} page={<AgentsAssistPage />} />
-        ),
+        element: <AgentsAssistPage />,
       },
 
       {
@@ -112,57 +109,39 @@ const routerConfig: RouteObject[] = [
       },
       {
         path: "/marketplace",
-        element: <ProtectedRoute persmissions={["SA"]} page={<ComingSoon />} />,
+        element: <ComingSoon />,
       },
       {
         path: "/users",
-        element: (
-          <ProtectedRoute
-            planTypes={["Starter", "Pro", "Commercial", "Enterprise"]}
-            persmissions={["SA", "TA"]}
-            page={<UsersPage />}
-          />
-        ),
+        element: <UsersPage />,
       },
       {
         path: "/tenant",
-        element: <ProtectedRoute persmissions={["TA"]} page={<TenantPage />} />,
+        element: <TenantPage />,
+      },
+      {
+        path: "/preferences",
+        element: <PreferencesPage />,
       },
       {
         path: "/integrations",
-        element: (
-          <ProtectedRoute
-            persmissions={["TA"]}
-            page={<AppIntegrationsPage />}
-          />
-        ),
+        element: <AppIntegrationsPage />,
       },
       {
-        path: "/on-prem-llms",
-        element: (
-          <ProtectedRoute persmissions={["TA"]} page={<OnPremLLMPage />} />
-        ),
+        path: "/on-prem-models",
+        element: <OnPremLLMPage />,
       },
       {
-        path: "/credits-usage",
-        element: (
-          <ProtectedRoute persmissions={["TA"]} page={<CreditsUsagePage />} />
-        ),
+        path: "/usage",
+        element: <CreditsUsagePage />,
       },
       {
         path: "/archive",
-        element: (
-          <ProtectedRoute persmissions={["TA"]} page={<AchievesPage />} />
-        ),
+        element: <AchievesPage />,
       },
       {
         path: "/approvals",
-        element: (
-          <ProtectedRoute
-            persmissions={["TA"]}
-            page={<TenantTemplatesApprovalPage />}
-          />
-        ),
+        element: <TenantTemplatesApprovalPage />,
       },
       {
         path: "/orchestrator",
@@ -172,105 +151,64 @@ const routerConfig: RouteObject[] = [
           {
             index: true,
             path: "/orchestrator/published-agents",
-            element: (
-              <ProtectedRoute
-                persmissions={["OM"]}
-                page={<PublishedAgentsPage />}
-              />
-            ),
+            element: <PublishedAgentsPage />,
           },
           {
             index: true,
             path: "/orchestrator/machines/:id?/:a?",
-            element: (
-              <ProtectedRoute persmissions={["OM"]} page={<MachinesPage />} />
-            ),
+            element: <MachinesPage />,
           },
           {
             path: "/orchestrator/queues/:id?/:a?",
-            element: (
-              <ProtectedRoute persmissions={["OM"]} page={<QueuesPage />} />
-            ),
+            element: <QueuesPage />,
           },
           {
             path: "/orchestrator/queues/work-items/:qid",
-            element: (
-              <ProtectedRoute
-                persmissions={["OM"]}
-                page={<QueuesWorkItemsPage />}
-              />
-            ),
+            element: <QueuesWorkItemsPage />,
           },
           {
             path: "/orchestrator/jobs",
-            element: (
-              <ProtectedRoute persmissions={["OM"]} page={<JobsPage />} />
-            ),
+            element: <JobsPage />,
           },
           {
             path: "/orchestrator/jobs/:id",
-            element: (
-              <ProtectedRoute
-                persmissions={["OM"]}
-                page={<ExecutionLogsPage />}
-              />
-            ),
+            element: <ExecutionLogsPage />,
           },
           {
             path: "/orchestrator/triggers/:id?/:a?",
-            element: (
-              <ProtectedRoute persmissions={["OM"]} page={<TriggersPage />} />
-            ),
+            element: <TriggersPage />,
           },
           {
             path: "/orchestrator/keystore/:id?/:a?",
-            element: (
-              <ProtectedRoute persmissions={["OM"]} page={<KeystorePage />} />
-            ),
+            element: <KeystorePage />,
           },
           {
             path: "/orchestrator/vault/:id?/:a?",
-            element: (
-              <ProtectedRoute persmissions={["OM"]} page={<VaultPage />} />
-            ),
+            element: <VaultPage />,
           },
         ],
       },
       {
         path: "/ga",
+        element: <GALayout />,
         children: [
           {
             path: "on-prem-tenants",
             children: [
               {
                 index: true,
-                element: (
-                  <ProtectedRoute
-                    persmissions={["SA"]}
-                    page={<OnPremTenantsPage />}
-                  />
-                ),
+                element: <OnPremTenantsPage />,
               },
               {
                 path: ":tid",
                 children: [
                   {
                     index: true,
-                    element: (
-                      <ProtectedRoute
-                        persmissions={["SA"]}
-                        page={<TenantInstancePage />}
-                      />
-                    ),
+                    element: <TenantInstancePage />,
                   },
                   {
                     path: ":id",
-                    element: (
-                      <ProtectedRoute
-                        persmissions={["SA"]}
-                        page={<TenantInstanceDataPage />}
-                      />
-                    ),
+                    element: <TenantInstanceDataPage />,
                   },
                 ],
               },
@@ -283,46 +221,27 @@ const routerConfig: RouteObject[] = [
         children: [
           {
             path: "/sa/tenants",
-            element: (
-              <ProtectedRoute persmissions={["SA"]} page={<TenantsPage />} />
-            ),
+            element: <TenantsPage />,
             index: true,
           },
           {
             path: "/sa/subscription-plans",
-            element: (
-              <ProtectedRoute
-                persmissions={["SA"]}
-                page={<SubscriptionPlansPage />}
-              />
-            ),
+            element: <SubscriptionPlansPage />,
             index: true,
           },
           {
             path: "/sa/approvals",
-            element: (
-              <ProtectedRoute
-                persmissions={["SA"]}
-                page={<PublicTemplatesApprovalPage />}
-              />
-            ),
+            element: <PublicTemplatesApprovalPage />,
             index: true,
           },
 
           {
             path: "/sa/credit-plans",
-            element: (
-              <ProtectedRoute
-                persmissions={["SA"]}
-                page={<CreditPlansPage />}
-              />
-            ),
+            element: <CreditPlansPage />,
           },
           {
             path: "/sa/tenants-consumption",
-            element: (
-              <ProtectedRoute persmissions={["SA"]} page={<ComingSoon />} />
-            ),
+            element: <ComingSoon />,
           },
         ],
       },

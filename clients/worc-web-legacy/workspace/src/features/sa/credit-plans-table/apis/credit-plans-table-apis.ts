@@ -4,7 +4,7 @@ import { axiosInstance } from "@/react-toolkit/lib/axios-instance";
 
 import { CreditPlansTableDto } from "../dtos/credit-plans-table-dto";
 
-const baseAPIURL: string = `${import.meta.env.VITE_ACCOUNTS_API_URL}/credit-plans`;
+const baseAPIURL: string = `${import.meta.env.VITE_ACCOUNTS_API_PATH}/credit-plans`;
 
 /**
  * Retrieves all Credit Plans created by user

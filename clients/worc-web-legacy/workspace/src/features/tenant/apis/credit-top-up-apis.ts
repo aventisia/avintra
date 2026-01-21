@@ -4,7 +4,7 @@ import { axiosInstance } from "@/react-toolkit/lib/axios-instance";
 
 import { CreditTopUpDto } from "../dtos/credit-top-up-dto";
 
-const baseAPIURL: string = `${import.meta.env.VITE_ACCOUNTS_API_URL}/top-up`;
+const baseAPIURL: string = `${import.meta.env.VITE_ACCOUNTS_API_PATH}/top-up`;
 
 export const insertCreditTopUp = (postObj: CreditTopUpDto) =>
   axiosInstance

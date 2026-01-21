@@ -26,7 +26,7 @@ export const TableCellLink = ({
     // Open url based on type
     window.location.href =
       type == "Agent"
-        ? `${import.meta.env.VITE_AGENTBUILDER_URL}/agent?f=${rowId}&v=${versionId}`
+        ? `${import.meta.env.VITE_AGENTBUILDER_PATH}agent?f=${rowId}&v=${versionId}`
         : "#"; //TODO:Add model url
   };
 

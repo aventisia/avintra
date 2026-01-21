@@ -28,6 +28,9 @@ const AvailableIntegrationsDialog = ({ children }: React.PropsWithChildren) => {
       isAlertDialogOpen: state.isAlertDialogOpen,
     })),
   );
+
+  const basePath = import.meta.env.VITE_WORC_PATH.replace(/\/$/, "");
+
   const { showDefaultAlertDialog } = useShowAlertHandler();
 
   const renderIntegrationForm = () => {
@@ -86,7 +89,7 @@ const AvailableIntegrationsDialog = ({ children }: React.PropsWithChildren) => {
             <div className="flex items-center gap-2">
               <div className="rounded-lg bg-accent p-2">
                 <img
-                  src={integrationInfo.icon}
+                  src={basePath + integrationInfo.icon}
                   alt={integrationInfo.name}
                   className="h-6 w-6"
                 />

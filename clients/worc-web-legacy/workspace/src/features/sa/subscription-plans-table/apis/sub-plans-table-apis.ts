@@ -9,7 +9,7 @@ import { axiosInstance } from "@/react-toolkit/lib/axios-instance";
 
 import { SubPlansTableDto } from "../dtos/sub-plans-table-dto";
 
-const baseAPIURL: string = `${import.meta.env.VITE_ACCOUNTS_API_URL}/subscription-plans`;
+const baseAPIURL: string = `${import.meta.env.VITE_ACCOUNTS_API_PATH}/subscription-plans`;
 
 /**
  * Retrieves all subPlans created by user

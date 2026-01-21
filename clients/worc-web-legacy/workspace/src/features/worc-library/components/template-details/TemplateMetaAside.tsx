@@ -13,6 +13,9 @@ import { FileTypeIcon } from "./FileTypeIcon";
 
 export function TemplateMetaAside({ template }: { template: UseTemplateDTO }) {
   const { mutate: downloadFile } = useDownloadFile();
+
+  const basePath = import.meta.env.VITE_WORC_PATH;
+
   return (
     <aside className="space-y-4">
       <Card>
@@ -56,7 +59,7 @@ export function TemplateMetaAside({ template }: { template: UseTemplateDTO }) {
                 ?.filter((icon) => icon !== "/function.png")
                 .map((icon, idx) => (
                   <div key={icon || idx} className="rounded-lg bg-accent p-2">
-                    <img src={icon} alt="icon" className="h-6 w-6" />
+                    <img src={basePath + icon} alt="icon" className="h-6 w-6" />
                   </div>
                 ))
             ) : (

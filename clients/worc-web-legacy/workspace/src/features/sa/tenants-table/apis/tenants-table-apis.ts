@@ -10,7 +10,7 @@ import { axiosInstance } from "@/react-toolkit/lib/axios-instance";
 
 import { TenantsTableDto } from "../dtos/tenants-table-dto";
 
-const baseAPIURL: string = `${import.meta.env.VITE_ACCOUNTS_API_URL}/tenant`;
+const baseAPIURL: string = `${import.meta.env.VITE_ACCOUNTS_API_PATH}/tenant`;
 
 /**
  * Retrieves list of tenants.
