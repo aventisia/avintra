@@ -122,9 +122,9 @@ function getModelConfigSchema(field: DCPFieldSchemaType): ZodTypeAny {
   if (field.defaultValue && typeof field.defaultValue === "object") {
     // If the structure is valid, apply default values to the schema
 
-    if ("isByokEnabled" in field.defaultValue) {
+    if ("is_byok_enabled" in field.defaultValue) {
       isByokEnabledSchema.default(
-        field?.defaultValue?.isByokEnabled as boolean,
+        field?.defaultValue?.is_byok_enabled as boolean,
       );
     }
     if ("provider" in field.defaultValue) {
@@ -136,31 +136,31 @@ function getModelConfigSchema(field: DCPFieldSchemaType): ZodTypeAny {
     if ("temperature" in field.defaultValue) {
       temperatureSchema.default(field?.defaultValue?.temperature as number);
     }
-    if ("topP" in field.defaultValue) {
-      topPSchema.default(field?.defaultValue?.topP as number);
+    if ("top_p" in field.defaultValue) {
+      topPSchema.default(field?.defaultValue?.top_p as number);
     }
-    if ("isJsonOutput" in field.defaultValue) {
-      isJsonOutputSchema.default(field?.defaultValue?.isJsonOutput as boolean);
+    if ("is_json_output" in field.defaultValue) {
+      isJsonOutputSchema.default(field?.defaultValue?.is_json_output as boolean);
     }
 
-    if ("maxOutputToken" in field.defaultValue) {
+    if ("max_output_tokens" in field.defaultValue) {
       maxOutputTokenSchema.default(
-        field?.defaultValue?.maxOutputToken as number,
+        field?.defaultValue?.max_output_tokens as number,
       );
     }
   }
 
   // Return the schema at the end
   return z.object({
-    isByokEnabled: isByokEnabledSchema,
+    is_byok_enabled: isByokEnabledSchema,
     provider: providerSchema,
-    credentials: credentialsSchema,
+    credential_id: credentialsSchema,
     model: modelSchema,
     temperature: temperatureSchema,
-    topP: topPSchema,
+    top_p: topPSchema,
     voice: voiceSchema,
-    isJsonOutput: isJsonOutputSchema,
-    maxOutputToken: maxOutputTokenSchema,
+    is_json_output: isJsonOutputSchema,
+    max_output_tokens: maxOutputTokenSchema,
   });
 }
 

@@ -5,7 +5,7 @@ import { ValidateTemplateDto } from "../dto/validate-template-dto";
 import { GenerateInstructionRequestDto } from "../dto/genereate-instruction-request-dto";
 
 // Base API URL for all project-template related endpoints
-const baseAPIURL = `${import.meta.env.VITE_WORC_API_URL}/project-template`;
+const baseAPIURL = `${import.meta.env.VITE_WORC_API_PATH}/project-template`;
 
 /**
  * Save and publish a new template.
@@ -42,7 +42,9 @@ const validateTemplate = (templateData: ValidateTemplateDto[]) => {
  * @param payload - Serialized prompt data (usually from nodes).
  * @returns Generated instruction as a string.
  */
-const generateTemplateInstruction = (postObj: GenerateInstructionRequestDto) => {
+const generateTemplateInstruction = (
+  postObj: GenerateInstructionRequestDto,
+) => {
   return axiosInstance
     .post<IHttpResponse<string>>(
       `${baseAPIURL}/generate`,

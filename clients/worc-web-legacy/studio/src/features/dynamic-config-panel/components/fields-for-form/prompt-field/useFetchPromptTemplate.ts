@@ -1,7 +1,7 @@
 import { useQuery } from "@tanstack/react-query";
 
 async function fetchPromptTemplate(fileKey: string) {
-  const res = await fetch(`/prompt-templates/${fileKey}.txt`);
+  const res = await fetch(`prompt-templates/${fileKey}.txt`);
 
   if (!res.ok) {
     throw new Error("Failed to load prompt template");

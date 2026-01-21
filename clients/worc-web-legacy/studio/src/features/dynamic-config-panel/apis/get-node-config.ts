@@ -39,7 +39,7 @@ export const getNodeConfig = async (
     try {
       const connectorConfig = await axiosInstance
         .get(
-          `${import.meta.env.VITE_WORC_API_URL}/cloud-connector/config-file/${nodeUniqueName}.json`,
+          `${import.meta.env.VITE_WORC_API_PATH}/cloud-connector/config-file/${nodeUniqueName}.json`,
         )
         .then((res) => res.data);
       if (connectorConfig) {

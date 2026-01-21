@@ -2,7 +2,7 @@ import { IHttpResponse } from "@aventisia/ui/dtos";
 import { axiosInstance } from "@/react-toolkit/lib/axios-instance";
 import { FlowVersionDto } from "../dtos/flow-version-dto";
 
-const baseAPIURL: string = `${import.meta.env.VITE_WORC_API_URL}/flow-version`;
+const baseAPIURL: string = `${import.meta.env.VITE_WORC_API_PATH}/flow-version`;
 
 /**
  * Retrieves all flows versions of a flow.

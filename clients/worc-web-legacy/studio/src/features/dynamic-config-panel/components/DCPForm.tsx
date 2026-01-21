@@ -248,7 +248,15 @@ export const DCPForm = () => {
               <DCPTabsFooterWrapper
                 className={cn(selectedTab == "Prompt" && "justify-between")}
               >
-                {selectedTab == "Prompt" && <ImproveWithAIButton form={form} />}
+                {selectedTab == "Prompt" && (
+                  <ImproveWithAIButton
+                    name={
+                      nodeConfig.fields.find((v) => v.type == "prompt-input")
+                        ?.name ?? ""
+                    }
+                    form={form}
+                  />
+                )}
                 <Button size={"sm"} type="submit" className="min-w-[5rem]">
                   Save
                 </Button>

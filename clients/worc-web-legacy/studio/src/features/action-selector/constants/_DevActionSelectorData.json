@@ -4414,7 +4414,7 @@
             "type": "activityNode",
             "name": "OpenWorkbookActivity",
             "label": "Open Excel Workbook",
-            "description": "Opens an existing Excel workbook from the specified file path and reports success or failure.",
+            "description": "Opens or reuses an Excel workbook in an existing Excel instance by workbook name.",
             "docsLink": "https://docs.aventisia.com",
             "icon": null,
             "img": "/assets/Excel.svg"

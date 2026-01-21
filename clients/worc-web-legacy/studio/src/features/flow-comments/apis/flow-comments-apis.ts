@@ -3,7 +3,7 @@ import { IOptimisticMutation } from "@aventisia/ui/dtos";
 import { axiosInstance } from "@/react-toolkit/lib/axios-instance";
 import { FlowCommentDto } from "../dtos/flow-comment-dto";
 
-const baseAPIURL: string = `${import.meta.env.VITE_WORC_API_URL}/flow-comment`;
+const baseAPIURL: string = `${import.meta.env.VITE_WORC_API_PATH}/flow-comment`;
 
 /**
  * Gets single flow comment to edit the comment

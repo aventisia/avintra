@@ -13,14 +13,14 @@
       "type": "model-config-select",
       "name": "__ModelConfig__Vision",
       "defaultValue": {
-        "isByokEnabled": false,
+        "is_byok_enabled": false,
         "provider": "openai",
-        "credentials": "",
+        "credential_id": "00000000-0000-0000-0000-000000000000",
         "model": "gpt-4o-mini",
         "temperature": 1,
-        "topP": 1,
-        "isJsonOutput": true,
-        "maxOutputToken": 50
+        "top_p": 1,
+        "is_json_output": true,
+        "max_output_tokens": 1000
       },
       "required": false,
       "category": "Models"
@@ -30,14 +30,14 @@
       "type": "text",
       "name": "files",
       "label": "Files",
-
+      "defaultValue": "",
       "required": false,
       "category": "Models"
     },
     {
       "direction": "Input",
       "type": "prompt-input",
-      "name": "prompt",
+      "name": "__Prompt__Vision",
       "required": false,
       "min": 22,
       "defaultValue": "",
@@ -47,11 +47,11 @@
     {
       "direction": "Output",
       "type": "config-panel-output",
-      "name": "AIModelResult",
-      "label": "Button Clicked Successfully",
-      "description": "AI Model Result.",
+      "name": "Result",
+      "label": "Result",
+      "description": "AI Model Result",
       "defaultValue": {
-        "value": "AIModelResult",
+        "value": "Result",
         "enabled": true
       },
       "required": false,

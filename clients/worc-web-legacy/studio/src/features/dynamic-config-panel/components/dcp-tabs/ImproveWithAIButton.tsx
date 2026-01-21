@@ -13,6 +13,7 @@ import { LoadingSpinner } from "@aventisia/ui";
 
 const ImproveWithAIButton = ({
   form,
+  name,
 }: {
   form: UseFormReturn<
     {
@@ -21,6 +22,7 @@ const ImproveWithAIButton = ({
     any,
     undefined
   >;
+  name: string;
 }) => {
   const { currentFlow } = useCurrentFlowStore(
     useShallow((state) => ({
@@ -34,7 +36,7 @@ const ImproveWithAIButton = ({
   useEffect(() => {
     if (data) {
       const improvedPrompt = data as unknown as LLMResponseDto;
-      form.setValue("prompt", improvedPrompt?.output);
+      form.setValue(name, improvedPrompt?.output);
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [data]);
@@ -61,7 +63,7 @@ const ImproveWithAIButton = ({
         topP,
       } = res.data;
 
-      const userPrompt = form.getValues("prompt") ?? "";
+      const userPrompt = form.getValues(name) ?? "";
 
       improveWithAI({
         provider: (modelProvider ?? "") as ProviderLiteral,
@@ -98,7 +100,7 @@ const ImproveWithAIButton = ({
       variant="outline"
       size="sm"
       type="button"
-      disabled={isPending || !form.watch("prompt")}
+      disabled={isPending || !form.watch(name)}
       className={cn(
         "flex w-36 items-center gap-2 rounded-full border-primary text-primary transition-all duration-200",
         isPending ? "cursor-wait" : "hover:bg-primary hover:text-white",
