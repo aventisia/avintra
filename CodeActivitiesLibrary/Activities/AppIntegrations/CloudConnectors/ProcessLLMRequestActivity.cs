@@ -82,7 +82,7 @@ namespace CodeActivitiesLibrary.AppIntegrations.CloudConnectorsActivities
                         json_schema = modelConfig?["json_schema"]?.Value<string>(),
                         max_output_tokens = modelConfig?["max_output_tokens"]?.Value<long>() ?? 0,
                         is_byok_enabled = modelConfig?["is_byok_enabled"]?.Value<bool>() ?? false,
-                        credential_id = modelConfig?["credential_id"]?.Value<Guid>() ?? Guid.Empty,
+                        credential_id = modelConfig?["credential_id"]?.Value<string>() ?? Guid.Empty.ToString(),
                         temperature = modelConfig?["temperature"]?.Value<double>() ?? 0.0,
                         top_p = modelConfig?["top_p"]?.Value<double>() ?? 1.0,
                         stream = false,
