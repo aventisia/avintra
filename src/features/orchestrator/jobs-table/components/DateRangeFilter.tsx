@@ -29,6 +29,8 @@ export const DateRangeFilter = () => {
   const hydratedRef = useRef(false);
   const today = new Date();
 
+  const isCurrentTab = searchParams.get("t") == "Current";
+
   /* -------------------------------
      Default last 7 days
   -------------------------------- */
@@ -108,8 +110,8 @@ export const DateRangeFilter = () => {
 
   return (
     <Popover open={showRangePicker} onOpenChange={setShowRangePicker}>
-      <PopoverTrigger>
-        <Button size="xs" variant="outline">
+      <PopoverTrigger disabled={isCurrentTab}>
+        <Button disabled={isCurrentTab} size="xs" variant="outline">
           <CalendarDays className="mr-2 h-3.5 w-3.5" />
           {format(selectedRange.from!, "MMM d, yyyy")} -{" "}
           {format(selectedRange.to!, "MMM d, yyyy")}
@@ -130,6 +132,11 @@ export const DateRangeFilter = () => {
                   size="sm"
                   variant={isSelected ? "default" : "outline"}
                   onClick={() => setSelectedRange(range)}
+                  className={`justify-start border-none shadow-none ${
+                    isSelected
+                      ? "hover:bg-primary/90 bg-primary-50 text-primary"
+                      : ""
+                  }`}
                 >
                   {preset.label}
                 </Button>
