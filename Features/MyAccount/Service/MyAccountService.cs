@@ -143,7 +143,7 @@ public class MyAccountService(
             // DeviceId did not match
             if (currentSession.DeviceId != userAgent)
             {
-                _logger.LogInformation($"DeviceId did not match for session {_sessionId} and account {_userName}");
+                _logger.LogInformation($"DeviceId did not match for session {_sessionId} and account {_userName}. Expected {currentSession.DeviceId}, found {userAgent}");
                 return serviceResponse;
             }
 
