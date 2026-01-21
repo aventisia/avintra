@@ -566,26 +566,4 @@ public class AccountUsersTableService : IAccountUsersTableService
             return new List<string?>();
         }
     }
-
-    // TODO: Keeping it only to see if we need it in future. HelperFn: Check if user can have "AE" role
-    private string? CanUserHaveAventisiaEmployeeRole(string email, List<string> toBeAddedUserRoles)
-    {
-        // Check for mandatory "AE" role for "@aventisia.com" domain
-        var isAventisiaEmail = ExtractDomainFromEmailUtil.ExtractDomainFromEmail(email) == "aventisia.com";
-        if (isAventisiaEmail && !toBeAddedUserRoles.Contains("AE"))
-        {
-            _logger.LogInformation($"AVENTISIA Employee (AE) role is mandatory for aventisia.com email domain. Requested email: {email}");
-            return "AVENTISIA Employee role is mandatory for aventisia.com email domain";
-        }
-
-        // Stop from using "AE" role for domains other than "@aventisia.com"
-        if (!isAventisiaEmail && toBeAddedUserRoles.Contains("AE"))
-        {
-            _logger.LogInformation($"AVENTISIA Employee (AE) role cannot be used for other domains. Requested email: {email}");
-            return "AVENTISIA Employee role cannot be used for other domains";
-        }
-
-        // Return null if no issue
-        return null;
-    }
 }

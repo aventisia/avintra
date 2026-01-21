@@ -11,7 +11,8 @@ public class AuthService : IAuthService
     private readonly ILogger<AuthService> _logger;
     private readonly IUnitOfWork _unitOfWork;
     private readonly IAuthHelperService _authHelperService;
-    private readonly DefaultTenantConfig _defaultTenantConfig;
+    private readonly AppRuntimeSettings _appRuntimeSettings;
+    private readonly GeneralConfig _generalConfig;
 
     public AuthService(
         UserManager<AccountUser> userManager,
@@ -23,7 +24,8 @@ public class AuthService : IAuthService
         IdentityConfig identityConfig,
         JwtConfig jwtConfig,
         VerificationCodeConfig verificationCodeConfig,
-        DefaultTenantConfig defaultTenantConfig)
+        AppRuntimeSettings appRuntimeSettings,
+        GeneralConfig generalConfig)
     {
         _userManager = userManager;
         _emailService = emailService;
@@ -34,7 +36,8 @@ public class AuthService : IAuthService
         _identityConfig = identityConfig;
         _jwtConfig = jwtConfig;
         _verificationCodeConfig = verificationCodeConfig;
-        _defaultTenantConfig = defaultTenantConfig;
+        _appRuntimeSettings = appRuntimeSettings;
+        _generalConfig = generalConfig;
     }
 
     // Checks the availability of a email.
@@ -121,6 +124,14 @@ public class AuthService : IAuthService
 
         try
         {
+            // Check if authentication-related operations are globally disabled.
+            // This can be due to maintenance, security incidents, or temporary administrative restrictions.
+            if (_appRuntimeSettings.IsLoginDisabled)
+            {
+                serviceResponse.StatusCode = 401;
+                serviceResponse.Message = "Authentication services are currently unavailable. Please contact Aventiisia Support for assistance.";
+                return serviceResponse;
+            }
             // Try to get user (Includes Tenant and Roles)
             var user = await _unitOfWork.AccountUserRepo
                     .GetByConditionAsync(w => EF.Functions.ILike(emailDto.Email, w.UserName))
@@ -326,7 +337,8 @@ public class AuthService : IAuthService
             {
                 serviceResponse.Message = "Complete organization setup to continue.";
             }
-            else
+
+            if (_appRuntimeSettings.TenantType == OnPremTenantTypesEnum.Commercial)
             {
                 // Query the current tenant's subscription, including related plan and creator details
                 var subscription = await _unitOfWork.TenantSubscriptionRepo
@@ -350,6 +362,10 @@ public class AuthService : IAuthService
                 {
                     serviceResponse.Message = "New session has been created successfully.";
                 }
+            }
+            else
+            {
+                serviceResponse.Message = "New session has been created successfully.";
             }
 
             // UserSessionDto is ready
@@ -493,6 +509,19 @@ public class AuthService : IAuthService
 
         try
         {
+            // Check if the tenant is of type Enterprise
+            if (_appRuntimeSettings.TenantType == OnPremTenantTypesEnum.Enterprise)
+            {
+                var appDomain = ExtractDomainFromEmailUtil.ExtractDomainFromUrl(_generalConfig.AppDomain);
+                var emailDomain = ExtractDomainFromEmailUtil.ExtractDomainFromEmail(createVerificationCodeDto.Email);
+                if (!appDomain.Equals(emailDomain, StringComparison.InvariantCultureIgnoreCase))
+                {
+                    serviceResponse.StatusCode = 400;
+                    serviceResponse.Message = "Email domain does not match the platform's domain.";
+                    return serviceResponse;
+                }
+            }
+
             // Implemented RequestTypes: VerifyEmailAddress, TwoFA, ResetPwd, UpdateEmail
             // Not yet implemented RequestTypes: UnlockAccount, AccountDeactivation
 

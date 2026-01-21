@@ -4,21 +4,21 @@ public class CreditUsageService : ICreditUsageService
 {
     private readonly IUnitOfWork _unitOfWork;
     private readonly ILogger<CreditUsageService> _logger;
-    private readonly DefaultTenantConfig _defaultTenantConfig;
+    private readonly AppRuntimeSettings _appRuntimeSettings;
     private readonly Guid _userId;
     private readonly Guid _tenantId;
 
-    public CreditUsageService(IUnitOfWork unitOfWork, ILogger<CreditUsageService> logger, IHttpContextAccessor httpContextAccessor, DefaultTenantConfig defaultTenantConfig)
+    public CreditUsageService(IUnitOfWork unitOfWork, ILogger<CreditUsageService> logger, IHttpContextAccessor httpContextAccessor, AppRuntimeSettings appRuntimeSettings)
     {
         _unitOfWork = unitOfWork;
         _logger = logger;
-        _defaultTenantConfig = defaultTenantConfig;
 
         // Extract user ID from JWT token in the HTTP context
         _userId = Guid.Parse(httpContextAccessor.HttpContext?.User?.FindFirstValue("uid") ?? Guid.Empty.ToString());
 
         // Extract tenant ID from JWT token claims
         _tenantId = Guid.Parse(httpContextAccessor.HttpContext?.User?.FindFirstValue("tntid") ?? Guid.Empty.ToString());
+        _appRuntimeSettings = appRuntimeSettings;
     }
 
     // Retrieves the credit usage for a given user or service.
@@ -280,7 +280,8 @@ public class CreditUsageService : ICreditUsageService
             var availableCredits = _unitOfWork.TenantCreditRepo
                 .GetByConditionAsync(w =>
                     w.TenantId == _tenantId &&
-                    w.ExpiredOn.Date >= DateTimeOffset.UtcNow.Date
+                    w.AvailableCredits > 0 &&
+                    w.ExpiredOn.Date > DateTimeOffset.UtcNow.Date
                 ).OrderBy(o => o.ExpiredOn);
 
             // If no available credits are found, log a warning and return failure message
@@ -305,40 +306,44 @@ public class CreditUsageService : ICreditUsageService
                 return serviceResponse;
             }
 
-            // Calculate how many credits are needed based on the consumed units
-            TenantCredit? tenantAvailableCredit = null;
-
-            // Round up the consumed units to the nearest whole number
-            creditUsageDto.ConsumedUnit = Math.Ceiling(creditUsageDto.ConsumedUnit);
-
-            // Calculate the credit used based on the consumed units, the credit plan's unit value, and the number of credits per unit
-            double creditUsed = creditUsageDto.ConsumedUnit / existingCreditPlan.OneUnit * existingCreditPlan.Credits;
-
-            // Apply the tenant's discount to creditUsed if it exists; otherwise, leave it unchanged.
-            creditUsed = tenant.Discount.HasValue ? creditUsed * tenant.Discount.Value : creditUsed;
-
-            // Attempt to find the first available credit that has enough available credits to cover the usage
-            tenantAvailableCredit = await availableCredits
-                .FirstOrDefaultAsync(w => w.AvailableCredits > 0 && w.AvailableCredits >= creditUsed);
-
-            // If no sufficient credits are found, get the highest available credit and log a warning
-            if (tenantAvailableCredit == null)
+            double creditUsed = 0;
+            if (_appRuntimeSettings.TenantType == OnPremTenantTypesEnum.Commercial)
             {
-                tenantAvailableCredit = await availableCredits.OrderByDescending(o => o.AvailableCredits).FirstAsync();
-            }
+                // Calculate how many credits are needed based on the consumed units
+                TenantCredit? tenantAvailableCredit = null;
 
-            // Reduce the available credits by the amount used
-            tenantAvailableCredit.AvailableCredits = tenantAvailableCredit.AvailableCredits - creditUsed;
+                // Round up the consumed units to the nearest whole number
+                creditUsageDto.ConsumedUnit = Math.Ceiling(creditUsageDto.ConsumedUnit);
 
-            // Update the tenant credit record with the new available credits
-            _unitOfWork.TenantCreditRepo.Update(tenantAvailableCredit);
+                // Calculate the credit used based on the consumed units, the credit plan's unit value, and the number of credits per unit
+                creditUsed = creditUsageDto.ConsumedUnit / existingCreditPlan.OneUnit * existingCreditPlan.Credits;
 
-            // Attempt to commit changes to the database
-            if (!await _unitOfWork.SaveAsync())
-            {
-                _logger.LogError("Database save failed during credit usage insertion for User ID: {UserId}, Service Type: {ServiceType}.",
-                    creditUsageDto.UsedByUserId, creditUsageDto.ServiceType);
-                return serviceResponse;
+                // Apply the tenant's discount to creditUsed if it exists; otherwise, leave it unchanged.
+                creditUsed = tenant.Discount.HasValue ? creditUsed * tenant.Discount.Value : creditUsed;
+
+                // Attempt to find the first available credit that has enough available credits to cover the usage
+                tenantAvailableCredit = await availableCredits
+                    .FirstOrDefaultAsync(w => w.AvailableCredits > 0 && w.AvailableCredits >= creditUsed);
+
+                // If no sufficient credits are found, get the highest available credit and log a warning
+                if (tenantAvailableCredit == null)
+                {
+                    tenantAvailableCredit = await availableCredits.OrderByDescending(o => o.AvailableCredits).FirstAsync();
+                }
+
+                // Reduce the available credits by the amount used
+                tenantAvailableCredit.AvailableCredits = tenantAvailableCredit.AvailableCredits - creditUsed;
+
+                // Update the tenant credit record with the new available credits
+                _unitOfWork.TenantCreditRepo.Update(tenantAvailableCredit);
+
+                // Attempt to commit changes to the database
+                if (!await _unitOfWork.SaveAsync())
+                {
+                    _logger.LogError("Database save failed during credit usage insertion for User ID: {UserId}, Service Type: {ServiceType}.",
+                        creditUsageDto.UsedByUserId, creditUsageDto.ServiceType);
+                    return serviceResponse;
+                }
             }
 
             // Map the DTO to the entity model and set the user ID
@@ -425,8 +430,8 @@ public class CreditUsageService : ICreditUsageService
             var availableCredits = await _unitOfWork.TenantCreditRepo
                 .GetByConditionAsync(w =>
                     w.TenantId == _tenantId &&
-                    w.ExpiredOn.Date >= DateTimeOffset.UtcNow.Date &&
-                    w.AvailableCredits > 0
+                    w.AvailableCredits > 0 &&
+                    w.ExpiredOn.Date > DateTimeOffset.UtcNow.Date
                 ).OrderBy(o => o.ExpiredOn)
                 .ToListAsync();
 
@@ -457,32 +462,36 @@ public class CreditUsageService : ICreditUsageService
             // Process each credit usage
             foreach (var creditUsageDto in creditUsageDtos)
             {
-                // Calculate how many credits are needed based on the consumed units
-                var creditPlan = existingCreditPlans.First(p => p.ServiceType == creditUsageDto.ServiceType);
-
-                // Round up the consumed units to the nearest whole number
-                creditUsageDto.ConsumedUnit = Math.Ceiling(creditUsageDto.ConsumedUnit);
-
-                // Calculate the credit used based on the consumed units, the credit plan's unit value, and the number of credits per unit
-                double creditUsed = creditUsageDto.ConsumedUnit / creditPlan.OneUnit * creditPlan.Credits;
-
-                // Apply the tenant's discount to creditUsed if it exists; otherwise, leave it unchanged.
-                creditUsed = tenant.Discount.HasValue ? creditUsed * tenant.Discount.Value : creditUsed;
-
-                // Attempt to find the first available credit that has enough available credits to cover the usage
-                var tenantAvailableCredit = availableCredits.FirstOrDefault(w => w.AvailableCredits >= creditUsed);
-
-                // If no sufficient credits are found, get the highest available credit and log a warning
-                if (tenantAvailableCredit == null)
+                double creditUsed = 0;
+                if (_appRuntimeSettings.TenantType == OnPremTenantTypesEnum.Commercial)
                 {
-                    tenantAvailableCredit = availableCredits.OrderByDescending(o => o.AvailableCredits).FirstOrDefault();
+                    // Calculate how many credits are needed based on the consumed units
+                    var creditPlan = existingCreditPlans.FirstOrDefault(p => p.ServiceType == creditUsageDto.ServiceType);
+
+                    // Round up the consumed units to the nearest whole number
+                    creditUsageDto.ConsumedUnit = Math.Ceiling(creditUsageDto.ConsumedUnit);
+
+                    // Calculate the credit used based on the consumed units, the credit plan's unit value, and the number of credits per unit
+                    creditUsed = creditUsageDto.ConsumedUnit / creditPlan.OneUnit * creditPlan.Credits;
+
+                    // Apply the tenant's discount to creditUsed if it exists; otherwise, leave it unchanged.
+                    creditUsed = tenant.Discount.HasValue ? creditUsed * tenant.Discount.Value : creditUsed;
+
+                    // Attempt to find the first available credit that has enough available credits to cover the usage
+                    var tenantAvailableCredit = availableCredits.FirstOrDefault(w => w.AvailableCredits >= creditUsed);
+
+                    // If no sufficient credits are found, get the highest available credit and log a warning
+                    if (tenantAvailableCredit == null)
+                    {
+                        tenantAvailableCredit = availableCredits.OrderByDescending(o => o.AvailableCredits).FirstOrDefault();
+                    }
+
+                    // Reduce the available credits by the amount used
+                    tenantAvailableCredit.AvailableCredits -= creditUsed;
+
+                    // Update the tenant credit record with the new available credits
+                    _unitOfWork.TenantCreditRepo.Update(tenantAvailableCredit);
                 }
-
-                // Reduce the available credits by the amount used
-                tenantAvailableCredit.AvailableCredits -= creditUsed;
-
-                // Update the tenant credit record with the new available credits
-                _unitOfWork.TenantCreditRepo.Update(tenantAvailableCredit);
 
                 // Map the DTO to the entity model and set the user ID
                 var creditUsage = creditUsageDto.Adapt<CreditUsage>();
@@ -682,28 +691,45 @@ public class CreditUsageService : ICreditUsageService
 
         try
         {
+            // Check if authentication-related operations are globally disabled.
+            // This can be due to maintenance, security incidents, or temporary administrative restrictions.
+            if (_appRuntimeSettings.IsLoginDisabled)
+            {
+                serviceResponse.StatusCode = 401;
+                serviceResponse.Message = "Authentication services are currently unavailable. Please contact Aventiisia Support for assistance.";
+                return serviceResponse;
+            }
+
             // Log the start of the credit retrieval process
             _logger.LogInformation("Starting credit retrieval for user: {UserId}", _userId);
 
-            // Fetch available tenant credits for the current user
-            var availableCreditsQuery = _unitOfWork.TenantCreditRepo
-                .GetByConditionAsync(w =>
-                    w.TenantId == _tenantId &&
-                    (
-                        (w.AvailableCredits > 0) ||
-                        (w.AvailableCredits < 0 && w.ExpiredOn.Date < DateTimeOffset.UtcNow.Date) ||
-                        (w.AvailableCredits < 0 && w.ExpiredOn >= DateTimeOffset.UtcNow.Date)
-                    )
-                );
-
-            // Aggregate available credit data into the DTO
-            var availableCreditDto = new AvailableCreditDto
+            // Handle credit retrieval for Commercial tenants
+            if (_appRuntimeSettings.TenantType == OnPremTenantTypesEnum.Commercial)
             {
-                AvailableCredits = await availableCreditsQuery.SumAsync(s => s.AvailableCredits),
-            };
+                // Fetch available tenant credits for the current user
+                var availableCreditsQuery = _unitOfWork.TenantCreditRepo
+                    .GetByConditionAsync(w =>
+                        w.TenantId == _tenantId &&
+                        w.AvailableCredits > 0 &&
+                        w.ExpiredOn.Date > DateTimeOffset.UtcNow.Date
+                    );
+
+                // Aggregate available credit data into the DTO
+                serviceResponse.Data = new AvailableCreditDto
+                {
+                    AvailableCredits = await availableCreditsQuery.SumAsync(s => s.AvailableCredits),
+                };
+            }
+            else
+            {
+                // For non-commercial tenants, set available credits to a very high value (e.g., unlimited)
+                serviceResponse.Data = new AvailableCreditDto
+                {
+                    AvailableCredits = int.MaxValue
+                };
+            }
 
             // Update response with successful data
-            serviceResponse.Data = availableCreditDto;
             serviceResponse.StatusCode = 200;
             serviceResponse.Message = "Available credits fetched successfully.";
 
@@ -736,11 +762,9 @@ public class CreditUsageService : ICreditUsageService
             var availableCreditsQuery = _unitOfWork.TenantCreditRepo
                 .GetByConditionAsync(w =>
                     w.TenantId == _tenantId &&
-                    (
-                        (w.AvailableCredits > 0) ||
-                        (w.AvailableCredits < 0 && w.ExpiredOn.Date < DateTimeOffset.UtcNow.Date) ||
-                        (w.AvailableCredits < 0 && w.ExpiredOn >= DateTimeOffset.UtcNow.Date)
-                    ));
+                    w.AvailableCredits > 0 &&
+                    w.ExpiredOn.Date > DateTimeOffset.UtcNow.Date
+                );
 
             // Construct the credit summary DTO with monthly breakdown
             var availableCreditDto = new AvailableCreditSummaryDto

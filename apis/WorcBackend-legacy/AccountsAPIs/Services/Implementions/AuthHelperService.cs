@@ -8,6 +8,7 @@ public class AuthHelperService : IAuthHelperService
     private readonly ExternalAPIsConfig _externalAPIsConfig;
     private readonly JwtConfig _jwtConfig;
     private readonly CookiePolicyConfig _cookiePolicyConfig;
+    private readonly InstanceConfig _instanceConfig;
     private readonly ILogger<AuthHelperService> _logger;
     private readonly IUnitOfWork _unitOfWork;
 
@@ -19,7 +20,8 @@ public class AuthHelperService : IAuthHelperService
         IdentityConfig identityConfig,
         ExternalAPIsConfig externalAPIsConfig,
         JwtConfig jwtConfig,
-        CookiePolicyConfig cookiePolicyConfig)
+        CookiePolicyConfig cookiePolicyConfig,
+        InstanceConfig instanceConfig)
     {
         _userManager = userManager;
         _httpContext = Guard.Against.Null(httpContextAccessor.HttpContext, "HttpContext cannot be null");
@@ -29,6 +31,7 @@ public class AuthHelperService : IAuthHelperService
         _externalAPIsConfig = externalAPIsConfig;
         _jwtConfig = jwtConfig;
         _cookiePolicyConfig = cookiePolicyConfig;
+        _instanceConfig = instanceConfig;
     }
 
     // Validates the null, disabled, and expired status of a tenant.
@@ -200,7 +203,11 @@ public class AuthHelperService : IAuthHelperService
             // Add session id
             claims.Add("sid", sessionId.ToString());
 
-            claims.Add("plan", currentPlan);
+            // Add tenant type (Enterprise or other)
+            claims.Add("type", _instanceConfig.TenantType);
+
+            // Add subscription plan information, if applicable
+            claims.Add("plan", _instanceConfig.TenantType == OnPremTenantTypesEnum.Enterprise.ToString() ? "None" : currentPlan);
 
             // Add permission access
             claims["permissions"] = user.UserRoles

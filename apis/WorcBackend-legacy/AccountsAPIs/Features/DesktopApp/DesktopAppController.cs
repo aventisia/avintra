@@ -65,7 +65,12 @@ public class DesktopAppController : BaseApiController
             return NotFound(message);
 
         // Get the latest verison out. Assuming version is in the format WorcDesktopApp_{version}_x64-setup.exe
-        var latestVersion = Path.GetFileNameWithoutExtension(fileName).Split('_')[1];
+        string latestVersion;
+        if (_webHostEnvironment.IsEnvironment("Development") || _webHostEnvironment.IsEnvironment("UAT"))
+            latestVersion = Path.GetFileNameWithoutExtension(fileName).Split('_')[2]; // WorcDesktopApp_DEV/UAT_{version}_x64-setup.exe
+        else
+            latestVersion = Path.GetFileNameWithoutExtension(fileName).Split('_')[1]; // WorcDesktopApp_{version}_x64-setup.exe
+
         var updateNotes = "Bug fixes and improvements.";
         var pubDate = DateTime.UtcNow.ToString("o"); // ISO 8601 format
 
@@ -86,7 +91,7 @@ public class DesktopAppController : BaseApiController
                 ["windows-x86_64"] = new
                 {
                     signature,
-                    url = $"{_generalConfig.AppDomain}/api/desktop-app/download/{latestVersion}"
+                    url = $"https://{_generalConfig.AppDomain}/accounts/api/desktop-app/download/{latestVersion}"
                 }
             }
         };

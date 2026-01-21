@@ -3,7 +3,7 @@ namespace AccountsAPIs.Entities;
 /// <summary>
 /// Represents a tenant's subscription to a specific plan, including start and end dates.
 /// </summary>
-public class TenantSubscription : BaseEntity, IMustHaveTenant
+public class TenantSubscription : BaseEntity
 {
     /// <summary>
     /// Gets or sets the ID of the tenant using the subscription.
