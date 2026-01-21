@@ -5,7 +5,7 @@ import { axiosInstance } from "@/react-toolkit/lib/axios-instance";
 
 import { LoadFlowDto } from "../dtos/load-flow-dto";
 
-const baseAPIURL: string = `${import.meta.env.VITE_WORC_API_URL}/flow`;
+const baseAPIURL: string = `${import.meta.env.VITE_WORC_API_PATH}/flow`;
 
 /**
  * Gets flow record to load when user opens it in studio

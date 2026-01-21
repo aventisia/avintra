@@ -10,7 +10,7 @@ import { axiosInstance } from "@/react-toolkit/lib/axios-instance";
 
 import { PricingPlansTableDto } from "../dtos/pricingPlans-table-dto";
 
-const baseAPIURL: string = `${import.meta.env.VITE_ACCOUNTS_API_URL}/manage-pricing-plan`;
+const baseAPIURL: string = `${import.meta.env.VITE_ACCOUNTS_API_PATH}/manage-pricing-plan`;
 
 /**
  * Retrieves list of pricingplans.
@@ -39,7 +39,7 @@ export const getPricingPlansToSelectForTenant = () => {
   return axiosInstance
     .get<
       IHttpResponse<ISelectOption[]>
-    >(`${import.meta.env.VITE_ACCOUNTS_API_URL}/pricing-plan/plans-to-select`)
+    >(`${import.meta.env.VITE_ACCOUNTS_API_PATH}/pricing-plan/plans-to-select`)
     .then((res) => res.data);
 };
 

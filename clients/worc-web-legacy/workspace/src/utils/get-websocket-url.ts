@@ -28,7 +28,7 @@ export const getWebSocketUrl = ({
     : ClientTypesEnum.WebBrowser;
 
   // Construct the WebSocket URL
-  let url = `${import.meta.env.VITE_WORC_API_URL}/orchestrator-hub?clientType=${clientType}`;
+  let url = `${import.meta.env.VITE_WORC_API_PATH}/orchestrator-hub?clientType=${clientType}`;
 
   // Only include osID, hostname, and appVersion if the app is in Tauri (i.e., IS_TAURI is true)
   if (IS_TAURI) {

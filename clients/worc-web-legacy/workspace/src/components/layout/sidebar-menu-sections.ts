@@ -1,4 +1,3 @@
-import { SidebarMenuSectionType } from "@aventisia/ui/types";
 import {
   BanknotesIcon,
   ChartPieIcon,
@@ -24,9 +23,14 @@ import {
 } from "lucide-react";
 import { AiOutlineThunderbolt } from "react-icons/ai";
 
-import { IS_TAURI } from "@/constants/constants";
+// import { IS_TAURI } from "@/constants/constants";
+import {
+  deploymentType,
+  SidebarMenuItemExtended,
+  SidebarMenuSectionExtended,
+} from "@/react-toolkit/types/sidebar-menu-types";
 
-const sidebarMenuSections: SidebarMenuSectionType[] = [
+const sidebarMenuSections: SidebarMenuSectionExtended[] = [
   {
     sectionName: "my projects",
     menuItems: [
@@ -35,18 +39,21 @@ const sidebarMenuSections: SidebarMenuSectionType[] = [
         name: "agents",
         route: "/agents",
         permissions: ["TD"],
+        type: ["Commercial", "Enterprise"],
       },
       {
         Icon: FileBoxIcon,
         name: "AI Models",
         route: "/ai-models",
         permissions: ["TD"],
+        type: ["Commercial", "Enterprise"],
       },
       {
         Icon: LibraryIcon,
         name: "Library",
         route: "/library",
         permissions: ["TD"],
+        type: ["Commercial", "Enterprise"],
       },
     ],
   },
@@ -58,69 +65,74 @@ const sidebarMenuSections: SidebarMenuSectionType[] = [
         Icon: BotIcon,
         name: "Published",
         route: "/orchestrator/published-agents",
+        type: ["Commercial", "Enterprise"],
       },
       {
         permissions: ["OM"],
         Icon: DesktopIcon,
         name: "machines",
         route: "/orchestrator/machines",
+        type: ["Commercial", "Enterprise"],
       },
       {
         permissions: ["OM"],
         Icon: QueueListIcon,
         name: "queues",
         route: "/orchestrator/queues",
+        type: ["Commercial"],
       },
       {
         permissions: ["OM"],
         Icon: AiOutlineThunderbolt,
         name: "triggers",
         route: "/orchestrator/triggers",
+        type: ["Commercial", "Enterprise"],
       },
       {
         permissions: ["OM"],
         Icon: MonitorPlayIcon,
         name: "Jobs",
         route: "/orchestrator/jobs",
+        type: ["Commercial", "Enterprise"],
       },
       {
         permissions: ["OM"],
         Icon: FolderCogIcon,
         name: "Key Store",
         route: "/orchestrator/keystore",
+        type: ["Commercial", "Enterprise"],
       },
       {
         permissions: ["OM"],
         Icon: Shield,
         name: "Vault",
         route: "/orchestrator/vault",
+        type: ["Commercial", "Enterprise"],
       },
     ],
   },
   {
     sectionName: "Assist",
     menuItems: [
-      // Add Assist my agents only if not production
-      ...(IS_TAURI
-        ? [
-            {
-              permissions: ["TU"],
-              Icon: BotIcon,
-              name: "my agents",
-              route: "/assist/my-agents",
-            },
-          ]
-        : []),
+      {
+        permissions: ["TU"],
+        Icon: BotIcon,
+        name: "my agents",
+        route: "/assist/my-agents",
+        type: ["Commercial", "Enterprise"],
+      },
+
       // Add Assist my queue only if not production
-      ...(import.meta.env.MODE !== "production" && IS_TAURI
-        ? [
+      ...(import.meta.env.MODE !== "production"
+        ? ([
             {
               permissions: ["TU"],
               Icon: QueueListIcon,
               name: "my queue",
               route: "/assist/my-queue",
+              type: ["Commercial", "Enterprise"],
             },
-          ]
+          ] as SidebarMenuItemExtended[])
         : []),
     ],
   },
@@ -132,53 +144,68 @@ const sidebarMenuSections: SidebarMenuSectionType[] = [
         Icon: IdentificationIcon,
         name: "tenant",
         route: "/tenant",
+        type: ["Commercial"],
+      },
+      {
+        permissions: ["TA"],
+        Icon: IdentificationIcon,
+        name: "preferences",
+        route: "/preferences",
+        type: ["Enterprise"],
       },
       // Add integrations only if not production
       ...(import.meta.env.MODE !== "production"
-        ? [
+        ? ([
             {
               permissions: ["TA"],
               Icon: Workflow,
               name: "integrations",
               route: "/integrations",
+              type: ["Commercial", "Enterprise"],
             },
             {
               permissions: ["TA"],
               Icon: ServerIcon,
-              name: "on-prem LLMs",
-              route: "/on-prem-llms",
+              name: "on-prem models",
+              route: "/on-prem-models",
+              type: ["Commercial", "Enterprise"],
             },
-          ]
+          ] as SidebarMenuItemExtended[])
         : []),
       {
         permissions: ["TA"],
         Icon: Wallet,
-        name: "credits Usage",
-        route: "/credits-usage",
+        name: "Usage",
+        route: "/usage",
+        type: ["Commercial"],
       },
       {
         permissions: ["TA"],
         Icon: CheckCheckIcon,
         name: "Approvals",
         route: "/approvals",
+        type: ["Commercial", "Enterprise"],
       },
       {
         permissions: ["TA"],
         Icon: UsersIcon,
         name: "users",
         route: "/users",
+        type: ["Commercial", "Enterprise"],
       },
       {
         permissions: ["TA"],
         Icon: ArchiveIcon,
         name: "archive",
         route: "/archive",
+        type: ["Commercial", "Enterprise"],
       },
       {
         permissions: ["TA"],
         Icon: QuestionMarkCircleIcon,
         name: "support",
         route: "/supportticket",
+        type: ["Commercial"],
       },
     ],
   },
@@ -189,37 +216,43 @@ const sidebarMenuSections: SidebarMenuSectionType[] = [
         permissions: ["SA"],
         Icon: IdentificationIcon,
         name: "tenants",
-        route: "sa/tenants",
+        route: "/sa/tenants",
+        type: ["Commercial"],
       },
       {
         permissions: ["SA"],
         Icon: UsersIcon,
         name: "users",
         route: "/users",
+        type: ["Commercial"],
       },
       {
         permissions: ["SA"],
         Icon: CheckCheckIcon,
         name: "Approvals",
-        route: "sa/approvals",
+        route: "/sa/approvals",
+        type: ["Commercial"],
       },
       {
         permissions: ["SA"],
         Icon: BadgeDollarSignIcon,
         name: "subscription plans",
-        route: "sa/subscription-plans",
+        route: "/sa/subscription-plans",
+        type: ["Commercial"],
       },
       {
         permissions: ["SA"],
         Icon: BanknotesIcon,
         name: "Credit Plans",
-        route: "sa/credit-plans",
+        route: "/sa/credit-plans",
+        type: ["Commercial"],
       },
       {
         permissions: ["SA"],
         Icon: ChartPieIcon,
         name: "Tenants Consumption",
-        route: "sa/tenants-consumption",
+        route: "/sa/tenants-consumption",
+        type: ["Commercial"],
       },
     ],
   },
@@ -230,7 +263,8 @@ const sidebarMenuSections: SidebarMenuSectionType[] = [
         permissions: ["SA"],
         Icon: IdentificationIcon,
         name: "On-prem Tenants",
-        route: "ga/on-prem-tenants",
+        route: "/ga/on-prem-tenants",
+        type: ["Commercial"],
       },
     ],
   },
@@ -238,16 +272,19 @@ const sidebarMenuSections: SidebarMenuSectionType[] = [
 
 // TODO: Refactor this function to use a more efficient method of checking permissions
 // TODO: This function filters the sidebar menu sections based on the user's roles for now.
-function getSidebarMenuBasedOnPersmissions(
+
+export function getSidebarMenuBasedOnPermissions(
   userRoles: string[],
-): SidebarMenuSectionType[] {
+  deploymentType: deploymentType,
+): SidebarMenuSectionExtended[] {
   return sidebarMenuSections
     .map((section) => {
       // Filter menuItems based on item-level permissions (if present)
       const filteredMenuItems = section.menuItems.filter(
         (item) =>
-          !item.permissions ||
-          item.permissions.some((role: string) => userRoles.includes(role)),
+          (!item.permissions ||
+            item.permissions.some((role) => userRoles.includes(role))) &&
+          item.type?.includes(deploymentType),
       );
 
       // Only return the section if it has at least one visible menu item
@@ -258,7 +295,18 @@ function getSidebarMenuBasedOnPersmissions(
         menuItems: filteredMenuItems,
       };
     })
-    .filter((section): section is SidebarMenuSectionType => section !== null); // Remove null sections with type guard
+    .filter(
+      (section): section is SidebarMenuSectionExtended => section !== null,
+    );
 }
 
-export { sidebarMenuSections, getSidebarMenuBasedOnPersmissions };
+export function flattenMenuRoutes(
+  sections: SidebarMenuSectionExtended[],
+): string[] {
+  return sections.flatMap((section) =>
+    section.menuItems.flatMap((item) => [
+      item.route,
+      ...(item.subMenuItems?.map((sub) => sub.route) ?? []),
+    ]),
+  );
+}

@@ -1,6 +1,7 @@
 import {
   DataTable,
   DataTableSkeleton,
+  DTExportButton,
   DTHeading,
   DTPagination,
   DTSearchBox,
@@ -9,7 +10,8 @@ import {
 } from "@aventisia/ui/data-table";
 import { useDataTable, useDocumentTitle } from "@aventisia/ui/hooks";
 import { Tabs, TabsList, TabsTrigger } from "@aventisia/ui/tabs";
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
+import { useSearchParams } from "react-router-dom";
 
 import { SEARCH_COLUMN, TABLE_HEADING, TABLE_KEY } from "../constants";
 import { columnDisplayNames } from "../constants/column-display-names";
@@ -17,7 +19,10 @@ import { columnVisibilityState } from "../constants/column-visibility-state";
 import { JobStatusTypesEnum } from "../enums/job-status-type-enum";
 import { useFetchJobsList } from "../hooks/useFetchJobsList";
 
+import { DateRangeFilter } from "./DateRangeFilter";
 import { jobsTableColumns } from "./JobsTableColumns";
+
+const tabs = ["Current", "Scheduled", "History"];
 
 /**
  * Renders a table of jobs.
@@ -25,7 +30,36 @@ import { jobsTableColumns } from "./JobsTableColumns";
  * @returns The rendered JobsTable component.
  */
 export const JobsTable = () => {
-  const [tabValue, setTabValue] = useState<string>("History");
+  const [searchParams, setSearchParams] = useSearchParams();
+  const tabParam = searchParams.get("t");
+  const defaultTab = "History";
+  const [tabValue, setTabValue] = useState(
+    tabParam && tabs.includes(tabParam) ? tabParam : defaultTab,
+  );
+
+  const handleTabParamChange = useCallback(
+    (newTab: string) => {
+      // preserve other params
+      const params = Object.fromEntries(searchParams.entries());
+      params.t = newTab;
+      setSearchParams(params);
+    },
+    [searchParams, setSearchParams],
+  );
+
+  // Sync tab selection with URL param on mount and when param changes
+  useEffect(() => {
+    if (tabParam && tabs.includes(tabParam)) {
+      setTabValue(tabParam);
+    } else if (!tabParam) {
+      handleTabParamChange(defaultTab);
+    }
+  }, [defaultTab, handleTabParamChange, tabParam]);
+
+  const handleTabSelect = (tab: string) => {
+    setTabValue(tab);
+    handleTabParamChange(tab);
+  };
 
   // Set the document title
   useDocumentTitle(TABLE_HEADING);
@@ -55,9 +89,9 @@ export const JobsTable = () => {
 
     if (!statusColumn) return;
 
-    if (tabValue === "Running") {
+    if (tabValue === "Current") {
       statusColumn.setFilterValue(JobStatusTypesEnum.Running);
-    } else if (tabValue === "Created") {
+    } else if (tabValue === "Scheduled") {
       statusColumn.setFilterValue(JobStatusTypesEnum.Created);
     } else if (tabValue === "History") {
       statusColumn.setFilterValue([
@@ -76,43 +110,35 @@ export const JobsTable = () => {
         <div className="space-y-4 pb-4 pt-[17px]">
           {/* Table toolbar */}
           <div className="flex items-center justify-between">
-            <DTHeading heading={TABLE_HEADING} />
-
+            <div className="flex items-center gap-2">
+              <DTHeading heading={TABLE_HEADING} />
+              <Tabs value={tabValue} onValueChange={handleTabSelect}>
+                <TabsList className="h-fit w-full rounded-lg px-1.5 py-1">
+                  {tabs.map((tab) => (
+                    <TabsTrigger
+                      value={tab}
+                      key={tab}
+                      className="w-full rounded-lg py-0.5"
+                    >
+                      {tab}
+                    </TabsTrigger>
+                  ))}
+                </TabsList>
+              </Tabs>
+            </div>
             <div className="flex items-center gap-2">
               <DTSearchBox
                 table={table}
                 searchColumn={SEARCH_COLUMN}
                 placeholder="Search..."
               />
-              <Tabs
-                value={tabValue}
-                // className="w-full"
-                onValueChange={setTabValue}
-              >
-                <TabsList className="h-fit w-full rounded-lg px-1.5 py-1">
-                  <TabsTrigger
-                    value="Running"
-                    className="w-full rounded-lg py-0.5"
-                  >
-                    Current
-                  </TabsTrigger>
-                  <TabsTrigger
-                    value="Created"
-                    className="w-full rounded-lg py-0.5"
-                  >
-                    Scheduled
-                  </TabsTrigger>
-                  <TabsTrigger
-                    value="History"
-                    className="w-full rounded-lg py-0.5"
-                  >
-                    History
-                  </TabsTrigger>
-                </TabsList>
-              </Tabs>
+              <DateRangeFilter />
               <DTViewOptions
                 {...{ table, columnDisplayNames, tableKey: TABLE_KEY }}
               />
+              {tabValue == "History" ? (
+                <DTExportButton fileName={TABLE_KEY} table={table} />
+              ) : null}
             </div>
           </div>
 

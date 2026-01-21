@@ -36,7 +36,7 @@ export const useValidateUserSession = () => {
         httpResponse.message.includes(NO_ACTIVE_SUBSCRIPTION)
       ) {
         window.location.href =
-          import.meta.env.VITE_ACCOUNTS_URL + "/onboarding";
+          import.meta.env.VITE_ACCOUNTS_PATH + "onboarding";
       }
 
       // Set authenticated user locally and session obj in store

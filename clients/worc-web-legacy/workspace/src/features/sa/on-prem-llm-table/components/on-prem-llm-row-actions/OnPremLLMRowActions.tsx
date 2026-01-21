@@ -17,7 +17,7 @@ export const OnPremLLMRowActions = ({ rowId }: OnPremLLMActionsProps) => {
       {/* <DropdownMenuSeparator /> */}
 
       {/* View the model details */}
-      {/* <DTRowAction rowId={rowId} crudAction="read" /> */}
+      <DTRowAction rowId={rowId} crudAction="read" />
 
       {/* Edit model details */}
       <DTRowAction rowId={rowId} crudAction="update" />

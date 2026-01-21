@@ -30,6 +30,7 @@ export const TemplateCard = ({ template }: TemplateCardProps) => {
   const templateIcons = template?.icons?.filter(
     (icon) => icon !== "/function.png",
   );
+  const basePath = import.meta.env.VITE_WORC_PATH;
 
   return (
     <Card
@@ -46,7 +47,7 @@ export const TemplateCard = ({ template }: TemplateCardProps) => {
                   key={icon || idx}
                   className="rounded-lg bg-accent p-1.5 md:p-2"
                 >
-                  <img src={icon} alt="icon" className="h-6 w-6" />
+                  <img src={basePath + icon} alt="icon" className="h-6 w-6" />
                 </div>
               ))}
 
@@ -60,7 +61,11 @@ export const TemplateCard = ({ template }: TemplateCardProps) => {
 
               {templateIcons.length === 5 && (
                 <div className="rounded-lg bg-accent p-1.5 md:p-2">
-                  <img src={templateIcons[4]} alt="icon" className="h-6 w-6" />
+                  <img
+                    src={basePath + templateIcons[4]}
+                    alt="icon"
+                    className="h-6 w-6"
+                  />
                 </div>
               )}
             </>

@@ -2,7 +2,7 @@ import { CrudActionType } from "@aventisia/ui/types";
 
 const ONPREM_LLM_QUERY_KEY = ["on_prem_llm"];
 
-const TABLE_HEADING = "On-prem LLMs";
+const TABLE_HEADING = "On-prem Models";
 
 const TABLE_KEY = "on-prem-llms";
 
@@ -14,11 +14,11 @@ const SEARCH_COLUMN = "llm";
 const getDialogHeadingDescription = (crudAction: CrudActionType) => {
   switch (crudAction) {
     case "create":
-      return { heading: "Create LLM", description: "" };
+      return { heading: "Add Model", description: "" };
     case "read":
-      return { heading: "LLM", description: "" };
+      return { heading: "Model", description: "" };
     case "update":
-      return { heading: "Edit LLM", description: "" };
+      return { heading: "Edit Model", description: "" };
     default:
       return { heading: "", description: "" };
   }

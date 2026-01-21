@@ -7,7 +7,7 @@ import { RecordPaymentDto } from "../dtos/record-payment-dto";
 import { RequestLicensesDto } from "../dtos/request-license-dto";
 import { LicensesTableDto } from "../dtos/sa-licenses-table-dto";
 
-const baseAPIURL: string = `${import.meta.env.VITE_ACCOUNTS_API_URL}/manage-license-credit`;
+const baseAPIURL: string = `${import.meta.env.VITE_ACCOUNTS_API_PATH}/manage-license-credit`;
 
 /**
  * Retrieves list of licenses.

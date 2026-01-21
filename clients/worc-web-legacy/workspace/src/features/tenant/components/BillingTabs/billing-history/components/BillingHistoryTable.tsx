@@ -7,7 +7,7 @@ import {
   DTViewOptions,
   getDataTablePreferences,
 } from "@aventisia/ui/data-table";
-import { useDataTable, useDocumentTitle } from "@aventisia/ui/hooks";
+import { useDataTable } from "@aventisia/ui/hooks";
 
 import { SEARCH_COLUMN, TABLE_HEADING, TABLE_KEY } from "../constants";
 import { columnDisplayNames } from "../constants/column-display-names";
@@ -23,7 +23,7 @@ import { billingHistoryTableColumns } from "./BillingHistoryTableColumns";
  */
 export const BillingHistoryTable = () => {
   // Set the document title
-  useDocumentTitle(TABLE_HEADING);
+  // useDocumentTitle(TABLE_HEADING);
 
   // Get data-table preferences from local storage
   const { columnVisibility, sortState } = getDataTablePreferences(

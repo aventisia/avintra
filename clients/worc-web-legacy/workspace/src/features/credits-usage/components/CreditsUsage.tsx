@@ -1,3 +1,5 @@
+import { useDocumentTitle } from "@aventisia/ui/hooks";
+
 import LoaderTemplate from "@/components/templates/LoaderTemplate";
 
 import { useFetchCreditUsageSummary } from "../hooks/useFetchCreditUsageSummary";
@@ -10,6 +12,9 @@ import UsageTabs from "./UsageTabs";
 
 export const CreditsUsage = () => {
   const { isLoading } = useFetchCreditUsageSummary();
+
+  // Set the document title
+  useDocumentTitle("Usage");
 
   return (
     <>

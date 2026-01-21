@@ -4,7 +4,7 @@ import { axiosInstance } from "@/react-toolkit/lib/axios-instance";
 
 import { TemplatesApprovalDto } from "../dtos/templates-approval-dtos";
 
-const baseAPIURL: string = `${import.meta.env.VITE_WORC_API_URL}/project-template`;
+const baseAPIURL: string = `${import.meta.env.VITE_WORC_API_PATH}/project-template`;
 
 /**
  * Retrieves all tenant level templates pending for approval.

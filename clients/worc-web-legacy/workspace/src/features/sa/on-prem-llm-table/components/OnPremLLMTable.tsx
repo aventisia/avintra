@@ -43,9 +43,7 @@ export const OnPremLLMTable = () => {
   // Return the rendered DataTable component.
   return (
     <>
-      {/* IMPORTANT */}
-      {/* Remove the ! operator once we have the api's for the onPrem LLM */}
-      {!data ? (
+      {data ? (
         <div className="space-y-4 pb-4 pt-[17px]">
           {/* Crud ops dialog */}
           <OnPremCrudDialog>
@@ -57,12 +55,12 @@ export const OnPremLLMTable = () => {
                 <DTSearchBox
                   table={table}
                   searchColumn={SEARCH_COLUMN}
-                  placeholder="Search LLM..."
+                  placeholder="Search Model..."
                 />
                 <DTViewOptions
                   {...{ table, columnDisplayNames, tableKey: TABLE_KEY }}
                 />
-                <DTCreateButton buttonText="Add LLM" />
+                <DTCreateButton buttonText="Add Model" />
               </div>
             </div>
 

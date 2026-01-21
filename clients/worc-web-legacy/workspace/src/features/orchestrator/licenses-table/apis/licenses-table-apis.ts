@@ -5,7 +5,7 @@ import { axiosInstance } from "@/react-toolkit/lib/axios-instance";
 
 import { MyLicensesTableDto } from "../dtos/licenses-table-dto";
 
-const baseAPIURL: string = `${import.meta.env.VITE_ACCOUNTS_API_URL}/license-credit`;
+const baseAPIURL: string = `${import.meta.env.VITE_ACCOUNTS_API_PATH}/license-credit`;
 
 /**
  * Retrieves list of licenses.
@@ -23,7 +23,7 @@ export const getMyPricingPlans = () => {
   return axiosInstance
     .get<
       IHttpResponse<MyLicensesTableDto[]>
-    >(`${import.meta.env.VITE_ACCOUNTS_API_URL}/pricing-plan/plans-to-select`)
+    >(`${import.meta.env.VITE_ACCOUNTS_API_PATH}/pricing-plan/plans-to-select`)
     .then((res) => res.data);
 };
 

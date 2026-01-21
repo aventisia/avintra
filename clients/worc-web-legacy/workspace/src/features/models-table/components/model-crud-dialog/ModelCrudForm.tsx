@@ -2,7 +2,7 @@ import { SubmitButton } from "@aventisia/ui/buttons";
 import {
   Form,
   InputField,
-  SwitchField,
+  // SwitchField,
   TextareaField,
 } from "@aventisia/ui/form";
 import { useListOptimisticMutation } from "@aventisia/ui/hooks";
@@ -14,7 +14,7 @@ import { MODELS_QUERY_KEY } from "../../constants";
 import {
   descriptionProps,
   idProps,
-  isDisabledProps,
+  // isDisabledProps,
   nameProps,
 } from "../../constants/model-form-field-props";
 import { modelZodSchema } from "../../constants/model-zod-schema";
@@ -89,7 +89,7 @@ export const ModelCrudForm = () => {
       <TextareaField {...descriptionProps} />
 
       {/* Is Disabled */}
-      {crudAction !== "create" && <SwitchField {...isDisabledProps} />}
+      {/* {crudAction !== "create" && <SwitchField {...isDisabledProps} />} */}
 
       {/* TODO: Implement AutherCard */}
 

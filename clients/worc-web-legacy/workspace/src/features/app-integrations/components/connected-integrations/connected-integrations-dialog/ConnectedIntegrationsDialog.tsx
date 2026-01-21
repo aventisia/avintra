@@ -17,6 +17,9 @@ import ConnectedIntegrationDialogContent from "./ConnectedIntegrationDialogConte
 const ConnectedIntegrationsDialog = () => {
   const { isOpen, setOpen, integrationInfo } =
     useConnectedIntegrationsDialogStore();
+
+  const basePath = import.meta.env.VITE_WORC_PATH.replace(/\/$/, "");
+
   return (
     <Dialog open={isOpen} onOpenChange={setOpen}>
       <DialogContent className="w-full max-w-[38rem]">
@@ -25,7 +28,7 @@ const ConnectedIntegrationsDialog = () => {
             <div className="flex items-center gap-2">
               <div className="rounded-lg bg-accent p-2">
                 <img
-                  src={integrationInfo.icon}
+                  src={basePath + integrationInfo.icon}
                   alt={integrationInfo.name}
                   className="h-6 w-6"
                 />

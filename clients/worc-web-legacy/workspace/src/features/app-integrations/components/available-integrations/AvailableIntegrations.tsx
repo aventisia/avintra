@@ -21,6 +21,8 @@ const AvailableIntegrations = () => {
     setIntegrationInfo(integrationInfo);
   };
 
+  const basePath = import.meta.env.VITE_WORC_PATH.replace(/\/$/, "");
+
   return (
     <div className="space-y-2">
       <p className="px-1 text-lg font-normal">Available</p>
@@ -30,7 +32,11 @@ const AvailableIntegrations = () => {
             <Card className="p-4 hover:shadow-md">
               <CardHeader className="flex-row items-center gap-3 p-0">
                 <div className="rounded-lg bg-accent p-2">
-                  <img src={item.icon} alt={item.name} className="h-6 w-6" />
+                  <img
+                    src={basePath + item.icon}
+                    alt={item.name}
+                    className="h-6 w-6"
+                  />
                 </div>
                 <CardTitle className="!mt-0 text-base capitalize">
                   {item.name}

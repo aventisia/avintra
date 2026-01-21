@@ -5,7 +5,7 @@ import { axiosInstance } from "@/react-toolkit/lib/axios-instance";
 import { STUpdateByReviewerDto } from "../dtos/STUpdateByReviewerDto";
 import { SupportTicketsTableDto } from "../dtos/SupportTicketsTableDto";
 
-const baseAPIURL: string = `${import.meta.env.VITE_WORC_API_URL}/supportticket`;
+const baseAPIURL: string = `${import.meta.env.VITE_WORC_API_PATH}/supportticket`;
 
 /**
  * Retrieves a support ticket.

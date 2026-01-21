@@ -3,10 +3,13 @@ import { KeyValueLookupType } from "@aventisia/ui/types";
 /** Array of column names and their corresponding display names. */
 export const columnDisplayNames: KeyValueLookupType[] = [
   { key: "id", value: "Select Row" },
-  { key: "llm", value: "LLM" },
-  { key: "displayName", value: "Display Name" },
-  { key: "description", value: "Description" },
+  { key: "name", value: "Name" },
+  { key: "modelName", value: "Model Name" },
+  { key: "providerType", value: "Provider" },
+  { key: "providerUrl", value: "Provider Url" },
   { key: "status", value: "Status" },
+  { key: "createdBy", value: "Created By" },
+  { key: "createdOn", value: "Created On" },
 ];
 
 // Get the column display name for the given column key.

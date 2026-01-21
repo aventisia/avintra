@@ -12,7 +12,7 @@ import type { AssignAgentDto } from "../dtos/assign-agent-dto";
 import { MachinesTableDto } from "../dtos/machines-table-dto";
 import type { SelectAgentTableDto } from "../dtos/select-agent-table-dto";
 
-const baseAPIURL: string = `${import.meta.env.VITE_WORC_API_URL}/machine`;
+const baseAPIURL: string = `${import.meta.env.VITE_WORC_API_PATH}/machine`;
 
 /**
  * Retrieves list of machines.
@@ -59,7 +59,7 @@ export const getNewMachineAgents = () => {
   return axiosInstance
     .get<
       IHttpResponse<SelectAgentTableDto[]>
-    >(`${import.meta.env.VITE_WORC_API_URL}/agent/publish-flows`)
+    >(`${import.meta.env.VITE_WORC_API_PATH}/agent/publish-flows`)
     .then((res) => res.data);
 };
 
