@@ -5,16 +5,21 @@ namespace WorkspaceAPIs.Features.CloudConnectors.LLMProvider;
 public class LLMProviderConnectorsService : ILLMProviderConnectorsService
 {
     private readonly ILogger<LLMProviderConnectorsService> _logger;
-    private readonly IM365ConnectorsService _m365ConnectorsService;
+    private readonly HttpClientUrlConfig _httpClientUrlConfig;
     private readonly ICloudConnectorsVaultService _cloudConnectorsVaultService;
+    private readonly string _jwt;
 
     public LLMProviderConnectorsService(
         ILogger<LLMProviderConnectorsService> logger,
-        IM365ConnectorsService m365ConnectorsService, ICloudConnectorsVaultService cloudConnectorsVaultService)
+        HttpClientUrlConfig httpClientUrlConfig,
+        ICloudConnectorsVaultService cloudConnectorsVaultService,
+        IHttpContextAccessor httpContextAccessor)
     {
         _logger = logger;
-        _m365ConnectorsService = m365ConnectorsService;
+        _httpClientUrlConfig = httpClientUrlConfig;
         _cloudConnectorsVaultService = cloudConnectorsVaultService;
+
+        _jwt = httpContextAccessor.HttpContext?.Request.Cookies["AccessToken"] ?? httpContextAccessor.HttpContext?.Request.Headers["Authorization"].ToString().Replace("Bearer ", "") ?? "";
 
     }
 
@@ -56,7 +61,7 @@ public class LLMProviderConnectorsService : ILLMProviderConnectorsService
             string? providerStr = cloudConnectorReqDto.Provider?.Trim();
 
             // Parse to enum
-           if (!Enum.TryParse<LLMProviderEnum>(providerStr, true, out LLMProviderEnum provider))
+            if (!Enum.TryParse<LLMProviderEnum>(providerStr, true, out LLMProviderEnum provider))
             {
                 _logger.LogError("Invalid provider specified: {Provider}", providerStr);
                 serviceResponse.Message = $"Unsupported provider: {providerStr}. Valid values: OpenAI, Ollama, DeepInfra.";
@@ -146,11 +151,9 @@ public class LLMProviderConnectorsService : ILLMProviderConnectorsService
 
             // call open AI Api 
             using var httpClient = new HttpClient();
-            //httpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", openAiApiKey);
+            httpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", _jwt);
 
-            string endpoint = "  https://dev-llmpipeline.aventisia.com/api/llm/generate";
-          
-            //string endpoint = "https://localhost:4001/api/llm.generate";
+            string endpoint = $"{_httpClientUrlConfig.LlmPipelineApisBaseUrl}/llm/generate";
 
             var jsonContent = new StringContent(
                 System.Text.Json.JsonSerializer.Serialize(llmPipelinePayload), Encoding.UTF8, "application/json");
@@ -173,7 +176,7 @@ public class LLMProviderConnectorsService : ILLMProviderConnectorsService
 
             var finalResponse = new JsonObject
             {
-                ["provider"] =  provider.ToString().ToLowerInvariant(),
+                ["provider"] = provider.ToString().ToLowerInvariant(),
                 ["credential_id"] = payloadCredentialId,
                 ["created_on"] = DateTime.UtcNow.ToString("o"),
                 ["action"] = cloudConnectorReqDto.Action
@@ -240,5 +243,4 @@ public class LLMProviderConnectorsService : ILLMProviderConnectorsService
 
         return (apiKey, organization);
     }
-
 }

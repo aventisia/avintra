@@ -28,6 +28,7 @@ public interface IUnitOfWork
     IAppSecretRepo AppSecretRepo { get; }
     IEncryptedKeyValueRepo EncryptedKeyValueRepo { get; }
     IAITaskRepo AITaskRepo { get; }
+    IOnPremModelRepo OnPremModelRepo { get; }
 
     /// <summary>
     /// Saves the changes made in the unit of work asynchronously.

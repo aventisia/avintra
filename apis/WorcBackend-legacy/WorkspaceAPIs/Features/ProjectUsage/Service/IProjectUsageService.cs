@@ -3,10 +3,10 @@ namespace WorkspaceAPIs.Services;
 public interface IProjectUsageService
 {
     /// <summary>
-    /// Retrieves and aggregates usage metrics for the active project.
+    /// Retrieves and aggregates usage metrics for the current project.
     /// </summary>
     /// <returns>
-    /// A <see cref="ServiceResponse{ProjectUsageMetricDto}"/> with summarized project usage metrics.
+    /// A <see cref="ServiceResponse{List{ProjectUsageMetricDto}}"/> containing the aggregated usage metrics for the project.
     /// </returns>
-    Task<ServiceResponse<ProjectUsageMetricDto>> GetUsageSummaryAsync();
+    Task<ServiceResponse<List<ProjectUsageMetricDto>>> GetUsageSummaryAsync();
 }

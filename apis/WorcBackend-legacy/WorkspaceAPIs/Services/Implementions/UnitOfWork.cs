@@ -35,6 +35,7 @@ public class UnitOfWork : IUnitOfWork
     public IAppSecretRepo AppSecretRepo => new AppSecretRepo(_workspaceDbContext);
     public IEncryptedKeyValueRepo EncryptedKeyValueRepo => new EncryptedKeyValueRepo(_workspaceDbContext);
     public IAITaskRepo AITaskRepo => new AITaskRepo(_workspaceDbContext);
+    public IOnPremModelRepo OnPremModelRepo => new OnPremModelRepo(_workspaceDbContext);
 
     public async Task<bool> SaveAsync(bool checkHasChanges = false)
     {

@@ -58,11 +58,14 @@ public class SendGridConnectorsService : ISendGridConnectorsService
             if (!payload.TryGetValue("body", out object? bodyObj) || bodyObj == null)
                 throw new ArgumentException("'body' is required in payload.");
 
+            if (!payload.TryGetValue("from", out object? fromObj) || fromObj == null)
+                throw new ArgumentException("'from' is required in payload.");
+
             string toEmail = toEmailObj.ToString()!;
+            string fromEmail = fromObj.ToString()!;
             string subject = subjectObj.ToString()!;
             string body = bodyObj.ToString()!;
 
-            string? fromEmail = payload.TryGetValue("from", out var fromEmailObj) ? fromEmailObj?.ToString() : null;
             string? fromName = payload.TryGetValue("fromName", out var fromNameObj) ? fromNameObj?.ToString() : null;
             string? ccEmail = payload.TryGetValue("cc", out var ccEmailObj) ? ccEmailObj?.ToString() : null;
             string? bccEmail = payload.TryGetValue("bcc", out var bccEmailObj) ? bccEmailObj?.ToString() : null;
@@ -125,7 +128,7 @@ public class SendGridConnectorsService : ISendGridConnectorsService
 
 
     public async Task<bool> SendEmailAsync(Guid credentialId, string toEmail, string subject,
-       string body, string? fromEmail = null, string? fromName = null, string? ccEmail = null, string? bccEmail = null)
+       string body, string fromEmail, string? fromName = null, string? ccEmail = null, string? bccEmail = null)
     {
         // 1. Get API key from vault
         var apiKey = await GetSendGridApiKeyAsync(credentialId);
@@ -139,9 +142,9 @@ public class SendGridConnectorsService : ISendGridConnectorsService
         var client = new SendGridClient(apiKey);
 
         // 3. Prepare email
-        var from = new EmailAddress(fromEmail ?? "aventisia.com", fromName ?? "Your App");
+        var from = new EmailAddress(fromEmail, fromName ?? string.Empty);
         var to = new EmailAddress(toEmail);
-        var msg = MailHelper.CreateSingleEmail(from, to, subject, plainTextContent: "", htmlContent: body);
+        var msg = MailHelper.CreateSingleEmail(from, to, subject, plainTextContent: string.Empty, htmlContent: body);
 
         //  Add CC/BCC
         if (!string.IsNullOrEmpty(ccEmail))
@@ -171,6 +174,4 @@ public class SendGridConnectorsService : ISendGridConnectorsService
             return false;
         }
     }
-
-
 }

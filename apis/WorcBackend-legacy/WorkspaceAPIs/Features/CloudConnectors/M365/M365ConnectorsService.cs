@@ -95,9 +95,9 @@ public class M365ConnectorsService : IM365ConnectorsService
             }
 
             // Site path: from root to site name
-            string sitePath = "/" + string.Join('/', segments.Take(siteRootIdx + 2)); // e.g., /sites/AventisiaTechnologiesPvtLtd
+            string sitePath = "/" + string.Join('/', segments.Take(siteRootIdx + 2)); // e.g., /sites/YourCompanyName
 
-            // File path: everything after the site path (skip 'site root', 'site name' and 'Shared Documents' e.g. '/sites/AventisiaTechnologiesPvtLtd/Shared Documents')
+            // File path: everything after the site path (skip 'site root', 'site name' and 'Shared Documents' e.g. '/sites/YourCompanyName/Shared Documents')
             string relativeFilePath = string.Join('/', segments.Skip(siteRootIdx + 3)); // e.g., General/m365_connector_testing.xlsx
             relativeFilePath = Uri.UnescapeDataString(relativeFilePath);
 

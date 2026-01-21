@@ -1,0 +1,229 @@
+namespace WorkspaceAPIs.Services;
+
+public class LLMProviderService : ILLMProviderService
+{
+    private readonly ILogger<LLMProviderService> _logger;
+    private readonly IUnitOfWork _unitOfWork;
+    private readonly Guid _userId;
+    private readonly IHttpClientFactory _httpClientFactory;
+    private readonly IAppSecretService _appSecretService;
+
+    public LLMProviderService(
+        ILogger<LLMProviderService> logger,
+        IUnitOfWork unitOfWork,
+        IHttpContextAccessor httpContextAccessor,
+        IHttpClientFactory httpClientFactory,
+        IAppSecretService appSecretService)
+    {
+        _logger = logger;
+        _unitOfWork = unitOfWork;
+        _httpClientFactory = httpClientFactory;
+        _appSecretService = appSecretService;
+
+        // Initialize the user ID by extracting it from the JWT claims in the HTTP context.
+        _userId = Guid.Parse(httpContextAccessor.HttpContext?.User?.FindFirstValue("uid") ?? Guid.Empty.ToString());
+    }
+
+    // Retrieves models based on the specified LLM provider type and credentials.
+    public async Task<ServiceResponse<IEnumerable<SelectOptionDto>>> GetAllModelsAsync(LLMProviderModelRequestDto requestDto)
+    {
+        var serviceResponse = new ServiceResponse<IEnumerable<SelectOptionDto>>
+        {
+            Data = null,
+            Message = "Failed to retrieve models. Please try again later."
+        };
+
+        try
+        {
+            // Fetch the secret credentials associated with the provided CredentialId.
+            var credential = await _appSecretService.GetAppSecretDetailAsync(requestDto.CredentialId);
+
+            // If credentials are not valid, return the error message.
+            if (credential.StatusCode != 200)
+            {
+                serviceResponse.Message = "Invalid credentials. Please verify the CredentialId and try again.";
+                return serviceResponse;
+            }
+
+            // Default to an empty string if ApiKey is not found
+            string apiKey = string.Empty;
+
+            // Check if the credential data is a JObject
+            if (credential?.Data?.Data is JObject data)
+            {
+                apiKey = data["ApiKey"]?.ToString() ?? string.Empty;
+            }
+            // Check if the credential data is a JsonElement
+            else if (credential?.Data?.Data is JsonElement dataElement)
+            {
+                // Check if "ApiKey" exists in the JsonElement and try to extract its value
+                if (dataElement.TryGetProperty("ApiKey", out JsonElement apiKeyElement))
+                {
+                    apiKey = apiKeyElement.GetString() ?? string.Empty;
+                }
+            }
+
+            if (string.IsNullOrEmpty(apiKey))
+            {
+                serviceResponse.Message = "API Key is missing or invalid. Please check the credentials.";
+                return serviceResponse;
+            }
+
+            // Initialize RestClient based on provider
+            RestClient client;
+
+            switch (requestDto.ProviderType)
+            {
+                case LLMProviderTypesEnum.OpenAI:
+                    client = new RestClient("https://api.openai.com");
+                    client.AddDefaultHeader("Authorization", $"Bearer {apiKey}");
+                    serviceResponse = await GetModelsAsync(requestDto.ProviderType, client);
+                    break;
+
+                case LLMProviderTypesEnum.OpenRouter:
+                    client = new RestClient("https://openrouter.ai/api");
+                    client.AddDefaultHeader("Authorization", $"Bearer {apiKey}");
+                    serviceResponse = await GetModelsAsync(requestDto.ProviderType, client);
+                    break;
+
+                case LLMProviderTypesEnum.Gemini:
+                    client = new RestClient("https://generativelanguage.googleapis.com");
+                    client.AddDefaultHeader("x-goog-api-key", apiKey);
+                    serviceResponse = await GetModelsAsync(requestDto.ProviderType, client);
+                    break;
+
+                default:
+                    serviceResponse.Message = "Provider type not supported.";
+                    _logger.LogWarning("Unsupported provider type: {ProviderType}", requestDto.ProviderType);
+                    break;
+            }
+
+            return serviceResponse;
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex, "Error occurred while fetching models for user {UserId}.", _userId);
+            serviceResponse.Message = "An error occurred while processing your request.";
+            return serviceResponse;
+        }
+    }
+    private async Task<ServiceResponse<IEnumerable<SelectOptionDto>>> GetModelsAsync(LLMProviderTypesEnum providerType, RestClient client)
+    {
+        var serviceResponse = new ServiceResponse<IEnumerable<SelectOptionDto>>();
+
+        try
+        {
+            // Define the API endpoint based on the provider type
+            // Select models endpoint based on provider
+            string endpoint = providerType switch
+            {
+                LLMProviderTypesEnum.OpenAI => "v1/models",
+                LLMProviderTypesEnum.OpenRouter => "v1/models",
+                LLMProviderTypesEnum.Gemini => "v1beta/models",
+                _ => throw new NotImplementedException("Unsupported provider")
+            };
+
+            // Create GET request
+            var request = new RestRequest(endpoint, Method.Get);
+
+            // Call provider API
+            var response = await client.ExecuteAsync(request);
+
+            // Validate response
+            if (!response.IsSuccessful || string.IsNullOrWhiteSpace(response.Content))
+            {
+                serviceResponse.Message = $"Failed to retrieve models from {providerType}. Status: {response.StatusCode}";
+                return serviceResponse;
+            }
+
+            // Log success
+            _logger.LogInformation("Successfully retrieved models from {Provider} API.", providerType);
+
+            // Parse JSON response body
+            JObject jsonResponse = JObject.Parse(response.Content);
+
+            // Extract data based on provider type
+            IEnumerable<JToken>? dataArray = providerType switch
+            {
+                LLMProviderTypesEnum.OpenAI => jsonResponse["data"]?.ToArray(),
+                LLMProviderTypesEnum.Gemini => jsonResponse["models"]?.ToArray(),
+                LLMProviderTypesEnum.OpenRouter => jsonResponse["data"]?.ToArray(),
+                _ => throw new NotImplementedException($"No data extraction logic defined for {providerType}")
+            };
+
+            if (dataArray == null || !dataArray.Any())
+            {
+                serviceResponse.Message = "No models found in the response.";
+                return serviceResponse;
+            }
+
+            // Create a list of SelectOptionDto objects from the JSON data
+            List<SelectOptionDto> models = dataArray
+                .Select(item => MapToSelectOptionDto(item, providerType))
+                .OrderBy(o => o.Label)
+                .ToList();
+
+            // Set the service response data and message
+            serviceResponse.Data = models;
+            serviceResponse.Message = $"Successfully retrieved models from {providerType} API.";
+            serviceResponse.StatusCode = 200;
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex, "Error occurred while fetching models from {ProviderType} API for user {UserId}.", providerType, _userId);
+        }
+
+        return serviceResponse;
+    }
+
+    // General method to map a JToken to SelectOptionDto based on the provider type
+    private SelectOptionDto MapToSelectOptionDto(JToken item, LLMProviderTypesEnum providerType)
+    {
+        var value = providerType switch
+        {
+            LLMProviderTypesEnum.OpenAI => RemovePrefix(item["id"]?.ToString() ?? string.Empty),
+            LLMProviderTypesEnum.Gemini => RemovePrefix(item["name"]?.ToString() ?? string.Empty),
+            LLMProviderTypesEnum.OpenRouter => item["canonical_slug"]?.ToString(),
+            _ => throw new NotImplementedException($"No value extraction logic defined for {providerType}")
+        };
+
+        var label = providerType switch
+        {
+            LLMProviderTypesEnum.OpenAI => RemovePrefix(item["id"]?.ToString() ?? string.Empty),
+            LLMProviderTypesEnum.Gemini => item["displayName"]?.ToString(),
+            LLMProviderTypesEnum.OpenRouter => item["name"]?.ToString(),
+            _ => throw new NotImplementedException($"No label extraction logic defined for {providerType}")
+        };
+
+        var description = providerType switch
+        {
+            LLMProviderTypesEnum.OpenAI => $"Owned by {item["owned_by"]?.ToString()}",
+            LLMProviderTypesEnum.Gemini => item["description"]?.ToString(),
+            LLMProviderTypesEnum.OpenRouter => item["description"]?.ToString(),
+            _ => throw new NotImplementedException($"No description extraction logic defined for {providerType}")
+        };
+
+        return new SelectOptionDto
+        {
+            Value = value ?? string.Empty,
+            Label = label ?? string.Empty,
+            Description = description,
+            Disabled = false,
+            Fixed = false
+        };
+    }
+    // Helper method to remove the prefix before the first "/" if it exists
+    private string RemovePrefix(string value)
+    {
+        if (!string.IsNullOrEmpty(value) && value.Contains("/"))
+        {
+            // Find the first occurrence of "/"
+            int index = value.IndexOf("/");
+
+            // Remove everything before and including the first "/"
+            return value.Substring(index + 1);
+        }
+
+        return value; // Return the original value if no "/" is found
+    }
+}
