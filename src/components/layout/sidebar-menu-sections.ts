@@ -114,17 +114,13 @@ const sidebarMenuSections: SidebarMenuSectionExtended[] = [
   {
     sectionName: "Assist",
     menuItems: [
-      // Add Assist my agents only if not production
-      ...(IS_TAURI
-        ? [
-            {
-              permissions: ["TU"],
-              Icon: BotIcon,
-              name: "my agents",
-              route: "/assist/my-agents",
-            },
-          ]
-        : []),
+      {
+        permissions: ["TU"],
+        Icon: BotIcon,
+        name: "my agents",
+        route: "/assist/my-agents",
+      },
+
       // Add Assist my queue only if not production
       ...(import.meta.env.MODE !== "production" && IS_TAURI
         ? [
