@@ -78,7 +78,7 @@ public class AzureBlobStorageService : IAzureBlobStorageService
     }
 
     // Downloads a blob from Azure Blob Storage.
-    public async Task<Stream> DownloadFileAsync(string containerName, string fileName)
+    public async Task<FileStreamContentResponseDto> DownloadFileAsync(string containerName, string fileName)
     {
         // Log the download operation for auditing and diagnostics.
         _logger.LogInformation("Downloading blob '{FileName}' from container '{ContainerName}'.", fileName, containerName);
@@ -96,8 +96,13 @@ public class AzureBlobStorageService : IAzureBlobStorageService
         // Download the blob.
         var response = await blobClient.DownloadAsync();
 
-        // Return the content stream of the blob.
-        return response.Value.Content;
+        // Return the blob content along with its MIME type and file name
+        return new FileStreamContentResponseDto()
+        {
+            Content = response.Value.Content,
+            ContentType = response.Value.Details.ContentType ?? "application/octet-stream",
+            Name = fileName,
+        };
     }
 
     // Deletes a blob if it exists.

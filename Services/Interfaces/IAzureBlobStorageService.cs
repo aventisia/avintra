@@ -24,12 +24,14 @@ public interface IAzureBlobStorageService
     Task<string> UploadFileAsync(string containerName, Stream fileStream, string fileName, string contentType);
 
     /// <summary>
-    /// Downloads a file from the specified blob container.
+    /// Downloads a file from the specified blob container in Azure Blob Storage.
     /// </summary>
     /// <param name="containerName">The name of the blob container.</param>
-    /// <param name="fileName">The name of the file (blob).</param>
-    /// <returns>A stream containing the file data.</returns>
-    Task<Stream> DownloadFileAsync(string containerName, string fileName);
+    /// <param name="fileName">The name of the file (including extension) to download.</param>
+    /// <returns>
+    /// A <see cref="FileStreamContentResponseDto"/> containing the file's content, MIME type, and name.
+    /// </returns>
+    Task<FileStreamContentResponseDto> DownloadFileAsync(string containerName, string fileName);
 
     /// <summary>
     /// Deletes a file from the specified blob container.
