@@ -18,6 +18,13 @@ public enum SubscriptionPlanTypeEnum
     Pro,
 
     /// <summary>
+    /// A placeholder value indicating no subscription plan is assigned or available.
+    /// </summary>
+    [Description("No subscription plan assigned")]
+    None,
+
+    // TODO: Remove 'Enterprise' and 'Commercial' plans once they are no longer needed
+    /// <summary>
     /// A full-featured plan designed for large businesses or organizations.
     /// </summary>
     [Description("Full-featured plan for businesses or organizations")]

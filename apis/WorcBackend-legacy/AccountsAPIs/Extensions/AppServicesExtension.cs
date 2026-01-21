@@ -81,14 +81,13 @@ public static class AppServicesExtension
         // Signleton
         services.AddSingleton(Guard.Against.Null(config.GetSection("SmtpConfig").Get<SmtpConfig>(), "SmtpConfig cannot be null"));
         services.AddSingleton(Guard.Against.Null(config.GetSection("TenantDefaultConfig").Get<TenantDefaultConfig>(), "TenantDefaultConfig cannot be null"));
-        services.AddSingleton(Guard.Against.Null(config.GetSection("DefaultUsersConfig").Get<DefaultUsersConfig>(), "DefaultUsersConfig cannot be null"));
+        services.AddSingleton(Guard.Against.Null(config.GetSection("DefaultUserConfig").Get<DefaultUserConfig>(), "DefaultUserConfig cannot be null"));
         services.AddSingleton(Guard.Against.Null(config.GetSection("IdentityConfig").Get<IdentityConfig>(), "IdentityConfig cannot be null"));
         services.AddSingleton(Guard.Against.Null(config.GetSection("VerificationCodeConfig").Get<VerificationCodeConfig>(), "VerificationCodeConfig cannot be null"));
         services.AddSingleton(Guard.Against.Null(config.GetSection("ExternalAPIsConfig").Get<ExternalAPIsConfig>(), "ExternalAPIsConfig cannot be null"));
-        services.AddSingleton(Guard.Against.Null(config.GetSection("DefaultTenantConfig").Get<DefaultTenantConfig>(), message: "DefaultTenantConfig cannot be null"));
+        services.AddSingleton(Guard.Against.Null(config.GetSection("InstanceConfig").Get<InstanceConfig>(), message: "InstanceConfig cannot be null"));
 
         // Feature services
-        services.AddScoped<ICreateAccountService, CreateAccountService>();
         services.AddScoped<IUserRegistrationService, UserRegistrationService>();
         services.AddScoped<IVerificationCodeService, VerificationCodeService>();
         services.AddScoped<IContactUsService, ContactUsService>();
@@ -116,6 +115,10 @@ public static class AppServicesExtension
         services.AddScoped<ITopUpService, TopUpService>();
         services.AddScoped<IPaymentTrackerService, PaymentTrackerService>();
         services.AddScoped<IAITaskService, AITaskService>();
+        services.AddScoped<IInstanceService, InstanceService>();
+
+        // Register AppRuntimeSettings as a singleton so that a single instance is shared across the application
+        services.AddSingleton<AppRuntimeSettings>();
 
         // Register Razorpay related services for customer, plan, and subscription management
         services.AddScoped<ICustomerService, CustomerService>();
@@ -128,6 +131,9 @@ public static class AppServicesExtension
         services.AddScoped<IUnitOfWork, UnitOfWork>();
         services.AddScoped<IAuthHelperService, AuthHelperService>();
         services.AddScoped<IAuthService, AuthService>();
+
+        // Register your hosted service
+        services.AddHostedService<InstanceUsageStartupService>();
     }
 
     /// <summary>
@@ -135,45 +141,74 @@ public static class AppServicesExtension
     /// </summary>
     /// <param name="services">The collection of services to register.</param>
     /// <param name="config">The configuration provider used to retrieve Razorpay settings.</param>
-    public static void AddRazorpayClient(this IServiceCollection services, IConfiguration config)
+    /// <param name="tenantType">The tenant type (e.g., Commercial, Enterprise) to determine if Razorpay should be enabled.</param>
+    public static void AddRazorpayClient(this IServiceCollection services, IConfiguration config, OnPremTenantTypesEnum tenantType)
     {
-        // Retrieve and validate the Razorpay configuration settings
-        var razorpayConfig = Guard.Against.Null(config.GetSection("RazorpayConfig").Get<RazorpayConfig>(), "RazorpayConfig cannot be null");
-
-        if (razorpayConfig == null || string.IsNullOrEmpty(razorpayConfig.KeyId) || string.IsNullOrEmpty(razorpayConfig.KeySecret))
+        // Check if the tenant type is Commercial, as Razorpay integration is only needed for Commercial tenants
+        if (tenantType == OnPremTenantTypesEnum.Commercial)
         {
-            throw new InvalidOperationException("Razorpay KeyId and KeySecret must be configured.");
+            // Retrieve the Razorpay configuration section from the configuration provider
+            var razorpayConfig = Guard.Against.Null(config.GetSection("RazorpayConfig").Get<RazorpayConfig>(), "RazorpayConfig cannot be null");
+
+            // Check if Razorpay KeyId and KeySecret are configured correctly
+            if (razorpayConfig == null || string.IsNullOrEmpty(razorpayConfig.KeyId) || string.IsNullOrEmpty(razorpayConfig.KeySecret))
+            {
+                throw new InvalidOperationException("Razorpay KeyId and KeySecret must be configured.");
+            }
+
+            services.AddSingleton<Razorpay.Api.RazorpayClient>(provider =>
+                new Razorpay.Api.RazorpayClient(razorpayConfig.KeyId, razorpayConfig.KeySecret));
+
+            services.AddSingleton(razorpayConfig);
         }
-
-        // Register the Razorpay client as a singleton service
-        services.AddSingleton<Razorpay.Api.RazorpayClient>(provider =>
-            new Razorpay.Api.RazorpayClient(razorpayConfig.KeyId, razorpayConfig.KeySecret));
-
-        // Optionally, register RazorpayConfig itself for further use
-        services.AddSingleton(razorpayConfig);
+        // If the tenant type is not Commercial, Razorpay integration is skipped (no further action is needed here)
     }
 
-    // Method to configure and register Quartz jobs along with their triggers
+    // Extension method to configure and register Quartz jobs and their triggers
     public static void AddQuartzJobs(this IServiceCollection services)
     {
+        // Configure Quartz scheduler
         services.AddQuartz(quartz =>
         {
-            // Register the TenantCreditAllocationJob and its trigger
+            // -----------------------------
+            // TenantCreditAllocationJob
+            // -----------------------------
+            // Define a unique JobKey for the job
             var tenantCreditAllocationJobKey = new JobKey("TenantCreditAllocationJob");
+
+            // Register the TenantCreditAllocationJob with Quartz
             quartz.AddJob<TenantCreditAllocationJob>(opts => opts.WithIdentity(tenantCreditAllocationJobKey));
 
+            // Define a trigger for the job to run daily at 12:00 AM UTC
             quartz.AddTrigger(opts => opts
                 .ForJob(tenantCreditAllocationJobKey)
                 .WithIdentity("TenantCreditAllocationJob-trigger")
                 .StartNow()
-                .WithCronSchedule("0 0 0 * * ? *", x => x.InTimeZone(TimeZoneInfo.Utc)) // Runs daily at 12:00 AM UTC
-                .WithDescription("Trigger for Tenant Credit Update Job - Runs at 12:00 AM UTC daily"));
+                .WithCronSchedule("0 0 0 * * ? *", x => x.InTimeZone(TimeZoneInfo.Utc)) // Cron expression: daily at 12:00 AM UTC
+                .WithDescription("Trigger for Tenant Credit Allocation Job - runs daily at 12:00 AM UTC"));
+
+            // -----------------------------
+            // InstanceUsageJob
+            // -----------------------------
+            var instanceUsageJobKey = new JobKey("InstanceUsageJob");
+
+            // Register the InstanceUsageJob with Quartz
+            quartz.AddJob<InstanceUsageJob>(opts => opts.WithIdentity(instanceUsageJobKey));
+
+            // Define a trigger for the job to run daily at 12:01 AM UTC
+            quartz.AddTrigger(opts => opts
+                .ForJob(instanceUsageJobKey)
+                .WithIdentity("InstanceUsageJob-trigger")
+                .StartNow()
+                .WithCronSchedule("1 0 0 * * ? *", x => x.InTimeZone(TimeZoneInfo.Utc)) // Cron expression: daily at 12:01 AM UTC
+                .WithDescription("Trigger for Instance Usage Job - runs daily at 12:01 AM UTC"));
         });
 
-        // Register Quartz hosted service to ensure jobs run in the background
+        // Register Quartz hosted service to run jobs in the background and wait for job completion on shutdown
         services.AddQuartzHostedService(q => q.WaitForJobsToComplete = true);
 
-        // Register the jobs with the DI container so they can be injected
+        // Register job classes with DI container so they can receive dependencies via constructor injection
         services.AddTransient<TenantCreditAllocationJob>();
+        services.AddTransient<InstanceUsageJob>();
     }
 }

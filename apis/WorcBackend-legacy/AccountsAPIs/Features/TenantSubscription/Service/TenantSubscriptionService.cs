@@ -5,7 +5,6 @@ public class TenantSubscriptionService : ITenantSubscriptionService
     private readonly IUnitOfWork _unitOfWork;
     private readonly ITopUpService _topUpService;
     private readonly ILogger<TenantSubscriptionService> _logger;
-    private readonly DefaultTenantConfig _defaultTenantConfig;
     private readonly IEmailService _emailService;
     private readonly GeneralConfig _generalConfig;
     private readonly Guid _userId;
@@ -15,13 +14,11 @@ public class TenantSubscriptionService : ITenantSubscriptionService
     public TenantSubscriptionService(IUnitOfWork unitOfWork,
     ILogger<TenantSubscriptionService> logger,
     IHttpContextAccessor httpContextAccessor,
-    DefaultTenantConfig defaultTenantConfig,
     ITopUpService topUpService,
     IEmailService emailService,
     GeneralConfig generalConfig)
     {
         _unitOfWork = unitOfWork;
-        _defaultTenantConfig = defaultTenantConfig;
         _logger = logger;
 
         // Extract user ID from JWT token claims for audit purposes
@@ -49,12 +46,9 @@ public class TenantSubscriptionService : ITenantSubscriptionService
         {
             _logger.LogInformation("Attempting to retrieve all tenant subscriptions.");
 
-            var isNonDefaultTenant = _defaultTenantConfig.TenantId != _tenantId;
-
             // Fetch all tenant subscriptions with their related plan and creator user
             var subscriptions = await _unitOfWork.TenantSubscriptionRepo
                 .GetByConditionAsync(w =>
-                    (isNonDefaultTenant || w.CreatedByUserId == _userId) &&
                     w.TenantId == _tenantId
                 )
                 .Include(i => i.Plan)
@@ -169,6 +163,7 @@ public class TenantSubscriptionService : ITenantSubscriptionService
             // Map DTO to entity
             var newSubscription = tenantSubscriptionDto.Adapt<TenantSubscription>();
             newSubscription.MaxCredits = subscriptionPlan.MaxCredits;
+            newSubscription.TenantId = _tenantId;
             newSubscription.MaxPublishedItems = subscriptionPlan.MaxPublishedItems;
             newSubscription.MaxSpaces = subscriptionPlan.MaxSpaces;
             newSubscription.MaxUsers = subscriptionPlan.MaxUsers;
@@ -434,6 +429,7 @@ public class TenantSubscriptionService : ITenantSubscriptionService
             tenantSubscription.Status = SubscriptionStatusTypesEnum.Initiated;
             tenantSubscription.PlanId = tenantSubscriptionPurchaseDto.PlanId;
             tenantSubscription.IsActive = false;
+            tenantSubscription.TenantId = _tenantId;
             tenantSubscription.NextBillingDate = DateTimeOffset.UtcNow.Date;
             tenantSubscription.MaxCredits = subscriptionPlan.MaxCredits;
             tenantSubscription.MaxPublishedItems = subscriptionPlan.MaxPublishedItems;
@@ -684,11 +680,8 @@ public class TenantSubscriptionService : ITenantSubscriptionService
             double availableCredits = await _unitOfWork.TenantCreditRepo
                 .GetByConditionAsync(w =>
                     w.TenantId == _tenantId &&
-                    (
-                        (w.AvailableCredits > 0) ||
-                        (w.AvailableCredits < 0 && w.ExpiredOn.Date < DateTimeOffset.UtcNow.Date) ||
-                        (w.AvailableCredits < 0 && w.ExpiredOn >= DateTimeOffset.UtcNow.Date)
-                    )
+                    w.AvailableCredits > 0 &&
+                    w.ExpiredOn.Date > DateTimeOffset.UtcNow.Date
                 )
                 .SumAsync(sm => sm.AvailableCredits);
 
@@ -1263,7 +1256,7 @@ public class TenantSubscriptionService : ITenantSubscriptionService
         // Return the service response (either success or failure)
         return serviceResponse;
     }
-    
+
     public async Task<ServiceResponse<List<TenantSubscriptionInfoDto>>> GetAllSubscriptionsAsync()
     {
         // Initialize ServiceResponse with a default failed response

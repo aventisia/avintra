@@ -10,8 +10,9 @@ public static class AccountsDbInitialSeed
             // Get TenantDefaultConfig
             var tenantDefaultConfig = scope.ServiceProvider.GetRequiredService<TenantDefaultConfig>();
 
-            // Get DefaultUsersConfig
-            var defaultUsersConfig = scope.ServiceProvider.GetRequiredService<DefaultUsersConfig>();
+            // Get DefaultUserConfig
+            var defaultUserConfig = scope.ServiceProvider.GetRequiredService<DefaultUserConfig>();
+            var instanceConfig = scope.ServiceProvider.GetRequiredService<InstanceConfig>();
 
             // Get accountsDbContext
             using var _accountsDbContext = scope.ServiceProvider.GetRequiredService<AccountsDbContext>();
@@ -27,10 +28,10 @@ public static class AccountsDbInitialSeed
                 if (!await IsSeedingRequired(_accountsDbContext)) return app;
 
                 // Seed Roles
-                if (!await SeedRolesAsync(_roleManager)) return app;
+                if (!await SeedDefaultRolesAsync(_roleManager)) return app;
 
                 // Seed Super User without tenant
-                var superUser = await SeedSuperUserAsync(_userManager, defaultUsersConfig.SuperUser);
+                var superUser = await SeedSuperUserAsync(_userManager, defaultUserConfig, instanceConfig);
 
                 // Super user not seeded
                 if (superUser == null) return app;
@@ -38,17 +39,20 @@ public static class AccountsDbInitialSeed
                 // Seed Permissions
                 if (!await SeedPermissionsAsync(_accountsDbContext, superUser)) return app;
 
-                // Seed default tenants
-                if (!await SeedDefaultTenantsAsync(_accountsDbContext, tenantDefaultConfig, superUser.Id)) return app;
+                // Seed default tenant
+                var defaultTenant = await SeedDefaultTenantAsync(_accountsDbContext, tenantDefaultConfig, instanceConfig, superUser.Id);
 
-                // Seed default IndividualUser
-                if (!await SeedIndividualUserAsync(_accountsDbContext, _userManager, defaultUsersConfig.IndividualUser, superUser.Id)) return app;
+                // Default tenant not seeded
+                if (defaultTenant == null) return app;
 
                 // Update Super user tenant Id
-                if (!await UpdateSuperUserTenantId(_accountsDbContext, superUser.Id)) return app;
+                if (!await UpdateSuperUserTenantId(_accountsDbContext, defaultTenant.Id, superUser.Id)) return app;
+
+                // Seed Permissions
+                if (!await SeedCreditPlansAsync(_accountsDbContext, superUser)) return app;
 
                 // Seed the default Subscription Plan (create or ensure the default subscription plan exists)
-                if (!await SeedSubscriptionPlanAsync(_accountsDbContext, superUser))
+                if (!await SeedSubscriptionPlanAsync(_accountsDbContext, instanceConfig, superUser))
                     return app;
 
                 // Seed the Tenant Subscription (this associates the super user with a subscription plan for their tenant)
@@ -105,7 +109,7 @@ public static class AccountsDbInitialSeed
     }
 
     // Seed roles
-    private async static Task<bool> SeedRolesAsync(RoleManager<AccountRole> roleManager)
+    private async static Task<bool> SeedDefaultRolesAsync(RoleManager<AccountRole> roleManager)
     {
         try
         {
@@ -138,7 +142,7 @@ public static class AccountsDbInitialSeed
     }
 
     // Seed super user without tenant
-    private async static Task<AccountUser?> SeedSuperUserAsync(UserManager<AccountUser> userManager, DefaultUser defaultSuperUser)
+    private async static Task<AccountUser?> SeedSuperUserAsync(UserManager<AccountUser> userManager, DefaultUserConfig defaultUserConfig, InstanceConfig instanceConfig)
     {
         try
         {
@@ -149,11 +153,13 @@ public static class AccountsDbInitialSeed
             var superUser = new AccountUser()
             {
                 Id = superUserId,
-                UserName = defaultSuperUser.Email,
-                Email = defaultSuperUser.Email,
+                UserName = defaultUserConfig.Email,
+                Email = defaultUserConfig.Email,
                 EmailConfirmed = true,
-                FirstName = defaultSuperUser.FirstName,
-                LastName = defaultSuperUser.LastName,
+                FirstName = instanceConfig.TenantType.Equals(OnPremTenantTypesEnum.Enterprise.ToString(), StringComparison.InvariantCultureIgnoreCase)
+                        ? "Tenant"
+                        : "Super",
+                LastName = "Admin",
                 PwdSetOn = DateTimeOffset.UtcNow,
                 IsDefault = true,
                 IsEditable = false,
@@ -162,9 +168,23 @@ public static class AccountsDbInitialSeed
                 LastModifiedByUserId = superUserId
             };
 
+            // Create a list of default roles to be assigned to the super user.
+            var roles = Enum.GetValues(typeof(CustomRolesEnum))
+                                .Cast<CustomRolesEnum>()
+                                .Where(w => w != CustomRolesEnum.SA)
+                                .Select(r => r.ToString())
+                                .ToList();
+
+            // Check if the tenant type is 'Enterprise' (case-insensitive comparison)
+            if (instanceConfig.TenantType.Equals(OnPremTenantTypesEnum.Enterprise.ToString(), StringComparison.InvariantCultureIgnoreCase))
+            {
+                // For Enterprise tenants, add the 'SA' role - typically for a role "Super Admin"
+                roles.Add(nameof(CustomRolesEnum.SA));
+            }
+
             // Add supper user & its roles
             var createUserResult = await userManager.CreateAsync(superUser);
-            var addToRoleResult = await userManager.AddToRolesAsync(superUser, defaultSuperUser.Roles);
+            var addToRoleResult = await userManager.AddToRolesAsync(superUser, roles);
 
             // Super user creation failed
             if (!createUserResult.Succeeded || !addToRoleResult.Succeeded)
@@ -191,111 +211,51 @@ public static class AccountsDbInitialSeed
     }
 
     // Seed default tenants
-    private async static Task<bool> SeedDefaultTenantsAsync(AccountsDbContext accountsDbContext, TenantDefaultConfig tenantDefaultConfig, Guid superUserId)
+    private async static Task<Tenant?> SeedDefaultTenantAsync(AccountsDbContext accountsDbContext, TenantDefaultConfig tenantDefaultConfig, InstanceConfig instanceConfig, Guid superUserId)
     {
         try
         {
-            foreach (Enum defaultTenant in Enum.GetValues(typeof(DefaultTenantsEnum)))
-            {
-                // Initialize default tenant
-                var newTenant = new Tenant()
-                {
-                    ResourceType = TenantResourceTypesEnum.Shared,
-                    Type = defaultTenant.Equals(DefaultTenantsEnum.IndividualUsers) ? TenantTypesEnum.Individual : TenantTypesEnum.Organization,
-                    Currency = CurrencyTypesEnum.USD,
-                    Name = GetEnumDescriptionUtil.GetEnumDescription(defaultTenant),
-                    ExpiresOn = DateTimeOffset.UtcNow.AddDays(tenantDefaultConfig.InactiveDaysBeforeDataExpires),
-                    IsSSOEnabled = false,
-                    IsPwdEnabled = true,
-                    IsPwdNeverExpiresEnabled = true,
-                    IsIdleSessionTimeoutEnabled = true,
-                    IsTwoFAEnabled = false,
-                    DaysBeforePwdExpires = tenantDefaultConfig.DaysBeforePwdExpires,
-                    IdleSessionTimeoutMinutes = tenantDefaultConfig.IdleSessionTimeoutInMinutes,
-                    IsDefault = true,
-                    IsEditable = !defaultTenant.Equals(DefaultTenantsEnum.IndividualUsers),
-                    SSOConfigJson = "",
-                    DbOption = DatabaseOptionsEnum.Isolated,
-                    CreatedByUserId = superUserId,
-                    LastModifiedByUserId = superUserId
-                };
+            // Attempt to parse the TenantId as a Guid
+            Guid tenantGuid;
+            bool isValidTenantId = Guid.TryParse(instanceConfig.TenantId, out tenantGuid);
 
-                // Add tenant
-                await accountsDbContext.Tenants.AddAsync(newTenant);
-            }
+            // Initialize default tenant
+            var newTenant = new Tenant()
+            {
+                Id = tenantGuid,
+                ResourceType = TenantResourceTypesEnum.Dedicated,
+                Type = TenantTypesEnum.Organization,
+                Currency = CurrencyTypesEnum.USD,
+                Name = instanceConfig.TenantName,
+                ExpiresOn = DateTimeOffset.MaxValue,    // TODO: We need to remove or update it
+                IsSSOEnabled = false,
+                IsPwdEnabled = true,
+                IsPwdNeverExpiresEnabled = true,
+                IsIdleSessionTimeoutEnabled = true,
+                IsTwoFAEnabled = false,
+                DaysBeforePwdExpires = tenantDefaultConfig.DaysBeforePwdExpires,
+                IdleSessionTimeoutMinutes = tenantDefaultConfig.IdleSessionTimeoutInMinutes,
+                IsDefault = true,
+                IsEditable = true,
+                SSOConfigJson = "",
+                DbOption = DatabaseOptionsEnum.DedicatedServer,
+                CreatedByUserId = superUserId,
+                LastModifiedByUserId = superUserId
+            };
+
+            // Add tenant
+            await accountsDbContext.Tenants.AddAsync(newTenant);
 
             // Save changes
             await accountsDbContext.SaveChangesAsync();
 
             // Tenants seeded successfully
-            return true;
+            return newTenant;
         }
         catch (Exception ex)
         {
             Console.WriteLine("Error: Error occurred while tyring to seed default tenants: " + ex.Message);
-            return false;
-        }
-    }
-
-    // Seed Individual User
-    private async static Task<bool> SeedIndividualUserAsync(AccountsDbContext accountsDbContext, UserManager<AccountUser> userManager, DefaultUser defaultIndividualUser, Guid superUserId)
-    {
-        try
-        {
-            // Get Tenant name
-            var tenantName = GetEnumDescriptionUtil.GetEnumDescription(DefaultTenantsEnum.IndividualUsers);
-
-            // Get default Tenant for individual user
-            var defaultTenant = await accountsDbContext.Tenants.Where(w => w.IsDefault && w.Name == tenantName).SingleOrDefaultAsync();
-
-            // Default Tenant not found
-            if (defaultTenant == null)
-            {
-                Console.WriteLine("Error: Default Tenant not found for individual user");
-                return false;
-            }
-
-            // Initialize individual user
-            var individualUser = new AccountUser()
-            {
-                UserName = defaultIndividualUser.Email,
-                Email = defaultIndividualUser.Email,
-                EmailConfirmed = true,
-                FirstName = defaultIndividualUser.FirstName,
-                LastName = defaultIndividualUser.LastName,
-                PwdSetOn = DateTimeOffset.UtcNow,
-                IsDefault = true,
-                IsEditable = false,
-                TenantId = defaultTenant.Id,
-                CreatedByUserId = superUserId,
-                LastModifiedByUserId = superUserId
-            };
-
-            // Add individual user & its roles
-            var createUserResult = await userManager.CreateAsync(individualUser);
-            var addToRoleResult = await userManager.AddToRolesAsync(individualUser, defaultIndividualUser.Roles);
-
-            // Individual user creation failed
-            if (!createUserResult.Succeeded || !addToRoleResult.Succeeded)
-            {
-                // Log create user errors
-                foreach (var error in createUserResult.Errors)
-                    Console.WriteLine($"Individual user creation failed. ErrorCode: {error.Code}, Description: {error.Description}");
-
-                // Log add-to-role errors
-                foreach (var error in addToRoleResult.Errors)
-                    Console.WriteLine($"Adding roles for individual user failed. ErrorCode: {error.Code}, Description: {error.Description}");
-
-                return false;
-            }
-
-            // Individual user seeded successfully
-            return true;
-        }
-        catch (Exception ex)
-        {
-            Console.WriteLine("Error: Error occurred while tyring to seed individual user : " + ex.Message);
-            return false;
+            return null;
         }
     }
 
@@ -334,15 +294,12 @@ public static class AccountsDbInitialSeed
         return true;
     }
 
-    private static async Task<bool> UpdateSuperUserTenantId(AccountsDbContext accountsDbContext, Guid superUserId)
+    private static async Task<bool> UpdateSuperUserTenantId(AccountsDbContext accountsDbContext, Guid defaultTenantId, Guid superUserId)
     {
         try
         {
-            // Get Tenant name
-            var tenantName = GetEnumDescriptionUtil.GetEnumDescription(DefaultTenantsEnum.Aventisia);
-
             // Get default Tenant for super user
-            var defaultTenant = await accountsDbContext.Tenants.Where(w => w.IsDefault && w.Name == tenantName).SingleOrDefaultAsync();
+            var defaultTenant = await accountsDbContext.Tenants.Where(w => w.Id == defaultTenantId).SingleOrDefaultAsync();
 
             // Default Tenant not found
             if (defaultTenant == null)
@@ -380,7 +337,50 @@ public static class AccountsDbInitialSeed
         }
     }
 
-    private static async Task<bool> SeedSubscriptionPlanAsync(AccountsDbContext accountsDbContext, AccountUser superUser)
+
+    // Seed CreditPlans based on CreditServiceTypesEnum
+    private async static Task<bool> SeedCreditPlansAsync(AccountsDbContext dbContext, AccountUser superUser)
+    {
+        try
+        {
+            // Create a list to hold CreditPlan objects to be inserted in bulk
+            var creditPlans = new List<CreditPlan>();
+
+            // Iterate over each value in CreditServiceTypesEnum
+            foreach (var creditServiceType in Enum.GetValues(typeof(CreditServiceTypesEnum)))
+            {
+                var serviceType = (CreditServiceTypesEnum)creditServiceType;
+
+                // Directly create CreditPlan object and add it to the list
+                creditPlans.Add(new CreditPlan()
+                {
+                    ServiceType = serviceType,
+                    UnitType = UnitTypesEnum.Transactions, // Assuming a default, can be adjusted
+                    OneUnit = 1, // Default value for OneUnit
+                    Credits = 1, // Default value for Credits
+                    CreatedByUserId = superUser.Id,
+                    LastModifiedByUserId = superUser.Id
+                });
+            }
+
+            // Insert all CreditPlans at once
+            await dbContext.CreditPlans.AddRangeAsync(creditPlans);
+
+            // Commit changes to the database
+            await dbContext.SaveChangesAsync();
+        }
+        catch (Exception ex)
+        {
+            // Log detailed error information for debugging
+            Console.WriteLine($"Error: Error occurred while seeding credit plans. Exception: {ex.Message}");
+            return false;
+        }
+
+        // Credit plans seeded successfully
+        return true;
+    }
+
+    private static async Task<bool> SeedSubscriptionPlanAsync(AccountsDbContext accountsDbContext, InstanceConfig instanceConfig, AccountUser superUser)
     {
         try
         {
@@ -399,15 +399,20 @@ public static class AccountsDbInitialSeed
                 return true;
             }
 
+            // Prepare plan type based on tenant type
+            SubscriptionPlanTypeEnum planType = instanceConfig.TenantType.Equals(OnPremTenantTypesEnum.Commercial.ToString(), StringComparison.InvariantCultureIgnoreCase) ?
+                SubscriptionPlanTypeEnum.Pro :
+                SubscriptionPlanTypeEnum.None;
+
             // If the plan doesn't exist, create the default subscription plan
             var newSubscriptionPlan = new SubscriptionPlan
             {
                 Name = subscriptionPlanName,
-                Type = SubscriptionPlanTypeEnum.Enterprise,
-                Currency = CurrencyTypesEnum.INR,
+                Type = planType,
+                Currency = CurrencyTypesEnum.USD,
                 Frequency = SubscriptionFrequenciesEnum.Yearly,
                 Status = PlanStatusTypesEnum.Custom,
-                UniqueName = $"{SubscriptionPlanTypeEnum.Enterprise}-{SubscriptionFrequenciesEnum.Yearly}-{CurrencyTypesEnum.INR}".ToLower(),
+                UniqueName = $"{planType}-{SubscriptionFrequenciesEnum.Yearly}-{CurrencyTypesEnum.INR}".ToLower(),
                 MaxPublishedItems = int.MaxValue,
                 MaxSpaces = int.MaxValue,
                 MaxUsers = int.MaxValue,
@@ -425,8 +430,6 @@ public static class AccountsDbInitialSeed
             // Save the changes to the database
             await accountsDbContext.SaveChangesAsync();
 
-            // Successfully seeded the subscription plan
-            Console.WriteLine("Default subscription plan seeded successfully.");
             return true;
         }
         catch (Exception ex)
@@ -441,12 +444,9 @@ public static class AccountsDbInitialSeed
     {
         try
         {
-            // Define the tenant name to be used for the super user (this could be fetched from an enum or config)
-            var tenantName = GetEnumDescriptionUtil.GetEnumDescription(DefaultTenantsEnum.Aventisia);
-
             // Get the default tenant associated with the super user
             var defaultTenant = await accountsDbContext.Tenants
-                .Where(w => w.IsDefault && w.Name == tenantName)
+                .Where(w => w.Id == superUser.TenantId)
                 .SingleOrDefaultAsync();
 
             // If the default tenant is not found, log the error and return false
@@ -461,7 +461,7 @@ public static class AccountsDbInitialSeed
 
             // Check if a subscription plan already exists for the super user's tenant
             var existingSubscription = await accountsDbContext.TenantSubscriptions
-                .Where(w => w.TenantId == superUser.TenantId && w.IsActive)
+                .Where(w => w.TenantId == defaultTenant.Id && w.IsActive)
                 .SingleOrDefaultAsync();
 
             // If a subscription plan already exists, skip seeding and return true
@@ -491,7 +491,7 @@ public static class AccountsDbInitialSeed
                 Frequency = SubscriptionFrequenciesEnum.Yearly,
                 IsActive = true,
                 Status = SubscriptionStatusTypesEnum.Active,
-                NextBillingDate = DateTimeOffset.UtcNow.AddYears(1),
+                NextBillingDate = DateTimeOffset.MaxValue,
                 MaxCredits = ulong.MaxValue,
                 MaxPublishedItems = int.MaxValue,
                 MaxSpaces = int.MaxValue,
@@ -508,8 +508,6 @@ public static class AccountsDbInitialSeed
             // Save the changes to the database
             await accountsDbContext.SaveChangesAsync();
 
-            // Successfully seeded the tenant subscription
-            Console.WriteLine("Subscription plan seeded successfully for super user's tenant.");
             return true;
         }
         catch (Exception ex)
@@ -524,12 +522,9 @@ public static class AccountsDbInitialSeed
     {
         try
         {
-            // Define the tenant name associated with the super user
-            var tenantName = GetEnumDescriptionUtil.GetEnumDescription(DefaultTenantsEnum.Aventisia);
-
             // Fetch the default tenant associated with the super user
             var defaultTenant = await accountsDbContext.Tenants
-                .Where(w => w.IsDefault && w.Name == tenantName)
+                .Where(w => w.Id == superUser.TenantId)
                 .SingleOrDefaultAsync();
 
             // If the default tenant is not found, log the error and return false
@@ -541,7 +536,7 @@ public static class AccountsDbInitialSeed
 
             // Check if the tenant already has an active subscription
             var tenantSubscription = await accountsDbContext.TenantSubscriptions
-                .Where(w => w.TenantId == superUser.TenantId && w.IsActive)
+                .Where(w => w.TenantId == defaultTenant.Id && w.IsActive)
                 .SingleOrDefaultAsync();
 
             // If no active subscription is found, log the error and return false
@@ -569,7 +564,7 @@ public static class AccountsDbInitialSeed
                 TenantId = defaultTenant.Id,
                 SubscriptionId = tenantSubscription.Id,
                 AvailableCredits = ulong.MaxValue,
-                ExpiredOn = DateTimeOffset.UtcNow.AddYears(1),
+                ExpiredOn = DateTimeOffset.MaxValue,
                 Type = CreditTypesEnum.Subscription,
                 CreatedByUserId = superUser.Id,
                 LastModifiedByUserId = superUser.Id
@@ -580,9 +575,6 @@ public static class AccountsDbInitialSeed
 
             // Save the changes to the database
             await accountsDbContext.SaveChangesAsync();
-
-            // Successfully seeded the tenant credits
-            Console.WriteLine("Tenant credits seeded successfully for super user's tenant.");
             return true;
         }
         catch (Exception ex)

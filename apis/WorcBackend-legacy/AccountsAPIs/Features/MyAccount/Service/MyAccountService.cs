@@ -143,7 +143,7 @@ public class MyAccountService(
             // DeviceId did not match
             if (currentSession.DeviceId != userAgent)
             {
-                _logger.LogInformation($"DeviceId did not match for session {_sessionId} and account {_userName}");
+                _logger.LogInformation($"DeviceId did not match for session {_sessionId} and account {_userName}. Expected {currentSession.DeviceId}, found {userAgent}");
                 return serviceResponse;
             }
 
@@ -204,6 +204,9 @@ public class MyAccountService(
             _httpContext.Request.Cookies.TryGetValue(CookieNamesEnum.RefreshToken.ToString(), out var refreshToken);
             var userAgent = _httpContext.Request.Headers["User-Agent"].ToString();
 
+            // Log:1 Cookies Retrieved
+            _logger.LogInformation("Log:1 Cookies Retrieved: SessionId = {SessionIdString}, UserName = {UserName}, RefreshToken = {RefreshToken}, UserAgent = {UserAgent}", sessionIdString, userName, refreshToken, userAgent);
+
             // Set all cookies to blank
             _authHelperService.RemoveCookie(CookieNamesEnum.SessionId.ToString());
             _authHelperService.RemoveCookie(CookieNamesEnum.AccessToken.ToString());
@@ -213,6 +216,7 @@ public class MyAccountService(
             // Something is missing
             if (sessionIdString == null || userName == null || userAgent == null)
             {
+                _logger.LogInformation("Log:2 Missing session data: SessionId = {SessionId}, UserName = {UserName}, User-Agent = {UserAgent}", sessionIdString, userName, userAgent);
                 _logger.LogInformation("{SessionId} or {UserName} or User-Agent not found", CookieNamesEnum.SessionId, CookieNamesEnum.UserName);
                 serviceResponse.Message = "Unable to refresh the session";
                 return serviceResponse;
@@ -221,6 +225,8 @@ public class MyAccountService(
             // RefreshToken not found
             if (refreshToken == null)
             {
+                _logger.LogInformation("Log:3 RefreshToken not found for sessionId {SessionIdString} and user {UserName}", sessionIdString, userName);
+
                 // Expired sessions will be deleted once user try to create new session via logging in
                 _logger.LogInformation($"Session has expired for {sessionIdString} because {CookieNamesEnum.RefreshToken} not found");
                 serviceResponse.Message = "Session has expired";
@@ -241,6 +247,7 @@ public class MyAccountService(
             // User doesn't exist
             if (user == null)
             {
+                _logger.LogInformation("Log:4 User {UserName} not found in database", userName);
                 _logger.LogInformation("{UserName} account not found", userName);
                 serviceResponse.Message = invalidcredentials;
                 return serviceResponse;
@@ -249,29 +256,33 @@ public class MyAccountService(
             // Tenant is null/disabled/expired
             if (!_authHelperService.IsUserTenantValid(user.Tenant, user.UserName))
             {
-                serviceResponse.Message = "Not able to retrieve your tenant's details. Please contact support adminstrator";
+                _logger.LogInformation("Log:5 Tenant validation failed for user {UserName} with tenantId {TenantId}", userName, user.TenantId);
+                serviceResponse.Message = "Not able to retrieve your tenant's details. Please contact support administrator";
                 return serviceResponse;
             }
 
             // Account is locked
             if (user.LockoutEnd > DateTimeOffset.UtcNow)
             {
+                _logger.LogInformation("Log:6 Account {UserName} is locked until {LockoutEnd}", userName, user.LockoutEnd);
                 _logger.LogInformation("{UserName} account is locked", userName);
-                serviceResponse.Message = "Your account is locked. Please contact support adminstrator";
+                serviceResponse.Message = "Your account is locked. Please contact support administrator";
                 return serviceResponse;
             }
 
             // Account is disabled
             if (user.IsDisabled)
             {
+                _logger.LogInformation("Log:7 Account {UserName} is disabled", userName);
                 _logger.LogInformation("{UserName} account is disabled", userName);
-                serviceResponse.Message = "Your account is disabled. Please contact support adminstrator";
+                serviceResponse.Message = "Your account is disabled. Please contact support administrator";
                 return serviceResponse;
             }
 
             // Password has expired
             if (!user.Tenant.IsPwdNeverExpiresEnabled && (DateTimeOffset.UtcNow - user.PwdSetOn)?.Days > user.Tenant.DaysBeforePwdExpires)
             {
+                _logger.LogInformation("Log:8 Password for {UserName} has expired. Password set on {PwdSetOn}", userName, user.PwdSetOn);
                 _logger.LogInformation("{UserName} account's password has been expired", userName);
                 /********IMPORTANCT NOTE********
                 DO NOT CHANGE the message's part "Your password has
@@ -290,26 +301,30 @@ public class MyAccountService(
             // Session not found
             if (activeSession == null)
             {
+                _logger.LogInformation("Log:9 Active session not found for user {UserName} with sessionId {SessionId}", userName, sessionIdString);
                 _logger.LogInformation($"Active session not found for account {userName}");
                 serviceResponse.Message = invalidcredentials;
                 return serviceResponse;
             }
 
-            // DeviceId did not match
-            if (activeSession.DeviceId != userAgent)
-            {
-                _logger.LogInformation($"DeviceId did not match for session {activeSession.Id} and account {userName}");
-                serviceResponse.Message = invalidcredentials;
-                return serviceResponse;
-            }
+            // TODO: Uncomment the DeviceId mismatch check when needed
+            // // DeviceId did not match
+            // if (activeSession.DeviceId != userAgent)
+            // {
+            //     _logger.LogInformation("Log:10 DeviceId mismatch: expected {ExpectedDeviceId}, found {ActualDeviceId} for session {SessionId} and user {UserName}", activeSession.DeviceId, userAgent, activeSession.Id, userName);
+            //     _logger.LogInformation($"DeviceId did not match for session {activeSession.Id} and account {userName}");
+            //     serviceResponse.Message = invalidcredentials;
+            //     return serviceResponse;
+            // }
 
-            // RefreshToken did not match
-            if (activeSession.RefreshToken != refreshToken)
-            {
-                _logger.LogInformation($"RefreshToken did not match for session {activeSession.Id} and account {userName}");
-                serviceResponse.Message = invalidcredentials;
-                return serviceResponse;
-            }
+            // // RefreshToken did not match
+            // if (activeSession.RefreshToken != refreshToken)
+            // {
+            //     _logger.LogInformation("Log:11 RefreshToken mismatch for session {SessionId} and user {UserName}. Expected {ExpectedRefreshToken}, found {ActualRefreshToken}", activeSession.Id, userName, activeSession.RefreshToken, refreshToken);
+            //     _logger.LogInformation($"RefreshToken did not match for session {activeSession.Id} and account {userName}");
+            //     serviceResponse.Message = invalidcredentials;
+            //     return serviceResponse;
+            // }
 
             /*No need to check refreshToken expiry bcz 
             cookie won't exist if refreshToken is expired*/
@@ -317,7 +332,6 @@ public class MyAccountService(
             // Get Jwt and RefreshToken validity config
             var jwtExpiresOn = DateTimeOffset.UtcNow.AddMinutes(_jwtConfig.AuthJwtValidityInMinutes);
             var refreshTokenExpiresOn = DateTimeOffset.UtcNow.AddDays(_jwtConfig.RefreshTokenValidityInDays);
-
 
             // Retrieve the tenant's subscription along with the associated plan details.
             var tenantSubscription = await _unitOfWork.TenantSubscriptionRepo
@@ -342,21 +356,21 @@ public class MyAccountService(
             // Update ActiveSession
             _unitOfWork.ActiveSessionRepo.Update(activeSession);
 
-            // Update-ActiveSession job failed
+            // Update ActiveSession failed
             if (!await _unitOfWork.SaveAsync())
             {
+                _logger.LogInformation("Log:12 Failed to save updated session data for user {UserName} and sessionId {SessionId}", user.UserName, sessionIdString);
                 _logger.LogInformation($"Context SaveChanges failed while refreshing active session for {user.UserName} and sessionId {sessionIdString}");
-                serviceResponse.Message = "Something went wrong while refreshing session. Please try again later";
                 return serviceResponse;
             }
 
-            // Append SessionId, Jwt/AccessToken, RefreshToken and Username to cookies
+            // Append SessionId, Jwt/AccessToken, RefreshToken, and Username to cookies
             _authHelperService.SetCookie(CookieNamesEnum.SessionId.ToString(), activeSession.Id.ToString(), refreshTokenExpiresOn);
             _authHelperService.SetCookie(CookieNamesEnum.AccessToken.ToString(), jwt, jwtExpiresOn);
             _authHelperService.SetCookie(CookieNamesEnum.RefreshToken.ToString(), newRefreshToken, refreshTokenExpiresOn);
             _authHelperService.SetCookie(CookieNamesEnum.UserName.ToString(), user.UserName, refreshTokenExpiresOn);
 
-            // Try to retrieve the tenant by id
+            // Try to retrieve tenant by id
             var tenant = await _unitOfWork.TenantRepo.GetByConditionAsync(w => w.Id == user.TenantId).FirstOrDefaultAsync();
 
             // Create UserSessionDto
@@ -372,46 +386,50 @@ public class MyAccountService(
                 Country = tenant != null ? tenant.Country.ToString() : "NA"
             };
 
-            // Check if the user is associated with an organization (tenant)
+            // Check if user is associated with an organization (tenant)
             if (user.Tenant == null || user.Tenant.Type == TenantTypesEnum.Unspecified)
             {
+                _logger.LogInformation("Log:13 User {UserName} has an incomplete organization setup", userName);
                 serviceResponse.Message = "Complete organization setup to continue.";
             }
             else
             {
-                // Query the current tenant's subscription, including related plan and creator details
+                // Query current tenant's subscription
                 var subscription = await _unitOfWork.TenantSubscriptionRepo
                     .GetByConditionAsync(w =>
                         w.TenantId == user.TenantId && w.IsActive
                     )
-                    .SingleOrDefaultAsync(); // @rahmat Since tenant should have only one active subscription at max so using SingleOrDefaultAsync() instead of FirstOrDefaultAsync()
+                    .SingleOrDefaultAsync();
 
                 // IMPORTANT NOTE: Once user has completed onboarding, then there will always be an 1 active subscription at 
                 // any point of time even that subscription's status is expired. Users will be able to login even if subscription 
                 // is expired they won't be able to access any paid features. In future, we may downgrade user's subscription to 
                 // free Starter plan automatically once subscription is expired. In that case also there will be always one active subscription.
 
+
                 // Check if a valid subscription was found
                 if (subscription == null || subscription.Status == SubscriptionStatusTypesEnum.Initiated)
                 {
+                    _logger.LogWarning("Log:14 No active subscription found for user {UserId} in tenant {TenantId}.", user.Id, user.TenantId);
                     _logger.LogWarning("No active subscription found for user {UserId} in tenant {TenantId}.", user.Id, user.TenantId);
                     serviceResponse.Message = "Tenant has no active subscription.";
                 }
                 else
                 {
+                    _logger.LogInformation("Log:15 Subscription is valid for tenant {TenantId}", user.TenantId);
                     serviceResponse.Message = "Session has been refreshed successfully.";
                 }
             }
 
             // UserSessionDto is ready
+            _logger.LogInformation($"Log:16 Session has been refreshed successfully for {user.UserName} and session Id {sessionIdString}");
             _logger.LogInformation($"Session has been refreshed successfully for {user.UserName} and session Id {sessionIdString}");
             serviceResponse.Data = userSessionDto;
             serviceResponse.StatusCode = 200;
         }
         catch (Exception ex)
         {
-            _logger.LogError(ex, "Error occured while performing {Name}", ex.TargetSite.Name);
-
+            _logger.LogError(ex, "Error occurred while performing {Name}", ex.TargetSite.Name);
             return serviceResponse;
         }
 
@@ -654,17 +672,6 @@ public class MyAccountService(
             {
                 _logger.LogInformation(userNotFoundTemplate, methodName, _userName);
                 serviceResponse.Message = userDoesNotExists;
-                return serviceResponse;
-            }
-
-            //Check if user is an Aventisia employee
-            var isAE = ExtractDomainFromEmailUtil.ExtractDomainFromEmail(user.Email) == "aventisia.com";
-
-            //if user is an Aventisia employee
-            if (isAE)
-            {
-                _logger.LogInformation("Failed to update email for Aventesia employee");
-                serviceResponse.Message = "Unable to update email for Aventesia employee";
                 return serviceResponse;
             }
 
@@ -923,14 +930,6 @@ public class MyAccountService(
                 return serviceResponse;
             }
 
-            var isAE = ExtractDomainFromEmailUtil.ExtractDomainFromEmail(user.Email) == "aventisia.com";
-            if (isAE)
-            {
-                _logger.LogInformation("Failed to delete Aventisia user");
-                serviceResponse.Message = "Unable to delete Aventisia user";
-                return serviceResponse;
-            }
-
             // Get Verification secret code
             var verificationCode = await _unitOfWork.VerificationCodeRepo
             .GetByConditionAsync(w => w.Id == deleteUserAccountDto.VerificationCodeId)
@@ -1139,14 +1138,9 @@ public class MyAccountService(
                 return serviceResponse;
             }
 
-            // Decide tenant name basis "@aventisia.com"
-            var tenantName = ExtractDomainFromEmailUtil.ExtractDomainFromEmail(user.Email) == "aventisia.com"
-                                ? GetEnumDescriptionUtil.GetEnumDescription(DefaultTenantsEnum.Aventisia)
-                                : GetEnumDescriptionUtil.GetEnumDescription(DefaultTenantsEnum.IndividualUsers);
-
             // Get default Tenant 
             var defaultTenant = await _unitOfWork.TenantRepo
-                                        .GetByConditionAsync(w => w.IsDefault && w.Name == tenantName)
+                                        .GetByConditionAsync(w => w.Id == user.TenantId)
                                         .SingleOrDefaultAsync();
 
             UserBillingAddressDto getUserTenantInfoDto;
@@ -1238,14 +1232,9 @@ public class MyAccountService(
                 return serviceResponse;
             }
 
-            // Decide tenant name basis "@aventisia.com"
-            var tenantName = ExtractDomainFromEmailUtil.ExtractDomainFromEmail(user.Email) == "aventisia.com"
-                                ? GetEnumDescriptionUtil.GetEnumDescription(DefaultTenantsEnum.Aventisia)
-                                : GetEnumDescriptionUtil.GetEnumDescription(DefaultTenantsEnum.IndividualUsers);
-
             // Get default Tenant 
             var defaultTenant = await _unitOfWork.TenantRepo
-                                        .GetByConditionAsync(w => w.IsDefault && w.Name == tenantName)
+                                        .GetByConditionAsync(w => w.Id == user.TenantId)
                                         .SingleOrDefaultAsync();
 
             var isIndie = defaultTenant?.Name.Equals(GetEnumDescriptionUtil.GetEnumDescription(DefaultTenantsEnum.IndividualUsers));
@@ -1293,17 +1282,6 @@ public class MyAccountService(
             {
                 _logger.LogInformation(userNotFoundTemplate, methodName, _userName);
                 serviceResponse.Message = userDoesNotExists;
-                return serviceResponse;
-            }
-
-            //Check if user is an Aventisia employee
-            var IsAE = ExtractDomainFromEmailUtil.ExtractDomainFromEmail(user.Email) == "aventisia.com";
-
-            //if user is an Aventisia employee
-            if (IsAE)
-            {
-                _logger.LogInformation("Failed to deactivate Aventesia employee");
-                serviceResponse.Message = "Unable to deactivate Aventesia employee";
                 return serviceResponse;
             }
 

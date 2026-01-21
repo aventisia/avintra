@@ -8,6 +8,7 @@ public class LoginWithPwdService : ILoginWithPwdService
     private readonly HttpContext _httpContext;
     private readonly IUnitOfWork _unitOfWork;
     private readonly IAuthHelperService _authHelperService;
+    private readonly AppRuntimeSettings _appRuntimeSettings;
 
     public LoginWithPwdService(
         SignInManager<AccountUser> signInManager,
@@ -15,7 +16,8 @@ public class LoginWithPwdService : ILoginWithPwdService
         ILogger<LoginWithPwdService> logger,
         IUnitOfWork unitOfWork,
         IAuthHelperService authHelperService,
-        UserManager<AccountUser> userManager)
+        UserManager<AccountUser> userManager,
+        AppRuntimeSettings appRuntimeSettings)
     {
         _signInManager = signInManager;
         _httpContext = Guard.Against.Null(httpContextAccessor.HttpContext, "HttpContext cannot be null");
@@ -23,6 +25,7 @@ public class LoginWithPwdService : ILoginWithPwdService
         _unitOfWork = unitOfWork;
         _authHelperService = authHelperService;
         _userManager = userManager;
+        _appRuntimeSettings = appRuntimeSettings;
     }
 
     // Authenticates an individual or tenant's user using the provided username and password.
@@ -38,6 +41,15 @@ public class LoginWithPwdService : ILoginWithPwdService
 
         try
         {
+            // Check if authentication-related operations are globally disabled.
+            // This can be due to maintenance, security incidents, or temporary administrative restrictions.
+            if (_appRuntimeSettings.IsLoginDisabled)
+            {
+                serviceResponse.StatusCode = 401;
+                serviceResponse.Message = "Authentication services are currently unavailable. Please contact Aventiisia Support for assistance.";
+                return serviceResponse;
+            }
+
             /*Get user (Includes Tenant and Roles) getting error: "The instance of entity 
             type 'User' cannot be tracked because another instance with the 
             same key value for {'Id'} is already being tracked. So, getting user using userManager*/
