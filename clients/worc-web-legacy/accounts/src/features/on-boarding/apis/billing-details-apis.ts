@@ -4,7 +4,7 @@ import { IHttpResponse } from "@aventisia/ui/dtos";
 
 import { BillingDetailsDto } from "../dtos/billing-details-dto";
 
-const baseAPIURL: string = `${import.meta.env.VITE_ACCOUNTS_API_URL}/billing-detail`;
+const baseAPIURL: string = `${import.meta.env.VITE_ACCOUNTS_API_PATH}/billing-detail`;
 
 export const getBillingDetails = () =>
   axiosInstance

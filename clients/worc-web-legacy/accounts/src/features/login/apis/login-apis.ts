@@ -5,7 +5,7 @@ import { axiosInstance } from "@/react-toolkit/lib/axios-instance";
 
 import { PwdLoginDto } from "../dtos/pwd-login-dto";
 
-const baseAPIURL: string = `${import.meta.env.VITE_ACCOUNTS_API_URL}/auth`;
+const baseAPIURL: string = `${import.meta.env.VITE_ACCOUNTS_API_PATH}/auth`;
 
 /** Authenticates individual or tenant's user via username and pwd */
 const authenticateUser = (postObj: PwdLoginDto) => {

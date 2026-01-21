@@ -31,14 +31,12 @@ export const useCreateAccountMutation = () => {
         setCreateAccountData(null);
 
         // Set authenticated user locally
-        const userSessionStoreObj = setUserSessionLocally(httpResponse.data);
+        setUserSessionLocally(httpResponse.data);
 
-        // TODO: Route as per user type (internal or external)
+        // Redirect to worc app
         navigate(
           "/redirect?msg=Logging in...&url=" +
-            (userSessionStoreObj.isAE
-              ? import.meta.env.VITE_WORC_URL
-              : import.meta.env.VITE_WORC_URL),
+            import.meta.env.VITE_WORC_PATH,
         );
       },
       onError: (error) => {

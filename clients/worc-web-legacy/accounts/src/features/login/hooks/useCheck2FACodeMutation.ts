@@ -28,14 +28,12 @@ export const useCheck2FACodeMutation = () => {
         resetLoginProcess();
 
         // Set authenticated user locally
-        const userSessionStoreObj = setUserSessionLocally(data);
+        setUserSessionLocally(data);
 
-        // TODO: Route as per user type (internal or external)
+        // Redirect to worc app
         navigate(
           "/redirect?msg=Logging in...&url=" +
-            (userSessionStoreObj.isAE
-              ? import.meta.env.VITE_WORC_URL
-              : import.meta.env.VITE_WORC_URL),
+            import.meta.env.VITE_WORC_PATH,
         );
       },
       onError: (error) => {
