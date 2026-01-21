@@ -20,19 +20,27 @@ import { buttonVariants } from "@aventisia/ui/buttons";
 import { CredentialsSelectField } from "./CredentialsSelectField";
 import { getProviderModels } from "../../apis/llm-pipelines-apis";
 import { toast } from "@aventisia/ui/sonner";
-import { ModelSelectField } from "./ModelSelectField";
+import { SearchableSelectField } from "@/react-toolkit/ui/searchable-select/SearchableSelectField";
 
 interface ModelConfigFieldProps {
   /** The name of the form field. */
   name: string;
 }
 
-const ModelConfigField = ({ name }: ModelConfigFieldProps) => {
-  const [byokModels, setByokModels] = useState<Model[]>([]);
-  const [isLoading, setByokLoading] = useState(false);
-  const [isInitialized, setIsInitialized] = useState(false);
+const PROVIDER_API_MAP: Record<string, string> = {
+  openai: "OpenAI",
+  googlegemini: "Gemini",
+  openrouter: "OpenRouter",
+};
 
-  // Field names
+const ModelConfigField = ({ name }: ModelConfigFieldProps) => {
+  const { control, setValue } = useFormContext();
+
+  const [byokModels, setByokModels] = useState<Model[]>([]);
+  const [isLoading, setIsLoading] = useState(false);
+  const [initialized, setInitialized] = useState(false);
+
+  // ---------------- Field names ----------------
   const fieldNames = {
     is_byok_enabled: `${name}.is_byok_enabled`,
     credential_id: `${name}.credential_id`,
@@ -45,10 +53,7 @@ const ModelConfigField = ({ name }: ModelConfigFieldProps) => {
     max_output_tokens: `${name}.max_output_tokens`,
   } as const satisfies Record<string, FieldPath<FieldValues>>;
 
-  // Form context
-  const { control, setValue } = useFormContext();
-
-  // Controllers
+  // ---------------- Controllers ----------------
   const { field: providerField } = useController({
     name: fieldNames.provider,
     control,
@@ -79,19 +84,39 @@ const ModelConfigField = ({ name }: ModelConfigFieldProps) => {
     control,
   });
 
-  // Derived values
-  const providerValue = providerField.value;
-  const is_byok_enabled = Boolean(isByokField.value);
-  const credentialsValue = credentialsField.value;
+  const provider = providerField.value;
+  const isByok = Boolean(isByokField.value);
+  const credentialId = credentialsField.value;
 
-  // Track previous values to detect actual changes
-  const prevValues = useRef({
-    is_byok_enabled,
-    providerValue,
-    credentialsValue,
-  });
+  // ---------------- Helpers ----------------
+  const resetCredentialAndModel = () => {
+    setValue(fieldNames.credential_id, isByok ? "" : null, {
+      shouldDirty: true,
+    });
+    setValue(fieldNames.model, "", { shouldDirty: true });
+    setByokModels([]);
+  };
 
-  // 1. Non-BYOK providers
+  const fetchByokModels = async (providerValue: string, credId: string) => {
+    const apiProvider = PROVIDER_API_MAP[providerValue];
+    if (!apiProvider || !credId) {
+      setByokModels([]);
+      return;
+    }
+
+    try {
+      setIsLoading(true);
+      const res = await getProviderModels(apiProvider, credId);
+      setByokModels(res?.data as Model[]);
+    } catch (e) {
+      toast.error(e as string);
+      setByokModels([]);
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  // ---------------- Static providers ----------------
   const filteredProviders = useMemo(() => {
     const requiredSpecialties = getSpecialtyFromNode(
       name.replace("__ModelConfig__", ""),
@@ -101,155 +126,78 @@ const ModelConfigField = ({ name }: ModelConfigFieldProps) => {
       .filter((p) => p.isEnabled !== false)
       .map((p) => ({
         ...p,
-        models: p.models.filter((m) => {
-          const specialtyMatch = requiredSpecialties.every((req) =>
-            m.specialty.includes(req),
-          );
-          return specialtyMatch && m.available;
-        }),
+        models: p.models.filter(
+          (m) =>
+            m.available &&
+            requiredSpecialties.every((req) => m.specialty.includes(req)),
+        ),
       }))
       .filter((p) => p.models.length > 0);
   }, [name]);
 
-  // 2. Initialize on mount (for saved data)
+  // ---------------- Initialization (saved data) ----------------
   useEffect(() => {
-    const initializeForm = async () => {
-      if (!is_byok_enabled) {
-        // Static models mode - no need to fetch
-        setIsInitialized(true);
-      } else {
-        // BYOK mode - need to fetch models if credential exists
-        if (credentialsValue && providerValue) {
-          try {
-            setByokLoading(true);
+    if (initialized) return;
 
-            const mapper: Record<string, string> = {
-              openai: "OpenAI",
-              googlegemini: "Gemini",
-              openrouter: "OpenRouter",
-            };
-
-            const provider = mapper[providerValue];
-            if (provider) {
-              const models = await getProviderModels(
-                provider,
-                credentialsValue,
-              );
-              setByokModels(models?.data as Model[]);
-            }
-          } catch (err) {
-            toast.error(err as string);
-            setByokModels([]);
-          } finally {
-            setByokLoading(false);
-          }
-        }
-        setIsInitialized(true);
-      }
-    };
-
-    initializeForm();
-  }, []); // Run once on mount
-
-  // 3. Handle BYOK toggle (only after initialization)
-  useEffect(() => {
-    if (!isInitialized) return;
-    if (prevValues.current.is_byok_enabled === is_byok_enabled) return;
-
-    prevValues.current.is_byok_enabled = is_byok_enabled;
-
-    // Reset dependent fields
-    setValue(fieldNames.credential_id, "", { shouldDirty: true });
-    setValue(fieldNames.model, "", { shouldDirty: true });
-    setByokModels([]);
-  }, [is_byok_enabled, isInitialized, setValue, fieldNames]);
-
-  // 4. Handle provider change (only after initialization)
-  useEffect(() => {
-    if (!isInitialized) return;
-    if (prevValues.current.providerValue === providerValue) return;
-
-    prevValues.current.providerValue = providerValue;
-
-    // Reset dependent fields
-    setValue(fieldNames.credential_id, "", { shouldDirty: true });
-    setValue(fieldNames.model, "", { shouldDirty: true });
-    setByokModels([]);
-  }, [providerValue, isInitialized, setValue, fieldNames]);
-
-  // 5. Fetch BYOK models on credential change
-  useEffect(() => {
-    if (!isInitialized) return;
-    if (prevValues.current.credentialsValue === credentialsValue) return;
-
-    prevValues.current.credentialsValue = credentialsValue;
-
-    const fetchModels = async () => {
-      try {
-        setByokLoading(true);
-
-        const mapper: Record<string, string> = {
-          openai: "OpenAI",
-          googlegemini: "Gemini",
-          openrouter: "OpenRouter",
-        };
-
-        const provider = mapper[providerValue];
-        if (!provider) {
-          setByokModels([]);
-          return;
-        }
-
-        const models = await getProviderModels(provider, credentialsValue);
-        setByokModels(models?.data as Model[]);
-
-        // Reset model selection when credentials change
-        setValue(fieldNames.model, "", { shouldDirty: true });
-      } catch (err) {
-        toast.error(err as string);
-        setByokModels([]);
-      } finally {
-        setByokLoading(false);
-      }
-    };
-
-    const timeoutId = setTimeout(() => {
-      if (!providerValue || !credentialsValue) {
-        setByokModels([]);
-        setValue(fieldNames.model, "", { shouldDirty: true });
-        return;
-      }
-      fetchModels();
-    }, 100);
-
-    return () => {
-      if (timeoutId) clearTimeout(timeoutId);
-    };
-  }, [credentialsValue, isInitialized, providerValue, setValue, fieldNames]);
-
-  // Available models
-  const availableModels = useMemo(() => {
-    if (is_byok_enabled) {
-      return byokModels;
+    if (isByok && provider && credentialId) {
+      fetchByokModels(provider, credentialId).finally(() =>
+        setInitialized(true),
+      );
+    } else {
+      setInitialized(true);
     }
+  }, [initialized, isByok, provider, credentialId]);
 
-    const provider = filteredProviders.find((p) => p.value === providerValue);
+  // ---------------- BYOK toggle ----------------
+  const prevByok = useRef(isByok);
+  useEffect(() => {
+    if (!initialized) return;
+    if (prevByok.current === isByok) return;
 
-    return provider?.models ?? [];
-  }, [is_byok_enabled, byokModels, filteredProviders, providerValue]);
+    prevByok.current = isByok;
+    resetCredentialAndModel();
+  }, [isByok, initialized]);
 
-  // Currently selected model
-  const currentModel = useMemo(() => {
-    if (!modelField.value) return undefined;
-    return availableModels.find((m) => m.value === modelField.value);
-  }, [availableModels, modelField.value]);
+  // ---------------- Provider change ----------------
+  const prevProvider = useRef(provider);
+  useEffect(() => {
+    if (!initialized) return;
+    if (prevProvider.current === provider) return;
 
-  // Current provider
-  const currentProvider = filteredProviders.find(
-    (p) => p.value === providerValue,
+    prevProvider.current = provider;
+    resetCredentialAndModel();
+  }, [provider, initialized]);
+
+  // ---------------- Credential change ----------------
+  const prevCredential = useRef(credentialId);
+  useEffect(() => {
+    if (!initialized || !isByok) return;
+    if (prevCredential.current === credentialId) return;
+
+    prevCredential.current = credentialId;
+    setValue(fieldNames.model, undefined, { shouldDirty: true });
+
+    if (provider && credentialId) {
+      fetchByokModels(provider, credentialId);
+    } else {
+      setByokModels([]);
+    }
+  }, [credentialId, provider, isByok, initialized]);
+
+  // ---------------- Available models ----------------
+  const availableModels = useMemo(() => {
+    if (isByok) return byokModels;
+
+    return filteredProviders.find((p) => p.value === provider)?.models ?? [];
+  }, [isByok, byokModels, filteredProviders, provider]);
+
+  const currentModel = availableModels.find(
+    (m) => m.value === modelField.value,
   );
 
-  // Render component
+  const currentProvider = filteredProviders.find((p) => p.value === provider);
+
+  // ---------------- Render ----------------
   return (
     <div className="w-full space-y-3.5">
       <SwitchField
@@ -266,24 +214,25 @@ const ModelConfigField = ({ name }: ModelConfigFieldProps) => {
         label="Model Provider"
       />
 
-      {is_byok_enabled && (
+      {isByok && (
         <CredentialsSelectField
           name={fieldNames.credential_id}
           size="sm"
           label={`${currentProvider?.label ?? ""} Credentials`}
-          modelProvider={providerValue}
+          modelProvider={provider}
         />
       )}
 
       <div className="flex items-end gap-1">
         <div className="flex-grow">
-          <ModelSelectField
+          <SearchableSelectField
             size="sm"
             name={fieldNames.model}
             selectOptions={availableModels}
             label="Model"
             isLoading={isLoading}
-            disabled={!isInitialized || (is_byok_enabled && !credentialsValue)}
+            primaryText="Models"
+            disabled={!initialized || (isByok && !credentialId)}
           />
         </div>
 
