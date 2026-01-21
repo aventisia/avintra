@@ -142,9 +142,10 @@ export const AppLayout = () => {
 
     const currentPath = location.pathname;
 
-    const hasAccess = allowedRoutes.some(
-      (route) => currentPath == route || currentPath == "/",
-    );
+    const hasAccess = allowedRoutes.some((route) => {
+      if (route === "/") return currentPath === "/";
+      return currentPath === route || currentPath.startsWith(`${route}/`);
+    });
 
     if (!hasAccess) {
       navigate("/page-not-found", { replace: true });
