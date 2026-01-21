@@ -24,16 +24,16 @@
       "type": "text",
       "name": "CommandLineArguments",
       "label": "Command line arguments",
-      "description": "Optional command-line arguments to pass to the application.",
+      "description": "Optional parameters to control how the application starts (e.g., a file to open or a silent mode flag). Example: \u0022C:\\report.xlsx\u0022 or \u0022--input=data.csv --quiet\u0022.",
       "defaultValue": "",
       "required": false
     },
     {
       "direction": "Input",
       "type": "text",
-      "name": "WorkingFolder",
-      "label": "Working folder",
-      "description": "The working directory for the application.",
+      "name": "WorkingDirectory",
+      "label": "Working Directory",
+      "description": "The folder the application uses as its \u0027current location\u0027 when running. If left empty, it defaults to the application\u0027s own folder. Required only if the app needs to access files like config.json or data.csv relative to a specific path.",
       "defaultValue": "",
       "required": false
     },
@@ -86,11 +86,6 @@
           "label": "Wait for Application to Load",
           "value": "WaitForApplicationToLoad",
           "description": "Wait until the launched application has fully loaded before continuing."
-        },
-        {
-          "label": "Wait for Application to Complete",
-          "value": "WaitForApplicationToComplete",
-          "description": "Wait until the launched application has exited before continuing."
         }
       ]
     },
@@ -106,7 +101,7 @@
         "conditions": [
           {
             "field": "AfterApplicationLaunch",
-            "equals": "WaitForApplicationToComplete"
+            "equals": "ContinueImmediately"
           }
         ]
       }
@@ -138,22 +133,10 @@
         "conditions": [
           {
             "field": "AfterApplicationLaunch",
-            "equals": "WaitForApplicationToComplete"
+            "equals": "ContinueImmediately"
           }
         ]
       }
-    },
-    {
-      "direction": "Output",
-      "type": "config-panel-output",
-      "name": "StatusMessages",
-      "label": "Status Message",
-      "description": "Provides status information about the operation.",
-      "defaultValue": {
-        "value": "StatusMessages",
-        "enabled": true
-      },
-      "required": false
     }
   ]
 }

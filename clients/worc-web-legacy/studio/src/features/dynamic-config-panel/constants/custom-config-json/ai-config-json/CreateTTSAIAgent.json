@@ -13,14 +13,14 @@
       "type": "model-config-select",
       "name": "__ModelConfig__TextToSpeech",
       "defaultValue": {
-        "isByokEnabled": false,
+        "is_byok_enabled": false,
         "provider": "openai",
-        "credentials": "",
+        "credential_id": "",
         "model": "gpt-4o-mini",
         "temperature": 1,
-        "topP": 1,
-        "isJsonOutput": true,
-        "maxOutputToken": 50
+        "top_p": 1,
+        "is_json_output": true,
+        "max_output_tokens": 50
       },
       "required": false,
       "category": "Models"

@@ -18,6 +18,7 @@ import { extractUniqueConfigKeys } from "../utils/config-key-utils";
 import { Node } from "@xyflow/react";
 import { NodeDataType } from "@/types/node-data-type";
 import { useJobDataStore } from "../stores/job-data-store";
+import { useUserSessionStore } from "@/react-toolkit/stores/user-session-store";
 
 const ExecuteFlow = ({
   isAssist = false,
@@ -26,6 +27,13 @@ const ExecuteFlow = ({
   flowId?: string;
   isAssist?: boolean;
 }) => {
+  // Get user session state and actions
+  const { userSession } = useUserSessionStore(
+    useShallow((state) => ({
+      userSession: state.userSession,
+    })),
+  );
+
   // Get current flow and execution state from current flow store
   const { currentFlow, executionState, setExecutionState } =
     useCurrentFlowStore(
@@ -57,20 +65,23 @@ const ExecuteFlow = ({
 
   const minCredits = 10;
 
+  const isCommercial = userSession?.deploymentType == "Commercial";
+
   // Start execution
   const startExecution = async () => {
     if (currentFlow?.isPublished) {
       toast.info("Published agents can only be executed via the Orchestrator.");
       return;
     }
-    const creditsData = await getAvailableCredits();
+    if (isCommercial) {
+      const creditsData = await getAvailableCredits();
 
-    if (creditsData?.data && creditsData.data.availableCredits < minCredits) {
-      // Show toast notification for insufficient credits
-      toast.error("Insufficient credits. Please top up to continue.");
-      return;
+      if (creditsData?.data && creditsData.data.availableCredits < minCredits) {
+        // Show toast notification for insufficient credits
+        toast.error("Insufficient credits. Please top up to continue.");
+        return;
+      }
     }
-
     // Set the execution state to launching executor
     setExecutionState("launching-executor");
 

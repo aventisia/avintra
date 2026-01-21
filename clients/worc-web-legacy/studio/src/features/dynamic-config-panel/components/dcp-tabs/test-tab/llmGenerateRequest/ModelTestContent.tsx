@@ -33,9 +33,9 @@ const ModelTestContent = ({
           <JsonViewerSkeleton />
         ) : testD?.is_json_output ? (
           <JsonViewer
-            jsonData={
-              testD ? (testD?.output ?? "{}") : (JSON.stringify(formData) ?? "")
-            }
+            jsonData={JSON.stringify(
+              testD ? (testD?.output ?? {}) : (formData ?? {}),
+            )}
             className="h-[calc(64vh)]"
             enableCopy
           />

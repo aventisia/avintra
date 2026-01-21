@@ -80,7 +80,7 @@ export async function getActionSelectorData(): Promise<PrimaryCategoryType[]> {
     const response = await axiosInstance
       .get<
         PrimaryCategoryType[]
-      >(`${import.meta.env.VITE_WORC_API_URL}/cloud-connector/config-file/CloudConnectorActionSelectorMappingFile.json`)
+      >(`${import.meta.env.VITE_WORC_API_PATH}/cloud-connector/config-file/CloudConnectorActionSelectorMappingFile.json`)
       .then((res) => res.data);
     if (response) {
       finalNodeList = mergeActionSelectorData(finalNodeList, response);

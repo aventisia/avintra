@@ -10,15 +10,17 @@ export const FallbackImageIcon = ({
   src,
   ...props
 }: FallbackImageIconProps) => {
+  const basePath = import.meta.env.VITE_AGENTBUILDER_PATH.replace(/\/$/, "");
+
   return (
     <div className="flex h-7 w-7 items-center justify-center overflow-hidden">
       <img
         alt="template"
         loading="lazy"
         decoding="async"
-        src={src}
+        src={basePath + src}
         className={cn(
-          "aspect-square h-5 object-cover opacity-80 rounded-[3px] transition-all",
+          "aspect-square h-5 rounded-[3px] object-cover opacity-80 transition-all",
           className,
         )}
         {...props}

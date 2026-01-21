@@ -4,7 +4,7 @@ import { axiosInstance } from "@/react-toolkit/lib/axios-instance";
 
 import { ConfigVariablesDto } from "../dtos/config-variables-dto";
 
-const baseAPIURL: string = `${import.meta.env.VITE_WORC_API_URL}/key-store`;
+const baseAPIURL: string = `${import.meta.env.VITE_WORC_API_PATH}/key-store`;
 
 /**
  * Retrieves list of keystores.
