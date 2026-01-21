@@ -121,6 +121,7 @@ const ExecuteFlow = ({
 
       // Call the Tauri command to launch the desktop executor
       const res = await invoke("launch_desktop_executor", {
+        appBaseUrl: window.location.origin,
         wsPort,
         agentId: versionId,
         agentName: agentName,
