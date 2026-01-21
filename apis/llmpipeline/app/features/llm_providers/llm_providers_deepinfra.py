@@ -2,6 +2,7 @@
 import json
 import time
 import httpx
+from datetime import datetime, timezone
 from app.core.config import settings
 from app.core.logger import log_exception, logger
 from app.features.llm_providers.llm_providers_schemas import LLMChunkResponse, LLMRequest, LLMResponse
@@ -23,7 +24,6 @@ class DeepInfraProvider(BaseLLMProvider):
     async def generate_llm_response(self, llm_request: LLMRequest, request: Request):
         logger.info(f"[NO STREAMING] Prompt sent to DeepInfra provider with model: {llm_request.model}")
 
-        
         # Retrieve and validate the JWT token from the request
         jwt = get_jwt(request)
         if not jwt or jwt.strip() == "" or jwt.startswith("Error:"):
@@ -77,6 +77,9 @@ class DeepInfraProvider(BaseLLMProvider):
                 # Handle response
                 response.raise_for_status()
                 response_data = response.json()
+                
+                # Log response data for debugging (pretty-printed for readability)
+                logger.info(f"DeepInfra response data:\n{json.dumps(response_data, indent=2)}")
                 
                 # Extract content from the first choice in the choices list
                 content = response_data.get("choices", [])[0].get("message", {}).get("content", "")
@@ -292,7 +295,7 @@ class DeepInfraProvider(BaseLLMProvider):
         llm_response.output = output
         llm_response.status = self.map_deepinfra_finish_reason_to_status(finish_reason)
         llm_response.finish_reason = self.map_deepinfra_finish_reason_to_finish_reason(finish_reason)
-        llm_response.created_on = time.strftime('%Y-%m-%d %H:%M:%S', time.gmtime(response_data.get("created")))
+        llm_response.created_on = datetime.fromtimestamp(response_data.get("created", 0), tz=timezone.utc)
         llm_response.time_taken = round(end_time - start_time, 2)
         llm_response.input_tokens = usage.get("prompt_tokens", 0)
         llm_response.input_cached_tokens = 0 # DeepInfra does not provide cached tokens info

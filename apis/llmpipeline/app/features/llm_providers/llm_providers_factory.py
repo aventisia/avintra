@@ -9,7 +9,7 @@ LLM_PROVIDER_MAP = {
     'openai': OpenAIProvider,
     'ollama': OllamaProvider,
     'deepinfra': DeepInfraProvider,
-    'gemini': GeminiProvider,
+    'googlegemini': GeminiProvider,
     'openrouter': OpenRouterProvider,
 }
 

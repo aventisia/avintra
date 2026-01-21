@@ -2,6 +2,7 @@
 import json
 import time
 import httpx
+from datetime import datetime, timezone
 from app.core.config import settings
 from app.core.logger import log_exception, logger
 from app.features.llm_providers.llm_providers_schemas import LLMChunkResponse, LLMRequest, LLMResponse
@@ -77,6 +78,9 @@ class OllamaProvider(BaseLLMProvider):
                 # Handle response
                 response.raise_for_status()
                 response_data = response.json()
+                
+                # Log response data for debugging (pretty-printed for readability)
+                logger.info(f"Ollama response data:\n{json.dumps(response_data, indent=2)}")
                 
                 # Handle is_json_output if requested
                 if llm_request.is_json_output:
@@ -277,7 +281,7 @@ class OllamaProvider(BaseLLMProvider):
         llm_response.output = output
         llm_response.status = self.map_ollama_done_reason_to_status(done_reason)
         llm_response.finish_reason = self.map_ollama_done_reason_to_finish_reason(done_reason)
-        llm_response.created_on = created_at_datetime.strftime('%Y-%m-%d %H:%M:%S')
+        llm_response.created_on = created_at_datetime
         llm_response.time_taken = round(end_time - start_time, 2)
         llm_response.input_tokens = response_data.get("prompt_eval_count", 0)
         llm_response.input_cached_tokens = 0 # Ollama does not provide cached tokens info
