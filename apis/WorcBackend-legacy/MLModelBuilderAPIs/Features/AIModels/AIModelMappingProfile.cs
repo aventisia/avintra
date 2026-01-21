@@ -10,6 +10,6 @@ public class AIModelMappingProfile : IRegister
             .Map(dest => dest.Name, src => src.AIProject.Name)
             .Map(dest => dest.Type, src => src.AIProject.Type)
             .Map(dest => dest.Description, src => src.AIProject.Description)
-            .Map(dest => dest.LLMs, src => src.Tasks.Select(s=>s.LLM).Distinct().ToList());
+            .Map(dest => dest.LLMs, src => src.Tasks.Select(s => s.Model).Distinct().ToList());
     }
 }

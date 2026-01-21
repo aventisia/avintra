@@ -61,8 +61,8 @@ public class AIProjecMappingProfile : IRegister
         var llms = versions
             .Where(v => v.Tasks != null)
             .SelectMany(sm => sm.Tasks!)
-            .Where(w => !string.IsNullOrEmpty(w.LLM))
-            .Select(s => s.LLM!)
+            .Where(w => !string.IsNullOrEmpty(w.Model))
+            .Select(s => s.Model!)
             .ToList();
 
         return llms;

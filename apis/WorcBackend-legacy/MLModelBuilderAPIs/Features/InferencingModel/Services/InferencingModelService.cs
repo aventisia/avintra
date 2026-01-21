@@ -1400,19 +1400,44 @@ public class InferencingModelService : IInferencingModelService
                 .Include(i => i.AIProject)
                 .SingleOrDefaultAsync();
 
-        // Call the LLM service to extract data
-        var llmResponse = await _llmDataExtractionService.ExtractDataAsync(
-            prompt,
-            versionTask.LLM,
-            versionTask.Temperature,
-            UsageSourceTypesEnum.AIModel,
-            versionTask.AIProjectVersionId,
-            aIProjectVersion.AIProject.Name,
-            actionType, // this will be AgentExecution or AIModelExecution
-            triggeredByAgent, // triggered by an agent
-            ollamaOutputFormatSchema // ollama output schema needed
-            // isJsonOutput is by default true
-            );
+        // // Call the LLM service to extract data
+        // var llmResponse = await _llmDataExtractionService.ExtractDataAsync(
+        //     prompt,
+        //     versionTask.Model,
+        //     versionTask.Temperature,
+        //     UsageSourceTypesEnum.AIModel,
+        //     versionTask.AIProjectVersionId,
+        //     aIProjectVersion.AIProject.Name,
+        //     actionType, // this will be AgentExecution or AIModelExecution
+        //     triggeredByAgent, // triggered by an agent
+        //     ollamaOutputFormatSchema // ollama output schema needed
+        //                              // isJsonOutput is by default true
+        //     );
+
+        // Create a request object to send to the LLM service for data extraction
+        var llmRequest = new LLMRequest()
+        {
+            Provider = versionTask.Provider,
+            Model = versionTask.Model,
+            Input = prompt,
+            IsJsonOutput = ollamaOutputFormatSchema != null ? true : versionTask.IsJsonOutput,
+            JsonSchema = ollamaOutputFormatSchema ?? null,
+            MaxOutputTokens = versionTask.MaxOutputToken,
+            IsBYOKEnabled = versionTask.IsBYOKEnabled,
+            CredentialId = versionTask.CredentialId,
+            Temperature = versionTask.Temperature,
+            TopP = versionTask.TopP ?? 1,
+            Stream = false,
+            RefType = UsageSourceTypesEnum.AIModel.ToString(),
+            RefId = versionTask.AIProjectVersionId.ToString(),
+            RefName = aIProjectVersion.AIProject.Name,
+            Action = actionType.ToString(),
+            AgentName = triggeredByAgent
+        };
+
+
+        // Call the service to extract data asynchronously, passing in the LLM request
+        var llmResponse = await _llmDataExtractionService.ExtractDataAsync(llmRequest);
 
         var endTime = DateTime.UtcNow;
         var executionSeconds = (int)Math.Ceiling((endTime - startTime).TotalSeconds);
@@ -1887,51 +1912,81 @@ public class InferencingModelService : IInferencingModelService
                 var extractionSetupObject = JsonSerializer.Deserialize<ExtractionTaskSetupDto>(versionTask.SetupObject ?? null, jsonOptions);
 
                 // Prepare the output format with extracted data, mapping from fields and tables
-                var extractionJsonObj = new
+                if (extractionSetupObject.Tables.Count() > 0)
                 {
-                    type = "object",
-                    properties = new
+                    return new
                     {
-                        fields = new
+                        type = "object",
+                        properties = new
                         {
-                            type = "object",
-                            properties = extractionSetupObject.Fields.ToDictionary(
+                            fields = new
+                            {
+                                type = "object",
+                                properties = extractionSetupObject.Fields.ToDictionary(
                                 f => f.JsonPropertyName,
                                 f => new { type = "string" }
                             ),
-                            required = extractionSetupObject.Fields.Select(f => f.JsonPropertyName).ToArray()
+                                required = extractionSetupObject.Fields.Select(f => f.JsonPropertyName).ToArray(),
+                                additionalProperties = false
+                            },
+                            tables = new
+                            {
+                                type = "array",
+                                items = new
+                                {
+                                    anyOf = extractionSetupObject.Tables.Select(table => new
+                                    {
+                                        type = "object",
+                                        properties = new
+                                        {
+                                            table_name = new { type = "string" },
+                                            rows = new
+                                            {
+                                                type = "array",
+                                                items = new
+                                                {
+                                                    type = "object",
+                                                    properties = table.TableHeaders.ToDictionary(
+                                                    h => h.JsonPropertyName,
+                                                    h => new { type = "string" }
+                                                ),
+                                                    required = table.TableHeaders.Select(h => h.JsonPropertyName).ToArray(),
+                                                    additionalProperties = false
+                                                }
+                                            }
+                                        },
+                                        required = new[] { "table_name", "rows" },
+                                        additionalProperties = false
+                                    }).ToArray(),
+                                }
+                            },
                         },
-                        tables = new
+                        required = new[] { "fields", "tables" },
+                        additionalProperties = false
+                    };
+                }
+                else
+                {
+                    return new
+                    {
+                        type = "object",
+                        properties = new
                         {
-                            type = "array",
-                            items = extractionSetupObject.Tables.Select(table => new
+                            fields = new
                             {
                                 type = "object",
-                                properties = new
-                                {
-                                    table_name = new { type = "string" },
-                                    rows = new
-                                    {
-                                        type = "array",
-                                        items = new
-                                        {
-                                            type = "object",
-                                            properties = table.TableHeaders.ToDictionary(
-                                                h => h.JsonPropertyName,
-                                                h => new { type = "string" }
-                                            ),
-                                            required = table.TableHeaders.Select(h => h.JsonPropertyName).ToArray()
-                                        }
-                                    }
-                                },
-                                required = new[] { "table_name", "rows" }
-                            }).ToArray()
-                        }
-                    }
-                };
-
-                // Return
-                return extractionJsonObj;
+                                properties = extractionSetupObject.Fields.ToDictionary(
+                                f => f.JsonPropertyName,
+                                f => new { type = "string" }
+                            ),
+                                required = extractionSetupObject.Fields.Select(f => f.JsonPropertyName).ToArray(),
+                                additionalProperties = false
+                            },
+                        },
+                        required = new[] { "fields" },
+                        additionalProperties = false
+                    };
+                }
 
             // Default case, if the model task name does not match any of the above
             default:
@@ -2200,11 +2255,16 @@ public class InferencingModelService : IInferencingModelService
                     {
                         Id = mlTask.Id,
                         Name = mlTask.Name,
-                        SetupObject = JsonSerializer.Deserialize<ExtractionTaskSetupDto>(mlTask.SetupObject ?? null, jsonOptions),
-                        LLM = mlTask.LLM,
-                        ConfigurationType = mlTask.IsBYOKEnabled ? LLMConfigurationTypesEnum.Cloud : LLMConfigurationTypesEnum.OnPrem,
+                        Model = mlTask.Model,
+                        Provider = mlTask.Provider,
+                        IsBYOKEnabled = mlTask.IsBYOKEnabled,
+                        CredentialId = mlTask.CredentialId,
+                        IsJsonOutput = mlTask.IsJsonOutput,
+                        Temperature = mlTask.Temperature,
+                        TopP = mlTask.TopP,
+                        MaxOutputToken = mlTask.MaxOutputToken,
                         NodePrompt = mlTask.SystemPrompt,
-                        Temperature = mlTask.Temperature
+                        SetupObject = JsonSerializer.Deserialize<ExtractionTaskSetupDto>(mlTask.SetupObject ?? null, jsonOptions),
                     };
                     inferencingModelDto.Extraction = extractionDto;
                     break;
@@ -2214,11 +2274,16 @@ public class InferencingModelService : IInferencingModelService
                     {
                         Id = mlTask.Id,
                         Name = mlTask.Name,
-                        SetupObject = JsonSerializer.Deserialize<ClassificationTaskSetupDto>(mlTask.SetupObject ?? null, jsonOptions),
-                        LLM = mlTask.LLM,
-                        ConfigurationType = mlTask.IsBYOKEnabled ? LLMConfigurationTypesEnum.Cloud : LLMConfigurationTypesEnum.OnPrem,
+                        Model = mlTask.Model,
+                        Provider = mlTask.Provider,
+                        IsBYOKEnabled = mlTask.IsBYOKEnabled,
+                        CredentialId = mlTask.CredentialId,
+                        IsJsonOutput = mlTask.IsJsonOutput,
+                        Temperature = mlTask.Temperature,
+                        TopP = mlTask.TopP,
+                        MaxOutputToken = mlTask.MaxOutputToken,
                         NodePrompt = mlTask.SystemPrompt,
-                        Temperature = mlTask.Temperature
+                        SetupObject = JsonSerializer.Deserialize<ClassificationTaskSetupDto>(mlTask.SetupObject ?? null, jsonOptions),
                     };
                     inferencingModelDto.Classification = classificationDto;
                     break;
@@ -2228,11 +2293,16 @@ public class InferencingModelService : IInferencingModelService
                     {
                         Id = mlTask.Id,
                         Name = mlTask.Name,
-                        SetupObject = JsonSerializer.Deserialize<SentimentAnalyticsTaskSetupDto>(mlTask.SetupObject ?? null, jsonOptions),
-                        LLM = mlTask.LLM,
-                        ConfigurationType = mlTask.IsBYOKEnabled ? LLMConfigurationTypesEnum.Cloud : LLMConfigurationTypesEnum.OnPrem,
+                        Model = mlTask.Model,
+                        Provider = mlTask.Provider,
+                        IsBYOKEnabled = mlTask.IsBYOKEnabled,
+                        CredentialId = mlTask.CredentialId,
+                        IsJsonOutput = mlTask.IsJsonOutput,
+                        Temperature = mlTask.Temperature,
+                        TopP = mlTask.TopP,
+                        MaxOutputToken = mlTask.MaxOutputToken,
                         NodePrompt = mlTask.SystemPrompt,
-                        Temperature = mlTask.Temperature
+                        SetupObject = JsonSerializer.Deserialize<SentimentAnalyticsTaskSetupDto>(mlTask.SetupObject ?? null, jsonOptions),
                     };
                     inferencingModelDto.SentimentAnalytics = sentimentDto;
                     break;
@@ -2242,11 +2312,16 @@ public class InferencingModelService : IInferencingModelService
                     {
                         Id = mlTask.Id,
                         Name = mlTask.Name,
-                        SetupObject = JsonSerializer.Deserialize<QuestionAnswerTaskSetupDto>(mlTask.SetupObject ?? null, jsonOptions),
-                        LLM = mlTask.LLM,
-                        ConfigurationType = mlTask.IsBYOKEnabled ? LLMConfigurationTypesEnum.Cloud : LLMConfigurationTypesEnum.OnPrem,
+                        Model = mlTask.Model,
+                        Provider = mlTask.Provider,
+                        IsBYOKEnabled = mlTask.IsBYOKEnabled,
+                        CredentialId = mlTask.CredentialId,
+                        IsJsonOutput = mlTask.IsJsonOutput,
+                        Temperature = mlTask.Temperature,
+                        TopP = mlTask.TopP,
+                        MaxOutputToken = mlTask.MaxOutputToken,
                         NodePrompt = mlTask.SystemPrompt,
-                        Temperature = mlTask.Temperature
+                        SetupObject = JsonSerializer.Deserialize<QuestionAnswerTaskSetupDto>(mlTask.SetupObject ?? null, jsonOptions),
                     };
                     inferencingModelDto.QuestionAnswer = questionAnswerDto;
                     break;
@@ -2256,11 +2331,16 @@ public class InferencingModelService : IInferencingModelService
                     {
                         Id = mlTask.Id,
                         Name = mlTask.Name,
-                        SetupObject = JsonSerializer.Deserialize<SummarizationTaskSetupDto>(mlTask.SetupObject ?? null, jsonOptions),
-                        LLM = mlTask.LLM,
-                        ConfigurationType = mlTask.IsBYOKEnabled ? LLMConfigurationTypesEnum.Cloud : LLMConfigurationTypesEnum.OnPrem,
+                        Model = mlTask.Model,
+                        Provider = mlTask.Provider,
+                        IsBYOKEnabled = mlTask.IsBYOKEnabled,
+                        CredentialId = mlTask.CredentialId,
+                        IsJsonOutput = mlTask.IsJsonOutput,
+                        Temperature = mlTask.Temperature,
+                        TopP = mlTask.TopP,
+                        MaxOutputToken = mlTask.MaxOutputToken,
                         NodePrompt = mlTask.SystemPrompt,
-                        Temperature = mlTask.Temperature
+                        SetupObject = JsonSerializer.Deserialize<SummarizationTaskSetupDto>(mlTask.SetupObject ?? null, jsonOptions),
                     };
                     inferencingModelDto.Summarization = summarizationDto;
                     break;
