@@ -28,14 +28,14 @@ public interface IUploadFileService
     /// </summary>
     /// <param name="fileUrl">The URL of the file to be deleted.</param>
     /// <returns>Returns true if the deletion was successful; otherwise, returns false.</returns>
-    ServiceResponse<bool> DeleteFileAsync(string fileUrl, bool isTemp = false);
+    Task<ServiceResponse<bool>> DeleteFileAsync(string fileUrl, bool isTemp = false);
 
     /// <summary>
     /// Retrieve a file for download.
     /// </summary>
     /// <param name="fileUrl">The URL of the file to download.</param>
     /// <returns>The response containing details about the downloaded file.</returns>
-    ServiceResponse<FileUploadResponseDto> DownloadFileAsync(string fileUrl, bool isTemp = false);
+    Task<ServiceResponse<FileStreamContentResponseDto>> DownloadFileAsync(string fileUrl, bool isTemp = false);
 
     /// <summary>
     /// Retrieve a file for download from remote server.
