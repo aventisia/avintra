@@ -46,7 +46,7 @@ public class TwilioConnectorsService : ITwilioConnectorsService
             if (!Enum.TryParse<TwilioActionsEnum>(cloudConnectorReqDto.Action, true, out var twilioAction))
             {
                 _logger.LogWarning("Invalid Twilio action: {Action}", cloudConnectorReqDto.Action);
-                serviceResponse.Message = $"Unsupported Twilio action: '{cloudConnectorReqDto.Action}'. Valid actions: SendTextSms, SendWhatsappMessage, SendWhatsappTemplateMessage.";
+                serviceResponse.Message = $"Unsupported Twilio action: '{cloudConnectorReqDto.Action}'. Valid actions: SendTextSms, SendWhatsAppMessage, SendWhatsAppTemplateMessage.";
                 return serviceResponse;
             }
 
@@ -142,71 +142,147 @@ public class TwilioConnectorsService : ITwilioConnectorsService
 
         if (!dict.TryGetValue("toNumber", out var toObj) || toObj == null)
             return new { Error = "'toNumber' is required in payload." };
-        if (!dict.TryGetValue("messageBody", out var bodyObj) || bodyObj == null)
-            return new { Error = "'messageBody' is required in payload." };
-
         string toNumber = toObj?.ToString() ?? string.Empty;
-        string messageBody = bodyObj.ToString() ?? string.Empty;
 
         // Extract optional fields
-        string? fromPhoneNumber = dict.TryGetValue("fromPhoneNumber", out var fromObj) ? fromObj?.ToString() : null;
+        string? recipientType = dict.TryGetValue("recipientType", out var recipientTypeObj) ? recipientTypeObj?.ToString() : null;
+        string? recipientTypeValue = dict.TryGetValue("recipientTypeValue", out var recipientTypeValueObj) ? recipientTypeValueObj?.ToString() : null;
         string? messagingServiceSid = dict.TryGetValue("messagingServiceSid", out var msgSvcObj) ? msgSvcObj?.ToString() : null;
-        string? templateName = dict.TryGetValue("templateName", out var tmplObj) ? tmplObj?.ToString() : null;
-        string? templateLanguage = dict.TryGetValue("templateLanguage", out var langObj) ? langObj?.ToString() : null;
+        string? templateId = dict.TryGetValue("templateId", out var templateIdObj) ? templateIdObj?.ToString() : null;
         string? templateParameters = dict.TryGetValue("templateParameters", out var paramsObj) ? paramsObj?.ToString() : null;
+        string? messageBody = dict.TryGetValue("messageBody", out var messageBodyObj) ? messageBodyObj?.ToString() : null;
 
         try
         {
             switch (action)
             {
                 case TwilioActionsEnum.SendTextSms:
-                    if (string.IsNullOrEmpty(fromPhoneNumber) && string.IsNullOrEmpty(messagingServiceSid))
-                        return new { Error = "Either 'fromPhoneNumber' or 'messagingServiceSid' is required for SMS." };
 
-                    var smsMsg = await MessageResource.CreateAsync(
-                        body: messageBody,
-                        from: !string.IsNullOrEmpty(fromPhoneNumber) ? new PhoneNumber(fromPhoneNumber) : null,
-                        messagingServiceSid: !string.IsNullOrEmpty(messagingServiceSid) ? messagingServiceSid : null,
-                        to: new PhoneNumber(toNumber)
-                    );
-                    return new { MessageSid = smsMsg.Sid, Status = smsMsg.Status?.ToString() };
+                    if (string.IsNullOrEmpty(recipientTypeValue))
+                        return new { Error = "'recipientTypeValue' is required for SMS messages." };
+                    if (string.IsNullOrEmpty(messageBody))
+                        return new { Error = "'messageBody' is required in payload." };
 
-                case TwilioActionsEnum.SendWhatsappMessage:
-                    if (string.IsNullOrEmpty(fromPhoneNumber))
-                        return new { Error = "'fromPhoneNumber' is required for WhatsApp messages." };
+                    // Determine the recipient type: PhoneNumber or MessagingServiceSID
+                    if (recipientType == "PhoneNumber")
+                    {
+                        // Use a phone number as the sender
+                        var smsMsg = await MessageResource.CreateAsync(
+                            body: messageBody,
+                            from: new PhoneNumber(recipientTypeValue),
+                            to: new PhoneNumber(toNumber)
+                        );
 
-                    var waMsg = await MessageResource.CreateAsync(
-                        body: messageBody,
-                        from: new PhoneNumber($"whatsapp:{fromPhoneNumber}"),
-                        to: new PhoneNumber($"whatsapp:{toNumber}")
-                    );
-                    return new { MessageSid = waMsg.Sid, Status = waMsg.Status?.ToString() };
+                        // Return the message SID and status
+                        return new { MessageSid = smsMsg.Sid, Status = smsMsg.Status?.ToString() };
+                    }
+                    else if (recipientType == "MessagingServiceSID")
+                    {
+                        // Use a Messaging Service SID as the sender
+                        var smsMsg = await MessageResource.CreateAsync(
+                            body: messageBody,
+                            messagingServiceSid: recipientTypeValue,
+                            to: new PhoneNumber(toNumber)
+                        );
 
-                case TwilioActionsEnum.SendWhatsappTemplateMessage:
-                    if (string.IsNullOrEmpty(templateName))
-                        return new { Error = "'templateName' is required for WhatsApp template messages." };
+                        // Return the message SID and status
+                        return new { MessageSid = smsMsg.Sid, Status = smsMsg.Status?.ToString() };
+                    }
+                    else
+                    {
+                        // Handle invalid recipient type
+                        throw new ArgumentException("Invalid recipient type. Must be 'PhoneNumber' or 'MessagingServiceSID'.");
+                    }
+
+                case TwilioActionsEnum.SendWhatsAppMessage:
+                    if (string.IsNullOrEmpty(recipientTypeValue))
+                        return new { Error = "'recipientTypeValue' is required for WhatsApp template messages." };
+                    if (string.IsNullOrEmpty(messageBody))
+                        return new { Error = "'messageBody' is required in payload." };
+
+                    // Determine if recipientType is PhoneNumber or MessagingServiceSID
+                    if (recipientType == "PhoneNumber")
+                    {
+                        // Use a phone number as the sender
+                        var tmplMsg = await MessageResource.CreateAsync(
+                            body: messageBody,
+                            from: new PhoneNumber($"whatsapp:{recipientTypeValue}"),
+                            to: new PhoneNumber($"whatsapp:{toNumber}")
+                        );
+
+                        // Return the message SID and status
+                        return new { MessageSid = tmplMsg.Sid, Status = tmplMsg.Status?.ToString() };
+                    }
+                    else if (recipientType == "MessagingServiceSID")
+                    {
+                        // Use a Messaging Service SID for the sender
+                        var tmplMsg = await MessageResource.CreateAsync(
+                            body: messageBody,
+                            messagingServiceSid: recipientTypeValue,
+                            to: new PhoneNumber($"whatsapp:{toNumber}")
+                        );
+                        // Return the message SID and status
+                        return new { MessageSid = tmplMsg.Sid, Status = tmplMsg.Status?.ToString() };
+                    }
+                    else
+                    {
+                        // Handle invalid recipient type
+                        throw new ArgumentException("Invalid recipient type. Must be 'PhoneNumber' or 'MessagingServiceSID'.");
+                    }
+
+                case TwilioActionsEnum.SendWhatsAppTemplateMessage:
+                    if (string.IsNullOrEmpty(templateId))
+                        return new { Error = "'templateId' is required for WhatsApp template messages." };
+                    if (string.IsNullOrEmpty(recipientTypeValue))
+                        return new { Error = "'tecipientTypeValue' is required for WhatsApp template messages." };
 
                     string? contentVariables = null;
                     if (!string.IsNullOrEmpty(templateParameters))
                     {
+                        // Split the input templateParameters by commas and remove empty entries and trim spaces
                         var paramList = templateParameters.Split(',', StringSplitOptions.RemoveEmptyEntries | StringSplitOptions.TrimEntries);
                         if (paramList.Length > 0)
                         {
-                            var variables = string.Join(", ", paramList.Select((p, i) => $"\"{i + 1}\":\"{p}\""));
-                            contentVariables = $"{{{variables}}}";
+                            // Create a dictionary with parameter index as key and parameter value as the value
+                            var parametersDict = paramList.Select((param, index) => new KeyValuePair<string, string>((index + 1).ToString(), param)).ToDictionary(kv => kv.Key, kv => kv.Value);
+                            contentVariables = JsonConvert.SerializeObject(parametersDict, Formatting.Indented);
                         }
                     }
-                    // Add approved number
-                    var tmplMsg = await MessageResource.CreateAsync(
-                        from: new PhoneNumber("whatsapp:+14155238886"),
-                        to: new PhoneNumber($"whatsapp:{toNumber}"),
-                        contentSid: templateName,
-                        contentVariables: contentVariables
-                    // Create async does not have a parameter language getting error.
-                    //language: templateLanguage ?? "en"
-                    );
-                    return new { MessageSid = tmplMsg.Sid, Status = tmplMsg.Status?.ToString() };
 
+                    // Determine if recipientType is PhoneNumber or MessagingServiceSID
+                    if (recipientType == "PhoneNumber")
+                    {
+                        // Use a phone number as the sender
+                        var tmplMsg = await MessageResource.CreateAsync(
+                            from: new PhoneNumber($"whatsapp:{recipientTypeValue}"),
+                            to: new PhoneNumber($"whatsapp:{toNumber}"),
+                            contentSid: templateId,
+                            contentVariables: contentVariables
+                        // language: templateLanguage ?? "en"
+                        );
+
+                        // Return the message SID and status
+                        return new { MessageSid = tmplMsg.Sid, Status = tmplMsg.Status?.ToString() };
+                    }
+                    else if (recipientType == "MessagingServiceSID")
+                    {
+                        // Use a Messaging Service SID for the sender
+                        var tmplMsg = await MessageResource.CreateAsync(
+                            messagingServiceSid: recipientTypeValue,
+                            to: new PhoneNumber($"whatsapp:{toNumber}"),
+                            contentSid: templateId,
+                            contentVariables: contentVariables
+                        // language: templateLanguage ?? "en"
+                        );
+
+                        // Return the message SID and status
+                        return new { MessageSid = tmplMsg.Sid, Status = tmplMsg.Status?.ToString() };
+                    }
+                    else
+                    {
+                        // Handle invalid recipient type
+                        throw new ArgumentException("Invalid recipient type. Must be 'PhoneNumber' or 'MessagingSID'.");
+                    }
                 default:
                     return new { Error = $"Unsupported Twilio action: {action}" };
             }

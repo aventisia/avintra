@@ -7,6 +7,7 @@ namespace WorkspaceAPIs.Services
         private readonly IAutoNotificationService _autoNotificationService;
         private readonly IUserManagementGuardService _userManagementGuardService;
         private readonly ILLMDataExtractionService _llmDataExtractionService;
+        private readonly HttpClientUrlConfig _httpClientUrlConfig;
         private readonly Guid _userId;
         private readonly Guid _tenantId;
         private readonly Guid _spaceId;
@@ -18,7 +19,8 @@ namespace WorkspaceAPIs.Services
             IHttpContextAccessor httpContextAccessor,
             IAutoNotificationService autoNotificationService,
             IUserManagementGuardService userManagementGuardService,
-            ILLMDataExtractionService llmDataExtractionService)
+            ILLMDataExtractionService llmDataExtractionService,
+            HttpClientUrlConfig httpClientUrlConfig)
         {
             // Set _userId
             _userId = Guid.Parse(httpContextAccessor.HttpContext?.User?.FindFirstValue("uid") ?? Guid.Empty.ToString());
@@ -31,6 +33,7 @@ namespace WorkspaceAPIs.Services
             _autoNotificationService = autoNotificationService;
             _userManagementGuardService = userManagementGuardService;
             _llmDataExtractionService = llmDataExtractionService;
+            _httpClientUrlConfig = httpClientUrlConfig;
         }
 
         // Retrieve all project templates list
@@ -805,7 +808,7 @@ namespace WorkspaceAPIs.Services
                 else
                 {
                     // Get AI model template schema
-                    HttpResponseMessage httpResponse = await RequestExternalAPIUtil.RequestExternalAPI(CrudTypesEnum.Read, $"http://localhost:4002/api/ai-model-template/schema/{publishProjectTemplateDto.RefId}", _jwt);
+                    HttpResponseMessage httpResponse = await RequestExternalAPIUtil.RequestExternalAPI(CrudTypesEnum.Read, $"{_httpClientUrlConfig.ModelStudioApisBaseUrl}/ai-model-template/schema/{publishProjectTemplateDto.RefId}", _jwt);
 
                     // Read and validate the external API response
                     if (!httpResponse.IsSuccessStatusCode)
@@ -1123,7 +1126,7 @@ namespace WorkspaceAPIs.Services
                     };
 
                     // Create AI model by template schema
-                    HttpResponseMessage httpResponse = await RequestExternalAPIUtil.RequestExternalAPI(CrudTypesEnum.Create, "http://localhost:4002/api/ai-model-template/use", _jwt, aiProjectRequest);
+                    HttpResponseMessage httpResponse = await RequestExternalAPIUtil.RequestExternalAPI(CrudTypesEnum.Create, $"{_httpClientUrlConfig.ModelStudioApisBaseUrl}/ai-model-template/use", _jwt, aiProjectRequest);
 
                     // Read and validate the external API response
                     if (!httpResponse.IsSuccessStatusCode)
@@ -1235,6 +1238,7 @@ namespace WorkspaceAPIs.Services
 
             var prompt = promptTemplate.Replace("{{PAYLOAD_CONTENT}}", genereateProjectInstructionRequestDto.Payload);
             var model = "gpt-4o-mini";
+            var provider = "openai";
             var temperature = 1;
 
             try
@@ -1242,19 +1246,37 @@ namespace WorkspaceAPIs.Services
                 // Log initiation of documentation generation using LLM
                 _logger.LogInformation("Starting instruction/documentation generation using LLM. Model: {Model}, Temperature: {Temperature}, {Prompt}", model, temperature, prompt);
 
-                // Call the LLM service to generate the documentation
-                var generatedOutput = await _llmDataExtractionService.ExtractDataAsync(
-                    prompt: prompt,
-                    llmModel: model,
-                    modelTemperature: temperature,
-                    genereateProjectInstructionRequestDto.RefType,
-                    genereateProjectInstructionRequestDto.RefId,
-                    genereateProjectInstructionRequestDto.RefName,
-                    ActionTypesEnum.TemplateDescriptionGeneration,
-                    null, // This will never be triggered by an agent
-                    null, // No ollama output schema needed
-                    false // No json output required
-                );
+                // // Call the LLM service to generate the documentation
+                // var generatedOutput = await _llmDataExtractionService.ExtractDataAsync(
+                //     prompt: prompt,
+                //     llmModel: model,
+                //     modelTemperature: temperature,
+                //     genereateProjectInstructionRequestDto.RefType,
+                //     genereateProjectInstructionRequestDto.RefId,
+                //     genereateProjectInstructionRequestDto.RefName,
+                //     ActionTypesEnum.TemplateDescriptionGeneration,
+                //     null, // This will never be triggered by an agent
+                //     null, // No ollama output schema needed
+                //     false // No json output required
+                // );
+
+                // Create a request object to send to the LLM service for data extraction
+                var llmRequest = new LLMRequest()
+                {
+                    Model = model,
+                    Input = prompt,
+                    Provider = provider,
+                    IsJsonOutput = true,
+                    Temperature = temperature,
+                    Stream = false,
+                    RefType = genereateProjectInstructionRequestDto.RefType.ToString(),
+                    RefId = genereateProjectInstructionRequestDto.RefId.ToString(),
+                    RefName = genereateProjectInstructionRequestDto.RefName,
+                    Action = ActionTypesEnum.TemplateDescriptionGeneration.ToString(),
+                };
+
+                // Call the service to extract data asynchronously, passing in the LLM request
+                var generatedOutput = await _llmDataExtractionService.ExtractDataAsync(llmRequest);
 
                 // Handle null or empty response
                 if (generatedOutput.Data == null)

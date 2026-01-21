@@ -6,16 +6,20 @@ namespace WorkspaceAPIs.Services;
 public interface IJobTableService
 {
     /// <summary>
-    /// Retrieves a list of all jobs.
+    /// Retrieves a list of all jobs between optional start and end date filters.
     /// </summary>
+    /// <param name="startDate">The optional start date filter.</param>
+    /// <param name="endDate">The optional end date filter.</param>
     /// <returns>A task representing the service response with the job details.</returns>
-    Task<ServiceResponse<IEnumerable<JobTableDto>>> GetJobsAsync();
+    Task<ServiceResponse<IEnumerable<JobTableDto>>> GetJobsAsync(DateTimeOffset? startDate, DateTimeOffset? endDate);
 
     /// <summary>
-    /// Retrieves a list of all job logs.
+    /// Retrieves a list of all job logs between optional start and end date filters.
     /// </summary>
+    /// <param name="startDate">The optional start date filter.</param>
+    /// <param name="endDate">The optional end date filter.</param>
     /// <returns>A task representing the service response with the job log details.</returns>
-    Task<ServiceResponse<IEnumerable<JobExecutionLogDto>>> GetJobLogsAsync();
+    Task<ServiceResponse<IEnumerable<JobExecutionLogDto>>> GetJobLogsAsync(DateTimeOffset? startDate, DateTimeOffset? endDate);
 
     /// <summary>
     /// Fetches a job by its unique identifier.
@@ -82,4 +86,11 @@ public interface IJobTableService
     /// <param name="jobExecutionDto">The details of the job execution, including the OS ID and flow version ID.</param>
     /// <returns>A service response that indicates whether the job abortion was successful or not.</returns>
     Task<ServiceResponse<bool>> AbortJobExecutionAsync(JobExecutionDto jobExecutionDto);
+
+    /// <summary>
+    /// Exports job data as a CSV file based on the filters specified in the provided request DTO.
+    /// </summary>
+    /// <param name="exportJobRequestDto">The DTO containing optional filters such as job priority, status, agent IDs, machine IDs, and date range to filter the job data.</param>
+    /// <returns>A service response containing the CSV file stream of the filtered job data.</returns>
+    Task<ServiceResponse<FileStreamResult>> ExportJobsAsync(ExportJobRequestDto exportJobRequestDto);
 }
