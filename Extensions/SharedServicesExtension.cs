@@ -127,4 +127,14 @@ public static class SharedServicesExtension
         // Registers LLMDataExtractionService as a scoped implementation of ILLMDataExtractionService
         services.AddScoped<ILLMDataExtractionService, LLMDataExtractionService>();
     }
+
+    // Method to add the Azure Blob Storage service to the service collection
+    public static void AddAzureBlobStorageService(this IServiceCollection services, IConfiguration config)
+    {
+        // Bind the "AzureBlobStorageConfig" section from configuration to a strongly-typed AzureBlobStorageConfig instance and register it as a singleton
+        services.AddSingleton(Guard.Against.Null(config.GetSection("AzureBlobStorageConfig").Get<AzureBlobStorageConfig>(), message: "AzureBlobStorageConfig cannot be null"));
+
+        // Register your AzureBlobStorageService implementation
+        services.AddSingleton<IAzureBlobStorageService, AzureBlobStorageService>();
+    }
 }
