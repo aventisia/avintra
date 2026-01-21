@@ -4,7 +4,7 @@ import { IHttpResponse } from "@aventisia/ui/dtos";
 
 import { ModelVersionDto } from "../dtos/model-version-dto";
 
-const baseAPIURL: string = `${import.meta.env.VITE_AISTUDIO_API_URL}/ai-project-version`;
+const baseAPIURL: string = `${import.meta.env.VITE_AISTUDIO_API_PATH}/ai-project-version`;
 
 /**
  * Retrieves all versions of a model.

@@ -5,7 +5,7 @@ import { redirectToLoginOn401Util } from "@/react-toolkit/utils/redirect-util";
 import { IHttpResponse } from "@aventisia/ui/dtos";
 import { toast } from "@aventisia/ui/sonner";
 
-const baseAPIURL: string = `${import.meta.env.VITE_ACCOUNTS_API_URL}/me`;
+const baseAPIURL: string = `${import.meta.env.VITE_ACCOUNTS_API_PATH}/me`;
 
 /** Gets user's current session to view latest user's info */
 const getMySession = () => {

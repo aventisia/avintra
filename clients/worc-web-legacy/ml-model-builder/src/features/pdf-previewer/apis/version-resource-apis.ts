@@ -2,7 +2,7 @@ import { axiosInstance } from "@/react-toolkit/lib/axios-instance";
 
 import { IHttpResponse } from "@aventisia/ui/dtos";
 
-const baseAPIURL: string = `${import.meta.env.VITE_AISTUDIO_API_URL}/upload-doc`;
+const baseAPIURL: string = `${import.meta.env.VITE_AISTUDIO_API_PATH}/upload-doc`;
 
 /**
  * Deletes a ai project's version resource by its Id.

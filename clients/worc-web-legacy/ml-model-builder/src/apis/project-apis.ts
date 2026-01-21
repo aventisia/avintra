@@ -3,7 +3,7 @@ import { axiosInstance } from "@/react-toolkit/lib/axios-instance";
 
 import { IHttpResponse } from "@aventisia/ui/dtos";
 
-const baseAPIURL: string = `${import.meta.env.VITE_AISTUDIO_API_URL}/ml-model`;
+const baseAPIURL: string = `${import.meta.env.VITE_AISTUDIO_API_PATH}/ml-model`;
 
 /**
  * Gets ai project's meta data by id.

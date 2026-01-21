@@ -3,7 +3,7 @@ import { axiosInstance } from "@/react-toolkit/lib/axios-instance";
 
 import { IHttpResponse } from "@aventisia/ui/dtos";
 
-const baseAPIURL: string = `${import.meta.env.VITE_AISTUDIO_API_URL}/extracted-data`;
+const baseAPIURL: string = `${import.meta.env.VITE_AISTUDIO_API_PATH}/extracted-data`;
 
 /**
  * Updates Extracted data.

@@ -5,7 +5,7 @@ import { IHttpResponse, IOptimisticMutation } from "@aventisia/ui/dtos";
 
 import { RunReviewRecordsMutatedDTO } from "../dtos/run-review-records-mutate";
 
-const baseAPIURL: string = `${import.meta.env.VITE_AISTUDIO_API_URL}`;
+const baseAPIURL: string = `${import.meta.env.VITE_AISTUDIO_API_PATH}`;
 
 /**
  * Retrieves all ai models created by user

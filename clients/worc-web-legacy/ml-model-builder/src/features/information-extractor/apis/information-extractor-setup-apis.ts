@@ -4,7 +4,7 @@ import { IHttpResponse } from "@aventisia/ui/dtos";
 
 import { InformationExtractorSetupDTO } from "../dtos/info-extractor-setup-dto";
 
-const baseAPIURL: string = `${import.meta.env.VITE_AISTUDIO_API_URL}/extraction`;
+const baseAPIURL: string = `${import.meta.env.VITE_AISTUDIO_API_PATH}/extraction`;
 
 /**
  * Get Form Data by id.

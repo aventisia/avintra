@@ -5,7 +5,7 @@ import { IHttpResponse } from "@aventisia/ui/dtos";
 import { APIKeyDTO } from "../dtos/api-keys-dto";
 import { UpdateAPIKeyDTO } from "../dtos/update-api-key-dto";
 
-const baseAPIURL: string = `${import.meta.env.VITE_AISTUDIO_API_URL}/api-keys`;
+const baseAPIURL: string = `${import.meta.env.VITE_AISTUDIO_API_PATH}/api-keys`;
 
 const getAPIKeysList = (modelId: string) => {
   return axiosInstance

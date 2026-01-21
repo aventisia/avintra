@@ -6,7 +6,7 @@ import { GenerateInstructionRequestDto } from "../dtos/genereate-instruction-req
 import { SaveAsTemplateDto } from "../dtos/save-as-template-dto";
 
 // Base API URL for all project-template related endpoints
-const baseAPIURL = `${import.meta.env.VITE_WORC_API_URL}/project-template`;
+const baseAPIURL = `${import.meta.env.VITE_WORC_API_PATH}/project-template`;
 
 /**
  * Save and publish a new template.

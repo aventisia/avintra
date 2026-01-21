@@ -34,8 +34,7 @@ export const useAIPersonaSetupForm = () => {
       id: modelId || "",
       aiPersona: {
         name: "AIPersona",
-        configurationType: "OnPrem",
-        llm: "gemma",
+        model: "gemma",
         nodePrompt: "AI Persona",
         temperature: 0.7,
         setupObject: {
@@ -120,9 +119,7 @@ export const useAIPersonaSetupForm = () => {
       id: setupFormData?.id ?? modelId ?? "",
       aiPersona: {
         name: setupFormData?.aiPersona?.name ?? "AIPersona",
-        configurationType:
-          setupFormData?.aiPersona?.configurationType ?? "OnPrem",
-        llm: setupFormData?.aiPersona?.llm ?? "gemma",
+        model: setupFormData?.aiPersona?.model ?? "gemma",
         nodePrompt: setupFormData?.aiPersona?.nodePrompt ?? "node prompt",
         temperature: setupFormData?.aiPersona?.temperature ?? 0.7,
         setupObject: {

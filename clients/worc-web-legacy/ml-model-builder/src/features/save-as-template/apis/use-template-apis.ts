@@ -5,7 +5,7 @@ import { IHttpResponse } from "@aventisia/ui/dtos";
 import { TemplateListDTO } from "../dtos/template-list-dto";
 import { UseTemplateDTO } from "../dtos/use-template-dto";
 
-const baseAPIURL: string = `${import.meta.env.VITE_AISTUDIO_API_URL}/ai-model-template`;
+const baseAPIURL: string = `${import.meta.env.VITE_AISTUDIO_API_PATH}/ai-model-template`;
 
 const getTemplateList = () => {
   return axiosInstance

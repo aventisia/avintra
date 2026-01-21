@@ -5,7 +5,7 @@ import { IHttpResponse } from "@aventisia/ui/dtos";
 
 import { SentimentAnalyticsTestDTO } from "../dtos/sentiment-analytics-test-dto";
 
-const baseAPIURL: string = `${import.meta.env.VITE_AISTUDIO_API_URL}/sentiment-analytics/extracted-data`;
+const baseAPIURL: string = `${import.meta.env.VITE_AISTUDIO_API_PATH}/sentiment-analytics/extracted-data`;
 
 /**
  * Get Form Data by id.

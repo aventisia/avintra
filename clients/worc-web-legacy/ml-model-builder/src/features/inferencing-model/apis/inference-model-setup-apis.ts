@@ -4,7 +4,7 @@ import { IHttpResponse } from "@aventisia/ui/dtos";
 
 import { InferenceModelSetupDTO } from "../dtos/inference-model-setup-dto";
 
-const baseAPIURL: string = `${import.meta.env.VITE_AISTUDIO_API_URL}/inferencing-model`;
+const baseAPIURL: string = `${import.meta.env.VITE_AISTUDIO_API_PATH}/inferencing-model`;
 
 /**
  * Get Form Data by id.

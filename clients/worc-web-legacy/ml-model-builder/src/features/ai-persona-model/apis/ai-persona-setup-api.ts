@@ -5,7 +5,7 @@ import { ISelectOption } from "@aventisia/ui/types";
 
 import { AiPersonaSetupDTO } from "../dtos/ai-persona-setup-dto";
 
-const baseAPIURL: string = `${import.meta.env.VITE_AISTUDIO_API_URL}/conversation-model`;
+const baseAPIURL: string = `${import.meta.env.VITE_AISTUDIO_API_PATH}/conversation-model`;
 
 /**
  * Get Form Data by id.
