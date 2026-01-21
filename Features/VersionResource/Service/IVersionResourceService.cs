@@ -43,7 +43,7 @@ public interface IVersionResourceService
     /// <param name="aiProjectVersionId">The unique identifier of the AI project version.</param>
     /// <returns>A service response containing the matching uploaded document records.</returns>
     Task<ServiceResponse<IEnumerable<VersionResourceDto>>> GetVersionResourcesAsync(Guid aiProjectVersionId);
-    
+
     /// <summary>
     /// Upload a collection of files for a specific purpose.
     /// </summary>
@@ -57,12 +57,12 @@ public interface IVersionResourceService
     /// </summary>
     /// <param name="fileUrl">The URL of the file to be deleted.</param>
     /// <returns>A response indicating whether the file deletion was successful (true) or not (false).</returns>
-    ServiceResponse<bool> DeleteFileAsync(string fileUrl);
+    Task<ServiceResponse<bool>> DeleteFileAsync(string fileUrl);
 
     /// <summary>
     /// Retrieve a file using its URL.
     /// </summary>
     /// <param name="fileUrl">The URL of the file to be downloaded.</param>
     /// <returns>A response containing the file details.</returns>
-    ServiceResponse<FileDetailDto> DownloadFileAsync(string fileUrl);
+    Task<ServiceResponse<FileStreamContentResponseDto>> DownloadFileAsync(string fileUrl);
 }
