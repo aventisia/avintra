@@ -1,0 +1,23 @@
+meta {
+  name: Export jobs
+  type: http
+  seq: 11
+}
+
+post {
+  url: {{WORC_APIS_BASE_URL}}/job/export
+  body: json
+  auth: none
+}
+
+body:json {
+  {
+    "Priority": null,
+    "Status": null,
+    "MachineIds": [],
+    "AgentIds": [],
+    "StartDate": "2025-01-01T00:00:00+00:00",
+    "EndDate": "2026-01-15T23:59:59+00:00"
+  }
+  
+}
