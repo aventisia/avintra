@@ -46,7 +46,7 @@ export const useOpenModel = () => {
     // Conditionally add the ml parameter based on the environment mode
     url += import.meta.env.MODE !== "production" ? "" : `&ml=inferencing`;
 
-    window.location.href = url;
+    return url;
   };
 
   // Return the handle open model action function

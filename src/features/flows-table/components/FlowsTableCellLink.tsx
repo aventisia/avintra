@@ -1,7 +1,5 @@
-import { Button } from "@aventisia/ui/buttons";
 import { cn } from "@aventisia/ui/lib";
-
-import { useOpenFlow } from "../hooks/useOpenFlow";
+import { NavLink } from "react-router-dom";
 
 interface FlowsTableCellLinkProps {
   /** The ID of the flow to open. */
@@ -15,19 +13,15 @@ export const FlowsTableCellLink = ({
   rowId,
   cellValue,
 }: FlowsTableCellLinkProps) => {
-  // Get handle function to open flow
-  const handleOpenFlowAction = useOpenFlow();
-
   // Return the component
   return (
-    <Button
-      onClick={() => handleOpenFlowAction(rowId)}
-      variant={"link"}
+    <NavLink
+      to={`${import.meta.env.VITE_AGENTBUILDER_PATH}agent?f=${rowId}`}
       className={cn(
-        "!h-8 w-auto truncate font-medium text-foreground hover:text-primary",
+        "!h-8 w-auto cursor-pointer truncate font-medium text-foreground hover:text-primary",
       )}
     >
       {cellValue}
-    </Button>
+    </NavLink>
   );
 };

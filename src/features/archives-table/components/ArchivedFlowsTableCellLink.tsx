@@ -1,7 +1,5 @@
-import { Button } from "@aventisia/ui/buttons";
 import { cn } from "@aventisia/ui/lib";
-
-import { useOpenArchivedFlow } from "../hooks/useOpenArchivedFlow";
+import { NavLink } from "react-router-dom";
 
 interface ArchivedFlowsTableCellLinkProps {
   /** The version ID of the Archived flow to open. */
@@ -19,19 +17,15 @@ export const ArchivedFlowsTableCellLink = ({
   refId,
   cellValue,
 }: ArchivedFlowsTableCellLinkProps) => {
-  // Get handle function to open Archived flow
-  const handleOpenArchivedFlowAction = useOpenArchivedFlow();
-
   // Return the component
   return (
-    <Button
-      onClick={() => handleOpenArchivedFlowAction(refId, rowId)}
-      variant={"link"}
+    <NavLink
+      to={`${import.meta.env.VITE_AGENTBUILDER_PATH}agent?f=${refId}&v=${rowId}`}
       className={cn(
         "!h-8 w-auto truncate font-medium text-foreground hover:text-primary",
       )}
     >
       {cellValue}
-    </Button>
+    </NavLink>
   );
 };

@@ -1,7 +1,5 @@
-import { Button } from "@aventisia/ui/buttons";
 import { cn } from "@aventisia/ui/lib";
-
-import { useOpenWorkItems } from "../hooks/useOpenWorkItems";
+import { NavLink } from "react-router-dom";
 
 interface WorkItemsTableCellLinkProps {
   /** The ID of the work items to open. */
@@ -15,19 +13,15 @@ export const WorkItemsTableCellLink = ({
   rowId,
   children,
 }: WorkItemsTableCellLinkProps) => {
-  // Get handle function to open work items
-  const handleOpenWorkItemsAction = useOpenWorkItems();
-
   // Return the component
   return (
-    <Button
-      onClick={() => handleOpenWorkItemsAction(rowId)}
-      variant={"link"}
+    <NavLink
+      to={`/orchestrator/queues/work-items/${rowId}`}
       className={cn(
-        "!h-8 w-auto truncate font-medium text-foreground hover:text-primary",
+        "!h-8 w-auto cursor-pointer truncate font-medium text-foreground hover:text-primary",
       )}
     >
       {children}
-    </Button>
+    </NavLink>
   );
 };
