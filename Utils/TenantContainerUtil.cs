@@ -1,13 +1,8 @@
-﻿using System;
-using System.Linq;
-using System.Security.Cryptography;
-using System.Text.RegularExpressions;
-
-namespace AspNetToolkit.Utils;
+﻿namespace AspNetToolkit.Utils;
 
 public static class TenantContainerUtil
 {
-    private const int MaxPrefixLength = 20;
+    private const int MaxPrefixLength = 30;
     private const int SuffixLength = 5;
     private const string AllowedChars = "abcdefghijklmnopqrstuvwxyz0123456789";
 
@@ -29,8 +24,11 @@ public static class TenantContainerUtil
         // Keep only letters, numbers, and spaces
         tenantName = Regex.Replace(tenantName, @"[^a-z0-9 ]", string.Empty);
 
+        // Replace multiple spaces with a single space
+        tenantName = Regex.Replace(tenantName, @"\s+", " ").Trim();
+
         // Replace spaces with hyphens
-        tenantName = Regex.Replace(tenantName, @"\s+", "-").Trim('-');
+        tenantName = Regex.Replace(tenantName, @"\s", "-");
 
         // Limit prefix length
         var prefix = tenantName.Length > MaxPrefixLength
