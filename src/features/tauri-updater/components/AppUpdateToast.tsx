@@ -1,12 +1,12 @@
 import { Button } from "@aventisia/ui/buttons";
-import { Download, X, CheckCircle2, AlertCircle } from "lucide-react";
+import { toast } from "@aventisia/ui/sonner";
+import { Download, X, CheckCircle2, AlertCircle, InfoIcon } from "lucide-react";
 import { useEffect, useState } from "react";
 
 import { IS_TAURI } from "@/constants/constants";
 import { Progress } from "@/features/tenant/shared/Progress";
 
 import { useAppUpdater } from "../hooks/useAppUpdater";
-import { toast } from "@aventisia/ui/sonner";
 
 interface AppUpdateToastProps {
   domain: string;
@@ -68,13 +68,14 @@ export function AppUpdateToast({
         toast.dismiss(currentToastId);
       }
 
-      const id = toast(
+      const id = toast.info(
         <div className="w-full space-y-3">
-          <p className="text-xs">
+          <p className="flex items-center gap-2 text-sm">
+            <InfoIcon className="h-3 w-3" />
             There's an update available: WorcDesktopApp {updateInfo.version}
           </p>
 
-          <div className="flex gap-2 pt-1">
+          <div className="flex justify-end gap-2">
             <Button
               size="xs"
               onClick={() => {
@@ -87,6 +88,7 @@ export function AppUpdateToast({
             <Button
               size="xs"
               variant="ghost"
+              className="hover:text-info-text/80"
               onClick={() => {
                 handleIgnore();
                 toast.dismiss(id);
@@ -98,6 +100,7 @@ export function AppUpdateToast({
         </div>,
         {
           duration: Infinity, // Don't auto-dismiss
+          className: "w-96 py-3",
         },
       );
 
@@ -134,17 +137,17 @@ export function AppUpdateToast({
 
       const getIcon = () => {
         if (progress.status === "INSTALLED") {
-          return <CheckCircle2 className="h-4 w-4 text-green-500" />;
+          return <CheckCircle2 className="h-3 w-3 text-green-500" />;
         }
         if (progress.status === "ERROR") {
-          return <AlertCircle className="h-4 w-4 text-red-500" />;
+          return <AlertCircle className="h-3 w-3 text-red-500" />;
         }
-        return <Download className="h-4 w-4 animate-pulse" />;
+        return <Download className="h-3 w-3 animate-pulse" />;
       };
 
-      const id = toast(
+      const id = toast.info(
         <div className="w-full space-y-3">
-          <div className="flex items-center gap-2 font-semibold">
+          <div className="flex items-center gap-2 text-sm">
             {getIcon()}
             <span>{getStatusText()}</span>
           </div>
@@ -152,7 +155,10 @@ export function AppUpdateToast({
           {(progress.status === "DOWNLOADING" ||
             progress.status === "PENDING") && (
             <>
-              <Progress value={progress.percentage} className="h-2" />
+              <Progress
+                value={progress.percentage}
+                className="!w-full bg-accent"
+              />
               <div className="flex justify-between text-xs text-muted-foreground">
                 <span>{Math.round(progress.percentage)}%</span>
                 {progress.total && (
@@ -183,18 +189,20 @@ export function AppUpdateToast({
 
           {(progress.status === "DOWNLOADING" ||
             progress.status === "PENDING") && (
-            <Button
-              size="sm"
-              variant="outline"
-              onClick={() => {
-                cancelUpdate();
-                toast.dismiss(id);
-              }}
-              className="h-8"
-            >
-              <X className="mr-1 h-3 w-3" />
-              Cancel
-            </Button>
+            <div className="flex justify-end gap-2">
+              <Button
+                size="xs"
+                variant="outline"
+                className="hover:text-info-text"
+                onClick={() => {
+                  cancelUpdate();
+                  toast.dismiss(id);
+                }}
+              >
+                <X className="mr-1 h-3 w-3" />
+                Cancel
+              </Button>
+            </div>
           )}
         </div>,
         {
@@ -202,6 +210,7 @@ export function AppUpdateToast({
             progress.status === "INSTALLED" || progress.status === "ERROR"
               ? 5000
               : Infinity,
+          className: "w-96 py-2",
         },
       );
 
