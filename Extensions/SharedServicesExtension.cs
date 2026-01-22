@@ -110,9 +110,10 @@ public static class SharedServicesExtension
     // Method to add the upload file service to the service collection
     public static void AddUploadFileService(this IServiceCollection services)
     {
-        // Register UploadFileService as a singleton for IUploadFileService
-        services.AddSingleton<IUploadFileService, UploadFileService>();
+        // Register UploadFileService as a add dcoped for IUploadFileService
+        services.AddScoped<IUploadFileService, UploadFileService>();
     }
+
 
     // Method to add the permission validator service to the service collection
     public static void AddSPermissionValidatorService(this IServiceCollection services)
