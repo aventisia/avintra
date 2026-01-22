@@ -1,3 +1,4 @@
+import { buttonVariants } from "@aventisia/ui/buttons";
 import { cn } from "@aventisia/ui/lib";
 import { NavLink } from "react-router-dom";
 
@@ -21,6 +22,7 @@ export const OnPremTenantInstanceLink = ({
         search: `?tname=${encodeURIComponent(cellValue)}`,
       }}
       className={cn(
+        buttonVariants({ variant: "link" }),
         "!h-8 w-auto cursor-pointer truncate font-medium text-foreground hover:text-primary",
       )}
     >

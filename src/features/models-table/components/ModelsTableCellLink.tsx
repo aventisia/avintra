@@ -1,3 +1,4 @@
+import { buttonVariants } from "@aventisia/ui/buttons";
 import { cn } from "@aventisia/ui/lib";
 import { NavLink } from "react-router-dom";
 
@@ -23,7 +24,8 @@ export const ModelsTableCellLink = ({
     <NavLink
       to={handleOpenModelAction(rowId, "View")}
       className={cn(
-        "!h-6 w-auto justify-start truncate font-medium text-foreground hover:text-primary",
+        buttonVariants({ variant: "link" }),
+        "!h-8 w-auto cursor-pointer truncate font-medium text-foreground hover:text-primary",
       )}
     >
       {cellValue}
