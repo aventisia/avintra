@@ -1,5 +1,8 @@
 use tauri::Manager;
+use tokio::sync::Mutex;
+
 mod commands;
+mod updater_commands;
 mod websocket;
 
 #[cfg_attr(mobile, tauri::mobile_entry_point)]
@@ -11,6 +14,7 @@ pub fn run() {
 
     // Initialize the Tauri application
     tauri::Builder::default()
+        .manage(updater_commands::PendingUpdate(Mutex::new(None)))
         .plugin(tauri_plugin_os::init())
         .plugin(tauri_plugin_shell::init())
         .plugin(tauri_plugin_store::Builder::new().build())
@@ -20,7 +24,13 @@ pub fn run() {
             commands::launch_desktop_executor,
             commands::launch_ui_inspector,
             commands::get_user_metadata,
-            websocket::get_websocket_port
+            websocket::get_websocket_port,
+            // updater commands
+            updater_commands::check_update_for_domain,
+            updater_commands::install_pending_update,
+            updater_commands::cancel_pending_update,
+            updater_commands::get_app_version,
+            updater_commands::has_pending_update,
         ])
         .setup(|app| {
             if cfg!(debug_assertions) {
