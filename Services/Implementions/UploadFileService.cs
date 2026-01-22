@@ -10,7 +10,13 @@ public class UploadFileService : IUploadFileService
     private readonly Guid _tenantId;
     private readonly string _containerName;
 
-    public UploadFileService(ILogger<UploadFileService> logger, FileUploadConfig fileUploadConfig, IHttpClientFactory httpClientFactory, IAzureBlobStorageService azureBlobStorageService, IHttpContextAccessor httpContextAccessor)
+    public UploadFileService(
+        ILogger<UploadFileService> logger,
+        FileUploadConfig fileUploadConfig,
+        IHttpClientFactory httpClientFactory,
+        IAzureBlobStorageService azureBlobStorageService,
+        IHttpContextAccessor httpContextAccessor,
+        ICurrentTenantService currentTenantService)
     {
         _logger = logger;
         _fileUploadConfig = fileUploadConfig;
@@ -21,7 +27,7 @@ public class UploadFileService : IUploadFileService
         _userId = Guid.Parse(httpContextAccessor.HttpContext?.User?.FindFirstValue("uid") ?? Guid.Empty.ToString());
         _tenantId = Guid.Parse(httpContextAccessor.HttpContext?.User?.FindFirstValue("tntid") ?? Guid.Empty.ToString());
 
-        _containerName = "tenant-container";
+        _containerName = currentTenantService.CurrentTenantContainerName;
     }
 
     public async Task<ServiceResponse<IEnumerable<FileUploadResponseDto>>> UploadFilesTemporaryAsync(List<IFormFile> files)
@@ -421,5 +427,4 @@ public class UploadFileService : IUploadFileService
 
         return serviceResponse;
     }
-
 }
