@@ -1,19 +1,10 @@
-import { useBaseLayoutStore } from "@aventisia/ui/stores";
 import { useEffect } from "react";
-import { useShallow } from "zustand/react/shallow";
 
 import { IS_TAURI } from "@/constants/constants";
 
 import { useAppUpdater } from "./useAppUpdater";
 
 export const useCheckForUpdate = () => {
-  // Access the setAppBanner function from the base layout store
-  const { setAppBanner } = useBaseLayoutStore(
-    useShallow((state) => ({
-      setAppBanner: state.setAppBanner,
-    })),
-  );
-
   const { checkForUpdates } = useAppUpdater(window.location.origin);
 
   useEffect(() => {
@@ -32,9 +23,6 @@ export const useCheckForUpdate = () => {
           console.log(
             `Found update v${update.version} from ${update.date} with notes ${update.notes}`,
           );
-
-          // Notify the user about the new update
-          setAppBanner("update");
         }
       } catch (error) {
         console.error("New version update failed:", error);
