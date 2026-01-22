@@ -19,7 +19,8 @@ public class VersionResourceService : IVersionResourceService
         ExtractViaLLMConfig extractViaLLMConfig,
         IUnitOfWork unitOfWork,
         IHttpContextAccessor httpContextAccessor,
-        IAzureBlobStorageService azureBlobStorageService)
+        IAzureBlobStorageService azureBlobStorageService,
+        ICurrentTenantService currentTenantService)
     {
         // Set _userId and _tenantId
         _userId = Guid.Parse(httpContextAccessor.HttpContext?.User?.FindFirstValue("uid") ?? Guid.Empty.ToString());
@@ -30,7 +31,7 @@ public class VersionResourceService : IVersionResourceService
         _extractViaLLMConfig = extractViaLLMConfig;
         _unitOfWork = unitOfWork;
         _azureBlobStorageService = azureBlobStorageService;
-        _containerName = "tenant-container";
+        _containerName = currentTenantService.CurrentTenantContainerName;
     }
 
 
