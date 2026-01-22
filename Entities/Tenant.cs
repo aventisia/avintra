@@ -187,4 +187,19 @@ public class Tenant : BaseEntity
     /// Gets or sets the type of the tenant.
     /// </summary>
     public required TenantTypesEnum Type { get; set; }
+
+    /// <summary>
+    /// Gets or sets the container name associated with the tenant.
+    /// </summary>
+    public string ContainerName { get; set; } = string.Empty;
+
+    /// <summary>
+    /// Ensures the ContainerName is set; generates one if empty.
+    /// </summary>
+    public void EnsureContainerName()
+    {
+        if (string.IsNullOrWhiteSpace(ContainerName))
+            ContainerName = TenantContainerUtil.GenerateName(Name);
+    }
+
 }
