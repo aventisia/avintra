@@ -227,6 +227,7 @@ public static class AccountsDbInitialSeed
                 Type = TenantTypesEnum.Organization,
                 Currency = CurrencyTypesEnum.USD,
                 Name = instanceConfig.TenantName,
+                ContainerName = TenantContainerUtil.GenerateName(instanceConfig.TenantName),
                 ExpiresOn = DateTimeOffset.MaxValue,    // TODO: We need to remove or update it
                 IsSSOEnabled = false,
                 IsPwdEnabled = true,
