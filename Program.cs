@@ -73,6 +73,12 @@ if (!IsEnvironmentLocalhost)
         message: "ON_PREM_INSTANCE_KEY cannot be null"
     );
 
+    var AZURE_BLOB_STORAGE_CONNECTION_STRING = Guard.Against.Null(
+        Environment.GetEnvironmentVariable("AZURE_BLOB_STORAGE_CONNECTION_STRING"),
+        message: "AZURE_BLOB_STORAGE_CONNECTION_STRING cannot be null"
+    );
+
+
     string? RAZORPAY_KEY_ID = string.Empty;
     string? RAZORPAY_KEY_SECRET = string.Empty;
     string? RAZORPAY_WEBHOOK_SECRET = string.Empty;
@@ -114,6 +120,7 @@ if (!IsEnvironmentLocalhost)
                 { "InstanceConfig:TenantName", DEFAULT_TENANT_NAME },
                 { "GeneralConfig:AppDomain", APP_BASE_URL },
                 { "DefaultUserConfig:Email", ADMIN_USER_EMAIL },
+                { "AzureBlobStorageConfig:ConnectionString", AZURE_BLOB_STORAGE_CONNECTION_STRING }
             }
         )
         .Build();
@@ -156,6 +163,7 @@ builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerConfig();
 builder.Services.AddSwaggerGen();
 builder.Services.AddQuartzJobs();
+builder.Services.AddAzureBlobStorageService(config);
 /*--Configure the HTTP request pipeline.--*/
 
 var app = builder.Build();
