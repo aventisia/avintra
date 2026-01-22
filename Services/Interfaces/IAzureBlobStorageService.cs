@@ -69,7 +69,7 @@ public interface IAzureBlobStorageService
     /// </summary>
     /// <param name="containerName">The name of the blob container.</param>
     /// <param name="fileName">The name of the file (blob).</param>
-    /// <param name="validFor">The duration for which the SAS token is valid.</param>
+    /// <param name="tokenLifetimeMinutes">The duration, in minutes, that the SAS token remains valid.</param>
     /// <returns>A SAS token granting temporary access to the file.</returns>
-    string GenerateSasToken(string containerName, string fileName, TimeSpan validFor);
+    string GenerateSasToken(string containerName, string fileName, int tokenLifetimeMinutes);
 }

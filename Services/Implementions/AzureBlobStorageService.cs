@@ -166,7 +166,7 @@ public class AzureBlobStorageService : IAzureBlobStorageService
     }
 
     // Generates a read-only Shared Access Signature (SAS) token for a blob.
-    public string GenerateSasToken(string containerName, string fileName, TimeSpan validFor)
+    public string GenerateSasToken(string containerName, string fileName, int tokenLifetimeMinutes)
     {
         // Get a client for the target blob container.
         var containerClient = _blobServiceClient.GetBlobContainerClient(containerName);
@@ -182,7 +182,7 @@ public class AzureBlobStorageService : IAzureBlobStorageService
         // Generate a SAS URI that grants read-only access to the blob and expires after the specified duration.
         var sasUri = blobClient.GenerateSasUri(
             BlobSasPermissions.Read,
-            DateTimeOffset.UtcNow.Add(validFor));
+            DateTimeOffset.UtcNow.AddMinutes(tokenLifetimeMinutes));
 
         // Return the full SAS URI as a string.
         return sasUri.ToString();
