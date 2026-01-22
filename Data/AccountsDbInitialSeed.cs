@@ -77,6 +77,24 @@ public static class AccountsDbInitialSeed
     {
         try
         {
+            if (await accountsDbContext.Tenants.Where(w => string.IsNullOrEmpty(w.ContainerName)).CountAsync() > 0)
+            {
+                // Fetch tenants with empty ContainerName
+                var tenantsToUpdate = await accountsDbContext.Tenants
+                    .Where(w => string.IsNullOrEmpty(w.ContainerName))
+                    .ToListAsync();
+
+                // Loop through each tenant and update ContainerName
+                foreach (var tenant in tenantsToUpdate)
+                {
+                    // Example: set ContainerName based on TenantId or any logic
+                    tenant.ContainerName = TenantContainerUtil.GenerateName(tenant.Name);
+                }
+
+                // Save changes to the database
+                await accountsDbContext.SaveChangesAsync();
+            }
+
             // Role already exists
             if (await accountsDbContext.Roles.CountAsync() > 0)
             {
