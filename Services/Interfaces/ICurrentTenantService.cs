@@ -22,6 +22,11 @@ public interface ICurrentTenantService
     Guid CurrentUserId { get; set; }
 
     /// <summary>
+    /// Gets the container name associated with the current tenant.
+    /// </summary>
+    string CurrentTenantContainerName { get; }
+
+    /// <summary>
     /// Validates the provided tenant ID with the database and sets it as the current tenant ID.
     /// If the user ID is not Unknown, it also sets the user ID and generates a random GUID for the CurrentUserId property.
     /// </summary>
