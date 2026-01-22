@@ -1,4 +1,5 @@
 import { DataTableSkeleton } from "@aventisia/ui/data-table";
+import { useDocumentTitle } from "@aventisia/ui/hooks";
 import { lazy, Suspense } from "react";
 
 // Lazy load the Billings component.
@@ -15,6 +16,9 @@ const Preferences = lazy(() =>
  * @returns JSX element representing the BillingPage component.
  */
 export const PreferencesPage = () => {
+    // Set the document title
+  useDocumentTitle("Preferences");
+
   return (
     <Suspense fallback={<DataTableSkeleton />}>
       <div className="space-y-4 py-4">
