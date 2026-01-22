@@ -1,4 +1,5 @@
 use serde::Serialize;
+use std::time::{Duration, Instant};
 use tauri::Url;
 use tauri::{ipc::Channel, AppHandle, State};
 use tauri_plugin_updater::{Update, UpdaterExt};
@@ -46,10 +47,10 @@ pub struct UpdateError {
 }
 
 impl UpdateError {
-    fn new(code: &str, message: String) -> Self {
+    fn new(code: &str, message: impl Into<String>) -> Self {
         Self {
             code: code.to_string(),
-            message,
+            message: message.into(),
         }
     }
 }
@@ -71,8 +72,11 @@ pub async fn check_update_for_domain(
         .trim_end_matches('/');
 
     let url = format!(
-        "https://{}/accounts/api/desktop-app/update/{{{{target}}}}/{{{{arch}}}}/{{{{current_version}}}}",domain
+        "https://{}/accounts/api/desktop-app/update/{{{{target}}}}/{{{{arch}}}}/{{{{current_version}}}}",
+        domain
     );
+
+    println!("[updater] checking update at {}", url);
 
     let update_url =
         Url::parse(&url).map_err(|e| UpdateError::new("URL_PARSE_ERROR", e.to_string()))?;
@@ -88,6 +92,11 @@ pub async fn check_update_for_domain(
         .map_err(|e| UpdateError::new("CHECK_ERROR", e.to_string()))?;
 
     if let Some(update) = update {
+        println!(
+            "[updater] update available: current={} latest={}",
+            current_version, update.version
+        );
+
         *state.0.lock().await = Some(update.clone());
 
         Ok(UpdateMetadata {
@@ -99,6 +108,8 @@ pub async fn check_update_for_domain(
             download_url: Some(update.download_url.to_string()),
         })
     } else {
+        println!("[updater] no update available");
+
         Ok(UpdateMetadata {
             available: false,
             version: current_version.clone(),
@@ -116,35 +127,77 @@ pub async fn install_pending_update(
     state: State<'_, PendingUpdate>,
     on_progress: Channel<DownloadProgress>,
 ) -> Result<(), UpdateError> {
+    println!("[updater] install_pending_update called");
+
     let update = state
         .0
         .lock()
         .await
         .take()
-        .ok_or_else(|| UpdateError::new("NO_UPDATE", "No pending update".into()))?;
+        .ok_or_else(|| UpdateError::new("NO_UPDATE", "No pending update"))?;
 
-    let mut last_percentage = 0u8;
-    let progress = on_progress.clone();
-    let finish = on_progress.clone();
+    let _ = on_progress.send(DownloadProgress {
+        downloaded: 0,
+        total: None,
+        percentage: 0,
+        status: ProgressStatus::Pending,
+    });
 
-    update
+    println!("[updater] starting download");
+
+    let mut last_percentage: u8 = 0;
+    let mut last_emit = Instant::now();
+    let emit_interval = Duration::from_millis(150);
+
+    let progress_channel = on_progress.clone();
+    let downloaded_channel = on_progress.clone();
+    let installing_channel = on_progress.clone();
+    let error_channel = on_progress.clone();
+
+    let result = update
         .download_and_install(
             move |downloaded, total| {
-                if let Some(total) = total {
-                    let percent = ((downloaded as f64 / total as f64) * 100.0) as u8;
-                    if percent > last_percentage {
-                        last_percentage = percent;
-                        let _ = progress.send(DownloadProgress {
-                            downloaded: downloaded as u64,
-                            total: Some(total as u64),
-                            percentage: percent.min(99),
-                            status: ProgressStatus::Downloading,
-                        });
-                    }
+                let downloaded = downloaded as u64;
+                let total = total.map(|t| t as u64);
+
+                let percentage = if let Some(total) = total {
+                    ((downloaded as f64 / total as f64) * 100.0)
+                        .min(100.0)
+                        .round() as u8
+                } else {
+                    0
+                };
+
+                if percentage != last_percentage && last_emit.elapsed() >= emit_interval {
+                    last_percentage = percentage;
+                    last_emit = Instant::now();
+
+                    println!(
+                        "[updater] downloading {} / {:?} ({}%)",
+                        downloaded, total, percentage
+                    );
+
+                    let _ = progress_channel.send(DownloadProgress {
+                        downloaded,
+                        total,
+                        percentage,
+                        status: ProgressStatus::Downloading,
+                    });
                 }
             },
             move || {
-                let _ = finish.send(DownloadProgress {
+                println!("[updater] download completed");
+
+                let _ = downloaded_channel.send(DownloadProgress {
+                    downloaded: 0,
+                    total: None,
+                    percentage: 100,
+                    status: ProgressStatus::Downloaded,
+                });
+
+                println!("[updater] installing update");
+
+                let _ = installing_channel.send(DownloadProgress {
                     downloaded: 0,
                     total: None,
                     percentage: 100,
@@ -152,8 +205,22 @@ pub async fn install_pending_update(
                 });
             },
         )
-        .await
-        .map_err(|e| UpdateError::new("INSTALL_ERROR", e.to_string()))?;
+        .await;
+
+    if let Err(e) = result {
+        println!("[updater] install error: {}", e);
+
+        let _ = error_channel.send(DownloadProgress {
+            downloaded: 0,
+            total: None,
+            percentage: 0,
+            status: ProgressStatus::Error,
+        });
+
+        return Err(UpdateError::new("INSTALL_ERROR", e.to_string()));
+    }
+
+    println!("[updater] update installed successfully");
 
     let _ = on_progress.send(DownloadProgress {
         downloaded: 0,
@@ -163,11 +230,11 @@ pub async fn install_pending_update(
     });
 
     app.restart();
-    Ok(())
 }
 
 #[tauri::command]
 pub async fn cancel_pending_update(state: State<'_, PendingUpdate>) -> Result<(), UpdateError> {
+    println!("[updater] cancel_pending_update called");
     *state.0.lock().await = None;
     Ok(())
 }
