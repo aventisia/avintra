@@ -1,6 +1,7 @@
 import { DotSeparator, LoadingSpinner, Separator } from "@aventisia/ui";
 import { Badge } from "@aventisia/ui/badge";
 import { Button } from "@aventisia/ui/buttons";
+import { useDocumentTitle } from "@aventisia/ui/hooks";
 import { dateFormatter } from "@aventisia/ui/utils";
 import { Clock, Download, Tag, User2 } from "lucide-react";
 import { useShallow } from "zustand/react/shallow";
@@ -14,6 +15,8 @@ import { useCloneTemplateMutation } from "../../hooks/useCloneTemplateMutation";
 import { DeleteTemplateButton } from "./DeleteTemplateButton";
 
 export function TemplateHeader({ template }: { template: UseTemplateDTO }) {
+  useDocumentTitle(`${template.name} - Library`);
+
   const { mutateAsync: cloneTemplateMutation, isPending } =
     useCloneTemplateMutation();
 

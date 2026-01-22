@@ -1,7 +1,6 @@
-import { Button } from "@aventisia/ui/buttons";
+import { buttonVariants } from "@aventisia/ui/buttons";
 import { cn } from "@aventisia/ui/lib";
-
-import { useNavigateToTenant } from "../hooks/useNavigateToTenant";
+import { NavLink } from "react-router-dom";
 
 interface OnPremTenantInstanceLinkProps {
   /** The ID of the job to open TenantInstance. */
@@ -15,17 +14,19 @@ export const OnPremTenantInstanceLink = ({
   rowId,
   cellValue,
 }: OnPremTenantInstanceLinkProps) => {
-  const { handleOpenTenant } = useNavigateToTenant();
   // Return the component
   return (
-    <Button
-      onClick={() => handleOpenTenant(rowId, cellValue)}
-      variant={"link"}
+    <NavLink
+      to={{
+        pathname: `/ga/on-prem-tenants/${rowId}`,
+        search: `?tname=${encodeURIComponent(cellValue)}`,
+      }}
       className={cn(
-        "!h-8 w-auto truncate font-medium text-foreground hover:text-primary",
+        buttonVariants({ variant: "link" }),
+        "!h-8 w-auto cursor-pointer truncate font-medium text-foreground hover:text-primary",
       )}
     >
       {cellValue}
-    </Button>
+    </NavLink>
   );
 };
