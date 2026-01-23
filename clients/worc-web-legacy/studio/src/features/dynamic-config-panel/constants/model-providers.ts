@@ -589,7 +589,7 @@ export const googleModelList: Model[] = [
 export const openRouterModelList: Model[] = [
   // --- Trending Reasoning & Frontier Models ---
   {
-    label: "Claude 4.5 Sonnet",
+    label: "anthropic/claude-4.5-sonnet",
     value: "anthropic/claude-4.5-sonnet",
     available: true,
     specialty: ["text", "vision", "deep-search"],
@@ -607,7 +607,7 @@ export const openRouterModelList: Model[] = [
     specialty: ["text", "vision", "deep-search"],
   },
   {
-    label: "Grok Code Fast 1",
+    label: "x-ai/grok-code-fast-1",
     value: "x-ai/grok-code-fast-1",
     available: true,
     specialty: ["text", "deep-search"],
@@ -615,19 +615,19 @@ export const openRouterModelList: Model[] = [
 
   // --- High-Performance Open Weights ---
   {
-    label: "DeepSeek V3.2 Speciale",
+    label: "deepseek/deepseek-v3.2-speciale",
     value: "deepseek/deepseek-v3.2-speciale",
     available: true,
     specialty: ["text", "vision"],
   },
   {
-    label: "Qwen 3 VL (72B)",
+    label: "qwen/qwen-3-vl-72b",
     value: "qwen/qwen-3-vl-72b",
     available: true,
     specialty: ["vision", "text"],
   },
   {
-    label: "Llama 3.3 Nemotron Super",
+    label: "nvidia/llama-3.3-nemotron-super-49b",
     value: "nvidia/llama-3.3-nemotron-super-49b",
     available: true,
     specialty: ["text", "vision"],
@@ -653,7 +653,7 @@ export const openRouterModelList: Model[] = [
     specialty: ["text"],
   },
   {
-    label: "DeepSeek R1T2 Chimera",
+    label: "tngtech/deepseek-r1t2-chimera",
     value: "tngtech/deepseek-r1t2-chimera",
     available: true,
     specialty: ["text"],
@@ -673,7 +673,7 @@ export const openRouterModelList: Model[] = [
     specialty: ["text", "vision", "realtime"],
   },
   {
-    label: "Claude 4.5 Haiku",
+    label: "anthropic/claude-4.5-haiku",
     value: "anthropic/claude-4.5-haiku",
     available: true,
     specialty: ["text", "realtime"],
