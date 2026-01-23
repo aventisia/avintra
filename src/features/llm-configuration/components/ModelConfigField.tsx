@@ -25,6 +25,7 @@ import {
   modelProviders,
 } from "../constants/model-providers";
 import { useModelProviderStore } from "../stores/model-provider-store";
+import { getUniqueArrayByKey } from "../utils/getUniqueArrayByKey";
 import { CredentialsSelectField } from "./CredentialsSelectField";
 
 interface ModelConfigFieldProps {
@@ -246,7 +247,7 @@ const ModelConfigField = ({ name }: ModelConfigFieldProps) => {
   const availableModels = useMemo(() => {
     if (isBYOKEnabled) {
       setModels(byokModels);
-      return byokModels;
+      return getUniqueArrayByKey(byokModels, "value");
     }
 
     const provider = filteredProviders.find((p) => p.value === providerValue);
@@ -306,6 +307,7 @@ const ModelConfigField = ({ name }: ModelConfigFieldProps) => {
             selectOptions={availableModels}
             label="Model"
             isLoading={isLoading}
+            primaryText="Models"
             disabled={!isInitialized || (isBYOKEnabled && !credentialsValue)}
           />
         </div>
