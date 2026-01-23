@@ -24,30 +24,34 @@ public class SessionValidationService : ISessionValidationService
         // Log the start of the session validation process
         _logger.LogInformation("Initiating validation for session with ID: {SessionId}", sessionId);
 
-        // Query the database for the active session using the provided session ID
-        var activeSession = await _tenantDbContext.ReadOnlyActiveSessions
+        // Check if the session exists in the database
+        var sessionExists = await _tenantDbContext.ReadOnlyActiveSessions
             .AsNoTracking()
-            .SingleOrDefaultAsync(x => x.Id == sessionId);
+            .AnyAsync(w => w.Id == sessionId);
 
-        // If no session was found in the database, return false
-        if (activeSession == null)
+        // If the session does not exist, log and return false
+        if (!sessionExists)
         {
             _logger.LogWarning("Session with ID: {SessionId} not found in the database.", sessionId);
             return false;
         }
 
-        // Check if the session has expired, and return false if it has
-        if (activeSession.SessionExpiresOn < DateTimeOffset.UtcNow)
+        // Check if the session has not expired
+        var sessionIsActive = await _tenantDbContext.ReadOnlyActiveSessions
+            .AsNoTracking()
+            .AnyAsync(a =>
+                a.Id == sessionId &&
+                a.SessionExpiresOn >= DateTimeOffset.UtcNow);
+
+        // If the session is expired, log and return false
+        if (!sessionIsActive)
         {
-            _logger.LogWarning("Session with ID: {SessionId} has expired. Expiry time: {ExpiryTime}",
-                sessionId, activeSession.SessionExpiresOn);
+            _logger.LogWarning("Session with ID: {SessionId} has expired.", sessionId);
             return false;
         }
 
         // Log a success message if the session is valid
-        _logger.LogInformation("Session with ID: {SessionId} is valid. Expiry time: {ExpiryTime}",
-            sessionId, activeSession.SessionExpiresOn);
-
+        _logger.LogInformation("Session with ID: {SessionId} is valid.", sessionId);
         return true;
     }
 }

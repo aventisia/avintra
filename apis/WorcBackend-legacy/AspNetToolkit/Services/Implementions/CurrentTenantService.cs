@@ -58,6 +58,13 @@ public class CurrentTenantService : ICurrentTenantService
         // set CurrentTenantId
         CurrentTenantId = tenant.Id;
 
+        // Resolve container name for the tenant If a container name is already stored, reuse it
+        // Otherwise, generate a new safe container name from the tenant name
+        if (string.IsNullOrEmpty(tenant.ContainerName))
+            CurrentTenantContainerName = TenantContainerUtil.GenerateName(tenant.Name);
+        else
+            CurrentTenantContainerName = tenant.ContainerName;
+
         // Return 
         return "pass";
     }
@@ -67,4 +74,7 @@ public class CurrentTenantService : ICurrentTenantService
 
     // Prop to keep userId for current request. Required for global filter to apply in DbContext
     public Guid CurrentUserId { get; set; }
+
+    // Container name associated with the current tenant.
+    public required string CurrentTenantContainerName { get; set; }
 }
