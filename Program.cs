@@ -67,21 +67,6 @@ if (!IsEnvironmentLocalhost)
         message: "AZURE_BLOB_STORAGE_CONNECTION_STRING cannot be null"
     );
 
-    var AZURE_ENTRA_CLIENT_ID = Guard.Against.Null(
-        Environment.GetEnvironmentVariable("AZURE_ENTRA_CLIENT_ID"),
-        message: "AZURE_ENTRA_CLIENT_ID cannot be null"
-    );
-
-    var AZURE_ENTRA_CLIENT_SECRET = Guard.Against.Null(
-            Environment.GetEnvironmentVariable("AZURE_ENTRA_CLIENT_SECRET"),
-            message: "AZURE_ENTRA_CLIENT_SECRET cannot be null"
-        );
-
-    var AZURE_TENANT_ID = Guard.Against.Null(
-            Environment.GetEnvironmentVariable("AZURE_TENANT_ID"),
-            message: "AZURE_TENANT_ID cannot be null"
-        );
-
     string? RAZORPAY_KEY_ID = string.Empty;
     string? RAZORPAY_KEY_SECRET = string.Empty;
     string? RAZORPAY_WEBHOOK_SECRET = string.Empty;
@@ -102,6 +87,14 @@ if (!IsEnvironmentLocalhost)
             message: "RAZORPAY_WEBHOOK_SECRET cannot be null"
         );
     }
+    string? AZURE_ENTRA_CLIENT_ID = string.Empty;
+    string? AZURE_TENANT_ID = string.Empty;
+    string? AZURE_ENTRA_CLIENT_SECRET = string.Empty;
+
+
+    AZURE_ENTRA_CLIENT_ID = Environment.GetEnvironmentVariable("AZURE_ENTRA_CLIENT_ID");
+    AZURE_ENTRA_CLIENT_SECRET = Environment.GetEnvironmentVariable("AZURE_ENTRA_CLIENT_SECRET");
+    AZURE_TENANT_ID = Environment.GetEnvironmentVariable("AZURE_TENANT_ID");
 
     // Update sensitive data in configuration
     config = new ConfigurationBuilder()
