@@ -6,14 +6,18 @@ public class InferencingModelService : IInferencingModelService
     private readonly IUnitOfWork _unitOfWork;
     private readonly ILLMDataExtractionService _llmDataExtractionService;
     private readonly FileUploadConfig _fileUploadConfig;
+    private readonly IAzureBlobStorageService _azureBlobStorageService;
     private readonly Guid _userId;
+    private readonly string _containerName;
 
     public InferencingModelService(
         ILogger<InferencingModelService> logger,
         IUnitOfWork unitOfWork,
         IHttpContextAccessor httpContextAccessor,
         ILLMDataExtractionService llmDataExtractionService,
-        FileUploadConfig fileUploadConfig)
+        FileUploadConfig fileUploadConfig,
+        IAzureBlobStorageService azureBlobStorageService,
+        ICurrentTenantService currentTenantService)
     {
         // Retrieve the user ID from the HTTP context and initialize the logger and unit of work
         _userId = Guid.Parse(httpContextAccessor.HttpContext?.User?.FindFirstValue("uid") ?? Guid.Empty.ToString());
@@ -22,6 +26,8 @@ public class InferencingModelService : IInferencingModelService
         _unitOfWork = unitOfWork;
         _llmDataExtractionService = llmDataExtractionService;
         _fileUploadConfig = fileUploadConfig;
+        _azureBlobStorageService = azureBlobStorageService;
+        _containerName = currentTenantService.CurrentTenantContainerName;
     }
 
     // Gets the model setup for a specific AI Project using its unique AI Project ID.
@@ -1224,24 +1230,15 @@ public class InferencingModelService : IInferencingModelService
             return (null, null);
         }
 
-        // If file is local then combine with local storage path
-        string filePath = document.Path;
-        if (!filePath.Contains("http://") && !filePath.Contains("https://"))
-        {
-            // Remove leading "/files" if present. TODO: This /files/ seems unnecessary in the local file path when we upload a file. need to check and change the logic
-            if (filePath.StartsWith("/files/"))
-                filePath = filePath.Substring("/files/".Length);
-
-            // Combine with local storage path
-            filePath = Path.Combine(_fileUploadConfig.UploadDirectory, filePath.TrimStart('/'));
-        }
+        // Generate a temporary SAS URL for the local file with a 5-minute validity
+        string filePath = _azureBlobStorageService.GenerateSasToken(_containerName, document.Path, 5);
 
         // Extract the text from the document using the provided path
         var documentText = await _llmDataExtractionService.GetFileTextAsync(filePath);
         if (string.IsNullOrEmpty(documentText))
         {
             // Log and handle the case where text extraction fails
-            _logger.LogWarning("Failed to extract text for DocumentId: {DocumentId} at path: {Path}", fileId, document.Path);
+            _logger.LogWarning("Failed to extract text for DocumentId: {DocumentId} at path: {Path}", fileId, filePath);
             documentExtractionData.Remarks = "Failed to extract text from the document.";
             return (null, null);
         }

@@ -21,6 +21,7 @@ if (!builder.Environment.IsEnvironment("Localhost"))
     var DB_CREDENTIALS = Guard.Against.Null(Environment.GetEnvironmentVariable("DB_CREDENTIALS"), "DB_CREDENTIALS cannot be null");
     var JWT_SECRET_KEY = Guard.Against.Null(Environment.GetEnvironmentVariable("JWT_SECRET_KEY"), "JWT_SECRET_KEY cannot be null");
     var OPENAI_API_KEY = Guard.Against.Null(Environment.GetEnvironmentVariable("OPENAI_API_KEY"), "OPENAI_API_KEY cannot be null");
+    var AZURE_BLOB_STORAGE_CONNECTION_STRING = Guard.Against.Null(Environment.GetEnvironmentVariable("AZURE_BLOB_STORAGE_CONNECTION_STRING"), message: "AZURE_BLOB_STORAGE_CONNECTION_STRING cannot be null");
 
     // Update sensitive data in configuration
     config = new ConfigurationBuilder().AddConfiguration(config).AddInMemoryCollection(new Dictionary<string, string?>
@@ -30,7 +31,9 @@ if (!builder.Environment.IsEnvironment("Localhost"))
         { "ConnectionStringConfig:TenantDb:Credentials", DB_CREDENTIALS },
         { "ConnectionStringConfig:TenantDb:Host", DB_HOST },
         { "JwtConfig:SecretKey", JWT_SECRET_KEY },
-        { "OpenAIConfig:OpenAIApiKey", OPENAI_API_KEY }
+        { "OpenAIConfig:OpenAIApiKey", OPENAI_API_KEY },
+        { "AzureBlobStorageConfig:ConnectionString", AZURE_BLOB_STORAGE_CONNECTION_STRING }
+
     }).Build();
 }
 
@@ -70,6 +73,7 @@ builder.Services.AddControllersConfig();
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerConfig();
 builder.Services.AddSwaggerGen();
+builder.Services.AddAzureBlobStorageService(config);
 
 var app = builder.Build();
 
@@ -103,7 +107,7 @@ app.UseAuthentication();
 
 app.UseAuthorization();
 
-app.UseRateLimiter(); 
+app.UseRateLimiter();
 
 app.UseMiddleware<SessionValidator>();
 
