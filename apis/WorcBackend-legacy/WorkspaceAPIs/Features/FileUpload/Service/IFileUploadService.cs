@@ -21,7 +21,7 @@ public interface IFileUploadService
     /// </summary>
     /// <param name="fileUrl">File Url</param>
     /// <returns>True if delete job is successful, else false</returns>
-    ServiceResponse<bool> DeleteFileAsync(string fileUrl);
+    Task<ServiceResponse<bool>> DeleteFileAsync(string fileUrl);
 
     /// <summary>
     /// Delete file
