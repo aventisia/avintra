@@ -18,19 +18,6 @@ var config = configurationBuilder.Build();
 
 var IsEnvironmentLocalhost = builder.Environment.IsEnvironment("Localhost");
 
-// Try to parse the TenantType from configuration
-var tenantTypeValue = builder.Configuration["InstanceConfig:TenantType"];
-
-if (Enum.TryParse(tenantTypeValue, true, out OnPremTenantTypesEnum tenantType) && Enum.IsDefined(typeof(OnPremTenantTypesEnum), tenantType))
-{
-    // Valid tenant type - you can add logic here if needed.
-}
-else
-{
-    // Invalid tenant type - throw an exception
-    throw new InvalidOperationException($"Invalid Tenant Type in configuration: '{tenantTypeValue}'");
-}
-
 if (!IsEnvironmentLocalhost)
 {
     // Get sensitive data from environment variables
@@ -100,7 +87,7 @@ if (!IsEnvironmentLocalhost)
     string? RAZORPAY_WEBHOOK_SECRET = string.Empty;
 
     // Only load Razorpay credentials if tenant type is 'Commercial'
-    if (tenantType == OnPremTenantTypesEnum.Commercial)
+    if (ON_PREM_TENANT_TYPE == OnPremTenantTypesEnum.Commercial.ToString())
     {
         RAZORPAY_KEY_ID = Guard.Against.Null(
             Environment.GetEnvironmentVariable("RAZORPAY_KEY_ID"),
@@ -170,7 +157,7 @@ builder.Services.AddAuthenticationConfig(config);
 builder.Services.AddDbContextConfig(config);
 
 // Razorpay client
-builder.Services.AddRazorpayClient(config, tenantType);
+builder.Services.AddRazorpayClient(config);
 
 // ASP.NET & App services
 builder.Services.AddHttpContextAccessor();

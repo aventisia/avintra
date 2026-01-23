@@ -144,10 +144,12 @@ public static class AppServicesExtension
     /// <param name="services">The collection of services to register.</param>
     /// <param name="config">The configuration provider used to retrieve Razorpay settings.</param>
     /// <param name="tenantType">The tenant type (e.g., Commercial, Enterprise) to determine if Razorpay should be enabled.</param>
-    public static void AddRazorpayClient(this IServiceCollection services, IConfiguration config, OnPremTenantTypesEnum tenantType)
+    public static void AddRazorpayClient(this IServiceCollection services, IConfiguration config)
     {
+        var ON_PREM_TENANT_TYPE = Environment.GetEnvironmentVariable("ON_PREM_TENANT_TYPE") ?? "Enterprise";
+
         // Check if the tenant type is Commercial, as Razorpay integration is only needed for Commercial tenants
-        if (tenantType == OnPremTenantTypesEnum.Commercial)
+        if (ON_PREM_TENANT_TYPE == OnPremTenantTypesEnum.Commercial.ToString())
         {
             // Retrieve the Razorpay configuration section from the configuration provider
             var razorpayConfig = Guard.Against.Null(config.GetSection("RazorpayConfig").Get<RazorpayConfig>(), "RazorpayConfig cannot be null");
