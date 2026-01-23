@@ -1,3 +1,5 @@
+using System.Threading.Tasks;
+
 namespace WorkspaceAPIs.Services;
 
 public class FileUploadService(ILogger<FileUploadService> logger, IUploadFileService uploadFileService) : IFileUploadService
@@ -99,7 +101,7 @@ public class FileUploadService(ILogger<FileUploadService> logger, IUploadFileSer
     }
 
     // Deletes a file from the server's storage based on the file URL.
-    public ServiceResponse<bool> DeleteFileAsync(string fileUrl)
+    public async Task<ServiceResponse<bool>> DeleteFileAsync(string fileUrl)
     {
         var serviceResponse = new ServiceResponse<bool>
         {
@@ -118,7 +120,7 @@ public class FileUploadService(ILogger<FileUploadService> logger, IUploadFileSer
 
             _logger.LogInformation("Starting file deletion process for file URL: {FileUrl}.", fileUrl);
 
-            var response = _uploadFileService.DeleteFileAsync(fileUrl);
+            var response = await _uploadFileService.DeleteFileAsync(fileUrl);
 
             if (response.StatusCode != 200)
             {
@@ -168,8 +170,8 @@ public class FileUploadService(ILogger<FileUploadService> logger, IUploadFileSer
             }
             else
             {
-                var downloadResponse = _uploadFileService.DownloadFileAsync(fileOrRemoteUrl, isTemp);
-                serviceResponse.Data = downloadResponse.Data.Path;
+                var downloadResponse = await _uploadFileService.DownloadFileAsync(fileOrRemoteUrl, isTemp);
+                serviceResponse.Data = fileOrRemoteUrl;
                 _logger.LogInformation(downloadResponse.Message);
             }
             serviceResponse.StatusCode = 200;

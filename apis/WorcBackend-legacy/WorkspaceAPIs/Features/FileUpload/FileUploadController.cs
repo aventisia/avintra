@@ -31,8 +31,8 @@ public class FileUploadController(IFileUploadService uploadedDocService) : BaseA
 
     //Delete files
     [HttpDelete]
-    public ActionResult<ServiceResponse<bool>> DeleteFile(string fileUrl)
+    public async Task<ActionResult<ServiceResponse<bool>>> DeleteFile(string fileUrl)
     {
-        return ResultHelper(_uploadedDocService.DeleteFileAsync(fileUrl));
+        return ResultHelper(await _uploadedDocService.DeleteFileAsync(fileUrl));
     }
 }
