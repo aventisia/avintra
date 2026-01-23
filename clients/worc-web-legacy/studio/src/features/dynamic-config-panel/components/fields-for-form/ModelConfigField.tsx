@@ -20,7 +20,8 @@ import { buttonVariants } from "@aventisia/ui/buttons";
 import { CredentialsSelectField } from "./CredentialsSelectField";
 import { getProviderModels } from "../../apis/llm-pipelines-apis";
 import { toast } from "@aventisia/ui/sonner";
-import { ModelSelectField } from "./ModelSelectField";
+import { SearchableSelectField } from "@/react-toolkit/ui/searchable-select/SearchableSelectField";
+import { getUniqueArrayByKey } from "../../utils/getUniqueArrayByKey";
 
 interface ModelConfigFieldProps {
   /** The name of the form field. */
@@ -230,7 +231,7 @@ const ModelConfigField = ({ name }: ModelConfigFieldProps) => {
   // Available models
   const availableModels = useMemo(() => {
     if (is_byok_enabled) {
-      return byokModels;
+      return getUniqueArrayByKey(byokModels, "value");
     }
 
     const provider = filteredProviders.find((p) => p.value === providerValue);
@@ -277,11 +278,12 @@ const ModelConfigField = ({ name }: ModelConfigFieldProps) => {
 
       <div className="flex items-end gap-1">
         <div className="flex-grow">
-          <ModelSelectField
+          <SearchableSelectField
             size="sm"
             name={fieldNames.model}
             selectOptions={availableModels}
             label="Model"
+            primaryText="Models"
             isLoading={isLoading}
             disabled={!isInitialized || (is_byok_enabled && !credentialsValue)}
           />
