@@ -86,6 +86,7 @@ public static class AppServicesExtension
         services.AddSingleton(Guard.Against.Null(config.GetSection("VerificationCodeConfig").Get<VerificationCodeConfig>(), "VerificationCodeConfig cannot be null"));
         services.AddSingleton(Guard.Against.Null(config.GetSection("ExternalAPIsConfig").Get<ExternalAPIsConfig>(), "ExternalAPIsConfig cannot be null"));
         services.AddSingleton(Guard.Against.Null(config.GetSection("InstanceConfig").Get<InstanceConfig>(), message: "InstanceConfig cannot be null"));
+        services.AddSingleton(Guard.Against.Null(config.GetSection("AzureEntraConfig").Get<AzureEntraConfig>(), message: "AzureEntraConfig cannot be null"));
 
         // Feature services
         services.AddScoped<IUserRegistrationService, UserRegistrationService>();
@@ -116,6 +117,7 @@ public static class AppServicesExtension
         services.AddScoped<IPaymentTrackerService, PaymentTrackerService>();
         services.AddScoped<IAITaskService, AITaskService>();
         services.AddScoped<IInstanceService, InstanceService>();
+        services.AddScoped<ILoginWithExternalAuthService, LoginWithExternalAuthService>();
 
         // Register AppRuntimeSettings as a singleton so that a single instance is shared across the application
         services.AddSingleton<AppRuntimeSettings>();
