@@ -2,10 +2,10 @@ import { Button } from "@aventisia/ui/buttons";
 import { toast } from "@aventisia/ui/sonner";
 import {
   X,
-  CheckCircle2,
   AlertCircle,
   InfoIcon,
   DownloadIcon,
+  RefreshCcw,
 } from "lucide-react";
 import { useEffect, useRef, useState } from "react";
 
@@ -22,51 +22,47 @@ interface AppUpdateToastProps {
   checkInterval?: number;
 }
 
+/**
+ * Toast manager component for App Updates.
+ * Enforces a strict "One Toast" policy.
+ */
 export function AppUpdateToast({
   domain,
   autoCheck = true,
   checkInterval,
 }: AppUpdateToastProps) {
   const {
+    downloading,
     installing,
     updateInfo,
     progress,
     error,
     checkForUpdates,
+    downloadUpdate,
     installUpdate,
-    cancelUpdate,
+    cancelDownload,
   } = useAppUpdater(domain);
 
   /**
-   * Stores the toast id for the entire update lifecycle.
-   * This allows us to update the same toast instead of
-   * destroying and recreating it on every progress change.
+   * Tracks the active toast ID to prevent duplicates.
    */
   const toastIdRef = useRef<string | number | null>(null);
-
-  /**
-   * Once a user ignores an update, we avoid showing
-   * the "update available" toast again in this session.
-   */
   const [hasIgnored, setHasIgnored] = useState(false);
 
-  /**
-   * Safely dismisses the current toast and
-   * resets the stored toast id.
-   */
-  const dismissToast = () => {
-    if (toastIdRef.current) {
-      toast.dismiss(toastIdRef.current);
-      toastIdRef.current = null;
-    }
-  };
+  // Derived state: Is the binary downloaded and ready for install?
+  const isReadyToInstall = updateInfo?.downloaded ?? false;
 
   /**
-   * Triggers update installation from the Rust side.
+   * Dismisses the current toast immediately.
+   * Uses global dismiss to ensure no visual overlapping occurs.
    */
-  const handleInstall = async () => {
-    await installUpdate();
+  const dismissToast = () => {
+    // Dismiss ALL toasts to enforce "only one toast seen" rule
+    toast.dismiss();
+    toastIdRef.current = null;
   };
+
+  /* LIFECYCLE: CHECKS */
 
   /**
    * Automatically check for updates when the app loads.
@@ -87,25 +83,40 @@ export function AppUpdateToast({
    */
   useEffect(() => {
     if (!checkInterval) return;
-
     const interval = setInterval(() => {
-      if (!installing && !hasIgnored) {
+      if (!downloading && !installing && !hasIgnored) {
         checkForUpdates().catch(console.error);
       }
     }, checkInterval);
-
     return () => clearInterval(interval);
-  }, [checkInterval, installing, hasIgnored, checkForUpdates]);
+  }, [checkInterval, downloading, installing, hasIgnored, checkForUpdates]);
+
+  /* LIFECYCLE: TOAST LOGIC */
 
   /**
-   * Shows the "Update available" toast.
-   * This toast is displayed only once and is removed
-   * as soon as installation starts or user ignores it.
+   * 1. HANDOVER LOGIC (CRITICAL)
+   * Detects when download finishes (status: DOWNLOADED).
+   * We MUST dismiss the "Progress" toast here so the "Install" toast can appear
+   * in the next effect.
    */
   useEffect(() => {
-    if (!updateInfo?.available || hasIgnored || installing) return;
+    if (
+      !downloading &&
+      progress?.status === "DOWNLOADED" &&
+      toastIdRef.current
+    ) {
+      dismissToast();
+    }
+  }, [downloading, progress?.status]);
 
-    // Prevent duplicate update-available toasts
+  /**
+   * 2. MAIN ACTION TOAST (Download / Install)
+   * Shows only if we are NOT downloading/installing and NOT ignored.
+   */
+  useEffect(() => {
+    // Block if busy, ignored, or if a toast is already actively tracked
+    if (!updateInfo?.available || hasIgnored || downloading || installing)
+      return;
     if (toastIdRef.current) return;
 
     const id = toast.info(
@@ -113,26 +124,43 @@ export function AppUpdateToast({
         <p className="flex items-center gap-2 text-sm">
           <InfoIcon className="h-3 w-3" />
           <span className="text-secondary">
-            There's an update available: WorcDesktopApp {updateInfo.version}
+            {isReadyToInstall
+              ? `Update ready: v${updateInfo.version}`
+              : `New version available: v${updateInfo.version}`}
           </span>
         </p>
 
         <div className="flex justify-end gap-2">
-          <Button
-            size="xs"
-            onClick={() => {
-              handleInstall();
-              dismissToast();
-            }}
-          >
-            Update
-          </Button>
+          {isReadyToInstall ? (
+            <Button
+              size="xs"
+              onClick={() => {
+                dismissToast(); // Clear "Ready" toast -> Show "Install Progress" toast
+                installUpdate();
+              }}
+            >
+              <RefreshCcw className="mr-2 h-3 w-3" />
+              Update
+            </Button>
+          ) : (
+            <Button
+              size="xs"
+              onClick={() => {
+                dismissToast(); // Clear "Available" toast -> Show "Download Progress" toast
+                downloadUpdate();
+              }}
+            >
+              <DownloadIcon className="mr-2 h-3 w-3" />
+              Download
+            </Button>
+          )}
+
           <Button
             size="xs"
             variant="outline"
             className="text-secondary"
             onClick={() => {
-              setHasIgnored(true);
+              setHasIgnored(true); // "Later" -> Close and don't show again
               dismissToast();
             }}
           >
@@ -143,88 +171,67 @@ export function AppUpdateToast({
       {
         duration: Infinity,
         className: "w-96 py-3",
+        onDismiss: () => {
+          toastIdRef.current = null;
+        },
       },
     );
 
     toastIdRef.current = id;
-  }, [updateInfo?.available, hasIgnored, installing]);
+  }, [updateInfo, hasIgnored, downloading, installing, isReadyToInstall]);
 
   /**
-   * Creates the progress toast exactly once when
-   * installation starts.
-   *
-   * From this point onward, we only update the content
-   * of this toast using the same toast id.
+   * 3. PROGRESS TOAST (Downloading / Installing)
    */
   useEffect(() => {
-    if (!installing || toastIdRef.current) return;
+    // Only run if active
+    if ((!downloading && !installing) || !progress) return;
 
-    toastIdRef.current = toast.info(
-      <div className="w-full space-y-3">
-        <div className="flex items-center gap-2 text-sm">
-          <DownloadIcon className="h-3 w-3" />
-          <span className="text-secondary">Preparing update…</span>
-        </div>
-      </div>,
-      {
+    // Create toast if one doesn't exist
+    if (!toastIdRef.current) {
+      toastIdRef.current = toast.info("Preparing...", {
         duration: Infinity,
         className: "w-96 py-2",
-      },
-    );
-  }, [installing]);
-
-  /**
-   * Updates the existing progress toast whenever
-   * progress data changes.
-   *
-   * Important:
-   * - We reuse the same toast id
-   * - No dismiss + recreate (prevents flicker)
-   * - UI stays smooth even with frequent progress events
-   */
-  useEffect(() => {
-    if (!installing || !progress || !toastIdRef.current) return;
+      });
+    }
 
     const getStatusText = () => {
       switch (progress.status) {
         case "PENDING":
-          return "Preparing download...";
+          return "Preparing...";
         case "DOWNLOADING":
           return "Downloading update...";
         case "DOWNLOADED":
-          return "Download complete";
+          return "Download complete!";
         case "INSTALLING":
           return "Installing update...";
         case "INSTALLED":
-          return "Update installed successfully";
+          return "Success! Restarting...";
         case "ERROR":
-          return "Installation failed";
+          return "Error occurred";
         default:
           return "Processing...";
       }
     };
 
-    const getIcon = () => {
-      if (progress.status === "INSTALLED") {
-        return <CheckCircle2 className="h-3 w-3 text-green-500" />;
-      }
-      if (progress.status === "ERROR") {
-        return <AlertCircle className="h-3 w-3 text-red-500" />;
-      }
-      return <DownloadIcon className="h-2 w-2" />;
-    };
-
-    const showProgress =
-      progress.status === "PENDING" || progress.status === "DOWNLOADING";
+    const isError = progress.status === "ERROR";
+    // Allow cancel only during download phase
+    const canCancel =
+      downloading &&
+      (progress.status === "PENDING" || progress.status === "DOWNLOADING");
 
     toast.info(
       <div className="w-full space-y-3">
         <div className="flex items-center gap-2 text-sm">
-          {getIcon()}
+          {isError ? (
+            <AlertCircle className="h-3 w-3 text-red-500" />
+          ) : (
+            <DownloadIcon className="h-3 w-3" />
+          )}
           <span className="text-secondary">{getStatusText()}</span>
         </div>
 
-        {showProgress && (
+        {!isError && (
           <>
             <Progress
               value={progress.percentage}
@@ -232,36 +239,32 @@ export function AppUpdateToast({
             />
             <div className="flex justify-between text-xs text-muted-foreground">
               <span>{progress.percentage}%</span>
-              {progress.total ? (
+              {progress.total && (
                 <span>
                   {(progress.downloaded / 1024 / 1024).toFixed(1)} MB /{" "}
                   {(progress.total / 1024 / 1024).toFixed(1)} MB
                 </span>
-              ) : null}
+              )}
             </div>
           </>
         )}
 
-        {progress.status === "INSTALLING" && (
-          <p className="text-xs text-muted-foreground">
-            Installing… the app will restart automatically.
-          </p>
-        )}
-
-        {progress.status === "ERROR" && error && (
+        {isError && error && (
           <p className="text-xs text-red-500">{error.message}</p>
         )}
 
-        {(progress.status === "DOWNLOADING" ||
-          progress.status === "PENDING") && (
+        {canCancel && (
           <div className="flex justify-end">
             <Button
               size="xs"
               variant="outline"
               onClick={() => {
-                cancelUpdate();
+                cancelDownload();
+                // Treat cancel as "Ignore for now" so the Main Toast doesn't pop back up instantly
+                setHasIgnored(true);
                 dismissToast();
               }}
+              className="text-secondary"
             >
               <X className="mr-1 h-3 w-3" />
               Cancel
@@ -271,24 +274,10 @@ export function AppUpdateToast({
       </div>,
       {
         id: toastIdRef.current,
-        duration:
-          progress.status === "INSTALLED" || progress.status === "ERROR"
-            ? 5000
-            : Infinity,
-        className: "w-96 py-2",
+        duration: isError ? 5000 : Infinity,
       },
     );
-  }, [progress, installing, error, cancelUpdate]);
+  }, [progress, downloading, installing, error, cancelDownload]);
 
-  /**
-   * Cleanup after installation finishes.
-   * Allows future update checks/toasts to work correctly.
-   */
-  useEffect(() => {
-    if (!installing && toastIdRef.current) {
-      toastIdRef.current = null;
-    }
-  }, [installing]);
-
-  return null; // This component only manages toasts
+  return null;
 }
