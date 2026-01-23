@@ -1,3 +1,4 @@
+import { useDocumentTitle } from "@aventisia/ui/hooks";
 import { Search } from "lucide-react";
 import { useMemo, useState, useEffect } from "react";
 
@@ -16,6 +17,8 @@ const WorcLibraryTemplates = ({
 }) => {
   const [currentPage, setCurrentPage] = useState(1);
   const [itemsPerPage, setItemsPerPage] = useState(8);
+
+  useDocumentTitle("Library");
 
   const { data, isLoading } = useFetchProjectTemplates();
 

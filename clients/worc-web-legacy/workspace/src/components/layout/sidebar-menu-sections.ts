@@ -29,6 +29,7 @@ import {
   SidebarMenuItemExtended,
   SidebarMenuSectionExtended,
 } from "@/react-toolkit/types/sidebar-menu-types";
+import { IS_TAURI } from "@/constants/constants";
 
 const sidebarMenuSections: SidebarMenuSectionExtended[] = [
   {
@@ -113,28 +114,30 @@ const sidebarMenuSections: SidebarMenuSectionExtended[] = [
   },
   {
     sectionName: "Assist",
-    menuItems: [
-      {
-        permissions: ["TU"],
-        Icon: BotIcon,
-        name: "my agents",
-        route: "/assist/my-agents",
-        type: ["Commercial", "Enterprise"],
-      },
+    menuItems: IS_TAURI
+      ? [
+          {
+            permissions: ["TU"],
+            Icon: BotIcon,
+            name: "my agents",
+            route: "/assist/my-agents",
+            type: ["Commercial", "Enterprise"],
+          },
 
-      // Add Assist my queue only if not production
-      ...(import.meta.env.MODE !== "production"
-        ? ([
-            {
-              permissions: ["TU"],
-              Icon: QueueListIcon,
-              name: "my queue",
-              route: "/assist/my-queue",
-              type: ["Commercial", "Enterprise"],
-            },
-          ] as SidebarMenuItemExtended[])
-        : []),
-    ],
+          // Add Assist my queue only if not production
+          ...(import.meta.env.MODE !== "production"
+            ? ([
+                {
+                  permissions: ["TU"],
+                  Icon: QueueListIcon,
+                  name: "my queue",
+                  route: "/assist/my-queue",
+                  type: ["Commercial", "Enterprise"],
+                },
+              ] as SidebarMenuItemExtended[])
+            : []),
+        ]
+      : [],
   },
   {
     sectionName: "Tenant Admin",
@@ -163,15 +166,15 @@ const sidebarMenuSections: SidebarMenuSectionExtended[] = [
               route: "/integrations",
               type: ["Commercial", "Enterprise"],
             },
-            {
-              permissions: ["TA"],
-              Icon: ServerIcon,
-              name: "on-prem models",
-              route: "/on-prem-models",
-              type: ["Commercial", "Enterprise"],
-            },
           ] as SidebarMenuItemExtended[])
         : []),
+      {
+        permissions: ["TA"],
+        Icon: ServerIcon,
+        name: "on-prem models",
+        route: "/on-prem-models",
+        type: ["Commercial", "Enterprise"],
+      },
       {
         permissions: ["TA"],
         Icon: Wallet,

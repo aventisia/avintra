@@ -1,6 +1,6 @@
-import { Button } from "@aventisia/ui/buttons";
+import { buttonVariants } from "@aventisia/ui/buttons";
 import { cn } from "@aventisia/ui/lib";
-import { useNavigate } from "react-router-dom";
+import { NavLink } from "react-router-dom";
 
 interface JobsTableCellLinkProps {
   /** The ID of the job to open execution log. */
@@ -14,18 +14,16 @@ export const JobsTableCellLink = ({
   rowId,
   cellValue,
 }: JobsTableCellLinkProps) => {
-  const navigate = useNavigate();
-
   // Return the component
   return (
-    <Button
-      onClick={() => navigate(`${rowId}`)}
-      variant={"link"}
+    <NavLink
+      to={rowId}
       className={cn(
-        "!h-8 w-auto truncate font-medium text-foreground hover:text-primary",
+        buttonVariants({ variant: "link" }),
+        "!h-8 w-auto cursor-pointer truncate font-medium text-foreground hover:text-primary",
       )}
     >
       {cellValue}
-    </Button>
+    </NavLink>
   );
 };

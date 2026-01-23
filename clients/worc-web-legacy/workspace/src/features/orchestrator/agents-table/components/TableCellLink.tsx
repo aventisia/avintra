@@ -1,5 +1,6 @@
-import { Button } from "@aventisia/ui/buttons";
+import { buttonVariants } from "@aventisia/ui/buttons";
 import { cn } from "@aventisia/ui/lib";
+import { NavLink } from "react-router-dom";
 
 interface TableCellLinkProps {
   /** The agent ID to open. */
@@ -18,28 +19,20 @@ interface TableCellLinkProps {
 export const TableCellLink = ({
   rowId,
   cellValue,
-  type,
+
   versionId,
 }: TableCellLinkProps) => {
-  // Function to open agent/model
-  const handleOpenAction = (rowId: string) => {
-    // Open url based on type
-    window.location.href =
-      type == "Agent"
-        ? `${import.meta.env.VITE_AGENTBUILDER_PATH}agent?f=${rowId}&v=${versionId}`
-        : "#"; //TODO:Add model url
-  };
-
   // Return the component
   return (
-    <Button
-      onClick={() => handleOpenAction(rowId)}
-      variant={"link"}
+    <NavLink
+      to={`${window.location.origin}${import.meta.env.VITE_AGENTBUILDER_PATH}agent?f=${rowId}&v=${versionId}`}
+      target="_blank"
       className={cn(
-        "!h-8 w-auto truncate font-medium text-foreground hover:text-primary",
+        buttonVariants({ variant: "link" }),
+        "!h-8 w-auto cursor-pointer truncate font-medium text-foreground hover:text-primary",
       )}
     >
       {cellValue}
-    </Button>
+    </NavLink>
   );
 };
