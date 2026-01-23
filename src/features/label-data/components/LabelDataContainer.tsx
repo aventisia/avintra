@@ -27,7 +27,6 @@ import { useLabelDataStore } from "../stores/label-data-store";
 
 export const LabelDataContainer = () => {
   useLabelDataQueryKey();
-
   const { step, setStepState } = useLabelDataStore(
     useShallow((state) => ({
       step: state.step,
@@ -62,6 +61,9 @@ export const LabelDataContainer = () => {
       }
     }
   }, [modelTypeFromAPI, mlParam, setStepState, setSearchParams, searchParams]);
+
+  // Set document title
+  document.title = `${searchParams.get("pn")} - ${import.meta.env.VITE_APP_NAME} | ${import.meta.env.VITE_COMPANY_NAME}`;
 
   return (
     <>
