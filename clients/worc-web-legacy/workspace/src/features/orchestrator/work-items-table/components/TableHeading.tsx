@@ -6,9 +6,11 @@ import {
   BreadcrumbPage,
   BreadcrumbSeparator,
 } from "@aventisia/ui/breadcrumb";
+import { useDocumentTitle } from "@aventisia/ui/hooks";
 import { NavLink } from "react-router-dom";
 
 export const PayloadTableHeading = ({ queueName }: { queueName: string }) => {
+  useDocumentTitle(`${queueName} - Queues`);
   return (
     <h2 className="ml-1 flex w-full items-center truncate text-lg font-medium text-foreground">
       <Breadcrumb>

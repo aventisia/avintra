@@ -50,7 +50,9 @@ const isOnPremTenantNameAvailable = (postObj: CheckAvailabilityDto) => {
  */
 const insertOnPremTenant = (newOnPremTenant: OnPremTenantDto) => {
   return axiosInstance
-    .post<IHttpResponse<OnPremTenantDto>>(`${baseAPIURL}`, newOnPremTenant)
+    .post<
+      IHttpResponse<OnPremTenantDto>
+    >(`${baseAPIURL}`, newOnPremTenant, appendAuthHeader())
     .then((res) => res.data);
 };
 
