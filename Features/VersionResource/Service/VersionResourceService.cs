@@ -469,10 +469,9 @@ public class VersionResourceService : IVersionResourceService
                 _logger.LogInformation("File '{FileName}' passed validation.", file.FileName);
 
                 // Generate a unique filename to avoid collisions and preserve the file type:
-                // - Prefix with the current date (yyyyMMdd) for easier organization and sorting
                 // - Append a GUID to guarantee uniqueness
                 // - Preserve the original file extension to maintain file type compatibility
-                var uniqueFileName = $"{DateTimeOffset.UtcNow:yyyyMMdd}_{Guid.NewGuid()}{extension}";
+                var uniqueFileName = $"{Guid.NewGuid()}{extension}";
 
                 // Upload the file stream directly to Azure Blob Storage without persisting it temporarily on the application server
                 using var fileStream = file.OpenReadStream();
