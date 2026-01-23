@@ -78,6 +78,20 @@ if (!IsEnvironmentLocalhost)
         message: "AZURE_BLOB_STORAGE_CONNECTION_STRING cannot be null"
     );
 
+    var AZURE_ENTRA_CLIENT_ID = Guard.Against.Null(
+        Environment.GetEnvironmentVariable("AZURE_ENTRA_CLIENT_ID"),
+        message: "AZURE_ENTRA_CLIENT_ID cannot be null"
+    );
+
+    var AZURE_ENTRA_CLIENT_SECRET = Guard.Against.Null(
+            Environment.GetEnvironmentVariable("AZURE_ENTRA_CLIENT_SECRET"),
+            message: "AZURE_ENTRA_CLIENT_SECRET cannot be null"
+        );
+
+    var AZURE_TENANT_ID = Guard.Against.Null(
+            Environment.GetEnvironmentVariable("AZURE_TENANT_ID"),
+            message: "AZURE_TENANT_ID cannot be null"
+        );
 
     string? RAZORPAY_KEY_ID = string.Empty;
     string? RAZORPAY_KEY_SECRET = string.Empty;
@@ -120,7 +134,10 @@ if (!IsEnvironmentLocalhost)
                 { "InstanceConfig:TenantName", DEFAULT_TENANT_NAME },
                 { "GeneralConfig:AppDomain", APP_BASE_URL },
                 { "DefaultUserConfig:Email", ADMIN_USER_EMAIL },
-                { "AzureBlobStorageConfig:ConnectionString", AZURE_BLOB_STORAGE_CONNECTION_STRING }
+                { "AzureBlobStorageConfig:ConnectionString", AZURE_BLOB_STORAGE_CONNECTION_STRING },
+                { "AzureEntraConfig:ClientId", AZURE_ENTRA_CLIENT_ID },
+                { "AzureEntraConfig:ClientSecret", AZURE_ENTRA_CLIENT_SECRET },
+                { "AzureEntraConfig:TenantId", AZURE_TENANT_ID },
             }
         )
         .Build();
