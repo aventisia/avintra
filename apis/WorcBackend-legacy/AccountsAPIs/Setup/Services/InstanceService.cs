@@ -33,6 +33,7 @@ public class InstanceService : IInstanceService
         serviceResponse.Data = new InstanceRequestDto()
         {
             PlatformVersion = _instanceConfig.PlatformVersion,
+            // TODO: instance type will be set by the global admin when we create the instance and deployment is going to consume it as it is.
             InstanceType = string.Equals(_hostEnvironment.EnvironmentName, _instanceConfig.InstanceType, StringComparison.OrdinalIgnoreCase) ? "Prod" : "NonProd",
             Source = source,
             Last7DayUsages = new List<ProjectUsageMetricDto>()

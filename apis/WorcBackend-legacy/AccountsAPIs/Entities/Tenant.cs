@@ -187,4 +187,9 @@ public class Tenant : BaseEntity
     /// Gets or sets the type of the tenant.
     /// </summary>
     public required TenantTypesEnum Type { get; set; }
+
+    /// <summary>
+    /// Gets or sets the container name associated with the tenant.
+    /// </summary>
+    public string ContainerName { get; set; } = string.Empty;
 }
