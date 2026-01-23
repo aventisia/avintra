@@ -1,34 +1,56 @@
 use serde::Serialize;
 use std::sync::atomic::{ AtomicU64, AtomicU8, Ordering };
 use std::sync::Arc;
+use tauri::async_runtime::JoinHandle;
 use tauri::{ ipc::Channel, AppHandle, State, Url };
 use tauri_plugin_updater::{ Update, UpdaterExt };
 use tokio::sync::Mutex;
 
-/* 
-STATE
+/* STATE MANAGEMENT
  */
 
 /**
- * Holds a single pending update between:
- *   1) check_update_for_domain
- *   2) install_pending_update
- *
- * Why Mutex<Option<Update>>?
- * - Update is not Copy and cannot be cloned freely
- * - Only ONE install should ever happen per update
- * - Once installation starts, we "take" the update out
- *   so it cannot be installed again accidentally
+ * Manages the lifecycle of an update operation.
+ * * - `update`: The metadata of the update found during the check phase.
+ * - `content`: The actual binary bytes, stored here after a successful download.
+ * - `download_task`: A handle to the background download task, allowing cancellation.
  */
-pub struct PendingUpdate(pub Mutex<Option<Update>>);
+pub struct UpdateState {
+    pub update: Option<Update>,
+    pub content: Option<Vec<u8>>,
+    pub download_task: Option<JoinHandle<()>>,
+}
 
-/* 
-DATA STRUCTS (sent to React)
+impl UpdateState {
+    pub fn new() -> Self {
+        Self {
+            update: None,
+            content: None,
+            download_task: None,
+        }
+    }
+}
+
+/**
+ * Thread-safe wrapper for the update state.
+ * Shared across commands (check, download, install).
+ */
+pub struct PendingUpdate(pub Arc<Mutex<UpdateState>>);
+
+impl PendingUpdate {
+    pub fn new() -> Self {
+        Self(Arc::new(Mutex::new(UpdateState::new())))
+    }
+}
+
+/* DATA STRUCTS (Sent to Frontend)
  */
 
 #[derive(Serialize, Clone)]
 pub struct UpdateMetadata {
     pub available: bool,
+    /// Indicates if the binary is already downloaded and ready to install.
+    pub downloaded: bool,
     pub version: String,
     pub current_version: String,
     pub notes: Option<String>,
@@ -79,18 +101,18 @@ impl UpdateError {
     }
 }
 
-/* 
-COMMAND: CHECK UPDATE
+/* COMMAND: CHECK UPDATE
  */
 
 /**
- * Checks whether an update is available for the given domain.
- *
- * This does NOT install anything.
- * It only:
- * - contacts the update endpoint
- * - stores the Update internally if one exists
- * - returns metadata for UI display
+ * Checks for updates for the specific domain.
+ * * Logic:
+ * 1. Constructs the update URL dynamically based on the domain.
+ * 2. Checks against the server.
+ * 3. If an update is found:
+ * - Checks if we already have *this specific version* downloaded in memory.
+ * - If it's a new version, it resets the state (clears old downloads).
+ * - If it's the same version we have in memory, it preserves the 'downloaded' state.
  */
 #[tauri::command]
 pub async fn check_update_for_domain(
@@ -127,14 +149,27 @@ pub async fn check_update_for_domain(
         .check().await
         .map_err(|e| UpdateError::new("CHECK_ERROR", e.to_string()))?;
 
-    if let Some(update) = update {
-        println!("[updater] update available: {} → {}", current_version, update.version);
+    let mut state_lock = state.0.lock().await;
 
-        // Store update in memory so install command can use it later
-        *state.0.lock().await = Some(update.clone());
+    if let Some(update) = update {
+        // Smart Check: Do we already have this version?
+        let already_downloaded = if let Some(existing) = &state_lock.update {
+            existing.version == update.version && state_lock.content.is_some()
+        } else {
+            false
+        };
+
+        if !already_downloaded {
+            // Reset state only if the version has changed
+            if state_lock.update.as_ref().map(|u| &u.version) != Some(&update.version) {
+                state_lock.update = Some(update.clone());
+                state_lock.content = None;
+            }
+        }
 
         Ok(UpdateMetadata {
             available: true,
+            downloaded: state_lock.content.is_some(),
             version: update.version.clone(),
             current_version,
             notes: update.body.clone(),
@@ -142,10 +177,11 @@ pub async fn check_update_for_domain(
             download_url: Some(update.download_url.to_string()),
         })
     } else {
-        println!("[updater] no update available");
-
+        // Clear state if no update is available (e.g. user rolled back or server changed)
+        *state_lock = UpdateState::new();
         Ok(UpdateMetadata {
             available: false,
+            downloaded: false,
             version: current_version.clone(),
             current_version,
             notes: None,
@@ -155,147 +191,183 @@ pub async fn check_update_for_domain(
     }
 }
 
-/*
-   COMMAND: INSTALL UPDATE
-   */
+/* COMMAND: DOWNLOAD
+ */
 
 /**
- * Downloads and installs the previously checked update.
- *
- * Key guarantees:
- * - Can only run if an update was checked first
- * - Can only run ONCE per update
- * - Streams progress to React
- * - Restarts the app after successful install
+ * Initiates the download process in a background task.
+ * * - Spawns an async task (abortable via `cancel_download`).
+ * - Streams progress back to the UI via the `on_progress` channel.
+ * - Stores the resulting binary in `state.content` upon success.
  */
 #[tauri::command]
-pub async fn install_pending_update(
+pub async fn download_update(
+    state: State<'_, PendingUpdate>,
+    on_progress: Channel<DownloadProgress>
+) -> Result<(), UpdateError> {
+    // Preparation: Get the update object and clone the state ARC for the background task
+    let (update, state_arc) = {
+        let lock = state.0.lock().await;
+
+        // Fast exit: if already downloaded, just notify UI
+        if lock.content.is_some() {
+            let _ = on_progress.send(DownloadProgress {
+                downloaded: 0,
+                total: None,
+                percentage: 100,
+                status: ProgressStatus::Downloaded,
+            });
+            return Ok(());
+        }
+
+        let update = lock.update
+            .clone()
+            .ok_or_else(|| UpdateError::new("NO_UPDATE", "No pending update"))?;
+        (update, state.0.clone())
+    };
+
+    let progress_channel = on_progress.clone();
+    let error_channel = on_progress.clone();
+    let finish_channel = on_progress.clone();
+
+    // Spawn: Run download in background so it doesn't block the main thread
+    let task = tauri::async_runtime::spawn(async move {
+        let _ = on_progress.send(DownloadProgress {
+            downloaded: 0,
+            total: None,
+            percentage: 0,
+            status: ProgressStatus::Pending,
+        });
+
+        // Atomic counters for thread-safe progress tracking
+        let downloaded_bytes = Arc::new(AtomicU64::new(0));
+        let total_bytes = Arc::new(AtomicU64::new(0));
+        let last_sent_percentage = Arc::new(AtomicU8::new(255));
+        let last_sent_bytes = Arc::new(AtomicU64::new(0));
+
+        let download_result = update.download(
+            {
+                let downloaded_bytes = downloaded_bytes.clone();
+                let total_bytes = total_bytes.clone();
+                let last_pct = last_sent_percentage.clone();
+                let last_bytes = last_sent_bytes.clone();
+                let progress_channel = progress_channel.clone();
+
+                // Progress Callback
+                move |chunk_length, total_opt| {
+                    let chunk = chunk_length as u64;
+                    let cumulative = downloaded_bytes.fetch_add(chunk, Ordering::Relaxed) + chunk;
+
+                    if let Some(total) = total_opt {
+                        total_bytes.store(total as u64, Ordering::Relaxed);
+                    }
+                    let total = total_bytes.load(Ordering::Relaxed);
+                    let total_opt = if total > 0 { Some(total) } else { None };
+
+                    let percentage = if total > 0 {
+                        (((cumulative as f64) / (total as f64)) * 100.0).min(99.0) as u8
+                    } else {
+                        0
+                    };
+
+                    // Throttling: Only send updates if % changed significantly or bytes > 2MB
+                    // This prevents spamming the frontend channel
+                    let pct_delta = percentage.saturating_sub(last_pct.load(Ordering::Relaxed));
+                    let byte_delta = cumulative.saturating_sub(last_bytes.load(Ordering::Relaxed));
+
+                    if
+                        last_pct.load(Ordering::Relaxed) == 255 ||
+                        pct_delta >= 2 ||
+                        byte_delta >= 2_000_000
+                    {
+                        last_pct.store(percentage, Ordering::Relaxed);
+                        last_bytes.store(cumulative, Ordering::Relaxed);
+                        let _ = progress_channel.send(DownloadProgress {
+                            downloaded: cumulative,
+                            total: total_opt,
+                            percentage,
+                            status: ProgressStatus::Downloading,
+                        });
+                    }
+                }
+            },
+            || {} // on_download_finish (handled in the match block below)
+        ).await;
+
+        match download_result {
+            Ok(bytes) => {
+                // Success: Store the bytes in state
+                let mut lock = state_arc.lock().await;
+                lock.content = Some(bytes);
+                lock.download_task = None;
+
+                // Notify UI: Ready to Install
+                let _ = finish_channel.send(DownloadProgress {
+                    downloaded: downloaded_bytes.load(Ordering::Relaxed),
+                    total: None,
+                    percentage: 100,
+                    status: ProgressStatus::Downloaded,
+                });
+            }
+            Err(e) => {
+                // Failure: Notify UI
+                let _ = error_channel.send(DownloadProgress {
+                    downloaded: 0,
+                    total: None,
+                    percentage: 0,
+                    status: ProgressStatus::Error,
+                });
+                println!("[updater] Download failed: {}", e);
+            }
+        }
+    });
+
+    // Save task handle to allow cancellation
+    state.0.lock().await.download_task = Some(task);
+    Ok(())
+}
+
+/* COMMAND: INSTALL
+ */
+
+/**
+ * Consumes the downloaded binary and installs the update.
+ * * - Requires `content` to be present in state.
+ * - Restarts the app automatically on success.
+ */
+#[tauri::command]
+pub async fn install_update(
     app: AppHandle,
     state: State<'_, PendingUpdate>,
     on_progress: Channel<DownloadProgress>
 ) -> Result<(), UpdateError> {
-    println!("[updater] install_pending_update called");
+    let (update, bytes) = {
+        let mut lock = state.0.lock().await;
+        // Take ownership of bytes (consumes the download)
+        let bytes = lock.content
+            .take()
+            .ok_or_else(|| UpdateError::new("NO_DOWNLOAD", "Update not downloaded"))?;
+        let update = lock.update
+            .clone()
+            .ok_or_else(|| UpdateError::new("NO_UPDATE", "No pending update"))?;
+        (update, bytes)
+    };
 
-    // Take ownership of the update.
-    // After this, no other install attempt is possible.
-    let update = state.0
-        .lock().await
-        .take()
-        .ok_or_else(|| UpdateError::new("NO_UPDATE", "No pending update"))?;
-
-    // Notify UI that preparation has started
     let _ = on_progress.send(DownloadProgress {
         downloaded: 0,
         total: None,
-        percentage: 0,
-        status: ProgressStatus::Pending,
+        percentage: 100,
+        status: ProgressStatus::Installing,
     });
 
-    /*
-       Progress tracking model
-
-       The updater callback only provides:
-       - size of the CURRENT chunk
-       - optional total size
-
-       It does NOT provide cumulative progress.
-       We calculate cumulative values here purely for UI.
-    */
-
-    let downloaded_bytes = Arc::new(AtomicU64::new(0));
-    let total_bytes = Arc::new(AtomicU64::new(0));
-
-    // Used to throttle progress updates sent to the UI
-    let last_sent_percentage = Arc::new(AtomicU8::new(255)); // sentinel value
-    let last_sent_bytes = Arc::new(AtomicU64::new(0));
-
-    let progress_channel = on_progress.clone();
-    let finish_channel = on_progress.clone();
-    let error_channel = on_progress.clone();
-
-    let result = update.download_and_install(
-        {
-            let downloaded_bytes = downloaded_bytes.clone();
-            let total_bytes = total_bytes.clone();
-            let last_pct = last_sent_percentage.clone();
-            let last_bytes = last_sent_bytes.clone();
-
-            move |chunk_length, total_opt| {
-                // Accumulate downloaded bytes
-                let chunk = chunk_length as u64;
-                let cumulative = downloaded_bytes.fetch_add(chunk, Ordering::Relaxed) + chunk;
-
-                // Store total size if provided
-                if let Some(total) = total_opt {
-                    total_bytes.store(total as u64, Ordering::Relaxed);
-                }
-
-                let total = total_bytes.load(Ordering::Relaxed);
-                let total_opt = if total > 0 { Some(total) } else { None };
-
-                // Percentage is best-effort and capped below 100 during download
-                let percentage = if total > 0 {
-                    (((cumulative as f64) / (total as f64)) * 100.0).min(99.0) as u8
-                } else {
-                    0
-                };
-
-                // Reduce UI noise by sending updates only when meaningful
-                let pct_delta = percentage.saturating_sub(last_pct.load(Ordering::Relaxed));
-                let byte_delta = cumulative.saturating_sub(last_bytes.load(Ordering::Relaxed));
-
-                if
-                    last_pct.load(Ordering::Relaxed) == 255 ||
-                    pct_delta >= 5 ||
-                    byte_delta >= 5_242_880
-                {
-                    last_pct.store(percentage, Ordering::Relaxed);
-                    last_bytes.store(cumulative, Ordering::Relaxed);
-
-                    let _ = progress_channel.send(DownloadProgress {
-                        downloaded: cumulative,
-                        total: total_opt,
-                        percentage,
-                        status: ProgressStatus::Downloading,
-                    });
-                }
-            }
-        },
-        {
-            let downloaded_bytes = downloaded_bytes.clone();
-            let total_bytes = total_bytes.clone();
-
-            move || {
-                let downloaded = downloaded_bytes.load(Ordering::Relaxed);
-                let total = total_bytes.load(Ordering::Relaxed);
-                let total_opt = if total > 0 { Some(total) } else { None };
-
-                // Download finished, installation is about to start
-                let _ = finish_channel.send(DownloadProgress {
-                    downloaded,
-                    total: total_opt,
-                    percentage: 100,
-                    status: ProgressStatus::Downloaded,
-                });
-
-                let _ = finish_channel.send(DownloadProgress {
-                    downloaded,
-                    total: total_opt,
-                    percentage: 100,
-                    status: ProgressStatus::Installing,
-                });
-            }
-        }
-    ).await;
-
-    if let Err(e) = result {
-        let _ = error_channel.send(DownloadProgress {
+    // Run the actual installation
+    if let Err(e) = update.install(bytes) {
+        let _ = on_progress.send(DownloadProgress {
             downloaded: 0,
             total: None,
             percentage: 0,
             status: ProgressStatus::Error,
         });
-
         return Err(UpdateError::new("INSTALL_ERROR", e.to_string()));
     }
 
@@ -311,16 +383,21 @@ pub async fn install_pending_update(
     app.restart();
 }
 
-/* 
-MISC COMMANDS
+/* COMMAND: UTILS
  */
 
 /**
- * Clears any pending update without installing it.
+ * Aborts the current download task if it exists.
  */
 #[tauri::command]
-pub async fn cancel_pending_update(state: State<'_, PendingUpdate>) -> Result<(), UpdateError> {
-    *state.0.lock().await = None;
+pub async fn cancel_download(state: State<'_, PendingUpdate>) -> Result<(), UpdateError> {
+    let mut lock = state.0.lock().await;
+    if let Some(task) = lock.download_task.take() {
+        task.abort();
+        println!("[updater] Download task aborted");
+    }
+    // Clean up partial downloads
+    lock.content = None;
     Ok(())
 }
 
@@ -338,5 +415,5 @@ pub fn get_app_version(app: AppHandle) -> String {
  */
 #[tauri::command]
 pub async fn has_pending_update(state: State<'_, PendingUpdate>) -> Result<bool, UpdateError> {
-    Ok(state.0.lock().await.is_some())
+    Ok(state.0.lock().await.update.is_some())
 }
