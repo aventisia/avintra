@@ -6,7 +6,7 @@ This directory contains the Nginx configuration and Dockerfile for containerized
 
 - `nginx.conf`: Main Nginx configuration
 - `common_api_config.conf`, `common_headers.conf`, `common_map.conf`, `common_ssl.conf`: Common config includes
-- `sites-available/worc.app`: Site-specific configuration template
+- `sites-available/aventisia.worc`: Site-specific configuration template
 - `Dockerfile`: Builds the Nginx image with all configs
 
 ## Usage
