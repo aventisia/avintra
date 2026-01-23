@@ -37,11 +37,41 @@ export function AppUpdateToast({
     cancelUpdate,
   } = useAppUpdater(domain);
 
+  /**
+   * Stores the toast id for the entire update lifecycle.
+   * This allows us to update the same toast instead of
+   * destroying and recreating it on every progress change.
+   */
   const toastIdRef = useRef<string | number | null>(null);
-  const [hasIgnored, setHasIgnored] = useState(false);
-  const isShowingProgressRef = useRef(false);
 
-  // Check for updates on mount
+  /**
+   * Once a user ignores an update, we avoid showing
+   * the "update available" toast again in this session.
+   */
+  const [hasIgnored, setHasIgnored] = useState(false);
+
+  /**
+   * Safely dismisses the current toast and
+   * resets the stored toast id.
+   */
+  const dismissToast = () => {
+    if (toastIdRef.current) {
+      toast.dismiss(toastIdRef.current);
+      toastIdRef.current = null;
+    }
+  };
+
+  /**
+   * Triggers update installation from the Rust side.
+   */
+  const handleInstall = async () => {
+    await installUpdate();
+  };
+
+  /**
+   * Automatically check for updates when the app loads.
+   * This only runs inside the Tauri environment.
+   */
   useEffect(() => {
     if (!IS_TAURI) return;
     if (autoCheck) {
@@ -49,7 +79,12 @@ export function AppUpdateToast({
     }
   }, [autoCheck, checkForUpdates]);
 
-  // Set up periodic checking
+  /**
+   * Optional periodic update check.
+   * Runs only when:
+   * - no update is currently installing
+   * - user has not ignored the update
+   */
   useEffect(() => {
     if (!checkInterval) return;
 
@@ -62,16 +97,16 @@ export function AppUpdateToast({
     return () => clearInterval(interval);
   }, [checkInterval, installing, hasIgnored, checkForUpdates]);
 
-  // Show update available toast
+  /**
+   * Shows the "Update available" toast.
+   * This toast is displayed only once and is removed
+   * as soon as installation starts or user ignores it.
+   */
   useEffect(() => {
-    if (!updateInfo?.available || hasIgnored || installing) {
-      return;
-    }
+    if (!updateInfo?.available || hasIgnored || installing) return;
 
-    // Don't create duplicate toasts
-    if (toastIdRef.current) {
-      return;
-    }
+    // Prevent duplicate update-available toasts
+    if (toastIdRef.current) return;
 
     const id = toast.info(
       <div className="w-full space-y-3">
@@ -97,7 +132,7 @@ export function AppUpdateToast({
             variant="outline"
             className="text-secondary"
             onClick={() => {
-              handleIgnore();
+              setHasIgnored(true);
               dismissToast();
             }}
           >
@@ -114,43 +149,41 @@ export function AppUpdateToast({
     toastIdRef.current = id;
   }, [updateInfo?.available, hasIgnored, installing]);
 
-  // Show installation progress toast - ONLY when installing starts
+  /**
+   * Creates the progress toast exactly once when
+   * installation starts.
+   *
+   * From this point onward, we only update the content
+   * of this toast using the same toast id.
+   */
   useEffect(() => {
-    if (installing && !isShowingProgressRef.current) {
-      console.log("[ui][updater] install started, will show progress updates");
-      isShowingProgressRef.current = true;
+    if (!installing || toastIdRef.current) return;
 
-      // Dismiss update available toast
-      if (toastIdRef.current) {
-        toast.dismiss(toastIdRef.current);
-        toastIdRef.current = null;
-      }
-    }
-
-    if (!installing && isShowingProgressRef.current) {
-      console.log("[ui][updater] install finished");
-      isShowingProgressRef.current = false;
-      toastIdRef.current = null;
-    }
+    toastIdRef.current = toast.info(
+      <div className="w-full space-y-3">
+        <div className="flex items-center gap-2 text-sm">
+          <DownloadIcon className="h-3 w-3" />
+          <span className="text-secondary">Preparing update…</span>
+        </div>
+      </div>,
+      {
+        duration: Infinity,
+        className: "w-96 py-2",
+      },
+    );
   }, [installing]);
 
-  // Update progress toast content ONLY when progress changes
+  /**
+   * Updates the existing progress toast whenever
+   * progress data changes.
+   *
+   * Important:
+   * - We reuse the same toast id
+   * - No dismiss + recreate (prevents flicker)
+   * - UI stays smooth even with frequent progress events
+   */
   useEffect(() => {
-    if (!installing || !progress || !isShowingProgressRef.current) {
-      return;
-    }
-
-    console.log("[ui][updater] progress update:", {
-      status: progress.status,
-      percentage: progress.percentage,
-      downloaded: progress.downloaded,
-      total: progress.total,
-    });
-
-    // Dismiss old toast and create new one with updated content
-    if (toastIdRef.current) {
-      toast.dismiss(toastIdRef.current);
-    }
+    if (!installing || !progress || !toastIdRef.current) return;
 
     const getStatusText = () => {
       switch (progress.status) {
@@ -178,19 +211,13 @@ export function AppUpdateToast({
       if (progress.status === "ERROR") {
         return <AlertCircle className="h-3 w-3 text-red-500" />;
       }
-      if (progress.status === "DOWNLOADED") {
-        return <CheckCircle2 className="h-3 w-3 text-blue-500" />;
-      }
       return <DownloadIcon className="h-2 w-2" />;
     };
 
     const showProgress =
-      progress.status === "DOWNLOADING" || progress.status === "PENDING";
+      progress.status === "PENDING" || progress.status === "DOWNLOADING";
 
-    const showCancelbutton =
-      progress.status === "DOWNLOADING" || progress.status === "PENDING";
-
-    const id = toast.info(
+    toast.info(
       <div className="w-full space-y-3">
         <div className="flex items-center gap-2 text-sm">
           {getIcon()}
@@ -205,7 +232,7 @@ export function AppUpdateToast({
             />
             <div className="flex justify-between text-xs text-muted-foreground">
               <span>{progress.percentage}%</span>
-              {progress.total && progress.total > 0 ? (
+              {progress.total ? (
                 <span>
                   {(progress.downloaded / 1024 / 1024).toFixed(1)} MB /{" "}
                   {(progress.total / 1024 / 1024).toFixed(1)} MB
@@ -215,44 +242,25 @@ export function AppUpdateToast({
           </>
         )}
 
-        {progress.status === "DOWNLOADED" && (
-          <p className="text-xs text-muted-foreground">
-            Starting installation...
-          </p>
-        )}
-
         {progress.status === "INSTALLING" && (
           <p className="text-xs text-muted-foreground">
-            Please wait while the update is being installed...
-          </p>
-        )}
-
-        {progress.status === "INSTALLED" && (
-          <p className="text-xs font-medium text-green-600">
-            The application will restart shortly.
+            Installing… the app will restart automatically.
           </p>
         )}
 
         {progress.status === "ERROR" && error && (
-          <div className="space-y-1">
-            <p className="text-xs font-medium text-red-500">{error.message}</p>
-            <p className="text-xs text-muted-foreground">
-              Error Code: {error.code}
-            </p>
-          </div>
+          <p className="text-xs text-red-500">{error.message}</p>
         )}
 
-        {showCancelbutton && (
-          <div className="flex justify-end gap-2">
+        {(progress.status === "DOWNLOADING" ||
+          progress.status === "PENDING") && (
+          <div className="flex justify-end">
             <Button
               size="xs"
               variant="outline"
-              className="text-secondary"
               onClick={() => {
-                console.log("[ui][updater] canceling update");
                 cancelUpdate();
                 dismissToast();
-                isShowingProgressRef.current = false;
               }}
             >
               <X className="mr-1 h-3 w-3" />
@@ -262,6 +270,7 @@ export function AppUpdateToast({
         )}
       </div>,
       {
+        id: toastIdRef.current,
         duration:
           progress.status === "INSTALLED" || progress.status === "ERROR"
             ? 5000
@@ -269,31 +278,17 @@ export function AppUpdateToast({
         className: "w-96 py-2",
       },
     );
+  }, [progress, installing, error, cancelUpdate]);
 
-    toastIdRef.current = id;
-  }, [progress, error, installing, cancelUpdate]);
-
-  const dismissToast = () => {
-    if (toastIdRef.current) {
-      toast.dismiss(toastIdRef.current);
+  /**
+   * Cleanup after installation finishes.
+   * Allows future update checks/toasts to work correctly.
+   */
+  useEffect(() => {
+    if (!installing && toastIdRef.current) {
       toastIdRef.current = null;
     }
-  };
-
-  const handleInstall = async () => {
-    try {
-      console.log("[ui][updater] starting install");
-      await installUpdate();
-    } catch (err) {
-      console.error("[ui][updater] failed to install update:", err);
-    }
-  };
-
-  const handleIgnore = () => {
-    console.log("[ui][updater] update ignored");
-    setHasIgnored(true);
-    dismissToast();
-  };
+  }, [installing]);
 
   return null; // This component only manages toasts
 }

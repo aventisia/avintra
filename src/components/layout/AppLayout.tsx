@@ -11,6 +11,7 @@ import { IS_TAURI } from "@/constants/constants";
 import useCheckJobTrigger from "@/features/execute-flow/hooks/useCheckJobTrigger";
 import { useCurrentFlowStore } from "@/features/execute-flow/stores/current-flow-store";
 import useCheckMachineStatus from "@/features/orchestrator/machines-table/hooks/useCheckMachineStatus";
+import { AppUpdateToast } from "@/features/tauri-updater/components/AppUpdateToast";
 // import {
 //   useCheckForUpdate,
 //   useRedirectOnRelaunch,
@@ -203,6 +204,7 @@ export const AppLayout = () => {
             )}
           />
           <AppBanner />
+          {IS_TAURI ? <AppUpdateToast domain={window.location.origin} /> : null}
           <AppHeader />
           <Sidebar />
           <ScrollArea
