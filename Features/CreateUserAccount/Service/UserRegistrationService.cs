@@ -184,6 +184,11 @@ public class UserRegistrationService : IUserRegistrationService
                 }
 
                 tenantId = userTenant.Id;
+                userRoles = Enum.GetValues(typeof(CustomRolesEnum))
+                            .Cast<CustomRolesEnum>()
+                            .Where(w => w != CustomRolesEnum.SA)
+                            .Select(r => r.ToString())
+                            .ToList();
             }
 
             // Link the new tenant to the user
