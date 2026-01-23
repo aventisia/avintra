@@ -68,6 +68,8 @@ if (!IsEnvironmentLocalhost)
         message: "ON_PREM_TENANT_ID cannot be null"
     );
 
+    var ON_PREM_TENANT_TYPE = Environment.GetEnvironmentVariable("ON_PREM_TENANT_TYPE") ?? "Enterprise";
+
     var ON_PREM_INSTANCE_KEY = Guard.Against.Null(
         Environment.GetEnvironmentVariable("ON_PREM_INSTANCE_KEY"),
         message: "ON_PREM_INSTANCE_KEY cannot be null"
@@ -116,6 +118,7 @@ if (!IsEnvironmentLocalhost)
                 { "RazorpayConfig:KeySecret", RAZORPAY_KEY_SECRET },
                 { "RazorpayConfig:WebhookSecret", RAZORPAY_WEBHOOK_SECRET },
                 { "InstanceConfig:TenantId", ON_PREM_TENANT_ID },
+                { "InstanceConfig:TenantType", ON_PREM_TENANT_TYPE },
                 { "InstanceConfig:InstanceKey", ON_PREM_INSTANCE_KEY },
                 { "InstanceConfig:TenantName", DEFAULT_TENANT_NAME },
                 { "GeneralConfig:AppDomain", APP_BASE_URL },
