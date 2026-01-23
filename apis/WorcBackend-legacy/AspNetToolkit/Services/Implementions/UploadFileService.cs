@@ -4,14 +4,30 @@ public class UploadFileService : IUploadFileService
 {
     private readonly ILogger<UploadFileService> _logger;
     private readonly FileUploadConfig _fileUploadConfig;
-
     private readonly IHttpClientFactory _httpClientFactory;
+    private readonly IAzureBlobStorageService _azureBlobStorageService;
+    private readonly Guid _userId;
+    private readonly Guid _tenantId;
+    private readonly string _containerName;
 
-    public UploadFileService(ILogger<UploadFileService> logger, FileUploadConfig fileUploadConfig, IHttpClientFactory httpClientFactory)
+    public UploadFileService(
+        ILogger<UploadFileService> logger,
+        FileUploadConfig fileUploadConfig,
+        IHttpClientFactory httpClientFactory,
+        IAzureBlobStorageService azureBlobStorageService,
+        IHttpContextAccessor httpContextAccessor,
+        ICurrentTenantService currentTenantService)
     {
         _logger = logger;
         _fileUploadConfig = fileUploadConfig;
         _httpClientFactory = httpClientFactory;
+        _azureBlobStorageService = azureBlobStorageService;
+
+        // Set _userId and _tenantId
+        _userId = Guid.Parse(httpContextAccessor.HttpContext?.User?.FindFirstValue("uid") ?? Guid.Empty.ToString());
+        _tenantId = Guid.Parse(httpContextAccessor.HttpContext?.User?.FindFirstValue("tntid") ?? Guid.Empty.ToString());
+
+        _containerName = currentTenantService.CurrentTenantContainerName;
     }
 
     public async Task<ServiceResponse<IEnumerable<FileUploadResponseDto>>> UploadFilesTemporaryAsync(List<IFormFile> files)
@@ -63,7 +79,7 @@ public class UploadFileService : IUploadFileService
             Message = "Files not uploaded."
         };
 
-        var fileStreams = new List<(string FileName, MemoryStream Stream)>();
+        var uploadedFiles = new List<FileUploadResponseDto>();
 
         try
         {
@@ -76,40 +92,64 @@ public class UploadFileService : IUploadFileService
             }
 
             // Process each file for validation and prepare for upload
+            // Process each file individually
             foreach (var file in files)
             {
-                _logger.LogInformation("Processing file: {FileName}.", file.FileName);
+                _logger.LogInformation("Processing file: {FileName}", file.FileName);
+
                 var extension = Path.GetExtension(file.FileName).ToLower();
 
-                // Identify file category based on the extension
+                // Determine file category (e.g., image, document) based on extension
                 var fileCategory = GetFileCategory(extension);
 
                 // Validate file type
                 if (string.IsNullOrEmpty(fileCategory) || !ValidateFileType(extension, fileCategory))
                 {
-                    serviceResponse.Message = $"The type of file {file.FileName} is unsupported.";
-                    _logger.LogError(serviceResponse.Message);
+                    serviceResponse.Message = $"The file type of '{file.FileName}' is unsupported.";
+                    _logger.LogWarning(serviceResponse.Message);
                     return serviceResponse;
                 }
 
-                // Validate file size
+                // Validate the uploaded file size based on its determined category
+                // (e.g., image, document, video) to enforce storage and security limits
                 if (!ValidateFileSize(file.Length, fileCategory))
                 {
-                    serviceResponse.Message = $"The file {file.FileName} exceeds the allowed size limit.";
-                    _logger.LogError(serviceResponse.Message);
+                    serviceResponse.Message = $"The file '{file.FileName}' exceeds the allowed size limit.";
+                    _logger.LogWarning(serviceResponse.Message);
                     return serviceResponse;
                 }
 
-                _logger.LogInformation("File {FileName} passed validation.", file.FileName);
+                // File passed all validation checks
+                _logger.LogInformation("File '{FileName}' passed validation.", file.FileName);
 
-                // Prepare file for storage by reading into a memory stream
-                var memoryStream = new MemoryStream();
-                await file.CopyToAsync(memoryStream);
-                fileStreams.Add((file.FileName, memoryStream));
+                // Generate a unique filename to avoid collisions and preserve the file type:
+                // - Prefix with the current date (yyyyMMdd) for easier organization and sorting
+                // - Append a GUID to guarantee uniqueness
+                // - Preserve the original file extension to maintain file type compatibility
+                var uniqueFileName = $"{DateTimeOffset.UtcNow:yyyyMMdd}_{Guid.NewGuid()}{extension}";
+
+                // Upload the file stream directly to Azure Blob Storage without persisting it temporarily on the application server
+                using var fileStream = file.OpenReadStream();
+                var fileUrl = await _azureBlobStorageService.UploadFileAsync(
+                    _containerName,
+                    fileStream,
+                    uniqueFileName,
+                    file.ContentType
+                );
+
+                // Store metadata about the uploaded file for the response payload
+                uploadedFiles.Add(new FileUploadResponseDto
+                {
+                    Path = uniqueFileName,
+                    Extension = extension.TrimStart('.').ToUpper(),
+                    Name = file.FileName,
+                    Size = file.Length
+                });
+
+                // Log successful upload with reference to the stored blob
+                _logger.LogInformation("File '{FileName}' uploaded successfully. Blob URL: {FileUrl}", file.FileName, fileUrl
+                );
             }
-
-            // Write files to storage after validation
-            var uploadedFiles = await WriteFilesToStorage(fileStreams, fileUploadDirectory);
 
             serviceResponse.Data = uploadedFiles;
             serviceResponse.StatusCode = 200;
@@ -122,23 +162,12 @@ public class UploadFileService : IUploadFileService
             // Catch any unexpected error during the file upload process
             _logger.LogError("An error occurred during file upload: {ErrorMessage}.", ex.Message);
         }
-        finally
-        {
-            // Dispose of all file streams to release memory
-            foreach (var (_, stream) in fileStreams)
-            {
-                stream.Dispose();
-            }
-
-            // Log completion of file storage operation
-            _logger.LogInformation("Completed writing files to storage.");
-        }
 
         return serviceResponse;
     }
 
     // Deletes a file from the server's storage based on the file URL.
-    public ServiceResponse<bool> DeleteFileAsync(string fileUrl, bool isTemp = false)
+    public async Task<ServiceResponse<bool>> DeleteFileAsync(string fileUrl, bool isTemp = false)
     {
         var serviceResponse = new ServiceResponse<bool>
         {
@@ -148,56 +177,37 @@ public class UploadFileService : IUploadFileService
 
         try
         {
+            // Validate input
             if (string.IsNullOrWhiteSpace(fileUrl))
             {
                 serviceResponse.Message = "File URL is null or empty.";
-                _logger.LogError(serviceResponse.Message);
+                _logger.LogError("{Message}", serviceResponse.Message);
                 return serviceResponse;
             }
 
-            _logger.LogInformation("Starting file deletion process for file URL: {FileUrl}.", fileUrl);
+            _logger.LogInformation("Initiating file deletion for URL: {FileUrl}", fileUrl);
 
-            // Remove the leading '/' from the fileUrl if present and split the path by '/'
-            var pathParts = fileUrl.TrimStart('/').Split('/');
-
-            // Ensure the URL has at least 2 parts: 'files', the subdirectory, and the file name
-            if (pathParts.Length < 2)
+            // Check if the file exists
+            if (!await _azureBlobStorageService.FileExistsAsync(_containerName, fileUrl))
             {
-                serviceResponse.Message = "Invalid file URL structure.";
-                _logger.LogError("Invalid file URL structure. Expected format: '/files/{filename}'.", pathParts.Last());
+                serviceResponse.Message = $"File does not exist at path '{fileUrl}'.";
+                _logger.LogWarning("{Message}", serviceResponse.Message);
                 return serviceResponse;
             }
 
-            var fileName = pathParts.Last();  // The file name is the last part, e.g., "2290a6c2-74d4-4f37-8bac-e1befb2242ce.pdf"
-
-            // Construct the full file path using the base upload directory, subdirectory, and file name
-            var fullDirectoryPath = Path.Combine(_fileUploadConfig.UploadDirectory);
-
-            var filePath = Path.Combine(fullDirectoryPath, fileName);
-
-            _logger.LogInformation("Resolved file path: {FilePath}.", filePath);
-
-            // Check if the file exists at the resolved path
-            if (File.Exists(filePath))
+            // Delete the file
+            if (!await _azureBlobStorageService.DeleteFileAsync(_containerName, fileUrl))
             {
-                _logger.LogInformation("File {FileName} exists at {FilePath}, proceeding with deletion.", fileName, filePath);
-
-                // Attempt to delete the file
-                File.Delete(filePath);
-
-                // Update the response to indicate success
-                serviceResponse.StatusCode = 200;
-                serviceResponse.Data = true;
-                serviceResponse.Message = "File deleted successfully.";
-                _logger.LogInformation("File {FileName} deleted from {FilePath}.", fileName, filePath);
-            }
-            else
-            {
-                // If the file doesn't exist, log the warning
-                serviceResponse.Message = $"File {fileName} does not exist";
-                _logger.LogWarning($"File {fileName} does not exist at {filePath}.");
+                serviceResponse.Message = $"File could not be deleted at path '{fileUrl}'.";
+                _logger.LogWarning("{Message}", serviceResponse.Message);
+                return serviceResponse;
             }
 
+            // Return success response
+            serviceResponse.Data = true;
+            serviceResponse.StatusCode = 200;
+            serviceResponse.Message = "File deleted successfully.";
+            _logger.LogInformation("File successfully deleted from '{FileUrl}'.", fileUrl);
         }
         catch (Exception ex)
         {
@@ -207,62 +217,6 @@ public class UploadFileService : IUploadFileService
 
         // Return the service response with the status of the operation
         return serviceResponse;
-    }
-
-    private async Task<List<FileUploadResponseDto>> WriteFilesToStorage(List<(string FileName, MemoryStream Stream)> fileStreams, string fileUploadDirectory)
-    {
-
-        var uploadedFiles = new List<FileUploadResponseDto>();
-
-        foreach (var (fileName, stream) in fileStreams)
-        {
-            _logger.LogInformation("Uploading file: {FileName}.", fileName);
-
-            try
-            {
-                // Construct the full directory path for the file upload
-                var fullDirectoryPath = Path.Combine(fileUploadDirectory);
-
-                // Create the directory if it doesn't exist
-                if (!Directory.Exists(fullDirectoryPath))
-                {
-                    Directory.CreateDirectory(fullDirectoryPath);
-                    _logger.LogInformation("Created directory: {DirectoryPath}.", fullDirectoryPath);
-                }
-
-                // Generate a unique name for the uploaded file
-                var uniqueFileName = $"{Guid.NewGuid()}{Path.GetExtension(fileName).ToLower()}";
-
-                var filePath = Path.Combine(fullDirectoryPath, uniqueFileName);
-
-                stream.Position = 0;
-
-                // Save the file to the disk
-                using (var fileStream = new FileStream(filePath, FileMode.Create, FileAccess.Write))
-                {
-                    await stream.CopyToAsync(fileStream);
-                }
-
-                // Construct the file URL for referencing later
-                var fileUrl = $"/files/{uniqueFileName}".Replace("\\", "/");
-
-                uploadedFiles.Add(new()
-                {
-                    Path = fileUrl,
-                    Extension = Path.GetExtension(fileName).TrimStart('.').ToUpper(),
-                    Name = fileName,
-                    Size = stream.Length,
-                });
-
-                _logger.LogInformation("File uploaded successfully: {FileName}, Path: {FilePath}.", fileName, filePath);
-            }
-            catch (Exception ex)
-            {
-                // Log any error that occurs during file writing
-                _logger.LogError("Error uploading file '{FileName}': {ErrorMessage}.", fileName, ex.Message);
-            }
-        }
-        return uploadedFiles;
     }
 
     // Identifies the file category based on the file extension
@@ -364,9 +318,9 @@ public class UploadFileService : IUploadFileService
     }
 
     // Downloads a file based on the provided file URL.
-    public ServiceResponse<FileUploadResponseDto> DownloadFileAsync(string fileUrl, bool isTemp = false)
+    public async Task<ServiceResponse<FileStreamContentResponseDto>> DownloadFileAsync(string fileUrl, bool isTemp = false)
     {
-        var serviceResponse = new ServiceResponse<FileUploadResponseDto>
+        var serviceResponse = new ServiceResponse<FileStreamContentResponseDto>
         {
             Data = null,
             Message = "File download failed."
@@ -374,54 +328,30 @@ public class UploadFileService : IUploadFileService
 
         try
         {
+            // Validate the input URL
             if (string.IsNullOrWhiteSpace(fileUrl))
             {
                 serviceResponse.Message = "File URL is null or empty.";
-                _logger.LogError(serviceResponse.Message);
+                _logger.LogError("{Message}", serviceResponse.Message);
                 return serviceResponse;
             }
 
-            _logger.LogInformation("Starting file download process for file URL: {FileUrl}.", fileUrl);
-
-            // Split file URL to extract subdirectory and file name
-            var pathParts = fileUrl.TrimStart('/').Split('/');
-
-            if (pathParts.Length < 2)
+            // Check if the file exists
+            if (!await _azureBlobStorageService.FileExistsAsync(_containerName, fileUrl))
             {
-                serviceResponse.Message = "Invalid file URL structure.";
-                _logger.LogError("Invalid file URL structure. Expected format: '/files/{filename}'.", pathParts.Last());
+                serviceResponse.Message = $"File does not exist at path '{fileUrl}'.";
+                _logger.LogWarning("{Message}", serviceResponse.Message);
                 return serviceResponse;
-
             }
 
-            var fileName = pathParts.Last();
+            var fileResponse = await _azureBlobStorageService.DownloadFileAsync(_containerName, fileUrl);
 
-            var filePath = Path.Combine(isTemp ? _fileUploadConfig.TempUploadDirectory : _fileUploadConfig.UploadDirectory, fileName);
+            // Return success response
+            serviceResponse.Data = fileResponse;
+            serviceResponse.StatusCode = 200;
+            serviceResponse.Message = "File ready for download.";
+            _logger.LogInformation("File {FileName} is ready for download.", fileResponse.Name);
 
-            if (File.Exists(filePath))
-            {
-
-                _logger.LogInformation("File {FileName} exists at {FilePath}, proceeding with download.", fileName, filePath);
-
-                // Prepare the file details for response
-                var fileDetail = new FileUploadResponseDto
-                {
-                    Path = filePath,
-                    Extension = Path.GetExtension(fileName).TrimStart('.').ToUpper(),
-                    Name = fileName,
-                    Size = new FileInfo(filePath).Length,
-                };
-
-                serviceResponse.Data = fileDetail;
-                serviceResponse.StatusCode = 200;
-                serviceResponse.Message = "File ready for download.";
-                _logger.LogInformation("File {FileName} is ready for download.", fileName);
-            }
-            else
-            {
-                serviceResponse.Message = $"File does not exist.";
-                _logger.LogWarning($"File {fileName} does not exist at {filePath}.");
-            }
         }
         catch (Exception ex)
         {
@@ -497,5 +427,4 @@ public class UploadFileService : IUploadFileService
 
         return serviceResponse;
     }
-
 }

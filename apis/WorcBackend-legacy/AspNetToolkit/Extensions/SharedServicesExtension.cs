@@ -110,9 +110,10 @@ public static class SharedServicesExtension
     // Method to add the upload file service to the service collection
     public static void AddUploadFileService(this IServiceCollection services)
     {
-        // Register UploadFileService as a singleton for IUploadFileService
-        services.AddSingleton<IUploadFileService, UploadFileService>();
+        // Register UploadFileService as a add dcoped for IUploadFileService
+        services.AddScoped<IUploadFileService, UploadFileService>();
     }
+
 
     // Method to add the permission validator service to the service collection
     public static void AddSPermissionValidatorService(this IServiceCollection services)
@@ -126,5 +127,15 @@ public static class SharedServicesExtension
     {
         // Registers LLMDataExtractionService as a scoped implementation of ILLMDataExtractionService
         services.AddScoped<ILLMDataExtractionService, LLMDataExtractionService>();
+    }
+
+    // Method to add the Azure Blob Storage service to the service collection
+    public static void AddAzureBlobStorageService(this IServiceCollection services, IConfiguration config)
+    {
+        // Bind the "AzureBlobStorageConfig" section from configuration to a strongly-typed AzureBlobStorageConfig instance and register it as a singleton
+        services.AddSingleton(Guard.Against.Null(config.GetSection("AzureBlobStorageConfig").Get<AzureBlobStorageConfig>(), message: "AzureBlobStorageConfig cannot be null"));
+
+        // Register your AzureBlobStorageService implementation
+        services.AddSingleton<IAzureBlobStorageService, AzureBlobStorageService>();
     }
 }
