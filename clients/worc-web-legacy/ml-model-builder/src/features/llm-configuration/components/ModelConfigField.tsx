@@ -1,3 +1,4 @@
+import { SearchableSelectField } from "@/react-toolkit/ui/searchable-select/SearchableSelectField";
 import { SliderField } from "@/shared/Slider/SliderField";
 
 import { buttonVariants } from "@aventisia/ui/buttons";
@@ -24,8 +25,8 @@ import {
   modelProviders,
 } from "../constants/model-providers";
 import { useModelProviderStore } from "../stores/model-provider-store";
+import { getUniqueArrayByKey } from "../utils/getUniqueArrayByKey";
 import { CredentialsSelectField } from "./CredentialsSelectField";
-import { ModelSelectField } from "./ModelSelectField";
 
 interface ModelConfigFieldProps {
   /** The name of the form field. */
@@ -246,7 +247,7 @@ const ModelConfigField = ({ name }: ModelConfigFieldProps) => {
   const availableModels = useMemo(() => {
     if (isBYOKEnabled) {
       setModels(byokModels);
-      return byokModels;
+      return getUniqueArrayByKey(byokModels, "value");
     }
 
     const provider = filteredProviders.find((p) => p.value === providerValue);
@@ -299,13 +300,14 @@ const ModelConfigField = ({ name }: ModelConfigFieldProps) => {
 
       <div className="flex items-end gap-1">
         <div className="flex-grow">
-          <ModelSelectField
+          <SearchableSelectField
             isRequired
             size="sm"
             name={fieldNames.model}
             selectOptions={availableModels}
             label="Model"
             isLoading={isLoading}
+            primaryText="Models"
             disabled={!isInitialized || (isBYOKEnabled && !credentialsValue)}
           />
         </div>

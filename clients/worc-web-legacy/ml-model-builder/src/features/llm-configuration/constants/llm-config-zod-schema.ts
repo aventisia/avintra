@@ -7,8 +7,8 @@ export const llmConfigZodSchema = z.object({
     .min(1, { message: reqError("Model") })
     .default("gpt-4o-mini"),
   nodePrompt: z.string().min(1, { message: reqError("Node Prompt") }),
-  temperature: z.number().default(0.2),
-  topP: z.number().default(0.2),
+  temperature: z.number().default(1),
+  topP: z.number().default(1),
   credentialId: z.string().nullable().optional(),
   provider: z
     .string()
@@ -16,5 +16,5 @@ export const llmConfigZodSchema = z.object({
     .default("openai"),
   isBYOKEnabled: z.boolean().default(false),
   isJsonOutput: z.boolean().default(false),
-  maxOutputToken: z.number().default(50),
+  maxOutputToken: z.number().nullable(),
 });

@@ -124,7 +124,7 @@ const LLMConfiguration = ({ form, modelType }: LLMConfigurationProps) => {
                 control={form.control}
                 name={`${modelType}.model`}
                 render={({ field }) => (
-                  <FormItem className="absolute left-40 top-[50%] translate-y-[-50%] w-40">
+                  <FormItem className="absolute left-[10.5rem] top-[50%] translate-y-[-50%] w-40">
                     <Select value={field.value} onValueChange={field.onChange}>
                       <SelectTrigger className="text-primary rounded-full bg-slate-200 h-6 text-xs text-left">
                         <span className="w-full">
