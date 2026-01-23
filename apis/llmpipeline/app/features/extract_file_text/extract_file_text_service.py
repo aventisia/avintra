@@ -28,8 +28,8 @@ def extract_text_from_file(file_path: str) -> str:
         else:
             local_path = file_path
 
-        # Determine file type
-        ext = Path(local_path).suffix.lower()
+        # Get the file extension
+        ext = Path(local_path.split("?")[0]).suffix.lower()
 
         # ---Extract text based on file type
         # Extract text from PDF
