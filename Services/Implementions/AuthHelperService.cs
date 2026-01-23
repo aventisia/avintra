@@ -211,11 +211,13 @@ public class AuthHelperService : IAuthHelperService
 
             // Add permission access
             claims["permissions"] = user.UserRoles
-                    .SelectMany(u => u.Role.RolePermissions)
-                    .GroupBy(a => a.Permission.Name)
-                    .ToDictionary(
-                        g => (int)Enum.Parse(typeof(PermissionTypesEnum), g.Key),
-                        g => JsonSerializer.Serialize(g.Select(a => (int)a.Access).ToList()));
+                .Where(w => w.Role != null && w.Role.RolePermissions != null)
+                .SelectMany(s => s.Role.RolePermissions)
+                .Where(w => w.Permission != null)
+                .GroupBy(g => g.Permission.Name)
+                .ToDictionary(
+                    td => (int)Enum.Parse(typeof(PermissionTypesEnum), td.Key),
+                    td => JsonSerializer.Serialize(td.Select(a => (int)a.Access).ToList()));
         }
 
         // SigningCredentials
