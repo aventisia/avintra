@@ -158,10 +158,11 @@ public class UserRegistrationService : IUserRegistrationService
             else
             {
                 // Create a new tenant entity for the newly created user
-                var userTenant = new Tenant
+                var userTenant = new Tenant()
                 {
                     Id = Guid.NewGuid(),
                     Name = newUser.Email,
+                    ContainerName = TenantContainerUtil.GenerateName(newUser.Email),
                     Domain = string.Empty,
                     Type = TenantTypesEnum.Unspecified,
                     ResourceType = TenantResourceTypesEnum.Shared,

@@ -348,6 +348,9 @@ public class MyAccountService(
             // Create new RefreshToken
             var newRefreshToken = _authHelperService.CreateRefreshToken();
 
+            // Detach the entity from the DbContext
+            _unitOfWork.ActiveSessionRepo.Detach(activeSession);
+
             // Update info of activeSession instance
             activeSession.RefreshToken = newRefreshToken;
             activeSession.SessionExpiresOn = refreshTokenExpiresOn;

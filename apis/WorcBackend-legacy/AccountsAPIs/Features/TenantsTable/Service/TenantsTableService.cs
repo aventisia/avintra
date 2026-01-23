@@ -278,6 +278,7 @@ public class TenantsTableService : ITenantsTableService
 
             // Default mapping
             var newTenant = tenantsTableDto.Adapt<Tenant>();
+            newTenant.ContainerName = TenantContainerUtil.GenerateName(newTenant.Name);
             newTenant.CreatedByUserId = _userId;
             newTenant.LastModifiedByUserId = _userId;
             newTenant.IsDefault = false; // DO NOT CHANGE THIS
