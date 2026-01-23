@@ -16,14 +16,14 @@ public class LoginWithExternalAuthController : BaseApiController
 
     // Generates an authentication URL for a specified external provider (Azure, Google, Facebook, Twitter).
     [HttpGet("generate-login-url")]
-    public IActionResult GenerateLoginUrl(ExternalAuthProviderEnum type, string redirectUrl)
+    public ActionResult<ServiceResponse<string>> GenerateLoginUrl(ExternalAuthProviderEnum type, string redirectUrl)
     {
         return ResultHelper(_loginWithExternalAuthService.GenerateLoginUrlAsync(type, redirectUrl));
     }
 
     // Validates an external token and creates the user if not already existing.
     [HttpPost("validate-token")]
-    public async Task<IActionResult> GenerateLoginUrl([FromBody] ValidateTokenRequestDto requestDto)
+    public async Task<ActionResult<ServiceResponse<UserSessionDto>>> GenerateLoginUrl([FromBody] ValidateTokenRequestDto requestDto)
     {
         // Validate the token and create the user if it doesn't exist
         var authenticateUserResult = await _loginWithExternalAuthService.ValidateTokenAndCreateUserAsync(requestDto);
