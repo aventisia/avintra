@@ -24,7 +24,7 @@ else
 fi
 
 # Replace placeholders in config files
-sed -i "s|\${APP_BASE_URL}|$APP_BASE_URL|g" /etc/nginx/conf.d/worc.app.conf
+sed -i "s|\${APP_BASE_URL}|$APP_BASE_URL|g" /etc/nginx/conf.d/aventisia.worc.conf
 sed -i "s|\${APP_BASE_URL}|$APP_BASE_URL|g" /etc/nginx/conf.d/common_headers.conf
 sed -i "s|\${CSP_SCRIPT_SRC}|$CSP_SCRIPT_SRC|g" /etc/nginx/conf.d/common_headers.conf
 sed -i "s|\${CSP_FRAME_SRC}|$CSP_FRAME_SRC|g" /etc/nginx/conf.d/common_headers.conf
