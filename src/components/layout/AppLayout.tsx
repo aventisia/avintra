@@ -9,14 +9,14 @@ import { useShallow } from "zustand/react/shallow";
 import { DotPattern } from "@/components/layout/DotPattern";
 import { IS_TAURI } from "@/constants/constants";
 import useCheckJobTrigger from "@/features/execute-flow/hooks/useCheckJobTrigger";
-// import { useCurrentFlowStore } from "@/features/execute-flow/stores/current-flow-store";
+import { useCurrentFlowStore } from "@/features/execute-flow/stores/current-flow-store";
 import useCheckMachineStatus from "@/features/orchestrator/machines-table/hooks/useCheckMachineStatus";
-import {
-  useCheckForUpdate,
-  useRedirectOnRelaunch,
-} from "@/features/tauri-updater";
+// import {
+//   useCheckForUpdate,
+//   useRedirectOnRelaunch,
+// } from "@/features/tauri-updater";
 import { useFetchPaymentStatus } from "@/features/tenant/hooks/useFetchPaymentStatus";
-// import { usePreventClose } from "@/hooks/usePreventClose";
+import { usePreventClose } from "@/hooks/usePreventClose";
 import useTauriUserMetadata from "@/hooks/useTauriUserMetadata";
 import useWebSocket from "@/hooks/useWebSocket";
 import { useValidateUserSession } from "@/react-toolkit/hooks/useValidateUserSession";
@@ -62,11 +62,23 @@ export const AppLayout = () => {
     })),
   );
 
+  // Get setExecutionState action from current flow store
+  const { executionState } = useCurrentFlowStore(
+    useShallow((state) => ({
+      executionState: state.executionState,
+    })),
+  );
+
+  // Prevent closing the Tauri app while an execution is in progress
+  usePreventClose(
+    executionState === "executing" || executionState === "paused",
+  );
+
   // Redirect to relaunch URL if available (if app is inside Tauri)
-  useRedirectOnRelaunch();
+  // useRedirectOnRelaunch();
 
   // Check for new version updates if app is inside the Tauri
-  useCheckForUpdate();
+  // useCheckForUpdate();
 
   useFetchPaymentStatus();
 
