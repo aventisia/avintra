@@ -1,6 +1,12 @@
 import { Button } from "@aventisia/ui/buttons";
 import { toast } from "@aventisia/ui/sonner";
-import { Download, X, CheckCircle2, AlertCircle, InfoIcon } from "lucide-react";
+import {
+  X,
+  CheckCircle2,
+  AlertCircle,
+  InfoIcon,
+  DownloadIcon,
+} from "lucide-react";
 import { useEffect, useRef, useState } from "react";
 
 import { IS_TAURI } from "@/constants/constants";
@@ -86,6 +92,7 @@ export function AppUpdateToast({
           <Button
             size="xs"
             variant="outline"
+            className="text-secondary"
             onClick={() => {
               handleIgnore();
               dismissToast();
@@ -149,7 +156,7 @@ export function AppUpdateToast({
       if (progress.status === "ERROR") {
         return <AlertCircle className="h-3 w-3 text-red-500" />;
       }
-      return <Download className="h-3 w-3" />;
+      return <DownloadIcon className="h-2 w-2" />;
     };
 
     toastIdRef.current = toast.info(
@@ -199,6 +206,7 @@ export function AppUpdateToast({
             <Button
               size="xs"
               variant="outline"
+              className="text-secondary"
               onClick={() => {
                 cancelUpdate();
                 dismissToast();
