@@ -21,7 +21,7 @@ import { CredentialsSelectField } from "./CredentialsSelectField";
 import { getProviderModels } from "../../apis/llm-pipelines-apis";
 import { toast } from "@aventisia/ui/sonner";
 import { SearchableSelectField } from "@/react-toolkit/ui/searchable-select/SearchableSelectField";
-import { getUniqueArrayByKey } from "../../utils/getUniqueArrayByKey";
+import { uniqueAndNormalizeArray } from "../../utils/uniqueAndNormalizeArray";
 
 interface ModelConfigFieldProps {
   /** The name of the form field. */
@@ -230,13 +230,16 @@ const ModelConfigField = ({ name }: ModelConfigFieldProps) => {
 
   // Available models
   const availableModels = useMemo(() => {
+    let models = [];
     if (is_byok_enabled) {
-      return getUniqueArrayByKey(byokModels, "value");
+      models = byokModels;
+    } else {
+      const provider = filteredProviders.find((p) => p.value === providerValue);
+
+      models = provider?.models ?? [];
     }
 
-    const provider = filteredProviders.find((p) => p.value === providerValue);
-
-    return provider?.models ?? [];
+    return uniqueAndNormalizeArray(models);
   }, [is_byok_enabled, byokModels, filteredProviders, providerValue]);
 
   // Currently selected model
