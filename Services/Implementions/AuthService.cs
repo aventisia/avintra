@@ -13,6 +13,8 @@ public class AuthService : IAuthService
     private readonly IAuthHelperService _authHelperService;
     private readonly AppRuntimeSettings _appRuntimeSettings;
     private readonly GeneralConfig _generalConfig;
+    private readonly AzureEntraConfig _azureEntraConfig;
+    private readonly ILoginWithExternalAuthService _loginWithExternalAuthService;
 
     public AuthService(
         UserManager<AccountUser> userManager,
@@ -25,7 +27,9 @@ public class AuthService : IAuthService
         JwtConfig jwtConfig,
         VerificationCodeConfig verificationCodeConfig,
         AppRuntimeSettings appRuntimeSettings,
-        GeneralConfig generalConfig)
+        GeneralConfig generalConfig,
+        AzureEntraConfig azureEntraConfig,
+        ILoginWithExternalAuthService loginWithExternalAuthService)
     {
         _userManager = userManager;
         _emailService = emailService;
@@ -38,6 +42,8 @@ public class AuthService : IAuthService
         _verificationCodeConfig = verificationCodeConfig;
         _appRuntimeSettings = appRuntimeSettings;
         _generalConfig = generalConfig;
+        _azureEntraConfig = azureEntraConfig;
+        _loginWithExternalAuthService = loginWithExternalAuthService;
     }
 
     // Checks the availability of a email.
@@ -147,7 +153,19 @@ public class AuthService : IAuthService
                 return serviceResponse;
             }
 
+            // Variable to hold tenant information for the response
             TenantInfoDto? tenantInfoDto = null;
+
+            // Check whether SSO (Azure Entra) is properly configured
+            bool isAzureSsoConfigured = !string.IsNullOrEmpty(_azureEntraConfig.ClientId)
+                    && !string.IsNullOrEmpty(_azureEntraConfig.TenantId)
+                    && !string.IsNullOrEmpty(_azureEntraConfig.ClientSecret);
+
+            // Generate Azure login URL only if SSO is enabled
+            var azureLoginUrl = isAzureSsoConfigured
+                    ? _loginWithExternalAuthService.GenerateLoginUrlAsync(ExternalAuthProviderEnum.Azure).Data
+                    : null;
+
             // Check if the user is associated with an organization (tenant)
             if (user.TenantId != null)
             {
@@ -164,7 +182,7 @@ public class AuthService : IAuthService
                     UserName = user.UserName,
                     Name = user.Tenant.IsDefault ? "default" : user.Tenant.Name,
                     TenantId = user.Tenant.Id,
-                    SSOConfigJson = user.Tenant.IsSSOEnabled ? user.Tenant.SSOConfigJson : null
+                    SSOConfigJson = azureLoginUrl
                 };
             }
             else
@@ -174,8 +192,7 @@ public class AuthService : IAuthService
                     UserName = user.UserName,
                     Name = "NA",
                     TenantId = Guid.Empty,
-                    SSOConfigJson = null
-
+                    SSOConfigJson = azureLoginUrl
                 };
             }
 
