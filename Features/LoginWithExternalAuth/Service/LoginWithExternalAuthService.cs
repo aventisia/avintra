@@ -9,6 +9,7 @@ public class LoginWithExternalAuthService : ILoginWithExternalAuthService
     private readonly GeneralConfig _generalConfig;
     private readonly UserManager<AccountUser> _userManager;
     private readonly IEmailService _emailService;
+    private readonly HttpClientUrlConfig _httpClientUrlConfig;
 
     public LoginWithExternalAuthService(
         ILogger<LoginWithExternalAuthService> logger,
@@ -17,7 +18,8 @@ public class LoginWithExternalAuthService : ILoginWithExternalAuthService
         AppRuntimeSettings appRuntimeSettings,
         GeneralConfig generalConfig,
         UserManager<AccountUser> userManager,
-        IEmailService emailService)
+        IEmailService emailService,
+        HttpClientUrlConfig httpClientUrlConfig)
     {
         _logger = logger;
         _azureEntraConfig = azureEntraConfig;
@@ -26,10 +28,11 @@ public class LoginWithExternalAuthService : ILoginWithExternalAuthService
         _generalConfig = generalConfig;
         _userManager = userManager;
         _emailService = emailService;
+        _httpClientUrlConfig = httpClientUrlConfig;
     }
 
     // Generates an authentication URL for a specific external provider (Azure, Google, Facebook, Twitter).
-    public ServiceResponse<string> GenerateLoginUrlAsync(ExternalAuthProviderEnum type, string redirectUrl)
+    public ServiceResponse<string> GenerateLoginUrlAsync(ExternalAuthProviderEnum type)
     {
         // Initialize default service response with failure state
         var serviceResponse = new ServiceResponse<string>
@@ -40,6 +43,9 @@ public class LoginWithExternalAuthService : ILoginWithExternalAuthService
 
         // Variable to hold the generated authentication URL
         string loginUrl = string.Empty;
+
+        // Redirect URI used by Azure Entra after successful login
+        string redirectUrl = $"{_httpClientUrlConfig.AccountsApisBaseUrl}/auth/entra/callback";
 
         try
         {
@@ -55,8 +61,9 @@ public class LoginWithExternalAuthService : ILoginWithExternalAuthService
                     loginUrl =
                         $"https://login.microsoftonline.com/{_azureEntraConfig.TenantId}/oauth2/v2.0/authorize" +
                         $"?client_id={_azureEntraConfig.ClientId}" +
-                        $"&redirect_uri={redirectUrl}" +
                         $"&response_type=code" +
+                        $"&redirect_uri={Uri.EscapeDataString(redirectUrl)}" +
+                        $"&response_mode=query" +
                         $"&scope=openid profile email";
 
                     _logger.LogInformation("Azure login URL generated successfully for TenantId={TenantId}", _azureEntraConfig.TenantId);
@@ -96,6 +103,110 @@ public class LoginWithExternalAuthService : ILoginWithExternalAuthService
         }
 
         return serviceResponse;
+    }
+
+    public async Task<ServiceResponse<AccountUser>> EntraCallbackAsync(string code)
+    {
+        // Initialize default failure response object
+        var serviceResponse = new ServiceResponse<AccountUser>
+        {
+            Data = null,
+            Message = "Failed to validate token. Please try again"
+        };
+
+        // Precondition check: Authorization code must be present
+        if (string.IsNullOrWhiteSpace(code))
+        {
+            _logger.LogWarning("EntraCallbackAsync called with empty or null authorization code.");
+
+            serviceResponse.Message = "Authorization code is missing.";
+            return serviceResponse;
+        }
+
+        // Build redirect URI used in both authorize and token calls (must match exactly)
+        string redirectUrl = $"{_httpClientUrlConfig.AccountsApisBaseUrl}/auth/entra/callback";
+
+        // Azure Entra token endpoint for this tenant
+        string tokenEndpoint = $"https://login.microsoftonline.com/{_azureEntraConfig.TenantId}/oauth2/v2.0/token";
+
+        _logger.LogInformation("Prepared Azure token request. TenantId={TenantId}, RedirectUrl={RedirectUrl}", _azureEntraConfig.TenantId, redirectUrl);
+
+        try
+        {
+            // Build form-urlencoded payload for token exchange
+            var form = new Dictionary<string, string>
+            {
+                ["client_id"] = _azureEntraConfig.ClientId,
+                ["client_secret"] = _azureEntraConfig.ClientSecret,
+                ["grant_type"] = "authorization_code",
+                ["code"] = code,
+                ["redirect_uri"] = redirectUrl,
+                ["scope"] = "openid profile email"
+            };
+
+            _logger.LogInformation("Sending token request to Azure Entra endpoint.");
+
+            // Create HTTP client and send POST request to token endpoint
+            using var http = new HttpClient();
+            using var response = await http.PostAsync(tokenEndpoint, new FormUrlEncodedContent(form));
+
+            // Read raw response body as string
+            var json = await response.Content.ReadAsStringAsync();
+
+            _logger.LogInformation("Received response from Azure token endpoint. Status={StatusCode}", response.StatusCode);
+
+            // Condition: Azure returned a non-success HTTP status code
+            if (!response.IsSuccessStatusCode)
+            {
+                _logger.LogError("Azure token endpoint failed. Status={Status}, Body={Body}", response.StatusCode, json);
+                serviceResponse.Message = "Azure token endpoint returned an error.";
+                return serviceResponse;
+            }
+
+            // Parse JSON response body
+            using var jsonDoc = JsonDocument.Parse(json);
+
+            _logger.LogInformation("Parsed JSON response from Azure token endpoint.");
+
+            // Condition: access_token field must be present
+            if (!jsonDoc.RootElement.TryGetProperty("access_token", out var accessTokenElement))
+            {
+                _logger.LogError("Azure token response missing access_token. Body={Body}", json);
+                serviceResponse.Message = "Invalid token response from Azure.";
+                return serviceResponse;
+            }
+
+            // Extract access_token value
+            var accessToken = accessTokenElement.GetString();
+
+            _logger.LogInformation("Extracted access_token from Azure response.");
+
+            // Condition: access_token must not be null or empty
+            if (string.IsNullOrWhiteSpace(accessToken))
+            {
+                _logger.LogError("Azure token response returned empty access_token. Body={Body}", json);
+                serviceResponse.Message = "Received empty token from Azure.";
+                return serviceResponse;
+            }
+
+            _logger.LogInformation("Access token validated successfully. Proceeding to user validation.");
+
+            // Validate token and create or load local user
+            var validateRequest = new ValidateTokenRequestDto
+            {
+                Type = ExternalAuthProviderEnum.Azure,
+                Token = accessToken
+            };
+
+            _logger.LogInformation("Calling ValidateTokenAndCreateUserAsync.");
+
+            return await ValidateTokenAndCreateUserAsync(validateRequest);
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex, "Unexpected error during EntraCallbackAsync.");
+            return serviceResponse;
+        }
     }
 
     // Validates the external authentication token and creates or retrieves the user
