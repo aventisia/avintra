@@ -1,4 +1,6 @@
-import { InputFieldProps, SwitchFieldProps } from "@aventisia/ui/form";
+import { InputFieldProps, SelectFieldProps, SwitchFieldProps } from "@aventisia/ui/form";
+import { enumToArray } from "@aventisia/ui/utils";
+import { OnPremInstanceTypesEnum } from "../enums/tenant-instance-type-enum";
 
 // Instance Id
 const idProps: InputFieldProps = {
@@ -15,6 +17,14 @@ const nameProps: InputFieldProps = {
   isRequired: true,
 };
 
+// Type
+const typeProps: SelectFieldProps = {
+  name: "type",
+  label: "Instance Type",
+  isRequired: true,
+  selectOptions: enumToArray(OnPremInstanceTypesEnum),
+};
+
 // Disable Instance
 const isDisabledProps: SwitchFieldProps = {
   name: "isDisabled",
@@ -23,4 +33,4 @@ const isDisabledProps: SwitchFieldProps = {
     "Disable this record if it's been outdated, or not required anymore",
 };
 
-export { idProps, nameProps, isDisabledProps };
+export { idProps, nameProps, typeProps, isDisabledProps };
