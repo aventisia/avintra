@@ -39,12 +39,18 @@ export const JsonEditor: React.FC<JsonEditorProps> = ({
       aria-disabled={disabled}
       onBlur={() => {
         try {
-          if (value) {
-            const formatted = JSON.stringify(JSON.parse(value), null, 2);
-            onChange?.(formatted);
-          }
+          const trimmed = value?.trim();
+
+          if (!trimmed) return;
+
+          const parsed: unknown = JSON.parse(trimmed);
+
+          // Works for both object & array
+          const formatted = JSON.stringify(parsed, null, 2);
+
+          onChange?.(formatted);
         } catch {
-          // ignore invalid JSON
+          // Invalid / partial JSON while typing — ignore
         }
       }}
       className={cn(

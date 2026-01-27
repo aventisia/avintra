@@ -1,11 +1,6 @@
 import { Button } from "@aventisia/ui/buttons";
 import {
   Form,
-  FormControl,
-  FormField,
-  FormItem,
-  FormLabelExt,
-  FormMessage,
   InputField,
   SelectField,
   SwitchField,
@@ -14,7 +9,7 @@ import {
 import { useListOptimisticMutation } from "@aventisia/ui/hooks";
 import { z } from "zod";
 
-import { JsonEditor } from "@/components/JsonEditor";
+import { JsonEditorField } from "@/components/json-editor/JsonEditorField";
 
 import { keystoreOptimisticMutationFn } from "../../apis/keystores-table-apis";
 import { DATA_QUERY_KEY } from "../../constants";
@@ -103,23 +98,11 @@ export const KeystoreCrudForm = () => {
 
       {/* value  */}
       {keyType == "JSON" && (
-        <FormField
+        <JsonEditorField
           name="value"
-          control={form.control}
-          render={({ field }) => (
-            <FormItem size={"base"}>
-              <FormLabelExt size={"base"} label="Value" isRequired />
-              <FormControl>
-                <JsonEditor
-                  value={field.value}
-                  onChange={field.onChange}
-                  disabled={isReadMode}
-                />
-              </FormControl>
-
-              <FormMessage size={"base"} />
-            </FormItem>
-          )}
+          label="Value"
+          isRequired={true}
+          disabled={isReadMode}
         />
       )}
 
