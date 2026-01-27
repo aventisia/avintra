@@ -8,13 +8,15 @@ public class AzureBlobStorageService : IAzureBlobStorageService
 {
     private readonly BlobServiceClient _blobServiceClient;
     private readonly ILogger<AzureBlobStorageService> _logger;
+    private readonly EnvironmentConfig _environmentConfig;
 
     public AzureBlobStorageService(
         ILogger<AzureBlobStorageService> logger,
-        AzureBlobStorageConfig azureBlobStorageConfig)
+        EnvironmentConfig environmentConfig)
     {
         _logger = logger;
-        _blobServiceClient = new BlobServiceClient(azureBlobStorageConfig.ConnectionString);
+        _blobServiceClient = new BlobServiceClient(environmentConfig.AzureBlobStorageConnectionString);
+        _environmentConfig = environmentConfig;
     }
 
     // Checks whether a blob exists in the specified container.
