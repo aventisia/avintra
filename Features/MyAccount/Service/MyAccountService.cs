@@ -15,6 +15,7 @@ public class MyAccountService : IMyAccountService
     private readonly IAuthHelperService _authHelperService;
     private readonly IEmailService _emailService;
     private readonly EnvironmentConfig _environmentConfig;
+    private readonly AppDefaultConfig _appDefaultConfig;
     private readonly string _jwt;
     private readonly string _userName;
     private readonly Guid _sessionId;
@@ -33,6 +34,7 @@ public class MyAccountService : IMyAccountService
         IAuthHelperService authHelperService,
         IAuthService authService,
         EnvironmentConfig environmentConfig,
+        AppDefaultConfig appDefaultConfig,
         IEmailService emailService)
     {
         _userManager = userManager;
@@ -44,6 +46,7 @@ public class MyAccountService : IMyAccountService
         _authHelperService = authHelperService;
         _emailService = emailService;
         _environmentConfig = environmentConfig;
+        _appDefaultConfig = appDefaultConfig;
         _jwt = GetJwtOfRequestUtil.GetJwtOfRequest(httpContextAccessor.HttpContext) ?? "jwt-not-found";
         _userName = httpContextAccessor.HttpContext?.User?.FindFirstValue("uname") ?? "Unknown";
         _sessionId = Guid.Parse(httpContextAccessor.HttpContext?.User?.FindFirstValue("sid") ?? Guid.Empty.ToString());
@@ -109,7 +112,8 @@ public class MyAccountService : IMyAccountService
                 AccessToken = accessToken,
                 RefreshToken = session.RefreshToken,
                 RTExpiresOn = session.SessionExpiresOn,
-                Country = tenant != null ? tenant.Country.ToString() : "NA"
+                Country = tenant != null ? tenant.Country.ToString() : "NA",
+                PlatformVersion = _appDefaultConfig.PlatformVersion
             };
 
             // Task successful
@@ -401,7 +405,8 @@ public class MyAccountService : IMyAccountService
                 AccessToken = jwt,
                 RefreshToken = refreshToken,
                 RTExpiresOn = refreshTokenExpiresOn,
-                Country = tenant != null ? tenant.Country.ToString() : "NA"
+                Country = tenant != null ? tenant.Country.ToString() : "NA",
+                PlatformVersion = _appDefaultConfig.PlatformVersion
             };
 
             // Check if user is associated with an organization (tenant)
