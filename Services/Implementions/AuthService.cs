@@ -129,6 +129,7 @@ public class AuthService : IAuthService
             // Try to get user (Includes Tenant and Roles)
             var user = await _unitOfWork.AccountUserRepo
                     .GetByConditionAsync(w => EF.Functions.ILike(emailDto.Email, w.UserName))
+                    .Include(i => i.Tenant)
                     .AsNoTracking()
                     .SingleOrDefaultAsync();
 
