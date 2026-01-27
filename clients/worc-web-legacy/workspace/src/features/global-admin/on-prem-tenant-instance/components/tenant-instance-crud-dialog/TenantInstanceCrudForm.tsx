@@ -10,10 +10,12 @@ import {
   idProps,
   isDisabledProps,
   nameProps,
+  typeProps,
 } from "../../constants/tenant-instance-field-props";
 import { tenantInstanceZodSchema } from "../../constants/tenant-instance-zod-schema";
 import { OnPremInstanceDto } from "../../dtos/tenant-instance-dto";
 import { useDefineTenantInstanceForm } from "../../hooks/useDefineTenantInstanceForm";
+import { SelectField } from "@/components/select-field/SelectField";
 
 export const TenantInstanceCrudForm = () => {
   // Define on-prem tenant instance form
@@ -84,6 +86,13 @@ export const TenantInstanceCrudForm = () => {
         onChangeCapture={(e) => handleInputChange(e.currentTarget.value)}
         nonErrorMessage={availabilityMessage}
       />
+
+      {/* Type */}
+      {crudAction === "create" ? (
+        <SelectField {...typeProps} />
+      ) : (
+        form.getValues("type") !== "" && <SelectField {...typeProps} />
+      )}
 
       {/* Is Disabled */}
       {crudAction !== "create" && <SwitchField {...isDisabledProps} />}

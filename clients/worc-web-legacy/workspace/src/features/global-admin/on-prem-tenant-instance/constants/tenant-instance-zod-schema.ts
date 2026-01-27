@@ -23,5 +23,6 @@ export const tenantInstanceNameSchema = z
 export const tenantInstanceZodSchema = z.object({
   id: z.string(),
   name: tenantInstanceNameSchema,
+  type: z.string().min(1, { message: reqError("Instance type") }),
   isDisabled: z.boolean().optional(),
 });

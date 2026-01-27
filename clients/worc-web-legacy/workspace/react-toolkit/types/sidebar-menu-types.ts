@@ -2,8 +2,7 @@ import {
   SidebarMenuItemType,
   SidebarMenuSectionType,
 } from "@aventisia/ui/types";
-
-export type deploymentType = "Commercial" | "Enterprise";
+import { deploymentType } from "./user-session-types";
 
 export type SidebarMenuItemExtended = SidebarMenuItemType & {
   type?: deploymentType[];

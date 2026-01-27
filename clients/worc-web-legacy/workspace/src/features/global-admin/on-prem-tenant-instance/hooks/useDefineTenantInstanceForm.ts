@@ -47,6 +47,7 @@ export const useDefineTenantInstanceForm = () => {
     defaultValues: {
       id: "",
       name: "",
+      type: "",
       isDisabled: false,
     },
   });
@@ -75,6 +76,7 @@ export const useDefineTenantInstanceForm = () => {
     form.reset({
       id: rowId,
       name: onPremTenantData?.name ?? "",
+      type: onPremTenantData?.type ?? "",
       isDisabled: onPremTenantData?.isDisabled ?? false,
     });
 

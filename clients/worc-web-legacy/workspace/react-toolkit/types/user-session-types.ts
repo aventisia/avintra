@@ -1,5 +1,3 @@
-import { deploymentType } from "./sidebar-menu-types";
-
 interface IUserSessionStore {
   tenantId: string;
   tenantName: string;
@@ -7,6 +5,7 @@ interface IUserSessionStore {
   firstName: string;
   lastName: string;
   userInitials: string;
+  platformVersion: string;
   planType?: string;
   deploymentType: deploymentType;
 
@@ -16,6 +15,8 @@ interface IUserSessionStore {
   expiresOn: Date;
   avatarSrc?: string;
 }
+
+export type deploymentType = "Commercial" | "Enterprise";
 
 interface IJwtPayload {
   /** jwt audience */
