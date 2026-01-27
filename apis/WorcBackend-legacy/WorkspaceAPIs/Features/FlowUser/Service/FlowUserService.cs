@@ -4,15 +4,13 @@ public class FlowUserService : IFlowUserService
 {
     private readonly ILogger<FlowUserService> _logger;
     private readonly IUnitOfWork _unitOfWork;
-    private readonly DefaultTenantConfig _defaultTenantConfig;
     private readonly Guid _userId;
     private readonly Guid _tenantId;
 
     public FlowUserService(
         ILogger<FlowUserService> logger,
         IUnitOfWork unitOfWork,
-        IHttpContextAccessor httpContextAccessor,
-        DefaultTenantConfig defaultTenantConfig)
+        IHttpContextAccessor httpContextAccessor)
     {
         // Attempt to retrieve the user's ID and tenant ID from the JWT claims
         _userId = Guid.TryParse(httpContextAccessor.HttpContext?.User?.FindFirstValue("uid"), out var userId) ? userId : Guid.Empty;
@@ -20,7 +18,6 @@ public class FlowUserService : IFlowUserService
 
         _logger = logger;
         _unitOfWork = unitOfWork;
-        _defaultTenantConfig = defaultTenantConfig;
     }
 
     // Retrieves a list of users associated with a specific flow.
@@ -116,14 +113,15 @@ public class FlowUserService : IFlowUserService
         };
 
         try
-        {
+        {   
+            // @rahmat, please confirm if this logic is still needed
             // Check if the tenant ID matches and return if true
-            if (_defaultTenantConfig.TenantId == _tenantId)
-            {
-                // Tenant ID matches, so return with a message indicating access is not allowed
-                serviceResponse.Message = "Access denied: You cannot add users to agent.";
-                return serviceResponse;
-            }
+            // if (_defaultTenantConfig.TenantId == _tenantId)
+            // {
+            //     // Tenant ID matches, so return with a message indicating access is not allowed
+            //     serviceResponse.Message = "Access denied: You cannot add users to agent.";
+            //     return serviceResponse;
+            // }
 
             var flowUser = await _unitOfWork.FlowUserRepo
                 .GetByConditionAsync(w =>
