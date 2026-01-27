@@ -38,6 +38,8 @@ const setUserSessionLocally = (
     isAE: roles.includes("AE"),
     userRoles: roles,
     expiresOn: new Date(decodedJwt.exp * 1000),
+    platformVersion: userSession.platformVersion,
+    planType: decodedJwt?.plan,
     deploymentType: decodedJwt.type,
   };
 };

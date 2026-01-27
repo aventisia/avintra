@@ -78,6 +78,50 @@
       "category": "Tools"
     },
     {
+      "direction": "Input",
+      "type": "switch",
+      "name": "useJSONSchema",
+      "label": "Use JSON Schema",
+      "description": "",
+      "defaultValue": false,
+      "required": false,
+      "category": "StructuredOutput"
+    },
+    {
+      "direction": "Input",
+      "type": "text",
+      "name": "SchemaName",
+      "label": "Schema Name",
+      "defaultValue": "",
+      "required": false,
+      "category": "StructuredOutput",
+      "renderIf": {
+        "conditions": [
+          {
+            "field": "useJSONSchema",
+            "equals": true
+          }
+        ]
+      }
+    },
+    {
+      "direction": "Input",
+      "type": "json-editor",
+      "name": "JSONSchema",
+      "label": "JSON Schema",
+      "defaultValue": "{\n  \"type\": \"object\",\n  \"properties\": {\n    \"steps\": {\n      \"type\": \"array\",\n      \"items\": {\n        \"type\": \"object\",\n        \"properties\": {\n          \"explanation\": {\n            \"type\": \"string\"\n          },\n          \"output\": {\n            \"type\": \"string\"\n          }\n        },\n        \"required\": [\n          \"explanation\",\n          \"output\"\n        ],\n        \"additionalProperties\": false\n      }\n    },\n    \"final_answer\": {\n      \"type\": \"string\"\n    }\n  },\n  \"required\": [\n    \"steps\",\n    \"final_answer\"\n  ],\n  \"additionalProperties\": false\n}",
+      "required": false,
+      "category": "StructuredOutput",
+      "renderIf": {
+        "conditions": [
+          {
+            "field": "useJSONSchema",
+            "equals": true
+          }
+        ]
+      }
+    },
+    {
       "direction": "Output",
       "type": "config-panel-output",
       "name": "Result",
