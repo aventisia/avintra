@@ -9,8 +9,7 @@ public class ConversationHistoryService : IConversationHistoryService
     public ConversationHistoryService(
         ILogger<ConversationHistoryService> logger,
         IUnitOfWork unitOfWork,
-        IHttpContextAccessor httpContextAccessor,
-        DefaultTenantConfig defaultTenantConfig)
+        IHttpContextAccessor httpContextAccessor)
     {
         // Attempt to retrieve the user's ID and tenant ID from the JWT claims
         _userId = Guid.TryParse(httpContextAccessor.HttpContext?.User?.FindFirstValue("uid"), out var userId) ? userId : Guid.Empty;
