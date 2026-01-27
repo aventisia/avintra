@@ -19,9 +19,8 @@ import {
 } from "react-hook-form";
 import { useShallow } from "zustand/react/shallow";
 import { ConfigPanelAutosizeInput } from "../..";
-import { ScrollArea, ScrollBar } from "@aventisia/ui/scroll";
-import ReactJson from "react-json-view";
 import { useEffect } from "react";
+import { JsonViewer } from "@/components/json-viewer/JsonViewer";
 
 interface ConfigPanelModelOutputFieldProps
   extends React.ComponentPropsWithoutRef<typeof ConfigPanelAutosizeInput> {
@@ -122,23 +121,10 @@ const ConfigPanelModelOutputField = ({
                   <Tooltip
                     className="max-w-[50vw] bg-white"
                     content={
-                      <ScrollArea className="h-[50vh] w-full">
-                        <ReactJson
-                          theme={"rjv-default"}
-                          style={{
-                            padding: "0.5rem",
-                            fontSize: "0.7rem",
-                            color: "white",
-                          }}
-                          enableClipboard={false}
-                          groupArraysAfterLength={20}
-                          displayDataTypes={false}
-                          name={false}
-                          quotesOnKeys={false}
-                          src={JSON.parse(JSON.stringify(description))}
-                        />
-                        <ScrollBar orientation="horizontal" />
-                      </ScrollArea>
+                      <JsonViewer
+                        jsonData={description}
+                        className="h-[calc(50vh)] w-full p-1"
+                      />
                     }
                   >
                     <div className="rounded hover:bg-slate-100 hover:text-primary">

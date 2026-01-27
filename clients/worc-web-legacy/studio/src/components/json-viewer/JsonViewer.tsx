@@ -2,21 +2,22 @@ import { Button } from "@aventisia/ui/buttons";
 import { cn } from "@aventisia/ui/lib";
 import { ScrollArea, ScrollBar } from "@aventisia/ui/scroll";
 import { toast } from "@aventisia/ui/sonner";
+import JsonView from "@uiw/react-json-view";
 import { CopyIcon } from "lucide-react";
-import ReactJson from "react-json-view";
 
 interface JsonViewerProps {
   jsonData: string;
   enableCopy?: boolean;
   className?: string;
 }
+
 export const JsonViewer = ({
   jsonData = "{}",
   enableCopy,
   className,
 }: JsonViewerProps) => {
   const handleCopy = () => {
-    navigator.clipboard.writeText(JSON.stringify(jsonData, null, 2));
+    navigator.clipboard.writeText(JSON.stringify(parsed, null, 2));
     toast.info("Copied to clipboard");
   };
 
@@ -51,29 +52,31 @@ export const JsonViewer = ({
       {enableCopy && (
         <div className="absolute right-2 top-2 z-10">
           <Button
-            variant={"outline"}
-            size={"xs"}
+            variant="outline"
+            size="xs"
             type="button"
             className="flex items-center gap-1 text-slate-600"
-            onClick={() => handleCopy()}
+            onClick={handleCopy}
           >
             <CopyIcon className="h-3 w-3" />
             Copy
           </Button>
         </div>
       )}
-      <ReactJson
+
+      <JsonView
+        value={parsed}
         style={{
           padding: "0.5rem",
-          fontSize: "0.7rem",
+          fontSize: "0.75rem",
+          fontFamily: "monospace",
         }}
         enableClipboard={false}
-        groupArraysAfterLength={20}
         displayDataTypes={false}
-        name={false}
-        quotesOnKeys={false}
-        src={parsed}
+        indentWidth={18}
+        highlightUpdates={false}
       />
+
       <ScrollBar orientation="horizontal" />
     </ScrollArea>
   );

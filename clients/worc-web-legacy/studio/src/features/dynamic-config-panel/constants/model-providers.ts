@@ -589,8 +589,8 @@ export const googleModelList: Model[] = [
 export const openRouterModelList: Model[] = [
   // --- Trending Reasoning & Frontier Models ---
   {
-    label: "anthropic/claude-4.5-sonnet",
-    value: "anthropic/claude-4.5-sonnet",
+    label: "anthropic/claude-4.5-sonnet-20250929",
+    value: "anthropic/claude-4.5-sonnet-20250929",
     available: true,
     specialty: ["text", "vision", "deep-search"],
   },
@@ -615,21 +615,21 @@ export const openRouterModelList: Model[] = [
 
   // --- High-Performance Open Weights ---
   {
-    label: "deepseek/deepseek-v3.2-speciale",
-    value: "deepseek/deepseek-v3.2-speciale",
-    available: true,
+    label: "deepseek/deepseek-v3.2-speciale-20251201",
+    value: "deepseek/deepseek-v3.2-speciale-20251201",
+    available: false,
     specialty: ["text", "vision"],
   },
   {
-    label: "qwen/qwen-3-vl-72b",
-    value: "qwen/qwen-3-vl-72b",
+    label: "qwen/qwen3-vl-32b-instruct",
+    value: "qwen/qwen3-vl-32b-instruct",
     available: true,
     specialty: ["vision", "text"],
   },
   {
-    label: "nvidia/llama-3.3-nemotron-super-49b",
-    value: "nvidia/llama-3.3-nemotron-super-49b",
-    available: true,
+    label: "nvidia/llama-3.3-nemotron-super-49b-v1.5",
+    value: "nvidia/llama-3.3-nemotron-super-49b-v1.5",
+    available: false,
     specialty: ["text", "vision"],
   },
   {
@@ -655,7 +655,7 @@ export const openRouterModelList: Model[] = [
   {
     label: "tngtech/deepseek-r1t2-chimera",
     value: "tngtech/deepseek-r1t2-chimera",
-    available: true,
+    available: false,
     specialty: ["text"],
   },
 
@@ -673,8 +673,8 @@ export const openRouterModelList: Model[] = [
     specialty: ["text", "vision", "realtime"],
   },
   {
-    label: "anthropic/claude-4.5-haiku",
-    value: "anthropic/claude-4.5-haiku",
+    label: "anthropic/claude-4.5-haiku-20251001",
+    value: "anthropic/claude-4.5-haiku-20251001",
     available: true,
     specialty: ["text", "realtime"],
   },
