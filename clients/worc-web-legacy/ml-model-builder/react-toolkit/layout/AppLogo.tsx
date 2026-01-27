@@ -1,5 +1,5 @@
 import { Button } from "@aventisia/ui/buttons";
-import { cn } from "@aventisia/ui/lib";
+import { LogoImage, LogoLink } from "@aventisia/ui/layout";
 import { Tooltip } from "@aventisia/ui/tooltip";
 import { ArrowLeftIcon } from "@heroicons/react/24/outline";
 
@@ -21,7 +21,7 @@ interface AppLogoProps {
 const AppLogo = ({
   showFullLogo = false,
   lightLogo = true,
-  className = "h-6 text-xl",
+  // className = "h-6 text-xl",
 }: AppLogoProps) => {
   // Logo file
   const logoFile = lightLogo ? "app_logo_light.svg" : "app_logo_dark.svg";
@@ -45,7 +45,9 @@ const AppLogo = ({
           <ArrowLeftIcon className="h-4 w-4 text-white/80" />
         </Button>
       </Tooltip>
-      <img className={cn(className)} src={logoSrc} alt="Logo" />
+      <LogoLink>
+        <LogoImage className="h-6" src={logoSrc} />
+      </LogoLink>
     </div>
   );
 };

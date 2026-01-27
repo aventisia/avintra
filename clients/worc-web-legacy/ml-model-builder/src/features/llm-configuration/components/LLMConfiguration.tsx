@@ -24,6 +24,7 @@ import { useShallow } from "zustand/react/shallow";
 import { getProviderModels } from "../apis/llm-model-apis";
 import { Model, modelProviders } from "../constants/model-providers";
 import { useModelProviderStore } from "../stores/model-provider-store";
+import { uniqueAndNormalizeArray } from "../utils/uniqueAndNormalizeArray";
 import CloudConfig from "./CloudConfig";
 
 interface LLMConfigurationProps {
@@ -55,18 +56,17 @@ const LLMConfiguration = ({ form, modelType }: LLMConfigurationProps) => {
   // 2. Initialize on mount (for saved data)
   useEffect(() => {
     const initializeModels = async () => {
+      let initModels: Model[] = [];
       if (!isBYOKEnabled) {
         // Static models mode - no need to fetch
         const provider = modelProviders.find(
           (p) => p.value === form.watch(`${modelType}.provider`),
         );
 
-        const m =
-          models.length > 0
+        initModels =
+          models?.length > 0
             ? models
-            : provider?.models.filter((m) => m.available);
-
-        setInitialModels(m || []);
+            : (provider?.models.filter((m) => m.available) ?? []);
       } else {
         // BYOK mode - need to fetch models if credential exists
         if (credentialId && provider) {
@@ -79,8 +79,8 @@ const LLMConfiguration = ({ form, modelType }: LLMConfigurationProps) => {
 
             const providerM = mapper[provider];
             if (providerM) {
-              const models = await getProviderModels(providerM, credentialId);
-              setInitialModels(models?.data as Model[]);
+              initModels = (await getProviderModels(providerM, credentialId))
+                .data as Model[];
             }
           } catch (err) {
             toast.error(err as string);
@@ -88,6 +88,7 @@ const LLMConfiguration = ({ form, modelType }: LLMConfigurationProps) => {
           }
         }
       }
+      setInitialModels(uniqueAndNormalizeArray(initModels));
     };
 
     initializeModels();
