@@ -122,7 +122,7 @@ export function AppUpdateToast({
     const id = toast.info(
       <div className="w-full space-y-3">
         <p className="flex items-center gap-2 text-sm">
-          <InfoIcon className="h-3 w-3" />
+          <InfoIcon className="h-2 w-2" />
           <span className="text-secondary">
             {isReadyToInstall
               ? `Update ready: v${updateInfo.version}`
@@ -139,7 +139,7 @@ export function AppUpdateToast({
                 installUpdate();
               }}
             >
-              <RefreshCcw className="mr-2 h-3 w-3" />
+              <RefreshCcw className="mr-2 h-2 w-2" />
               Update
             </Button>
           ) : (
@@ -150,7 +150,7 @@ export function AppUpdateToast({
                 downloadUpdate();
               }}
             >
-              <DownloadIcon className="mr-2 h-3 w-3" />
+              <DownloadIcon className="mr-2 h-2 w-2" />
               Download
             </Button>
           )}
@@ -170,7 +170,7 @@ export function AppUpdateToast({
       </div>,
       {
         duration: Infinity,
-        className: "w-96 py-3",
+        className: "w-96 py-2",
         onDismiss: () => {
           toastIdRef.current = null;
         },
@@ -224,9 +224,9 @@ export function AppUpdateToast({
       <div className="w-full space-y-3">
         <div className="flex items-center gap-2 text-sm">
           {isError ? (
-            <AlertCircle className="h-3 w-3 text-red-500" />
+            <AlertCircle className="h-2 w-2 text-red-500" />
           ) : (
-            <DownloadIcon className="h-3 w-3" />
+            <DownloadIcon className="h-2 w-2" />
           )}
           <span className="text-secondary">{getStatusText()}</span>
         </div>
@@ -266,7 +266,7 @@ export function AppUpdateToast({
               }}
               className="text-secondary"
             >
-              <X className="mr-1 h-3 w-3" />
+              <X className="mr-1 h-2 w-2" />
               Cancel
             </Button>
           </div>
