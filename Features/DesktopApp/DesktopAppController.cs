@@ -7,17 +7,17 @@ namespace AccountsAPIs.Controllers;
 [ApiController]
 public class DesktopAppController : BaseApiController
 {
-    private readonly FileUploadConfig _fileUploadConfig;
-    private readonly GeneralConfig _generalConfig;
+    private readonly AppDefaultConfig _appDefaultConfig;
+    private readonly EnvironmentConfig _environmentConfig;
     private readonly IWebHostEnvironment _webHostEnvironment;
 
     public DesktopAppController(
-        FileUploadConfig fileUploadConfig,
-        GeneralConfig generalConfig,
+        AppDefaultConfig appDefaultConfig,
+        EnvironmentConfig environmentConfig,
         IWebHostEnvironment webHostEnvironment)
     {
-        _fileUploadConfig = fileUploadConfig;
-        _generalConfig = generalConfig;
+        _appDefaultConfig = appDefaultConfig;
+        _environmentConfig = environmentConfig;
         _webHostEnvironment = webHostEnvironment;
     }
 
@@ -91,7 +91,7 @@ public class DesktopAppController : BaseApiController
                 ["windows-x86_64"] = new
                 {
                     signature,
-                    url = $"https://{_generalConfig.AppDomain}/accounts/api/desktop-app/download/{latestVersion}"
+                    url = $"https://{_environmentConfig.AppBaseUrl}/accounts/api/desktop-app/download/{latestVersion}"
                 }
             }
         };
@@ -112,7 +112,7 @@ public class DesktopAppController : BaseApiController
             appName += "";
         
         // Get base path
-        var basePath = Path.Combine(_fileUploadConfig.UploadDirectory, "binaries");
+        var basePath = Path.Combine(_appDefaultConfig.FileUploadConfig.UploadDirectory, "binaries");
 
         // Ensure the latest folder exists
         if (!Directory.Exists(basePath))

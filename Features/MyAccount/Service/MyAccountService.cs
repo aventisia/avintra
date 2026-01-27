@@ -4,36 +4,51 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Storage.Internal.Mapping;
 
 namespace AccountsAPIs.Services;
 
-public class MyAccountService(
-    UserManager<AccountUser> userManager,
-    SignInManager<AccountUser> signInManager,
-    IHttpContextAccessor httpContextAccessor,
-    ILogger<AuthService> logger,
-    IUnitOfWork unitOfWork,
-    IAuthHelperService authHelperService,
-    IAuthService authService,
-    JwtConfig jwtConfig,
-    IdentityConfig identityConfig,
-    IEmailService emailService) : IMyAccountService
+public class MyAccountService : IMyAccountService
 {
-    private readonly UserManager<AccountUser> _userManager = userManager;
-    private readonly SignInManager<AccountUser> _signInManager = signInManager;
-    private readonly HttpContext _httpContext = Guard.Against.Null(httpContextAccessor.HttpContext, message: "HttpContext cannot be null");
-    private readonly ILogger<AuthService> _logger = logger;
-    private readonly IUnitOfWork _unitOfWork = unitOfWork;
-    private readonly IAuthService _authService = authService;
-    private readonly IAuthHelperService _authHelperService = authHelperService;
-    private readonly IEmailService _emailService = emailService;
-    private readonly IdentityConfig _identityConfig = identityConfig;
-    private readonly JwtConfig _jwtConfig = jwtConfig;
-    private readonly string _jwt = GetJwtOfRequestUtil.GetJwtOfRequest(httpContextAccessor.HttpContext) ?? "jwt-not-found";
-    private readonly string _userName = httpContextAccessor.HttpContext?.User?.FindFirstValue("uname") ?? "Unknown";
-    private readonly Guid _sessionId = Guid.Parse(httpContextAccessor.HttpContext?.User?.FindFirstValue("sid") ?? Guid.Empty.ToString());
-    private readonly Guid _userId = Guid.Parse(httpContextAccessor.HttpContext?.User?.FindFirstValue("uid") ?? Guid.Empty.ToString());
+    private readonly UserManager<AccountUser> _userManager;
+    private readonly SignInManager<AccountUser> _signInManager;
+    private readonly HttpContext _httpContext;
+    private readonly ILogger<MyAccountService> _logger;
+    private readonly IUnitOfWork _unitOfWork;
+    private readonly IAuthService _authService;
+    private readonly IAuthHelperService _authHelperService;
+    private readonly IEmailService _emailService;
+    private readonly EnvironmentConfig _environmentConfig;
+    private readonly string _jwt;
+    private readonly string _userName;
+    private readonly Guid _sessionId;
+    private readonly Guid _userId;
 
     const string invalidcredentials = "Invalid credentials";
     const string userDoesNotExists = "User does not exists";
     const string userNotFoundTemplate = "{methodName}: User not found for username {_userName}";
+
+    public MyAccountService(
+        UserManager<AccountUser> userManager,
+        SignInManager<AccountUser> signInManager,
+        IHttpContextAccessor httpContextAccessor,
+        ILogger<MyAccountService> logger,
+        IUnitOfWork unitOfWork,
+        IAuthHelperService authHelperService,
+        IAuthService authService,
+        EnvironmentConfig environmentConfig,
+        IEmailService emailService)
+    {
+        _userManager = userManager;
+        _signInManager = signInManager;
+        _httpContext = Guard.Against.Null(httpContextAccessor.HttpContext, message: "HttpContext cannot be null");
+        _logger = logger;
+        _unitOfWork = unitOfWork;
+        _authService = authService;
+        _authHelperService = authHelperService;
+        _emailService = emailService;
+        _environmentConfig = environmentConfig;
+        _jwt = GetJwtOfRequestUtil.GetJwtOfRequest(httpContextAccessor.HttpContext) ?? "jwt-not-found";
+        _userName = httpContextAccessor.HttpContext?.User?.FindFirstValue("uname") ?? "Unknown";
+        _sessionId = Guid.Parse(httpContextAccessor.HttpContext?.User?.FindFirstValue("sid") ?? Guid.Empty.ToString());
+        _userId = Guid.Parse(httpContextAccessor.HttpContext?.User?.FindFirstValue("uid") ?? Guid.Empty.ToString());
+    }
 
     // Gets user's current session without JWT to view latest user's info
     public async Task<ServiceResponse<UserSessionDto>> GetMySessionAsync()
@@ -330,8 +345,8 @@ public class MyAccountService(
             cookie won't exist if refreshToken is expired*/
 
             // Get Jwt and RefreshToken validity config
-            var jwtExpiresOn = DateTimeOffset.UtcNow.AddMinutes(_jwtConfig.AuthJwtValidityInMinutes);
-            var refreshTokenExpiresOn = DateTimeOffset.UtcNow.AddDays(_jwtConfig.RefreshTokenValidityInDays);
+            var jwtExpiresOn = DateTimeOffset.UtcNow.AddMinutes(_environmentConfig.JwtValidityInMinutes);
+            var refreshTokenExpiresOn = DateTimeOffset.UtcNow.AddDays(_environmentConfig.JwtRefreshTokenValidityInDays);
 
             // Retrieve the tenant's subscription along with the associated plan details.
             var tenantSubscription = await _unitOfWork.TenantSubscriptionRepo
@@ -473,8 +488,8 @@ public class MyAccountService(
             {
                 // Increase lockout count
                 user.AccessFailedCount++;
-                user.LockoutEnd = user.AccessFailedCount >= _identityConfig.LockoutMaxFailedAccessAttempts
-                    ? DateTimeOffset.UtcNow.AddMinutes(_identityConfig.DefaultLockoutTimeSpanInMinutes)
+                user.LockoutEnd = user.AccessFailedCount >= _environmentConfig.LockoutMaxFailedAccessAttempts
+                    ? DateTimeOffset.UtcNow.AddMinutes(_environmentConfig.DefaultLockoutTimeSpanInMinutes)
                     : user.LockoutEnd;
 
                 // Update user

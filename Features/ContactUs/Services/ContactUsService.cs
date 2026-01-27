@@ -5,14 +5,14 @@ public class ContactUsService : IContactUsService
     private readonly ILogger<ContactUsService> _logger;
     private readonly IUnitOfWork _unitOfWork;
     private readonly IEmailService _emailService;
-    private readonly GeneralConfig _generalConfig;
+    private readonly EnvironmentConfig _environmentConfig;
     private readonly string _userName;
 
     public ContactUsService(
         ILogger<ContactUsService> logger,
         IUnitOfWork unitOfWork,
         IEmailService emailService,
-        GeneralConfig generalConfig,
+        EnvironmentConfig environmentConfig,
         IHttpContextAccessor httpContextAccessor)
     {
         // Set _userName
@@ -21,7 +21,7 @@ public class ContactUsService : IContactUsService
         _logger = logger;
         _unitOfWork = unitOfWork;
         _emailService = emailService;
-        _generalConfig = generalConfig;
+        _environmentConfig = environmentConfig;
     }
 
     // Retrieves a specific contact us record by its ID.
@@ -123,7 +123,7 @@ public class ContactUsService : IContactUsService
             // Failed to send VerificationCode email
             if (!await _emailService.SendEmailUsingTemplate(
                 EmailTypesEnum.ContactUsRequest,
-                _generalConfig.SalesEmails,
+                _environmentConfig.SalesEmails,
                 new Dictionary<string, string>()
                 {
                     {"{{userFullName}}", contactUsDto.Name },
@@ -133,7 +133,7 @@ public class ContactUsService : IContactUsService
                 }))
             {
                 _logger.LogError($"Error occurred while sending new contact us request " +
-                    $"email to {_generalConfig.SalesEmails} and " +
+                    $"email to {_environmentConfig.SalesEmails} and " +
                     $"request type {EmailTypesEnum.ContactUsRequest}");
                 return serviceResponse;
             }

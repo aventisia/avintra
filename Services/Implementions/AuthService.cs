@@ -5,17 +5,12 @@ public class AuthService : IAuthService
     private readonly UserManager<AccountUser> _userManager;
     private readonly IEmailService _emailService;
     private readonly HttpContext _httpContext;
-    private readonly VerificationCodeConfig _verificationCodeConfig;
-    private readonly IdentityConfig _identityConfig;
-    private readonly JwtConfig _jwtConfig;
+    private readonly EnvironmentConfig _environmentConfig;
     private readonly ILogger<AuthService> _logger;
     private readonly IUnitOfWork _unitOfWork;
     private readonly IAuthHelperService _authHelperService;
-    private readonly AppRuntimeSettings _appRuntimeSettings;
-    private readonly GeneralConfig _generalConfig;
-    private readonly AzureEntraConfig _azureEntraConfig;
     private readonly ILoginWithExternalAuthService _loginWithExternalAuthService;
-
+    
     public AuthService(
         UserManager<AccountUser> userManager,
         IEmailService emailService,
@@ -23,12 +18,7 @@ public class AuthService : IAuthService
         ILogger<AuthService> logger,
         IUnitOfWork unitOfWork,
         IAuthHelperService authHelperService,
-        IdentityConfig identityConfig,
-        JwtConfig jwtConfig,
-        VerificationCodeConfig verificationCodeConfig,
-        AppRuntimeSettings appRuntimeSettings,
-        GeneralConfig generalConfig,
-        AzureEntraConfig azureEntraConfig,
+        EnvironmentConfig environmentConfig,
         ILoginWithExternalAuthService loginWithExternalAuthService)
     {
         _userManager = userManager;
@@ -37,12 +27,7 @@ public class AuthService : IAuthService
         _logger = logger;
         _unitOfWork = unitOfWork;
         _authHelperService = authHelperService;
-        _identityConfig = identityConfig;
-        _jwtConfig = jwtConfig;
-        _verificationCodeConfig = verificationCodeConfig;
-        _appRuntimeSettings = appRuntimeSettings;
-        _generalConfig = generalConfig;
-        _azureEntraConfig = azureEntraConfig;
+        _environmentConfig = environmentConfig;
         _loginWithExternalAuthService = loginWithExternalAuthService;
     }
 
@@ -132,7 +117,7 @@ public class AuthService : IAuthService
         {
             // Check if authentication-related operations are globally disabled.
             // This can be due to maintenance, security incidents, or temporary administrative restrictions.
-            if (_appRuntimeSettings.IsLoginDisabled)
+            if (_environmentConfig.OnPremLoginDisabled)
             {
                 serviceResponse.StatusCode = 401;
                 serviceResponse.Message = "Authentication services are currently unavailable. Please contact Aventiisia Support for assistance.";
@@ -157,9 +142,9 @@ public class AuthService : IAuthService
             TenantInfoDto? tenantInfoDto = null;
 
             // Check whether SSO (Azure Entra) is properly configured
-            bool isAzureSsoConfigured = !string.IsNullOrEmpty(_azureEntraConfig.ClientId)
-                    && !string.IsNullOrEmpty(_azureEntraConfig.TenantId)
-                    && !string.IsNullOrEmpty(_azureEntraConfig.ClientSecret);
+            bool isAzureSsoConfigured = !string.IsNullOrEmpty(_environmentConfig.AzureEntraIdClientId)
+                    && !string.IsNullOrEmpty(_environmentConfig.AzureTenantId)
+                    && !string.IsNullOrEmpty(_environmentConfig.AzureEntraIdClientSecret);
 
             // Generate Azure login URL only if SSO is enabled
             var azureLoginUrl = isAzureSsoConfigured
@@ -241,7 +226,7 @@ public class AuthService : IAuthService
                                         .CountAsync();
 
             // Allowed active session limit exhausted
-            if (activeSessionCount >= _identityConfig.MaxActiveSessionAllowed)
+            if (activeSessionCount >= _environmentConfig.MaxActiveSessionAllowed)
             {
                 _logger.LogInformation($"Maximum allowed active session limit " +
                     $"exhausted for {user.UserName}");
@@ -252,9 +237,9 @@ public class AuthService : IAuthService
 
             // Get Jwt and RefreshToken validity config
             var jwtExpiresOn = DateTimeOffset.UtcNow.AddMinutes(
-                _jwtConfig.AuthJwtValidityInMinutes);
+                _environmentConfig.JwtValidityInMinutes);
             var refreshTokenExpiresOn = DateTimeOffset.UtcNow.AddDays(
-                _jwtConfig.RefreshTokenValidityInDays);
+                _environmentConfig.JwtRefreshTokenValidityInDays);
 
             // Retrieve the tenant's subscription along with the associated plan details.
             var tenantSubscription = await _unitOfWork.TenantSubscriptionRepo
@@ -355,7 +340,7 @@ public class AuthService : IAuthService
                 serviceResponse.Message = "Complete organization setup to continue.";
             }
 
-            if (_appRuntimeSettings.TenantType == OnPremTenantTypesEnum.Commercial)
+            if (_environmentConfig.OnPremTenantType == OnPremTenantTypesEnum.Commercial.ToString())
             {
                 // Query the current tenant's subscription, including related plan and creator details
                 var subscription = await _unitOfWork.TenantSubscriptionRepo
@@ -527,9 +512,9 @@ public class AuthService : IAuthService
         try
         {
             // Check if the tenant is of type Enterprise
-            if (_appRuntimeSettings.TenantType == OnPremTenantTypesEnum.Enterprise)
+            if (_environmentConfig.OnPremTenantType == OnPremTenantTypesEnum.Enterprise.ToString())
             {
-                var appDomain = ExtractDomainFromEmailUtil.ExtractDomainFromUrl(_generalConfig.AppDomain);
+                var appDomain = ExtractDomainFromEmailUtil.ExtractDomainFromUrl(_environmentConfig.AppBaseUrl);
                 var emailDomain = ExtractDomainFromEmailUtil.ExtractDomainFromEmail(createVerificationCodeDto.Email);
                 if (!appDomain.Equals(emailDomain, StringComparison.InvariantCultureIgnoreCase))
                 {
@@ -599,7 +584,7 @@ public class AuthService : IAuthService
 
             // Create code's ExpiresOn
             var codeExpiresOn = DateTimeOffset.UtcNow.AddMinutes(
-                _verificationCodeConfig.ValidityInMinutes);
+                _environmentConfig.OtpValidityInMinutes);
 
             // Create VerificationCode instance
             var verificationCode = new VerificationCode()
@@ -634,7 +619,7 @@ public class AuthService : IAuthService
                 {
                     {"{{userFirstName}}", user?.FirstName ?? "" },
                     {"{{VerificationCode}}", verificationCode.SecretCode},
-                    {"{{VerificationCodeValidityInMinutes}}", _verificationCodeConfig.ValidityInMinutes.ToString() }
+                    {"{{VerificationCodeValidityInMinutes}}", _environmentConfig.OtpValidityInMinutes.ToString() }
                 }))
             {
                 _logger.LogError(

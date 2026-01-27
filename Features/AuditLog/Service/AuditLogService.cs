@@ -8,21 +8,18 @@ public class AuditLogService : IAuditLogService
     private readonly IUnitOfWork _unitOfWork;
     private readonly Guid _userId;
     private readonly string _userName;
-    private readonly IdentityConfig _identityConfig;
-    private readonly JwtConfig _jwtConfig;
+
+
 
     public AuditLogService(ILogger<AuthService> logger,
       IUnitOfWork unitOfWork, UserManager<AccountUser> userManager, SignInManager<AccountUser> signInManager,
-      IHttpContextAccessor httpContextAccessor, IdentityConfig identityConfig,
-      JwtConfig jwtConfig)
+      IHttpContextAccessor httpContextAccessor)
     {
         //Set _userId
         _userId = Guid.Parse(httpContextAccessor.HttpContext?.User?.FindFirstValue("uid") ?? Guid.Empty.ToString());
         _userName = httpContextAccessor.HttpContext?.User?.FindFirstValue("uname") ?? "Unknown";
         _logger = logger;
         _unitOfWork = unitOfWork;
-        _identityConfig = identityConfig;
-        _jwtConfig = jwtConfig;
         _userManager = userManager;
         _signInManager = signInManager;
     }

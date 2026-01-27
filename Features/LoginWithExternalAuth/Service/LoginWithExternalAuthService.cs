@@ -3,32 +3,23 @@ namespace AccountsAPIs.Services;
 public class LoginWithExternalAuthService : ILoginWithExternalAuthService
 {
     private readonly ILogger<LoginWithExternalAuthService> _logger;
-    private readonly AzureEntraConfig _azureEntraConfig;
     private readonly IUnitOfWork _unitOfWork;
-    private readonly AppRuntimeSettings _appRuntimeSettings;
-    private readonly GeneralConfig _generalConfig;
+    private readonly EnvironmentConfig _environmentConfig;
     private readonly UserManager<AccountUser> _userManager;
     private readonly IEmailService _emailService;
-    private readonly HttpClientUrlConfig _httpClientUrlConfig;
 
     public LoginWithExternalAuthService(
         ILogger<LoginWithExternalAuthService> logger,
-        AzureEntraConfig azureEntraConfig,
         IUnitOfWork unitOfWork,
-        AppRuntimeSettings appRuntimeSettings,
-        GeneralConfig generalConfig,
+        EnvironmentConfig environmentConfig,
         UserManager<AccountUser> userManager,
-        IEmailService emailService,
-        HttpClientUrlConfig httpClientUrlConfig)
+        IEmailService emailService)
     {
         _logger = logger;
-        _azureEntraConfig = azureEntraConfig;
         _unitOfWork = unitOfWork;
-        _appRuntimeSettings = appRuntimeSettings;
-        _generalConfig = generalConfig;
+        _environmentConfig = environmentConfig;
         _userManager = userManager;
         _emailService = emailService;
-        _httpClientUrlConfig = httpClientUrlConfig;
     }
 
     // Generates an authentication URL for a specific external provider (Azure, Google, Facebook, Twitter).
@@ -45,7 +36,7 @@ public class LoginWithExternalAuthService : ILoginWithExternalAuthService
         string loginUrl = string.Empty;
 
         // Redirect URI used by Azure Entra after successful login
-        string redirectUrl = $"{_httpClientUrlConfig.AccountsApisBaseUrl}/auth/entra/callback";
+        string redirectUrl = $"https://{_environmentConfig.AppBaseUrl}/accounts/api/auth/entra/callback";
 
         try
         {
@@ -59,14 +50,15 @@ public class LoginWithExternalAuthService : ILoginWithExternalAuthService
                 case ExternalAuthProviderEnum.Azure:
                     // Build Azure OAuth 2.0 authorization URL
                     loginUrl =
-                        $"https://login.microsoftonline.com/{_azureEntraConfig.TenantId}/oauth2/v2.0/authorize" +
-                        $"?client_id={_azureEntraConfig.ClientId}" +
+                        $"https://login.microsoftonline.com/{_environmentConfig.AzureTenantId}/oauth2/v2.0/authorize" +
+                        $"?client_id={_environmentConfig.AzureEntraIdClientId}" +
+                        $"&redirect_uri={redirectUrl}" +
                         $"&response_type=code" +
                         $"&redirect_uri={Uri.EscapeDataString(redirectUrl)}" +
                         $"&response_mode=query" +
                         $"&scope=openid profile email";
 
-                    _logger.LogInformation("Azure login URL generated successfully for TenantId={TenantId}", _azureEntraConfig.TenantId);
+                    _logger.LogInformation("Azure login URL generated successfully for TenantId={TenantId}", _environmentConfig.AzureTenantId);
                     break;
 
                 case ExternalAuthProviderEnum.Google:
@@ -124,20 +116,20 @@ public class LoginWithExternalAuthService : ILoginWithExternalAuthService
         }
 
         // Build redirect URI used in both authorize and token calls (must match exactly)
-        string redirectUrl = $"{_httpClientUrlConfig.AccountsApisBaseUrl}/auth/entra/callback";
+        string redirectUrl = $"https://{_environmentConfig.AppBaseUrl}/accounts/api/auth/entra/callback";
 
         // Azure Entra token endpoint for this tenant
-        string tokenEndpoint = $"https://login.microsoftonline.com/{_azureEntraConfig.TenantId}/oauth2/v2.0/token";
+        string tokenEndpoint = $"https://login.microsoftonline.com/{_environmentConfig.AzureTenantId}/oauth2/v2.0/token";
 
-        _logger.LogInformation("Prepared Azure token request. TenantId={TenantId}, RedirectUrl={RedirectUrl}", _azureEntraConfig.TenantId, redirectUrl);
+        _logger.LogInformation("Prepared Azure token request. TenantId={TenantId}, RedirectUrl={RedirectUrl}", _environmentConfig.AzureTenantId, redirectUrl);
 
         try
         {
             // Build form-urlencoded payload for token exchange
             var form = new Dictionary<string, string>
             {
-                ["client_id"] = _azureEntraConfig.ClientId,
-                ["client_secret"] = _azureEntraConfig.ClientSecret,
+                ["client_id"] = _environmentConfig.AzureEntraIdClientId,
+                ["client_secret"] = _environmentConfig.AzureEntraIdClientSecret,
                 ["grant_type"] = "authorization_code",
                 ["code"] = code,
                 ["redirect_uri"] = redirectUrl,
@@ -300,9 +292,9 @@ public class LoginWithExternalAuthService : ILoginWithExternalAuthService
             }
 
             // Validation: enterprise tenants require email domain match
-            if (_appRuntimeSettings.TenantType == OnPremTenantTypesEnum.Enterprise)
+            if (_environmentConfig.OnPremTenantType == OnPremTenantTypesEnum.Enterprise.ToString())
             {
-                var appDomain = ExtractDomainFromEmailUtil.ExtractDomainFromUrl(_generalConfig.AppDomain);
+                var appDomain = ExtractDomainFromEmailUtil.ExtractDomainFromUrl(_environmentConfig.AppBaseUrl);
                 var emailDomain = ExtractDomainFromEmailUtil.ExtractDomainFromEmail(email);
 
                 if (!appDomain.Equals(emailDomain, StringComparison.InvariantCultureIgnoreCase))
@@ -373,12 +365,11 @@ public class LoginWithExternalAuthService : ILoginWithExternalAuthService
                 List<string> userRoles;
 
                 // Condition: enterprise tenant vs non-enterprise tenant
-                if (_appRuntimeSettings.TenantType == OnPremTenantTypesEnum.Enterprise)
+                if (_environmentConfig.OnPremTenantType == OnPremTenantTypesEnum.Enterprise.ToString())
                 {
                     // Assign enterprise tenant and default role
                     userRoles = new List<string> { CustomRolesEnum.TD.ToString() };
-                    tenantId = _appRuntimeSettings.TenantId;
-
+                    tenantId = Guid.Parse(_environmentConfig.OnPremTenantId);
                     _logger.LogInformation(
                         "Enterprise tenant assigned. TenantId={TenantId}, UserId={UserId}",
                         tenantId, newUser.Id);
@@ -395,7 +386,7 @@ public class LoginWithExternalAuthService : ILoginWithExternalAuthService
                         Type = TenantTypesEnum.Unspecified,
                         ResourceType = TenantResourceTypesEnum.Shared,
                         Currency = CurrencyTypesEnum.USD,
-                        ExpiresOn = DateTimeOffset.UtcNow.AddYears(1),
+                        ExpiresOn = DateTimeOffset.MaxValue, // TODO: We need to remove or update it
                         Role = string.Empty,
                         CreatedByUserId = newUser.Id,
                         LastModifiedByUserId = newUser.Id
@@ -471,7 +462,7 @@ public class LoginWithExternalAuthService : ILoginWithExternalAuthService
                     emailType: EmailTypesEnum.AccountCreated,
                     toEmailAddress: newUser.Email,
                     placeholderValues: placeholderValues,
-                    bccEmailAddresses: _generalConfig.SalesEmails))
+                    bccEmailAddresses: _environmentConfig.SalesEmails))
                 {
                     _logger.LogError(
                         "Failed to send account creation email. Email={Email}",

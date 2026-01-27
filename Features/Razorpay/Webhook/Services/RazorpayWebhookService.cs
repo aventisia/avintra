@@ -6,13 +6,16 @@ public class WebhookService : IWebhookService
 {
     private readonly IUnitOfWork _unitOfWork;
     private readonly ILogger<WebhookService> _logger;
-    private readonly RazorpayConfig _razorpayConfig;
+    private readonly EnvironmentConfig _environmentConfig;
 
-    public WebhookService(IUnitOfWork unitOfWork, ILogger<WebhookService> logger, RazorpayConfig razorpayConfig)
+    public WebhookService(
+        IUnitOfWork unitOfWork, 
+        ILogger<WebhookService> logger, 
+        EnvironmentConfig environmentConfig)
     {
         _unitOfWork = unitOfWork;
         _logger = logger;
-        _razorpayConfig = razorpayConfig;
+        _environmentConfig = environmentConfig;
     }
 
     public async Task<bool> HandleWebhookAsync(HttpRequest request)
@@ -40,7 +43,7 @@ public class WebhookService : IWebhookService
             }
 
             // Fetch the webhook secret from configuration to validate the signature
-            string secret = _razorpayConfig.WebhookSecret;
+            string secret = _environmentConfig.RazorpayWebhookSecret;
 
             // Verify the authenticity of the webhook request by comparing the Razorpay signature with a computed hash using the request body and secret.
             Razorpay.Api.Utils.verifyWebhookSignature(body, signature, secret);

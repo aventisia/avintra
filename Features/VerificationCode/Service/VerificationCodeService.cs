@@ -3,7 +3,7 @@ namespace AccountsAPIs.Services;
 public class VerificationCodeService : IVerificationCodeService
 {
     private readonly HttpContext _httpContext;
-    private readonly JwtConfig _jwtConfig;
+    private readonly EnvironmentConfig _environmentConfig;
     private readonly ILogger<VerificationCodeService> _logger;
     private readonly IUnitOfWork _unitOfWork;
     private readonly IAuthHelperService _authHelperService;
@@ -13,12 +13,12 @@ public class VerificationCodeService : IVerificationCodeService
         ILogger<VerificationCodeService> logger,
         IUnitOfWork unitOfWork,
         IAuthHelperService authHelperService,
-        JwtConfig jwtConfig)
+        EnvironmentConfig environmentConfig)
     {
         _httpContext = Guard.Against.Null(httpContextAccessor.HttpContext, "HttpContext cannot be null");
         _logger = logger;
         _unitOfWork = unitOfWork;
-        _jwtConfig = jwtConfig;
+        _environmentConfig = environmentConfig;
         _authHelperService = authHelperService;
     }
 
@@ -118,8 +118,7 @@ public class VerificationCodeService : IVerificationCodeService
                 string? currentPlan = tenantSubscription?.Plan?.Type.ToString();
 
                 // Get Jwt validity config
-                var jwtExpiresOn = DateTimeOffset.UtcNow.AddMinutes(
-                    _jwtConfig.PwdResetJwtValidityInMinutes);
+                var jwtExpiresOn = DateTimeOffset.UtcNow.AddMinutes(10); // 10 minutes validity for reset pwd
 
                 // Create Jwt string
                 var jwt = _authHelperService.CreateJwt(user, jwtExpiresOn, true, null, currentPlan);
