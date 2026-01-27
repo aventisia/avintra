@@ -1,5 +1,5 @@
-global using AspNetToolkit.Config;
 global using AspNetToolkit.Controllers;
+global using AspNetToolkit.Config;
 global using AspNetToolkit.DTOs;
 global using AspNetToolkit.Data;
 global using AspNetToolkit.Entities;
