@@ -3,24 +3,20 @@ namespace AspNetToolkit.Middleware;
 public class TenantRouteAccessMiddleware
 {
     private readonly RequestDelegate _next;
-    private readonly IConfiguration _configuration;
-
     public TenantRouteAccessMiddleware(
-        RequestDelegate next,
-        IConfiguration configuration)
+        RequestDelegate next)
     {
         _next = next;
-        _configuration = configuration;
     }
 
-    public async Task InvokeAsync(HttpContext context)
+    public async Task InvokeAsync(HttpContext context, EnvironmentConfig environmentConfig)
     {
         // Attempt to parse tenant type from configuration
-        if (!Enum.TryParse<OnPremTenantTypesEnum>(_configuration["InstanceConfig:TenantType"], ignoreCase: true, out var tenantType))
+        if (!Enum.TryParse<OnPremTenantTypesEnum>(environmentConfig.OnPremTenantType, ignoreCase: true, out var tenantType))
         {
             // If parsing fails, return 403 Forbidden immediately
             context.Response.StatusCode = StatusCodes.Status403Forbidden;
-            await context.Response.WriteAsync("Invalid or missing tenant type.");
+            await context.Response.WriteAsync($"Invalid or missing tenant type - {environmentConfig.OnPremTenantType}");
             return;
         }
 
