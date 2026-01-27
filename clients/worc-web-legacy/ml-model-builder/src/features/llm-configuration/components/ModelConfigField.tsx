@@ -25,7 +25,7 @@ import {
   modelProviders,
 } from "../constants/model-providers";
 import { useModelProviderStore } from "../stores/model-provider-store";
-import { getUniqueArrayByKey } from "../utils/getUniqueArrayByKey";
+import { uniqueAndNormalizeArray } from "../utils/uniqueAndNormalizeArray";
 import { CredentialsSelectField } from "./CredentialsSelectField";
 
 interface ModelConfigFieldProps {
@@ -245,14 +245,18 @@ const ModelConfigField = ({ name }: ModelConfigFieldProps) => {
 
   // Available models
   const availableModels = useMemo(() => {
+    let models = [];
     if (isBYOKEnabled) {
-      setModels(byokModels);
-      return getUniqueArrayByKey(byokModels, "value");
+      models = byokModels;
+    } else {
+      const provider = filteredProviders.find((p) => p.value === providerValue);
+      models = provider?.models ?? [];
     }
+    models = uniqueAndNormalizeArray(models);
 
-    const provider = filteredProviders.find((p) => p.value === providerValue);
-    setModels(provider?.models ?? []);
-    return provider?.models ?? [];
+    setModels(models);
+
+    return models;
   }, [isBYOKEnabled, filteredProviders, setModels, byokModels, providerValue]);
 
   // Currently selected model
