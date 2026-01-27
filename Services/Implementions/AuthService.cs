@@ -6,6 +6,7 @@ public class AuthService : IAuthService
     private readonly IEmailService _emailService;
     private readonly HttpContext _httpContext;
     private readonly EnvironmentConfig _environmentConfig;
+    private readonly AppDefaultConfig _appDefaultConfig;
     private readonly ILogger<AuthService> _logger;
     private readonly IUnitOfWork _unitOfWork;
     private readonly IAuthHelperService _authHelperService;
@@ -19,6 +20,7 @@ public class AuthService : IAuthService
         IUnitOfWork unitOfWork,
         IAuthHelperService authHelperService,
         EnvironmentConfig environmentConfig,
+        AppDefaultConfig appDefaultConfig,
         ILoginWithExternalAuthService loginWithExternalAuthService)
     {
         _userManager = userManager;
@@ -28,6 +30,7 @@ public class AuthService : IAuthService
         _unitOfWork = unitOfWork;
         _authHelperService = authHelperService;
         _environmentConfig = environmentConfig;
+        _appDefaultConfig = appDefaultConfig;
         _loginWithExternalAuthService = loginWithExternalAuthService;
     }
 
@@ -331,7 +334,8 @@ public class AuthService : IAuthService
                 AccessToken = jwt,
                 RefreshToken = refreshToken,
                 RTExpiresOn = refreshTokenExpiresOn,
-                Country = user.Tenant != null ? user.Tenant.Country.ToString() : "NA"
+                Country = user.Tenant != null ? user.Tenant.Country.ToString() : "NA",
+                PlatformVersion = _appDefaultConfig.PlatformVersion
             };
 
             // Check if the user is associated with an organization (tenant)
