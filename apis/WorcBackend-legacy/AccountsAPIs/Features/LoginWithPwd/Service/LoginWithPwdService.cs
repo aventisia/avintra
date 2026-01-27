@@ -8,7 +8,7 @@ public class LoginWithPwdService : ILoginWithPwdService
     private readonly HttpContext _httpContext;
     private readonly IUnitOfWork _unitOfWork;
     private readonly IAuthHelperService _authHelperService;
-    private readonly AppRuntimeSettings _appRuntimeSettings;
+    private readonly EnvironmentConfig _environmentConfig;
 
     public LoginWithPwdService(
         SignInManager<AccountUser> signInManager,
@@ -17,7 +17,7 @@ public class LoginWithPwdService : ILoginWithPwdService
         IUnitOfWork unitOfWork,
         IAuthHelperService authHelperService,
         UserManager<AccountUser> userManager,
-        AppRuntimeSettings appRuntimeSettings)
+        EnvironmentConfig environmentConfig)
     {
         _signInManager = signInManager;
         _httpContext = Guard.Against.Null(httpContextAccessor.HttpContext, "HttpContext cannot be null");
@@ -25,7 +25,7 @@ public class LoginWithPwdService : ILoginWithPwdService
         _unitOfWork = unitOfWork;
         _authHelperService = authHelperService;
         _userManager = userManager;
-        _appRuntimeSettings = appRuntimeSettings;
+        _environmentConfig = environmentConfig;
     }
 
     // Authenticates an individual or tenant's user using the provided username and password.
@@ -43,7 +43,7 @@ public class LoginWithPwdService : ILoginWithPwdService
         {
             // Check if authentication-related operations are globally disabled.
             // This can be due to maintenance, security incidents, or temporary administrative restrictions.
-            if (_appRuntimeSettings.IsLoginDisabled)
+            if (_environmentConfig.OnPremLoginDisabled)
             {
                 serviceResponse.StatusCode = 401;
                 serviceResponse.Message = "Authentication services are currently unavailable. Please contact Aventiisia Support for assistance.";

@@ -4,15 +4,16 @@ public class InstanceUsageStartupService : IHostedService
 {
     private readonly IServiceScopeFactory _serviceScopeFactory;
     private readonly ILogger<InstanceUsageStartupService> _logger;
-    private readonly InstanceConfig _instanceConfig;
-    private readonly AppRuntimeSettings _appRuntimeSettings;
+    private readonly EnvironmentConfig _environmentConfig;
 
-    public InstanceUsageStartupService(IServiceScopeFactory serviceScopeFactory, ILogger<InstanceUsageStartupService> logger, InstanceConfig instanceConfig, AppRuntimeSettings appRuntimeSettings)
+    public InstanceUsageStartupService(
+        IServiceScopeFactory serviceScopeFactory, 
+        ILogger<InstanceUsageStartupService> logger, 
+        EnvironmentConfig environmentConfig)
     {
         _serviceScopeFactory = serviceScopeFactory;
         _logger = logger;
-        _instanceConfig = instanceConfig;
-        _appRuntimeSettings = appRuntimeSettings;
+        _environmentConfig = environmentConfig;
     }
 
     // This method will be called when the application starts. It collects metrics and posts them to the external API.
@@ -45,16 +46,8 @@ public class InstanceUsageStartupService : IHostedService
                 // Post the collected metrics to the external API for processing
                 await instanceService.PostMetricsToApiAsync(serviceResponse.Data);
 
-                // Fail startup if the tenant configuration is invalid
-                if (!_instanceConfig.TenantType.Equals(_appRuntimeSettings.TenantType.ToString()))
-                {
-                    _logger.LogError("Startup aborted: invalid tenant configuration detected.");
-                    errorMessage = "The tenant type is invalid. Please contact the support team.";
-                    throw new InvalidOperationException(errorMessage);
-                }
-
                 // Fail if contract has not started
-                if (!_appRuntimeSettings.IsContractStarted)
+                if (_environmentConfig.OnPremContractStart.Date > currentDateTime.Date)
                 {
                     _logger.LogError("Contract has not started. Startup cannot continue. Please contact the support team.");
                     errorMessage = "Contract has not started. Please contact the support team";
@@ -62,7 +55,7 @@ public class InstanceUsageStartupService : IHostedService
                 }
 
                 // Fail if contract expired
-                if (_appRuntimeSettings.IsContractExpired)
+                if (_environmentConfig.OnPremContractEnd.Date < currentDateTime.Date)
                 {
                     _logger.LogError("Contract has expired. Startup cannot continue. Please contact the support team.");
                     errorMessage = "Contract has expired. Please contact the support team.";
@@ -70,7 +63,7 @@ public class InstanceUsageStartupService : IHostedService
                 }
 
                 // Fail if login is disabled
-                if (_appRuntimeSettings.IsLoginDisabled)
+                if (_environmentConfig.OnPremLoginDisabled)
                 {
                     _logger.LogError("Login is disabled. Startup cannot continue. Please contact the support team.");
                     errorMessage = "Login is disabled. Please contact the support team.";

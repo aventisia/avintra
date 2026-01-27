@@ -4,11 +4,15 @@ public class CreditUsageService : ICreditUsageService
 {
     private readonly IUnitOfWork _unitOfWork;
     private readonly ILogger<CreditUsageService> _logger;
-    private readonly AppRuntimeSettings _appRuntimeSettings;
+    private readonly EnvironmentConfig _environmentConfig;
     private readonly Guid _userId;
     private readonly Guid _tenantId;
 
-    public CreditUsageService(IUnitOfWork unitOfWork, ILogger<CreditUsageService> logger, IHttpContextAccessor httpContextAccessor, AppRuntimeSettings appRuntimeSettings)
+    public CreditUsageService(
+        IUnitOfWork unitOfWork, 
+        ILogger<CreditUsageService> logger, 
+        IHttpContextAccessor httpContextAccessor, 
+        EnvironmentConfig environmentConfig)
     {
         _unitOfWork = unitOfWork;
         _logger = logger;
@@ -18,7 +22,7 @@ public class CreditUsageService : ICreditUsageService
 
         // Extract tenant ID from JWT token claims
         _tenantId = Guid.Parse(httpContextAccessor.HttpContext?.User?.FindFirstValue("tntid") ?? Guid.Empty.ToString());
-        _appRuntimeSettings = appRuntimeSettings;
+        _environmentConfig = environmentConfig;
     }
 
     // Retrieves the credit usage for a given user or service.
@@ -307,7 +311,7 @@ public class CreditUsageService : ICreditUsageService
             }
 
             double creditUsed = 0;
-            if (_appRuntimeSettings.TenantType == OnPremTenantTypesEnum.Commercial)
+            if (_environmentConfig.OnPremTenantType == OnPremTenantTypesEnum.Commercial.ToString())
             {
                 // Calculate how many credits are needed based on the consumed units
                 TenantCredit? tenantAvailableCredit = null;
@@ -463,7 +467,7 @@ public class CreditUsageService : ICreditUsageService
             foreach (var creditUsageDto in creditUsageDtos)
             {
                 double creditUsed = 0;
-                if (_appRuntimeSettings.TenantType == OnPremTenantTypesEnum.Commercial)
+                if (_environmentConfig.OnPremTenantType == OnPremTenantTypesEnum.Commercial.ToString())
                 {
                     // Calculate how many credits are needed based on the consumed units
                     var creditPlan = existingCreditPlans.FirstOrDefault(p => p.ServiceType == creditUsageDto.ServiceType);
@@ -693,7 +697,7 @@ public class CreditUsageService : ICreditUsageService
         {
             // Check if authentication-related operations are globally disabled.
             // This can be due to maintenance, security incidents, or temporary administrative restrictions.
-            if (_appRuntimeSettings.IsLoginDisabled)
+            if (_environmentConfig.OnPremLoginDisabled)
             {
                 serviceResponse.StatusCode = 401;
                 serviceResponse.Message = "Authentication services are currently unavailable. Please contact Aventiisia Support for assistance.";
@@ -704,7 +708,7 @@ public class CreditUsageService : ICreditUsageService
             _logger.LogInformation("Starting credit retrieval for user: {UserId}", _userId);
 
             // Handle credit retrieval for Commercial tenants
-            if (_appRuntimeSettings.TenantType == OnPremTenantTypesEnum.Commercial)
+            if (_environmentConfig.OnPremTenantType == OnPremTenantTypesEnum.Commercial.ToString())
             {
                 // Fetch available tenant credits for the current user
                 var availableCreditsQuery = _unitOfWork.TenantCreditRepo

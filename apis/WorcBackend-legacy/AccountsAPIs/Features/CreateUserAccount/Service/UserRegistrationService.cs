@@ -7,8 +7,7 @@ public class UserRegistrationService : IUserRegistrationService
     private readonly ILogger<UserRegistrationService> _logger;
     private readonly IUnitOfWork _unitOfWork;
     private readonly IAuthHelperService _authHelperService;
-    private readonly GeneralConfig _generalConfig;
-    private readonly AppRuntimeSettings _appRuntimeSettings;
+    private readonly EnvironmentConfig _environmentConfig;
     private readonly Guid _userId;
     private readonly Guid _tenantId;
     private readonly string _username;
@@ -19,22 +18,20 @@ public class UserRegistrationService : IUserRegistrationService
         ILogger<UserRegistrationService> logger,
         IUnitOfWork unitOfWork,
         IAuthHelperService authHelperService,
-        GeneralConfig generalConfig,
-        IHttpContextAccessor httpContextAccessor,
-        AppRuntimeSettings appRuntimeSettings)
+        EnvironmentConfig environmentConfig,
+        IHttpContextAccessor httpContextAccessor)
     {
         _userManager = userManager;
         _emailService = emailService;
         _logger = logger;
         _unitOfWork = unitOfWork;
         _authHelperService = authHelperService;
-        _generalConfig = generalConfig;
+        _environmentConfig = environmentConfig;
 
         // Extract user ID from the claims
         _userId = Guid.Parse(httpContextAccessor.HttpContext?.User?.FindFirstValue("uid") ?? Guid.Empty.ToString());
         _tenantId = Guid.Parse(httpContextAccessor.HttpContext?.User?.FindFirstValue("tntid") ?? Guid.Empty.ToString());
         _username = httpContextAccessor.HttpContext?.User?.FindFirstValue("uname") ?? string.Empty;
-        _appRuntimeSettings = appRuntimeSettings;
     }
 
     // Creates a new account for an individual user (IU) or Aventisia employee.
@@ -50,9 +47,9 @@ public class UserRegistrationService : IUserRegistrationService
         try
         {
             // Check if the tenant is of type Enterprise
-            if (_appRuntimeSettings.TenantType == OnPremTenantTypesEnum.Enterprise)
+            if (_environmentConfig.OnPremTenantType == OnPremTenantTypesEnum.Enterprise.ToString())
             {
-                var appDomain = ExtractDomainFromEmailUtil.ExtractDomainFromUrl(_generalConfig.AppDomain);
+                var appDomain = ExtractDomainFromEmailUtil.ExtractDomainFromUrl(_environmentConfig.AppBaseUrl);
                 var emailDomain = ExtractDomainFromEmailUtil.ExtractDomainFromEmail(createAccountDto.Email);
                 if (!appDomain.Equals(emailDomain, StringComparison.InvariantCultureIgnoreCase))
                 {
@@ -64,7 +61,7 @@ public class UserRegistrationService : IUserRegistrationService
 
             // Check if authentication-related operations are globally disabled.
             // This can be due to maintenance, security incidents, or temporary administrative restrictions.
-            if (_appRuntimeSettings.IsLoginDisabled)
+            if (_environmentConfig.OnPremLoginDisabled)
             {
                 serviceResponse.StatusCode = 401;
                 serviceResponse.Message = "Authentication services are currently unavailable. Please contact Aventiisia Support for assistance.";
@@ -150,10 +147,10 @@ public class UserRegistrationService : IUserRegistrationService
             var tenantId = Guid.Empty;
             var userRoles = new List<string>();
 
-            if (_appRuntimeSettings.TenantType == OnPremTenantTypesEnum.Enterprise)
+            if (_environmentConfig.OnPremTenantType == OnPremTenantTypesEnum.Enterprise.ToString())
             {
                 userRoles = new List<string> { CustomRolesEnum.TD.ToString() };
-                tenantId = _appRuntimeSettings.TenantId;
+                tenantId = Guid.Parse(_environmentConfig.OnPremTenantId);
             }
             else
             {
@@ -167,7 +164,7 @@ public class UserRegistrationService : IUserRegistrationService
                     Type = TenantTypesEnum.Unspecified,
                     ResourceType = TenantResourceTypesEnum.Shared,
                     Currency = CurrencyTypesEnum.USD,
-                    ExpiresOn = DateTimeOffset.UtcNow.AddYears(1),
+                    ExpiresOn = DateTimeOffset.MaxValue, // TODO: We need to remove or update it,
                     Role = string.Empty,
                     CreatedByUserId = newUser.Id,
                     LastModifiedByUserId = newUser.Id
@@ -184,6 +181,11 @@ public class UserRegistrationService : IUserRegistrationService
                 }
 
                 tenantId = userTenant.Id;
+                userRoles = Enum.GetValues(typeof(CustomRolesEnum))
+                            .Cast<CustomRolesEnum>()
+                            .Where(w => w != CustomRolesEnum.SA)
+                            .Select(r => r.ToString())
+                            .ToList();
             }
 
             // Link the new tenant to the user
@@ -227,7 +229,7 @@ public class UserRegistrationService : IUserRegistrationService
 
             // Failed to send AccountCreated email
             if (!await _emailService.SendEmailUsingTemplate(emailType: EmailTypesEnum.AccountCreated, toEmailAddress: createAccountDto.Email, placeholderValues: placeholderValues,
-                bccEmailAddresses: _generalConfig.SalesEmails))
+                bccEmailAddresses: _environmentConfig.SalesEmails))
             {
                 _logger.LogError($"Error occurred while sending account creation confirmation email to {createAccountDto.Email}");
                 /*Still moving forward as account is already saved in the database*/

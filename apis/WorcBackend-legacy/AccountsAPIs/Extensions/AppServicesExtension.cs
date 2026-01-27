@@ -7,9 +7,17 @@ public static class AppServicesExtension
     /// </summary>
     public static void AddDbContextConfig(this IServiceCollection services, IConfiguration config)
     {
-        var connConfig = Guard.Against.Null(config.GetSection("ConnectionStringConfig").Get<ConnectionStringConfig>(), "ConnectionStringConfig cannot be null");
-        var appDbConnectionString = $"{connConfig.AppDb.Credentials}{connConfig.AppDb.Host}{connConfig.AppDb.Database}{connConfig.AppDb.Other}";
-        var tenantDbConnectionString = $"{connConfig.TenantDb.Credentials}{connConfig.TenantDb.Host}{connConfig.TenantDb.Database}{connConfig.TenantDb.Other}";
+        var environmentConfig = Guard.Against.Null(config.GetSection("EnvironmentConfig").Get<EnvironmentConfig>(), message: "EnvironmentConfig cannot be null");
+
+        // Read PostgreSQL settings from environment variables or config
+        var pgHost = environmentConfig.PostgresqlHost ?? "localhost";
+        var pgPort = environmentConfig.PostgresqlPort.ToString() ?? "5432";
+        var pgUsername = environmentConfig.PostgresqlUsername ?? "";
+        var pgPassword = environmentConfig.PostgresqlPassword ?? "";
+
+        // Build connection strings for different databases
+        var appDbConnectionString = $"Host={pgHost};Port={pgPort};Username={pgUsername};Password={pgPassword};Database=AccountsDb;Include Error Detail=true";
+        var tenantDbConnectionString = $"Host={pgHost};Port={pgPort};Username={pgUsername};Password={pgPassword};Database=AccountsDb;Include Error Detail=true";
 
         services.AddDbContext<AccountsDbContext>(options => options.UseNpgsql(appDbConnectionString));
         services.AddDbContext<TenantDbContext>(options => options.UseNpgsql(tenantDbConnectionString));
@@ -52,7 +60,7 @@ public static class AppServicesExtension
         this IServiceCollection services,
         IConfiguration config)
     {
-        var identityConfig = Guard.Against.Null(config.GetSection("IdentityConfig").Get<IdentityConfig>(), "IdentityConfig cannot be null");
+        var environmentConfig = Guard.Against.Null(config.GetSection("EnvironmentConfig").Get<EnvironmentConfig>(), message: "EnvironmentConfig cannot be null");
 
         var builder = services.AddIdentity<AccountUser, AccountRole>(options =>
         {
@@ -62,11 +70,11 @@ public static class AppServicesExtension
             options.Password.RequireUppercase = true;
             options.Password.RequireNonAlphanumeric = true;
             options.Lockout.AllowedForNewUsers = true;
-            options.Lockout.DefaultLockoutTimeSpan = TimeSpan.FromMinutes(identityConfig.DefaultLockoutTimeSpanInMinutes);
-            options.Lockout.MaxFailedAccessAttempts = identityConfig.LockoutMaxFailedAccessAttempts;
-            options.SignIn.RequireConfirmedAccount = identityConfig.SignInRequireConfirmedAccount;
-            options.SignIn.RequireConfirmedEmail = identityConfig.SignInRequireConfirmedEmail;
-            options.SignIn.RequireConfirmedPhoneNumber = identityConfig.SignInRequireConfirmedPhoneNo;
+            options.Lockout.DefaultLockoutTimeSpan = TimeSpan.FromMinutes(environmentConfig.DefaultLockoutTimeSpanInMinutes);
+            options.Lockout.MaxFailedAccessAttempts = environmentConfig.LockoutMaxFailedAccessAttempts;
+            options.SignIn.RequireConfirmedAccount = true;
+            options.SignIn.RequireConfirmedEmail = true;
+            options.SignIn.RequireConfirmedPhoneNumber = false;
             options.User.RequireUniqueEmail = true;
         })
         .AddEntityFrameworkStores<AccountsDbContext>()
@@ -79,13 +87,8 @@ public static class AppServicesExtension
     public static void AddAppDependencies(this IServiceCollection services, IConfiguration config)
     {
         // Signleton
-        services.AddSingleton(Guard.Against.Null(config.GetSection("SmtpConfig").Get<SmtpConfig>(), "SmtpConfig cannot be null"));
-        services.AddSingleton(Guard.Against.Null(config.GetSection("TenantDefaultConfig").Get<TenantDefaultConfig>(), "TenantDefaultConfig cannot be null"));
-        services.AddSingleton(Guard.Against.Null(config.GetSection("DefaultUserConfig").Get<DefaultUserConfig>(), "DefaultUserConfig cannot be null"));
-        services.AddSingleton(Guard.Against.Null(config.GetSection("IdentityConfig").Get<IdentityConfig>(), "IdentityConfig cannot be null"));
-        services.AddSingleton(Guard.Against.Null(config.GetSection("VerificationCodeConfig").Get<VerificationCodeConfig>(), "VerificationCodeConfig cannot be null"));
-        services.AddSingleton(Guard.Against.Null(config.GetSection("ExternalAPIsConfig").Get<ExternalAPIsConfig>(), "ExternalAPIsConfig cannot be null"));
-        services.AddSingleton(Guard.Against.Null(config.GetSection("InstanceConfig").Get<InstanceConfig>(), message: "InstanceConfig cannot be null"));
+        services.AddSingleton(Guard.Against.Null(config.GetSection("EnvironmentConfig").Get<EnvironmentConfig>(), "EnvironmentConfig cannot be null"));
+        services.AddSingleton(Guard.Against.Null(config.GetSection("AppDefaultConfig").Get<AppDefaultConfig>(), "AppDefaultConfig cannot be null"));
 
         // Feature services
         services.AddScoped<IUserRegistrationService, UserRegistrationService>();
@@ -116,9 +119,7 @@ public static class AppServicesExtension
         services.AddScoped<IPaymentTrackerService, PaymentTrackerService>();
         services.AddScoped<IAITaskService, AITaskService>();
         services.AddScoped<IInstanceService, InstanceService>();
-
-        // Register AppRuntimeSettings as a singleton so that a single instance is shared across the application
-        services.AddSingleton<AppRuntimeSettings>();
+        services.AddScoped<ILoginWithExternalAuthService, LoginWithExternalAuthService>();
 
         // Register Razorpay related services for customer, plan, and subscription management
         services.AddScoped<ICustomerService, CustomerService>();
@@ -142,26 +143,32 @@ public static class AppServicesExtension
     /// <param name="services">The collection of services to register.</param>
     /// <param name="config">The configuration provider used to retrieve Razorpay settings.</param>
     /// <param name="tenantType">The tenant type (e.g., Commercial, Enterprise) to determine if Razorpay should be enabled.</param>
-    public static void AddRazorpayClient(this IServiceCollection services, IConfiguration config, OnPremTenantTypesEnum tenantType)
+    public static void AddRazorpayClient(this IServiceCollection services, IConfiguration config)
     {
+        var environmentConfig = Guard.Against.Null(config.GetSection("EnvironmentConfig").Get<EnvironmentConfig>(), message: "EnvironmentConfig cannot be null");
+        var onPremTenantType = environmentConfig.OnPremTenantType ?? "Enterprise";
+
         // Check if the tenant type is Commercial, as Razorpay integration is only needed for Commercial tenants
-        if (tenantType == OnPremTenantTypesEnum.Commercial)
+        if (onPremTenantType == OnPremTenantTypesEnum.Commercial.ToString())
         {
             // Retrieve the Razorpay configuration section from the configuration provider
-            var razorpayConfig = Guard.Against.Null(config.GetSection("RazorpayConfig").Get<RazorpayConfig>(), "RazorpayConfig cannot be null");
+            var razorpayKeyId = environmentConfig.RazorpayKeyId;
+            var razorpayKeySecret = environmentConfig.RazorpayKeySecret;
 
             // Check if Razorpay KeyId and KeySecret are configured correctly
-            if (razorpayConfig == null || string.IsNullOrEmpty(razorpayConfig.KeyId) || string.IsNullOrEmpty(razorpayConfig.KeySecret))
+            if (string.IsNullOrEmpty(razorpayKeyId) || string.IsNullOrEmpty(razorpayKeySecret))
             {
                 throw new InvalidOperationException("Razorpay KeyId and KeySecret must be configured.");
             }
 
             services.AddSingleton<Razorpay.Api.RazorpayClient>(provider =>
-                new Razorpay.Api.RazorpayClient(razorpayConfig.KeyId, razorpayConfig.KeySecret));
-
-            services.AddSingleton(razorpayConfig);
+                new Razorpay.Api.RazorpayClient(razorpayKeyId, razorpayKeySecret));
         }
-        // If the tenant type is not Commercial, Razorpay integration is skipped (no further action is needed here)
+        else
+        {
+            // Register null RazorpayClient for non-Commercial tenants to satisfy DI requirements
+            services.AddSingleton<Razorpay.Api.RazorpayClient>(provider => null!);
+        }
     }
 
     // Extension method to configure and register Quartz jobs and their triggers
