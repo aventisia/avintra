@@ -5,7 +5,6 @@ public class WorkspaceUserService : IWorkspaceUserService
     private readonly ILogger<WorkspaceUserService> _logger;
     private readonly IUnitOfWork _unitOfWork;
     private readonly IUserManagementGuardService _userManagementGuardService;
-    private readonly DefaultTenantConfig _defaultTenantConfig;
     private readonly Guid _userId;
     private readonly string _userName;
     private readonly Guid _tenantId;
@@ -14,8 +13,7 @@ public class WorkspaceUserService : IWorkspaceUserService
         ILogger<WorkspaceUserService> logger,
         IUnitOfWork unitOfWork,
         IUserManagementGuardService userManagementGuardService,
-        IHttpContextAccessor httpContextAccessor,
-        DefaultTenantConfig defaultTenantConfig)
+        IHttpContextAccessor httpContextAccessor)
     {
         // Set _userId
         _userId = Guid.Parse(httpContextAccessor.HttpContext?.User?.FindFirstValue("uid") ?? Guid.Empty.ToString());
@@ -25,7 +23,6 @@ public class WorkspaceUserService : IWorkspaceUserService
         _logger = logger;
         _unitOfWork = unitOfWork;
         _userManagementGuardService = userManagementGuardService;
-        _defaultTenantConfig = defaultTenantConfig;
     }
 
     // Retrieves a workspace user by its ID.
@@ -322,29 +319,31 @@ public class WorkspaceUserService : IWorkspaceUserService
 
             List<WorkspaceUserDto>? workspaceUsers = new List<WorkspaceUserDto>();
 
+            // @rahmat, please confirm if this logic is still needed
             // Check if the tenant ID matches and return if true
-            if (_defaultTenantConfig.TenantId == _tenantId)
-            {
-                // Tenant ID matches, so return with a message indicating access is not allowed
-                serviceResponse.Message = "Access denied: You cannot add users to agent.";
-                return serviceResponse;
-            }
-            else
-            {
-                // Search workspace users by FirstName, LastName, or UserName
-                workspaceUsers = await _unitOfWork.WorkspaceUserRepo
-                .GetByConditionAsync(w =>
-                    w.TenantId == _tenantId &&
-                    (includeCurrentUser || w.Id != _userId) &&
-                    (
-                        w.FirstName.ToLower().Contains(searchKey.ToLower()) ||
-                        w.LastName.ToLower().Contains(searchKey.ToLower()) ||
-                        w.UserName.ToLower().Contains(searchKey.ToLower())
-                    )
+            // if (_defaultTenantConfig.TenantId == _tenantId)
+            // {
+            //     // Tenant ID matches, so return with a message indicating access is not allowed
+            //     serviceResponse.Message = "Access denied: You cannot add users to agent.";
+            //     return serviceResponse;
+            // }
+            // else
+            // {
+            // }
+
+            // Search workspace users by FirstName, LastName, or UserName
+            workspaceUsers = await _unitOfWork.WorkspaceUserRepo
+            .GetByConditionAsync(w =>
+                w.TenantId == _tenantId &&
+                (includeCurrentUser || w.Id != _userId) &&
+                (
+                    w.FirstName.ToLower().Contains(searchKey.ToLower()) ||
+                    w.LastName.ToLower().Contains(searchKey.ToLower()) ||
+                    w.UserName.ToLower().Contains(searchKey.ToLower())
                 )
-                .ProjectToType<WorkspaceUserDto>()
-                .ToListAsync();
-            }
+            )
+            .ProjectToType<WorkspaceUserDto>()
+            .ToListAsync();
 
             // Update and return the successful response
             serviceResponse.Data = workspaceUsers;

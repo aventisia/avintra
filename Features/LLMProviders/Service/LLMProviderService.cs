@@ -3,21 +3,15 @@ namespace WorkspaceAPIs.Services;
 public class LLMProviderService : ILLMProviderService
 {
     private readonly ILogger<LLMProviderService> _logger;
-    private readonly IUnitOfWork _unitOfWork;
     private readonly Guid _userId;
-    private readonly IHttpClientFactory _httpClientFactory;
     private readonly IAppSecretService _appSecretService;
 
     public LLMProviderService(
         ILogger<LLMProviderService> logger,
-        IUnitOfWork unitOfWork,
         IHttpContextAccessor httpContextAccessor,
-        IHttpClientFactory httpClientFactory,
         IAppSecretService appSecretService)
     {
         _logger = logger;
-        _unitOfWork = unitOfWork;
-        _httpClientFactory = httpClientFactory;
         _appSecretService = appSecretService;
 
         // Initialize the user ID by extracting it from the JWT claims in the HTTP context.
