@@ -5,8 +5,8 @@ public class VersionResourceService : IVersionResourceService
     #region Fields
     private readonly ILogger<VersionResourceService> _logger;
     private readonly IUnitOfWork _unitOfWork;
-    private readonly FileUploadConfig _fileUploadConfig;
-    private readonly ExtractViaLLMConfig _extractViaLLMConfig;
+    private readonly AppDefaultConfig _appDefaultConfig;
+    private readonly EnvironmentConfig _environmentConfig;
     private readonly IAzureBlobStorageService _azureBlobStorageService;
     private readonly Guid _userId;
     private readonly Guid _tenantId;
@@ -15,8 +15,8 @@ public class VersionResourceService : IVersionResourceService
     #endregion
     public VersionResourceService(
         ILogger<VersionResourceService> logger,
-        FileUploadConfig fileUploadConfig,
-        ExtractViaLLMConfig extractViaLLMConfig,
+        AppDefaultConfig appDefaultConfig,
+        EnvironmentConfig environmentConfig,
         IUnitOfWork unitOfWork,
         IHttpContextAccessor httpContextAccessor,
         IAzureBlobStorageService azureBlobStorageService,
@@ -27,8 +27,8 @@ public class VersionResourceService : IVersionResourceService
         _tenantId = Guid.Parse(httpContextAccessor.HttpContext?.User?.FindFirstValue("tntid") ?? Guid.Empty.ToString());
 
         _logger = logger;
-        _fileUploadConfig = fileUploadConfig;
-        _extractViaLLMConfig = extractViaLLMConfig;
+        _appDefaultConfig = appDefaultConfig;
+        _environmentConfig = environmentConfig;
         _unitOfWork = unitOfWork;
         _azureBlobStorageService = azureBlobStorageService;
         _containerName = currentTenantService.CurrentTenantContainerName;
@@ -613,28 +613,28 @@ public class VersionResourceService : IVersionResourceService
         _logger.LogInformation("Determining file category for extension: {Extension}.", extension);
 
         // Check Pictures category
-        if (_fileUploadConfig.AllowedFileTypes.Pictures.AllowedFileExtensions.Contains(extension))
+        if (_appDefaultConfig.FileUploadConfig.AllowedFileTypes.Pictures.AllowedFileExtensions.Contains(extension))
         {
             _logger.LogInformation("File extension '{Extension}' matches category: Pictures.", extension);
             return "Pictures";
         }
 
         // Check Documents category
-        if (_fileUploadConfig.AllowedFileTypes.Documents.AllowedFileExtensions.Contains(extension))
+        if (_appDefaultConfig.FileUploadConfig.AllowedFileTypes.Documents.AllowedFileExtensions.Contains(extension))
         {
             _logger.LogInformation("File extension '{Extension}' matches category: Documents.", extension);
             return "Documents";
         }
 
         // Check Videos category
-        if (_fileUploadConfig.AllowedFileTypes.Videos.AllowedFileExtensions.Contains(extension))
+        if (_appDefaultConfig.FileUploadConfig.AllowedFileTypes.Videos.AllowedFileExtensions.Contains(extension))
         {
             _logger.LogInformation("File extension '{Extension}' matches category: Videos.", extension);
             return "Videos";
         }
 
         // Check Audios category
-        if (_fileUploadConfig.AllowedFileTypes.Audio.AllowedFileExtensions.Contains(extension))
+        if (_appDefaultConfig.FileUploadConfig.AllowedFileTypes.Audio.AllowedFileExtensions.Contains(extension))
         {
             _logger.LogInformation("File extension '{Extension}' matches category: Audio.", extension);
             return "Audio";
@@ -653,10 +653,10 @@ public class VersionResourceService : IVersionResourceService
         // Retrieve the allowed extensions for the given file category
         List<string> allowedExtensions = fileCategory.ToLower() switch
         {
-            "pictures" => _fileUploadConfig.AllowedFileTypes.Pictures.AllowedFileExtensions,
-            "documents" => _fileUploadConfig.AllowedFileTypes.Documents.AllowedFileExtensions,
-            "videos" => _fileUploadConfig.AllowedFileTypes.Videos.AllowedFileExtensions,
-            "audio" => _fileUploadConfig.AllowedFileTypes.Audio.AllowedFileExtensions,
+            "pictures" => _appDefaultConfig.FileUploadConfig.AllowedFileTypes.Pictures.AllowedFileExtensions,
+            "documents" => _appDefaultConfig.FileUploadConfig.AllowedFileTypes.Documents.AllowedFileExtensions,
+            "videos" => _appDefaultConfig.FileUploadConfig.AllowedFileTypes.Videos.AllowedFileExtensions,
+            "audio" => _appDefaultConfig.FileUploadConfig.AllowedFileTypes.Audio.AllowedFileExtensions,
             _ => new List<string>()
         };
 
@@ -688,10 +688,10 @@ public class VersionResourceService : IVersionResourceService
         // Retrieve the maximum allowed size (in MB) for the given file category
         int maxSizeMB = fileCategory.ToLower() switch
         {
-            "pictures" => _fileUploadConfig.AllowedFileTypes.Pictures.MaxSizeMB,
-            "documents" => _fileUploadConfig.AllowedFileTypes.Documents.MaxSizeMB,
-            "videos" => _fileUploadConfig.AllowedFileTypes.Videos.MaxSizeMB,
-            "audio" => _fileUploadConfig.AllowedFileTypes.Audio.MaxSizeMB,
+            "pictures" => _appDefaultConfig.FileUploadConfig.AllowedFileTypes.Pictures.MaxSizeMB,
+            "documents" => _appDefaultConfig.FileUploadConfig.AllowedFileTypes.Documents.MaxSizeMB,
+            "videos" => _appDefaultConfig.FileUploadConfig.AllowedFileTypes.Videos.MaxSizeMB,
+            "audio" => _appDefaultConfig.FileUploadConfig.AllowedFileTypes.Audio.MaxSizeMB,
             _ => throw new InvalidOperationException($"Unsupported file category: {fileCategory}")
         };
 
@@ -744,7 +744,7 @@ public class VersionResourceService : IVersionResourceService
             _logger.LogDebug("DeleteFileByURL: Extracted subdirectory '{Subdirectory}' and file name '{FileName}' from URL: {Url}", subdirectoryName, fileName, url);
 
             // Construct the absolute file path
-            string fullFilePath = Path.Combine(_fileUploadConfig.UploadDirectory, subdirectoryName, fileName);
+            string fullFilePath = Path.Combine(_appDefaultConfig.FileUploadConfig.UploadDirectory, subdirectoryName, fileName);
 
             _logger.LogDebug("DeleteFileByURL: Resolved file path: {FullPath}", fullFilePath);
 
@@ -783,11 +783,12 @@ public class VersionResourceService : IVersionResourceService
                 filePath = filePath.Substring("/files/".Length);
 
             // Combine with local storage path
-            filePath = Path.Combine(_fileUploadConfig.UploadDirectory, filePath.TrimStart('/'));
+            filePath = Path.Combine(_appDefaultConfig.FileUploadConfig.UploadDirectory, filePath.TrimStart('/'));
 
             using (HttpClient client = new HttpClient())
             {
-                client.DefaultRequestHeaders.Add("API_KEY", _extractViaLLMConfig.LLMPipelineAPIKey);
+                // TODO: Currently there is no API_KEY based authentication mechanism in llmpipeline api
+                // client.DefaultRequestHeaders.Add("API_KEY", _environmentConfig.LLMPipelineAPIKey);
 
                 var requestDto = new
                 {
@@ -798,7 +799,7 @@ public class VersionResourceService : IVersionResourceService
                 var content = new StringContent(jsonRequest, Encoding.UTF8, "application/json");
 
                 _logger.LogInformation("Requesting file conversion to PDF for file path: {filePath}", filePath);
-                HttpResponseMessage response = await client.PostAsync($"{_extractViaLLMConfig.LLMPipelineAPI}/convert-to-pdf", content);
+                HttpResponseMessage response = await client.PostAsync($"{_environmentConfig.LlmPipelineApiBaseUrl}/api/convert-to-pdf", content);
 
                 // If the response is unsuccessful, log the error and return null
                 if (!response.IsSuccessStatusCode)
