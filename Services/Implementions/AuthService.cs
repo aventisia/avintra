@@ -10,7 +10,7 @@ public class AuthService : IAuthService
     private readonly IUnitOfWork _unitOfWork;
     private readonly IAuthHelperService _authHelperService;
     private readonly ILoginWithExternalAuthService _loginWithExternalAuthService;
-    
+
     public AuthService(
         UserManager<AccountUser> userManager,
         IEmailService emailService,
@@ -141,13 +141,8 @@ public class AuthService : IAuthService
             // Variable to hold tenant information for the response
             TenantInfoDto? tenantInfoDto = null;
 
-            // Check whether SSO (Azure Entra) is properly configured
-            bool isAzureSsoConfigured = !string.IsNullOrEmpty(_environmentConfig.AzureEntraIdClientId)
-                    && !string.IsNullOrEmpty(_environmentConfig.AzureTenantId)
-                    && !string.IsNullOrEmpty(_environmentConfig.AzureEntraIdClientSecret);
-
             // Generate Azure login URL only if SSO is enabled
-            var azureLoginUrl = isAzureSsoConfigured
+            var azureLoginUrl = user.Tenant.IsSSOEnabled
                     ? _loginWithExternalAuthService.GenerateLoginUrlAsync(ExternalAuthProviderEnum.Azure).Data
                     : null;
 
@@ -177,7 +172,7 @@ public class AuthService : IAuthService
                     UserName = user.UserName,
                     Name = "NA",
                     TenantId = Guid.Empty,
-                    SSOConfigJson = azureLoginUrl
+                    SSOConfigJson = null
                 };
             }
 
