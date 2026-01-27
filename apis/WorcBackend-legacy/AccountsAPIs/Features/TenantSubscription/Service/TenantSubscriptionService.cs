@@ -6,17 +6,18 @@ public class TenantSubscriptionService : ITenantSubscriptionService
     private readonly ITopUpService _topUpService;
     private readonly ILogger<TenantSubscriptionService> _logger;
     private readonly IEmailService _emailService;
-    private readonly GeneralConfig _generalConfig;
+    private readonly EnvironmentConfig _environmentConfig;
     private readonly Guid _userId;
     private readonly Guid _tenantId;
     private readonly string? _username;
 
-    public TenantSubscriptionService(IUnitOfWork unitOfWork,
-    ILogger<TenantSubscriptionService> logger,
-    IHttpContextAccessor httpContextAccessor,
-    ITopUpService topUpService,
-    IEmailService emailService,
-    GeneralConfig generalConfig)
+    public TenantSubscriptionService(
+        IUnitOfWork unitOfWork,
+        ILogger<TenantSubscriptionService> logger,
+        IHttpContextAccessor httpContextAccessor,
+        ITopUpService topUpService,
+        IEmailService emailService,
+        EnvironmentConfig environmentConfig)
     {
         _unitOfWork = unitOfWork;
         _logger = logger;
@@ -29,7 +30,7 @@ public class TenantSubscriptionService : ITenantSubscriptionService
         _username = httpContextAccessor.HttpContext?.User?.FindFirstValue("uname");
         _topUpService = topUpService;
         _emailService = emailService;
-        _generalConfig = generalConfig;
+        _environmentConfig = environmentConfig;
     }
 
     // Retrieves all tenant subscriptions from the database including the creator user.
@@ -1001,7 +1002,7 @@ public class TenantSubscriptionService : ITenantSubscriptionService
             // Log and handle failure if email verification fails
             if (!await _emailService.SendEmailUsingTemplate(
                 EmailTypesEnum.SubscriptionPlanUpgrade,
-                _generalConfig.SalesEmails,
+                _environmentConfig.SalesEmails,
                 new Dictionary<string, string>()
                 {
                 {"{{TenantName}}", tenant.Name },
@@ -1011,7 +1012,7 @@ public class TenantSubscriptionService : ITenantSubscriptionService
                 {"{{RequestedOn}}", DateTimeOffset.UtcNow.Date.ToString("MMMM d, yyyy") }
                 }))
             {
-                _logger.LogError("Failed to send email for subscription upgrade request to {SalesEmails}. Request type: {EmailType}.", _generalConfig.SalesEmails, EmailTypesEnum.ContactUsRequest);
+                _logger.LogError("Failed to send email for subscription upgrade request to {SalesEmails}. Request type: {EmailType}.", _environmentConfig.SalesEmails, EmailTypesEnum.ContactUsRequest);
                 return serviceResponse;
             }
 

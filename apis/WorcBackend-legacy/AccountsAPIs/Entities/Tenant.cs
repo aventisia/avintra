@@ -44,7 +44,7 @@ public class Tenant : BaseEntity
     /// Gets or sets the number of days before the password can expire.
     /// This is only required or applicable if IsPwdNeverExpiresEnabled is set to true.
     /// </summary>
-    public int DaysBeforePwdExpires { get; set; }
+    public int DaysBeforePwdExpires { get; set; } = 730;
 
     /// <summary>
     /// Gets or sets a value indicating whether user sessions will automatically time out after a period of inactivity.
@@ -55,7 +55,7 @@ public class Tenant : BaseEntity
     /// Gets or sets the number of minutes before a user session can expire automatically due to inactivity on the app.
     /// This is only required or applicable if IsIdleSessionTimeoutEnabled is set to true.
     /// </summary>
-    public int IdleSessionTimeoutMinutes { get; set; }
+    public int IdleSessionTimeoutMinutes { get; set; } = 10;
 
     /// <summary>
     /// Gets or sets a value indicating whether an additional verification step is required for all users to log in.

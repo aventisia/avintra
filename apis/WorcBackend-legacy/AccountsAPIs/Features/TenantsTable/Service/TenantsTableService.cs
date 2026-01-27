@@ -4,14 +4,12 @@ public class TenantsTableService : ITenantsTableService
 {
     private readonly ILogger<TenantsTableService> _logger;
     private readonly IUnitOfWork _unitOfWork;
-    private readonly TenantDefaultConfig _tenantDefaultConfig;
     private readonly ICurrentTenantService _currentTenantService;
     private readonly Guid _userId;
 
     public TenantsTableService(
         ILogger<TenantsTableService> logger,
         IUnitOfWork unitOfWork,
-        TenantDefaultConfig tenantDefaultConfig,
         IHttpContextAccessor httpContextAccessor,
         ICurrentTenantService currentTenantService)
     {
@@ -20,7 +18,6 @@ public class TenantsTableService : ITenantsTableService
 
         _logger = logger;
         _unitOfWork = unitOfWork;
-        _tenantDefaultConfig = tenantDefaultConfig;
         _currentTenantService = currentTenantService;
     }
 
@@ -285,9 +282,9 @@ public class TenantsTableService : ITenantsTableService
             newTenant.IsEditable = true; // DO NOT CHANGE THIS
 
             // Additional mapping
-            newTenant.ExpiresOn = tenantsTableDto.ExpiresOn ?? DateTimeOffset.UtcNow.AddDays(_tenantDefaultConfig.InactiveDaysBeforeDataExpires);
-            newTenant.DaysBeforePwdExpires = tenantsTableDto.DaysBeforePwdExpires ?? _tenantDefaultConfig.DaysBeforePwdExpires;
-            newTenant.IdleSessionTimeoutMinutes = tenantsTableDto.IdleSessionTimeoutMinutes ?? _tenantDefaultConfig.IdleSessionTimeoutInMinutes;
+            newTenant.ExpiresOn = tenantsTableDto.ExpiresOn ?? DateTimeOffset.MaxValue; // TODO: We need to remove or update it;
+            newTenant.DaysBeforePwdExpires = tenantsTableDto.DaysBeforePwdExpires ?? 730;
+            newTenant.IdleSessionTimeoutMinutes = tenantsTableDto.IdleSessionTimeoutMinutes ?? 10;
             newTenant.DbOption = tenantsTableDto.DbOption ?? DatabaseOptionsEnum.Shared;
             newTenant.DbCredentials = $"User ID={tenantsTableDto.DbUserId ?? ""};Password={tenantsTableDto.DbPwd ?? ""};";
             newTenant.DbHost = $"Host={tenantsTableDto.DbHost ?? ""};Port={tenantsTableDto.DbPort ?? 0};";

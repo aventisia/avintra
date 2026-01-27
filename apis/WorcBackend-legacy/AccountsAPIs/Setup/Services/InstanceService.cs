@@ -4,19 +4,19 @@ public class InstanceService : IInstanceService
 {
     private readonly IUnitOfWork _unitOfWork;
     private readonly ILogger<InstanceService> _logger;
-    private readonly InstanceConfig _instanceConfig;
-    private readonly AppRuntimeSettings _appRuntimeSettings;
-    private readonly HttpClientUrlConfig _httpClientUrlConfig;
-    private readonly IHostEnvironment _hostEnvironment;
+    private readonly AppDefaultConfig _appDefaultConfig;
+    private readonly EnvironmentConfig _environmentConfig;
 
-    public InstanceService(IUnitOfWork unitOfWork, ILogger<InstanceService> logger, InstanceConfig instanceConfig, AppRuntimeSettings appRuntimeSettings, HttpClientUrlConfig httpClientUrlConfig, IHostEnvironment hostEnvironment)
+    public InstanceService(
+        IUnitOfWork unitOfWork, 
+        ILogger<InstanceService> logger, 
+        AppDefaultConfig appDefaultConfig, 
+        EnvironmentConfig environmentConfig)
     {
         _unitOfWork = unitOfWork;
         _logger = logger;
-        _instanceConfig = instanceConfig;
-        _appRuntimeSettings = appRuntimeSettings;
-        _httpClientUrlConfig = httpClientUrlConfig;
-        _hostEnvironment = hostEnvironment;
+        _appDefaultConfig = appDefaultConfig;
+        _environmentConfig = environmentConfig;
     }
 
     // Collects and processes metrics such as user count, job execution stats, and other instance-related metrics from an external API.
@@ -32,9 +32,7 @@ public class InstanceService : IInstanceService
         // Initialize the InstanceRequestDto using the configuration values and prepare for metric collection
         serviceResponse.Data = new InstanceRequestDto()
         {
-            PlatformVersion = _instanceConfig.PlatformVersion,
-            // TODO: instance type will be set by the global admin when we create the instance and deployment is going to consume it as it is.
-            InstanceType = string.Equals(_hostEnvironment.EnvironmentName, _instanceConfig.InstanceType, StringComparison.OrdinalIgnoreCase) ? "Prod" : "NonProd",
+            PlatformVersion = _appDefaultConfig.PlatformVersion,
             Source = source,
             Last7DayUsages = new List<ProjectUsageMetricDto>()
         };
@@ -47,7 +45,7 @@ public class InstanceService : IInstanceService
             // Fetch metrics from the external API
             HttpResponseMessage httpResponse = await RequestExternalAPIUtil.RequestExternalAPI(
                 CrudTypesEnum.Read,
-                $"{_httpClientUrlConfig.WorkspaceApisBaseUrl}/project/usage",
+                $"{_environmentConfig.WorcApiBaseUrl}/api/project/usage",
                 null);
 
             // Handle unsuccessful API response
@@ -118,8 +116,8 @@ public class InstanceService : IInstanceService
             var httpClient = new HttpClient();
 
             // Add the API Key and Instance details to the headers for authentication
-            httpClient.DefaultRequestHeaders.Add("X-OnPrem-Tenant-Id", $"{_instanceConfig.TenantId}");
-            httpClient.DefaultRequestHeaders.Add("X-OnPrem-Instance-Key", $"{_instanceConfig.InstanceKey}");
+            httpClient.DefaultRequestHeaders.Add("X-OnPrem-Tenant-Id", $"{_environmentConfig.OnPremTenantId}");
+            httpClient.DefaultRequestHeaders.Add("X-OnPrem-Instance-Key", $"{_environmentConfig.OnPremInstanceKey}");
 
             // Serialize the InstanceRequestDto to JSON for the POST body
             var jsonContent = new StringContent(
@@ -129,7 +127,7 @@ public class InstanceService : IInstanceService
             );
 
             // Call the external API to post the metrics
-            var httpResponse = await httpClient.PostAsync($"{_httpClientUrlConfig.GlobalAdminApisBaseUrl}/onprem/instance/validate", jsonContent);
+            var httpResponse = await httpClient.PostAsync($"{_appDefaultConfig.GlobalAdminApiBaseUrl}/api/onprem/instance/validate", jsonContent);
 
             // Check if the response was successful
             if (!httpResponse.IsSuccessStatusCode)
@@ -139,7 +137,7 @@ public class InstanceService : IInstanceService
                     httpResponse.ReasonPhrase
                 );
                 // Update runtime application settings from the API response
-                _appRuntimeSettings.IsLoginDisabled = true;
+                _environmentConfig.OnPremLoginDisabled = true;
                 return;
             }
 
@@ -164,14 +162,13 @@ public class InstanceService : IInstanceService
             _logger.LogInformation("Metrics posted successfully to the external API.");
 
             // Update runtime application settings from the API response
-            _appRuntimeSettings.InvalidCheckCount = externalServiceResponse.Data.Enforcement.NoOfInvalidCheck;
-            _appRuntimeSettings.IsExecutionDisabled = externalServiceResponse.Data.Enforcement.IsExecutionDisabled;
-            _appRuntimeSettings.IsLoginDisabled = externalServiceResponse.Data.Enforcement.IsLoginDisabled;
-            _appRuntimeSettings.ExecutionTimeAllowed = externalServiceResponse.Data.Enforcement.ExecutionTimeAllowed >= 0;
-            _appRuntimeSettings.TenantType = externalServiceResponse.Data.Tenant.Type;
-            _appRuntimeSettings.TenantId = externalServiceResponse.Data.Tenant.TenantId;
-            _appRuntimeSettings.IsContractStarted = externalServiceResponse.Data.Contract.ContractStartDate.Date <= DateTimeOffset.UtcNow.Date;
-            _appRuntimeSettings.IsContractExpired = externalServiceResponse.Data.Contract.ContractRenewalDate.Date < DateTimeOffset.UtcNow.Date;
+            _environmentConfig.OnPremExecutionDisabled = externalServiceResponse.Data.Enforcement.IsExecutionDisabled;
+            _environmentConfig.OnPremLoginDisabled = externalServiceResponse.Data.Enforcement.IsLoginDisabled;
+            _environmentConfig.OnPremExecutionTimeAllowed = externalServiceResponse.Data.Enforcement.ExecutionTimeAllowed;
+            _environmentConfig.OnPremTenantType = externalServiceResponse.Data.Tenant.Type.ToString();
+            _environmentConfig.OnPremTenantId = externalServiceResponse.Data.Tenant.TenantId.ToString();
+            _environmentConfig.OnPremContractStart = externalServiceResponse.Data.Contract.ContractStartDate.Date;
+            _environmentConfig.OnPremContractEnd = externalServiceResponse.Data.Contract.ContractRenewalDate.Date;
         }
         catch (Exception ex)
         {

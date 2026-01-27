@@ -7,12 +7,8 @@ public static class AccountsDbInitialSeed
     {
         using (var scope = app.Services.CreateScope())
         {
-            // Get TenantDefaultConfig
-            var tenantDefaultConfig = scope.ServiceProvider.GetRequiredService<TenantDefaultConfig>();
-
-            // Get DefaultUserConfig
-            var defaultUserConfig = scope.ServiceProvider.GetRequiredService<DefaultUserConfig>();
-            var instanceConfig = scope.ServiceProvider.GetRequiredService<InstanceConfig>();
+            // Get environment configs
+            var environmentConfig = scope.ServiceProvider.GetRequiredService<EnvironmentConfig>();
 
             // Get accountsDbContext
             using var _accountsDbContext = scope.ServiceProvider.GetRequiredService<AccountsDbContext>();
@@ -31,7 +27,7 @@ public static class AccountsDbInitialSeed
                 if (!await SeedDefaultRolesAsync(_roleManager)) return app;
 
                 // Seed Super User without tenant
-                var superUser = await SeedSuperUserAsync(_userManager, defaultUserConfig, instanceConfig);
+                var superUser = await SeedSuperUserAsync(_userManager, environmentConfig);
 
                 // Super user not seeded
                 if (superUser == null) return app;
@@ -40,7 +36,7 @@ public static class AccountsDbInitialSeed
                 if (!await SeedPermissionsAsync(_accountsDbContext, superUser)) return app;
 
                 // Seed default tenant
-                var defaultTenant = await SeedDefaultTenantAsync(_accountsDbContext, tenantDefaultConfig, instanceConfig, superUser.Id);
+                var defaultTenant = await SeedDefaultTenantAsync(_accountsDbContext, environmentConfig, superUser.Id);
 
                 // Default tenant not seeded
                 if (defaultTenant == null) return app;
@@ -52,7 +48,7 @@ public static class AccountsDbInitialSeed
                 if (!await SeedCreditPlansAsync(_accountsDbContext, superUser)) return app;
 
                 // Seed the default Subscription Plan (create or ensure the default subscription plan exists)
-                if (!await SeedSubscriptionPlanAsync(_accountsDbContext, instanceConfig, superUser))
+                if (!await SeedSubscriptionPlanAsync(_accountsDbContext, environmentConfig, superUser))
                     return app;
 
                 // Seed the Tenant Subscription (this associates the super user with a subscription plan for their tenant)
@@ -160,7 +156,7 @@ public static class AccountsDbInitialSeed
     }
 
     // Seed super user without tenant
-    private async static Task<AccountUser?> SeedSuperUserAsync(UserManager<AccountUser> userManager, DefaultUserConfig defaultUserConfig, InstanceConfig instanceConfig)
+    private async static Task<AccountUser?> SeedSuperUserAsync(UserManager<AccountUser> userManager, EnvironmentConfig environmentConfig)
     {
         try
         {
@@ -171,12 +167,10 @@ public static class AccountsDbInitialSeed
             var superUser = new AccountUser()
             {
                 Id = superUserId,
-                UserName = defaultUserConfig.Email,
-                Email = defaultUserConfig.Email,
+                UserName = environmentConfig.OnPremAdminEmail,
+                Email = environmentConfig.OnPremAdminEmail,
                 EmailConfirmed = true,
-                FirstName = instanceConfig.TenantType.Equals(OnPremTenantTypesEnum.Enterprise.ToString(), StringComparison.InvariantCultureIgnoreCase)
-                        ? "Tenant"
-                        : "Super",
+                FirstName = "Platform",
                 LastName = "Admin",
                 PwdSetOn = DateTimeOffset.UtcNow,
                 IsDefault = true,
@@ -193,10 +187,10 @@ public static class AccountsDbInitialSeed
                                 .Select(r => r.ToString())
                                 .ToList();
 
-            // Check if the tenant type is 'Enterprise' (case-insensitive comparison)
-            if (instanceConfig.TenantType.Equals(OnPremTenantTypesEnum.Enterprise.ToString(), StringComparison.InvariantCultureIgnoreCase))
+            // Check if the tenant type is 'Commercial' (case-insensitive comparison)
+            if (environmentConfig.OnPremTenantType.Equals(OnPremTenantTypesEnum.Commercial.ToString(), StringComparison.InvariantCultureIgnoreCase))
             {
-                // For Enterprise tenants, add the 'SA' role - typically for a role "Super Admin"
+                // For Commercial tenants, add the 'SA' role - typically for a role "Super Admin"
                 roles.Add(nameof(CustomRolesEnum.SA));
             }
 
@@ -229,13 +223,13 @@ public static class AccountsDbInitialSeed
     }
 
     // Seed default tenants
-    private async static Task<Tenant?> SeedDefaultTenantAsync(AccountsDbContext accountsDbContext, TenantDefaultConfig tenantDefaultConfig, InstanceConfig instanceConfig, Guid superUserId)
+    private async static Task<Tenant?> SeedDefaultTenantAsync(AccountsDbContext accountsDbContext, EnvironmentConfig environmentConfig, Guid superUserId)
     {
         try
         {
             // Attempt to parse the TenantId as a Guid
             Guid tenantGuid;
-            bool isValidTenantId = Guid.TryParse(instanceConfig.TenantId, out tenantGuid);
+            bool isValidTenantId = Guid.TryParse(environmentConfig.OnPremTenantId, out tenantGuid);
 
             // Initialize default tenant
             var newTenant = new Tenant()
@@ -244,16 +238,16 @@ public static class AccountsDbInitialSeed
                 ResourceType = TenantResourceTypesEnum.Dedicated,
                 Type = TenantTypesEnum.Organization,
                 Currency = CurrencyTypesEnum.USD,
-                Name = instanceConfig.TenantName,
-                ContainerName = TenantContainerUtil.GenerateName(instanceConfig.TenantName),
-                ExpiresOn = DateTimeOffset.MaxValue,    // TODO: We need to remove or update it
+                Name = environmentConfig.OnPremTenantName,
+                ContainerName = TenantContainerUtil.GenerateName(environmentConfig.OnPremTenantName),
+                ExpiresOn = DateTimeOffset.MaxValue, // TODO: We need to remove or update it
                 IsSSOEnabled = false,
                 IsPwdEnabled = true,
                 IsPwdNeverExpiresEnabled = true,
                 IsIdleSessionTimeoutEnabled = true,
                 IsTwoFAEnabled = false,
-                DaysBeforePwdExpires = tenantDefaultConfig.DaysBeforePwdExpires,
-                IdleSessionTimeoutMinutes = tenantDefaultConfig.IdleSessionTimeoutInMinutes,
+                DaysBeforePwdExpires = 730,
+                IdleSessionTimeoutMinutes = 10,
                 IsDefault = true,
                 IsEditable = true,
                 SSOConfigJson = "",
@@ -399,7 +393,7 @@ public static class AccountsDbInitialSeed
         return true;
     }
 
-    private static async Task<bool> SeedSubscriptionPlanAsync(AccountsDbContext accountsDbContext, InstanceConfig instanceConfig, AccountUser superUser)
+    private static async Task<bool> SeedSubscriptionPlanAsync(AccountsDbContext accountsDbContext, EnvironmentConfig environmentConfig, AccountUser superUser)
     {
         try
         {
@@ -419,7 +413,7 @@ public static class AccountsDbInitialSeed
             }
 
             // Prepare plan type based on tenant type
-            SubscriptionPlanTypeEnum planType = instanceConfig.TenantType.Equals(OnPremTenantTypesEnum.Commercial.ToString(), StringComparison.InvariantCultureIgnoreCase) ?
+            SubscriptionPlanTypeEnum planType = environmentConfig.OnPremTenantType.Equals(OnPremTenantTypesEnum.Commercial.ToString(), StringComparison.InvariantCultureIgnoreCase) ?
                 SubscriptionPlanTypeEnum.Pro :
                 SubscriptionPlanTypeEnum.None;
 
