@@ -52,7 +52,6 @@ public class LoginWithExternalAuthService : ILoginWithExternalAuthService
                     loginUrl =
                         $"https://login.microsoftonline.com/{_environmentConfig.AzureTenantId}/oauth2/v2.0/authorize" +
                         $"?client_id={_environmentConfig.AzureEntraIdClientId}" +
-                        $"&redirect_uri={redirectUrl}" +
                         $"&response_type=code" +
                         $"&redirect_uri={Uri.EscapeDataString(redirectUrl)}" +
                         $"&response_mode=query" +
