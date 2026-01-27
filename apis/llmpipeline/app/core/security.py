@@ -15,8 +15,8 @@ def verify_token(token: str):
             token,
             settings.JWT_SECRET_KEY,
             algorithms=["HS512"],
-            audience=settings.JWT_AUDIENCE,
-            issuer=settings.JWT_ISSUER
+            audience=f"https://{settings.APP_BASE_URL}",
+            issuer=f"https://{settings.APP_BASE_URL}"
         )
         logger.info("✅ JWT token successfully verified.")
         return payload
