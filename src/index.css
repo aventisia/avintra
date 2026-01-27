@@ -56,6 +56,37 @@
   max-width: 55vw;
   text-wrap: wrap;
 }
+
+/* Hide default outline of Codemirror JSON editor */
+.cm-focused {
+  outline: none !important;
+}
+
+/* Apply border radius to Codemirror JSON editor */
+.cm-editor {
+  border-radius: var(--radius);
+}
+
+/* Customize line numbers section Codemirror JSON editor */
+.cm-gutters {
+  background-color: var(--muted) !important;
+  color: var(--muted-foreground) !important;
+  border: 0x !important;
+  border-top-left-radius: var(--radius);
+  border-bottom-left-radius: var(--radius);
+  border-right: 1px solid var(--border) !important;
+}
+
+/* Apply font to Codemirror JSON editor */
+.cm-content {
+  font-family: monospace;
+}
+
+/* Wrap line to avoid overflow in Codemirror JSON editor */
+.cm-line {
+  max-width: 34rem;
+  text-wrap: wrap;
+}
 @layer base {
   *,
   *::after,
