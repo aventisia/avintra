@@ -7,7 +7,6 @@ public class ModelBuilderUserService : IModelBuilderUserService
     private readonly ILogger<ModelBuilderUserService> _logger;
     private readonly IUnitOfWork _unitOfWork;
     private readonly IUserManagementGuardService _userManagementGuardService;
-    private readonly DefaultTenantConfig _defaultTenantConfig;
     private readonly Guid _userId;
     private readonly string _userName;
     private readonly Guid _tenantId;
@@ -16,8 +15,7 @@ public class ModelBuilderUserService : IModelBuilderUserService
         ILogger<ModelBuilderUserService> logger,
         IUnitOfWork unitOfWork,
         IUserManagementGuardService userManagementGuardService,
-        IHttpContextAccessor httpContextAccessor,
-        DefaultTenantConfig defaultTenantConfig)
+        IHttpContextAccessor httpContextAccessor)
     {
         // Set _userId
         _userId = Guid.Parse(httpContextAccessor.HttpContext?.User?.FindFirstValue("uid") ?? Guid.Empty.ToString());
@@ -27,7 +25,6 @@ public class ModelBuilderUserService : IModelBuilderUserService
         _logger = logger;
         _unitOfWork = unitOfWork;
         _userManagementGuardService = userManagementGuardService;
-        _defaultTenantConfig = defaultTenantConfig;
     }
 
     // Retrieves a model builder user by its ID.
@@ -324,28 +321,42 @@ public class ModelBuilderUserService : IModelBuilderUserService
 
             List<ModelBuilderUserDto>? modelBuilderUsers = new List<ModelBuilderUserDto>();
 
-            // Check if the tenant ID matches and return if true
-            if (_defaultTenantConfig.TenantId == _tenantId)
-            {
-                // Tenant ID matches, so return with a message indicating access is not allowed
-                serviceResponse.Message = "Access denied: You cannot add users to agent.";
-                return serviceResponse;
-            }
-            else
-            {
-                // Search model builder users by FirstName, LastName, or UserName
-                modelBuilderUsers = await _unitOfWork.ModelBuilderUserRepo
-                    .GetByConditionAsync(w =>
-                        (includeCurrentUser || w.Id != _userId) &&
-                        (
-                            w.FirstName.ToLower().Contains(searchKey.ToLower()) ||
-                            w.LastName.ToLower().Contains(searchKey.ToLower()) ||
-                            w.UserName.ToLower().Contains(searchKey.ToLower())
-                        )
+            // @rahmat, please confirm if this logic is still needed
+            // // Check if the tenant ID matches and return if true
+            // if (_defaultTenantConfig.TenantId == _tenantId)
+            // {
+            //     // Tenant ID matches, so return with a message indicating access is not allowed
+            //     serviceResponse.Message = "Access denied: You cannot add users to agent.";
+            //     return serviceResponse;
+            // }
+            // else
+            // {
+            //     // Search model builder users by FirstName, LastName, or UserName
+            //     modelBuilderUsers = await _unitOfWork.ModelBuilderUserRepo
+            //         .GetByConditionAsync(w =>
+            //             (includeCurrentUser || w.Id != _userId) &&
+            //             (
+            //                 w.FirstName.ToLower().Contains(searchKey.ToLower()) ||
+            //                 w.LastName.ToLower().Contains(searchKey.ToLower()) ||
+            //                 w.UserName.ToLower().Contains(searchKey.ToLower())
+            //             )
+            //         )
+            //         .ProjectToType<ModelBuilderUserDto>()
+            //         .ToListAsync();
+            // }
+
+            // Search model builder users by FirstName, LastName, or UserName
+            modelBuilderUsers = await _unitOfWork.ModelBuilderUserRepo
+                .GetByConditionAsync(w =>
+                    (includeCurrentUser || w.Id != _userId) &&
+                    (
+                        w.FirstName.ToLower().Contains(searchKey.ToLower()) ||
+                        w.LastName.ToLower().Contains(searchKey.ToLower()) ||
+                        w.UserName.ToLower().Contains(searchKey.ToLower())
                     )
-                    .ProjectToType<ModelBuilderUserDto>()
-                    .ToListAsync();
-            }
+                )
+                .ProjectToType<ModelBuilderUserDto>()
+                .ToListAsync();
 
             // Update and return the successful response
             serviceResponse.Data = modelBuilderUsers;

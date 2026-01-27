@@ -5,7 +5,6 @@ public class InferencingModelService : IInferencingModelService
     private readonly ILogger<InferencingModelService> _logger;
     private readonly IUnitOfWork _unitOfWork;
     private readonly ILLMDataExtractionService _llmDataExtractionService;
-    private readonly FileUploadConfig _fileUploadConfig;
     private readonly IAzureBlobStorageService _azureBlobStorageService;
     private readonly Guid _userId;
     private readonly string _containerName;
@@ -15,7 +14,6 @@ public class InferencingModelService : IInferencingModelService
         IUnitOfWork unitOfWork,
         IHttpContextAccessor httpContextAccessor,
         ILLMDataExtractionService llmDataExtractionService,
-        FileUploadConfig fileUploadConfig,
         IAzureBlobStorageService azureBlobStorageService,
         ICurrentTenantService currentTenantService)
     {
@@ -25,7 +23,6 @@ public class InferencingModelService : IInferencingModelService
         _logger = logger;
         _unitOfWork = unitOfWork;
         _llmDataExtractionService = llmDataExtractionService;
-        _fileUploadConfig = fileUploadConfig;
         _azureBlobStorageService = azureBlobStorageService;
         _containerName = currentTenantService.CurrentTenantContainerName;
     }
