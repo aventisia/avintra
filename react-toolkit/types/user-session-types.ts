@@ -5,13 +5,15 @@ interface IUserSessionStore {
   firstName: string;
   lastName: string;
   userInitials: string;
+  platformVersion: string;
+  planType?: string;
+  deploymentType: deploymentType;
+
   /** IsAventisiaEmployee */
   isAE: boolean;
   userRoles: string[];
   expiresOn: Date;
   avatarSrc?: string;
-
-  deploymentType: deploymentType;
 }
 
 export type deploymentType = "Commercial" | "Enterprise";
@@ -37,7 +39,7 @@ interface IJwtPayload {
   uname: string;
   /** List of user roles */
   "http://schemas.microsoft.com/ws/2008/06/identity/claims/role": string[];
-
+  plan: string;
   type: deploymentType;
 }
 
