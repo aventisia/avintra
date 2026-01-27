@@ -23,6 +23,10 @@ interface UserSessionDto {
 
   /** A date when refresh token gets expires */
   rtExpiresOn: Date;
+
+  country: string;
+
+  platformVersion: string;
 }
 
 export { type UserSessionDto };
