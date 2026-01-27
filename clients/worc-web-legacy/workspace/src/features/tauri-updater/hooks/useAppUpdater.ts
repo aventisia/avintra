@@ -3,6 +3,7 @@ import { useState, useCallback } from "react";
 
 export interface UpdateMetadata {
   available: boolean;
+  downloaded: boolean;
   version: string;
   current_version: string;
   notes?: string;
@@ -31,6 +32,7 @@ export interface UpdateError {
 interface UseAppUpdaterReturn {
   // State
   checking: boolean;
+  downloading: boolean;
   installing: boolean;
   updateInfo: UpdateMetadata | null;
   progress: DownloadProgress | null;
@@ -38,16 +40,23 @@ interface UseAppUpdaterReturn {
 
   // Actions
   checkForUpdates: () => Promise<UpdateMetadata>;
+  downloadUpdate: () => Promise<void>;
   installUpdate: () => Promise<void>;
-  cancelUpdate: () => Promise<void>;
+  cancelDownload: () => Promise<void>;
   getAppVersion: () => Promise<string | null>;
-  hasPendingUpdate: () => Promise<boolean>;
   clearError: () => void;
 }
 
+/**
+ * Custom hook to manage the full lifecycle of the app updater.
+ * * Bridges the React UI with the Rust backend commands.
+ * Handles: Checking -> Downloading (with progress) -> Installing.
+ */
 export function useAppUpdater(domain: string): UseAppUpdaterReturn {
   const [checking, setChecking] = useState(false);
+  const [downloading, setDownloading] = useState(false);
   const [installing, setInstalling] = useState(false);
+
   const [updateInfo, setUpdateInfo] = useState<UpdateMetadata | null>(null);
   const [progress, setProgress] = useState<DownloadProgress | null>(null);
   const [error, setError] = useState<UpdateError | null>(null);
@@ -56,22 +65,34 @@ export function useAppUpdater(domain: string): UseAppUpdaterReturn {
     setError(null);
   }, []);
 
+  /**
+   * Checks for updates.
+   * If the server reports the update is already downloaded (persisted in Rust memory),
+   * we update the progress state to "DOWNLOADED" immediately.
+   */
   const checkForUpdates = useCallback(async (): Promise<UpdateMetadata> => {
     setChecking(true);
     setError(null);
-
     try {
       const result = await invoke<UpdateMetadata>("check_update_for_domain", {
         domain,
       });
-
       setUpdateInfo(result);
+
+      if (result.downloaded) {
+        setProgress({
+          downloaded: 0,
+          total: 0,
+          percentage: 100,
+          status: "DOWNLOADED",
+        });
+      }
       return result;
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
     } catch (err: any) {
-      const updateError: UpdateError = {
-        code: err.code || "UNKNOWN_ERROR",
-        message: err.message || "Failed to check for updates",
+      const updateError = {
+        code: err.code || "UNKNOWN",
+        message: err.message || "Failed check",
       };
       setError(updateError);
       throw updateError;
@@ -80,86 +101,99 @@ export function useAppUpdater(domain: string): UseAppUpdaterReturn {
     }
   }, [domain]);
 
-  const installUpdate = useCallback(async (): Promise<void> => {
-    setInstalling(true);
+  /**
+   * Starts the download process.
+   * Listens to the 'onProgress' channel for real-time updates.
+   * * Transition: PENDING -> DOWNLOADING -> DOWNLOADED
+   */
+  const downloadUpdate = useCallback(async (): Promise<void> => {
+    if (downloading) return;
+    setDownloading(true);
     setError(null);
-    setProgress({
-      downloaded: 0,
-      total: undefined,
-      percentage: 0,
-      status: "PENDING",
-    });
+    setProgress({ downloaded: 0, percentage: 0, status: "PENDING" });
 
     try {
       const onProgress = new Channel<DownloadProgress>();
+      onProgress.onmessage = (data) => {
+        setProgress(data);
 
-      onProgress.onmessage = (progressData) => {
-        setProgress(progressData);
+        // Critical: When download finishes, we unset 'downloading' state
+        // This allows the UI to switch from "Progress Bar" to "Install Button"
+        if (data.status === "DOWNLOADED") {
+          setDownloading(false);
+          setUpdateInfo((prev) =>
+            prev ? { ...prev, downloaded: true } : null,
+          );
+        } else if (data.status === "ERROR") {
+          setDownloading(false);
+          setError({ code: "DL_ERR", message: "Download failed" });
+        }
       };
 
-      await invoke("install_pending_update", {
-        onProgress,
-      });
-
-      // App will restart after successful installation
+      await invoke("download_update", { onProgress });
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
     } catch (err: any) {
-      const updateError: UpdateError = {
-        code: err.code || "INSTALL_ERROR",
-        message: err.message || "Failed to install update",
+      setError({ code: "DL_START", message: err.message });
+      setDownloading(false);
+    }
+  }, [downloading]);
+
+  /**
+   * Installs the downloaded update.
+   * This will eventually restart the application.
+   */
+  const installUpdate = useCallback(async (): Promise<void> => {
+    setInstalling(true);
+    setError(null);
+    try {
+      const onProgress = new Channel<DownloadProgress>();
+      onProgress.onmessage = (data) => {
+        setProgress(data);
+        if (data.status === "INSTALLED" || data.status === "ERROR") {
+          setInstalling(false);
+        }
       };
-      setError(updateError);
-      setProgress((prev) => (prev ? { ...prev, status: "ERROR" } : null));
-      throw updateError;
-    } finally {
+      await invoke("install_update", { onProgress });
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    } catch (err: any) {
+      setError({ code: "INST_ERR", message: err.message });
       setInstalling(false);
     }
   }, []);
 
-  const cancelUpdate = useCallback(async (): Promise<void> => {
+  /**
+   * Cancels the active download and cleans up state.
+   */
+  const cancelDownload = useCallback(async (): Promise<void> => {
     try {
-      await invoke("cancel_pending_update");
-      setUpdateInfo(null);
+      await invoke("cancel_download");
+      setDownloading(false);
       setProgress(null);
-      setError(null);
-    } catch (err: unknown) {
-      console.error("Failed to cancel update:", err);
-      throw err;
+    } catch (err) {
+      console.error(err);
     }
   }, []);
 
-  const getAppVersion = useCallback(async (): Promise<string | null> => {
+  const getAppVersion = useCallback(async () => {
     try {
       return await invoke<string>("get_app_version");
-    } catch (err) {
-      console.error("Failed to get app version:", err);
+    } catch {
       return null;
     }
   }, []);
 
-  const hasPendingUpdate = useCallback(async (): Promise<boolean> => {
-    try {
-      return await invoke<boolean>("has_pending_update");
-    } catch (err) {
-      console.error("Failed to check pending update:", err);
-      return false;
-    }
-  }, []);
-
   return {
-    // State
     checking,
+    downloading,
     installing,
     updateInfo,
     progress,
     error,
-
-    // Actions
     checkForUpdates,
+    downloadUpdate,
     installUpdate,
-    cancelUpdate,
+    cancelDownload,
     getAppVersion,
-    hasPendingUpdate,
     clearError,
   };
 }

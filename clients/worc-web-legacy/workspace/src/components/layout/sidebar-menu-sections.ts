@@ -1,3 +1,4 @@
+import { deploymentType } from "@/react-toolkit/types/user-session-types";
 import {
   BanknotesIcon,
   ChartPieIcon,
@@ -24,12 +25,11 @@ import {
 import { AiOutlineThunderbolt } from "react-icons/ai";
 
 // import { IS_TAURI } from "@/constants/constants";
+import { IS_TAURI } from "@/constants/constants";
 import {
-  deploymentType,
   SidebarMenuItemExtended,
   SidebarMenuSectionExtended,
 } from "@/react-toolkit/types/sidebar-menu-types";
-import { IS_TAURI } from "@/constants/constants";
 
 const sidebarMenuSections: SidebarMenuSectionExtended[] = [
   {
