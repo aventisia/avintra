@@ -13,6 +13,10 @@ export interface QueuesTableDto {
   name: string;
 
   /**
+   * Gets or sets the name of the queue.
+   */
+  type?: string;
+  /**
    * Gets or sets the description for the queue.
    */
   description: string;
