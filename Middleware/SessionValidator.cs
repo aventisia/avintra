@@ -10,7 +10,7 @@ public class SessionValidator
     }
 
     // Middleware that validates the user's session for authenticated users.
-    public async Task Invoke(HttpContext context, ISessionValidationService sessionService, TenantResolverConfig tenantResolverConfig)
+    public async Task Invoke(HttpContext context, ISessionValidationService sessionService, AppDefaultConfig appDefaultConfig)
     {
         // Try to retrieve the session ID from the user's claims (looking for the "sid" claim)
         var sid = context.User.FindFirst("sid")?.Value;
@@ -20,8 +20,8 @@ public class SessionValidator
 
         // Determine if the current endpoint is tenantless (does not require a tenant/session check)
         // Tenantless endpoints are defined in the configuration and can include wildcards (*)
-        bool isTenantless = tenantResolverConfig.TenantlessEndpoints != null &&
-                            tenantResolverConfig.TenantlessEndpoints.Any(pattern =>
+        bool isTenantless = appDefaultConfig.TenantlessEndpoints != null &&
+                            appDefaultConfig.TenantlessEndpoints.Any(pattern =>
                             {
                                 // Convert wildcard pattern to a regex pattern for matching
                                 var regexPattern = "^" + Regex.Escape(pattern).Replace("\\*", ".*") + "$";

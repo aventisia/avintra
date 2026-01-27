@@ -6,11 +6,6 @@ namespace AspNetToolkit.DTOs;
 public class InstanceRequestDto
 {
     /// <summary>
-    /// Gets or sets the type of the on-prem instance (e.g., Prod, Test).
-    /// </summary>
-    public required string InstanceType { get; set; }
-
-    /// <summary>
     /// Gets or sets the platform version of the instance (e.g., "2.4.1").
     /// </summary>
     public required string PlatformVersion { get; set; }

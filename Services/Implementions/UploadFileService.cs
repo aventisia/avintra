@@ -3,7 +3,7 @@ namespace AspNetToolkit.Services;
 public class UploadFileService : IUploadFileService
 {
     private readonly ILogger<UploadFileService> _logger;
-    private readonly FileUploadConfig _fileUploadConfig;
+    private readonly AppDefaultConfig _appDefaultConfig;
     private readonly IHttpClientFactory _httpClientFactory;
     private readonly IAzureBlobStorageService _azureBlobStorageService;
     private readonly Guid _userId;
@@ -12,14 +12,14 @@ public class UploadFileService : IUploadFileService
 
     public UploadFileService(
         ILogger<UploadFileService> logger,
-        FileUploadConfig fileUploadConfig,
+        AppDefaultConfig appDefaultConfig,
         IHttpClientFactory httpClientFactory,
         IAzureBlobStorageService azureBlobStorageService,
         IHttpContextAccessor httpContextAccessor,
         ICurrentTenantService currentTenantService)
     {
         _logger = logger;
-        _fileUploadConfig = fileUploadConfig;
+        _appDefaultConfig = appDefaultConfig;
         _httpClientFactory = httpClientFactory;
         _azureBlobStorageService = azureBlobStorageService;
 
@@ -32,7 +32,7 @@ public class UploadFileService : IUploadFileService
 
     public async Task<ServiceResponse<IEnumerable<FileUploadResponseDto>>> UploadFilesTemporaryAsync(List<IFormFile> files)
     {
-        return await CoreUploadFilesAsync(files, _fileUploadConfig.TempUploadDirectory);
+        return await CoreUploadFilesAsync(files, _appDefaultConfig.FileUploadConfig.TempUploadDirectory);
     }
 
     // Uploads a single file and returns the result in a service response.
@@ -67,7 +67,7 @@ public class UploadFileService : IUploadFileService
     // Uploads multiple files for a given step and returns the saved file URLs.
     public async Task<ServiceResponse<IEnumerable<FileUploadResponseDto>>> UploadFilesAsync(List<IFormFile> files)
     {
-        return await CoreUploadFilesAsync(files, _fileUploadConfig.UploadDirectory);
+        return await CoreUploadFilesAsync(files, _appDefaultConfig.FileUploadConfig.UploadDirectory);
     }
 
     private async Task<ServiceResponse<IEnumerable<FileUploadResponseDto>>> CoreUploadFilesAsync(List<IFormFile> files, string fileUploadDirectory)
@@ -224,21 +224,21 @@ public class UploadFileService : IUploadFileService
         _logger.LogInformation("Determining file category for extension: {Extension}.", extension);
 
         // Check Pictures category
-        if (_fileUploadConfig.AllowedFileTypes.Pictures.AllowedFileExtensions.Contains(extension))
+        if (_appDefaultConfig.FileUploadConfig.AllowedFileTypes.Pictures.AllowedFileExtensions.Contains(extension))
         {
             _logger.LogInformation("File extension '{Extension}' matches category: Pictures.", extension);
             return "Pictures";
         }
 
         // Check Documents category
-        if (_fileUploadConfig.AllowedFileTypes.Documents.AllowedFileExtensions.Contains(extension))
+        if (_appDefaultConfig.FileUploadConfig.AllowedFileTypes.Documents.AllowedFileExtensions.Contains(extension))
         {
             _logger.LogInformation("File extension '{Extension}' matches category: Documents.", extension);
             return "Documents";
         }
 
         // Check Videos category
-        if (_fileUploadConfig.AllowedFileTypes.Videos.AllowedFileExtensions.Contains(extension))
+        if (_appDefaultConfig.FileUploadConfig.AllowedFileTypes.Videos.AllowedFileExtensions.Contains(extension))
         {
             _logger.LogInformation("File extension '{Extension}' matches category: Videos.", extension);
             return "Videos";
@@ -257,9 +257,9 @@ public class UploadFileService : IUploadFileService
         // Retrieve the allowed extensions for the given file category
         List<string> allowedExtensions = fileCategory.ToLower() switch
         {
-            "pictures" => _fileUploadConfig.AllowedFileTypes.Pictures.AllowedFileExtensions,
-            "documents" => _fileUploadConfig.AllowedFileTypes.Documents.AllowedFileExtensions,
-            "videos" => _fileUploadConfig.AllowedFileTypes.Videos.AllowedFileExtensions,
+            "pictures" => _appDefaultConfig.FileUploadConfig.AllowedFileTypes.Pictures.AllowedFileExtensions,
+            "documents" => _appDefaultConfig.FileUploadConfig.AllowedFileTypes.Documents.AllowedFileExtensions,
+            "videos" => _appDefaultConfig.FileUploadConfig.AllowedFileTypes.Videos.AllowedFileExtensions,
             _ => new List<string>()
         };
 
@@ -291,9 +291,9 @@ public class UploadFileService : IUploadFileService
         // Retrieve the maximum allowed size (in MB) for the given file category
         int maxSizeMB = fileCategory switch
         {
-            "Pictures" => _fileUploadConfig.AllowedFileTypes.Pictures.MaxSizeMB,
-            "Documents" => _fileUploadConfig.AllowedFileTypes.Documents.MaxSizeMB,
-            "Videos" => _fileUploadConfig.AllowedFileTypes.Videos.MaxSizeMB,
+            "Pictures" => _appDefaultConfig.FileUploadConfig.AllowedFileTypes.Pictures.MaxSizeMB,
+            "Documents" => _appDefaultConfig.FileUploadConfig.AllowedFileTypes.Documents.MaxSizeMB,
+            "Videos" => _appDefaultConfig.FileUploadConfig.AllowedFileTypes.Videos.MaxSizeMB,
             _ => throw new InvalidOperationException($"Unsupported file category: {fileCategory}")
         };
 
@@ -388,7 +388,7 @@ public class UploadFileService : IUploadFileService
                 return serviceResponse;
             }
 
-            var fileUploadDirectory = isTemp ? _fileUploadConfig.TempUploadDirectory : _fileUploadConfig.UploadDirectory;
+            var fileUploadDirectory = isTemp ? _appDefaultConfig.FileUploadConfig.TempUploadDirectory : _appDefaultConfig.FileUploadConfig.UploadDirectory;
 
             // Construct the full directory path for the file upload
             var fullDirectoryPath = Path.Combine(fileUploadDirectory);

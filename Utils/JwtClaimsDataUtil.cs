@@ -6,9 +6,15 @@ public static class JwtClaimsDataUtil
     /// Extracts Jwt claims data from Jwt after validating it
     /// </summary>
     /// <param name="jwt"></param>
-    /// <param name="jwtConfig"></param>
+    /// <param name="jwtIssuer"></param>
+    /// <param name="jwtAudience"></param>
+    /// <param name="jwtSecretKey"></param>
     /// <returns>JwtClaimsData object containing all extracted claims of jwt</returns>
-    public static JwtClaimsData? GetJwtClaimsData(string jwt, JwtConfig jwtConfig)
+    public static JwtClaimsData? GetJwtClaimsData(
+        string jwt, 
+        string jwtIssuer, 
+        string jwtAudience,
+        string jwtSecretKey)
     {
         SecurityToken validatedToken;
 
@@ -19,9 +25,9 @@ public static class JwtClaimsDataUtil
             ValidateAudience = true,
             ValidateLifetime = false,
             ValidateIssuerSigningKey = true,
-            IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(jwtConfig.SecretKey)),
-            ValidIssuer = jwtConfig.Issuer,
-            ValidAudience = jwtConfig.Audience,
+            IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(jwtSecretKey)),
+            ValidIssuer = jwtIssuer,
+            ValidAudience = jwtAudience,
             ClockSkew = TimeSpan.Zero
         };
 

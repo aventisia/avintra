@@ -22,6 +22,7 @@ global using System.Text.RegularExpressions;
 global using System.Globalization;
 global using System.Reflection;
 global using System.Net.Http.Headers;
+global using System.Net.Http.Json;
 global using System.Threading.RateLimiting;
 global using System.Text.Json.Serialization;
 global using System.Security.Cryptography;
