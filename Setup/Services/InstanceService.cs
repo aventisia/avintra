@@ -8,9 +8,9 @@ public class InstanceService : IInstanceService
     private readonly EnvironmentConfig _environmentConfig;
 
     public InstanceService(
-        IUnitOfWork unitOfWork, 
-        ILogger<InstanceService> logger, 
-        AppDefaultConfig appDefaultConfig, 
+        IUnitOfWork unitOfWork,
+        ILogger<InstanceService> logger,
+        AppDefaultConfig appDefaultConfig,
         EnvironmentConfig environmentConfig)
     {
         _unitOfWork = unitOfWork;
