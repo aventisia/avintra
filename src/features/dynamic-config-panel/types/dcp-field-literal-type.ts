@@ -49,4 +49,5 @@ export type DCPControlType =
   | "model-config-select"
   | "prompt-input"
   | "knowledge-base-config"
-  | "memory-config";
+  | "memory-config"
+  | "json-editor";

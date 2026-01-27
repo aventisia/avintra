@@ -17,6 +17,7 @@ import { SliderField } from "@/components/Slider/SliderField";
 import { PromptConfigField } from "./fields-for-form/prompt-field/PromptField";
 import { KnowledgeBaseConfigField } from "./fields-for-form/KnowledgeBaseConfigField";
 import { MemoryConfigField } from "./fields-for-form/MemoryConfigField";
+import { JsonEditorField } from "@/components/json-editor/JsonEditorField";
 
 // Helper to render the correct field type
 export const RenderField = (field: DCPFieldSchemaType) => {
@@ -92,6 +93,8 @@ export const RenderField = (field: DCPFieldSchemaType) => {
 
     case "memory-config":
       return <MemoryConfigField name={field.name} />;
+    case "json-editor":
+      return <JsonEditorField {...baseProps} className={field.className} />;
     default:
       return null;
   }

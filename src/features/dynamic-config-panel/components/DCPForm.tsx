@@ -108,7 +108,7 @@ export const DCPForm = () => {
                 ?.filter(
                   (key) =>
                     import.meta.env.MODE !== "production" ||
-                    (key !== "Memory" && key !== "Tools"),
+                    (key !== "Memory" && key !== "Tools" && key!=="StructuredOutput"),
                 )
                 ?.map((key) => (
                   <DCPTabsTrigger
