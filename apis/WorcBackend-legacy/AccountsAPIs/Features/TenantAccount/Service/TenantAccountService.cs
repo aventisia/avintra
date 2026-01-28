@@ -4,13 +4,15 @@ public class TenantAccountService : ITenantAccountService
 {
     private readonly ILogger<TenantAccountService> _logger;
     private readonly IUnitOfWork _unitOfWork;
+    private readonly EnvironmentConfig _environmentConfig;
     private readonly Guid _userId;
     private readonly Guid _tenantId;
 
     public TenantAccountService(
         ILogger<TenantAccountService> logger,
         IUnitOfWork unitOfWork,
-        IHttpContextAccessor httpContextAccessor)
+        IHttpContextAccessor httpContextAccessor,
+        EnvironmentConfig environmentConfig)
     {
         _logger = logger;
         _unitOfWork = unitOfWork;
@@ -20,7 +22,7 @@ public class TenantAccountService : ITenantAccountService
 
         // Extract tenant ID from JWT token claims
         _tenantId = Guid.Parse(httpContextAccessor.HttpContext?.User?.FindFirstValue("tntid") ?? Guid.Empty.ToString());
-
+        _environmentConfig = environmentConfig;
     }
 
     // acccounts-api/tenant/user/
@@ -162,7 +164,7 @@ public class TenantAccountService : ITenantAccountService
                                         w.PaymentStatus == PaymentStatusTypesEnum.Refunded ||
                                         w.PaymentStatus == PaymentStatusTypesEnum.Failed).Count();
 
-            
+
 
             // Check if billing history exists or not and decide to update or create new billing detail
             var billingDetailObjForResponse = existingBillingDetail;
@@ -319,6 +321,34 @@ public class TenantAccountService : ITenantAccountService
             preferencesDto.Adapt(tenant);
             tenant.LastModifiedByUserId = _userId;
 
+            if (tenant.IsSSOEnabled)
+            {
+                // Validate that Azure Entra (Azure AD) SSO is enabled and fully configured at the environment level
+                bool isAzureSsoConfigured =
+                    _environmentConfig.AzureEntraIdEnabled &&
+                    !string.IsNullOrWhiteSpace(_environmentConfig.AzureEntraIdClientId) &&
+                    !string.IsNullOrWhiteSpace(_environmentConfig.AzureTenantId) &&
+                    !string.IsNullOrWhiteSpace(_environmentConfig.AzureEntraIdClientSecret);
+
+                // Block enabling SSO if required Azure Entra configuration is missing
+                if (!isAzureSsoConfigured)
+                {
+                    serviceResponse.Message = "Azure SSO configuration is incomplete. Check Client ID, Tenant ID, Secret.";
+                    _logger.LogWarning("SSO enablement blocked for TenantId {TenantId} due to incomplete Azure Entra configuration.", _tenantId);
+                    return serviceResponse;
+                }
+
+                // Validate Azure Entra credentials by attempting token acquisition
+                bool areAzureCredentialsValid = await ValidateAzureEntraCredentialsAsync();
+
+                if (!areAzureCredentialsValid)
+                {
+                    serviceResponse.Message = "Azure SSO credentials are invalid or expired. Verify the secret and IDs.";
+                    _logger.LogWarning("SSO enablement blocked for TenantId {TenantId} due to invalid Azure Entra credentials.", _tenantId);
+                    return serviceResponse;
+                }
+            }
+
             // Mark entity as updated
             _unitOfWork.TenantRepo.Update(tenant);
 
@@ -346,5 +376,57 @@ public class TenantAccountService : ITenantAccountService
         }
 
         return serviceResponse;
+    }
+    /// <summary>
+    /// Validates Azure Entra (Azure AD) credentials by attempting to acquire an access token.
+    /// </summary>
+    /// <returns>True if credentials are valid; false otherwise.</returns>
+    public async Task<bool> ValidateAzureEntraCredentialsAsync()
+    {
+        try
+        {
+            // Extract Azure Entra configuration from environment
+            var tenantId = _environmentConfig.AzureTenantId;
+            var clientId = _environmentConfig.AzureEntraIdClientId;
+            var clientSecret = _environmentConfig.AzureEntraIdClientSecret;
+
+            _logger.LogInformation("Validating Azure Entra credentials for TenantId: {TenantId}", tenantId);
+
+            // Prepare the token endpoint for the tenant
+            var tokenEndpoint = $"https://login.microsoftonline.com/{tenantId}/oauth2/v2.0/token";
+
+            using var httpClient = new HttpClient();
+
+            // Prepare request content for client credentials flow
+            var content = new FormUrlEncodedContent(new Dictionary<string, string>
+            {
+                ["client_id"] = clientId,
+                ["client_secret"] = clientSecret,
+                ["scope"] = "https://graph.microsoft.com/.default",
+                ["grant_type"] = "client_credentials"
+            });
+
+            // Send POST request to Azure AD token endpoint
+            var response = await httpClient.PostAsync(tokenEndpoint, content);
+
+            if (response.IsSuccessStatusCode)
+            {
+                _logger.LogInformation("Azure Entra credentials validated successfully for TenantId: {TenantId}", tenantId);
+                return true;
+            }
+            else
+            {
+                // Log detailed failure for easier troubleshooting
+                var responseBody = await response.Content.ReadAsStringAsync();
+                _logger.LogWarning("Azure Entra credential validation failed for TenantId: {TenantId}. Status: {StatusCode}, Response: {Response}", tenantId, response.StatusCode, responseBody);
+                return false;
+            }
+        }
+        catch (Exception ex)
+        {
+            // Catch any exception and log the error
+            _logger.LogError(ex, "Exception occurred while validating Azure Entra credentials for TenantId: {TenantId}", _environmentConfig.AzureTenantId);
+            return false;
+        }
     }
 }
