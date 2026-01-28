@@ -87,4 +87,10 @@ public class VersionResourceController : BaseApiController
         return File(fileDetailsResponse.Data.Content, fileDetailsResponse.Data.ContentType, fileDetailsResponse.Data.Name);
     }
 
+    // Downloads a file by its URL.
+    [HttpGet("local-to-cloud")]
+    public async Task<ActionResult<ServiceResponse<bool>>> UplaodFileLocalToCloud()
+    {
+        return ResultHelper(await _versionResourceService.UploadFileLocalToCloudAsync());
+    }
 }
