@@ -44,6 +44,13 @@ public static class ExtractDomainFromEmailUtil
             // url is null or empty
             if (string.IsNullOrEmpty(url)) return urlDomain;
 
+            // If url doesn't start with http:// or https://, prepend http:// so Uri can parse it
+            if (!url.StartsWith("http://", StringComparison.OrdinalIgnoreCase) &&
+                !url.StartsWith("https://", StringComparison.OrdinalIgnoreCase))
+            {
+                url = "http://" + url;
+            }
+
             // parse URL
             Uri uri = new Uri(url);
 
