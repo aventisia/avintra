@@ -99,4 +99,6 @@ app.MapControllers();
 
 app.MapHub<OrchestratorHub>("/orchestrator-hub");
 
+await app.SeedInitialData();
+
 await app.RunAsync();
