@@ -1,0 +1,151 @@
+{
+  "name": "SendEmailMessage",
+  "description": "Sends an email using the mailkit.Provide valid email and app password credentials, sender and recipient details, subject, body, and optional attachments. The connector will return the response data.",
+  "version": "1.0.0",
+  "author": "@gaurav",
+  "fields": [
+    {
+      "direction": "Input",
+      "type": "credentials-select",
+      "name": "__CredentialId__GeneralCredential",
+      "label": "Email Credential",
+      "description": "The Email credential containing valid email and app password which is used to authenticate user requests.",
+      "defaultValue": ""
+    },
+    {
+      "direction": "Input",
+      "type": "text",
+      "name": "From",
+      "label": "From",
+      "description": "The sender's email address.",
+      "defaultValue": ""
+    },
+    {
+      "direction": "Input",
+      "type": "text",
+      "name": "To",
+      "label": "To",
+      "description": "The recipient's email address(es) (comma-separated).",
+      "defaultValue": ""
+    },
+    {
+      "direction": "Input",
+      "type": "text",
+      "name": "Cc",
+      "label": "CC",
+      "description": "The CC recipients' email addresses (comma-separated).",
+      "defaultValue": ""
+    },
+    {
+      "direction": "Input",
+      "type": "text",
+      "name": "Bcc",
+      "label": "BCC",
+      "description": "The BCC recipients' email addresses (comma-separated).",
+      "defaultValue": ""
+    },
+    {
+      "direction": "Input",
+      "type": "text",
+      "name": "Subject",
+      "label": "Subject",
+      "description": "The subject of the email.",
+      "defaultValue": ""
+    },
+    {
+      "direction": "Input",
+      "type": "text",
+      "name": "Body",
+      "label": "Body",
+      "description": "The body of the email.",
+      "defaultValue": ""
+    },
+    {
+      "direction": "Input",
+      "type": "select",
+      "name": "BodyFormat",
+      "label": "Body Format",
+      "description": "The format of the email body (Text or Html).",
+      "defaultValue": "Text",
+      "selectOptions": [
+        {
+          "label": "Plain",
+          "value": "Text",
+          "description": "Plain text format"
+        },
+        {
+          "label": "Html",
+          "value": "Html",
+          "description": "HTML format"
+        }
+      ]
+    },
+     {
+      "direction": "Input",
+      "type": "text",
+      "name": "Attachments",
+      "label": "Attachments",
+      "description": "Paths to files to attach to the email (comma-separated).",
+      "defaultValue": ""
+    },
+    {
+        "direction": "Input",
+        "type": "text",
+        "name": "SecurityProtocol",
+        "label": "Security Protocol",
+        "description": "is a set of rules or procedures that govern the transmission and exchange of data between two or more devices over a network.",
+        "defaultValue" : "StartSsl"
+    },
+    {
+      "direction": "Input",
+      "type": "text",
+      "name": "SmtpServer",
+      "label": "Smtp Server",
+      "description": "Smtp server is a communication protocol used for sending and receiving email messages over the Internet",
+      "defaultValue": "smtp.gmail.com"
+    },
+    {
+        "direction": "Input",
+        "type": "number",
+        "name": "ServerPort",
+        "label": "ServerPort",
+        "description": "The port number used to connect to the IMAP server. Default is 587",
+        "defaultValue": 587
+    },
+    {
+        "direction": "Input",
+        "type": "switch",
+        "name": "SmtpServerNeedsAuthentication",
+        "label": "Smtp Server Needs Authentication",
+        "description": "Smtp Server Needs Authentication to authenticate the credentials.",
+        "defaultValue": true
+    },
+    {
+        "direction":"Input",
+        "type":"switch",
+        "name": "acceptUntrustedCertificates",
+        "label": "accept Untrusted Certificates",
+        "description":"accept the Untrusted Certificates",
+        "defaultValue": true
+    },
+    {
+        "direction":"Input",
+        "type":"switch",
+        "name": "IsHtml",
+        "label": "Is Html",
+        "description": "The message is in html format.",
+        "defaultValue": false
+    },
+    {
+      "direction": "Output",
+      "type": "config-panel-output",
+      "name": "Result",
+      "label": "Result",
+      "description": "Returns the response data from mailkit after sending the email.",
+      "defaultValue": {
+        "value": "Result",
+        "enabled": true
+      }
+    }
+  ]
+}

@@ -181,6 +181,45 @@
                "img": "/assets/Twilio.svg"
             }
           ]
+      },
+      {
+        "label": "Email",
+        "description": "Work with Email services",
+        "icon": null,
+        "img": "/assets/Email.svg",
+        "listType": null,
+        "actions": 
+        [
+            {
+              "type": "cloudConnectorNode",
+              "name": "Email/SendEmailMessage",
+              "label": "Send email message",
+              "description": "Send email message using an mailkit ",
+              "docsLink": "https://docs.aventisia.com",
+              "icon": null,
+              "img": "/assets/Email.svg"
+            },
+            {
+
+              "type": "cloudConnectorNode",
+              "name": "Email/ProcessEmailMessages",
+              "label": "Process email messages",
+              "description": "Process email messages using an mailkit ",
+              "docsLink": "https://docs.aventisia.com",
+              "icon": null,
+              "img": "/assets/Email.svg"
+            },
+            {
+
+              "type": "cloudConnectorNode",
+              "name": "Email/RetrieveEmailMessages",
+              "label": "Retrieve email messages",
+              "description": "Retrieve email messages using an mailkit ",
+              "docsLink": "https://docs.aventisia.com",
+              "icon": null,
+              "img": "/assets/Email.svg"
+            }
+        ]
       }
     ]
   }

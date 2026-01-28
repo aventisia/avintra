@@ -1,0 +1,116 @@
+{
+  "name": "RetrieveEmailMessages",
+  "description": "Retrieves email messages from an IMAP server.",
+  "version": "1.0.0",
+  "author": "@gaurav",
+  "fields": [
+    {
+      "direction": "Input",
+      "type": "credentials-select",
+      "name": "__CredentialId__GeneralCredential",
+      "label": "Email Credential",
+      "description": "The Email credential containing valid email and app password which is used to authenticate user requests.",
+      "defaultValue": ""
+    },
+    {
+      "direction": "Input",
+      "type": "select",
+      "name": "RetrieveMode",
+      "label": "RetrieveMode",
+      "description": "Specifies the action to perform on the email messages.",
+      "defaultValue": "MarkAsUnread",
+      "selectOptions": [
+        {
+          "label": "AllEmails",
+          "value": "AllEmails",
+          "description": "Retrieves all email messages."
+        },
+        {
+          "label": "UnreadOnly",
+          "value": "UnreadOnly",
+          "description": "Retrieves only unread email messages."
+        },
+        {
+          "label": "ReadOnly",
+          "value": "ReadOnly",
+          "description": "Retrieves only read email messages."
+        }
+      ]
+    },
+    {
+      "direction": "Input",
+      "type": "text",
+      "name": "ImapServer",
+      "label": "Imap Server",
+      "description": "The IMAP server address (e.g., imap.gmail.com).Retrieve email messages over the Internet",
+      "defaultValue": "imap.gmail.com"
+    },
+    {
+      "direction": "Input",
+      "type": "number",
+      "name": "ImapPort",
+      "label": "Imap Port",
+      "description": "The port number used to connect to the IMAP server. Default is 993.",
+      "defaultValue": 993
+    },
+    {
+      "direction": "Input",
+      "type": "switch",
+      "name": "acceptUntrusted",
+      "label": "accept Untrusted Certificates",
+      "description": "accept the Untrusted Certificates",
+      "defaultValue": true
+    },
+    {
+      "direction": "Input",
+      "type": "text",
+      "name": "MailFolder",
+      "label": "MailFolder",
+      "description": "The destination mail folder. Required when Operation is set to Move to Mail Folder.",
+      "defaultValue": "Inbox"
+    },
+    {
+      "direction": "Input",
+      "type": "switch",
+      "name": "UseSsl",
+      "label": "Use SSL",
+      "description": "If true, uses SSL encryption for the connection.",
+      "defaultValue": false
+    },
+    {
+      "direction": "Input",
+      "type": "switch",
+      "name": "MarkAsRead",
+      "label": "Mark As Read",
+      "description": "If true, marks retrieved emails as read.",
+      "defaultValue": true
+    },
+    {
+      "direction": "Input",
+      "type": "text",
+      "name": "SecurityProtocol",
+      "label": "Security Protocol",
+      "description": "is a set of rules or procedures that govern the transmission and exchange of data between two or more devices over a network.",
+      "defaultValue": "Ssl"
+    },
+    {
+        "direction": "Input",
+        "type":"number",
+        "name": "TopN",
+        "label": "TopN",
+        "description": "Retrieve the top 10 email messages",
+        "defaultValue": 10
+    },
+    {
+      "direction": "Output",
+      "type": "config-panel-output",
+      "name": "Result",
+      "label": "Result",
+      "description": "Returns the response data from mailkit after process the email.",
+      "defaultValue": {
+        "value": "Result",
+        "enabled": true
+      }
+    }
+  ]
+}

@@ -1,0 +1,92 @@
+{
+  "name": "ProcessEmailMessages",
+  "description": "Process email messages such as Move, delete, or mark as unread emails using IMAP and MailKit",
+  "version": "1.0.0",
+  "author": "@gaurav",
+  "fields": [
+    {
+      "direction": "Input",
+      "type": "credentials-select",
+      "name": "__CredentialId__GeneralCredential",
+      "label": "Email Credential",
+      "description": "The Email credential containing valid email and app password which is used to authenticate user requests.",
+      "defaultValue": ""
+    },
+    {
+      "direction": "Input",
+      "type": "select",
+      "name": "Operation",
+      "label": "Operation",
+      "description": "Specifies the action to perform on the email messages.",
+      "defaultValue": "MarkAsUnread",
+      "selectOptions": [
+        {
+            "label": "Delete",
+            "value":"Delete",
+            "description":"Deletes email messages from the server."
+        },
+        {
+          "label": "MarkAsUnread",
+          "value": "MarkAsUnread",
+          "description": "Marks email messages as unread."
+        },
+        {
+          "label": "MoveToFolder",
+          "value": "MoveToFolder",
+          "description": "Moves email messages to a specified mail folder."
+        }   
+      ]
+    },
+     {
+      "direction": "Input",
+      "type": "number",
+      "name": "MessageUidsObj",
+      "label": "Message Uids",
+      "description": "Unique identifiers ID of the email messages from the IMAP server",
+      "defaultValue": ""
+    },
+    {
+      "direction": "Input",
+      "type": "text",
+      "name": "ImapServer",
+      "label": "Imap Server",
+      "description": "The IMAP server address (e.g., imap.gmail.com).Process email messages over the Internet",
+      "defaultValue": "imap.gmail.com"
+    },
+    {
+        "direction": "Input",
+        "type": "number",
+        "name": "ImapPort",
+        "label": "Imap Port",
+        "description": "The port number used to connect to the IMAP server. Default is 993.",
+        "defaultValue": 993
+    },
+    {
+        "direction":"Input",
+        "type":"switch",
+        "name": "acceptUntrustedCertificates",
+        "label": "accept Untrusted Certificates",
+        "description":"accept the Untrusted Certificates",
+        "defaultValue": true
+    },
+    {
+        "direction":"Input",
+        "type":"strin",
+        "name": "MailFolder",
+        "label": "MailFolder",
+        "description": "The destination mail folder. Required when Operation is set to Move to Mail Folder.",
+        "defaultValue": "Inbox"
+    },
+    {
+      "direction": "Output",
+      "type": "config-panel-output",
+      "name": "Result",
+      "label": "Result",
+      "description": "Returns the response data from mailkit after process the email.",
+      "defaultValue": {
+        "value": "Result",
+        "enabled": true
+      }
+    }
+  ]
+}
