@@ -335,26 +335,23 @@ public class AuthService : IAuthService
             };
 
             // Check if the user is associated with an organization (tenant)
-            if (user.Tenant == null || user.Tenant.Type == TenantTypesEnum.Unspecified)
+            if (user.Tenant?.Type == TenantTypesEnum.Unspecified || user.Tenant == null)
             {
                 serviceResponse.Message = "Complete organization setup to continue.";
             }
-
-            if (_environmentConfig.OnPremTenantType == OnPremTenantTypesEnum.Commercial.ToString())
+            else if (_environmentConfig.OnPremTenantType == OnPremTenantTypesEnum.Commercial.ToString())
             {
                 // Query the current tenant's subscription, including related plan and creator details
                 var subscription = await _unitOfWork.TenantSubscriptionRepo
-                    .GetByConditionAsync(w =>
-                        w.TenantId == user.TenantId && w.IsActive
-                    )
-                    .SingleOrDefaultAsync(); // @rahmat Since tenant should have only one active subscription at max so using SingleOrDefaultAsync() instead of FirstOrDefaultAsync()
+                    .GetByConditionAsync(w => w.TenantId == user.TenantId && w.IsActive)
+                    .SingleOrDefaultAsync();
 
                 // IMPORTANT NOTE: Once user has completed onboarding, then there will always be an 1 active subscription at 
                 // any point of time even that subscription's status is expired. Users will be able to login even if subscription 
                 // is expired they won't be able to access any paid features. In future, we may downgrade user's subscription to 
                 // free Starter plan automatically once subscription is expired. In that case also there will be always one active subscription.
 
-                // Check if a valid subscription was found
+                // Subscription validation logic
                 if (subscription == null || subscription.Status == SubscriptionStatusTypesEnum.Initiated)
                 {
                     _logger.LogWarning("No active subscription found for user {UserId} in tenant {TenantId}.", user.Id, user.TenantId);
