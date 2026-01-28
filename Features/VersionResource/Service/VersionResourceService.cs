@@ -11,6 +11,7 @@ public class VersionResourceService : IVersionResourceService
     private readonly Guid _userId;
     private readonly Guid _tenantId;
     private readonly string _containerName;
+    private readonly IUploadFileService _uploadFileService;
 
     #endregion
     public VersionResourceService(
@@ -20,7 +21,8 @@ public class VersionResourceService : IVersionResourceService
         IUnitOfWork unitOfWork,
         IHttpContextAccessor httpContextAccessor,
         IAzureBlobStorageService azureBlobStorageService,
-        ICurrentTenantService currentTenantService)
+        ICurrentTenantService currentTenantService,
+        IUploadFileService uploadFileService)
     {
         // Set _userId and _tenantId
         _userId = Guid.Parse(httpContextAccessor.HttpContext?.User?.FindFirstValue("uid") ?? Guid.Empty.ToString());
@@ -32,6 +34,7 @@ public class VersionResourceService : IVersionResourceService
         _unitOfWork = unitOfWork;
         _azureBlobStorageService = azureBlobStorageService;
         _containerName = currentTenantService.CurrentTenantContainerName;
+        _uploadFileService = uploadFileService;
     }
 
 
@@ -818,5 +821,68 @@ public class VersionResourceService : IVersionResourceService
             _logger.LogError("An error occurred while converting file to PDF: {error}", ex.Message);
             return null;
         }
+    }
+
+    // Upload a file from the local system to the cloud
+    public async Task<ServiceResponse<bool>> UploadFileLocalToCloudAsync()
+    {
+        var serviceResponse = new ServiceResponse<bool>()
+        {
+            Data = false,
+            Message = "Failed to upload file."
+        };
+
+        try
+        {
+            // Get the list of files with valid paths
+            var files = await _unitOfWork.VersionResourceRepo
+                .GetByConditionAsync(w => !string.IsNullOrEmpty(w.Path))
+                .AsNoTracking()
+                .ToListAsync();
+
+            var needToUpdates = new List<VersionResource>();
+
+            // Iterate through files and attempt to upload each
+            foreach (var file in files)
+            {
+                var response = await _uploadFileService.UploadFileToBlobAsync(file.Path, file.TenantId);
+
+                if (response.StatusCode == 200)
+                {
+                    file.Path = response.Data ?? string.Empty;
+                    needToUpdates.Add(file);
+                }
+                else
+                {
+                    // Handle non-200 status codes here (e.g., logging or retrying)
+                    _logger.LogWarning($"Failed to upload file: {file.Path}, Status Code: {response.StatusCode}");
+                }
+            }
+
+            // If we have files that need to be updated, persist changes
+            if (needToUpdates.Any())
+            {
+                _unitOfWork.VersionResourceRepo.Update(needToUpdates);
+
+                // Attempt to save changes to the database
+                if (!await _unitOfWork.SaveAsync())
+                {
+                    _logger.LogWarning("Failed to save changes to the database after upload.");
+                    return serviceResponse;
+                }
+            }
+
+            serviceResponse.Data = true;
+            serviceResponse.Message = "Files uploaded successfully.";
+            serviceResponse.StatusCode = 200;
+        }
+        catch (Exception ex)
+        {
+            // Log exception details for debugging
+            _logger.LogError($"An error occurred during the upload process: {ex.Message}", ex);
+            serviceResponse.Message = $"An error occurred: {ex.Message}";
+        }
+
+        return serviceResponse;
     }
 }

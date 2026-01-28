@@ -65,4 +65,10 @@ public interface IVersionResourceService
     /// <param name="fileUrl">The URL of the file to be downloaded.</param>
     /// <returns>A response containing the file details.</returns>
     Task<ServiceResponse<FileStreamContentResponseDto>> DownloadFileAsync(string fileUrl);
+
+    /// <summary>
+    /// Upload a file from the local system to the cloud.
+    /// </summary>
+    /// <returns>A response indicating whether the upload was successful or not.</returns>
+    Task<ServiceResponse<bool>> UploadFileLocalToCloudAsync();
 }
