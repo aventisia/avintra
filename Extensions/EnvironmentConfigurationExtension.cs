@@ -232,7 +232,7 @@ public static class EnvironmentConfigurationExtension
 
             // Deserialize and return the tenant validation DTO
             return Guard.Against.Null(
-                await response.Content.ReadFromJsonAsync<OnPremDeploymentMetaDataDto>(),
+                (await response.Content.ReadFromJsonAsync<ServiceResponse<OnPremDeploymentMetaDataDto>>())?.Data,
                 message: "Tenant validation response from GlobalAdmin API cannot be null"
             );
         }
