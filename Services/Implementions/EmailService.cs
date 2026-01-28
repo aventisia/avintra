@@ -9,16 +9,18 @@ namespace AspNetToolkit.Services;
 /// </summary>
 public class EmailService : IEmailService
 {
-    private readonly SmtpConfig _smtpConfig;
     private readonly ILogger<EmailService> _logger;
-    private readonly GeneralConfig _generalConfig;
+    private readonly EnvironmentConfig _environmentConfig;
     private readonly IWebHostEnvironment _webHostEnvironment;
 
-    public EmailService(SmtpConfig smtpConfig, ILogger<EmailService> logger, GeneralConfig generalConfig, IWebHostEnvironment webHostEnvironment)
+    public EmailService(
+        ILogger<EmailService> logger, 
+        EnvironmentConfig environmentConfig, 
+        IWebHostEnvironment webHostEnvironment)
     {
-        _smtpConfig = smtpConfig;
+        _environmentConfig = environmentConfig;
         _logger = logger;
-        _generalConfig = generalConfig;
+        _environmentConfig = environmentConfig;
         _webHostEnvironment = webHostEnvironment;
     }
 
@@ -28,9 +30,6 @@ public class EmailService : IEmailService
     {
         try
         {
-            // Validates the smtp server configuration.
-            Guard.Against.Null(_smtpConfig, "Smtp Server config cannot be null");
-
             // Validates inputs.
             if (string.IsNullOrWhiteSpace(toEmailAddresses))
             {
@@ -53,7 +52,7 @@ public class EmailService : IEmailService
             var message = new MimeMessage();
 
             // Sets the the sender's name and address.
-            message.From.Add(new MailboxAddress(_smtpConfig.MailFromName, _smtpConfig.MailFromAddress));
+            message.From.Add(new MailboxAddress(_environmentConfig.SmtpMailFromName, _environmentConfig.SmtpMailFromAddress));
 
             // Splits the recipient email addresses and adds them to the message.
             var toEmailAddressList = toEmailAddresses.Split(new[] { ',' }, StringSplitOptions.RemoveEmptyEntries);
@@ -111,12 +110,12 @@ public class EmailService : IEmailService
                 var socketOptions = _webHostEnvironment.IsEnvironment("Localhost") ? SecureSocketOptions.None : SecureSocketOptions.SslOnConnect;
 
                 // Connects to the SMTP server using the specified host, port, and security options.
-                await client.ConnectAsync(_smtpConfig.Host, _smtpConfig.Port, socketOptions);
+                await client.ConnectAsync(_environmentConfig.SmtpHost, _environmentConfig.SmtpPort, socketOptions);
 
                 // If not in "Localhost" environment, authenticate with the SMTP server using the provided credentials.
                 if (!_webHostEnvironment.IsEnvironment("Localhost"))
                 {
-                    await client.AuthenticateAsync(_smtpConfig.Username, _smtpConfig.ApiKey);
+                    await client.AuthenticateAsync(_environmentConfig.SmtpUser, _environmentConfig.SmtpPassword);
                 }
                 // Sends the email.
                 await client.SendAsync(message);

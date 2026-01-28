@@ -7,7 +7,16 @@ public static class SecurityServicesExtension
 {
     public static void CorsPolicyConfig(this IServiceCollection services, IConfiguration config)
     {
-        var corsOrigins = Guard.Against.Null(config.GetSection("CorsOrigins").Get<List<string>>(), message: "CorsOrigins cannot be null");
+        var environmentConfig = Guard.Against.Null(config.GetSection("EnvironmentConfig").Get<EnvironmentConfig>(), message: "EnvironmentConfig cannot be null");
+        var corsOrigins = config.GetSection("CorsOrigins").Get<List<string>>();
+
+        if (corsOrigins == null || !corsOrigins.Any())
+        {
+            corsOrigins = new List<string>
+            {
+                $"https://{environmentConfig.AppBaseUrl}"
+            };
+        }   
 
         services.AddCors(options =>
         {
@@ -21,22 +30,12 @@ public static class SecurityServicesExtension
 
     public static void CookiePolicyConfig(this IServiceCollection services, IConfiguration config)
     {
-        var cookiePolicyConfig = Guard.Against.Null(config.GetSection("CookiePolicyConfig").Get<CookiePolicyConfig>(), "CookiePolicyConfig cannot be null");
-
-        var minimumSameSitePolicy = Microsoft.AspNetCore.Http.SameSiteMode.Strict;
-        switch (cookiePolicyConfig.SameSiteMode)
-        {
-            case "None":
-                minimumSameSitePolicy = Microsoft.AspNetCore.Http.SameSiteMode.None;
-                break;
-            case "Lax":
-                minimumSameSitePolicy = Microsoft.AspNetCore.Http.SameSiteMode.Lax;
-                break;
-        }
-
+        // Microsoft.AspNetCore.Http.SameSiteMode.Strict
+        // Microsoft.AspNetCore.Http.SameSiteMode.None
+        // Microsoft.AspNetCore.Http.SameSiteMode.Lax
         services.Configure<CookiePolicyOptions>(options =>
         {
-            options.MinimumSameSitePolicy = minimumSameSitePolicy;
+            options.MinimumSameSitePolicy = Microsoft.AspNetCore.Http.SameSiteMode.None;
             options.HttpOnly = HttpOnlyPolicy.Always;
             options.Secure = CookieSecurePolicy.Always;
         });
@@ -62,7 +61,7 @@ public static class SecurityServicesExtension
 
     public static void AddAuthenticationConfig(this IServiceCollection services, IConfiguration config)
     {
-        var jwtConfig = Guard.Against.Null(config.GetSection("JwtConfig").Get<JwtConfig>(), "JwtConfig cannot be null");
+        var environmentConfig = Guard.Against.Null(config.GetSection("EnvironmentConfig").Get<EnvironmentConfig>(), message: "EnvironmentConfig cannot be null");
 
         services.AddAuthentication(options =>
         {
@@ -81,9 +80,9 @@ public static class SecurityServicesExtension
                 ValidateAudience = true,
                 ValidateLifetime = true,
                 ValidateIssuerSigningKey = true,
-                ValidIssuer = jwtConfig.Issuer,
-                ValidAudience = jwtConfig.Audience,
-                IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(jwtConfig.SecretKey))
+                ValidIssuer = $"https://{environmentConfig.AppBaseUrl}",
+                ValidAudience = $"https://{environmentConfig.AppBaseUrl}",
+                IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(environmentConfig.JwtSecretKey))
             };
             options.SaveToken = false;
             options.RequireHttpsMetadata = true;

@@ -17,14 +17,14 @@ public class TenantResolver
     public async Task InvokeAsync(
         HttpContext context,
         ICurrentTenantService currentTenantService,
-        TenantResolverConfig tenantResolverConfig,
-        JwtConfig jwtConfig)
+        AppDefaultConfig appDefaultConfig,
+        EnvironmentConfig environmentConfig)
     {
         // Get tenantId from jwt or request header
         GetTenantIdFromJwtOrRequestHeader(
             context,
-            jwtConfig,
-            tenantResolverConfig,
+            environmentConfig,
+            appDefaultConfig,
             out string tenantId,
             out string userId);
 
@@ -44,8 +44,8 @@ public class TenantResolver
 
     private void GetTenantIdFromJwtOrRequestHeader(
         HttpContext context,
-        JwtConfig jwtConfig,
-        TenantResolverConfig tenantResolverConfig,
+        EnvironmentConfig environmentConfig,
+        AppDefaultConfig appDefaultConfig,
         out string tenantId,
         out string userId)
     {
@@ -57,9 +57,9 @@ public class TenantResolver
         {
             // get current endpoint
             var currentEndpoint = (context.Request.Method + ":" + context.Request.Path).ToLower();
-            
+
             // Check for tenantless endpoint
-            if (tenantResolverConfig.TenantlessEndpoints != null && tenantResolverConfig.TenantlessEndpoints.Any(pattern =>
+            if (appDefaultConfig.TenantlessEndpoints != null && appDefaultConfig.TenantlessEndpoints.Any(pattern =>
                 {
                     var regexPattern = "^" + System.Text.RegularExpressions.Regex.Escape(pattern).Replace("\\*", ".*") + "$";
                     return System.Text.RegularExpressions.Regex.IsMatch(currentEndpoint, regexPattern);
@@ -76,7 +76,11 @@ public class TenantResolver
             if (!string.IsNullOrEmpty(jwt))
             {
                 // Extract info from JWT
-                var jwtInfo = JwtClaimsDataUtil.GetJwtClaimsData(jwt, jwtConfig);
+                var jwtInfo = JwtClaimsDataUtil.GetJwtClaimsData(
+                    jwt,
+                    $"https://{environmentConfig.AppBaseUrl}",
+                    $"https://{environmentConfig.AppBaseUrl}",
+                    $"{environmentConfig.JwtSecretKey}");
 
                 // JWTInfo found
                 if (jwtInfo != null)
@@ -88,7 +92,7 @@ public class TenantResolver
             }
 
             // Check if endpoint is accepted where tenantId can be in Request Header
-            if (tenantResolverConfig.TenantIdInHeaderEndpoints != null && !tenantResolverConfig.TenantIdInHeaderEndpoints.Contains(currentEndpoint))
+            if (appDefaultConfig.TenantIdInHeaderEndpoints != null && !appDefaultConfig.TenantIdInHeaderEndpoints.Contains(currentEndpoint))
                 return;
 
             // Get tenantId from custom request header

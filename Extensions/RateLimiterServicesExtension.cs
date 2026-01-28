@@ -4,8 +4,8 @@ public static class RateLimiterServicesExtension
 {
     public static void SharedRateLimiter(this IServiceCollection services, IConfiguration config)
     {
-        // Load rate limiter configuration from appsettings.json
-        var rateLimiterConfig = config.GetSection("RateLimiterConfig").Get<RateLimiterConfig>() ?? new RateLimiterConfig();
+        // Load rate limiter configuration from appsettings.json (supports both root and AppDefaultConfig nesting)
+        var rateLimiterConfig = config.GetSection("AppDefaultConfig:RateLimiterConfig").Get<RateLimiterConfig>() ?? new RateLimiterConfig();
 
         // Register the global rate limiter
         services.AddRateLimiter(options =>

@@ -10,13 +10,26 @@ public class SessionValidator
     }
 
     // Middleware that validates the user's session for authenticated users.
-    public async Task Invoke(HttpContext context, ISessionValidationService sessionService)
+    public async Task Invoke(HttpContext context, ISessionValidationService sessionService, AppDefaultConfig appDefaultConfig)
     {
         // Try to retrieve the session ID from the user's claims (looking for the "sid" claim)
         var sid = context.User.FindFirst("sid")?.Value;
 
-        // Check if the user is authenticated
-        if (context.User.Identity?.IsAuthenticated == true && !string.IsNullOrEmpty(sid))
+        // Construct a string representing the current endpoint in the format "method:path", e.g., "get:/api/users"
+        var currentEndpoint = (context.Request.Method + ":" + context.Request.Path).ToLower();
+
+        // Determine if the current endpoint is tenantless (does not require a tenant/session check)
+        // Tenantless endpoints are defined in the configuration and can include wildcards (*)
+        bool isTenantless = appDefaultConfig.TenantlessEndpoints != null &&
+                            appDefaultConfig.TenantlessEndpoints.Any(pattern =>
+                            {
+                                // Convert wildcard pattern to a regex pattern for matching
+                                var regexPattern = "^" + Regex.Escape(pattern).Replace("\\*", ".*") + "$";
+                                return Regex.IsMatch(currentEndpoint, regexPattern);
+                            });
+
+        // If the endpoint is not tenantless AND the user is authenticated AND a session ID exists then we need to validate the session
+        if (!isTenantless && context.User.Identity?.IsAuthenticated == true && !string.IsNullOrEmpty(sid))
         {
             // Parse the sid
             Guid.TryParse(sid, out var sessionId);

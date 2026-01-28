@@ -3,21 +3,18 @@ namespace AspNetToolkit.Services;
 public class LLMDataExtractionService : ILLMDataExtractionService
 {
     private readonly ILogger<LLMDataExtractionService> _logger;
-    private readonly ExtractViaLLMConfig _extractViaLLMConfig;
-    private readonly HttpClientUrlConfig _httpClientUrlConfig;
+    private readonly EnvironmentConfig _environmentConfig;
     private readonly string _jwt;
 
     public LLMDataExtractionService(
         ILogger<LLMDataExtractionService> logger,
-        ExtractViaLLMConfig extractViaLLMConfig,
         IHttpContextAccessor httpContextAccessor,
-        HttpClientUrlConfig httpClientUrlConfig)
+        EnvironmentConfig environmentConfig)
     {
         _jwt = httpContextAccessor.HttpContext?.Request.Cookies["AccessToken"] ?? httpContextAccessor.HttpContext?.Request.Headers["Authorization"].ToString().Replace("Bearer ", "") ?? "";
 
         _logger = logger;
-        _extractViaLLMConfig = extractViaLLMConfig;
-        _httpClientUrlConfig = httpClientUrlConfig;
+        _environmentConfig = environmentConfig;
     }
 
     // To check if credits are available to continue.
@@ -34,7 +31,7 @@ public class LLMDataExtractionService : ILLMDataExtractionService
         try
         {
             // Create credits usage in AccountsDb database
-            var response = await RequestExternalAPIUtil.RequestExternalAPI(CrudTypesEnum.Read, $"{_httpClientUrlConfig.AccountsApisBaseUrl}/credit-usage/available-credits", _jwt);
+            var response = await RequestExternalAPIUtil.RequestExternalAPI(CrudTypesEnum.Read, $"{_environmentConfig.AccountsApiBaseUrl}/api/credit-usage/available-credits", _jwt);
             var responseContent = await response.Content.ReadAsStringAsync();
 
             // Failed to get available credits
@@ -124,7 +121,7 @@ public class LLMDataExtractionService : ILLMDataExtractionService
                         var apiResponse = await GetChatCompletionAsync(client, llmRequest);
 
                         // Store the model's output in the response
-                        llmResponse = apiResponse.Output;
+                        llmResponse = apiResponse.Output.ToString() ?? string.Empty;
 
                         // Log success after receiving the LLM response
                         _logger.LogInformation("Received successful response from LLM Pipeline API: {LLMResponse}", llmResponse);
@@ -206,7 +203,8 @@ public class LLMDataExtractionService : ILLMDataExtractionService
         {
             using (HttpClient client = new HttpClient())
             {
-                client.DefaultRequestHeaders.Add("API_KEY", _extractViaLLMConfig.LLMPipelineAPIKey);
+                // TODO: Currently there is no API_KEY based authentication mechanism in llmpipeline api
+                // client.DefaultRequestHeaders.Add("API_KEY", _environmentConfig.LLMPipelineAPIKey);
 
                 var requestDto = new
                 {
@@ -217,7 +215,7 @@ public class LLMDataExtractionService : ILLMDataExtractionService
                 var content = new StringContent(jsonRequest, Encoding.UTF8, "application/json");
 
                 _logger.LogInformation("Requesting file text extraction from pipeline for file URL: {fileUrl}", fileUrl);
-                HttpResponseMessage response = await client.PostAsync($"{_extractViaLLMConfig.LLMPipelineAPI}/extract-file-text", content);
+                HttpResponseMessage response = await client.PostAsync($"{_environmentConfig.LlmPipelineApiBaseUrl}/api/extract-file-text", content);
 
                 // If the response is unsuccessful, log the error and return an empty string
                 if (!response.IsSuccessStatusCode)
@@ -253,19 +251,19 @@ public class LLMDataExtractionService : ILLMDataExtractionService
                 model = llmRequest.Model,
                 input = llmRequest.Input,
                 files = llmRequest.Files,
-                isJsonOutput = llmRequest.IsJsonOutput,
-                jsonSchema = llmRequest.JsonSchema,
-                maxOutputTokens = llmRequest.MaxOutputTokens,
-                isBYOKEnabled = llmRequest.IsBYOKEnabled,
-                credentialId = llmRequest.CredentialId,
+                is_json_output = llmRequest.IsJsonOutput,
+                json_schema = llmRequest.JsonSchema,
+                max_output_tokens = llmRequest.MaxOutputTokens,
+                is_byok_enabled = llmRequest.IsBYOKEnabled,
+                credential_id = llmRequest.CredentialId,
                 temperature = llmRequest.Temperature,
-                topP = llmRequest.TopP,
+                top_p = llmRequest.TopP,
                 stream = llmRequest.Stream,
                 ref_type = llmRequest.RefType,
                 ref_id = llmRequest.RefId,
                 ref_name = llmRequest.RefName,
                 action = llmRequest.Action,
-                agentName = llmRequest.AgentName
+                agent_name = llmRequest.AgentName
             };
 
             // Log the request body before sending it
@@ -282,7 +280,7 @@ public class LLMDataExtractionService : ILLMDataExtractionService
             );
 
             // Construct the request URL
-            var requestUrl = $"{_httpClientUrlConfig.LlmPipelineApisBaseUrl.TrimEnd('/')}/llm/generate";
+            var requestUrl = $"{_environmentConfig.LlmPipelineApiBaseUrl}/api/llm/generate";
 
             // Send POST request to the LLM Pipeline API
             var apiResponse = await client.PostAsync(requestUrl, content);

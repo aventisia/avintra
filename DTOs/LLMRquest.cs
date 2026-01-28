@@ -34,7 +34,7 @@ public class LLMRequest
     /// <summary>
     /// Gets or sets the JSON schema to be used for validating the LLM response.
     /// </summary>
-    public string? JsonSchema { get; set; }
+    public object? JsonSchema { get; set; }
 
     /// <summary>
     /// Gets or sets the maximum number of tokens allowed in the model output.
