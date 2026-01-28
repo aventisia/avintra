@@ -5,12 +5,11 @@ public class ResetPwdService : IResetPwdService
     private readonly UserManager<AccountUser> _userManager;
     private readonly IEmailService _emailService;
     private readonly HttpContext _httpContext;
-    private readonly JwtConfig _jwtConfig;
+    private readonly EnvironmentConfig _environmentConfig;
     private readonly ILogger<ResetPwdService> _logger;
     private readonly IUnitOfWork _unitOfWork;
     private readonly IAuthService _authService;
     private readonly IAuthHelperService _authHelperService;
-    private readonly AppRuntimeSettings _appRuntimeSettings;
 
     public ResetPwdService(
         UserManager<AccountUser> userManager,
@@ -19,9 +18,8 @@ public class ResetPwdService : IResetPwdService
         ILogger<ResetPwdService> logger,
         IUnitOfWork unitOfWork,
         IAuthHelperService authHelperService,
-        JwtConfig jwtConfig,
-        IAuthService authService,
-        AppRuntimeSettings appRuntimeSettings)
+        EnvironmentConfig environmentConfig,
+        IAuthService authService)
     {
         _userManager = userManager;
         _emailService = emailService;
@@ -29,9 +27,8 @@ public class ResetPwdService : IResetPwdService
         _logger = logger;
         _unitOfWork = unitOfWork;
         _authHelperService = authHelperService;
-        _jwtConfig = jwtConfig;
+        _environmentConfig = environmentConfig;
         _authService = authService;
-        _appRuntimeSettings = appRuntimeSettings;
     }
 
     // Resets the password if the user has forgotten it or is setting it for the first time.
@@ -50,7 +47,7 @@ public class ResetPwdService : IResetPwdService
         {
             // Check if authentication-related operations are globally disabled.
             // This can be due to maintenance, security incidents, or temporary administrative restrictions.
-            if (_appRuntimeSettings.IsLoginDisabled)
+            if (_environmentConfig.OnPremLoginDisabled)
             {
                 serviceResponse.StatusCode = 401;
                 serviceResponse.Message = "Authentication services are currently unavailable. Please contact Aventiisia Support for assistance.";
@@ -70,7 +67,11 @@ public class ResetPwdService : IResetPwdService
             _authHelperService.RemoveCookie(CookieNamesEnum.AccessToken.ToString());
 
             // Extract info from jwt
-            var jwtInfo = JwtClaimsDataUtil.GetJwtClaimsData(pwdResetJwt, _jwtConfig);
+            var jwtInfo = JwtClaimsDataUtil.GetJwtClaimsData(
+                pwdResetJwt,
+                $"{_environmentConfig.JwtSecretKey}",
+                $"https://{_environmentConfig.AppBaseUrl}",
+                $"https://{_environmentConfig.AppBaseUrl}");
 
             // JwtInfo not found
             if (jwtInfo == null)

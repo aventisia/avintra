@@ -5,13 +5,12 @@ public class AuthService : IAuthService
     private readonly UserManager<AccountUser> _userManager;
     private readonly IEmailService _emailService;
     private readonly HttpContext _httpContext;
-    private readonly VerificationCodeConfig _verificationCodeConfig;
-    private readonly IdentityConfig _identityConfig;
-    private readonly JwtConfig _jwtConfig;
+    private readonly EnvironmentConfig _environmentConfig;
+    private readonly AppDefaultConfig _appDefaultConfig;
     private readonly ILogger<AuthService> _logger;
     private readonly IUnitOfWork _unitOfWork;
     private readonly IAuthHelperService _authHelperService;
-    private readonly AppRuntimeSettings _appRuntimeSettings;
+    private readonly ILoginWithExternalAuthService _loginWithExternalAuthService;
 
     public AuthService(
         UserManager<AccountUser> userManager,
@@ -20,10 +19,9 @@ public class AuthService : IAuthService
         ILogger<AuthService> logger,
         IUnitOfWork unitOfWork,
         IAuthHelperService authHelperService,
-        IdentityConfig identityConfig,
-        JwtConfig jwtConfig,
-        VerificationCodeConfig verificationCodeConfig,
-        AppRuntimeSettings appRuntimeSettings)
+        EnvironmentConfig environmentConfig,
+        AppDefaultConfig appDefaultConfig,
+        ILoginWithExternalAuthService loginWithExternalAuthService)
     {
         _userManager = userManager;
         _emailService = emailService;
@@ -31,10 +29,9 @@ public class AuthService : IAuthService
         _logger = logger;
         _unitOfWork = unitOfWork;
         _authHelperService = authHelperService;
-        _identityConfig = identityConfig;
-        _jwtConfig = jwtConfig;
-        _verificationCodeConfig = verificationCodeConfig;
-        _appRuntimeSettings = appRuntimeSettings;
+        _environmentConfig = environmentConfig;
+        _appDefaultConfig = appDefaultConfig;
+        _loginWithExternalAuthService = loginWithExternalAuthService;
     }
 
     // Checks the availability of a email.
@@ -123,7 +120,7 @@ public class AuthService : IAuthService
         {
             // Check if authentication-related operations are globally disabled.
             // This can be due to maintenance, security incidents, or temporary administrative restrictions.
-            if (_appRuntimeSettings.IsLoginDisabled)
+            if (_environmentConfig.OnPremLoginDisabled)
             {
                 serviceResponse.StatusCode = 401;
                 serviceResponse.Message = "Authentication services are currently unavailable. Please contact Aventiisia Support for assistance.";
@@ -132,6 +129,7 @@ public class AuthService : IAuthService
             // Try to get user (Includes Tenant and Roles)
             var user = await _unitOfWork.AccountUserRepo
                     .GetByConditionAsync(w => EF.Functions.ILike(emailDto.Email, w.UserName))
+                    .Include(i => i.Tenant)
                     .AsNoTracking()
                     .SingleOrDefaultAsync();
 
@@ -144,7 +142,14 @@ public class AuthService : IAuthService
                 return serviceResponse;
             }
 
+            // Variable to hold tenant information for the response
             TenantInfoDto? tenantInfoDto = null;
+
+            // Generate Azure login URL only if SSO is enabled
+            var azureLoginUrl = user.Tenant.IsSSOEnabled
+                    ? _loginWithExternalAuthService.GenerateLoginUrlAsync(ExternalAuthProviderEnum.Azure).Data
+                    : null;
+
             // Check if the user is associated with an organization (tenant)
             if (user.TenantId != null)
             {
@@ -161,7 +166,7 @@ public class AuthService : IAuthService
                     UserName = user.UserName,
                     Name = user.Tenant.IsDefault ? "default" : user.Tenant.Name,
                     TenantId = user.Tenant.Id,
-                    SSOConfigJson = user.Tenant.IsSSOEnabled ? user.Tenant.SSOConfigJson : null
+                    SSOConfigJson = azureLoginUrl
                 };
             }
             else
@@ -172,7 +177,6 @@ public class AuthService : IAuthService
                     Name = "NA",
                     TenantId = Guid.Empty,
                     SSOConfigJson = null
-
                 };
             }
 
@@ -221,7 +225,7 @@ public class AuthService : IAuthService
                                         .CountAsync();
 
             // Allowed active session limit exhausted
-            if (activeSessionCount >= _identityConfig.MaxActiveSessionAllowed)
+            if (activeSessionCount >= _environmentConfig.MaxActiveSessionAllowed)
             {
                 _logger.LogInformation($"Maximum allowed active session limit " +
                     $"exhausted for {user.UserName}");
@@ -232,9 +236,9 @@ public class AuthService : IAuthService
 
             // Get Jwt and RefreshToken validity config
             var jwtExpiresOn = DateTimeOffset.UtcNow.AddMinutes(
-                _jwtConfig.AuthJwtValidityInMinutes);
+                _environmentConfig.JwtValidityInMinutes);
             var refreshTokenExpiresOn = DateTimeOffset.UtcNow.AddDays(
-                _jwtConfig.RefreshTokenValidityInDays);
+                _environmentConfig.JwtRefreshTokenValidityInDays);
 
             // Retrieve the tenant's subscription along with the associated plan details.
             var tenantSubscription = await _unitOfWork.TenantSubscriptionRepo
@@ -326,29 +330,28 @@ public class AuthService : IAuthService
                 AccessToken = jwt,
                 RefreshToken = refreshToken,
                 RTExpiresOn = refreshTokenExpiresOn,
-                Country = user.Tenant != null ? user.Tenant.Country.ToString() : "NA"
+                Country = user.Tenant != null ? user.Tenant.Country.ToString() : "NA",
+                PlatformVersion = _appDefaultConfig.PlatformVersion
             };
 
             // Check if the user is associated with an organization (tenant)
-            if (user.Tenant == null || user.Tenant.Type == TenantTypesEnum.Unspecified)
+            if (user.Tenant?.Type == TenantTypesEnum.Unspecified || user.Tenant == null)
             {
                 serviceResponse.Message = "Complete organization setup to continue.";
             }
-            else
+            else if (_environmentConfig.OnPremTenantType == OnPremTenantTypesEnum.Commercial.ToString())
             {
                 // Query the current tenant's subscription, including related plan and creator details
                 var subscription = await _unitOfWork.TenantSubscriptionRepo
-                    .GetByConditionAsync(w =>
-                        w.TenantId == user.TenantId && w.IsActive
-                    )
-                    .SingleOrDefaultAsync(); // @rahmat Since tenant should have only one active subscription at max so using SingleOrDefaultAsync() instead of FirstOrDefaultAsync()
+                    .GetByConditionAsync(w => w.TenantId == user.TenantId && w.IsActive)
+                    .SingleOrDefaultAsync();
 
                 // IMPORTANT NOTE: Once user has completed onboarding, then there will always be an 1 active subscription at 
                 // any point of time even that subscription's status is expired. Users will be able to login even if subscription 
                 // is expired they won't be able to access any paid features. In future, we may downgrade user's subscription to 
                 // free Starter plan automatically once subscription is expired. In that case also there will be always one active subscription.
 
-                // Check if a valid subscription was found
+                // Subscription validation logic
                 if (subscription == null || subscription.Status == SubscriptionStatusTypesEnum.Initiated)
                 {
                     _logger.LogWarning("No active subscription found for user {UserId} in tenant {TenantId}.", user.Id, user.TenantId);
@@ -358,6 +361,10 @@ public class AuthService : IAuthService
                 {
                     serviceResponse.Message = "New session has been created successfully.";
                 }
+            }
+            else
+            {
+                serviceResponse.Message = "New session has been created successfully.";
             }
 
             // UserSessionDto is ready
@@ -501,6 +508,19 @@ public class AuthService : IAuthService
 
         try
         {
+            // Check if the tenant is of type Enterprise
+            if (_environmentConfig.OnPremTenantType == OnPremTenantTypesEnum.Enterprise.ToString())
+            {
+                var appDomain = ExtractDomainFromEmailUtil.ExtractDomainFromUrl(_environmentConfig.AppBaseUrl);
+                var emailDomain = ExtractDomainFromEmailUtil.ExtractDomainFromEmail(createVerificationCodeDto.Email);
+                if (!appDomain.Equals(emailDomain, StringComparison.InvariantCultureIgnoreCase))
+                {
+                    serviceResponse.StatusCode = 400;
+                    serviceResponse.Message = "Email domain does not match the platform's domain.";
+                    return serviceResponse;
+                }
+            }
+
             // Implemented RequestTypes: VerifyEmailAddress, TwoFA, ResetPwd, UpdateEmail
             // Not yet implemented RequestTypes: UnlockAccount, AccountDeactivation
 
@@ -561,7 +581,7 @@ public class AuthService : IAuthService
 
             // Create code's ExpiresOn
             var codeExpiresOn = DateTimeOffset.UtcNow.AddMinutes(
-                _verificationCodeConfig.ValidityInMinutes);
+                _environmentConfig.OtpValidityInMinutes);
 
             // Create VerificationCode instance
             var verificationCode = new VerificationCode()
@@ -596,7 +616,7 @@ public class AuthService : IAuthService
                 {
                     {"{{userFirstName}}", user?.FirstName ?? "" },
                     {"{{VerificationCode}}", verificationCode.SecretCode},
-                    {"{{VerificationCodeValidityInMinutes}}", _verificationCodeConfig.ValidityInMinutes.ToString() }
+                    {"{{VerificationCodeValidityInMinutes}}", _environmentConfig.OtpValidityInMinutes.ToString() }
                 }))
             {
                 _logger.LogError(

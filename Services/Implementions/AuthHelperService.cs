@@ -4,11 +4,7 @@ public class AuthHelperService : IAuthHelperService
 {
     private readonly UserManager<AccountUser> _userManager;
     private readonly HttpContext _httpContext;
-    private readonly IdentityConfig _identityConfig;
-    private readonly ExternalAPIsConfig _externalAPIsConfig;
-    private readonly JwtConfig _jwtConfig;
-    private readonly CookiePolicyConfig _cookiePolicyConfig;
-    private readonly InstanceConfig _instanceConfig;
+    private readonly EnvironmentConfig _environmentConfig;
     private readonly ILogger<AuthHelperService> _logger;
     private readonly IUnitOfWork _unitOfWork;
 
@@ -17,21 +13,13 @@ public class AuthHelperService : IAuthHelperService
         IHttpContextAccessor httpContextAccessor,
         ILogger<AuthHelperService> logger,
         IUnitOfWork unitOfWork,
-        IdentityConfig identityConfig,
-        ExternalAPIsConfig externalAPIsConfig,
-        JwtConfig jwtConfig,
-        CookiePolicyConfig cookiePolicyConfig,
-        InstanceConfig instanceConfig)
+        EnvironmentConfig environmentConfig)
     {
         _userManager = userManager;
         _httpContext = Guard.Against.Null(httpContextAccessor.HttpContext, "HttpContext cannot be null");
         _logger = logger;
         _unitOfWork = unitOfWork;
-        _identityConfig = identityConfig;
-        _externalAPIsConfig = externalAPIsConfig;
-        _jwtConfig = jwtConfig;
-        _cookiePolicyConfig = cookiePolicyConfig;
-        _instanceConfig = instanceConfig;
+        _environmentConfig = environmentConfig;
     }
 
     // Validates the null, disabled, and expired status of a tenant.
@@ -121,7 +109,7 @@ public class AuthHelperService : IAuthHelperService
             _unitOfWork.ObsoletePwdRepo.Delete(await _unitOfWork.ObsoletePwdRepo
                     .GetByConditionAsync(w => w.UserId == user.Id)
                     .OrderByDescending(o => o.PwdSetOn)
-                    .Skip(_identityConfig.ObsoletePwdRetainLimit)
+                    .Skip(_environmentConfig.ObsoletePwdRetainLimit)
                     .ToListAsync());
 
             // Context SaveChanges job failed
@@ -204,30 +192,32 @@ public class AuthHelperService : IAuthHelperService
             claims.Add("sid", sessionId.ToString());
 
             // Add tenant type (Enterprise or other)
-            claims.Add("type", _instanceConfig.TenantType);
+            claims.Add("type", _environmentConfig.OnPremTenantType);
 
             // Add subscription plan information, if applicable
-            claims.Add("plan", _instanceConfig.TenantType == OnPremTenantTypesEnum.Enterprise.ToString() ? "None" : currentPlan);
+            claims.Add("plan", _environmentConfig.OnPremTenantType == OnPremTenantTypesEnum.Enterprise.ToString() ? "None" : currentPlan);
 
             // Add permission access
             claims["permissions"] = user.UserRoles
-                    .SelectMany(u => u.Role.RolePermissions)
-                    .GroupBy(a => a.Permission.Name)
-                    .ToDictionary(
-                        g => (int)Enum.Parse(typeof(PermissionTypesEnum), g.Key),
-                        g => JsonSerializer.Serialize(g.Select(a => (int)a.Access).ToList()));
+                .Where(w => w.Role != null && w.Role.RolePermissions != null)
+                .SelectMany(s => s.Role.RolePermissions)
+                .Where(w => w.Permission != null)
+                .GroupBy(g => g.Permission.Name)
+                .ToDictionary(
+                    td => (int)Enum.Parse(typeof(PermissionTypesEnum), td.Key),
+                    td => JsonSerializer.Serialize(td.Select(a => (int)a.Access).ToList()));
         }
 
         // SigningCredentials
         var signingCredentials = new SigningCredentials(
-            new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_jwtConfig.SecretKey)),
+            new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_environmentConfig.JwtSecretKey)),
             SecurityAlgorithms.HmacSha512);
 
         // TokenOptions
         var securityTokenDescriptor = new SecurityTokenDescriptor
         {
-            Issuer = _jwtConfig.Issuer,
-            Audience = _jwtConfig.Audience,
+            Issuer =  $"https://{_environmentConfig.AppBaseUrl}",
+            Audience = $"https://{_environmentConfig.AppBaseUrl}",
             Claims = claims,
             IssuedAt = DateTime.UtcNow,
             Expires = jwtExpiresOn.UtcDateTime,
@@ -269,7 +259,7 @@ public class AuthHelperService : IAuthHelperService
         var cookieOptions = new CookieOptions();
 
         // Set domain
-        cookieOptions.Domain = _cookiePolicyConfig.Domain;
+        cookieOptions.Domain = _environmentConfig.AppBaseUrl;
 
         // Set expiry
         if (expiry.HasValue) cookieOptions.Expires = expiry;
@@ -286,7 +276,7 @@ public class AuthHelperService : IAuthHelperService
     {
         _httpContext.Response.Cookies.Delete(name, new CookieOptions
         {
-            Domain = _cookiePolicyConfig.Domain,
+            Domain = _environmentConfig.AppBaseUrl,
             Path = string.IsNullOrWhiteSpace(subPath) ? "/" : subPath
         });
 
@@ -306,7 +296,7 @@ public class AuthHelperService : IAuthHelperService
         };
 
         // Create or Update user in WorkspaceDb database
-        HttpResponseMessage response = await RequestExternalAPIUtil.RequestExternalAPI(crudType, _externalAPIsConfig.WorkspaceUser, jwt, user);
+        HttpResponseMessage response = await RequestExternalAPIUtil.RequestExternalAPI(crudType, $"{_environmentConfig.WorcApiBaseUrl}/api/user", jwt, user);
 
         // Failed to Create or Update user in Workspace database
         if (!response.IsSuccessStatusCode)
@@ -316,13 +306,13 @@ public class AuthHelperService : IAuthHelperService
             return false;
         }
 
-        // Create or Update user in MLModelBuilder database
-        HttpResponseMessage response2 = await RequestExternalAPIUtil.RequestExternalAPI(crudType, _externalAPIsConfig.ModelBuilderUser, jwt, user);
+        // Create or Update user in AiStudio database
+        HttpResponseMessage response2 = await RequestExternalAPIUtil.RequestExternalAPI(crudType, $"{_environmentConfig.AiStudioApiBaseUrl}/api/user", jwt, user);
 
         if (!response2.IsSuccessStatusCode)
         {
             string errorContent = await response2.Content.ReadAsStringAsync();
-            _logger.LogError($"Failed to {crudType} user in ML Model Builder database for {user.UserName}. Response: {response2.StatusCode} - {errorContent}");
+            _logger.LogError($"Failed to {crudType} user in AiStudio database for {user.UserName}. Response: {response2.StatusCode} - {errorContent}");
             return false;
         }
 
@@ -333,7 +323,7 @@ public class AuthHelperService : IAuthHelperService
     public async Task<bool> DeleteUserInOtherDbsAsync(Guid userId, string jwt)
     {
         // Delete user in WorkspaceDb database
-        HttpResponseMessage response = await RequestExternalAPIUtil.RequestExternalAPI(CrudTypesEnum.Delete, $"{_externalAPIsConfig.WorkspaceUser}/{userId}", jwt);
+        HttpResponseMessage response = await RequestExternalAPIUtil.RequestExternalAPI(CrudTypesEnum.Delete, $"{_environmentConfig.WorcApiBaseUrl}/api/user/{userId}", jwt);
         // Failed to Delete user in Workspace database
         if (!response.IsSuccessStatusCode)
         {
@@ -341,12 +331,12 @@ public class AuthHelperService : IAuthHelperService
             return false;
         }
 
-        // Delete user in MLModelBuilderDb database
-        HttpResponseMessage response2 = await RequestExternalAPIUtil.RequestExternalAPI(CrudTypesEnum.Delete, $"{_externalAPIsConfig.ModelBuilderUser}/{userId}", jwt);
+        // Delete user in AiStudio database
+        HttpResponseMessage response2 = await RequestExternalAPIUtil.RequestExternalAPI(CrudTypesEnum.Delete, $"{_environmentConfig.AiStudioApiBaseUrl}/api/user/{userId}", jwt);
 
         if (!response2.IsSuccessStatusCode)
         {
-            _logger.LogInformation($"Failed to delete user in ML Model Builder Db database for user Id: {userId}");
+            _logger.LogInformation($"Failed to delete user in AiStudio database for user Id: {userId}");
             return false;
         }
 

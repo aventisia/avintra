@@ -4,36 +4,54 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Storage.Internal.Mapping;
 
 namespace AccountsAPIs.Services;
 
-public class MyAccountService(
-    UserManager<AccountUser> userManager,
-    SignInManager<AccountUser> signInManager,
-    IHttpContextAccessor httpContextAccessor,
-    ILogger<AuthService> logger,
-    IUnitOfWork unitOfWork,
-    IAuthHelperService authHelperService,
-    IAuthService authService,
-    JwtConfig jwtConfig,
-    IdentityConfig identityConfig,
-    IEmailService emailService) : IMyAccountService
+public class MyAccountService : IMyAccountService
 {
-    private readonly UserManager<AccountUser> _userManager = userManager;
-    private readonly SignInManager<AccountUser> _signInManager = signInManager;
-    private readonly HttpContext _httpContext = Guard.Against.Null(httpContextAccessor.HttpContext, message: "HttpContext cannot be null");
-    private readonly ILogger<AuthService> _logger = logger;
-    private readonly IUnitOfWork _unitOfWork = unitOfWork;
-    private readonly IAuthService _authService = authService;
-    private readonly IAuthHelperService _authHelperService = authHelperService;
-    private readonly IEmailService _emailService = emailService;
-    private readonly IdentityConfig _identityConfig = identityConfig;
-    private readonly JwtConfig _jwtConfig = jwtConfig;
-    private readonly string _jwt = GetJwtOfRequestUtil.GetJwtOfRequest(httpContextAccessor.HttpContext) ?? "jwt-not-found";
-    private readonly string _userName = httpContextAccessor.HttpContext?.User?.FindFirstValue("uname") ?? "Unknown";
-    private readonly Guid _sessionId = Guid.Parse(httpContextAccessor.HttpContext?.User?.FindFirstValue("sid") ?? Guid.Empty.ToString());
-    private readonly Guid _userId = Guid.Parse(httpContextAccessor.HttpContext?.User?.FindFirstValue("uid") ?? Guid.Empty.ToString());
+    private readonly UserManager<AccountUser> _userManager;
+    private readonly SignInManager<AccountUser> _signInManager;
+    private readonly HttpContext _httpContext;
+    private readonly ILogger<MyAccountService> _logger;
+    private readonly IUnitOfWork _unitOfWork;
+    private readonly IAuthService _authService;
+    private readonly IAuthHelperService _authHelperService;
+    private readonly IEmailService _emailService;
+    private readonly EnvironmentConfig _environmentConfig;
+    private readonly AppDefaultConfig _appDefaultConfig;
+    private readonly string _jwt;
+    private readonly string _userName;
+    private readonly Guid _sessionId;
+    private readonly Guid _userId;
 
     const string invalidcredentials = "Invalid credentials";
     const string userDoesNotExists = "User does not exists";
     const string userNotFoundTemplate = "{methodName}: User not found for username {_userName}";
+
+    public MyAccountService(
+        UserManager<AccountUser> userManager,
+        SignInManager<AccountUser> signInManager,
+        IHttpContextAccessor httpContextAccessor,
+        ILogger<MyAccountService> logger,
+        IUnitOfWork unitOfWork,
+        IAuthHelperService authHelperService,
+        IAuthService authService,
+        EnvironmentConfig environmentConfig,
+        AppDefaultConfig appDefaultConfig,
+        IEmailService emailService)
+    {
+        _userManager = userManager;
+        _signInManager = signInManager;
+        _httpContext = Guard.Against.Null(httpContextAccessor.HttpContext, message: "HttpContext cannot be null");
+        _logger = logger;
+        _unitOfWork = unitOfWork;
+        _authService = authService;
+        _authHelperService = authHelperService;
+        _emailService = emailService;
+        _environmentConfig = environmentConfig;
+        _appDefaultConfig = appDefaultConfig;
+        _jwt = GetJwtOfRequestUtil.GetJwtOfRequest(httpContextAccessor.HttpContext) ?? "jwt-not-found";
+        _userName = httpContextAccessor.HttpContext?.User?.FindFirstValue("uname") ?? "Unknown";
+        _sessionId = Guid.Parse(httpContextAccessor.HttpContext?.User?.FindFirstValue("sid") ?? Guid.Empty.ToString());
+        _userId = Guid.Parse(httpContextAccessor.HttpContext?.User?.FindFirstValue("uid") ?? Guid.Empty.ToString());
+    }
 
     // Gets user's current session without JWT to view latest user's info
     public async Task<ServiceResponse<UserSessionDto>> GetMySessionAsync()
@@ -94,7 +112,8 @@ public class MyAccountService(
                 AccessToken = accessToken,
                 RefreshToken = session.RefreshToken,
                 RTExpiresOn = session.SessionExpiresOn,
-                Country = tenant != null ? tenant.Country.ToString() : "NA"
+                Country = tenant != null ? tenant.Country.ToString() : "NA",
+                PlatformVersion = _appDefaultConfig.PlatformVersion
             };
 
             // Task successful
@@ -143,7 +162,7 @@ public class MyAccountService(
             // DeviceId did not match
             if (currentSession.DeviceId != userAgent)
             {
-                _logger.LogInformation($"DeviceId did not match for session {_sessionId} and account {_userName}");
+                _logger.LogInformation($"DeviceId did not match for session {_sessionId} and account {_userName}. Expected {currentSession.DeviceId}, found {userAgent}");
                 return serviceResponse;
             }
 
@@ -307,30 +326,31 @@ public class MyAccountService(
                 return serviceResponse;
             }
 
-            // DeviceId did not match
-            if (activeSession.DeviceId != userAgent)
-            {
-                _logger.LogInformation("Log:10 DeviceId mismatch: expected {ExpectedDeviceId}, found {ActualDeviceId} for session {SessionId} and user {UserName}", activeSession.DeviceId, userAgent, activeSession.Id, userName);
-                _logger.LogInformation($"DeviceId did not match for session {activeSession.Id} and account {userName}");
-                serviceResponse.Message = invalidcredentials;
-                return serviceResponse;
-            }
+            // TODO: Uncomment the DeviceId mismatch check when needed
+            // // DeviceId did not match
+            // if (activeSession.DeviceId != userAgent)
+            // {
+            //     _logger.LogInformation("Log:10 DeviceId mismatch: expected {ExpectedDeviceId}, found {ActualDeviceId} for session {SessionId} and user {UserName}", activeSession.DeviceId, userAgent, activeSession.Id, userName);
+            //     _logger.LogInformation($"DeviceId did not match for session {activeSession.Id} and account {userName}");
+            //     serviceResponse.Message = invalidcredentials;
+            //     return serviceResponse;
+            // }
 
-            // RefreshToken did not match
-            if (activeSession.RefreshToken != refreshToken)
-            {
-                _logger.LogInformation("Log:11 RefreshToken mismatch for session {SessionId} and user {UserName}. Expected {ExpectedRefreshToken}, found {ActualRefreshToken}", activeSession.Id, userName, activeSession.RefreshToken, refreshToken);
-                _logger.LogInformation($"RefreshToken did not match for session {activeSession.Id} and account {userName}");
-                serviceResponse.Message = invalidcredentials;
-                return serviceResponse;
-            }
+            // // RefreshToken did not match
+            // if (activeSession.RefreshToken != refreshToken)
+            // {
+            //     _logger.LogInformation("Log:11 RefreshToken mismatch for session {SessionId} and user {UserName}. Expected {ExpectedRefreshToken}, found {ActualRefreshToken}", activeSession.Id, userName, activeSession.RefreshToken, refreshToken);
+            //     _logger.LogInformation($"RefreshToken did not match for session {activeSession.Id} and account {userName}");
+            //     serviceResponse.Message = invalidcredentials;
+            //     return serviceResponse;
+            // }
 
             /*No need to check refreshToken expiry bcz 
             cookie won't exist if refreshToken is expired*/
 
             // Get Jwt and RefreshToken validity config
-            var jwtExpiresOn = DateTimeOffset.UtcNow.AddMinutes(_jwtConfig.AuthJwtValidityInMinutes);
-            var refreshTokenExpiresOn = DateTimeOffset.UtcNow.AddDays(_jwtConfig.RefreshTokenValidityInDays);
+            var jwtExpiresOn = DateTimeOffset.UtcNow.AddMinutes(_environmentConfig.JwtValidityInMinutes);
+            var refreshTokenExpiresOn = DateTimeOffset.UtcNow.AddDays(_environmentConfig.JwtRefreshTokenValidityInDays);
 
             // Retrieve the tenant's subscription along with the associated plan details.
             var tenantSubscription = await _unitOfWork.TenantSubscriptionRepo
@@ -346,6 +366,9 @@ public class MyAccountService(
 
             // Create new RefreshToken
             var newRefreshToken = _authHelperService.CreateRefreshToken();
+
+            // Detach the entity from the DbContext
+            _unitOfWork.ActiveSessionRepo.Detach(activeSession);
 
             // Update info of activeSession instance
             activeSession.RefreshToken = newRefreshToken;
@@ -382,7 +405,8 @@ public class MyAccountService(
                 AccessToken = jwt,
                 RefreshToken = refreshToken,
                 RTExpiresOn = refreshTokenExpiresOn,
-                Country = tenant != null ? tenant.Country.ToString() : "NA"
+                Country = tenant != null ? tenant.Country.ToString() : "NA",
+                PlatformVersion = _appDefaultConfig.PlatformVersion
             };
 
             // Check if user is associated with an organization (tenant)
@@ -469,8 +493,8 @@ public class MyAccountService(
             {
                 // Increase lockout count
                 user.AccessFailedCount++;
-                user.LockoutEnd = user.AccessFailedCount >= _identityConfig.LockoutMaxFailedAccessAttempts
-                    ? DateTimeOffset.UtcNow.AddMinutes(_identityConfig.DefaultLockoutTimeSpanInMinutes)
+                user.LockoutEnd = user.AccessFailedCount >= _environmentConfig.LockoutMaxFailedAccessAttempts
+                    ? DateTimeOffset.UtcNow.AddMinutes(_environmentConfig.DefaultLockoutTimeSpanInMinutes)
                     : user.LockoutEnd;
 
                 // Update user
@@ -671,17 +695,6 @@ public class MyAccountService(
             {
                 _logger.LogInformation(userNotFoundTemplate, methodName, _userName);
                 serviceResponse.Message = userDoesNotExists;
-                return serviceResponse;
-            }
-
-            //Check if user is an Aventisia employee
-            var isAE = ExtractDomainFromEmailUtil.ExtractDomainFromEmail(user.Email) == "aventisia.com";
-
-            //if user is an Aventisia employee
-            if (isAE)
-            {
-                _logger.LogInformation("Failed to update email for Aventesia employee");
-                serviceResponse.Message = "Unable to update email for Aventesia employee";
                 return serviceResponse;
             }
 
@@ -940,14 +953,6 @@ public class MyAccountService(
                 return serviceResponse;
             }
 
-            var isAE = ExtractDomainFromEmailUtil.ExtractDomainFromEmail(user.Email) == "aventisia.com";
-            if (isAE)
-            {
-                _logger.LogInformation("Failed to delete Aventisia user");
-                serviceResponse.Message = "Unable to delete Aventisia user";
-                return serviceResponse;
-            }
-
             // Get Verification secret code
             var verificationCode = await _unitOfWork.VerificationCodeRepo
             .GetByConditionAsync(w => w.Id == deleteUserAccountDto.VerificationCodeId)
@@ -1156,14 +1161,9 @@ public class MyAccountService(
                 return serviceResponse;
             }
 
-            // Decide tenant name basis "@aventisia.com"
-            var tenantName = ExtractDomainFromEmailUtil.ExtractDomainFromEmail(user.Email) == "aventisia.com"
-                                ? GetEnumDescriptionUtil.GetEnumDescription(DefaultTenantsEnum.Aventisia)
-                                : GetEnumDescriptionUtil.GetEnumDescription(DefaultTenantsEnum.IndividualUsers);
-
             // Get default Tenant 
             var defaultTenant = await _unitOfWork.TenantRepo
-                                        .GetByConditionAsync(w => w.IsDefault && w.Name == tenantName)
+                                        .GetByConditionAsync(w => w.Id == user.TenantId)
                                         .SingleOrDefaultAsync();
 
             UserBillingAddressDto getUserTenantInfoDto;
@@ -1255,14 +1255,9 @@ public class MyAccountService(
                 return serviceResponse;
             }
 
-            // Decide tenant name basis "@aventisia.com"
-            var tenantName = ExtractDomainFromEmailUtil.ExtractDomainFromEmail(user.Email) == "aventisia.com"
-                                ? GetEnumDescriptionUtil.GetEnumDescription(DefaultTenantsEnum.Aventisia)
-                                : GetEnumDescriptionUtil.GetEnumDescription(DefaultTenantsEnum.IndividualUsers);
-
             // Get default Tenant 
             var defaultTenant = await _unitOfWork.TenantRepo
-                                        .GetByConditionAsync(w => w.IsDefault && w.Name == tenantName)
+                                        .GetByConditionAsync(w => w.Id == user.TenantId)
                                         .SingleOrDefaultAsync();
 
             var isIndie = defaultTenant?.Name.Equals(GetEnumDescriptionUtil.GetEnumDescription(DefaultTenantsEnum.IndividualUsers));
@@ -1310,17 +1305,6 @@ public class MyAccountService(
             {
                 _logger.LogInformation(userNotFoundTemplate, methodName, _userName);
                 serviceResponse.Message = userDoesNotExists;
-                return serviceResponse;
-            }
-
-            //Check if user is an Aventisia employee
-            var IsAE = ExtractDomainFromEmailUtil.ExtractDomainFromEmail(user.Email) == "aventisia.com";
-
-            //if user is an Aventisia employee
-            if (IsAE)
-            {
-                _logger.LogInformation("Failed to deactivate Aventesia employee");
-                serviceResponse.Message = "Unable to deactivate Aventesia employee";
                 return serviceResponse;
             }
 

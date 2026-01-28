@@ -44,4 +44,6 @@ public class UserSessionDto
     /// Gets or sets the user's country. 
     /// </summary>
     public required string Country { get; set; }
+
+    public required string PlatformVersion { get; set; }
 }

@@ -20,9 +20,7 @@ global using AccountsAPIs.MappingProfiles;
 global using AccountsAPIs.DTOs;
 global using AccountsAPIs.Global;
 global using AccountsAPIs.Enums;
-global using AccountsAPIs.Config;
 global using AccountsAPIs.Jobs;
-global using AccountsAPIs.Settings;
 
 global using System.ComponentModel;
 global using System.ComponentModel.DataAnnotations;

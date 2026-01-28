@@ -7,17 +7,17 @@ namespace AccountsAPIs.Controllers;
 [ApiController]
 public class DesktopAppController : BaseApiController
 {
-    private readonly FileUploadConfig _fileUploadConfig;
-    private readonly GeneralConfig _generalConfig;
+    private readonly AppDefaultConfig _appDefaultConfig;
+    private readonly EnvironmentConfig _environmentConfig;
     private readonly IWebHostEnvironment _webHostEnvironment;
 
     public DesktopAppController(
-        FileUploadConfig fileUploadConfig,
-        GeneralConfig generalConfig,
+        AppDefaultConfig appDefaultConfig,
+        EnvironmentConfig environmentConfig,
         IWebHostEnvironment webHostEnvironment)
     {
-        _fileUploadConfig = fileUploadConfig;
-        _generalConfig = generalConfig;
+        _appDefaultConfig = appDefaultConfig;
+        _environmentConfig = environmentConfig;
         _webHostEnvironment = webHostEnvironment;
     }
 
@@ -65,7 +65,12 @@ public class DesktopAppController : BaseApiController
             return NotFound(message);
 
         // Get the latest verison out. Assuming version is in the format WorcDesktopApp_{version}_x64-setup.exe
-        var latestVersion = Path.GetFileNameWithoutExtension(fileName).Split('_')[1];
+        string latestVersion;
+        if (_webHostEnvironment.IsEnvironment("Development") || _webHostEnvironment.IsEnvironment("UAT"))
+            latestVersion = Path.GetFileNameWithoutExtension(fileName).Split('_')[2]; // WorcDesktopApp_DEV/UAT_{version}_x64-setup.exe
+        else
+            latestVersion = Path.GetFileNameWithoutExtension(fileName).Split('_')[1]; // WorcDesktopApp_{version}_x64-setup.exe
+
         var updateNotes = "Bug fixes and improvements.";
         var pubDate = DateTime.UtcNow.ToString("o"); // ISO 8601 format
 
@@ -86,7 +91,7 @@ public class DesktopAppController : BaseApiController
                 ["windows-x86_64"] = new
                 {
                     signature,
-                    url = $"{_generalConfig.AppDomain}/api/desktop-app/download/{latestVersion}"
+                    url = $"https://{_environmentConfig.AppBaseUrl}/accounts/api/desktop-app/download/{latestVersion}"
                 }
             }
         };
@@ -107,7 +112,7 @@ public class DesktopAppController : BaseApiController
             appName += "";
         
         // Get base path
-        var basePath = Path.Combine(_fileUploadConfig.UploadDirectory, "binaries");
+        var basePath = Path.Combine(_appDefaultConfig.FileUploadConfig.UploadDirectory, "binaries");
 
         // Ensure the latest folder exists
         if (!Directory.Exists(basePath))

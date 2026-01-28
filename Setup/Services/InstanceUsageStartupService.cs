@@ -4,15 +4,16 @@ public class InstanceUsageStartupService : IHostedService
 {
     private readonly IServiceScopeFactory _serviceScopeFactory;
     private readonly ILogger<InstanceUsageStartupService> _logger;
-    private readonly IHostEnvironment _hostEnvironment;
-    private readonly AppRuntimeSettings _appRuntimeSettings;
+    private readonly EnvironmentConfig _environmentConfig;
 
-    public InstanceUsageStartupService(IServiceScopeFactory serviceScopeFactory, ILogger<InstanceUsageStartupService> logger, IHostEnvironment hostEnvironment, AppRuntimeSettings appRuntimeSettings)
+    public InstanceUsageStartupService(
+        IServiceScopeFactory serviceScopeFactory,
+        ILogger<InstanceUsageStartupService> logger,
+        EnvironmentConfig environmentConfig)
     {
         _serviceScopeFactory = serviceScopeFactory;
         _logger = logger;
-        _hostEnvironment = hostEnvironment;
-        _appRuntimeSettings = appRuntimeSettings;
+        _environmentConfig = environmentConfig;
     }
 
     // This method will be called when the application starts. It collects metrics and posts them to the external API.
@@ -37,8 +38,8 @@ public class InstanceUsageStartupService : IHostedService
                 // Check if data is retrieved successfully
                 if (serviceResponse.Data == null || serviceResponse.StatusCode != 200)
                 {
-                    _logger.LogError("Failed to retrieve data from the Workspace API. Status Code: {StatusCode}, Message: {Message}, Data: {Data}", serviceResponse.StatusCode, serviceResponse.Message, serviceResponse.Data);
-                    errorMessage = $"Workspace API is not responding or not running. Please contact the support team.";
+                    _logger.LogError("Failed to retrieve data from the worc apis. Status Code: {StatusCode}, Message: {Message}, Data: {Data}", serviceResponse.StatusCode, serviceResponse.Message, serviceResponse.Data);
+                    errorMessage = $"worc apis is not responding or not running. Please contact the support team.";
                     throw new InvalidOperationException(errorMessage);
                 }
 
@@ -46,23 +47,15 @@ public class InstanceUsageStartupService : IHostedService
                 await instanceService.PostMetricsToApiAsync(serviceResponse.Data);
 
                 // Fail if contract has not started
-                if (!_appRuntimeSettings.IsContractStarted)
+                if (_environmentConfig.OnPremContractStart.Date > currentDateTime.Date)
                 {
                     _logger.LogError("Contract has not started. Startup cannot continue. Please contact the support team.");
                     errorMessage = "Contract has not started. Please contact the support team";
                     throw new InvalidOperationException(errorMessage);
                 }
 
-                // Fail if contract expired
-                if (_appRuntimeSettings.IsContractExpired)
-                {
-                    _logger.LogError("Contract has expired. Startup cannot continue. Please contact the support team.");
-                    errorMessage = "Contract has expired. Please contact the support team.";
-                    throw new InvalidOperationException(errorMessage);
-                }
-
                 // Fail if login is disabled
-                if (_appRuntimeSettings.IsLoginDisabled)
+                if (_environmentConfig.OnPremLoginDisabled)
                 {
                     _logger.LogError("Login is disabled. Startup cannot continue. Please contact the support team.");
                     errorMessage = "Login is disabled. Please contact the support team.";
