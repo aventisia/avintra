@@ -9,6 +9,7 @@ public class UploadFileService : IUploadFileService
     private readonly Guid _userId;
     private readonly Guid _tenantId;
     private readonly string _containerName;
+    private readonly TenantDbContext _tenantDbContext;
 
     public UploadFileService(
         ILogger<UploadFileService> logger,
@@ -16,7 +17,8 @@ public class UploadFileService : IUploadFileService
         IHttpClientFactory httpClientFactory,
         IAzureBlobStorageService azureBlobStorageService,
         IHttpContextAccessor httpContextAccessor,
-        ICurrentTenantService currentTenantService)
+        ICurrentTenantService currentTenantService,
+        TenantDbContext tenantDbContext)
     {
         _logger = logger;
         _appDefaultConfig = appDefaultConfig;
@@ -28,6 +30,7 @@ public class UploadFileService : IUploadFileService
         _tenantId = Guid.Parse(httpContextAccessor.HttpContext?.User?.FindFirstValue("tntid") ?? Guid.Empty.ToString());
 
         _containerName = currentTenantService.CurrentTenantContainerName;
+        _tenantDbContext = tenantDbContext;
     }
 
     public async Task<ServiceResponse<IEnumerable<FileUploadResponseDto>>> UploadFilesTemporaryAsync(List<IFormFile> files)
@@ -424,6 +427,146 @@ public class UploadFileService : IUploadFileService
             _logger.LogError("Error during file download from remote server: {ErrorMessage}.", ex.Message);
         }
 
+        return serviceResponse;
+    }
+    /// <summary>
+    /// Uploads a file to Azure Blob Storage associated with a specific tenant.
+    /// </summary>
+    /// <param name="fileUrl">The URL of the file to be uploaded. Typically a local file path or temporary file path.</param>
+    /// <param name="tenantId">The ID of the tenant associated with the file upload, used to determine the correct container name.</param>
+    /// <returns>A task that represents the asynchronous operation. The task result contains a <see cref="ServiceResponse{string}"/> 
+    /// with the status of the upload operation. If successful, it includes the unique file name used in Blob Storage. Otherwise, it returns an error message.</returns>
+    public async Task<ServiceResponse<string>> UploadFileToBlobAsync(string fileUrl, Guid tenantId)
+    {
+        // Initialize the service response
+        var serviceResponse = new ServiceResponse<string>
+        {
+            Data = null,
+            Message = "Failed to upload file to Azure Blob Storage."
+        };
+
+        try
+        {
+            // Check if the file URL is provided
+            if (string.IsNullOrWhiteSpace(fileUrl))
+            {
+                serviceResponse.Message = "File URL is null or empty.";
+                _logger.LogError("File URL is null or empty.");
+                return serviceResponse;
+            }
+
+            // Extract path segments from the file URL
+            var pathSegments = fileUrl.TrimStart('/').Split('/');
+            if (pathSegments.Length < 2)
+            {
+                serviceResponse.Message = "Invalid file URL structure. Expected format: '/subdirectory/filename.ext'.";
+                _logger.LogWarning("Invalid URL structure. Provided URL: {FileUrl}", fileUrl);
+                return serviceResponse;
+            }
+
+            // Extract file name and subdirectory from URL path segments
+            var fileName = pathSegments.Last(); // The actual file name (e.g., file.ext)
+            var subDirectory = pathSegments[^2]; // The subdirectory (one level before the file name)
+
+            // Construct the full local file path
+            var fullLocalPath = Path.Combine("/var/www/aventisia.com/files", subDirectory, fileName);
+
+            // Log the expected local file path
+            _logger.LogInformation("Constructed local file path: {FullLocalPath}", fullLocalPath);
+
+            // Ensure the file exists locally
+            if (!File.Exists(fullLocalPath))
+            {
+                serviceResponse.Message = $"File does not exist at path: {fullLocalPath}";
+                _logger.LogWarning("File does not exist at path: {FullLocalPath}", fullLocalPath);
+                return serviceResponse;
+            }
+
+            // Get the file extension and convert it to lowercase
+            var extension = Path.GetExtension(fileName).ToLower();
+
+            // Determine MIME type based on file extension
+            string mimeType = extension switch
+            {
+                // Document types
+                ".pdf" => "application/pdf",
+                ".docx" => "application/vnd.openxmlformats-officedocument.wordprocessingml.document",
+                ".xlsx" => "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+                ".txt" => "text/plain",
+
+                // Image types
+                ".jpg" or ".jpeg" => "image/jpeg",
+                ".png" => "image/png",
+                ".gif" => "image/gif",
+
+                // Audio types
+                ".mp3" => "audio/mpeg",
+                ".wav" => "audio/wav",
+                ".aac" => "audio/aac",
+                ".ogg" => "audio/ogg",
+                ".oga" => "audio/ogg",
+                ".flac" => "audio/flac",
+                ".m4a" => "audio/m4a",
+                ".opus" => "audio/opus",
+
+                // Default MIME type
+                _ => "application/octet-stream"
+            };
+
+            // Log the determined MIME type
+            _logger.LogInformation("Determined MIME type for file {FileName}: {MimeType}", fileName, mimeType);
+
+            // Create a unique filename to prevent conflicts, keeping the file extension.
+            var uniqueFileName = fileName;
+
+            // Log the unique file name generated
+            _logger.LogInformation("Generated unique file name for upload: {UniqueFileName}", uniqueFileName);
+
+            // Retrieve tenant information based on tenantId
+            var tenant = await _tenantDbContext.ReadOnlyTenants.SingleOrDefaultAsync(w => w.Id == tenantId);
+            if (tenant == null)
+            {
+                serviceResponse.Message = "Tenant not found.";
+                _logger.LogWarning("Tenant with ID {TenantId} not found.", tenantId);
+                return serviceResponse;
+            }
+
+            // Determine the container name for the tenant
+            var containerName = tenant.ContainerName;
+
+            // Upload the file asynchronously to Azure Blob Storage
+            _logger.LogInformation("Starting file upload for {FileName} to Azure Blob Storage in container {ContainerName}.", fileName, containerName);
+
+            // Open the file stream and upload the file to Blob Storage
+            using (var fileStream = File.OpenRead(fullLocalPath))
+            {
+                // Assuming _azureBlobStorageService.UploadFileAsync returns a URI or other result
+                var blobUri = await _azureBlobStorageService.UploadFileAsync(
+                    containerName,
+                    fileStream,
+                    uniqueFileName,
+                    mimeType
+                );
+
+                // Log successful upload
+                _logger.LogInformation("Successfully uploaded file {FileName} to Azure Blob Storage. Blob URI: {BlobUri}", fileName, blobUri?.ToString());
+
+                // Store the unique file name in the service response as an indicator of success
+                serviceResponse.Data = uniqueFileName;
+            }
+
+            // Update the service response to indicate success
+            serviceResponse.Message = "File uploaded successfully to Azure Blob Storage.";
+            serviceResponse.StatusCode = 200;
+
+        }
+        catch (Exception ex)
+        {
+            // Log any unexpected errors during the upload process
+            _logger.LogError(ex, "An error occurred while uploading the file to Azure Blob Storage.");
+        }
+
+        // Return the service response with status and file details
         return serviceResponse;
     }
 }
