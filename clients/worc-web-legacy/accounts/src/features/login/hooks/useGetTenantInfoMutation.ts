@@ -26,7 +26,7 @@ export const useGetTenantInfoMutation = () => {
           toast.error("Failed to get account information.");
           return;
         }
-        
+
         if (data.ssoConfigJson) {
           // TODO: if SSO enabled then route
           window.location.assign(data.ssoConfigJson);
