@@ -44,4 +44,13 @@ public interface IUploadFileService
     /// <returns>The response is path of the downloaded file.</returns>
     Task<ServiceResponse<string>> DownloadFileOnServerAsync(string fileUrl, bool isTemp = false);
 
+    /// <summary>
+    /// Uploads a file to Azure Blob Storage, associating it with a specific tenant.
+    /// </summary>
+    /// <param name="fileUrl">The URL of the file to upload. This is typically a local file path or temporary file path.</param>
+    /// <param name="tenantId">The ID of the tenant that the file is associated with, used to organize files by tenant.</param>
+    /// <returns>
+    /// A task that represents the asynchronous operation. The task result contains a <see cref="ServiceResponse{string}"/> 
+    /// </returns>
+    Task<ServiceResponse<string>> UploadFileToBlobAsync(string fileUrl, Guid tenantId);
 }
