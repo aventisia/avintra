@@ -22,11 +22,11 @@ public class LoginWithExternalAuthController : BaseApiController
     }
 
     // Validates an external token and creates the user if not already existing.
-    [HttpGet("entra/callback")]
-    public async Task<ActionResult<ServiceResponse<UserSessionDto>>> EntraCallback(string code)
+    [HttpGet("entra/token")]
+    public async Task<ActionResult<ServiceResponse<UserSessionDto>>> EntraToken(string code)
     {
         // Validate the token and create the user if it doesn't exist
-        var authenticateUserResult = await _loginWithExternalAuthService.EntraCallbackAsync(code);
+        var authenticateUserResult = await _loginWithExternalAuthService.EntraTokenAsync(code);
 
         // Return BadRequest if token validation fails due to domain mismatch or other client error
         if (authenticateUserResult.StatusCode == 400)
