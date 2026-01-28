@@ -6,6 +6,7 @@ import { ColumnDef } from "@tanstack/react-table";
 import { TABLE_KEY } from "../constants";
 import { statusColor } from "../constants/column-display-names";
 import { QueueWorkItemDto } from "../dtos/queue-work-item-dto";
+import { WorkItemRowActions } from "./WorkItemRowActions";
 
 /**
  * Array of table columns for the WorkItems table.
@@ -67,6 +68,13 @@ export const workItemsTableColumns: ColumnDef<QueueWorkItemDto>[] = [
       <div className="w-auto truncate font-medium">
         {dateFormatter(row.getValue("createdOn"))}
       </div>
+    ),
+  },
+  {
+    id: "actions",
+    cell: ({ row }) => (
+      // Render the queues row actions component
+      <WorkItemRowActions rowId={row.original.id ?? "rowId"} />
     ),
   },
 ];
