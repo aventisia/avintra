@@ -5,12 +5,15 @@ import {
   Form,
   FormLabelExt,
   InputField,
+  SelectField,
   SwitchField,
   TextareaField,
 } from "@aventisia/ui/form";
 import { useListOptimisticMutation } from "@aventisia/ui/hooks";
 import { useEffect, useRef } from "react";
 import { z } from "zod";
+
+import { JsonEditorField } from "@/components/json-editor/JsonEditorField";
 
 import { queueOptimisticMutationFn } from "../../apis/queues-table-apis";
 import { DATA_QUERY_KEY } from "../../constants";
@@ -19,6 +22,7 @@ import {
   idProps,
   isDisabledProps,
   nameProps,
+  typeProps,
 } from "../../constants/queue-form-field-props";
 import { queueZodSchema } from "../../constants/queue-zod-schema";
 import { QueuesTableDto } from "../../dtos/queues-table-dto";
@@ -46,7 +50,7 @@ export const QueueCrudForm = () => {
     refineFormData,
   } = useDefineQueueForm();
 
-  const jData = form.watch("inputSchema");
+  // const jData = form.watch("inputSchema");
 
   const handleFileUpload = (event: React.ChangeEvent<HTMLInputElement>) => {
     event.preventDefault();
@@ -135,6 +139,12 @@ export const QueueCrudForm = () => {
         nonErrorMessage={availabilityMessage}
       />
 
+      {/* Type */}
+      {crudAction === "create" ? (
+        <SelectField {...typeProps} />
+      ) : (
+        form.getValues("type") !== "" && <SelectField {...typeProps} />
+      )}
       {/* Description */}
       <TextareaField {...descriptionProps} />
       <SwitchField
@@ -206,10 +216,7 @@ export const QueueCrudForm = () => {
             </Button>
           </div>
           <pre>
-            <TextareaField
-              name="inputSchema"
-              rows={jData.length < 5 ? 1 : 15}
-            />
+            <JsonEditorField name="inputSchema" disabled={isReadMode} />
           </pre>
         </div>
       </div>

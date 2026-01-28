@@ -6,7 +6,7 @@
  */
 export enum QueueWorkItemStatusEnum {
   Pending = "Pending",
-  InProgress = "In Progress",
+  InProgress = "InProgress",
   Completed = "Completed",
   Failed = "Failed",
 }
