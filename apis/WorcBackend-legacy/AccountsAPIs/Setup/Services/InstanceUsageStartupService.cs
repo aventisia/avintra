@@ -7,8 +7,8 @@ public class InstanceUsageStartupService : IHostedService
     private readonly EnvironmentConfig _environmentConfig;
 
     public InstanceUsageStartupService(
-        IServiceScopeFactory serviceScopeFactory, 
-        ILogger<InstanceUsageStartupService> logger, 
+        IServiceScopeFactory serviceScopeFactory,
+        ILogger<InstanceUsageStartupService> logger,
         EnvironmentConfig environmentConfig)
     {
         _serviceScopeFactory = serviceScopeFactory;
@@ -51,14 +51,6 @@ public class InstanceUsageStartupService : IHostedService
                 {
                     _logger.LogError("Contract has not started. Startup cannot continue. Please contact the support team.");
                     errorMessage = "Contract has not started. Please contact the support team";
-                    throw new InvalidOperationException(errorMessage);
-                }
-
-                // Fail if contract expired
-                if (_environmentConfig.OnPremContractEnd.Date < currentDateTime.Date)
-                {
-                    _logger.LogError("Contract has expired. Startup cannot continue. Please contact the support team.");
-                    errorMessage = "Contract has expired. Please contact the support team.";
                     throw new InvalidOperationException(errorMessage);
                 }
 

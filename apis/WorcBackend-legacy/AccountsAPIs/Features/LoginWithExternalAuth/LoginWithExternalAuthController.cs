@@ -22,7 +22,7 @@ public class LoginWithExternalAuthController : BaseApiController
     }
 
     // Validates an external token and creates the user if not already existing.
-    [HttpPost("entra/callback")]
+    [HttpGet("entra/callback")]
     public async Task<ActionResult<ServiceResponse<UserSessionDto>>> EntraCallback(string code)
     {
         // Validate the token and create the user if it doesn't exist

@@ -13,6 +13,9 @@ public static class AccountsDbInitialSeed
             // Get accountsDbContext
             using var _accountsDbContext = scope.ServiceProvider.GetRequiredService<AccountsDbContext>();
 
+            // Apply pending database migrations
+            await ApplyMigrationsAsync(_accountsDbContext);
+
             // Get RoleManager and UserManager
             using var _roleManager = scope.ServiceProvider.GetRequiredService<RoleManager<AccountRole>>();
             using var _userManager = scope.ServiceProvider.GetRequiredService<UserManager<AccountUser>>();
@@ -65,6 +68,22 @@ public static class AccountsDbInitialSeed
                 Console.WriteLine("Error: Error occurred while tyring to seed data: " + ex.Message);
             }
             return app;
+        }
+    }
+
+    // Apply pending database migrations
+    private async static Task ApplyMigrationsAsync(AccountsDbContext accountsDbContext)
+    {
+        try
+        {
+            Console.WriteLine("Info: Applying database migrations...");
+            await accountsDbContext.Database.MigrateAsync();
+            Console.WriteLine("Info: Database migrations applied successfully.");
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine($"Error: An error occurred while applying database migrations: {ex.Message}");
+            throw;
         }
     }
 
