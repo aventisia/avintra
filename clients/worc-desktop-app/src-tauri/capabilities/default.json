@@ -1,0 +1,43 @@
+{
+  "$schema": "../gen/schemas/desktop-schema.json",
+  "identifier": "default",
+  "description": "enables the default permissions",
+  "windows": ["main"],
+  "permissions": [
+    "core:default",
+    "updater:default",
+    "process:default",
+    "store:default",
+    "os:default",
+    "core:window:allow-destroy",
+    "core:window:allow-close",
+    {
+      "identifier": "shell:allow-execute",
+      "allow": [
+        {
+          "name": "taskkill",
+          "cmd": "taskkill",
+          "args": [
+            { "validator": "\\S+" },
+            { "validator": "\\S+" },
+            { "validator": "\\S+" }
+          ]
+        },
+
+        {
+          "name": "pkill",
+          "cmd": "pkill",
+          "args": [{ "validator": "\\S+" }, { "validator": "\\S+" }]
+        }
+      ]
+    }
+  ],
+  "local": true,
+  "remote": {
+    "urls": [
+      "http://localhost:*/**",
+      "https://localhost:*/**",
+      "https://*.aventisia.com/**"
+    ]
+  }
+}
