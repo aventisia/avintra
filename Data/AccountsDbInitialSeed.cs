@@ -258,6 +258,7 @@ public static class AccountsDbInitialSeed
                 Type = TenantTypesEnum.Organization,
                 Currency = CurrencyTypesEnum.USD,
                 Name = environmentConfig.OnPremTenantName,
+                Domain = ExtractDomainFromEmailUtil.ExtractDomainFromUrl(environmentConfig.AccountsApiBaseUrl),
                 ContainerName = TenantContainerUtil.GenerateName(environmentConfig.OnPremTenantName),
                 ExpiresOn = DateTimeOffset.MaxValue, // TODO: We need to remove or update it
                 IsSSOEnabled = false,
