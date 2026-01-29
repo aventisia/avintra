@@ -12,31 +12,10 @@ configurationBuilder.AddJsonFile("serilogsettings.json", optional: false, reload
 configurationBuilder.AddJsonFile($"appsettings.{Environment.GetEnvironmentVariable("ASPNETCORE_ENVIRONMENT")}.json", optional: true, reloadOnChange: true);
 var config = configurationBuilder.Build();
 
-if (!builder.Environment.IsEnvironment("Localhost"))
-{
-    // Get sensitive data from environment variables
-    var DB_HOST = Guard.Against.Null(Environment.GetEnvironmentVariable("DB_HOST"), message: "DB_HOST cannot be null");
-    var DB_CREDENTIALS = Guard.Against.Null(Environment.GetEnvironmentVariable("DB_CREDENTIALS"), message: "DB_CREDENTIALS cannot be null");
-    var JWT_SECRET_KEY = Guard.Against.Null(Environment.GetEnvironmentVariable("JWT_SECRET_KEY"), message: "JWT_SECRET_KEY cannot be null");
-    var SMTP_API_KEY = Guard.Against.Null(Environment.GetEnvironmentVariable("SMTP_API_KEY"), message: "SMTP_API_KEY cannot be null");
-    var OPENAI_API_KEY = Guard.Against.Null(Environment.GetEnvironmentVariable("OPENAI_API_KEY"), message: "OPENAI_API_KEY cannot be null");
-    var AES_ENCRYPTION_KEY = Guard.Against.Null(Environment.GetEnvironmentVariable("AES_ENCRYPTION_KEY"), message: "AES_ENCRYPTION_KEY cannot be null");
-    var AES_INITIALIZATION_VECTOR = Guard.Against.Null(Environment.GetEnvironmentVariable("AES_INITIALIZATION_VECTOR"), message: "AES_INITIALIZATION_VECTOR cannot be null");
+var isEnvironmentLocalhost = builder.Environment.IsEnvironment("Localhost");
 
-    // Update sensitive data in configuration
-    config = new ConfigurationBuilder().AddConfiguration(config).AddInMemoryCollection(new Dictionary<string, string?>
-    {
-        { "ConnectionStringConfig:AppDb:Credentials", DB_CREDENTIALS },
-        { "ConnectionStringConfig:AppDb:Host", DB_HOST },
-        { "ConnectionStringConfig:TenantDb:Credentials", DB_CREDENTIALS },
-        { "ConnectionStringConfig:TenantDb:Host", DB_HOST },
-        { "JwtConfig:SecretKey", JWT_SECRET_KEY },
-        { "SmtpConfig:ApiKey", SMTP_API_KEY },
-        { "OpenAIConfig:OpenAIApiKey", OPENAI_API_KEY },
-        { "AesEncryptionConfig:AES_ENCRYPTION_KEY", AES_ENCRYPTION_KEY },
-        { "AesEncryptionConfig:AES_INITIALIZATION_VECTOR", AES_INITIALIZATION_VECTOR }
-    }).Build();
-}
+// Load environment variables into configuration
+config = config.LoadEnvironmentConfiguration(isEnvironmentLocalhost);
 
 /*---------Serilog Configuration---------*/
 
@@ -75,12 +54,12 @@ builder.Services.AddSwaggerGen();
 builder.Services.AddQuartzJobs();
 builder.Services.AddStringEncryptionService();
 builder.Services.AddUploadFileService();
-builder.Services.AddHttpClientService(config);
+builder.Services.AddHttpClient();
+builder.Services.AddAzureBlobStorageService();
 /*--Configure the HTTP request pipeline.--*/
-
 var app = builder.Build();
 
-if (app.Environment.IsEnvironment("Localhost"))
+if (isEnvironmentLocalhost)
 {
     app.UseDeveloperExceptionPage();
     app.UseSwagger();
@@ -89,10 +68,10 @@ if (app.Environment.IsEnvironment("Localhost"))
 
 app.UseMiddleware<ExceptionMiddleware>();
 
-if (!app.Environment.IsEnvironment("Localhost")) app.UseHsts();
+if (!isEnvironmentLocalhost) app.UseHsts();
 
 // In a Nginx setup with SSL termination, Nginx handles the HTTPS connection and forwards the request to your backend ASP.NET Core application using HTTP (port 80 by default).
-// if (app.Environment.IsEnvironment("Localhost")) app.UseHttpsRedirection();
+// if (isEnvironmentLocalhost) app.UseHttpsRedirection();
 
 app.UseSerilogRequestLogging();
 
@@ -110,7 +89,7 @@ app.UseAuthentication();
 
 app.UseAuthorization();
 
-app.UseRateLimiter(); 
+app.UseRateLimiter();
 
 app.UseMiddleware<SessionValidator>();
 
@@ -119,5 +98,7 @@ app.UseMiddleware<TenantResolver>();
 app.MapControllers();
 
 app.MapHub<OrchestratorHub>("/orchestrator-hub");
+
+await app.SeedInitialData();
 
 await app.RunAsync();

@@ -1,10 +1,13 @@
+using System.Threading.Tasks;
+
 namespace WorkspaceAPIs.Services;
 
-public class FileUploadService(ILogger<FileUploadService> logger, IUploadFileService uploadFileService) : IFileUploadService
+public class FileUploadService(ILogger<FileUploadService> logger, IUploadFileService uploadFileService, IUnitOfWork unitOfWork) : IFileUploadService
 {
     #region Fields
     private readonly ILogger<FileUploadService> _logger = logger;
     private readonly IUploadFileService _uploadFileService = uploadFileService;
+    private readonly IUnitOfWork _unitOfWork = unitOfWork;
     #endregion
 
     // Uploads multiple files for a given step and returns the saved file URLs.
@@ -99,7 +102,7 @@ public class FileUploadService(ILogger<FileUploadService> logger, IUploadFileSer
     }
 
     // Deletes a file from the server's storage based on the file URL.
-    public ServiceResponse<bool> DeleteFileAsync(string fileUrl)
+    public async Task<ServiceResponse<bool>> DeleteFileAsync(string fileUrl)
     {
         var serviceResponse = new ServiceResponse<bool>
         {
@@ -118,7 +121,7 @@ public class FileUploadService(ILogger<FileUploadService> logger, IUploadFileSer
 
             _logger.LogInformation("Starting file deletion process for file URL: {FileUrl}.", fileUrl);
 
-            var response = _uploadFileService.DeleteFileAsync(fileUrl);
+            var response = await _uploadFileService.DeleteFileAsync(fileUrl);
 
             if (response.StatusCode != 200)
             {
@@ -168,8 +171,8 @@ public class FileUploadService(ILogger<FileUploadService> logger, IUploadFileSer
             }
             else
             {
-                var downloadResponse = _uploadFileService.DownloadFileAsync(fileOrRemoteUrl, isTemp);
-                serviceResponse.Data = downloadResponse.Data.Path;
+                var downloadResponse = await _uploadFileService.DownloadFileAsync(fileOrRemoteUrl, isTemp);
+                serviceResponse.Data = fileOrRemoteUrl;
                 _logger.LogInformation(downloadResponse.Message);
             }
             serviceResponse.StatusCode = 200;
@@ -182,6 +185,71 @@ public class FileUploadService(ILogger<FileUploadService> logger, IUploadFileSer
         }
 
         // Return the service response with the status of the operation
+        return serviceResponse;
+    }
+
+    // Upload a file from the local system to the cloud
+    public async Task<ServiceResponse<bool>> UploadFileLocalToCloudAsync()
+    {
+        var serviceResponse = new ServiceResponse<bool>()
+        {
+            Data = false,
+            Message = "Failed to upload file."
+        };
+
+        try
+        {
+            // Get the list of files where the Path is not null, not empty, and starts with "/"
+            var files = await _unitOfWork.TemplateResourceRepo
+                .GetByConditionAsync(w => !string.IsNullOrEmpty(w.Path) && w.Path.StartsWith("/"))
+                .AsNoTracking()
+                .ToListAsync();
+
+            _logger.LogInformation($"Found {files.Count} file(s) to upload.");
+
+            var needToUpdates = new List<TemplateResource>();
+
+            // Iterate through files and attempt to upload each
+            foreach (var file in files)
+            {
+                var response = await _uploadFileService.UploadFileToBlobAsync(file.Path, file.TenantId.Value);
+
+                if (response.StatusCode == 200)
+                {
+                    file.Path = response.Data ?? string.Empty;
+                    needToUpdates.Add(file);
+                }
+                else
+                {
+                    // Handle non-200 status codes here (e.g., logging or retrying)
+                    _logger.LogWarning($"Failed to upload file: {file.Path}, Status Code: {response.StatusCode}");
+                }
+            }
+
+            // If we have files that need to be updated, persist changes
+            if (needToUpdates.Any())
+            {
+                _unitOfWork.TemplateResourceRepo.Update(needToUpdates);
+
+                // Attempt to save changes to the database
+                if (!await _unitOfWork.SaveAsync())
+                {
+                    _logger.LogWarning("Failed to save changes to the database after upload.");
+                    return serviceResponse;
+                }
+            }
+
+            serviceResponse.Data = true;
+            serviceResponse.Message = "Files uploaded successfully.";
+            serviceResponse.StatusCode = 200;
+        }
+        catch (Exception ex)
+        {
+            // Log exception details for debugging
+            _logger.LogError($"An error occurred during the upload process: {ex.Message}", ex);
+            serviceResponse.Message = $"An error occurred: {ex.Message}";
+        }
+
         return serviceResponse;
     }
 }

@@ -9,9 +9,17 @@ public static class AppServicesExtension
 {
     public static void AddDbContextConfig(this IServiceCollection services, IConfiguration config)
     {
-        var connConfig = Guard.Against.Null(config.GetSection("ConnectionStringConfig").Get<ConnectionStringConfig>(), "ConnectionStringConfig cannot be null");
-        var appDbConnectionString = $"{connConfig.AppDb.Credentials}{connConfig.AppDb.Host}{connConfig.AppDb.Database}{connConfig.AppDb.Other}";
-        var tenantDbConnectionString = $"{connConfig.TenantDb.Credentials}{connConfig.TenantDb.Host}{connConfig.TenantDb.Database}{connConfig.TenantDb.Other}";
+        var environmentConfig = Guard.Against.Null(config.GetSection("EnvironmentConfig").Get<EnvironmentConfig>(), message: "EnvironmentConfig cannot be null");
+        
+        // Read PostgreSQL settings from environment variables or config
+        var pgHost = environmentConfig.PostgresqlHost ?? "localhost";
+        var pgPort = environmentConfig.PostgresqlPort.ToString() ?? "5432";
+        var pgUsername = environmentConfig.PostgresqlUsername ?? "";
+        var pgPassword = environmentConfig.PostgresqlPassword ?? "";
+
+        // Build connection strings for different databases
+        var appDbConnectionString = $"Host={pgHost};Port={pgPort};Username={pgUsername};Password={pgPassword};Database=WorkspaceDb;Include Error Detail=true";
+        var tenantDbConnectionString = $"Host={pgHost};Port={pgPort};Username={pgUsername};Password={pgPassword};Database=AccountsDb;Include Error Detail=true";
 
         services.AddDbContext<WorkspaceDbContext>(options => options.UseNpgsql(appDbConnectionString));
         services.AddDbContext<WorkspaceInternalDbContext>(options => options.UseNpgsql(appDbConnectionString));
@@ -54,14 +62,9 @@ public static class AppServicesExtension
 
     public static void AddAppDependencies(this IServiceCollection services, IConfiguration config)
     {
-
         // Signleton
-        services.AddSingleton(Guard.Against.Null(config.GetSection("SmtpConfig").Get<SmtpConfig>(), "SmtpConfig cannot be null"));
-        services.AddSingleton(Guard.Against.Null(config.GetSection("AesEncryptionConfig").Get<AesEncryptionConfig>(), "AesEncryptionConfig cannot be null"));
-        services.AddSingleton(Guard.Against.Null(config.GetSection("DefaultTenantConfig").Get<DefaultTenantConfig>(), message: "DefaultTenantConfig cannot be null"));
-        services.AddSingleton(Guard.Against.Null(config.GetSection("APIKeyConfig").Get<APIKeyConfig>(), "APIKeyConfig cannot be null"));
-        services.AddSingleton(Guard.Against.Null(config.GetSection("ExtractViaLLMConfig").Get<ExtractViaLLMConfig>(), "ExtractViaLLMConfig cannot be null"));
-        services.AddSingleton(Guard.Against.Null(config.GetSection("OpenAIConfig").Get<OpenAIConfig>(), "OpenAIConfig cannot be null"));
+        services.AddSingleton(Guard.Against.Null(config.GetSection("EnvironmentConfig").Get<EnvironmentConfig>(), "EnvironmentConfig cannot be null"));
+        services.AddSingleton(Guard.Against.Null(config.GetSection("AppDefaultConfig").Get<AppDefaultConfig>(), "AppDefaultConfig cannot be null"));
 
         // Feature Services
         services.AddScoped<IWorkspaceUserService, WorkspaceUserService>();

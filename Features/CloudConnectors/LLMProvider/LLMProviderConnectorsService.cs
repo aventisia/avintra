@@ -5,18 +5,18 @@ namespace WorkspaceAPIs.Features.CloudConnectors.LLMProvider;
 public class LLMProviderConnectorsService : ILLMProviderConnectorsService
 {
     private readonly ILogger<LLMProviderConnectorsService> _logger;
-    private readonly HttpClientUrlConfig _httpClientUrlConfig;
+    private readonly EnvironmentConfig _environmentConfig;
     private readonly ICloudConnectorsVaultService _cloudConnectorsVaultService;
     private readonly string _jwt;
 
     public LLMProviderConnectorsService(
         ILogger<LLMProviderConnectorsService> logger,
-        HttpClientUrlConfig httpClientUrlConfig,
+        EnvironmentConfig environmentConfig,
         ICloudConnectorsVaultService cloudConnectorsVaultService,
         IHttpContextAccessor httpContextAccessor)
     {
         _logger = logger;
-        _httpClientUrlConfig = httpClientUrlConfig;
+        _environmentConfig = environmentConfig;
         _cloudConnectorsVaultService = cloudConnectorsVaultService;
 
         _jwt = httpContextAccessor.HttpContext?.Request.Cookies["AccessToken"] ?? httpContextAccessor.HttpContext?.Request.Headers["Authorization"].ToString().Replace("Bearer ", "") ?? "";
@@ -153,7 +153,7 @@ public class LLMProviderConnectorsService : ILLMProviderConnectorsService
             using var httpClient = new HttpClient();
             httpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", _jwt);
 
-            string endpoint = $"{_httpClientUrlConfig.LlmPipelineApisBaseUrl}/llm/generate";
+            string endpoint = $"{_environmentConfig.LlmPipelineApiBaseUrl}/api/llm/generate";
 
             var jsonContent = new StringContent(
                 System.Text.Json.JsonSerializer.Serialize(llmPipelinePayload), Encoding.UTF8, "application/json");

@@ -84,7 +84,7 @@ public class OnPremModelService : IOnPremModelService
         {
             // Query to fetch on-prem models created by the current user, ordered by creation date.
             var onPremModels = await _unitOfWork.OnPremModelRepo
-                .GetByConditionAsync(w => w.CreatedByUserId == _userId)
+                .GetAllAsync()
                 .AsNoTracking()
                 .Include(i => i.CreatedByUser)
                 .Include(i => i.LastModifiedByUser)
@@ -274,15 +274,25 @@ public class OnPremModelService : IOnPremModelService
 
         try
         {
-            // Check if a model with the same name already exists.
+            // Check whether an on-prem model with the same name, provider type, and provider URL already exists.
             var existingModel = await _unitOfWork.OnPremModelRepo
-                .GetByConditionAsync(w => w.Name.ToLower() == onPremModelDto.Name.ToLower())
+                .GetByConditionAsync(w =>
+                    w.ModelName.ToLower() == onPremModelDto.ModelName.ToLower() &&
+                    w.ProviderType == onPremModelDto.ProviderType &&
+                    w.ProviderUrl == onPremModelDto.ProviderUrl
+                )
                 .FirstOrDefaultAsync();
 
             if (existingModel != null)
             {
-                _logger.LogWarning("Duplicate model name '{ModelName}' attempted for insertion.", onPremModelDto.Name);
-                serviceResponse.Message = "An on-prem model with the same name already exists.";
+                _logger.LogWarning(
+                    "Attempted to insert a duplicate on-prem model. ModelName: {ModelName}, ProviderType: {ProviderType}, ProviderUrl: {ProviderUrl}.",
+                    onPremModelDto.ModelName,
+                    onPremModelDto.ProviderType,
+                    onPremModelDto.ProviderUrl
+                );
+
+                serviceResponse.Message = "An on-prem model with the same name, provider type, and provider URL already exists.";
                 serviceResponse.StatusCode = 409;
                 return serviceResponse;
             }
@@ -292,6 +302,7 @@ public class OnPremModelService : IOnPremModelService
 
             // Create a new on-prem model from the DTO and assign user IDs for tracking.
             var newOnPremModel = onPremModelDto.Adapt<OnPremModel>();
+            newOnPremModel.Status = OnPremModelStatusEnum.Installed;
             newOnPremModel.CreatedByUserId = _userId;
             newOnPremModel.LastModifiedByUserId = _userId;
 
@@ -354,6 +365,22 @@ public class OnPremModelService : IOnPremModelService
                 // - Emit domain event
             }
 
+            // Call SyncAllOnPremModelsAsync method and wait for its result
+            var syncResponse = await SyncAllOnPremModelsAsync(new SyncOnPremModelsDto()
+            {
+                ProviderUrl = onPremModelDto.ProviderUrl,
+                ProviderType = onPremModelDto.ProviderType
+            });
+
+            if (syncResponse.Data)
+            {
+                _logger.LogInformation("Successfully synced on-prem models for ProviderUrl: {ProviderUrl}, ProviderType: {ProviderType}.", onPremModelDto.ProviderUrl, onPremModelDto.ProviderType);
+            }
+            else
+            {
+                _logger.LogWarning("Failed to sync on-prem models for ProviderUrl: {ProviderUrl}, ProviderType: {ProviderType}.", onPremModelDto.ProviderUrl, onPremModelDto.ProviderType);
+            }
+
             // Map the inserted model to DTO for response.
             serviceResponse.Data = newOnPremModel.Adapt<OnPremModelDto>();
             serviceResponse.StatusCode = 200;
@@ -384,6 +411,7 @@ public class OnPremModelService : IOnPremModelService
             // Query to check if the model exists in the database.
             var existingOnPremModel = await _unitOfWork.OnPremModelRepo
                 .GetByConditionAsync(w => w.Id == onPremModelDto.Id)
+                .AsNoTracking()
                 .SingleOrDefaultAsync();
 
             if (existingOnPremModel == null)
@@ -393,17 +421,26 @@ public class OnPremModelService : IOnPremModelService
                 return serviceResponse;
             }
 
-            // Check for duplicate names if the name is changed.
+            // Check whether an on-prem model with the same name, provider type, and provider URL already exists.
             var duplicateOnPremModel = await _unitOfWork.OnPremModelRepo
                 .GetByConditionAsync(w =>
                     w.Id != onPremModelDto.Id &&
-                    w.Name.ToLower() == onPremModelDto.Name.ToLower())
+                    w.ModelName.ToLower() == onPremModelDto.ModelName.ToLower() &&
+                    w.ProviderType == onPremModelDto.ProviderType &&
+                    w.ProviderUrl == onPremModelDto.ProviderUrl
+                )
                 .FirstOrDefaultAsync();
 
             if (duplicateOnPremModel != null)
             {
-                _logger.LogWarning("Attempt to update on-prem model with duplicate name '{ModelName}'.", onPremModelDto.Name);
-                serviceResponse.Message = "An on-prem model with the same name already exists.";
+                _logger.LogWarning(
+                    "Attempted to insert a duplicate on-prem model. ModelName: {ModelName}, ProviderType: {ProviderType}, ProviderUrl: {ProviderUrl}.",
+                    onPremModelDto.ModelName,
+                    onPremModelDto.ProviderType,
+                    onPremModelDto.ProviderUrl
+                );
+
+                serviceResponse.Message = "An on-prem model with the same name, provider type, and provider URL already exists.";
                 serviceResponse.StatusCode = 409;
                 return serviceResponse;
             }
@@ -471,6 +508,25 @@ public class OnPremModelService : IOnPremModelService
                 // - Persist completion timestamp
                 // - Emit domain event
             }
+
+            // Call SyncAllOnPremModelsAsync method and wait for its result
+            var syncResponse = await SyncAllOnPremModelsAsync(new SyncOnPremModelsDto()
+            {
+                ProviderUrl = onPremModelDto.ProviderUrl,
+                ProviderType = onPremModelDto.ProviderType
+            });
+
+            if (syncResponse.Data)
+            {
+                _logger.LogInformation("Successfully synced on-prem models for ProviderUrl: {ProviderUrl}, ProviderType: {ProviderType}.", onPremModelDto.ProviderUrl, onPremModelDto.ProviderType);
+            }
+            else
+            {
+                _logger.LogWarning("Failed to sync on-prem models for ProviderUrl: {ProviderUrl}, ProviderType: {ProviderType}.", onPremModelDto.ProviderUrl, onPremModelDto.ProviderType);
+            }
+
+
+
 
             // Return the updated model.
             serviceResponse.Data = existingOnPremModel.Adapt<OnPremModelDto>();
@@ -863,9 +919,6 @@ public class OnPremModelService : IOnPremModelService
                 // Read the JSON response containing the model list
                 var modelsJson = await response.Content.ReadAsStringAsync(cancellationToken);
 
-                // Log the raw response for debugging purposes
-                _logger.LogInformation("Received response from Ollama: {Response}", modelsJson);
-
                 // Configure JSON deserialization options for case-insensitive property matching
                 var options = new JsonSerializerOptions
                 {
@@ -934,22 +987,22 @@ public class OnPremModelService : IOnPremModelService
                     var ollamaModels = await GetOllamaModelsAsync(syncOnPremModelsDto.ProviderUrl, CancellationToken.None);
 
                     // Loop through each on-prem model retrieved from the database
-                    foreach (var modelDto in onPremModels)
+                    foreach (var ollamaModel in ollamaModels)
                     {
                         // Skip iteration if there are no models from Ollama
                         if (ollamaModels.Count == 0) continue;
 
                         // Attempt to find a matching Ollama model by comparing model names (case-insensitive)
-                        var ollamaModel = ollamaModels
-                            .FirstOrDefault(w => w.Name.Equals(modelDto.ModelName, StringComparison.InvariantCultureIgnoreCase));
+                        var onPremModel = onPremModels
+                            .FirstOrDefault(w => w.ModelName.Equals(ollamaModel.Name, StringComparison.InvariantCultureIgnoreCase));
 
-                        if (ollamaModel != null)
+                        if (onPremModel != null)
                         {
                             // If a matching Ollama model is found and its status is not "installed", update it
-                            if (modelDto.Status != OnPremModelStatusEnum.Installed)
+                            if (onPremModel.Status != OnPremModelStatusEnum.Installed)
                             {
-                                modelDto.Status = OnPremModelStatusEnum.Installed;
-                                needToBeUpdated.Add(modelDto);
+                                onPremModel.Status = OnPremModelStatusEnum.Installed;
+                                needToBeUpdated.Add(onPremModel);
                             }
                         }
                         else
@@ -957,9 +1010,9 @@ public class OnPremModelService : IOnPremModelService
                             // If the Ollama model is not found in the database, create a new model entry
                             var newOnPremModel = new OnPremModel
                             {
-                                Name = modelDto.Name,
+                                Name = ollamaModel.Name,
                                 ProviderUrl = syncOnPremModelsDto.ProviderUrl,
-                                ModelName = modelDto.ModelName,
+                                ModelName = ollamaModel.Name,
                                 Status = OnPremModelStatusEnum.Installed,
                                 ProviderType = syncOnPremModelsDto.ProviderType,
                                 CreatedByUserId = _userId,
@@ -983,7 +1036,7 @@ public class OnPremModelService : IOnPremModelService
                     }
 
                     // Save changes to the database
-                    if (!await _unitOfWork.SaveAsync())
+                    if (!await _unitOfWork.SaveAsync() && (needToBeInserted.Any() || needToBeUpdated.Any()))
                     {
                         _logger.LogError("Failed to save changes when inserting on-prem model with name '{ModelName}'", onPremModels.FirstOrDefault()?.ModelName);
                         return serviceResponse;

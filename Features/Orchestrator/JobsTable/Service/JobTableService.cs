@@ -24,10 +24,10 @@ public class JobTableService : IJobTableService
         _jobsExecutorService = jobsExecutorService;
     }
 
-    // Retrieves a list of active jobs (either created or running).
-    public async Task<ServiceResponse<IEnumerable<JobTableDto>>> GetJobsAsync()
+    // Retrieves a list of jobs within the specified date range, or defaults to the last 7 days if no dates are provided.
+    public async Task<ServiceResponse<IEnumerable<JobTableDto>>> GetJobsAsync(DateTimeOffset? startDate, DateTimeOffset? endDate)
     {
-        // Initialize ServiceResponse with an error message.
+        // Initialize the response with a default error message.
         var serviceResponse = new ServiceResponse<IEnumerable<JobTableDto>>
         {
             Data = null,
@@ -36,65 +36,82 @@ public class JobTableService : IJobTableService
 
         try
         {
-            // Fetch jobs 
-            var jobs = await _unitOfWork.JobRepo
-                                        .GetAllAsync()
-                                        .Include(i => i.FlowVersion)
-                                            .ThenInclude(i2 => i2.Flow)
-                                        .OrderByDescending(o => o.CreatedOn)
-                                        .Take(100)
-                                        .ProjectToType<JobTableDto>()
-                                        .ToListAsync();
+            // If no date filters are provided, default to the last 7 days.
+            if (!startDate.HasValue || !endDate.HasValue)
+            {
+                startDate = DateTime.UtcNow.Date.AddDays(-6);
+                endDate = DateTime.UtcNow.Date;
+            }
 
-            // If jobs are retrieved successfully, update the response.
+            // Fetch jobs from the repository with the provided date filters.
+            var jobs = await _unitOfWork.JobRepo
+                .GetByConditionAsync(w =>
+                    w.CreatedOn.Date >= startDate.Value && w.CreatedOn.Date <= endDate.Value
+                )
+                .Include(i => i.FlowVersion)
+                    .ThenInclude(i2 => i2.Flow)
+                .OrderByDescending(o => o.CreatedOn)
+                .ProjectToType<JobTableDto>()
+                .ToListAsync();
+
+            // If jobs are successfully retrieved, update the response.
             serviceResponse.Data = jobs;
             serviceResponse.StatusCode = 200;
             serviceResponse.Message = "Jobs retrieved successfully.";
-            _logger.LogInformation("Successfully retrieved {JobCount} jobs.", jobs.Count); // Log success
+
+            _logger.LogInformation("Successfully retrieved {JobCount} jobs between {StartDate} and {EndDate}.", jobs.Count, startDate, endDate);
         }
         catch (Exception ex)
         {
-            _logger.LogError("Error retrieving jobs: {ErrorMessage}", ex.ToString()); // Log error with detailed message
+            _logger.LogError("Error occurred while retrieving jobs: {ErrorDetails}", ex.ToString());
             return serviceResponse;
         }
 
         return serviceResponse;
     }
 
-    // Retrieves a list of completed or failed job logs (excluding 'Created' or 'Running' statuses).
-    public async Task<ServiceResponse<IEnumerable<JobExecutionLogDto>>> GetJobLogsAsync()
+    // Retrieves a list of job execution logs, excluding those with a 'Created' or 'Running' status, within the specified date range.
+    public async Task<ServiceResponse<IEnumerable<JobExecutionLogDto>>> GetJobLogsAsync(DateTimeOffset? startDate, DateTimeOffset? endDate)
     {
-        // Initialize ServiceResponse with an error message.
+        // Initialize the response with a default error message.
         var serviceResponse = new ServiceResponse<IEnumerable<JobExecutionLogDto>>
         {
             Data = null,
-            Message = "Unable to retrieve job logs. Please try again later."
+            Message = "Failed to retrieve job logs. Please try again later."
         };
 
         try
         {
-            // Fetch job logs where the status is neither 'Created' nor 'Running'.
-            var jobLogs = await _unitOfWork.JobRepo
-                                            .GetByConditionAsync(w =>
-                                                w.Status != JobStatusTypesEnum.Created &&
-                                                w.Status != JobStatusTypesEnum.Running
-                                            )
-                                            .Include(i => i.FlowVersion)
-                                                .ThenInclude(i2 => i2.Flow)
-                                            .OrderByDescending(o => o.CreatedOn)
-                                            .Take(100)
-                                            .ProjectToType<JobExecutionLogDto>()
-                                            .ToListAsync();
+            // If no date filters are provided, default to the last 7 days.
+            if (!startDate.HasValue || !endDate.HasValue)
+            {
+                startDate = DateTime.UtcNow.Date.AddDays(-6);
+                endDate = DateTime.UtcNow.Date;
+            }
 
-            // If job logs are retrieved successfully, update the response.
+            // Fetch job execution logs, excluding 'Created' and 'Running' statuses.
+            var jobLogs = await _unitOfWork.JobRepo
+                .GetByConditionAsync(w =>
+                    w.Status != JobStatusTypesEnum.Created &&
+                    w.Status != JobStatusTypesEnum.Running &&
+                    w.CreatedOn.Date >= startDate.Value && w.CreatedOn.Date <= endDate.Value
+                )
+                .Include(i => i.FlowVersion)
+                    .ThenInclude(i2 => i2.Flow)
+                .OrderByDescending(o => o.CreatedOn)
+                .ProjectToType<JobExecutionLogDto>()
+                .ToListAsync();
+
+            // If job logs are successfully retrieved, update the response.
             serviceResponse.Data = jobLogs;
             serviceResponse.StatusCode = 200;
             serviceResponse.Message = "Job logs retrieved successfully.";
-            _logger.LogInformation("Successfully retrieved {JobLogCount} job logs.", jobLogs.Count);
+
+            _logger.LogInformation("Successfully retrieved {JobLogCount} job logs between {StartDate} and {EndDate}.", jobLogs.Count, startDate, endDate); // Log success with count and date range
         }
         catch (Exception ex)
         {
-            _logger.LogError("Error retrieving job logs: {ErrorMessage}", ex.ToString());
+            _logger.LogError("Error occurred while retrieving job logs: {ErrorDetails}", ex.ToString());
             return serviceResponse;
         }
 
@@ -665,6 +682,110 @@ public class JobTableService : IJobTableService
         }
 
         // Return the final response to the caller.
+        return serviceResponse;
+    }
+
+    public async Task<ServiceResponse<FileStreamResult>> ExportJobsAsync(ExportJobRequestDto exportJobRequestDto)
+    {
+        // Initialize ServiceResponse with a failure response
+        var serviceResponse = new ServiceResponse<FileStreamResult>
+        {
+            Data = null,
+            Message = "Failed to export job data. Please try again."
+        };
+
+        try
+        {
+            // Check if StartDate or EndDate are not provided (null)
+            if (!exportJobRequestDto.StartDate.HasValue || !exportJobRequestDto.EndDate.HasValue)
+            {
+                // Set default values if dates are missing
+                exportJobRequestDto.EndDate = DateTime.UtcNow.Date;
+                exportJobRequestDto.StartDate = DateTime.UtcNow.Date.AddDays(-6);
+            }
+
+            // Initialize the base query with date filter
+            var jobQuery = _unitOfWork.JobRepo
+                .GetByConditionAsync(w =>
+                    w.CreatedOn.Date >= exportJobRequestDto.StartDate.Value.Date &&
+                    w.CreatedOn.Date <= exportJobRequestDto.EndDate.Value.Date
+                )
+                .OrderByDescending(o => o.CreatedOn)
+                .AsQueryable();
+
+            // Apply filters based on optional criteria in the request DTO
+
+            // Filter by Job Status if specified
+            if (exportJobRequestDto.Status.HasValue)
+            {
+                jobQuery = jobQuery.Where(w => w.Status == exportJobRequestDto.Status.Value);
+            }
+
+            // Filter by Job Priority if specified
+            if (exportJobRequestDto.Priority.HasValue)
+            {
+                jobQuery = jobQuery.Where(w => w.Priority == exportJobRequestDto.Priority.Value);
+            }
+
+            // Filter by Machine IDs if provided
+            if (exportJobRequestDto.MachineIds?.Any() == true)
+            {
+                jobQuery = jobQuery.Where(w => w.MachineId != null && exportJobRequestDto.MachineIds.Contains(w.MachineId ?? Guid.Empty));
+            }
+
+            // Filter by Agent IDs if provided
+            if (exportJobRequestDto.AgentIds?.Any() == true)
+            {
+                jobQuery = jobQuery.Where(w => exportJobRequestDto.AgentIds.Contains(w.FlowVersionId));
+            }
+
+            // Fetch and map filtered jobs to DTOs for export
+            var jobs = await jobQuery
+                .Include(i => i.Machine)
+                .Include(i => i.FlowVersion)
+                    .ThenInclude(i2 => i2.Flow)
+                .ProjectToType<ExportJobResponseDto>()
+                .ToListAsync();
+
+            // Log the count of jobs being exported
+            _logger.LogInformation("Exporting {Count} job(s) based on applied filters.", jobs.Count);
+
+            // Convert the retrieved data to CSV byte array for file export
+            var csvBytes = CsvDataExporterUtil.ExportToCsvBytes(jobs, new List<string>
+            {
+                "Job Name",
+                "Priority",
+                "Trigger Type",
+                "Start Time",
+                "End Time",
+                "Duration",
+                "Retry",
+                "Current Status",
+                "Machine Name",
+                "Created On",
+            });
+
+            var stream = new MemoryStream(csvBytes);
+
+            // Prepare the file result for export
+            var fileResult = new FileStreamResult(stream, "text/csv")
+            {
+                FileDownloadName = $"job-data-{DateTime.UtcNow:dd-MM-yyyy}.csv"
+            };
+
+            // Update the service response with the file stream
+            serviceResponse.Data = fileResult;
+            serviceResponse.StatusCode = 200;
+            serviceResponse.Message = "Job data exported successfully.";
+
+            _logger.LogInformation("Job export completed. File generated: {FileName}", fileResult.FileDownloadName);
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex, "An error occurred while exporting job data.");
+            serviceResponse.Message = "An error occurred while processing the export. Please try again later.";
+        }
+
         return serviceResponse;
     }
 }

@@ -21,7 +21,7 @@ public interface IFileUploadService
     /// </summary>
     /// <param name="fileUrl">File Url</param>
     /// <returns>True if delete job is successful, else false</returns>
-    ServiceResponse<bool> DeleteFileAsync(string fileUrl);
+    Task<ServiceResponse<bool>> DeleteFileAsync(string fileUrl);
 
     /// <summary>
     /// Delete file
@@ -29,4 +29,10 @@ public interface IFileUploadService
     /// <param name="fileUrl">File Url</param>
     /// <returns>True if delete job is successful, else false</returns>
     Task<ServiceResponse<string>> GetFileByUrlOrFileIdAsync(string fileOrRemoteUrl, bool isTemp = true);
+
+    /// <summary>
+    /// Upload a file from the local system to the cloud.
+    /// </summary>
+    /// <returns>A response indicating whether the upload was successful or not.</returns>
+    Task<ServiceResponse<bool>> UploadFileLocalToCloudAsync();
 }

@@ -12,15 +12,19 @@ public class JobController : BaseApiController
     }
 
     [HttpGet("list")]
-    public async Task<ActionResult<ServiceResponse<IEnumerable<JobTableDto>>>> GetJobs()
+    public async Task<ActionResult<ServiceResponse<IEnumerable<JobTableDto>>>> GetJobs(
+        [FromQuery] DateTimeOffset? startDate,
+        [FromQuery] DateTimeOffset? endDate)
     {
-        return ResultHelper(await _jobTableService.GetJobsAsync());
+        return ResultHelper(await _jobTableService.GetJobsAsync(startDate, endDate));
     }
 
     [HttpGet("logs/list")]
-    public async Task<ActionResult<ServiceResponse<IEnumerable<JobExecutionLogDto>>>> GetJobLogs()
+    public async Task<ActionResult<ServiceResponse<IEnumerable<JobExecutionLogDto>>>> GetJobLogs(
+        [FromQuery] DateTimeOffset? startDate,
+        [FromQuery] DateTimeOffset? endDate)
     {
-        return ResultHelper(await _jobTableService.GetJobLogsAsync());
+        return ResultHelper(await _jobTableService.GetJobLogsAsync(startDate, endDate));
     }
 
     [HttpGet("{jobId}")]
@@ -76,5 +80,17 @@ public class JobController : BaseApiController
     public async Task<ActionResult<ServiceResponse<bool>>> AbortMachineExecution(JobExecutionDto jobExecutionDto)
     {
         return ResultHelper(await _jobTableService.AbortJobExecutionAsync(jobExecutionDto));
+    }
+
+    // Exports jobs data into a CSV file
+    [HttpPost("export")]
+    public async Task<ActionResult> ExportJobs(ExportJobRequestDto exportJobRequestDto)
+    {
+        var exportedData = await _jobTableService.ExportJobsAsync(exportJobRequestDto);
+        if (exportedData.StatusCode == 200 && exportedData.Data != null)
+        {
+            return exportedData.Data;
+        }
+        return ResultHelper(exportedData);
     }
 }

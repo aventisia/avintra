@@ -1,5 +1,5 @@
-global using AspNetToolkit.Config;
 global using AspNetToolkit.Controllers;
+global using AspNetToolkit.Config;
 global using AspNetToolkit.DTOs;
 global using AspNetToolkit.Data;
 global using AspNetToolkit.Entities;
@@ -48,3 +48,5 @@ global using Newtonsoft.Json;
 global using Newtonsoft.Json.Schema;
 global using Newtonsoft.Json.Linq;
 global using Quartz;
+global using RestSharp;
+
