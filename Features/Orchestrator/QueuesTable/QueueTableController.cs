@@ -69,7 +69,6 @@ public class QueueTableController : BaseApiController
         return ResultHelper(await _queueTableService.DeleteQueuesAsync(queueIds));
     }
 
-
     // Assigns multiple agents to a specific queue using the queueId and a list of agentIds.
     [HttpPost("{queueId}/assign-agents")]
     public async Task<ActionResult<ServiceResponse<bool>>> AssignAgents(Guid queueId, [FromBody] IEnumerable<Guid> agentIds)
@@ -82,5 +81,19 @@ public class QueueTableController : BaseApiController
     public async Task<ActionResult<ServiceResponse<IEnumerable<AssignAgentQueueDto>>>> GetAgents(Guid queueId)
     {
         return ResultHelper(await _queueTableService.GetAgentsAsync(queueId));
+    }
+
+    // Assigns multiple users to a specific queue using the queueId and a list of userIds.
+    [HttpPost("{queueId}/assign-users")]
+    public async Task<ActionResult<ServiceResponse<bool>>> AssignUsers(Guid queueId, [FromBody] IEnumerable<Guid> userIds)
+    {
+        return ResultHelper(await _queueTableService.AssignUsersAsync(queueId, userIds));
+    }
+
+    // Retrieves a list of users associated with a specific queue identified by queueId.
+    [HttpGet("{queueId}/users")]
+    public async Task<ActionResult<ServiceResponse<IEnumerable<AssignUserQueueDto>>>> GetUsers(Guid queueId)
+    {
+        return ResultHelper(await _queueTableService.GetUsersAsync(queueId));
     }
 }

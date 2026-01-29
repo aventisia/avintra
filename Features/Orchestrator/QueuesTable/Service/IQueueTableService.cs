@@ -76,4 +76,19 @@ public interface IQueueTableService
     /// <param name="queueId">The ID of the queue whose assigned agents are to be retrieved.</param>
     /// <returns>A service response containing a list of agents assigned to the queue.</returns>
     Task<ServiceResponse<IEnumerable<AssignAgentQueueDto>>> GetAgentsAsync(Guid queueId);
+
+    /// <summary>
+    /// Assign a set of users to a specified queue.
+    /// </summary>
+    /// <param name="queueId">The ID of the queue to whom the users will be assigned.</param>
+    /// <param name="userIds">A collection of user IDs to be assigned to the queue.</param>
+    /// <returns>A service response indicating whether the operation was successful.</returns>
+    Task<ServiceResponse<bool>> AssignUsersAsync(Guid queueId, IEnumerable<Guid> userIds);
+
+    /// <summary>
+    /// Fetch all users currently assigned to a specified queue.
+    /// </summary>
+    /// <param name="queueId">The ID of the queue whose assigned users are to be retrieved.</param>
+    /// <returns>A service response containing a list of users assigned to the queue.</returns>
+    Task<ServiceResponse<IEnumerable<AssignUserQueueDto>>> GetUsersAsync(Guid queueId);
 }
