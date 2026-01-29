@@ -3,7 +3,7 @@ namespace WorkspaceAPIs.MappingProfiles
     /// <summary>
     /// Defines the mapping configuration between the QueueFlowVersion entity and the QueueFlowVersionDto data transfer object using Mapster.
     /// </summary>
-    public class QueueAgentMappingProfile : IRegister
+    public class QueueFlowVersionMappingProfile : IRegister
     {
         public void Register(TypeAdapterConfig config)
         {
