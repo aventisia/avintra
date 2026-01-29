@@ -1,0 +1,21 @@
+meta {
+  name: get tenant and instance metadata
+  type: http
+  seq: 4
+}
+
+get {
+  url: {{GLOBAL_ADMIN_BASE_URL}}/onprem/instance/metadata
+  body: none
+  auth: inherit
+}
+
+headers {
+  X-OnPrem-Tenant-Id: 7a6f2caa-4496-4b57-90a1-150020653ba7
+  X-OnPrem-Instance-Key: ***REMOVED***
+}
+
+settings {
+  encodeUrl: true
+  timeout: 0
+}
