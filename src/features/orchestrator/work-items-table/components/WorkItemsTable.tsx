@@ -3,9 +3,12 @@ import {
   DataTableSkeleton,
   DTPagination,
   DTSearchBox,
+  DTViewOptions,
 } from "@aventisia/ui/data-table";
 import { useDataTable } from "@aventisia/ui/hooks";
 
+import { TABLE_KEY } from "../constants";
+import { columnDisplayNames } from "../constants/column-display-names";
 import { useFetchQueuesWorkItems } from "../hooks/useFetchQueuesWorkItems";
 
 import { PayloadTableHeading } from "./TableHeading";
@@ -45,6 +48,9 @@ export const WorkItemsTable = () => {
                 table={table}
                 searchColumn={"id"}
                 placeholder="Search..."
+              />
+              <DTViewOptions
+                {...{ table, columnDisplayNames, tableKey: TABLE_KEY }}
               />
             </div>
           </div>
