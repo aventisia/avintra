@@ -10,7 +10,7 @@
         "description": "Set rules and manage the course of the flow",
         "icon": null,
         "img": "/assets/BreakLoop.svg",
-        "listType": "list",
+        "listType": null,
         "actions": [
           {
             "type": "breakLoopNode",
@@ -37,7 +37,7 @@
         "description": "Control the flow of execution based on predefined rules, enabling decision-making, repetition of actions, and iteration through collections.",
         "icon": null,
         "img": "/function.png",
-        "listType": "list",
+        "listType": null,
         "actions": [
           {
             "type": "blockNode",
@@ -74,6 +74,60 @@
             "docsLink": "https://docs.aventisia.com",
             "icon": "LoopNodeIcon",
             "img": "/function.png"
+          }
+        ]
+      },
+      {
+        "label": "Queues",
+        "description": "Create, retrieve, update, move, and delete work items in queues",
+        "icon": null,
+        "img": "/assets/Queue.svg",
+        "listType": null,
+        "actions": [
+          {
+            "type": "activityNode",
+            "name": "CreateWorkItemActivity",
+            "label": "Create Work Item",
+            "description": "Creates a new work item in the specified queue.",
+            "docsLink": "https://docs.aventisia.com",
+            "icon": null,
+            "img": "/assets/Queue.svg"
+          },
+          {
+            "type": "activityNode",
+            "name": "GetWorkItemActivity",
+            "label": "Get Work Item",
+            "description": "Retrieves a work item from the specified queue using its identifier.",
+            "docsLink": "https://docs.aventisia.com",
+            "icon": null,
+            "img": "/assets/Queue.svg"
+          },
+          {
+            "type": "activityNode",
+            "name": "UpdateWorkItemActivity",
+            "label": "Update Work Item",
+            "description": "Updates the fields or status of an existing work item.",
+            "docsLink": "https://docs.aventisia.com",
+            "icon": null,
+            "img": "/assets/Queue.svg"
+          },
+          {
+            "type": "activityNode",
+            "name": "DeleteWorkItemActivity",
+            "label": "Delete Work Item",
+            "description": "Deletes a work item permanently from the queue.",
+            "docsLink": "https://docs.aventisia.com",
+            "icon": null,
+            "img": "/assets/Queue.svg"
+          },
+          {
+            "type": "activityNode",
+            "name": "MoveWorkItemActivity",
+            "label": "Move Work Item",
+            "description": "Moves a work item from one queue to another.",
+            "docsLink": "https://docs.aventisia.com",
+            "icon": null,
+            "img": "/assets/Queue.svg"
           }
         ]
       }
