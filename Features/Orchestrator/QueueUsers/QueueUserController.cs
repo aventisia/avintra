@@ -13,7 +13,7 @@ public class QueueUserController : BaseApiController
     }
 
     // Get a list of queue users for a specific Queue
-    [HttpGet("{queueId}list")]
+    [HttpGet("{queueId}/list")]
     public async Task<ActionResult<ServiceResponse<IEnumerable<QueueUserDto>>>> GetQueueUsersAsync(Guid queueId)
     {
         return ResultHelper(await _queueUserService.GetQueueUsersAsync(queueId));
