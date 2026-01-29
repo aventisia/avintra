@@ -1,0 +1,11 @@
+meta {
+  name: Get queue agent
+  type: http
+  seq: 5
+}
+
+get {
+  url: {{WORC_APIS_BASE_URL}}/queue-agent/{{QUEUE_AGENT_ID}}
+  body: none
+  auth: none
+}
