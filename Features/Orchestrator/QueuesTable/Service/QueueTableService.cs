@@ -5,14 +5,16 @@ public class QueueTableService : IQueueTableService
     private readonly ILogger<QueueTableService> _logger;
     private readonly IUnitOfWork _unitOfWork;
     private readonly Guid _userId;
+    private readonly Guid _tenantId;
 
     public QueueTableService(
         ILogger<QueueTableService> logger,
         IUnitOfWork unitOfWork,
         IHttpContextAccessor httpContextAccessor)
     {
-        // Set _userId
+        // Set _userId and _tenantId
         _userId = Guid.Parse(httpContextAccessor.HttpContext?.User?.FindFirstValue("uid") ?? Guid.Empty.ToString());
+        _tenantId = Guid.Parse(httpContextAccessor.HttpContext?.User?.FindFirstValue("tntid") ?? Guid.Empty.ToString());
 
         _logger = logger;
         _unitOfWork = unitOfWork;
@@ -529,10 +531,8 @@ public class QueueTableService : IQueueTableService
         {
             // Check if the queue exists and belongs to the current user
             var queue = await _unitOfWork.QueueRepo
-                                            .GetByConditionAsync(w =>
-                                                w.Id == queueId &&
-                                                w.CreatedByUserId == _userId)
-                                            .Include(a => a.QueueFlowVersions)
+                                            .GetByConditionAsync(w => w.Id == queueId)
+                                            .Include(i => i.QueueFlowVersions)
                                             .FirstOrDefaultAsync();
 
             // Return an error if the queue doesn't exist
@@ -545,18 +545,16 @@ public class QueueTableService : IQueueTableService
 
             // Retrieve all agents for the current user
             var agents = await _unitOfWork.FlowVersionRepo
-                                            .GetByConditionAsync(w =>
-                                                w.IsPublished &&
-                                                w.CreatedByUserId == _userId)
-                                            .Include(f => f.Flow)
+                                            .GetByConditionAsync(w => w.IsPublished)
+                                            .Include(i => i.Flow)
                                             .ProjectToType<AssignAgentQueueDto>()
                                             .ToListAsync();
 
             // Set IsAssigned to true if the agent is already assigned to the queue
-            agents.ForEach(a =>
+            agents.ForEach(fe =>
             {
-                a.IsAssigned = (queue.QueueFlowVersions ?? Enumerable.Empty<QueueFlowVersion>()).Any(mf => mf.FlowVersionId == a.Id);
-                a.QueueId = queue.Id;
+                fe.IsAssigned = (queue.QueueFlowVersions ?? Enumerable.Empty<QueueFlowVersion>()).Any(a => a.FlowVersionId == fe.Id);
+                fe.QueueId = queue.Id;
             });
 
             // Return the agents along with their assignment status
@@ -704,10 +702,8 @@ public class QueueTableService : IQueueTableService
         {
             // Check if the queue exists and belongs to the current user
             var queue = await _unitOfWork.QueueRepo
-                                            .GetByConditionAsync(w =>
-                                                w.Id == queueId &&
-                                                w.CreatedByUserId == _userId)
-                                            .Include(a => a.QueueUsers)
+                                            .GetByConditionAsync(w => w.Id == queueId)
+                                            .Include(i => i.QueueUsers)
                                             .FirstOrDefaultAsync();
 
             // Return an error if the queue doesn't exist
@@ -718,12 +714,10 @@ public class QueueTableService : IQueueTableService
                 return serviceResponse;
             }
 
-            var userIds = queue.QueueUsers?.Select(s => s.UserId).ToList() ?? new List<Guid>();
 
             // Retrieve all users for the current user
             var users = await _unitOfWork.WorkspaceUserRepo
-                                            .GetByConditionAsync(w =>
-                                                userIds.Contains(w.Id))
+                                            .GetByConditionAsync(w => w.TenantId == _tenantId)
                                             .ProjectToType<AssignUserQueueDto>()
                                             .ToListAsync();
 
