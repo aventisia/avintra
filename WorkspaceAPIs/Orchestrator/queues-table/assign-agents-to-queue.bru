@@ -1,0 +1,27 @@
+meta {
+  name: Assign agents to queue
+  type: http
+  seq: 9
+}
+
+post {
+  url: {{WORC_APIS_BASE_URL}}/queue/{{QUEUE_ID}}/assign-agents
+  body: none
+  auth: none
+}
+
+script:pre-request {
+  // Set flowVersionId in request body
+  req.setBody(
+    JSON.parse(`["${bru.getGlobalEnvVar("FLOW_VERSION_ID")}"]`)
+  )
+}
+
+script:post-response {
+  if(res.getStatus() == 200){
+      bru.setGlobalEnvVar(
+          "MACHINE_FLOW_ID",
+          res.getBody().data.id
+      );
+  }
+}
