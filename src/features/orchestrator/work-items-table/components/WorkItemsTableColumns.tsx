@@ -6,6 +6,7 @@ import { ColumnDef } from "@tanstack/react-table";
 import { TABLE_KEY } from "../constants";
 import { statusColor } from "../constants/column-display-names";
 import { QueueWorkItemDto } from "../dtos/queue-work-item-dto";
+
 import { WorkItemRowActions } from "./WorkItemRowActions";
 
 /**
@@ -36,7 +37,7 @@ export const workItemsTableColumns: ColumnDef<QueueWorkItemDto>[] = [
             : "bg-slate-200 text-slate-600"
         }
       >
-        {row.getValue("status")}
+        {row.original.status?.replace(/([A-Z])/g, " $1")}
       </Badge>
     ),
   },
