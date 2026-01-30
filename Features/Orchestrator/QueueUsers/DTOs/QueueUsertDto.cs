@@ -16,9 +16,24 @@ public class QueueUserDto
     public Guid UserId { get; set; }
 
     /// <summary>
-    /// Gets or sets the name of the user that the queue is associated with.
+    /// Gets or sets the first name of the user associated with the queue.
+    /// </summary>
+    public string? FirstName { get; set; }
+
+    /// <summary>
+    /// Gets or sets the last name of the user associated with the queue.
+    /// </summary>
+    public string? LastName { get; set; }
+
+    /// <summary>
+    /// Gets or sets the username of the user associated with the queue.
     /// </summary>
     public string? Username { get; set; }
+
+    /// <summary>
+    /// Gets or sets initials of the user who created the record
+    /// </summary>
+    public string? CreatedByUserInitials { get; set; }
 
     /// <summary>
     /// Gets or sets the unique identifier for the queue that the user belongs to.

@@ -9,7 +9,13 @@ namespace WorkspaceAPIs.MappingProfiles
         {
             // Map from QueueUser entity to QueueUserDto
             config.NewConfig<QueueUser, QueueUserDto>()
-                .Map(dest => dest.Username, src => src.User != null ? $"{src.User.FirstName} {src.User.LastName}" : string.Empty)
+                .Map(dest => dest.FirstName, src => src.User != null ? src.User.FirstName : string.Empty)
+                .Map(dest => dest.LastName, src => src.User != null ? src.User.LastName : string.Empty)
+                .Map(dest => dest.Username, src => src.User != null ? src.User.UserName : string.Empty)
+                .Map(dest => dest.CreatedByUserInitials,
+                    src => src.User != null
+                    ? src.User.FirstName.FirstOrDefault() + "" + src.User.LastName.FirstOrDefault()
+                    : null)
                 .Map(dest => dest.QueueName, src => src.Queue != null ? src.Queue.Name : string.Empty)
                 .Map(dest => dest.CreatedBy,
                      src => src.CreatedByUser != null
