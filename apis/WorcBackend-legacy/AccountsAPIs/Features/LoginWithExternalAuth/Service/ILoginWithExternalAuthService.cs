@@ -17,9 +17,9 @@ public interface ILoginWithExternalAuthService
     // Task<ServiceResponse<AccountUser>> ValidateTokenAndCreateUserAsync(ValidateTokenRequestDto validateTokenRequestDto);
 
     /// <summary>
-    /// Handles the Azure Entra login callback and processes the authorization code.
+    /// Processes the Azure Entra login and handles the provided authorization code.
     /// </summary>
-    /// <param name="code">The authorization code returned by Azure Entra.</param>
-    /// <returns>The service response with the authenticated user.</returns>
-    Task<ServiceResponse<AccountUser>> EntraCallbackAsync(string code);
+    /// <param name="code">The authorization code received from Azure Entra.</param>
+    /// <returns>A service response containing the authenticated user account information.</returns>
+    Task<ServiceResponse<AccountUser>> EntraTokenAsync(string code);
 }
