@@ -4,14 +4,33 @@ public static class HelperUtil
 {
     public static string GenerateRandomPassword(int pwdLength = 8)
     {
-        const string validChars = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789!@#$%^&*()-+";
-        StringBuilder password = new StringBuilder();
-        Random rnd = new Random();
-        for (int i = 0; i < pwdLength; i++)
+        // Character sets
+        const string U = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
+        const string L = "abcdefghijklmnopqrstuvwxyz";
+        const string N = "0123456789";
+        const string S = "!@#$%^&*";
+        const string A = U + L + N + S;
+
+        // Allocate password buffer on the stack (fast, no heap allocation)
+        Span<char> password = stackalloc char[pwdLength];
+
+        // Ensure at least one character from each required set
+        if (pwdLength >= 4)
         {
-            password.Append(validChars[rnd.Next(validChars.Length)]);
+            password[0] = U[RandomNumberGenerator.GetInt32(U.Length)];
+            password[1] = L[RandomNumberGenerator.GetInt32(L.Length)];
+            password[2] = N[RandomNumberGenerator.GetInt32(N.Length)];
+            password[3] = S[RandomNumberGenerator.GetInt32(S.Length)];
         }
-        return password.ToString();
+
+        // Fill remaining characters randomly from all sets
+        for (int i = 4; i < pwdLength; i++)
+        {
+            password[i] = A[RandomNumberGenerator.GetInt32(A.Length)];
+        }
+
+        // Convert Span<char> to string and return
+        return new string(password);
     }
 
     public static string GetFirstNameFromFullName(string input)
