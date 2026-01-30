@@ -61,9 +61,8 @@ const UsersList = () => {
                   <div className="flex grow items-center gap-2">
                     <Avatar className={cn("flex h-7 w-7")}>
                       <AvatarFallback className="bg-primary text-xs font-bold capitalize tracking-wider text-secondary text-white">
-                        {val?.firstName
-                          ? val.firstName.charAt(0) +
-                            (val.lastName ? val.lastName?.charAt(0) : "")
+                        {val?.createdByUserInitials
+                          ? val.createdByUserInitials
                           : "--"}
                       </AvatarFallback>
                     </Avatar>
