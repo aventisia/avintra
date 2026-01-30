@@ -17,6 +17,11 @@ public class QueuesTableDto
     public required string Name { get; set; }
 
     /// <summary>
+    /// Gets or sets the tyoe of the queue.
+    /// </summary>
+    public QueueTypesEnum Type { get; set; }
+
+    /// <summary>
     /// Gets or sets the description of the queue.
     /// This field is optional and can contain a maximum of 500 characters.
     /// </summary>

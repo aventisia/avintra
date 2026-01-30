@@ -36,6 +36,7 @@ public class FileUploadController(IFileUploadService uploadedDocService) : BaseA
         return ResultHelper(await _uploadedDocService.DeleteFileAsync(fileUrl));
     }
 
+    [AllowAnonymous]
     [HttpGet("local-to-cloud")]
     public async Task<ActionResult<ServiceResponse<bool>>> UplaodFileLocalToCloud()
     {
