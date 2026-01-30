@@ -36,7 +36,16 @@ const ImproveWithAIButton = ({
   useEffect(() => {
     if (data) {
       const improvedPrompt = data as unknown as LLMResponseDto;
-      form.setValue(name, improvedPrompt?.output);
+      try {
+        const outputJson = JSON.parse(improvedPrompt?.output) as {
+          refinedPrompt: string;
+          outputSchema: unknown;
+        };
+        form.setValue(name, outputJson.refinedPrompt);
+        form.setValue("json_schema", JSON.stringify(outputJson.outputSchema));
+      } catch {
+        console.error("ImproveWithAI: Invalid LLM structured output");
+      }
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [data]);
@@ -45,7 +54,7 @@ const ImproveWithAIButton = ({
     if (isPending) return;
 
     try {
-      const res = await getAITasksByName("ImproveWithAI");
+      const res = await getAITasksByName("ImproveWithAINew"); //This is the unique name of ai task
 
       if (!res?.data) {
         console.warn("ImproveWithAI task not found");
