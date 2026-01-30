@@ -212,9 +212,10 @@ public static class AccountsDbInitialSeed
                 // For Commercial tenants, add the 'SA' role - typically for a role "Super Admin"
                 roles.Add(nameof(CustomRolesEnum.SA));
             }
+            var password = HelperUtil.GenerateRandomPassword();
 
             // Add supper user & its roles
-            var createUserResult = await userManager.CreateAsync(superUser);
+            var createUserResult = await userManager.CreateAsync(superUser, password);
             var addToRoleResult = await userManager.AddToRolesAsync(superUser, roles);
 
             // Super user creation failed
@@ -230,6 +231,10 @@ public static class AccountsDbInitialSeed
 
                 return null;
             }
+
+            Console.WriteLine("User created successfully.");
+            Console.WriteLine($"Email: {superUser.Email}");
+            Console.WriteLine($"Password: {password}");
 
             // Super user seeded successfully
             return superUser;
@@ -258,6 +263,7 @@ public static class AccountsDbInitialSeed
                 Type = TenantTypesEnum.Organization,
                 Currency = CurrencyTypesEnum.USD,
                 Name = environmentConfig.OnPremTenantName,
+                Domain = ExtractDomainFromEmailUtil.ExtractDomainFromUrl(environmentConfig.AccountsApiBaseUrl),
                 ContainerName = TenantContainerUtil.GenerateName(environmentConfig.OnPremTenantName),
                 ExpiresOn = DateTimeOffset.MaxValue, // TODO: We need to remove or update it
                 IsSSOEnabled = false,
@@ -368,7 +374,6 @@ public static class AccountsDbInitialSeed
             return false;
         }
     }
-
 
     // Seed CreditPlans based on CreditServiceTypesEnum
     private async static Task<bool> SeedCreditPlansAsync(AccountsDbContext dbContext, AccountUser superUser)

@@ -36,8 +36,7 @@ public class LoginWithExternalAuthService : ILoginWithExternalAuthService
         string loginUrl = string.Empty;
 
         // Redirect URI used by Azure Entra after successful login
-        string redirectUrl = $"https://{_environmentConfig.AppBaseUrl}/accounts/api/auth/entra/callback";
-
+        string redirectUrl = $"https://{_environmentConfig.AppBaseUrl}/accounts/sso-redirect";
         try
         {
             // Log provider type and redirect URL for traceability
@@ -96,7 +95,7 @@ public class LoginWithExternalAuthService : ILoginWithExternalAuthService
         return serviceResponse;
     }
 
-    public async Task<ServiceResponse<AccountUser>> EntraCallbackAsync(string code)
+    public async Task<ServiceResponse<AccountUser>> EntraTokenAsync(string code)
     {
         // Initialize default failure response object
         var serviceResponse = new ServiceResponse<AccountUser>
@@ -108,14 +107,14 @@ public class LoginWithExternalAuthService : ILoginWithExternalAuthService
         // Precondition check: Authorization code must be present
         if (string.IsNullOrWhiteSpace(code))
         {
-            _logger.LogWarning("EntraCallbackAsync called with empty or null authorization code.");
+            _logger.LogWarning("EntraTokenAsync called with empty or null authorization code.");
 
             serviceResponse.Message = "Authorization code is missing.";
             return serviceResponse;
         }
 
         // Build redirect URI used in both authorize and token calls (must match exactly)
-        string redirectUrl = $"https://{_environmentConfig.AppBaseUrl}/accounts/api/auth/entra/callback";
+        string redirectUrl = $"https://{_environmentConfig.AppBaseUrl}/accounts/sso-redirect";
 
         // Azure Entra token endpoint for this tenant
         string tokenEndpoint = $"https://login.microsoftonline.com/{_environmentConfig.AzureTenantId}/oauth2/v2.0/token";
@@ -195,7 +194,7 @@ public class LoginWithExternalAuthService : ILoginWithExternalAuthService
         }
         catch (Exception ex)
         {
-            _logger.LogError(ex, "Unexpected error during EntraCallbackAsync.");
+            _logger.LogError(ex, "Unexpected error during EntraTokenAsync.");
             return serviceResponse;
         }
     }
