@@ -1,7 +1,7 @@
 import { cn } from "@aventisia/ui/lib";
 import { json } from "@codemirror/lang-json";
 import CodeMirror from "@uiw/react-codemirror";
-import React from "react";
+import React, { useEffect, useRef } from "react";
 
 interface JsonEditorProps {
   value?: string;
@@ -18,6 +18,33 @@ export const JsonEditor: React.FC<JsonEditorProps> = ({
   disabled = false,
   className,
 }) => {
+  const formattedOnLoad = useRef(false);
+
+  // json formatter
+  const formatJson = (raw?: string) => {
+    try {
+      const trimmed = raw?.trim();
+      if (!trimmed) return;
+
+      const parsed = JSON.parse(trimmed);
+      return JSON.stringify(parsed, null, 2);
+    } catch {
+      return;
+    }
+  };
+
+  // Format when field first rendered
+  useEffect(() => {
+    if (formattedOnLoad.current) return;
+
+    const formatted = formatJson(value);
+
+    if (formatted && formatted !== value) {
+      if (value.length > 7) formattedOnLoad.current = true; // set formatted true only when the content is present {"":""}.length==7
+      onChange?.(formatted);
+    }
+  }, [value, onChange]);
+
   return (
     <CodeMirror
       value={value}
@@ -38,14 +65,9 @@ export const JsonEditor: React.FC<JsonEditorProps> = ({
       contentEditable={disabled}
       aria-disabled={disabled}
       onBlur={() => {
-        try {
-          if (value) {
-            const formatted = JSON.stringify(JSON.parse(value), null, 2);
-            onChange?.(formatted);
-          }
-        } catch {
-          // ignore invalid JSON
-        }
+        // Format on blur
+        const formatted = formatJson(value);
+        if (formatted) onChange?.(formatted);
       }}
       className={cn(
         "flex min-h-20 w-full rounded-lg border border-input bg-background text-sm shadow-sm shadow-black/5 ring-offset-background transition-shadow placeholder:text-muted-foreground focus-within:border-primary focus-within:outline-none focus-within:ring-[3px] focus-within:ring-ring",

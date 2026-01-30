@@ -42,6 +42,34 @@ export const useDefineQueueForm = () => {
     })),
   );
 
+  const defaultSchema=[
+  {
+    "name": "userId",
+    "description": "Unique identifier for the user",
+    "label": "User ID",
+    "type": "string",
+    "isRequired": true,
+    "isUsedForUniqueIdentifier": true
+  },
+  {
+    "name": "age",
+    "description": "Age of the user",
+    "label": "Age",
+    "type": "int",
+    "isRequired": false,
+    "isUsedForUniqueIdentifier": false
+  },
+  {
+    "name": "createdAt",
+    "description": "Account creation date",
+    "label": "Created At",
+    "type": "Date",
+    "isRequired": false,
+    "isUsedForUniqueIdentifier": false
+  }
+]
+
+
   // Get query client
   const queryClient = useQueryClient();
 
@@ -54,6 +82,7 @@ export const useDefineQueueForm = () => {
       id: "",
       name: "",
       description: "",
+      type: "Agent",
 
       isUniqueReferencesEnforced: false,
       isStoredEncrypted: false,
@@ -95,13 +124,14 @@ export const useDefineQueueForm = () => {
       id: rowId,
       name: queueData?.name,
       description: queueData?.description,
+      type: queueData?.type ?? "Agent",
 
       isUniqueReferencesEnforced: queueData?.isUniqueReferencesEnforced,
       isStoredEncrypted: queueData?.isStoredEncrypted,
       // shouldRetryFailedItems: queueData?.shouldRetryFailedItems,
       // shouldRetryAbandonedItems: queueData?.shouldRetryAbandonedItems,
       // maximumRetryAttempts: queueData?.maximumRetryAttempts,
-      inputSchema: JSON.stringify(queueData?.inputSchema, null, 2) ?? "[]",
+      inputSchema: JSON.stringify(queueData?.inputSchema, null, 2) ?? JSON.stringify(defaultSchema),
       // outputDataSchemaFile: undefined,
 
       isDisabled: queueData?.isDisabled,

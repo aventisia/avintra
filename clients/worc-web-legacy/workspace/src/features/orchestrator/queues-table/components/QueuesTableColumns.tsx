@@ -2,6 +2,7 @@ import { Checkbox } from "@aventisia/ui";
 import { DTColumnHeader } from "@aventisia/ui/data-table";
 import { dateFormatter } from "@aventisia/ui/utils";
 import { ColumnDef } from "@tanstack/react-table";
+import { format } from "date-fns";
 
 import { TABLE_KEY } from "../constants";
 import { getColumnName } from "../constants/column-display-names";
@@ -51,6 +52,21 @@ export const queuesTableColumns: ColumnDef<QueuesTableDto>[] = [
       <WorkItemsTableCellLink rowId={row.original.id}>
         {row.getValue<string>("name")}
       </WorkItemsTableCellLink>
+    ),
+  },
+  {
+    accessorKey: "type",
+    header: ({ column }) => (
+      <DTColumnHeader
+        tableKey={TABLE_KEY}
+        column={column}
+        title={getColumnName("type")}
+      />
+    ),
+    cell: ({ row }) => (
+      <div className="w-auto truncate font-medium">
+        {row.getValue("type") ?? "--"}
+      </div>
     ),
   },
   {
@@ -140,7 +156,9 @@ export const queuesTableColumns: ColumnDef<QueuesTableDto>[] = [
     ),
     cell: ({ row }) => (
       <div className="w-auto truncate font-medium">
-        {dateFormatter(row.getValue("lastModifiedOn"))}
+        {row.getValue("lastModifiedOn")
+          ? format(row.getValue("lastModifiedOn"), "dd MMM yyyy, h:mm a")
+          : "--"}
       </div>
     ),
   },
