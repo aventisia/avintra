@@ -50,4 +50,6 @@ export type DCPControlType =
   | "prompt-input"
   | "knowledge-base-config"
   | "memory-config"
-  | "json-editor";
+  | "json-editor"
+  | "queue-select"
+  | "queue-conditional-group";

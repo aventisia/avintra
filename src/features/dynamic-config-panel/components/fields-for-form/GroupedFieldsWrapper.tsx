@@ -1,6 +1,13 @@
 import { cn } from "@aventisia/ui/lib";
 import React from "react";
 
+/**
+ * A wrapper component that visually groups related fields.
+ *
+ * Renders a bordered container with a floating group title.
+ * Use this as a parent wrapper for any form fields that should
+ * appear as a logical group.
+ */
 export const GroupedFieldsWrapper = ({
   groupName,
   children,

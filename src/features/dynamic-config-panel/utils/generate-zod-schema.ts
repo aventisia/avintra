@@ -140,7 +140,9 @@ function getModelConfigSchema(field: DCPFieldSchemaType): ZodTypeAny {
       topPSchema.default(field?.defaultValue?.top_p as number);
     }
     if ("is_json_output" in field.defaultValue) {
-      isJsonOutputSchema.default(field?.defaultValue?.is_json_output as boolean);
+      isJsonOutputSchema.default(
+        field?.defaultValue?.is_json_output as boolean,
+      );
     }
 
     if ("max_output_tokens" in field.defaultValue) {
@@ -264,6 +266,8 @@ function getZodType(field: DCPFieldSchemaType): ZodTypeAny {
       return getKnowledgeBaseConfigSchema(field);
     case "memory-config":
       return getMemoryConfigSchema(field);
+    case "queue-conditional-group":
+      return z.array(z.any());
     default:
       return applyFieldOptions(z.string(), field); // Fallback to string
   }

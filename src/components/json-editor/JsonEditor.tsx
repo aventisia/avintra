@@ -36,13 +36,14 @@ export const JsonEditor: React.FC<JsonEditorProps> = ({
   // Format when field first rendered
   useEffect(() => {
     if (formattedOnLoad.current) return;
+    setTimeout(() => {
+      const formatted = formatJson(value);
 
-    const formatted = formatJson(value);
-
-    if (formatted && formatted !== value) {
-      if (value.length > 7) formattedOnLoad.current = true; // set formatted true only when the content is present {"":""}.length==7
-      onChange?.(formatted);
-    }
+      if (formatted && formatted !== value) {
+        formattedOnLoad.current = true; // set formatted true only when the content is present {"":""}.length==7
+        onChange?.(formatted);
+      }
+    }, 100);
   }, [value, onChange]);
 
   return (

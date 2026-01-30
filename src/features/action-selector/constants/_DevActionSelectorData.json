@@ -6,35 +6,8 @@
     "img": null,
     "actionCategories": [
       {
-        "label": "Flow control",
+        "label": "Subflows",
         "description": "Set rules and manage the course of the flow",
-        "icon": null,
-        "img": "/assets/BreakLoop.svg",
-        "listType": null,
-        "actions": [
-          {
-            "type": "breakLoopNode",
-            "name": "BreakLoopActivity",
-            "label": "Break Loop",
-            "description": "Breaks out of the current loop in the workflow execution.",
-            "docsLink": "https://docs.aventisia.com",
-            "icon": null,
-            "img": "/assets/BreakLoop.svg"
-          },
-          {
-            "type": "activityNode",
-            "name": "WaitActivity",
-            "label": "Wait",
-            "description": "Pauses the workflow execution for a specified number of seconds.",
-            "docsLink": "https://docs.aventisia.com",
-            "icon": null,
-            "img": "/assets/Wait.svg"
-          }
-        ]
-      },
-      {
-        "label": "Conditionals",
-        "description": "Control the flow of execution based on predefined rules, enabling decision-making, repetition of actions, and iteration through collections.",
         "icon": null,
         "img": "/function.png",
         "listType": null,
@@ -56,7 +29,16 @@
             "docsLink": "https://docs.aventisia.com",
             "icon": "CallAgentIcon",
             "img": "/function.png"
-          },
+          }
+        ]
+      },
+      {
+        "label": "Flow control",
+        "description": "Control the flow of execution based on predefined rules, enabling decision-making, repetition of actions, and iteration through collections.",
+        "icon": null,
+        "img": "/assets/BreakLoop.svg",
+        "listType": null,
+        "actions": [
           {
             "type": "conditionalNode",
             "name": "ConditionalActivity",
@@ -74,11 +56,29 @@
             "docsLink": "https://docs.aventisia.com",
             "icon": "LoopNodeIcon",
             "img": "/function.png"
+          },
+          {
+            "type": "breakLoopNode",
+            "name": "BreakLoopActivity",
+            "label": "Break Loop",
+            "description": "Breaks out of the current loop in the workflow execution.",
+            "docsLink": "https://docs.aventisia.com",
+            "icon": null,
+            "img": "/assets/BreakLoop.svg"
+          },
+          {
+            "type": "activityNode",
+            "name": "WaitActivity",
+            "label": "Wait",
+            "description": "Pauses the workflow execution for a specified number of seconds.",
+            "docsLink": "https://docs.aventisia.com",
+            "icon": null,
+            "img": "/assets/Wait.svg"
           }
         ]
       },
       {
-        "label": "Queues",
+        "label": "Queue Management",
         "description": "Create, retrieve, update, move, and delete work items in queues",
         "icon": null,
         "img": "/assets/Queue.svg",
