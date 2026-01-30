@@ -55,6 +55,8 @@ builder.Services.AddControllersConfig();
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerConfig();
 builder.Services.AddSwaggerGen();
+builder.Services.AddUploadFileService();
+builder.Services.AddHttpClient();
 builder.Services.AddAzureBlobStorageService();
 
 var app = builder.Build();

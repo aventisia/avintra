@@ -26,7 +26,6 @@ public class MLModelBuilderDbContext : DbContext
         modelBuilder.Entity<VersionTask>().HasQueryFilter(qf => qf.TenantId == CurrentTenantId);
         modelBuilder.Entity<ExtractedData>().HasQueryFilter(qf => qf.TenantId == CurrentTenantId);
         modelBuilder.Entity<AIProject_User>().HasQueryFilter(qf => qf.TenantId == CurrentTenantId);
-        modelBuilder.Entity<VersionResource>().HasQueryFilter(qf => qf.TenantId == CurrentTenantId);
         modelBuilder.Entity<AIProjectVersionApiKey>().HasQueryFilter(qf => qf.TenantId == CurrentTenantId);
         modelBuilder.Entity<MLModelTemplate>().HasQueryFilter(qf => qf.TenantId == CurrentTenantId);
         modelBuilder.Entity<ConversationHistory>().HasQueryFilter(qf => qf.TenantId == CurrentTenantId);
@@ -34,6 +33,11 @@ public class MLModelBuilderDbContext : DbContext
         modelBuilder.Entity<GenerativeModel>().HasQueryFilter(qf => qf.TenantId == CurrentTenantId);
         modelBuilder.Entity<ScheduledModel>().HasQueryFilter(qf => qf.TenantId == CurrentTenantId);
         modelBuilder.Entity<FineTuningLog>().HasQueryFilter(qf => qf.TenantId == CurrentTenantId);
+        // Test_Azure: Need to remove after testing
+        if (CurrentTenantId != Guid.Empty)
+        {
+            modelBuilder.Entity<VersionResource>().HasQueryFilter(qf => qf.TenantId == CurrentTenantId);
+        }
 
         // Unique property
         modelBuilder.Entity<AIProject>().HasIndex(index => new { index.Name, index.CreatedByUserId }).IsUnique();
