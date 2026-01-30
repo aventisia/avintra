@@ -15,6 +15,7 @@ import {
 const CreateAccountPage = lazy(() => import("@/pages/CreateAccountPage"));
 const OnBoardingPage = lazy(() => import("@/pages/OnBoardingPage"));
 const LogInPage = lazy(() => import("@/pages/LogInPage"));
+const SsoRedirectPage = lazy(() => import("@/pages/SsoRedirectPage"));
 const ResetPwdPage = lazy(() => import("@/pages/ResetPwdPage"));
 
 // Create a new query client
@@ -40,6 +41,10 @@ const router = createBrowserRouter(
         {
           path: "/login",
           element: <LogInPage />,
+        },
+        {
+          path: "/sso-redirect",
+          element: <SsoRedirectPage />,
         },
         {
           path: "/create-account",
