@@ -12,12 +12,43 @@ class LLMMessage(BaseModel):
     role: Literal['system', 'developer', 'user', 'assistant', 'model']
     content: str
 
+from typing import Literal
+
+class LLMEncodedFile(BaseModel):
+    mime_type: Literal[
+        'application/pdf',
+        'image/png',
+        'image/jpeg',
+        'image/gif',
+        'image/bmp',
+        'image/tiff',
+        'video/mp4',
+        'video/webm',
+        'audio/mpeg',
+        'audio/wav',
+        'audio/ogg',
+        'application/msword',
+        'application/vnd.openxmlformats-officedocument.wordprocessingml.document',
+        'application/vnd.ms-excel',
+        'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
+        'application/vnd.ms-powerpoint',
+        'application/vnd.openxmlformats-officedocument.presentationml.presentation',
+        'application/zip',
+        'application/x-rar-compressed',
+        'application/csv',
+        'text/csv',
+        'text/plain',
+        'application/json',
+        'application/xml',
+    ]
+    encoded_content: str
+
 # Request schema to generate LLM response
 class LLMRequest(BaseModel):
     provider: ProviderLiteral
     model: str
     input: Union[str, List[LLMMessage]]  # Accepts string or list of messages
-    files: Optional[List[str]] = None  # List of base64-encoded files for OCR/text extraction
+    files: Optional[List[LLMEncodedFile]] = None  # List of base64-encoded files for OCR/text extraction
     is_json_output: Optional[bool] = False # Try to extract JSON from response and sends no streaming response in one go even if streaming is true
     json_schema: Optional[Union[str, dict]] = None  # Can be JSON string or dict object
     max_output_tokens: Optional[int] = None
