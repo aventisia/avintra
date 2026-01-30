@@ -199,11 +199,13 @@ public class FileUploadService(ILogger<FileUploadService> logger, IUploadFileSer
 
         try
         {
-            // Get the list of files with valid paths
+            // Get the list of files where the Path is not null, not empty, and starts with "/"
             var files = await _unitOfWork.TemplateResourceRepo
-                .GetByConditionAsync(w => !string.IsNullOrEmpty(w.Path))
+                .GetByConditionAsync(w => !string.IsNullOrEmpty(w.Path) && w.Path.StartsWith("/"))
                 .AsNoTracking()
                 .ToListAsync();
+
+            _logger.LogInformation($"Found {files.Count} file(s) to upload.");
 
             var needToUpdates = new List<TemplateResource>();
 

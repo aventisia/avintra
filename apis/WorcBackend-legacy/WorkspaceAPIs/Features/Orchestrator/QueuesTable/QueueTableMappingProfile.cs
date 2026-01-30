@@ -11,7 +11,7 @@ public class QueueTableMappingProfile : IRegister
             .Map(dest => dest.Failed, src => src.QueueTransactions != null ? src.QueueTransactions.Count(c => c.Status == QueueTransactionStatusTypesEnum.Completed) : 0)
             .Map(dest => dest.Pending, src => src.QueueTransactions != null ? src.QueueTransactions.Count(c => c.Status == QueueTransactionStatusTypesEnum.Pending) : 0)
             .Map(dest => dest.Total, src => src.QueueTransactions != null ? src.QueueTransactions.Count() : 0)
-            .Map(dest => dest.InputSchema, src => System.Text.Json.JsonSerializer.Deserialize<List<QueueSchemaDefinitionDto>>(src.InputSchema?? "[]", new JsonSerializerOptions { PropertyNameCaseInsensitive = true }))
+            .Map(dest => dest.InputSchema, src => System.Text.Json.JsonSerializer.Deserialize<List<QueueSchemaDefinitionDto>>(src.InputSchema ?? "[]", new JsonSerializerOptions { PropertyNameCaseInsensitive = true }))
             .Map(dest => dest.CreatedBy, src => src.CreatedByUser != null ? src.CreatedByUser.FirstName + " " + src.CreatedByUser.LastName : null)
             .Map(dest => dest.LastModifiedBy, src => src.LastModifiedByUser != null ? src.LastModifiedByUser.FirstName + " " + src.LastModifiedByUser.LastName : null);
 
@@ -38,5 +38,9 @@ public class QueueTableMappingProfile : IRegister
                 src => src.CreatedByUser != null
                     ? src.CreatedByUser.FirstName.First() + "" + src.CreatedByUser.LastName.First()
                     : null);
+
+        // Mapping to get user list
+        config.NewConfig<WorkspaceUser, AssignUserQueueDto>()
+            .Map(dest => dest.Name, src => src.FirstName + " " + src.LastName);
     }
 }
