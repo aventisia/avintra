@@ -1,6 +1,6 @@
 import {
   InputField,
-  // MultiSelectField,
+  MultiSelectField,
   SelectField,
   SwitchField,
 } from "@aventisia/ui/form";
@@ -20,7 +20,6 @@ import { MemoryConfigField } from "./fields-for-form/MemoryConfigField";
 import { JsonEditorField } from "@/components/json-editor/JsonEditorField";
 import { QueueSelectorField } from "./fields-for-form/QueueSelectorField";
 import { QueueConditionGroupsField } from "./queue-condition-groups/QueueConditionGroupsField";
-import { MultiSearchableSelectField } from "@/react-toolkit/ui/searchable-select/MultiSelectField";
 
 // Helper to render the correct field type
 export const RenderField = (field: DCPFieldSchemaType) => {
@@ -75,9 +74,9 @@ export const RenderField = (field: DCPFieldSchemaType) => {
       return <PromptConfigField {...baseProps} rows={field.min ?? 5} />;
     case "multi-selector":
       return (
-        <MultiSearchableSelectField
+        <MultiSelectField
           {...baseProps}
-          selectOptions={field.selectOptions ?? []}
+          selectOptions={field.selectOptions || []}
         />
       );
     case "slider":
