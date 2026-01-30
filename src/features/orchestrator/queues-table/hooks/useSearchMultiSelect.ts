@@ -2,7 +2,7 @@ import { useState } from "react";
 
 import { AgentsTableDto } from "../../agents-table/dtos/agents-table-dto";
 import { useDebounce } from "../../agents-table/hooks/useDebounce";
-import { useAssignAgentsStore } from "../stores/assign-agents-store";
+import { useQueueAgentsStore } from "../stores/queue-agents-store";
 
 import { useAssignAgentMutation } from "./useAssignAgentMutation";
 import { useSearchAgentsList } from "./useSearchAgentsList";
@@ -15,7 +15,7 @@ export const useSearchMultiSelect = () => {
 
   const debouncedSearchTerm = useDebounce(searchTerm, 500);
 
-  const { setView, queueId } = useAssignAgentsStore((state) => ({
+  const { setView, queueId } = useQueueAgentsStore((state) => ({
     setView: state.setView,
     queueId: state.queueId,
   }));

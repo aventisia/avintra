@@ -3,7 +3,7 @@ import { BotIcon } from "lucide-react";
 import React from "react";
 import { useShallow } from "zustand/react/shallow";
 
-import { useAssignAgentsStore } from "../../stores/assign-agents-store";
+import { useQueueAgentsStore } from "../../stores/queue-agents-store";
 
 interface AssignAgentsRowActionProps {
   rowId: string;
@@ -15,7 +15,7 @@ export const AssignAgentsRowAction: React.FC<AssignAgentsRowActionProps> = ({
   size = "md",
   rowId,
 }) => {
-  const { setOpen, setQueueId } = useAssignAgentsStore(
+  const { setOpen, setQueueId } = useQueueAgentsStore(
     useShallow((s) => ({
       setOpen: s.setShowDialog,
       setQueueId: s.setQueueId,

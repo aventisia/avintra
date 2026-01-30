@@ -11,12 +11,12 @@ import { BotIcon } from "lucide-react";
 import { useShallow } from "zustand/react/shallow";
 
 import { useFetchQueueAgents } from "../../hooks/useFetchQueueAgents";
-import { useAssignAgentsStore } from "../../stores/assign-agents-store";
+import { useQueueAgentsStore } from "../../stores/queue-agents-store";
 
 import { AgentsListItemActions } from "./assign-agent-item-actions";
 
 const AgentsList = () => {
-  const { queueId } = useAssignAgentsStore(
+  const { queueId } = useQueueAgentsStore(
     useShallow((s) => ({
       queueId: s.queueId,
     })),

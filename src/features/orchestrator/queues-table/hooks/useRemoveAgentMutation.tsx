@@ -4,13 +4,13 @@ import { useShallow } from "zustand/react/shallow";
 
 import { deleteQueueAgent } from "../apis/queue-agents-apis";
 import { QUEUE_AGENT_KEY } from "../constants";
-import { useAssignAgentsStore } from "../stores/assign-agents-store";
+import { useQueueAgentsStore } from "../stores/queue-agents-store";
 
 export const useRemoveAgentMutation = () => {
   // // Get the query client for cache management
   const queryClient = useQueryClient();
 
-  const { queueId } = useAssignAgentsStore(
+  const { queueId } = useQueueAgentsStore(
     useShallow((s) => ({
       queueId: s.queueId,
     })),

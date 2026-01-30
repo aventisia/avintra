@@ -8,13 +8,13 @@ import { Tooltip } from "@aventisia/ui/tooltip";
 import { ArrowLeftIcon, PlusIcon } from "lucide-react";
 import { useShallow } from "zustand/react/shallow";
 
-import { useAssignAgentsStore } from "../../stores/assign-agents-store";
+import { useQueueAgentsStore } from "../../stores/queue-agents-store";
 
 import AgentsList from "./AgentsList";
 import { SearchAgents } from "./SearchAgents";
 
 const AssignAgentsDialog = () => {
-  const { open, setOpen, setView, view } = useAssignAgentsStore(
+  const { open, setOpen, setView, view } = useQueueAgentsStore(
     useShallow((state) => ({
       open: state.showDialog,
       setOpen: state.setShowDialog,

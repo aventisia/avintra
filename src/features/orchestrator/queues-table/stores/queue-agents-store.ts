@@ -17,7 +17,7 @@ type Actions = {
  *
  * @returns An object containing the state and actions of the search store.
  */
-export const useAssignAgentsStore = create<State & Actions>((set) => ({
+export const useQueueAgentsStore = create<State & Actions>((set) => ({
   showDialog: false,
   view: "Agents",
   queueId: "",
