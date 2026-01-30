@@ -88,6 +88,7 @@ public class VersionResourceController : BaseApiController
     }
 
     // Downloads a file by its URL.
+    [AllowAnonymous]
     [HttpGet("local-to-cloud")]
     public async Task<ActionResult<ServiceResponse<bool>>> UplaodFileLocalToCloud()
     {
