@@ -2,7 +2,8 @@ import { toast } from "@aventisia/ui/sonner";
 import { useQuery } from "@tanstack/react-query";
 import { useEffect } from "react";
 
-import { getAgents } from "../apis/queues-table-apis";
+import { getQueueAgents } from "../apis/queue-agents-apis";
+import { QUEUE_AGENT_KEY } from "../constants";
 
 /**
  * Custom hook to fetch queue agents using react query.
@@ -11,8 +12,8 @@ import { getAgents } from "../apis/queues-table-apis";
 export const useFetchQueueAgents = (queueId: string) => {
   // Get agents using react query
   const { data, isFetching, isLoading, isError, error } = useQuery({
-    queryKey: ["queue-agents", queueId],
-    queryFn: () => getAgents(queueId),
+    queryKey: [QUEUE_AGENT_KEY, queueId],
+    queryFn: () => getQueueAgents(queueId),
   });
 
   // Show toast on fetch error

@@ -5,6 +5,8 @@ import { CrudActionType } from "@aventisia/ui/types";
  */
 const DATA_QUERY_KEY = ["queues"];
 
+const QUEUE_AGENT_KEY = "QUEUE_AGENT";
+
 /**
  * The heading for the queues table.
  */
@@ -32,6 +34,7 @@ const getDialogHeadingDescription = (crudAction: CrudActionType) => {
 
 export {
   DATA_QUERY_KEY,
+  QUEUE_AGENT_KEY,
   getDialogHeadingDescription,
   SEARCH_COLUMN,
   TABLE_HEADING,
