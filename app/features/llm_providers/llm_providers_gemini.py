@@ -19,7 +19,6 @@ from app.features.llm_providers.llm_providers_utils import extract_json_from_llm
 from app.features.llm_providers.llm_job_manager import active_llm_jobs
 from .llm_providers_base import BaseLLMProvider
 
-
 class GeminiProvider(BaseLLMProvider):
     """
     Gemini LLM provider implementation.
@@ -248,13 +247,13 @@ class GeminiProvider(BaseLLMProvider):
 
         # Add base64 files if any are provided (Gemini 'inline_data')
         if llm_request.files:
-            for b64_file in llm_request.files:
+            for encoded_file in llm_request.files:
                 contents.append({
                     "parts": [
                         {
                             "inline_data": {
-                                "mime_type": "image/png",  # Set MIME type based on the file type
-                                "data": b64_file
+                                "mime_type": encoded_file.mime_type,
+                                "data": encoded_file.encoded_content
                             }
                         }
                     ]
@@ -269,14 +268,19 @@ class GeminiProvider(BaseLLMProvider):
                 "maxOutputTokens": llm_request.max_output_tokens,
             }
         }
+        
+        # Initialize responseMimeType to a default value (text)
+        payload["generationConfig"]["responseMimeType"] = "text/plain"
 
-        # Handle response type (JSON or Text)
-        if llm_request.is_json_output:
+        # If JSON schema is defined, include it and set MIME type to application/json
+        if llm_request.json_schema:
+            payload["generationConfig"]["responseJsonSchema"] = llm_request.json_schema
             payload["generationConfig"]["responseMimeType"] = "application/json"
-            # For JSON responses, include schema
-            payload["generationConfig"]["response_schema"] = llm_request.json_schema
-        else:
-            payload["generationConfig"]["responseMimeType"] = "text/plain"
+
+        # If JSON output is requested (and no schema), set MIME type to application/json
+        elif llm_request.is_json_output:
+            payload["generationConfig"]["responseMimeType"] = "application/json"
+
 
         # Construct request headers for Gemini API
         headers = {
@@ -285,7 +289,6 @@ class GeminiProvider(BaseLLMProvider):
         }
 
         return payload, headers
-
     
     # Handle BYOK credentials or enforce platform credit usage
     def _handle_byok_and_credits(self, llm_request: LLMRequest, jwt: str):
