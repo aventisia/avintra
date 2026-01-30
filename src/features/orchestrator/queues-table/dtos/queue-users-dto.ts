@@ -5,8 +5,17 @@ export interface QueueUserDto {
   /** Unique identifier for the user associated with the queue */
   userId: string;
 
+  /** FirstName of the user that the queue is associated with */
+  firstName?: string | null;
+
+  /** LastName of the user that the queue is associated with */
+  lastName?: string | null;
+
   /** Name of the user that the queue is associated with */
   username?: string | null;
+
+  /** Intial of the user that the queue is associated with */
+  createdByUserInitials?: string | null;
 
   /** Unique identifier for the queue that the user belongs to */
   queueId: string;

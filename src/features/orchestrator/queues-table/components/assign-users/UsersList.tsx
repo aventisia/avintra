@@ -49,7 +49,7 @@ const UsersList = () => {
             return (
               <CommandItem
                 key={val.id}
-                value={`${val.username}`}
+                value={`${val?.username}${val?.firstName}${val?.lastName}`}
                 className="group/CommandItem cursor-pointer rounded-lg p-1"
               >
                 <div
@@ -61,14 +61,17 @@ const UsersList = () => {
                   <div className="flex grow items-center gap-2">
                     <Avatar className={cn("flex h-7 w-7")}>
                       <AvatarFallback className="bg-primary text-xs font-bold capitalize tracking-wider text-secondary text-white">
-                        {/* {val.initials ? val.initials : "--"} */}
+                        {val?.firstName
+                          ? val.firstName.charAt(0) +
+                            (val.lastName ? val.lastName?.charAt(0) : "")
+                          : "--"}
                       </AvatarFallback>
                     </Avatar>
                     {/* User name */}
                     <div className="flex flex-col">
-                      <p>{val.username}</p>
+                      <p>{`${val?.firstName} ${val?.lastName}`}</p>
                       <span className="text-2xs text-muted-foreground">
-                        {val.username}
+                        {val?.username}
                       </span>
                     </div>
                   </div>
