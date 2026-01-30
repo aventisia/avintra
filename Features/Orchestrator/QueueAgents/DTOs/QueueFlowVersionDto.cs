@@ -31,6 +31,11 @@ public class QueueFlowVersionDto
     public string? QueueName { get; set; }
 
     /// <summary>
+    /// Gets or sets the version number of a flow version record
+    /// </summary>
+    public int VersionNumber { get; set; }
+
+    /// <summary>
     /// Gets or sets a flag indicating whether the queue flow version is disabled. This is nullable to distinguish between `true`, `false`, and `null`.
     /// </summary>
     public bool? IsDisabled { get; set; }
