@@ -217,13 +217,35 @@ class OpenRouterProvider(BaseLLMProvider):
 
         # Add base64 files if provided
         if llm_request.files:
-            for b64_file in llm_request.files:
-                messages.append({
-                    "inline_data": {
-                        "mime_type": "image/png",  # Change this based on your file type (e.g., image/jpeg, application/pdf, etc.)
-                        "data": b64_file
-                    }
-                })
+            for encoded_file in llm_request.files:
+                # Determine content type: images vs documents
+                if encoded_file.mime_type.startswith("image/"):
+                    messages.append({
+                        "role": "user",
+                        "content": [
+                            {
+                                "type": "image_url",
+                                "imageUrl": {
+                                    "url": f"data:{encoded_file.mime_type};base64,{encoded_file.encoded_content}"
+                                }
+                            }
+                        ]
+                    })
+                else:
+                    # For PDFs, docs, or other file types
+                    messages.append({
+                        "role": "user",
+                        "content": [
+                            {
+                                "type": "file",
+                                "file": {
+                                    "filename": "file",  # optionally: pass real filename if available
+                                    "file_data": f"data:{encoded_file.mime_type};base64,{encoded_file.encoded_content}"
+                                }
+                            }
+                        ]
+                    })
+
         # Building the payload with dynamic elements
         payload = {
             "model": llm_request.model,
@@ -234,12 +256,25 @@ class OpenRouterProvider(BaseLLMProvider):
             "max_tokens": llm_request.max_output_tokens,
         }
 
-        # Include response format for JSON output type
-        if llm_request.is_json_output:
-            payload["response_format"] = {"type": llm_request.json_schema}
-            payload["output_type"] = "json",
+        # Initialize default response format
+        payload["response_format"] = {}
+
+        # Include response format if JSON schema is defined
+        if llm_request.json_schema:
+            payload["response_format"] = {
+                "type": "json_object",
+                "json_schema": llm_request.json_schema
+            }
+
+        # Set response format based on is_json_output flag (only if no schema)
+        elif llm_request.is_json_output:
+            payload["response_format"] = {
+                "type": "json_object"
+            }
+
+        # Default output type if no schema and not JSON output
         else:
-            payload["output_type"] = "text",
+            payload["output_type"] = "text"
 
 
         # Constructing the headers with the API key
