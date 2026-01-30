@@ -15,11 +15,12 @@ import { columnDisplayNames } from "../constants/column-display-names";
 import { columnVisibilityState } from "../constants/column-visibility-state";
 import { useFetchQueues } from "../hooks/useFetchQueues";
 
+import AssignAgentsDialog from "./assign-agents/AssignAgentsDialog";
+import AssignUsersDialog from "./assign-users/AssignUsersDialog";
 import { QueueCrudDialog } from "./queue-crud-dialog/QueueCrudDialog";
 import { QueueBulkActions } from "./queue-row-actions/QueueBulkActions";
 import UploadItemsDialog from "./queue-upload-items/UploadItemsDialog";
 import { queuesTableColumns } from "./QueuesTableColumns";
-import AssignAgentsDialog from "./assign-agents/AssignAgentsDialog";
 
 /**
  * Renders a table of queues.
@@ -53,8 +54,9 @@ export const QueuesTable = () => {
     <>
       {data ? (
         <div className="space-y-4 pb-4 pt-[17px]">
+          <AssignAgentsDialog />
+          <AssignUsersDialog />
           <QueueCrudDialog>
-            <AssignAgentsDialog />
             {/* Table toolbar */}
             <div className="flex items-center justify-between">
               <DTHeading heading={TABLE_HEADING} />

@@ -32,8 +32,8 @@ const AssignAgentsDialog = () => {
       }}
     >
       <DialogContent className="h-[60vh]">
-        <DialogDefaultHeader heading={`Agents`} />
-        <div className="h-[calc(60vh-5.1rem)] p-2 px-4">
+        <DialogDefaultHeader heading={`Queue Agents`} />
+        <div className="h-[calc(60vh-5.1rem)] p-2 px-4 pb-4">
           <div className="flex w-full items-center justify-between">
             <div className="flex items-center gap-2 text-md font-semibold">
               {view == "Search" ? (

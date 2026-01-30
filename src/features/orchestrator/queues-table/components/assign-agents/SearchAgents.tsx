@@ -48,7 +48,7 @@ export const SearchAgents: React.FC = () => {
           <Button
             onClick={handleSubmit}
             disabled={selectedItems?.length === 0 || isSubmitting}
-            className="px-6"
+            className="min-w-20"
           >
             {isSubmitting ? (
               <>

@@ -200,6 +200,7 @@ export const queuesTableColumns: ColumnDef<QueuesTableDto>[] = [
       <QueueRowActions
         rowId={row.original.id ?? "rowId"}
         queueName={row.original.name ?? ""}
+        type={row.original.type ?? ""}
       />
     ),
   },
