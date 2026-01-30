@@ -606,8 +606,8 @@ export const openRouterModelList: Model[] = [
     specialty: ["text", "vision", "deep-search"],
   },
   {
-    label: "x-ai/grok-code-fast-1",
-    value: "x-ai/grok-code-fast-1",
+    label: "x-ai/grok-3-mini",
+    value: "x-ai/grok-3-mini",
     available: true,
     specialty: ["text", "deep-search"],
   },
