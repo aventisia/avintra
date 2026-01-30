@@ -14,6 +14,10 @@ def extract_json_from_llm_response(text: str):
     if text.endswith('```'):
         text = text[:-3].strip()
 
+    start = text.find('[')
+    if start != -1:
+        return json.loads(text)
+
     # Try to find the first valid JSON object using a stack (handles nested braces)
     start = text.find('{')
     if start == -1:
