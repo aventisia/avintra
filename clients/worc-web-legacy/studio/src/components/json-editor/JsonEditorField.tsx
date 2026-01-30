@@ -2,9 +2,11 @@ import { FormControl, FormLabelExt } from "@aventisia/ui/form";
 import { FormField } from "@aventisia/ui/form";
 import { FormItem } from "@aventisia/ui/form";
 import { FormMessage } from "@aventisia/ui/form";
-import { FieldPath, FieldValues, useFormContext } from "react-hook-form";
-import { JsonEditor } from "./JsonEditor";
 import { cn } from "@aventisia/ui/lib";
+import { FormFieldSizeType } from "@aventisia/ui/types";
+import { FieldPath, FieldValues, useFormContext } from "react-hook-form";
+
+import { JsonEditor } from "./JsonEditor";
 
 interface JsonEditorFieldProps {
   /** The name of the form field. */
@@ -18,6 +20,10 @@ interface JsonEditorFieldProps {
   className?: string;
 
   disabled?: boolean;
+
+  isRequired?: boolean;
+
+  size?: FormFieldSizeType;
 }
 
 /**
@@ -29,6 +35,8 @@ const JsonEditorField = ({
   description,
   className,
   disabled,
+  isRequired,
+  size = "base",
 }: JsonEditorFieldProps) => {
   const { control } = useFormContext<FieldValues>();
 
@@ -38,8 +46,13 @@ const JsonEditorField = ({
         name={name}
         control={control}
         render={({ field }) => (
-          <FormItem size={"sm"}>
-            <FormLabelExt size={"sm"} label={label} description={description} />
+          <FormItem size={size}>
+            <FormLabelExt
+              size={size}
+              label={label}
+              isRequired={isRequired && !disabled}
+              description={description}
+            />
             <FormControl>
               <JsonEditor
                 value={field.value}
@@ -49,7 +62,7 @@ const JsonEditorField = ({
               />
             </FormControl>
 
-            <FormMessage size={"sm"} />
+            <FormMessage size={size} />
           </FormItem>
         )}
       />

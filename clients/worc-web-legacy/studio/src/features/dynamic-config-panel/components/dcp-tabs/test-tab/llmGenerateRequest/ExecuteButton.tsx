@@ -92,7 +92,9 @@ const ExecuteButton = ({
       input,
       files,
       is_json_output: modelConfig.is_json_output,
-      json_schema: null,
+      json_schema: formData.useJSONSchema
+        ? (formData.json_schema as string)
+        : null,
       max_output_tokens: modelConfig.max_output_tokens,
       is_byok_enabled: modelConfig.is_byok_enabled,
       credential_id: modelConfig.credential_id || null,
