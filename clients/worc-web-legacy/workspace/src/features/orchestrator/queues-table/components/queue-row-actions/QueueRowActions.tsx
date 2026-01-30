@@ -3,6 +3,7 @@ import { DropdownMenuSeparator } from "@aventisia/ui/dropdown-menu";
 
 import { AddTriggerRowAction } from "./AddTriggerRowAction";
 import { AssignAgentsRowAction } from "./AssignAgentsRowAction";
+import { OpenQueueRowAction } from "./OpenQueueRowAction";
 import { QueueRowDeleteAction } from "./QueueRowDeleteAction";
 import { UploadItemsRowAction } from "./UploadItemsRowAction";
 
@@ -16,7 +17,7 @@ export const QueueRowActions = ({ rowId, queueName }: QueueRowActionsProps) => {
     // Dropdown menu for Queue table row action */}
     <DataTableRowActions className="flex !w-8 flex-col">
       {/* View the Queue details */}
-      <DTRowAction rowId={rowId} crudAction="read" />
+      <OpenQueueRowAction rowId={rowId} />
 
       {/* Edit Queue details */}
       <DTRowAction rowId={rowId} crudAction="update" />

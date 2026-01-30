@@ -20,6 +20,7 @@ import { JobStatusTypesEnum } from "../enums/job-status-type-enum";
 import { useFetchJobsList } from "../hooks/useFetchJobsList";
 
 import { DateRangeFilter } from "./DateRangeFilter";
+import { JobsStats } from "./JobsStats";
 import { jobsTableColumns } from "./JobsTableColumns";
 
 const tabs = ["Current", "Scheduled", "History"];
@@ -143,7 +144,16 @@ export const JobsTable = () => {
           </div>
 
           {/* Data table to render data */}
-          <DataTable table={table} columnsLength={jobsTableColumns.length} />
+          <div className="flex flex-col gap-2">
+            {tabValue === "History" && (
+              <JobsStats
+                data={data.data.filter(
+                  (job) => !["Created", "Running"].includes(job.status),
+                )}
+              />
+            )}
+            <DataTable table={table} columnsLength={jobsTableColumns.length} />
+          </div>
 
           {/* Data table Pagination component */}
           <DTPagination table={table} />

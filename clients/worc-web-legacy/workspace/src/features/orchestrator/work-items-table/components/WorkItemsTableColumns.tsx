@@ -1,9 +1,13 @@
+import { Badge } from "@aventisia/ui/badge";
 import { DTColumnHeader } from "@aventisia/ui/data-table";
 import { dateFormatter } from "@aventisia/ui/utils";
 import { ColumnDef } from "@tanstack/react-table";
 
 import { TABLE_KEY } from "../constants";
+import { statusColor } from "../constants/column-display-names";
 import { QueueWorkItemDto } from "../dtos/queue-work-item-dto";
+
+import { WorkItemRowActions } from "./WorkItemRowActions";
 
 /**
  * Array of table columns for the WorkItems table.
@@ -26,9 +30,15 @@ export const workItemsTableColumns: ColumnDef<QueueWorkItemDto>[] = [
       <DTColumnHeader tableKey={TABLE_KEY} column={column} title={"Status"} />
     ),
     cell: ({ row }) => (
-      <div className="w-auto truncate font-medium">
-        {row.getValue("status")}
-      </div>
+      <Badge
+        className={
+          row.original.status
+            ? statusColor[row.original.status]
+            : "bg-slate-200 text-slate-600"
+        }
+      >
+        {row.original.status?.replace(/([A-Z])/g, " $1")}
+      </Badge>
     ),
   },
   {
@@ -59,6 +69,13 @@ export const workItemsTableColumns: ColumnDef<QueueWorkItemDto>[] = [
       <div className="w-auto truncate font-medium">
         {dateFormatter(row.getValue("createdOn"))}
       </div>
+    ),
+  },
+  {
+    id: "actions",
+    cell: ({ row }) => (
+      // Render the queues row actions component
+      <WorkItemRowActions rowId={row.original.id ?? "rowId"} />
     ),
   },
 ];

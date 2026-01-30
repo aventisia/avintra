@@ -1,6 +1,6 @@
 import {
-  alphaNumericError,
-  alphaNumericRegex,
+  flexibleNameError,
+  flexibleNameRegex,
   maxLenError,
   // numericRegex,
   reqError,
@@ -17,12 +17,17 @@ const itemSchema = z.object({
   isUsedForUniqueIdentifier: z.boolean().default(false).optional(),
 });
 
-// Validates a JSON string that parses into an array of valid items
 const jsonInputSchema = z.string().refine(
   (val) => {
     try {
       const parsed = JSON.parse(val);
-      itemSchema.array().parse(parsed); // throws if invalid
+
+      // Must be an array
+      if (!Array.isArray(parsed)) return false;
+
+      // Validate each item against itemSchema
+      itemSchema.array().parse(parsed);
+
       return true;
     } catch {
       return false;
@@ -40,8 +45,8 @@ export const queueNameSchema = z
   .string()
   .min(1, { message: reqError("Queue name") })
   .max(255, { message: maxLenError("Queue name", 255) })
-  .regex(alphaNumericRegex, {
-    message: alphaNumericError("Queue name"),
+  .regex(flexibleNameRegex, {
+    message: flexibleNameError("Queue name"),
   });
 
 /**
@@ -51,6 +56,7 @@ export const queueZodSchema = z.object({
   crudAction: z.enum(["create", "read", "update"]).default("create"),
   id: z.string(),
   name: queueNameSchema,
+  type: z.string().min(1, { message: reqError("Type") }),
   description: z.string().optional().nullable(),
 
   isUniqueReferencesEnforced: z.boolean().default(false),

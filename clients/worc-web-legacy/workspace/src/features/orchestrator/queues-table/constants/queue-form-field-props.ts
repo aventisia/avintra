@@ -1,4 +1,4 @@
-import type { TextareaFieldProps } from "@aventisia/ui/form";
+import type { SelectFieldProps, TextareaFieldProps } from "@aventisia/ui/form";
 import { InputFieldProps, SwitchFieldProps } from "@aventisia/ui/form";
 
 // queue Id
@@ -13,7 +13,6 @@ export const nameProps: InputFieldProps = {
   name: "name",
   label: "Name",
   isRequired: true,
-  placeholder: "exampleQueue",
 };
 
 // Is Disabled
@@ -22,6 +21,17 @@ export const isDisabledProps: SwitchFieldProps = {
   label: "Disable Record",
   description:
     "Disable this record if it's been outdated, or not required anymore",
+};
+
+// Type
+export const typeProps: SelectFieldProps = {
+  name: "type",
+  label: "Instance Type",
+  isRequired: true,
+  selectOptions: [
+    { label: "Agent", value: "Agent" },
+    { label: "User", value: "User" },
+  ],
 };
 
 // Description
