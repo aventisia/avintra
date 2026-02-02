@@ -387,40 +387,40 @@ class OpenRouterProvider(BaseLLMProvider):
         llm_response.output_tokens = usage.get("completion_tokens", 0)
         llm_response.output_reasoning_tokens = usage.get("completion_tokens_details", {}).get("reasoning_tokens", 0)
 
-        # # If not BYOK and credential_id is present, post the credit usage
-        # if not llm_request.is_byok_enabled and llm_request.credential_id:
-        #     # Prepare the credit usage data
-        #     credit_usage_data = [
-        #         {
-        #             "ServiceType": "CustomInputService",
-        #             "ConsumedUnit": llm_response.input_tokens or 0,
-        #             "RefType": llm_request.ref_type,
-        #             "RefId": llm_request.ref_id,
-        #             "RefName": llm_request.ref_name,
-        #             "Action": llm_request.action,
-        #             "TriggeredByAgent": llm_request.agent_name
-        #         },
-        #         {
-        #             "ServiceType": "CustomInputService",
-        #             "ConsumedUnit": llm_response.output_tokens or 0,
-        #             "RefType": llm_request.ref_type,
-        #             "RefId": llm_request.ref_id,
-        #             "RefName": llm_request.ref_name,
-        #             "Action": llm_request.action,
-        #             "TriggeredByAgent": llm_request.agent_name
-        #         }
-        #     ]
+        # If not BYOK and credential_id is present, post the credit usage
+        if not llm_request.is_byok_enabled and llm_request.credential_id:
+            # Prepare the credit usage data
+            credit_usage_data = [
+                {
+                    "ServiceType": "Qwen3Vl32bInstructInput",
+                    "ConsumedUnit": llm_response.input_tokens or 0,
+                    "RefType": llm_request.ref_type,
+                    "RefId": llm_request.ref_id,
+                    "RefName": llm_request.ref_name,
+                    "Action": llm_request.action,
+                    "TriggeredByAgent": llm_request.agent_name
+                },
+                {
+                    "ServiceType": "Qwen3Vl32bInstructOutput",
+                    "ConsumedUnit": llm_response.output_tokens or 0,
+                    "RefType": llm_request.ref_type,
+                    "RefId": llm_request.ref_id,
+                    "RefName": llm_request.ref_name,
+                    "Action": llm_request.action,
+                    "TriggeredByAgent": llm_request.agent_name
+                }
+            ]
 
-        #     # Initialize the CreditManagerService
-        #     credit_manager = CreditManagerService()
+            # Initialize the CreditManagerService
+            credit_manager = CreditManagerService()
 
-        #     # Post the credit usage data
-        #     try:
-        #         credit_manager.post_credit_usage(task="openrouter", request=credit_usage_data, jwt=jwt)
-        #         logger.info(f"Successfully posted credit usage data for request ID {llm_request.ref_id}.")
-        #     except Exception as e:
-        #         logger.error(f"Failed to post credit usage data for request ID {llm_request.ref_id}. Error: {str(e)}")
-        #         raise HTTPException(status_code=500, detail=f"Failed to post credit usage: {str(e)}")
+            # Post the credit usage data
+            try:
+                credit_manager.post_credit_usage(task="openrouter", request=credit_usage_data, jwt=jwt)
+                logger.info(f"Successfully posted credit usage data for request ID {llm_request.ref_id}.")
+            except Exception as e:
+                logger.error(f"Failed to post credit usage data for request ID {llm_request.ref_id}. Error: {str(e)}")
+                raise HTTPException(status_code=500, detail=f"Failed to post credit usage: {str(e)}")
 
         # Return the final llm_response
         return llm_response
