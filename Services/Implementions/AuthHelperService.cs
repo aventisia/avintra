@@ -195,7 +195,9 @@ public class AuthHelperService : IAuthHelperService
             claims.Add("type", _environmentConfig.OnPremTenantType);
 
             // Add subscription plan information, if applicable
-            claims.Add("plan", _environmentConfig.OnPremTenantType == OnPremTenantTypesEnum.Enterprise.ToString() ? "None" : currentPlan);
+            claims.Add("plan", _environmentConfig.OnPremTenantType == OnPremTenantTypesEnum.Enterprise.ToString()
+                ? (_environmentConfig.OnPremExecutionDisabled ? "Inactive" : "Active")
+                : currentPlan);
 
             // Add permission access
             claims["permissions"] = user.UserRoles
@@ -216,7 +218,7 @@ public class AuthHelperService : IAuthHelperService
         // TokenOptions
         var securityTokenDescriptor = new SecurityTokenDescriptor
         {
-            Issuer =  $"https://{_environmentConfig.AppBaseUrl}",
+            Issuer = $"https://{_environmentConfig.AppBaseUrl}",
             Audience = $"https://{_environmentConfig.AppBaseUrl}",
             Claims = claims,
             IssuedAt = DateTime.UtcNow,
