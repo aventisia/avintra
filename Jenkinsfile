@@ -1,12 +1,12 @@
-// Define a function to get the target server based on the branch name
-def getTargetServer(branchName) {
+// Define a function to get the target servers based on the branch name
+def getTargetServers(branchName) {
     switch(branchName) {
         case 'dev':
-            return 'avdev.aventisia.com'
+            return ['avdev.aventisia.com']
         case 'uat':
-            return 'avuat.aventisia.com'
+            return ['avuat.aventisia.com']
         case 'main':
-            return 'avweb.aventisia.com'
+            return ['avweb1.aventisia.com', 'avweb2.aventisia.com']
         default:
             error "Unsupported branch: ${branchName}"
     }
@@ -24,17 +24,25 @@ pipeline {
             steps {
                 script {
                     sshagent(credentials: ['aventisia_vps_ssh']) {
-                        // Set target server based on branch
-                        def targetServer = getTargetServer(env.BRANCH_NAME)
+                        // Get target servers based on branch
+                        def targetServers = getTargetServers(env.BRANCH_NAME)
+
+                        echo "Deploying to ${targetServers.size()} server(s): ${targetServers.join(', ')}..."
+
+                        // Do deployment on each target server
+                        targetServers.each { server ->
+                            echo "Transfering to ${server}..."
                         
-                        echo "Transfering to ${targetServer}..."
-                        sh "rsync -avz --exclude 'venv' --exclude '.gitignore' --exclude 'base.pt' --exclude 'Jenkinsfile' --exclude '.git' --delete . admin@${targetServer}:${DEPLOY_PATH}"
+                            sh "rsync -avz --exclude 'venv' --exclude '.gitignore' --exclude 'base.pt' --exclude 'Jenkinsfile' --exclude '.git' --delete . admin@${server}:${DEPLOY_PATH}"
 
-                        echo "Installing required packages..."
-                        sh "ssh admin@${targetServer} 'cd ${DEPLOY_PATH} && python3 -m venv venv && source venv/bin/activate && pip install -r requirements.txt'"
+                            echo "Installing required packages..."
+                            sh "ssh admin@${server} 'cd ${DEPLOY_PATH} && python3 -m venv venv && source venv/bin/activate && pip install -r requirements.txt'"
 
-                        echo "Restarting the service..."
-                        sh "ssh admin@${targetServer} 'sudo systemctl restart llmpipeline_apis.service'"
+                            echo "Restarting the service..."
+                            sh "ssh admin@${server} 'sudo systemctl restart llmpipeline_apis.service'"
+                            
+                            echo "Successfully deployed to ${server}"
+                        }
                     }
                 }
             }
