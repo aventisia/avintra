@@ -7,22 +7,31 @@ meta {
 put {
   url: {{GLOBAL_ADMIN_BASE_URL}}/onprem-tenant
   body: json
-  auth: inherit
+  auth: bearer
+}
+
+auth:bearer {
+  token: {{AUTH_TOKEN}}
 }
 
 body:json {
   {
-    "id": "{{ON_PREM_TENANT_ID}}",
-    "name": "tenant_name",
-    "type": "Enterprise",
-    "executionTimeAllowed": 1000,
-    "contractStartDate": "2025-12-11",
-    "contractRenewalDate": "2025-12-20",
-    "isExecutionDisabled": false,
-    "isLoginDisabled": false,
-    "ourEmails": "rahmat@aventisia.com",
-    "tenantEmails": "contact@aventisia.com" 
-  }
+      "id": "7ec059e8-1c5f-4786-8fee-4d321305a04f",
+      "name": "Test",
+      "type": "Enterprise",
+      "executionTimeAllowed": 100,
+      "consumedExecutionTime": 0,
+      "contractStartDate": "2026-01-23T10:15:31.947+00:00",
+      "contractRenewalDate": "2026-02-23T18:30:00+00:00",
+      "isExecutionDisabled": false,
+      "isLoginDisabled": false,
+      "ourEmails": "vaibhav@aventisia.com",
+      "tenantEmails": "vaibhav@aventisia.com",
+      "createdByUser": "vaibhav@aventisia.com",
+      "createdOn": "2026-01-23T10:15:42.775173+00:00",
+      "lastModifiedByUser": "vaibhav@aventisia.com",
+      "lastModifiedOn": "2026-01-23T10:15:42.775174+00:00"
+    }
 }
 
 script:post-response {
