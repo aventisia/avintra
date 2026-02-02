@@ -13,6 +13,7 @@ from app.core.vault_manager import VaultManager
 from app.core.credit_manager import CreditManagerService
 from app.core.security import get_jwt
 from fastapi import HTTPException, Request
+from app.utils.file_util import FileUtils
 
 class DeepInfraProvider(BaseLLMProvider):
     # Constructor: To initialize API URL and key
@@ -203,31 +204,41 @@ class DeepInfraProvider(BaseLLMProvider):
     def create_request_payload_and_headers(self, llm_request: LLMRequest) -> tuple:
 
         # Convert LLMMessage objects to dicts if input is a list
-        if llm_request.files and len(llm_request.files) > 0 and isinstance(llm_request.input, str):
-            # IMPORTANT Note: If files are present, they will be included in the messages only if the input is a string.
-            # Basically we are assuming a single request to do OCR or image captioning.
-            # In case of llm_request.input is a list of messages, assuming user has already included images array in the messages.
-            # TODO: Testing is pending for files + messages both being sent together.
-            messages = [
-                {
-                    "role": "user",
-                    "content": [
-                        {
-                            "type": "image_url",
-                            "image_url": {
-                                "url": f"data:image/jpeg;base64,{llm_request.files[0]}"  # Assuming single file for now
-                            }
-                        },
-                        { "type": "text", "text": llm_request.input },
-                    ]
-                }
-            ]
-        elif isinstance(llm_request.input, str):
-            messages = [{"role": "user", "content": llm_request.input}]
+        if isinstance(llm_request.input, str):
+            messages = [{"role": "user", "content": [{ "type": "text", "text": llm_request.input }]}]
         elif isinstance(llm_request.input, list):
             messages = [msg.model_dump() if hasattr(msg, 'model_dump') else msg for msg in llm_request.input]
         else:
             raise ValueError("Invalid input format. Must be string or list of messages.")
+
+         # Add base64 files if any are provided
+        if llm_request.files:
+            for file_data in llm_request.files:
+                # If file_data is a URL (assuming it's a string), fetch file content from URL
+                if isinstance(file_data, str):
+                    mime_type, encoded_content = FileUtils.get_file_data_from_url(file_data)
+                    filename = file_data.split('/')[-1]  # Extract filename from URL
+                else:
+                    mime_type = file_data.mime_type
+                    encoded_content = file_data.encoded_content
+                    filename = getattr(file_data, "filename", "file")  # Use provided filename or default
+
+                # Ensure mime_type and encoded_content are valid
+                if mime_type and encoded_content:
+                    # Handle image files (JPEG, PNG, GIF, etc.)
+                    if mime_type.startswith("image/"):
+                        messages[0]["content"].append({
+                            "type": "input_image",
+                            "image_url": f"data:{mime_type};base64,{encoded_content}"
+                        })
+
+                    # Handle other file types (PDF, DOCX, CSV, TXT, JSON, etc.)
+                    else:
+                        messages[0]["content"].append({
+                            "type": "input_file",
+                            "filename": filename,
+                            "file_data": f"data:{mime_type};base64,{encoded_content}"
+                        })
 
         # Build request payload and headers
         request_payload = {
