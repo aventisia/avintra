@@ -149,7 +149,7 @@ public class UserRegistrationService : IUserRegistrationService
 
             if (_environmentConfig.OnPremTenantType == OnPremTenantTypesEnum.Enterprise.ToString())
             {
-                userRoles = new List<string> { CustomRolesEnum.TD.ToString() };
+                userRoles = new List<string> { CustomRolesEnum.TD.ToString(), CustomRolesEnum.TU.ToString() };
                 tenantId = Guid.Parse(_environmentConfig.OnPremTenantId);
             }
             else
