@@ -12,8 +12,6 @@ class LLMMessage(BaseModel):
     role: Literal['system', 'developer', 'user', 'assistant', 'model']
     content: str
 
-from typing import Literal
-
 class LLMEncodedFile(BaseModel):
     mime_type: Literal[
         'application/pdf',
@@ -48,7 +46,7 @@ class LLMRequest(BaseModel):
     provider: ProviderLiteral
     model: str
     input: Union[str, List[LLMMessage]]  # Accepts string or list of messages
-    files: Optional[List[LLMEncodedFile]] = None  # List of base64-encoded files for OCR/text extraction
+    files: Union[List[str], List[LLMEncodedFile]] = None  
     is_json_output: Optional[bool] = False # Try to extract JSON from response and sends no streaming response in one go even if streaming is true
     json_schema: Optional[Union[str, dict]] = None  # Can be JSON string or dict object
     max_output_tokens: Optional[int] = None
