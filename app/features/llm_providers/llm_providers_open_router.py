@@ -17,7 +17,7 @@ from app.features.llm_providers.llm_providers_schemas import (
 )
 from app.features.llm_providers.llm_job_manager import active_llm_jobs
 from .llm_providers_base import BaseLLMProvider
-
+from app.utils.file_util import FileUtils
 
 class OpenRouterProvider(BaseLLMProvider):
     """
@@ -215,32 +215,73 @@ class OpenRouterProvider(BaseLLMProvider):
         else:
             raise ValueError("Input must be a string or a list of messages.")
 
-        # Add base64 files if provided
+        # Add base64 files if any are provided (Gemini 'inline_data')
         if llm_request.files:
-            for encoded_file in llm_request.files:
-                # Determine content type: images vs documents
-                if encoded_file.mime_type.startswith("image/"):
+            for file_data in llm_request.files:
+                # If file_data is a URL (string), fetch file content
+                if isinstance(file_data, str):
+                    mime_type, encoded_content = FileUtils.get_file_data_from_url(file_data)
+                    filename = file_data.split("/")[-1]  # Extract filename from URL
+                else:
+                    # Handle case where file_data is an object with mime_type and encoded_content
+                    mime_type = file_data.mime_type
+                    encoded_content = file_data.encoded_content
+                    filename = getattr(file_data, "filename", "file")  # Use provided filename or default
+
+                # Determine content type and add appropriate message
+                if mime_type.startswith("image/"):
+                    # Image
                     messages.append({
                         "role": "user",
                         "content": [
                             {
                                 "type": "image_url",
                                 "imageUrl": {
-                                    "url": f"data:{encoded_file.mime_type};base64,{encoded_file.encoded_content}"
+                                    "url": f"data:{mime_type};base64,{encoded_content}"
+                                }
+                            }
+                        ]
+                    })
+                elif mime_type.startswith("video/"):
+                    # Video
+                    messages.append({
+                        "role": "user",
+                        "content": [
+                            {
+                                "type": "input_video",
+                                "input_video": {
+                                    "data": encoded_content,
+                                    "format": mime_type.split("/")[-1],  # e.g., 'mp4', 'webm'
+                                    "filename": filename
+                                }
+                            }
+                        ]
+                    })
+                elif mime_type.startswith("audio/"):
+                    # Audio
+                    messages.append({
+                        "role": "user",
+                        "content": [
+                            {
+                                "type": "input_audio",
+                                "input_audio": {
+                                    "data": encoded_content,
+                                    "format": mime_type.split("/")[-1],  # e.g., 'mp3', 'wav'
+                                    "filename": filename
                                 }
                             }
                         ]
                     })
                 else:
-                    # For PDFs, docs, or other file types
+                    # Documents or other file types (PDF, DOCX, CSV, etc.)
                     messages.append({
                         "role": "user",
                         "content": [
                             {
                                 "type": "file",
                                 "file": {
-                                    "filename": "file",  # optionally: pass real filename if available
-                                    "file_data": f"data:{encoded_file.mime_type};base64,{encoded_file.encoded_content}"
+                                    "filename": filename,
+                                    "file_data": f"data:{mime_type};base64,{encoded_content}"
                                 }
                             }
                         ]

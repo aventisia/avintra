@@ -18,6 +18,7 @@ from app.features.llm_providers.llm_providers_schemas import (
 from app.features.llm_providers.llm_providers_utils import extract_json_from_llm_response
 from app.features.llm_providers.llm_job_manager import active_llm_jobs
 from .llm_providers_base import BaseLLMProvider
+from app.utils.file_util import FileUtils
 
 class GeminiProvider(BaseLLMProvider):
     """
@@ -247,17 +248,26 @@ class GeminiProvider(BaseLLMProvider):
 
         # Add base64 files if any are provided (Gemini 'inline_data')
         if llm_request.files:
-            for encoded_file in llm_request.files:
-                contents.append({
-                    "parts": [
-                        {
-                            "inline_data": {
-                                "mime_type": encoded_file.mime_type,
-                                "data": encoded_file.encoded_content
+            for file_data in llm_request.files:
+                # If file_data is a URL (assuming it's a string), fetch file content from URL
+                if isinstance(file_data, str):  # Assuming file_data is a URL if it's a string
+                    mime_type, encoded_content = FileUtils.get_file_data_from_url(file_data)
+                else:
+                    # Handle the case where file_data is an object with mime_type and encoded_content
+                    mime_type = file_data.mime_type
+                    encoded_content = file_data.encoded_content
+
+                if mime_type and encoded_content:
+                    contents.append({
+                        "parts": [
+                            {
+                                "inline_data": {
+                                    "mime_type": mime_type,
+                                    "data": encoded_content
+                                }
                             }
-                        }
-                    ]
-                })
+                        ]
+                    })
 
         # Create the payload base
         payload = {
