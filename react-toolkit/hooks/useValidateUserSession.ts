@@ -1,5 +1,6 @@
 import { useMutation } from "@tanstack/react-query";
 import { useEffect } from "react";
+import { useShallow } from "zustand/react/shallow";
 
 import {
   getMySession,
@@ -13,7 +14,12 @@ import { setUserSessionLocally } from "@/react-toolkit/utils/user-session-utils"
  * @returns An object containing the `isPending` state.
  */
 export const useValidateUserSession = () => {
-  const { setUserSession } = useUserSessionStore();
+  const { userSession, setUserSession } = useUserSessionStore(
+    useShallow((state) => ({
+      userSession: state.userSession,
+      setUserSession: state.setUserSession,
+    })),
+  );
 
   // Validate user session
   const { mutate, isPending } = useMutation({
@@ -39,5 +45,5 @@ export const useValidateUserSession = () => {
   }, [mutate]);
 
   // return isPending state
-  return { isPending };
+  return { isPending, userSession };
 };
