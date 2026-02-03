@@ -58,14 +58,8 @@ function mergeActionSelectorData(
  * Loads the action selector data from the JSON file in src.
  */
 export async function getActionSelectorData(): Promise<PrimaryCategoryType[]> {
-  let desktopNodesJson =
+  const desktopNodesJson =
     "../features/action-selector/constants/_ActionSelectorData.json";
-
-  // Use dev data in non-production environments
-  if (import.meta.env.MODE !== "production") {
-    desktopNodesJson =
-      "../features/action-selector/constants/_DevActionSelectorData.json";
-  }
 
   // Get default Desktop automation modules
   const loader = modules[desktopNodesJson];
