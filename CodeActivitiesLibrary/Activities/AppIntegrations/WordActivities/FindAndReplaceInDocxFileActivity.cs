@@ -41,6 +41,10 @@ namespace CodeActivitiesLibrary.AppIntegrations.WordActivities
         [DefaultValue(false)]
         public InArgument<bool> UseRegex { get; set; }
 
+        [DisplayName("Save Document")]
+        [Description("Automatically saves the Word document after replacement.")]
+        public InArgument<bool> SaveDocument { get; set; }
+
         protected override void Execute(CodeActivityContext context)
         {
             try
@@ -50,6 +54,7 @@ namespace CodeActivitiesLibrary.AppIntegrations.WordActivities
                 var textToReplaceWith = TextToReplaceWith.Get(context) ?? string.Empty;
                 var allMatches = AllMatches.Get(context);
                 var useRegex = UseRegex.Get(context);
+                var saveDocument = SaveDocument.Expression == null ? true: SaveDocument.Get(context);
 
                 if (string.IsNullOrWhiteSpace(documentPath))
                     throw new ArgumentException("Document path is required.");
@@ -60,7 +65,7 @@ namespace CodeActivitiesLibrary.AppIntegrations.WordActivities
                 if (string.IsNullOrEmpty(textToFind))
                     throw new ArgumentException("No search text provided; no replacements performed.");
 
-                ReplaceTextInDocument(documentPath, textToFind, textToReplaceWith, allMatches, useRegex);
+                ReplaceTextInDocument(documentPath, textToFind, textToReplaceWith, allMatches, useRegex, saveDocument);
 
                 IsSuccess.Set(context, true);
                 StatusMessage.Set(context, "Text replaced successfully.");
@@ -72,7 +77,7 @@ namespace CodeActivitiesLibrary.AppIntegrations.WordActivities
 
             }
         }
-        private static void ReplaceTextInDocument(string filePath, string searchText, string replaceText, bool replaceAll, bool useRegex)
+        private static void ReplaceTextInDocument(string filePath, string searchText, string replaceText, bool replaceAll, bool useRegex, bool saveDocument)
         {
             using (var wordDoc = WordprocessingDocument.Open(filePath, isEditable: true))
             {
@@ -89,18 +94,10 @@ namespace CodeActivitiesLibrary.AppIntegrations.WordActivities
 
                     if (useRegex)
                     {
-                        try
-                        {
-                            var regex = new Regex(searchText);
-                            if (replaceAll)
-                                updatedText = regex.Replace(textElement.Text, replaceText);
-                            else
-                                updatedText = regex.Replace(textElement.Text, replaceText, 1);
-                        }
-                        catch (ArgumentException regexEx)
-                        {
-                            throw new ArgumentException($"Invalid regular expression: {regexEx.Message}", regexEx);
-                        }
+                        var regex = new Regex(searchText);
+                        updatedText = replaceAll
+                            ? regex.Replace(textElement.Text, replaceText)
+                            : regex.Replace(textElement.Text, replaceText, 1);
                     }
                     else
                     {
@@ -111,33 +108,28 @@ namespace CodeActivitiesLibrary.AppIntegrations.WordActivities
                         else
                         {
                             var index = textElement.Text.IndexOf(searchText, StringComparison.Ordinal);
-                            if (index >= 0)
-                            {
-                                updatedText = textElement.Text.Substring(0, index) + replaceText +
-                                              textElement.Text.Substring(index + searchText.Length);
-                                replacedFirst = true;
-                            }
-                            else
-                            {
-                                updatedText = textElement.Text;
-                            }
+                            if (index < 0) continue;
+
+                            updatedText =
+                                textElement.Text.Substring(0, index) +
+                                replaceText +
+                                textElement.Text.Substring(index + searchText.Length);
+
+                            replacedFirst = true;
                         }
                     }
 
                     if (textElement.Text != updatedText)
                     {
                         textElement.Text = updatedText;
-                        if (!replaceAll && !useRegex && !replacedFirst)
-                        {
-                            replacedFirst = true;
-                        }
                     }
 
-                    // Stop after first replacement in non-regex
-                    if (!replaceAll && !useRegex && replacedFirst)
-                    {
+                    if (!replaceAll && replacedFirst)
                         break;
-                    }
+                }
+                if (saveDocument)
+                {
+                    wordDoc.MainDocumentPart.Document.Save();
                 }
             }
         }
