@@ -122,8 +122,8 @@ public class AuthService : IAuthService
             // This can be due to maintenance, security incidents, or temporary administrative restrictions.
             if (_environmentConfig.OnPremLoginDisabled)
             {
-                serviceResponse.StatusCode = 401;
-                serviceResponse.Message = "Authentication services are currently unavailable. Please contact Aventiisia Support for assistance.";
+                serviceResponse.StatusCode = 403;
+                serviceResponse.Message = "Authentication is currently disabled. Please contact Aventisia Support for assistance.";
                 return serviceResponse;
             }
             // Try to get user (Includes Tenant and Roles)
