@@ -85,18 +85,13 @@ export async function getActionSelectorData(): Promise<PrimaryCategoryType[]> {
 
   // Explicitly import AI Integrations module
 
-  let aiIntegrationsJson =
+  const aiIntegrationsJson =
     "../features/action-selector/constants/_AIIntegrationsActionSelectorData.json";
-
-  // Use dev data in non-production environments
-  if (import.meta.env.MODE !== "production") {
-    aiIntegrationsJson =
-      "../features/action-selector/constants/_DevAIIntegrationsActionSelectorData.json";
-  }
 
   // Get default AI integrations automation modules
   const AIloader = modules[aiIntegrationsJson];
-  if (!AIloader) throw new Error("Action selector data JSON not found");
+  if (!AIloader)
+    throw new Error("Action selector data JSON not found for ai nodes");
   const aiIntegrationsModule = (await AIloader()) as {
     default: PrimaryCategoryType[];
   };

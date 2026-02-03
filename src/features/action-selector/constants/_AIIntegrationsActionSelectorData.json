@@ -1,13 +1,13 @@
 [
   {
     "label": "AI Integrations",
-    "description": "AI-powered advanced actions for smarter, dynamic automation",
+    "description": "Integrate AI models for smarter, dynamic automation workflows, enhancing process efficiency and intelligence.",
     "icon": "IntelligentAutomationIcon",
     "img": null,
     "actionCategories": [
       {
         "label": "AI Actions",
-        "description": "AI Actions",
+        "description": "Actions to build, deploy, and integrate AI models for tasks like text processing, image recognition, and speech conversion.",
         "icon": null,
         "img": "/function.png",
         "listType": "list",
@@ -50,21 +50,69 @@
           },
           {
             "type": "aiNode",
-            "name": "AIModel",
-            "label": "Speech To Text (STT)",
-            "description": "Convert spoken language into written text using AI",
+            "name": "CreateConversationalAIAgent",
+            "label": "Conversational Model",
+            "description": "Manages multi-turn interactions with human-like understanding and memory to guide users through complex tasks.",
             "docsLink": null,
+            "visibility": {
+              "showInProd": false
+            },
             "icon": "",
-            "img": "/assets/SpeechToText.svg"
+            "img": "/assets/ConversationModel.svg"
           },
           {
             "type": "aiNode",
-            "name": "AIModel",
-            "label": "Text To Speech (TTS)",
-            "description": "Convert written text into natural-sounding speech using AI",
+            "name": "CreateSTTAIAgent",
+            "label": "Speech To Text Model",
+            "description": "Convert spoken language into written text using AI.",
             "docsLink": null,
             "icon": "",
-            "img": "/assets/TextToSpeech.svg"
+            "img": "/assets/SpeechToTextModel.svg"
+          },
+          {
+            "type": "aiNode",
+            "name": "CreateTTSAIAgent",
+            "label": "Text To Speech Model",
+            "description": "Convert text into natural-sounding speech using AI.",
+            "docsLink": null,
+            "icon": "",
+            "img": "/assets/TextToSpeechModel.svg"
+          },
+          {
+            "type": "aiNode",
+            "name": "CreateImageAIAgent",
+            "label": "Image Model",
+            "description": "Generates new visual assets or modifies existing images based on precise descriptive text instructions.",
+            "docsLink": null,
+            "visibility": {
+              "showInProd": false
+            },
+            "icon": "",
+            "img": "/assets/ImageModel.svg"
+          },
+          {
+            "type": "aiNode",
+            "name": "CreateVideoAIAgent",
+            "label": "Video Model",
+            "description": "Creates high-fidelity video footage or applies cinematic edits to existing clips for dynamic content pipelines.",
+            "docsLink": null,
+            "visibility": {
+              "showInProd": false
+            },
+            "icon": "",
+            "img": "/assets/VideoModel.svg"
+          },
+          {
+            "type": "aiNode",
+            "name": "CreateDeepResearchAIAgent",
+            "label": "Deep Research Model",
+            "description": "An autonomous agent that plans and executes multi-step web searches to synthesize cited, evidence-based reports.",
+            "docsLink": null,
+            "visibility": {
+              "showInProd": false
+            },
+            "icon": "",
+            "img": "/assets/DeepSearchModel.svg"
           }
         ]
       }
