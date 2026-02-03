@@ -7,13 +7,15 @@ public class OrchestratorHub : Hub
     private readonly IClientStatusStore _clientStatusStore;
     private readonly ILogger<OrchestratorHub> _logger;
     private readonly WorkspaceInternalDbContext _workspaceInternalDbContext;
+    private readonly EnvironmentConfig _environmentConfig;
 
     // Constructor to initialize dependencies
-    public OrchestratorHub(IClientStatusStore clientStatusStore, ILogger<OrchestratorHub> logger, WorkspaceInternalDbContext workspaceInternalDbContext)
+    public OrchestratorHub(IClientStatusStore clientStatusStore, ILogger<OrchestratorHub> logger, WorkspaceInternalDbContext workspaceInternalDbContext, EnvironmentConfig environmentConfig)
     {
         _clientStatusStore = clientStatusStore;
         _logger = logger;
         _workspaceInternalDbContext = workspaceInternalDbContext;
+        _environmentConfig = environmentConfig;
     }
 
     // Invoked when a client successfully connects to the hub.
@@ -96,7 +98,7 @@ public class OrchestratorHub : Hub
             }
 
             // If the client is a machine, handle machine-specific logic
-            if (clientType == ClientTypesEnum.WorcMachine)
+            if (clientType == ClientTypesEnum.WorcMachine && !_environmentConfig.OnPremExecutionDisabled)
             {
                 // Retrieve all FlowVersionIds associated with the current machine from the MachineFlow table
                 var flowVersionIds = await _workspaceInternalDbContext.MachineFlow
@@ -218,6 +220,12 @@ public class OrchestratorHub : Hub
     {
         try
         {
+            // Check if execution is disabled in the current environment.
+            if (_environmentConfig.OnPremExecutionDisabled)
+            {
+                _logger.LogError("Execution is currently disabled in this environment. Job processing cannot be performed.");
+                return;
+            }
             // Log the attempt to execute the agent on a machine
             _logger.LogInformation("Attempting to execute agent {AgentId} on machine {MachineId}.", agentId, machineId);
 
@@ -362,6 +370,12 @@ public class OrchestratorHub : Hub
     // {
     //     try
     //     {
+    //         // Check if execution is disabled in the current environment.
+    //         if (_environmentConfig.OnPremExecutionDisabled)
+    //         {
+    //             _logger.LogError("Execution is currently disabled in this environment. Job processing cannot be performed.");
+    //             return;
+    //         }
     //         // Log the attempt to execute the agent on the specified machine
     //         _logger.LogInformation("Attempting to execute agent {AgentId} on machine {MachineId}.", executionCommandDto.AgentId, executionCommandDto.MachineId);
 
