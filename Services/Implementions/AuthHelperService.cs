@@ -140,7 +140,11 @@ public class AuthHelperService : IAuthHelperService
             var verificaitonCodeList = await _unitOfWork.VerificationCodeRepo
                                         .GetByConditionAsync(w =>
                                             (w.ExpiresOn <= DateTimeOffset.UtcNow) ||
-                                            (w.Email == userName && w.DeviceId == userAgent))
+                                            (
+                                                //  w.DeviceId == userAgent && // TODO: Uncomment to check for DeviceId mismatch when needed
+                                                w.Email == userName
+                                            )
+                                        )
                                         .ToListAsync();
 
             // No codes found
