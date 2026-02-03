@@ -12,12 +12,6 @@ public enum CreditServiceTypesEnum
     AgentExecutionTime,
 
     /// <summary>
-    /// Service for executing AI model inference tasks.
-    /// </summary>
-    [Description("AI Model Execution Time")]
-    AIModelExecutionTime,
-
-    /// <summary>
     /// Input token processing for the GPT-4o Mini model.
     /// </summary>
     [Description("GPT 4o mini-input")]
@@ -40,6 +34,9 @@ public enum CreditServiceTypesEnum
     /// </summary>
     [Description("qwen3-vl-32b-instruct - output")]
     Qwen3Vl32bInstructOutput,
+
+    // ---------------------------------------------------------
+    // TODO: Remove this later when no longer needed
 
     /// <summary>
     /// Speech-to-text service hosted on-premises.
@@ -64,8 +61,6 @@ public enum CreditServiceTypesEnum
     /// </summary>
     [Description("ElevenLabs TTS")]
     ElevenLabsTTS,
-
-    // TODO: Remove this later when no longer needed
 
     /// <summary>
     /// Input token processing for the GPT-4o model.
@@ -108,4 +103,10 @@ public enum CreditServiceTypesEnum
     /// </summary>
     [Description("Gemini 2.5 Flash-output")]
     Gemini25FlashOutput,
+
+    /// <summary>
+    /// Service for executing AI model inference tasks.
+    /// </summary>
+    [Description("AI Model Execution Time")]
+    AIModelExecutionTime,
 }
