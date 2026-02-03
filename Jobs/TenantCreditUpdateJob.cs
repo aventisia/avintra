@@ -27,7 +27,7 @@ public class TenantCreditAllocationJob : IJob
                 .GetByConditionAsync(w =>
                     w.Plan.Type == SubscriptionPlanTypeEnum.Starter &&
                     w.IsActive &&
-                    w.NextBillingDate.Date == currentDateTime.Date)
+                    w.NextBillingDate.Date <= currentDateTime.Date)
                 .Include(i => i.Plan)
                 .ToListAsync();
 
@@ -51,7 +51,7 @@ public class TenantCreditAllocationJob : IJob
                     TenantId = subscription.TenantId,
                     AvailableCredits = subscription.MaxCredits,
                     CreditedOn = currentDateTime,
-                    ExpiredOn = currentDateTime.AddMonths(1).Date,
+                    ExpiredOn = subscription.NextBillingDate.AddMonths(1).Date,
                     Type = CreditTypesEnum.Subscription,
                     SubscriptionId = subscription.Id,
                     CreatedByUserId = subscription.CreatedByUserId,
