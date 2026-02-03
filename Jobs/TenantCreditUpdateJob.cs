@@ -51,7 +51,7 @@ public class TenantCreditAllocationJob : IJob
                     TenantId = subscription.TenantId,
                     AvailableCredits = subscription.MaxCredits,
                     CreditedOn = currentDateTime,
-                    ExpiredOn = subscription.NextBillingDate.AddMonths(1).Date,
+                    ExpiredOn = subscription.NextBillingDate.Date,
                     Type = CreditTypesEnum.Subscription,
                     SubscriptionId = subscription.Id,
                     CreatedByUserId = subscription.CreatedByUserId,
