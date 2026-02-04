@@ -1,6 +1,7 @@
 import { LoadingSpinner } from "@aventisia/ui";
 import { Button } from "@aventisia/ui/buttons";
 import { cn } from "@aventisia/ui/lib";
+import { toast } from "@aventisia/ui/sonner";
 import { Tooltip } from "@aventisia/ui/tooltip";
 import { PlayIcon, StopIcon } from "@heroicons/react/24/solid";
 import { useShallow } from "zustand/react/shallow";
@@ -8,6 +9,7 @@ import { useShallow } from "zustand/react/shallow";
 import { useAbortJobExecutionMutation } from "@/features/execute-flow/hooks/useAbortJobExecutionMutation";
 import { useCreateJobMutation } from "@/features/orchestrator/agents-table/hooks/useCreateJobMutation";
 import { MachineStatusTypesEnum } from "@/react-toolkit/enums/machine-status-types-enum";
+import { useUserSessionStore } from "@/react-toolkit/stores/user-session-store";
 
 import { useAssignMachineStore } from "../../stores/assign-machine-store";
 
@@ -29,6 +31,15 @@ export const ExecutionAction = ({
       setMachineIds: s.setMachineIds,
     })),
   );
+
+  const { userSession } = useUserSessionStore(
+    useShallow((state) => ({
+      userSession: state.userSession,
+    })),
+  );
+
+  const isEnterprise = userSession?.deploymentType == "Enterprise";
+  const hasActivePlan = userSession?.planType == "Active";
 
   const { createJobMutation, isPending } = useCreateJobMutation();
 
@@ -56,6 +67,15 @@ export const ExecutionAction = ({
             size="icon7"
             className="hover:bg-slate-200"
             onClick={() => {
+              // Check plan for enterprise
+              if (isEnterprise && !hasActivePlan) {
+                // Show toast notification for inactive plan
+                toast.error(
+                  "Your enterprise plan is inactive. Please activate a plan to continue.",
+                );
+                return;
+              }
+
               createJobMutation({
                 flowVersionId: flowVersionId,
                 machineId: rowId,

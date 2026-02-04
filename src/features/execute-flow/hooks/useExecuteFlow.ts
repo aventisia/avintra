@@ -38,6 +38,8 @@ export default function useExecuteFlow() {
     })),
   );
   const isCommercial = userSession?.deploymentType == "Commercial";
+  const isEnterprise = userSession?.deploymentType == "Enterprise";
+  const hasActivePlan = userSession?.planType == "Active";
 
   const { sendCommand } = useWebSocket();
 
@@ -53,6 +55,14 @@ export default function useExecuteFlow() {
         toast.error("Insufficient credits. Please top up to continue.");
         return;
       }
+    }
+    // Check plan for enterprise
+    if (isEnterprise && !hasActivePlan) {
+      // Show toast notification for inactive plan
+      toast.error(
+        "Your enterprise plan is inactive. Please activate a plan to continue.",
+      );
+      return;
     }
     if (!data) return;
 
