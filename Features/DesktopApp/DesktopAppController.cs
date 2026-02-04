@@ -9,16 +9,13 @@ public class DesktopAppController : BaseApiController
 {
     private readonly AppDefaultConfig _appDefaultConfig;
     private readonly EnvironmentConfig _environmentConfig;
-    private readonly IWebHostEnvironment _webHostEnvironment;
-
+    
     public DesktopAppController(
         AppDefaultConfig appDefaultConfig,
-        EnvironmentConfig environmentConfig,
-        IWebHostEnvironment webHostEnvironment)
+        EnvironmentConfig environmentConfig)
     {
         _appDefaultConfig = appDefaultConfig;
         _environmentConfig = environmentConfig;
-        _webHostEnvironment = webHostEnvironment;
     }
 
     // GET: /desktop-app/download/
@@ -65,11 +62,7 @@ public class DesktopAppController : BaseApiController
             return NotFound(message);
 
         // Get the latest verison out. Assuming version is in the format WorcDesktopApp_{version}_x64-setup.exe
-        string latestVersion;
-        if (_webHostEnvironment.IsEnvironment("Development") || _webHostEnvironment.IsEnvironment("UAT"))
-            latestVersion = Path.GetFileNameWithoutExtension(fileName).Split('_')[2]; // WorcDesktopApp_DEV/UAT_{version}_x64-setup.exe
-        else
-            latestVersion = Path.GetFileNameWithoutExtension(fileName).Split('_')[1]; // WorcDesktopApp_{version}_x64-setup.exe
+        string latestVersion = Path.GetFileNameWithoutExtension(fileName).Split('_')[1]; // WorcDesktopApp_{version}_x64-setup.exe
 
         var updateNotes = "Bug fixes and improvements.";
         var pubDate = DateTime.UtcNow.ToString("o"); // ISO 8601 format
@@ -102,15 +95,6 @@ public class DesktopAppController : BaseApiController
     // Helper to get the latest version from a file or database
     private (string?, string?, string?, string) GetLatestVersion(string? version = null)
     {
-        // Set WorcDesktopApp base name based on environment
-        var appName = "WorcDesktopApp";
-        if (_webHostEnvironment.IsEnvironment("Development"))
-            appName += "_DEV";
-        else if (_webHostEnvironment.IsEnvironment("UAT"))
-            appName += "_UAT";
-        else
-            appName += "";
-        
         // Get base path
         var basePath = Path.Combine(_appDefaultConfig.FileUploadConfig.UploadDirectory, "binaries");
 
@@ -123,9 +107,9 @@ public class DesktopAppController : BaseApiController
 
         // Set search pattern based on version
         if (!string.IsNullOrEmpty(version))
-            searchPattern = $"{appName}_{version}_x64-setup.exe";
+            searchPattern = $"WorcDesktopApp_{version}_x64-setup.exe";
         else
-            searchPattern = $"{appName}_*_x64-setup.exe";
+            searchPattern = $"WorcDesktopApp_*_x64-setup.exe";
 
         // Get files matching the search pattern
         var files = Directory.GetFiles(basePath, searchPattern);
