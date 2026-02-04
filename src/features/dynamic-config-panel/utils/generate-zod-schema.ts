@@ -249,6 +249,31 @@ function getConditionSchema(field: DCPFieldSchemaType): ZodTypeAny {
   return z.array(z.any());
 }
 
+function getQueueConditionalGroupSchema(field: DCPFieldSchemaType): ZodTypeAny {
+  if (!Array.isArray(field.conditionSchema)) {
+    return z.array(z.any());
+  }
+
+  // Build object shape dynamically from conditionSchema
+  const itemShapes: Record<string, ZodTypeAny> = {};
+
+  field.conditionSchema.forEach((subField) => {
+    itemShapes[subField.name] = getZodType(subField);
+  });
+
+  const conditionObject = z.object(itemShapes);
+
+  let arrSchema = z.array(conditionObject);
+
+  if (field.required) {
+    arrSchema = arrSchema.min(1, {
+      message: reqError(field.label || "Conditions"),
+    });
+  }
+
+  return arrSchema;
+}
+
 function getZodType(field: DCPFieldSchemaType): ZodTypeAny {
   switch (field.type) {
     case "number":
@@ -267,7 +292,8 @@ function getZodType(field: DCPFieldSchemaType): ZodTypeAny {
     case "memory-config":
       return getMemoryConfigSchema(field);
     case "queue-conditional-group":
-      return z.array(z.any());
+    case "queue-priority-group":
+      return getQueueConditionalGroupSchema(field);
     default:
       return applyFieldOptions(z.string(), field); // Fallback to string
   }

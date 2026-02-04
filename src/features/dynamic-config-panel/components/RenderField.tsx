@@ -20,6 +20,7 @@ import { MemoryConfigField } from "./fields-for-form/MemoryConfigField";
 import { JsonEditorField } from "@/components/json-editor/JsonEditorField";
 import { QueueSelectorField } from "./fields-for-form/QueueSelectorField";
 import { QueueConditionGroupsField } from "./queue-condition-groups/QueueConditionGroupsField";
+import { QueuePriorityGroupsField } from "./queue-condition-groups/QueuePriorityGroupsField";
 
 // Helper to render the correct field type
 export const RenderField = (field: DCPFieldSchemaType) => {
@@ -101,6 +102,8 @@ export const RenderField = (field: DCPFieldSchemaType) => {
       return <QueueSelectorField {...baseProps} selectOptions={[]} size="sm" />;
     case "queue-conditional-group":
       return <QueueConditionGroupsField {...field} />;
+    case "queue-priority-group":
+      return <QueuePriorityGroupsField {...field} />;
     default:
       return null;
   }
