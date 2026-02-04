@@ -12,15 +12,15 @@ def getBuildMode(branchName) {
     }
 }
 
-// Define a function to get the target server based on the branch name
-def getTargetServer(branchName) {
+// Define a function to get the target servers based on the branch name
+def getTargetServers(branchName) {
     switch(branchName) {
         case 'dev':
-            return 'avdev.aventisia.com'
+            return ['avdev.aventisia.com']
         case 'uat':
-            return 'avuat.aventisia.com'
+            return ['avuat.aventisia.com']
         case 'main':
-            return 'avweb.aventisia.com'
+            return ['avweb1.aventisia.com', 'avweb2.aventisia.com']
         default:
             error "Unsupported branch: ${branchName}"
     }
@@ -58,13 +58,17 @@ pipeline {
             steps {
                 script {
                     sshagent(credentials: ['aventisia_vps_ssh']) {
-                        // Set target server based on branch
-                        def targetServer = getTargetServer(env.BRANCH_NAME)
+                        // Get target servers based on branch
+                        def targetServers = getTargetServers(env.BRANCH_NAME)
 
-                        echo "Deploying to ${targetServer}..."
+                        echo "Deploying to ${targetServers.size()} server(s): ${targetServers.join(', ')}..."
                         
-                        // Deploy to target server  
-                        sh "rsync -avz --delete ${WORKSPACE}/dist/* admin@${targetServer}:/var/www/aventisia.com/clients/worc/"
+                        // Deploy to each target server
+                        targetServers.each { server ->
+                            echo "Deploying to ${server}..."
+                            sh "rsync -avz --delete ${WORKSPACE}/dist/* admin@${server}:/var/www/aventisia.com/clients/worc/"
+                            echo "Successfully deployed to ${server}"
+                        }
                     }
                 }
             }
