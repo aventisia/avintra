@@ -9,7 +9,7 @@ export interface CreditConsumptionDto {
   /**
    * Gets or sets the type of service being used, based on the available credit-based services.
    */
-  serviceType: CreditServiceTypesEnum;
+  serviceType: CreditServiceTypesEnum | string;
 
   /**
    * Gets or sets the number of consumed units for the service.
@@ -19,7 +19,7 @@ export interface CreditConsumptionDto {
   /**
    * Gets or sets the reference type (e.g.Agent, AIModel,Platform) associated with the usage.
    */
-  refType: UsageSourceTypesEnum;
+  refType: UsageSourceTypesEnum | string;
 
   /**
    * Gets or sets the unique identifier for the reference object.
@@ -34,7 +34,7 @@ export interface CreditConsumptionDto {
   /**
    * Gets or sets the action type (e.g.AgentExecution, AIModelExecution) associated with the usage.
    */
-  action: ActionTypesEnum;
+  action: ActionTypesEnum | string;
 
   /**
    * Gets or sets the name of the agent that consumed the credits.
