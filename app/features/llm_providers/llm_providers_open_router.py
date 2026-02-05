@@ -387,8 +387,8 @@ class OpenRouterProvider(BaseLLMProvider):
         llm_response.output_tokens = usage.get("completion_tokens", 0)
         llm_response.output_reasoning_tokens = usage.get("completion_tokens_details", {}).get("reasoning_tokens", 0)
 
-        # If not BYOK and credential_id is present, post the credit usage
-        if not llm_request.is_byok_enabled and llm_request.credential_id:
+        # If BYOK is not enabled and credential_id is not provided, post credit usage to CreditManagerService
+        if not llm_request.is_byok_enabled and not llm_request.credential_id:
             # Prepare the credit usage data
             credit_usage_data = [
                 {
