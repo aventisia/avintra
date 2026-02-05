@@ -54,6 +54,15 @@
       "description": "If enabled, \u0027Text to Find\u0027 is treated as a .NET regular expression.",
       "defaultValue": false,
       "required": false
+    },
+    {
+      "direction": "Input",
+      "type": "switch",
+      "name": "SaveDocument",
+      "label": "Save Document",
+      "description": "Automatically saves the Word document after replacement.",
+      "defaultValue": "",
+      "required": false
     }
   ]
 }

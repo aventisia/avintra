@@ -1,4 +1,5 @@
 import { NodeDataType } from "@/types/node-data-type";
+import { VisibilityRules } from "./visibility-type";
 
 /**
  * Represents a action Category for list of actions.
@@ -20,4 +21,7 @@ export type ActionCategoryType = {
 
   /** The list of actions associated with the action category. */
   actions?: NodeDataType[];
+
+   /** Visibility rules (absence = visible everywhere) */
+  visibility?: VisibilityRules;
 };

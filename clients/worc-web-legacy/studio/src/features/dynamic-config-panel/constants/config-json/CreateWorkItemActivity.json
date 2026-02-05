@@ -1,0 +1,50 @@
+{
+  "name": "CreateWorkItem",
+  "label": "Create Work Item",
+  "description": "Creates a new work item in the specified queue.",
+  "version": "1.0.0",
+  "auther": "@aventisia",
+  "supportedPlatforms": ["desktop"],
+  "errorHandling": "standard",
+  "testScreenType": "standard",
+  "fields": [
+    {
+      "direction": "Input",
+      "type": "queue-select",
+      "name": "SelectQueue",
+      "label": "Select Queue",
+      "description": "Choose the queue where the new work item will be created.",
+      "defaultValue": "",
+      "required": true
+    },
+    {
+      "direction": "Input",
+      "type": "json-editor",
+      "name": "CreateWorkItemData",
+      "label": "Work Item Data",
+      "description": "Provide the data payload for the work item in JSON format. This data will be stored with the work item.",
+      "defaultValue": "",
+      "required": true
+    },
+    {
+      "direction": "Input",
+      "type": "text",
+      "name": "WorkItemRemark",
+      "label": "Remark",
+      "description": "Enter the remark for the work item.",
+      "defaultValue": ""
+    },
+    {
+      "direction": "Output",
+      "type": "config-panel-output",
+      "name": "CreateWorkItem",
+      "label": "CreateWorkItem",
+      "description": "Returns the newly created work item.",
+      "defaultValue": {
+        "value": "CreateWorkItem",
+        "enabled": true
+      },
+      "required": false
+    }
+  ]
+}
