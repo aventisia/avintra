@@ -2,7 +2,7 @@
   "$schema": "../node_modules/@tauri-apps/cli/config.schema.json",
   "mainBinaryName": "WorcDesktopApp",
   "productName": "WorcDesktopApp",
-  "version": "0.1.44",
+  "version": "0.1.47",
   "identifier": "com.aventisia.worc",
   "build": {
     "frontendDist": "../dist",
@@ -16,7 +16,7 @@
         "title": "WorcDesktopApp",
         "resizable": true,
         "fullscreen": false,
-        "userAgent": "WorcDesktopApp/0.1.44"
+        "userAgent": "WorcDesktopApp/0.1.47"
       }
     ],
     "security": {
@@ -42,7 +42,6 @@
   "plugins": {
     "updater": {
       "pubkey": "dW50cnVzdGVkIGNvbW1lbnQ6IG1pbmlzaWduIHB1YmxpYyBrZXk6IEVGMjkwM0I1OEFFMzU5NTcKUldSWFdlT0t0UU1wN3o5TjMzTjNtdzFEWTdhUGJGdnV0ZFVaWWE2cDcwK2s5ZXNTYjBoVWFHeWwK",
-
       "dialog": false,
       "windows": {
         "installMode": "passive"
