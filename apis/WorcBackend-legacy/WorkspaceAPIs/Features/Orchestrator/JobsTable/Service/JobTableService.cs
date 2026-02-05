@@ -6,6 +6,7 @@ public class JobTableService : IJobTableService
     private readonly IUnitOfWork _unitOfWork;
     private readonly ICurrentTenantService _currentTenantService;
     private readonly IJobsExecutorService _jobsExecutorService;
+    private readonly EnvironmentConfig _environmentConfig;
     private readonly Guid _userId;
 
     public JobTableService(
@@ -13,7 +14,8 @@ public class JobTableService : IJobTableService
         IUnitOfWork unitOfWork,
         IHttpContextAccessor httpContextAccessor,
         ICurrentTenantService currentTenantService,
-        IJobsExecutorService jobsExecutorService)
+        IJobsExecutorService jobsExecutorService,
+        EnvironmentConfig environmentConfig)
     {
         // Set the user ID from the HTTP context
         _userId = Guid.Parse(httpContextAccessor.HttpContext?.User?.FindFirstValue("uid") ?? Guid.Empty.ToString());
@@ -22,6 +24,7 @@ public class JobTableService : IJobTableService
         _unitOfWork = unitOfWork;
         _currentTenantService = currentTenantService;
         _jobsExecutorService = jobsExecutorService;
+        _environmentConfig = environmentConfig;
     }
 
     // Retrieves a list of jobs within the specified date range, or defaults to the last 7 days if no dates are provided.
@@ -207,6 +210,15 @@ public class JobTableService : IJobTableService
 
         try
         {
+            // Check if execution is disabled in the current environment.
+            if (_environmentConfig.OnPremExecutionDisabled)
+            {
+                // Set the service response message to inform the user about execution being disabled.
+                serviceResponse.Message = "Execution is currently disabled. Please contact Aventisia Support for assistance.";
+                _logger.LogError("Execution is currently disabled in this environment. Job processing cannot be performed.");
+                return serviceResponse;
+            }
+
             // Trim the string properties in the DTO
             jobTableDto = TrimDtoStringPropsUtil.TrimDtoStringProps(jobTableDto);
 

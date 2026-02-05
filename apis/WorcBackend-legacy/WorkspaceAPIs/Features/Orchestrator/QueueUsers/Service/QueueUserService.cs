@@ -215,12 +215,12 @@ public class QueueUserService : IQueueUserService
         var serviceResponse = new ServiceResponse<bool>
         {
             Data = false,
-            Message = "Failed to delete the queue user. Please try again."
+            Message = "Failed to remove the queue user. Please try again."
         };
 
         try
         {
-            // Fetch the queue user to be deleted
+            // Fetch the queue user to be removed
             var queueUser = await _unitOfWork.QueueUserRepo
                 .GetByConditionAsync(q => q.Id == queueUserId && q.CreatedByUserId == _userId)
                 .SingleOrDefaultAsync();
@@ -239,19 +239,19 @@ public class QueueUserService : IQueueUserService
             // Ensure changes are saved
             if (!await _unitOfWork.SaveAsync())
             {
-                _logger.LogInformation($"Failed to save changes while deleting queue user with ID: {queueUserId}");
+                _logger.LogInformation($"Failed to save changes while removing queue user with ID: {queueUserId}");
                 return serviceResponse;
             }
 
             // Return success message
             serviceResponse.Data = true;
             serviceResponse.StatusCode = 200;
-            serviceResponse.Message = "queue user deleted successfully.";
-            _logger.LogInformation($"queue user with ID: {queueUserId} deleted successfully.");
+            serviceResponse.Message = "queue user removed successfully.";
+            _logger.LogInformation($"queue user with ID: {queueUserId} removed successfully.");
         }
         catch (Exception ex)
         {
-            _logger.LogError($"Error deleting queue user with ID: {queueUserId}. Exception: {ex.Message}");
+            _logger.LogError($"Error removing queue user with ID: {queueUserId}. Exception: {ex.Message}");
             return serviceResponse;
         }
 
@@ -265,12 +265,12 @@ public class QueueUserService : IQueueUserService
         var serviceResponse = new ServiceResponse<bool>
         {
             Data = false,
-            Message = "Failed to delete the queue users. Please try again."
+            Message = "Failed to remove the queue users. Please try again."
         };
 
         try
         {
-            // Fetch the queue users to be deleted
+            // Fetch the queue users to be removed
             var queueUsers = await _unitOfWork.QueueUserRepo
                 .GetByConditionAsync(q => q.CreatedByUserId == _userId && queueUserIds.Contains(q.Id))
                 .ToListAsync();
@@ -278,7 +278,7 @@ public class QueueUserService : IQueueUserService
             if (queueUsers.Count == 0)
             {
                 // If no queue users are found, return an error message
-                _logger.LogInformation("No queue users found to delete.");
+                _logger.LogInformation("No queue users found to remove.");
                 serviceResponse.Message = "Queue users do not exist.";
                 return serviceResponse;
             }
@@ -289,19 +289,19 @@ public class QueueUserService : IQueueUserService
             // Ensure changes are saved successfully
             if (!await _unitOfWork.SaveAsync())
             {
-                _logger.LogInformation("Failed to save changes while deleting queue users.");
+                _logger.LogInformation("Failed to save changes while removeing queue users.");
                 return serviceResponse;
             }
 
-            // Return a success message with the count of deleted users
+            // Return a success message with the count of removed users
             serviceResponse.Data = true;
             serviceResponse.StatusCode = 200;
-            serviceResponse.Message = $"{queueUserIds.Count()} queue users deleted successfully.";
-            _logger.LogInformation($"{queueUserIds.Count()} queue users deleted successfully.");
+            serviceResponse.Message = $"{queueUserIds.Count()} queue users removed successfully.";
+            _logger.LogInformation($"{queueUserIds.Count()} queue users removed successfully.");
         }
         catch (Exception ex)
         {
-            _logger.LogError($"Error deleting queue users. Exception: {ex.Message}");
+            _logger.LogError($"Error removing queue users. Exception: {ex.Message}");
             return serviceResponse;
         }
 

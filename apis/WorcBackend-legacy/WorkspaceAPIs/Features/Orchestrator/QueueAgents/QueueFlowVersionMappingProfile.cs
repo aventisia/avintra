@@ -13,7 +13,11 @@ namespace WorkspaceAPIs.MappingProfiles
                     src => src.FlowVersion != null
                         ? (src.FlowVersion.Flow != null ? src.FlowVersion.Flow.Name : string.Empty)
                         : string.Empty)
-                    .Map(dest => dest.QueueName,
+                .Map(dest => dest.VersionNumber,
+                    src => src.FlowVersion != null
+                        ? src.FlowVersion.VersionNumber
+                        : 0)
+                .Map(dest => dest.QueueName,
                     src => src.Queue != null
                         ? src.Queue.Name
                         : string.Empty)
