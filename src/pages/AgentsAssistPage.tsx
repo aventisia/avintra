@@ -2,7 +2,7 @@ import { lazy, Suspense } from "react";
 
 // Lazy load the AgentsAssist component.
 const AgentsAssist = lazy(() =>
-  import("@/features/agents-assist/components/AgentsAssistTable").then(
+  import("@/features/assist/my-agents/components/AgentsAssistTable").then(
     (module) => ({
       default: module.AgentsAssistTable,
     }),
