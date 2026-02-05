@@ -5,7 +5,7 @@ meta {
 }
 
 post {
-  url: {{WORC_APIS_BASE_URL}}/cloud-connector/m365/twilio/invoke
+  url: {{WORC_APIS_BASE_URL}}/cloud-connector/twilio/invoke
   body: json
   auth: none
 }
@@ -15,7 +15,7 @@ body:json {
     "agentId": "00000000-0000-0000-0000-000000000000",
     "agentName": "Test",
     "provider": "Twilio",
-    "action": "SendWhatsappTemplateMessage",
+    "action": "SendWhatsAppTemplateMessage",
      "credentialId": "DUMMY",
     "payload": {  
       "recipientType": "MessagingServiceSID", //"PhoneNumber"
@@ -24,7 +24,7 @@ body:json {
   //    "recipientTypeValue": "+14155238886",
       "toNumber": "+919049107094",
       "templateId": "HX4891e246bf440597b379fc2a8b42a372",
-      "TemplateParameters": "Username,"
+      "templateParameters": "Username"
     }
   }
 }
