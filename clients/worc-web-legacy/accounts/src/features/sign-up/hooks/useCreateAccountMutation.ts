@@ -1,5 +1,6 @@
 import { ADD_TENANT, USER_NAME_LS_KEY } from "@/react-toolkit/constants";
 import { useCarryParams } from "@/react-toolkit/hooks/useForwardQueryParams";
+import { setUserSessionLocally } from "@/react-toolkit/utils/user-session-utils";
 
 import { toast } from "@aventisia/ui/sonner";
 import { useMutation } from "@tanstack/react-query";
@@ -41,8 +42,16 @@ export const useCreateAccountMutation = () => {
         // Reset createAccountData
         setCreateAccountData(null);
 
+        // Set authenticated user locally
+        const { deploymentType } = setUserSessionLocally(httpResponse.data);
+
         if (httpResponse.message.includes(ADD_TENANT)) {
           navigate(withQueryParams("/onboarding"));
+        } else if (deploymentType == "Enterprise") {
+          // Redirect to worc app
+          navigate(
+            "/redirect?msg=Logging in...&url=" + import.meta.env.VITE_WORC_PATH,
+          );
         }
       },
       onError: (error) => {
