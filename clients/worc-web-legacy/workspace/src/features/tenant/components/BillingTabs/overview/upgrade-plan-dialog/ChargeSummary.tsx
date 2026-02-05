@@ -1,5 +1,6 @@
 import { LoadingSpinner, Separator } from "@aventisia/ui";
 import { Button } from "@aventisia/ui/buttons";
+import { toast } from "@aventisia/ui/sonner";
 
 import { formatCurrency } from "@/features/tenant/constants/currency-symbol-map";
 import { CompanyDetailsDTO } from "@/features/tenant/dtos/company-details-dto";
@@ -52,6 +53,17 @@ const ChargeSummary = ({
   };
 
   const handleCreditTopUp = () => {
+    const credits = topUp.credits || 0;
+    console.log(credits);
+    if (credits % 500 !== 0) {
+      toast.error("Credits must be in multiples of 500");
+      return;
+    }
+
+    if (credits < 500) {
+      toast.error("Minimum 500 credits required");
+      return;
+    }
     insertCreditTopUpMutation({
       amount: total,
       credits: topUp.credits,

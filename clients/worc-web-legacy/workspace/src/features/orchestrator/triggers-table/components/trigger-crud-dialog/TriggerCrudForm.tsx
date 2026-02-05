@@ -9,7 +9,6 @@ import {
   FormLabelExt,
   FormMessage,
   InputField,
-  MultiSelectField,
   SelectField,
   SwitchField,
 } from "@aventisia/ui/form";
@@ -17,6 +16,8 @@ import { useListOptimisticMutation } from "@aventisia/ui/hooks";
 import { cn } from "@aventisia/ui/lib";
 import { useEffect } from "react";
 import { z } from "zod";
+
+import { MultiSelectField } from "@/components/multi-select/MultiSelectField";
 
 import { triggerOptimisticMutationFn } from "../../apis/triggers-table-apis";
 import { DATA_QUERY_KEY } from "../../constants";

@@ -2,20 +2,19 @@
  * Enum representing the available credit-based services for AI processing, communication, and execution tasks.
  */
 export enum CreditServiceTypesEnum {
+  AgentExecutionTime,
+  Gpt4oMiniInput,
+  Gpt4oMiniOutput,
+  Qwen3Vl32bInstructInput,
+  Qwen3Vl32bInstructOutput,
+
+  // -----------------------------------------------------
+  // TODO: TO remvoe later
+
   /**
    * GPU-accelerated text processing service hosted on-premises.
    */
   OnPremGpuText,
-
-  /**
-   * Input token processing for the GPT-4o Mini model.
-   */
-  Gpt4oMiniInput,
-
-  /**
-   * Output token generation for the GPT-4o Mini model.
-   */
-  Gpt4oMiniOutput,
 
   /**
    * Input token processing for the Gemini 2.5 Flash model.
@@ -26,11 +25,6 @@ export enum CreditServiceTypesEnum {
    * Output token generation for the Gemini 2.5 Flash model.
    */
   Gemini25FlashOutput,
-
-  /**
-   * Service for executing autonomous agent workflows.
-   */
-  AgentExecutionTime,
 
   /**
    * Service for executing AI model inference tasks.

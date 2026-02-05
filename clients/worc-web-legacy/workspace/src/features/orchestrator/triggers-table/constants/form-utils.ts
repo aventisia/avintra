@@ -75,10 +75,34 @@ const generateDayOfMonthOptions = () =>
   })) as unknown as ISelectOption[];
 
 const generateHourlyOptions = () =>
-  Array.from({ length: 23 }, (_, i) => ({
-    label: `${i + 1} hour${i === 0 ? "" : "s"}`,
-    value: (i + 1).toString(),
-  })) as unknown as ISelectOption[];
+  Array.from({ length: 23 }, (_, i) => {
+    const hour = i + 1;
+
+    const displayHour = hour % 12 === 0 ? 12 : hour % 12;
+    const period = hour < 12 ? "AM" : "PM";
+
+    return {
+      label: `${displayHour} ${period}`,
+      value: hour.toString(),
+    };
+  }) as unknown as ISelectOption[];
+
+const formatHour = (h: number) => {
+  const hour = h % 12 === 0 ? 12 : h % 12;
+  const period = h < 12 || h === 24 ? "AM" : "PM";
+  return `${hour} ${period}`;
+};
+
+const generateHourlyWithRangeOptions = () =>
+  Array.from({ length: 23 }, (_, i) => {
+    const start = i + 1;
+    const end = start + 1;
+
+    return {
+      label: `${formatHour(start)} to ${formatHour(end)}`,
+      value: start.toString(),
+    };
+  }) as unknown as ISelectOption[];
 
 const timezoneOptions = Enumerable.from(timezones)
   .select<ISelectOption>((t) => ({
@@ -110,6 +134,7 @@ export {
   generateDayOfMonthOptions,
   generateDayOfWeekOptions,
   generateHourlyOptions,
+  generateHourlyWithRangeOptions,
   generateHourMinutesOptions,
   generateMinutesOptions,
   generateMonthOptions,
