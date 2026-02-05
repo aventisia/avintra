@@ -18,7 +18,7 @@ from app.features.llm_providers.llm_providers_schemas import (
 from app.features.llm_providers.llm_providers_utils import extract_json_from_llm_response
 from app.features.llm_providers.llm_job_manager import active_llm_jobs
 from .llm_providers_base import BaseLLMProvider
-
+from app.utils.file_util import FileUtils
 
 class GeminiProvider(BaseLLMProvider):
     """
@@ -248,17 +248,26 @@ class GeminiProvider(BaseLLMProvider):
 
         # Add base64 files if any are provided (Gemini 'inline_data')
         if llm_request.files:
-            for b64_file in llm_request.files:
-                contents.append({
-                    "parts": [
-                        {
-                            "inline_data": {
-                                "mime_type": "image/png",  # Set MIME type based on the file type
-                                "data": b64_file
+            for file_data in llm_request.files:
+                # If file_data is a URL (assuming it's a string), fetch file content from URL
+                if isinstance(file_data, str):  # Assuming file_data is a URL if it's a string
+                    mime_type, encoded_content = FileUtils.get_file_data_from_url(file_data)
+                else:
+                    # Handle the case where file_data is an object with mime_type and encoded_content
+                    mime_type = file_data.mime_type
+                    encoded_content = file_data.encoded_content
+
+                if mime_type and encoded_content:
+                    contents.append({
+                        "parts": [
+                            {
+                                "inline_data": {
+                                    "mime_type": mime_type,
+                                    "data": encoded_content
+                                }
                             }
-                        }
-                    ]
-                })
+                        ]
+                    })
 
         # Create the payload base
         payload = {
@@ -269,14 +278,19 @@ class GeminiProvider(BaseLLMProvider):
                 "maxOutputTokens": llm_request.max_output_tokens,
             }
         }
+        
+        # Initialize responseMimeType to a default value (text)
+        payload["generationConfig"]["responseMimeType"] = "text/plain"
 
-        # Handle response type (JSON or Text)
-        if llm_request.is_json_output:
+        # If JSON schema is defined, include it and set MIME type to application/json
+        if llm_request.json_schema:
+            payload["generationConfig"]["responseJsonSchema"] = llm_request.json_schema
             payload["generationConfig"]["responseMimeType"] = "application/json"
-            # For JSON responses, include schema
-            payload["generationConfig"]["response_schema"] = llm_request.json_schema
-        else:
-            payload["generationConfig"]["responseMimeType"] = "text/plain"
+
+        # If JSON output is requested (and no schema), set MIME type to application/json
+        elif llm_request.is_json_output:
+            payload["generationConfig"]["responseMimeType"] = "application/json"
+
 
         # Construct request headers for Gemini API
         headers = {
@@ -285,7 +299,6 @@ class GeminiProvider(BaseLLMProvider):
         }
 
         return payload, headers
-
     
     # Handle BYOK credentials or enforce platform credit usage
     def _handle_byok_and_credits(self, llm_request: LLMRequest, jwt: str):

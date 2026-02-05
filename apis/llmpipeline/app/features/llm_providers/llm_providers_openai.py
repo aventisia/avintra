@@ -13,6 +13,7 @@ from fastapi import HTTPException, Request
 from app.core.vault_manager import VaultManager
 from app.core.credit_manager import CreditManagerService
 from app.core.security import get_jwt
+from app.utils.file_util import FileUtils
 
 class OpenAIProvider(BaseLLMProvider):
     # Constructor: To initialize API URL and key
@@ -205,7 +206,7 @@ class OpenAIProvider(BaseLLMProvider):
         
         # Convert LLMMessage objects to dicts if input is a list
         if isinstance(llm_request.input, str):
-            input_serialized = llm_request.input
+            input_serialized = [{"role": "user", "content": [{"type": "input_text", "text": llm_request.input}]}]
         elif isinstance(llm_request.input, list):
             input_serialized = [msg.model_dump() if hasattr(msg, 'model_dump') else msg for msg in llm_request.input]
         else:
@@ -240,6 +241,37 @@ class OpenAIProvider(BaseLLMProvider):
         # If max_output_tokens is provided, include it in the payload
         if llm_request.max_output_tokens:
             request_payload["max_output_tokens"] = llm_request.max_output_tokens
+        
+        # Add base64 files if any are provided
+        if llm_request.files:
+            # Iterate through the files provided in llm_request.files
+            for file_data in llm_request.files:
+                # If file_data is a URL (assuming it's a string), fetch file content from URL
+                if isinstance(file_data, str):  # Assuming file_data is a URL if it's a string
+                    mime_type, encoded_content = FileUtils.get_file_data_from_url(file_data)
+                    filename = file_data.split('/')[-1]
+                else:
+                    # Handle the case where file_data is an object with mime_type and encoded_content
+                    mime_type = file_data.mime_type
+                    encoded_content = file_data.encoded_content
+                    filename = getattr(file_data, "filename", "file")  # Use provided filename or default
+
+                # Ensure mime_type and encoded_content are valid
+                if mime_type and encoded_content:
+                    # IMAGE: Handle image files (JPEG, PNG, GIF, etc.)
+                    if mime_type.startswith("image/"):
+                        request_payload["input"][0]["content"].append({
+                            "type": "input_image",
+                            "image_url": f"data:{mime_type};base64,{encoded_content}"
+                        })
+
+                    # ALL OTHER FILE TYPES (PDF, DOCX, CSV, TXT, JSON, etc.)
+                    else:
+                        request_payload["input"][0]["content"].append({
+                            "type": "input_file",
+                            "filename": filename,
+                            "file_data": f"data:{mime_type};base64,{encoded_content}"
+                        })
 
         # Return both payload and headers
         return request_payload, request_headers
@@ -285,8 +317,8 @@ class OpenAIProvider(BaseLLMProvider):
         llm_response.output_tokens = usage.get("output_tokens", 0)
         llm_response.output_reasoning_tokens = usage.get("output_tokens_details", {}).get("reasoning_tokens", 0)
         
-        # If not BYOK and credential_id is present, post the credit usage
-        if not llm_request.is_byok_enabled and llm_request.credential_id:
+        # If BYOK is not enabled and credential_id is not provided, post credit usage to CreditManagerService
+        if not llm_request.is_byok_enabled and not llm_request.credential_id:
             # Prepare the credit usage data
             credit_usage_data = [
                 {
