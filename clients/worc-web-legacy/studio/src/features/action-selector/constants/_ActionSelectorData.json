@@ -130,7 +130,10 @@
             "description": "Moves a work item from one queue to another.",
             "docsLink": "https://docs.aventisia.com",
             "icon": null,
-            "img": "/assets/Queue.svg"
+            "img": "/assets/Queue.svg",
+            "visibility": {
+              "showInProd": false
+            }
           }
         ]
       }
