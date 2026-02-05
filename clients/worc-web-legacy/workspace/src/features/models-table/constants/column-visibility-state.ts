@@ -9,6 +9,7 @@ export const columnVisibilityState = {
   setupStatus: true,
   //trainedOn: false,
   createdOn: true,
+  createdBy: true,
   //tokenCount: false,
   //executionCount: false,
   //failedCount: false,

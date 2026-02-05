@@ -147,7 +147,7 @@ export const JobsTable = () => {
           <div className="flex flex-col gap-2">
             {tabValue === "History" && (
               <JobsStats
-                data={data.data.filter(
+                data={data?.data.filter(
                   (job) => !["Created", "Running"].includes(job.status),
                 )}
               />

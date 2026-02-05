@@ -1,6 +1,7 @@
 import { Checkbox } from "@aventisia/ui";
 import { Badge } from "@aventisia/ui/badge";
 import { DTColumnHeader } from "@aventisia/ui/data-table";
+import { cn } from "@aventisia/ui/lib";
 import { dateFormatter } from "@aventisia/ui/utils";
 import { ColumnDef } from "@tanstack/react-table";
 
@@ -203,13 +204,32 @@ export const modelsTableColumns: ColumnDef<ModelsTableDto>[] = [
       const llmName = row.getValue("llMs") as string[];
       return (
         <Badge
-          variant={"outline"}
-          className={`w-auto truncate px-2.5 py-1.5 font-medium capitalize`}
+          className={cn(
+            `capitalize`,
+            llmName && llmName.length > 0
+              ? "bg-blue-200 text-blue-700"
+              : "bg-slate-200 text-slate-600",
+          )}
         >
           {llmName && llmName.length > 0 ? "Completed" : "Pending"}
         </Badge>
       );
     },
+  },
+  {
+    accessorKey: "createdBy",
+    header: ({ column }) => (
+      <DTColumnHeader
+        tableKey={TABLE_KEY}
+        column={column}
+        title={getColumnName("createdBy")}
+      />
+    ),
+    cell: ({ row }) => (
+      <div className="w-auto truncate font-medium">
+        {row.getValue("createdBy")}
+      </div>
+    ),
   },
   {
     accessorKey: "createdOn",

@@ -6,7 +6,23 @@ const formatDuration = (sec: number) => {
   return min > 0 ? `${min}m ${secRemain}s` : `${secRemain}s`;
 };
 
+const formatSecondsToCompactDuration = (totalSeconds?: number) => {
+  if (!totalSeconds || totalSeconds <= 0) return "0s";
+
+  const h = Math.floor(totalSeconds / 3600);
+  const m = Math.floor((totalSeconds % 3600) / 60);
+  const s = Math.floor(totalSeconds % 60);
+
+  const parts: string[] = [];
+
+  if (h > 0) parts.push(`${h}h`);
+  if (m > 0) parts.push(`${m}m`);
+  if (s > 0) parts.push(`${s}s`);
+
+  return parts.join(" ");
+};
+
 // Format date
 const getFormattedDate = (date: Date) => format(date, "dd-MMM-yyyy hh:mm a");
 
-export { formatDuration, getFormattedDate };
+export { formatDuration, getFormattedDate, formatSecondsToCompactDuration };
