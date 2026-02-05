@@ -2,20 +2,19 @@
  * Enum representing the available credit-based services for AI processing, communication, and execution tasks.
  */
 export enum CreditServiceTypesEnum {
+  AgentExecutionTime,
+  Gpt4oMiniInput,
+  Gpt4oMiniOutput,
+  Qwen3Vl32bInstructInput,
+  Qwen3Vl32bInstructOutput,
+
+  // -----------------------------------------------------
+  // TODO: TO remvoe later
+
   /**
    * GPU-accelerated text processing service hosted on-premises.
    */
   OnPremGpuText,
-
-  /**
-   * Input token processing for the GPT-4o Mini model.
-   */
-  Gpt4oMiniInput,
-
-  /**
-   * Output token generation for the GPT-4o Mini model.
-   */
-  Gpt4oMiniOutput,
 
   /**
    * Input token processing for the Gemini 2.5 Flash model.
@@ -28,29 +27,9 @@ export enum CreditServiceTypesEnum {
   Gemini25FlashOutput,
 
   /**
-   * Service for executing autonomous agent workflows.
-   */
-  AgentExecutionTime,
-
-  /**
    * Service for executing AI model inference tasks.
    */
   AIModelExecutionTime,
-
-  /**
-   * Email communication service using SendGrid.
-   */
-  SendGridEmail,
-
-  /**
-   * WhatsApp messaging service powered by Twilio.
-   */
-  TwilioWhatsApp,
-
-  /**
-   * SMS messaging service powered by Twilio.
-   */
-  TwilioSms,
 
   /**
    * Speech-to-text service hosted on-premises.
@@ -71,4 +50,24 @@ export enum CreditServiceTypesEnum {
    * Text-to-speech service provided by ElevenLabs.
    */
   ElevenLabsTTS,
+
+  /**
+   * Input token processing for the GPT-4o model.
+   */
+  Gpt4oInput,
+
+  /**
+   * Output token generation for the GPT-4o model.
+   */
+  Gpt4oOutput,
+
+  /**
+   * Input OCR processing for the olmOCR model.
+   */
+  OlmOcrInput,
+
+  /**
+   * Output OCR generation for the olmOCR model.
+   */
+  OlmOcrOutput,
 }
