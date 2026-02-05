@@ -20,9 +20,9 @@ public class StringEncryptionService : IStringEncryptionService
         }
 
         using var aesAlg = Aes.Create();
-        // Set the encryption key and IV from the configuration
-        aesAlg.Key = Encoding.UTF8.GetBytes(_environmentConfig.AesEncryptionKey);
-        aesAlg.IV = Encoding.UTF8.GetBytes(_environmentConfig.AesInitializationVector);
+        // Set the encryption key and IV from the configuration (decode from Base64)
+        aesAlg.Key = Convert.FromBase64String(_environmentConfig.AesEncryptionKey);
+        aesAlg.IV = Convert.FromBase64String(_environmentConfig.AesInitializationVector);
 
         using var encrypt = aesAlg.CreateEncryptor(aesAlg.Key, aesAlg.IV);
         using var ms = new MemoryStream();
@@ -46,9 +46,9 @@ public class StringEncryptionService : IStringEncryptionService
         }
 
         using var aesAlg = Aes.Create();
-        // Set the decryption key and IV from the configuration
-        aesAlg.Key = Encoding.UTF8.GetBytes(_environmentConfig.AesEncryptionKey);
-        aesAlg.IV = Encoding.UTF8.GetBytes(_environmentConfig.AesInitializationVector);
+        // Set the decryption key and IV from the configuration (decode from Base64)
+        aesAlg.Key = Convert.FromBase64String(_environmentConfig.AesEncryptionKey);
+        aesAlg.IV = Convert.FromBase64String(_environmentConfig.AesInitializationVector);
 
         using var decrypt = aesAlg.CreateDecryptor(aesAlg.Key, aesAlg.IV);
         using var ms = new MemoryStream(Convert.FromBase64String(encryptedText));
