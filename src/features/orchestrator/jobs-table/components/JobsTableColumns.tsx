@@ -7,6 +7,7 @@ import { format } from "date-fns";
 import { TABLE_KEY } from "../constants";
 import { getColumnName, statusColor } from "../constants/column-display-names";
 import { JobsTableDto } from "../dtos/jobs-table-dto";
+import { formatSecondsToCompactDuration } from "../utils";
 
 import { JobRowActions } from "./jobs-row-actions/JobRowActions";
 import { JobsTableCellLink } from "./JobsTableCellLink";
@@ -133,11 +134,17 @@ export const jobsTableColumns: ColumnDef<JobsTableDto>[] = [
         title={getColumnName("duration") ?? 0}
       />
     ),
-    cell: ({ row }) => (
-      <div className="w-auto truncate font-medium">
-        {row.getValue("duration") ? Math.round(row.getValue("duration")) : "NA"}
-      </div>
-    ),
+    cell: ({ row }) => {
+      const duration = row.getValue<number>("duration");
+
+      return (
+        <div className="w-auto truncate font-medium">
+          {row.getValue("duration")
+            ? formatSecondsToCompactDuration(duration)
+            : "NA"}
+        </div>
+      );
+    },
   },
 
   {
