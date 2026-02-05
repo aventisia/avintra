@@ -1,0 +1,42 @@
+meta {
+  name: insert-tenant-instance-data
+  type: http
+  seq: 2
+}
+
+post {
+  url: {{GLOBAL_ADMIN_BASE_URL}}/onprem/instance/validate
+  body: json
+  auth: inherit
+}
+
+headers {
+  X-OnPrem-Tenant-Id: 7ec059e8-1c5f-4786-8fee-4d321305a04f
+  X-OnPrem-Instance-Key: ***REMOVED***
+}
+
+body:json {
+  {
+    "PlatformVersion":"0.1.44",
+    "Source":"StartupService",
+    "Last7DayUsages":[
+      {
+        "Date":"2026-01-27T00:00:00+00:00",
+        "JobsExecuted":0,
+        "TotalExecutionTime":0.0,
+        "Users":21,
+        "PublishedAgents":40
+      },
+      {
+        "Date":"2026-01-28T00:00:00+00:00",
+        "JobsExecuted":0,
+        "TotalExecutionTime":0.0,
+        "Users":21,
+        "PublishedAgents":40
+      },{"Date":"2026-01-29T00:00:00+00:00","JobsExecuted":0,"TotalExecutionTime":0.0,"Users":21,"PublishedAgents":40},{"Date":"2026-01-30T00:00:00+00:00","JobsExecuted":0,"TotalExecutionTime":0.0,"Users":21,"PublishedAgents":40},{"Date":"2026-01-31T00:00:00+00:00","JobsExecuted":0,"TotalExecutionTime":0.0,"Users":21,"PublishedAgents":40},{"Date":"2026-02-01T00:00:00+00:00","JobsExecuted":0,"TotalExecutionTime":0.0,"Users":21,"PublishedAgents":40},{"Date":"2026-02-02T00:00:00+00:00","JobsExecuted":0,"TotalExecutionTime":0.0,"Users":21,"PublishedAgents":40}]}
+}
+
+settings {
+  encodeUrl: true
+  timeout: 0
+}
