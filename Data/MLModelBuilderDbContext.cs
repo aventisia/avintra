@@ -77,6 +77,12 @@ public class MLModelBuilderDbContext : DbContext
         // Configure One-to-Many relationship between Schedule Model and fine tuning log
         modelBuilder.Entity<ScheduledModel>().HasMany(many => many.FineTuningLogs).WithOne(one => one.ScheduledModel).HasForeignKey(fKey => fKey.ScheduledModelId).IsRequired();
 
+        modelBuilder.Entity<ScheduledModel>().HasOne(u => u.ExtractedData).WithMany(t => t.ScheduledModels).HasForeignKey(u => u.ExtractedDataId).OnDelete(DeleteBehavior.Cascade);
+        modelBuilder.Entity<FineTuningLog>().HasOne(u => u.ScheduledModel).WithMany(t => t.FineTuningLogs).HasForeignKey(u => u.ScheduledModelId).OnDelete(DeleteBehavior.Cascade);
+        modelBuilder.Entity<VersionTask>().HasOne(u => u.AIProjectVersion).WithMany(t => t.Tasks).HasForeignKey(u => u.AIProjectVersionId).OnDelete(DeleteBehavior.Cascade);
+        modelBuilder.Entity<VersionResource>().HasOne(u => u.AIProjectVersion).WithMany(t => t.Resources).HasForeignKey(u => u.AIProjectVersionId).OnDelete(DeleteBehavior.Cascade);
+        modelBuilder.Entity<AIProject_User>().HasOne(u => u.AIProject).WithMany(t => t.ProjectUsers).HasForeignKey(u => u.AIProjectId).OnDelete(DeleteBehavior.Cascade);
+
         base.OnModelCreating(modelBuilder);
     }
 
