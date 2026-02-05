@@ -366,11 +366,9 @@ public class LoginWithExternalAuthService : ILoginWithExternalAuthService
                 if (_environmentConfig.OnPremTenantType == OnPremTenantTypesEnum.Enterprise.ToString())
                 {
                     // Assign enterprise tenant and default role
-                    userRoles = new List<string> { CustomRolesEnum.TD.ToString() };
+                    userRoles = new List<string> { CustomRolesEnum.TD.ToString(), CustomRolesEnum.TD.ToString() };
                     tenantId = Guid.Parse(_environmentConfig.OnPremTenantId);
-                    _logger.LogInformation(
-                        "Enterprise tenant assigned. TenantId={TenantId}, UserId={UserId}",
-                        tenantId, newUser.Id);
+                    _logger.LogInformation("Enterprise tenant assigned. TenantId={TenantId}, UserId={UserId}", tenantId, newUser.Id);
                 }
                 else
                 {

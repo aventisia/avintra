@@ -6,10 +6,10 @@ namespace AccountsAPIs.Enums;
 public enum CreditServiceTypesEnum
 {
     /// <summary>
-    /// GPU-accelerated text processing service hosted on-premises.
+    /// Service for executing autonomous agent workflows.
     /// </summary>
-    [Description("On-prem GPU-text")]
-    OnPremGpuText,
+    [Description("Agent Execution Time")]
+    AgentExecutionTime,
 
     /// <summary>
     /// Input token processing for the GPT-4o Mini model.
@@ -24,28 +24,19 @@ public enum CreditServiceTypesEnum
     Gpt4oMiniOutput,
 
     /// <summary>
-    /// Input token processing for the Gemini 2.5 Flash model.
+    /// Input token processing for the qwen3-vl-32b-instruct model.
     /// </summary>
-    [Description("Gemini 2.5 Flash-input")]
-    Gemini25FlashInput,
+    [Description("qwen3-vl-32b-instruct - input")]
+    Qwen3Vl32bInstructInput,
 
     /// <summary>
-    /// Output token generation for the Gemini 2.5 Flash model.
+    /// Output token generation for the qwen3-vl-32b-instruct model.
     /// </summary>
-    [Description("Gemini 2.5 Flash-output")]
-    Gemini25FlashOutput,
+    [Description("qwen3-vl-32b-instruct - output")]
+    Qwen3Vl32bInstructOutput,
 
-    /// <summary>
-    /// Service for executing autonomous agent workflows.
-    /// </summary>
-    [Description("Agent Execution Time")]
-    AgentExecutionTime,
-
-    /// <summary>
-    /// Service for executing AI model inference tasks.
-    /// </summary>
-    [Description("AI Model Execution Time")]
-    AIModelExecutionTime,
+    // ---------------------------------------------------------
+    // TODO: Remove this later when no longer needed
 
     /// <summary>
     /// Speech-to-text service hosted on-premises.
@@ -93,5 +84,29 @@ public enum CreditServiceTypesEnum
     /// Output OCR generation for the olmOCR model.
     /// </summary>
     [Description("olmOCR-output")]
-    OlmOcrOutput
+    OlmOcrOutput,
+
+    /// <summary>
+    /// GPU-accelerated text processing service hosted on-premises.
+    /// </summary>
+    [Description("On-prem GPU-text")]
+    OnPremGpuText,
+
+    /// <summary>
+    /// Input token processing for the Gemini 2.5 Flash model.
+    /// </summary>
+    [Description("Gemini 2.5 Flash-input")]
+    Gemini25FlashInput,
+
+    /// <summary>
+    /// Output token generation for the Gemini 2.5 Flash model.
+    /// </summary>
+    [Description("Gemini 2.5 Flash-output")]
+    Gemini25FlashOutput,
+
+    /// <summary>
+    /// Service for executing AI model inference tasks.
+    /// </summary>
+    [Description("AI Model Execution Time")]
+    AIModelExecutionTime,
 }

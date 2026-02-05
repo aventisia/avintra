@@ -159,12 +159,13 @@ public class MyAccountService : IMyAccountService
             // Get user request's deviceId
             var userAgent = _httpContext.Request.Headers["User-Agent"].ToString();
 
-            // DeviceId did not match
-            if (currentSession.DeviceId != userAgent)
-            {
-                _logger.LogInformation($"DeviceId did not match for session {_sessionId} and account {_userName}. Expected {currentSession.DeviceId}, found {userAgent}");
-                return serviceResponse;
-            }
+            // TODO: Uncomment to check for DeviceId mismatch when needed
+            // // DeviceId did not match
+            // if (currentSession.DeviceId != userAgent)
+            // {
+            //     _logger.LogInformation($"DeviceId did not match for session {_sessionId} and account {_userName}. Expected {currentSession.DeviceId}, found {userAgent}");
+            //     return serviceResponse;
+            // }
 
             // Add sessionId to list (TerminateUserSessionsAsync accepts list of sessionId)
             var sessionIds = new List<Guid> { _sessionId };

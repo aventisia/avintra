@@ -45,8 +45,8 @@ public class LoginWithPwdService : ILoginWithPwdService
             // This can be due to maintenance, security incidents, or temporary administrative restrictions.
             if (_environmentConfig.OnPremLoginDisabled)
             {
-                serviceResponse.StatusCode = 401;
-                serviceResponse.Message = "Authentication services are currently unavailable. Please contact Aventiisia Support for assistance.";
+                serviceResponse.StatusCode = 403;
+                serviceResponse.Message = "Authentication is currently disabled. Please contact Aventisia Support for assistance.";
                 return serviceResponse;
             }
 
@@ -194,10 +194,13 @@ public class LoginWithPwdService : ILoginWithPwdService
 
             // Get VerificationCode 
             var verificationCode = await _unitOfWork.VerificationCodeRepo
-                    .GetByConditionAsync(w => w.Id == checkVerificationCodeDto.VerificationCodeId &&
+                    .GetByConditionAsync(w =>
+                        w.Id == checkVerificationCodeDto.VerificationCodeId &&
                         w.Email == checkVerificationCodeDto.Email &&
-                        w.RequestType == checkVerificationCodeDto.RequestType &&
-                        w.DeviceId == userAgent)
+                        // TODO: Uncomment to check for DeviceId mismatch when needed
+                        // w.DeviceId == userAgent &&
+                        w.RequestType == checkVerificationCodeDto.RequestType
+                    )
                     .SingleOrDefaultAsync();
 
             // VerificationCode not found
