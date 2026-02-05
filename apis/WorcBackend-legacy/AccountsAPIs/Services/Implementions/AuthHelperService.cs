@@ -140,7 +140,11 @@ public class AuthHelperService : IAuthHelperService
             var verificaitonCodeList = await _unitOfWork.VerificationCodeRepo
                                         .GetByConditionAsync(w =>
                                             (w.ExpiresOn <= DateTimeOffset.UtcNow) ||
-                                            (w.Email == userName && w.DeviceId == userAgent))
+                                            (
+                                                //  w.DeviceId == userAgent && // TODO: Uncomment to check for DeviceId mismatch when needed
+                                                w.Email == userName
+                                            )
+                                        )
                                         .ToListAsync();
 
             // No codes found
@@ -195,7 +199,9 @@ public class AuthHelperService : IAuthHelperService
             claims.Add("type", _environmentConfig.OnPremTenantType);
 
             // Add subscription plan information, if applicable
-            claims.Add("plan", _environmentConfig.OnPremTenantType == OnPremTenantTypesEnum.Enterprise.ToString() ? "None" : currentPlan);
+            claims.Add("plan", _environmentConfig.OnPremTenantType == OnPremTenantTypesEnum.Enterprise.ToString()
+                ? (_environmentConfig.OnPremExecutionDisabled ? "Inactive" : "Active")
+                : currentPlan);
 
             // Add permission access
             claims["permissions"] = user.UserRoles
@@ -216,7 +222,7 @@ public class AuthHelperService : IAuthHelperService
         // TokenOptions
         var securityTokenDescriptor = new SecurityTokenDescriptor
         {
-            Issuer =  $"https://{_environmentConfig.AppBaseUrl}",
+            Issuer = $"https://{_environmentConfig.AppBaseUrl}",
             Audience = $"https://{_environmentConfig.AppBaseUrl}",
             Claims = claims,
             IssuedAt = DateTime.UtcNow,

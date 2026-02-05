@@ -63,8 +63,8 @@ public class UserRegistrationService : IUserRegistrationService
             // This can be due to maintenance, security incidents, or temporary administrative restrictions.
             if (_environmentConfig.OnPremLoginDisabled)
             {
-                serviceResponse.StatusCode = 401;
-                serviceResponse.Message = "Authentication services are currently unavailable. Please contact Aventiisia Support for assistance.";
+                serviceResponse.StatusCode = 403;
+                serviceResponse.Message = "Authentication is currently disabled. Please contact Aventisia Support for assistance.";
                 return serviceResponse;
             }
 
@@ -149,7 +149,7 @@ public class UserRegistrationService : IUserRegistrationService
 
             if (_environmentConfig.OnPremTenantType == OnPremTenantTypesEnum.Enterprise.ToString())
             {
-                userRoles = new List<string> { CustomRolesEnum.TD.ToString() };
+                userRoles = new List<string> { CustomRolesEnum.TD.ToString(), CustomRolesEnum.TU.ToString() };
                 tenantId = Guid.Parse(_environmentConfig.OnPremTenantId);
             }
             else

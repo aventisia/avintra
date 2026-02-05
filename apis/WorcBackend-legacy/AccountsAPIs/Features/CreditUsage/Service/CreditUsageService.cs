@@ -9,9 +9,9 @@ public class CreditUsageService : ICreditUsageService
     private readonly Guid _tenantId;
 
     public CreditUsageService(
-        IUnitOfWork unitOfWork, 
-        ILogger<CreditUsageService> logger, 
-        IHttpContextAccessor httpContextAccessor, 
+        IUnitOfWork unitOfWork,
+        ILogger<CreditUsageService> logger,
+        IHttpContextAccessor httpContextAccessor,
         EnvironmentConfig environmentConfig)
     {
         _unitOfWork = unitOfWork;
@@ -699,8 +699,8 @@ public class CreditUsageService : ICreditUsageService
             // This can be due to maintenance, security incidents, or temporary administrative restrictions.
             if (_environmentConfig.OnPremLoginDisabled)
             {
-                serviceResponse.StatusCode = 401;
-                serviceResponse.Message = "Authentication services are currently unavailable. Please contact Aventiisia Support for assistance.";
+                serviceResponse.StatusCode = 403;
+                serviceResponse.Message = "Authentication is currently disabled. Please contact Aventisia Support for assistance.";
                 return serviceResponse;
             }
 

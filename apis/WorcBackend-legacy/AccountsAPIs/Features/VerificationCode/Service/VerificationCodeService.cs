@@ -42,10 +42,13 @@ public class VerificationCodeService : IVerificationCodeService
 
             // Get VerificationCode 
             var verificationCode = await _unitOfWork.VerificationCodeRepo
-                    .GetByConditionAsync(w => w.Id == checkVerificationCodeDto.VerificationCodeId &&
+                    .GetByConditionAsync(w =>
+                        w.Id == checkVerificationCodeDto.VerificationCodeId &&
                         w.Email == checkVerificationCodeDto.Email &&
-                        w.RequestType == checkVerificationCodeDto.RequestType &&
-                        w.DeviceId == userAgent)
+                        // TODO: Uncomment to check for DeviceId mismatch when needed
+                        // w.DeviceId == userAgent &&
+                        w.RequestType == checkVerificationCodeDto.RequestType
+                    )
                     .SingleOrDefaultAsync();
 
             // VerificationCode not found
