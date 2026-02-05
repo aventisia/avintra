@@ -1,5 +1,6 @@
-import { InputField, MultiSelectField, SelectField } from "@aventisia/ui/form";
+import { InputField, SelectField } from "@aventisia/ui/form";
 
+import { MultiSelectField } from "@/components/multi-select/MultiSelectField";
 import { TriggerFrequencyTypesEnum } from "@/enums/trigger-frequency-types-enum";
 
 import {

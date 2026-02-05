@@ -9,7 +9,10 @@ import { enumToArray } from "@aventisia/ui/utils";
 
 import { TriggerFrequencyTypesEnum } from "@/enums/trigger-frequency-types-enum";
 
-import { generateDayOfWeekOptions, generateHourlyOptions } from "./form-utils";
+import {
+  generateDayOfWeekOptions,
+  generateHourlyWithRangeOptions,
+} from "./form-utils";
 
 // trigger Id
 const idProps: InputFieldProps = {
@@ -60,7 +63,7 @@ const exceptionHoursProps: MultiSelectFieldProps = {
   name: "exceptionHours",
   label: "Exception Hours",
   description: "Select specific hours when this trigger should be skipped.",
-  selectOptions: generateHourlyOptions(),
+  selectOptions: generateHourlyWithRangeOptions(),
 };
 
 const exceptionWeekdaysProps: MultiSelectFieldProps = {

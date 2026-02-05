@@ -1,10 +1,12 @@
 import { LoadingSpinner, Separator } from "@aventisia/ui";
 import { Button } from "@aventisia/ui/buttons";
-import { DatePickerField, Form, MultiSelectField } from "@aventisia/ui/form";
+import { DatePickerField, Form } from "@aventisia/ui/form";
 import { Label } from "@aventisia/ui/label";
 import { ScrollArea } from "@aventisia/ui/scroll";
 import React from "react";
 import { FormProvider } from "react-hook-form";
+
+import { MultiSelectField } from "@/components/multi-select/MultiSelectField";
 
 import {
   endDateProps,

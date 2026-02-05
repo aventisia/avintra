@@ -1,74 +1,36 @@
 export interface QueueAgentsDto {
-  /**
-   * Gets or sets Id of the machine flow.
-   * @type { string}
-   * @memberof AssignAgentDto
-   */
-  id: string;
-  /**
-   * Gets or sets Id of the tenant.
-   * @type { string}
-   * @memberof AssignAgentDto
-   */
-  tenantId: string;
-  /**
-   * </summary>
-   * @type { string}
-   * @memberof AssignAgentDto
-   */
+  /** Unique identifier for the queue flow version */
+  id?: string;
+
+  /** Unique identifier for the flow version associated with the queue */
+  flowVersionId: string;
+
+  versionNumber?: string;
+
+  /** Name of the flow version that the queue is associated with */
+  flowName?: string | null;
+
+  /** Unique identifier for the queue that the flow version belongs to */
   queueId: string;
+
+  /** Name of the queue that the flow version is associated with */
+  queueName?: string | null;
+
   /**
-   * Gets or sets the name of the flow.
-   * @type { string}
-   * @memberof AssignAgentDto
+   * Flag indicating whether the queue flow version is disabled.
+   * Nullable to distinguish between `true`, `false`, and `null`
    */
-  name: string;
-  /**
-   * Note: It's important to have this property nullable because we need to differentiate between true, false, and null.
-   * @type { boolean}
-   * @memberof AssignAgentDto
-   */
-  isDisabled: boolean;
-  /**
-   * This property is intended for use in responses only and should not be included in requests.
-   * @type { string}
-   * @memberof AssignAgentDto
-   */
-  createdBy: string;
-  /**
-   * This property is intended for use in responses only and should not be included in requests.
-   * @type { Date}
-   * @memberof AssignAgentDto
-   */
-  createdOn: Date;
-  /**
-   * This property is intended for use in responses only and should not be included in requests.
-   * @type { string}
-   * @memberof AssignAgentDto
-   */
-  lastModifiedBy: string;
-  /**
-   * This property is intended for use in responses only and should not be included in requests.
-   * @type { Date}
-   * @memberof AssignAgentDto
-   */
-  lastModifiedOn: Date;
-  /**
-   * Gets or sets initials of the user who created the record
-   * @type { string}
-   * @memberof AssignAgentDto
-   */
-  createdByUserInitials: string;
-  /**
-   * Gets or sets the version number of a flow version record
-   * @type { number}
-   * @memberof AssignAgentDto
-   */
-  versionNumber: number;
-  /**
-   * Gets or sets a value indicating whether the flow version is assigned.
-   * @type { boolean}
-   * @memberof AssignAgentDto
-   */
-  isAssigned: boolean;
+  isDisabled?: boolean | null;
+
+  /** Username of the creator of the record (response only) */
+  createdBy?: string | null;
+
+  /** Timestamp of when the record was created (response only) */
+  createdOn?: Date | string | null;
+
+  /** Username of the last user who modified the record (response only) */
+  lastModifiedBy?: string | null;
+
+  /** Timestamp of when the record was last modified (response only) */
+  lastModifiedOn?: Date | string | null;
 }

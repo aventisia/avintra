@@ -1,13 +1,9 @@
 import { Button } from "@aventisia/ui/buttons";
-import {
-  AutherCard,
-  Form,
-  InputField,
-  MultiSelectField,
-  SwitchField,
-} from "@aventisia/ui/form";
+import { AutherCard, Form, InputField, SwitchField } from "@aventisia/ui/form";
 import { useListOptimisticMutation } from "@aventisia/ui/hooks";
 import { z } from "zod";
+
+import { MultiSelectField } from "@/components/multi-select/MultiSelectField";
 
 import { userOptimisticMutationFn } from "../../apis/users-table-apis";
 import { DATA_QUERY_KEY } from "../../constants";

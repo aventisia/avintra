@@ -218,12 +218,15 @@ export default function useWebSocket() {
           });
           await postCreditConsumption([
             {
-              serviceType: CreditServiceTypesEnum.AgentExecutionTime,
+              serviceType:
+                CreditServiceTypesEnum[
+                  CreditServiceTypesEnum.AgentExecutionTime
+                ],
               consumedUnit: duration,
-              refType: UsageSourceTypesEnum.Agent,
+              refType: UsageSourceTypesEnum[UsageSourceTypesEnum.Agent],
               refId: currentFlow.id,
               refName: currentFlow.name,
-              action: ActionTypesEnum.AgentExecution,
+              action: ActionTypesEnum[ActionTypesEnum.AgentExecution],
               triggeredByAgent: currentFlow.name,
             },
           ]); // Post the consumption data

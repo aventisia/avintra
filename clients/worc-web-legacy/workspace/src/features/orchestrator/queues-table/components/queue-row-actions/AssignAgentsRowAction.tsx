@@ -3,7 +3,7 @@ import { BotIcon } from "lucide-react";
 import React from "react";
 import { useShallow } from "zustand/react/shallow";
 
-import { useQueueDTCrudDialogStore } from "../../stores/queue-dialog-store";
+import { useQueueAgentsStore } from "../../stores/queue-agents-store";
 
 interface AssignAgentsRowActionProps {
   rowId: string;
@@ -14,13 +14,11 @@ interface AssignAgentsRowActionProps {
 export const AssignAgentsRowAction: React.FC<AssignAgentsRowActionProps> = ({
   size = "md",
   rowId,
-  queueName,
 }) => {
-  // Get data-table crud dialog store state and actions
-  const { setCrudDialogOptions, setDialogHeading } = useQueueDTCrudDialogStore(
-    useShallow((state) => ({
-      setCrudDialogOptions: state.setCrudDialogOptions,
-      setDialogHeading: state.setDialogHeading,
+  const { setOpen, setQueueId } = useQueueAgentsStore(
+    useShallow((s) => ({
+      setOpen: s.setShowDialog,
+      setQueueId: s.setQueueId,
     })),
   );
 
@@ -30,12 +28,8 @@ export const AssignAgentsRowAction: React.FC<AssignAgentsRowActionProps> = ({
       content="Assign Agents"
       Icon={BotIcon}
       onClick={() => {
-        setDialogHeading(`Assign Agents : ${queueName}`);
-        setCrudDialogOptions({
-          crudAction: "assign-agents",
-          rowId,
-          showDialog: true,
-        });
+        setOpen(true);
+        setQueueId(rowId);
       }}
     />
   );
