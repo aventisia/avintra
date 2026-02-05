@@ -6,12 +6,57 @@
     "img": null,
     "actionCategories": [
       {
-        "label": "Flow control",
+        "label": "Subflows",
         "description": "Set rules and manage the course of the flow",
         "icon": null,
-        "img": "/assets/BreakLoop.svg",
-        "listType": "list",
+        "img": "/function.png",
+        "listType": null,
         "actions": [
+          {
+            "type": "blockNode",
+            "name": "CallBlockActivity",
+            "label": "Call Block",
+            "description": "Use to add custom block",
+            "docsLink": "https://docs.aventisia.com",
+            "icon": "BlockNodeIcon",
+            "img": "/function.png"
+          },
+          {
+            "type": "callAgentNode",
+            "name": "CallAgentActivity",
+            "label": "Call Agent",
+            "description": "Use this to call another agent within the current agent",
+            "docsLink": "https://docs.aventisia.com",
+            "icon": "CallAgentIcon",
+            "img": "/function.png"
+          }
+        ]
+      },
+      {
+        "label": "Flow control",
+        "description": "Control the flow of execution based on predefined rules, enabling decision-making, repetition of actions, and iteration through collections.",
+        "icon": null,
+        "img": "/assets/BreakLoop.svg",
+        "listType": null,
+        "actions": [
+          {
+            "type": "conditionalNode",
+            "name": "ConditionalActivity",
+            "label": "Router",
+            "description": "Use conditions to decide which direction the flow should take",
+            "docsLink": "https://docs.aventisia.com",
+            "icon": "ConditionalNodeIcon",
+            "img": "/function.png"
+          },
+          {
+            "type": "forLoopNode",
+            "name": "LoopActivity",
+            "label": "Loop",
+            "description": "Use this to keep doing something again and again, as long as certain conditions are met.",
+            "docsLink": "https://docs.aventisia.com",
+            "icon": "LoopNodeIcon",
+            "img": "/function.png"
+          },
           {
             "type": "breakLoopNode",
             "name": "BreakLoopActivity",
@@ -33,47 +78,56 @@
         ]
       },
       {
-        "label": "Conditionals",
-        "description": "Control the flow of execution based on predefined rules, enabling decision-making, repetition of actions, and iteration through collections.",
+        "label": "Queue Management",
+        "description": "Create, retrieve, update, move, and delete work items in queues",
         "icon": null,
-        "img": "/function.png",
-        "listType": "list",
+        "img": "/assets/Queue.svg",
+        "listType": null,
         "actions": [
           {
-            "type": "blockNode",
-            "name": "CallBlockActivity",
-            "label": "Call Block",
-            "description": "Use to add custom block",
+            "type": "activityNode",
+            "name": "CreateWorkItemActivity",
+            "label": "Create Work Item",
+            "description": "Creates a new work item in the specified queue.",
             "docsLink": "https://docs.aventisia.com",
-            "icon": "BlockNodeIcon",
-            "img": "/function.png"
+            "icon": null,
+            "img": "/assets/Queue.svg"
           },
           {
-            "type": "callAgentNode",
-            "name": "CallAgentActivity",
-            "label": "Call Agent",
-            "description": "Use this to call another agent within the current agent",
+            "type": "activityNode",
+            "name": "GetWorkItemActivity",
+            "label": "Get Work Item",
+            "description": "Retrieves a work item from the specified queue using its identifier.",
             "docsLink": "https://docs.aventisia.com",
-            "icon": "CallAgentIcon",
-            "img": "/function.png"
+            "icon": null,
+            "img": "/assets/Queue.svg"
           },
           {
-            "type": "conditionalNode",
-            "name": "ConditionalActivity",
-            "label": "Router",
-            "description": "Use conditions to decide which direction the flow should take",
+            "type": "activityNode",
+            "name": "UpdateWorkItemActivity",
+            "label": "Update Work Item",
+            "description": "Updates the fields or status of an existing work item.",
             "docsLink": "https://docs.aventisia.com",
-            "icon": "ConditionalNodeIcon",
-            "img": "/function.png"
+            "icon": null,
+            "img": "/assets/Queue.svg"
           },
           {
-            "type": "forLoopNode",
-            "name": "LoopActivity",
-            "label": "Loop",
-            "description": "Use this to keep doing something again and again, as long as certain conditions are met.",
+            "type": "activityNode",
+            "name": "DeleteWorkItemActivity",
+            "label": "Delete Work Item",
+            "description": "Deletes a work item permanently from the queue.",
             "docsLink": "https://docs.aventisia.com",
-            "icon": "LoopNodeIcon",
-            "img": "/function.png"
+            "icon": null,
+            "img": "/assets/Queue.svg"
+          },
+          {
+            "type": "activityNode",
+            "name": "MoveWorkItemActivity",
+            "label": "Move Work Item",
+            "description": "Moves a work item from one queue to another.",
+            "docsLink": "https://docs.aventisia.com",
+            "icon": null,
+            "img": "/assets/Queue.svg"
           }
         ]
       }

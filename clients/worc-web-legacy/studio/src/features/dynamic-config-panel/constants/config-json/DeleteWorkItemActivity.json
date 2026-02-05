@@ -1,0 +1,33 @@
+{
+  "name": "DeleteWorkItem",
+  "label": "Delete Work Item",
+  "description": "Deletes a work item permanently from the queue.",
+  "version": "1.0.0",
+  "auther": "@aventisia",
+  "supportedPlatforms": ["desktop"],
+  "errorHandling": "standard",
+  "testScreenType": "standard",
+  "fields": [
+    {
+      "direction": "Input",
+      "type": "text",
+      "name": "WorItemId",
+      "label": "WorkItem ID",
+      "description": "Enter the unique identifier of the work item you want to permanently delete.",
+      "defaultValue": ""
+    },
+
+    {
+      "direction": "Output",
+      "type": "config-panel-output",
+      "name": "WorkItemDeleted",
+      "label": "WorkItemDeleted",
+      "description": "Returns true if work item deleted successfully.",
+      "defaultValue": {
+        "value": "WorkItemDeleted",
+        "enabled": true
+      },
+      "required": false
+    }
+  ]
+}

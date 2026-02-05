@@ -1,9 +1,9 @@
 import { getActionSelectorData } from "@/apis/get-action-selector-data";
 import { useNodeSelectorStore } from "@/features/action-selector/stores/action-selector-store";
-import {
-  useCheckForUpdate,
-  useRedirectOnRelaunch,
-} from "@/features/tauri-updater";
+// import {
+//   useCheckForUpdate,
+//   useRedirectOnRelaunch,
+// } from "@/features/tauri-updater";
 import { useValidateUserSession } from "@/react-toolkit/hooks/useValidateUserSession";
 import { cn } from "@aventisia/ui/lib";
 import { useBaseLayoutStore } from "@aventisia/ui/stores";
@@ -13,6 +13,8 @@ import { useShallow } from "zustand/react/shallow";
 import AppBanner from "./AppBanner";
 import AppHeader from "./AppHeader";
 import { AppRedirectPage } from "./AppRedirectPage";
+import { isVisible } from "@/features/action-selector/utils/action-visibilty";
+import { deploymentType } from "@/react-toolkit/types/user-session-types";
 
 export const AppLayout = () => {
   const [loading, setLoading] = useState(true);
@@ -25,13 +27,13 @@ export const AppLayout = () => {
   );
 
   // Redirect to relaunch URL if available (if app is inside Tauri)
-  useRedirectOnRelaunch();
+  // useRedirectOnRelaunch();
 
   // Check for new version updates if app is inside the Tauri
-  useCheckForUpdate();
+  // useCheckForUpdate();
 
   // Validate user session
-  const { isPending } = useValidateUserSession();
+  const { isPending, userSession } = useValidateUserSession();
 
   // Get setActionSelectorData function from the store
   const { setActionSelectorData } = useNodeSelectorStore(
@@ -46,10 +48,36 @@ export const AppLayout = () => {
   // Set action selector data on mount
   useEffect(() => {
     getActionSelectorData().then((data) => {
-      setActionSelectorData(data);
+      // deploymentType (Commercial / Enterprise)
+      const deploymentType = userSession?.deploymentType as deploymentType;
+
+      const filtered = data.map((primary) => ({
+        ...primary,
+
+        // Filter Action Categories based on visibility
+        actionCategories: primary.actionCategories
+          .filter((actionCategory) =>
+            isVisible(actionCategory.visibility, deploymentType),
+          )
+
+          // For visible categories, also filter individual actions
+          .map((actionCategory) => ({
+            ...actionCategory,
+
+            actions: actionCategory.actions?.filter((action) =>
+              isVisible(action.visibility, deploymentType),
+            ),
+          }))
+
+          // Remove categories that end up with no actions
+          .filter((ac) => ac.actions?.length),
+      }));
+
+      setActionSelectorData(filtered);
     });
+
     setLoading(false);
-  }, [setActionSelectorData]);
+  }, [setActionSelectorData, userSession?.deploymentType]);
 
   return (
     <>

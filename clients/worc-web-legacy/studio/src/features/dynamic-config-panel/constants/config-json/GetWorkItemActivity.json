@@ -1,0 +1,147 @@
+{
+  "name": "GetWorkItem",
+  "label": "Get Work Item",
+  "description": "Retrieves a work item from the specified queue using its identifier.",
+  "version": "1.0.0",
+  "auther": "@aventisia",
+  "supportedPlatforms": ["desktop"],
+  "errorHandling": "standard",
+  "testScreenType": "standard",
+  "fields": [
+    {
+      "direction": "Input",
+      "type": "queue-select",
+      "name": "SelectQueue",
+      "label": "Select Queue",
+      "description": "Choose the queue where the work item will be looked for.",
+      "defaultValue": "",
+      "required": true
+    },
+    {
+      "direction": "Input",
+      "type": "queue-priority-group",
+      "name": "QueuePriority",
+      "label": "QueuePriority",
+      "description": "Add one or more conditions",
+      "defaultValue": [
+        {
+          "Field": "",
+          "OrderBy": "Ascending",
+          "Id": "group-1-condition-1"
+        }
+      ],
+      "required": false,
+      "conditionSchema": [
+        {
+          "direction": "Input",
+          "type": "select",
+          "name": "Field",
+          "defaultValue": "",
+          "selectOptions": [],
+          "required": true
+        },
+        {
+          "direction": "Input",
+          "type": "select",
+          "name": "OrderBy",
+          "defaultValue": "Ascending",
+          "required": true,
+          "selectOptions": [
+            {
+              "label": "Ascending",
+              "value": "Ascending"
+            },
+            {
+              "label": "Descending",
+              "value": "Descending"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "direction": "Input",
+      "type": "queue-conditional-group",
+      "name": "Conditions",
+      "label": "Conditions",
+      "description": "Add one or more conditions",
+      "defaultValue": [
+        {
+          "Field": "",
+          "ComparisonOperator": "EqualTo",
+          "Value": "",
+          "Id": "group-1-condition-1"
+        }
+      ],
+      "required": false,
+      "conditionSchema": [
+        {
+          "direction": "Input",
+          "type": "select",
+          "name": "Field",
+          "defaultValue": "",
+          "selectOptions": [],
+          "required": true
+        },
+        {
+          "direction": "Input",
+          "type": "select",
+          "name": "ComparisonOperator",
+          "defaultValue": "EqualTo",
+          "required": true,
+          "selectOptions": [
+            { "label": "Equals", "value": "EqualTo" },
+            { "label": "Not Equals", "value": "NotEqualTo" },
+            { "label": "Greater Than", "value": "GreaterThan" },
+            { "label": "Greater Than Or Equal", "value": "GreaterThanOrEqual" },
+            { "label": "Less Than", "value": "LessThan" },
+            { "label": "Less Than Or Equal", "value": "LessThanOrEqual" },
+            { "label": "Contains", "value": "Contains" },
+            { "label": "Does Not Contain", "value": "NotContains" },
+            { "label": "Starts With", "value": "StartsWith" },
+            { "label": "Ends With", "value": "EndsWith" },
+            { "label": "In List", "value": "In" },
+            { "label": "Not In List", "value": "NotIn" },
+            { "label": "Is Null", "value": "IsNull" },
+            { "label": "Is Not Null", "value": "IsNotNull" }
+          ]
+        },
+        {
+          "direction": "Input",
+          "type": "text",
+          "name": "Value",
+          "defaultValue": "",
+          "required": true,
+          "renderIf": {
+            "conditions": [
+              { "field": "ComparisonOperator", "equals": "EqualTo" },
+              { "field": "ComparisonOperator", "equals": "GreaterThan" },
+              { "field": "ComparisonOperator", "equals": "GreaterThanOrEqual" },
+              { "field": "ComparisonOperator", "equals": "LessThan" },
+              { "field": "ComparisonOperator", "equals": "LessThanOrEqual" },
+              { "field": "ComparisonOperator", "equals": "Contains" },
+              { "field": "ComparisonOperator", "equals": "NotContains" },
+              { "field": "ComparisonOperator", "equals": "StartsWith" },
+              { "field": "ComparisonOperator", "equals": "EndsWith" },
+              { "field": "ComparisonOperator", "equals": "In" },
+              { "field": "ComparisonOperator", "equals": "NotIn" }
+            ]
+          }
+        }
+      ]
+    },
+
+    {
+      "direction": "Output",
+      "type": "config-panel-output",
+      "name": "WorkItem",
+      "label": "WorkItem",
+      "description": "Returns work items.",
+      "defaultValue": {
+        "value": "WorkItem",
+        "enabled": true
+      },
+      "required": false
+    }
+  ]
+}
