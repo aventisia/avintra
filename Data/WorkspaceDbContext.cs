@@ -119,7 +119,18 @@ public class WorkspaceDbContext : DbContext
         // Configure Many-to-Many relationship between trigger and flow version
         modelBuilder.Entity<TimeTrigger>().HasMany(many => many.TimeTriggerFlowVersions).WithOne(one => one.Trigger).HasForeignKey(fKey => fKey.TriggerId).IsRequired();
         modelBuilder.Entity<FlowVersion>().HasMany(many => many.TriggerFlowVersions).WithOne(one => one.FlowVersion).HasForeignKey(fKey => fKey.FlowVersionId).IsRequired();
-
+        modelBuilder.Entity<EncryptedKeyValue>().HasOne(u => u.AppSecret).WithMany(t => t.EncryptedKeyValues).HasForeignKey(u => u.AppSecretId).OnDelete(DeleteBehavior.Cascade);
+        modelBuilder.Entity<TimeTriggersFlowVersion>().HasOne(u => u.Trigger).WithMany(t => t.TimeTriggerFlowVersions).HasForeignKey(u => u.TriggerId).OnDelete(DeleteBehavior.Cascade);
+        modelBuilder.Entity<QueueFlowVersion>().HasOne(u => u.Queue).WithMany(t => t.QueueFlowVersions).HasForeignKey(u => u.Queue).OnDelete(DeleteBehavior.Cascade);
+        modelBuilder.Entity<QueueTransaction>().HasOne(u => u.Queue).WithMany(t => t.QueueTransactions).HasForeignKey(u => u.Queue).OnDelete(DeleteBehavior.Cascade);
+        modelBuilder.Entity<QueueUser>().HasOne(u => u.Queue).WithMany(t => t.QueueUsers).HasForeignKey(u => u.Queue).OnDelete(DeleteBehavior.Cascade);
+        modelBuilder.Entity<MachineFlow>().HasOne(u => u.Machine).WithMany(t => t.MachineFlows).HasForeignKey(u => u.MachineId).OnDelete(DeleteBehavior.Cascade);
+        modelBuilder.Entity<FlowComment>().HasOne(u => u.Flow).WithMany(t => t.FlowComments).HasForeignKey(u => u.FlowId).OnDelete(DeleteBehavior.Cascade);
+        modelBuilder.Entity<FlowLog>().HasOne(u => u.Flow).WithMany(t => t.FlowLog).HasForeignKey(u => u.FlowId).OnDelete(DeleteBehavior.Cascade);
+        modelBuilder.Entity<FlowUser>().HasOne(u => u.Flow).WithMany(t => t.FlowUsers).HasForeignKey(u => u.FlowId).OnDelete(DeleteBehavior.Cascade);
+        modelBuilder.Entity<TemplateResource>().HasOne(u => u.ProjectTemplate).WithMany(t => t.TemplateResources).HasForeignKey(u => u.ProjectTemplateId).OnDelete(DeleteBehavior.Cascade);
+        modelBuilder.Entity<SupportTicketRemark>().HasOne(u => u.SupportTicket).WithMany(t => t.SupportTicketRemarks).HasForeignKey(u => u.SupportTicketId).OnDelete(DeleteBehavior.Cascade);
+        modelBuilder.Entity<NotificationUser>().HasOne(u => u.Notification).WithMany(t => t.NotificationUsers).HasForeignKey(u => u.NotificationId).OnDelete(DeleteBehavior.Cascade);
     }
     // On Save Changes - write tenant Id to table
     public override int SaveChanges()
