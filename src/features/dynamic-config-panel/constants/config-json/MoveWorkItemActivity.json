@@ -26,6 +26,23 @@
       "required": true
     },
     {
+      "direction": "Input",
+      "type": "json-editor",
+      "name": "CreateWorkItemData",
+      "label": "Work Item Data",
+      "description": "Provide the data payload for the work item in JSON format. This data will be stored with the work item.",
+      "defaultValue": "",
+      "required": true
+    },
+    {
+      "direction": "Input",
+      "type": "text",
+      "name": "WorkItemRemark",
+      "label": "Remark",
+      "description": "Enter the remark for the work item.",
+      "defaultValue": ""
+    },
+    {
       "direction": "Output",
       "type": "config-panel-output",
       "name": "MovedWorkItem",

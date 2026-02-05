@@ -31,7 +31,14 @@
         { "label": "Completed", "value": "Completed" }
       ]
     },
-
+    {
+      "direction": "Input",
+      "type": "text",
+      "name": "WorkItemRemark",
+      "label": "Remark",
+      "description": "Enter the remark for the work item.",
+      "defaultValue": ""
+    },
     {
       "direction": "Input",
       "type": "switch",

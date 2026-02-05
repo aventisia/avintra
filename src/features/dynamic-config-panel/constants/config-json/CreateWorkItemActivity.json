@@ -27,6 +27,14 @@
       "required": true
     },
     {
+      "direction": "Input",
+      "type": "text",
+      "name": "WorkItemRemark",
+      "label": "Remark",
+      "description": "Enter the remark for the work item.",
+      "defaultValue": ""
+    },
+    {
       "direction": "Output",
       "type": "config-panel-output",
       "name": "CreateWorkItem",
