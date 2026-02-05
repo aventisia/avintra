@@ -217,12 +217,12 @@ public class QueueFlowVersionService : IQueueFlowVersionService
         var serviceResponse = new ServiceResponse<bool>
         {
             Data = false,
-            Message = "Failed to delete the queue flow version. Please try again."
+            Message = "Failed to remove the queue flow version. Please try again."
         };
 
         try
         {
-            // Fetch the queue flow version to be deleted
+            // Fetch the queue flow version to be removed
             var queueFlowVersion = await _unitOfWork.QueueFlowVersionRepo
                 .GetByConditionAsync(q => q.Id == queueFlowVersionId && q.CreatedByUserId == _userId)
                 .SingleOrDefaultAsync();
@@ -241,19 +241,19 @@ public class QueueFlowVersionService : IQueueFlowVersionService
             // Ensure changes are saved
             if (!await _unitOfWork.SaveAsync())
             {
-                _logger.LogInformation($"Failed to save changes while deleting queue flow version with ID: {queueFlowVersionId}");
+                _logger.LogInformation($"Failed to save changes while removing queue flow version with ID: {queueFlowVersionId}");
                 return serviceResponse;
             }
 
             // Return success message
             serviceResponse.Data = true;
             serviceResponse.StatusCode = 200;
-            serviceResponse.Message = "Queue flow version deleted successfully.";
-            _logger.LogInformation($"Queue flow version with ID: {queueFlowVersionId} deleted successfully.");
+            serviceResponse.Message = "Queue flow version removed successfully.";
+            _logger.LogInformation($"Queue flow version with ID: {queueFlowVersionId} removed successfully.");
         }
         catch (Exception ex)
         {
-            _logger.LogError($"Error deleting queue flow version with ID: {queueFlowVersionId}. Exception: {ex.Message}");
+            _logger.LogError($"Error removing queue flow version with ID: {queueFlowVersionId}. Exception: {ex.Message}");
             return serviceResponse;
         }
 
@@ -267,12 +267,12 @@ public class QueueFlowVersionService : IQueueFlowVersionService
         var serviceResponse = new ServiceResponse<bool>
         {
             Data = false,
-            Message = "Failed to delete the queue flow versions. Please try again."
+            Message = "Failed to remove the queue flow versions. Please try again."
         };
 
         try
         {
-            // Fetch the queue flow versions to be deleted
+            // Fetch the queue flow versions to be removed
             var queueFlowVersions = await _unitOfWork.QueueFlowVersionRepo
                 .GetByConditionAsync(q => q.CreatedByUserId == _userId && queueFlowVersionIds.Contains(q.Id))
                 .ToListAsync();
@@ -280,7 +280,7 @@ public class QueueFlowVersionService : IQueueFlowVersionService
             if (queueFlowVersions.Count == 0)
             {
                 // If no queue flow versions are found, return an error message
-                _logger.LogInformation("No queue flow versions found to delete.");
+                _logger.LogInformation("No queue flow versions found to remove.");
                 serviceResponse.Message = "Queue flow versions do not exist.";
                 return serviceResponse;
             }
@@ -291,19 +291,19 @@ public class QueueFlowVersionService : IQueueFlowVersionService
             // Ensure changes are saved successfully
             if (!await _unitOfWork.SaveAsync())
             {
-                _logger.LogInformation("Failed to save changes while deleting queue flow versions.");
+                _logger.LogInformation("Failed to save changes while removing queue flow versions.");
                 return serviceResponse;
             }
 
-            // Return a success message with the count of deleted versions
+            // Return a success message with the count of removed versions
             serviceResponse.Data = true;
             serviceResponse.StatusCode = 200;
-            serviceResponse.Message = $"{queueFlowVersionIds.Count()} queue flow versions deleted successfully.";
-            _logger.LogInformation($"{queueFlowVersionIds.Count()} queue flow versions deleted successfully.");
+            serviceResponse.Message = $"{queueFlowVersionIds.Count()} queue flow versions removed successfully.";
+            _logger.LogInformation($"{queueFlowVersionIds.Count()} queue flow versions removed successfully.");
         }
         catch (Exception ex)
         {
-            _logger.LogError($"Error deleting queue flow versions. Exception: {ex.Message}");
+            _logger.LogError($"Error removing queue flow versions. Exception: {ex.Message}");
             return serviceResponse;
         }
 
