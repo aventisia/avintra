@@ -28,7 +28,7 @@ public class TenantCreditAllocationJob : IJob
                     w.Plan.Type == SubscriptionPlanTypeEnum.Starter &&
                     w.IsActive &&
                     w.NextBillingDate.Date <= currentDateTime.Date)
-                .Include(i => i.Plan)
+                .AsNoTracking()
                 .ToListAsync();
 
             // Log how many subscriptions are due for processing
@@ -39,10 +39,20 @@ public class TenantCreditAllocationJob : IJob
             // Loop through each subscription to create tenant credits and update NextBillingDate
             foreach (var subscription in tenantSubscriptions)
             {
-                // Update the NextBillingDate by adding 1 month to it
+                // Check if the NextBillingDate is more than 1 month old
+                if (subscription.NextBillingDate < DateTimeOffset.UtcNow.AddMonths(-1))
+                {
+                    // If so, set the NextBillingDate to the current UTC time
+                    subscription.NextBillingDate = DateTimeOffset.UtcNow;
+                }
+
+                // Add 1 month to the NextBillingDate
                 subscription.NextBillingDate = subscription.NextBillingDate.AddMonths(1);
+
+                // Ensure LastModifiedByUserId is set (it seems like it's being set to itself here)
                 subscription.LastModifiedByUserId = subscription.LastModifiedByUserId;
 
+                // Update the subscription in the database
                 _unitOfWork.TenantSubscriptionRepo.Update(subscription);
 
                 // Create a new TenantCredit for the subscription

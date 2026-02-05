@@ -5,13 +5,15 @@ public class TenantsTableService : ITenantsTableService
     private readonly ILogger<TenantsTableService> _logger;
     private readonly IUnitOfWork _unitOfWork;
     private readonly ICurrentTenantService _currentTenantService;
+    private readonly IAzureBlobStorageService _azureBlobStorageService;
     private readonly Guid _userId;
 
     public TenantsTableService(
         ILogger<TenantsTableService> logger,
         IUnitOfWork unitOfWork,
         IHttpContextAccessor httpContextAccessor,
-        ICurrentTenantService currentTenantService)
+        ICurrentTenantService currentTenantService,
+        IAzureBlobStorageService azureBlobStorageService)
     {
         // Set _userId
         _userId = Guid.Parse(httpContextAccessor.HttpContext?.User?.FindFirstValue("uid") ?? Guid.Empty.ToString());
@@ -19,6 +21,7 @@ public class TenantsTableService : ITenantsTableService
         _logger = logger;
         _unitOfWork = unitOfWork;
         _currentTenantService = currentTenantService;
+        _azureBlobStorageService = azureBlobStorageService;
     }
 
     // Retrieves all tenants.
@@ -435,16 +438,157 @@ public class TenantsTableService : ITenantsTableService
                 return serviceResponse;
             }
 
-            // IMPORTANT: Check if any relationship exists and abort required
-            var relationshipExists = await _unitOfWork.AccountUserRepo
-                                            .DoesDependentEntitiesExistAsync(w => w.TenantId == id);
+            _logger.LogInformation($"Checking and deleting related data for tenant ID: {tenant.Id}");
 
-            // Relationship exists
-            if (relationshipExists)
+            // --- Payment Related Records ---
+
+            // Retrieve and delete payment history records (transactions associated with the tenant)
+            var paymentHistories = await _unitOfWork.PaymentHistoryRepo.GetByConditionAsync(w => w.TenantId == tenant.Id).ToListAsync();
+            if (paymentHistories.Any())
             {
-                _logger.LogInformation($"Cannot delete Tenant because it is linked with other records");
-                serviceResponse.Message = "Cannot delete Tenant because it is linked with other records";
-                return serviceResponse;
+                _logger.LogInformation($"Deleting {paymentHistories.Count} PaymentHistory records for tenant ID: {tenant.Id}");
+                _unitOfWork.PaymentHistoryRepo.Delete(paymentHistories);  // Deleting all related payment history records
+            }
+
+            // Retrieve and delete payment methods (stored payment methods for the tenant)
+            var paymentMethods = await _unitOfWork.PaymentMethodRepo.GetByConditionAsync(w => w.TenantId == tenant.Id).ToListAsync();
+            if (paymentMethods.Any())
+            {
+                _logger.LogInformation($"Deleting {paymentMethods.Count} PaymentMethod records for tenant ID: {tenant.Id}");
+                _unitOfWork.PaymentMethodRepo.Delete(paymentMethods);  // Deleting all related payment method records
+            }
+
+            // --- Subscription Related Records ---
+
+            // Retrieve and delete credit usage records (how the tenant has used credits)
+            var creditUsages = await _unitOfWork.CreditUsageRepo.GetByConditionAsync(w => w.TenantId == tenant.Id).ToListAsync();
+            if (creditUsages.Any())
+            {
+                _logger.LogInformation($"Deleting {creditUsages.Count} CreditUsage records for tenant ID: {tenant.Id}");
+                _unitOfWork.CreditUsageRepo.Delete(creditUsages);  // Deleting all related credit usage records
+            }
+
+            // Retrieve and delete tenant credits (remaining credits for the tenant)
+            var tenantCredits = await _unitOfWork.TenantCreditRepo.GetByConditionAsync(w => w.TenantId == tenant.Id).ToListAsync();
+            if (tenantCredits.Any())
+            {
+                _logger.LogInformation($"Deleting {tenantCredits.Count} TenantCredit records for tenant ID: {tenant.Id}");
+                _unitOfWork.TenantCreditRepo.Delete(tenantCredits);  // Deleting all related tenant credit records
+            }
+
+            // Retrieve and delete billing history records (historical billing details for the tenant)
+            var billingHistories = await _unitOfWork.BillingHistoryRepo.GetByConditionAsync(w => w.TenantId == tenant.Id).ToListAsync();
+            if (billingHistories.Any())
+            {
+                _logger.LogInformation($"Deleting {billingHistories.Count} BillingHistory records for tenant ID: {tenant.Id}");
+                _unitOfWork.BillingHistoryRepo.Delete(billingHistories);  // Deleting all related billing history records
+            }
+
+            // Retrieve and delete billing details (billing information associated with the tenant)
+            var billingDetails = await _unitOfWork.BillingDetailRepo.GetByConditionAsync(w => w.TenantId == tenant.Id).ToListAsync();
+            if (billingDetails.Any())
+            {
+                _logger.LogInformation($"Deleting {billingDetails.Count} BillingDetail records for tenant ID: {tenant.Id}");
+                _unitOfWork.BillingDetailRepo.Delete(billingDetails);  // Deleting all related billing details
+            }
+
+            // Retrieve and delete tenant subscriptions (current subscriptions the tenant is active in)
+            var tenantSubscriptions = await _unitOfWork.TenantSubscriptionRepo.GetByConditionAsync(w => w.TenantId == tenant.Id).ToListAsync();
+            if (tenantSubscriptions.Any())
+            {
+                _logger.LogInformation($"Deleting {tenantSubscriptions.Count} TenantSubscription records for tenant ID: {tenant.Id}");
+                _unitOfWork.TenantSubscriptionRepo.Delete(tenantSubscriptions);  // Deleting all related tenant subscription records
+            }
+
+            // --- Space and Integration Records ---
+
+            // Retrieve and delete spaces (physical or logical spaces associated with the tenant)
+            var spaces = await _unitOfWork.SpaceRepo.GetByConditionAsync(w => w.TenantId == tenant.Id).ToListAsync();
+            if (spaces.Any())
+            {
+                _logger.LogInformation($"Deleting {spaces.Count} Space records for tenant ID: {tenant.Id}");
+                _unitOfWork.SpaceRepo.Delete(spaces);  // Deleting all related space records
+            }
+
+            // Retrieve and delete app integrations (third-party integrations associated with the tenant)
+            var appIntegrations = await _unitOfWork.AppIntegrationRepo.GetByConditionAsync(w => w.TenantId == tenant.Id).ToListAsync();
+            if (appIntegrations.Any())
+            {
+                _logger.LogInformation($"Deleting {appIntegrations.Count} AppIntegration records for tenant ID: {tenant.Id}");
+                _unitOfWork.AppIntegrationRepo.Delete(appIntegrations);  // Deleting all related app integration records
+            }
+
+            // --- Session and Log Records ---
+
+            // Retrieve and delete session logs (logs related to tenant's active sessions)
+            var sessionLogs = await _unitOfWork.SessionLogRepo.GetByConditionAsync(w => w.UserId == tenant.Id).ToListAsync();
+            if (sessionLogs.Any())
+            {
+                _logger.LogInformation($"Deleting {sessionLogs.Count} SessionLog records for tenant ID: {tenant.Id}");
+                _unitOfWork.SessionLogRepo.Delete(sessionLogs);  // Deleting all related session log records
+            }
+
+            // Retrieve and delete audit logs (audit trail related to tenant actions)
+            var auditLogs = await _unitOfWork.AuditLogRepo.GetByConditionAsync(w => w.UserId == tenant.Id).ToListAsync();
+            if (auditLogs.Any())
+            {
+                _logger.LogInformation($"Deleting {auditLogs.Count} AuditLog records for tenant ID: {tenant.Id}");
+                _unitOfWork.AuditLogRepo.Delete(auditLogs);  // Deleting all related audit log records
+            }
+
+            // Retrieve and delete active sessions (sessions that are currently active for the tenant)
+            var activeSessions = await _unitOfWork.ActiveSessionRepo.GetByConditionAsync(w => w.UserId == tenant.Id).ToListAsync();
+            if (activeSessions.Any())
+            {
+                _logger.LogInformation($"Deleting {activeSessions.Count} ActiveSession records for tenant ID: {tenant.Id}");
+                _unitOfWork.ActiveSessionRepo.Delete(activeSessions);  // Deleting all related active session records
+            }
+
+            // --- Roles and Permissions ---
+
+            // Retrieve and delete account roles (roles associated with the tenant's accounts)
+            var accountRoles = await _unitOfWork.AccountRoleRepo.GetByConditionAsync(w => w.TenantId == tenant.Id).ToListAsync();
+            if (accountRoles.Any())
+            {
+                _logger.LogInformation($"Deleting {accountRoles.Count} AccountRole records for tenant ID: {tenant.Id}");
+                _unitOfWork.AccountRoleRepo.Delete(accountRoles);  // Deleting all related account role records
+            }
+
+            // --- User and Code Records ---
+
+            // Retrieve and delete obsolete passwords (expired or unused passwords for the tenant)
+            var obsoletePwds = await _unitOfWork.ObsoletePwdRepo.GetByConditionAsync(w => w.UserId == tenant.Id).ToListAsync();
+            if (obsoletePwds.Any())
+            {
+                _logger.LogInformation($"Deleting {obsoletePwds.Count} ObsoletePwd records for tenant ID: {tenant.Id}");
+                _unitOfWork.ObsoletePwdRepo.Delete(obsoletePwds);  // Deleting all related obsolete password records
+            }
+
+            // Retrieve and delete verification codes (verification codes associated with the tenant's email)
+            var verificationCodes = await _unitOfWork.VerificationCodeRepo.GetByConditionAsync(w => w.Email == tenant.Id.ToString()).ToListAsync();
+            if (verificationCodes.Any())
+            {
+                _logger.LogInformation($"Deleting {verificationCodes.Count} VerificationCode records for tenant ID: {tenant.Id}");
+                _unitOfWork.VerificationCodeRepo.Delete(verificationCodes);  // Deleting all related verification code records
+            }
+
+            // Retrieve and delete tenant users (users associated with the tenant)
+            var tenantUsers = await _unitOfWork.AccountUserRepo.GetByConditionAsync(w => w.TenantId == tenant.Id).ToListAsync();
+            if (tenantUsers.Any())
+            {
+                _logger.LogInformation($"Deleting {tenantUsers.Count} AccountUser records for tenant ID: {tenant.Id}");
+                _unitOfWork.AccountUserRepo.Delete(tenantUsers);  // Deleting all related tenant user records
+            }
+
+            // Attempt to delete the container asynchronously.
+            if (!await _azureBlobStorageService.RemoveContainerAsync(tenant.ContainerName))
+            {
+                _logger.LogError($"Failed to delete blob container '{tenant.ContainerName}'.");
+                _logger.LogInformation($"Tenant Info: ID={tenant.Id}, Name={tenant.Name}");
+            }
+            else
+            {
+                _logger.LogInformation($"Blob container '{tenant.ContainerName}' deleted successfully.");
             }
 
             // Delete tenant
