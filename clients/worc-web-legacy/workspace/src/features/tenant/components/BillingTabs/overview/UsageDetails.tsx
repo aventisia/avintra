@@ -56,11 +56,15 @@ const UsageDetails = ({ planUsage, className }: UsageDetailsProps) => {
   return (
     <div className={cn(className)}>
       <h3 className="font-medium">Usage:</h3>
-      <div className="mt-2 space-y-4">
+      <div className="mt-4 space-y-6">
         {/* Dynamically render usage items */}
         {usageData.map((item, index) => {
           // Skip the "Spaces" resource if it's not needed
-          // if (item.resourceName === "Spaces") return null;
+          if (
+            item.resourceName === "Spaces" &&
+            import.meta.env.MODE == "production"
+          )
+            return null;
 
           return (
             <UsageItem
