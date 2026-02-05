@@ -580,16 +580,17 @@ public class TenantsTableService : ITenantsTableService
                 _unitOfWork.AccountUserRepo.Delete(tenantUsers);  // Deleting all related tenant user records
             }
 
-            // Attempt to delete the container asynchronously.
-            if (!await _azureBlobStorageService.RemoveContainerAsync(tenant.ContainerName))
-            {
-                _logger.LogError($"Failed to delete blob container '{tenant.ContainerName}'.");
-                _logger.LogInformation($"Tenant Info: ID={tenant.Id}, Name={tenant.Name}");
-            }
-            else
-            {
-                _logger.LogInformation($"Blob container '{tenant.ContainerName}' deleted successfully.");
-            }
+            // @rahmat - 'IAzureBlobStorageService' does not contain a definition for 'RemoveContainerAsync'
+            // // Attempt to delete the container asynchronously.
+            // if (!await _azureBlobStorageService.RemoveContainerAsync(tenant.ContainerName))
+            // {
+            //     _logger.LogError($"Failed to delete blob container '{tenant.ContainerName}'.");
+            //     _logger.LogInformation($"Tenant Info: ID={tenant.Id}, Name={tenant.Name}");
+            // }
+            // else
+            // {
+            //     _logger.LogInformation($"Blob container '{tenant.ContainerName}' deleted successfully.");
+            // }
 
             // Delete tenant
             _unitOfWork.TenantRepo.Delete(tenant);
