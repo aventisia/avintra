@@ -10,6 +10,7 @@ export const columnDisplayNames: KeyValueLookupType[] = [
   { key: "docsProcessed", value: "Records Processed" },
   { key: "description", value: "Description" },
   { key: "createdOn", value: "Created On" },
+  { key: "createdBy", value: "Created By" },
   { key: "trainedOn", value: "Trained On" },
   { key: "setupStatus", value: "Setup Status" },
   { key: "tokenCount", value: "Token Count" },
