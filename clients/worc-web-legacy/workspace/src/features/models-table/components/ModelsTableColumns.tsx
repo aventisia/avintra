@@ -207,7 +207,7 @@ export const modelsTableColumns: ColumnDef<ModelsTableDto>[] = [
           className={cn(
             `capitalize`,
             llmName && llmName.length > 0
-              ? "bg-blue-200 text-blue-700"
+              ? "bg-green-200 text-green-700"
               : "bg-slate-200 text-slate-600",
           )}
         >
