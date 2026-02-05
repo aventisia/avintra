@@ -17,7 +17,7 @@ from app.features.llm_providers.llm_providers_schemas import (
 )
 from app.features.llm_providers.llm_job_manager import active_llm_jobs
 from .llm_providers_base import BaseLLMProvider
-
+from app.utils.file_util import FileUtils
 
 class OpenRouterProvider(BaseLLMProvider):
     """
@@ -215,15 +215,78 @@ class OpenRouterProvider(BaseLLMProvider):
         else:
             raise ValueError("Input must be a string or a list of messages.")
 
-        # Add base64 files if provided
+        # Add base64 files if any are provided (Gemini 'inline_data')
         if llm_request.files:
-            for b64_file in llm_request.files:
-                messages.append({
-                    "inline_data": {
-                        "mime_type": "image/png",  # Change this based on your file type (e.g., image/jpeg, application/pdf, etc.)
-                        "data": b64_file
-                    }
-                })
+            for file_data in llm_request.files:
+                # If file_data is a URL (string), fetch file content
+                if isinstance(file_data, str):
+                    mime_type, encoded_content = FileUtils.get_file_data_from_url(file_data)
+                    filename = file_data.split("/")[-1]  # Extract filename from URL
+                else:
+                    # Handle case where file_data is an object with mime_type and encoded_content
+                    mime_type = file_data.mime_type
+                    encoded_content = file_data.encoded_content
+                    filename = getattr(file_data, "filename", "file")  # Use provided filename or default
+
+                # Determine content type and add appropriate message
+                if mime_type.startswith("image/"):
+                    # Image
+                    messages.append({
+                        "role": "user",
+                        "content": [
+                            {
+                                "type": "image_url",
+                                "imageUrl": {
+                                    "url": f"data:{mime_type};base64,{encoded_content}"
+                                }
+                            }
+                        ]
+                    })
+                elif mime_type.startswith("video/"):
+                    # Video
+                    messages.append({
+                        "role": "user",
+                        "content": [
+                            {
+                                "type": "input_video",
+                                "input_video": {
+                                    "data": encoded_content,
+                                    "format": mime_type.split("/")[-1],  # e.g., 'mp4', 'webm'
+                                    "filename": filename
+                                }
+                            }
+                        ]
+                    })
+                elif mime_type.startswith("audio/"):
+                    # Audio
+                    messages.append({
+                        "role": "user",
+                        "content": [
+                            {
+                                "type": "input_audio",
+                                "input_audio": {
+                                    "data": encoded_content,
+                                    "format": mime_type.split("/")[-1],  # e.g., 'mp3', 'wav'
+                                    "filename": filename
+                                }
+                            }
+                        ]
+                    })
+                else:
+                    # Documents or other file types (PDF, DOCX, CSV, etc.)
+                    messages.append({
+                        "role": "user",
+                        "content": [
+                            {
+                                "type": "file",
+                                "file": {
+                                    "filename": filename,
+                                    "file_data": f"data:{mime_type};base64,{encoded_content}"
+                                }
+                            }
+                        ]
+                    })
+
         # Building the payload with dynamic elements
         payload = {
             "model": llm_request.model,
@@ -234,12 +297,25 @@ class OpenRouterProvider(BaseLLMProvider):
             "max_tokens": llm_request.max_output_tokens,
         }
 
-        # Include response format for JSON output type
-        if llm_request.is_json_output:
-            payload["response_format"] = {"type": llm_request.json_schema}
-            payload["output_type"] = "json",
+        # Initialize default response format
+        payload["response_format"] = {}
+
+        # Include response format if JSON schema is defined
+        if llm_request.json_schema:
+            payload["response_format"] = {
+                "type": "json_object",
+                "json_schema": llm_request.json_schema
+            }
+
+        # Set response format based on is_json_output flag (only if no schema)
+        elif llm_request.is_json_output:
+            payload["response_format"] = {
+                "type": "json_object"
+            }
+
+        # Default output type if no schema and not JSON output
         else:
-            payload["output_type"] = "text",
+            payload["output_type"] = "text"
 
 
         # Constructing the headers with the API key
@@ -311,40 +387,40 @@ class OpenRouterProvider(BaseLLMProvider):
         llm_response.output_tokens = usage.get("completion_tokens", 0)
         llm_response.output_reasoning_tokens = usage.get("completion_tokens_details", {}).get("reasoning_tokens", 0)
 
-        # # If not BYOK and credential_id is present, post the credit usage
-        # if not llm_request.is_byok_enabled and llm_request.credential_id:
-        #     # Prepare the credit usage data
-        #     credit_usage_data = [
-        #         {
-        #             "ServiceType": "CustomInputService",
-        #             "ConsumedUnit": llm_response.input_tokens or 0,
-        #             "RefType": llm_request.ref_type,
-        #             "RefId": llm_request.ref_id,
-        #             "RefName": llm_request.ref_name,
-        #             "Action": llm_request.action,
-        #             "TriggeredByAgent": llm_request.agent_name
-        #         },
-        #         {
-        #             "ServiceType": "CustomInputService",
-        #             "ConsumedUnit": llm_response.output_tokens or 0,
-        #             "RefType": llm_request.ref_type,
-        #             "RefId": llm_request.ref_id,
-        #             "RefName": llm_request.ref_name,
-        #             "Action": llm_request.action,
-        #             "TriggeredByAgent": llm_request.agent_name
-        #         }
-        #     ]
+        # If BYOK is not enabled and credential_id is not provided, post credit usage to CreditManagerService
+        if not llm_request.is_byok_enabled and not llm_request.credential_id:
+            # Prepare the credit usage data
+            credit_usage_data = [
+                {
+                    "ServiceType": "Qwen3Vl32bInstructInput",
+                    "ConsumedUnit": llm_response.input_tokens or 0,
+                    "RefType": llm_request.ref_type,
+                    "RefId": llm_request.ref_id,
+                    "RefName": llm_request.ref_name,
+                    "Action": llm_request.action,
+                    "TriggeredByAgent": llm_request.agent_name
+                },
+                {
+                    "ServiceType": "Qwen3Vl32bInstructOutput",
+                    "ConsumedUnit": llm_response.output_tokens or 0,
+                    "RefType": llm_request.ref_type,
+                    "RefId": llm_request.ref_id,
+                    "RefName": llm_request.ref_name,
+                    "Action": llm_request.action,
+                    "TriggeredByAgent": llm_request.agent_name
+                }
+            ]
 
-        #     # Initialize the CreditManagerService
-        #     credit_manager = CreditManagerService()
+            # Initialize the CreditManagerService
+            credit_manager = CreditManagerService()
 
-        #     # Post the credit usage data
-        #     try:
-        #         credit_manager.post_credit_usage(task="openrouter", request=credit_usage_data, jwt=jwt)
-        #         logger.info(f"Successfully posted credit usage data for request ID {llm_request.ref_id}.")
-        #     except Exception as e:
-        #         logger.error(f"Failed to post credit usage data for request ID {llm_request.ref_id}. Error: {str(e)}")
-        #         raise HTTPException(status_code=500, detail=f"Failed to post credit usage: {str(e)}")
+            # Post the credit usage data
+            try:
+                credit_manager.post_credit_usage(task="openrouter", request=credit_usage_data, jwt=jwt)
+                logger.info(f"Successfully posted credit usage data for request ID {llm_request.ref_id}.")
+            except Exception as e:
+                logger.error(f"Failed to post credit usage data for request ID {llm_request.ref_id}. Error: {str(e)}")
+                raise HTTPException(status_code=500, detail=f"Failed to post credit usage: {str(e)}")
 
         # Return the final llm_response
         return llm_response
