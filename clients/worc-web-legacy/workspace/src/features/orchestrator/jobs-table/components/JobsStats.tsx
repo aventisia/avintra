@@ -5,6 +5,7 @@ import { StatsCard } from "@/react-toolkit/ui/card/StatsCard";
 
 import { JobsTableDto } from "../dtos/jobs-table-dto";
 import { JobStatusTypesEnum } from "../enums/job-status-type-enum";
+import { formatSecondsToCompactDuration } from "../utils";
 
 interface StatsProps {
   data: JobsTableDto[];
@@ -16,11 +17,11 @@ export const JobsStats = ({ data }: StatsProps) => {
       return {
         jobs: 0,
         agents: 0,
-        totalExecutionHours: 0,
+        totalExecutionLabel: "0 sec",
         completed: 0,
         failed: 0,
         aborted: 0,
-        avgSeconds: 0,
+        avgLabel: "0 sec",
       };
     }
 
@@ -42,14 +43,16 @@ export const JobsStats = ({ data }: StatsProps) => {
 
     const totalSeconds = data.reduce((acc, x) => acc + (x.duration ?? 0), 0);
 
+    const avgSeconds = Math.round(totalSeconds / jobs);
+
     return {
       jobs,
       agents: uniqueAgents.size,
       completed,
       failed,
       aborted,
-      totalExecutionHours: +(totalSeconds / 3600).toFixed(2),
-      avgSeconds: Math.round(totalSeconds / jobs),
+      totalExecutionLabel: formatSecondsToCompactDuration(totalSeconds),
+      avgLabel: formatSecondsToCompactDuration(avgSeconds),
     };
   }, [data]);
 
@@ -73,9 +76,9 @@ export const JobsStats = ({ data }: StatsProps) => {
 
       {/* Execution Time */}
       <StatsCard
-        title="Execution Time (Hours)"
-        mainText={stats.totalExecutionHours}
-        description={`Avg: ${stats.avgSeconds}s / job`}
+        title="Execution Time"
+        mainText={stats.totalExecutionLabel}
+        description={`Avg ${stats.avgLabel} per job`}
         icon={<Clock10Icon stroke="var(--primary)" className="h-10 w-10" />}
       />
     </div>
