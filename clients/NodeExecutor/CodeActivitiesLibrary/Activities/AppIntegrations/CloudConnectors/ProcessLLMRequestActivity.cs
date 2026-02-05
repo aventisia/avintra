@@ -7,6 +7,7 @@ using System.Collections.Generic;
 using System.ComponentModel;
 using System.Configuration;
 using System.IO;
+using System.Linq;
 using System.Net.Http;
 using System.Net.Http.Headers;
 using System.Text;
@@ -56,10 +57,10 @@ namespace CodeActivitiesLibrary.AppIntegrations.CloudConnectorsActivities
             var agentName = AgentName.Get(context);
 
             // Convert files to base64 if any
-            var filesListBase64 = ConvertFileToBase64(filesList);
+            var formattedFilesList = FormatFilesList(filesList);
 
             // If converted list count not same as original, some files were missing
-            if (filesList != null && filesListBase64.Count != filesList.Count)
+            if (filesList != null && formattedFilesList.Count != filesList.Count)
             {
                 throw new FileNotFoundException("One or more files in the provided Files List were not found.");
             }
@@ -77,14 +78,14 @@ namespace CodeActivitiesLibrary.AppIntegrations.CloudConnectorsActivities
                         provider = modelConfig?["provider"]?.Value<string>(),
                         model = modelConfig?["model"]?.Value<string>(),
                         input = prompt ?? "",
-                        files = filesListBase64,
-                        is_json_output = modelConfig?["is_json_output"]?.Value<bool>() ?? false,
+                        files = formattedFilesList,
+                        is_json_output = modelConfig?["is_json_output"]?.Value<bool?>() ?? false,
                         json_schema = modelConfig?["json_schema"]?.Value<string>(),
-                        max_output_tokens = modelConfig?["max_output_tokens"]?.Value<long>() ?? 0,
-                        is_byok_enabled = modelConfig?["is_byok_enabled"]?.Value<bool>() ?? false,
+                        max_output_tokens = modelConfig?["max_output_tokens"]?.Value<long?>() ?? 0,
+                        is_byok_enabled = modelConfig?["is_byok_enabled"]?.Value<bool?>() ?? false,
                         credential_id = modelConfig?["credential_id"]?.Value<string>() ?? Guid.Empty.ToString(),
-                        temperature = modelConfig?["temperature"]?.Value<double>() ?? 0.0,
-                        top_p = modelConfig?["top_p"]?.Value<double>() ?? 1.0,
+                        temperature = modelConfig?["temperature"]?.Value<double?>() ?? 1,
+                        top_p = modelConfig?["top_p"]?.Value<double?>() ?? 1.0,
                         stream = false,
                         ref_type = "Agent",
                         ref_id = agentId,
@@ -155,12 +156,17 @@ namespace CodeActivitiesLibrary.AppIntegrations.CloudConnectorsActivities
             }
         }
 
-        private List<string> ConvertFileToBase64(List<string> filesList)
+        private List<object> FormatFilesList(List<string> filesList)
         {
+            // If no files provided, return null
             if (filesList == null || filesList.Count == 0)
                 return null;
 
-            var base64Files = new List<string>();
+            // If file is remote file with http/https, return as is
+            if (filesList.All(f => f.StartsWith("http://") || f.StartsWith("https://")))
+                return filesList.Cast<object>().ToList();
+
+            var base64Files = new List<object>();
             foreach (var filePathOrBase64 in filesList)
             {
                 // If string is already base64, use it directly
@@ -177,7 +183,13 @@ namespace CodeActivitiesLibrary.AppIntegrations.CloudConnectorsActivities
                 // Read file and convert to base64
                 var fileBytes = File.ReadAllBytes(filePathOrBase64);
                 var fileBase64 = Convert.ToBase64String(fileBytes);
-                base64Files.Add(fileBase64);
+
+                // Add to list
+                base64Files.Add(new
+                {
+                    mime_type = GetMimeType(Path.GetExtension(filePathOrBase64)),
+                    encoded_content = fileBase64
+                });
             }
             return base64Files;
         }
@@ -203,6 +215,39 @@ namespace CodeActivitiesLibrary.AppIntegrations.CloudConnectorsActivities
             catch
             {
                 return false;
+            }
+        }
+
+        private static string GetMimeType(string fileExtension)
+        {
+            switch (fileExtension.ToLower())
+            {
+                case ".txt": return "text/plain";
+                case ".pdf": return "application/pdf";
+                case ".doc": return "application/msword";
+                case ".docx": return "application/vnd.openxmlformats-officedocument.wordprocessingml.document";
+                case ".xls": return "application/vnd.ms-excel";
+                case ".xlsx": return "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet";
+                case ".ppt": return "application/vnd.ms-powerpoint";
+                case ".pptx": return "application/vnd.openxmlformats-officedocument.presentationml.presentation";
+                case ".png": return "image/png";
+                case ".jpg":
+                case ".jpeg": return "image/jpeg";
+                case ".gif": return "image/gif";
+                case ".bmp": return "image/bmp";
+                case ".tiff":
+                case ".tif": return "image/tiff";
+                case ".mp4": return "video/mp4";
+                case ".webm": return "video/webm";
+                case ".mp3": return "audio/mpeg";
+                case ".wav": return "audio/wav";
+                case ".ogg": return "audio/ogg";
+                case ".zip": return "application/zip";
+                case ".rar": return "application/x-rar-compressed";
+                case ".csv": return "text/csv";
+                case ".json": return "application/json";
+                case ".xml": return "application/xml";
+                default: return "application/octet-stream";
             }
         }
     }
