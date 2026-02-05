@@ -69,9 +69,9 @@ public class ResetPwdService : IResetPwdService
             // Extract info from jwt
             var jwtInfo = JwtClaimsDataUtil.GetJwtClaimsData(
                 pwdResetJwt,
-                $"{_environmentConfig.JwtSecretKey}",
                 $"https://{_environmentConfig.AppBaseUrl}",
-                $"https://{_environmentConfig.AppBaseUrl}");
+                $"https://{_environmentConfig.AppBaseUrl}",
+                $"{_environmentConfig.JwtSecretKey}");
 
             // JwtInfo not found
             if (jwtInfo == null)
