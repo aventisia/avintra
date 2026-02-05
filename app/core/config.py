@@ -24,23 +24,23 @@ class Settings(BaseSettings):
     # JWT Settings
     JWT_SECRET_KEY: str
     
-    # LLM Providers api keys
-    OPENAI_API_KEY: str
-    DEEPINFRA_API_KEY: str
-    GEMINI_API_KEY: str
-    OPENROUTER_API_KEY: str
+    # LLM Providers api keys (Since for enterprise, these keys are optional as they might use BYOK, we will not enforce them to be present)
+    OPENAI_API_KEY: str = ""
+    DEEPINFRA_API_KEY: str = ""
+    GEMINI_API_KEY: str = ""
+    OPENROUTER_API_KEY: str = ""
     
     # LLM Providers api urls
-    OPENAI_API_URL: str
-    DEEPINFRA_API_URL: str
-    GEMINI_API_URL: str
-    OPENROUTER_API_URL: str
+    OPENAI_API_URL: str = "https://api.openai.com/v1"
+    DEEPINFRA_API_URL: str = "https://api.deepinfra.com/v1/openai/chat/completions"
+    GEMINI_API_URL: str = "https://generativelanguage.googleapis.com/v1beta"
+    OPENROUTER_API_URL: str = "https://openrouter.ai/api/v1"
     
     # TODO: Need to adjust later
-    OLLAMA_API_URL: str
-    OLLAMA_API_KEY: str
-    QDRANT_URL: str
-    QDRANT_API_KEY: str
+    OLLAMA_API_URL: str = ""
+    OLLAMA_API_KEY: str = ""
+    QDRANT_URL: str = ""
+    QDRANT_API_KEY: str = ""
     
     model_config = SettingsConfigDict(
         env_file=env_files, # System env vars take precedence over these files
