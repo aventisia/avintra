@@ -90,4 +90,9 @@ public class JobTableDto
     /// Gets or sets the timestamp indicating when the job record was created.
     /// </summary>
     public DateTimeOffset CreatedOn { get; set; }
+
+    /// <summary>
+    /// Gets or sets a value that indicates whether the flow version is published or unpublished.
+    /// </summary>
+    public bool IsPublished { get; set; }
 }
