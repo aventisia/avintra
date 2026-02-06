@@ -50,10 +50,12 @@ public interface IAzureBlobStorageService
     Task CreateContainerAsync(string containerName);
 
     /// <summary>
-    /// Deletes an existing blob container.
+    /// Removes the specified blob container if it exists.
     /// </summary>
-    /// <param name="containerName">The name of the container to delete.</param>
-    Task DeleteContainerAsync(string containerName);
+    /// <param name="containerName">The name of the blob container to remove.</param>
+    /// <returns>True if the container was deleted or didn't exist; otherwise, false.</returns>
+    Task<bool> RemoveContainerAsync(string containerName);
+
 
     /// <summary>
     /// Calculates the total size of all blobs within the specified container.
