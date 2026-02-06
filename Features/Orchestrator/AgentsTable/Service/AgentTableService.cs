@@ -556,4 +556,41 @@ public class AgentTableService : IAgentTableService
 
         return serviceResponse;
     }
+
+    // Retrieves the total count of published flow versions for a specific flow or all flows.
+    public async Task<ServiceResponse<int>> GetTotalPublishedFlowVersionsAsync()
+    {
+        // Initialize ServiceResponse to indicate failure by default.
+        var serviceResponse = new ServiceResponse<int>
+        {
+            Data = 0, // Default to 0 if the count cannot be retrieved.
+            Message = "Failed to retrieve the total count of published flow versions. Please try again."
+        };
+
+        try
+        {
+            // Try to retrieve the count of published flow versions from the repository.
+            var totalPublishedFlowVersions = await _unitOfWork.FlowVersionRepo
+                .GetByConditionAsync(w =>
+                    w.Flow.Type == FlowTypesEnum.Agent &&
+                    w.IsPublished &&
+                    !w.IsArchived
+                )
+                .CountAsync();
+
+            // If successful, set the response data with the total count.
+            serviceResponse.Data = totalPublishedFlowVersions;
+            serviceResponse.StatusCode = 200;
+            serviceResponse.Message = "Total count of published agents retrieved successfully.";
+        }
+        catch (Exception ex)
+        {
+            // Log any exception and return the default service response.
+            _logger.LogError(ex.ToString());
+        }
+
+        // Return the service response.
+        return serviceResponse;
+    }
+
 }
