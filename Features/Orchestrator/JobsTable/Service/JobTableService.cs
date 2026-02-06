@@ -219,23 +219,45 @@ public class JobTableService : IJobTableService
                 return serviceResponse;
             }
 
-            // Trim the string properties in the DTO
+            // Retrieve the flow version associated with the job using the FlowVersionId from the DTO.
+            var flowVersion = await _unitOfWork.FlowVersionRepo
+                    .GetByConditionAsync(w => w.Id == jobTableDto.FlowVersionId)
+                    .AsNoTracking()
+                    .FirstOrDefaultAsync();
+
+            if (flowVersion == null)
+            {
+                // If the flow version is not found, log the event and return an error message.
+                _logger.LogError("Flow version not found with ID: {FlowVersionId}", jobTableDto.FlowVersionId);
+                serviceResponse.Message = "The flow version was not found.";
+                return serviceResponse;
+            }
+
+            // Trim the string properties in the DTO to remove any leading/trailing spaces (if applicable).
             jobTableDto = TrimDtoStringPropsUtil.TrimDtoStringProps(jobTableDto);
 
+            // If the OSId is provided, attempt to find a matching machine.
             if (!string.IsNullOrEmpty(jobTableDto.OSId))
             {
                 var machine = await _unitOfWork.MachineRepo
                     .GetByConditionAsync(w =>
                         w.OSId.ToLower() == jobTableDto.OSId.ToLower())
-                    .SingleOrDefaultAsync();
+                    .FirstOrDefaultAsync();
 
-                // Log whether a machine was found or not
+                // Log the outcome of the machine search.
                 if (machine != null)
                 {
+                    // If a machine is found, assign its ID to the job DTO.
                     jobTableDto.MachineId = machine.Id;
                     _logger.LogInformation("Machine found with ID: {MachineId}", machine.Id);
                 }
-            }            // Convert the Data Transfer Object (DTO) to a Job entity
+                else
+                {
+                    _logger.LogWarning("No machine found with OSId: {OSId}", jobTableDto.OSId);
+                }
+            }
+
+            // Convert the DTO to a Job entity.
             var newJob = new Job()
             {
                 TenantId = _currentTenantService.CurrentTenantId,
@@ -245,6 +267,7 @@ public class JobTableService : IJobTableService
                 Priority = JobPriorityTypesEnum.Normal,
                 Status = JobStatusTypesEnum.Created,
                 CreatedOn = DateTimeOffset.UtcNow,
+                IsPublished = flowVersion.IsPublished,
             };
 
             // Insert the new job into the repository
@@ -257,8 +280,12 @@ public class JobTableService : IJobTableService
                 return serviceResponse;
             }
 
-            // Execute the new job asynchronously
-            await _jobsExecutorService.ExecuteJobCommandAsync(newJob);
+            // If the flow version is published, trigger the job execution.
+            if (newJob.IsPublished)
+            {
+                // Execute the job asynchronously.
+                await _jobsExecutorService.ExecuteJobCommandAsync(newJob);
+            }
 
             // Success - return the created job
             serviceResponse.Data = newJob.Adapt<JobTableDto>();
@@ -303,6 +330,20 @@ public class JobTableService : IJobTableService
                 return serviceResponse;
             }
 
+            // Retrieve the flow version associated with the job using the FlowVersionId from the DTO.
+            var flowVersion = await _unitOfWork.FlowVersionRepo
+                    .GetByConditionAsync(w => w.Id == job.FlowVersionId)
+                    .AsNoTracking()
+                    .FirstOrDefaultAsync();
+
+            if (flowVersion == null)
+            {
+                // If the flow version is not found, log the event and return an error message.
+                _logger.LogError("Flow version not found with ID: {FlowVersionId}", job.FlowVersionId);
+                serviceResponse.Message = "The flow version was not found.";
+                return serviceResponse;
+            }
+
             // Checks if the job status is the same as the stored status (no change).
             bool isStatusUnchanged = job.Status == jobExecutionLogDto.Status;
 
@@ -311,7 +352,7 @@ public class JobTableService : IJobTableService
 
             // Map the updated values from DTO to the job entity
             jobExecutionLogDto.Adapt(job);
-
+            job.IsPublished = flowVersion.IsPublished;
 
             // If the job status is "Running", set the StartTime to the current UTC time.
             if (job.Status == JobStatusTypesEnum.Running)
@@ -331,7 +372,7 @@ public class JobTableService : IJobTableService
             }
 
             // If the job status has changed (i.e., it differs from the previously stored status), proceed with the action.
-            if (!isStatusUnchanged)
+            if (!isStatusUnchanged && job.IsPublished)
             {
                 // Create a new ExecutionCommandDto to determine which action to trigger based on job status.
                 var executionCommand = new ExecutionCommandDto()
