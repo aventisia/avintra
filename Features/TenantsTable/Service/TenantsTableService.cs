@@ -437,6 +437,18 @@ public class TenantsTableService : ITenantsTableService
                 serviceResponse.Message = "Cannot delete system default tenant";
                 return serviceResponse;
             }
+            // Check if there is any billing history associated with the tenant
+            var billingHistoryExists = await _unitOfWork.BillingHistoryRepo
+                .GetByConditionAsync(w => w.TenantId == tenant.Id)
+                .AnyAsync();
+
+            // If billing history exists, it means the tenant is a paid customer and cannot be deleted
+            if (billingHistoryExists)
+            {
+                // Log a warning message indicating that the tenant has billing history and cannot be deleted
+                _logger.LogWarning($"Cannot delete tenant with ID {tenant.Id}. The tenant has an active billing history and is considered a paid customer.");
+                serviceResponse.Message = "Cannot delete paid tenant with existing billing history.";
+            }
 
             _logger.LogInformation($"Checking and deleting related data for tenant ID: {tenant.Id}");
 
