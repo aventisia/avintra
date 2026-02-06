@@ -1757,7 +1757,7 @@ namespace WorkspaceAPIs.Data.Migrations
                     b.HasOne("WorkspaceAPIs.Entities.Flow", "Flow")
                         .WithMany("FlowLog")
                         .HasForeignKey("FlowId")
-                        .OnDelete(DeleteBehavior.Restrict)
+                        .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
                     b.Navigation("Flow");
