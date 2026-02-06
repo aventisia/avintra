@@ -460,6 +460,9 @@ namespace WorkspaceAPIs.Data.Migrations
                     b.Property<string>("InputArguments")
                         .HasColumnType("text");
 
+                    b.Property<bool>("IsPublished")
+                        .HasColumnType("boolean");
+
                     b.Property<Guid?>("MachineId")
                         .HasColumnType("uuid");
 
