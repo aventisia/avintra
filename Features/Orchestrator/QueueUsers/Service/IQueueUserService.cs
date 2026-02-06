@@ -6,6 +6,12 @@ namespace WorkspaceAPIs.Services;
 public interface IQueueUserService
 {
     /// <summary>
+    /// Fetches all users associated with a specific queue.
+    /// </summary>
+    /// <returns>A task that represents the asynchronous operation, containing a list of user details for the specified queue.</returns>
+    Task<ServiceResponse<IEnumerable<QueuesTableDto>>> GetMyQueuesAsync();
+
+    /// <summary>
     /// Retrieves all queue users associated with a specific queue.
     /// </summary>
     /// <param name="queueId">The identifier of the queue to fetch associated queue users.</param>
