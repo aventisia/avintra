@@ -52,4 +52,10 @@ public interface IAIProjectService
     /// <param name="aiProjectId">The unique identifier of the AI project.</param>
     /// <returns>A service response containing the requested AI project DTO.</returns>
     Task<ServiceResponse<AIProjectDto>> GetAIProjectByIdAsync(Guid aiProjectId);
+
+    /// <summary>
+    /// Gets the total count of published ai project versions.
+    /// A <see cref="ServiceResponse{T}"/> with the count of published ai project versions.
+    /// </returns>
+    Task<ServiceResponse<int>> GetTotalAIProjectVersionsAsync();
 }

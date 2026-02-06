@@ -20,7 +20,7 @@ namespace MLModelBuilderAPIs.Services
 
             // Initialize logger for logging purposes
             _logger = logger;
-            
+
             // Initialize UnitOfWork for accessing repositories
             _unitOfWork = unitOfWork;
             _aiProjectUserService = aiProjectUserService;
@@ -515,6 +515,41 @@ namespace MLModelBuilderAPIs.Services
                 _logger.LogError(ex, "Exception occurred while fetching AI project ID {ProjectId} for user {UserId}", projectId, _userId);
             }
 
+            return serviceResponse;
+        }
+
+        // Retrieves the total count of published ai project versions.
+        public async Task<ServiceResponse<int>> GetTotalAIProjectVersionsAsync()
+        {
+            // Initialize ServiceResponse to indicate failure by default.
+            var serviceResponse = new ServiceResponse<int>
+            {
+                Data = 0, // Default to 0 if the count cannot be retrieved.
+                Message = "Failed to retrieve the total count of published ai project versions. Please try again."
+            };
+
+            try
+            {
+                // Try to retrieve the count of published ai project versions from the repository.
+                var totalPublishedAIProjectVersions = await _unitOfWork.AIProjectVersionRepo
+                    .GetByConditionAsync(w =>
+                        w.IsPublished &&
+                        !w.IsArchived
+                    )
+                    .CountAsync();
+
+                // If successful, set the response data with the total count.
+                serviceResponse.Data = totalPublishedAIProjectVersions;
+                serviceResponse.StatusCode = 200;
+                serviceResponse.Message = "Total count of published ai models retrieved successfully.";
+            }
+            catch (Exception ex)
+            {
+                // Log any exception and return the default service response.
+                _logger.LogError(ex.ToString());
+            }
+
+            // Return the service response.
             return serviceResponse;
         }
     }
