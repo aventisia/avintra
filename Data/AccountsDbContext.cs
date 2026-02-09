@@ -109,6 +109,7 @@ public partial class AccountsDbContext : IdentityDbContext<
         builder.Entity<AccountUserRole>().HasOne(u => u.User).WithMany(t => t.UserRoles).HasForeignKey(u => u.UserId).OnDelete(DeleteBehavior.Cascade);
         builder.Entity<RolePermission>().HasOne(u => u.AccountRole).WithMany(t => t.RolePermissions).HasForeignKey(u => u.AccountRoleId).OnDelete(DeleteBehavior.Cascade);
         builder.Entity<SpaceUser>().HasOne(u => u.Space).WithMany(t => t.SpaceUsers).HasForeignKey(u => u.SpaceId).OnDelete(DeleteBehavior.Cascade);
+        builder.Entity<AccountUser>().HasOne(a => a.Tenant).WithMany(t => t.Users).HasForeignKey(a => a.TenantId).OnDelete(DeleteBehavior.Cascade);
     }
 
     // On Save Changes - write tenant Id to table
