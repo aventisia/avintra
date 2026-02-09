@@ -18,6 +18,10 @@ import { useJobDataStore } from "../stores/job-data-store";
 import { CreditServiceTypesEnum } from "@/features/credits-management/constants/credit-service-type-enum";
 import { UsageSourceTypesEnum } from "@/features/credits-management/constants/usage-source-types-enum";
 import { ActionTypesEnum } from "@/features/credits-management/constants/action-types-enum";
+import { insertJob } from "../apis/jobs-table-apis";
+import { getLocalExecutionLog } from "@/features/flow-execution-log/apis/get-version-execution-log";
+import { ExecutionNode } from "@/features/flow-execution-log/types/execution-types";
+import { useTuariUserMetadataStore } from "@/stores/tuari-user-metadata-store";
 
 export default function useWebSocket() {
   const socketRef = useRef<WebSocket | null>(null);
@@ -30,7 +34,7 @@ export default function useWebSocket() {
     })),
   );
 
-  const { startTime, endTime, updateField } = useJobDataStore(
+  const { startTime, endTime, status, updateField } = useJobDataStore(
     useShallow((state) => ({
       updateField: state.updateField,
       startTime: state.startTime,
@@ -39,6 +43,11 @@ export default function useWebSocket() {
     })),
   );
 
+  const { osID: machineId } = useTuariUserMetadataStore(
+    useShallow((state) => ({
+      osID: state.osID,
+    })),
+  );
   const { postCreditConsumption } = usePostCreditConsumptionMutation();
 
   const [currExecCommand, setCurrExecCommand] = useState<
@@ -176,15 +185,36 @@ export default function useWebSocket() {
 
     const handleExecutionData = async () => {
       try {
+        // Fetch execution logs for the current flow version
+        const localLogs = await getLocalExecutionLog(currentFlow.versionId);
+        let executionData: ExecutionNode[] = [];
+
+        if (Array.isArray(localLogs) && localLogs.length > 0) {
+          executionData = localLogs[0].nodes ?? [];
+        }
         // Handle Credit Consumption
         if (currExecCommand) {
           const duration = Math.round(
             (endTime.getTime() - startTime.getTime()) / 1000,
           );
+          await insertJob({
+            flowId: currentFlow.id,
+            flowVersionId: currentFlow.versionId,
+            machineId,
+            duration,
+            status,
+            startTime,
+            endTime,
+            isPublished: false,
+            nodeExecutionLogs: JSON.stringify(executionData),
+          });
 
           await postCreditConsumption([
             {
-              serviceType: CreditServiceTypesEnum[CreditServiceTypesEnum.AgentExecutionTime],
+              serviceType:
+                CreditServiceTypesEnum[
+                  CreditServiceTypesEnum.AgentExecutionTime
+                ],
               consumedUnit: duration,
               refType: UsageSourceTypesEnum[UsageSourceTypesEnum.Agent],
               refId: currentFlow.id,
