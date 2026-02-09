@@ -91,7 +91,7 @@ export const PlanFeatures = ({
     `${getFeatureLabel(publishedItems, " published Agent or AI Model", " published Agents or AI Models", "Unlimited published Agents or AI Models")}`,
     `${getFeatureLabel(historyRetentionDays, " day", " days", "Unlimited days")} of insights & workflow history`,
     `${getFeatureLabel(spaces, " space", " spaces", "Unlimited spaces")}`,
-    `${getFeatureLabel(storageLimitMB, "mb storage", "mb storage", "Unlimited storage")}`,
+    `${getFeatureLabel(storageLimitMB, " MB storage", " MB storage", "Unlimited storage")}`,
     `${getFeatureLabel(users, " user", " users", "Unlimited users")}`,
   ];
 

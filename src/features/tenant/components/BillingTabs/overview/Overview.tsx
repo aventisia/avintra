@@ -18,7 +18,7 @@ import CancelPlanDialog from "./CancelPlanDialog";
 import NextPaymentDetails from "./NextPaymentDetails";
 import { PlanFeatures } from "./PlanFeatures";
 import UpgradePlanDialog from "./upgrade-plan-dialog/UpgradePlanDialog";
-import UsageDetails from "./UsageDetails";
+import { UsageDetails } from "./UsageDetails";
 
 const Overview = () => {
   const { setOpen } = useCancelPlanDialogStore();
