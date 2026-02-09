@@ -227,6 +227,6 @@
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <PropertyGroup>
     <PostBuildEvent>xcopy "$(TargetDir)*.*" "C:\Users\$(USERNAME)\Gitea\Aventisia\worc-desktop-app\src-tauri\binaries\ui-inspector" /E /Y /I
-xcopy "$(TargetDir)*.*" "C:\Users\$(USERNAME)\AppData\Local\WorcDesktopApp_DEV\binaries\ui-inspector" /E /Y /I</PostBuildEvent>
+xcopy "$(TargetDir)*.*" "C:\Users\$(USERNAME)\AppData\Local\WorcDesktopApp\binaries\ui-inspector" /E /Y /I</PostBuildEvent>
   </PropertyGroup>
 </Project>

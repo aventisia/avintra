@@ -1,4 +1,5 @@
 ﻿using CodeActivitiesLibrary.Extensions;
+using DocumentFormat.OpenXml;
 using DocumentFormat.OpenXml.Packaging;
 using DocumentFormat.OpenXml.Wordprocessing;
 using System;
@@ -7,7 +8,6 @@ using System.ComponentModel;
 using System.IO;
 using System.Linq;
 using System.Text.RegularExpressions;
-using Text = DocumentFormat.OpenXml.Wordprocessing.Text;
 
 namespace CodeActivitiesLibrary.AppIntegrations.WordActivities
 {
@@ -54,7 +54,7 @@ namespace CodeActivitiesLibrary.AppIntegrations.WordActivities
                 var textToReplaceWith = TextToReplaceWith.Get(context) ?? string.Empty;
                 var allMatches = AllMatches.Get(context);
                 var useRegex = UseRegex.Get(context);
-                var saveDocument = SaveDocument.Expression == null ? true: SaveDocument.Get(context);
+                var saveDocument = SaveDocument.Expression == null ? true : SaveDocument.Get(context);
 
                 if (string.IsNullOrWhiteSpace(documentPath))
                     throw new ArgumentException("Document path is required.");
@@ -64,6 +64,9 @@ namespace CodeActivitiesLibrary.AppIntegrations.WordActivities
 
                 if (string.IsNullOrEmpty(textToFind))
                     throw new ArgumentException("No search text provided; no replacements performed.");
+
+                // Process escape sequences in replacement text
+                textToReplaceWith = UnescapeString(textToReplaceWith);
 
                 ReplaceTextInDocument(documentPath, textToFind, textToReplaceWith, allMatches, useRegex, saveDocument);
 
@@ -77,61 +80,122 @@ namespace CodeActivitiesLibrary.AppIntegrations.WordActivities
 
             }
         }
+        
         private static void ReplaceTextInDocument(string filePath, string searchText, string replaceText, bool replaceAll, bool useRegex, bool saveDocument)
         {
             using (var wordDoc = WordprocessingDocument.Open(filePath, isEditable: true))
             {
                 var body = wordDoc.MainDocumentPart?.Document?.Body;
-                if (body == null) return;
+                if (body == null || string.IsNullOrEmpty(searchText)) return;
 
-                bool replacedFirst = false;
-
-                foreach (var textElement in body.Descendants<Text>().ToList())
+                // Work at the paragraph level to handle text split across runs
+                foreach (var paragraph in body.Descendants<Paragraph>().ToList())
                 {
-                    if (string.IsNullOrEmpty(textElement.Text)) continue;
+                    var runs = paragraph.Descendants<Run>().ToList();
+                    if (!runs.Any()) continue;
 
+                    // Get all text elements in this paragraph
+                    var textElements = runs.SelectMany(r => r.Descendants<Text>()).ToList();
+                    if (!textElements.Any()) continue;
+
+                    // Concatenate all text in the paragraph
+                    string paragraphText = string.Concat(textElements.Select(t => t.Text));
+
+                    // Check if search text exists
+                    bool containsMatch = useRegex
+                        ? Regex.IsMatch(paragraphText, searchText)
+                        : paragraphText.Contains(searchText);
+
+                    if (!containsMatch) continue;
+
+                    // Perform replacement on concatenated text
                     string updatedText;
-
                     if (useRegex)
                     {
                         var regex = new Regex(searchText);
                         updatedText = replaceAll
-                            ? regex.Replace(textElement.Text, replaceText)
-                            : regex.Replace(textElement.Text, replaceText, 1);
+                            ? regex.Replace(paragraphText, replaceText)
+                            : regex.Replace(paragraphText, replaceText, 1);
                     }
                     else
                     {
-                        if (replaceAll)
+                        updatedText = replaceAll
+                            ? paragraphText.Replace(searchText, replaceText)
+                            : ReplaceFirstOccurrence(paragraphText, searchText, replaceText);
+                    }
+
+                    if (paragraphText != updatedText)
+                    {
+                        // Clear existing runs
+                        foreach (var run in runs)
                         {
-                            updatedText = textElement.Text.Replace(searchText, replaceText);
+                            run.Remove();
+                        }
+
+                        // Handle newlines by creating separate runs with breaks
+                        if (updatedText.Contains("\n"))
+                        {
+                            var lines = updatedText.Split(new[] { "\n" }, StringSplitOptions.None);
+                            for (int i = 0; i < lines.Length; i++)
+                            {
+                                var newRun = new Run();
+                                var newText = new Text(lines[i])
+                                {
+                                    Space = SpaceProcessingModeValues.Preserve
+                                };
+                                newRun.Append(newText);
+                                paragraph.Append(newRun);
+
+                                // Add line break after each line except the last
+                                if (i < lines.Length - 1)
+                                {
+                                    var breakRun = new Run();
+                                    breakRun.Append(new Break());
+                                    paragraph.Append(breakRun);
+                                }
+                            }
                         }
                         else
                         {
-                            var index = textElement.Text.IndexOf(searchText, StringComparison.Ordinal);
-                            if (index < 0) continue;
-
-                            updatedText =
-                                textElement.Text.Substring(0, index) +
-                                replaceText +
-                                textElement.Text.Substring(index + searchText.Length);
-
-                            replacedFirst = true;
+                            // No newlines, just add as single run
+                            var newRun = new Run();
+                            var newText = new Text(updatedText)
+                            {
+                                Space = SpaceProcessingModeValues.Preserve
+                            };
+                            newRun.Append(newText);
+                            paragraph.Append(newRun);
                         }
-                    }
 
-                    if (textElement.Text != updatedText)
-                    {
-                        textElement.Text = updatedText;
+                        if (!replaceAll)
+                            break;
                     }
-
-                    if (!replaceAll && replacedFirst)
-                        break;
                 }
+
                 if (saveDocument)
                 {
                     wordDoc.MainDocumentPart.Document.Save();
                 }
             }
+        }
+
+        private static string ReplaceFirstOccurrence(string text, string searchText, string replaceText)
+        {
+            var index = text.IndexOf(searchText, StringComparison.Ordinal);
+            if (index < 0) return text;
+
+            return text.Substring(0, index) + replaceText + text.Substring(index + searchText.Length);
+        }
+
+        private static string UnescapeString(string input)
+        {
+            if (string.IsNullOrEmpty(input)) return input;
+
+            return input
+                .Replace("\\n", "\n")   // Newline
+                .Replace("\\r", "\r")   // Carriage return
+                .Replace("\\t", "\t")   // Tab
+                .Replace("\\\\", "\\");  // Backslash (must be last)
         }
     }
 }
