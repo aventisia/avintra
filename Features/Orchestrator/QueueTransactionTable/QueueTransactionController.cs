@@ -77,4 +77,10 @@ public class QueueTransactionController : BaseApiController
     {
         return ResultHelper(await _queueTransactionService.DeleteQueueTransactionsAsync(queueTransactionIds));
     }
+    // Retrieves transactions for the specified queue based on filter criteria
+    [HttpPost("item-list")]
+    public async Task<ActionResult<ServiceResponse<IEnumerable<QueueTransactionDto>>>> GetItems(QueueFilterRequestDto queueFilterRequestDto)
+    {
+        return ResultHelper(await _queueTransactionService.GetQueueTransactionItemsAsync(queueFilterRequestDto));
+    }
 }

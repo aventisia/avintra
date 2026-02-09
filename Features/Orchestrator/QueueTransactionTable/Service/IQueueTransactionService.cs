@@ -60,4 +60,14 @@ public interface IQueueTransactionService
     /// It is recommended to use this method to delete multiple queue transactions at once to reduce the number of requests to the server.
     /// </remarks>
     Task<ServiceResponse<bool>> DeleteQueueTransactionsAsync(List<Guid> queueTransactionIds);
+
+    /// <summary>
+    /// Retrieves a list of queue transaction items based on the specified filter request.
+    /// </summary>
+    /// <param name="queueFilterRequestDto">The filter request used to filter queue transactions, including sorting and conditions.</param>
+    /// <returns>The task result contains the service response with a list of filtered queue transaction items.</returns>
+    /// <remarks>
+    /// Use this method to get queue transactions that match specific filter criteria, such as sorting and conditions.
+    /// </remarks>
+    Task<ServiceResponse<IEnumerable<QueueTransactionDto>>> GetQueueTransactionItemsAsync(QueueFilterRequestDto queueFilterRequestDto);
 }
