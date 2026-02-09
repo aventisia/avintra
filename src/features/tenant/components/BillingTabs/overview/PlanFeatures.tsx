@@ -88,7 +88,7 @@ export const PlanFeatures = ({
   // Generate features list
   const featuresList = [
     `${getCreditsLabel(credits, frequency === "Monthly")}`,
-    `${getFeatureLabel(publishedItems, " published Agent or AI Model", " published Agents or AI Models", "Unlimited published Agents or AI Models")}`,
+    `${getFeatureLabel(publishedItems, " published Agent", " published Agents", "Unlimited published Agents")}`,
     `${getFeatureLabel(historyRetentionDays, " day", " days", "Unlimited days")} of insights & workflow history`,
     `${getFeatureLabel(spaces, " space", " spaces", "Unlimited spaces")}`,
     `${getFeatureLabel(storageLimitMB, " MB storage", " MB storage", "Unlimited storage")}`,
