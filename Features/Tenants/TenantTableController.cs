@@ -2,6 +2,7 @@ namespace WorkspaceAPIs.Controllers;
 
 [Route("tenant")]
 [ApiController]
+[Authorize(Roles = "SA")]
 public class TenantTableController : BaseApiController
 {
     private readonly ITenantTableService _tenantTableService;

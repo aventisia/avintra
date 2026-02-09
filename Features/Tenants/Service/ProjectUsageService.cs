@@ -16,6 +16,7 @@ public class TenantTableService : ITenantTableService
     // Deletes a tenant and all associated data from the database.
     public async Task<ServiceResponse<bool>> DeleteTenantAsync(Guid tenantId)
     {
+        // Initialize ServiceResponse with failed response
         var serviceResponse = new ServiceResponse<bool>
         {
             Data = false,
@@ -24,221 +25,214 @@ public class TenantTableService : ITenantTableService
 
         try
         {
-            // Retrieve all key store records associated with the specified tenant
+            // Retrieve and delete key store records (associated with the tenant)
             var keyStores = await _unitOfWork.KeyStoreRepo.GetByConditionAsync(k => k.TenantId == tenantId).ToListAsync();
-
-            // Check if there are any key store records associated with the tenant
             if (keyStores.Any())
             {
-                // Log the deletion of key store records related to the tenant
-                _logger.LogInformation("Deleting {KeyStoreCount} key store records associated with tenant ID {TenantId}", keyStores.Count, tenantId);
-
-                // Delete all key store records related to the tenant from the database
+                _logger.LogInformation($"Deleting {keyStores.Count} KeyStore records for tenant ID: {tenantId}");
                 _unitOfWork.KeyStoreRepo.Delete(keyStores);
+                if (!await _unitOfWork.SaveAsync())
+                {
+                    _logger.LogError("Context SaveChanges failed while deleting KeyStore records.");
+                    return serviceResponse;
+                }
             }
 
-            // Retrieve all app secret records associated with the specified tenant
+            // Retrieve and delete app secret records (associated with the tenant)
             var appSecrets = await _unitOfWork.AppSecretRepo.GetByConditionAsync(a => a.TenantId == tenantId).ToListAsync();
-
-            // Check if there are any app secret records associated with the tenant
             if (appSecrets.Any())
             {
-                // Log the deletion of app secret records related to the tenant
-                _logger.LogInformation("Deleting {AppSecretCount} app secret records associated with tenant ID {TenantId}", appSecrets.Count, tenantId);
-
-                // Delete all app secret records related to the tenant from the database
+                _logger.LogInformation($"Deleting {appSecrets.Count} AppSecret records for tenant ID: {tenantId}");
                 _unitOfWork.AppSecretRepo.Delete(appSecrets);
+                if (!await _unitOfWork.SaveAsync())
+                {
+                    _logger.LogError("Context SaveChanges failed while deleting AppSecret records.");
+                    return serviceResponse;
+                }
             }
 
-            // Retrieve all vault records associated with the specified tenant
+            // Retrieve and delete vault records (associated with the tenant)
             var vaults = await _unitOfWork.VaultRepo.GetByConditionAsync(v => v.TenantId == tenantId).ToListAsync();
-
-            // Check if there are any vault records associated with the tenant
             if (vaults.Any())
             {
-                _logger.LogInformation("Deleting {VaultCount} vault records associated with tenant ID {TenantId}", vaults.Count, tenantId);
-
-                // Delete all vault records related to the tenant from the database
+                _logger.LogInformation($"Deleting {vaults.Count} Vault records for tenant ID: {tenantId}");
                 _unitOfWork.VaultRepo.Delete(vaults);
+                if (!await _unitOfWork.SaveAsync())
+                {
+                    _logger.LogError("Context SaveChanges failed while deleting Vault records.");
+                    return serviceResponse;
+                }
             }
 
-            // Retrieve all job records associated with the specified tenant
+            // Retrieve and delete job records (associated with the tenant)
             var jobs = await _unitOfWork.JobRepo.GetByConditionAsync(j => j.TenantId == tenantId).ToListAsync();
-
-            // Check if there are any job records associated with the tenant
             if (jobs.Any())
             {
-                _logger.LogInformation("Deleting {JobCount} job records associated with tenant ID {TenantId}", jobs.Count, tenantId);
-
-                // Delete all job records related to the tenant from the database
+                _logger.LogInformation($"Deleting {jobs.Count} Job records for tenant ID: {tenantId}");
                 _unitOfWork.JobRepo.Delete(jobs);
+                if (!await _unitOfWork.SaveAsync())
+                {
+                    _logger.LogError("Context SaveChanges failed while deleting Job records.");
+                    return serviceResponse;
+                }
             }
 
-            // Retrieve all time trigger records associated with the specified tenant
+            // Retrieve and delete time trigger records (associated with the tenant)
             var timeTriggers = await _unitOfWork.TriggerRepo.GetByConditionAsync(t => t.TenantId == tenantId).ToListAsync();
-
-            // Check if there are any time trigger records associated with the tenant
             if (timeTriggers.Any())
             {
-                // Log the deletion of time trigger records related to the tenant
-                _logger.LogInformation("Deleting {TimeTriggerCount} time trigger records associated with tenant ID {TenantId}", timeTriggers.Count, tenantId);
-
-                // Delete all time trigger records related to the tenant from the database
+                _logger.LogInformation($"Deleting {timeTriggers.Count} TimeTrigger records for tenant ID: {tenantId}");
                 _unitOfWork.TriggerRepo.Delete(timeTriggers);
+                if (!await _unitOfWork.SaveAsync())
+                {
+                    _logger.LogError("Context SaveChanges failed while deleting TimeTrigger records.");
+                    return serviceResponse;
+                }
             }
 
-            // Retrieve all queue records associated with the specified tenant
+            // Retrieve and delete queue records (associated with the tenant)
             var queues = await _unitOfWork.QueueRepo.GetByConditionAsync(q => q.TenantId == tenantId).ToListAsync();
-
-            // Check if there are any queue records associated with the tenant
             if (queues.Any())
             {
-                // Log the deletion of queue records related to the tenant
-                _logger.LogInformation("Deleting {QueueCount} queue records associated with tenant ID {TenantId}", queues.Count, tenantId);
-
-                // Delete all queue records related to the tenant from the database
+                _logger.LogInformation($"Deleting {queues.Count} Queue records for tenant ID: {tenantId}");
                 _unitOfWork.QueueRepo.Delete(queues);
+                if (!await _unitOfWork.SaveAsync())
+                {
+                    _logger.LogError("Context SaveChanges failed while deleting Queue records.");
+                    return serviceResponse;
+                }
             }
 
-            // Retrieve all machine records associated with the specified tenant
+            // Retrieve and delete machine records (associated with the tenant)
             var machines = await _unitOfWork.MachineRepo.GetByConditionAsync(m => m.TenantId == tenantId).ToListAsync();
-
-            // Check if there are any machine records associated with the tenant
             if (machines.Any())
             {
-                // Log the deletion of machine records related to the tenant
-                _logger.LogInformation("Deleting {MachineCount} machine records associated with tenant ID {TenantId}", machines.Count, tenantId);
-
-                // Delete all machine records related to the tenant from the database
+                _logger.LogInformation($"Deleting {machines.Count} Machine records for tenant ID: {tenantId}");
                 _unitOfWork.MachineRepo.Delete(machines);
+                if (!await _unitOfWork.SaveAsync())
+                {
+                    _logger.LogError("Context SaveChanges failed while deleting Machine records.");
+                    return serviceResponse;
+                }
             }
 
-            // Retrieve all flow version records associated with the specified tenant
+            // Retrieve and delete flow version records (associated with the tenant)
             var flowVersions = await _unitOfWork.FlowVersionRepo.GetByConditionAsync(f => f.TenantId == tenantId).ToListAsync();
-
-            // Check if there are any flow version records for the tenant
             if (flowVersions.Any())
             {
-                // Log the deletion of flow version records associated with the tenant
-                _logger.LogInformation("Deleting {FlowVersionCount} flow version records related to tenant ID {TenantId}", flowVersions.Count, tenantId);
-
-                // Delete all flow version records related to the tenant from the database
+                _logger.LogInformation($"Deleting {flowVersions.Count} FlowVersion records for tenant ID: {tenantId}");
                 _unitOfWork.FlowVersionRepo.Delete(flowVersions);
+                if (!await _unitOfWork.SaveAsync())
+                {
+                    _logger.LogError("Context SaveChanges failed while deleting FlowVersion records.");
+                    return serviceResponse;
+                }
             }
 
-            // Retrieve all flow records associated with the specified tenant
+            // Retrieve and delete flow records (associated with the tenant)
             var flows = await _unitOfWork.FlowRepo.GetByConditionAsync(f => f.TenantId == tenantId).ToListAsync();
-
-            // Check if there are any flow records associated with the tenant
             if (flows.Any())
             {
-                _logger.LogInformation("Deleting {FlowCount} flow records associated with tenant ID {TenantId}", flows.Count, tenantId);
-
-                // Delete all flow records related to the tenant from the database
+                _logger.LogInformation($"Deleting {flows.Count} Flow records for tenant ID: {tenantId}");
                 _unitOfWork.FlowRepo.Delete(flows);
+                if (!await _unitOfWork.SaveAsync())
+                {
+                    _logger.LogError("Context SaveChanges failed while deleting Flow records.");
+                    return serviceResponse;
+                }
             }
 
-            // Retrieve all support ticket records associated with the specified tenant
+            // Retrieve and delete support ticket records (associated with the tenant)
             var supportTickets = await _unitOfWork.SupportTicketRepo.GetByConditionAsync(s => s.TenantId == tenantId).ToListAsync();
-
-            // Check if there are any support tickets associated with the tenant
             if (supportTickets.Any())
             {
-                _logger.LogInformation("Deleting {SupportTicketCount} support ticket records associated with tenant ID {TenantId}", supportTickets.Count, tenantId);
-
-                // Delete all support ticket records related to the tenant from the database
+                _logger.LogInformation($"Deleting {supportTickets.Count} SupportTicket records for tenant ID: {tenantId}");
                 _unitOfWork.SupportTicketRepo.Delete(supportTickets);
+                if (!await _unitOfWork.SaveAsync())
+                {
+                    _logger.LogError("Context SaveChanges failed while deleting SupportTicket records.");
+                    return serviceResponse;
+                }
             }
 
-            // Retrieve all notification records associated with the specified tenant
+            // Retrieve and delete notification records (associated with the tenant)
             var notifications = await _unitOfWork.NotificationRepo.GetByConditionAsync(n => n.TenantId == tenantId).ToListAsync();
-
-            // Check if there are any notifications associated with the tenant
             if (notifications.Any())
             {
-                // Log the deletion of notification records related to the tenant
-                _logger.LogInformation("Deleting {NotificationCount} notification records associated with tenant ID {TenantId}", notifications.Count, tenantId);
-
-                // Delete all notification records related to the tenant from the database
+                _logger.LogInformation($"Deleting {notifications.Count} Notification records for tenant ID: {tenantId}");
                 _unitOfWork.NotificationRepo.Delete(notifications);
+                if (!await _unitOfWork.SaveAsync())
+                {
+                    _logger.LogError("Context SaveChanges failed while deleting Notification records.");
+                    return serviceResponse;
+                }
             }
 
-            // Retrieve all project template records associated with the specified tenant
+            // Retrieve and delete project template records (associated with the tenant)
             var projectTemplates = await _unitOfWork.ProjectTemplateRepo.GetByConditionAsync(p => p.TenantId == tenantId).ToListAsync();
-
-            // Check if there are any project template records for the tenant
             if (projectTemplates.Any())
             {
-                // Log the deletion of project template records related to the tenant
-                _logger.LogInformation("Deleting {ProjectTemplateCount} project template records associated with tenant ID {TenantId}", projectTemplates.Count, tenantId);
-
-                // Delete all project template records related to the tenant from the database
+                _logger.LogInformation($"Deleting {projectTemplates.Count} ProjectTemplate records for tenant ID: {tenantId}");
                 _unitOfWork.ProjectTemplateRepo.Delete(projectTemplates);
+                if (!await _unitOfWork.SaveAsync())
+                {
+                    _logger.LogError("Context SaveChanges failed while deleting ProjectTemplate records.");
+                    return serviceResponse;
+                }
             }
 
-            // Retrieve all on-prem model records associated with the specified tenant
+            // Retrieve and delete on-prem model records (associated with the tenant)
             var onPremModels = await _unitOfWork.OnPremModelRepo.GetByConditionAsync(o => o.TenantId == tenantId).ToListAsync();
-
-            // Check if there are any on-prem model records associated with the tenant
             if (onPremModels.Any())
             {
-                // Log the deletion of on-prem model records related to the tenant
-                _logger.LogInformation("Deleting {OnPremModelCount} on-prem model records associated with tenant ID {TenantId}", onPremModels.Count, tenantId);
-
-                // Delete all on-prem model records related to the tenant from the database
+                _logger.LogInformation($"Deleting {onPremModels.Count} OnPremModel records for tenant ID: {tenantId}");
                 _unitOfWork.OnPremModelRepo.Delete(onPremModels);
+                if (!await _unitOfWork.SaveAsync())
+                {
+                    _logger.LogError("Context SaveChanges failed while deleting OnPremModel records.");
+                    return serviceResponse;
+                }
             }
 
-            // Retrieve all subscription records associated with the specified tenant
+            // Retrieve and delete subscription records (associated with the tenant)
             var subscriptions = await _unitOfWork.SubscriptionRepo.GetByConditionAsync(s => s.TenantId == tenantId).ToListAsync();
-
-            // Check if there are any subscription records for the tenant
             if (subscriptions.Any())
             {
-                // Log the deletion of subscription records related to the tenant
-                _logger.LogInformation("Deleting {SubscriptionCount} subscription records associated with tenant ID {TenantId}", subscriptions.Count, tenantId);
-
-                // Delete all subscription records related to the tenant from the database
+                _logger.LogInformation($"Deleting {subscriptions.Count} Subscription records for tenant ID: {tenantId}");
                 _unitOfWork.SubscriptionRepo.Delete(subscriptions);
+                if (!await _unitOfWork.SaveAsync())
+                {
+                    _logger.LogError("Context SaveChanges failed while deleting Subscription records.");
+                    return serviceResponse;
+                }
             }
 
-            // Retrieve all users associated with the specified tenant
+            // Retrieve and delete users (associated with the tenant)
             var worcUsers = await _unitOfWork.WorkspaceUserRepo.GetByConditionAsync(w => w.TenantId == tenantId).ToListAsync();
-
-            // Check if there are any users associated with the tenant
             if (worcUsers.Any())
             {
-                _logger.LogInformation("Deleting {UserCount} users associated with tenant ID {TenantId}", worcUsers.Count, tenantId);
-
-                // Delete all users related to the tenant from the database
+                _logger.LogInformation($"Deleting {worcUsers.Count} WorkspaceUser records for tenant ID: {tenantId}");
                 _unitOfWork.WorkspaceUserRepo.Delete(worcUsers);
+                if (!await _unitOfWork.SaveAsync())
+                {
+                    _logger.LogError("Context SaveChanges failed while deleting WorkspaceUser records.");
+                    return serviceResponse;
+                }
             }
 
-
-            // Attempt to commit the changes to the database
-            if (!await _unitOfWork.SaveAsync())
-            {
-                // If no changes were saved, it means deletion may not have been executed
-                serviceResponse.Message = "Tenant and associated data have been deleted successfully.";
-            }
-            else
-            {
-                // If no records were deleted (perhaps the tenant was already removed), inform the user
-                serviceResponse.Message = "No changes were made, likely because the tenant was already deleted.";
-            }
-
-            // Mark the response as successful
+            // If deletion is successful
             serviceResponse.Data = true;
             serviceResponse.StatusCode = 200;
+            serviceResponse.Message = "Tenant and associated data have been deleted successfully.";
         }
         catch (Exception ex)
         {
-            // Log an error if the deletion operation fails
+            // Log error and return failure
             _logger.LogError(ex, "Error occurred while attempting to delete tenant with ID {TenantId}", tenantId);
             serviceResponse.Message = "An error occurred while trying to delete the tenant. Please try again later.";
         }
 
-        // Return the response indicating success or failure
+        // Return service response
         return serviceResponse;
     }
 }
