@@ -1,5 +1,3 @@
-using Org.BouncyCastle.Asn1;
-
 namespace MLModelBuilderAPIs.Services;
 
 public class TenantTableService : ITenantTableService
@@ -18,6 +16,7 @@ public class TenantTableService : ITenantTableService
     // Deletes a tenant and all associated data from the database.
     public async Task<ServiceResponse<bool>> DeleteTenantAsync(Guid tenantId)
     {
+        // Initialize ServiceResponse with failed response
         var serviceResponse = new ServiceResponse<bool>
         {
             Data = false,
@@ -26,132 +25,126 @@ public class TenantTableService : ITenantTableService
 
         try
         {
-            // Retrieve all conversation history records associated with the specified tenant
-            var conversationHistories = await _unitOfWork.ConversationHistoryRepo.GetByConditionAsync(history => history.TenantId == tenantId).ToListAsync();
-
-            // Check if there are any conversation history records for the tenant
+            // Retrieve and delete conversation history records (associated with the tenant)
+            var conversationHistories = await _unitOfWork.ConversationHistoryRepo.GetByConditionAsync(w => w.TenantId == tenantId).ToListAsync();
             if (conversationHistories.Any())
             {
-                _logger.LogInformation("Deleting {ConversationHistoryCount} conversation history records associated with tenant ID {TenantId}", conversationHistories.Count, tenantId);
-
-                // Delete all conversation history records related to the tenant from the database
+                _logger.LogInformation($"Deleting {conversationHistories.Count} ConversationHistory records for tenant ID: {tenantId}");
                 _unitOfWork.ConversationHistoryRepo.Delete(conversationHistories);
+                if (!await _unitOfWork.SaveAsync())
+                {
+                    _logger.LogError("Context SaveChanges failed while deleting ConversationHistory records.");
+                    return serviceResponse;
+                }
             }
 
-            // Retrieve all conversational model records associated with the specified tenant
-            var conversationalModels = await _unitOfWork.ConversationalModelRepo.GetByConditionAsync(model => model.TenantId == tenantId).ToListAsync();
-
-            // Check if there are any conversational model records for the tenant
+            // Retrieve and delete conversational model records (associated with the tenant)
+            var conversationalModels = await _unitOfWork.ConversationalModelRepo.GetByConditionAsync(w => w.TenantId == tenantId).ToListAsync();
             if (conversationalModels.Any())
             {
-                _logger.LogInformation("Deleting {ConversationalModelCount} conversational model records associated with tenant ID {TenantId}", conversationalModels.Count, tenantId);
-
-                // Delete all conversational model records related to the tenant from the database
+                _logger.LogInformation($"Deleting {conversationalModels.Count} ConversationalModel records for tenant ID: {tenantId}");
                 _unitOfWork.ConversationalModelRepo.Delete(conversationalModels);
+                if (!await _unitOfWork.SaveAsync())
+                {
+                    _logger.LogError("Context SaveChanges failed while deleting ConversationalModel records.");
+                    return serviceResponse;
+                }
             }
 
-            // Retrieve all generative model records associated with the specified tenant
-            var generativeModels = await _unitOfWork.GenerativeModelRepo.GetByConditionAsync(model => model.TenantId == tenantId).ToListAsync();
-
-            // Check if there are any generative model records for the tenant
+            // Retrieve and delete generative model records (associated with the tenant)
+            var generativeModels = await _unitOfWork.GenerativeModelRepo.GetByConditionAsync(w => w.TenantId == tenantId).ToListAsync();
             if (generativeModels.Any())
             {
-                _logger.LogInformation("Deleting {GenerativeModelCount} generative model records associated with tenant ID {TenantId}", generativeModels.Count, tenantId);
-
-                // Delete all generative model records related to the tenant from the database
+                _logger.LogInformation($"Deleting {generativeModels.Count} GenerativeModel records for tenant ID: {tenantId}");
                 _unitOfWork.GenerativeModelRepo.Delete(generativeModels);
+                if (!await _unitOfWork.SaveAsync())
+                {
+                    _logger.LogError("Context SaveChanges failed while deleting GenerativeModel records.");
+                    return serviceResponse;
+                }
             }
 
-            // Retrieve all API key records associated with the specified tenant for AI project versions
-            var aiProjectVersionApiKeys = await _unitOfWork.AIProjectVersionApiKeyRepo.GetByConditionAsync(apiKey => apiKey.TenantId == tenantId).ToListAsync();
-
-            // Check if there are any API key records for the tenant
+            // Retrieve and delete API key records (associated with the tenant for AI project versions)
+            var aiProjectVersionApiKeys = await _unitOfWork.AIProjectVersionApiKeyRepo.GetByConditionAsync(w => w.TenantId == tenantId).ToListAsync();
             if (aiProjectVersionApiKeys.Any())
             {
-                // Log the deletion of API key records for the tenant
-                _logger.LogInformation("Deleting {ApiKeyCount} API key records associated with tenant ID {TenantId}", aiProjectVersionApiKeys.Count, tenantId);
-
-                // Delete all API key records related to the tenant from the database
+                _logger.LogInformation($"Deleting {aiProjectVersionApiKeys.Count} AIProjectVersionApiKey records for tenant ID: {tenantId}");
                 _unitOfWork.AIProjectVersionApiKeyRepo.Delete(aiProjectVersionApiKeys);
+                if (!await _unitOfWork.SaveAsync())
+                {
+                    _logger.LogError("Context SaveChanges failed while deleting AIProjectVersionApiKey records.");
+                    return serviceResponse;
+                }
             }
 
-            // Retrieve all extracted data records associated with the specified tenant
-            var extractedDatas = await _unitOfWork.ExtractedDataRepo.GetByConditionAsync(data => data.TenantId == tenantId).ToListAsync();
-
-            // Check if there are any extracted data records for the tenant
+            // Retrieve and delete extracted data records (associated with the tenant)
+            var extractedDatas = await _unitOfWork.ExtractedDataRepo.GetByConditionAsync(w => w.TenantId == tenantId).ToListAsync();
             if (extractedDatas.Any())
             {
-                // Log the deletion of extracted data records for the tenant
-                _logger.LogInformation("Deleting {DataCount} extracted data records associated with tenant ID {TenantId}", extractedDatas.Count, tenantId);
-
-                // Delete all extracted data records related to the tenant from the database
+                _logger.LogInformation($"Deleting {extractedDatas.Count} ExtractedData records for tenant ID: {tenantId}");
                 _unitOfWork.ExtractedDataRepo.Delete(extractedDatas);
+                if (!await _unitOfWork.SaveAsync())
+                {
+                    _logger.LogError("Context SaveChanges failed while deleting ExtractedData records.");
+                    return serviceResponse;
+                }
             }
 
-            // Retrieve all ai project model version tasks associated with the specified tenant
-            var aiProjectVersionTasks = await _unitOfWork.VersionTaskRepo.GetByConditionAsync(task => task.TenantId == tenantId).ToListAsync();
-
-            // Check if any ai project model version tasks exist for the tenant
+            // Retrieve and delete AI project version tasks (associated with the tenant)
+            var aiProjectVersionTasks = await _unitOfWork.VersionTaskRepo.GetByConditionAsync(w => w.TenantId == tenantId).ToListAsync();
             if (aiProjectVersionTasks.Any())
             {
-                _logger.LogInformation("Deleting {TaskCount} ai project model version tasks associated with tenant ID {TenantId}", aiProjectVersionTasks.Count, tenantId);
-
-                // Remove all ai project model version tasks related to the tenant from the database
+                _logger.LogInformation($"Deleting {aiProjectVersionTasks.Count} AIProjectVersionTask records for tenant ID: {tenantId}");
                 _unitOfWork.VersionTaskRepo.Delete(aiProjectVersionTasks);
+                if (!await _unitOfWork.SaveAsync())
+                {
+                    _logger.LogError("Context SaveChanges failed while deleting AIProjectVersionTask records.");
+                    return serviceResponse;
+                }
             }
 
-            // Retrieve all ai project model records associated with the specified tenant
-            var aiProjectVersions = await _unitOfWork.AIProjectVersionRepo.GetByConditionAsync(version => version.TenantId == tenantId).ToListAsync();
-
-            // Check if any ai project model records exist for the tenant
+            // Retrieve and delete AI project versions (associated with the tenant)
+            var aiProjectVersions = await _unitOfWork.AIProjectVersionRepo.GetByConditionAsync(w => w.TenantId == tenantId).ToListAsync();
             if (aiProjectVersions.Any())
             {
-                // Log the deletion of ai project model records for the tenant
-                _logger.LogInformation("Deleting {ModelCount} ai project model records associated with tenant ID {TenantId}", aiProjectVersions.Count, tenantId);
-
-                // Remove all ai project model records related to the tenant from the database
+                _logger.LogInformation($"Deleting {aiProjectVersions.Count} AIProjectVersion records for tenant ID: {tenantId}");
                 _unitOfWork.AIProjectVersionRepo.Delete(aiProjectVersions);
+                if (!await _unitOfWork.SaveAsync())
+                {
+                    _logger.LogError("Context SaveChanges failed while deleting AIProjectVersion records.");
+                    return serviceResponse;
+                }
             }
 
-            // Fetch all AI project records linked to the specified tenant
-            var aiProjects = await _unitOfWork.AIProjectRepo.GetByConditionAsync(project => project.TenantId == tenantId).ToListAsync();
-
-            // Check if any AI project records exist for the tenant
+            // Retrieve and delete AI projects (associated with the tenant)
+            var aiProjects = await _unitOfWork.AIProjectRepo.GetByConditionAsync(w => w.TenantId == tenantId).ToListAsync();
             if (aiProjects.Any())
             {
-                _logger.LogInformation("Deleting {ProjectCount} AI project records associated with tenant ID {TenantId}", aiProjects.Count, tenantId);
-
-                // Remove all AI project records related to the tenant from the database
+                _logger.LogInformation($"Deleting {aiProjects.Count} AIProject records for tenant ID: {tenantId}");
                 _unitOfWork.AIProjectRepo.Delete(aiProjects);
+                if (!await _unitOfWork.SaveAsync())
+                {
+                    _logger.LogError("Context SaveChanges failed while deleting AIProject records.");
+                    return serviceResponse;
+                }
             }
 
-            // Fetch all users linked to the specified tenant
-            var tenantUsers = await _unitOfWork.ModelBuilderUserRepo.GetByConditionAsync(user => user.TenantId == tenantId).ToListAsync();
-
-            // Check if any users are found for the tenant
+            // Retrieve and delete users (associated with the tenant)
+            var tenantUsers = await _unitOfWork.ModelBuilderUserRepo.GetByConditionAsync(w => w.TenantId == tenantId).ToListAsync();
             if (tenantUsers.Any())
             {
-                _logger.LogInformation("Removing {UserCount} users associated with tenant ID {TenantId}", tenantUsers.Count, tenantId);
-
-                // Remove all users associated with the tenant from the database
+                _logger.LogInformation($"Deleting {tenantUsers.Count} ModelBuilderUser records for tenant ID: {tenantId}");
                 _unitOfWork.ModelBuilderUserRepo.Delete(tenantUsers);
+                if (!await _unitOfWork.SaveAsync())
+                {
+                    _logger.LogError("Context SaveChanges failed while deleting ModelBuilderUser records.");
+                    return serviceResponse;
+                }
             }
 
-            // Attempt to commit the changes to the database
-            if (!await _unitOfWork.SaveAsync())
-            {
-                // If no changes were saved, it means deletion may not have been executed
-                serviceResponse.Message = "Tenant and associated data have been deleted successfully.";
-            }
-            else
-            {
-                // If no records were deleted (perhaps the tenant was already removed), inform the user
-                serviceResponse.Message = "No changes were made, likely because the tenant was already deleted.";
-            }
-
-            // Mark the response as successful
             serviceResponse.Data = true;
             serviceResponse.StatusCode = 200;
+            serviceResponse.Message = "Tenant and associated data have been deleted successfully.";
         }
         catch (Exception ex)
         {
