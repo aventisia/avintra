@@ -1,5 +1,3 @@
-import { SearchableSelect } from "@/react-toolkit/ui/searchable-select/SearchableSelect";
-
 import {
   BaseFieldProps,
   FormControl,
@@ -10,6 +8,8 @@ import {
 } from "@aventisia/ui/form";
 import { FormFieldSizeType, ISelectOption } from "@aventisia/ui/types";
 import { FieldPath, FieldValues, useFormContext } from "react-hook-form";
+
+import { SearchableSelect } from "./SearchableSelect";
 
 interface SearchableSelectFieldProps extends BaseFieldProps {
   name: FieldPath<FieldValues>;
