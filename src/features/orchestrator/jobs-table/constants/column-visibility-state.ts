@@ -6,6 +6,7 @@ export const columnVisibilityState = {
   startTime: true,
   endTime: true,
   duration: true,
+  isPublished: true,
   retryCount: false,
   versionNumber: false,
   executedBy: true,

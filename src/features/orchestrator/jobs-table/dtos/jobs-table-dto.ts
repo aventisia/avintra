@@ -30,6 +30,8 @@ export interface JobsTableDto {
    */
   name: string;
 
+  isPublished?: boolean;
+
   /**
    * Gets or sets the number of retry counts in the execution.
    */
