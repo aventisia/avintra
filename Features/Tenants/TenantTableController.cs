@@ -12,9 +12,9 @@ public class TenantTableController : BaseApiController
         _tenantTableService = tenantTableService;
     }
 
-    // Deletes a tenant by its ID
-    [HttpDelete("{tenantId}")]
-    public async Task<ActionResult<ServiceResponse<bool>>> DeleteTenant(Guid tenantId)
+    // Deletes a tenant by its ID (tenantId in the query parameters)
+    [HttpDelete("records")]
+    public async Task<ActionResult<ServiceResponse<bool>>> DeleteTenant([FromQuery] Guid tenantId)
     {
         return ResultHelper(await _tenantTableService.DeleteTenantAsync(tenantId));
     }
