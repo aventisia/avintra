@@ -20,7 +20,10 @@ export interface OnPremTenantDto {
    */
   executionTimeAllowed: number;
 
-  executionTimeConsumed?: number;
+  /**
+   * Total execution time consumed by the tenant.
+   */
+  consumedExecutionTime: number;
 
   /** Contract start date  */
   contractStartDate: Date | string;

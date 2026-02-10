@@ -5,6 +5,8 @@ import { cn } from "@aventisia/ui/lib";
 import { dateFormatter, getEnumValueByKey } from "@aventisia/ui/utils";
 import { ColumnDef } from "@tanstack/react-table";
 
+import { formatSecondsToCompactDuration } from "@/features/orchestrator/jobs-table/utils";
+
 import { TABLE_KEY } from "../constants";
 import { getColumnName } from "../constants/column-display-names";
 import { OnPremTenantDto } from "../dtos/on-prem-tenant-dto";
@@ -93,22 +95,17 @@ export const onPremTenantsTableColumns: ColumnDef<OnPremTenantDto>[] = [
     ),
   },
   {
-    accessorKey: "executionTimeConsumed",
+    accessorKey: "consumedExecutionTime",
     header: ({ column }) => (
       <DTColumnHeader
         tableKey={TABLE_KEY}
         column={column}
-        title={getColumnName("executionTimeConsumed")}
+        title={getColumnName("consumedExecutionTime")}
       />
     ),
     cell: ({ row }) => (
       <div className="w-auto truncate font-medium">
-        {`${Number(row.getValue("executionTimeConsumed") ?? 0)?.toLocaleString(
-          "en-US",
-          {
-            maximumFractionDigits: 2,
-          },
-        )} Hours`}
+        {formatSecondsToCompactDuration(row.getValue("consumedExecutionTime"))}
       </div>
     ),
   },

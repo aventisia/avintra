@@ -1,5 +1,6 @@
 import { BadgeCheckIcon, BotIcon, ClockIcon, UsersIcon } from "lucide-react";
 
+import { formatSecondsToCompactDuration } from "@/features/orchestrator/jobs-table/utils";
 import { StatsCard } from "@/react-toolkit/ui/card/StatsCard";
 
 import { useTenantRoute } from "../../on-prem-tenant-instance/hooks/useTenantRoute";
@@ -15,7 +16,7 @@ export const TenantInstanceStats = () => {
       <StatsCard
         key="Total Execution Time"
         title={"Total Execution Time"}
-        mainText={formatNumber(data?.data.totalExecutionTimeConsumed ?? 0)}
+        mainText={formatSecondsToCompactDuration(data?.data.totalExecutionTimeConsumed ?? 0)}
         icon={<ClockIcon stroke="var(--primary)" className="h-6 w-6" />}
       />
       <StatsCard

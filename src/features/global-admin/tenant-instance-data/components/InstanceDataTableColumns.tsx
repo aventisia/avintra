@@ -3,6 +3,8 @@ import { getEnumValueByKey } from "@aventisia/ui/utils";
 import { ColumnDef } from "@tanstack/react-table";
 import { format } from "date-fns";
 
+import { formatSecondsToCompactDuration } from "@/features/orchestrator/jobs-table/utils";
+
 import { formatNumber, TABLE_KEY } from "../constants";
 import { getColumnName } from "../constants/column-display-names";
 import { OnPremInstanceDataDto } from "../dtos/tenant-instance-dto";
@@ -69,7 +71,7 @@ export const instanceDataTableColumns: ColumnDef<OnPremInstanceDataDto>[] = [
     ),
     cell: ({ row }) => (
       <div className="w-auto truncate font-medium">
-        {formatNumber(row.getValue("executionTime") || 0)}
+        {formatSecondsToCompactDuration(row.getValue("executionTime") || 0)}
       </div>
     ),
   },
