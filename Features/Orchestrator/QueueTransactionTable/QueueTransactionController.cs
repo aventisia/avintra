@@ -20,14 +20,6 @@ public class QueueTransactionController : BaseApiController
         return ResultHelper(await _queueTransactionService.GetAllTransactionsAsync(queueId));
     }
 
-    // Retrieve all transactions associated with a specific queue
-    [HttpPost("list")]
-    public async Task<ActionResult<ServiceResponse<IEnumerable<QueueTransactionDto>>>> FindTransactions(FindQueueTransactionQuery queueTransactionQuery)
-    {
-        // Fetch all transactions for the given queue
-        return ResultHelper(await _queueTransactionService.FindAllTransactionsAsync(queueTransactionQuery));
-    }
-
     // Retrieves a specific queue transaction by its ID.
     [HttpGet("{queueTransactionId}")]
     public async Task<ActionResult<ServiceResponse<QueuesTableDto>>> GetQueueTransactionById(Guid queueTransactionId)
@@ -61,7 +53,7 @@ public class QueueTransactionController : BaseApiController
     [HttpPut("data")]
     public async Task<ActionResult<ServiceResponse<QueueTransactionDto>>> UpdateTransactionDatas([FromBody] QueueTransactionDto queueTransactionDto)
     {
-        return ResultHelper(await _queueTransactionService.UpdateTransactionStatusAsync(queueTransactionDto));
+        return ResultHelper(await _queueTransactionService.UpdateTransactionDataAsync(queueTransactionDto));
     }
 
     // Remove a specific transaction (work item) from the queue
@@ -78,8 +70,8 @@ public class QueueTransactionController : BaseApiController
         return ResultHelper(await _queueTransactionService.DeleteQueueTransactionsAsync(queueTransactionIds));
     }
     // Retrieves transactions for the specified queue based on filter criteria
-    [HttpPost("item-list")]
-    public async Task<ActionResult<ServiceResponse<IEnumerable<QueueTransactionDto>>>> GetItems(QueueFilterRequestDto queueFilterRequestDto)
+    [HttpPost("list")]
+    public async Task<ActionResult<ServiceResponse<IEnumerable<QueueTransactionDto>>>> GeQueueTransactiontItems(QueueFilterRequestDto queueFilterRequestDto)
     {
         return ResultHelper(await _queueTransactionService.GetQueueTransactionItemsAsync(queueFilterRequestDto));
     }
