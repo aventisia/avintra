@@ -257,7 +257,7 @@ public class JobTableService : IJobTableService
                 }
             }
 
-            // Convert the DTO to a Job entity.
+            // Convert the incoming DTO into a new Job entity
             var newJob = new Job()
             {
                 TenantId = _currentTenantService.CurrentTenantId,
@@ -269,6 +269,14 @@ public class JobTableService : IJobTableService
                 CreatedOn = DateTimeOffset.UtcNow,
                 IsPublished = flowVersion.IsPublished,
             };
+
+            // If the flow version is NOT published, allow the caller to explicitly control job execution details
+            if (!flowVersion.IsPublished)
+            {
+                newJob.Status = jobTableDto.Status;
+                newJob.StartTime = jobTableDto.StartTime;
+                newJob.EndTime = jobTableDto.EndTime;
+            }
 
             // Insert the new job into the repository
             await _unitOfWork.JobRepo.InsertAsync(newJob);
