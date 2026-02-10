@@ -577,8 +577,8 @@ public class TenantsTableService : ITenantsTableService
         try
         {
             // Define the URLs for AI_STUDIO and Workspace API endpoints
-            var aiStudioApiUrl = $"{_environmentConfig.AiStudioApiBaseUrl}/api/tenant/{tenant.Id}";
-            var worcApiUrl = $"{_environmentConfig.WorcApiBaseUrl}/api/tenant/{tenant.Id}";
+            var aiStudioApiUrl = $"{_environmentConfig.AiStudioApiBaseUrl}/api/tenant/records?tenantId={tenant.Id}";
+            var worcApiUrl = $"{_environmentConfig.WorcApiBaseUrl}/api/tenant/records?tenantId={tenant.Id}";
 
             // Create a new HttpClient instance for making API requests
             using var httpClient = new HttpClient();
@@ -589,7 +589,7 @@ public class TenantsTableService : ITenantsTableService
                 // Prepare the DELETE request with necessary headers (Authorization & TenantId)
                 using var request = new HttpRequestMessage(HttpMethod.Delete, apiUrl);
                 request.Headers.Authorization = new System.Net.Http.Headers.AuthenticationHeaderValue("Bearer", _jwt);
-                request.Headers.Add("X-Tenant-Id", tenantId.ToString());
+                request.Headers.Add("tntid", tenantId.ToString());
 
                 // Log the outgoing request to the external API for transparency
                 _logger.LogInformation("Sending DELETE request to {ApiUrl} for tenant {TenantId}", apiUrl, tenantId);
