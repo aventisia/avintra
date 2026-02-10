@@ -57,7 +57,7 @@ export const QueueConditionGroupsField = (field: DCPFieldSchemaType) => {
 
   // Controllers
   const { field: queueSelectField } = useController({
-    name: "SelectQueue",
+    name: "QueueId",
     control,
   });
 

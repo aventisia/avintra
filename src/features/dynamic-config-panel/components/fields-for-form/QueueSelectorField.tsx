@@ -26,8 +26,6 @@ interface QueueSelectorFieldProps
 
   /** The placeholder for the select field. */
   placeholder?: string;
-
-  modelProvider?: string;
 }
 
 const QueueSelectorField = ({
@@ -72,23 +70,26 @@ const QueueSelectorField = ({
   });
 
   // Form context
-  const { control, setValue } = useFormContext();
+  const { control, setValue, getValues } = useFormContext();
 
   // Controllers
   const { field: queueSelectField } = useController({ name, control });
 
   useEffect(() => {
-    if (queueSelectField.value) {
+    const values = getValues();
+    const fieldExists = "WorkItemData" in values;
+    if (queueSelectField.value && fieldExists) {
       const queueSchema = data?.find(
         (item) => item.id == queueSelectField.value,
       )?.inputSchema;
 
       if (queueSchema) {
         const sampleWorkItem = createExampleValueObjectFromSchema(queueSchema);
-        setValue("CreateWorkItemData", JSON.stringify(sampleWorkItem));
+        setValue("WorkItemData", JSON.stringify(sampleWorkItem));
       }
     }
   }, [queueSelectField.value]);
+
   return (
     <SearchableSelectField
       name={name}

@@ -11,7 +11,7 @@
     {
       "direction": "Input",
       "type": "text",
-      "name": "WorItemId",
+      "name": "WorkItemId",
       "label": "WorkItem ID",
       "description": "Enter the unique identifier of the work item you want to update.",
       "defaultValue": ""
@@ -28,7 +28,7 @@
         { "label": "Pending", "value": "Pending" },
         { "label": "In Progress", "value": "InProgress" },
         { "label": "Completed", "value": "Completed" },
-        { "label": "Completed", "value": "Completed" }
+        { "label": "Failed", "value": "Failed" }
       ]
     },
     {
@@ -50,7 +50,7 @@
     {
       "direction": "Input",
       "type": "json-editor",
-      "name": "UpdateWorkItemData",
+      "name": "WorkItemData",
       "label": "Work Item Data",
       "description": "Provide the updated work item data in JSON format. This will replace the existing data stored with the work item.",
       "defaultValue": "",

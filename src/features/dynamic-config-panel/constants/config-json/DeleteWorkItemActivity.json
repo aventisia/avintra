@@ -11,7 +11,7 @@
     {
       "direction": "Input",
       "type": "text",
-      "name": "WorItemId",
+      "name": "WorkItemId",
       "label": "WorkItem ID",
       "description": "Enter the unique identifier of the work item you want to permanently delete.",
       "defaultValue": ""

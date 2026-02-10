@@ -11,7 +11,7 @@
     {
       "direction": "Input",
       "type": "queue-select",
-      "name": "SelectQueue",
+      "name": "QueueId",
       "label": "Select Queue",
       "description": "Choose the queue where the work item will be looked for.",
       "defaultValue": "",
