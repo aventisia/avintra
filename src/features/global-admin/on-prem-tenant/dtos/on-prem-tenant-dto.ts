@@ -40,7 +40,7 @@ export interface OnPremTenantDto {
   /** Tenant-provided email address */
   tenantEmails?: string | null;
 
-  lastAuthStatus?: string;
+  isAnyInstanceFailed?: boolean;
 
   /** User who created the tenant */
   createdByUser?: string | null;

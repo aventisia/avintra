@@ -9,7 +9,7 @@ export const columnDisplayNames: KeyValueLookupType[] = [
   { key: "executionTimeConsumed", value: "Execution Time Consumed" },
   { key: "contractStartDate", value: "Contract Start Date" },
   { key: "contractRenewalDate", value: "Contract Renewal Date" },
-  { key: "lastAuthStatus", value: "Last Authentication Status" },
+  { key: "isAnyInstanceFailed", value: "Last Authentication Status" },
   { key: "createdByUser", value: "Created By" },
   { key: "createdOn", value: "Created On" },
 ];
