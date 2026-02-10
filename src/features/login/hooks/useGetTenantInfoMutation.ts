@@ -20,10 +20,10 @@ export const useGetTenantInfoMutation = () => {
   const { mutate: getTenantInfoMutation, isPending: isInfoPending } =
     useMutation({
       mutationFn: getTenantInfo,
-      onSuccess: ({ data }) => {
+      onSuccess: ({ data, message }) => {
         // If data is undefined show error
         if (!data) {
-          toast.error("Failed to get account information.");
+          toast.error(message);
           return;
         }
 
