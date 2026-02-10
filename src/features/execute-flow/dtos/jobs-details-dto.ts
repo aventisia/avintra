@@ -25,7 +25,7 @@ export interface JobDetailsDto {
 
   duration?: number;
 
-  machineId: string;
+  machineId?: string;
 
   /** Version no */
   versionNumber?: number;

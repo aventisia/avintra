@@ -21,7 +21,6 @@ import { ActionTypesEnum } from "@/features/credits-management/constants/action-
 import { insertJob } from "../apis/jobs-table-apis";
 import { getLocalExecutionLog } from "@/features/flow-execution-log/apis/get-version-execution-log";
 import { ExecutionNode } from "@/features/flow-execution-log/types/execution-types";
-import { useTuariUserMetadataStore } from "@/stores/tuari-user-metadata-store";
 
 export default function useWebSocket() {
   const socketRef = useRef<WebSocket | null>(null);
@@ -43,11 +42,6 @@ export default function useWebSocket() {
     })),
   );
 
-  const { osID: machineId } = useTuariUserMetadataStore(
-    useShallow((state) => ({
-      osID: state.osID,
-    })),
-  );
   const { postCreditConsumption } = usePostCreditConsumptionMutation();
 
   const [currExecCommand, setCurrExecCommand] = useState<
@@ -200,7 +194,6 @@ export default function useWebSocket() {
           await insertJob({
             flowId: currentFlow.id,
             flowVersionId: currentFlow.versionId,
-            machineId,
             duration,
             status,
             startTime,
