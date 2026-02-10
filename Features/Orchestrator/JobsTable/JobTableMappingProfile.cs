@@ -8,10 +8,6 @@ public class JobTableMappingProfile : IRegister
         config.NewConfig<Job, JobTableDto>()
             .Map(dest => dest.Name, src => src.FlowVersion != null ? src.FlowVersion.Flow.Name : null);
 
-        // Mapping for job record or records.
-        config.NewConfig<Job, JobExecutionLogDto>()
-            .Map(dest => dest.Name, src => src.FlowVersion != null ? src.FlowVersion.Flow.Name : null);
-
         config.NewConfig<Job, JobDetailDto>()
             .Map(dest => dest.FlowId, src => src.FlowVersion != null ? src.FlowVersion.FlowId : Guid.Empty)
             .Map(dest => dest.Name, src => src.FlowVersion != null ? src.FlowVersion.Flow.Name : null)
@@ -23,13 +19,6 @@ public class JobTableMappingProfile : IRegister
 
         // Mapping for inserting or updating a job record.
         config.NewConfig<JobTableDto, Job>()
-            .Ignore(dest => dest.Id)
-            .Ignore(dest => dest.RetryCount)
-            .Ignore(dest => dest.TenantId)
-            .Ignore(dest => dest.CreatedOn)
-            .IgnoreNullValues(true);
-
-        config.NewConfig<JobExecutionLogDto, Job>()
             .Ignore(dest => dest.Id)
             .Ignore(dest => dest.RetryCount)
             .Ignore(dest => dest.TenantId)

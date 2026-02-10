@@ -11,7 +11,7 @@ public interface IJobTableService
     /// <param name="startDate">The optional start date filter.</param>
     /// <param name="endDate">The optional end date filter.</param>
     /// <returns>A task representing the service response with the job details.</returns>
-    Task<ServiceResponse<IEnumerable<JobTableDto>>> GetJobsAsync(DateTimeOffset? startDate, DateTimeOffset? endDate);
+    Task<ServiceResponse<IEnumerable<JobTableDto>>> GetJobsAsync(DateTimeOffset? startDate, DateTimeOffset? endDate, bool includeLogs);
 
     /// <summary>
     /// Retrieves a list of all job logs between optional start and end date filters.
@@ -19,14 +19,14 @@ public interface IJobTableService
     /// <param name="startDate">The optional start date filter.</param>
     /// <param name="endDate">The optional end date filter.</param>
     /// <returns>A task representing the service response with the job log details.</returns>
-    Task<ServiceResponse<IEnumerable<JobExecutionLogDto>>> GetJobLogsAsync(DateTimeOffset? startDate, DateTimeOffset? endDate);
+    Task<ServiceResponse<IEnumerable<JobTableDto>>> GetJobLogsAsync(DateTimeOffset? startDate, DateTimeOffset? endDate);
 
     /// <summary>
     /// Fetches a job by its unique identifier.
     /// </summary>
     /// <param name="jobId">The identifier of the job to retrieve.</param>
     /// <returns>A task representing the service response containing the details of the job.</returns>
-    Task<ServiceResponse<JobExecutionLogDto>> GetJobByIdAsync(Guid jobId);
+    Task<ServiceResponse<JobTableDto>> GetJobByIdAsync(Guid jobId);
 
     /// <summary>
     /// Fetches a job detail by its unique identifier.
@@ -45,9 +45,9 @@ public interface IJobTableService
     /// <summary>
     /// Modifies an existing job with the provided data.
     /// </summary>
-    /// <param name="jobExecutionLogDto">The data required to update the job.</param>
+    /// <param name="jobTableDto">The data required to update the job.</param>
     /// <returns>A task representing the service response containing the updated job details.</returns>
-    Task<ServiceResponse<JobTableDto>> UpdateJobAsync(JobExecutionLogDto jobExecutionLogDto);
+    Task<ServiceResponse<JobTableDto>> UpdateJobAsync(JobTableDto jobTableDto);
 
     /// <summary>
     /// Removes a job by its identifier.

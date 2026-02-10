@@ -28,7 +28,7 @@ public class JobTableService : IJobTableService
     }
 
     // Retrieves a list of jobs within the specified date range, or defaults to the last 7 days if no dates are provided.
-    public async Task<ServiceResponse<IEnumerable<JobTableDto>>> GetJobsAsync(DateTimeOffset? startDate, DateTimeOffset? endDate)
+    public async Task<ServiceResponse<IEnumerable<JobTableDto>>> GetJobsAsync(DateTimeOffset? startDate, DateTimeOffset? endDate, bool includeLogs)
     {
         // Initialize the response with a default error message.
         var serviceResponse = new ServiceResponse<IEnumerable<JobTableDto>>
@@ -49,13 +49,18 @@ public class JobTableService : IJobTableService
             // Fetch jobs from the repository with the provided date filters.
             var jobs = await _unitOfWork.JobRepo
                 .GetByConditionAsync(w =>
-                    w.CreatedOn.Date >= startDate.Value && w.CreatedOn.Date <= endDate.Value
+                    w.CreatedOn.Date >= startDate.Value &&
+                    w.CreatedOn.Date <= endDate.Value
                 )
                 .Include(i => i.FlowVersion)
                     .ThenInclude(i2 => i2.Flow)
                 .OrderByDescending(o => o.CreatedOn)
                 .ProjectToType<JobTableDto>()
                 .ToListAsync();
+
+            // If the 'includeLogs' flag is false, clear the 'NodeExecutionLogs' for each job
+            if (!includeLogs)
+                jobs.ForEach(j => j.NodeExecutionLogs = string.Empty);  // Set NodeExecutionLogs to an empty string for all jobs
 
             // If jobs are successfully retrieved, update the response.
             serviceResponse.Data = jobs;
@@ -74,10 +79,10 @@ public class JobTableService : IJobTableService
     }
 
     // Retrieves a list of job execution logs, excluding those with a 'Created' or 'Running' status, within the specified date range.
-    public async Task<ServiceResponse<IEnumerable<JobExecutionLogDto>>> GetJobLogsAsync(DateTimeOffset? startDate, DateTimeOffset? endDate)
+    public async Task<ServiceResponse<IEnumerable<JobTableDto>>> GetJobLogsAsync(DateTimeOffset? startDate, DateTimeOffset? endDate)
     {
         // Initialize the response with a default error message.
-        var serviceResponse = new ServiceResponse<IEnumerable<JobExecutionLogDto>>
+        var serviceResponse = new ServiceResponse<IEnumerable<JobTableDto>>
         {
             Data = null,
             Message = "Failed to retrieve job logs. Please try again later."
@@ -102,7 +107,7 @@ public class JobTableService : IJobTableService
                 .Include(i => i.FlowVersion)
                     .ThenInclude(i2 => i2.Flow)
                 .OrderByDescending(o => o.CreatedOn)
-                .ProjectToType<JobExecutionLogDto>()
+                .ProjectToType<JobTableDto>()
                 .ToListAsync();
 
             // If job logs are successfully retrieved, update the response.
@@ -122,10 +127,10 @@ public class JobTableService : IJobTableService
     }
 
     // Retrieves a specific job by its ID for the current user.
-    public async Task<ServiceResponse<JobExecutionLogDto>> GetJobByIdAsync(Guid jobId)
+    public async Task<ServiceResponse<JobTableDto>> GetJobByIdAsync(Guid jobId)
     {
         // Initialize ServiceResponse with an error message.
-        var serviceResponse = new ServiceResponse<JobExecutionLogDto>
+        var serviceResponse = new ServiceResponse<JobTableDto>
         {
             Data = null,
             Message = "Failed to retrieve the job. Please try again."
@@ -138,7 +143,7 @@ public class JobTableService : IJobTableService
                                         .GetByConditionAsync(w =>
                                             w.Id == jobId
                                         )
-                                        .ProjectToType<JobExecutionLogDto>()
+                                        .ProjectToType<JobTableDto>()
                                         .FirstOrDefaultAsync();
 
             // Success - set the response with retrieved job
@@ -276,6 +281,7 @@ public class JobTableService : IJobTableService
                 newJob.Status = jobTableDto.Status;
                 newJob.StartTime = jobTableDto.StartTime;
                 newJob.EndTime = jobTableDto.EndTime;
+                newJob.NodeExecutionLogs = jobTableDto.NodeExecutionLogs;
             }
 
             // Insert the new job into the repository
@@ -310,7 +316,7 @@ public class JobTableService : IJobTableService
     }
 
     // Updates an existing job.
-    public async Task<ServiceResponse<JobTableDto>> UpdateJobAsync(JobExecutionLogDto jobExecutionLogDto)
+    public async Task<ServiceResponse<JobTableDto>> UpdateJobAsync(JobTableDto jobTableDto)
     {
         // Initialize ServiceResponse with an error message.
         var serviceResponse = new ServiceResponse<JobTableDto>
@@ -325,8 +331,8 @@ public class JobTableService : IJobTableService
             // Fetch the job that needs to be updated
             var job = await _unitOfWork.JobRepo
                                         .GetByConditionAsync(w =>
-                                            w.Id == jobExecutionLogDto.Id &&
-                                            w.FlowVersionId == jobExecutionLogDto.FlowVersionId
+                                            w.Id == jobTableDto.Id &&
+                                            w.FlowVersionId == jobTableDto.FlowVersionId
                                         )
                                         .SingleOrDefaultAsync();
 
@@ -353,13 +359,13 @@ public class JobTableService : IJobTableService
             }
 
             // Checks if the job status is the same as the stored status (no change).
-            bool isStatusUnchanged = job.Status == jobExecutionLogDto.Status;
+            bool isStatusUnchanged = job.Status == jobTableDto.Status;
 
             // Trim the string properties in the DTO
-            jobExecutionLogDto = TrimDtoStringPropsUtil.TrimDtoStringProps(jobExecutionLogDto);
+            jobTableDto = TrimDtoStringPropsUtil.TrimDtoStringProps(jobTableDto);
 
             // Map the updated values from DTO to the job entity
-            jobExecutionLogDto.Adapt(job);
+            jobTableDto.Adapt(job);
             job.IsPublished = flowVersion.IsPublished;
 
             // If the job status is "Running", set the StartTime to the current UTC time.
