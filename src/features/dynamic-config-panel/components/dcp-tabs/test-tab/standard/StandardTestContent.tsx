@@ -5,13 +5,7 @@ import { useDynamicConfigPanelStore } from "@/features/dynamic-config-panel/stor
 
 import STJsonViewer from "./STJsonViewer";
 
-const StandardTestContent = ({
-  formData,
-}: {
-  formData: {
-    [x: string]: unknown;
-  };
-}) => {
+const StandardTestContent = () => {
   const { nodeData } = useDynamicConfigPanelStore(
     useShallow((state) => ({
       nodeData: state.nodeData,
@@ -21,7 +15,7 @@ const StandardTestContent = ({
   return (
     <DCPTabsContent tabValue="Test" hasFooter={false}>
       <STJsonViewer
-        jsonData={JSON.stringify(formData)}
+        jsonData={JSON.stringify(nodeData?.inputs)}
         label="Inputs"
         className="mb-5 mt-1.5"
       />
