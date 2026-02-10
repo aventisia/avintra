@@ -107,7 +107,9 @@ const Overview = () => {
                       setUpgradePlanDialogOpen(true);
                     }}
                     disabled={
-                      currentPlan.planName == "Starter" || isPaymentProcessing
+                      currentPlan.planName == "Starter" ||
+                      isPaymentProcessing ||
+                      !currentPlan.isActive
                     }
                     variant={"default"}
                     size={"icon6"}
