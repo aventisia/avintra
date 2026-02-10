@@ -577,8 +577,8 @@ public class TenantsTableService : ITenantsTableService
         try
         {
             // Define the URLs for AI_STUDIO and Workspace API endpoints
-            var aiStudioApiUrl = $"{_environmentConfig.AiStudioApiBaseUrl}/api/tenant";
-            var worcApiUrl = $"{_environmentConfig.WorcApiBaseUrl}/api/tenant";
+            var aiStudioApiUrl = $"{_environmentConfig.AiStudioApiBaseUrl}/api/tenant/{tenant.Id}";
+            var worcApiUrl = $"{_environmentConfig.WorcApiBaseUrl}/api/tenant/{tenant.Id}";
 
             // Create a new HttpClient instance for making API requests
             using var httpClient = new HttpClient();
