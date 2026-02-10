@@ -13,9 +13,22 @@ post {
 body:json {
   {
     "queueId": "{{QUEUE_ID}}",
-    "queueName": "",
-    "sortBy": "Status", // Date, Priority
-    "isAscending": true
+    "queuePriority": [{
+      "field": "Name",
+      "OrderBy": "Desscending"
+    }],
+    "conditions": [
+      {
+        "field": "Id",
+        "comparisonOperator": "GreaterThan",
+        "value": "1"
+      },
+      {
+        "field": "Location",
+        "comparisonOperator": "NotEqualTo",
+        "value": "Washington"
+      }
+    ]
   }
   
 }
