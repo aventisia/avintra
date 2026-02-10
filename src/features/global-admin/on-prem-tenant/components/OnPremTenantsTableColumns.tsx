@@ -85,12 +85,7 @@ export const onPremTenantsTableColumns: ColumnDef<OnPremTenantDto>[] = [
     ),
     cell: ({ row }) => (
       <div className="w-auto truncate font-medium">
-        {`${Number(row.getValue("executionTimeAllowed") ?? 0)?.toLocaleString(
-          "en-US",
-          {
-            maximumFractionDigits: 2,
-          },
-        )} Hours`}
+        {formatSecondsToCompactDuration(row.getValue("executionTimeAllowed"))}
       </div>
     ),
   },
