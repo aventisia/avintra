@@ -2,6 +2,7 @@ import { useReactFlowExtStore } from "@/stores/react-flow-ext-store";
 import { NodeInputType, NodeOutputType } from "@/types/node-data-type";
 import { Node } from "@xyflow/react";
 import { useShallow } from "zustand/react/shallow";
+import { useDynamicConfigPanelStore } from "../stores/dcp-store";
 
 /**
  * Hook to update a node's input/output data and flowVariablesObject in the ReactFlow store.
@@ -17,6 +18,13 @@ export const useUpdateNodeDataIO = () => {
         setFlowVariablesObject: state.setFlowVariablesObject,
       })),
     );
+
+  const { nodeData, setNodeData } = useDynamicConfigPanelStore(
+    useShallow((state) => ({
+      nodeData: state.nodeData,
+      setNodeData: state.setNodeData,
+    })),
+  );
 
   /**
    * Update a node's input and output data by node id.
@@ -41,6 +49,11 @@ export const useUpdateNodeDataIO = () => {
           typeof nodeLabel === "string" && nodeLabel.length > 0
             ? nodeLabel
             : node.data.label;
+
+        // Set nodeData
+        if (nodeData) {
+          setNodeData({ ...nodeData, inputs: newInputs, outputs: newOutputs });
+        }
 
         return {
           ...node,
