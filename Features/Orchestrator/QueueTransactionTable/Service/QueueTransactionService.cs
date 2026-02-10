@@ -71,12 +71,12 @@ public class QueueTransactionService : IQueueTransactionService
         try
         {
             var queue = await _unitOfWork.QueueRepo
-                .GetByConditionAsync(w => w.Id == queueFilterRequestDto.SelectQueue)
+                .GetByConditionAsync(w => w.Id == queueFilterRequestDto.QueueId)
                 .FirstOrDefaultAsync();
 
             if (queue == null)
             {
-                _logger.LogWarning("Queue not found for Queue ID: {QueueId}", queueFilterRequestDto.SelectQueue);
+                _logger.LogWarning("Queue not found for Queue ID: {QueueId}", queueFilterRequestDto.QueueId);
                 serviceResponse.Message = "Queue not found.";
                 return serviceResponse;
             }
@@ -194,7 +194,7 @@ public class QueueTransactionService : IQueueTransactionService
         }
         catch (Exception ex)
         {
-            _logger.LogError(ex, "Error occurred while processing transactions for Queue ID: {QueueId}", queueFilterRequestDto?.SelectQueue);
+            _logger.LogError(ex, "Error occurred while processing transactions for Queue ID: {QueueId}", queueFilterRequestDto?.QueueId);
         }
         finally
         {

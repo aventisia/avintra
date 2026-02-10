@@ -8,7 +8,7 @@ public class QueueFilterRequestDto
     /// <summary>
     /// Gets or sets the unique identifier of the selected queue.
     /// </summary>
-    public Guid SelectQueue { get; set; }
+    public Guid QueueId { get; set; }
 
     /// <summary>
     /// Gets or sets the list of queue priorities for sorting the filter results.
