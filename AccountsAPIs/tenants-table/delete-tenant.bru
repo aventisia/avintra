@@ -5,13 +5,9 @@ meta {
 }
 
 delete {
-  url: {{ACCOUNTS_APIS_BASE_URL}}/tenant/dd7d311c-6202-4172-bb11-759a379ff1a4
+  url: {{ACCOUNTS_APIS_BASE_URL}}/tenant/{{TENANT_ID}}
   body: none
   auth: none
-}
-
-headers {
-  TenantId: dd7d311c-6202-4172-bb11-759a379ff1a4
 }
 
 script:post-response {
