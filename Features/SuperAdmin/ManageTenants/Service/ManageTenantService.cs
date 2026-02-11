@@ -60,7 +60,7 @@ public class ManageTenantService : IManageTenantService
             var tenant = await _unitOfWork.TenantRepo
                 .GetByConditionAsync(w =>
                     w.IsEditable &&
-                    w.Id != _currentTenantService.CurrentTenantId && // Exclude the current tenant from being deleted
+                    w.Id != _tenantId && // Exclude the current tenant from being deleted
                     w.Id == tenantId)
                 .AsNoTracking()
                 .SingleOrDefaultAsync();
