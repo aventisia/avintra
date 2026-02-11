@@ -6,7 +6,7 @@ using System.ComponentModel;
 using System.ComponentModel.DataAnnotations;
 using System.Reflection;
 
-namespace CodeActivitiesLibrary.AppIntegrations.UIActivities
+namespace CodeActivitiesLibrary.AppIntegrations.SAPActivities
 {
     [DisplayName("Click Toolbar Button")]
     [Description("Clicks a specified toolbar button. Supports Healing Agent mode.")]

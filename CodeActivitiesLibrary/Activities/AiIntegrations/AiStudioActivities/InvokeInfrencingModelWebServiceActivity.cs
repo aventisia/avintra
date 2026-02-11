@@ -9,7 +9,7 @@ using System.Net.Http.Headers;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace CodeActivitiesLibrary.AIIntegrations.AIStudioActivities
+namespace CodeActivitiesLibrary.AiIntegrations.AiStudioActivities
 {
 
     [DisplayName("Invoke Inference Model Web Service")]

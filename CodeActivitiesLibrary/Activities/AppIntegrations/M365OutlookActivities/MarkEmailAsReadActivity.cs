@@ -11,7 +11,7 @@ using System.Threading.Tasks;
 
 namespace CodeActivitiesLibrary.AppIntegrations.M365OutlookActivities
 {
-    [DisplayName("Mark Email as Read/Unread")]
+    [DisplayName("Mark Email as Read or Unread")]
     [Description("Marks an email as read or unread using Microsoft Graph API.")]
     [ActivityMetaData(nodeImg: "/assets/M365.svg")]
     public class MarkEmailAsReadActivity : BaseCodeActivity
