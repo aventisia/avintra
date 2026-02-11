@@ -57,6 +57,7 @@ public static class AppServicesExtension
         config.Apply(new TimeTriggerMappingProfile());
         config.Apply(new AITaskMappingProfile());
         config.Apply(new OnPremModelMappingProfile());
+        config.Apply(new QueueWorkItemMappingProfile());
 
         services.AddSingleton(config);
     }
@@ -104,6 +105,7 @@ public static class AppServicesExtension
         services.AddScoped<IOnPremModelService, OnPremModelService>();
         services.AddScoped<ILLMProviderService, LLMProviderService>();
         services.AddScoped<ITenantTableService, TenantTableService>();
+        services.AddScoped<IQueueWorkItemService, QueueWorkItemService>();
 
         // Cloud Connectors feature
         services.AddScoped<ICloudConnectorsVaultService, CloudConnectorsVaultService>();
