@@ -1112,6 +1112,9 @@ namespace WorkspaceAPIs.Data.Migrations
                     b.Property<bool>("IsDisabled")
                         .HasColumnType("boolean");
 
+                    b.Property<bool>("IsUserModified")
+                        .HasColumnType("boolean");
+
                     b.Property<DateTimeOffset>("LastModifiedOn")
                         .HasColumnType("timestamp with time zone");
 
@@ -1121,8 +1124,10 @@ namespace WorkspaceAPIs.Data.Migrations
                     b.Property<Guid>("QueueId")
                         .HasColumnType("uuid");
 
+                    b.Property<string>("Remarks")
+                        .HasColumnType("text");
+
                     b.Property<string>("Status")
-                        .IsRequired()
                         .HasColumnType("text");
 
                     b.Property<Guid>("TenantId")
