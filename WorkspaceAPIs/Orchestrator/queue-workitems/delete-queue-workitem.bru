@@ -1,0 +1,20 @@
+meta {
+  name: Delete queue workitem
+  type: http
+  seq: 9
+}
+
+delete {
+  url: {{WORC_APIS_BASE_URL}}/queue/workitem/{{QUEUE_WORKITEM_ID}}
+  body: none
+  auth: none
+}
+
+script:post-response {
+  if(res.getStatus() == 200){
+      bru.setGlobalEnvVar(
+        "QUEUE_WORKITEM_ID", 
+        "00000000-0000-0000-0000-000000000000"
+      );
+  }
+}
