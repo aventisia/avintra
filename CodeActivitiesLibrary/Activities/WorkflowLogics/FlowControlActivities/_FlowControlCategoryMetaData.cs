@@ -5,7 +5,7 @@ namespace CodeActivitiesLibrary.WorkflowLogics.FlowControlActivities
     [ActivityCategoryMetadata(
         primaryCategory: "Workflow Logics",
         label: "Flow control",
-        description: "Set rules and manage the course of the flow",
+        description: "Control the flow of execution based on predefined rules, enabling decision-making, repetition of actions, and iteration through collections.",
         listType: "list",
         img: "/assets/BreakLoop.svg")]
         

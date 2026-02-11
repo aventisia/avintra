@@ -3,9 +3,9 @@ using System.Activities;
 using System.ComponentModel;
 using System.ComponentModel.DataAnnotations;
 
-namespace CodeActivitiesLibrary.WorkflowLogics.ConditionalsLoopsActivities
+namespace CodeActivitiesLibrary.WorkflowLogics.SubFlowsActivities
 {
-    [ActivityMetaData(nodeType: "blockNode", nodeIcon: "BlockNodeIcon")]
+    [ActivityMetaData(nodeType: "blockNode", nodeIcon: "BlockNodeIcon", nodeImg: null)]
     [DisplayName("Call Block")]
     [Description("Use to add custom block")]
     public class CallBlockActivity : BaseCodeActivity
