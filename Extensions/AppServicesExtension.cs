@@ -121,6 +121,8 @@ public static class AppServicesExtension
         services.AddScoped<IInstanceService, InstanceService>();
         services.AddScoped<ILoginWithExternalAuthService, LoginWithExternalAuthService>();
 
+        services.AddScoped<IManageTenantService, ManageTenantService>();
+
         // Register Razorpay related services for customer, plan, and subscription management
         services.AddScoped<ICustomerService, CustomerService>();
         services.AddScoped<IPlanService, PlanService>();
