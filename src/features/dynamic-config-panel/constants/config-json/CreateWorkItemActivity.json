@@ -1,10 +1,12 @@
 {
   "name": "CreateWorkItem",
   "label": "Create Work Item",
-  "description": "Creates a new work item in the specified queue.",
+  "discription": "Creates a new work item in the specified queue.",
   "version": "1.0.0",
   "auther": "@aventisia",
-  "supportedPlatforms": ["desktop"],
+  "supportedPlatforms": [
+    "desktop"
+  ],
   "errorHandling": "standard",
   "testScreenType": "standard",
   "fields": [
@@ -32,7 +34,8 @@
       "name": "Remark",
       "label": "Remark",
       "description": "Enter the remark for the work item.",
-      "defaultValue": ""
+      "defaultValue": "",
+      "required": false
     },
     {
       "direction": "Output",

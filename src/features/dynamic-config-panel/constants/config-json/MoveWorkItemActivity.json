@@ -1,20 +1,23 @@
 {
   "name": "MoveWorkItem",
   "label": "Move Work Item",
-  "description": "Moves a work item from one queue to another.",
+  "discription": "Moves a work item from one queue to another.",
   "version": "1.0.0",
   "auther": "@aventisia",
-  "supportedPlatforms": ["desktop"],
+  "supportedPlatforms": [
+    "desktop"
+  ],
   "errorHandling": "standard",
   "testScreenType": "standard",
   "fields": [
     {
       "direction": "Input",
       "type": "text",
-      "name": "WorItemId",
+      "name": "WorkItemId",
       "label": "WorkItem ID",
       "description": "Enter the unique identifier of the work item you want to move.",
-      "defaultValue": ""
+      "defaultValue": "",
+      "required": true
     },
     {
       "direction": "Input",
@@ -40,7 +43,8 @@
       "name": "WorkItemRemark",
       "label": "Remark",
       "description": "Enter the remark for the work item.",
-      "defaultValue": ""
+      "defaultValue": "",
+      "required": false
     },
     {
       "direction": "Output",

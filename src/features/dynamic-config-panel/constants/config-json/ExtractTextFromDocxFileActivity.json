@@ -52,7 +52,7 @@
       "label": "Bookmark Name",
       "description": "The name of the bookmark to retrieve content from.",
       "defaultValue": "",
-      "required": true,
+      "required": false,
       "renderIf": {
         "conditions": [
           {
