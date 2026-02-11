@@ -63,7 +63,7 @@ public static class AppServicesExtension
         services.AddScoped<IMLModelTemplateService, MLModelTemplateService>();
         services.AddScoped<IAIProjectUserService, AIProjectUserService>();
         services.AddScoped<IConversationHistoryService, ConversationHistoryService>();
-        services.AddScoped<ITenantTableService, TenantTableService>();
+        services.AddScoped<IManageTenantService, ManageTenantService>();
 
         // Common services
         services.AddScoped<IUnitOfWork, UnitOfWork>();

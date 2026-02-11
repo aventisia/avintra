@@ -1,11 +1,10 @@
 namespace MLModelBuilderAPIs.Services;
 
-public interface ITenantTableService
+public interface IManageTenantService
 {
     /// <summary>
-    /// Deletes a tenant by its ID.
+    /// Deletes a tenant identified by its ID, typically passed in the request headers.
     /// </summary>
-    /// <param name="id">The ID of the tenant to delete.</param>
     /// <returns>A task representing the asynchronous operation. The task result contains a <see cref="ServiceResponse{T}"/> indicating whether the deletion was successful.</returns>
-    Task<ServiceResponse<bool>> DeleteTenantAsync(Guid id);
+    Task<ServiceResponse<bool>> DeleteTenantAsync();
 }
