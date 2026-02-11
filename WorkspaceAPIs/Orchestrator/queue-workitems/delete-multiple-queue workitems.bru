@@ -1,0 +1,33 @@
+meta {
+  name: Delete multiple queue workitems
+  type: http
+  seq: 11
+}
+
+delete {
+  url: {{WORC_APIS_BASE_URL}}/queue/workitem
+  body: json
+  auth: none
+}
+
+body:json {
+  ["{{QUEUE_WORKITEM_ID}}"]
+}
+
+script:pre-request {
+  if(res.getStatus() == 200){
+      bru.setGlobalEnvVar(
+        "QUEUE_TRANSACTION_ID", 
+        "00000000-0000-0000-0000-000000000000"
+      );
+  }
+}
+
+script:post-response {
+  if(res.getStatus() == 200){
+      bru.setGlobalEnvVar(
+        "QUEUE_TRANSACTION_ID", 
+        "00000000-0000-0000-0000-000000000000"
+      );
+  }
+}
