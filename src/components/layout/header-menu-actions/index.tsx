@@ -12,7 +12,6 @@ import {
   ArrowLeftRightIcon,
   BookCopyIcon,
   DockIcon,
-  DownloadIcon,
   ImportIcon,
   KeyboardIcon,
   LockOpenIcon,
@@ -108,7 +107,7 @@ export const HeaderActionMenu: React.FC = () => {
             onClick={openUIInspector}
           />
         ) : null}
-        {!IS_TAURI ? (
+        {/* {!IS_TAURI ? (
           <SimpleDDMenuItem
             size="md"
             Icon={DownloadIcon}
@@ -120,7 +119,7 @@ export const HeaderActionMenu: React.FC = () => {
               );
             }}
           />
-        ) : null}
+        ) : null} */}
 
         <SimpleDDMenuItem
           size="md"
