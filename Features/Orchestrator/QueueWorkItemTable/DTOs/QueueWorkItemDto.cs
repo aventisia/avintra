@@ -33,6 +33,10 @@ public class QueueWorkItemDto
     /// This field is primarily used for diagnostics or displaying validation results.
     /// </summary>
     public string? Remarks { get; set; }
+    /// <summary>
+    /// Gets or sets a value indicating whether the work item has been modified by the user (true) or agent (false).
+    /// </summary>
+    public bool IsUserModified { get; set; }
 
     /// <summary>
     /// Gets or sets the the user who created the record.

@@ -350,7 +350,7 @@ public class QueueWorkItemService : IQueueWorkItemService
             }
 
             var enrichedPayloadData = new JArray(); // To hold validated/enriched payload
-            var newTransactions = new List<QueueTransaction>(); // To hold valid workitem entities
+            var newWorkItems = new List<QueueTransaction>(); // To hold valid workitem entities
             var isValidationFailed = false;
 
             // Begin validating each workitem object
@@ -435,11 +435,12 @@ public class QueueWorkItemService : IQueueWorkItemService
                     }
 
                     // Map DTO to entity and populate fields
-                    var newTransaction = queueWorkItemDto.Adapt<QueueTransaction>();
-                    newTransaction.PayloadData = serializedPayload;
-                    newTransaction.Status = QueueTransactionStatusTypesEnum.Pending;
+                    var newWorkItem = queueWorkItemDto.Adapt<QueueTransaction>();
+                    newWorkItem.PayloadData = serializedPayload;
+                    newWorkItem.Status = QueueTransactionStatusTypesEnum.Pending;
+                    newWorkItem.Remarks = queueWorkItemDto.Remarks;
 
-                    newTransactions.Add(newTransaction);
+                    newWorkItems.Add(newWorkItem);
 
                     _logger.LogInformation("Validated workitem prepared for insertion.");
                 }
@@ -460,10 +461,10 @@ public class QueueWorkItemService : IQueueWorkItemService
             }
 
             // Insert if no validation errors
-            if (newTransactions.Any())
+            if (newWorkItems.Any())
             {
-                _logger.LogInformation("Inserting {Count} workitem(s) into the database...", newTransactions.Count);
-                await _unitOfWork.QueueTransactionRepo.InsertAsync(newTransactions);
+                _logger.LogInformation("Inserting {Count} workitem(s) into the database...", newWorkItems.Count);
+                await _unitOfWork.QueueTransactionRepo.InsertAsync(newWorkItems);
 
                 if (!await _unitOfWork.SaveAsync())
                 {
@@ -614,10 +615,23 @@ public class QueueWorkItemService : IQueueWorkItemService
                 queueWorkItemDto.WorkItemData = _stringEncryptionService.EncryptString(queueWorkItemDto.WorkItemData ?? string.Empty);
             }
 
-            // Update the existing queue workitem entity with values from the DTO
-            queueWorkItem.PayloadData = queueWorkItemDto.WorkItemData;
-            queueWorkItem.Status = (QueueTransactionStatusTypesEnum)(queueWorkItemDto.Status != null ? queueWorkItemDto.Status : queueWorkItem.Status);
+            // Update the queue workitem entity with values from the DTO
+            queueWorkItem.PayloadData = string.IsNullOrWhiteSpace(queueWorkItemDto.WorkItemData)
+                ? queueWorkItem.PayloadData
+                : queueWorkItemDto.WorkItemData;
+
+            // Update the status only if the new status is provided
+            if (queueWorkItemDto.Status.HasValue)
+            {
+                queueWorkItem.Status = queueWorkItemDto.Status.Value;
+            }
+
+            // Update IsUserModified only if it's different from the current value, or if it is explicitly provided
+            queueWorkItem.IsUserModified = queueWorkItemDto.IsUserModified;
+
+            // Set the last modified timestamp
             queueWorkItem.LastModifiedOn = DateTimeOffset.UtcNow;
+
 
             // Mark the workitem as updated
             _unitOfWork.QueueTransactionRepo.Update(queueWorkItem);
