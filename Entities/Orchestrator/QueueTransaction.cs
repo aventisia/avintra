@@ -20,12 +20,23 @@ public class QueueTransaction : IMustHaveTenant
     /// <summary>
     /// Gets or sets the current status of the queue transaction (e.g., Pending, In Progress, Completed, Failed).
     /// </summary>
-    public QueueTransactionStatusTypesEnum Status { get; set; }
+    public QueueTransactionStatusTypesEnum? Status { get; set; }
 
     /// <summary>
     /// Gets or sets the payload data associated with this transaction, which may include relevant details for processing.
     /// </summary>
     public string? PayloadData { get; set; }
+
+    /// <summary>
+    /// Gets or sets the remarks, validation errors, or other processing notes related to the transaction.
+    /// This field is primarily used for diagnostics or displaying validation results.
+    /// </summary>
+    public string? Remarks { get; set; }
+
+    /// <summary>
+    /// Gets or sets a value indicating whether the work item has been modified by the user (true) or agent (false).
+    /// </summary>
+    public bool IsUserModified { get; set; }
 
     /// <summary>
     /// Gets or sets the the user who created the record.
