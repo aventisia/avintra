@@ -83,12 +83,12 @@ export const useAuthenticateUserMutation = () => {
 
           // Redirect to worc app
           navigate(
-            "/redirect?msg=Logging in...&url=" +
-              import.meta.env.VITE_WORC_PATH,
+            "/redirect?msg=Logging in...&url=" + import.meta.env.VITE_WORC_PATH,
           );
         }
       },
-      onError: () => {
+      onError: (error) => {
+        toast.error(error.toString());
         resetLoginProcess();
       },
     });
