@@ -26,6 +26,11 @@ namespace CodeActivitiesLibrary.Extensions
         public string NodeIcon { get; }
         public string NodeImg { get; }
         public string DocsLink { get; }
+        
+        /// <summary>
+        /// Possible values (one or more separated by comma): "production" or "commercial" or "enterprise" or "production,enterprise" etc
+        /// </summary>
+        public string DoNotRenderIf { get; }
 
         public ActivityMetaDataAttribute(string nodeType = "activityNode",
             string version = "1.0.0",
@@ -35,7 +40,8 @@ namespace CodeActivitiesLibrary.Extensions
             string testScreenType = "standard",
             string nodeIcon = null,
             string nodeImg = "/function.png",
-            string docsLink = "https://docs.aventisia.com")
+            string docsLink = "https://docs.aventisia.com",
+            string doNotRenderIf = null)
         {
             NodeType = nodeType;
             Version = version;
@@ -46,6 +52,7 @@ namespace CodeActivitiesLibrary.Extensions
             NodeIcon = nodeIcon;
             NodeImg = nodeImg;
             DocsLink = docsLink;
+            DoNotRenderIf = doNotRenderIf;
         }
     }
 }
