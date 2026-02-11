@@ -1,5 +1,5 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
-import { VisibilityRules } from "@/features/action-selector/types/visibility-type";
+import { DoNotRenderIfType } from "@/features/action-selector/types/do-not-render-type";
 import { CustomNodeType } from "./custom-node-type";
 
 type NodeTypeAndCategory = {
@@ -36,7 +36,7 @@ type NodeDataType = {
   outputs?: NodeOutputType[];
   disabled?: boolean;
   hidden?: boolean;
-  visibility?: VisibilityRules;
+  doNotRenderIf?: DoNotRenderIfType;
   formType?: "custom" | "dynamic";
   isGroupHead?: boolean;
   groupId?: string;

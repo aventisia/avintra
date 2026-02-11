@@ -13,7 +13,7 @@ import { useShallow } from "zustand/react/shallow";
 import AppBanner from "./AppBanner";
 import AppHeader from "./AppHeader";
 import { AppRedirectPage } from "./AppRedirectPage";
-import { isVisible } from "@/features/action-selector/utils/action-visibilty";
+import { canWeRenderNodeOrCategory } from "@/features/action-selector/utils/action-visibilty";
 import { deploymentType } from "@/react-toolkit/types/user-session-types";
 import { useCurrentFlowStore } from "@/stores/current-flow-store";
 import { usePreventClose } from "@/hooks/usePreventClose";
@@ -74,7 +74,7 @@ export const AppLayout = () => {
         // Filter Action Categories based on visibility
         actionCategories: primary.actionCategories
           .filter((actionCategory) =>
-            isVisible(actionCategory.visibility, deploymentType),
+            canWeRenderNodeOrCategory(actionCategory.doNotRenderIf, deploymentType),
           )
 
           // For visible categories, also filter individual actions
@@ -82,7 +82,7 @@ export const AppLayout = () => {
             ...actionCategory,
 
             actions: actionCategory.actions?.filter((action) =>
-              isVisible(action.visibility, deploymentType),
+              canWeRenderNodeOrCategory(action.doNotRenderIf, deploymentType),
             ),
           }))
 

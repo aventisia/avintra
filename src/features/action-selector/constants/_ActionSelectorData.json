@@ -83,9 +83,7 @@
         "icon": null,
         "img": "/assets/Queue.svg",
         "listType": null,
-        "visibility": {
-          "showInProd": false
-        },
+        "doNotRenderIf": ["production"],
         "actions": [
           {
             "type": "activityNode",
@@ -131,9 +129,7 @@
             "docsLink": "https://docs.aventisia.com",
             "icon": null,
             "img": "/assets/Queue.svg",
-            "visibility": {
-              "showInProd": false
-            }
+            "doNotRenderIf": ["production"]
           }
         ]
       }
@@ -2462,9 +2458,7 @@
         "icon": null,
         "img": "/assets/ThomsonReuters.svg",
         "listType": null,
-        "visibility": {
-          "allowedDeploymentTypes": ["Commercial"]
-        },
+        "doNotRenderIf": ["enterprise"],
         "actions": [
           {
             "type": "activityNode",
@@ -2573,9 +2567,7 @@
         "icon": null,
         "img": "/assets/ServiceNow.svg",
         "listType": null,
-        "visibility": {
-          "allowedDeploymentTypes": ["Commercial"]
-        },
+        "doNotRenderIf": ["enterprise"],
         "actions": [
           {
             "type": "activityNode",
@@ -2801,9 +2793,7 @@
         "icon": null,
         "img": "/assets/SAP.svg",
         "listType": null,
-        "visibility": {
-          "allowedDeploymentTypes": ["Commercial"]
-        },
+        "doNotRenderIf": ["enterprise"],
         "actions": [
           {
             "type": "activityNode",
@@ -3146,9 +3136,7 @@
         "icon": null,
         "img": "/assets/Salesforce.svg",
         "listType": null,
-        "visibility": {
-          "allowedDeploymentTypes": ["Commercial"]
-        },
+        "doNotRenderIf": ["enterprise"],
         "actions": [
           {
             "type": "activityNode",
