@@ -397,8 +397,6 @@
     <Compile Include="Activities\AppIntegrations\SAPActivities\SaveImageActivity.cs" />
     <Compile Include="Activities\AppIntegrations\SAPActivities\SelectMenuItemActivity.cs" />
     <Compile Include="Activities\AppIntegrations\SAPActivities\_SAPCategoryMetaData.cs" />
-    <Compile Include="Activities\AppIntegrations\SendGridActivities\SendEmailThroughSendGridActivity.cs" />
-    <Compile Include="Activities\AppIntegrations\SendGridActivities\_SendGridCategoryMetaData.cs" />
     <Compile Include="Activities\AppIntegrations\ServiceNowActivities\AttachmentAction\DeleteServiceNowAttachmentActivity.cs" />
     <Compile Include="Activities\AppIntegrations\ServiceNowActivities\AttachmentAction\GetManyServiceNowAttachmentsActivity.cs" />
     <Compile Include="Activities\AppIntegrations\ServiceNowActivities\AttachmentAction\GetServiceNowAttachmentActivity.cs" />
@@ -436,10 +434,6 @@
     <Compile Include="Activities\AppIntegrations\TerminalEmulationActivities\SetTextOnTerminalSessionActivity.cs" />
     <Compile Include="Activities\AppIntegrations\TerminalEmulationActivities\WaitForTextOnTerminalSessionActivity.cs" />
     <Compile Include="Activities\AppIntegrations\TerminalEmulationActivities\_TerminalEmulationCategoryMetaData.cs" />
-    <Compile Include="Activities\AppIntegrations\TwilioActivities\SendTextSmsActivity.cs" />
-    <Compile Include="Activities\AppIntegrations\TwilioActivities\SendWhatsappMessageActivity.cs" />
-    <Compile Include="Activities\AppIntegrations\TwilioActivities\SendWhatsappTemplateMessageActivity.cs" />
-    <Compile Include="Activities\AppIntegrations\TwilioActivities\_TwilioCategoryMetaData.cs" />
     <Compile Include="Activities\AppIntegrations\UltraTaxCSActivities\FillUltraTaxFormActivity.cs" />
     <Compile Include="Activities\AppIntegrations\UltraTaxCSActivities\InspectUltraTaxFormActivity.cs" />
     <Compile Include="Activities\AppIntegrations\UltraTaxCSActivities\Helpers\UltraTaxFormHelper.cs" />
