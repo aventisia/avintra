@@ -104,7 +104,7 @@ public static class AppServicesExtension
         services.AddScoped<IProjectUsageService, ProjectUsageService>();
         services.AddScoped<IOnPremModelService, OnPremModelService>();
         services.AddScoped<ILLMProviderService, LLMProviderService>();
-        services.AddScoped<ITenantTableService, TenantTableService>();
+        services.AddScoped<IManageTenantService, ManageTenantService>();
         services.AddScoped<IQueueWorkItemService, QueueWorkItemService>();
 
         // Cloud Connectors feature

@@ -1,20 +1,31 @@
 namespace WorkspaceAPIs.Services;
 
-public class TenantTableService : ITenantTableService
+public class ManageTenantService : IManageTenantService
 {
-    private readonly ILogger<TenantTableService> _logger;
+    private readonly ILogger<ManageTenantService> _logger;
     private readonly IUnitOfWork _unitOfWork;
+    private readonly ICurrentTenantService _currentTenantService;
+    private readonly Guid _userId;
+    private readonly Guid _tenantId;
 
-    public TenantTableService(
-        ILogger<TenantTableService> logger,
-        IUnitOfWork unitOfWork)
+    public ManageTenantService(
+        ILogger<ManageTenantService> logger,
+        IUnitOfWork unitOfWork,
+        IHttpContextAccessor httpContextAccessor,
+        ICurrentTenantService currentTenantService)
     {
         _logger = logger;
         _unitOfWork = unitOfWork;
+        _currentTenantService = currentTenantService;
+
+        // Set _userId
+        _userId = Guid.Parse(httpContextAccessor.HttpContext?.User?.FindFirstValue("uid") ?? Guid.Empty.ToString());
+        _tenantId = Guid.Parse(httpContextAccessor.HttpContext?.User?.FindFirstValue("tntid") ?? Guid.Empty.ToString());
+
     }
 
     // Deletes a tenant and all associated data from the database.
-    public async Task<ServiceResponse<bool>> DeleteTenantAsync(Guid tenantId)
+    public async Task<ServiceResponse<bool>> DeleteTenantAsync()
     {
         // Initialize ServiceResponse with failed response
         var serviceResponse = new ServiceResponse<bool>
@@ -25,6 +36,17 @@ public class TenantTableService : ITenantTableService
 
         try
         {
+            // Check if the current tenant ID is the same as the tenant ID to delete If the tenant tries to delete itself, we prevent it.
+            if (_currentTenantService.CurrentTenantId == _tenantId)
+            {
+                _logger.LogWarning($"Attempt to delete current tenant. TenantId: {_tenantId}. Operation is not allowed.");
+                serviceResponse.Message = "You cannot delete your own tenant.";
+                return serviceResponse;
+            }
+
+            // Fetch tenant ID from current tenant service, which should be used for deletion
+            var tenantId = _currentTenantService.CurrentTenantId;
+
             // Retrieve and delete key store records (associated with the tenant)
             var keyStores = await _unitOfWork.KeyStoreRepo.GetByConditionAsync(k => k.TenantId == tenantId).ToListAsync();
             if (keyStores.Any())
@@ -228,8 +250,7 @@ public class TenantTableService : ITenantTableService
         catch (Exception ex)
         {
             // Log error and return failure
-            _logger.LogError(ex, "Error occurred while attempting to delete tenant with ID {TenantId}", tenantId);
-            serviceResponse.Message = "An error occurred while trying to delete the tenant. Please try again later.";
+            _logger.LogError(ex, "Error occurred while attempting to delete tenant with ID {TenantId}", _currentTenantService.CurrentTenantId);
         }
 
         // Return service response
