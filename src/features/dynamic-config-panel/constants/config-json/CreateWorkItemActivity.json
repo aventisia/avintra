@@ -29,7 +29,7 @@
     {
       "direction": "Input",
       "type": "text",
-      "name": "WorkItemRemark",
+      "name": "Remark",
       "label": "Remark",
       "description": "Enter the remark for the work item.",
       "defaultValue": ""

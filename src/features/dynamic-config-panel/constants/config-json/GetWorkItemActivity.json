@@ -20,8 +20,8 @@
     {
       "direction": "Input",
       "type": "queue-priority-group",
-      "name": "QueuePriority",
-      "label": "QueuePriority",
+      "name": "PriorityList",
+      "label": "Priority",
       "description": "Add one or more conditions",
       "defaultValue": [
         {
@@ -62,13 +62,13 @@
     {
       "direction": "Input",
       "type": "queue-conditional-group",
-      "name": "Conditions",
+      "name": "ConditionList",
       "label": "Conditions",
       "description": "Add one or more conditions",
       "defaultValue": [
         {
           "Field": "",
-          "ComparisonOperator": "EqualTo",
+          "Operator": "EqualTo",
           "Value": "",
           "Id": "group-1-condition-1"
         }
@@ -86,7 +86,7 @@
         {
           "direction": "Input",
           "type": "select",
-          "name": "ComparisonOperator",
+          "name": "Operator",
           "defaultValue": "EqualTo",
           "required": true,
           "selectOptions": [
@@ -114,17 +114,17 @@
           "required": true,
           "renderIf": {
             "conditions": [
-              { "field": "ComparisonOperator", "equals": "EqualTo" },
-              { "field": "ComparisonOperator", "equals": "GreaterThan" },
-              { "field": "ComparisonOperator", "equals": "GreaterThanOrEqual" },
-              { "field": "ComparisonOperator", "equals": "LessThan" },
-              { "field": "ComparisonOperator", "equals": "LessThanOrEqual" },
-              { "field": "ComparisonOperator", "equals": "Contains" },
-              { "field": "ComparisonOperator", "equals": "NotContains" },
-              { "field": "ComparisonOperator", "equals": "StartsWith" },
-              { "field": "ComparisonOperator", "equals": "EndsWith" },
-              { "field": "ComparisonOperator", "equals": "In" },
-              { "field": "ComparisonOperator", "equals": "NotIn" }
+              { "field": "Operator", "equals": "EqualTo" },
+              { "field": "Operator", "equals": "GreaterThan" },
+              { "field": "Operator", "equals": "GreaterThanOrEqual" },
+              { "field": "Operator", "equals": "LessThan" },
+              { "field": "Operator", "equals": "LessThanOrEqual" },
+              { "field": "Operator", "equals": "Contains" },
+              { "field": "Operator", "equals": "NotContains" },
+              { "field": "Operator", "equals": "StartsWith" },
+              { "field": "Operator", "equals": "EndsWith" },
+              { "field": "Operator", "equals": "In" },
+              { "field": "Operator", "equals": "NotIn" }
             ]
           }
         }
