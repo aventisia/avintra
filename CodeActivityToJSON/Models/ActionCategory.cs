@@ -9,6 +9,7 @@ namespace CodeActivityToJSON.Models
         public string Icon { get; set; }
         public string Img { get; set; }
         public string ListType { get; set; }
+        public List<string> DoNotRenderIf { get; set; }
         public List<NodeAction> Actions { get; set; }
     }
 }

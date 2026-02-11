@@ -77,11 +77,12 @@ namespace CodeActivityToJSON.Utils
                         // Create ActionCategory object
                         var actionCategory = new ActionCategory
                         {
-                            Label = attribute.Label,
-                            Description = attribute.Description,
-                            Icon = attribute.Icon,
-                            Img = attribute.Img,
-                            ListType = attribute.ListType,
+                            Label = attribute?.Label,
+                            Description = attribute?.Description,
+                            Icon = attribute?.Icon,
+                            Img = attribute?.Img,
+                            ListType = attribute?.ListType,
+                            DoNotRenderIf = attribute?.DoNotRenderIf != null ? attribute?.DoNotRenderIf.Split(',').ToList() : null,
                             Actions = new List<NodeAction>()
                         };
 
@@ -118,7 +119,8 @@ namespace CodeActivityToJSON.Utils
                                 Description = description.Description,
                                 DocsLink = activityMetaData?.DocsLink ?? "https://docs.aventisia.com",
                                 Img = activityMetaData?.NodeImg ?? "/function.png",
-                                Icon = activityMetaData?.NodeIcon ?? null
+                                Icon = activityMetaData?.NodeIcon ?? null,
+                                DoNotRenderIf = activityMetaData?.DoNotRenderIf != null ? activityMetaData?.DoNotRenderIf.Split(',').ToList() : null,
                             });
                         }
 
