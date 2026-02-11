@@ -475,7 +475,7 @@ public class QueueWorkItemService : IQueueWorkItemService
 
             // Set response status code and attach updated DTO to response
             serviceResponse.StatusCode = 200;
-            serviceResponse.Data = queueWorkItemDto;
+            serviceResponse.Data = newWorkItems.FirstOrDefault().Adapt<QueueWorkItemDto>();
             serviceResponse.Message = "Transaction validated and added successfully.";
             _logger.LogInformation("Transaction processing completed successfully. All workitems inserted into queue {QueueId}.", queueWorkItemDto.QueueId);
         }
@@ -501,7 +501,7 @@ public class QueueWorkItemService : IQueueWorkItemService
             _logger.LogInformation("Initiating update for workitem ID {QueueWorkitemId}.", queueWorkItemDto.Id);
 
             // Check if WorkItemData is null or starts with '{'
-            if (!queueWorkItemDto.WorkItemData.TrimStart().StartsWith("{"))
+            if (!string.IsNullOrEmpty(queueWorkItemDto.WorkItemData) && !queueWorkItemDto.WorkItemData.TrimStart().StartsWith("{"))
             {
                 serviceResponse.Message = "Invalid payload format. The data must start with '{' indicating a valid JSON object.";
                 return serviceResponse;
@@ -519,100 +519,102 @@ public class QueueWorkItemService : IQueueWorkItemService
                 serviceResponse.Message = "Queue workitem not found.";
                 return serviceResponse;
             }
-
-            var queue = queueWorkItem.Queue;
-
-            // Deserialize the queue's input schema; fall back to empty list if schema is invalid or null
-            var inputSchema = System.Text.Json.JsonSerializer.Deserialize<List<QueueSchemaDefinitionDto>>(
-                queue.InputSchema ?? "[]",
-                new JsonSerializerOptions { PropertyNameCaseInsensitive = true }
-            ) ?? new List<QueueSchemaDefinitionDto>();
-
-            // Generate a dynamic object based on the schema
-            dynamic dynamicObject = CreateDynamicObjectFromSchema(inputSchema);
-
             var errors = new List<string>();
 
-            // Parse the incoming payload; fall back to an empty object if null or malformed
-            var data = Newtonsoft.Json.Linq.JObject.Parse(queueWorkItemDto.WorkItemData ?? "{}");
-
-            // Extract existing unique keys from the queue's workitems to ensure uniqueness
-            var existingUniqueKeys = new HashSet<string>();
-            if (queue.QueueTransactions != null)
+            if (!string.IsNullOrEmpty(queueWorkItemDto.WorkItemData))
             {
-                foreach (var workitem in queue.QueueTransactions.Where(w => w.Id != queueWorkItem.Id).ToList())
+                var queue = queueWorkItem.Queue;
+
+                // Deserialize the queue's input schema; fall back to empty list if schema is invalid or null
+                var inputSchema = System.Text.Json.JsonSerializer.Deserialize<List<QueueSchemaDefinitionDto>>(
+                    queue.InputSchema ?? "[]",
+                    new JsonSerializerOptions { PropertyNameCaseInsensitive = true }
+                ) ?? new List<QueueSchemaDefinitionDto>();
+
+                // Generate a dynamic object based on the schema
+                dynamic dynamicObject = CreateDynamicObjectFromSchema(inputSchema);
+
+                // Parse the incoming payload; fall back to an empty object if null or malformed
+                var data = Newtonsoft.Json.Linq.JObject.Parse(queueWorkItemDto.WorkItemData ?? "{}");
+
+                // Extract existing unique keys from the queue's workitems to ensure uniqueness
+                var existingUniqueKeys = new HashSet<string>();
+                if (queue.QueueTransactions != null)
                 {
-                    var payload = workitem.PayloadData;
-                    if (string.IsNullOrWhiteSpace(payload)) continue;
+                    foreach (var workitem in queue.QueueTransactions.Where(w => w.Id != queueWorkItem.Id).ToList())
+                    {
+                        var payload = workitem.PayloadData;
+                        if (string.IsNullOrWhiteSpace(payload)) continue;
 
-                    if (queue.IsStoredEncrypted)
-                        payload = _stringEncryptionService.DecryptString(payload);
+                        if (queue.IsStoredEncrypted)
+                            payload = _stringEncryptionService.DecryptString(payload);
 
-                    var obj = Newtonsoft.Json.Linq.JObject.Parse(payload);
+                        var obj = Newtonsoft.Json.Linq.JObject.Parse(payload);
 
-                    var keyParts = inputSchema
-                        .Where(w => w.IsUsedForUniqueIdentifier)
-                        .Select(s =>
-                        {
-                            obj.TryGetValue(s.Name, out var val);
-                            return val?.ToString() ?? string.Empty;
-                        });
+                        var keyParts = inputSchema
+                            .Where(w => w.IsUsedForUniqueIdentifier)
+                            .Select(s =>
+                            {
+                                obj.TryGetValue(s.Name, out var val);
+                                return val?.ToString() ?? string.Empty;
+                            });
 
-                    var uniqueKey = string.Join("|", keyParts);
-                    existingUniqueKeys.Add(uniqueKey);
-                }
-            }
-
-            // Construct the unique key from the incoming payload and validate fields
-            var uniqueKeyParts = new List<string>();
-
-            foreach (var field in inputSchema)
-            {
-                var hasValue = data.TryGetValue(field.Name, out var value) &&
-                               value != null &&
-                               !string.IsNullOrWhiteSpace(value.ToString());
-
-                // Check for missing required fields
-                if (field.IsRequired && !hasValue)
-                {
-                    var label = string.IsNullOrWhiteSpace(field.Label) ? field.Name : field.Label;
-                    errors.Add($"Missing required field: {label}");
+                        var uniqueKey = string.Join("|", keyParts);
+                        existingUniqueKeys.Add(uniqueKey);
+                    }
                 }
 
-                // Build the composite unique key
-                if (field.IsUsedForUniqueIdentifier && queue.IsUniqueReferencesEnforced && hasValue)
+                // Construct the unique key from the incoming payload and validate fields
+                var uniqueKeyParts = new List<string>();
+
+                foreach (var field in inputSchema)
                 {
-                    uniqueKeyParts.Add(value!.ToString()!);
+                    var hasValue = data.TryGetValue(field.Name, out var value) &&
+                                   value != null &&
+                                   !string.IsNullOrWhiteSpace(value.ToString());
+
+                    // Check for missing required fields
+                    if (field.IsRequired && !hasValue)
+                    {
+                        var label = string.IsNullOrWhiteSpace(field.Label) ? field.Name : field.Label;
+                        errors.Add($"Missing required field: {label}");
+                    }
+
+                    // Build the composite unique key
+                    if (field.IsUsedForUniqueIdentifier && queue.IsUniqueReferencesEnforced && hasValue)
+                    {
+                        uniqueKeyParts.Add(value!.ToString()!);
+                    }
+
+                    // Populate the dynamic object with payload values
+                    ((IDictionary<string, object>)dynamicObject)[field.Name] = value!;
                 }
 
-                // Populate the dynamic object with payload values
-                ((IDictionary<string, object>)dynamicObject)[field.Name] = value!;
-            }
-
-            // Check if the constructed unique key already exists in the queue
-            if (queue.IsUniqueReferencesEnforced && uniqueKeyParts.Any())
-            {
-                var newUniqueKey = string.Join("|", uniqueKeyParts);
-
-                if (existingUniqueKeys.Contains(newUniqueKey, StringComparer.InvariantCultureIgnoreCase))
+                // Check if the constructed unique key already exists in the queue
+                if (queue.IsUniqueReferencesEnforced && uniqueKeyParts.Any())
                 {
-                    errors.Add("A workitem with the same unique field values already exists in the queue.");
+                    var newUniqueKey = string.Join("|", uniqueKeyParts);
+
+                    if (existingUniqueKeys.Contains(newUniqueKey, StringComparer.InvariantCultureIgnoreCase))
+                    {
+                        errors.Add("A workitem with the same unique field values already exists in the queue.");
+                    }
                 }
-            }
 
-            // Serialize the validated dynamic object back to JSON
-            queueWorkItemDto.WorkItemData = JsonConvert.SerializeObject(dynamicObject, Formatting.Indented);
+                // Serialize the validated dynamic object back to JSON
+                queueWorkItemDto.WorkItemData = JsonConvert.SerializeObject(dynamicObject, Formatting.Indented);
 
-            // Set the creator username if not already set
-            if (string.IsNullOrEmpty(queueWorkItemDto.CreatedBy))
-            {
-                queueWorkItemDto.CreatedBy = _username;
-            }
+                // Set the creator username if not already set
+                if (string.IsNullOrEmpty(queueWorkItemDto.CreatedBy))
+                {
+                    queueWorkItemDto.CreatedBy = _username;
+                }
 
-            // Encrypt payload if required
-            if (queue.IsStoredEncrypted)
-            {
-                queueWorkItemDto.WorkItemData = _stringEncryptionService.EncryptString(queueWorkItemDto.WorkItemData ?? string.Empty);
+                // Encrypt payload if required
+                if (queue.IsStoredEncrypted)
+                {
+                    queueWorkItemDto.WorkItemData = _stringEncryptionService.EncryptString(queueWorkItemDto.WorkItemData ?? string.Empty);
+                }
             }
 
             // Update the queue workitem entity with values from the DTO
@@ -626,8 +628,11 @@ public class QueueWorkItemService : IQueueWorkItemService
                 queueWorkItem.Status = queueWorkItemDto.Status.Value;
             }
 
-            // Update IsUserModified only if it's different from the current value, or if it is explicitly provided
+            // Only update IsUserModified if the value has changed or is explicitly provided.
             queueWorkItem.IsUserModified = queueWorkItemDto.IsUserModified;
+
+            // Update Remarks with the value from the DTO.
+            queueWorkItem.Remarks = queueWorkItemDto.Remarks;
 
             // Set the last modified timestamp
             queueWorkItem.LastModifiedOn = DateTimeOffset.UtcNow;
@@ -652,7 +657,7 @@ public class QueueWorkItemService : IQueueWorkItemService
             }
             else
             {
-                serviceResponse.Message = "Queue workitem status updated successfully.";
+                serviceResponse.Message = "Queue workitem updated successfully.";
             }
             // Return successful response
             serviceResponse.Data = queueWorkItem.Adapt<QueueWorkItemDto>();
