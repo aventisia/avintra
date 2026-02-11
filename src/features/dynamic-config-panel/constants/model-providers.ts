@@ -62,7 +62,7 @@ export const openAiModelList: Model[] = [
   {
     label: "gpt-5.1",
     value: "gpt-5.1",
-    available: false,
+    available: true,
     specialty: ["text", "vision"],
   },
   {
@@ -74,13 +74,13 @@ export const openAiModelList: Model[] = [
   {
     label: "gpt-5-mini",
     value: "gpt-5-mini",
-    available: false,
+    available: true,
     specialty: ["text", "vision"],
   },
   {
     label: "gpt-5-nano",
     value: "gpt-5-nano",
-    available: false,
+    available: true,
     specialty: ["text"],
   },
 
