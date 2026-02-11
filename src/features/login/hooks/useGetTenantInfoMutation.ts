@@ -26,14 +26,13 @@ export const useGetTenantInfoMutation = () => {
           toast.error(message);
           return;
         }
+        // Set userName in localstorage
+        localStorage.setItem(USER_NAME_LS_KEY, data.userName);
 
         if (data.ssoConfigJson) {
           // TODO: if SSO enabled then route
           window.location.assign(data.ssoConfigJson);
         } else {
-          // Set userName in localstorage
-          localStorage.setItem(USER_NAME_LS_KEY, data.userName);
-
           // Set tenantId and email/username
           setLoginData({
             tenantId: data.tenantId,
