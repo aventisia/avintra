@@ -1,0 +1,111 @@
+import { Callout, Steps } from "nextra/components";
+
+# Send Email
+
+The **Send Email** node allows you to create and send email messages effortlessly. Use it to notify clients, share reports, or collaborate with team members via email directly from the platform.
+
+With this node, you can:
+- Specify recipient details (To, CC, BCC).
+- Define the email content (Subject, Body) and choose a format (Text or HTML).
+- Attach files and configure SMTP server settings.
+
+## Configuration Options
+
+| Field Name                           | Description                                                                                                                                         | Input Type | Required? | Default Value |
+| ------------------------------------ | --------------------------------------------------------------------------------------------------------------------------------------------------- | ---------- | --------- | ------------- |
+| **From**                             | The sender's email address.                                                                                                                         | Text       | Yes       | (empty)       |
+| **To**                               | The recipient's email address(es), comma-separated.                                                                                                 | Text       | Yes       | (empty)       |
+| **CC**                               | The CC recipients' email addresses, comma-separated.                                                                                                | Text       | No        | (empty)       |
+| **BCC**                              | The BCC recipients' email addresses, comma-separated.                                                                                               | Text       | No        | (empty)       |
+| **Subject**                          | The subject of the email.                                                                                                                           | Text       | Yes       | (empty)       |
+| **Body**                             | The body of the email.                                                                                                                              | Text       | Yes       | (empty)       |
+| **Body Format**                      | The format of the email body; choose **Plain** for text or **Html** for HTML formatting.                                                            | Select     | No        | Text          |
+| **Attachments**                      | Paths to files to attach to the email, comma-separated.                                                                                             | Text       | No        | (empty)       |
+| **SMTP Server**                      | The SMTP server URL used to send the email.                                                                                                         | Text       | Yes       | (empty)       |
+| **Server Port**                      | The port number for the SMTP server. Adjust if not using the default `587`.                                                                         | Text       | No        | 587           |
+| **Security Protocol**                | The security protocol for the connection. Options include **None**, **Auto**, **SslOnConnect**, **StartTls**, **StartTlsWhenAvailable**.           | Select     | No        | Auto          |
+| **SMTP Server Needs Authentication** | Enable if your SMTP server requires an authentication login.                                                                                        | Switch     | No        | True          |
+| **User Name**                        | The username for authenticating with the SMTP server.                                                                                               | Text       | No        | (empty)       |
+| **Password**                         | The password for authenticating with the SMTP server.                                                                                               | Password   | No        | (empty)       |
+| **Accept Untrusted Certificates**    | Enable if the SMTP server accepts untrusted SSL certificates.                                                                                       | Switch     | No        | False         |
+| **Timeout (seconds)**                | Specify the connection timeout in seconds. Adjust using longer times for slower networks or servers.                                                | Text       | No        | 30            |
+
+## Expected Output Format
+
+The successful execution of this node results in an email sent to specified recipients. It does not produce an output format but confirms the action via logs or notifications if configured.
+
+## Step-by-Step Guide
+
+<Steps>
+### Step 1
+
+Add **Send Email** node into your flow.
+
+### Step 2
+
+Enter the sender's email in the **From** field.
+
+### Step 3
+
+Provide the recipient's email addresses in the **To** field. You can add multiple addresses separated by a comma.
+
+### Step 4
+
+Fill in **CC** and **BCC** fields if you need to send copies to additional recipients.
+
+### Step 5
+
+Subject and content go into **Subject** and **Body** fields respectively.
+
+### Step 6
+
+Select the **Body Format** (e.g., Plain text for simple emails or Html for stylized versions).
+
+### Step 7
+
+Add any file paths to the **Attachments** field, separated by commas for multiple files.
+
+### Step 8
+
+Configure your **SMTP Server** settings, including **Server Port**, **Security Protocol**, and whether the server requires authentication.
+
+### Step 9
+
+If authentication is needed, fill in the **User Name** and **Password** fields.
+
+### Step 10
+
+Decide whether to enable **Accept Untrusted Certificates**—only advisable when necessary due to potential security risks.
+
+### Step 11
+
+Set the desired **Timeout** period to prevent early termination of the connection.
+
+</Steps>
+
+<Callout type="warning" title="Security Notice">
+  Always ensure connection security by using reliable SMTP server configurations and avoiding the acceptance of untrusted certificates unless absolutely necessary.
+</Callout>
+
+## Input/Output Examples
+
+- **To**: "jane.doe@example.com, john.doe@example.com"
+- **Subject**: "Monthly Report"
+- **Body**: "Please find attached the monthly report for review."
+- **Attachments**: "C:\Reports\MonthlyReport.pdf"
+
+## Common Mistakes & Troubleshooting
+
+| Problem                                            | Solution                                                                                                                                                                      |
+| -------------------------------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| **Email not sending**                              | Verify SMTP server settings and ensure credentials are correct. If using authentication, make sure **User Name** and **Password** are accurate. Check internet connection.     |
+| **Attachments not appearing**                      | Make sure file paths in **Attachments** are correct and accessible. Ensure they're separated by commas without spaces.                                                         |
+| **Format rendering incorrectly**                   | Double-check **Body Format** setting—use HTML only when familiar with HTML structuring and styling. For simple emails, ensure "Plain" is selected.                             |
+| **Timeout issues**                                 | Increase the **Timeout** setting if initial attempts to send do not complete. Check if firewall settings may be obstructing longer connections.                                |
+
+## Real-World Use Cases
+
+- **Notifications**: Automate sending notifications to clients and customers.
+- **Marketing**: Distribute promotional content in versatile HTML formatted emails.
+- **Collaboration**: Quickly share important documents and updates with team members across various departments.
+- **Alerts**: Configure alerts for transaction processes that confirm action completions to relevant stakeholders.
