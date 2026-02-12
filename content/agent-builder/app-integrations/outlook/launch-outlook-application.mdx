@@ -1,0 +1,70 @@
+import { Callout, Steps } from "nextra/components";
+
+# Launch Outlook Application
+
+The **Launch Outlook Application** node is designed to open the Microsoft Outlook email client on your desktop. This node is useful when you need to automate tasks involving emails, calendars, or contacts, allowing you to launch Outlook and optionally connect to a specific profile seamlessly during your automation processes.
+
+For example:
+
+- Starting Outlook to prepare for sending or receiving emails.
+- Automating workflows that require access to Outlook's calendar or contact functionalities.
+
+## Configuration Options
+
+| Field Name            | Description                                                                 | Input Type | Required? | Default Value |
+|-----------------------|-----------------------------------------------------------------------------|------------|-----------|---------------|
+| **Profile Name**      | The name of the Outlook profile to use for launching. This is optional.     | Text       | No        | _(empty)_     |
+| **Create New Instance** | Choose whether to open a new Outlook instance or use an existing one.      | Switch     | No        | True          |
+
+## Expected Output Format
+
+The output of this node is an **Outlook Application object**. This object represents the instance of the Outlook application that is opened or reused, allowing it to be utilized in further automation tasks.
+
+## Step-by-Step Guide
+
+<Steps>
+### Step 1
+
+Add **Launch Outlook Application** node into your flow.
+
+### Step 2
+
+(Optional) If you have multiple Outlook profiles and wish to specify one, enter the name in the **Profile Name** field. If left empty, Outlook will launch using the default profile.
+
+### Step 3
+
+In the **Create New Instance** switch, decide whether Outlook should start as a new instance or connect to an already open one:
+
+- **On**: Creates a new instance of Outlook.
+- **Off**: Reuses an existing open instance if available.
+
+### Step 4
+
+Proceed with your automation tasks, using the **Outlook Application** object as needed in subsequent nodes.
+
+</Steps>
+
+<Callout type="info" title="Tip">
+  If unsure about which profile name to use, you can leave the **Profile Name** field empty to launch with the default profile.
+</Callout>
+
+## Input/Output Examples
+
+| Profile Name | Create New Instance | Output Value         | Output Type            |
+|--------------|----------------------|----------------------|------------------------|
+| Personal     | True                 | OutlookApplication   | Outlook Application    |
+| Work         | False                | OutlookApplication   | Outlook Application    |
+
+## Common Mistakes & Troubleshooting
+
+| Problem                                               | Solution                                                                                                                                                        |
+|-------------------------------------------------------|-----------------------------------------------------------------------------------------------------------------------------------------------------------------|
+| **Outlook not launching**                             | Ensure Outlook is installed on your desktop and the profile name provided (if any) is correct.                                                                 |
+| **Multiple instances opening unintentionally**        | Check the **Create New Instance** switch. Set it to **Off** if you prefer to use an existing session of Outlook.                                               |
+| **Profile name errors**                               | If you're experiencing issues with the profile name, ensure the name matches one of the profiles set up in Outlook or leave it blank for the default profile. |
+
+## Real-World Use Cases
+
+- **Email Automation**: Automatically launch Outlook to send a batch of pre-composed emails.
+- **Calendar Management**: Open Outlook in preparation for performing calendar-related tasks like scheduling or updating events.
+- **Contact Operations**: Use Outlook's contact functionalities in conjunction with automated processes.

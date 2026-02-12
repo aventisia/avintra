@@ -1,0 +1,69 @@
+import { Callout, Steps } from "nextra/components";
+
+# Save Outlook Email Messages
+
+The **Save Outlook Email Messages** node enables users to save selected Outlook email messages as `.msg` files to a specified location on their computer. This is particularly useful for backing up important emails, freeing up space in your inbox by storing emails locally, or organizing emails for offline access or archiving.
+
+## Configuration Options
+
+| Field Name            | Description                                                                    | Input Type | Required? | Default Value |
+| --------------------- | ------------------------------------------------------------------------------ | ---------- | --------- | ------------- |
+| **Outlook Application** | The Outlook application object used to access and manage email messages.       | Text       | Yes       | _(empty)_     |
+| **Email Messages**    | A list of email items that you want to save as `.msg` files.                    | Text       | Yes       | _(empty)_     |
+| **Save Location**     | The file path where you want the `.msg` files to be saved on your computer.     | Text       | Yes       | _(empty)_     |
+
+## Expected Output Format
+
+The node outputs no additional data directly in terms of values or messages. The primary action is the creation of `.msg` files at the specified location, which reflects successful operation. 
+
+## Step-by-Step Guide
+
+<Steps>
+### Step 1
+
+Add **Save Outlook Email Messages** node into your flow.
+
+### Step 2
+
+In the **Outlook Application** field, specify the Outlook application object that connects to your Outlook email service.
+
+### Step 3
+
+Within the **Email Messages** field, list each email message you wish to save. Enter them as MailItem objects.
+
+### Step 4
+
+In the **Save Location** field, enter the folder path where you want the email messages to be saved as `.msg` files.
+
+### Step 5
+
+Execute the flow to save the specified emails to the desired location. Confirm that the `.msg` files appear in your designated folder.
+
+</Steps>
+
+<Callout type="info" title="Tip">
+  Ensure the specified Save Location folder exists and is accessible. Create the folder beforehand if necessary to avoid errors.
+</Callout>
+
+## Input/Output Examples
+
+| Field              | Example Input                                |
+| ------------------ | -------------------------------------------- |
+| Outlook Application| `Outlook.Application` object                 |
+| Email Messages     | A list of selected email items               |
+| Save Location      | `C:\Users\YourName\Documents\SavedEmails`    |
+
+## Common Mistakes & Troubleshooting
+
+| Problem                                                                   | Solution                                                                                                 |
+| ------------------------------------------------------------------------- | -------------------------------------------------------------------------------------------------------- |
+| **Save Location does not exist**                                          | Verify the folder path and ensure the destination directory exists prior to running the automation.      |
+| **Invalid Outlook Application input**                                     | Ensure a valid Outlook Application object is pointed at your Outlook instance.                           |
+| **Emails not saving or missing**                                          | Double-check the list of emails specified are reachable and correctly selected for saving.               |
+
+## Real-World Use Cases
+
+- **Email Archiving**: Save important emails for long-term storage or for legal reasons without relying on a mail server.
+- **Project Documenting**: Store project-related emails in project directories for organized referencing.
+- **Backup Strategy**: Offload significant emails to local storage to reduce email server load.
+- **Compliance Records**: Ensure a timely archiving of emails to comply with business record-keeping standards.
