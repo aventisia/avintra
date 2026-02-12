@@ -674,10 +674,10 @@ public class MyAccountService : IMyAccountService
     }
 
     // Update user's email
-    public async Task<ServiceResponse<EmailUpdateDto>> UpdateEmailAsync(EmailUpdateDto emailUpdateDto)
+    public async Task<ServiceResponse<UserSessionDto>> UpdateEmailAsync(EmailUpdateDto emailUpdateDto)
     {
         // Initialize ServiceResponse with Failed response
-        var serviceResponse = new ServiceResponse<EmailUpdateDto>()
+        var serviceResponse = new ServiceResponse<UserSessionDto>()
         {
             Data = null,
             Message = "Failed to update your email. Please try again later"
@@ -761,6 +761,8 @@ public class MyAccountService : IMyAccountService
                 return serviceResponse;
             }
 
+
+
             // Get any active sessions for the user and delete them
             var activeSessions = await _unitOfWork.ActiveSessionRepo.GetByConditionAsync(w => w.UserId == user.Id).ToListAsync();
             if (activeSessions.Any())
@@ -771,13 +773,30 @@ public class MyAccountService : IMyAccountService
                     _logger.LogWarning($"Failed to save after deleting {activeSessions.Count} active session(s) for user {user.UserName}.");
                 }
             }
+            // Fetch the updated user with their tenant details
+            user = await _unitOfWork.AccountUserRepo
+                .GetByConditionAsync(w => EF.Functions.ILike(user.Email, w.UserName))
+                .AsSplitQuery()
+                .Include(i => i.Tenant)
+                .Include(i => i.UserRoles)
+                        .ThenInclude(i1 => i1.Role)
+                            .ThenInclude(i2 => i2.RolePermissions)
+                                .ThenInclude(i3 => i3.Permission)
+                .AsNoTracking()
+                .SingleOrDefaultAsync();
 
             // Create a new session for the user with the updated email
             var activeSession = await _authService.CreateUserSessionAsync(user);
+            if (activeSession.StatusCode != 200)
+            {
+                // Log the error with relevant details
+                _logger.LogError($"Failed to create user session. Status Code: {activeSession.StatusCode}, User ID: {user.Id}, Email: {user.Email}");
+                return serviceResponse;
+            }
 
             // Log success and set response message
             _logger.LogInformation($"{methodName}: Email has been updated for account {_userName}");
-            serviceResponse.Data = emailUpdateDto;
+            serviceResponse.Data = activeSession.Data;
             serviceResponse.StatusCode = 200;
             serviceResponse.Message = "Your email has been updated successfully";
         }

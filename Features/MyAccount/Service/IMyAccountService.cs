@@ -56,7 +56,7 @@ public interface IMyAccountService
     /// </summary>
     /// <param name="emailUpdateDto">the email update dto</param>
     /// <returns>A task that represents the asynchronous operation. The task result contains the service response indicating whether the email update was successful or not.</returns>
-    Task<ServiceResponse<EmailUpdateDto>> UpdateEmailAsync(EmailUpdateDto emailUpdateDto);
+    Task<ServiceResponse<UserSessionDto>> UpdateEmailAsync(EmailUpdateDto emailUpdateDto);
 
 
     /// <summary>
