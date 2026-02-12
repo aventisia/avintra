@@ -1,0 +1,70 @@
+import { Callout, Steps } from "nextra/components";
+
+# Renew AWS ACM Certificate
+
+The **Renew AWS ACM Certificate** node is designed to renew a Secure Socket Layer (SSL) certificate in Amazon Web Services (AWS) using the AWS Certificate Manager (ACM). This is essential for maintaining secure connections in your web services without manual renewal efforts. Use this node when your existing ACM certificate is close to expiring to ensure uninterrupted secure communications.
+
+## Configuration Options
+
+| Field Name                   | Description                                                                     | Input Type | Required? | Default Value |
+| ---------------------------- | ------------------------------------------------------------------------------- | ---------- | --------- | ------------- |
+| **AWS Credential (Vault ID)**| Select the AWS credential to use for authentication.                             | Text       | Yes       | _(empty)_     |
+| **Certificate ARN**          | The Amazon Resource Name (ARN) of the ACM certificate you wish to renew.        | Text       | Yes       | _(empty)_     |
+| **AWS Region**               | The region where your certificate is located (e.g., us-east-1).                 | Text       | No        | us-east-1     |
+
+## Expected Output Format
+
+The output of this node includes two fields:
+
+- **API Response**: A JSON object detailing the success or error returned by the AWS API.
+- **Renewal Status**: A simple text message indicating "Success" or "Failed".
+
+## Step-by-Step Guide
+
+<Steps>
+### Step 1
+
+Add the **Renew AWS ACM Certificate** node into your flow.
+
+### Step 2
+
+In the **AWS Credential (Vault ID)** field, enter the appropriate Vault ID for AWS Credential you are using for authentication.
+
+### Step 3
+
+Enter the **Certificate ARN** of the SSL certificate you want to renew.
+
+### Step 4
+
+Specify the **AWS Region** where your certificate is hosted. If unsure, the default region is `us-east-1`.
+
+### Step 5
+
+The results of the renewal operation are available under **API Response** and **Renewal Status**.
+</Steps>
+
+<Callout type="info" title="Note">
+  Ensure your AWS credentials have the necessary permissions to renew ACM certificates.
+</Callout>
+
+## Input/Output Examples
+
+| AWS Credential ID | Certificate ARN                                 | AWS Region | API Response           | Renewal Status |
+| ----------------- | ----------------------------------------------- | ---------- | ---------------------- | -------------- |
+| vault_123         | arn:aws:acm:us-east-1:123456789012:certificate... | us-east-1  | `{"result": "Success"}` | Success        |
+| vault_456         | arn:aws:acm:us-west-2:987654321098:certificate... | us-west-2  | `{"error": "Access Denied"}` | Failed |
+
+## Common Mistakes & Troubleshooting
+
+| Problem                                     | Solution                                                                                                                                                               |
+| ------------------------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| **Invalid Credential**                      | Ensure you have selected the correct Vault ID with appropriate permissions.                                                                                             |
+| **Certificate ARN Not Found**               | Verify the ARN entered is correct and belongs to a certificate within your specified AWS region.                                                                       |
+| **Access Denied Error**                     | Make sure your AWS credentials include the necessary ACM permissions or that the IAM policy attached to the credential allows ACM actions.                             |
+| **AWS Region Incorrect**                    | Check the AWS Region you have entered. If your certificate is in a different region, you will need to change this to match the certificate's location.                   |
+
+## Real-World Use Cases
+
+- **Website Security Maintenance**: Automatically renew SSL certificates to keep websites secure without manual interventions.
+- **E-commerce Platforms**: Ensure secure data transfer by promptly renewing certificates before expiry.
+- **Regulatory Compliance**: Keep your company's application communications compliant with data protection laws by managing SSL renewals effectively.

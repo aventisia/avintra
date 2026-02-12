@@ -1,0 +1,97 @@
+import { Callout, Steps } from "nextra/components";
+
+# Create or Update AWS DynamoDB Item
+
+The **Create or Update AWS DynamoDB Item** node allows you to add or update an item in your Amazon DynamoDB table effortlessly. Use this node when you need to manage your data storage within DynamoDB, automating tasks such as inserting new records or updating existing entries based on a primary key.
+
+For example:
+
+- Automating order entry updates in an eCommerce database.
+- Synchronizing inventory data across systems.
+- Recording customer interactions or preferences in real-time.
+
+## Configuration Options
+
+| Field Name           | Description                                                                                     | Input Type | Required? | Default Value  |
+| -------------------- | ----------------------------------------------------------------------------------------------- | ---------- | --------- | -------------- |
+| **Credential to connect with** | Select the AWS credential to use for authentication.                                    | Text       | Yes       | _(empty)_      |
+| **Table Name or ID** | The name of the DynamoDB table to create or update an item in.                                   | Text       | Yes       | _(empty)_      |
+| **Data to Send**     | Choose how to send data: auto-map all inputs or define each column manually.                     | Select     | Yes       | _(empty)_      |
+| **Inputs to ignore** | Comma-separated list of input property names to ignore when auto-mapping. _Appears if auto-mapping is selected._ | Text       | No        | _(empty)_      |
+| **Fields to Send**   | List of fields to send when manually defining columns. _Appears if manual definition is selected._ | Text       | No        | _(empty)_      |
+| **Additional Fields** | Optional additional fields to include in the item.                                             | Text       | No        | _(empty)_      |
+| **AWS Region**       | The AWS region where the DynamoDB table is located (e.g., us-east-1). Default: us-east-1.      | Text       | No        | us-east-1     |
+
+## Expected Output Format
+
+The node generates an output comprising:
+
+- **API Response**: Raw JSON response from AWS DynamoDB.
+- **Item Key**: The primary key of the created or updated item.
+
+## Step-by-Step Guide
+
+<Steps>
+
+### Step 1
+
+Add the **Create or Update AWS DynamoDB Item** node into your flow.
+
+### Step 2
+
+In the **Credential to connect with** field, select the AWS credential to authenticate your request.
+
+### Step 3
+
+Enter the **Table Name or ID** of the DynamoDB table where you want to create or update an item.
+
+### Step 4
+
+Select how to send your data in the **Data to Send** dropdown:
+
+- **Auto-Map Input Data to Columns**: Automatically map all input fields to columns.
+- **Define Below for Each Column**: Manually define fields to be sent.
+
+### Step 5
+
+- If you selected **Auto-Map Input Data to Columns**, specify any **Inputs to ignore**.
+- If you selected **Define Below for Each Column**, list the fields under **Fields to Send**.
+
+### Step 6
+
+(Optional) Add any **Additional Fields** you wish to include in the item.
+
+### Step 7
+
+(Optional) Specify the **AWS Region** where your DynamoDB table is located. The default is us-east-1.
+
+### Step 8
+
+The node will produce a **Response** (raw JSON from AWS DynamoDB) and **Item Key** (the primary key of the affected item), ready for further use in your flow.
+
+</Steps>
+
+<Callout type="info" title="Note">
+  Make sure to correctly configure your AWS credential for authentication, as it is critical for successful interaction with DynamoDB.
+</Callout>
+
+## Input/Output Examples
+
+| Input Scenario                     | Description                          | Output Field | Output Description                |
+| ---------------------------------- | ------------------------------------ | ------------ | --------------------------------- |
+| Successfully created a new record  | New product added to inventory.      | API Response | Confirmation of creation in JSON. |
+| Updated existing customer profile  | Modified data based on customer ID.  | Item Key     | Unique ID of customer profile.    |
+
+## Common Mistakes & Troubleshooting
+
+| Problem                                           | Solution                                                                                                                                         |
+| ------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------ |
+| **Missing AWS Credential**                        | Ensure the correct AWS Credential is selected in the **Credential to connect with** field.                                                       |
+| **Table does not exist**                          | Verify and correctly enter the table's name in the **Table Name or ID** field.                                                                  |
+| **Unrecognized input fields when auto-mapping**   | Ensure that input fields are correctly named and formatted as expected for the DynamoDB table structure.                                         |
+
+## Real-World Use Cases
+
+- **Customer Management**: Automatically update customer records based on interactions or purchases.
+- **Inventory Management**: Sync product details such as stock amount and pricing across various regions or locations.
+- **Order Processing**: Track and update order statuses in an eCommerce system dynamically.

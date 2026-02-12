@@ -1,0 +1,77 @@
+import { Callout, Steps } from "nextra/components";
+
+# Get AWS ELB Load Balancer
+
+The **Get AWS ELB Load Balancer** node is used to fetch detailed information about an Application or Network Load Balancer from AWS Elastic Load Balancing (ALB/NLB). This node is useful when you need to monitor, audit, or manage load balancers as part of your AWS infrastructure tasks.
+
+Common reasons to use this node include:
+
+- Retrieving configuration details for documentation or auditing purposes.
+- Checking the current state or status of a load balancer.
+- Fetching DNS names and other critical information for integration or network requests.
+
+## Configuration Options
+
+| Field Name                  | Description                                                                                            | Input Type | Required? | Default Value |
+| --------------------------- | ------------------------------------------------------------------------------------------------------ | ---------- | --------- | ------------- |
+| **Credential to connect with** | Select the AWS credential to use for authentication.                                                 | Text       | Yes       | _(empty)_     |
+| **Load Balancer ARN**       | The ARN (Amazon Resource Name) of the load balancer you wish to retrieve.                              | Text       | Yes       | _(empty)_     |
+| **AWS Region**              | Specify the AWS region where the load balancer is located, such as "us-east-1".                        | Text       | No        | us-east-1     |
+
+## Expected Output Format
+
+The output will include:
+
+- **Load Balancer Details**: Key attributes such as ARN, DNS name, the state of the load balancer, etc.
+- **API Response**: The complete raw JSON response from the AWS ELB service.
+
+Both outputs are available as structured data that can be used in subsequent workflow steps.
+
+## Step-by-Step Guide
+
+<Steps>
+### Step 1
+
+Add the **Get AWS ELB Load Balancer** node into your workspace flow.
+
+### Step 2
+
+In the **Credential to connect with** field, enter or select the AWS credential that allows access to your AWS account.
+
+### Step 3
+
+Enter the **Load Balancer ARN** for the load balancer you wish to retrieve. Ensure this ARN is correct to avoid errors.
+
+### Step 4
+
+If your load balancer is located outside of the default region (us-east-1), provide the correct **AWS Region** where it's hosted.
+
+### Step 5
+
+Execute the node to retrieve the load balancer details. The information will be presented as **Load Balancer Details** and the **API Response** will contain the raw data.
+
+</Steps>
+
+<Callout type="info" title="Tip">
+  Double-check your ARN and AWS Region to avoid unnecessary errors, especially when operating across multiple AWS accounts or regions.
+</Callout>
+
+## Input/Output Examples
+
+| AWS Region | Load Balancer ARN | Load Balancer Details                   | API Response                             |
+| ---------- | ----------------- | --------------------------------------- | ---------------------------------------- |
+| us-east-1  | arn:aws:elasticloadbalancing:abc123 | `{ARN: "...", DNSName: "...", State: "..."}` | `{statusCode: 200, body: {...}}` |
+
+## Common Mistakes & Troubleshooting
+
+| Problem                                                   | Solution                                                                                       |
+| --------------------------------------------------------- | ---------------------------------------------------------------------------------------------- |
+| **Incorrect ARN format**                                  | Verify the ARN is in the correct format. It should start with "arn:aws:elasticloadbalancing".  |
+| **Authentication Failure**                                | Ensure that the credentials provided have access to query AWS ELB services. Check permissions. |
+| **Region mismatch**                                       | Double-check the AWS Region; ensure it matches the location where your load balancer is deployed. |
+
+## Real-World Use Cases
+
+- **Infrastructure Monitoring**: Continuously monitor load balancer health and performance metrics.
+- **Security Audits**: Retrieve configuration details during security audits to ensure compliance.
+- **Networking**: Fetch DNS names for integration with external systems or network configuration.

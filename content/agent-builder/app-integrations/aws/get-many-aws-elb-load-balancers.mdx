@@ -1,0 +1,70 @@
+import { Callout, Steps } from "nextra/components";
+
+# Get Many AWS ELB Load Balancers
+
+The **Get Many AWS ELB Load Balancers** node allows you to retrieve multiple load balancers from AWS Elastic Load Balancing (ELB). This node can fetch Application Load Balancers (ALB) or Network Load Balancers (NLB) that you might use for distributing incoming application or network traffic. It is particularly useful for monitoring, management, or integration purposes where you need details about active load balancers in your AWS environment.
+
+## Configuration Options
+
+| Field Name                     | Description                                                                                   | Input Type | Required? | Default Value |
+| ------------------------------ | --------------------------------------------------------------------------------------------- | ---------- | --------- | ------------- |
+| **Credential to connect with** | Select the AWS credential to use for authentication.                                          | Text       | Yes       | _(empty)_     |
+| **Return All**                 | Enable to retrieve all load balancers (up to AWS limit). If not enabled, limits the results. | Switch     | No        | _(empty)_     |
+| **Limit**                      | Maximum number of load balancers to return (max 100).                                         | Text       | No        | 100           |
+| **AWS Region**                 | The AWS region where the load balancers are located (e.g., us-east-1).                        | Text       | No        | us-east-1     |
+
+## Expected Output Format
+
+- **Load Balancers**: Gives you a list of retrieved load balancers including ARN, DNS name, state, etc.
+- **API Response**: Provides the raw JSON response directly from AWS ELB.
+
+## Step-by-Step Guide
+
+<Steps>
+### Step 1
+
+Add the **Get Many AWS ELB Load Balancers** node into your flow.
+
+### Step 2
+
+Select the credential you wish to use for AWS authentication in the **Credential to connect with** field.
+
+### Step 3
+
+Decide whether to toggle **Return All**. If disabled, make sure to fill in the **Limit** field to cap the number of load balancers retrieved.
+
+### Step 4
+
+Specify the **AWS Region** where your load balancers are located, such as `us-east-1`.
+
+### Step 5
+
+Once configured, the node will output a detailed list of load balancers to **LoadBalancers** for further use, along with the **API Response** JSON.
+
+</Steps>
+
+<Callout type="warning" title="Note">
+  If **Return All** is selected, the **Limit** field will not be operative. Ensure your AWS account supports the number of load balancers being requested.
+</Callout>
+
+## Input/Output Examples
+
+| Return All | Limit | Region   | Output Value (Load Balancers) | Response Output Type |
+| ---------- | ----- | -------- | ----------------------------- | -------------------- |
+| True       | n/a   | us-east-1 | List of Load Balancers        | Raw JSON             |
+| False      | 50    | us-west-2 | List of Load Balancers        | Raw JSON             |
+
+## Common Mistakes & Troubleshooting
+
+| Problem                                        | Solution                                                                                                                                               |
+| ---------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------ |
+| **Invalid credential error**                   | Make sure the correct AWS credentials are chosen in the **Credential to connect with** field.                                                          |
+| **No load balancers returned**                 | Double-check the region specified and that load balancers exist in the chosen AWS region.                                                              |
+| **Limit not applying**                         | Ensure that **Return All** is not enabled if you want to set a custom limit.                                                                           |
+| **AWS Region not supported**                   | Verify the AWS region code is correct and supported, e.g., `us-east-1`.                                                                                |
+
+## Real-World Use Cases
+
+- **Load Balancer Inventory**: Quickly pull a complete inventory of your load balancers for auditing or monitoring purposes.
+- **Real-time Monitoring**: Use the data fetched to monitor active load balancers and their status.
+- **Performance Tuning**: Retrieve specifics about load balancers to tune application performance according to current distribution settings.

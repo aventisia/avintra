@@ -1,0 +1,69 @@
+import { Callout, Steps } from "nextra/components";
+
+# Delete AWS ELB Load Balancer
+
+The **Delete AWS ELB Load Balancer** node allows you to remove an Application Load Balancer (ALB) or Network Load Balancer (NLB) from your AWS infrastructure. This is helpful when you need to discontinue a load balancer that is no longer required, freeing up resources and potentially reducing costs related to unused infrastructure.
+
+- You can specify the Load Balancer using its Amazon Resource Name (ARN).
+- Ensure the appropriate AWS credentials are used to authenticate the operation.
+
+## Configuration Options
+
+| Field Name                | Description                                                                        | Input Type | Required? | Default Value |
+| ------------------------- | ---------------------------------------------------------------------------------- | ---------- | --------- | ------------- |
+| **Credential to connect with** | Select the AWS credential to use for authentication (AWSServiceVaultId).             | Text       | Yes       | _(empty)_     |
+| **Load Balancer ARN**     | The ARN of the load balancer to delete.                                            | Text       | Yes       | _(empty)_     |
+| **AWS Region**            | The AWS region where the load balancer is located (e.g., us-east-1). Default: us-east-1. | Text       | No        | _(empty)_     |
+
+## Expected Output Format
+
+The node provides two main outputs as feedback on the operation:
+
+- **Response**: Raw JSON response from AWS ELB. It gives detailed information about the deletion process.
+- **Success**: Indicates whether the operation was successfully executed (e.g., `true` or `false`).
+
+The outputs give diagnostic details after attempting the load balancer deletion.
+
+## Step-by-Step Guide
+
+<Steps>
+### Step 1
+
+Add **Delete AWS ELB Load Balancer** node into your flow.
+
+### Step 2
+
+In the **Credential to connect with** field, select the AWS credentials stored in your Service Vault needed to authenticate AWS access.
+
+### Step 3
+
+In the **Load Balancer ARN** field, enter the ARN of the load balancer you intend to delete. This unique identifier tells AWS which load balancer to remove.
+
+### Step 4
+
+(Optional) In the **AWS Region** field, specify the region in which your load balancer resides. If not specified, it defaults to `us-east-1`.
+
+### Step 5
+
+The result of the deletion attempt will be available as **Response** and **Success** outputs for use in subsequent nodes.
+
+</Steps>
+
+<Callout type="info" title="Important Note">
+  Ensure that you have the right permissions to delete load balancers in your AWS account to avoid permission-related errors.
+</Callout>
+
+## Common Mistakes & Troubleshooting
+
+| Problem                                | Solution                                                                                      |
+| -------------------------------------- | --------------------------------------------------------------------------------------------- |
+| **Invalid ARN**                        | Confirm that the ARN you entered is correct and corresponds to an existing load balancer.     |
+| **Permission Denied**                  | Verify that the AWS credentials have the correct permissions to delete load balancers.        |
+| **Region Misconfiguration**            | Make sure the region specified matches the region where the load balancer is located.         |
+| **Empty or Incorrect Credentials**     | Double-check that the AWS credentials are correctly entered and functional.                   |
+
+## Real-World Use Cases
+
+- **Cost Management**: Regularly delete unused ELBs to reduce AWS resource costs.
+- **Infrastructure Cleanup**: Automate the removal of old or decommissioned load balancers to maintain a clean setup.
+- **Security Compliance**: Ensures you only have active, necessary load balancers, reducing security risks from dormant resources.
