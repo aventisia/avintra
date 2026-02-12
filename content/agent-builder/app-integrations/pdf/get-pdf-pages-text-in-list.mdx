@@ -1,0 +1,71 @@
+import { Callout, Steps } from "nextra/components";
+
+# Get PDF Pages Text in List
+
+The **Get PDF Pages Text in List** node allows you to extract text from each page of a PDF file and returns the extracted texts as a list. This is useful for analyzing PDF documents by processing the text content page by page, such as gathering information from multi-page reports or extracting data for further analysis.
+
+For example:
+
+- Extracting text from each page of a report for separate processing.
+- Retrieving content from academic papers for review.
+- Decompiling large documents into manageable text chunks.
+
+## Configuration Options
+
+| Field Name         | Description                                                                            | Input Type | Required? | Default Value |
+| ------------------ | -------------------------------------------------------------------------------------- | ---------- | --------- | ------------- |
+| **PDF File Path**  | Full path to the PDF file from which you want to extract text (e.g., `C:\\docs\\input.pdf`). | Text       | Yes       | _(empty)_     |
+
+## Expected Output Format
+
+This node generates two distinct outputs:
+
+- **Page Texts**: A list of strings. Each string contains the text extracted from a single page of the PDF.
+- **Page Count**: A simple numeric value representing the total number of pages processed.
+
+## Step-by-Step Guide
+
+<Steps>
+### Step 1
+
+Add **Get PDF Pages Text in List** node into your flow.
+
+### Step 2
+
+In the **PDF File Path** field, enter the complete path to your PDF file. Ensure that the file path is correct and the PDF document is accessible.
+
+### Step 3
+
+Once set up, the node will process the PDF and output:
+- **Page Texts** as a list of text blocks, each representing one page.
+- **Page Count** with the total number of pages.
+
+### Step 4
+
+You can use the **Page Texts** and **Page Count** in subsequent steps of your workflow for processing or analyzing the extracted text data.
+
+</Steps>
+
+<Callout type="info" title="Tip">
+  Ensure your PDF file is not locked or password-protected. This node cannot process protected PDFs.
+</Callout>
+
+## Input/Output Examples
+
+| PDF File Path       | Expected Output                                             |
+| ------------------- | ----------------------------------------------------------- |
+| `C:\\docs\\input.pdf` | Page Texts: [`"Page 1 Text..."`, `"Page 2 Text..."`] <br /> Page Count: `10` |
+
+## Common Mistakes & Troubleshooting
+
+| Problem                                                      | Solution                                                                                                              |
+| ------------------------------------------------------------ | --------------------------------------------------------------------------------------------------------------------- |
+| **File Not Found Error**                                     | Double-check the file path entered in the **PDF File Path** field to ensure it points to the correct and accessible PDF. |
+| **Empty Output List**                                        | Verify that the PDF file contains text and is not entirely image-based (consider using OCR if needed).                |
+| **Password-Protected PDF**                                   | Ensure the PDF is not locked with a password. If so, remove the protection before processing.                         |
+
+## Real-World Use Cases
+
+- **Data Analysis**: Extract each page's content from multi-page reports for segment-specific analysis.
+- **Content Review**: Gather text from academic papers for scholarly reviews.
+- **Document Translation**: Break down PDF documents page by page for translation tasks.
