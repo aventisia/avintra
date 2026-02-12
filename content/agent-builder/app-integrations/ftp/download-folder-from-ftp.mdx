@@ -1,0 +1,76 @@
+import { Callout, Steps } from "nextra/components";
+
+# Download Folder from FTP
+
+The **Download Folder from FTP** node is used to transfer folders from a specified FTP server directly to your local machine. This functionality is critical when you need to backup server data or access files locally for analysis or processing.
+
+This node is useful for:
+
+- Downloading project directories for local review or changes.
+- Backing up server folders for safety and record-keeping.
+- Accessing files offline when the server is unavailable.
+
+## Configuration Options
+
+| Field Name      | Description                                                | Input Type | Required? | Default Value |
+| --------------- | ---------------------------------------------------------- | ---------- | --------- | --------------|
+| **FTP Connection** | The FTP connection object that includes connection details. | Text       | Yes       | _(empty)_     |
+| **Folder Name**   | The specific folder name you wish to download from the FTP server. | Text       | Yes       | _(empty)_     |
+| **Local Directory** | The directory path on your local machine for saving the downloaded folder. | Text       | Yes       | _(empty)_     |
+
+## Expected Output Format
+
+The node will download the folder from the FTP server and store it in the specified local directory. There are no direct output values displayed beyond the folder's download confirmation.
+
+## Step-by-Step Guide
+
+<Steps>
+### Step 1
+
+Add the **Download Folder from FTP** node into your flow.
+
+### Step 2
+
+In the **FTP Connection** field, input the FTP connection details. This includes the server address, username, and password (formatted as a connection object).
+
+### Step 3
+
+Enter the name of the folder you wish to download in the **Folder Name** field. Ensure the name matches exactly the folder's name on the FTP server.
+
+### Step 4
+
+Specify the path where you want to save the folder on your local machine in the **Local Directory** field.
+
+### Step 5
+
+Once configured, execute the node to begin the folder download process. Make sure your network connection is stable to avoid interruptions.
+</Steps>
+
+<Callout type="warning" title="Note">
+  Ensure that the FTP server's permissions allow for folder download, and that the destination local directory has sufficient storage space.
+</Callout>
+
+## Input/Output Examples
+
+| Field            | Input Example               |
+| ---------------- | --------------------------- |
+| FTP Connection   | ftp://user:password@host    |
+| Folder Name      | `ProjectData`               |
+| Local Directory  | `C:\Users\Name\Downloads`   |
+
+**Output Example**: Folder `ProjectData` is downloaded to `C:\Users\Name\Downloads`.
+
+## Common Mistakes & Troubleshooting
+
+| Problem                                               | Solution                                                                                                                       |
+| ----------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------ |
+| **Invalid FTP Connection Details**                    | Verify the FTP credentials and address. Ensure you have network access to the FTP server.                                      |
+| **Folder Not Found**                                  | Check if the folder name is entered correctly and exists on the FTP server.                                                    |
+| **No Write Permission in Local Directory**            | Ensure that you have the necessary permissions to save files in the specified local directory.                                 |
+| **Incomplete Download**                               | Ensure a stable internet connection. If interrupted, reattempt the download to complete it.                                    |
+
+## Real-World Use Cases
+
+- **Remote Project Management**: Download project files stored on an FTP server to your local environment for updates or local processing.
+- **Data Backups**: Regularly download server folders to your local machine for secure backups.
+- **Content Updates**: Access website or application content stored on an FTP server for making offline changes.

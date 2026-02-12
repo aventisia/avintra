@@ -1,0 +1,88 @@
+import { Callout, Steps } from "nextra/components";
+
+# Upload File to FTP
+
+The **Upload File to FTP** node allows you to transfer a file from your local computer to a specified location on an FTP server. This is particularly useful for automating file uploads to remote locations, like backups or file sharing in business workflows.
+
+## Configuration Options
+
+| Field Name         | Description                                                                                 | Input Type | Required? | Default Value               |
+| ------------------ | ------------------------------------------------------------------------------------------- | ---------- | --------- | --------------------------- |
+| **FTP Connection** | The connection details for your FTP server.                                                 | Text       | Yes       | _(empty)_                   |
+| **Local File**     | The full path of the file on your computer that you want to upload.                         | Text       | Yes       | _(empty)_                   |
+| **Remote Directory** | The location on the FTP server where the file should be uploaded.                          | Text       | Yes       | _(empty)_                   |
+| **Overwrite Mode** | Choose when to overwrite existing files on the server.                                      | Select     | No        | IfNewerOrSizeDifferent      |
+| **Timeout Seconds**| Maximum time to wait before the operation times out.                                        | Text       | No        | 30                          |
+
+## Expected Output Format
+
+The output of this node includes:
+
+- **Uploaded Files Count**: Shows the number of files successfully uploaded (either 0 or 1).
+- **Skipped Files**: Lists any file that was skipped during the upload process.
+
+## Step-by-Step Guide
+
+<Steps>
+### Step 1
+
+Add the **Upload File to FTP** node into your workflow.
+
+### Step 2
+
+In the **FTP Connection** field, enter the details that represent an open connection to your FTP server.
+
+### Step 3
+
+Provide the full path to the **Local File** you want to upload, ensuring the file exists on your computer.
+
+### Step 4
+
+Specify the **Remote Directory** on the FTP server where the file should be placed.
+
+### Step 5
+
+Select an **Overwrite Mode** from the dropdown menu:
+- **Always**: Always replace files.
+- **Never**: Never replace files.
+- **If newer**: Overwrite if the remote file is older.
+- **If size different**: Overwrite if files are different sizes.
+- **If newer or size different**: Default setting, replaces if either condition is true.
+
+### Step 6
+
+Optionally, set the **Timeout Seconds** to determine how long to wait for a successful upload before timing out.
+
+### Step 7
+
+Once configured, the node will output:
+- **Uploaded Files Count**: Number of files uploaded.
+- **Skipped Files**: If any, files that weren't uploaded.
+
+</Steps>
+
+<Callout type="info" title="Tip">
+  Ensure that the FTP server connection is established before attempting to upload files, as connection failures will prevent uploads.
+</Callout>
+
+## Input/Output Examples
+
+| Local File Path        | Remote Directory | Overwrite Mode             | Uploaded Files Count | Skipped Files       |
+| ---------------------- | ---------------- | -------------------------- | ------------------- | ------------------- |
+| `/path/to/myfile.txt`  | `/uploads`       | Always                     | 1                   | _(none)_            |
+| `/path/to/myfile.txt`  | `/uploads`       | Never                      | 0                   | `/path/to/myfile.txt` |
+
+## Common Mistakes & Troubleshooting
+
+| Problem                                          | Solution                                                                                      |
+| ------------------------------------------------ | --------------------------------------------------------------------------------------------- |
+| **Invalid FTP Connection Details**               | Verify FTP details are correct and the server is accessible.                                  |
+| **File Not Found**                               | Ensure the file path is correct and the file exists.                                          |
+| **Timeout Expired**                              | Increase the value in **Timeout Seconds** or check network stability.                         |
+| **Overwrite Mode Misunderstanding**              | Double-check the selected overwrite mode and ensure it matches your intentions.               |
+
+## Real-World Use Cases
+
+- **Daily Backups**: Automate the upload of important files to a remote FTP server for safekeeping.
+- **Report Sharing**: Continuously upload generated reports to a shared server folder accessible by stakeholders.
+- **System Logs**: Regularly transfer system logs or application data to a centralized server for monitoring.

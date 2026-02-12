@@ -1,0 +1,72 @@
+import { Callout, Steps } from "nextra/components";
+
+# Rename FTP File
+
+The **Rename FTP File** node allows you to change the name of a file that is stored on an FTP server. This is useful for organizing files, adhering to naming conventions, or simply updating file names to reflect their content more accurately.
+
+For example:
+
+- Changing a file name from `report_old.csv` to `report_new.csv`.
+- Correcting typo errors in file names.
+- Updating filenames to match updated content.
+
+## Configuration Options
+
+| Field Name         | Description                                                                            | Input Type | Required? | Default Value |
+| ------------------ | -------------------------------------------------------------------------------------- | ---------- | --------- | ------------- |
+| **FTP Connection** | The FTP connection details to connect and access the server where the file resides.    | Text       | Yes       | _(empty)_     |
+| **Old File Name**  | The current name of the file on the server that you want to rename.                    | Text       | Yes       | _(empty)_     |
+| **New File Name**  | The new name you want the file to have after renaming.                                 | Text       | Yes       | _(empty)_     |
+| **Timeout Seconds**| The time in seconds the system should wait before stopping the operation due to timeout.| Text       | No        | 30            |
+
+## Expected Output Format
+
+There is no direct output value for this node. The success or failure of the renaming operation is reflected in the node’s execution result. When successful, the file on the FTP server will have the new name you specified.
+
+## Step-by-Step Guide
+
+<Steps>
+### Step 1
+
+Add **Rename FTP File** node into your flow.
+
+### Step 2
+
+In the **FTP Connection** field, enter the details of your FTP server connection. Ensure it's a valid and active connection.
+
+### Step 3
+
+In the **Old File Name** field, type the current name of the file you wish to rename.
+
+### Step 4
+
+In the **New File Name** field, enter the desired new file name.
+
+### Step 5
+
+(Optional) Set the **Timeout Seconds** if you need to adjust how long to wait before the operation times out.
+
+### Step 6
+
+Run the node to execute the file renaming operation on the specified FTP server.
+
+</Steps>
+
+<Callout type="warning" title="Important">
+  Make sure the FTP connection is active and the file permissions allow renaming. Incorrect connection details or permissions might result in errors.
+</Callout>
+
+## Common Mistakes & Troubleshooting
+
+| Problem                                  | Solution                                                                 |
+| ---------------------------------------- | ------------------------------------------------------------------------ |
+| **Invalid FTP Connection**               | Ensure the **FTP Connection** details are correct and the server is accessible. |
+| **File Not Found**                       | Verify the file exists on the server with the name entered in **Old File Name**. |
+| **Permission Denied**                    | Check if you have the necessary permissions to rename files on the server. |
+| **Operation Timeout**                    | Increase **Timeout Seconds** to allow more time for the server to respond. |
+
+## Real-World Use Cases
+
+- **File Organization**: Easily manage and organize files by renaming them to fit into a structured naming pattern aligned with corporate guidelines.
+- **Archiving Systems**: Rename files to include date and version numbers as part of systematic archiving processes.
+- **Data Correction**: Fix naming errors on multiple files hosted on an FTP server to maintain data integrity and searchability.
