@@ -1,0 +1,71 @@
+import { Callout, Steps } from "nextra/components";
+
+# Delete Range or Cell in Google Sheet
+
+The **Delete Range or Cell in Google Sheet** node helps you remove values from a specified cell or a range of cells in a Google Sheet without affecting any existing formatting, formulas, or comments. This is particularly useful when you want to clear data for updates or processing, while maintaining the sheet's structure and detailed annotations.
+
+## Configuration Options
+
+| Field Name        | Description                                                                                                          | Input Type | Required? | Default Value |
+| ----------------- | -------------------------------------------------------------------------------------------------------------------- | ---------- | --------- | ------------- |
+| **Sheets Service** | The authenticated SheetsService instance created from the 'Create Google Sheets Service Instance' activity.           | Text       | Yes       | _(empty)_     |
+| **Spreadsheet ID** | The unique identifier of your Google Spreadsheet, found in the URL.                                                  | Text       | Yes       | _(empty)_     |
+| **Sheet Name**     | The name of the specific sheet tab you wish to alter (e.g., 'Sheet1').                                               | Text       | Yes       | _(empty)_     |
+| **Range**          | The specific cell or range of cells from which you want to delete values (e.g., 'A1', 'A1:B10').                      | Text       | Yes       | _(empty)_     |
+| **Run Delay (ms)** | An optional delay before execution in milliseconds, useful to manage API rate limits.                                 | Text       | No        | 0             |
+
+## Expected Output Format
+
+This node does not produce direct output but modifies the data within the specified range of your Google Sheet.
+
+## Step-by-Step Guide
+
+<Steps>
+### Step 1
+
+Add the **Delete Range or Cell in Google Sheet** node into your flow.
+
+### Step 2
+
+In the **Sheets Service** field, enter the previously authenticated SheetsService instance. This is essential for connecting and executing actions on the Google Sheet.
+
+### Step 3
+
+Enter the **Spreadsheet ID** in the corresponding field. This ID is part of your Google Sheet's URL and uniquely identifies your spreadsheet.
+
+### Step 4
+
+Specify the **Sheet Name** of the tab you wish to clear data from. This should match exactly as it appears in your Google Sheet.
+
+### Step 5
+
+Enter the **Range** to determine which cells will have their data removed (e.g., 'A1', 'A1:B10').
+
+### Step 6
+
+(Optional) Set a **Run Delay (ms)** if you need a pause before execution to respect API limits, typically a few milliseconds.
+
+### Step 7
+
+Proceed to execute the node to have the data in the specified range cleared.
+</Steps>
+
+<Callout type="info" title="Note">
+  This action will only clear the values of the specified cells and will not delete or modify any formatting, formulas, or comments present.
+</Callout>
+
+## Common Mistakes & Troubleshooting
+
+| Problem                                             | Solution                                                                                                                                   |
+| --------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------ |
+| **Incorrect Sheets Service**                         | Ensure you are using a proper SheetsService instance from the 'Create Google Sheets Service Instance' activity to authenticate your request. |
+| **Invalid Spreadsheet ID**                          | Verify if the Spreadsheet ID is correctly copied from the Google Sheet URL and has no extra characters.                                     |
+| **Non-matching Sheet Name**                         | Double-check the Sheet Name for typos or differences in case-sensitive entries against your actual tab name.                                 |
+| **Range Format**                                    | Ensure the Range entered is in valid A1 notation and correctly points to the desired cells or regions.                                      |
+| **Run Delay Required for Large Sheets**             | Consider adding a Run Delay if executing on large sheets or facing frequent API rate limit issues.                                          |
+
+## Real-World Use Cases
+
+- **Monthly Reports**: Clear previous month's data while preserving formulas and prepare sheets for fresh entries.
+- **Data Processing**: Remove temporary data post-calculation ensuring the structure and annotations remain intact.
+- **Template Management**: Regularly reset cells in a template without disrupting the formatting and embedded instructions.

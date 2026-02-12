@@ -1,0 +1,87 @@
+import { Callout, Steps } from "nextra/components";
+
+# Create Google Sheets Service Instance
+
+The **Create Google Sheets Service Instance** node is designed to provide a seamless integration with Google Sheets by creating a SheetsService instance. This is essential for automating interactions with Google Sheets using your Google service account credentials. By setting up this instance, you enable powerful capabilities for reading, writing, and modifying sheets within your specified Google project.
+
+For example:
+
+- Automating data entry into Google Sheets.
+- Extracting or processing data from Sheets.
+- Managing Google Sheets as part of larger workflow automations.
+
+## Configuration Options
+
+| Field Name        | Description                                                                                      | Input Type | Required? | Default Value |
+| ----------------- | ------------------------------------------------------------------------------------------------ | ---------- | --------- | ------------- |
+| **Run Delay (ms)**| Delay in milliseconds before creating the instance. Helps manage rate limits.                     | Text       | Yes       | _(empty)_     |
+| **Account Type**  | The type of Google service account (e.g., `service_account`).                                    | Text       | Yes       | _(empty)_     |
+| **Project ID**    | The project ID linked with your Google Cloud Platform service account.                           | Text       | Yes       | _(empty)_     |
+| **Private Key ID**| The private key ID found within your service account JSON file.                                  | Text       | Yes       | _(empty)_     |
+| **Private Key**   | The private key, which must include escape characters like `\\n` from your JSON file.            | Text       | Yes       | _(empty)_     |
+| **Client Email**  | The email address associated with your Google service account.                                   | Text       | Yes       | _(empty)_     |
+| **Client ID**     | The unique client ID for the Google service account.                                             | Text       | Yes       | _(empty)_     |
+
+## Expected Output Format
+
+Upon successful configuration, the node outputs a **SheetsService instance**, a key component for interacting with the Google Sheets API, marked as `SheetsService`. This is an object that facilitates communication and actions with Google Sheets.
+
+## Step-by-Step Guide
+
+<Steps>
+### Step 1
+
+Add the **Create Google Sheets Service Instance** node into your flow.
+
+### Step 2
+
+Fill in the **Run Delay (ms)** field with the desired delay in milliseconds to manage API call limits.
+
+### Step 3
+
+Enter **Account Type**: Typically, this is `service_account`.
+
+### Step 4
+
+Provide the **Project ID** from your Google Cloud Platform setup.
+
+### Step 5
+
+Input the **Private Key ID** from your service account credentials JSON file.
+
+### Step 6
+
+Copy the **Private Key** ensuring to include necessary escape characters (e.g., `\\n`).
+
+### Step 7
+
+Enter the **Client Email** which corresponds to the Google service account.
+
+### Step 8
+
+Fill in the **Client ID** retrieved from your service account credentials.
+
+### Step 9
+
+The configured service will now output a **SheetsService** instance for further Google Sheets interactions within your workflow.
+
+</Steps>
+
+<Callout type="info" title="Important">
+Ensure all credentials and IDs are pasted exactly as provided in your Google service account JSON file to avoid authentication errors.
+</Callout>
+
+## Common Mistakes & Troubleshooting
+
+| Problem                                   | Solution                                                                                             |
+| ------------------------------------------| ---------------------------------------------------------------------------------------------------- |
+| **Missing escape characters in Private Key** | Double-check your private key input, ensure all `\\n` escape characters are correctly formatted.    |
+| **Incorrect Account Type**                | Verify that you entered the exact type as `service_account`.                                        |
+| **Invalid Project ID, Private Key ID or other credentials**| Confirm each value by checking against your Google Cloud Platform service account details.|
+
+## Real-World Use Cases
+
+- **Data Import Automation**: Swiftly import large datasets into Google Sheets for analysis and sharing.
+- **Scheduled Reporting**: Automate reports by programmatically updating Google Sheets.
+- **Collaborative Tasks Management**: Programmatically manage task or project lists stored in Sheets, automating updates and alerts.
+- **Budgeting and Financial Modelling**: Seamlessly integrate updated financial data into Google Sheets to maintain accurate budgets and forecasts.
