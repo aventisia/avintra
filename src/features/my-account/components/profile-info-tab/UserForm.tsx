@@ -1,8 +1,13 @@
+import { PhoneInput } from "@aventisia/ui";
 import { SubmitButton } from "@aventisia/ui/buttons";
 import { CountriesEnum } from "@aventisia/ui/enums";
 import {
-  DatePickerField,
+  // DatePickerField,
   Form,
+  FormControl,
+  FormField,
+  FormItem,
+  FormMessage,
   InputField,
   SelectField,
 } from "@aventisia/ui/form";
@@ -63,13 +68,13 @@ export const UserForm = () => {
             </div>
           </InputDivElement>
 
-          <InputDivElement
+          {/* <InputDivElement
             headingForInput="Date of Birth"
             messageForInput="This information is required to verify your age and provide age appropriate services."
             showSkelaton={isLoading}
           >
             <DatePickerField name="dateOfBirth" />
-          </InputDivElement>
+          </InputDivElement> */}
 
           {/* <InputDivElement
             headingForInput={"Gender"}
@@ -111,12 +116,18 @@ export const UserForm = () => {
             showSkelaton={isLoading}
             messageForInput="Please provide a valid phone number where we can reach you if needed."
           >
-            <InputField
-              type="text"
-              name="phoneNumber"
-              className="border-slate-300/60 shadow-sm"
-              required={false}
-              placeholder=""
+            <FormField
+              name={"phoneNumber"}
+              control={form.control}
+              render={({ field }) => (
+                <FormItem>
+                  <FormControl>
+                    <PhoneInput value={field.value} onChange={field.onChange} />
+                  </FormControl>
+
+                  <FormMessage />
+                </FormItem>
+              )}
             />
           </InputDivElement>
 
