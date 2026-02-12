@@ -617,6 +617,25 @@ public class QueueWorkItemService : IQueueWorkItemService
                 }
             }
 
+            // Check if the QueueId needs to be updated
+            if (queueWorkItem.QueueId != queueWorkItemDto.QueueId || queueWorkItemDto.QueueId != Guid.Empty)
+            {
+                // Try to fetch the queue using the new QueueId
+                var queue = await _unitOfWork.QueueRepo.GetByConditionAsync(w => w.Id == queueWorkItemDto.QueueId).SingleOrDefaultAsync();
+
+                // If the queue does not exist, log the issue and return early
+                if (queue == null)
+                {
+                    _logger.LogError($"Queue with ID {queueWorkItemDto.QueueId} not found while updating work item with ID {queueWorkItem.Id}");
+                    serviceResponse.Message = $"Queue with ID {queueWorkItemDto.QueueId} was not found. Please check the provided Queue ID.";
+                    return serviceResponse;  // Return the service response indicating failure
+                }
+
+                // Update the QueueId of the work item
+                queueWorkItem.QueueId = queueWorkItemDto.QueueId;
+                _logger.LogInformation($"QueueId updated for work item {queueWorkItem.Id} to {queueWorkItemDto.QueueId}");
+            }
+
             // Update the queue workitem entity with values from the DTO
             queueWorkItem.PayloadData = string.IsNullOrWhiteSpace(queueWorkItemDto.WorkItemData)
                 ? queueWorkItem.PayloadData
