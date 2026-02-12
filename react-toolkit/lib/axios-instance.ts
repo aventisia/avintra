@@ -106,6 +106,9 @@ axiosInstance.interceptors.response.use(
       case 429:
         return Promise.reject(errorMessage); // Return just the error message so that it can be used in the component to show toast notification and take action accordingly
       case 401:
+        if (error.config?.url.includes("/auth/login")) {
+          return Promise.reject(errorMessage);
+        }
         toast.error(errorMessage);
 
         // Redirect to login page if error is not "Invalid credentials"
