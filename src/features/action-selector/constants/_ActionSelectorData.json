@@ -465,6 +465,14 @@
         "actions": [
           {
             "type": "activityNode",
+            "name": "DeleteJSONNodeWithPrimaryKeyActivity",
+            "label": "Delete JSON Node by Primary Key",
+            "description": "Recursively searches for an object with a matching primary key-value pair and deletes it from the structure.",
+            "docsLink": "https://docs.aventisia.com",
+            "img": "/assets/JSON.svg"
+          },
+          {
+            "type": "activityNode",
             "name": "DeserializeJSONTextActivity",
             "label": "Deserialize JSON Text",
             "description": "Parses a JSON string into a JToken object.",
@@ -2006,6 +2014,22 @@
           },
           {
             "type": "activityNode",
+            "name": "SwitchToDefaultContentActivity",
+            "label": "Switch To Default Content",
+            "description": "Switches the Selenium WebDriver context back to the main document or top window (exiting all frames/iframe contexts).",
+            "docsLink": "https://docs.aventisia.com",
+            "img": "/function.png"
+          },
+          {
+            "type": "activityNode",
+            "name": "SwitchToIframeActivity",
+            "label": "Switch To Iframe",
+            "description": "Switches the browser context to a specified iframe using the provided locator type and value (e.g., ID, Name, XPath, or CSS Selector).",
+            "docsLink": "https://docs.aventisia.com",
+            "img": "/assets/BrowserAutomation.svg"
+          },
+          {
+            "type": "activityNode",
             "name": "SwitchToTabActivity",
             "label": "Switch To Tab",
             "description": "Switches control to a browser tab using index, title, or partial URL.",
@@ -2488,6 +2512,14 @@
           },
           {
             "type": "activityNode",
+            "name": "ClickToolbarButtonActivity",
+            "label": "Click Toolbar Button",
+            "description": "Clicks a specified toolbar button. Supports Healing Agent mode.",
+            "docsLink": "https://docs.aventisia.com",
+            "img": "/assets/SAP.svg"
+          },
+          {
+            "type": "activityNode",
             "name": "ExpandALVHierarchicalTableActivity",
             "label": "Expand ALV Hierarchical Table",
             "description": "Expands a row in an SAP ALV Hierarchical Table by clicking the expansion icon.",
@@ -2499,6 +2531,14 @@
             "name": "ExpandALVTreeActivity",
             "label": "Expand ALV Tree",
             "description": "Expands parent ALV tree to the selected node.",
+            "docsLink": "https://docs.aventisia.com",
+            "img": "/assets/SAP.svg"
+          },
+          {
+            "type": "activityNode",
+            "name": "ExpandTreeActivity",
+            "label": "Expand Tree",
+            "description": "Expands a tree node using a specified path (e.g., 'Menu → Submenu → Item').",
             "docsLink": "https://docs.aventisia.com",
             "img": "/assets/SAP.svg"
           },
@@ -3440,7 +3480,7 @@
           {
             "type": "activityNode",
             "name": "MarkEmailAsReadActivity",
-            "label": "Mark Email as Read/Unread",
+            "label": "Mark Email as Read or Unread",
             "description": "Marks an email as read or unread using Microsoft Graph API.",
             "docsLink": "https://docs.aventisia.com",
             "img": "/assets/M365.svg"
