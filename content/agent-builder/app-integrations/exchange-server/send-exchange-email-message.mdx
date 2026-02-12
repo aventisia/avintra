@@ -1,0 +1,100 @@
+import { Callout, Steps } from "nextra/components";
+
+# Send Exchange Email Message
+
+The **Send Exchange Email Message** node allows you to create and send an email using an Exchange server connection. This node is beneficial for automating email dispatches directly through your business’s Exchange account, making it ideal for sending reports, notifications, or any standard communication effortlessly.
+
+For example:
+- Sending automated reports to stakeholders.
+- Dispatching notifications or alerts.
+- Communicating with customer service teams directly over Exchange.
+
+## Configuration Options
+
+| Field Name           | Description                                                                                              | Input Type | Required? | Default Value |
+| ---------------------| -------------------------------------------------------------------------------------------------------- | ---------- | --------- | ------------- |
+| **Exchange Connection** | The connection details for accessing the Exchange server.                                            | Text       | Yes       | _(empty)_     |
+| **From**             | The email address or display name of the sender.                                                         | Text       | Yes       | _(empty)_     |
+| **To**               | Recipient email addresses separated by commas.                                                           | Text       | Yes       | _(empty)_     |
+| **CC**               | CC recipient email addresses separated by commas.                                                        | Text       | No        | _(empty)_     |
+| **BCC**              | BCC recipient email addresses separated by commas.                                                       | Text       | No        | _(empty)_     |
+| **Subject**          | The subject line of the email.                                                                           | Text       | Yes       | _(empty)_     |
+| **Body**             | The main content of the email.                                                                           | Text       | Yes       | _(empty)_     |
+| **Body is HTML**     | Indicates if the email body content is in HTML format.                                                   | Switch     | No        | _(empty)_     |
+| **Attachments**      | Paths to files to be included as attachments, separated by commas.                                       | Text       | No        | _(empty)_     |
+
+## Expected Output Format
+
+There is no direct output from this node as it acts as a send operation. However, upon successful execution, the email is sent from the specified Exchange account to the designated recipients.
+
+## Step-by-Step Guide
+
+<Steps>
+### Step 1
+
+Add **Send Exchange Email Message** node into your flow.
+
+### Step 2
+
+Fill in the **Exchange Connection** field with the details for connecting to your Exchange server.
+
+### Step 3
+
+Enter the sender's information in the **From** field.
+
+### Step 4
+
+Provide recipient email addresses in the **To** field. If adding multiple recipients, separate each email with a comma.
+
+### Step 5
+
+(Optional) Add any CC or BCC addresses by entering them in the **CC** and **BCC** fields, respectively, ensuring multiple addresses are comma-separated.
+
+### Step 6
+
+Set the **Subject** of the email to reflect the content or purpose of your message.
+
+### Step 7
+
+Write your main message in the **Body** field. If the body contains HTML, enable **Body is HTML** by switching it on.
+
+### Step 8
+
+(Optional) Attach necessary files by providing their file paths in the **Attachments** field, separated by commas if there are multiple.
+
+### Step 9
+
+Double-check all fields to ensure accuracy and click to execute the flow, sending the email.
+
+</Steps>
+
+<Callout type="info" title="Tip">
+Ensure that the Exchange server credentials and connection details are correct to avoid sending failures.
+</Callout>
+
+## Input/Output Examples
+
+1. **Simple Send Example**:
+   - **From**: `sender@domain.com`
+   - **To**: `recipient1@domain.com,recipient2@domain.com`
+   - **Subject**: `Monthly Report`
+   - **Body**: `Please find the attached report for this month.`
+
+2. **HTML Body Example**:
+   - **Body**: `<p>Please <strong>review</strong> the attached <em>documents</em>.</p>`
+   - **Body is HTML**: Enabled
+
+## Common Mistakes & Troubleshooting
+
+| Problem                                           | Solution                                                                                                                              |
+| ------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------- |
+| **Invalid Exchange Connection Details**           | Verify the Exchange connection information for accuracy.                                                                              |
+| **Emails Not Sending**                            | Ensure all required fields are populated and the network connection to the server is stable.                                          |
+| **Incorrect Email Addresses**                     | Double-check recipient email formats to prevent send errors.                                                                          |
+| **HTML Content Not Displaying Correctly**         | Make sure to toggle on **Body is HTML** if you're including HTML content in the email body.                                           |
+
+## Real-World Use Cases
+
+- **Customer Service Outreach**: Automatically dispatch follow-up emails to clients and customers who signed up for services.
+- **Team Communications**: Send updates and information to team members with pre-scheduled or trigger-based emails.
+- **Alert Notifications**: Instantly send notifications to predetermined email addresses upon specific business events or conditions.
