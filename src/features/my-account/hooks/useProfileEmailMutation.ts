@@ -20,9 +20,10 @@ export const useProfileEmailMutation = () => {
   const { mutate: updateProfileEmailMutation, isPending: isUpdatePending } =
     useMutation({
       mutationFn: updateMyAccountEmail,
-      onSuccess: () => {
+      onSuccess: (data) => {
         // Reset update email data
         setupdateProfileEmailData(null);
+        toast.success(data.message);
       },
       onError: (error) => {
         toast.error(error.toString());
