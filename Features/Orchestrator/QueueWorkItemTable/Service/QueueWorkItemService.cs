@@ -507,24 +507,64 @@ public class QueueWorkItemService : IQueueWorkItemService
                 return serviceResponse;
             }
 
-            // Retrieve the workitem with its associated queue
+            // Retrieve the work item with its associated queue from the database (using AsNoTracking for performance)
             var queueWorkItem = await _unitOfWork.QueueTransactionRepo
-                .GetByConditionAsync(w => w.Id == queueWorkItemDto.Id)
-                .Include(i => i.Queue)
-                .SingleOrDefaultAsync();
+               .GetByConditionAsync(w => w.Id == queueWorkItemDto.Id)
+               .AsNoTracking()
+               .SingleOrDefaultAsync();
 
+            // If the work item does not exist, log the issue and return early with a failure message
             if (queueWorkItem == null)
             {
                 _logger.LogWarning("Queue workitem ID {QueueWorkitemId} not found. Update aborted.", queueWorkItemDto.Id);
                 serviceResponse.Message = "Queue workitem not found.";
                 return serviceResponse;
             }
+
             var errors = new List<string>();
+            Queue? queue = null; // Initialize the queue variable which will hold the retrieved queue
+            string? workitemData = string.Empty; // Variable to store the work item data
 
-            if (!string.IsNullOrEmpty(queueWorkItemDto.WorkItemData))
+            // If the QueueId in the DTO is the same as the current QueueId, or the new QueueId is empty (Guid.Empty)
+            if (queueWorkItem.QueueId == queueWorkItemDto.QueueId || queueWorkItemDto.QueueId == Guid.Empty)
             {
-                var queue = queueWorkItem.Queue;
+                // Retrieve the queue associated with the current QueueId of the work item
+                queue = await _unitOfWork.QueueRepo.GetByConditionAsync(w => w.Id == queueWorkItem.QueueId).SingleOrDefaultAsync();
 
+                // If the queue cannot be found, log the error and return a failure message
+                if (queue == null)
+                {
+                    _logger.LogError($"Queue with ID {queueWorkItem.QueueId} not found while trying to update work item with ID {queueWorkItem.Id}");
+                    serviceResponse.Message = $"Queue with ID {queueWorkItem.QueueId} was not found. Please verify the Queue ID.";
+                    return serviceResponse; // Return failure response
+                }
+            }
+            else
+            {
+                // Retrieve the queue associated with the new QueueId from the DTO
+                queue = await _unitOfWork.QueueRepo.GetByConditionAsync(w => w.Id == queueWorkItemDto.QueueId).SingleOrDefaultAsync();
+
+                // If the queue cannot be found, log the error and return a failure message
+                if (queue == null)
+                {
+                    _logger.LogError($"Queue with ID {queueWorkItemDto.QueueId} not found while attempting to update work item with ID {queueWorkItem.Id}");
+                    serviceResponse.Message = $"Queue with ID {queueWorkItemDto.QueueId} was not found. Please verify the Queue ID.";
+                    return serviceResponse; // Return failure response
+                }
+
+                // After fetching the appropriate queue, update the QueueId in the DTO to the fetched queue's Id
+                queueWorkItem.QueueId = queue.Id;
+            }
+
+            // Check if there is WorkItemData in the DTO and assign it accordingly to the work item data
+            if (!string.IsNullOrEmpty(queueWorkItemDto.WorkItemData))
+                workitemData = queueWorkItem.PayloadData; // Use the existing payload data if WorkItemData is empty
+            else
+                workitemData = queueWorkItemDto.WorkItemData; // Otherwise, use the WorkItemData from the DTO
+
+            // Check if the workitem data is not empty or null before proceeding
+            if (!string.IsNullOrEmpty(workitemData))
+            {
                 // Deserialize the queue's input schema; fall back to empty list if schema is invalid or null
                 var inputSchema = System.Text.Json.JsonSerializer.Deserialize<List<QueueSchemaDefinitionDto>>(
                     queue.InputSchema ?? "[]",
@@ -535,7 +575,7 @@ public class QueueWorkItemService : IQueueWorkItemService
                 dynamic dynamicObject = CreateDynamicObjectFromSchema(inputSchema);
 
                 // Parse the incoming payload; fall back to an empty object if null or malformed
-                var data = Newtonsoft.Json.Linq.JObject.Parse(queueWorkItemDto.WorkItemData ?? "{}");
+                var data = Newtonsoft.Json.Linq.JObject.Parse(workitemData ?? "{}");
 
                 // Extract existing unique keys from the queue's workitems to ensure uniqueness
                 var existingUniqueKeys = new HashSet<string>();
@@ -615,25 +655,6 @@ public class QueueWorkItemService : IQueueWorkItemService
                 {
                     queueWorkItemDto.WorkItemData = _stringEncryptionService.EncryptString(queueWorkItemDto.WorkItemData ?? string.Empty);
                 }
-            }
-
-            // Check if the QueueId needs to be updated
-            if (queueWorkItem.QueueId != queueWorkItemDto.QueueId || queueWorkItemDto.QueueId != Guid.Empty)
-            {
-                // Try to fetch the queue using the new QueueId
-                var queue = await _unitOfWork.QueueRepo.GetByConditionAsync(w => w.Id == queueWorkItemDto.QueueId).SingleOrDefaultAsync();
-
-                // If the queue does not exist, log the issue and return early
-                if (queue == null)
-                {
-                    _logger.LogError($"Queue with ID {queueWorkItemDto.QueueId} not found while updating work item with ID {queueWorkItem.Id}");
-                    serviceResponse.Message = $"Queue with ID {queueWorkItemDto.QueueId} was not found. Please check the provided Queue ID.";
-                    return serviceResponse;  // Return the service response indicating failure
-                }
-
-                // Update the QueueId of the work item
-                queueWorkItem.QueueId = queueWorkItemDto.QueueId;
-                _logger.LogInformation($"QueueId updated for work item {queueWorkItem.Id} to {queueWorkItemDto.QueueId}");
             }
 
             // Update the queue workitem entity with values from the DTO
