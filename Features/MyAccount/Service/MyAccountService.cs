@@ -1035,7 +1035,7 @@ public class MyAccountService : IMyAccountService
     //Update user's profile details updateUserProfileDto
     public async Task<ServiceResponse<UserProfileDto>> UpdateUserProfileAsync(UserProfileDto userProfileDto)
     {
-        //Initialize ServiceResponse with Failed response
+        // Initialize ServiceResponse with failed response by default
         var serviceResponse = new ServiceResponse<UserProfileDto>()
         {
             Data = null,
@@ -1044,13 +1044,13 @@ public class MyAccountService : IMyAccountService
 
         try
         {
-            //set method name
+            // Set method name for logging purposes
             var methodName = nameof(UpdateUserProfileAsync);
 
-            // Get user
+            // Get the user from the UserManager using the username
             var user = await _userManager.FindByNameAsync(_userName);
 
-            // User doesn't exist
+            // If user doesn't exist, log and return a failure response
             if (user == null)
             {
                 _logger.LogInformation(userNotFoundTemplate, methodName, _userName);
@@ -1058,15 +1058,21 @@ public class MyAccountService : IMyAccountService
                 return serviceResponse;
             }
 
+            // If DateOfBirth is provided, update the user's DateOfBirth
+            if (userProfileDto.DateOfBirth.HasValue)
+                user.DateOfBirth = userProfileDto.DateOfBirth.Value;
+
+            // Update user's other details like First Name, Last Name, Phone Number, Gender, and Country
             user.FirstName = userProfileDto.FirstName;
             user.LastName = userProfileDto.LastName;
-            user.DateOfBirth = userProfileDto.DateOfBirth;
             user.PhoneNumber = userProfileDto.PhoneNumber;
             user.Gender = userProfileDto.Gender;
             user.Country = userProfileDto.Country;
+
+            // Attempt to update the user information in the UserManager
             var updateUserResult = await _userManager.UpdateAsync(user);
 
-            // User Update-Job failed
+            // If the update fails, log the failure and return a failure response
             if (!updateUserResult.Succeeded)
             {
                 _logger.LogInformation("Failed while updating user's profile");
@@ -1074,7 +1080,17 @@ public class MyAccountService : IMyAccountService
                 return serviceResponse;
             }
 
-            // Task successful
+            //Update user in other databases
+            var response = await _authHelperService.CreateOrUpdateUserInOtherDbsAsync(user, CrudTypesEnum.Update, _jwt);
+
+            if (!response)
+            {
+                _logger.LogInformation("Failed while updating user in other databases");
+                serviceResponse.Message = "User's name update failed in other databases";
+                return serviceResponse;
+            }
+
+            // If the update is successful, log success and set the success response
             _logger.LogInformation("{MethodName}: profile has been updated for account {_UserName}", methodName, _userName);
             serviceResponse.Data = userProfileDto;
             serviceResponse.StatusCode = 200;
@@ -1082,9 +1098,11 @@ public class MyAccountService : IMyAccountService
         }
         catch (Exception ex)
         {
-            _logger.LogError(ex, "Error occured while performing {Name}", ex.TargetSite.Name);
+            _logger.LogError(ex, "Error occurred while performing {Name}", ex.TargetSite.Name);
             return serviceResponse;
         }
+
+        // Return the final service response (either success or failure)
         return serviceResponse;
     }
 
