@@ -1,0 +1,74 @@
+import { Callout, Steps } from "nextra/components";
+
+# Delete JSON Node by Primary Key
+
+The **Delete JSON Node by Primary Key** node is used to remove an object within a JSON structure by identifying it through a specified primary key name and its corresponding value. This node is primarily beneficial for cleaning up or updating JSON data structures without manual editing.
+
+You might use this function when you:
+- Need to delete a specific entry in a complex JSON file based on a unique ID or name.
+- Want to ensure a JSON structure is updated dynamically by removing elements automatically.
+
+## Configuration Options
+
+| Field Name          | Description                                                                                         | Input Type | Required? | Default Value |
+| ------------------- | --------------------------------------------------------------------------------------------------- | ---------- | --------- | ------------- |
+| **JSON Content**    | The JSON data you want to search and modify. This can be either a JSON string or a JSON data object. | Text       | Yes       | _(empty)_     |
+| **Primary Key Name**| The property name used to locate the item to be deleted (e.g., 'id', 'name').                       | Text       | Yes       | _(empty)_     |
+| **Primary Key Value**| The value of the primary key to find and delete the respective object.                              | Text       | Yes       | _(empty)_     |
+
+## Expected Output Format
+
+The output of this node is a **boolean value** that indicates whether a node was successfully deleted.
+
+- If a match is found and the node is deleted: output will be `true`.
+- If no match is found: output will be `false`.
+
+## Step-by-Step Guide
+
+<Steps>
+### Step 1
+
+Add the **Delete JSON Node by Primary Key** node into your workflow.
+
+### Step 2
+
+In the **JSON Content** field, enter or paste the JSON data you want to search for the node to delete.
+
+### Step 3
+
+Enter the **Primary Key Name** you wish to match, such as `id` or `name`.
+
+### Step 4
+
+Provide the **Primary Key Value** to identify the specific node you want to delete within the JSON content.
+
+### Step 5
+
+After processing, the deletion status will be indicated by the output value labeled **NodeDeleted** — `true` if a node was deleted, otherwise `false`.
+
+</Steps>
+
+<Callout type="warning" title="Important">
+  Double-check your primary key name and value to ensure the correct node is targeted for deletion.
+</Callout>
+
+## Input/Output Examples
+
+| JSON Content                                     | Primary Key Name | Primary Key Value | Node Deleted |
+| ------------------------------------------------ | ---------------- | ----------------- | ------------ |
+| `{ "employees": [{"id": 1, "name": "John"}, {"id": 2, "name": "Jane"}] }` | id               | 1                 | true         |
+| `{ "employees": [{"id": 1, "name": "John"}, {"id": 2, "name": "Jane"}] }` | id               | 3                 | false        |
+
+## Common Mistakes & Troubleshooting
+
+| Problem                                              | Solution                                                                                                                                                  |
+| ---------------------------------------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| **Primary key mismatch**                             | Ensure that both the Primary Key Name and Value match exactly with the target object's properties in your JSON content.                                   |
+| **Invalid JSON Format**                              | Check that the JSON content entered is correctly formatted. Errors in syntax can prevent the node from functioning properly.                              |
+| **Output shows 'false' unexpectedly**                | Verify any typos in the Primary Key Name or Value field. It must match the JSON data precisely to find and delete the correct node.                       |
+
+## Real-World Use Cases
+
+- **User Management Systems**: Automatically remove user entries from a list based on deactivation or account termination.
+- **Product Catalog Updates**: Remove outdated products from an inventory JSON object where each product has a unique identifier.
+- **Data Privacy Compliance**: Delete user data from records upon request for GDPR compliance, ensuring personal information is reliably removed from structures.

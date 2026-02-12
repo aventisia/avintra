@@ -1,0 +1,80 @@
+import { Callout, Steps } from "nextra/components";
+
+# Delete Column From Data Table
+
+The **Delete Column From Data Table** node allows you to remove a specific column from a data table by specifying either the column's name or its position (index). This is particularly useful when you need to clean up data by removing unnecessary or sensitive columns before processing or sharing it.
+
+For example:
+
+- Removing confidential information from a dataset.
+- Eliminating unwanted columns for clearer data analysis.
+- Adapting data tables for different reports or applications.
+
+## Configuration Options
+
+| Field Name             | Description                                                                         | Input Type | Required? | Default Value |
+| ---------------------- | ----------------------------------------------------------------------------------- | ---------- | --------- | ------------- |
+| **Data Table**         | The data table you wish to modify by removing a column.                             | Text       | No        | _(empty)_     |
+| **Specify Column With**| Select whether to identify the column to delete by its name or index.              | Select     | No        | Name          |
+| **Column Name**        | The name of the column to delete. Required if "Specify Column With" is set to name. | Text       | No        | _(empty)_     |
+| **Column Index**       | The position of the column to delete, starting at 0. Required if "Specify Column With" is set to index. | Text  | No        | _(empty)_     |
+
+## Expected Output Format
+
+The output from this node is a **Modified Data Table** where the specified column has been removed.
+
+## Step-by-Step Guide
+
+<Steps>
+### Step 1
+
+Click on the **Add** button to insert the **Delete Column From Data Table** node into your workflow.
+
+### Step 2
+
+In the **Data Table** field, enter the data table you're aiming to edit.
+
+### Step 3
+
+Use the **Specify Column With** dropdown to choose how to identify the column to delete:
+
+- **Name**: Identify by column name.
+- **Index**: Identify by column index.
+
+### Step 4
+
+Depending on your choice in the previous step:
+
+- If you chose **Name**, enter the column's name in the **Column Name** field.
+- If you chose **Index**, enter the column's index (starting from zero) in the **Column Index** field.
+
+### Step 5
+
+Once configured, the node will output the **Modified Data Table**, now without the specified column.
+
+</Steps>
+
+<Callout type="info" title="Note">
+  Remember: If you don't specify "Name" or "Index" appropriately in the **Specify Column With** dropdown, the corresponding fields won't appear.
+</Callout>
+
+## Input/Output Examples
+
+| Specify Column With | Column Name | Column Index | Original Data Table                   | Modified Data Table                 |
+| ------------------- | ----------- | ------------ | ------------------------------------ | ----------------------------------- |
+| Name                | "Age"       | _(n/a)_      | Name, Age, Salary <br/> John, 28, 6000 | Name, Salary <br/> John, 6000       |
+| Index               | _(n/a)_     | 1            | Product, Price, Stock <br/> Widget, 15, 300 | Product, Stock <br/> Widget, 300     |
+
+## Common Mistakes & Troubleshooting
+
+| Problem                                             | Solution                                                                                                 |
+| --------------------------------------------------- | -------------------------------------------------------------------------------------------------------- |
+| **Field not appearing**                             | Ensure "Specify Column With" is set correctly to "Name" or "Index" to display respective input fields.   |
+| **Incorrect Column Index**                          | Remember column index begins at 0. Ensure accuracy to avoid the wrong column being deleted.             |
+| **Column name case sensitivity issues**             | Confirm the exact spelling and casing of the column name as it appears in the data table.               |
+
+## Real-World Use Cases
+
+- **Privacy Compliance**: Automatically remove columns containing sensitive information from data exports.
+- **Data Preparation**: Clean data by removing unnecessary columns before analysis.
+- **Reporting**: Tailor data tables for specific report requirements by eliminating non-relevant columns.

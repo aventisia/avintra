@@ -1,0 +1,70 @@
+import { Callout, Steps } from "nextra/components";
+
+# Hash from File with Key
+
+The **Hash from File with Key** node allows you to generate a secure hashed version of the file's content using a specific key. This can be helpful for securing file data through hash encryption, useful in scenarios like verifying the authenticity of the file or storing a securely hashed file representation.
+
+## Configuration Options
+
+| Field Name          | Description                                                         | Input Type | Required? | Default Value    |
+| ------------------- | ------------------------------------------------------------------- | ---------- | --------- | ---------------- |
+| **File Path to Hash** | The path to the file you want to hash                             | Text       | Yes       | _(empty)_        |
+| **Key to Use**      | The key to use in hashing                                           | Text       | Yes       | _(empty)_        |
+| **Hashing Algorithm** | The algorithm to use for hashing (SHA256, SHA512, or MD5)         | Select     | Yes       | _(empty)_        |
+
+## Expected Output Format
+
+The output of this node is the **hashed content** of the file, represented as a string value.
+
+- The output can be seen as **HashedContent**, a string representing the secured hash of the file using the selected algorithm and key.
+
+## Step-by-Step Guide
+
+<Steps>
+
+### Step 1
+
+Add a **Hash from File with Key** node to your flow.
+
+### Step 2
+
+Enter the path of the file you wish to hash in the **File Path to Hash** field.
+
+### Step 3
+
+Enter the secret **Key to Use** that acts as a salt in the hashing procedure.
+
+### Step 4
+
+Select the **Hashing Algorithm** you prefer from the dropdown options: SHA256, SHA512, or MD5.
+
+### Step 5
+
+The resulting hashed document will be available as **HashedContent** for further usage in your flow.
+
+</Steps>
+
+<Callout type="info" title="Tip">
+  Ensure the file path and key are correctly entered to avoid any hash mismatches.
+</Callout>
+
+## Input/Output Examples
+
+| File Path       | Key          | Algorithm | Hashed Content                                      | Output Type  |
+| --------------- | ------------ | --------- | --------------------------------------------------- | ------------ |
+| /docs/sample.txt | MySecretKey | SHA256    | a7615874bd56a59d...94823742                         | String       |
+| /images/logo.png | Key123      | MD5       | 098f6bcd4621d373cade4e832627b4f6                    | String       |
+
+## Common Mistakes & Troubleshooting
+
+| Problem                                         | Solution                                                      |
+| ----------------------------------------------- | ------------------------------------------------------------- |
+| **File path not found**                         | Double-check the file path is correct and accessible.         |
+| **Incorrect key entered**                       | Verify the key to avoid incorrect hash values.                |
+| **Invalid hashing algorithm selected**          | Ensure you select a supported algorithm: SHA256, SHA512, MD5. |
+
+## Real-World Use Cases
+
+- **Data Verification**: Use hashing to verify file integrity by comparing hash values.
+- **Security Enhancement**: Securely storage sensitive files by hashing with a key.
+- **Digital Signatures**: Generate digital signatures for files by hashing with a unique key.

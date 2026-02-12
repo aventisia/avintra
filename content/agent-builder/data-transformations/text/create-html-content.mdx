@@ -1,0 +1,74 @@
+import { Callout, Steps } from "nextra/components";
+
+# Create HTML Content
+
+The **Create HTML Content** node allows you to generate a basic HTML structure, including a title and body, which can then be integrated or displayed as a webpage. This is particularly useful for users who need to create HTML outputs for documents, emails, or web content without manually writing code.
+
+## Configuration Options
+
+| Field Name      | Description                                        | Input Type | Required? | Default Value |
+| --------------- | -------------------------------------------------- | ---------- | --------- | ------------- |
+| **Title**       | The title of the HTML document.                    | Text       | Yes       | _(empty)_     |
+| **Body Content**| The body content of the HTML document.             | Text       | Yes       | _(empty)_     |
+
+## Expected Output Format
+
+The output of this node is a **string of HTML content**. It will include the HTML elements for the title and body text provided.
+
+- The output is stored in a variable called `ResultHtml`.
+- The structure will look like:
+  ```html
+  <html>
+    <head>
+      <title>Your Title Here</title>
+    </head>
+    <body>
+      Your Body Content Here
+    </body>
+  </html>
+  ```
+
+## Step-by-Step Guide
+
+<Steps>
+### Step 1
+
+Add the **Create HTML Content** node into your workflow by selecting the add option.
+
+### Step 2
+
+In the **Title** field, enter the desired title for your HTML document. This will appear in the browser tab or window title.
+
+### Step 3
+
+In the **Body Content** field, type the content you want to include in the body of the HTML document. This could be text, links, or other HTML elements.
+
+### Step 4
+
+The generated HTML will automatically be available as **ResultHtml**. You can use this output in subsequent nodes or operations as needed.
+
+</Steps>
+
+<Callout type="info" title="Tip">
+  Make sure to properly format your HTML if including more than just plain text in the **Body Content** field.
+</Callout>
+
+## Input/Output Examples
+
+| Title            | Body Content                | Output Type    | Example Output                                              |
+| ---------------- | --------------------------- | -------------- | ----------------------------------------------------------- |
+| My Document      | Welcome to my website!      | String (HTML)  | `<html><head><title>My Document</title></head><body>Welcome to my website!</body></html>`       |
+| Product List     | <ul><li>Item 1</li></ul>    | String (HTML)  | `<html><head><title>Product List</title></head><body><ul><li>Item 1</li></ul></body></html>`    |
+
+## Common Mistakes & Troubleshooting
+
+| Problem                             | Solution                                                                                               |
+| ----------------------------------- | ------------------------------------------------------------------------------------------------------ |
+| **Title or Body left empty**        | Both fields are required; ensure you fill them in to generate any HTML content.                         |
+| **Invalid HTML tags in Body Content** | Review and correct any HTML syntax within the body content to ensure it renders as expected.             |
+
+## Real-World Use Cases
+
+- **Dynamic Web Pages**: Quickly generate HTML pages from an internal system or database to display information to users.
+- **Email Templates**: Create email content in HTML format for rich-text emails.
+- **Automated Reports**: Build simple, structured web-based reports using HTML for better presentation and accessibility.

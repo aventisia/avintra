@@ -1,0 +1,87 @@
+import { Callout, Steps } from "nextra/components";
+
+# Split Text
+
+The **Split Text** node is designed to divide a single block of text into multiple parts based on a chosen delimiter or pattern. This node is particularly beneficial when you need to separate text into components for analysis, reporting, or further processing.
+
+For example:
+
+- Breaking a CSV string into individual values.
+- Dividing a document into sections using new lines.
+- Splitting a string into fixed-length segments for uniformity.
+
+## Configuration Options
+
+| Field Name           | Description                                                                                     | Input Type | Required? | Default Value |
+| -------------------- | ----------------------------------------------------------------------------------------------- | ---------- | --------- | ------------- |
+| **Text to Split**    | The full text block you wish to divide into parts.                                              | Text       | Yes       | _(empty)_     |
+| **Delimiter Type**   | Choose the method for splitting the text: standard, fixed number of characters, or custom.     | Select     | Yes       | _(empty)_     |
+| **Standard Delimiter** | Select the standard delimiter to use if "Standard" is chosen for Delimiter Type.               | Select     | No        | _(empty)_     |
+| **Times**            | Number of times to apply the standard delimiter for splitting (only for Standard type).        | Text       | No        | _(empty)_     |
+| **Split Width**      | Set the character width for each part if "Number of Characters" is chosen.                     | Text       | No        | _(empty)_     |
+| **Custom Delimiter** | Provide a custom delimiter or pattern if "Custom" type is selected for splitting.              | Text       | No        | _(empty)_     |
+| **Is Regular Expression** | Define whether the custom delimiter involves a regex for complex patterns.                     | Switch     | No        | _(empty)_     |
+
+## Expected Output Format
+
+The result of this node is a **Text List** which is an array of strings, each representing a portion of the original text.
+
+## Step-by-Step Guide
+
+<Steps>
+### Step 1
+
+Add **Split Text** node into your flow.
+
+### Step 2
+
+Enter the text in the **Text to Split** field that you want to break into smaller parts.
+
+### Step 3
+
+Select the **Delimiter Type**:
+
+- **Standard**: Choose between common delimiters like Tab or New Line.
+- **Number of Characters**: Defines each split based on a specific character width.
+- **Custom**: Use your own delimiter or pattern.
+
+### Step 4
+
+Configure additional settings based on chosen Delimiter Type:
+
+- If **Standard**, select a **Standard Delimiter** and optionally enter a **Times** value to limit splits.
+- If **Number of Characters**, specify the **Split Width**.
+- If **Custom**, enter a **Custom Delimiter** and toggle **Is Regular Expression** if using regex.
+
+### Step 5
+
+The split results will be available as a **Text List** for successive nodes or processes.
+
+</Steps>
+
+<Callout type="info" title="Notice">
+  The "Standard Delimiter", "Times", "Split Width", "Custom Delimiter", and "Is Regular Expression" fields only appear when relevant to your Delimiter Type selection.
+</Callout>
+
+## Input/Output Examples
+
+| Delimiter Type        | Input Text        | Additional Setting          | Output Value                      | Output Type  |
+| --------------------- | ----------------- | --------------------------- | --------------------------------- | ------------ |
+| Standard (Tab)        | "Apple\tBanana\tCherry" | _(n/a)_                         | ["Apple", "Banana", "Cherry"]    | Text List    |
+| Number of Characters  | "ABCDEFGHIJ"      | 3 (Split Width)             | ["ABC", "DEF", "GHI", "J"]       | Text List    |
+| Custom (Comma)        | "one,two,three"   | Custom Delimiter: ","       | ["one", "two", "three"]          | Text List    |
+
+## Common Mistakes & Troubleshooting
+
+| Problem                                        | Solution                                                                                                                                                   |
+| ---------------------------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| **Text isn't splitting as expected**           | Ensure the correct **Delimiter Type** and settings are chosen. Double-check the delimiter or pattern.                                                      |
+| **Regex patterns not working**                 | Verify **Is Regular Expression** is toggled on and pattern is valid and properly formatted.                                                                |
+| **Number of Characters option not splitting**  | Confirm **Split Width** is set to a valid number that divides the text evenly or acceptably.                                                               |
+| **Unexpected results with Standard delimiter** | Check that the delimiter matches exactly with input text. For example, if using "New Line", ensure text contains actual newline characters.                |
+
+## Real-World Use Cases
+
+- **Data Importing**: Split CSV file lines into separate data fields for database input.
+- **Log Analysis**: Break system log entries into manageable data points.
+- **Content Formatting**: Divide paragraphs or text elements for web content management and presentation.

@@ -1,0 +1,60 @@
+import { Callout, Steps } from "nextra/components";
+
+# Deserialize JSON Text
+
+The **Deserialize JSON Text** node is designed to convert a text-formatted JSON string into a structured object known as a JToken. This is particularly beneficial when you have data in JSON form and need to process or manipulate it within workflows. By transforming the JSON string into a structured object, you can easily extract, analyze, and utilize different parts of the data.
+
+## Configuration Options
+
+| Field Name         | Description                                                   | Input Type | Required? | Default Value |
+| ------------------ | ------------------------------------------------------------- | ---------- | --------- | ------------- |
+| **JSON Text**      | The JSON string you want to convert into a structured format. | Text       | Yes       | _(empty)_     |
+
+## Expected Output Format
+
+The output of this node is a structured object derived from the JSON string you input. The outputs are:
+
+- **Deserialized Token**: A structured object (JToken) representing the JSON data.
+- **Deserialized JSON**: The JSON string form of the resulting structure, if parsing is successful.
+
+## Step-by-Step Guide
+
+<Steps>
+### Step 1
+
+Add the **Deserialize JSON Text** node to your workflow.
+
+### Step 2
+
+In the **JSON Text** field, enter the JSON string you want to parse. 
+
+### Step 3
+
+Upon successful parsing, the node will produce two outputs: **Deserialized Token** and **Deserialized JSON**. These can be used in subsequent nodes for further processing.
+
+</Steps>
+
+<Callout type="info" title="Tip">
+  Ensure that the input in **JSON Text** is a valid JSON string format to avoid errors in parsing.
+</Callout>
+
+## Input/Output Examples
+
+| JSON Text                   | Deserialized Token                 | Deserialized JSON              |
+| --------------------------- | ---------------------------------- | ------------------------------ |
+| `{"name":"John","age":30}`  | `{"name":"John","age":30}`         | `{"name":"John","age":30}`     |
+| `[{"id":1,"value":"A"}]`    | `[{"id":1,"value":"A"}]`           | `[{"id":1,"value":"A"}]`       |
+| `{"status":null}`           | `{"status":null}`                  | `{"status":null}`              |
+
+## Common Mistakes & Troubleshooting
+
+| Problem                           | Solution                                                                                     |
+| --------------------------------- | -------------------------------------------------------------------------------------------- |
+| **Invalid JSON format**           | Ensure that your JSON string is properly formatted with correct syntax (e.g., brackets, commas). |
+| **Parsing returns null**          | Double-check the input in **JSON Text** to ensure it is a valid JSON string.                   |
+
+## Real-World Use Cases
+
+- **Data Integration**: Deserialize JSON-formatted data received from APIs for integration into internal systems.
+- **Data Transformation**: Convert incoming JSON data for easy access to individual attributes or elements.
+- **Data Parsing**: Use deserialization to access nested data values within a JSON structure for reporting or calculations.

@@ -1,0 +1,54 @@
+import { Callout, Steps } from "nextra/components";
+
+# Close SQL Connection
+
+The **Close SQL Connection** node is an essential step in managing database interactions within your workflow. It allows you to close an open SQL database connection that was previously established. This is important for conserving resources and ensuring that your application does not maintain unnecessary open connections which could lead to issues like database overload or lockouts.
+
+For example:
+
+- Close a connection after executing all desired operations on a database.
+- Free up resources that are tied to an open connection.
+- Ensure that your application complies with best practices for database connectivity management.
+
+## Configuration Options
+
+| Field Name         | Description                      | Input Type | Required? | Default Value |
+| ------------------ | -------------------------------- | ---------- | --------- | ------------- |
+| **SQL Connection** | The SQL connection to close.     | Text       | Yes       | _(empty)_     |
+
+## Expected Output Format
+
+This node does not produce a data output. Its purpose is to close an existing SQL connection and ensure proper resource management within your application.
+
+## Step-by-Step Guide
+
+<Steps>
+### Step 1
+
+Add the **Close SQL Connection** node into your workflow where necessary to terminate an open SQL connection.
+
+### Step 2
+
+In the **SQL Connection** field, input the identifier or connection string of the SQL connection you wish to close. This should match the connection you previously used to open the database connection.
+
+### Step 3
+
+Once configured, the node will close the specified SQL connection when the workflow reaches this step.
+</Steps>
+
+<Callout type="info" title="Note">
+  Ensure that the connection you intend to close is no longer needed in your workflow, as closing it will terminate any active database interaction through that connection.
+</Callout>
+
+## Common Mistakes & Troubleshooting
+
+| Problem                                | Solution                                                                                     |
+| -------------------------------------- | ------------------------------------------------------------------------------------------- |
+| **SQL Connection field left empty**    | Make sure to specify the connection string or identifier of the open SQL connection to close. |
+| **Trying to close an already closed connection** | Review your flow to ensure this node follows after an open connection that is still active.  |
+
+## Real-World Use Cases
+
+- **Transactional Operations**: Execute SQL operations within a transaction, then close the connection after committing or rolling back to ensure the database remains consistent.
+- **Batch Processing**: After running a batch process that requires database interaction, close the connection to maintain optimal server performance.
+- **Scheduled Tasks**: For applications with scheduled database tasks (such as nightly reports), ensure that all connections are closed after the task completes to avoid extended open connections.

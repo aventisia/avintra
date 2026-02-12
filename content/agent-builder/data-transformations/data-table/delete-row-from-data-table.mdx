@@ -1,0 +1,69 @@
+import { Callout, Steps } from "nextra/components";
+
+# Delete Row From Data Table
+
+The **Delete Row From Data Table** node allows you to remove a specific row from a data table by specifying its zero-based index position. This is particularly useful when you need to clean up data, remove obsolete or irrelevant information, or adjust datasets for further processing.
+
+For example:
+
+- Removing a customer's data entry after their account is closed.
+- Deleting erroneous transactions from transaction logs.
+- Adjusting data tables by removing unwanted rows for analysis.
+
+## Configuration Options
+
+| Field Name     | Description                                                          | Input Type | Required? | Default Value |
+| -------------- | -------------------------------------------------------------------- | ---------- | --------- | ------------- |
+| **Data Table** | The data table from which you want to delete a row.                  | Text       | Yes       | _(empty)_     |
+| **Row Index**  | The position (starting at 0) of the row you want to delete in the table. | Text       | Yes       | _(empty)_     |
+
+## Expected Output Format
+
+The output of this node is a **Modified Data Table**, which returns the updated data table post-deletion without the specified row.
+
+## Step-by-Step Guide
+
+<Steps>
+### Step 1
+
+Add the **Delete Row From Data Table** node into your workflow.
+
+### Step 2
+
+In the **Data Table** field, enter or select the data table which contains the row you wish to delete.
+
+### Step 3
+
+In the **Row Index** field, specify the zero-based index of the row to be deleted. For example, to delete the first row, enter `0`.
+
+### Step 4
+
+Once the node is configured, the system will process and provide the **Modified Data Table** as output, reflecting the deletion.
+
+</Steps>
+
+<Callout type="info" title="Note">
+  The row index is zero-based. This means the first row has an index of 0, the second row has an index of 1, and so on.
+</Callout>
+
+## Input/Output Examples
+
+| Data Table            | Row Index | Output (Modified Data Table)       |
+| --------------------- | --------- | ---------------------------------- |
+| Customers Table       | 0         | Table without the first customer   |
+| Transaction Records   | 2         | Table with the third transaction removed |
+| Inventory List        | 4         | Table without the fifth inventory item |
+
+## Common Mistakes & Troubleshooting
+
+| Problem                                                   | Solution                                                                                  |
+| --------------------------------------------------------- | ----------------------------------------------------------------------------------------- |
+| **Index Out of Range Error**                              | Ensure that the Row Index is within the range of available rows in the table.              |
+| **Incorrect Data Table**                                  | Double-check that the correct data table is selected in the **Data Table** field.          |
+| **Non-numeric Row Index Entered**                         | Make sure that the Row Index is a numeric value, starting at 0 for the first row.          |
+
+## Real-World Use Cases
+
+- **Customer Data Management**: Easily remove customer entries from a list when accounts are closed or canceled.
+- **Financial Reporting**: Extract detailed transaction logs by removing unwanted or duplicate entries.
+- **Inventory Updates**: Keep inventory lists current by deleting outdated or sold items from records.

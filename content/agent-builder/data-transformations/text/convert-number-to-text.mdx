@@ -1,0 +1,77 @@
+import { Callout, Steps } from "nextra/components";
+
+# Convert Number to Text
+
+The **Convert Number to Text** node transforms numeric values into text format, applying specific formatting options. This tool is useful when you need to display numbers as part of a report, document, or user-facing interface, ensuring readability and adherence to formatting standards.
+
+For example:
+
+- Formatting numbers with thousands separators for clarity (e.g., 1,000 vs. 1000).
+- Controlling the number of decimal digits in display (e.g., 15.756 rounded to 15.76).
+- Ensuring consistent textual representation of numeric data across applications.
+
+## Configuration Options
+
+| Field Name               | Description                                                                           | Input Type | Required? | Default Value |
+| ------------------------ | ------------------------------------------------------------------------------------- | ---------- | --------- | ------------- |
+| **Number to Convert**    | The numeric value to convert to text.                                                 | Text       | Yes       | _(empty)_     |
+| **Decimal Places**       | The number of decimal places to include in the formatted text.                        | Text       | No        | 2             |
+| **Use Thousands Separator** | If true, includes a thousands separator in the formatted text.                     | Switch     | No        | True          |
+
+## Expected Output Format
+
+The output of this node is a **text-based formatted number**. For example:
+
+- With a thousands separator and 2 decimal places: `1,000.00`
+- Without a thousands separator and rounded: `1000.57`
+
+## Step-by-Step Guide
+
+<Steps>
+### Step 1
+
+Add **Convert Number to Text** node into your flow.
+
+### Step 2
+
+In the **Number to Convert** field, input the numeric value you wish to convert into text.
+
+### Step 3
+
+Optionally, set the **Decimal Places** field to determine the number of decimal places the text should have. The default is 2.
+
+### Step 4
+
+Toggle the **Use Thousands Separator** switch if you want the output to include commas as thousands separators.
+
+### Step 5
+
+The processed text will appear as **FormattedNumber** for further use in the flow.
+
+</Steps>
+
+<Callout type="info" title="Note">
+  The thousands separator is a great way to make large numbers more readable, especially in financial or detailed report outputs.
+</Callout>
+
+## Input/Output Examples
+
+| Input Number | Decimal Places | Use Thousands Separator | Output Value  | Output Type |
+| ------------ | -------------- | ----------------------- | ------------- | ----------- |
+| 1234567.89   | 2              | True                    | 1,234,567.89  | Text        |
+| 9876.54321   | 3              | False                   | 9876.543      | Text        |
+| 5000         | 0              | True                    | 5,000         | Text        |
+
+## Common Mistakes & Troubleshooting
+
+| Problem                                             | Solution                                                                                                                                                  |
+| --------------------------------------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| **Unexpected text output format**                   | Check the **Decimal Places** and **Use Thousands Separator** settings to ensure they align with your desired format.                                       |
+| **Non-numeric value in Number to Convert**          | Ensure the input is a numeric value. Avoid entering text or special characters that are not numbers.                                                      |
+| **FormattedNumber not used properly in further nodes** | Make sure other nodes in the flow are configured to accept text inputs if using the converted number further.                                             |
+
+## Real-World Use Cases
+
+- **Financial Reports**: Display large financial figures with separators for clarity and precision.
+- **Data Presentation**: Format data outputs in applications or dashboards to improve readability for end-users.
+- **Invoices and Billing Statements**: Convert numerical monetary amounts to text format for inclusion in detailed documentation.

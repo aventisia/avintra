@@ -1,0 +1,64 @@
+import { Callout, Steps } from "nextra/components";
+
+# Reverse Text
+
+The **Reverse Text** node is designed to take any string of text and reverse the order of its characters. This simple transformation can be used in numerous scenarios, such as encoding text, creating playful reversals, or analyzing text patterns.
+
+For example:
+
+- Reversing "Hello" results in "olleH".
+- It can be useful in creating mirror text designs or for stylistic purposes.
+
+## Configuration Options
+
+| Field Name      | Description                                                | Input Type | Required? | Default Value |
+| --------------- | ---------------------------------------------------------- | ---------- | --------- | ------------- |
+| **Original Text** | The text string you wish to reverse.                      | Text       | Yes       | _(empty)_     |
+| **Reversed Text** | Shows the reversed version of the input text.             | Output     | No        | ReversedText  |
+
+## Expected Output Format
+
+The output of this node is a **string of text**, which is the reverse sequence of the input text.
+
+## Step-by-Step Guide
+
+<Steps>
+### Step 1
+
+Add the **Reverse Text** node into your flow.
+
+### Step 2
+
+In the **Original Text** field, enter the text that you want to reverse.
+
+### Step 3
+
+Once the text is entered, the reversed version will be automatically available as **ReversedText**.
+
+</Steps>
+
+<Callout type="info" title="Note">
+  Ensure that you enter a text string in the **Original Text** field: this node
+  will reverse each character's position, producing a new text output.
+</Callout>
+
+## Input/Output Examples
+
+| Original Text | Reversed Text |
+| ------------- | ------------- |
+| Hello         | olleH         |
+| 1234          | 4321          |
+| Racecar       | racecaR       |
+
+## Common Mistakes & Troubleshooting
+
+| Problem                                            | Solution                                                                         |
+| -------------------------------------------------- | -------------------------------------------------------------------------------- |
+| **Input field left empty**                         | The **Original Text** field is required. Ensure you provide a valid text input.  |
+| **Non-text values or special characters entered**  | The node will reverse any text, but the result may be unexpected with symbols.   |
+
+## Real-World Use Cases
+
+- **Data Encoding**: Reverse text can be used as a simple encoding technique.
+- **Design and Art**: Create symmetry and mirror effects in design projects.
+- **Puzzles and Games**: Incorporate reverse text logic in creating puzzles or games.

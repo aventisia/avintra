@@ -1,0 +1,79 @@
+import { Callout, Steps } from "nextra/components";
+
+# Subtract Dates
+
+The **Subtract Dates** node calculates the time difference between two DateTime values, allowing you to understand the duration between events. This is particularly useful in scenarios where you need to track time intervals, such as project timelines, event planning, or any time-sensitive tasks.
+
+You can select the unit of time (Seconds, Minutes, Hours, or Days) to get the difference, making it flexible for various use cases.
+
+## Configuration Options
+
+| Field Name           | Description                                                                     | Input Type | Required? | Default Value |
+| -------------------- | ------------------------------------------------------------------------------- | ---------- | --------- | ------------- |
+| **Start DateTime**   | The starting point (earlier DateTime value) for the calculation.                | Text       | Yes       | _(empty)_     |
+| **End DateTime**     | The endpoint (later DateTime value) for the calculation.                        | Text       | Yes       | _(empty)_     |
+| **Difference Unit**  | The unit of measurement for the time difference: Seconds, Minutes, Hours, Days. | Select     | Yes       | Days          |
+
+## Expected Output Format
+
+The output is a **single number value** representing the time difference in the selected unit.
+
+- For example, if you choose "Days" and the interval is 3 days, the output will be `3`.
+- The output label is available as **DifferenceValue** for subsequent processing in your workflow.
+
+## Step-by-Step Guide
+
+<Steps>
+### Step 1
+
+Add **Subtract Dates** node into your flow.
+
+### Step 2
+
+In the **Start DateTime** field, input the start date and time from which to begin the subtraction.
+
+### Step 3
+
+In the **End DateTime** field, input the end date and time up to which to perform the subtraction.
+
+### Step 4
+
+From the **Difference Unit** dropdown, select the unit for expressing the time difference:
+
+- **Seconds**: Calculate total seconds between dates.
+- **Minutes**: Calculate total minutes between dates.
+- **Hours**: Calculate total hours between dates.
+- **Days**: Calculate total days between dates.
+
+### Step 5
+
+The calculated time difference will appear as **DifferenceValue** for use in subsequent nodes.
+
+</Steps>
+
+<Callout type="info" title="Tip">
+  Ensure the **End DateTime** is always later than **Start DateTime** for accurate results.
+</Callout>
+
+## Input/Output Examples
+
+| Start DateTime     | End DateTime       | Difference Unit | Output Value | Output Type         |
+| ------------------ | ------------------ | --------------- | ------------ | ------------------- |
+| 2023-10-01 08:00   | 2023-10-02 08:00   | Days            | 1            | Number (Days)       |
+| 2023-10-01 08:00   | 2023-10-01 09:30   | Hours           | 1.5          | Number (Hours)      |
+| 2023-10-01 08:00   | 2023-10-01 08:05   | Minutes         | 5            | Number (Minutes)    |
+| 2023-10-01 08:00   | 2023-10-01 08:00:30 | Seconds         | 30           | Number (Seconds)    |
+
+## Common Mistakes & Troubleshooting
+
+| Problem                                   | Solution                                                                                                           |
+| ----------------------------------------- | ------------------------------------------------------------------------------------------------------------------ |
+| **End DateTime is before Start DateTime** | Ensure the **End DateTime** is a later value than **Start DateTime** to get a positive time difference result.     |
+| **Incorrect date format**                 | Make sure your date and time inputs match a standard format, such as `YYYY-MM-DD HH:MM`.                          |
+| **Empty time difference**                 | Double-check both date fields to make sure they are correctly filled out. Avoid leaving any field blank.           |
+
+## Real-World Use Cases
+
+- **Event Scheduling**: Calculate days remaining until an event by subtracting current date from event date.
+- **Billing**: Determine total hours spent on a project that started and ended at specific times.
+- **Workflow Automation**: Trigger actions based on elapsed time by calculating minutes/hours since a previous event.

@@ -1,0 +1,70 @@
+import { Callout, Steps } from "nextra/components";
+
+# Merge Lists
+
+The **Merge Lists** node enables you to combine two separate lists into a single, new list, while keeping the original lists unchanged. This function is particularly useful when you want to consolidate data sets, organize combined information, or prepare lists for further processing.
+
+For example:
+
+- Combining lists of customer email addresses.
+- Merging inventory data from two sources.
+- Adding elements from different lists into a comprehensive collection.
+
+## Configuration Options
+
+| Field Name    | Description                                  | Input Type | Required? | Default Value |
+| ------------- | -------------------------------------------- | ---------- | --------- | ------------- |
+| **First List**  | The first list of items to merge.             | Text       | Yes       | _(empty)_     |
+| **Second List** | The second list of items to merge.            | Text       | Yes       | _(empty)_     |
+
+## Expected Output Format
+
+The output is a **new list** containing items from both the first and second lists provided in input.
+
+- Output Type: List (e.g., `["Item1", "Item2", "Item3"]` if `FirstList = ["Item1", "Item2"]` and `SecondList = ["Item3"]`).
+
+## Step-by-Step Guide
+
+<Steps>
+### Step 1
+
+Add **Merge Lists** node into your flow.
+
+### Step 2
+
+In the **First List** field, enter the items for the first list you want to include in the merge.
+
+### Step 3
+
+In the **Second List** field, enter the items for the second list you want to include in the merge.
+
+### Step 4
+
+The combined list, referred to as **MergedList**, will be available for use in your workflow.
+
+</Steps>
+
+<Callout type="info" title="Note">
+  Ensure the items in the lists are separated correctly, respecting the input format to avoid errors during merging.
+</Callout>
+
+## Input/Output Examples
+
+| First List         | Second List      | Output Value                      | Output Type |
+| ------------------ | ---------------- | --------------------------------- | ----------- |
+| `["Apple", "Banana"]`  | `["Orange"]`   | `["Apple", "Banana", "Orange"]`   | List        |
+| `["Red", "Blue"]`      | `["Green"]`    | `["Red", "Blue", "Green"]`        | List        |
+
+## Common Mistakes & Troubleshooting
+
+| Problem                             | Solution                                                                                                                      |
+| ----------------------------------- | ----------------------------------------------------------------------------------------------------------------------------- |
+| **Lists not merging as expected**   | Ensure you have entered the list items properly, using correct delimiters (commas, semicolons, etc.) based on system settings. |
+| **Empty output**                    | Make sure both input fields are filled with valid lists before processing.                                                     |
+| **Unexpected characters in output** | Double-check the input list items to avoid any unintended characters or symbols.                                              |
+
+## Real-World Use Cases
+
+- **Mailing Lists**: Combine multiple customer lists for a unified mailing campaign.
+- **Sales Data**: Merge sales data from different quarters or stores to form a year-round dataset.
+- **Product Catalogs**: Consolidate diverse product lists from different vendors for a comprehensive catalog.

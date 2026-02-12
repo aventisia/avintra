@@ -1,0 +1,89 @@
+import { Callout, Steps } from "nextra/components";
+
+# Replace Text
+
+The **Replace Text** node allows you to modify a text string by replacing specified parts with other text. This is beneficial for tasks such as correcting typos, changing outdated terms, or applying formatting changes in large volumes of text easily. Additionally, it supports advanced pattern matching through Regular Expressions for more complex substitution tasks.
+
+This node is useful in scenarios like:
+
+- Correcting misspelled words across documents.
+- Formatting text based on specific patterns.
+- Standardizing content by replacing outdated terms with new terminology.
+
+## Configuration Options
+
+| Field Name                 | Description                                                                           | Input Type | Required? | Default Value |
+| -------------------------- | ------------------------------------------------------------------------------------- | ---------- | --------- | ------------- |
+| **Original Text**          | The original content you want to modify.                                              | Text       | Yes       | _(empty)_     |
+| **Search Pattern**         | The part of the text to replace. This can also be a regular expression pattern.       | Text       | Yes       | _(empty)_     |
+| **Replacement Text**       | The text that will replace the search pattern in the original text.                   | Text       | Yes       | _(empty)_     |
+| **Use Regular Expressions**| Enables the use of regular expressions for the search pattern.                       | Switch     | No        | False         |
+| **Ignore Case**            | A case-insensitive search if set to true.                                             | Switch     | No        | False         |
+| **Activate Escape Sequences** | Processes escape sequences in the replacement text if enabled.                      | Switch     | No        | False         |
+
+## Expected Output Format
+
+The output of this node is a **string of text**, represented as the adjusted version of the original text. This will be available as **ReplacedText**.
+
+## Step-by-Step Guide
+
+<Steps>
+### Step 1
+
+Add the **Replace Text** node into your automation flow.
+
+### Step 2
+
+In the **Original Text** field, input the text you want to modify.
+
+### Step 3
+
+Enter the **Search Pattern** specifying the exact text or pattern to be replaced.
+
+### Step 4
+
+Input the **Replacement Text** that will replace the matched search pattern.
+
+### Step 5
+
+(Optional) Enable or disable the **Use Regular Expressions** switch based on whether you are using regular expressions.
+
+### Step 6
+
+(Optional) Toggle the **Ignore Case** switch if you want the search to disregard letter casing.
+
+### Step 7
+
+(Optional) Turn on **Activate Escape Sequences** if the replacement text includes escape sequences that need processing.
+
+### Step 8
+
+The modified text will be output as **ReplacedText**.
+</Steps>
+
+<Callout type="info" title="Tip">
+  Using regular expressions can greatly enhance the ability to match complex patterns, but ensure you understand the syntax to avoid unexpected results.
+</Callout>
+
+## Input/Output Examples
+
+| Original Text         | Search Pattern | Replacement Text | Use Regex | Ignore Case | Output Text              | Output Type  |
+| --------------------- | -------------- | ---------------- | --------- | ----------- | ------------------------ | ------------ |
+| "Hello World"         | "World"        | "Earth"          | No        | No          | "Hello Earth"            | String (Text)|
+| "apple and Apple"     | "apple"        | "fruit"          | No        | Yes         | "fruit and fruit"        | String (Text)|
+| "123-456-7890"        | "\d"           | "X"              | Yes       | No          | "XXX-XXX-XXXX"           | String (Text)|
+| "C:\\Files\\Example"  | "\\\\"         | "/"              | Yes       | No          | "C:/Files/Example"       | String (Text)|
+
+## Common Mistakes & Troubleshooting
+
+| Issue                                           | Solution                                                                                                                      |
+| ------------------------------------------------| ----------------------------------------------------------------------------------------------------------------------------- |
+| **No Changes in Output**                        | Ensure that the **Search Pattern** correctly matches part of the **Original Text**. Check your spelling or pattern accuracy.  |
+| **No Case Sensitivity**                         | Confirm that **Ignore Case** is set according to your needs. Enable it if case should not matter for the search pattern.      |
+| **Unexpected Regex Results**                    | Double-check regular expressions for syntax errors or unintended patterns. Utilize online tools for regex validation.         |
+
+## Real-World Use Cases
+
+- **Data Cleaning**: Automatically correct frequently occurring typos or update terminology in bulk text data.
+- **Text Formatting**: Reformat document paths, addresses, or other structured text according to organizational standards.
+- **Content Standardization**: Systematically replace brand names or technical terms across large datasets.

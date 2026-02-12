@@ -1,0 +1,76 @@
+import { Callout, Steps } from "nextra/components";
+
+# Add Time to DateTime
+
+The **Add Time to DateTime** node enables you to modify a DateTime value by adding a specified amount of time. You can choose the unit of time (e.g., seconds, minutes, days) and specify how much of that unit should be added. This node is useful when you need to adjust timestamps for scheduling, logging, or any time-based calculations.
+
+For example:
+
+- Adding days to a project deadline.
+- Adjusting event times by adding hours or minutes.
+- Calculating future dates or times for reminders or meetings.
+
+## Configuration Options
+
+| Field Name       | Description                                                                            | Input Type | Required? | Default Value |
+| ---------------- | -------------------------------------------------------------------------------------- | ---------- | --------- | ------------- |
+| **Base DateTime**| The original DateTime value to which you want to add time.                             | Text       | Yes       | _(empty)_     |
+| **Value to Add** | The numeric amount of time you want to add.                                            | Text       | Yes       | _(empty)_     |
+| **Time Unit**    | Choose the unit of time for addition (e.g., Seconds, Minutes, Hours).                  | Select     | Yes       | Days          |
+
+## Expected Output Format
+
+The output of this node is an **updated DateTime** value. The format will typically be the same as the input DateTime, adjusted according to the time and unit specified.
+
+For example, if you add 5 days to `2023-11-01T10:00:00`, the output is `2023-11-06T10:00:00`.
+
+## Step-by-Step Guide
+
+<Steps>
+### Step 1
+
+Add the **Add Time to DateTime** node into your flow.
+
+### Step 2
+
+In the **Base DateTime** field, enter the DateTime value you wish to modify.
+
+### Step 3
+
+In the **Value to Add** field, input the numeric value indicating how much time you want to add.
+
+### Step 4
+
+From the **Time Unit** dropdown, select the appropriate unit of time to add, such as Seconds, Minutes, Hours, etc.
+
+### Step 5
+
+The newly adjusted DateTime will be available as **ResultDateTime** for further use in your flow.
+
+</Steps>
+
+<Callout type="info" title="Tip">
+  Ensure that your Base DateTime value is in a supported DateTime format to prevent errors.
+</Callout>
+
+## Input/Output Examples
+
+| Base DateTime         | Value to Add | Time Unit | Output DateTime         | Output Type       |
+| --------------------- | ------------ | --------- | ----------------------- | ----------------- |
+| 2023-11-01T10:00:00   | 5            | Days      | 2023-11-06T10:00:00     | DateTime          |
+| 2023-11-01T10:00:00   | 2            | Hours     | 2023-11-01T12:00:00     | DateTime          |
+| 2023-11-01T10:00:00   | 15           | Minutes   | 2023-11-01T10:15:00     | DateTime          |
+
+## Common Mistakes & Troubleshooting
+
+| Problem                                       | Solution                                                                                                                                                        |
+| --------------------------------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| **Non-numeric value entered in Value to Add** | Ensure that the Value to Add is a numeric input (e.g., 10).                                                                                                      |
+| **Base DateTime not in valid format**         | Check that your DateTime input follows an accepted format (e.g., `YYYY-MM-DDTHH:MM:SS`).                                                                        |
+| **Incorrect time adjustments**                | Double-check both the Value to Add and the Time Unit to ensure you are adding the right amount of time in the correct unit.                                      |
+
+## Real-World Use Cases
+
+- **Project Management**: Automatically adjust project deadlines by adding days or weeks.
+- **Event Scheduling**: Update meeting times by adding minutes or hours, useful for timezone adjustments.
+- **Recurring Reminders**: Calculate the next occurrence of a recurring event by adding months or years.

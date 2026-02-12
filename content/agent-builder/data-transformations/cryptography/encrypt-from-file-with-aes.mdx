@@ -1,0 +1,80 @@
+import { Callout, Steps } from "nextra/components";
+
+# Encrypt from File with AES
+
+The **Encrypt from File with AES** node encrypts the contents of a specified file using AES (Advanced Encryption Standard) encryption. This process enhances data security by encoding file contents so they can't be easily read without the correct decryption key. The node supports different encoding formats like Base64 or Hex, providing flexibility in how you store or transmit the encrypted data.
+
+This node is useful for tasks such as:
+
+- Securing sensitive file contents before storing or sharing.
+- Encoding files for secure backups.
+- Preparing encrypted files for secure transfer over the internet.
+
+## Configuration Options
+
+| Field Name           | Description                                                                                    | Input Type | Required? | Default Value |
+| -------------------- | ---------------------------------------------------------------------------------------------- | ---------- | --------- | ------------- |
+| **Input File Path**  | The full path to the file you want to encrypt.                                                 | Text       | Yes       | _(empty)_     |
+| **Encryption Key**   | The secret key used to encrypt the file. Should be kept secure.                                | Text       | Yes       | _(empty)_     |
+| **Encoding Format**  | The format that dictates how the encrypted data is encoded: Base64, Hex, or UTF8.              | Select     | Yes       | _(empty)_     |
+| **Output File Path** | The full path where the encrypted file will be saved.                                          | Text       | Yes       | _(empty)_     |
+
+## Expected Output Format
+
+The output of this node is an **encrypted file** stored at the specified output path. The file's contents will be encoded in the selected format (Base64, Hex, or UTF8).
+
+## Step-by-Step Guide
+
+<Steps>
+
+### Step 1
+
+Add the **Encrypt from File with AES** node into your flow.
+
+### Step 2
+
+In the **Input File Path** field, enter the path of the file you wish to encrypt.
+
+### Step 3
+
+Enter your **Encryption Key**. This key will be used in the encryption process, so ensure it is both secure and memorable or store it securely elsewhere.
+
+### Step 4
+
+Select your desired **Encoding Format** from the dropdown. Choose between Base64, Hex, or UTF8 depending on your needs for the encrypted data.
+
+### Step 5
+
+In the **Output File Path** field, specify where the encrypted file should be saved on your system.
+
+### Step 6
+
+Once configured, the node processes the file and saves the encrypted version at the path you designated in **Step 5**.
+
+</Steps>
+
+<Callout type="warning" title="Important Note">
+  The **Encryption Key** is crucial for decrypting the file later. Make sure to keep it secure and do not lose it.
+</Callout>
+
+## Input/Output Examples
+
+Assuming your input file path is `/User/Documents/secret.txt` and your specified output path is `/User/Documents/encrypted_secret.txt`:
+
+- **Encoding Format**: Base64
+- The encrypted file is created at `/User/Documents/encrypted_secret.txt` using the Base64 encoding.
+
+## Common Mistakes & Troubleshooting
+
+| Problem                                      | Solution                                                                                                         |
+| -------------------------------------------- | ---------------------------------------------------------------------------------------------------------------- |
+| **Path Errors**                              | Double-check that the input and output file paths are correct and accessible.                                     |
+| **Invalid Encryption Key**                   | Ensure the encryption key is entered correctly and meets any length/format requirements.                          |
+| **Unsupported Encoding Format**              | Choose a valid encoding format from the options provided: Base64, Hex, or UTF8.                                   |
+| **Encrypted File Not Found**                 | Verify the output path. Ensure the directory is writable and that you have appropriate permissions.               |
+
+## Real-World Use Cases
+
+- **Secure File Storage**: Encrypt sensitive documents before uploading them to cloud storage for enhanced privacy.
+- **Email Attachments**: Protect confidential attachments by encrypting them before sending.
+- **Compliance**: Meet regulatory requirements for data protection by encrypting files containing personal data.

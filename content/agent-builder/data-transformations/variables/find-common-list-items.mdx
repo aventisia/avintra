@@ -1,0 +1,73 @@
+import { Callout, Steps } from "nextra/components";
+
+# Find Common List Items
+
+The **Find Common List Items** node is designed to help you identify items that are present in both of two lists you provide. This node compares each list and returns a new list containing only the items that appear in both. It's particularly useful for deduplicating or matching sets of data.
+
+For example:
+
+- Identifying overlapping product codes in different inventory lists.
+- Finding customers who are in both current and previous marketing campaigns.
+- Matching survey respondents who selected multiple specific options.
+
+## Configuration Options
+
+| Field Name      | Description                                           | Input Type | Required? | Default Value |
+| --------------- | ----------------------------------------------------- | ---------- | --------- | ------------- |
+| **First List**  | The first list to compare.                            | Text       | Yes       | _(empty)_     |
+| **Second List** | The second list to compare.                           | Text       | Yes       | _(empty)_     |
+
+## Expected Output Format
+
+This node outputs a **list of common items** found in both provided input lists. It is a collection of elements, formatted as a list, which are present in both input lists.
+
+Example Output:
+
+- Common items will be presented as a list such as `["apple", "banana", "cherry"]`.
+
+## Step-by-Step Guide
+
+<Steps>
+### Step 1
+
+Add **Find Common List Items** node into your flow.
+
+### Step 2
+
+In the **First List** field, enter the first list of items you wish to compare. Ensure the items are separated appropriately (e.g., commas for a comma-separated list).
+
+### Step 3
+
+In the **Second List** field, enter the second list of items you wish to compare, following the same formatting guidelines as the first list.
+
+### Step 4
+
+Review the output field **Intersection List**, where the common items from both lists will be displayed.
+
+</Steps>
+
+<Callout type="info" title="Tip">
+  Ensure your list formatting is consistent (e.g., using commas or semicolons) to prevent mismatches and achieve an accurate comparison.
+</Callout>
+
+## Input/Output Examples
+
+| First List                 | Second List                | Output Value                     |
+| -------------------------- | -------------------------- | -------------------------------- |
+| `["apple", "banana"]`      | `["banana", "cherry"]`     | `["banana"]`                     |
+| `["1", "2", "3"]`          | `["3", "4", "5"]`          | `["3"]`                          |
+| `["email@example.com"]`    | `["user@example.com"]`     | `[]`                             |
+
+## Common Mistakes & Troubleshooting
+
+| Problem                                 | Solution                                                                                                                                       |
+| --------------------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------- |
+| **No output or empty list returned**    | Double-check that both input lists contain items and are correctly formatted. Lists must have overlapping items for the node to find a match.   |
+| **Unexpected items in output list**     | Ensure there are no additional whitespace or formatting issues, such as spaces, affecting list item comparison.                                 |
+| **Non-standard list delimiters used**   | Use standard delimiters (like commas or semicolons, consistently across both lists) for accurate comparison.                                    |
+
+## Real-World Use Cases
+
+- **Product Inventory Management**: Quickly identify shared stock items across different warehouses.
+- **Customer Data Analysis**: Match customers featured in multiple datasets for targeted marketing.
+- **Survey Result Data**: Find common answers among different survey question responses to analyze patterns.

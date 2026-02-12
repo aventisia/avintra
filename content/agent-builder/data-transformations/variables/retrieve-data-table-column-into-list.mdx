@@ -1,0 +1,71 @@
+import { Callout, Steps } from "nextra/components";
+
+# Retrieve Data Table Column Into List
+
+The **Retrieve Data Table Column Into List** node allows you to extract data from a specific column in a data table and convert it into a list. This functionality is useful when you need to gather columnar data for further processing, analysis, or output, such as exporting a list of email addresses or product names.
+
+For example:
+
+- Convert a column of names in a table into a list for easy access or processing.
+- Extract numerical data from a specific column for calculations.
+- Prepare a list of unique items found in a chosen column for reporting.
+
+## Configuration Options
+
+| Field Name                 | Description                                                                                | Input Type | Required? | Default Value |
+| -------------------------- | ------------------------------------------------------------------------------------------ | ---------- | --------- | ------------- |
+| **Data Table**             | The data table containing the column to convert into a list.                               | Text       | Yes       | _(empty)_     |
+| **Column Name or Index**   | Specifies which column to extract by name (if defined) or index (zero-based).              | Text       | Yes       | _(empty)_     |
+
+## Expected Output Format
+
+The output of this node is a **list of strings** which contains the data from the specified column.
+
+- The list will contain each cell's data from the selected column, rearranged in list format (e.g., `["Item1", "Item2", "Item3"]`).
+
+## Step-by-Step Guide
+
+<Steps>
+
+### Step 1
+
+Add **Retrieve Data Table Column Into List** node into your flow.
+
+### Step 2
+
+In the **Data Table** field, enter the data table that contains the column you wish to convert into a list. Ensure the table is accessible within your setup.
+
+### Step 3
+
+Enter the **Column Name or Index** to specify the column. You can use the column's name if available, or its index starting with 0 (first column).
+
+### Step 4
+
+Upon configuration, the column data will be converted and available as **ColumnAsList** for further use in your process.
+
+</Steps>
+
+<Callout type="info" title="Note">
+  Ensure that the specified column exists in the data table. Otherwise, you may not get the expected output.
+</Callout>
+
+## Input/Output Examples
+
+| Data Table         | Column Name or Index | Output List                   | Output Type        |
+| ------------------ | ---------------------| ----------------------------- | ------------------ |
+| `[["Name", "Age"], ["Alice", "30"], ["Bob", "25"]]` | Name                       | `["Alice", "Bob"]` | List of Strings    |
+| Same as above      | 1                    | `["30", "25"]`               | List of Strings    |
+
+## Common Mistakes & Troubleshooting
+
+| Problem                                                   | Solution                                                                                                                                  |
+| --------------------------------------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------- |
+| **Invalid Column Name or Index**                          | Ensure the column exists in the data table and recheck the spelling or index used.                                                      |
+| **Entering Non-Table Data**                               | Verify that the input contains a valid table structure and not just isolated values or unrelated data.                                    |
+| **Empty Output**                                          | Double-check both the table input and column specifications. Make sure the specified column has data.                                    |
+
+## Real-World Use Cases
+
+- **Email Campaigns**: Extract a list of email addresses from a table for mass mailing.
+- **Inventory Management**: Gather a list of product names or IDs for inventory monitoring.
+- **Contact Lists**: Generate a list of client names for personalized engagement activities.

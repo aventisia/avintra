@@ -1,0 +1,74 @@
+import { Callout, Steps } from "nextra/components";
+
+# Extract Text with OCR
+
+The **Extract Text with OCR** node allows you to automatically convert written text in images into editable text using Optical Character Recognition (OCR) technology. This is particularly useful when you need to pull in data from scanned documents, photos, or other image formats to utilize in digital workflows and processes.
+
+For example:
+
+- Digitizing printed documents such as invoices or contracts.
+- Extracting information from screenshots for processing.
+- Translating printed text from images into editable or searchable text.
+
+## Configuration Options
+
+| Field Name      | Description                                                                               | Input Type | Required? | Default Value |
+| --------------- | ----------------------------------------------------------------------------------------- | ---------- | --------- | ------------- |
+| **Image Path**  | The path to the image file (e.g., .png, .jpg) you want to process for text extraction.    | Text       | Yes       | _(empty)_     |
+| **Language Code** | The language code used by Tesseract (e.g., 'eng' for English).                           | Text       | No        | `eng`         |
+| **TessData Path** | Directory containing the tessdata folder. Leave blank for auto setup by the OCR engine. | Text       | No        | _(empty)_     |
+
+## Expected Output Format
+
+The output of this node is **Extracted Text** from the image, provided as a continuous string of characters.
+
+## Step-by-Step Guide
+
+<Steps>
+### Step 1
+
+Add the **Extract Text with OCR** node into your flow.
+
+### Step 2
+
+In the **Image Path** field, enter the path of the image file you wish to convert to text (ensure file is accessible and correctly typed).
+
+### Step 3
+
+Optionally, specify the **Language Code** if the text in the image is different from the default 'eng'. This directs the OCR engine to the appropriate language for accurate text extraction.
+
+### Step 4
+
+Optionally provide the **TessData Path** if you have a custom tessdata directory. Leaving it blank allows automatic configuration.
+
+### Step 5
+
+Extracted text will automatically be available as **ExtractedText** for further use in your workflow.
+</Steps>
+
+<Callout type="info" title="Tip">
+  Ensure the image file is clear and readable to increase OCR accuracy. Blurry or low-quality images may reduce the successful text extraction rate.
+</Callout>
+
+## Input/Output Examples
+
+| Image Path          | Language Code | TessData Path | Extracted Text      | Output Type  |
+| ------------------- | ------------- | ------------- | ------------------- | ------------ |
+| /images/invoice.png | eng           | _(empty)_     | "Invoice Number..." | Text String  |
+| /photos/letter.jpg  | fre           | /custom/tess  | "Chère Madame..."   | Text String  |
+
+## Common Mistakes & Troubleshooting
+
+| Problem                                       | Solution                                                                                    |
+| --------------------------------------------- | ------------------------------------------------------------------------------------------- |
+| **Incorrect image path error**                | Verify the image file path is correct and accessible.                                       |
+| **Unclear extracted text**                    | Ensure the image is of good quality and properly oriented. Consider adjusting brightness.    |
+| **Incorrect language output**                 | Double-check the specified language code. Confirm it's valid for the text in the image.     |
+| **Empty extracted text**                      | Ensure the OCR engine supports the provided text in the image's language and quality.        |
+
+## Real-World Use Cases
+
+- **Automating Document Processing**: Extract text from scanned forms for automated data entry.
+- **Archiving**: Convert printed materials to editable text for digital archiving.
+- **Translation Services**: Extract and translate printed text quickly from images into digital formats.
+- **Research and Analysis**: Pull text from images for quick analysis or incorporation into reports.

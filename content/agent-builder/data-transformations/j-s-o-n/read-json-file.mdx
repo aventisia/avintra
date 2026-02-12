@@ -1,0 +1,65 @@
+import { Callout, Steps } from "nextra/components";
+
+# Read JSON File
+
+The **Read JSON File** node is designed to extract and display the content of a JSON file from a specified file path. It is useful when you need to import data structured in JSON format for further processing or display within your automation workflows.
+
+## Configuration Options
+
+| Field Name           | Description                                                   | Input Type | Required? | Default Value |
+| -------------------- | ------------------------------------------------------------- | ---------- | --------- | ------------- |
+| **File Path**        | The full path to the JSON file to be read from your desktop.  | Text       | Yes       | _(empty)_     |
+| **JSON Content (String)** | Outputs the JSON file content as a string. Returns "null" if an error occurs. | Output     | No        | JsonContentString |
+| **JSON Content (JToken)** | Outputs the JSON file content as a JToken. Returns null if an error occurs. | Output     | No        | JsonContentToken |
+
+## Expected Output Format
+
+This node produces two potential outputs based on user selection:
+
+- **JSON Content (String)**: Outputs the file content in a string format, which is readable as plain text.
+- **JSON Content (JToken)**: Outputs the file content as a JToken (a native representation of JSON in automation workflows, similar to JSON objects).
+
+## Step-by-Step Guide
+
+<Steps>
+### Step 1
+
+Add the **Read JSON File** node into your flow.
+
+### Step 2
+
+In the **File Path** field, enter the complete file path to the JSON file you wish to read. Ensure the path is correct and points to a valid JSON file on your desktop or network.
+
+### Step 3
+
+Once configured, the node will read the JSON file. Choose whether to use the "JSON Content (String)" or "JSON Content (JToken)" output depending on what format you need for your subsequent nodes or operations.
+
+### Step 4
+
+Use the outputs ("JsonContentString" or "JsonContentToken") in your automation process as required, enabling subsequent nodes to access and manipulate the JSON data.
+</Steps>
+
+<Callout type="warning" title="Important">
+  Ensure the file path is correct and accessible. If the node cannot find the file, it will return "null" as the output.
+</Callout>
+
+## Input/Output Examples
+
+| File Path               | Output Type          | Output Example                              |
+| ----------------------- | -------------------- | ------------------------------------------- |
+| `C:\data\info.json`     | JSON Content (String) | `{"key": "value", "list": [1, 2, 3]}`      |
+| `C:\data\info.json`     | JSON Content (JToken) | Equivalent structured JSON object representation |
+
+## Common Mistakes & Troubleshooting
+
+| Problem                                       | Solution                                                                                                           |
+| --------------------------------------------- | ------------------------------------------------------------------------------------------------------------------ |
+| **Invalid File Path**                         | Double-check the file path entered. Make sure it is a full path with correct spelling and file extensions (.json). |
+| **Permission Issues**                         | Ensure you have read permissions for the file path directory.                                                      |
+| **Output is Null**                            | This could be due to an incorrect file path or invalid JSON structure within the file. Recheck the file and path.   |
+
+## Real-World Use Cases
+
+- **Data Import**: Automatically import and analyze data from JSON files for business intelligence dashboards.
+- **Configuration Files**: Load and modify application configuration settings stored in JSON format.
+- **Data Transformation**: Preprocess JSON data prior to integration with other systems or applications in your automation workflows.

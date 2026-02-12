@@ -1,0 +1,76 @@
+import { Callout, Steps } from "nextra/components";
+
+# Convert Text to Number
+
+The **Convert Text to Number** node is designed to transform a text that represents a number into an actual numeric value. This is particularly useful when you have data in a text format (like data entries from forms or imported CSV files) that you need to process as numbers for calculations or further analysis.
+
+For instance:
+
+- Converting string values like `"123"` to the number `123`.
+- Parsing text `"$45.67"` to the numerical `45.67` for calculations.
+- Changing multiple strings like `"1.23"`, `"45"`, or `"100.5"` to their corresponding numeric types for financial or statistical operations.
+
+## Configuration Options
+
+| Field Name         | Description                                                                     | Input Type | Required? | Default Value |
+| ------------------ | ------------------------------------------------------------------------------- | ---------- | --------- | ------------- |
+| **Text to Convert**| The text value that you want to convert to a numeric type.                       | Text       | Yes       | _(empty)_     |
+| **Output Type**    | Choose the numeric type for the conversion: Integer, Double, or Decimal.         | Select     | Yes       | _(empty)_     |
+
+## Expected Output Format
+
+The output of this node is a **numeric value**. The format depends on the chosen output type:
+
+- **Integer**: A whole number without any decimal points (e.g., `123`).
+- **Double**: A floating-point number with precision for larger numerical computations (e.g., `123.45`).
+- **Decimal**: A precise fractional number good for financial calculations (e.g., `123.4567`).
+
+## Step-by-Step Guide
+
+<Steps>
+### Step 1
+
+Add the **Convert Text to Number** node into your flow.
+
+### Step 2
+
+In the **Text to Convert** field, input the text you wish to transform into a number.
+
+### Step 3
+
+In the **Output Type** dropdown, select the type of number you require:
+
+- **Integer**: For whole numbers.
+- **Double**: For numbers with decimal precision.
+- **Decimal**: For exact fractional numbers, commonly used in precise calculations.
+
+### Step 4
+
+Once configured, the converted numeric value is available as **ConvertedValue** for further use in subsequent nodes.
+
+</Steps>
+
+<Callout type="info" title="Note">
+  Ensure that the input text should be a valid numeric string. Invalid texts, such as "abc" or "12a4", cannot be converted and might cause errors.
+</Callout>
+
+## Input/Output Examples
+
+| Input Text  | Output Type | Output Value | Output Type       |
+| ----------- | ----------- | ------------ | ----------------- |
+| `"123"`     | Integer     | 123          | Number (Integer)  |
+| `"45.67"`   | Double      | 45.67        | Number (Double)   |
+| `"100.50"`  | Decimal     | 100.50       | Number (Decimal)  |
+
+## Common Mistakes & Troubleshooting
+
+| Problem                                             | Solution                                                                                                 |
+| --------------------------------------------------- | -------------------------------------------------------------------------------------------------------- |
+| **Conversion fails**                                | Check that the input text is actually in a numeric format (e.g., no letters or special characters).       |
+| **Unexpected output type**                          | Verify that the correct output type (Integer, Double, Decimal) is selected according to your requirements.|
+
+## Real-World Use Cases
+
+- **Data Importation**: Converting number-like text entries from data files into numeric values for database storage.
+- **Financial Analysis**: Transforming textual financial data to decimals for accurate computations.
+- **Inventory Management**: Converting text quantities from input files to integers for stock control systems.
