@@ -1,0 +1,88 @@
+import { Callout, Steps } from "nextra/components";
+
+# Mark Email as Read or Unread
+
+The **Mark Email as Read or Unread** node enables you to change the read status of an email in a Microsoft Outlook mailbox through the Microsoft Graph API. This node is particularly useful for managing emails programmatically, allowing users to automate the process of marking emails as read or unread based on certain conditions or workflows.
+
+Use cases include:
+
+- Automatically marking newsletters and non-urgent emails as read.
+- Keeping important emails unread until you've had a chance to deal with them.
+- Integrating with notification systems where certain actions are triggered based on email status.
+
+## Configuration Options
+
+| Field Name     | Description                                                                    | Input Type | Required? | Default Value |
+| -------------- | ------------------------------------------------------------------------------ | ---------- | --------- | ------------- |
+| **User Email** | The email address of the mailbox owner.                                        | Text       | Yes       | _(empty)_     |
+| **Message ID** | The ID of the message to update.                                               | Text       | Yes       | _(empty)_     |
+| **Is Read**    | Use the switch to set email status: True for read, False for unread.           | Switch     | Yes       | _(empty)_     |
+| **Tenant ID**  | Azure Active Directory tenant (directory) ID. Required for authentication.     | Text       | Yes       | _(empty)_     |
+| **Client ID**  | Azure AD application (client) ID for identifying your app to Microsoft Graph.  | Text       | Yes       | _(empty)_     |
+| **Client Secret** | Azure AD application client secret for authenticating your app.             | Text       | Yes       | _(empty)_     |
+
+## Expected Output Format
+
+The output of this node is a **confirmation status** indicating whether the email's read/unread status was successfully updated. It's typically presented as a simple success message.
+
+## Step-by-Step Guide
+
+<Steps>
+### Step 1
+
+Add the **Mark Email as Read or Unread** node into your workflow.
+
+### Step 2
+
+In the **User Email** field, enter the email address of the mailbox you wish to access.
+
+### Step 3
+
+Input the **Message ID** of the email you want to modify. This is a unique identifier for each email message.
+
+### Step 4
+
+Toggle the **Is Read** switch to select if the email should be marked as 'Read' (True) or 'Unread' (False).
+
+### Step 5
+
+Enter your **Tenant ID**. This is essential for using the Microsoft Graph API.
+
+### Step 6
+
+Provide the **Client ID** for your Azure application, which helps identify your usage.
+
+### Step 7
+
+Supply the **Client Secret** to authenticate your application with Azure AD.
+
+### Step 8
+
+Finalize your setup and execute the workflow to mark the email with the selected status.
+</Steps>
+
+<Callout type="warning" title="Important">
+  Ensure that all Azure credentials such as Tenant ID, Client ID, and Client Secret are kept secure and are not shared or exposed in unsecured environments.
+</Callout>
+
+## Input/Output Examples
+
+| User Email        | Message ID | Is Read | Expected Output       |
+| ----------------- | ---------- | ------- | --------------------- |
+| user@example.com  | 123456     | True    | Email marked as read  |
+| user@example.com  | 654321     | False   | Email marked as unread |
+
+## Common Mistakes & Troubleshooting
+
+| Problem                                              | Solution                                                                                                                                          |
+| ---------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------- |
+| **Invalid credentials**                              | Double-check Tenant ID, Client ID, and Client Secret to ensure they are correct and correspond to your Azure environment.                        |
+| **Email not found**                                  | Verify the Message ID is correct for the specified User Email. Consider retrieving the Message ID using Microsoft Graph Explorer if unknown.      |
+| **Network or API errors**                            | Check your network connection and ensure the Microsoft Graph API service is available. Retry the operation if necessary.                          |
+| **Unauthorized access**                              | Ensure that the Azure app permissions are adequately set up to access the user’s mailbox in the Microsoft environment.                            |
+
+## Real-World Use Cases
+
+- **Email Management**: Automatically mark promotional emails as read for clutter-free inbox management.
+- **Task Delegation**: Keep collaborative task-related emails unread until they are addressed in team meetings.
+- **Urgent Notifications**: Integrate with alert systems to ensure crucial alerts remain highlighted for attention by marking them unread after initial automation process handlings.

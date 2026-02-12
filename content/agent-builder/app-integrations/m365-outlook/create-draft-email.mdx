@@ -1,0 +1,84 @@
+import { Callout, Steps } from "nextra/components";
+
+# Create Draft Email
+
+The **Create Draft Email** node allows you to generate a draft email in a user's mailbox using the Microsoft Graph API. This can be particularly useful for scenarios where you need to prepare an email for review or send it at a later time, ensuring your communications are pre-planned and organized.
+
+For example:
+
+- Composing draft emails for a marketing campaign to be reviewed.
+- Preparing emails as drafts for approval before sending.
+- Scheduling emails for events or reminders by creating them as drafts first.
+
+## Configuration Options
+
+| Field Name                 | Description                                                                                       | Input Type | Required? | Default Value |
+| -------------------------- | ------------------------------------------------------------------------------------------------- | ---------- | --------- | ------------- |
+| **User Email**             | The email address of the mailbox owner.                                                           | Text       | Yes       | _(empty)_     |
+| **Tenant ID**              | Azure Active Directory tenant (directory) ID.                                                     | Text       | Yes       | _(empty)_     |
+| **Client ID**              | Azure AD application (client) ID.                                                                 | Text       | Yes       | _(empty)_     |
+| **Client Secret**          | Azure AD application client secret.                                                               | Text       | Yes       | _(empty)_     |
+| **Email Message JSON**     | JSON string representing the draft email content (subject, body, recipients, etc.).               | Text       | Yes       | _(empty)_     |
+
+## Expected Output Format
+
+The output of this node is a **Draft ID**, which is a unique identifier for the newly created draft email.
+
+- **Output Value**: The Draft ID as a string (e.g., `"12345"`).
+
+## Step-by-Step Guide
+
+<Steps>
+### Step 1
+
+Add the **Create Draft Email** node to your flow.
+
+### Step 2
+
+In the **User Email** field, enter the email address of the user's mailbox where the draft will be saved.
+
+### Step 3
+
+Enter your organization's **Tenant ID** to authenticate access to the required Azure services.
+
+### Step 4
+
+Provide the **Client ID** for the Azure AD application involved in authentication.
+
+### Step 5
+
+Enter the **Client Secret** associated with the Azure AD application to secure the authentication process.
+
+### Step 6
+
+In the **Email Message JSON** field, input the JSON string that describes the draft email, including the subject, recipients, and body content.
+
+### Step 7
+
+Once configured, the node will create a draft in the specified mailbox, and the **Draft ID** will be available as `DraftId` for further use within your automation flow.
+
+</Steps>
+
+<Callout type="warning" title="Security Note">
+  Ensure your Client Secret remains confidential and never shared. It plays a critical role in securing access to your Microsoft services.
+</Callout>
+
+## Input/Output Examples
+
+| Example Scenario                           | User Email       | Tenant ID     | Client ID     | Client Secret | Email Message JSON                              | Output Draft ID |
+| ------------------------------------------ | ---------------- | ------------- | ------------- | ------------- | ------------------------------------------------ | --------------- |
+| Creating a marketing campaign email draft  | user@example.com | tenant12345   | client56789   | secretKey123  | `{"subject":"Hello","body":"Welcome!","to":["a@b.com"]}` | "12345"         |
+
+## Common Mistakes & Troubleshooting
+
+| Problem                                           | Solution                                                                                                     |
+| ------------------------------------------------- | ------------------------------------------------------------------------------------------------------------ |
+| **Invalid JSON Format in Email Message JSON**     | Ensure the JSON string is correctly formatted and includes necessary email components like subject and body. |
+| **Incorrect Client ID or Secret**                 | Verify the Client ID and Client Secret match those configured in your Azure AD application settings.         |
+| **Authentication Errors**                         | Double-check your Tenant ID, Client ID, and Client Secret for accuracy and validity.                        |
+
+## Real-World Use Cases
+
+- **Marketing Teams**: Draft emails for campaigns to go through multiple approval stages before sending.
+- **Project Management**: Schedule project update emails as drafts, allowing team members to review and append information.
+- **HR Departments**: Prepare draft emails for recruitment communication, needing final checks before sending out.

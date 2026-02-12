@@ -1,0 +1,88 @@
+import { Callout, Steps } from "nextra/components";
+
+# Get Emails
+
+The **Get Emails** node is designed to retrieve the top 10 emails from a user's Inbox folder using Microsoft Graph API. This is beneficial for quickly accessing recent email data without navigating through an email client, streamlining the integration of email information into your workflows and processes.
+
+## Configuration Options
+
+| Field Name      | Description                                            | Input Type | Required? | Default Value |
+| --------------- | ------------------------------------------------------ | ---------- | --------- | ------------- |
+| **User Email**  | The email address of the mailbox owner.                | Text       | Yes       | _(empty)_     |
+| **Tenant ID**   | Azure Active Directory tenant (directory) ID.          | Text       | Yes       | _(empty)_     |
+| **Client ID**   | Azure AD application (client) ID.                      | Text       | Yes       | _(empty)_     |
+| **Client Secret** | Azure AD application client secret.                 | Text       | Yes       | _(empty)_     |
+
+## Expected Output Format
+
+The output of this node is a **JSON object** containing the details of the last 10 emails from the inbox. The data is accessible as **Emails JSON**.
+
+## Step-by-Step Guide
+
+<Steps>
+### Step 1
+
+Add the **Get Emails** node to your flow.
+
+### Step 2
+
+Enter the **User Email** for the mailbox you wish to access.
+
+### Step 3
+
+Provide the **Tenant ID** of your Azure Active Directory.
+
+### Step 4
+
+Enter your **Client ID** associated with your Azure AD application.
+
+### Step 5
+
+Input the **Client Secret** for the application client to authenticate and authorize access.
+
+### Step 6
+
+Once all fields are filled, the node will fetch and display emails in the JSON format under **Emails JSON**.
+
+</Steps>
+
+<Callout type="info" title="Note">
+  Ensure that your Azure AD credentials (Tenant ID, Client ID, and Client Secret) are valid and have necessary permissions to access email data via Microsoft Graph API.
+</Callout>
+
+## Input/Output Examples
+
+- **Input**: 
+  - User Email: `user@example.com`
+  - Tenant ID: `12345678-1234-1234-1234-123456789abc`
+  - Client ID: `abcd1234-5678-abcd-1234-56789abcdef`
+  - Client Secret: `XyZ12345SecretComb!`
+
+- **Output**:
+  - JSON Object containing email data e.g., 
+    ```json
+    {
+      "Emails": [
+        {
+          "subject": "Meeting Reminder",
+          "sender": "boss@example.com",
+          "receivedDateTime": "2023-10-05T12:30:00Z"
+        },
+        // more emails...
+      ]
+    }
+    ```
+
+## Common Mistakes & Troubleshooting
+
+| Problem                                           | Solution                                                |
+| ------------------------------------------------- | ------------------------------------------------------- |
+| **Authentication Failed**                         | Re-check your Tenant ID, Client ID, and Client Secret.  |
+| **No Emails Retrieved**                           | Ensure the user mailbox has emails and permissions are correct. |
+| **Invalid Email Address**                         | Verify the format and existence of the User Email.      |
+
+## Real-World Use Cases
+
+- **Automated Email Reports**: Integrate retrieved emails into automatic reporting systems for business intelligence.
+- **Customer Support**: Quickly fetch customer emails for streamlined support resolution processes.
+- **Sales Monitoring**: Track latest sales email communications for immediate follow-up actions.

@@ -1,0 +1,83 @@
+import { Callout, Steps } from "nextra/components";
+
+# Delete Email
+
+The **Delete Email** node is designed to remove an email from your mailbox by using the unique Message ID associated with the email. This node is valuable when you need to automate the cleanup of your inbox or remove specific emails programmatically, using Microsoft Graph API.
+
+Here's when and why to use it:
+
+- To automatically clean up emails after processing them or extracting necessary data.
+- To ensure sensitive information does not remain in your mailbox longer than required.
+
+## Configuration Options
+
+| Field Name       | Description                                                          | Input Type | Required? | Default Value |
+| ---------------- | -------------------------------------------------------------------- | ---------- | --------- | ------------- |
+| **User Email**   | The email address of the mailbox owner.                              | Text       | Yes       | _(empty)_     |
+| **Tenant ID**    | The Azure Active Directory tenant (directory) ID.                    | Text       | Yes       | _(empty)_     |
+| **Client ID**    | The Azure AD application (client) ID.                                | Text       | Yes       | _(empty)_     |
+| **Client Secret**| The Azure AD application client secret.                              | Text       | Yes       | _(empty)_     |
+| **Message ID**   | The ID of the email message to be deleted.                           | Text       | Yes       | _(empty)_     |
+
+## Expected Output Format
+
+This node does not produce a visible output or returned value. The success of the operation is internal and confirms the email deletion from the mailbox.
+
+## Step-by-Step Guide
+
+<Steps>
+### Step 1
+
+Add the **Delete Email** node into your flow.
+
+### Step 2
+
+In the **User Email** field, enter the email address of the mailbox owner.
+
+### Step 3
+
+Enter the **Tenant ID** corresponding to your Azure Active Directory.
+
+### Step 4
+
+Input the **Client ID** for the Azure AD application.
+
+### Step 5
+
+Provide the **Client Secret** for the Azure AD application.
+
+### Step 6
+
+Finally, specify the **Message ID** of the email you want to delete.
+
+### Step 7
+
+Run the node to delete the specified email from your mailbox.
+
+</Steps>
+
+<Callout type="warning" title="Caution">
+  Ensure that you correctly enter the **Message ID** as the deletion is irrevocable. Double-check the email you intend to delete.
+</Callout>
+
+## Input/Output Examples
+
+Given the secure nature of this action, a success message or background confirmation might serve as the only indicator that the operation was completed. No direct output will be visible but verify by checking the mailbox.
+
+- **User Email**: `user@example.com`
+- **Message ID**: `AQMkADAwATM3ZmYAZC1mMGUeAQABINAmp0Qf...`
+  - **Effect**: Email associated with this ID is permanently removed.
+
+## Common Mistakes & Troubleshooting
+
+| Problem                                  | Solution                                                                                 |
+| ---------------------------------------- | ---------------------------------------------------------------------------------------- |
+| **Incorrect Message ID entered**         | Double-check and confirm the accurate Message ID is provided, ensuring the right email is targeted. |
+| **Authentication failures**              | Verify all identity fields are properly filled: User Email, Tenant ID, Client ID, and Client Secret. |
+| **Email not deleted despite operation**  | Ensure network connectivity and verify permissions related to Microsoft Graph API settings.|
+
+## Real-World Use Cases
+
+- **Automated Cleanup**: After processing orders via email, ensure they are deleted to maintain inbox hygiene.
+- **Compliance with Data Policies**: Deleting emails containing sensitive data post-processing to comply with data retention policies.
+- **Inbox Management**: Efficiently manage mailbox space by routinely deleting outdated or unnecessary emails.
