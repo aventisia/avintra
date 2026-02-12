@@ -1,0 +1,57 @@
+import { Callout, Steps } from "nextra/components";
+
+# Pause Service
+
+The **Pause Service** node is used to temporarily pause a running Windows service. This is useful when you need to halt a service's activity without stopping it entirely, which can be necessary during maintenance, upgrades, or troubleshooting processes.
+
+## Configuration Options
+
+| Field Name             | Description                                                                                                 | Input Type | Required? | Default Value |
+| ---------------------- | ----------------------------------------------------------------------------------------------------------- | ---------- | --------- | ------------- |
+| **Service to Pause**   | Select the service you wish to pause from the available list.                                               | Select     | Yes       | _(empty)_     |
+| **Custom Service Name**| Enter a custom service name if the service to pause is not listed in the selection above.                   | Text       | No        | _(empty)_     |
+
+## Expected Output Format
+
+The node does not produce a visible output in terms of data; it performs an action to pause the specified Windows service.
+
+## Step-by-Step Guide
+
+<Steps>
+### Step 1
+
+Add the **Pause Service** node to your workflow.
+
+### Step 2
+
+In the **Service to Pause** dropdown, select the name of the service you want to pause.
+
+- Options include services like "Remote Procedure Call (RPC) Locator", "SQL Server (MSSQLSERVER)", and "Task Scheduler".
+
+### Step 3
+
+If the service you want to pause is not available in the dropdown, use the **Custom Service Name** field to enter the exact name of the desired service.
+
+### Step 4
+
+Confirm and apply the changes to execute and pause the selected service.
+
+</Steps>
+
+<Callout type="info" title="Note">
+  It is often necessary to have administrative privileges to pause certain system services.
+</Callout>
+
+## Common Mistakes & Troubleshooting
+
+| Problem                                           | Solution                                                                                                                 |
+| ------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------ |
+| **Service Not Found Error**                       | Ensure the service name is correctly spelled, especially when using the **Custom Service Name** field.                   |
+| **Insufficient Permissions**                      | Verify that you have the required administrative rights to pause the selected Windows service.                           |
+| **Unresponsive Service**                          | If the service doesn't respond to the pause command, check if it supports pause functionality or if it requires stopping.|
+
+## Real-World Use Cases
+
+- **Server Maintenance**: Temporarily pause services during scheduled maintenance to prevent data corruption.
+- **System Upgrades**: Use to halt services during software updates without terminating them completely.
+- **Performance Tuning**: Pause non-critical services temporarily to allocate system resources to more urgent tasks.

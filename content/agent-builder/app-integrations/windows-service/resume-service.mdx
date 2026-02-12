@@ -1,0 +1,58 @@
+import { Callout, Steps } from "nextra/components";
+
+# Resume Service
+
+The **Resume Service** node enables you to restart a Windows service that has been paused. This is particularly useful for ensuring that critical system services or custom applications that temporarily stop are resumed without manual intervention, maintaining their expected functionality.
+
+## Configuration Options
+
+| Field Name             | Description                                                                                      | Input Type | Required? | Default Value |
+| ---------------------- | ------------------------------------------------------------------------------------------------ | ---------- | --------- | ------------- |
+| **Service to Resume**  | Select a service from the list to resume.                                                        | Select     | Yes       | _(empty)_     |
+| **Custom Service Name** | Optional: Enter a custom service name if the desired service is not available in the dropdown list. | Text       | No        | _(empty)_     |
+
+## Expected Output Format
+
+The output is a **confirmation message** indicating that the selected service has been successfully resumed.
+
+## Step-by-Step Guide
+
+<Steps>
+### Step 1
+
+Add the **Resume Service** node into your flow.
+
+### Step 2
+
+Click on the **Service to Resume** dropdown and select the service you want to resume from the predefined list. 
+
+### Step 3
+
+If the service you need is not listed, enter the name of the custom service in the **Custom Service Name** field. Make sure the name is exactly as it appears in your Windows Services to avoid errors.
+
+### Step 4
+
+Proceed to execute the flow. The selected or custom service will be resumed.
+
+### Step 5
+
+Check for a confirmation message to ensure the service has been successfully resumed.
+</Steps>
+
+<Callout type="info" title="Note">
+  If you specify a **Custom Service Name**, make sure it is spelled correctly and matches the service name in Windows to prevent errors.
+</Callout>
+
+## Common Mistakes & Troubleshooting
+
+| Problem                                                                         | Solution                                                                                             |
+| --------------------------------------------------------------------------------| -----------------------------------------------------------------------------------------------------|
+| **Custom Service Name not working**                                             | Verify the exact spelling and capitalization of the service name as recognized by the Windows system.|
+| **Service not resuming**                                                        | Ensure the service is not disabled or already running. Only paused services can be resumed.          |
+| **Service to Resume list is empty or missing services**                         | Check your system's available services and make sure the application has the correct permissions.    |
+
+## Real-World Use Cases
+
+- **IT Management**: Automatically resume critical services that have paused for updates or maintenance.
+- **System Monitoring**: Ensure continuous operation of security systems that may pause due to configuration changes.
+- **Application Uptime**: Quickly resume custom-built applications or microservices without manual intervention.
