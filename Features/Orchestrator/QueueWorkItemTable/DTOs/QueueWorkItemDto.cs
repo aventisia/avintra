@@ -26,7 +26,6 @@ public class QueueWorkItemDto
     /// <summary>
     /// Gets or sets the payload data associated with this transaction, which may include relevant details for processing.
     /// </summary>
-    [JsonPropertyName("PayloadData")]
     public string? WorkItemData { get; set; }
 
     /// <summary>

@@ -180,13 +180,13 @@ public class QueueWorkItemService : IQueueWorkItemService
             );
 
             // Deserialize the JSON back into a list of QueueWorkItemDto objects, This effectively creates a deep copy of the workitems
-            var result = System.Text.Json.JsonSerializer.Deserialize<List<QueueWorkItemDto>>(
+            var result = System.Text.Json.JsonSerializer.Deserialize<List<QueueTransaction>>(
                 json,
                 options
             );
 
             // Build success response
-            serviceResponse.Data = result;
+            serviceResponse.Data = result.Adapt<List<QueueWorkItemDto>>();
             serviceResponse.StatusCode = 200;
             serviceResponse.Message = "Successfully retrieved queue workitems.";
 
