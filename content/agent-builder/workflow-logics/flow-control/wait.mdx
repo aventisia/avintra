@@ -1,0 +1,61 @@
+import { Callout, Steps } from "nextra/components";
+
+# Wait
+
+The **Wait** node allows you to pause or delay the workflow execution for a specific number of seconds. It is particularly useful when you need to introduce delays in processing for tasks that require a wait time, such as:
+
+- Pausing between requests or actions to prevent overload.
+- Delaying execution until certain conditions are met.
+- Synchronizing the workflow timing with external events or systems.
+
+## Configuration Options
+
+| Field Name           | Description                                       | Input Type | Required? | Default Value |
+| -------------------- | ------------------------------------------------- | ---------- | --------- | ------------- |
+| **Duration (Seconds)** | The number of seconds to pause workflow execution. | Text       | Yes       | _(empty)_     |
+
+## Expected Output Format
+
+The **Wait** node does not produce a tangible or visual output. Its function is to simply pause the workflow for the specified duration. The flow will automatically continue after the delay.
+
+## Step-by-Step Guide
+
+<Steps>
+### Step 1
+
+Add the **Wait** node into your flow.
+
+### Step 2
+
+In the **Duration (Seconds)** field, enter the number of seconds you want the workflow to pause. Ensure this duration is appropriate for your task requirements.
+
+### Step 3
+
+After the specified duration elapses, the workflow will automatically continue to the next step.
+
+</Steps>
+
+<Callout type="warning" title="Important">
+  Ensure the number in **Duration (Seconds)** is a positive integer to avoid errors in the workflow.
+</Callout>
+
+## Input/Output Examples
+
+While the **Wait** node does not have direct input/output examples, consider:
+
+- **Input Duration**: 5 seconds
+- **Effect**: Workflow pauses for 5 seconds
+
+## Common Mistakes & Troubleshooting
+
+| Problem                                    | Solution                                                                                                                                          |
+| ------------------------------------------ | ------------------------------------------------------------------------------------------------------------------------------------------------- |
+| **Negative or zero duration**              | Enter a positive number in the **Duration (Seconds)** field. The system does not accept zero or negative values for the delay.                     |
+| **Unintended long pauses**                  | Double-check the value entered in the **Duration (Seconds)** field to ensure it matches your intended wait time.                                   |
+| **Non-numeric value entered as duration**  | Enter only numeric values for the duration. Avoid using letters or symbols, which result in system errors.                                         |
+
+## Real-World Use Cases
+
+- **API Rate Limiting**: Insert delays between API requests to comply with service rate limits.
+- **Sequential Process Synchronization**: Delay tasks until previous actions are definitively complete.
+- **UX Enhancement**: Introduce small delays to improve user interface responsiveness or simulate latencies.

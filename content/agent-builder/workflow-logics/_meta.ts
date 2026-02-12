@@ -1,13 +1,9 @@
 import type { MetaRecord } from "nextra";
 
 const meta: MetaRecord = {
-  // conditionals: {
-  //   title: "Conditionals",
-  // },
-  // "flow-control": {
-  //   title: "Flow Control",
-  //   display: "hidden",
-  // },
+  "flow-control": { title: "Flow Control" },
+  "queue-management": { title: "Queue Management" },
+  "sub-flows": { title: "Sub Flows" },
 };
 
 export default meta;
