@@ -1,0 +1,61 @@
+import { Callout, Steps } from "nextra/components";
+
+# Set Text on Terminal Session
+
+The **Set Text on Terminal Session** node is used to send textual input to a specific terminal session identified by a session ID. This is particularly useful for automating command entry or text output in a command-line interface during a session. By targeting the correct session, users can automate interactions with terminal applications directly within a no-code automation flow.
+
+## Configuration Options
+
+| Field Name  | Description                                | Input Type | Required? | Default Value |
+| ----------- | ------------------------------------------ | ---------- | --------- | ------------- |
+| **SessionId** | The session ID of the terminal session.     | Text       | Yes       | _(empty)_     |
+| **Text**    | The text to set on the terminal session.    | Text       | Yes       | _(empty)_     |
+
+## Expected Output Format
+
+The node does not directly produce an output value that can be used. Instead, it acts by placing the specified text into the designated terminal session.
+
+## Step-by-Step Guide
+
+<Steps>
+### Step 1
+
+Add the **Set Text on Terminal Session** node to your workflow.
+
+### Step 2
+
+In the **SessionId** field, enter the unique identifier of the terminal session you want to target. This ensures the text is sent to the correct session.
+
+### Step 3
+
+In the **Text** field, input the text or command you wish to set on the terminal session.
+
+### Step 4
+
+Ensure all entered values are correct and aligned with your session’s requirements. This node will then send the inputted text to the specified terminal session.
+
+</Steps>
+
+<Callout type="warning" title="Important">
+  Make sure the session ID is correct to avoid unintended text actions on the wrong terminal session.
+</Callout>
+
+## Input/Output Examples
+
+| SessionId | Text           | Action Taken                                     |
+| --------- | -------------- | ------------------------------------------------ |
+| 12345     | ls -l          | Executes the 'ls -l' command in the terminal.    |
+| abcde     | echo "Hello!"  | Displays "Hello!" in the terminal session.       |
+
+## Common Mistakes & Troubleshooting
+
+| Problem                                               | Solution                                                                                       |
+| ----------------------------------------------------- | ---------------------------------------------------------------------------------------------- |
+| **Incorrect Session ID**                              | Double-check the session ID for accuracy to ensure text is sent to the right terminal session.  |
+| **Empty Text Field**                                  | Ensure text is entered to avoid missing command actions.                                       |
+
+## Real-World Use Cases
+
+- **Server Management**: Automatically send commands to manage servers or applications via terminal.
+- **Scripting Automation**: Quickly send scripts or text outputs during software tests or development cycles.
+- **Remote Access Coordination**: Efficiently manage remote sessions by automating repeated text inputs.

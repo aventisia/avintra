@@ -1,0 +1,70 @@
+import { Callout, Steps } from "nextra/components";
+
+# Wait for Text on Terminal Session
+
+The **Wait for Text on Terminal Session** node is used to monitor a terminal session and pause execution until specific text appears in the terminal output. This can be helpful in automation workflows where waiting for a particular command output or system message before proceeding is crucial.
+
+For example:
+
+- Synchronizing processes that depend on command completion feedback.
+- Triggering subsequent actions only when specific prompt messages appear.
+
+## Configuration Options
+
+| Field Name       | Description                                            | Input Type | Required? | Default Value |
+| ---------------- | ------------------------------------------------------ | ---------- | --------- | ------------- |
+| **SessionId**    | The session ID of the terminal session you want to monitor. | Text       | Yes       | _(empty)_     |
+| **TextToWaitFor**| The specific text string to pause and wait for in the terminal session. | Text       | Yes       | _(empty)_     |
+
+## Expected Output Format
+
+The output of this node is either `true` or `false`:
+
+- **true** indicates that the specified text was detected within the terminal session.
+- **false** indicates that the specified text was not found.
+
+## Step-by-Step Guide
+
+<Steps>
+### Step 1
+
+Add **Wait for Text on Terminal Session** node into your flow.
+
+### Step 2
+
+In the **SessionId** field, enter the identifier for the terminal session you want to monitor. This is typically obtained from a preceding step that initiates or identifies the terminal session.
+
+### Step 3
+
+In the **TextToWaitFor** field, input the exact text you want the system to look out for in the terminal session.
+
+### Step 4
+
+Once the specified text appears, the node will output `true`. This can be used to trigger the next steps in your workflow.
+
+</Steps>
+
+<Callout type="info" title="Note">
+  Ensure the specified **SessionId** accurately matches the active session you intend to monitor, as discrepancies can lead to missed detections.
+</Callout>
+
+## Input/Output Examples
+
+| Input SessionId | Input TextToWaitFor | Output Value |
+| --------------- | -------------------- | ------------ |
+| 12345           | "Process Complete"  | true         |
+| 67890           | "Ready"             | false        |
+
+## Common Mistakes & Troubleshooting
+
+| Problem                                             | Solution                                                                                                                 |
+| --------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------ |
+| **SessionId does not match any active session**     | Verify that the correct session ID is provided and that the session is currently active and accessible.                   |
+| **TextToWaitFor is not specific enough**            | Be sure to use exact text string as they appear in the terminal. Check for typographical errors and verify the text case. |
+| **False returns unexpectedly**                      | Double-check both the session and the text configuration. Ensure terminal session output is not being cleared or changed.  |
+
+## Real-World Use Cases
+
+- **Automation Continuity**: Ensures a script waits for a processing confirmation message before proceeding to subsequent tasks.
+- **Server Monitoring**: Trigger alerts or actions when specific errors or logs appear in terminal sessions for live systems.
+- **Testing Workflows**: Automatically validate test scripts when terminal outputs specific success or failure keywords.
