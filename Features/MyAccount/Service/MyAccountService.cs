@@ -673,10 +673,10 @@ public class MyAccountService : IMyAccountService
         return serviceResponse;
     }
 
-    //Update user's email
+    // Update user's email
     public async Task<ServiceResponse<EmailUpdateDto>> UpdateEmailAsync(EmailUpdateDto emailUpdateDto)
     {
-        //Initialize ServiceResponse with Failed response
+        // Initialize ServiceResponse with Failed response
         var serviceResponse = new ServiceResponse<EmailUpdateDto>()
         {
             Data = null,
@@ -685,13 +685,13 @@ public class MyAccountService : IMyAccountService
 
         try
         {
-            //set method name
+            // Set method name for logging purposes
             var methodName = nameof(UpdateEmailAsync);
 
-            // Get user
+            // Get the current user using their username
             var user = await _userManager.FindByNameAsync(_userName);
 
-            // User doesn't exist
+            // Check if the user exists, return error message if not
             if (user == null)
             {
                 _logger.LogInformation(userNotFoundTemplate, methodName, _userName);
@@ -699,12 +699,12 @@ public class MyAccountService : IMyAccountService
                 return serviceResponse;
             }
 
-            // Get Verification secret code
+            // Get the verification code based on the provided ID
             var verificationCode = await _unitOfWork.VerificationCodeRepo
-            .GetByConditionAsync(w => w.Id == emailUpdateDto.VerificationCodeId)
-            .SingleOrDefaultAsync();
+                .GetByConditionAsync(w => w.Id == emailUpdateDto.VerificationCodeId)
+                .SingleOrDefaultAsync();
 
-            // Verification secret code not found
+            // Handle case where the verification code is not found
             if (verificationCode == null)
             {
                 _logger.LogInformation($"Verification code not found for email {emailUpdateDto.Email}");
@@ -712,15 +712,15 @@ public class MyAccountService : IMyAccountService
                 return serviceResponse;
             }
 
-            // Match Verification secret code
+            // Check if the provided secret code matches and has not expired
             var verificationCodeMatches = verificationCode.SecretCode.Equals(emailUpdateDto.SecretCode)
                 && DateTimeOffset.UtcNow < verificationCode.ExpiresOn;
 
-            // Delete Verification secret Code
+            // Delete the verification code after use to prevent re-use
             _unitOfWork.VerificationCodeRepo.Delete(verificationCode);
             await _unitOfWork.SaveAsync();
 
-            // Secret code did not match
+            // If the verification code does not match or is expired, return error message
             if (!verificationCodeMatches)
             {
                 _logger.LogInformation($"Invalid verification code for email {emailUpdateDto.Email}");
@@ -728,14 +728,15 @@ public class MyAccountService : IMyAccountService
                 return serviceResponse;
             }
 
-            // Update account User using UserManager
+            // Update the user's email and username to the new email address
             user.Email = emailUpdateDto.Email;
             user.UserName = emailUpdateDto.Email;
 
+            // Generate a token for email change and attempt to change the email
             var token = await _userManager.GenerateChangeEmailTokenAsync(user, emailUpdateDto.Email);
             var identityResult = await _userManager.ChangeEmailAsync(user, emailUpdateDto.Email, token);
 
-            // User Update-Job failed
+            // If the email change fails, log and return error message
             if (!identityResult.Succeeded)
             {
                 _logger.LogInformation("Failed while updating user");
@@ -743,15 +744,16 @@ public class MyAccountService : IMyAccountService
                 return serviceResponse;
             }
 
-            // Update the security stamp to invalidate old cookies
+            // Update the user's security stamp to invalidate any old cookies
             await _userManager.UpdateSecurityStampAsync(user);
 
-            // Re-sign the user in to refresh the authentication cookie
+            // Refresh the sign-in session to apply the new email
             await _signInManager.RefreshSignInAsync(user);
 
-            //Update user in other databases
+            // Attempt to update the user data in other connected databases
             var response = await _authHelperService.CreateOrUpdateUserInOtherDbsAsync(user, CrudTypesEnum.Update, _jwt);
 
+            // If updating in other databases fails, return error message
             if (!response)
             {
                 _logger.LogInformation("Failed while updating user in other databases");
@@ -759,7 +761,21 @@ public class MyAccountService : IMyAccountService
                 return serviceResponse;
             }
 
-            // Task successful
+            // Get any active sessions for the user and delete them
+            var activeSessions = await _unitOfWork.ActiveSessionRepo.GetByConditionAsync(w => w.UserId == user.Id).ToListAsync();
+            if (activeSessions.Any())
+            {
+                _unitOfWork.ActiveSessionRepo.Delete(activeSessions);
+                if (!await _unitOfWork.SaveAsync())
+                {
+                    _logger.LogWarning($"Failed to save after deleting {activeSessions.Count} active session(s) for user {user.UserName}.");
+                }
+            }
+
+            // Create a new session for the user with the updated email
+            var activeSession = await _authService.CreateUserSessionAsync(user);
+
+            // Log success and set response message
             _logger.LogInformation($"{methodName}: Email has been updated for account {_userName}");
             serviceResponse.Data = emailUpdateDto;
             serviceResponse.StatusCode = 200;
@@ -767,10 +783,11 @@ public class MyAccountService : IMyAccountService
         }
         catch (Exception ex)
         {
-            _logger.LogError(ex, "Error occured while performing {Name}", ex.TargetSite.Name);
-
+            _logger.LogError(ex, "Error occurred while performing {Name}", ex.TargetSite.Name);
             return serviceResponse;
         }
+
+        // Return the service response, which will be success or failure based on the flow
         return serviceResponse;
     }
 
