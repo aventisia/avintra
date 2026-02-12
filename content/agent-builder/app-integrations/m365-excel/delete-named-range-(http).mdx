@@ -1,0 +1,81 @@
+import { Callout, Steps } from "nextra/components";
+
+# Delete Named Range (HTTP)
+
+The **Delete Named Range (HTTP)** node lets you remove a named range from an Excel workbook stored on OneDrive or SharePoint. This node is particularly useful when you need to update or manage workbook contents by deleting no longer needed named ranges using Microsoft Graph API via HTTP DELETE requests. Such capabilities are critical in maintaining and organizing Excel data efficiently.
+
+## Configuration Options
+
+| Field Name            | Description                                         | Input Type | Required? | Default Value |
+| --------------------- | --------------------------------------------------- | ---------- | --------- | ------------- |
+| **Tenant ID**         | Azure AD Tenant ID                                  | Text       | Yes       | _(empty)_     |
+| **Client ID**         | Azure AD Application Client ID                      | Text       | Yes       | _(empty)_     |
+| **Client Secret**     | Azure AD Application Client Secret                  | Text       | Yes       | _(empty)_     |
+| **Drive ID**          | OneDrive or SharePoint Drive ID                     | Text       | Yes       | _(empty)_     |
+| **Item ID**           | Excel file Item ID                                  | Text       | Yes       | _(empty)_     |
+| **Named Range Name**  | Name of the range to delete                         | Text       | Yes       | _(empty)_     |
+
+## Expected Output Format
+
+The output of this node does not return a direct data value. Instead, it confirms the deletion of the specified named range from the Excel workbook.
+
+## Step-by-Step Guide
+
+<Steps>
+### Step 1
+
+Add **Delete Named Range (HTTP)** node into your workflow.
+
+### Step 2
+
+In the **Tenant ID** field, input your Azure Active Directory Tenant ID. This is essential for authorization.
+
+### Step 3
+
+In the **Client ID** field, enter your Azure AD Application Client ID. This identifies your application in Azure.
+
+### Step 4
+
+Provide the **Client Secret** for your Azure AD application. Keep this information secure.
+
+### Step 5
+
+Specify the **Drive ID** where your Excel file is stored (OneDrive or SharePoint).
+
+### Step 6
+
+Enter the **Item ID** corresponding to the specific Excel file you wish to modify.
+
+### Step 7
+
+In the **Named Range Name**, specify the name of the range you want to delete.
+
+### Step 8
+
+Execute the node to trigger the deletion of the specified named range from your Excel workbook.
+
+</Steps>
+
+<Callout type="warning" title="Caution">
+Ensure that all IDs and secrets are correct and align with your Azure and Excel setup. Incorrect values can lead to authorization errors or failure to execute the node.
+</Callout>
+
+## Input/Output Examples
+
+| Tenant ID | Client ID | Drive ID | Item ID | Named Range Name | Outcome                    |
+| --------- | --------- | -------- | ------- | ---------------- | -------------------------- |
+| `abc123`  | `xyz789`  | `d98765` | `i54321`| `SalesData`      | Named range is deleted     |
+
+## Common Mistakes & Troubleshooting
+
+| Problem                                      | Solution                                                                                                           |
+| -------------------------------------------- | ------------------------------------------------------------------------------------------------------------------ |
+| **Invalid Client ID or Secret**              | Verify your Azure AD Client ID and Secret. Ensure they are correct and matched to your registered application.     |
+| **Incorrect Drive or Item ID**               | Double-check the Drive ID and Item ID. Errors here can prevent access to your file.                                 |
+| **Non-existent Named Range**                 | Ensure the named range exists in the workbook. Attempting to delete a non-existent range will cause an error.      |
+
+## Real-World Use Cases
+
+- **Data Updates**: Removing outdated named range definitions when updating workbook data.
+- **Automation**: Deleting temporary or dynamic named ranges used in automated report generation systems.
+- **Workbook Cleanup**: Periodically cleaning up workbooks by removing unused or obsolete named ranges to streamline data structure.

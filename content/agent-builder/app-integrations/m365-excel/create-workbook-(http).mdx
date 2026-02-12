@@ -1,0 +1,86 @@
+import { Callout, Steps } from "nextra/components";
+
+# Create Workbook (HTTP)
+
+The **Create Workbook (HTTP)** node is designed to help you generate a new Excel workbook directly within OneDrive or SharePoint. This is done using the Microsoft Graph HTTP PUT method. It is ideal for scenarios where you need to programmatically create spreadsheets for reporting, data logging, or collaborative purposes without manually accessing OneDrive or SharePoint.
+
+For example:
+
+- Automatically generate a workbook for daily sales data.
+- Create templates for your team directly in the cloud environment.
+- Organize data collection by saving worksheets to specific directories.
+
+## Configuration Options
+
+| Field Name      | Description                                        | Input Type | Required? | Default Value |
+| --------------- | -------------------------------------------------- | ---------- | --------- | ------------- |
+| **Tenant ID**   | Azure AD Tenant ID                                 | Text       | Yes       | _(empty)_     |
+| **Client ID**   | Azure AD Application Client ID                     | Text       | Yes       | _(empty)_     |
+| **Client Secret** | Azure AD Application Client Secret                | Text       | Yes       | _(empty)_     |
+| **Drive ID**    | OneDrive or SharePoint Drive ID                    | Text       | Yes       | _(empty)_     |
+| **File Path**   | Relative path in the drive, e.g., `/Documents/NewWorkbook.xlsx` | Text       | Yes       | _(empty)_     |
+
+## Expected Output Format
+
+The expected output from this node is a **HTTP response** indicating the success or failure of the workbook creation. This response is a status code, typically `201 Created` for success.
+
+## Step-by-Step Guide
+
+<Steps>
+### Step 1
+
+Add the **Create Workbook (HTTP)** node to your workflow.
+
+### Step 2
+
+Enter the **Tenant ID** for your Azure Active Directory in the respective field.
+
+### Step 3
+
+Provide the **Client ID** of your Azure AD Application. This is necessary for authentication.
+
+### Step 4
+
+Input the **Client Secret** associated with the Client ID. Keep this information secure.
+
+### Step 5
+
+Enter the **Drive ID** where the workbook will be created. This ID specifies the OneDrive or SharePoint location.
+
+### Step 6
+
+Specify the **File Path** where the new workbook should be saved. For example, enter `/Documents/NewWorkbook.xlsx`.
+
+### Step 7
+
+After configuration, execute the node to create the workbook. Verify the HTTP response to confirm creation.
+
+</Steps>
+
+<Callout type="warning" title="Security Reminder">
+  Ensure that your Azure AD credentials (Tenant ID, Client ID, Client Secret) are handled with care to prevent unauthorized access to your data.
+</Callout>
+
+## Input/Output Examples
+
+| Field Inputs                                      | Output                            |
+| ------------------------------------------------- | --------------------------------- |
+| Tenant ID: `your-tenant-id`                       | 201 Created                       |
+| Client ID: `your-client-id`                       |                                   |
+| Client Secret: `your-client-secret`               |                                   |
+| Drive ID: `your-drive-id`                         |                                   |
+| File Path: `/Documents/NewWorkbook.xlsx`          |                                   |
+
+## Common Mistakes & Troubleshooting
+
+| Problem                                           | Solution                                                                                  |
+| ------------------------------------------------- | ----------------------------------------------------------------------------------------- |
+| **Incorrect Tenant or Client Information**        | Double-check the Tenant ID, Client ID, and Client Secret. Make sure they are accurate and up-to-date. |
+| **Invalid Drive ID**                              | Verify the Drive ID. Ensure it corresponds to the correct OneDrive or SharePoint location. |
+| **Authentication Errors**                         | Check your Azure AD credentials and permissions. Ensure your application has access rights. |
+
+## Real-World Use Cases
+
+- **Project Management**: Generate workbooks for tracking project milestones within a shared team directory.
+- **Data Analysis**: Automatically store sales data from daily operations in organized Excel formats for analysis.
+- **Collaboration**: Enable team members to contribute to templates saved directly in accessible cloud storages.

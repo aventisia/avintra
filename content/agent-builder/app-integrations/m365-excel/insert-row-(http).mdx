@@ -1,0 +1,85 @@
+import { Callout, Steps } from "nextra/components";
+
+# Insert Row (HTTP)
+
+The **Insert Row (HTTP)** node is designed to add a new row of data into a specific table within an Excel file using Microsoft Graph's HTTP POST method. This node is particularly useful when you need to automate data entry into Excel sheets that are stored in OneDrive or SharePoint. 
+
+Use cases include:
+
+- Adding new data entries to a shared report or database.
+- Automating record-keeping tasks where multiple systems feed data into a single Excel file.
+- Seamlessly updating Excel files without manual intervention.
+
+## Configuration Options
+
+| Field Name          | Description                                                 | Input Type | Required? | Default Value |
+| ------------------- | ----------------------------------------------------------- | ---------- | --------- | ------------- |
+| **Tenant ID**       | Azure AD Tenant ID for authentication purposes.             | Text       | Yes       | _(empty)_     |
+| **Client ID**       | Azure AD Application Client ID for secure access.           | Text       | Yes       | _(empty)_     |
+| **Client Secret**   | Azure AD Application Client Secret to authenticate requests.| Text       | Yes       | _(empty)_     |
+| **Drive ID**        | Unique identifier for the OneDrive or SharePoint drive.     | Text       | Yes       | _(empty)_     |
+| **Item ID**         | Identifier for the specific Excel file within the drive.    | Text       | Yes       | _(empty)_     |
+| **Table Name**      | Name of the table where the new row should be inserted.     | Text       | Yes       | _(empty)_     |
+| **Values (JSON Object)** | The values to insert into the table as a JSON object (e.g., `{"Column1":1,"Column2":2}`). | Text       | Yes       | _(empty)_     |
+
+## Expected Output Format
+
+There is no direct output returned to the user in a visible format. Instead, a new row is added to the specified Excel table with the values provided in JSON format.
+
+## Step-by-Step Guide
+
+<Steps>
+### Step 1
+
+Add the **Insert Row (HTTP)** node into your flow.
+
+### Step 2
+
+Input your **Tenant ID** in the provided field. This is necessary to authenticate against Azure AD.
+
+### Step 3
+
+Enter the **Client ID** for your Azure AD application into the corresponding field. This is part of your app's credentials.
+
+### Step 4
+
+Provide the **Client Secret**. This is used in combination with the Client ID to authenticate the requests.
+
+### Step 5
+
+Enter the **Drive ID** of the OneDrive or SharePoint location where the Excel file is housed.
+
+### Step 6
+
+Input the **Item ID** for the specific Excel file. This uniquely identifies the file inside the drive.
+
+### Step 7
+
+Type the **Table Name** of the table where you want to insert your new row.
+
+### Step 8
+
+Input the **Values (JSON Object)** that represent the data for the new row. Ensure your input is a valid JSON format.
+
+### Step 9
+
+Execute the flow to insert the new row into the specified Excel table without manually opening Excel.
+</Steps>
+
+<Callout type="warning" title="Important">
+  All the fields are required for the operation to succeed. Make sure each input is correctly filled, especially the JSON format for row values.
+</Callout>
+
+## Common Mistakes & Troubleshooting
+
+| Problem                                           | Solution                                                                                     |
+| ------------------------------------------------- | -------------------------------------------------------------------------------------------- |
+| **Invalid JSON format**                           | Ensure your Values (JSON Object) field is correctly formatted as a JSON string.              |
+| **Authentication errors**                         | Double-check the Tenant ID, Client ID, and Client Secret for accuracy. These are case-sensitive.|
+| **Missing or incorrect Drive ID, Item ID, or Table Name** | Verify that these IDs and names match exactly as they appear in OneDrive or SharePoint.      |
+
+## Real-World Use Cases
+
+- **Data Consolidation**: Automatically append rows of data into a central report file from various system outputs.
+- **Sales Tracking**: Insert sales data entries into an Excel-based dashboard for real-time tracking.
+- **Project Management**: Log project updates into a shared Excel file for team visibility and communication.

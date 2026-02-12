@@ -1,0 +1,96 @@
+import { Callout, Steps } from "nextra/components";
+
+# Import CSV to Worksheet (HTTP)
+
+The **Import CSV to Worksheet (HTTP)** node allows you to import data from a CSV file directly into a specific worksheet of an Excel file stored on OneDrive or SharePoint. This is particularly useful for updating or populating data in an existing workbook with new or external datasets received in CSV format.
+
+You can use this node to automate the data import process, avoiding manual data entry, which is time-consuming and error-prone.
+
+## Configuration Options
+
+| Field Name        | Description                                                                                   | Input Type | Required? | Default Value |
+| ----------------- | --------------------------------------------------------------------------------------------- | ---------- | --------- | ------------- |
+| **Tenant ID**     | The Azure AD tenant identifier used to authenticate with Microsoft 365 (e.g., 'contoso.onmicrosoft.com' or a GUID). | Text       | Yes       | _(empty)_     |
+| **Client ID**     | The Application (Client) ID of the Azure AD app registered to access Microsoft Graph.          | Text       | Yes       | _(empty)_     |
+| **Client Secret** | The client secret of the Azure AD application, ensuring it has permissions like Files.ReadWrite.All. | Text       | Yes       | _(empty)_     |
+| **Drive ID**      | The unique ID of the OneDrive or SharePoint document library drive where the Excel file is stored. | Text       | Yes       | _(empty)_     |
+| **File Path**     | The relative path to the Excel file in the drive (e.g., 'Data/ImportTarget.xlsx').            | Text       | Yes       | _(empty)_     |
+| **Worksheet Name**| The name of the worksheet where CSV data will be imported (e.g., 'RawData'). The operation may fail if it doesn’t exist. | Text       | Yes       | _(empty)_     |
+| **CSV Content**   | The full CSV data as a string (including headers if needed). Example: "Name,Age\\nJohn,30\\nJane,25". Use \\n for line breaks. | Text       | Yes       | _(empty)_     |
+
+## Expected Output Format
+
+There is no direct output from this node in the form of data fields. The result of the operation is an updated Excel worksheet with the imported CSV data.
+
+## Step-by-Step Guide
+
+<Steps>
+
+### Step 1
+
+Add the **Import CSV to Worksheet (HTTP)** node into your flow.
+
+### Step 2
+
+In the **Tenant ID** field, enter your Azure AD tenant identifier.
+
+### Step 3
+
+Enter the **Client ID** of your Azure AD application.
+
+### Step 4
+
+Provide the **Client Secret** for authentication purposes.
+
+### Step 5
+
+Specify the **Drive ID** where your target Excel file is stored. This is specific to your OneDrive or SharePoint library.
+
+### Step 6
+
+Enter the **File Path** of the Excel file within the specified drive.
+
+### Step 7
+
+Provide the name of the **Worksheet** where you want to import the data. Make sure this worksheet already exists in the Excel file.
+
+### Step 8
+
+In the **CSV Content** field, paste the complete CSV data string that you wish to import into the worksheet. Ensure line breaks are represented with \\n.
+
+### Step 9
+
+Run the node to import the CSV data into the specified worksheet.
+
+</Steps>
+
+<Callout type="info" title="Note">
+  Ensure that all Azure AD credentials provided are correct and have the necessary permissions to access Microsoft Graph and OneDrive/SharePoint resources.
+</Callout>
+
+## Input/Output Examples
+
+| Input Field     | Example Value                             |
+| --------------- | ----------------------------------------- |
+| Tenant ID       | contoso.onmicrosoft.com                   |
+| Client ID       | abc123xy-12s3-4e5f-gh67-12345jklmn678     |
+| Client Secret   | [Your_Client_Secret123%*]                 |
+| Drive ID        | b!abc123DEFghi456JKLmno789PQRstuvWXYZ     |
+| File Path       | Data/ImportTarget.xlsx                    |
+| Worksheet Name  | RawData                                   |
+| CSV Content     | "Name,Age\\nJohn,30\\nJane,25"            |
+
+## Common Mistakes & Troubleshooting
+
+| Problem                                                                       | Solution                                                                                                              |
+| ----------------------------------------------------------------------------- | --------------------------------------------------------------------------------------------------------------------- |
+| **Invalid credentials or permissions**                                        | Double-check Azure AD credentials and permissions for access to Microsoft Graph and OneDrive/SharePoint.               |
+| **File Path is incorrect**                                                    | Verify that the File Path is correct and the file exists at the specified location in the drive.                       |
+| **Worksheet not found**                                                       | Ensure the worksheet name is spelled correctly and exists in the Excel file.                                          |
+| **CSV formatting issues**                                                     | Ensure CSV content format uses correct delimiters and \\n for line breaks.                                            |
+
+## Real-World Use Cases
+
+- **Monthly Sales Data**: Automate the entry of new sales data from regional managers into a central Excel dashboard.
+- **HR Records Update**: Import latest employee data for payroll processing.
+- **Inventory Sheet Management**: Regularly update inventory records in Excel from CSV exports of sales systems.

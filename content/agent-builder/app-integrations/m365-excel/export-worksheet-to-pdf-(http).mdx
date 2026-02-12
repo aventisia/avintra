@@ -1,0 +1,84 @@
+import { Callout, Steps } from "nextra/components";
+
+# Export Worksheet to PDF (HTTP)
+
+The **Export Worksheet to PDF (HTTP)** node is designed to convert an Excel worksheet stored in OneDrive or SharePoint into a PDF document. Use this node when you need to share Excel data in a universal format like PDF, ideal for reporting, documentation, or printing purposes.
+
+## Configuration Options
+
+| Field Name         | Description                                                                                                    | Input Type | Required? | Default Value |
+| ------------------ | -------------------------------------------------------------------------------------------------------------- | ---------- | --------- | ------------- |
+| **Tenant ID**      | Azure AD Tenant ID that identifies the directory resource.                                                      | Text       | Yes       | _(empty)_     |
+| **Client ID**      | Azure AD Client ID for the application that's accessing the file.                                               | Text       | Yes       | _(empty)_     |
+| **Client Secret**  | Azure AD Client Secret to authenticate the application.                                                         | Text       | Yes       | _(empty)_     |
+| **Drive ID**       | OneDrive or SharePoint Drive ID where the workbook is located.                                                  | Text       | Yes       | _(empty)_     |
+| **File Path**      | The path to the Excel workbook within the drive (e.g., 'Reports/Summary.xlsx').                                | Text       | Yes       | _(empty)_     |
+| **Worksheet Name** | The name of the specific worksheet to be exported (e.g., 'Dashboard'). If left out, it may export the entire workbook. | Text       | Yes       | _(empty)_     |
+
+## Expected Output Format
+
+The output of this node is a **byte array**, which contains the PDF document data. This can be utilized for saving as a file, embedding in emails, or any other downstream processing that requires PDF data.
+
+- Output is referred to as **PDFBytes**.
+
+## Step-by-Step Guide
+
+<Steps>
+### Step 1
+
+Add the **Export Worksheet to PDF (HTTP)** node into your flow.
+
+### Step 2
+
+Enter your **Tenant ID** in the field provided. This is required to identify the directory resource in Azure AD.
+
+### Step 3
+
+Provide your **Client ID** to authenticate the application accessing the Excel data.
+
+### Step 4
+
+Enter the **Client Secret**. This is crucial for securely accessing the resources.
+
+### Step 5
+
+Specify the **Drive ID** for the OneDrive or SharePoint location of your Excel workbook.
+
+### Step 6
+
+In the **File Path** field, specify the precise path to the Excel file (e.g., 'Reports/Summary.xlsx').
+
+### Step 7
+
+Enter the **Worksheet Name** you wish to export. If you want to export the entire workbook and are uncertain of the worksheet name, leaving this blank might work but would depend on implementation specifics.
+
+### Step 8
+
+Upon successful execution, retrieve the exported PDF document through the **PDFBytes** output for further use.
+
+</Steps>
+
+<Callout type="info" title="Note">
+  Make sure all your authentication details (Tenant ID, Client ID, and Client Secret) are accurately entered and kept secure to avoid unauthorized access.
+</Callout>
+
+## Input/Output Examples
+
+| Tenor ID | Client ID | Client Secret | Drive ID | File Path                | Worksheet Name | Output          |
+| -------- | --------- | ------------- | -------- | ------------------------ | -------------- | --------------- |
+| 123456   | abcdef    | s3cR3tKey     | A1B2C3   | Reports/Summary.xlsx     | Dashboard      | PDFBytes (byte) |
+
+## Common Mistakes & Troubleshooting
+
+| Problem                                                       | Solution                                                                                                                                 |
+| ------------------------------------------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------- |
+| **Incorrect Tenant ID, Client ID, or Client Secret**          | Double-check and verify the credentials with Azure AD settings. These must be accurate for successful authentication.                     |
+| **Drive ID or File Path not found**                           | Ensure the Drive ID and File Path are correct and point to an existing file. Check your OneDrive or SharePoint for the correct identifiers. |
+| **Worksheet Name is Misentered or Blank**                     | Verify the worksheet name or try exporting without specifying a worksheet to export the full workbook.                                    |
+| **Output PDF not usable**                                     | Confirm that the flow executed successfully and check for any error messages that could indicate issues with file locations or credentials.|
+
+## Real-World Use Cases
+
+- **Financial Reporting**: Convert monthly sales data from Excel to PDF for easy distribution to stakeholders.
+- **Academic Records**: Export student grades from worksheets for printing or official documentation.
+- **Project Management**: Print schedules or task lists from Excel into PDF format for team meetings or client briefings.

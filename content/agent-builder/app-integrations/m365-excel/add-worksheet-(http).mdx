@@ -1,0 +1,85 @@
+import { Callout, Steps } from "nextra/components";
+
+# Add Worksheet (HTTP)
+
+The **Add Worksheet (HTTP)** node allows you to add a new worksheet to an existing Excel workbook stored in OneDrive or SharePoint. This is done by using the Microsoft Graph HTTP POST request, making it handy for automating data management and organization tasks without manual intervention.
+
+This node is useful in scenarios where you need to dynamically create workbooks or expand existing ones by adding new sheets for data, reports, or analyses.
+
+## Configuration Options
+
+| Field Name        | Description                                     | Input Type | Required? | Default Value |
+| ----------------- | ----------------------------------------------- | ---------- | --------- | ------------- |
+| **Tenant ID**     | Azure AD Tenant ID required for authentication. | Text       | Yes       | _(empty)_     |
+| **Client ID**     | Azure AD Application Client ID.                 | Text       | Yes       | _(empty)_     |
+| **Client Secret** | Azure AD Application Client Secret.             | Text       | Yes       | _(empty)_     |
+| **Drive ID**      | OneDrive or SharePoint Drive ID.                | Text       | Yes       | _(empty)_     |
+| **Item ID**       | Excel file Item ID.                             | Text       | Yes       | _(empty)_     |
+| **Worksheet Name**| Name of the worksheet to add.                   | Text       | Yes       | _(empty)_     |
+
+## Expected Output Format
+
+The output of this node does not return a value directly. Instead, it results in a **new worksheet** being added to the specified Excel file in OneDrive or SharePoint.
+
+## Step-by-Step Guide
+
+<Steps>
+### Step 1
+
+Add the **Add Worksheet (HTTP)** node into your flow.
+
+### Step 2
+
+In the **Tenant ID** field, enter the Azure AD Tenant ID obtained from your Azure portal.
+
+### Step 3
+
+Enter your **Client ID** from the Azure AD app registration.
+
+### Step 4
+
+Enter your **Client Secret** associated with the Azure AD Application.
+
+### Step 5
+
+In the **Drive ID** field, input the ID of the drive where your Excel file is stored. This could be from OneDrive or SharePoint.
+
+### Step 6
+
+Provide the **Item ID** for the Excel file where you wish to add a worksheet. You can find this in the file properties on OneDrive/SharePoint.
+
+### Step 7
+
+Enter the desired name for your new worksheet in the **Worksheet Name** field. This name will be used for the newly added sheet.
+
+</Steps>
+
+<Callout type="info" title="Security Note">
+  Ensure that your **Client Secret** is kept confidential and never exposed in shared or public documents.
+</Callout>
+
+## Input/Output Examples
+
+- **Input Example**:
+  - Tenant ID: `12345678-90ab-cdef-1234-567890abcdef`
+  - Client ID: `abcd1234-5678-90ab-cdef-12345678abcd`
+  - Client Secret: `secretXYZ`
+  - Drive ID: `b!abcdef12345`
+  - Item ID: `01DTY3V3Z6RCJTCNKJ3FBLNKP6ETV37GEF`
+  - Worksheet Name: `Q1 Report`
+
+- **Expected action**: A new worksheet named "Q1 Report" will be added to the specified Excel workbook.
+
+## Common Mistakes & Troubleshooting
+
+| Problem                                                | Solution                                                                                                                                   |
+| ------------------------------------------------------ | ------------------------------------------------------------------------------------------------------------------------------------------ |
+| **Authentication Error**                               | Double-check your Tenant ID, Client ID, and Client Secret. Make sure they are correctly configured and have necessary permissions.          |
+| **Drive or Item ID not found**                         | Verify the correctness of the Drive ID and Item ID. Check file and folder permissions in OneDrive or SharePoint. Ensure the file exists.    |
+| **Worksheet Name Conflict**                            | If the specified worksheet name already exists, consider appending a version number or date to ensure uniqueness.                           |
+
+## Real-World Use Cases
+
+- **Automated Reporting**: Automatically add new worksheets for weekly or monthly reports in a centralized Excel document stored in the cloud.
+- **Project Management**: Create organized worksheets dynamically for different projects or tasks as new data comes in.
+- **Financial Data Processing**: Expand financial models by adding new sheets for additional fiscal periods or scenarios.

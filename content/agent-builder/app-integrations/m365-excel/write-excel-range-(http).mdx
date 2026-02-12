@@ -1,0 +1,82 @@
+import { Callout, Steps } from "nextra/components";
+
+# Write Excel Range (HTTP)
+
+The **Write Excel Range (HTTP)** node enables you to write data directly to an Excel worksheet by using Microsoft Graph HTTP PATCH requests. This is particularly useful for automating updates to Excel files stored on OneDrive or SharePoint without needing to open them manually. It allows for seamless integration with other workflows that require dynamic data input into Excel sheets.
+
+For example:
+- Automatically updating a sales report with new sales data.
+- Modifying a project tracker or dashboard with real-time project updates.
+- Injecting analytical data into specific spreadsheet cells for further business intelligence processing.
+
+## Configuration Options
+
+| Field Name        | Description                                           | Input Type | Required? | Default Value |
+| ----------------- | ----------------------------------------------------- | ---------- | --------- | ------------- |
+| **Tenant ID**     | Azure Active Directory Tenant ID.                     | Text       | Yes       | _(empty)_     |
+| **Client ID**     | Azure AD Application Client ID.                       | Text       | Yes       | _(empty)_     |
+| **Client Secret** | Azure AD Application Client Secret.                   | Text       | Yes       | _(empty)_     |
+| **Drive ID**      | ID of the OneDrive or SharePoint Drive containing the Excel file. | Text       | Yes       | _(empty)_     |
+| **Item ID**       | ID of the specific Excel file to be accessed.         | Text       | Yes       | _(empty)_     |
+| **Worksheet Name**| The name of the worksheet to write to.                | Text       | Yes       | _(empty)_     |
+| **Range Address** | The range within the worksheet to update (e.g., A1:D10). | Text       | Yes       | _(empty)_     |
+| **Values JSON**   | Values to insert in the specified range, as a JSON array. | Text       | Yes       | _(empty)_     |
+
+## Expected Output Format
+
+This node performs an update action and typically does not generate an output value. Instead, the result is seen in the Excel file being modified. Successful updates will modify the specified range with the provided JSON values.
+
+## Step-by-Step Guide
+
+<Steps>
+### Step 1
+
+Add the **Write Excel Range (HTTP)** node into your automation flow.
+
+### Step 2
+
+In the **Tenant ID** field, enter your Azure AD Tenant ID. This identifies the organization in Microsoft's cloud.
+
+### Step 3
+
+Provide the **Client ID** and **Client Secret** for your Azure AD application. These credentials authenticate your request to update the Excel file.
+
+### Step 4
+
+Enter the **Drive ID** for the location where your Excel file is stored. This could be a OneDrive or SharePoint location.
+
+### Step 5
+
+Specify the **Item ID**, which identifies the particular Excel file you wish to modify.
+
+### Step 6
+
+Fill in the **Worksheet Name** with the name of the worksheet within the Excel file where you want to write data.
+
+### Step 7
+
+Define the **Range Address**. This indicates which cells will be updated (e.g., A1:D10).
+
+### Step 8
+
+Populate the **Values JSON** field with the data you want to insert, formatted as a JSON array.
+
+</Steps>
+
+<Callout type="info" title="Note">
+  Make sure your JSON data matches the format and cell structure of the specified range. Mismatches could result in errors or incomplete data updates.
+</Callout>
+
+## Common Mistakes & Troubleshooting
+
+| Problem                                    | Solution                                                                                   |
+| ------------------------------------------ | ------------------------------------------------------------------------------------------ |
+| **Authentication Errors**                  | Double-check your Tenant ID, Client ID, and Client Secret for accuracy and permissions.    |
+| **Incorrect Range**                        | Ensure the range specified in **Range Address** exists and is correctly formatted.         |
+| **Invalid JSON Format**                    | Validate your JSON array structure in **Values JSON** to ensure it matches your selected range. |
+
+## Real-World Use Cases
+
+- **Sales Dashboards**: Automatically populate sales performance figures into Excel for real-time analysis.
+- **Budgeting Processes**: Import financial data from other systems directly into designated spreadsheets.
+- **Project Management**: Feed updated project milestones or tracking data into shared Excel sheets to maintain up-to-date records.

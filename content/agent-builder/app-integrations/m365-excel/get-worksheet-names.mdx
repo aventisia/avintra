@@ -1,0 +1,73 @@
+import { Callout, Steps } from "nextra/components";
+
+# Get Worksheet Names
+
+The **Get Worksheet Names** node lets you retrieve all the worksheet names from a specified Excel workbook stored in OneDrive or SharePoint. This is especially useful when you need to analyze or manipulate multiple sheets within a workbook without opening each one manually. Use this node to automate your workflow processes where worksheet identification is necessary.
+
+## Configuration Options
+
+| Field Name      | Description                                              | Input Type | Required? | Default Value |
+| ----------------| -------------------------------------------------------- | ---------- | --------- | ------------- |
+| **Tenant ID**   | Your Azure Active Directory Tenant ID.                   | Text       | Yes       | _(empty)_     |
+| **Client ID**   | Your Azure Active Directory Client ID.                   | Text       | Yes       | _(empty)_     |
+| **Client Secret** | Your Azure AD Client Secret.                          | Text       | Yes       | _(empty)_     |
+| **Drive ID**    | The ID of the OneDrive or SharePoint drive.              | Text       | Yes       | _(empty)_     |
+| **Item ID**     | The ID of the Excel file containing the worksheets.      | Text       | Yes       | _(empty)_     |
+
+## Expected Output Format
+
+The output of this node is a **list of worksheet names** available within the specified Excel file. Each name is a string.
+
+## Step-by-Step Guide
+
+<Steps>
+### Step 1
+
+Add the **Get Worksheet Names** node to your flow.
+
+### Step 2
+
+Enter your Azure information:
+
+- **Tenant ID**: Fill in your Azure Active Directory Tenant ID.
+- **Client ID**: Fill in your Azure AD Client ID.
+- **Client Secret**: Securely enter your Azure AD Client Secret.
+
+### Step 3
+
+Provide document location details:
+
+- **Drive ID**: Enter the OneDrive or SharePoint Drive ID.
+- **Item ID**: Enter the Item ID for your Excel file.
+
+### Step 4
+
+The node will automatically retrieve the names of worksheets as **Worksheet Names** for further use in your automation.
+
+</Steps>
+
+<Callout type="info" title="Tip">
+Ensure your credentials (Tenant ID, Client ID, and Client Secret) are correctly set up within Azure for successful data retrieval.
+</Callout>
+
+## Input/Output Examples
+
+| Tenant ID  | Client ID | Drive ID        | Item ID       | Output Value                |
+| ---------- | --------- | --------------- | ------------- | --------------------------- |
+| yourTenant | yourClient| drive123        | item456       | ["Sheet1", "Sheet2", "Data"]|
+
+- **Output Type**: List of Strings
+
+## Common Mistakes & Troubleshooting
+
+| Problem                                            | Solution                                                                                         |
+| -------------------------------------------------- | ------------------------------------------------------------------------------------------------ |
+| **Invalid credentials**                            | Double-check the Tenant ID, Client ID, and Client Secret. Ensure they are correctly inputted.     |
+| **Invalid Drive ID or Item ID**                    | Ensure the Drive ID and Item ID are valid and correspond to your account and file location.       |
+| **Output not displaying worksheet names**          | Verify that the Excel file contains worksheets and the IDs provided are correct.                  |
+
+## Real-World Use Cases
+
+- **Report Generation**: Automate the generation of reports by dynamically retrieving and processing data from various worksheets.
+- **Data Consolidation**: Simplify the process of gathering and analyzing data spread across different worksheets.
+- **Automated Audit**: Quickly access and validate worksheet details as part of auditing workflows.

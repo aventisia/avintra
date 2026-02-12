@@ -1,0 +1,74 @@
+import { Callout, Steps } from "nextra/components";
+
+# Copy Range (HTTP)
+
+The **Copy Range (HTTP)** node is designed to copy a specific range of cells from one part of an Excel workbook to another, using HTTP requests. This node is particularly useful when managing data coordination across different parts of an Excel file stored on OneDrive or SharePoint online.
+
+For example, you might use this node to:
+
+- Duplicate a data set from one worksheet to another.
+- Store the result of calculations from Sheet1 to a summary table in Sheet2.
+
+## Configuration Options
+
+| Field Name          | Description                                                                                                          | Input Type | Required? | Default Value |
+| ------------------- | -------------------------------------------------------------------------------------------------------------------- | ---------- | --------- | ------------- |
+| **Tenant ID**       | Azure AD Tenant ID related to your account.                                                                           | Text       | Yes       | _(empty)_     |
+| **Client ID**       | Azure AD Application Client ID to authenticate the connection.                                                        | Text       | Yes       | _(empty)_     |
+| **Client Secret**   | Azure AD Application Client Secret used for secure access.                                                            | Text       | Yes       | _(empty)_     |
+| **Drive ID**        | OneDrive or SharePoint Drive ID where the Excel file is stored.                                                       | Text       | Yes       | _(empty)_     |
+| **Item ID**         | The specific Excel file Item ID to access.                                                                            | Text       | Yes       | _(empty)_     |
+| **Source Range**    | The A1-style address of the cell range to copy, e.g., `A1:C10` or `Sheet2!B5:D20`.                                    | Text       | Yes       | _(empty)_     |
+| **Destination Range** | The A1-style address where to paste the copied data, e.g., `E1` or `Sheet3!A1`; must be same size or larger than source. | Text       | Yes       | _(empty)_     |
+
+## Expected Output Format
+
+The operation does not produce a new output; instead, it directly manipulates the contents of the specified destination range in the Excel file.
+
+## Step-by-Step Guide
+
+<Steps>
+### Step 1
+
+Add the **Copy Range (HTTP)** node into your flow.
+
+### Step 2
+
+Enter your **Tenant ID**, **Client ID**, and **Client Secret** fields to authenticate access to the Excel file through your Azure AD setup.
+
+### Step 3
+
+Input the **Drive ID** and **Item ID** for the Excel file you want to access.
+
+### Step 4
+
+Specify the **Source Range** you wish to copy by using the A1-style address (e.g., `A1:C10`).
+
+### Step 5
+
+Determine the **Destination Range** where the data should be pasted. Ensure this range is equal to or larger than the source.
+
+### Step 6
+
+Execute the action. The specified range from the source will be copied to the designated destination in your workbook.
+
+</Steps>
+
+<Callout type="warning" title="Important">
+  Make sure that your **Destination Range** is not smaller than your **Source Range**, as this can lead to incomplete data copying.
+</Callout>
+
+## Common Mistakes & Troubleshooting
+
+| Problem                                                    | Solution                                                                                                                                                      |
+| ---------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| **Authentication errors**                                  | Ensure that **Tenant ID**, **Client ID**, and **Client Secret** are correct and correspond to the registered Azure application.                                 |
+| **Invalid range address**                                  | Double-check that the **Source Range** and **Destination Range** follow the correct A1-style format and reference existing cells in the worksheet appropriately.|
+| **Drive or Item ID not found**                             | Verify that **Drive ID** and **Item ID** accurately match the location and file name in OneDrive or SharePoint.                                               |
+| **Destination Range is too small**                         | Update the **Destination Range** to be the same size or larger than the **Source Range** to ensure all data is copied.                                        |
+
+## Real-World Use Cases
+
+- **Monthly Data Transfers**: Automatically move monthly sales data from an input sheet to a historical data archive within the same workbook.
+- **Report Generation**: Copy calculations and statistics from detailed data tabs into summary pages for reports.
+- **Data Consolidation**: Collect and aggregate information from multiple tabs into a single sheet for analysis.

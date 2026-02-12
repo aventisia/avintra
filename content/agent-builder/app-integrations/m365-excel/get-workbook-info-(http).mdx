@@ -1,0 +1,85 @@
+import { Callout, Steps } from "nextra/components";
+
+# Get Workbook Info (HTTP)
+
+The **Get Workbook Info (HTTP)** node retrieves important metadata about an Excel workbook stored in OneDrive or SharePoint. With this node, you can easily access details such as the workbook's author, creation date, modification date, and more. This is especially useful when you need to audit document changes, generate reports, or simply manage files in a systematic way.
+
+## Configuration Options
+
+| Field Name          | Description                                                                                                                   | Input Type | Required? | Default Value |
+| ------------------- | ----------------------------------------------------------------------------------------------------------------------------- | ---------- | --------- | ------------- |
+| **Tenant ID**       | The Azure AD tenant identifier, used to authenticate with Microsoft 365.                                                      | Text       | Yes       | _(empty)_     |
+| **Client ID**       | The Application (Client) ID of the Azure AD app registered to access Microsoft Graph.                                         | Text       | Yes       | _(empty)_     |
+| **Client Secret**   | The client secret of the Azure AD application, ensure it has the necessary permissions (e.g., Files.ReadWrite.All).           | Text       | Yes       | _(empty)_     |
+| **Drive ID**        | The unique ID of the OneDrive or SharePoint document library drive where the workbook is stored.                              | Text       | Yes       | _(empty)_     |
+| **Item ID**         | The Microsoft Graph DriveItem ID of the Excel workbook file.                                                                  | Text       | Yes       | _(empty)_     |
+| **Workbook Metadata JSON** | A JSON string containing the workbook\u0027s metadata properties such as name, ID, created/modified dates, size, and web URL. Useful for logging or downstream processing. | Output     | No        | WorkbookMetadata |
+
+## Expected Output Format
+
+The output from this node is a **JSON string** that contains the workbook's metadata.
+
+- **Output**: JSON-formatted string detailing the workbook's information such as author, created date, modified date, size, and web URL.
+
+## Step-by-Step Guide
+
+<Steps>
+
+### Step 1
+
+Add the **Get Workbook Info (HTTP)** node to your flow.
+
+### Step 2
+
+In the **Tenant ID** field, enter your Azure AD tenant ID. This is necessary for authenticating with Microsoft 365.
+
+### Step 3
+
+Enter the **Client ID** of the Azure AD application that you registered to access Microsoft Graph in the **Client ID** field.
+
+### Step 4
+
+Input the **Client Secret** associated with your Azure AD application. Ensure that the client secret has permissions like "Files.ReadWrite.All."
+
+### Step 5
+
+Provide the **Drive ID** which identifies the OneDrive or SharePoint document library drive where your workbook is located.
+
+### Step 6
+
+Enter the **Item ID** for the specific Excel workbook file you wish to get metadata from.
+
+### Step 7
+
+The processed metadata information will be available as **WorkbookMetadata JSON** for use in subsequent nodes.
+
+</Steps>
+
+<Callout type="info" title="Note">
+  Ensure that the Azure AD application you're using has the proper permissions to access the files needed. Incorrect permissions will prevent successful retrieval of workbook metadata.
+</Callout>
+
+## Input/Output Examples
+
+| Parameter               | Sample Input Value                          | Output Example       | Output Type         |
+| ----------------------  | ------------------------------------------- | -------------------- | -------------------- |
+| Tenant ID               | abcdef12-3456-7890-abcd-ef1234567890        |                      |                      |
+| Client ID               | 12345678-abcd-1234-abcd-1234567890ab        |                      |                      |
+| Client Secret           | **************                              |                      |                      |
+| Drive ID                | b!Ab12345CDEF--ghiJklMN123O_pQrStUVWXyZ0000 |                      |                      |
+| Item ID                 | 01A234B56CD789EF!103                        |                      |                      |
+| Workbook Metadata JSON  |                                             | `{"name":"example.xlsx", "id":"01A234B56CD789EF", "createdDate":"2023-01-01", "modifiedDate":"2023-01-10"}` | JSON string |
+
+## Common Mistakes & Troubleshooting
+
+| Problem                                                | Solution                                                                                                                                |
+| ------------------------------------------------------ | --------------------------------------------------------------------------------------------------------------------------------------- |
+| **Invalid Tenant ID**                                  | Double-check the Tenant ID to ensure it is correctly entered and matches what's registered in your Azure AD platform.                   |
+| **Incorrect Client ID or Client Secret**               | Verify that both Client ID and Client Secret are correct and have necessary permissions. Recreate secrets if the current one has expired.|
+| **Unauthorized Errors**                                | Ensure the Azure AD application has the needed permissions (e.g., Files.ReadWrite.All) to access the workbook.                          |
+
+## Real-World Use Cases
+
+- **Document Monitoring**: Regularly pull metadata to check when workbooks were last modified or who last modified them.
+- **Audit Logs**: Use metadata to generate logs of workbook activities for compliance and audit trails.
+- **File Management**: Automate the organization and management of workbook files based on size, creation date, or other metadata.

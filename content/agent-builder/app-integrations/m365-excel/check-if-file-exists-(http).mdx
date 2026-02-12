@@ -1,0 +1,85 @@
+import { Callout, Steps } from "nextra/components";
+
+# Check If File Exists (HTTP)
+
+The **Check If File Exists (HTTP)** node is designed to verify the existence of a specific workbook in OneDrive or SharePoint using an HTTP request. It can be particularly useful for workflows where you need to confirm that a file is present before proceeding with further actions, such as updates or data analysis.
+
+For example:
+
+- Ensuring a sales report is available before attempting to generate a summary.
+- Verifying the presence of an important document before sending notifications.
+
+## Configuration Options
+
+| Field Name      | Description                                                                 | Input Type | Required? | Default Value |
+| --------------- | --------------------------------------------------------------------------- | ---------- | --------- | ------------- |
+| **Tenant ID**   | The Azure AD tenant ID (for example, `your-tenant.onmicrosoft.com` or GUID). | Text       | Yes       | _(empty)_     |
+| **Client ID**   | The Azure AD application (client) ID registered in your tenant.              | Text       | Yes       | _(empty)_     |
+| **Client Secret** | The client secret for the Azure AD application. Keep this information secure. | Text     | Yes       | _(empty)_     |
+| **Drive ID**    | The unique ID of the OneDrive or SharePoint document library drive.          | Text       | Yes       | _(empty)_     |
+| **File Path**   | The relative path to the file in the drive (e.g., `Reports/Sales.xlsx`).     | Text       | Yes       | _(empty)_     |
+
+## Expected Output Format
+
+The output of this node is a **boolean value**:
+
+- `True`: Indicates the specified file exists in the provided path.
+- `False`: Indicates the file does not exist.
+
+## Step-by-Step Guide
+
+<Steps>
+### Step 1
+
+Add the **Check If File Exists (HTTP)** node into your flow.
+
+### Step 2
+
+Enter the **Tenant ID**. This should be your organization's Azure AD tenant ID.
+
+### Step 3
+
+Enter the **Client ID** for the Azure AD application. Make sure this ID is correct and properly registered in your tenant.
+
+### Step 4
+
+Enter the **Client Secret**. Ensure this is stored securely as it provides application access.
+
+### Step 5
+
+Input the **Drive ID** for the OneDrive or SharePoint document library. Double-check for accuracy to avoid access issues.
+
+### Step 6
+
+Specify the **File Path** for the desired file. Use the relative path format (e.g., `Reports/Sales.xlsx`).
+
+### Step 7
+
+The result will display as **File Exists**. You can now use this output in other nodes to control workflow behavior based on file presence.
+
+</Steps>
+
+<Callout type="warning" title="Security Note">
+  Keep your **Client Secret** secure and do not share it publicly or store it in unsecured locations.
+</Callout>
+
+## Input/Output Examples
+
+| Tenant ID                      | Client ID                         | Drive ID          | File Path          | File Exists Output |
+| ------------------------------ | --------------------------------- | ----------------- | ------------------ | ----------------- |
+| your-tenant.onmicrosoft.com    | abc12345-def6-7890-gh12-ijk345lm  | 123abcdef-456ghi  | Reports/Sales.xlsx | `True`            |
+| your-tenant.onmicrosoft.com    | abc12345-def6-7890-gh12-ijk345lm  | 123abcdef-456ghi  | Reports/OldData.csv | `False`           |
+
+## Common Mistakes & Troubleshooting
+
+| Problem                                   | Solution                                                                                      |
+| ----------------------------------------- | --------------------------------------------------------------------------------------------- |
+| **Incorrect Tenant, Client, or Drive ID** | Verify and re-check all IDs entered for correctness. Mismatched IDs result in access issues.  |
+| **Non-existent File**                     | Double-check the file path and name for typos or mismatch with the document library contents. |
+| **Security Errors**                       | Ensure that all client credentials are correct and have the proper permissions applied.        |
+
+## Real-World Use Cases
+
+- **Automated Backups**: Verify the presence of backup files in OneDrive before triggering new backups.
+- **Document Reviews**: Confirm critical documents are uploaded before starting a team review process.
+- **Data Syncing**: Check if the latest data files are present before starting sync operations to other systems.

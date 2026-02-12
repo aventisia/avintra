@@ -1,0 +1,76 @@
+import { Callout, Steps } from "nextra/components";
+
+# Clear Excel Range (HTTP)
+
+The **Clear Excel Range (HTTP)** node is designed to clear the contents of a specified range in an Excel worksheet hosted on OneDrive or SharePoint. This is particularly useful when you need to reset data without manually editing the Excel file, streamlining your workflow with automated data management.
+
+## Configuration Options
+
+| Field Name        | Description                                                 | Input Type | Required? | Default Value |
+| ----------------- | ----------------------------------------------------------- | ---------- | --------- | ------------- |
+| **Tenant ID**     | Azure AD Tenant ID. Identifies your Azure Active Directory. | Text       | Yes       | _(empty)_     |
+| **Client ID**     | Azure AD Application Client ID for authentication.          | Text       | Yes       | _(empty)_     |
+| **Client Secret** | Azure AD Application Client Secret for secure access.       | Text       | Yes       | _(empty)_     |
+| **Drive ID**      | Identifies the OneDrive or SharePoint drive containing the file.| Text  | Yes       | _(empty)_     |
+| **Item ID**       | Excel file's unique Item ID.                                | Text       | Yes       | _(empty)_     |
+| **Worksheet Name**| Name of the worksheet where the range is located.           | Text       | Yes       | _(empty)_     |
+| **Range Address** | Address of the range to clear, e.g., A1:D10.                | Text       | Yes       | _(empty)_     |
+
+## Expected Output Format
+
+The operation does not produce a direct output value but clears values in the specified Excel range.
+
+## Step-by-Step Guide
+
+<Steps>
+### Step 1
+
+Add the **Clear Excel Range (HTTP)** node into your flow.
+
+### Step 2
+
+Enter your **Tenant ID** in the corresponding field. This identifies your Azure AD.
+
+### Step 3
+
+Fill in the **Client ID**. This ID is used to authenticate the application within Azure.
+
+### Step 4
+
+Provide the **Client Secret**. This is a critical security credential, so handle with care.
+
+### Step 5
+
+Input the **Drive ID**. It points to the specific OneDrive or SharePoint drive.
+
+### Step 6
+
+Specify your **Item ID**, identifying the Excel file needing value clearance.
+
+### Step 7
+
+Enter the **Worksheet Name** to specify which sheet within the workbook the range is in.
+
+### Step 8
+
+Provide the **Range Address** (e.g., A1:D10) to specify exactly where to clear data.
+
+</Steps>
+
+<Callout type="warning" title="Important">
+  Ensure you have the necessary permissions to access and modify the Excel file on OneDrive or SharePoint.
+</Callout>
+
+## Common Mistakes & Troubleshooting
+
+| Problem                                                    | Solution                                                                                                      |
+| ---------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------- |
+| **Authentication errors when connecting to Azure**         | Verify your Tenant ID, Client ID, and Client Secret are correctly entered and have permissions.               |
+| **Invalid Drive ID or Item ID errors**                     | Ensure the IDs are correct and that you have proper access to the drive and file.                             |
+| **Range not clearing as expected**                         | Double-check your Range Address formatting and make sure it matches the sheet’s existing structure.           |
+
+## Real-World Use Cases
+
+- **Daily Reporting**: Before running a new report, clear previous data from the Excel sheet to ensure accuracy.
+- **Template Preparation**: Reset a worksheet to its original state by clearing inputs after each use.
+- **Automated Data Cleanup**: Integrate with workflows that prepare Excel sheets for new data uploads, dynamically clearing out-of-date information.

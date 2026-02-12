@@ -1,0 +1,98 @@
+import { Callout, Steps } from "nextra/components";
+
+# Update Excel Range (HTTP)
+
+The **Update Excel Range (HTTP)** node lets you update or modify values within a specified range in an Excel worksheet stored on OneDrive or SharePoint using Microsoft Graph. This node is useful for automating data entry or manipulation directly within your Excel files.
+
+You might use this node when you need to:
+
+- Update sales data or performance metrics in an existing spreadsheet automatically.
+- Append new information, like inventory or task lists, into specific parts of a workbook.
+- Modify data for analysis or collaborative purposes within an organization.
+
+## Configuration Options
+
+| Field Name           | Description                                                                                   | Input Type | Required? | Default Value |
+| -------------------- | --------------------------------------------------------------------------------------------- | ---------- | --------- | ------------- |
+| **Tenant ID**        | The Azure AD tenant identifier.                                                               | Text       | Yes       | _(empty)_     |
+| **Client ID**        | The Application (Client) ID of the Azure AD app registered to access Microsoft Graph.         | Text       | Yes       | _(empty)_     |
+| **Client Secret**    | The client secret of the Azure AD application. Ensure it has proper permissions for access.   | Text       | Yes       | _(empty)_     |
+| **Workbook ID or DriveItem ID** | The unique Microsoft Graph ID of the Excel workbook file.    | Text       | Yes       | _(empty)_     |
+| **Worksheet Name**   | The name of the worksheet in the workbook where the range is to be updated.                   | Text       | Yes       | _(empty)_     |
+| **Range Address**    | The cell range address in A1-style notation, specifying where to write data (e.g., 'A1:B2').  | Text       | Yes       | _(empty)_     |
+| **Values (JSON or 2D array)** | JSON string representing a 2D array of values to update the selected range.          | Text       | Yes       | _(empty)_     |
+| **Response JSON**    | The raw JSON response from Microsoft Graph post-update. Useful for debugging.                 | Output     | No        | ResponseJson  |
+
+## Expected Output Format
+
+The output of this node is a **JSON response** that shows the result of the update operation. This mainly includes confirmation and any meta-information from Microsoft Graph.
+
+## Step-by-Step Guide
+
+<Steps>
+### Step 1
+
+Add **Update Excel Range (HTTP)** node into your flow.
+
+### Step 2
+
+In the **Tenant ID** field, input your Azure AD tenant identifier to connect properly to Microsoft services.
+
+### Step 3
+
+Enter your **Client ID**, which is the Application ID of the Azure AD app registered for the necessary Graph permissions.
+
+### Step 4
+
+Provide the **Client Secret** for the app. Ensure it has sufficient permissions like `Files.ReadWrite.All`.
+
+### Step 5
+
+In the **Workbook ID or DriveItem ID** field, specify the unique ID of the Excel file you intend to update.
+
+### Step 6
+
+Type in the **Worksheet Name** where the data is to be updated.
+
+### Step 7
+
+Define the **Range Address** in A1-style, indicating the specific cell range you wish to update (e.g., `A1:B2`).
+
+### Step 8
+
+Enter the **Values** you want to update as a JSON string or 2D array format (e.g., `[[“Apple”, 10], [“Banana”, 20]]`).
+
+### Step 9
+
+After setting everything up, the node will process when triggered, and output the **Response JSON** of success or error state from Microsoft Graph.
+
+</Steps>
+
+<Callout type="warning" title="Important">
+  Ensure that all ID and credentials are correct and that permissions are set in Azure AD correctly to allow access to Microsoft Graph.
+</Callout>
+
+## Input/Output Examples
+
+| Input Example    | Description                                                                                                        |
+| ---------------- | ------------------------------------------------------------------------------------------------------------------ |
+| **Tenant ID**    | `abc123-xyz456-tenant-id`                                                                                          |
+| **Client ID**    | `12345-client-id-67890`                                                                                            |
+| **Workbook ID or DriveItem ID** | `workbook-id-xyz789`                                                                           |
+| **Worksheet Name** | `SalesReport`                                                                                                  |
+| **Range Address** | `C2:D5`                                                                                                           |
+| **Values (JSON or 2D array)** | `[[\"Item\", \"Quantity\"], [\"Apple\", 5], [\"Orange\", 10]]`                                     |
+
+## Common Mistakes & Troubleshooting
+
+| Problem                                             | Solution                                                                                                     |
+| --------------------------------------------------- | ------------------------------------------------------------------------------------------------------------ |
+| **Credentials error**                               | Verify your Tenant ID, Client ID, and Client Secret are all correct and that the app has the necessary scopes. |
+| **Invalid Range Address**                           | Ensure the cell range address is in A1-style notation and the worksheet exists.                               |
+| **Failed to update values**                         | Check if the workbook and worksheet names are correct and the file is accessible with the provided credentials.|
+
+## Real-World Use Cases
+
+- **Daily Inventory Updates**: Automatically update daily sales or inventory data from business systems into Excel for record keeping.
+- **Financial Forecasting**: Append updated predictions or actual figures into Excel for financial analysis or reporting tasks.
+- **Project Management**: Update task lists or project statuses from other systems into Excel files used for tracking progress.

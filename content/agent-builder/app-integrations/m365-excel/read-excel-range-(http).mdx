@@ -1,0 +1,95 @@
+import { Callout, Steps } from "nextra/components";
+
+# Read Excel Range (HTTP)
+
+The **Read Excel Range (HTTP)** node allows you to read data from a specific range in an Excel file by making an HTTP GET request using Microsoft Graph. This node is particularly useful for accessing Excel files stored on OneDrive or SharePoint and retrieving specific data ranges for analysis, reporting, or further processing.
+
+For example, you can use this node to:
+- Extract financial data from a monthly report.
+- Retrieve sales figures from a specific sheet and range.
+- Access and analyze data for business intelligence.
+
+## Configuration Options
+
+| Field Name       | Description                                           | Input Type | Required? | Default Value |
+| ---------------- | ----------------------------------------------------- | ---------- | --------- | ------------- |
+| **Tenant ID**    | Azure AD Tenant ID                                    | Text       | Yes       | _(empty)_     |
+| **Client ID**    | Azure AD Application Client ID                        | Text       | Yes       | _(empty)_     |
+| **Client Secret**| Azure AD Application Client Secret                    | Text       | Yes       | _(empty)_     |
+| **Drive ID**     | OneDrive or SharePoint Drive ID                       | Text       | Yes       | _(empty)_     |
+| **Item ID**      | Excel file Item ID                                    | Text       | Yes       | _(empty)_     |
+| **Worksheet Name** | Name of the worksheet                               | Text       | Yes       | _(empty)_     |
+| **Range Address**| Range to read (e.g., A1:D10)                          | Text       | Yes       | _(empty)_     |
+
+## Expected Output Format
+
+The output of this node is a **JSON object** containing the values from the specified Excel range.
+
+- Output value will be stored as **`OutputJson`**.
+
+## Step-by-Step Guide
+
+<Steps>
+### Step 1
+
+Add the **Read Excel Range (HTTP)** node into your flow.
+
+### Step 2
+
+In the **Tenant ID** field, enter your Azure Active Directory Tenant ID.
+
+### Step 3
+
+In the **Client ID** field, enter your Azure AD Application Client ID.
+
+### Step 4
+
+In the **Client Secret** field, input your Azure AD Application Client Secret.
+  
+### Step 5
+
+Enter the **Drive ID** for your OneDrive or SharePoint location where the Excel file is stored.
+
+### Step 6
+
+In the **Item ID** field, specify the unique identifier for your Excel file.
+
+### Step 7
+
+Enter the **Worksheet Name** from which you want to read the data.
+
+### Step 8
+
+Specify the **Range Address**, like `A1:D10`, that you wish to read from the worksheet.
+
+### Step 9
+
+Execute the flow, and the specified range data will be outputted as a JSON object, accessible as **OutputJson**.
+
+</Steps>
+
+<Callout type="info" title="Tip">
+  Double-check your Azure credentials and ID values for accuracy to ensure successful data retrieval.
+</Callout>
+
+## Input/Output Examples
+
+| Range Address | Input Values                                                                 | Output (OutputJson)                                      | Output Type  |
+| ------------- | ------------------------------------------------------------------------------| ---------------------------------------------------------| ------------ |
+| A1:B2         | Tenant ID: `1234`, Client ID: `abcd`, Client Secret: `efgh`, ... (other IDs)  | `[{ "ColumnA": "Data1", "ColumnB": "Data2" }, ...]`      | JSON Object  |
+| C3:D4         | Tenant ID: `5678`, Client ID: `ijkl`, Client Secret: `mnop`, ... (other IDs)  | `[{ "ColumnC": "Data3", "ColumnD": "Data4" }, ...]`      | JSON Object  |
+
+## Common Mistakes & Troubleshooting
+
+| Problem                                 | Solution                                                                                     |
+| --------------------------------------- | -------------------------------------------------------------------------------------------- |
+| **Incorrect Azure credentials**         | Make sure Tenant ID, Client ID, and Client Secret are correct. Check Azure portal for values.|
+| **Invalid Drive or Item ID**            | Verify that the Drive ID and Item ID match those in your OneDrive or SharePoint setup.       |
+| **Range not specified**                 | Ensure the Range Address is entered correctly as per Excel's format (e.g., `A1:D10`).         |
+| **Data not retrieved**                  | Check network connectivity, ensure access permissions, and verify that your credentials are active. |
+
+## Real-World Use Cases
+
+- **Business Dashboards**: Fetch data from various Excel sheets to populate dashboards with real-time analytics.
+- **Data Aggregation**: Use in conjunction with other nodes to combine and analyze data from multiple Excel sources.
+- **Financial Forecasting**: Automatically retrieve sales or budgetary data to aid in predictive modeling and planning.

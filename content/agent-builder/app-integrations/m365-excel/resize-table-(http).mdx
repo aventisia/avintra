@@ -1,0 +1,80 @@
+import { Callout, Steps } from "nextra/components";
+
+# Resize Table (HTTP)
+
+The **Resize Table (HTTP)** node helps in changing the size of an existing Excel table to a new range within a workbook stored on OneDrive or SharePoint. This is beneficial when your data set grows or shrinks, and you need to modify the table dimensions accordingly without manually editing the workbook.
+
+## Configuration Options
+
+| Field Name           | Description                                                                                                                                                                            | Input Type | Required? | Default Value |
+| -------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ---------- | --------- | ------------- |
+| **Tenant ID**        | The Azure Active Directory identifier, such as \`contoso.onmicrosoft.com\` or a GUID, used for Microsoft 365 authentication.                                                           | Text       | Yes       | _(empty)_     |
+| **Client ID**        | The Application (Client) ID for the Azure AD app registered to interact with Microsoft Graph.                                                                                           | Text       | Yes       | _(empty)_     |
+| **Client Secret**    | The secret key of the Azure AD application, ensuring it has appropriate permissions like Files.ReadWrite.All.                                                                           | Text       | Yes       | _(empty)_     |
+| **Drive ID**         | The specific ID of the drive where the workbook is stored, either within OneDrive or a SharePoint document library.                                                                     | Text       | Yes       | _(empty)_     |
+| **Workbook Item ID** | The Microsoft Graph DriveItem ID of the Excel workbook that contains the table.                                                                                                        | Text       | Yes       | _(empty)_     |
+| **Table Name**       | The name of the table within the Excel workbook that you want to resize. Example names might include \`Table1\` or \`SalesData\`.                                                        | Text       | Yes       | _(empty)_     |
+| **New Range Address**| Defines the new size of your table in A1 notation (e.g., \`A1:D20\`). This range should cover all headers and data rows.                                                                | Text       | Yes       | _(empty)_     |
+
+## Expected Output Format
+
+The output of this node is a **confirmation message** indicating the table has been resized successfully.
+
+## Step-by-Step Guide
+
+<Steps>
+### Step 1
+
+Add the **Resize Table (HTTP)** node into your flow.
+
+### Step 2
+
+Fill in the **Tenant ID** with your Azure AD tenant identifier.
+
+### Step 3
+
+Enter the **Client ID** of your registered Azure AD application.
+
+### Step 4
+
+Input the **Client Secret** for authentication purposes.
+
+### Step 5
+
+Specify the **Drive ID** where your Excel workbook is stored.
+
+### Step 6
+
+Provide the **Workbook Item ID** of the Excel file containing your table.
+
+### Step 7
+
+Enter the **Table Name** that you want to resize.
+
+### Step 8
+
+Fill in the **New Range Address** with the desired range in A1 notation format (e.g., `A1:D20`).
+
+### Step 9
+
+Verify all the inputs and execute the node to resize the table.
+</Steps>
+
+<Callout type="info" title="Note">
+  Ensure all identifiers and secrets are correct, and permissions are set to allow modifications to the Excel file within Microsoft 365 services.
+</Callout>
+
+## Common Mistakes & Troubleshooting
+
+| Problem                                         | Solution                                                                                                  |
+| ----------------------------------------------- | --------------------------------------------------------------------------------------------------------- |
+| **Incorrect Tenant ID or Client ID**            | Double-check and ensure you have the correct Azure AD tenant and app registration details.               |
+| **Invalid New Range Address**                   | Verify the range address is correct and covers all necessary rows and columns including headers.         |
+| **Authentication Errors**                       | Re-examine the Client Secret and ensure adequate permissions are granted to the Azure App.               |
+| **Non-existent Table Name**                     | Make sure the table name matches exactly with the one in your Excel file, including case sensitivity.     |
+
+## Real-World Use Cases
+
+- **Dynamic Reporting**: Resize tables as data grows to fit new entries without manual spreadsheet changes.
+- **Data Updates**: Automatically adjust table ranges during regular data imports or exports.
+- **Project Tracking**: Scale project plan tables as tasks increase or decrease over time.

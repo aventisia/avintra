@@ -1,0 +1,90 @@
+import { Callout, Steps } from "nextra/components";
+
+# Create Named Range (HTTP)
+
+The **Create Named Range (HTTP)** node allows you to create a named range in an Excel workbook using a Microsoft Graph HTTP POST request. This can be particularly useful for automating tasks where specific cell ranges in Excel need to be named for easy reference, especially when working with OneDrive or SharePoint-hosted Excel files.
+
+For example, you might use this node to:
+
+- Automate the creation of named ranges in dynamic reporting templates.
+- Set up predefined data areas for Excel automation and processing.
+- Manage Excel files stored in cloud environments programmatically.
+
+## Configuration Options
+
+| Field Name           | Description                                                             | Input Type | Required? | Default Value |
+| -------------------- | ----------------------------------------------------------------------- | ---------- | --------- | -------------- |
+| **Tenant ID**        | Azure AD Tenant ID (GUID or domain)                                     | Text       | Yes       | _(empty)_      |
+| **Client ID**        | Azure AD Application (Client) ID                                        | Text       | Yes       | _(empty)_      |
+| **Client Secret**    | Azure AD Application Client Secret                                      | Text       | Yes       | _(empty)_      |
+| **Drive ID**         | OneDrive or SharePoint Drive ID                                         | Text       | Yes       | _(empty)_      |
+| **Item ID**          | Excel file Item ID in the drive                                         | Text       | Yes       | _(empty)_      |
+| **Named Range Name** | The name to assign to the Excel named range                             | Text       | Yes       | _(empty)_      |
+| **Reference**        | The Excel range reference (e.g., 'Sheet1!A1:B10')                       | Text       | Yes       | _(empty)_      |
+
+## Expected Output Format
+
+The operation creates a named range in an Excel spreadsheet but does not produce a visible output or result within the node's interface. The completion indicates that the named range creation was successful.
+
+## Step-by-Step Guide
+
+<Steps>
+### Step 1
+
+Add **Create Named Range (HTTP)** node into your flow.
+
+### Step 2
+
+In the **Tenant ID** field, enter your Azure AD Tenant ID (GUID or domain) to authenticate the request.
+
+### Step 3
+
+Enter your **Client ID** in the corresponding field—this identifies your application within Azure AD.
+
+### Step 4
+
+Enter your **Client Secret**—this is needed to validate the application's identity within Azure AD.
+
+### Step 5
+
+Under **Drive ID**, input the ID of the OneDrive or SharePoint drive that holds the Excel file.
+
+### Step 6
+
+Input the **Item ID** for the specific Excel file you want to work with. This ensures the correct file is accessed.
+
+### Step 7
+
+Fill in the **Named Range Name**—the specific name you want the Excel range to carry.
+
+### Step 8
+
+Provide the **Reference** to the Excel cell range (e.g., 'Sheet1!A1:B10') you wish to name.
+
+### Step 9
+
+Confirm all entries and run the node to create the named range in your Excel file.
+
+</Steps>
+
+<Callout type="info" title="Note">
+  Ensure all Azure AD credentials (Tenant ID, Client ID, Client Secret) are correct to avoid authentication errors.
+</Callout>
+
+## Input/Output Examples
+
+Since this node primarily performs an HTTP POST action, it doesn't have instance-specific input/output examples. However, ensure the range reference provided (e.g., 'Sheet1!A1:B10') is correct for effective range naming.
+
+## Common Mistakes & Troubleshooting
+
+| Problem                                             | Solution                                                                                                        |
+| --------------------------------------------------- | ---------------------------------------------------------------------------------------------------------------- |
+| **Authentication fails with error**                 | Double-check and verify all Azure AD credentials: Tenant ID, Client ID, and Client Secret.                      |
+| **Incorrect Excel range specified**                 | Confirm the **Reference** format is correct and matches the Excel file structure (e.g., 'Sheet1!A1:B10').       |
+| **Named range does not appear in Excel file**       | Ensure the node completes without errors and that the **Named Range Name** and **Reference** are correctly input.|
+
+## Real-World Use Cases
+
+- **Automated Reporting**: Define named ranges in automated Excel reports to easily update or reference critical data areas.
+- **Financial Templates**: Create placeholders for frequently used formulas or tables, optimizing Excel management and efficiency.
+- **Collaborative Worksheets**: Designate key input and output areas in shared documents for seamless data collection and analysis by teams.

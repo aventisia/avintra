@@ -1,0 +1,89 @@
+import { Callout, Steps } from "nextra/components";
+
+# Delete Worksheet
+
+The **Delete Worksheet** node allows you to remove a specific worksheet from an Excel workbook stored in OneDrive or SharePoint. This is particularly useful for managing and cleaning up spreadsheets by removing unnecessary or old worksheets to maintain data relevance and organization.
+
+For example:
+
+- Deleting outdated analysis worksheets from reports.
+- Removing temporary worksheets once data processing is complete.
+- Managing drive storage by removing unnecessary files.
+
+## Configuration Options
+
+| Field Name       | Description                                             | Input Type | Required? | Default Value |
+| ---------------- | ------------------------------------------------------- | ---------- | --------- | ------------- |
+| **Tenant ID**    | Azure AD Tenant ID                                      | Text       | Yes       | _(empty)_     |
+| **Client ID**    | Azure AD Client ID                                      | Text       | Yes       | _(empty)_     |
+| **Client Secret**| Azure AD Client Secret                                  | Text       | Yes       | _(empty)_     |
+| **Drive ID**     | OneDrive or SharePoint Drive ID                         | Text       | Yes       | _(empty)_     |
+| **Item ID**      | Excel file Item ID                                      | Text       | Yes       | _(empty)_     |
+| **Worksheet Name**| Name of the worksheet you want to delete                | Text       | Yes       | _(empty)_     |
+
+## Expected Output Format
+
+This node performs an operation without returning a value, but the success of the task can usually be confirmed through workflow status checks or logs.
+
+## Step-by-Step Guide
+
+<Steps>
+### Step 1
+
+Add the **Delete Worksheet** node to your flow.
+
+### Step 2
+
+Enter the **Tenant ID** for your Azure Active Directory. This identifies which directory your application is associated with.
+
+### Step 3
+
+Enter the **Client ID** for your Azure Native Application. This is an identifier for the application in the directory.
+
+### Step 4
+
+Enter your **Client Secret**. This works as a password for your Azure app to authenticate.
+
+### Step 5
+
+Enter the **Drive ID**. This specifies the OneDrive or SharePoint drive that holds the target Excel file.
+
+### Step 6
+
+Specify the **Item ID**. This refers to the particular Excel file from which you want to delete the worksheet.
+
+### Step 7
+
+Enter the **Worksheet Name** of the worksheet you wish to delete.
+
+### Step 8
+
+Verify all inputs are correct and execute the flow to remove the worksheet.
+
+</Steps>
+
+<Callout type="info" title="Tip">
+  Ensure all identifiers (IDs and names) are correct and available, as incorrect details may cause errors or unexpected behavior.
+</Callout>
+
+## Input/Output Examples
+
+| Tenant ID | Client ID | Drive ID | Item ID | Worksheet Name |
+| ----------- | ----------- | ----------- | ----------- | ------------- |
+| `123-tenant` | `abc123-client` | `drive789` | `file456` | `Old Report` |
+
+Performing the action with the above specifics will delete the worksheet named "Old Report" from the specified Excel file.
+
+## Common Mistakes & Troubleshooting
+
+| Problem                                                        | Solution                                                                                                         |
+| -------------------------------------------------------------- | ---------------------------------------------------------------------------------------------------------------- |
+| **Incorrect ID or Secret**                                     | Ensure that the Tenant ID, Client ID, and Client Secret are accurately entered and not expired or rescinded.     |
+| **Worksheet Not Found**                                        | Double-check the Worksheet Name for typos. Make sure it matches exactly with what is present in the Excel file.  |
+| **Unauthorized Access Errors**                                 | Verify that you have appropriate permissions and that the Azure app is configured with requisite API permissions. |
+
+## Real-World Use Cases
+
+- **Data Hygiene**: Regularly delete outdated reports or data tables to keep the workbook up-to-date.
+- **Project Management**: Remove temporary sheets used during active projects to maintain focus on completed work.
+- **Organization and Storage Management**: Regularly clean your drives by deleting sheets that are no longer necessary for current workloads.

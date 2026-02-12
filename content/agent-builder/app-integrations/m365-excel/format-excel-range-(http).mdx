@@ -1,0 +1,94 @@
+import { Callout, Steps } from "nextra/components";
+
+# Format Excel Range (HTTP)
+
+The **Format Excel Range (HTTP)** node enables you to apply specific formatting to a defined area within an Excel spreadsheet stored on OneDrive or SharePoint. Using the Microsoft Graph API via HTTP PATCH, this node allows you to set font color, fill color, and bold formatting options for the selected range. This is particularly useful for users who need to highlight key data points or ensure consistency across their Excel documents without manual editing.
+
+## Configuration Options
+
+| Field Name         | Description                                                             | Input Type | Required? | Default Value |
+| ------------------ | ----------------------------------------------------------------------- | ---------- | --------- | ------------- |
+| **Tenant ID**      | Azure Active Directory (AD) Tenant ID.                                  | Text       | Yes       | _(empty)_     |
+| **Client ID**      | Azure AD Application Client ID for authentication.                      | Text       | Yes       | _(empty)_     |
+| **Client Secret**  | Azure AD Application Client Secret for secure access.                   | Text       | Yes       | _(empty)_     |
+| **Drive ID**       | The ID of the OneDrive or SharePoint drive containing the Excel file.   | Text       | Yes       | _(empty)_     |
+| **Item ID**        | The unique identifier for the Excel file within OneDrive or SharePoint. | Text       | Yes       | _(empty)_     |
+| **Worksheet Name** | The name of the worksheet where the range is located.                   | Text       | Yes       | _(empty)_     |
+| **Range Address**  | The specific cell range to format (e.g., A1:D10).                       | Text       | Yes       | _(empty)_     |
+| **Font Color (Hex)**   | The color code (hexadecimal) for the text, without the `#` (e.g., FF0000). | Text       | No        | _(empty)_     |
+| **Fill Color (Hex)**   | The background color code (hexadecimal) for the cells, without the `#` (e.g., FFFF00). | Text       | No        | _(empty)_     |
+| **Bold**           | A toggle to apply bold formatting to the specified range.               | Switch     | No        | _(empty)_     |
+
+
+## Expected Output Format
+
+This node does not produce a direct output value. Instead, it modifies the specified Excel range according to the formatting settings you provide:
+
+- **Font Color**: Changes the text color to the specified hex value.
+- **Fill Color**: Changes the cell background to the specified hex value.
+- **Bold**: Applies bold styling to the text if enabled.
+
+## Step-by-Step Guide
+
+<Steps>
+### Step 1
+
+Add **Format Excel Range (HTTP)** node into your automation workflow.
+
+### Step 2
+
+In the **Tenant ID** field, enter your Azure AD Tenant ID. This is necessary for authenticating your request.
+
+### Step 3
+
+Input your **Client ID** and **Client Secret** to securely access your application registered in Azure AD.
+
+### Step 4
+
+Enter the **Drive ID** and **Item ID** of the Excel file. These fields identify the exact location and file you wish to format.
+
+### Step 5
+
+Specify the **Worksheet Name** and **Range Address** (e.g., A1:D10) for the cells you wish to format. Be precise for successful formatting.
+
+### Step 6
+
+(Optional) In **Font Color** and **Fill Color**, provide 6-digit hexadecimal color codes to customize text and background appearance.
+
+### Step 7
+
+(Optional) Toggle the **Bold** switch to apply bold formatting to the text in the range.
+
+### Step 8
+
+Execute the node to apply your customized formatting to the specified range in your Excel file.
+</Steps>
+
+<Callout type="info" title="Important Note">
+  Ensure that appropriate permissions are set up in your Azure application to access and modify the Excel file.
+</Callout>
+
+## Input/Output Examples
+
+For example, to format range `A1:D10` in the worksheet "DataSheet":
+
+- **Font Color**: Enter `FF0000` for red text.
+- **Fill Color**: Enter `00FF00` for a green background.
+- **Bold**: Toggle on to make text bold.
+
+After executing, the text in range `A1:D10` will be red, italicized, and on a green background.
+
+## Common Mistakes & Troubleshooting
+
+| Problem                                               | Solution                                                                                                                                                    |
+| ----------------------------------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| **Authentication Failure**                            | Double-check the entered Tenant ID, Client ID, and Client Secret for correctness. Ensure the application has necessary permissions in Azure AD.            |
+| **Incorrect Drive or Item ID**                        | Verify the IDs are correct by reviewing the OneDrive or SharePoint file properties.                                                                         |
+| **Hex color values not rendering correctly**          | Ensure color inputs do not include the `#` symbol and are exactly six characters long.                                                                      |
+| **Formatting not applying to range**                  | Confirm the worksheet name and range address are accurately specified. Ensure the Excel file is not open or being edited simultaneously by another process. |
+
+## Real-World Use Cases
+
+- **Financial Reporting**: Highlight specific cells in a financial report, such as gross margins or net income, using bold and colored fonts.
+- **Budget Reviews**: Use fill colors to differentiate budget plan versus actual spend in Excel sheets, applying a green fill for "under budget" and red for "over budget."
+- **Data Analysis**: Emphasize key metrics in data analysis Excel sheets by applying font color and bold text for immediate visual impact.

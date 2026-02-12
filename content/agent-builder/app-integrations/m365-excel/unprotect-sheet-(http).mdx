@@ -1,0 +1,82 @@
+import { Callout, Steps } from "nextra/components";
+
+# Unprotect Sheet (HTTP)
+
+The **Unprotect Sheet (HTTP)** node allows you to remove protection from an Excel worksheet hosted on OneDrive or SharePoint. It is particularly useful if you need to update, analyze, or share data from protected sheets without manually unprotecting them in Excel.
+
+Common scenarios include:
+
+- Automatically unprotecting sheets for data processing.
+- Removing protection from shared files for collaboration.
+- Handling protected financial or technical reports that need regular updates.
+
+## Configuration Options
+
+| Field Name           | Description                                                                                  | Input Type | Required? | Default Value |
+| -------------------- | -------------------------------------------------------------------------------------------- | ---------- | --------- | ------------- |
+| **Tenant ID**        | Azure AD Tenant ID                                                                           | Text       | Yes       | _(empty)_     |
+| **Client ID**        | Azure AD Client ID                                                                           | Text       | Yes       | _(empty)_     |
+| **Client Secret**    | Azure AD Client Secret                                                                       | Text       | Yes       | _(empty)_     |
+| **Drive ID**         | OneDrive or SharePoint Drive ID                                                              | Text       | Yes       | _(empty)_     |
+| **File Path**        | The relative path to the Excel workbook in the drive (e.g., 'Reports/ProtectedData.xlsx').   | Text       | Yes       | _(empty)_     |
+| **Worksheet Name**   | The name of the protected worksheet to unprotect (e.g., 'Summary').                          | Text       | Yes       | _(empty)_     |
+| **Password**         | The password used to protect the sheet. Leave blank if no password was set.                  | Text       | No        | _(empty)_     |
+
+## Expected Output Format
+
+The node does not produce a typical output value accessible in the flow, but rather performs an action (unprotecting the specified worksheet) which does not return data to be used by subsequent nodes.
+
+## Step-by-Step Guide
+
+<Steps>
+### Step 1
+
+Add the **Unprotect Sheet (HTTP)** node into your flow.
+
+### Step 2
+
+Enter your **Tenant ID** associated with your Azure AD account in the relevant field.
+
+### Step 3
+
+Provide the **Client ID** in the designated input field.
+
+### Step 4
+
+Enter the **Client Secret** for authentication with Azure AD.
+
+### Step 5
+
+Specify the **Drive ID** where the Excel file resides, either in OneDrive or SharePoint.
+
+### Step 6
+
+Input the **File Path** to the specific Excel workbook you wish to modify.
+
+### Step 7
+
+State the exact **Worksheet Name** you intend to unprotect.
+
+### Step 8
+
+If the worksheet is password-protected, enter the **Password** used to protect it. Leave this field blank if no password is present.
+</Steps>
+
+<Callout type="warning" title="Important">
+  Ensure that all IDs and secrets (e.g., Tenant ID, Client ID, Client Secret) are correctly entered to avoid authentication errors.
+</Callout>
+
+## Common Mistakes & Troubleshooting
+
+| Problem                           | Solution                                                                                                                    |
+| --------------------------------- | --------------------------------------------------------------------------------------------------------------------------- |
+| **Authentication failed**         | Double-check your Tenant ID, Client ID, and Client Secret. All values must match your Azure AD credentials.                  |
+| **File not found error**          | Verify the File Path and Drive ID to ensure they point to the correct location and file on OneDrive or SharePoint.           |
+| **Worksheet not found**           | Make sure the Worksheet Name matches exactly, including case sensitivity, the name of the worksheet you are trying to unprotect. |
+| **Incorrect password**            | Confirm the correct password is entered if the sheet was protected with one. Leave blank if no password was used.           |
+
+## Real-World Use Cases
+
+- **Monthly Report Updates**: Unprotect financial reports routinely for monthly updates without having to manually remove protection.
+- **Data Sharing with Teams**: Automatically unprotect shared worksheets to allow team members to edit or review data collaboratively.
+- **Automated Data Processing**: Unprotect sheets to integrate data with automated processing tools without manual intervention.
