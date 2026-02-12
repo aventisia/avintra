@@ -49,17 +49,17 @@ public class InstanceUsageStartupService : IHostedService
                 // Fail if contract has not started
                 if (_environmentConfig.OnPremContractStart.Date > currentDateTime.Date)
                 {
-                    _logger.LogError("Contract has not started. Startup cannot continue. Please contact the support team.");
-                    errorMessage = "Contract has not started. Please contact the support team";
-                    throw new InvalidOperationException(errorMessage);
+                    _logger.LogError("Contract has not started. Please contact the support team.");
+                    // errorMessage = "Contract has not started. Please contact the support team";
+                    // throw new InvalidOperationException(errorMessage);
                 }
 
                 // Fail if login is disabled
                 if (_environmentConfig.OnPremLoginDisabled)
                 {
-                    _logger.LogError("Login is disabled. Startup cannot continue. Please contact the support team.");
-                    errorMessage = "Login is disabled. Please contact the support team.";
-                    throw new InvalidOperationException(errorMessage);
+                    _logger.LogError("Login is disabled. Please contact the support team.");
+                    // errorMessage = "Login is disabled. Please contact the support team.";
+                    // throw new InvalidOperationException(errorMessage);
                 }
 
                 // Log successful completion of the startup task
