@@ -107,7 +107,7 @@ export const ReactFlowExt = () => {
     <DCPDialog>
       <ReactFlow
         fitView
-        minZoom={0.4}
+        minZoom={0.1}
         panOnDrag={panOnDrag}
         panOnScroll
         defaultEdgeOptions={defaultEdgeOptions}
