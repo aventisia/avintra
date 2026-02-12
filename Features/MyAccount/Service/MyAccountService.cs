@@ -730,6 +730,7 @@ public class MyAccountService : IMyAccountService
 
             // Update account User using UserManager
             user.Email = emailUpdateDto.Email;
+            user.UserName = emailUpdateDto.Email;
 
             var token = await _userManager.GenerateChangeEmailTokenAsync(user, emailUpdateDto.Email);
             var identityResult = await _userManager.ChangeEmailAsync(user, emailUpdateDto.Email, token);
@@ -747,6 +748,16 @@ public class MyAccountService : IMyAccountService
 
             // Re-sign the user in to refresh the authentication cookie
             await _signInManager.RefreshSignInAsync(user);
+
+            //Update user in other databases
+            var response = await _authHelperService.CreateOrUpdateUserInOtherDbsAsync(user, CrudTypesEnum.Update, _jwt);
+
+            if (!response)
+            {
+                _logger.LogInformation("Failed while updating user in other databases");
+                serviceResponse.Message = "User's email update failed in other databases";
+                return serviceResponse;
+            }
 
             // Task successful
             _logger.LogInformation($"{methodName}: Email has been updated for account {_userName}");
