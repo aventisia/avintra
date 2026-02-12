@@ -1,0 +1,62 @@
+import { Callout, Steps } from "nextra/components";
+
+# Attach to Running Word
+
+The **Attach to Running Word** node allows you to connect to a Microsoft Word document that's already open on your desktop. If the document is not open, this node can also open the specified document for you. This is particularly useful when you need to perform automated actions on documents, such as edits or data extraction.
+
+## Configuration Options
+
+| Field Name        | Description                                                                     | Input Type | Required? | Default Value |
+| ----------------- | ------------------------------------------------------------------------------- | ---------- | --------- | ------------- |
+| **Document Path** | The full path or file name of the Word document to attach to.                   | Text       | Yes       | _(empty)_     |
+
+## Expected Output Format
+
+When this node is executed successfully, it produces a **Word Instance** output, which represents the specific instance of the Word document that can be used for subsequent activities within your automation flow.
+
+## Step-by-Step Guide
+
+<Steps>
+### Step 1
+
+Add **Attach to Running Word** node into your flow.
+
+### Step 2
+
+In the **Document Path** field, enter the complete file path or just the file name of the Word document you wish to attach to.
+
+- Ensure the document path is correct; otherwise, the system will not be able to locate the document.
+
+### Step 3
+
+After executing the flow, if the document is already open, the node will attach to it. If not, it will open the document.
+
+### Step 4
+
+The document is now connected, and the Word instance is available as **WordInstance** for use in further actions.
+
+</Steps>
+
+<Callout type="info" title="Note">
+  If the specified document path is incorrect, the node will be unable to open or attach to the document. Double-check your path for accuracy.
+</Callout>
+
+## Input/Output Examples
+
+| Document Path              | Word Instance      | Output Type         |
+| -------------------------- | ------------------ | ------------------- |
+| C:\Documents\Report.docx   | WordInstance       | Word Document Object|
+
+## Common Mistakes & Troubleshooting
+
+| Problem                                       | Solution                                                                                 |
+| --------------------------------------------- | ---------------------------------------------------------------------------------------- |
+| **Incorrect Document Path**                   | Verify the file path and ensure it is complete and points to an existing file.            |
+| **Document Not Opening**                      | Check if your machine has Microsoft Word installed and if the document format is supported.|
+| **Multiple Instances of the Document Detected** | Close extra copies of the document to ensure only one instance is being modified.          |
+
+## Real-World Use Cases
+
+- **Report Generation**: Attach to a pre-designed report template and insert data from other sources.
+- **Document Editing**: Open a document to make edits such as inserting text or images automatically.
+- **Project Documentation**: Attach to project documents to automate version updates or data pulling for analysis.

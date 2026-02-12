@@ -1,0 +1,65 @@
+import { Callout, Steps } from "nextra/components";
+
+# Read from Word Document
+
+The **Read from Word Document** node allows you to extract text content from a Microsoft Word document. This is particularly useful for automating workflows that require data manipulation or analysis directly from Word files without manual copying. 
+
+For example, you can use this node to:
+
+- Gather entire document content for processing or review.
+- Retrieve specific page content or sections marked by bookmarks.
+- Integrate Word data with other applications or processes.
+
+## Configuration Options
+
+| Field Name        | Description                                                       | Input Type | Required? | Default Value   |
+| ----------------- | ----------------------------------------------------------------- | ---------- | --------- | --------------- |
+| **Word Instance** | The specific Word instance to read from. This specifies the file. | Text       | Yes       | _(empty)_       |
+| **Retrieve**      | Specifies the portion of the document to retrieve: whole, pages, or bookmark. | Select     | No        | Whole Document  |
+
+## Expected Output Format
+
+The output of this node is a **string of text**. This string represents the extracted content from the Word document based on the user-selected parameters. The output is available as **WordData** for subsequent nodes.
+
+## Step-by-Step Guide
+
+<Steps>
+### Step 1
+
+Add **Read from Word Document** node into your flow.
+
+### Step 2
+
+In the **Word Instance** field, enter the specific Word document instance you wish to read from.
+
+### Step 3
+
+In the **Retrieve** dropdown, select how you want to extract content:
+
+- **Whole Document**: Retrieves the entire content of the document.
+- **Pages**: Retrieves content from specified pages. You will need to define the page numbers elsewhere in your flow.
+- **Bookmark**: Retrieves content from a specified bookmark location within the document.
+
+### Step 4
+
+The extracted text will be available as **WordData** for use in other nodes.
+
+</Steps>
+
+<Callout type="info" title="Tip">
+  If you're not interested in extracting specific parts, selecting "Whole Document" in the **Retrieve** dropdown will automatically gather all available text from your document.
+</Callout>
+
+## Common Mistakes & Troubleshooting
+
+| Problem                                                   | Solution                                                                                   |
+| --------------------------------------------------------- | ------------------------------------------------------------------------------------------ |
+| **Word Instance not specified**                           | Ensure you've entered the document you wish to read for the **Word Instance** field.       |
+| **Unexpected content retrieved**                          | Double-check your **Retrieve** selection and any associated parameters such as page numbers or bookmarks. |
+| **No output or empty content**                            | Make sure that the Word document is correctly formatted and accessible. Confirm permission settings. |
+
+## Real-World Use Cases
+
+- **Data Analysis**: Quickly extract and analyze data from Word documents for reporting purposes.
+- **Document Management**: Automate the retrieval of important content sections using bookmarks.
+- **Automated Reporting**: Integrate Word document contents into reporting or presentation workflows without manual data entry.

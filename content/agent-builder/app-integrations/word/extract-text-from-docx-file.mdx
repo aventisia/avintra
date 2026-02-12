@@ -1,0 +1,81 @@
+import { Callout, Steps } from "nextra/components";
+
+# Extract Text from DOCX File
+
+The **Extract Text from DOCX File** node allows you to read and retrieve text content from a `.docx` document. This is particularly useful for automating the processing of documents and extracting specific text for reports, analysis, or further workflows.
+
+For example:
+
+- Retrieving the entire text from a document to use in another application.
+- Extracting specific pages from a report.
+- Collecting information from bookmarked sections in documents.
+
+## Configuration Options
+
+| Field Name      | Description                                                                | Input Type | Required? | Default Value   |
+| --------------- | -------------------------------------------------------------------------- | ---------- | --------- | --------------- |
+| **Document Path** | The full file path to the .docx document to read from.                     | Text       | Yes       | _(empty)_       |
+| **Retrieve**    | Specifies the portion of the document to retrieve: whole content, pages, or bookmark. | Select     | No        | Whole Document  |
+| **Bookmark Name** | The name of the bookmark to retrieve content from. _Only appears if Retrieve is "Bookmark"._ | Text       | No        | _(empty)_       |
+
+## Expected Output Format
+
+The output of this node is **text data** representing the content extracted from the specified `.docx` document.
+
+- If you select **Whole Document**: output contains the entire document's text.
+- If you specify **Pages**: output includes text from those specific pages.
+- If you choose **Bookmark**: output will contain text from the bookmarked section.
+
+## Step-by-Step Guide
+
+<Steps>
+### Step 1
+
+Add **Extract Text from DOCX File** node into your flow.
+
+### Step 2
+
+In the **Document Path** field, enter the full file path to the `.docx` document from which you want to extract text.
+
+### Step 3
+
+Use the **Retrieve** dropdown to choose the part of the document you wish to extract:
+
+- **Whole Document**: To get all the text from the document.
+- **Pages**: To specify and retrieve text from certain pages. *(Note: Additional setup not covered here)*
+- **Bookmark**: To extract text from a specific bookmark.
+
+### Step 4
+
+If you select **Bookmark** in the Retrieve option, a **Bookmark Name** field appears. Enter the bookmark's name here.
+
+### Step 5
+
+The extracted content will be available under **Word Data** for use in subsequent nodes.
+
+</Steps>
+
+<Callout type="info" title="Note">
+  Ensure the document path is correct and accessible by the system where this node is executed.
+</Callout>
+
+## Input/Output Examples
+
+| Retrieve Method  | Document Path   | Bookmark Name | Output Value                        | Output Type |
+| ---------------- | --------------- | ------------- | ----------------------------------- | ----------- |
+| Whole Document   | /docs/report.docx | _(n/a)_       | "All text content from the document" | Text        |
+| Bookmark         | /docs/report.docx | Section1      | "Text content from the Section1 bookmark" | Text        |
+
+## Common Mistakes & Troubleshooting
+
+| Problem                                      | Solution                                                                                                              |
+| -------------------------------------------- | --------------------------------------------------------------------------------------------------------------------- |
+| **Incorrect Document Path**                  | Double-check the file path entered is correct and points to a valid .docx file. Ensure file permissions are suitable. |
+| **Bookmark Name not triggering result**      | Verify that the bookmark name is correct and exists in the document.                                                  |
+| **No output returned**                       | Ensure that the retrieval settings correctly correspond to the document's structure (e.g., pages or bookmarks).       |
+
+## Real-World Use Cases
+
+- **Contract Review**: Extract specific sections from legal documents for review.
+- **Report Generation**: Automatically retrieve entire documents or summaries for weekly status updates.
+- **Document Analysis**: Gather data from bookmarked sections for further processing in business intelligence tools.
