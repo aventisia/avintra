@@ -1,0 +1,93 @@
+import { Callout, Steps } from "nextra/components";
+
+# Lookup Range in Excel Worksheet
+
+The **Lookup Range in Excel Worksheet** node is designed to help you search for a specific value in an Excel worksheet and return the corresponding value from the same position in another range. This operation mimics the LOOKUP function in Excel, making it useful for cross-referencing data, generating reports, or finding related data across different sets.
+
+For example:
+
+- Locating a product name from its ID in a product catalog.
+- Finding an employee's full name based on their employee ID.
+- Retrieving a price from a named price list.
+
+## Configuration Options
+
+| Field Name                   | Description                                                                 | Input Type | Required? | Default Value |
+| ---------------------------- | --------------------------------------------------------------------------- | ---------- | --------- | ------------- |
+| **Worksheet Instance**       | The Excel Worksheet object where the lookup will be performed. If left blank, the active sheet of the workbook will be used. | Text       | No        | _(empty)_     |
+| **Lookup Value**             | The value to search for in the lookup range.                                 | Text       | Yes       | _(empty)_     |
+| **Ranges Format**            | Choose how the ranges are defined: Named Cells or Specific Ranges.           | Select     | Yes       | NamedCells    |
+| **Cells Name**               | The name of the named range to use for lookup (only if `Ranges Format` is `Named Cells`). | Text       | No        | _(empty)_     |
+| **Start Column**             | The starting column of the lookup range (only if `Ranges Format` is `Specific Ranges`). | Text       | No        | _(empty)_     |
+| **Start Row**                | The starting row of the lookup range (only if `Ranges Format` is `Specific Ranges`). | Text       | No        | _(empty)_     |
+| **End Column**               | The ending column of the lookup range (only if `Ranges Format` is `Specific Ranges`). | Text       | No        | _(empty)_     |
+| **End Row**                  | The ending row of the lookup range (only if `Ranges Format` is `Specific Ranges`). | Text       | No        | _(empty)_     |
+| **Array Form**               | If true, performs array-based lookup; otherwise, performs scalar lookup.     | Switch     | No        | _(empty)_     |
+| **Start Column of Results Source** | The starting column of the result range (only if `Array Form` is false).         | Text       | No        | _(empty)_     |
+| **Start Row of Results Source** | The starting row of the result range (only if `Array Form` is false).             | Text       | No        | _(empty)_     |
+| **End Column of Results Source** | The ending column of the result range (only if `Array Form` is false).            | Text       | No        | _(empty)_     |
+| **End Row of Results Source** | The ending row of the result range (only if `Array Form` is false).               | Text       | No        | _(empty)_     |
+
+## Expected Output Format
+
+This node outputs the result of the lookup as a **single value**, labeled as `LookupResult`. This could be a number, text, or any valid cell content from the result range in the Excel worksheet.
+
+## Step-by-Step Guide
+
+<Steps>
+### Step 1
+
+Add the **Lookup Range in Excel Worksheet** node to your flow.
+
+### Step 2
+
+Specify the **Worksheet Instance** if you want to perform the lookup on a specific worksheet; otherwise, the active worksheet will be used.
+
+### Step 3
+
+Enter the **Lookup Value** you wish to find in the Excel sheet.
+
+### Step 4
+
+Choose the **Ranges Format**:
+- **Named Cells**: Specified using a predefined name.
+- **Specific Ranges**: Enter the columns/rows manually.
+
+### Step 5
+
+If you selected **Named Cells**, enter the **Cells Name**.
+
+### Step 6
+
+If you selected **Specific Ranges**, fill in the fields for **Start Column**, **Start Row**, **End Column**, and **End Row** to define the lookup area.
+
+### Step 7
+
+Decide the **Array Form** setting:
+- Set to `true` to perform an array-based lookup.
+- Set to `false` for a scalar lookup, and provide details for result source range.
+
+### Step 8
+
+For scalar lookups, enter the ranges for the results source by specifying **Start Column of Results Source**, **Start Row of Results Source**, **End Column of Results Source**, and **End Row of Results Source**.
+
+</Steps>
+
+<Callout type="info" title="Pro Tip">
+Use **Named Cells** for quicker setup if your Excel workbook already includes named ranges.
+</Callout>
+
+## Common Mistakes & Troubleshooting
+
+| Problem                                              | Solution                                                                 |
+| ---------------------------------------------------- | ------------------------------------------------------------------------ |
+| **Lookup Value not found**                           | Ensure the value exists in the defined range and matches the case.        |
+| **Ranges Format is incorrect**                       | Verify that you have selected the correct range format setting—either `Named Cells` or `Specific Ranges`. |
+| **Fields for Specific Range not appearing/accessible** | Make sure the `Ranges Format` is set to `Specific Ranges` if those fields are needed.                |
+| **Unexpected Output**                                | Confirm that the defined result range matches the lookup range format.     |
+
+## Real-World Use Cases
+
+- **Inventory Management**: Quickly find the stock quantity by product ID.
+- **Student Records**: Retrieve student grades by their ID for reporting.
+- **Pricing Control**: Look up and display current price settings based on SKU or product identifier.

@@ -1,0 +1,92 @@
+import { Callout, Steps } from "nextra/components";
+
+# Write to Excel Worksheet
+
+The **Write to Excel Worksheet** node allows you to write a value directly into a specific cell or range of cells within an Excel worksheet. This is particularly useful for automating data entry, updating spreadsheets with dynamic content, or populating templates with data.
+
+Use this node when you need to:
+
+- Enter data into a predefined location in an Excel sheet.
+- Update the active cell or a named cell range with new values.
+- Automate repeated data entry tasks within Excel worksheets.
+
+## Configuration Options
+
+| Field Name                | Description                                                                 | Input Type | Required? | Default Value        |
+| ------------------------- | --------------------------------------------------------------------------- | ---------- | --------- | -------------------- |
+| **Worksheet Instance**    | The Excel Worksheet where the value will be written.                         | Text       | Yes       | _(empty)_            |
+| **Value To Write**        | The value (text or data) to write into the specified cell or range.          | Text       | Yes       | _(empty)_            |
+| **Write Mode**            | Specify the method to determine the target cell(s) for writing.              | Select     | Yes       | OnSpecifiedCell      |
+| **Column**                | The column letter for data entry. Only used when Write Mode is "On Specified Cell". | Text       | No        | _(empty)_            |
+| **Column Index**          | The index of the column. Overrides Column letter if greater than 0. Only for "On Specified Cell". | Text       | No        | _(empty)_            |
+| **Row**                   | The row number for data entry. Only for "On Specified Cell".                | Text       | No        | _(empty)_            |
+| **Name**                  | The name of the named range to write to. Only used when Write Mode is "On Named Cells". | Text       | No        | _(empty)_            |
+| **Populate Entire Range** | If true, populates the entire named range with the same value.               | Switch     | No        | _(empty)_            |
+
+## Expected Output Format
+
+This node does not produce an output value into other nodes but performs an action on an Excel worksheet. The end result is the updated Excel file with the specified data written into the designated cell(s).
+
+## Step-by-Step Guide
+
+<Steps>
+### Step 1
+
+Add **Write to Excel Worksheet** node into your workflow.
+
+### Step 2
+
+Enter the filename or the file path of your Excel Worksheet in the **Worksheet Instance** field.
+
+### Step 3
+
+Enter the **Value To Write** – the data you want to input into the Excel worksheet.
+
+### Step 4
+
+In the **Write Mode** dropdown, choose how you want to select the cell(s) where data will be written:
+
+- **On Specified Cell**: Input the specific Column, Column Index, and Row where the data should be entered.
+- **On Currently Active Cell**: Directly writes to the cell currently selected in the Excel Worksheet.
+- **On Named Cells**: Allows entry into predefined named ranges. Enter the **Name** of the range.
+
+### Step 5
+
+If using **On Specified Cell**, provide the necessary details for **Column, Column Index,** and **Row**.
+
+### Step 6
+
+If using **On Named Cells** and desire to fill the entire range with the same data, toggle **Populate Entire Range**.
+
+### Step 7
+
+Review all entries and ensure all required fields have been populated correctly. Execute the flow to write data into the Excel worksheet.
+
+</Steps>
+
+<Callout type="warning" title="Important">
+  Ensure the Excel Worksheet is not open during the process, as it may lead to access conflicts or errors.
+</Callout>
+
+## Input/Output Examples
+
+| Write Mode           | Worksheet Instance | Value To Write | Column | Row | Name      | Output Behavior                                         |
+| -------------------- | ------------------ | -------------- | ------ | --- | ----------| --------------------------------------------------------|
+| On Specified Cell    | MySheet.xlsx       | Hello World    | A      | 1   | _(n/a)_   | Writes "Hello World" to cell A1 in MySheet.xlsx          |
+| On Currently Active Cell | MySheet.xlsx   | 12345          | _(n/a)_| _(n/a)_ | _(n/a)_ | Updates the active cell in MySheet.xlsx with "12345"    |
+| On Named Cells       | MySheet.xlsx       | 100            | _(n/a)_| _(n/a)_ | TotalCost | Fills the named range "TotalCost" with "100"            |
+
+## Common Mistakes & Troubleshooting
+
+| Problem                                               | Solution                                                                |
+| ----------------------------------------------------- | ----------------------------------------------------------------------- |
+| **Worksheet not found**                               | Ensure the worksheet instance path is correct and accessible.           |
+| **Write Mode selections not respected**               | Double-check the chosen Write Mode and fill corresponding settings.     |
+| **Excel file is locked or open**                      | Close the Excel file if open; avoid editing during node operations.     |
+| **Incomplete data entry**                             | Verify all required fields are filled, especially in "On Specified Cell".|
+
+## Real-World Use Cases
+
+- **Monthly Report Updates**: Automatically fill specific cells in a report template with new data.
+- **Sales Data Entry**: Input sales figures into a shared workbook from a data source.
+- **Budget Planning**: Distribute a default value across a financial template using named ranges.

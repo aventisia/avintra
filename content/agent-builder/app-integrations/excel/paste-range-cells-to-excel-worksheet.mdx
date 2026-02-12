@@ -1,0 +1,93 @@
+import { Callout, Steps } from "nextra/components";
+
+# Paste Range Cells to Excel Worksheet
+
+The **Paste Range Cells to Excel Worksheet** node helps you transfer a selected range of cells from one Excel worksheet to another, facilitating data organization and compilation. This is particularly helpful when consolidating reports or creating summary documents that require data from multiple sources.
+
+You can specify exactly where to paste the copied data: to a named range, starting from the currently active cell, or a specific cell by defining its column and row.
+
+## Configuration Options
+
+| Field Name               | Description                                                                                                                                  | Input Type | Required? | Default Value         |
+| ------------------------ | -------------------------------------------------------------------------------------------------------------------------------------------- | ---------- | --------- | --------------------- |
+| **Source Worksheet**     | The source Excel worksheet containing the range to copy.                                                                                     | Text       | Yes       | _(empty)_             |
+| **Target Worksheet**     | The target Excel worksheet where the data will be pasted.                                                                                    | Text       | Yes       | _(empty)_             |
+| **Source Range Address** | The range address (e.g., 'A1:B10') in the source worksheet to be copied.                                                                     | Text       | Yes       | _(empty)_             |
+| **Paste Mode**           | Specifies how to determine the paste location. Options include pasting into a named range, on the currently active cell, or on specified cells. | Select     | Yes       | OnSpecifiedCell       |
+| **Name**                 | The name of the named range to paste into. This is required when the 'Paste Mode' is set to 'On Named Cells'.                                 | Text       | No        | _(empty)_ (depends on **Paste Mode**)             |
+| **Column**               | The column letter (e.g., 'A', 'B') where the paste should begin. Required when 'Paste Mode' is 'On Specified Cell'.                           | Text       | No        | _(empty)_ (depends on **Paste Mode**)             |
+| **Row**                  | The row number where the paste should begin. Required when 'Paste Mode' is 'On Specified Cell'.                                               | Text       | No        | _(empty)_ (depends on **Paste Mode**)             |
+
+## Expected Output Format
+
+This node does not output data itself but performs an action on the specified Excel worksheets. After execution, the cells from the source range will be pasted into the designated area of the target worksheet. The handling of data format and type will depend on your worksheet setup.
+
+## Step-by-Step Guide
+
+<Steps>
+
+### Step 1
+
+Add the **Paste Range Cells to Excel Worksheet** node into your automation flow.
+
+### Step 2
+
+In the **Source Worksheet** field, enter the instance name or reference of the worksheet containing the cells you want to copy.
+
+### Step 3
+
+In the **Target Worksheet** field, enter the instance name or reference of the worksheet where you want to paste the cells.
+
+### Step 4
+
+Specify the **Source Range Address** by entering the Excel range (like 'A1:B10') that you want to copy.
+
+### Step 5
+
+Select the **Paste Mode** from the dropdown to decide where the data should be pasted:
+
+- **On Named Cells**: Pastes data into a predefined named range.
+- **On Currently Active Cell**: Starts pasting from the current cell.
+- **On Specified Cell**: Choose a specific column and row to start pasting.
+
+### Step 6
+
+If **Paste Mode** is **On Named Cells**, enter the name of the range in **Name**. If it's **On Specified Cell**, enter the **Column** and **Row** where the paste should start.
+
+### Step 7
+
+Execute the node to transfer your specified range of cells to the target worksheet.
+
+</Steps>
+
+<Callout type="warning" title="Important Note">
+Ensure that both the source and target worksheets are correctly referenced and accessible within your automation flow to avoid errors.
+</Callout>
+
+## Input/Output Examples
+
+Suppose you want to copy data from the range 'B2:C6' in 'Worksheet1' and paste it from cell 'D1' of 'Worksheet2'. 
+
+- **Source Worksheet**: Worksheet1
+- **Target Worksheet**: Worksheet2
+- **Source Range Address**: B2:C6
+- **Paste Mode**: On Specified Cell
+- **Column**: D
+- **Row**: 1
+
+Result: Data from 'B2:C6' in 'Worksheet1' is pasted beginning at 'D1' in 'Worksheet2'.
+
+## Common Mistakes & Troubleshooting
+
+| Problem                                                                                                                                               | Solution                                                                                                                                                  |
+| ----------------------------------------------------------------------------------------------------------------------------------------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| **Error locating source or target worksheet**                                                                                                         | Double-check the worksheet references are correct and available.                                                                                          |
+| **Paste location incorrect when using named ranges**                                                                                                  | Ensure the named range exists in your target worksheet.                                                                                                   |
+| **Data does not appear after node execution**                                                                                                         | Verify that you've entered the correct source range and paste locations, and check for any automation flow errors.                                         |
+| **Required fields are left empty**                                                                                                                    | Fill in all mandatory fields highlighted during node setup.                                                                                               |
+
+## Real-World Use Cases
+
+- **Data Consolidation**: Aggregate sales data from multiple Excel files into a central report.
+- **Summary Reports**: Extract and compile summaries from detailed worksheets for executive presentations.
+- **Data Comparison**: Create side-by-side analysis by copying data from different sheets into one worksheet.

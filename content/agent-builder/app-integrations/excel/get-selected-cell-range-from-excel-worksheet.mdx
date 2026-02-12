@@ -1,0 +1,71 @@
+import { Callout, Steps } from "nextra/components";
+
+# Get Selected Cell Range from Excel Worksheet
+
+The **Get Selected Cell Range from Excel Worksheet** node is designed to extract the range of cells currently selected in a specified Excel worksheet. This node is useful when you need to process or analyze a specific segment of your worksheet, such as extracting data, applying functions, or outlining ranges for reports.
+
+When to use this node:
+
+- You have a live Excel worksheet open where you manually select a cell range to process.
+- You want to automate data extraction or manipulation by identifying cell coordinates.
+
+## Configuration Options
+
+| Field Name           | Description                                                                           | Input Type | Required? | Default Value  |
+| ---------------------| ------------------------------------------------------------------------------------- | ---------- | --------- | -------------- |
+| **Worksheet Instance** | The target Excel worksheet instance to get the selected cell range from.              | Text       | Yes       | _(empty)_      |
+
+## Expected Output Format
+
+This node outputs four integer values representing the indices of the selected cell range:
+
+- **FirstColumnIndex**: The column index (1-based) of the first cell in the selected range.
+- **FirstRowIndex**: The row index (1-based) of the first cell in the selected range.
+- **LastColumnIndex**: The column index (1-based) of the last cell in the selected range.
+- **LastRowIndex**: The row index (1-based) of the last cell in the selected range.
+
+## Step-by-Step Guide
+
+<Steps>
+### Step 1
+
+Add the **Get Selected Cell Range from Excel Worksheet** node into your flow.
+
+### Step 2
+
+In the **Worksheet Instance** field, specify the Excel worksheet from which you wish to retrieve the selected cell range.
+
+### Step 3
+
+Activate this node to fetch the current selection range from the worksheet.
+
+### Step 4
+
+The output will provide you with the indices of the selected cells, available as **FirstColumnIndex**, **FirstRowIndex**, **LastColumnIndex**, and **LastRowIndex**.
+
+</Steps>
+
+<Callout type="info" title="Note">
+  Ensure Excel is open and the correct worksheet is active when using this node to capture the cell range selection.
+</Callout>
+
+## Input/Output Examples
+
+| Worksheet Instance | Selected Range | FirstColumnIndex | FirstRowIndex | LastColumnIndex | LastRowIndex |
+| ------------------ | -------------- | ---------------- | ------------- | --------------- | ------------ |
+| MySheet            | A1:C3          | 1                | 1             | 3               | 3            |
+| DataSheet          | B2:E5          | 2                | 2             | 5               | 5            |
+
+## Common Mistakes & Troubleshooting
+
+| Problem                                    | Solution                                                                                                                 |
+| ------------------------------------------ | ------------------------------------------------------------------------------------------------------------------------ |
+| **Worksheet not specified**                | Ensure you provide a valid worksheet instance name that is open and accessible.                                           |
+| **No selection range retrieved**           | Verify that the Excel application is running and the intended worksheet is active with a selected range visible.          |
+| **Output values seem incorrect**           | Confirm the worksheet and the selected range before activating the node to ensure you fetch the desired cell coordinates. |
+
+## Real-World Use Cases
+
+- **Data Extraction**: Automatically retrieve and process data from a specific section of a large worksheet.
+- **Conditional Formatting**: Apply specific formatting rules to a dynamic section of cells based on user selection.
+- **Report Generation**: Use selected cell ranges to compile data-driven reports focusing on relevant entries.

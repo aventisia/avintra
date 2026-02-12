@@ -1,0 +1,79 @@
+import { Callout, Steps } from "nextra/components";
+
+# Resize Columns or Rows in Excel Worksheet
+
+The **Resize Columns or Rows in Excel Worksheet** node allows you to adjust the width of columns or the height of rows within a specified Excel worksheet. This can be useful when you need to standardize column widths or row heights to accommodate data neatly, improve spreadsheet appearance, or ensure consistent layout across your workbook.
+
+Common scenarios for using this node include:
+
+- Adjusting column width to fit text or numerical data properly.
+- Ensuring rows have enough space for content, such as images or large text.
+- Standardizing formatting before sharing or printing the worksheet.
+
+## Configuration Options
+
+| Field Name          | Description                                                                                 | Input Type | Required? | Default Value |
+| ------------------- | ------------------------------------------------------------------------------------------- | ---------- | --------- | ------------- |
+| **Worksheet Instance**   | The Excel Worksheet object where resizing should occur.                                   | Text       | Yes       | _(empty)_     |
+| **Resize Target**   | Specifies whether columns or rows should be resized.                                        | Select     | Yes       | Columns       |
+| **Selection Range** | Determines how the columns or rows are selected for resizing: all, a specific range, or a single. | Select     | Yes       | AllAvailable  |
+| **Start Column**    | Starting column of the range to resize. _Required if "Selection Range" is "Range"._         | Text       | No        | _(empty)_     |
+| **End Column**      | Ending column of the range to resize. _Required if "Selection Range" is "Range"._           | Text       | No        | _(empty)_     |
+| **Column**          | The specific column to resize. _Required if "Selection Range" is "Single"._                 | Text       | No        | _(empty)_     |
+| **Resize Type**     | Choose between automatic size adjustment or setting a custom size.                          | Select     | Yes       | CustomSize    |
+| **Width**           | The new width for columns or height for rows. _Required if "Resize Type" is "Custom Size"._ | Text       | No        | _(empty)_     |
+
+## Expected Output Format
+
+The node does not generate an output value directly. Instead, it modifies the formatting of the specified Excel worksheet, which can be saved and used within your broader automation workflows.
+
+## Step-by-Step Guide
+
+<Steps>
+### Step 1
+
+Add **Resize Columns or Rows in Excel Worksheet** node to your flow.
+
+### Step 2
+
+In the **Worksheet Instance** field, input the Excel worksheet you are working with.
+
+### Step 3
+
+Select whether you want to resize **Columns** or **Rows** in the **Resize Target** dropdown.
+
+### Step 4
+
+Choose your **Selection Range** option:
+
+- **All available**: Resize all columns or rows.
+- **Range**: Resize a specific range, entering **Start Column** and **End Column** as needed.
+- **Single**: Resize one column, specifying in the **Column** field.
+
+### Step 5
+
+Select the **Resize Type**:
+
+- **Autofit**: Sizes are adjusted automatically based on content.
+- **Custom Size**: Enter specific dimensions in the **Width** field.
+
+</Steps>
+
+<Callout type="info" title="Tip">
+  If you choose "Autofit" in the **Resize Type**, you don't need to enter any measurements.
+</Callout>
+
+## Common Mistakes & Troubleshooting
+
+| Problem                                        | Solution                                                                                                     |
+| ---------------------------------------------- | ------------------------------------------------------------------------------------------------------------ |
+| **Missing Worksheet Instance**                 | Ensure the Excel Worksheet object is provided in the **Worksheet Instance** field.                          |
+| **Range Fields Not Appearing**                 | Check that you have selected **"Range"** in **Selection Range** to unlock **Start Column** and **End Column** fields. |
+| **Invalid Column/Row Specification**           | Verify that columns are correctly labeled with letters (e.g., "A", "B") and rows with numbers if applicable. |
+| **Width Not Applied Correctly**                | Ensure you've specified "Custom Size" and entered a valid number for **Width** when applicable.              |
+
+## Real-World Use Cases
+
+- **Data Presentation**: Make sure all columns are visually consistent before printing a price list or menu.
+- **Large Content Management**: Automatically adjust row heights when importing large text or media into cells.
+- **Template Preparation**: For templates that require exact column widths or row heights across multiple pages.

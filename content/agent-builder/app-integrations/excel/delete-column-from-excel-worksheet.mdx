@@ -1,0 +1,67 @@
+import { Callout, Steps } from "nextra/components";
+
+# Delete Column from Excel Worksheet
+
+The **Delete Column from Excel Worksheet** node allows you to remove a specific column from an Excel worksheet. This is useful when you need to clean up data by deleting unnecessary columns that are not needed for your analysis or reports.
+
+For example:
+
+- Removing a column of obsolete data that clutters the worksheet.
+- Deleting columns to ensure the worksheet remains within a manageable size.
+- Excluding confidential or sensitive information by deleting respective columns.
+
+## Configuration Options
+
+| Field Name            | Description                                                                         | Input Type | Required? | Default Value |
+| --------------------- | ----------------------------------------------------------------------------------- | ---------- | --------- | ------------- |
+| **Worksheet Instance**| The Excel Worksheet object from which the column will be deleted.                   | Text       | Yes       | _(empty)_     |
+| **Column Index**      | The index (1-based) or letter (e.g., 'A', 'B') of the column to delete.             | Text       | Yes       | _(empty)_     |
+
+## Expected Output Format
+
+The node does not directly provide a value output, but modifies the provided Excel worksheet by deleting the specified column.
+
+## Step-by-Step Guide
+
+<Steps>
+### Step 1
+
+Add the **Delete Column from Excel Worksheet** node into your flow.
+
+### Step 2
+
+In the **Worksheet Instance** field, input the name or reference to the Excel Worksheet you want to modify.
+
+### Step 3
+
+In the **Column Index** field, enter the column index (e.g., '3') or letter (e.g., 'C') of the column you wish to delete.
+
+### Step 4
+
+Verify that the column has been removed from the worksheet through subsequent actions or by inspecting the worksheet object within the platform.
+</Steps>
+
+<Callout type="warning" title="Warning">
+  Double-check the column index or letter specified; once a column is deleted, it cannot be recovered through this action.
+</Callout>
+
+## Input/Output Examples
+
+| Worksheet Instance | Column Index | Modification Action  |
+| ------------------ | ------------ | -------------------  |
+| SalesData2023      | C            | Deletes the 3rd column (Column 'C') |
+| InventorySheet     | 2            | Deletes the 2nd column (Column 'B') |
+
+## Common Mistakes & Troubleshooting
+
+| Problem                                             | Solution                                                                                                                        |
+| --------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------- |
+| **Column not deleted**                              | Ensure the correct worksheet instance is specified and has the column index that matches the provided input.                     |
+| **Incorrect Column Index**                          | Remember that column indices can be 1-based numbers or letters. Double-check for typos or miscounts.                             |
+| **Worksheet Instance not found**                    | Verify that the correct name or variable reference of the worksheet is used, and that it is active and accessible in your flow.  |
+
+## Real-World Use Cases
+
+- **Data Analysis**: Clean datasets by removing unneeded columns to focus on relevant data for analysis.
+- **Report Preparation**: Remove confidential data columns to share sanitized reports with stakeholders.
+- **Data Management**: Maintain an organized and uncluttered worksheet by routinely removing obsolete data columns.

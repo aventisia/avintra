@@ -1,0 +1,62 @@
+import { Callout, Steps } from "nextra/components";
+
+# Get First Free Column or Row from Excel Worksheet
+
+The **Get First Free Column or Row from Excel Worksheet** node enables you to identify the first available empty column and/or row in an Excel worksheet. This functionality is particularly helpful when you want to add new data to an existing Excel file without manually searching for empty cells.
+
+## Configuration Options
+
+| Field Name           | Description                                                          | Input Type | Required? | Default Value |
+| -------------------- | -------------------------------------------------------------------- | ---------- | --------- | ------------- |
+| **Worksheet Instance** | The target Excel worksheet instance to analyze.                      | Text       | Yes       | _(empty)_     |
+| **First Free Column** | Returns the first free column as a letter (e.g., 'A', 'B', 'C').     | Output     | No        | FirstFreeColumn |
+| **First Free Row**    | Returns the first free row as a number.                              | Output     | No        | FirstFreeRow |
+
+## Expected Output Format
+
+The output from this node will be:
+
+- **First Free Column**: A single letter representing the first available column (e.g., `D`).
+- **First Free Row**: A number indicating the first empty row (e.g., `5`).
+
+## Step-by-Step Guide
+
+<Steps>
+### Step 1
+
+Add the **Get First Free Column or Row from Excel Worksheet** node into your flow.
+
+### Step 2
+
+In the **Worksheet Instance** field, enter the worksheet instance you wish to analyze. This should be a reference to your target Excel worksheet.
+
+### Step 3
+
+Execute the node to determine the first free column and/or row. The outcomes, **First Free Column** and **First Free Row**, will be accessible for use in subsequent nodes.
+
+</Steps>
+
+<Callout type="info" title="Tip">
+  Ensure that the Worksheet Instance is correctly referenced; otherwise, the node may fail to identify the first free spaces accurately.
+</Callout>
+
+## Input/Output Examples
+
+- **Input**: An Excel worksheet with columns A to C filled and rows 1 to 4 populated.
+- **Output**: 
+
+  - First Free Column: `D`
+  - First Free Row: `5`
+
+## Common Mistakes & Troubleshooting
+
+| Problem                                    | Solution                                                                                         |
+| ------------------------------------------ | ----------------------------------------------------------------------------------------------- |
+| **Worksheet Instance is invalid**          | Verify that you have entered a valid Excel worksheet instance. Ensure it is loaded and open.     |
+| **Unexpected results**                     | Double-check the data in your worksheet to ensure there are no hidden or unexpected filled cells.|
+
+## Real-World Use Cases
+
+- **Data Entry Applications**: Quickly find the next available row or column for adding new entries without disrupting existing data.
+- **Automated Reporting**: Use the node to append new report data to an existing file, automatically locating the appropriate starting point.
+- **Dynamic Inventory Management**: Maintain continuous additions to inventory logs by identifying free spaces in your Excel records dynamically.

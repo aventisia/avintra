@@ -1,0 +1,60 @@
+import { Callout, Steps } from "nextra/components";
+
+# Insert Column to Excel Worksheet
+
+The **Insert Column to Excel Worksheet** node allows you to add a new column to an existing Excel worksheet. This column will be inserted to the left of a specified column. You can choose the column either by its 1-based index number or by using column letters, like 'A' for the first column or 'B' for the second. This is particularly useful for dynamically modifying spreadsheets, such as adding space for additional data entries or calculations.
+
+## Configuration Options
+
+| Field Name           | Description                                                                                          | Input Type | Required? | Default Value |
+| -------------------- | ---------------------------------------------------------------------------------------------------- | ---------- | --------- | ------------- |
+| **Worksheet Instance** | The Excel Worksheet object where the new column will be inserted.                                   | Text       | Yes       | _(empty)_     |
+| **Column Reference**   | The 1-based index or letter (e.g., 'A', 'B') of the column where the new column should be inserted. | Text       | Yes       | _(empty)_     |
+
+## Expected Output Format
+
+This node modifies the structure of an Excel worksheet by adding a new column. It does not produce a standalone data output.
+
+## Step-by-Step Guide
+
+<Steps>
+### Step 1
+
+Add the **Insert Column to Excel Worksheet** node into your flow.
+
+### Step 2
+
+In the **Worksheet Instance** field, specify the Excel worksheet you are working with.
+
+### Step 3
+
+In the **Column Reference** field, provide the column where the new column will be inserted to the left. Use either the column's number (e.g., 2 for column B) or its letter (e.g., 'B').
+
+### Step 4
+
+Ensure that the Excel worksheet is loaded and accessible before running the flow.
+
+### Step 5
+
+Execute the flow to apply the change. The worksheet will now have a new column inserted at the specified location.
+
+</Steps>
+
+<Callout type="info" title="Note">
+  Double-check that the Excel file is not locked by another application while inserting the column.
+</Callout>
+
+## Common Mistakes & Troubleshooting
+
+| Problem                                 | Solution                                                                                  |
+| --------------------------------------- | ----------------------------------------------------------------------------------------- |
+| **Excel worksheet not accessible**      | Ensure the file is not open in another application, which could prevent modifications.    |
+| **Invalid Column Reference error**      | Verify that the column reference provided is correct and exists within the worksheet.     |
+| **Inserted column not appearing**       | Make sure the worksheet instance is set correctly and the Excel file is being saved.      |
+
+## Real-World Use Cases
+
+- **Automated Report Generation**: Add columns for additional data or metrics that are calculated or imported dynamically.
+- **Template Adjustment**: Modify existing templates by inserting columns for new fields without manually editing each template.
+- **Data Preparation**: Create space for intermediate calculation columns in large data sets.
+- **Collaborative Work**: Quickly adjust and prepare shared workbooks for multiple contributors by ensuring space for new data entries.
