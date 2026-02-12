@@ -51,7 +51,7 @@ export const UsageDetails = ({ planUsage, className }: UsageDetailsProps) => {
               </p>
 
               <p className="font-light">
-                {spaces.used} of {spaces.limit}
+                {`${spaces.used} / ${spaces.limit}`}
               </p>
             </div>
 
@@ -70,7 +70,7 @@ export const UsageDetails = ({ planUsage, className }: UsageDetailsProps) => {
             <div className="flex items-center justify-between text-sm">
               <p>Storage</p>
               <p className="font-light">
-                {storage.used} of {storage.limit} {storage.unit}
+                {`${storage.used} ${storage.unit} / ${storage.limit} ${storage.unit}`}
               </p>
             </div>
 
