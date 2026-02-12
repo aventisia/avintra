@@ -1,0 +1,72 @@
+import { Callout, Steps } from "nextra/components";
+
+# Wait For File
+
+The **Wait For File** node suspends the processing of your workflow until a specific file is either created or deleted. This is particularly useful in scenarios where subsequent tasks depend on the presence or absence of a file. For example, you might need to wait for a report to be generated and saved before sending it via email.
+
+- **Use Case Examples:**
+  - Pause operations until a daily report file is prepared and ready.
+  - Stop processes until a temporary file is deleted after use.
+
+## Configuration Options
+
+| Field Name                | Description                                                                 | Input Type | Required? | Default Value |
+| ------------------------- | --------------------------------------------------------------------------- | ---------- | --------- | ------------- |
+| **File Path**             | Enter the complete path of the file you want to monitor (to wait for).      | Text       | Yes       | _(empty)_     |
+| **Wait for File to be**   | Choose whether to wait for the file's creation or deletion.                 | Select     | No        | Created      |
+| **Fail with Timeout Error** | Decide if the workflow should fail if the file doesn't appear/disappear within a set time. | Switch     | No        | False        |
+| **Duration (seconds)**    | Specify how long (in seconds) to wait for the file's presence/absence before timing out. | Text       | No        | 5 seconds    |
+
+## Expected Output Format
+
+This node does not produce a direct output value. Instead, it controls the flow of the process by pausing until the specified file condition is met.
+
+## Step-by-Step Guide
+
+<Steps>
+### Step 1
+
+Add the **Wait For File** node into your flow.
+
+### Step 2
+
+In the **File Path** field, enter the full path of the file you wish to monitor.
+
+### Step 3
+
+Select **Wait for File to be** to either "Created" or "Deleted", depending on your needs:
+
+- **Created**: Waits until the file is created in the specified location.
+- **Deleted**: Waits until the file is removed from the specified location.
+
+### Step 4
+
+(Optional) Enable **Fail with Timeout Error** if you want the process to fail altogether if the file does not meet the condition within the set time.
+
+### Step 5
+
+(Optional) Set the **Duration (seconds)** field to specify how long the node should wait before timing out. This is only available if **Fail with Timeout Error** is enabled.
+
+### Step 6
+
+Proceed with your workflow. The node will halt the flow until the file condition is satisfied.
+
+</Steps>
+
+<Callout type="info" title="Note">
+  Enabling **Fail with Timeout Error** without specifying a longer duration may lead to premature timeouts in cases where file operations take longer than expected.
+</Callout>
+
+## Common Mistakes & Troubleshooting
+
+| Problem                                                      | Solution                                                                                                                                                         |
+| ------------------------------------------------------------ | -------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| **Invalid File Path entered**                                | Double-check that the full file path is correct and accessible from the system running the workflow.                                                            |
+| **Timeout occurs when expecting file creation/deletion**     | Ensure that **Fail with Timeout Error** is enabled and the **Duration** is sufficiently long to accommodate any expected delays in file creation or deletion.   |
+| **The node does not proceed even after file condition met** | Verify that the file's path and type match the conditions set in the node configuration (e.g., waiting for the wrong file name or at an incorrect file location). |
+
+## Real-World Use Cases
+
+- **Automated Backups**: Wait for a backup file to be fully saved before triggering subsequent data transfer processes.
+- **Cleaning Temporary Files**: Suspend further processing until temporary files used by the previous steps are deleted.
+- **Batch Processing**: Automatically start the processing of batch files only after an input file is uploaded/created in the system.

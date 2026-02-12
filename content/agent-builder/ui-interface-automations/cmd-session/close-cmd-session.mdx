@@ -1,0 +1,50 @@
+import { Callout, Steps } from "nextra/components";
+
+# Close CMD Session
+
+The **Close CMD Session** node is designed to terminate an open command prompt (CMD) session that was previously initiated. Closing CMD sessions is crucial to ensure that system resources are freed and no unintended processes are left running, which can affect system performance or cause issues with further automation tasks.
+
+## Configuration Options
+
+| Field Name     | Description                                                             | Input Type | Required? | Default Value |
+| -------------- | ----------------------------------------------------------------------- | ---------- | --------- | ------------- |
+| **CMD Session** | The reference to the process representing the open CMD session to close. | Text       | Yes       | _(empty)_     |
+
+## Expected Output Format
+
+This node does not have an output value as its primary function is to close a process. However, successful execution means the specified CMD session is terminated, and resources are freed.
+
+## Step-by-Step Guide
+
+<Steps>
+### Step 1
+
+Add the **Close CMD Session** node to your workflow.
+
+### Step 2
+
+In the **CMD Session** field, enter the identifier or name of the CMD session process you wish to close.
+
+### Step 3
+
+Execute the workflow to close the specified CMD session. Ensure that the correct session state is managed in your flow.
+
+</Steps>
+
+<Callout type="info" title="Note">
+  Make sure the CMD session you are attempting to close is no longer needed before using this node, as terminating an active or necessary session may interrupt other automated processes.
+</Callout>
+
+## Common Mistakes & Troubleshooting
+
+| Problem                                    | Solution                                                                                                                                                 |
+| ------------------------------------------ | -------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| **CMD Session not found or invalid**       | Verify that the CMD session identifier is correct and that the session is active and open before attempting to close it.                                 |
+| **Error closing CMD session**              | Ensure that you have the proper permissions to terminate the session, as administrative rights may be required to close certain command prompt sessions. |
+| **No visible effect after execution**      | Confirm that the CMD session specified was indeed open and that the correct session name was entered.                                                    |
+
+## Real-World Use Cases
+
+- **Resource Management**: Free up system resources by ensuring CMD sessions are closed after task completion.
+- **Security**: Terminate unused CMD sessions to prevent unauthorized access or unintended command execution.
+- **Automation Cleanup**: End CMD sessions as part of a larger automated workflow to maintain a clean and predictable environment.

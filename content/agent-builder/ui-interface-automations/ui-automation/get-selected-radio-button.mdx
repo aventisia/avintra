@@ -1,0 +1,66 @@
+import { Callout, Steps } from "nextra/components";
+
+# Get Selected Radio Button
+
+The **Get Selected Radio Button** node allows you to retrieve the name of the selected radio button from a group on a user interface. This functionality is useful when you need to process or respond to user choices made through radio buttons, often used in forms or settings selection. 
+
+For example, if you're automating a form submission process, you can use this node to determine which option a user selected, enabling subsequent workflow actions to handle the choice appropriately.
+
+## Configuration Options
+
+| Field Name                   | Description                                                                                   | Input Type | Required? | Default Value |
+| ---------------------------- | --------------------------------------------------------------------------------------------- | ---------- | --------- | ------------- |
+| **UI Element**               | The specific UI component (group of radio buttons) you want to read the selection from.       | Text       | Yes       | _(empty)_     |
+| **Max Wait Time (seconds)**  | The maximum duration to wait for the UI element to be available, in seconds.                  | Text       | No        | 5             |
+
+## Expected Output Format
+
+The output of this node is a **string** representing the name of the selected radio button. If no radio button is selected, the output will be an empty string.
+
+- Example: If "Option A" is the selected radio button, the output will be `"Option A"`.
+
+## Step-by-Step Guide
+
+<Steps>
+### Step 1
+
+Add the **Get Selected Radio Button** node to your workflow.
+
+### Step 2
+
+In the **UI Element** field, specify the radio button group you want to check for a selected button. This should be the identifier or path to the UI element.
+
+### Step 3
+
+Choose a value for **Max Wait Time (seconds)** if necessary. Default is 5 seconds. This determines how long the system will attempt to locate the UI element.
+
+### Step 4
+
+Once configured, the node will output the name of the selected radio button, available as **`SelectedRadioButton`** for use in subsequent nodes.
+
+</Steps>
+
+<Callout type="info" title="Tip">
+  Ensure that the UI Element field is correctly specified to avoid issues with locating the radio button group.
+</Callout>
+
+## Input/Output Examples
+
+| UI Element          | Max Wait Time (seconds) | Selected Radio Button Name | Output Value | Output Type |
+| ------------------- | ----------------------- | -------------------------- | ------------ | ----------- |
+| FormRadioGroup      | 5                       | Option A                   | Option A     | String      |
+| UserPreferences     | 10                      | Option B                   | Option B     | String      |
+| SettingsRadioGroup  | 3                       | _(none)_                   | _(empty)_    | String      |
+
+## Common Mistakes & Troubleshooting
+
+| Problem                                                    | Solution                                                                                                                                               |
+| ---------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| **UI Element not found**                                   | Check that the UI Element path is correctly specified and that the element is active on the screen within the max wait time configured.                  |
+| **No radio button selected but expected**                  | Ensure that the UI is correctly updating on screen, as the process may be checking too early. Increasing the wait time or reviewing the flow timing may help. |
+
+## Real-World Use Cases
+
+- **User Surveys**: Determine which opinion or feedback option a survey respondent has selected.
+- **Preference Settings**: Retrieve user's preferred option in settings before proceeding to adjust configurations or perform actions.
+- **Form Processing**: Capture and process the selected option from a group of predefined choices within a form.

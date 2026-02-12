@@ -1,0 +1,73 @@
+import { Callout, Steps } from "nextra/components";
+
+# Remove XML Element Attribute
+
+The **Remove XML Element Attribute** node is used to delete a specific attribute from an XML element within your XML data. This is helpful when you need to clean up XML content by removing unnecessary attributes so that you can work with simpler or cleaner XML structures for further processing or integration.
+
+For example:
+
+- Tidying up XML data by removing redundant attributes.
+- Modifying XML content to meet schema requirements.
+- Preparing XML data for transformation or export.
+
+## Configuration Options
+
+| Field Name             | Description                                                                                | Input Type | Required? | Default Value   |
+| ---------------------- | ------------------------------------------------------------------------------------------ | ---------- | --------- | --------------- |
+| **XML Content**        | The XML data containing the element from which you want to remove an attribute.            | Text       | Yes       | _(empty)_       |
+| **XPath Expression**   | The XPath to locate the element in the XML document.                                       | Text       | Yes       | _(empty)_       |
+| **Attribute Name**     | The specific name of the attribute you wish to be removed from the XML element.            | Text       | Yes       | _(empty)_       |
+
+## Expected Output Format
+
+The output of this node is the **Updated XML Content**, which continues to include all original XML elements and attributes except for the specific attribute you have chosen to remove. The format remains an XML string.
+
+## Step-by-Step Guide
+
+<Steps>
+### Step 1
+
+Add **Remove XML Element Attribute** node into your workflow.
+
+### Step 2
+
+In the **XML Content** field, input the XML data as a string that you want to modify.
+
+### Step 3
+
+Provide the **XPath Expression** to precisely locate the element which contains the attribute you wish to remove.
+
+### Step 4
+
+Specify the **Attribute Name** of the attribute you plan to remove from the selected XML element.
+
+### Step 5
+
+The node will output the **Updated XML Content**, now without the specified attribute, ready to be used in subsequent nodes.
+
+</Steps>
+
+<Callout type="info" title="Tip">
+  Ensure that the XPath expression is correctly formed and accurate, as an incorrect expression will prevent successful location of your desired element.
+</Callout>
+
+## Input/Output Examples
+
+| XML Content                      | XPath Expression | Attribute Name | Updated XML Content                           |
+| -------------------------------- | ---------------- | -------------- | --------------------------------------------- |
+| `<item id="123" name="Book"/>`   | `//item`         | `name`         | `<item id="123"/>`                            |
+| `<user active="true" role="admin"/>` | `//user`         | `active`       | `<user role="admin"/>`                        |
+
+## Common Mistakes & Troubleshooting
+
+| Problem                                                 | Solution                                                                                         |
+| ------------------------------------------------------- | ------------------------------------------------------------------------------------------------ |
+| **Incorrect XPath Expression**                           | Verify the XPath expression to ensure it correctly identifies the XML element you're targeting.   |
+| **Attribute Not Found**                                 | Double-check the attribute name for typos or incorrect casing as XML is case-sensitive.           |
+| **No Output or Changes Observed**                        | Make sure the XML contains the attributes you're trying to remove and that the XPath expression successfully selects an element. |
+
+## Real-World Use Cases
+
+- **XML Data Cleaning**: Remove deprecated or unnecessary attributes from XML data files.
+- **XML Integration**: Adjust XML content to comply with specific API or system requirements by removing irrelevant attributes.
+- **Schema Compliance**: Ensure XML data aligns with updated schema changes by removing outdated attributes.

@@ -1,0 +1,71 @@
+import { Callout, Steps } from "nextra/components";
+
+# Create Folder
+
+The **Create Folder** node allows you to generate a new folder within a specified parent directory on your desktop. This is useful for organizing files, creating new directories for projects, or structuring data storage systematically.
+
+You might use this when:
+
+- Setting up a new directory structure for a project.
+- Automatically organizing files into new folders.
+- Preparing directories for software or document deployment.
+
+## Configuration Options
+
+| Field Name               | Description                                                                                            | Input Type | Required? | Default Value |
+| ------------------------ | ------------------------------------------------------------------------------------------------------ | ---------- | --------- | ------------- |
+| **Create New Folder Into** | The full path of the parent directory where the new folder should be created.                          | Text       | Yes       | _(empty)_     |
+| **New Folder Name**        | The name of the folder to be created inside the specified parent directory.                           | Text       | Yes       | _(empty)_     |
+
+## Expected Output Format
+
+The output of this node will be the **full path of the newly created folder**. This path can be used for further actions, such as storing files within the new directory.
+
+- **Example:** If the parent directory is `C:\Projects` and the folder name is `NewProject`, the output will be `C:\Projects\NewProject`.
+
+## Step-by-Step Guide
+
+<Steps>
+### Step 1
+
+Add the **Create Folder** node to your flow.
+
+### Step 2
+
+In the **Create New Folder Into** field, enter the path of the parent directory where you want the new folder to be created.
+
+### Step 3
+
+In the **New Folder Name** field, enter the name you want for the new folder.
+
+### Step 4
+
+Upon execution, the node will create the folder at the specified location. The full path of the new folder will be available as **NewFolder** for use in other nodes.
+
+</Steps>
+
+<Callout type="warning" title="Important">
+  Make sure the parent directory path you provide is valid and accessible. Otherwise, the folder creation will fail.
+</Callout>
+
+## Input/Output Examples
+
+| ParentDirectory  | FolderName  | Output Path              |
+| ---------------- | ----------- | ------------------------ |
+| `C:\Documents`   | Reports     | `C:\Documents\Reports`   |
+| `C:\Projects`    | NewProject  | `C:\Projects\NewProject` |
+| `D:\Data`        | 2023Data    | `D:\Data\2023Data`       |
+
+## Common Mistakes & Troubleshooting
+
+| Problem                                          | Solution                                                                                          |
+| ------------------------------------------------ | ------------------------------------------------------------------------------------------------- |
+| **Invalid parent directory path**                | Ensure the path is entered correctly and the directory exists on your system.                     |
+| **Folder with same name already exists**         | Manually verify the folder does not already exist or choose a different name for the new folder.  |
+| **Permission denied**                            | Make sure you have the necessary permissions to create a folder in the specified directory.       |
+
+## Real-World Use Cases
+
+- **Project Initialization**: Automatically create a new folder structure for a project setup to systematize files and documentation.
+- **Monthly Reports**: Generate a new directory for storing monthly reports or data analytics results.
+- **File Organization**: Automatically sort files into newly created directories based on naming conventions or categories.

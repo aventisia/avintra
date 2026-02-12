@@ -1,0 +1,62 @@
+import { Callout, Steps } from "nextra/components";
+
+# Read Text from File
+
+The **Read Text from File** node is designed to extract all the text content from a specified file on your computer. Use this node when you need to access and utilize the contents of a text file for further automation processes. It's particularly helpful when you have reports, logs, or data files whose contents you need to manipulate or analyze.
+
+## Configuration Options
+
+| Field Name    | Description                                                       | Input Type | Required? | Default Value |
+| ------------- | ----------------------------------------------------------------- | ---------- | --------- | ------------- |
+| **File Path** | The full path of the file you want to read.                       | Text       | Yes       | _(empty)_     |
+| **Trim Content** | Indicates whether to trim whitespace from the file content once read. | Switch     | No        | Yes           |
+
+## Expected Output Format
+
+The output from this node will be the text content of the specified file, available as **FileContent**. This is a plain text output with line breaks as seen in the file.
+
+## Step-by-Step Guide
+
+<Steps>
+### Step 1
+
+Add the **Read Text from File** node into your automation flow.
+
+### Step 2
+
+In the **File Path** field, enter the full path of the file you wish to read. Make sure the path is accurate and the file is accessible.
+
+### Step 3
+
+Toggle the **Trim Content** option to decide whether you want to trim white spaces from the file content. By default, this is set to "Yes".
+
+### Step 4
+
+The text content extracted from the file will be stored in **FileContent** for use in any subsequent nodes.
+
+</Steps>
+
+<Callout type="info" title="Note">
+  Ensure the file at the specified path is not locked or in use by another application, as this might restrict access for reading its content.
+</Callout>
+
+## Input/Output Examples
+
+| Input File Path             | Trim Content | Output (FileContent)                                                             | Output Type |
+| --------------------------- | ------------ | -------------------------------------------------------------------------------- | ----------- |
+| `/Users/name/docs/sample.txt` | Yes          | "This is a sample file text."                                                    | Text        |
+| `C:\Users\name\docs\sample.txt` | No         | "This is a sample file text.    " (including any trailing spaces in the file)    | Text        |
+
+## Common Mistakes & Troubleshooting
+
+| Problem                                      | Solution                                                                                  |
+| -------------------------------------------- | ----------------------------------------------------------------------------------------- |
+| **Invalid or non-existent file path entered** | Verify the file path is correct and the file exists at the specified location.              |
+| **File access errors**                       | Ensure the file isn't open in another application and check user permissions to access it.  |
+| **Unexpected content output**                | If whitespace or formatting issues appear, consider adjusting the **Trim Content** setting. |
+
+## Real-World Use Cases
+
+- **Log Processing**: Automatically read and analyze content from server log files.
+- **Report Automation**: Extract data from regularly updated text reports for automatic processing.
+- **Content Analysis**: Read and preprocess contents of text-heavy files for analysis or data transformation workflows.

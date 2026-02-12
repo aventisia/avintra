@@ -1,0 +1,94 @@
+import { Callout, Steps } from "nextra/components";
+
+# Click on Web Page
+
+The **Click on Web Page** node simulates clicking a UI element such as a link or button on a web page. This is particularly useful for automating web navigation tasks, form submissions, or interactions requiring user input on websites.
+
+For example:
+- Clicking a "Submit" button on a form.
+- Navigating through a web menu by clicking links.
+- Simulating user interactions for web testing processes.
+
+## Configuration Options
+
+| Field Name                      | Description                                                                                      | Input Type | Required? | Default Value |
+| ------------------------------- | ------------------------------------------------------------------------------------------------| ---------- | --------- | ------------- |
+| **Web Browser Instance**        | Enter or choose the variable that contains the web browser instance to work with.                | Text       | Yes       | _(empty)_     |
+| **Find Type**                   | Specifies how to find the element (e.g., ID, XPath, CssSelector).                               | Select     | Yes       | XPath         |
+| **Value To Find**               | The selector used to locate the link or button on the web page.                                 | Text       | Yes       | _(empty)_     |
+| **Click Type**                  | Specifies the type of click to perform.                                                         | Select     | No        | LeftClick     |
+| **Send Physical Click**         | If true, simulates physical mouse movement before clicking.                                     | Switch     | No        | true          |
+| **Wait for Page Load**          | If true, waits for the next page to load after the click.                                       | Switch     | No        | true          |
+| **Timeout for Page Load**       | The maximum time (in seconds) to wait for the page to load.                                     | Text       | No        | 60            |
+| **Handle Dialog**               | Specifies what to do if a dialog appears after the click.                                       | Select     | No        | DoNothing     |
+| **Dialog Button to Press**      | The name of the button to press if a dialog appears (e.g., 'Ok', 'Cancel').                     | Text       | No        | Ok            |
+| **Mouse Position Relative to Element** | Specifies where to position the mouse relative to the element before clicking.               | Select     | No        | MiddleCenter  |
+| **Offset X**                    | Move the mouse this many pixels horizontally from the selected position.                        | Text       | No        | 0             |
+| **Offset Y**                    | Move the mouse this many pixels vertically from the selected position.                          | Text       | No        | 0             |
+
+## Expected Output Format
+
+There is no direct output from this node. The function performed (clicking on a web page element) is an action affecting the web browser.
+
+## Step-by-Step Guide
+
+<Steps>
+### Step 1
+
+Add **Click on Web Page** node into your flow.
+
+### Step 2
+
+In the **Web Browser Instance** field, input or select the variable that contains the web browser you want to automate.
+
+### Step 3
+
+In the **Find Type** dropdown, select how you would like to locate the web page element (e.g., XPath, Id, CssSelector).
+
+### Step 4
+
+Input the **Value To Find** that specifies the exact identifier of the element (like an XPath or CSS Selector for the button/link).
+
+### Step 5
+
+In the **Click Type** dropdown, choose the type of click action (e.g., Left Click, Right Click, Double Click).
+
+### Step 6
+
+(Optional) Toggle **Send Physical Click** if a physical mouse movement simulation is needed before clicking.
+
+### Step 7
+
+(Optional) Toggle **Wait for Page Load** to true if you need the automation to wait for the web page loading process after the click.
+
+### Step 8
+
+(Optional) Enter a value in the **Timeout for Page Load** for how long to wait for the page to load.
+
+### Step 9
+
+(Optional) Configure **Handle Dialog** and **Dialog Button to Press** fields if expecting a dialog post-click.
+  
+### Step 10
+
+(Optional) Set **Mouse Position Relative to Element** and **Offset X/Y** for precise mouse positioning before the click.
+
+</Steps>
+
+<Callout type="info" title="Tip">
+  If you're unsure of which **Find Type** to choose, XPath is often the most flexible for finding complex elements.
+</Callout>
+
+## Common Mistakes & Troubleshooting
+
+| Problem                                           | Solution                                                                                       |
+| ------------------------------------------------- | ----------------------------------------------------------------------------------------------|
+| **Element not found using specified Find Type**   | Re-check the element selector (XPath, CSS selector, etc.) for accuracy and correct path.      |
+| **Page not loaded after click**                   | Make sure **Wait for Page Load** is enabled, and that the **Timeout** is reasonable.          |
+| **Unexpected dialog handling**                    | Confirm the **Handle Dialog** and **Dialog Button to Press** settings are correct.            |
+
+## Real-World Use Cases
+
+- **Form Submissions**: Automating submission of online forms without user intervention.
+- **Navigation Automation**: Simulate user browsing by clicking through a sequence of hyperlinks on a website.
+- **Testing Automation**: Automate user interaction testing where specific UI elements need to be clicked as part of a test case.

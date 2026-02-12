@@ -1,0 +1,70 @@
+import { Callout, Steps } from "nextra/components";
+
+# Get Selected Item from Drop-Down List
+
+The **Get Selected Item from Drop-Down List** node allows you to retrieve the item that is currently selected in a drop-down list on your desktop application. This is useful when you need to know the current selection in a list to make decisions or trigger further actions based on that choice.
+
+For example:
+
+- Checking the user's choice in a settings menu.
+- Triggering a follow-up process based on a user's selection from a list.
+- Collecting data from various selections automatically without manual copying.
+
+## Configuration Options
+
+| Field Name             | Description                                                                                      | Input Type | Required? | Default Value |
+| ---------------------- | ------------------------------------------------------------------------------------------------ | ---------- | --------- | ------------- |
+| **UI Element**         | The UI element where the selected item is read from.                                             | Text       | Yes       | _(empty)_     |
+| **Max Wait Time (seconds)** | Maximum time (in seconds) to wait for the UI element to appear.                               | Text       | No        | 5             |
+
+## Expected Output Format
+
+The output of this node is a **single text value** which represents the item currently selected in the specified drop-down list.
+
+- Example output: `'United States'`
+
+## Step-by-Step Guide
+
+<Steps>
+### Step 1
+
+Add **Get Selected Item from Drop-Down List** node into your flow.
+
+### Step 2
+
+In the **UI Element** field, specify the location or identifier of the drop-down list in your application's window where you want to read the selection.
+
+### Step 3
+
+(Optional) Set the **Max Wait Time (seconds)** field to define how long the system should wait to locate the drop-down list. The default value is `5` seconds.
+
+### Step 4
+
+Once configured, the node will output the selected item as **SelectedItem**, which you can then use in subsequent nodes or processes.
+
+</Steps>
+
+<Callout type="info" title="Tip">
+  Ensure that the correct UI element is selected in the **UI Element** field to avoid errors retrieving the selected item from the drop-down list.
+</Callout>
+
+## Input/Output Examples
+
+| UI Element          | Max Wait Time | Selected Item | Output Type |
+| ------------------- | ------------- | ------------- | ----------- |
+| "CountrySelect"     | 10            | "Canada"      | Text        |
+| "LanguageDropdown"  | 5             | "English"     | Text        |
+
+## Common Mistakes & Troubleshooting
+
+| Problem                                        | Solution                                                                                             |
+| ---------------------------------------------- | ---------------------------------------------------------------------------------------------------- |
+| **UI Element not found error**                 | Check if the correct UI path is provided in the **UI Element** field.                                |
+| **Operation times out too soon**               | Increase the **Max Wait Time** to allow more time for the system to locate the drop-down list element. |
+| **Incorrect item retrieved**                   | Verify that the correct drop-down list is targeted in your application's interface.                  |
+
+## Real-World Use Cases
+
+- **User Settings Retrieval**: Automatically read the current choice in a user settings menu (e.g., theme, language).
+- **Data Entry Validation**: Confirm the selection in a form to ensure the correct choice is made before submission.
+- **Workflow Automation**: Trigger different workflows based on the user's selected item in application menus.

@@ -1,0 +1,76 @@
+import { Callout, Steps } from "nextra/components";
+
+# Set Checkbox State
+
+The **Set Checkbox State** node enables you to programmatically check or uncheck a checkbox within a specified UI element on a desktop application. This functionality is particularly useful for automating interactions with checkbox elements when running repetitive tasks or tests. You can either identify the checkbox by its name or position within a group of checkboxes.
+
+## Configuration Options
+
+| Field Name                  | Description                                                                 | Input Type | Required? | Default Value |
+| --------------------------- | --------------------------------------------------------------------------- | ---------- | --------- | ------------- |
+| **UI Element Identification Path** | The parent UI element where the checkboxes are located.                        | Text       | Yes       | _(empty)_     |
+| **Checkbox Name or Index**  | The name or zero-based index of the checkbox to set.                          | Text       | Yes       | _(empty)_     |
+| **Desired State**           | Whether to check (true) or uncheck (false) the checkbox.                    | Switch     | Yes       | false         |
+| **Max Wait Time (seconds)** | Maximum time to wait to find the UI element (in seconds). _(Optional)_      | Text       | No        | 5             |
+
+## Expected Output Format
+
+The output of this node is a **boolean value**, indicating the success of the operation:
+
+- **True**: The checkbox state was changed successfully.
+- **False**: The checkbox state was not changed.
+
+## Step-by-Step Guide
+
+<Steps>
+### Step 1
+
+Add the **Set Checkbox State** node to your flow.
+
+### Step 2
+
+In the **UI Element Identification Path** field, specify the path to the parent element containing the checkbox.
+
+### Step 3
+
+Enter the name or zero-based index of the checkbox you wish to modify in the **Checkbox Name or Index** field.
+
+### Step 4
+
+Set the **Desired State** switch to determine whether you want the checkbox to be checked (true) or unchecked (false).
+
+### Step 5
+
+Optionally, you may adjust the **Max Wait Time** to set the duration (in seconds) to wait for the UI element.
+
+### Step 6
+
+The result of the operation will be available as **WasStateChanged** for further use in your automation processes.
+
+</Steps>
+
+<Callout type="warning" title="Note">
+  Ensure the correct UI path is used for the checkboxes. If the path is incorrect, the operation may fail, and the state change could return false.
+</Callout>
+
+## Input/Output Examples
+
+| Identification Path | Checkbox Name or Index | Desired State | Output Value (WasStateChanged) | Output Type |
+| ------------------- | ---------------------- | ------------- | ------------------------------ | ----------- |
+| "Form/MainPanel"    | "AcceptTerms"          | true          | True                           | Boolean     |
+| "Preferences"       | 0                      | false         | True                           | Boolean     |
+| "Settings"          | "EnableFeatureX"       | true          | False                          | Boolean     |
+
+## Common Mistakes & Troubleshooting
+
+| Problem                                          | Solution                                                                                   |
+| ------------------------------------------------ | ------------------------------------------------------------------------------------------ |
+| **Incorrect UI Path**                            | Double-check the UI path to ensure it leads to the correct parent element.                 |
+| **Unexpected Output**                            | Verify the checkbox name or index is correct and that the UI element is visible and active.|
+| **Timeout Problems**                             | Increase the Max Wait Time if the operation appears to complete too quickly or inconsistently.|
+
+## Real-World Use Cases
+
+- **Form Submission**: Automatically check or uncheck confirmation checkboxes before submitting forms.
+- **Setting Automation**: Toggle feature settings on/off in application options or preferences screens.
+- **Testing Scenarios**: Simulate changes to checkbox states during UI testing without manual intervention.

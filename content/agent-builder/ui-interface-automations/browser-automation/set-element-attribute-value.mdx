@@ -1,0 +1,82 @@
+import { Callout, Steps } from "nextra/components";
+
+# Set Element Attribute Value
+
+The **Set Element Attribute Value** node is designed to modify the value of a specific attribute on a web element during automation processes. This node is particularly useful for users who wish to dynamically alter attributes such as 'value', 'class', or 'style' on elements within web pages, allowing for more flexible automation tasks.
+
+For example:
+
+- Changing the 'value' attribute of an input field to simulate user input.
+- Adjusting the 'class' attribute to alter the element's appearance dynamically.
+- Modifying the 'title' attribute to update or add tooltips.
+
+## Configuration Options
+
+| Field Name            | Description                                                                                       | Input Type | Required? | Default Value |
+| --------------------- | ------------------------------------------------------------------------------------------------- | ---------- | --------- | ------------- |
+| **Web Browser Instance** | Enter or choose the variable that contains the web browser instance to work with.                  | Text       | Yes       | _(empty)_     |
+| **Find Type**         | Specifies how to find the element (e.g., ID, XPath, CssSelector).                                  | Select     | Yes       | XPath         |
+| **Value To Find**     | The value used to locate the element (e.g., 'username', '//input[@id=\'email\']').                 | Text       | Yes       | _(empty)_     |
+| **Attribute Name**    | The name of the attribute to set (e.g., 'value', 'class', 'style').                               | Text       | Yes       | _(empty)_     |
+| **New Attribute Value**| The new value to assign to the attribute.                                                         | Text       | Yes       | _(empty)_     |
+| **Wait For Element**  | If true, waits for the element to appear before setting its attribute.                             | Switch     | No        | _(empty)_     |
+| **Timeout Seconds**   | Maximum time in seconds to wait for the element before failing.                                    | Text       | No        | 60            |
+
+## Expected Output Format
+
+This node does not directly output a value but updates the specified attribute of a web element. Any subsequent nodes that require information from the updated attribute can reference the change.
+
+## Step-by-Step Guide
+
+<Steps>
+### Step 1
+
+Add **Set Element Attribute Value** node into your flow.
+
+### Step 2
+
+In the **Web Browser Instance** field, specify or select the browser instance variable you wish to interact with.
+
+### Step 3
+
+In the **Find Type** dropdown, choose the method to identify the web element (e.g., XPath, ID, CssSelector).
+
+### Step 4
+
+Enter the corresponding **Value To Find** to locate the web element uniquely.
+
+### Step 5
+
+Specify the **Attribute Name** you want to alter, such as 'value' or 'class'.
+
+### Step 6
+
+Enter the **New Attribute Value** that should be assigned to the attribute.
+
+### Step 7
+
+If necessary, toggle **Wait For Element** to `true` if you want the node to wait for the element’s appearance before setting the attribute.
+
+### Step 8
+
+Define the **Timeout Seconds** to set how long to wait for the web element if **Wait For Element** is enabled (default is 60 seconds).
+
+</Steps>
+
+<Callout type="info" title="Tip">
+  Use the **Wait For Element** option when dealing with elements that may load asynchronously or be hidden during initial page load.
+</Callout>
+
+## Common Mistakes & Troubleshooting
+
+| Problem                                              | Solution                                                                                                                       |
+| ---------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------ |
+| **Element not found**                                | Ensure the **Find Type** and **Value To Find** are correctly set for the target element.                                        |
+| **Attribute change not taking effect**               | Verify the web element is correctly identified and ensure the **Attribute Name** is spelled exactly as needed.                  |
+| **Timeout expired**                                  | Increase **Timeout Seconds** if elements take longer to appear, or confirm the page loads as expected before attempting the action. |
+
+## Real-World Use Cases
+
+- **Form Automation**: Automatically fill out web forms by setting the 'value' attribute of input fields with desired data.
+- **Dynamic UI Testing**: Change 'class' attributes to apply different CSS rules for visual testing scenarios.
+- **SEO Adjustments**: Update 'title' attributes dynamically for testing different SEO strategies.

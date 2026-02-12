@@ -1,0 +1,74 @@
+import { Callout, Steps } from "nextra/components";
+
+# Set Screen Resolution
+
+The **Set Screen Resolution** node allows you to change the resolution settings of your computer's display or displays. You can use this node to specify the width, height, bit count, and refresh rate (frequency) for a selected monitor. This feature is helpful for ensuring the display settings match your needs, whether for clarity, compatibility, or preference in specific applications or environments.
+
+For example:
+- Setting your primary display to a high resolution for demanding graphic applications.
+- Adjusting all monitors in a multi-display setup to the same resolution for consistency.
+- Modifying screen parameters for enhanced performance or accessibility.
+
+## Configuration Options
+
+| Field Name     | Description                                                                                      | Input Type | Required? | Default Value |
+| -------------- | ------------------------------------------------------------------------------------------------ | ---------- | --------- | ------------- |
+| **Display**    | The name or identifier of the display you want to change, use 'Primary' for the main monitor or 'All' for all. | Text       | Yes       | _(empty)_     |
+| **Width**      | The desired width of the screen in pixels.                                                       | Text       | Yes       | _(empty)_     |
+| **Height**     | The desired height of the screen in pixels.                                                      | Text       | Yes       | _(empty)_     |
+| **Bit Count**  | The color depth, expressed as a number, for the display.                                         | Text       | Yes       | _(empty)_     |
+| **Frequency**  | The targeted refresh rate of the screen in hertz (Hz).                                           | Text       | Yes       | _(empty)_     |
+
+## Expected Output Format
+
+The output of this node is the configuration confirmation, without a specific data type, indicating that the screen resolution change has been implemented.
+
+## Step-by-Step Guide
+
+<Steps>
+### Step 1
+
+Add **Set Screen Resolution** node into your flow.
+
+### Step 2
+
+In the **Display** field, enter the name or number of the monitor you wish to adjust. You can type 'Primary' to target the main display, or 'All' to adjust all screens.
+
+### Step 3
+
+Enter the desired **Width** for the display in pixels.
+
+### Step 4
+
+Enter the desired **Height** for the display in pixels.
+
+### Step 5
+
+Specify the **Bit Count**, which is the color depth for the monitor settings.
+
+### Step 6
+
+Set the desired **Frequency** in hertz (Hz) to determine the refresh rate.
+
+### Step 7
+
+Review your settings and execute the node to apply the new screen resolution settings.
+</Steps>
+
+<Callout type="info" title="Tip">
+  Ensure the display settings you choose are supported by your monitor(s) to avoid any display issues.
+</Callout>
+
+## Common Mistakes & Troubleshooting
+
+| Problem                                               | Solution                                                                                                                     |
+| ----------------------------------------------------- | ---------------------------------------------------------------------------------------------------------------------------- |
+| **Display not recognized**                            | Double-check the display name or number. Use 'Primary' for the primary monitor if unsure.                                    |
+| **Resolution settings not applying**                  | Ensure the width and height entered are supported by the display. Also, check compatibility of bit count and frequency.      |
+| **Fuzzy or distorted display output**                 | Verify that the settings chosen are ideally supported by your monitor and try using default or recommended settings first.    |
+
+## Real-World Use Cases
+
+- **Application Optimization**: Set the ideal screen resolution for graphic-intensive software on one or more displays.
+- **Projector/External Display Configuration**: Quickly configure a projector or another external monitor for presentations or meetings.
+- **Accessibility Adjustments**: Tailor screen resolutions to improve readability and usability for individuals with vision impairments.

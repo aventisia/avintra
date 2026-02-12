@@ -1,0 +1,85 @@
+import { Callout, Steps } from "nextra/components";
+
+# Get UI Element Details
+
+The **Get UI Element Details** node allows you to retrieve specific information from a user interface (UI) element within a desktop application. You might use this node if you need to extract details such as the size, position, or text of a UI component, or verify its state (e.g., whether it's enabled or visible). This is particularly useful when working with complex applications where automation or validation requires detailed UI element data.
+
+## Configuration Options
+
+| Field Name                  | Description                                                                          | Input Type | Required? | Default Value        |
+| --------------------------- | ------------------------------------------------------------------------------------ | ---------- | --------- | -------------------- |
+| **UI Element**              | The UI element from which you want to retrieve details.                              | Text       | Yes       | _(empty)_            |
+| **Detail Type**             | Choose the information to retrieve, like coordinates, text, or state of the element. | Select     | Yes       | Bounding Rectangle   |
+| **Max Wait Time (seconds)** | Maximum time to wait to find the UI element (in seconds).                            | Text       | No        | 5                    |
+
+## Expected Output Format
+
+The output depends on the selected detail type in the **Detail Type** field and can include:
+
+- A **rectangle** representing the size and coordinates, if "Bounding Rectangle" is selected.
+- A **point** representing x, y coordinates, if "Clickable Point" is selected.
+- A **string** of label text, if "Label Text" is selected.
+- A **boolean** value, if "Is Enabled", "Is Offscreen", or "Is Password" is selected:
+
+  - `true` or `false`
+
+## Step-by-Step Guide
+
+<Steps>
+### Step 1
+
+Add the **Get UI Element Details** node into your flow.
+
+### Step 2
+
+In the **UI Element** field, specify the UI element you are inspecting. This is typically a reference or selector that identifies the element on your application window.
+
+### Step 3
+
+From the **Detail Type** dropdown, select the type of detail you wish to retrieve:
+- **Bounding Rectangle**: Get size and position data.
+- **Clickable Point**: Get a point within the element where clicks can occur.
+- **Label Text**: Get the text contained within the element.
+- **Is Enabled**: Check if the element can interact.
+- **Is Offscreen**: Check if the element is visible to the user.
+- **Is Password**: Check if the field is a password type.
+
+### Step 4
+
+(Optional) In **Max Wait Time**, specify how long the system should wait for the UI element to become available before skipping or exiting the operation (default: 5 seconds).
+
+### Step 5
+
+The extracted detail will be available as output from this node for further use in your automation flow.
+
+</Steps>
+
+<Callout type="info" title="Note">
+  Each selected detail in the **Detail Type** dropdown generates a specific output type. Ensure you choose the correct type for your task requirements.
+</Callout>
+
+## Input/Output Examples
+
+| Detail Type        | Example Input   | Example Output         | Output Value                  | Output Type |
+| ------------------ | --------------- | ---------------------- | ----------------------------- | ----------- |
+| Bounding Rectangle | UIComponent1    | `{x: 10, y: 20, width: 100, height: 200}` | "Bounding Rectangle" | Rectangle   |
+| Clickable Point    | UIComponent2    | `{x: 15, y: 25}`         | "Clickable Point"             | Point       |
+| Label Text         | TextBoxLabel    | "Username"             | "Label Text"                  | Text        |
+| Is Enabled         | Button1         | true                   | "Is Enabled"                  | Boolean     |
+| Is Offscreen       | PopupWindow     | false                  | "Is Offscreen"                | Boolean     |
+| Is Password        | PasswordField   | true                   | "Is Password"                 | Boolean     |
+
+## Common Mistakes & Troubleshooting
+
+| Problem                                      | Solution                                                                                                               |
+| -------------------------------------------- | ---------------------------------------------------------------------------------------------------------------------- |
+| **UI Element not found**                     | Ensure the element identifier/reference is correct. Adjust **Max Wait Time** to higher if the element loads slowly.    |
+| **Unexpected output type**                   | Verify that the **Detail Type** matches the desired output format.                                                     |
+| **False results for "Is Offscreen"**         | Elements might be incorrectly marked offscreen. Check UI layout or verify with other tools if possible.                 |
+
+## Real-World Use Cases
+
+- **UI Testing**: Validate if interface changes impact element positions or visibility.
+- **Accessibility Verification**: Confirm if button states (enabled/disabled) meet requirements.
+- **Automation Workflows**: Navigate applications by identifying and interacting with UI elements based on their position or state.
+- **Security Auditing**: Validate if sensitive input fields are properly marked as password fields for additional security.

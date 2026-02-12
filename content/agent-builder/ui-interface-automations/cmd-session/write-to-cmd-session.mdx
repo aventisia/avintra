@@ -1,0 +1,74 @@
+import { Callout, Steps } from "nextra/components";
+
+# Write to CMD Session
+
+The **Write to CMD Session** node allows you to send specific commands to an open Command Prompt (CMD) session on your computer. This can be particularly useful for running scripts, automating tasks, or controlling system processes directly through the command line interface.
+
+By using this node, you can:
+
+- Execute commands in an active CMD session.
+- Automate local system operations without manual input.
+- Integrate command line tasks into broader workflows.
+
+## Configuration Options
+
+| Field Name                 | Description                                                            | Input Type | Required? | Default Value |
+| -------------------------- | ---------------------------------------------------------------------- | ---------- | --------- | ------------- |
+| **CMD Session**            | The process representing the open CMD session where the command runs.  | Text       | Yes       | _(empty)_     |
+| **Command**                | The specific command to execute within the CMD session.                | Text       | Yes       | _(empty)_     |
+| **Send &lt;Enter> After Command** | Defines if the Enter key should be pressed after executing the command. | Switch     | No        | true          |
+
+## Expected Output Format
+
+The output of this node is the **system response** from executing the command. This output is not formatted as text, but rather reflects the standard console response you would receive in CMD.
+
+## Step-by-Step Guide
+
+<Steps>
+### Step 1
+
+Add the **Write to CMD Session** node to your workflow.
+
+### Step 2
+
+In the **CMD Session** field, input the identifier for the CMD session you wish to target. This typically corresponds to an active CMD process.
+
+### Step 3
+
+Enter the command you want to execute in the **Command** field.
+
+### Step 4
+
+Decide if you want to send an Enter key after the command by toggling **Send &lt;Enter> After Command**. 
+- If set to true, the CMD will act as if Enter was pressed after your command.
+
+### Step 5
+
+Once configured, the command will run within the specified CMD session, and you can use the resulting output for further processing in your workflow.
+
+</Steps>
+
+<Callout type="info" title="Tip">
+  Ensure that the CMD session is properly identified in the **CMD Session** field, or the command may not execute correctly.
+</Callout>
+
+## Input/Output Examples
+
+| CMD Session   | Command              | Send &lt;Enter> | Output                                           |
+| ------------- | -------------------- | ------------ | ------------------------------------------------ |
+| Session_12345 | `dir`                | true         | A list of directory contents in the active session. |
+| Session_67890 | `echo Hello World`   | true         | "Hello World" displayed in the CMD output.          |
+
+## Common Mistakes & Troubleshooting
+
+| Problem                                         | Solution                                                                                                   |
+| ----------------------------------------------- | ---------------------------------------------------------------------------------------------------------- |
+| **Command not executing**                       | Make sure the **CMD Session** is correctly identified and opened.                                          |
+| **Unexpected CMD response**                     | Verify that the **Command** is valid for the CMD environment you're running.                                |
+| **No Enter action performed**                   | Double-check the **Send &lt;Enter> After Command** toggle setting if the command requires confirmation to run. |
+
+## Real-World Use Cases
+
+- **System Administration**: Automate routine administrative tasks by executing batch scripts automatically.
+- **Data Gathering**: Use network commands to collect and process system data efficiently.
+- **Build Automation**: Enhance your build process by integrating direct command line tasks in deployment pipelines.

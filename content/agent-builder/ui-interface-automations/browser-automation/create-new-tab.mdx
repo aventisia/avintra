@@ -1,0 +1,84 @@
+import { Callout, Steps } from "nextra/components";
+
+# Create New Tab
+
+The **Create New Tab** node allows you to open a new tab in your web browser. It can also be set to navigate directly to a specific URL if you need to jump straight into a website. This is beneficial for workflows that involve multi-tab operations or when specific web pages need to be accessed on the fly.
+
+For example:
+
+- Open a new tab to access a CRM system while maintaining the current context in another tab.
+- Automate the opening of a new web app interface during a reporting session.
+
+## Configuration Options
+
+| Field Name               | Description                                                                                | Input Type | Required? | Default Value |
+| ------------------------ | ------------------------------------------------------------------------------------------ | ---------- | --------- | ------------- |
+| **Web Browser Instance** | Enter or choose the variable that contains the web browser instance to work with.          | Text       | Yes       | _(empty)_     |
+| **URL to Navigate To**   | The URL to navigate to after creating the new tab.                                         | Text       | No        | _(empty)_     |
+| **Wait for Page to Load**| If true, waits for the page to fully load before continuing.                               | Switch     | No        | true          |
+| **Timeout for Page Load**| Maximum time (in seconds) to wait for the page to load.                                    | Text       | No        | 60            |
+| **Handle Dialog**        | Specifies what to do if a dialog appears after navigating.                                 | Select     | No        | DoNothing     |
+| **Dialog Button to Press**| The button to press if a dialog appears (e.g., 'OK', 'Cancel').                           | Text       | No        | OK            |
+
+## Expected Output Format
+
+The output of this node is a **new browser instance** as an IWebDriver object, which represents the newly opened browser tab or window.
+
+## Step-by-Step Guide
+
+<Steps>
+### Step 1
+
+Add the **Create New Tab** node into your flow.
+
+### Step 2
+
+In the **Web Browser Instance** field, specify the variable that contains your active web browser instance.
+
+### Step 3
+
+To automatically navigate to a website after creating a new tab, enter the URL in the **URL to Navigate To** field. This step is optional.
+
+### Step 4
+
+If you need the new page to fully load before proceeding, turn on the **Wait for Page to Load** switch. You can also set a **Timeout for Page Load** to define how long to wait in seconds. 
+
+### Step 5
+
+In the **Handle Dialog** dropdown, choose what to do if a pop-up dialog appears on the webpage:
+
+- **Do Nothing**: Ignore any dialog that appears.
+- **Close It**: Automatically close any dialog.
+- **Press a Button**: Specify a button to press using the **Dialog Button to Press** field (like 'OK').
+
+### Step 6
+
+The new web browser instance will be available as **NewBrowserInstance** for use in subsequent nodes.
+
+</Steps>
+
+<Callout type="info" title="Note">
+  The "Dialog Button to Press" field becomes relevant only if "Handle Dialog" is set to "Press a Button".
+</Callout>
+
+## Input/Output Examples
+
+| Action                 | URL (Input)                     | Dialog Action  | Output Value       | Output Type           |
+| ---------------------- | ------------------------------- | -------------- | ------------------ | --------------------- |
+| New Tab with Website   | `https://example.com`           | Do Nothing     | NewBrowserInstance | IWebDriver Object     |
+| New Tab with Dialog    | `https://login.example.com`     | Press 'Cancel' | NewBrowserInstance | IWebDriver Object     |
+
+## Common Mistakes & Troubleshooting
+
+| Problem                               | Solution                                                                                                                                          |
+| ------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------- |
+| **Web Browser Instance not specified**| Ensure you have selected or entered the correct variable that holds the web browser instance that should open the new tab.                        |
+| **URL not loading or incorrect**      | Double-check the URL entered. Ensure it is valid and properly formatted.                                                                            |
+| **Page not loading fully**            | Consider increasing the timeout in **Timeout for Page Load** or double-check that **Wait for Page to Load** is enabled if the page requires it.    |
+| **Pop-up dialog not handled**         | Make sure you specify the correct button in **Dialog Button to Press** if handling dialogs by pressing a button.                                   |
+
+## Real-World Use Cases
+
+- **Multi-tasking**: Automate the opening of multiple tabs for different software when starting your workday.
+- **Data Gathering**: Instantly pull up market research websites during a meeting with stakeholders.
+- **Website Testing**: Open different versions of a website in multiple tabs for comparison and development purposes.

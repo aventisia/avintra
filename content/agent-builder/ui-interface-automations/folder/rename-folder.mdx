@@ -1,0 +1,64 @@
+import { Callout, Steps } from "nextra/components";
+
+# Rename Folder
+
+The **Rename Folder** node allows you to change the name of an existing folder by specifying the folder's current path and the new desired name. This is particularly useful in organizing your directory structure, updating legacy folder names to align with new naming conventions, or simply making names more intuitive and consistent for team use.
+
+## Configuration Options
+
+| Field Name             | Description                                                      | Input Type | Required? | Default Value |
+| ---------------------- | ---------------------------------------------------------------- | ---------- | --------- | ------------- |
+| **Original Folder Path** | The current path of the folder you want to rename.               | Text       | No        | _(empty)_     |
+| **New Folder Name**    | The new name you want to assign to the folder.                   | Text       | No        | _(empty)_     |
+
+## Expected Output Format
+
+The output of this node is a **folder path** string. It reflects the new path of the folder once it has been successfully renamed.
+
+For example: `C:\Users\Documents\RenamedFolder`
+
+## Step-by-Step Guide
+
+<Steps>
+### Step 1
+
+Add the **Rename Folder** node into your flow.
+
+### Step 2
+
+In the **Original Folder Path** field, enter the path of the folder you wish to rename.
+
+### Step 3
+
+In the **New Folder Name** field, specify the new name for the folder.
+
+### Step 4
+
+Once complete, the renamed folder path will be available as **RenamedFolderPath** for use in subsequent nodes.
+
+</Steps>
+
+<Callout type="info" title="Tip">
+  Ensure that the path you enter in **Original Folder Path** exists and is accessible.
+</Callout>
+
+## Input/Output Examples
+
+| Original Folder Path         | New Folder Name | Output Value                                  | Output Type     |
+| ---------------------------- | --------------- | ---------------------------------------------- | --------------- |
+| C:\Users\Documents\Projects  | FinalProject    | C:\Users\Documents\FinalProject                | String (Path)   |
+| D:\Archives\2022\QuarterOne  | Q1Review        | D:\Archives\2022\Q1Review                      | String (Path)   |
+
+## Common Mistakes & Troubleshooting
+
+| Problem                                                 | Solution                                                                                                                                  |
+| ------------------------------------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------- |
+| **Incorrect Original Folder Path**                      | Verify that the folder path is correct and the folder exists before trying to rename.                                                     |
+| **Permission Denied Error**                             | Ensure you have the necessary permissions to access and rename folders in the specified directory.                                        |
+| **New Folder Name Already Exists in Destination**       | If a folder with the new name already exists, choose a different name or delete/rename the existing folder if appropriate.                 |
+
+## Real-World Use Cases
+
+- **Project Management**: Quickly update project folder names to reflect new project phases or updates.
+- **Organizational Efficiency**: Standardize folder names across departments to align with corporate naming policies.
+- **Legacy System Updates**: Rename outdated folder names to align with current systems or software requirements.

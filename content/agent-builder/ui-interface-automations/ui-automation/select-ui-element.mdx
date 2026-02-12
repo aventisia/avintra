@@ -1,0 +1,65 @@
+import { Callout, Steps } from "nextra/components";
+
+# Select UI Element
+
+The **Select UI Element** node enables you to choose a specific UI element—such as a list item, tab item, or combo box option—using UI Automation. This is notably useful in desktop applications where selecting items programmatically can help automate tasks, improve efficiency, and reduce manual errors.
+
+For instance, automatically selecting a product from a dropdown list, or choosing options in a settings menu.
+
+## Configuration Options
+
+| Field Name          | Description                                                                      | Input Type | Required? | Default Value |
+| ------------------- | -------------------------------------------------------------------------------- | ---------- | --------- | ------------- |
+| **UI Element**      | The UI element you would like to select.                                         | Text       | Yes       | _(empty)_     |
+| **Max Wait Time (seconds)** | Maximum time to wait to find the UI element (in seconds).                   | Text       | No        | 5             |
+| **Was Selected**    | True if the element was selected successfully, otherwise false.                  | Output     | No        | WasSelected   |
+
+## Expected Output Format
+
+The output of this node is a **boolean value**, indicating success with `true` if the element was selected, or `false` if it wasn't.
+
+## Step-by-Step Guide
+
+<Steps>
+### Step 1
+
+Add the **Select UI Element** node into your flow.
+
+### Step 2
+
+In the **UI Element** field, enter the specific UI element you wish to select.
+
+### Step 3
+
+(Optional) Set the **Max Wait Time (seconds)** to define how long the system should look for the UI element before timing out.
+
+### Step 4
+
+The result, indicating whether the selection was successful, will be automatically available as **WasSelected** to use in subsequent nodes.
+
+</Steps>
+
+<Callout type="info" title="Note">
+  The default wait time is 5 seconds. Adjust this if the UI element typically takes longer to appear.
+</Callout>
+
+## Input/Output Examples
+
+| UI Element | Max Wait Time (seconds) | Was Selected (Output) |
+| ---------- | ----------------------- | --------------------- |
+| "SubmitButton" | 3                         | true                  |
+| "DropdownItem2" | 10                        | false                 |
+
+## Common Mistakes & Troubleshooting
+
+| Problem                                | Solution                                                                                                                                       |
+| -------------------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------- |
+| **UI Element field is empty**          | Ensure that you have entered the name/path of the UI element you intend to select.                                                             |
+| **Wait time too short**                | If the operation often fails, consider increasing the **Max Wait Time** to give more time for the UI element to load fully.                     |
+| **Element not found error**            | Double-check that the UI element's identifier is correct, and ensure the application window is in focus and not obscured by other windows.     |
+
+## Real-World Use Cases
+
+- **Product Selection**: Automate choosing items from a dropdown in e-commerce applications to speed up order processes.
+- **Software Configuration**: Automatically navigate through settings menus to configure software according to specified parameters.
+- **Data Entry Tasks**: Select entries in forms or lists to streamline common data entry operations.

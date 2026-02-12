@@ -1,0 +1,77 @@
+import { Callout, Steps } from "nextra/components";
+
+# Take Screenshot
+
+The **Take Screenshot** node allows you to capture screenshots of your screen(s) on a desktop platform. You can choose to capture one specific screen, all available screens, or just the primary screen. The screenshot can then be saved either to the clipboard for quick pasting into documents, or as a file for permanent storage. This is useful when you need to document, share, or save visual information from your desktop.
+
+## Configuration Options
+
+| Field Name            | Description                                                                 | Input Type | Required? | Default Value |
+| --------------------- | --------------------------------------------------------------------------- | ---------- | --------- | ------------- |
+| **Capture**           | Specifies which part of the screen to capture: all screens, primary screen, or a specific one. | Select     | Yes       | _(empty)_     |
+| **Screen to Capture** | The handle of the screen/window to capture, required only if choosing "Select screen". | Text       | No        | _(empty)_     |
+| **Save Screenshot To**| Choose where to save the screenshot: clipboard or file.                      | Select     | No        | _(empty)_     |
+| **Image File Path**   | Path to save the screenshot file, required only if saving to "File".         | Text       | No        | _(empty)_     |
+| **Image Format**      | The format to save the screenshot (e.g., BMP, GIF, JPG, PNG, TIFF). Required if saving to "File". | Select     | No        | BMP           |
+
+## Expected Output Format
+
+The node does not directly produce an output value you interact with in the flow. Instead, the screenshot is either stored as an image file on your system or is available in the clipboard for further use.
+
+## Step-by-Step Guide
+
+<Steps>
+### Step 1
+
+Add **Take Screenshot** node into your flow.
+
+### Step 2
+
+In the **Capture** dropdown, select what you want to capture:
+
+- **All screens**: Captures all available screens on your desktop.
+- **Primary screen**: Captures only the main screen you use.
+- **Select screen**: Captures a specific screen or window. You'll need to provide the screen's handle.
+
+### Step 3
+
+If you selected **Select screen**, fill in the **Screen to Capture** field with the appropriate screen/window handle.
+
+### Step 4
+
+In the **Save Screenshot To** dropdown, choose where you want the screenshot to be saved:
+
+- **Clipboard**: The screenshot will be put in your clipboard, ready to paste elsewhere.
+- **File**: The screenshot will be saved to a file.
+
+### Step 5
+
+If you selected **File**, fill in the **Image File Path** with the location where you want to save the file, and choose an **Image Format** (e.g., JPG, PNG, TIFF) from the dropdown.
+
+</Steps>
+
+<Callout type="info" title="Tip">
+  If you choose "Clipboard" in the **Save Screenshot To** option, you do not need to specify an **Image File Path** or **Image Format**.
+</Callout>
+
+## Input/Output Examples
+
+| Capture Mode    | Save To      | Image Format | Image File Path       | Output      |
+| --------------- | ------------ | ------------ | --------------------- | ----------- |
+| All screens     | Clipboard    | _(n/a)_      | _(n/a)_               | Screenshot available on clipboard |
+| Primary screen  | File         | PNG          | C:\Screenshots\screen.png | Screenshot saved as PNG |
+| Select screen   | File         | JPG          | D:\Capture\capture.jpg | Screenshot of specified screen saved as JPG |
+
+## Common Mistakes & Troubleshooting
+
+| Problem                                                      | Solution                                                                       |
+| ------------------------------------------------------------ | ------------------------------------------------------------------------------ |
+| **Screen to Capture required but not provided**              | Ensure you specify the screen handle when selecting "Select screen".          |
+| **Save path not available when "File" selected**             | Provide a valid file path in **Image File Path** when saving to a file.       |
+| **Screenshot not saving to desired format**                  | Double-check the **Image Format** you selected matches your intention.         |
+
+## Real-World Use Cases
+
+- **Quick Communication**: Capture and share your desktop arrangements or settings via clipboard for fast communication.
+- **Documentation**: Take comprehensive visual documentation of software UIs by saving screenshots to files.
+- **Monitoring**: Automatically capture periodic screenshots of a dedicated monitoring system or primary screen setup for record purposes.

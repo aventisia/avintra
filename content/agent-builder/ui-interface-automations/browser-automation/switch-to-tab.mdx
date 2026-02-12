@@ -1,0 +1,94 @@
+import { Callout, Steps } from "nextra/components";
+
+# Switch To Tab
+
+The **Switch To Tab** node is designed to switch control to an active browser tab in a web browsing instance. You can specify which tab to switch to by its position, by part of its title, or by a text fragment that appears in its URL. This is useful when automating workflows that require interaction with multiple browser tabs, allowing for smooth navigation between them.
+
+Here are situations where it might be beneficial:
+
+- Switching to a specific tab to update or retrieve data.
+- Automating tasks across multiple tabs in a browser session.
+- Navigating between tabs when gathering information from web sources.
+
+## Configuration Options
+
+| Field Name             | Description                                                                 | Input Type | Required? | Default Value |
+| ---------------------- | --------------------------------------------------------------------------- | ---------- | --------- | ------------- |
+| **Web Browser Instance** | Enter or choose the variable that contains the web browser instance to work with. | Text       | Yes       | _(empty)_     |
+| **Switch Mode**        | Specifies how to locate the tab: by index, title, or URL fragment.         | Select     | Yes       | ByIndex      |
+| **Tab Index**          | The index (1-based) of the tab to switch to. _Only appears if Switch Mode is "By Index"._ | Text       | No        | _(empty)_     |
+| **Tab Title**          | The title of the tab to switch to. _Only appears if Switch Mode is "By Title"._ | Text       | No        | _(empty)_     |
+| **URL Fragment**       | A partial URL to match the tab. _Only appears if Switch Mode is "By URL Fragment"._ | Text       | No        | _(empty)_     |
+| **Timeout Seconds**    | Maximum time in seconds to wait for the tab to become available.            | Text       | No        | 60            |
+
+## Expected Output Format
+
+The output from this node includes:
+
+- **Current Tab Title**: This returns the title of the current tab after switching.
+- **Current Tab URL**: Provides the URL of the current tab after switching.
+
+These outputs are returned as text values.
+
+## Step-by-Step Guide
+
+<Steps>
+### Step 1
+
+Add the **Switch To Tab** node into your flow from the node library.
+
+### Step 2
+
+In the **Web Browser Instance** field, input or select the variable that represents your web browser session.
+
+### Step 3
+
+Use the **Switch Mode** dropdown to choose how you want to find the tab:
+
+- **By Index**: Select this to switch tabs based on their order in the browser.
+- **By Title**: Select this to switch using the tab's full or partial title.
+- **By URL Fragment**: Opt this to switch based on text found in the tab's URL.
+
+### Step 4
+
+Depending on your **Switch Mode** selection, fill in the additional field:
+
+- **Tab Index** for "By Index".
+- **Tab Title** for "By Title".
+- **URL Fragment** for "By URL Fragment".
+
+### Step 5
+
+(Optionally) Adjust the **Timeout Seconds** if you expect delays in tab loading.
+
+### Step 6
+
+The node will provide **CurrentTabTitle** and **CurrentTabUrl** as outputs for further use in your automation flow.
+
+</Steps>
+
+<Callout type="info" title="Note">
+  Remember that the additional fields like **Tab Index**, **Tab Title**, or **URL Fragment** will only appear based on your selection in the **Switch Mode** field.
+</Callout>
+
+## Input/Output Examples
+
+| Switch Mode     | Input Value                  | Output - Current Tab Title | Output - Current Tab URL |
+| ----------------| ---------------------------- | ---------------------------| ------------------------ |
+| By Index        | 3                            | Google                      | https://www.google.com   |
+| By Title        | Gmail                        | Gmail                       | https://mail.google.com  |
+| By URL Fragment | google                       | Google Search               | https://www.google.com   |
+
+## Common Mistakes & Troubleshooting
+
+| Problem                                      | Solution                                                                                                         |
+| -------------------------------------------- | ---------------------------------------------------------------------------------------------------------------- |
+| **Tab not switching**                        | Ensure the browser instance variable is correct and active. Also, make sure the specified tab is present.        |
+| **Timeout issues**                           | Increase the **Timeout Seconds** if your browser or system is slow in loading pages.                             |
+| **Fields not appearing**                     | Check that your selection in **Switch Mode** matches the corresponding field you are trying to use (Index/Title/URL). |
+
+## Real-World Use Cases
+
+- **Research and Data Collection**: Switch between multiple tabs to gather data from assorted online sources efficiently.
+- **Web Testing Automation**: Automatically verify web app functionality across different tabs and URLs.
+- **Online Shopping**: Navigate between product pages, price comparison tabs, or checkout processes dynamically.

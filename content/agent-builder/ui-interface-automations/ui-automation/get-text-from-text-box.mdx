@@ -1,0 +1,71 @@
+import { Callout, Steps } from "nextra/components";
+
+# Get Text from Text Box
+
+The **Get Text from Text Box** node is used to automatically capture and return the text contained within a text box or an editable field from your desktop application's user interface. This is particularly helpful when you need to extract input information from forms or other text entries for automated processing or record-keeping.
+
+Examples of use include:
+
+- Retrieving user inputs from a software form submission.
+- Collecting data from editable fields to be used in a subsequent process step.
+- Extracting comments or notes entered in a software interface for analysis.
+
+## Configuration Options
+
+| Field Name           | Description                                                                 | Input Type | Required? | Default Value |
+| -------------------- | --------------------------------------------------------------------------- | ---------- | --------- | ------------- |
+| **UI Element**       | The UI Element for the text box or editable field you want to read.         | Text       | Yes       | _(empty)_     |
+| **Max Wait Time**    | Maximum time to wait to find the UI element (in seconds).                   | Text       | No        | 5             |
+
+## Expected Output Format
+
+The output of this node is the **string of text** extracted from the specified text box or editable field.
+
+- Example output: "Order Number: 123456"
+- The output is available under the label **TextBoxContent**.
+
+## Step-by-Step Guide
+
+<Steps>
+### Step 1
+
+Add the **Get Text from Text Box** node into your flow.
+
+### Step 2
+
+In the **UI Element** field, specify the identification or path to the text box you wish to capture text from. Ensure that this element is clearly identified and located on your desktop application.
+
+### Step 3
+
+Optionally, set the **Max Wait Time** if you expect longer loading times for the UI element. The default wait time is set to 5 seconds.
+
+### Step 4
+
+Once configured, the node will read the text from the specified UI element and store it under **TextBoxContent** to be referenced by subsequent nodes in your flow.
+
+</Steps>
+
+<Callout type="info" title="Tip">
+  The **Max Wait Time** allows flexibility in capturing text from applications that might be slow to load. Adjust this time based on the application's performance you are interacting with.
+</Callout>
+
+## Input/Output Examples
+
+| Input Identification | Max Wait Time (seconds) | Output String             | Output Label      |
+| -------------------- | ----------------------- | ------------------------- | ----------------- |
+| `#usernameField`     | 3                       | "John Doe"                | TextBoxContent    |
+| `.notes`             | 10                      | "Important Update Notes"  | TextBoxContent    |
+
+## Common Mistakes & Troubleshooting
+
+| Problem                                               | Solution                                                                                     |
+| ----------------------------------------------------- | -------------------------------------------------------------------------------------------- |
+| **Text not captured**                                 | Ensure the UI Element is correctly specified and that the application window is open and focus is on the specified element. |
+| **Max Wait Time too short**                           | Increase the wait time if the element takes longer to appear than the default 5 seconds.     |
+| **Invalid UI Element path**                           | Double-check the identification or path of the UI Element for accuracy.                      |
+
+## Real-World Use Cases
+
+- **Automate Form Processing**: Extract names or IDs entered into an application form to populate a database.
+- **Dynamic Report Generation**: Pull text data from editable fields directly into generated reports.
+- **Customer Feedback Collection**: Retrieve feedback comments from a CRM system for analysis and action.

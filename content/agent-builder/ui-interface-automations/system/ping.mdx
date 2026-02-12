@@ -1,0 +1,77 @@
+import { Callout, Steps } from "nextra/components";
+
+# Ping
+
+The **Ping** node helps you check if a remote computer is accessible over a network by sending a "ping" message. This is useful for diagnosing network connectivity issues or ensuring that networked devices are reachable.
+
+For example:
+
+- Network troubleshooting: Verify if a server or website is online.
+- Monitoring: Check the accessibility of devices in automated workflows.
+
+## Configuration Options
+
+| Field Name          | Description                                                           | Input Type | Required? | Default Value |
+| ------------------- | --------------------------------------------------------------------- | ---------- | --------- | ------------- |
+| **Host Name**       | The hostname or IP address of the device you want to ping.            | Text       | Yes       | _(empty)_     |
+| **Timeout**         | Maximum wait time for a ping response, in milliseconds.               | Text       | No        | _(empty)_     |
+
+## Expected Output Format
+
+The outputs of this node provide detailed information about the ping operation:
+
+- **Ping Result**: A message indicating if the ping was successful or failed ("success" or "failure").
+- **Round Trip Time**: The duration taken for the ping operation, measured in milliseconds.
+- **Status Message**: Additional status information about the ping operation.
+
+These outputs are configured within the node as **PingResult**, **RoundTripTime**, and **StatusMessages**, respectively.
+
+## Step-by-Step Guide
+
+<Steps>
+### Step 1
+
+Add the **Ping** node into your flow.
+
+### Step 2
+
+In the **Host Name** field, enter the hostname or IP address of the server or device you wish to ping.
+
+### Step 3
+
+(Optional) Provide the **Timeout** value by specifying the maximum wait time for a response in milliseconds. If left empty, the default system timeout will apply.
+
+### Step 4
+
+Review the outputs, which will show the results under **Ping Result**, the time it took under **Round Trip Time**, and any additional information in **Status Message**.
+
+### Step 5
+
+Use the ping results in subsequent nodes to respond to network availability or connectivity conditions.
+
+</Steps>
+
+<Callout type="info" title="Tip">
+  If you don't specify a **Timeout**, the system will use its default timeout setting. This can vary depending on system configurations.
+</Callout>
+
+## Input/Output Examples
+
+| Host Name    | Timeout | Ping Result | Round Trip Time | Status Message           |
+| ------------ | ------- | ----------- | --------------- | ------------------------ |
+| `example.com`| 1000    | success     | 45              | "Ping successful."       |
+| `badsite.com`| 1000    | failure     | -               | "Host unreachable."      |
+
+## Common Mistakes & Troubleshooting
+
+| Problem                                    | Solution                                                                                               |
+| ------------------------------------------ | ------------------------------------------------------------------------------------------------------ |
+| **Host Name is empty**                     | Ensure you enter a valid hostname or IP address in the **Host Name** field before proceeding.          |
+| **Ping Result shows "failure" unexpectedly** | Check if the network connection is working and the hostname/IP is correct.                             |
+| **Long Round Trip Time**                   | If the time is too long, consider setting a longer **Timeout** or check for network latency issues.    |
+
+## Real-World Use Cases
+
+- **Website Monitoring**: Regularly check if a website is accessible and measure response time for performance metrics.
+- **Server Management**: Automatically verify server accessibility and receive alerts if a server becomes unreachable.
+- **Network Troubleshooting**: Quickly identify if specific devices are accessible during network diagnostics.

@@ -1,0 +1,73 @@
+import { Callout, Steps } from "nextra/components";
+
+# Convert Binary Data to File
+
+The **Convert Binary Data to File** node lets you transform binary data, such as byte arrays or Base64 strings, into a tangible file. This can be particularly helpful when you need to store image data, documents, or any binary-formatted data as actual files on your system for further use or archival.
+
+For example:
+- Saving image binary data as .jpg or .png files.
+- Storing document data as .pdf or .docx files.
+- Converting Base64 encoded data back into files for further processing or analysis.
+
+## Configuration Options
+
+| Field Name       | Description                                                                               | Input Type | Required? | Default Value |
+| ---------------- | ----------------------------------------------------------------------------------------- | ---------- | --------- | ------------- |
+| **Binary Data**  | The binary data to convert. It can be either byte array or a Base64 string.               | Text       | Yes       | _(empty)_     |
+| **File Path**    | The full path on your computer where the file should be saved.                            | Text       | Yes       | _(empty)_     |
+| **If File Exists** | Defines what to do if a file with the same name already exists in the destination folder. | Select     | Yes       | DoNothing     |
+
+## Expected Output Format
+
+The output of this node is a **file saved** at the specified location on your computer. There isn’t a direct output value through the node; the result is tangible as a file stored on disk.
+
+## Step-by-Step Guide
+
+<Steps>
+### Step 1
+
+Add **Convert Binary Data to File** node into your flow.
+
+### Step 2
+
+In the **Binary Data** field, enter the binary information you wish to convert. Ensure it is either in byte array or Base64 string format.
+
+### Step 3
+
+In the **File Path** field, specify the complete path including the filename and extension where you want the file to save.
+
+### Step 4
+
+In the **If File Exists** dropdown, select what to do if a file with the same name already exists at the destination:
+- **Do nothing**: The existing file will remain intact.
+- **Overwrite**: The existing file will be deleted and replaced by the new file.
+
+### Step 5
+
+Proceed with executing the flow to convert the binary data and save the file.
+</Steps>
+
+<Callout type="warning" title="Important">
+  Ensure the File Path is correct and the destination folder exists. Incorrect paths can lead to errors or file not being saved.
+</Callout>
+
+## Input/Output Examples
+
+| Binary Data             | File Path                | If File Exists | Resulting Action                      |
+| ----------------------- | ------------------------ | -------------- | ------------------------------------- |
+| Binary data as Base64   | C:\user\documents\image.jpg | Overwrite      | Existing image.jpg is replaced with new file. |
+| Byte array data         | D:\backup\file.pdf       | Do nothing     | If file.pdf exists, it remains unchanged.   |
+
+## Common Mistakes & Troubleshooting
+
+| Problem                                        | Solution                                                                                  |
+| ---------------------------------------------- | ----------------------------------------------------------------------------------------- |
+| **Invalid File Path**                          | Double-check that the file path is correctly entered, including the directory and filename. |
+| **Binary data format not recognized**          | Ensure the binary data is valid and correctly formatted as byte array or Base64 string.     |
+| **Unexpected overwrite**                       | To avoid accidental overwriting, double-check your selection in the **If File Exists** field. |
+
+## Real-World Use Cases
+
+- **Image Storage**: Store user-uploaded image data in a dedicated folder to maintain user submissions.
+- **Document Restoration**: Convert and save encoded document data for archival or access on disk.
+- **Data Backups**: Convert data streams into files for localized backups.

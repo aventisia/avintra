@@ -1,0 +1,86 @@
+import { Callout, Steps } from "nextra/components";
+
+# Print Document
+
+The **Print Document** node lets you automate the process of printing documents with customizable settings such as printer selection, method of printing, and number of copies. This node is particularly useful when you want to automate the printing of files through different printers and methods without manual intervention.
+
+For example:
+
+- Selecting a specific printer from your available devices.
+- Specifying the number of copies of the document you need.
+- Choosing an alternative printing method if the default one is unsuitable.
+
+## Configuration Options
+
+| Field Name         | Description                                                               | Input Type | Required? | Default Value |
+| ------------------ | ------------------------------------------------------------------------- | ---------- | --------- | ------------- |
+| **Document Path**  | Full path to the document you want to print.                              | Text       | Yes       | _(empty)_     |
+| **Printer Name**   | The specific printer to use for the job. Leave blank to use the default.  | Text       | No        | _(empty)_     |
+| **Print Method**   | Choose how the document is printed: Default, Process Start, or Direct.    | Select     | No        | Default       |
+| **Copies**         | The number of copies of the document to print.                            | Text       | No        | 1             |
+
+## Expected Output Format
+
+The output from this node is a **status indication** as well as an optional **job identifier**:
+
+- **Success**: The operation returns a success message indicating if the print was successful.
+- **Job ID**: Provides an identifier for the print job if this information is available.
+
+## Step-by-Step Guide
+
+<Steps>
+### Step 1
+
+Add the **Print Document** node to your flow.
+
+### Step 2
+
+In the **Document Path** field, input the full path to the document you want to print. This path should be accessible from your computer.
+
+### Step 3
+
+(Optional) To specify a printer, enter its name in the **Printer Name** field. Leave this blank to use your computer's default printer.
+
+### Step 4
+
+In the **Print Method** dropdown, select your preferred method of printing. Options include:
+
+- **Default**: Uses the system's default printing process.
+- **Process Start**: Utilizes an external process to send the document to the printer.
+- **Direct**: Implements direct printing where supported.
+
+### Step 5
+
+(Optional) Specify the number of copies you wish to print in the **Copies** field. The default is one copy if left empty.
+
+### Step 6
+
+The results of the print operation can be accessed through the **Success** message and **Job ID** (if available) output fields.
+</Steps>
+
+<Callout type="warning" title="Important">
+  Be sure the document path is correct and accessible to avoid errors during the printing process.
+</Callout>
+
+## Input/Output Examples
+
+| Document Path   | Printer Name        | Print Method | Copies | Success    | Job ID   |
+| --------------- | ------------------- | ------------ | ------ | ---------- | -------- |
+| C:\Documents\file.pdf | HP LaserJet  | Default      | 2      | Success    | 12345    |
+| C:\Docs\invoice.docx | _(empty)_      | ProcessStart | 1      | Success    | 67890    |
+| C:\Reports\report.pdf | Canon Pixma   | Direct       | 5      | Success    | 13579    |
+
+## Common Mistakes & Troubleshooting
+
+| Problem                                      | Solution                                                                                                   |
+| -------------------------------------------- | ---------------------------------------------------------------------------------------------------------- |
+| **Document not printing**                    | Verify the document path is correct and the printer is set up correctly and connected.                     |
+| **Printer not found**                        | Double-check the printer name is entered correctly. Use the device's exact name as listed in your settings. |
+| **No print job ID returned**                 | Not all printers provide job IDs. Check printer capabilities or try a different print method.              |
+
+## Real-World Use Cases
+
+- **Bulk Printing**: Quickly print multiple documents with different settings to streamline workflows.
+- **Office Automation**: Use in office environments to reduce manual printer job setups.
+- **Scheduled Reports**: Automate the printing of scheduled reports so that they are ready when needed.
+- **Client Presentations**: Ensure all presentation materials are printed and ready prior to meetings or events.

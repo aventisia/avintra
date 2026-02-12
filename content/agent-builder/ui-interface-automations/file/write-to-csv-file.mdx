@@ -1,0 +1,79 @@
+import { Callout, Steps } from "nextra/components";
+
+# Write to CSV File
+
+The **Write to CSV File** node enables you to save data into a CSV (Comma-Separated Values) file, which is a common format for importing and exporting spreadsheet data. You can write various data formats like data tables, rows, or lists to a file on your system. This is particularly useful for creating reports, data backups, or transferring information between different systems.
+
+## Configuration Options
+
+| Field Name                  | Description                                                                                           | Input Type | Required? | Default Value                  |
+|-----------------------------|-------------------------------------------------------------------------------------------------------|------------|-----------|-------------------------------|
+| **Variable to Write**       | The data you want to write to the CSV file. This could be a table, single row, or list of data.       | Text       | Yes       | _(empty)_                     |
+| **File Path**               | The complete path where you want to save the CSV file.                                               | Text       | Yes       | _(empty)_                     |
+| **Encoding**                | Choose the encoding type for your CSV file to ensure it is saved correctly across different systems.  | Select     | No        | UTF-8                          |
+| **Use Custom Column Separator** | Toggle to specify whether a custom column separator is to be used, instead of a standard one.      | Switch     | No        | false                          |
+| **Custom Column Separator** | Define a custom character to separate columns. _Only appears if "Use Custom Column Separator" is enabled._ | Text       | No        | _(empty)_                     |
+| **Predefined Separator**    | Select a standard separator (Comma, Tab, or Semicolon) for your CSV file. _Only appears if "Use Custom Column Separator" is not enabled._ | Select     | No        | Comma                         |
+| **If File Exists**          | Decide how to handle the situation if the file already exists: overwrite it or append new data at the end. | Select     | No        | Overwrite                     |
+
+## Expected Output Format
+
+The node writes data to a **CSV file** format, which will reside on your computer as specified in the "File Path." The file is formatted according to the selected encoding and separator.
+
+## Step-by-Step Guide
+
+<Steps>
+### Step 1
+
+Add a **Write to CSV File** node to your work process.
+
+### Step 2
+
+Enter your data variable in the **Variable to Write** field. This could be a table, row, or list that you wish to save as a CSV.
+
+### Step 3
+
+Specify the complete file path in the **File Path** field where the CSV will be created or updated. Ensure you have the correct file extension `.csv`.
+
+### Step 4
+
+Select the file encoding you prefer from the **Encoding** dropdown menu. If unsure, leave it as **UTF-8**, which is generally applicable.
+
+### Step 5
+
+Decide if you wish to use a custom column separator by toggling the **Use Custom Column Separator**. If left unchecked, choose from standard separators with **Predefined Separator**.
+
+### Step 6
+
+Define your choice for the **If File Exists** option to either overwrite any existing files or append to them.
+
+### Step 7
+
+Execute the process, after which the data is written into the specified CSV file.
+
+</Steps>
+
+<Callout type="info" title="Note">
+  Use a custom column separator only if necessary, such as when default separators interfere with your data content.
+</Callout>
+
+## Input/Output Examples
+
+| Variable to Write | File Path         | Separator | Encoding | If File Exists | Output                                   |
+|-------------------|-------------------|-----------|----------|----------------|------------------------------------------|
+| TableData         | C:/data/output.csv | Comma     | UTF-8    | Overwrite      | Data is written to "C:/data/output.csv". |
+
+## Common Mistakes & Troubleshooting
+
+| Problem                                       | Solution                                                                                                            |
+|-----------------------------------------------|---------------------------------------------------------------------------------------------------------------------|
+| **File path is incorrect or inaccessible**    | Verify that the directory path exists and you have permission to create or modify files there.                      |
+| **Data not formatted correctly in CSV**       | Check your data structure and ensure that it matches the intended format for the CSV. Ensure correct separator.     |
+| **Encoding issues**                           | Select the proper encoding that suits the desired target system. Changing from "UTF-8" to "System Default" might help. |
+| **File not found error when appending**       | Ensure that the file exists if you selected the "Append" option. If it doesn't exist, choose "Overwrite" instead.    |
+
+## Real-World Use Cases
+
+- **Exporting Sales Reports**: Save daily transaction data tables to CSV for onward reporting and analysis.
+- **Data Backup**: Periodically back up critical records out of an application database as CSV files.
+- **Information Sharing**: Transform lists of client or employee information into CSV for emailing or integration into another system.

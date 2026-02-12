@@ -1,0 +1,76 @@
+import { Callout, Steps } from "nextra/components";
+
+# Copy File(s)
+
+The **Copy File(s)** node allows you to duplicate one or more files from a specified source location to a chosen destination folder on your desktop. It is particularly useful for organizing files, creating backups, or moving batches of files without manually copying each one.
+
+For example:
+
+- Copying selected files with specific extensions to a backup folder.
+- Moving all modified documents to a single project directory.
+- Duplicating media files for archiving.
+
+## Configuration Options
+
+| Field Name            | Description                                                                                                  | Input Type | Required? | Default Value |
+| --------------------- | ------------------------------------------------------------------------------------------------------------ | ---------- | --------- | ------------- |
+| **File(s) to copy**   | The path(s) of the file(s) you want to copy. Supports using wildcards like `*.txt` to copy multiple files.   | Text       | Yes       | _(empty)_     |
+| **Destination folder**| The folder where the files will be copied to.                                                                | Text       | Yes       | _(empty)_     |
+| **If file exists**    | Choose what actions should be taken if files with the same name already exist in the destination folder.     | Select     | Yes       | DoNothing     |
+
+## Expected Output Format
+
+The output of this node is a **list of file names** that were successfully copied to the destination. Each entry in the list is the name of a file.
+
+## Step-by-Step Guide
+
+<Steps>
+### Step 1
+
+Add **Copy File(s)** node into your workflow.
+
+### Step 2
+
+Enter the paths of the files you want to copy in the **File(s) to copy** field. You can input single or multiple paths and use wildcards like `*.txt` to select multiple files of the same type.
+
+### Step 3
+
+Specify the **Destination folder** where you want the files to be copied. Ensure the path is accurate and accessible.
+
+### Step 4
+
+In the **If file exists** dropdown, select what should happen if a file with the same name exists in the destination:
+
+- **Do nothing**: The file will not be copied if it already exists.
+- **Overwrite**: The existing file will be replaced with the new one.
+
+### Step 5
+
+Run the node to copy your files. The list of successfully copied files will appear as **Copied Files** for further use in your flow.
+
+</Steps>
+
+<Callout type="info" title="Tip">
+  Remember to ensure that both the source and destination paths are correctly formatted and accessible to avoid errors during the copy process.
+</Callout>
+
+## Input/Output Examples
+
+| File(s) to copy       | Destination folder | If file exists | Copied Files                               |
+| --------------------- | ------------------ | -------------- | ------------------------------------------ |
+| `/user/docs/*.docx`   | `/backups/docs`    | Overwrite      | [`file1.docx`, `file2.docx`]               |
+| `/images/pic*.png`    | `/archive/images`  | DoNothing      | [`pic1.png`, `pic2.png`]                   |
+
+## Common Mistakes & Troubleshooting
+
+| Problem                                            | Solution                                                                                                                                         |
+| -------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------ |
+| **File not found error**                           | Check the source file path for typos or incorrect syntax. Ensure the file exists at the specified location.                                       |
+| **Destination path incorrect**                     | Verify that the destination folder path is correct and accessible. Check for permission issues or path typos.                                      |
+| **Files not overwriting despite selection**        | Ensure that "Overwrite" is selected in the **If file exists** dropdown if you want files to be replaced.                                          |
+
+## Real-World Use Cases
+
+- **Project Management**: Easily consolidate files from different folders to a unified project directory for improved organization.
+- **Regular Backups**: Automate the process of copying important files to a secure backup location on a regular basis.
+- **Document Versioning**: Copy and overwrite drafts to maintain only the latest version in a specific folder.

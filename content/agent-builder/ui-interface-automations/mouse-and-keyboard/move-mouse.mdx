@@ -1,0 +1,86 @@
+import { Callout, Steps } from "nextra/components";
+
+# Move Mouse
+
+The **Move Mouse** node allows you to programmatically move the mouse cursor to a specific position on your desktop screen. This is particularly helpful for automating tasks that require precise mouse positioning, such as navigating user interfaces or executing mouse-based actions.
+
+For example:
+
+- Moving the cursor to a button on the screen for a subsequent click operation.
+- Positioning the mouse over a form field before data entry.
+- Aligning the cursor with particular elements in a software application.
+
+## Configuration Options
+
+| Field Name                          | Description                                                                                          | Input Type | Required? | Default Value  |
+| ----------------------------------- | ---------------------------------------------------------------------------------------------------- | ---------- | --------- | -------------- |
+| **Position X**                      | Specifies the X coordinate on the screen where the mouse should be moved.                            | Text       | No        | _(empty)_      |
+| **Position Y**                      | Specifies the Y coordinate on the screen where the mouse should be moved.                            | Text       | No        | _(empty)_      |
+| **Relative To**                     | Determines the reference point for the mouse movement: relative to the screen or a specific window.  | Select     | No        | _(empty)_      |
+| **Move Mouse From Previous Position** | Specifies if the mouse should move from its current location with an animated effect, and sets speed. | Select     | No        | _(empty)_      |
+
+## Expected Output Format
+
+The output is the **current position of the cursor** on the screen after the operation, formatted as `CurrentCursorPosition`.
+
+## Step-by-Step Guide
+
+<Steps>
+### Step 1
+
+Add the **Move Mouse** node into your flow.
+
+### Step 2
+
+Enter the desired horizontal coordinate in the **Position X** field. This determines how far from the left of your screen or window the cursor will be moved.
+
+### Step 3
+
+Enter the desired vertical coordinate in the **Position Y** field. This determines how far from the top of your screen or window the cursor will be moved.
+
+### Step 4
+
+Select the reference point for the mouse's movement in the **Relative To** dropdown. You can choose:
+
+- **Screen**: Moves the cursor based on the entire screen dimensions.
+- **Foreground Window**: Moves the cursor relative to the active window currently in focus.
+
+### Step 5
+
+Choose your preferred animated effect for moving the mouse in the **Move Mouse From Previous Position** dropdown:
+
+- **Instant**: Immediately moves the mouse without animation.
+- **Low Speed**: Moves the mouse slowly with visible animation.
+- **Normal Speed**: Moves the mouse at moderate speed with animation.
+- **High Speed**: Quickly shifts the mouse with minimal delay.
+
+### Step 6
+
+The final position of the cursor will be provided as **CurrentCursorPosition** for further use in your automation flow.
+
+</Steps>
+
+<Callout type="info" title="Tip">
+  If accurate positioning is crucial, ensure your screen or the window is stable and unchanged during mouse movement.
+</Callout>
+
+## Input/Output Examples
+
+| X Coordinate | Y Coordinate | Relative To         | Animation Effect         | Output Value           | Output Type       |
+| ------------ | ------------ | ------------------- | ------------------------ | ---------------------- | ----------------- |
+| 500          | 300          | Screen              | Instant                  | 500,300                | CurrentCursorPosition |
+| 100          | 200          | Foreground Window   | Low Speed                | 100,200                | CurrentCursorPosition |
+
+## Common Mistakes & Troubleshooting
+
+| Problem                                                                   | Solution                                                                                                                  |
+| ------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------- |
+| **Mouse doesn't move as expected**                                        | Ensure the correct coordinates and reference point (Screen or Foreground Window) are selected.                            |
+| **Movement is too slow or fast**                                          | Adjust the **Move Mouse From Previous Position** setting to your desired speed.                                           |
+| **Cursor moves off-screen**                                               | Double-check the coordinates to ensure they fall within your screen or active window boundaries.                          |
+
+## Real-World Use Cases
+
+- **Automated Testing**: Moving the mouse to specific points in software applications to simulate user interactions or for UI automation checks.
+- **Data Entry Automation**: Aligning the cursor with fields for automated text input.
+- **Presentation Setup**: Previewing and setting mouse positions for slides that offer interactive controls.

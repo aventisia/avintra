@@ -1,0 +1,86 @@
+import { Callout, Steps } from "nextra/components";
+
+# Get File Path Components
+
+The **Get File Path Components** node is designed to help you extract key parts of a file path. When you need to work with individual components of a file's path—such as the directory, file name, or file extension—this node makes it easy and efficient. It’s particularly useful when automating tasks that require manipulating or analyzing file paths, such as organizing files, generating reports, or preparing data for further processing.
+
+For example, you can extract:
+
+- The directory where the file is located.
+- The file's name, with or without its extension.
+- The file's extension (e.g., `.doc`).
+- The root path or the file’s creation date and time.
+
+## Configuration Options
+
+| Field Name                     | Description                                               | Input Type | Required? | Default Value        |
+| ------------------------------ | --------------------------------------------------------- | ---------- | --------- | -------------------- |
+| **Source File Path**           | The full path of the file from which to extract components. | Text       | Yes       | _(empty)_            |
+| **Root Path**                  | The root path of the source file.                          | Output     | No        | RootPath             |
+| **Directory Path**             | The directory of the source file.                          | Output     | No        | Directory            |
+| **File Name**                  | The name of the source file.                               | Output     | No        | FileName             |
+| **File Name Without Extension**| The file name without the file extension.                  | Output     | No        | FileNameNoExtension  |
+| **File Extension**             | The extension of the source file.                          | Output     | No        | FileExtension        |
+| **Creation Date Time**         | The creation date and time of the source file.             | Output     | No        | CreationDateTime     |
+
+## Expected Output Format
+
+The output from this node includes various components of the file path:
+
+- **Root Path**: Text (e.g., `C:\`)
+- **Directory Path**: Text (e.g., `C:\Users\Documents\`)
+- **File Name**: Text (e.g., `report.docx`)
+- **File Name Without Extension**: Text (e.g., `report`)
+- **File Extension**: Text (e.g., `.docx`)
+- **Creation Date Time**: DateTime (e.g., `2023-10-12T14:45:00`)
+
+## Step-by-Step Guide
+
+<Steps>
+### Step 1
+
+Add the **Get File Path Components** node into your flow.
+
+### Step 2
+
+In the **Source File Path** field, enter the full file path from which you want to extract components. This could be a path like `C:\Users\Documents\report.docx`.
+
+### Step 3
+
+Upon entering the file path, the node will automatically extract and display the following components:
+- Root Path
+- Directory Path
+- File Name
+- File Name Without Extension
+- File Extension
+- Creation Date Time
+
+### Step 4
+
+Use these extracted components in subsequent nodes within your automation flow as needed.
+
+</Steps>
+
+<Callout type="info" title="Tip">
+  Ensure that the file path you enter in the **Source File Path** field is accurate and complete to avoid errors.
+</Callout>
+
+## Input/Output Examples
+
+| Source File Path                      | Root Path | Directory Path            | File Name | File Name No Extension | File Extension | Creation Date Time   |
+| ------------------------------------- | --------- | ------------------------- | --------- | ---------------------- | -------------- | -------------------- |
+| `C:\Users\Documents\report.docx`      | `C:\`     | `C:\Users\Documents\`     | `report.docx` | `report`               | `.docx`         | `2023-10-12T14:45:00`|
+
+## Common Mistakes & Troubleshooting
+
+| Problem                                              | Solution                                                        |
+| ---------------------------------------------------- | --------------------------------------------------------------- |
+| **Invalid file path**                                | Ensure you enter a correct and existing file path.              |
+| **Empty output fields**                              | Double-check if the input file path is present and correct.     |
+| **Unexpected extraction results**                    | Verify the format and components of input file path.            |
+
+## Real-World Use Cases
+
+- **File Management**: Automate file organization tasks by extracting and using directory and file name information.
+- **Data Reporting**: Prepare file-based data references for reports by extracting the creation date time.
+- **Integration Tasks**: Enable detailed file handling for integration between different systems by extracting necessary file components.

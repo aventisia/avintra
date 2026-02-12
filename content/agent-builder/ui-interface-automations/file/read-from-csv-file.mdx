@@ -1,0 +1,94 @@
+import { Callout, Steps } from "nextra/components";
+
+# Read from CSV File
+
+The **Read from CSV File** node is designed to import data from CSV (Comma Separated Values) files into a format that can be used in your automation workflows. This node is handy when you need to process or analyze data stored in CSV files, a common format for data exchange and storage.
+
+Typical usage scenarios include:
+
+- Reading data from reports or exports saved as CSV files.
+- Preparing data from spreadsheets for processing in automation tasks.
+- Extracting structured data from CSV files for further use in workflows.
+
+## Configuration Options
+
+| Field Name                           | Description                                                                                             | Input Type | Required? | Default Value |
+| ------------------------------------ | ------------------------------------------------------------------------------------------------------- | ---------- | --------- | ------------- |
+| **File Path**                        | The full path of the CSV file you want to read.                                                         | Text       | Yes       | _(empty)_     |
+| **Encoding**                         | Select the file encoding method. This affects how text is read from the CSV file.                        | Select     | No        | UTF8          |
+| **Trim Fields**                      | Determines if leading and trailing whitespaces should be removed from each field.                        | Switch     | No        | true          |
+| **First Line Contains Column Names** | Indicates if the first line of the CSV contains column names (or just data).                             | Switch     | No        | true          |
+| **Columns Separator**                | Specifies whether to use a predefined separator (comma, tab, etc.) or a custom separator.               | Select     | No        | Predefined    |
+| **Predefined Separator**             | Choose a predefined separator such as comma, tab, or semicolon.                                         | Select     | No        | Comma         |
+| **Custom Separator**                 | Define your custom separator if different from predefined options.                                       | Text       | No        | _(empty)_     |
+
+## Expected Output Format
+
+The output from this node is a **DataTable**, a structured format representing the contents of the CSV file, with rows and columns corresponding to the data read. It is labeled as `CsvTable`.
+
+## Step-by-Step Guide
+
+<Steps>
+### Step 1
+
+Add **Read from CSV File** node into your flow.
+
+### Step 2
+
+Enter the full path of your CSV file into the **File Path** field.
+
+### Step 3
+
+(Optional) Set the **Encoding** based on your file's text encoding. If unsure, UTF-8 is a safe default.
+
+### Step 4
+
+(Optional) Toggle **Trim Fields** if you want to remove extra spaces from around the data in each cell.
+
+### Step 5
+
+Set **First Line Contains Column Names** to match whether your CSV's first line is headers or data.
+
+### Step 6
+
+Choose **Columns Separator** type:
+- Select **Predefined** if your file uses common delimiters (comma, tab).
+- If you select **Predefined**, choose your **Predefined Separator** like Comma.
+- Select **Custom** to input your own unique delimiter in **Custom Separator** field.
+
+### Step 7
+
+Once everything is set, execute the node to read your CSV data. The result is available as `CsvTable` for use in other nodes.
+
+</Steps>
+
+<Callout type="info" title="Tip">
+  See what separator your CSV uses before setting **Columns Separator** to ensure proper data reading.
+</Callout>
+
+## Input/Output Examples
+
+- **Example Input:**
+  - File Path: `C:\Data\sales.csv`
+  - Encoding: `UTF-8`
+  - Trim Fields: `true`
+  - First Line Contains Column Names: `true`
+  - Separator: `Comma`
+- **Example Output:**
+  - DataTable labeled `CsvTable`, structured according to CSV content with headers and data properly separated.
+
+## Common Mistakes & Troubleshooting
+
+| Problem                                     | Solution                                                                                                                              |
+| ------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------- |
+| **File not found error**                    | Ensure the **File Path** is correct, including proper folder structure and filename extensions such as `.csv`.                         |
+| **Incorrect data structure**                | Verify the **Columns Separator** setting matches your CSV file's delimiter and check if column names option is set correctly.          |
+| **Encoding issues resulting in garbled text** | Adjust the **Encoding** option to match the file's encoding – try alternatives if data is not displaying properly.                      |
+| **Missing headers or wrong column names**   | Confirm the **First Line Contains Column Names** option matches your CSV file layout.                                                 |
+
+## Real-World Use Cases
+
+- **Sales Report Analysis**: Import a CSV of sales data to summarize sales figures and trends.
+- **Customer List Update**: Read a CSV of customer information to automate updates to a CRM system.
+- **Inventory Management**: Analyze product data stored in CSV files to optimize stock levels.
+- **Survey Data Integration**: Incorporate survey responses saved in CSV format into a broader business analytics workflow.

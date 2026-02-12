@@ -1,0 +1,64 @@
+import { Callout, Steps } from "nextra/components";
+
+# Wait for Mouse
+
+The **Wait for Mouse** node is designed to pause a workflow until a specified change occurs in the mouse pointer's appearance. This can be particularly useful in scenarios where you need to ensure certain processes or loading routines have completed before proceeding in an automation sequence. For instance, you may want a workflow to wait until a loading cursor disappears or a specific action is complete, as indicated by a cursor type change.
+
+## Configuration Options
+
+| Field Name                | Description                                                                                     | Input Type | Required? | Default Value |
+| ------------------------- | ----------------------------------------------------------------------------------------------- | ---------- | --------- | ------------- |
+| **Wait for Mouse Pointer To** | Decide whether to wait for the cursor to become or stop being a specified type.              | Select     | Yes       | _(empty)_     |
+| **Mouse Pointer**         | Choose the mouse pointer type to wait for (e.g., Arrow, Hourglass).                             | Select     | Yes       | _(empty)_     |
+| **Fail with Timeout Error** | Toggle to throw an error if the cursor change does not occur within the specified timeout.    | Switch     | No        | _(empty)_     |
+| **Duration**              | Set the maximum wait time in seconds for the cursor change to occur.                           | Text       | No        | 5             |
+
+## Expected Output Format
+
+The node itself does not produce a data output but rather controls the flow of the process based on the cursor change condition. Therefore, it acts as a control mechanism in a workflow sequence.
+
+## Step-by-Step Guide
+
+<Steps>
+### Step 1
+
+Add a **Wait for Mouse** node into your automation flow.
+
+### Step 2
+
+Set the **Wait for Mouse Pointer To** field by selecting either **Become** or **Become Not** from the dropdown:
+
+- **Become**: Wait until the cursor becomes the specified type.
+- **Become Not**: Wait until the cursor stops being the specified type.
+
+### Step 3
+
+In the **Mouse Pointer** field, select the cursor type you expect to appear or disappear (e.g., Arrow, Hourglass).
+
+### Step 4
+
+(Optional) Toggle **Fail with Timeout Error** if you want an error to trigger should the cursor not meet the condition within the timeout period.
+
+### Step 5
+
+Set the **Duration** field to specify how long (in seconds) the node should wait for the cursor change before it continues or fails if set.
+
+</Steps>
+
+<Callout type="info" title="Tip">
+  Use the "Fail with Timeout Error" switch to handle exceptions gracefully if the cursor does not change as anticipated within your timeout settings.
+</Callout>
+
+## Common Mistakes & Troubleshooting
+
+| Problem                                 | Solution                                                                                           |
+| --------------------------------------- | -------------------------------------------------------------------------------------------------- |
+| **Cursor does not change as expected**  | Verify that the correct mouse pointer type and condition is selected in the **Mouse Pointer** field.|
+| **Timeouts occur frequently**           | Ensure your **Duration** is sufficient for the task’s completion time. You may need to increase it. |
+| **Error not thrown when expected**      | Make sure the **Fail with Timeout Error** toggle switch is turned on.                              |
+
+## Real-World Use Cases
+
+- **Application Monitoring**: Pause automation until a program completes loading as indicated by a "Wait" cursor disappearing.
+- **Web Process Automation**: Wait for cursor to turn into a Hand symbol (link pointer) when an interactive element is ready.
+- **Form Completion**: Ensure forms are fully loaded and editable by waiting until cursor changes to an I-Beam (text entry) cursor.

@@ -1,0 +1,82 @@
+import { Callout, Steps } from "nextra/components";
+
+# Get Window
+
+The **Get Window** node helps you find and interact with a desktop window by its name using UI Automation. This is particularly useful when automating desktop applications or tasks that require detecting specific windows to proceed with other actions.
+
+For instance, you can:
+
+- Locate an open application window to bring it to the foreground.
+- Verify whether a specific window is open or not.
+- Prepare for further automation by obtaining details of a window.
+
+## Configuration Options
+
+| Field Name           | Description                                                                                        | Input Type | Required? | Default Value |
+| -------------------- | -------------------------------------------------------------------------------------------------- | ---------- | --------- | ------------- |
+| **Window Name**      | The name (title) of the window you wish to find.                                                    | Text       | Yes       | _(empty)_     |
+| **Name Match Mode**  | Define how the window name should be matched: exact match, contains text, or starts with text.    | Select     | No        | Equals        |
+| **Max Wait Time**    | Set the maximum time (in seconds) the system should wait to find the window.                        | Text       | No        | 5             |
+
+## Expected Output Format
+
+The output of this node is an **Automation Element** representing the found window. 
+
+- If the window is found, you receive an `AutomationElement` object (e.g., `WindowElement`).
+- If the window is not found, the output will indicate a failure to locate the window.
+
+## Step-by-Step Guide
+
+<Steps>
+### Step 1
+
+Add the **Get Window** node into your flow.
+
+### Step 2
+
+In the **Window Name** field, enter the exact or partial name of the window you want to locate.
+
+### Step 3
+
+Select a matching strategy from the **Name Match Mode** dropdown:
+
+- **Equals**: The window name must match exactly.
+- **Contains**: The window name must include the specified text.
+- **Starts With**: The window name must begin with the specified text.
+
+### Step 4
+
+(Optional) Specify the **Max Wait Time** in seconds, dictating how long the system should search for the window before giving up.
+
+### Step 5
+
+Use the found **Automation Element** (`WindowElement`) in subsequent nodes to perform actions on the window.
+
+</Steps>
+
+<Callout type="warn" title="Warning">
+  Ensure that the window you are trying to find is already open and visible on your desktop. This node cannot open windows.
+</Callout>
+
+## Input/Output Examples
+
+| Window Name | Match Mode  | Max Wait Time | Output                        | Output Type        |
+| ----------- | ----------- | ------------- | ----------------------------- | ------------------ |
+| "Notepad"   | Equals      | 5             | AutomationElement (success)   | Automation Element |
+| "Note"      | Contains    | 10            | AutomationElement (success)   | Automation Element |
+| "Calc"      | Starts With | 3             | AutomationElement (not found) | Automation Element |
+
+## Common Mistakes & Troubleshooting
+
+| Problem                                                 | Solution                                                                                                                                      |
+| ------------------------------------------------------- | --------------------------------------------------------------------------------------------------------------------------------------------- |
+| **Incorrect window title**                              | Double-check the window name you entered. Ensure it matches (or appropriately contains/starts with) the actual title of the window.           |
+| **Max Wait Time too short**                             | Consider increasing the **Max Wait Time** if the window is slow to appear or load.                                                            |
+| **No window is open**                                   | Ensure that the specific window you are trying to detect is actually open and visible on the screen before running the node.                  |
+| **Selection of inappropriate Match Mode**               | Re-evaluate the **Name Match Mode**; try a different mode if the current one does not yield the expected results.                             |
+
+## Real-World Use Cases
+
+- **Application Monitoring**: Verify if an application is already running before attempting to interact with it.
+- **Pre Automation Setup**: Locate required windows before executing further automation scripts or tasks.
+- **Window Management**: Automate switching between different windows as part of a complex workflow.

@@ -1,0 +1,76 @@
+import { Callout, Steps } from "nextra/components";
+
+# Run Python Script
+
+The **Run Python Script** node allows you to execute a custom Python script within your automation workflow and capture its output into a variable. This is particularly useful when you need to perform complex calculations, manipulate data, or integrate Python-based logic into your automation without manually running scripts outside of the platform.
+
+For example, you can use this node to:
+
+- Execute a function that performs advanced mathematical calculations.
+- Manipulate or format data using Python libraries.
+- Process input data and return custom results.
+
+## Configuration Options
+
+| Field Name           | Description                                         | Input Type | Required? | Default Value |
+| -------------------- | --------------------------------------------------- | ---------- | --------- | ------------- |
+| **Python Script Code** | The Python script code to execute.                  | Text       | Yes       | _(empty)_     |
+| **Script Output**    | Returns the output of the script.                    | Text       | No        | ScriptOutput  |
+
+## Expected Output Format
+
+The output of this node is stored as **ScriptOutput**, which contains the result returned by your Python script. Depending on your script's content, this can vary in type and format (e.g., string, number, list).
+
+## Step-by-Step Guide
+
+<Steps>
+### Step 1
+
+Add the **Run Python Script** node into your flow.
+
+### Step 2
+
+In the **Python Script Code** field, enter the Python script you wish to execute.
+
+### Step 3
+
+Ensure your script is correctly formatted and does not contain syntax errors.
+
+### Step 4
+
+Connect the **Script Output** to other nodes where you wish to use the output data.
+
+### Step 5
+
+Test the configuration to ensure the script runs correctly and yields the desired output.
+
+</Steps>
+
+<Callout type="important" title="Warning">
+  Be cautious when executing scripts—make sure they come from trusted sources to
+  avoid unintended operations or security risks.
+</Callout>
+
+## Input/Output Examples
+
+| Example Script                           | Output       | Output Type  |
+| ---------------------------------------- | ------------ | ------------ |
+| `print("Hello World")`                   | Hello World  | Text         |
+| `for i in range(5): print(i)`            | 0\n1\n2\n3\n4 | List (Text)  |
+| `print(3 + 7)`                           | 10           | Number       |
+
+## Common Mistakes & Troubleshooting
+
+| Problem                                                      | Solution                                                                                                                                          |
+| ------------------------------------------------------------ | ------------------------------------------------------------------------------------------------------------------------------------------------- |
+| **Invalid Python syntax**                                    | Double-check your script for syntax errors. Useful tools like PyCharm or online syntax checkers can be helpful.                                    |
+| **Script does not execute**                                  | Ensure that the script is correctly entered in the **Python Script Code** field and there's no missing import of necessary libraries.              |
+| **Output not as expected**                                   | Test the script independently to see the raw output and make adjustments as necessary for the correct automation output.                           |
+| **Security warnings when using external script content**     | Ensure scripts from external sources are verified and safe to execute. Vulnerabilities can compromise your system and data integrity.              |
+
+## Real-World Use Cases
+
+- **Data Analysis**: Run scripts to analyze and summarize data stats within workflows.
+- **API Interaction**: Execute scripts that interact with external APIs for fetching or processing data.
+- **Custom Calculations**: Perform non-standard financial computations or data transformations.
+- **Data Formatting**: Use Python libraries to format strings, dates, or numerical data optimally.

@@ -1,0 +1,87 @@
+import { Callout, Steps } from "nextra/components";
+
+# Get Parent Element
+
+The **Get Parent Element** node helps you find and retrieve the parent element of a specified web element within a web browser. This is particularly useful when you need to navigate upwards in the DOM (Document Object Model) hierarchy to manipulate or examine parent elements for tasks like web scraping, form analysis, or dynamic web page interaction.
+
+For example:
+- Locating a parent form element from an input field.
+- Identifying the container element of a button.
+- Navigating the web page structure without knowing the exact parent structure in advance.
+
+## Configuration Options
+
+| Field Name            | Description                                                                                                                    | Input Type | Required? | Default Value |
+| --------------------- | ------------------------------------------------------------------------------------------------------------------------------ | ---------- | --------- | ------------- |
+| **Web Browser Instance** | Enter or choose the variable that contains the web browser instance to work with.                                           | Text       | Yes       | _(empty)_     |
+| **Find Type**           | Specifies how to find the element (e.g., ID, XPath, CssSelector).                                                           | Select     | Yes       | XPath        |
+| **Value To Find**       | The value used to locate the element (e.g., `username`, `//input[@id='email']`).                                            | Text       | Yes       | _(empty)_    |
+| **Wait For Element**    | If true, waits for the element to appear before retrieving its parent.                                                       | Switch     | No        | _(empty)_    |
+| **Timeout Seconds**     | Maximum time in seconds to wait for the element before failing.                                                              | Text       | No        | 60           |
+
+## Expected Output Format
+
+The output of this node is a **single web element** (IWebElement data type), which represents the parent element of the specified web element.
+
+- The output will be available as **ParentElement** for use in other nodes.
+
+## Step-by-Step Guide
+
+<Steps>
+### Step 1
+
+Add the **Get Parent Element** node into your flow.
+
+### Step 2
+
+In the **Web Browser Instance** field, specify the variable that holds the browser instance you are using.
+
+### Step 3
+
+In the **Find Type** dropdown, select the method by which you will locate the web element:
+
+- Options include XPath, ID, Css Selector, and others listed in the dropdown.
+
+### Step 4
+
+In the **Value To Find**, enter the specific ID, XPath, or other identifier for the web element whose parent you need to find.
+
+### Step 5
+
+(optional) Toggle **Wait For Element** if you want the node to wait for the element to appear before attempting to find its parent.
+
+### Step 6
+
+(optional) Specify the **Timeout Seconds**, which is how long the node should wait for the web element before giving up (default is 60 seconds).
+
+### Step 7
+
+The parent element will be accessible as **ParentElement**, which can be used in subsequent automation steps.
+
+</Steps>
+
+<Callout type="info" title="Tip">
+  Ensure that the web page and element are fully loaded in your browser before attempting to retrieve the parent element to avoid any identification issues.
+</Callout>
+
+## Input/Output Examples
+
+| Find Type          | Value To Find                         | Wait For Element | Timeout Seconds | Output Type    |
+| ------------------ | ------------------------------------- | ---------------- | --------------- | -------------- |
+| XPath              | //input[@id='email']                  | true             | 30              | IWebElement    |
+| ID                 | usernameField                         | false            | _(default 60)_  | IWebElement    |
+| Css Selector       | div.container                         | true             | 45              | IWebElement    |
+
+## Common Mistakes & Troubleshooting
+
+| Problem                                                   | Solution                                                                                                             |
+| --------------------------------------------------------- | -------------------------------------------------------------------------------------------------------------------- |
+| **Element not found**                                     | Double-check the **Find Type** and **Value To Find** for accuracy and ensure that the element is visible on the page. |
+| **Timeout occurred**                                      | Increase the **Timeout Seconds** field if the web page or element takes longer to load.                               |
+| **Incorrect browser instance**                            | Make sure the correct browser instance variable is selected in **Web Browser Instance**.                              |
+
+## Real-World Use Cases
+
+- **Web Form Submission**: Navigate upwards from a form control to the form itself to trigger form actions.
+- **Dynamic Content Scraping**: Identify the parent container of dynamically loaded content for detailed scraping operations.
+- **UI Testing**: Verify parent component styles or attributes in automated UI tests.

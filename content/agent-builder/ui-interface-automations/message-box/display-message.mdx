@@ -1,0 +1,96 @@
+import { Callout, Steps } from "nextra/components";
+
+# Display Message
+
+The **Display Message** node is designed to present a dialog box with a custom message to the user. It is useful for providing information, alerts, or options that require the user's interaction. This node allows you to customize the appearance and behavior of the message box with various settings such as title, icons, buttons, and automatic closure.
+
+## Configuration Options
+
+| Field Name                            | Description                                                                                          | Input Type | Required? | Default Value |
+| ------------------------------------- | ---------------------------------------------------------------------------------------------------- | ---------- | --------- | ------------- |
+| **Message Box Title**                 | The title text displayed at the top of the message box.                                              | Text       | No        | (empty)       |
+| **Message to Display**                | The main content of the message box. Supports strings, tables, or any object.                        | Text       | No        | (empty)       |
+| **Message Box Icon**                  | The icon to be displayed in the message box.                                                         | Select     | No        | None          |
+| **Message Box Buttons**               | The buttons to display in the message box.                                                           | Select     | No        | OK            |
+| **Default Button**                    | The button that is highlighted by default.                                                           | Select     | No        | First Button  |
+| **Keep Message Box Always on Top**    | If true, the message box will stay on top of other windows.                                         | Switch     | No        | Off           |
+| **Close Message Box Automatically**   | If true, the message box will close automatically after the specified timeout.                      | Switch     | No        | Off           |
+| **Timeout (Seconds)**                 | Duration in seconds after which the message box closes automatically if the auto-close is enabled.  | Text       | No        | (empty)       |
+
+## Expected Output Format
+
+The output of this node is a **Boolean value** indicating whether a button in the message box was pressed (e.g., `true` if a button is pressed).
+
+## Step-by-Step Guide
+
+<Steps>
+### Step 1
+
+Add **Display Message** node into your flow.
+
+### Step 2
+
+In the **Message Box Title** field, type in the title you want to appear at the top of the message box.
+
+### Step 3
+
+Enter the main content in the **Message to Display** field.
+
+### Step 4
+
+Select an option for **Message Box Icon** from the dropdown to visually cue the type of message (e.g., Information, Warning).
+
+### Step 5
+
+Choose the required buttons in **Message Box Buttons** dropdown to tailor user interaction options.
+
+### Step 6
+
+Select a **Default Button** to determine which button is highlighted first.
+
+### Step 7
+
+Enable **Keep Message Box Always on Top** if you want the dialog to remain above other windows.
+
+### Step 8
+
+Enable **Close Message Box Automatically** if you want the box to close after a set time, and specify the time in the **Timeout (Seconds)** field.
+
+### Step 9
+
+The boolean value indicating if a button was pressed will be available as **ButtonPressed** for use in other nodes.
+
+</Steps>
+
+<Callout type="info" title="Tip">
+  Configure **Timeout (Seconds)** only if **Close Message Box Automatically** is enabled. Otherwise, this setting is disregarded.
+</Callout>
+
+## Input/Output Examples
+
+| Field                   | Example Input                          | Description                         |
+| ----------------------- | -------------------------------------- | ----------------------------------- |
+| **Message Box Title**   | "Data Entry Alert"                     | Header text for the message box.    |
+| **Message to Display**  | "Please review the data entries below" | Message content for the user.       |
+| **Message Box Icon**    | Information                            | Displays (i) icon for info messages.|
+| **Message Box Buttons** | OKCancel                               | Displays OK and Cancel buttons.     |
+| **Default Button**      | First Button                           | OK button is highlighted by default.|
+
+| Output Field    | Example Output | Output Description                                 |
+| --------------- | -------------- |---------------------------------------------------|
+| **ButtonPressed** | true           | Indicates if the user pressed one of the buttons. |
+
+## Common Mistakes & Troubleshooting
+
+| Issue                                                      | Solution                                                                                                                  |
+| ---------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------- |
+| **Timeout not functioning as expected**                    | Ensure **Close Message Box Automatically** is enabled; otherwise, **Timeout** settings are ignored.                      |
+| **No buttons displayed**                                   | Check if the **Message Box Buttons** dropdown has been set.                                                               |
+| **Message box not staying on top**                         | Enable **Keep Message Box Always on Top** to ensure the message remains visible above other windows.                      |
+| **Unexpected default button behavior**                     | Verify that the **Default Button** is set to correspond with the desired default button in the current button configuration. |
+
+## Real-World Use Cases
+
+- **Notification Alert**: Informing users of successful actions or errors requiring attention with appropriate icons.
+- **User Confirmation**: Using "Yes-No" options for decisions that affect further flow.
+- **System Messages**: Warning users about maintenance or system states with a timed closure to ensure visibility but prevent disruptions.

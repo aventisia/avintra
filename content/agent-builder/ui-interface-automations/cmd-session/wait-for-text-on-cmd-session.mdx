@@ -1,0 +1,70 @@
+import { Callout, Steps } from "nextra/components";
+
+# Wait for Text on CMD Session
+
+The **Wait for Text on CMD Session** node is designed to monitor a Command Prompt (CMD) session for specific text or patterns. When automating tasks that involve CMD, this node pauses execution until the desired text appears in the CMD session. It's useful when scripts or applications need to complete or reach a specific output before continuing.
+
+For example:
+
+- Waiting for a process to start and display a confirmation message before executing the next step.
+- Detecting error messages in a running script to handle them appropriately.
+
+## Configuration Options
+
+| Field Name            | Description                                                                                  | Input Type | Required? | Default Value |
+| --------------------- | -------------------------------------------------------------------------------------------- | ---------- | --------- | ------------- |
+| **CMD Session**       | The process representing the open CMD session.                                               | Text       | Yes       | _(empty)_     |
+| **Text to Wait For**  | The text or regular expression to wait for in the CMD session output.                        | Text       | Yes       | _(empty)_     |
+| **Is Regular Expression** | Specifies whether the 'Text to Wait For' is a regular expression.                          | Switch     | No        | false         |
+| **Ignore Case**       | Specifies whether to ignore case when matching the text.                                     | Switch     | No        | true          |
+| **Timeout**           | The maximum time (in seconds) to wait before timing out. Use 0 for no timeout.               | Text       | No        | 10            |
+
+## Expected Output Format
+
+This node does not produce a visible output. Its function is to pause execution until the specified text is detected or the timeout is reached.
+
+### Step-by-Step Guide
+
+<Steps>
+### Step 1
+
+Add the **Wait for Text on CMD Session** node to your automation flow.
+
+### Step 2
+
+In the **CMD Session** field, specify the process that represents the open CMD session you are monitoring.
+
+### Step 3
+
+Enter the specific text or pattern you are waiting for in the **Text to Wait For** field. 
+
+### Step 4
+
+If using a regular expression for the **Text to Wait For**, enable the **Is Regular Expression** switch.
+
+### Step 5
+
+Determine if the text matching should be case-sensitive and set the **Ignore Case** switch accordingly.
+
+### Step 6
+
+Set the **Timeout** to the maximum waiting time in seconds. Enter 0 if you prefer to wait indefinitely until the text is found.
+</Steps>
+
+<Callout type="info" title="Important Note">
+  Ensure the CMD session specified is already open and the correct session you intend to monitor before using this node.
+</Callout>
+
+## Common Mistakes & Troubleshooting
+
+| Problem                                       | Solution                                                                                                                                                  |
+| --------------------------------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| **Incorrect CMD Session specified**           | Verify that you have selected the correct CMD session process that should be monitored.                                                                   |
+| **Text never found and process times out**    | Double-check the text entered, ensuring it's accurate and reflects potential output exactly. Adjust **Timeout** if necessary to allow more time.          |
+| **Regex not working as expected**             | Make sure the **Is Regular Expression** switch is set correctly, and the regex pattern is valid.                                                          |
+
+## Real-World Use Cases
+
+- **Server Monitoring**: Wait for a service to start up completely by identifying startup completion messages in the CMD.
+- **Script Execution Handling**: Monitor logs for specific success or error messages to trigger follow-up actions in automation.
+- **Installation Processes**: Detect when an installation process completes based on specific text appearing in the command output.

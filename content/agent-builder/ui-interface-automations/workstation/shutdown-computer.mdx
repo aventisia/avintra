@@ -1,0 +1,66 @@
+import { Callout, Steps } from "nextra/components";
+
+# Shutdown Computer
+
+The **Shutdown Computer** node allows you to control the power state of your computer. You can power off, restart, log off, sleep, or hibernate your computer using this node. This can be particularly useful for automating environment cleanup processes or saving power after work hours.
+
+## Configuration Options
+
+| Field Name       | Description                                                                     | Input Type | Required? | Default Value |
+| ---------------- | ------------------------------------------------------------------------------- | ---------- | --------- | ------------- |
+| **Shutdown Mode** | Select how you want to power down or modify the state of the computer. Options include powering off, restarting, logging off, sleeping, or hibernating. | Select     | Yes       | _(empty)_     |
+
+## Expected Output Format
+
+This node performs an action on your computer depending on the selected shutdown mode. It does not produce a traditional data output.
+
+## Step-by-Step Guide
+
+<Steps>
+### Step 1
+
+Add the **Shutdown Computer** node into your automation flow.
+
+### Step 2
+
+In the **Shutdown Mode** dropdown, select the desired option based on the action you wish to perform:
+
+- **Power Off**: The computer will completely turn off.
+- **Restart**: The computer will restart.
+- **Logoff**: The currently logged-in user will be logged off.
+- **Sleep**: The computer will enter a low-power state.
+- **Hibernate**: The computer will save its current state and power down.
+
+### Step 3
+
+After selecting the shutdown mode, the node is set up to perform the action.
+
+### Step 4
+
+Integrate this node with other nodes in your flow to automate tasks, ensuring those tasks are completed before the shutdown action.
+
+</Steps>
+
+<Callout type="warning" title="Warning">
+  Make sure all important data is saved, as selected actions like **Power Off** or **Restart** will close all applications without saving.
+</Callout>
+
+## Input/Output Examples
+
+- Setting **Shutdown Mode** to **Power Off** will power down the computer.
+- Selecting **Restart** will immediately reboot the computer.
+
+## Common Mistakes & Troubleshooting
+
+| Problem                                                | Solution                                                                                                                                                         |
+| ------------------------------------------------------ | --------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| **Node not executing**                                 | Ensure the node is properly connected and the flow conditions allow it to execute.                                                                               |
+| **Shutdown action not desired**                        | Double-check the selected **Shutdown Mode** to make sure you have chosen the correct action.                                                                     |
+| **Computer does not respond to shutdown command**      | Verify system settings to ensure it allows programmed commands. Some systems may require administrative privileges.                                               |
+
+## Real-World Use Cases
+
+- **End-of-Day Workflow**: Automatically shut down computers in an office environment after all tasks are complete to save energy.
+- **Scheduled Maintenance**: Restart computers at a scheduled time for system updates.
+- **User Logoff**: Automatically log off users after a specific idle time period in a shared computer policy.
+- **Power Management**: Hibernate computers after work hours to maintain the session state while conservatively using power.

@@ -1,0 +1,76 @@
+import { Callout, Steps } from "nextra/components";
+
+# Zip Files
+
+The **Zip Files** node allows you to compress multiple files or entire folders into a single ZIP archive. This is particularly useful for situations where you need to group files for storage, send them as a package, or reduce their size for easier sharing.
+
+For example:
+
+- Compressing project files for backup.
+- Sending multiple documents as a single attachment.
+- Reducing file sizes for storage efficiency.
+
+## Configuration Options
+
+| Field Name             | Description                                                                                  | Input Type | Required? | Default Value |
+| ---------------------- | -------------------------------------------------------------------------------------------- | ---------- | --------- | ------------- |
+| **Source Paths**       | Enter file or folder paths you want to compress (use commas to separate multiple paths).     | Text       | Yes       | _(empty)_     |
+| **Type of Compression**| Choose the compression method for the ZIP archive.                                           | Select     | No        | Deflate       |
+| **Output Zip Path**    | Specify the full path where the ZIP file will be saved (e.g., `C:\temp\archive.zip`).        | Text       | Yes       | _(empty)_     |
+
+## Expected Output Format
+
+The output is the **full path** to the created ZIP file.
+
+- Example: `"C:\\temp\\archive.zip"`
+
+## Step-by-Step Guide
+
+<Steps>
+### Step 1
+
+Add the **Zip Files** node to your flow.
+
+### Step 2
+
+In the **Source Paths** field, input the file or folder paths you wish to compress. Use commas to separate multiple paths if you have more than one.
+
+### Step 3
+
+Select the **Type of Compression** from the dropdown menu. If unsure, the default "Deflate" is a standard choice that balances speed and compression ratio.
+
+### Step 4
+
+In the **Output Zip Path** field, specify where you want the ZIP file to be saved on your computer.
+
+### Step 5
+
+Once configured, the node will output the full path of the created ZIP file as **OutputZipFullPath**, ready for use in other nodes or processes.
+
+</Steps>
+
+<Callout type="info" title="Tip">
+  Ensure all paths entered exist and are correctly formatted to avoid errors.
+</Callout>
+
+## Input/Output Examples
+
+| Source Paths                     | Type of Compression | Output Zip Path      | Output Zip Full Path               |
+| -------------------------------- | ------------------- | -------------------- | ---------------------------------- |
+| C:\Documents, C:\Photos          | Deflate             | C:\Archive\backup.zip| C:\Archive\backup.zip              |
+| C:\Project                       | None                | D:\Exports\project.zip| D:\Exports\project.zip             |
+| C:\Files1, C:\Files2\Doc.txt     | GZip                | E:\compressed.zip    | E:\compressed.zip                  |
+
+## Common Mistakes & Troubleshooting
+
+| Problem                                  | Solution                                                                                             |
+| ---------------------------------------- | ---------------------------------------------------------------------------------------------------- |
+| **Invalid Source Paths**                 | Double-check that the paths are correct and the files/folders exist at those locations.              |
+| **Output path inaccessible**             | Ensure you have write permissions for the directory where you're saving the ZIP file.                |
+| **File is not a ZIP format**             | Verify the file was saved with a ".zip" extension in the **Output Zip Path** field.                  |
+
+## Real-World Use Cases
+
+- **Backup Projects**: Regularly compress working folders into ZIP files for backup.
+- **Emailing Attachments**: Combine and compress multiple files for easier email attachments.
+- **Document Archiving**: Compress completed documents for long-term storage without using excessive space.

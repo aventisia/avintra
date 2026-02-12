@@ -1,0 +1,71 @@
+import { Callout, Steps } from "nextra/components";
+
+# Insert XML Element
+
+The **Insert XML Element** node is designed to modify XML documents by adding a new XML element at a specified location. This is beneficial when you need to dynamically update XML data structures in business documents, data exchanges, or configurations without manual coding.
+
+For example:
+
+- Adding a new product item in an XML-based catalog.
+- Updating configuration settings in an XML file by adding new nodes.
+- Inserting user data into XML templates for processing or storage.
+
+## Configuration Options
+
+| Field Name            | Description                                                                              | Input Type | Required? | Default Value       |
+| --------------------- | ---------------------------------------------------------------------------------------- | ---------- | --------- | ------------------- |
+| **XML Content**       | The existing XML document as a string where the new element will be inserted.            | Text       | Yes       | _(empty)_           |
+| **XPath Expression**  | The XPath expression that identifies the insertion point in the XML document.            | Text       | Yes       | _(empty)_           |
+| **XML Element To Insert** | The XML structure/string of the element that you want to insert at the XPath location. | Text       | Yes       | _(empty)_           |
+
+## Expected Output Format
+
+The output of this node is **Updated XML Content**, which is an XML document string reflecting the newly inserted element.
+
+## Step-by-Step Guide
+
+<Steps>
+### Step 1
+
+Add the **Insert XML Element** node to your flow.
+
+### Step 2
+
+In the **XML Content** field, input the existing XML document as a string.
+
+### Step 3
+
+For **XPath Expression**, enter the path expression that specifies where the new element should be inserted in the XML Content.
+
+### Step 4
+
+Enter the additional XML data in **XML Element To Insert** field, which will be added at the location specified by the XPath Expression.
+
+### Step 5
+
+The process will produce **Updated XML Content** that integrates the newly inserted XML element.
+</Steps>
+
+<Callout type="info" title="Tip">
+Ensure the XPath Expression accurately targets where you want to insert the new XML element for successful modifications.
+</Callout>
+
+## Input/Output Examples
+
+| XML Content                                  | XPath Expression | XML Element To Insert         | Updated XML Content                                                                           |
+|--------------------------------------------- | ---------------- | ----------------------------- | --------------------------------------------------------------------------------------------- |
+| `<products><product id=\"1\"></product></products>` | `/products`      | `<product id=\"2\"></product>` | `<products><product id=\"1\"></product><product id=\"2\"></product></products>`               |
+
+## Common Mistakes & Troubleshooting
+
+| Problem                                       | Solution                                                                                                                                                           |
+| --------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
+| **Invalid XPath Expression**                  | Ensure your XPath expression correctly navigates the XML structure, targeting an element that exists within your XML Content.                                       |
+| **Incorrect XML Format**                      | Double-check that both **XML Content** and **XML Element To Insert** fields contain well-formed XML strings (e.g., correct opening and closing tags).               |
+| **Insertion Point Not Found**                 | Verify that the XPath expression points to a valid location for insertion. If not found, the new element cannot be added, resulting in no changes to the XML.       |
+
+## Real-World Use Cases
+
+- **Catalog Management**: Insert new products into an XML-based product catalog regularly and automatically.
+- **Configuration Updates**: Add new configuration settings to XML configuration files in applications or systems.
+- **Data Processing**: Dynamically insert user or transactional data into XML templates for automated processing.

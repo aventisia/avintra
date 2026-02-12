@@ -1,0 +1,87 @@
+import { Callout, Steps } from "nextra/components";
+
+# Switch To Iframe
+
+The **Switch To Iframe** node allows you to change the browser context to a specific iframe within a webpage. This is useful when you need to interact with elements inside an iframe, as direct access to elements within iframes isn't possible without first setting the context to that iframe.
+
+Use this node when:
+
+- You want to automate interactions with elements present inside an iframe.
+- A webpage has embedded content, forms, or other interactive elements within iframes that need manipulation.
+
+## Configuration Options
+
+| Field Name            | Description                                                                                          | Input Type | Required? | Default Value |
+| --------------------- | ---------------------------------------------------------------------------------------------------- | ---------- | --------- | ------------- |
+| **Browser Instance**  | The active browser session you are working with.                                                     | Text       | Yes       | _(empty)_     |
+| **Iframe Locator Type**| The method used to locate the target iframe (choose from ID, Name, XPath, CSS Selector, or Index). | Select     | Yes       | _(empty)_     |
+| **Iframe Locator Value**| The specific value to identify the iframe, depending on the selected locator type.                 | Text       | Yes       | _(empty)_     |
+| **Timeout (Seconds)** | Maximum time to wait for the iframe to load before timing out.                                        | Text       | No        | 60            |
+
+## Expected Output Format
+
+The output for this node is a **boolean value**:
+
+- `true`: The switch to the specified iframe was successful.
+- `false`: The switch failed, possibly due to incorrect identifiers or the iframe not being available.
+
+## Step-by-Step Guide
+
+<Steps>
+### Step 1
+
+Add **Switch To Iframe** node into your automation flow.
+
+### Step 2
+
+In the **Browser Instance** field, specify the active Web Browser Instance you're using.
+
+### Step 3
+
+Choose **Iframe Locator Type** from the dropdown menu based on how you want to identify the iframe:
+
+- **ID**: Use the iframe's ID attribute.
+- **Name**: Use the iframe's name attribute.
+- **XPath**: Use an XPath expression.
+- **CSS Selector**: Use a CSS selector.
+- **Index**: Use a zero-based index to select the nth iframe on the page.
+
+### Step 4
+
+Enter the **Iframe Locator Value** corresponding to the method chosen in Step 3.
+
+### Step 5
+
+In the **Timeout (Seconds)** field, provide the maximum time to wait for the iframe to load. The default is 60 seconds.
+
+### Step 6
+
+The status of the switch operation will be available as **Switched** (true or false).
+
+</Steps>
+
+<Callout type="warning" title="Note">
+  Selecting the correct **Iframe Locator Type** and specifying accurate **Iframe Locator Value** are crucial for successful switching, as incorrect values could lead to failures.
+</Callout>
+
+## Input/Output Examples
+
+| Iframe Locator Type | Iframe Locator Value | Timeout Seconds | Switch Successful |
+| ------------------- | -------------------- | --------------- | ----------------- |
+| ID                  | "myIframe"           | 30              | true              |
+| XPath               | "//iframe[@name='contentFrame']" | 60          | true              |
+| Index               | 0                    | 10              | true              |
+
+## Common Mistakes & Troubleshooting
+
+| Problem                                              | Solution                                                                                           |
+| ---------------------------------------------------- | -------------------------------------------------------------------------------------------------- |
+| **Incorrect Locator Type/Value**                     | Ensure you choose the correct locator type and provide the value that accurately identifies the iframe. |
+| **Timeout Expired**                                  | If the iframe takes too long to load, consider increasing the **Timeout (Seconds)** value.            |
+| **Index Out of Bounds**                              | If using Index, ensure the specified index is within the range of available iframes on the webpage.   |
+
+## Real-World Use Cases
+
+- **Form Interaction**: Switch and submit data to forms embedded in iframes.
+- **Content Manipulation**: Access and modify content inside iframes for testing or automation.
+- **Dynamic Data Verification**: Automate verification of data or content loaded dynamically inside iframes.
