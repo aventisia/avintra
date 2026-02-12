@@ -26,6 +26,7 @@ public class QueueWorkItemService : IQueueWorkItemService
     // Retrieve all workitems for a specific queue
     public async Task<ServiceResponse<IEnumerable<QueueWorkItemDto>>> GetAllWorkItemsAsync(Guid queueId)
     {
+        // Initialize ServiceResponse with failed response
         var serviceResponse = new ServiceResponse<IEnumerable<QueueWorkItemDto>>
         {
             Data = null,
@@ -207,6 +208,7 @@ public class QueueWorkItemService : IQueueWorkItemService
     // Retrieves a specific queue workitem by its ID.
     public async Task<ServiceResponse<QueueWorkItemDto>> GetQueueWorkItemByIdAsync(Guid queueWorkitemId)
     {
+        // Initialize ServiceResponse with failed response
         var serviceResponse = new ServiceResponse<QueueWorkItemDto>
         {
             Data = null,
@@ -248,6 +250,7 @@ public class QueueWorkItemService : IQueueWorkItemService
     // Inserts a multiple new workitems into a specified queue, validating against the schema, enforcing uniqueness, and handling encryption if necessary.
     public async Task<ServiceResponse<QueueWorkItemDto>> InsertWorkItemsAsync(QueueWorkItemDto queueWorkItemDto)
     {
+        // Initialize ServiceResponse with failed response
         var serviceResponse = new ServiceResponse<QueueWorkItemDto>
         {
             Data = null,
@@ -490,6 +493,7 @@ public class QueueWorkItemService : IQueueWorkItemService
     // Updates the payload of an existing queue workitem, including validation, uniqueness checks, encryption handling, and database persistence.
     public async Task<ServiceResponse<QueueWorkItemDto>> UpdateWorkItemAsync(QueueWorkItemDto queueWorkItemDto)
     {
+        // Initialize ServiceResponse with failed response
         var serviceResponse = new ServiceResponse<QueueWorkItemDto>
         {
             Data = null,
@@ -510,6 +514,7 @@ public class QueueWorkItemService : IQueueWorkItemService
             // Retrieve the work item with its associated queue from the database (using AsNoTracking for performance)
             var queueWorkItem = await _unitOfWork.QueueTransactionRepo
                .GetByConditionAsync(w => w.Id == queueWorkItemDto.Id)
+               .Include(i => i.Queue)
                .AsNoTracking()
                .SingleOrDefaultAsync();
 
@@ -522,49 +527,13 @@ public class QueueWorkItemService : IQueueWorkItemService
             }
 
             var errors = new List<string>();
-            Queue? queue = null; // Initialize the queue variable which will hold the retrieved queue
-            string? workitemData = string.Empty; // Variable to store the work item data
-
-            // If the QueueId in the DTO is the same as the current QueueId, or the new QueueId is empty (Guid.Empty)
-            if (queueWorkItem.QueueId == queueWorkItemDto.QueueId || queueWorkItemDto.QueueId == Guid.Empty)
-            {
-                // Retrieve the queue associated with the current QueueId of the work item
-                queue = await _unitOfWork.QueueRepo.GetByConditionAsync(w => w.Id == queueWorkItem.QueueId).SingleOrDefaultAsync();
-
-                // If the queue cannot be found, log the error and return a failure message
-                if (queue == null)
-                {
-                    _logger.LogError($"Queue with ID {queueWorkItem.QueueId} not found while trying to update work item with ID {queueWorkItem.Id}");
-                    serviceResponse.Message = $"Queue with ID {queueWorkItem.QueueId} was not found. Please verify the Queue ID.";
-                    return serviceResponse; // Return failure response
-                }
-            }
-            else
-            {
-                // Retrieve the queue associated with the new QueueId from the DTO
-                queue = await _unitOfWork.QueueRepo.GetByConditionAsync(w => w.Id == queueWorkItemDto.QueueId).SingleOrDefaultAsync();
-
-                // If the queue cannot be found, log the error and return a failure message
-                if (queue == null)
-                {
-                    _logger.LogError($"Queue with ID {queueWorkItemDto.QueueId} not found while attempting to update work item with ID {queueWorkItem.Id}");
-                    serviceResponse.Message = $"Queue with ID {queueWorkItemDto.QueueId} was not found. Please verify the Queue ID.";
-                    return serviceResponse; // Return failure response
-                }
-
-                // After fetching the appropriate queue, update the QueueId in the DTO to the fetched queue's Id
-                queueWorkItem.QueueId = queue.Id;
-            }
-
-            // Check if there is WorkItemData in the DTO and assign it accordingly to the work item data
-            if (!string.IsNullOrEmpty(queueWorkItemDto.WorkItemData))
-                workitemData = queueWorkItem.PayloadData; // Use the existing payload data if WorkItemData is empty
-            else
-                workitemData = queueWorkItemDto.WorkItemData; // Otherwise, use the WorkItemData from the DTO
 
             // Check if the workitem data is not empty or null before proceeding
-            if (!string.IsNullOrEmpty(workitemData))
+            if (!string.IsNullOrEmpty(queueWorkItemDto.WorkItemData))
             {
+                // Retrieve the Queue object associated with the specified QueueId from the incoming DTO
+                var queue = queueWorkItem.Queue;
+
                 // Deserialize the queue's input schema; fall back to empty list if schema is invalid or null
                 var inputSchema = System.Text.Json.JsonSerializer.Deserialize<List<QueueSchemaDefinitionDto>>(
                     queue.InputSchema ?? "[]",
@@ -575,7 +544,7 @@ public class QueueWorkItemService : IQueueWorkItemService
                 dynamic dynamicObject = CreateDynamicObjectFromSchema(inputSchema);
 
                 // Parse the incoming payload; fall back to an empty object if null or malformed
-                var data = Newtonsoft.Json.Linq.JObject.Parse(workitemData ?? "{}");
+                var data = Newtonsoft.Json.Linq.JObject.Parse(queueWorkItemDto.WorkItemData ?? "{}");
 
                 // Extract existing unique keys from the queue's workitems to ensure uniqueness
                 var existingUniqueKeys = new HashSet<string>();
@@ -677,7 +646,6 @@ public class QueueWorkItemService : IQueueWorkItemService
             // Set the last modified timestamp
             queueWorkItem.LastModifiedOn = DateTimeOffset.UtcNow;
 
-
             // Mark the workitem as updated
             _unitOfWork.QueueTransactionRepo.Update(queueWorkItem);
 
@@ -699,6 +667,32 @@ public class QueueWorkItemService : IQueueWorkItemService
             {
                 serviceResponse.Message = "Queue workitem updated successfully.";
             }
+
+            // Check if the QueueId has changed, and ensure the new QueueId is not empty
+            if (queueWorkItem.QueueId != queueWorkItemDto.QueueId && queueWorkItemDto.QueueId != Guid.Empty)
+            {
+                // Log the change in QueueId and the creation of a new work item for the new queue
+                _logger.LogInformation("QueueId has changed for workitem ID {QueueWorkitemId}. Creating new work item for new QueueId: {NewQueueId}.",
+                                        queueWorkItemDto.Id, queueWorkItemDto.QueueId);
+
+                // Create a new work item for the new QueueId with initial Pending status
+                var newQueueWorkitem = await InsertWorkItemsAsync(new QueueWorkItemDto()
+                {
+                    QueueId = queueWorkItemDto.QueueId,
+                    WorkItemData = queueWorkItem.PayloadData,
+                    Status = QueueTransactionStatusTypesEnum.Pending,
+                });
+
+                // Check if the creation of the new work item was successful
+                if (newQueueWorkitem.StatusCode != 200)
+                {
+                    // Log failure and set the service response to reflect the error
+                    _logger.LogError("Failed to route new queue work item for QueueId {QueueId}. Error: {ErrorMessage}.", queueWorkItemDto.QueueId, newQueueWorkitem.Message);
+                    serviceResponse.StatusCode = newQueueWorkitem.StatusCode;
+                    serviceResponse.Message = newQueueWorkitem.Message;
+                }
+            }
+
             // Return successful response
             serviceResponse.Data = queueWorkItem.Adapt<QueueWorkItemDto>();
             serviceResponse.StatusCode = 200;
@@ -715,6 +709,7 @@ public class QueueWorkItemService : IQueueWorkItemService
     // Delete a workitem from the queue
     public async Task<ServiceResponse<bool>> RemoveWorkItemAsync(Guid workitemId)
     {
+        // Initialize ServiceResponse with failed response
         var serviceResponse = new ServiceResponse<bool>
         {
             Data = false,
@@ -765,7 +760,7 @@ public class QueueWorkItemService : IQueueWorkItemService
     // Deletes multiple queue workitems based on provided IDs.
     public async Task<ServiceResponse<bool>> DeleteQueueWorkItemsAsync(List<Guid> queueWorkitemIds)
     {
-        // Initialize the response as a failed operation by default
+        // Initialize ServiceResponse with failed response
         var serviceResponse = new ServiceResponse<bool>
         {
             Data = false,
