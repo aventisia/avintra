@@ -29,10 +29,10 @@ public class QueueWorkItemDto
     public string? WorkItemData { get; set; }
 
     /// <summary>
-    /// Gets or sets the remarks, validation errors, or other processing notes related to the transaction.
-    /// This field is primarily used for diagnostics or displaying validation results.
+    /// Gets or sets the description, validation errors, or other processing notes related to the transaction.
     /// </summary>
-    public string? Remarks { get; set; }
+    public string? Description { get; set; }
+
     /// <summary>
     /// Gets or sets a value indicating whether the work item has been modified by the user (true) or agent (false).
     /// </summary>

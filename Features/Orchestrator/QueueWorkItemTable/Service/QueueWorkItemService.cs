@@ -441,7 +441,7 @@ public class QueueWorkItemService : IQueueWorkItemService
                     var newWorkItem = queueWorkItemDto.Adapt<QueueTransaction>();
                     newWorkItem.PayloadData = serializedPayload;
                     newWorkItem.Status = QueueTransactionStatusTypesEnum.Pending;
-                    newWorkItem.Remarks = queueWorkItemDto.Remarks;
+                    newWorkItem.Description = queueWorkItemDto.Description;
 
                     newWorkItems.Add(newWorkItem);
 
@@ -640,8 +640,8 @@ public class QueueWorkItemService : IQueueWorkItemService
             // Only update IsUserModified if the value has changed or is explicitly provided.
             queueWorkItem.IsUserModified = queueWorkItemDto.IsUserModified;
 
-            // Update Remarks with the value from the DTO.
-            queueWorkItem.Remarks = queueWorkItemDto.Remarks;
+            // Update description with the value from the DTO.
+            queueWorkItem.Description = queueWorkItemDto.Description;
 
             // Set the last modified timestamp
             queueWorkItem.LastModifiedOn = DateTimeOffset.UtcNow;
