@@ -1110,6 +1110,9 @@ namespace WorkspaceAPIs.Data.Migrations
                     b.Property<DateTimeOffset>("CreatedOn")
                         .HasColumnType("timestamp with time zone");
 
+                    b.Property<string>("Description")
+                        .HasColumnType("text");
+
                     b.Property<Guid?>("FlowVersionId")
                         .HasColumnType("uuid");
 
@@ -1127,9 +1130,6 @@ namespace WorkspaceAPIs.Data.Migrations
 
                     b.Property<Guid>("QueueId")
                         .HasColumnType("uuid");
-
-                    b.Property<string>("Remarks")
-                        .HasColumnType("text");
 
                     b.Property<string>("Status")
                         .HasColumnType("text");
@@ -1637,6 +1637,57 @@ namespace WorkspaceAPIs.Data.Migrations
                     b.HasIndex("LastModifiedByUserId");
 
                     b.ToTable("Vaults");
+                });
+
+            modelBuilder.Entity("WorkspaceAPIs.Entities.WorkItemEvent", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uuid");
+
+                    b.Property<Guid>("CreatedByUserId")
+                        .HasColumnType("uuid");
+
+                    b.Property<DateTimeOffset>("CreatedOn")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<string>("Data")
+                        .HasColumnType("text");
+
+                    b.Property<string>("EventType")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.Property<bool>("IsDisabled")
+                        .HasColumnType("boolean");
+
+                    b.Property<Guid>("LastModifiedByUserId")
+                        .HasColumnType("uuid");
+
+                    b.Property<DateTimeOffset>("LastModifiedOn")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<Guid>("TenantId")
+                        .HasColumnType("uuid");
+
+                    b.Property<uint>("Version")
+                        .IsConcurrencyToken()
+                        .ValueGeneratedOnAddOrUpdate()
+                        .HasColumnType("xid")
+                        .HasColumnName("xmin");
+
+                    b.Property<Guid>("WorkItemId")
+                        .HasColumnType("uuid");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("CreatedByUserId");
+
+                    b.HasIndex("LastModifiedByUserId");
+
+                    b.HasIndex("WorkItemId");
+
+                    b.ToTable("worc_WorkItemEvents");
                 });
 
             modelBuilder.Entity("WorkspaceAPIs.Entities.WorkspaceUser", b =>
@@ -2301,6 +2352,33 @@ namespace WorkspaceAPIs.Data.Migrations
                     b.Navigation("LastModifiedByUser");
                 });
 
+            modelBuilder.Entity("WorkspaceAPIs.Entities.WorkItemEvent", b =>
+                {
+                    b.HasOne("WorkspaceAPIs.Entities.WorkspaceUser", "CreatedByUser")
+                        .WithMany()
+                        .HasForeignKey("CreatedByUserId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("WorkspaceAPIs.Entities.WorkspaceUser", "LastModifiedByUser")
+                        .WithMany()
+                        .HasForeignKey("LastModifiedByUserId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("WorkspaceAPIs.Entities.QueueTransaction", "WorkItem")
+                        .WithMany("WorkItemEvents")
+                        .HasForeignKey("WorkItemId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("CreatedByUser");
+
+                    b.Navigation("LastModifiedByUser");
+
+                    b.Navigation("WorkItem");
+                });
+
             modelBuilder.Entity("WorkspaceAPIs.Entities.AppSecret", b =>
                 {
                     b.Navigation("EncryptedKeyValues");
@@ -2357,6 +2435,11 @@ namespace WorkspaceAPIs.Data.Migrations
                     b.Navigation("QueueTransactions");
 
                     b.Navigation("QueueUsers");
+                });
+
+            modelBuilder.Entity("WorkspaceAPIs.Entities.QueueTransaction", b =>
+                {
+                    b.Navigation("WorkItemEvents");
                 });
 
             modelBuilder.Entity("WorkspaceAPIs.Entities.SupportTicket", b =>
