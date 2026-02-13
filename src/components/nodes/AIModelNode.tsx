@@ -1,6 +1,6 @@
 import { InputHandle } from "@/components/handles/InputHandle";
 import { OutputHandle } from "@/components/handles/OutputHandle";
-import { NodeDataType } from "@/types/node-data-type";
+import { NodeDataType, NodeInputType } from "@/types/node-data-type";
 import { Node, NodeProps } from "@xyflow/react";
 import { ReactFlowContextMenu } from "@/features/react-flow/components/context-menu";
 import { cn } from "@aventisia/ui/lib";
@@ -10,6 +10,7 @@ import { useShallow } from "zustand/react/shallow";
 import { Badge } from "@aventisia/ui/badge";
 import { useEffect } from "react";
 import { useReactFlowExtStore } from "@/stores/react-flow-ext-store";
+import { ModelConfigType } from "@/types/model-config-type";
 
 type AIModelNode = Node<NodeDataType, "aiNode">;
 
@@ -57,8 +58,22 @@ export const AIModelNode = ({
     }
   }, [data.label, data?.selectedModel]);
 
+  function getModel(config: NodeInputType[] | undefined): string[] {
+    const modelConfigItem = config?.find((item) =>
+      item.key.includes("__ModelConfig__"),
+    );
+
+    if (!modelConfigItem) return [];
+
+    const value = modelConfigItem.value as ModelConfigType;
+
+    return value?.model ? [value.model] : [];
+  }
+
   //Get llm for the selected model
-  const llm = data?.selectedModel?.llMs as unknown as string[];
+  const llm = data.name.includes("AIAgent")
+    ? getModel(data?.inputs)
+    : (data?.selectedModel?.llMs as unknown as string[]);
 
   return (
     <ReactFlowContextMenu>
