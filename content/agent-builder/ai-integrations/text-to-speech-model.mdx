@@ -1,0 +1,68 @@
+import { Callout, Steps } from "nextra/components";
+
+# Text To Speech Model
+
+The **Text To Speech Model** node allows you to convert written text into natural-sounding spoken audio using AI technology. This node is beneficial when you need to generate speech output from your text content, such as transforming articles into podcasts, providing audio for accessibility purposes, or creating voice responses for interactive voice systems.
+
+## Configuration Options
+
+| Field Name                        | Description                                                                           | Input Type           | Required? | Default Value                               |
+| --------------------------------- | ------------------------------------------------------------------------------------- | -------------------- | --------- | ------------------------------------------- |
+| **Model Configuration**           | Select and configure the AI model for speech synthesis.                               | Model Config Select  | No        | Provider: openai, Model: gpt-4o-mini, etc.  |
+| **Files**                         | Upload files if needed for additional context in generating the speech.               | Text                 | No        | _(empty)_                                   |
+| **Prompt**                        | Enter the text that you want to convert into speech.                                  | Text                 | No        | _(empty)_                                   |
+
+## Expected Output Format
+
+The output of this node is an audio file that captures the natural-sounding speech converted from the input text.
+
+- Output Format: **AI Model Result** representing the speech synthesis result.
+
+## Step-by-Step Guide
+
+<Steps>
+### Step 1
+
+Add the **Text To Speech Model** node into your flow.
+
+### Step 2
+
+In the **Model Configuration** section, select the AI model and configure its settings as needed. The default provider is **OpenAI** with model **gpt-4o-mini**.
+
+### Step 3
+
+Upload any necessary files in the **Files** field if additional context is required.
+
+### Step 4
+
+Enter the text you want to be spoken in the **Prompt** field. This serves as the main content for the speech synthesis.
+
+### Step 5
+
+The generated speech output will become available as **AIModelResult** for further use.
+
+</Steps>
+
+<Callout type="info" title="Note">
+  The **Files** and **Prompt** fields are optional, but entering prompt text is necessary for generating speech output.
+</Callout>
+
+## Input/Output Examples
+
+| Input Configuration           | Files | Prompt                | Output Value        | Output Type          |
+| ----------------------------- | ----- | --------------------- | ------------------- | -------------------- |
+| Model: gpt-4o-mini, openai    | None  | "Hello, world!"       | AIModelResult       | Audio (Speech Output) |
+| Model: gpt-4o-mini, openai    | None  | "Today's headlines."  | AIModelResult       | Audio (Speech Output) |
+
+## Common Mistakes & Troubleshooting
+
+| Problem                                                | Solution                                                                                             |
+| ------------------------------------------------------ | ---------------------------------------------------------------------------------------------------- |
+| **No output generated**                                | Ensure that there is text entered in the **Prompt** field.                                           |
+| **Unexpected speech output**                           | Check your model configuration and ensure that the correct model is selected and appropriately configured. |
+
+## Real-World Use Cases
+
+- **Podcast Creation**: Convert blog posts or articles into audio files for podcast-ready content.
+- **Accessibility Tools**: Generate speech for visually impaired users requiring audio content.
+- **Interactive Systems**: Create voice responses for customer support systems or virtual assistants.

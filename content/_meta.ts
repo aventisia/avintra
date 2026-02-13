@@ -7,12 +7,15 @@ const meta: MetaRecord = {
   "signing-in": {
     title: "Sign In",
   },
-  "worc": {
+  worc: {
     title: "Worc",
     display: "hidden",
   },
   "agent-builder": {
     title: "Agent Builder",
+    theme: {
+      collapsed: false,
+    },
   },
   documentation: {
     title: "Documentation",

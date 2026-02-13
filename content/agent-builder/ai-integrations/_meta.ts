@@ -1,17 +1,23 @@
 import type { MetaRecord } from "nextra";
 
 const meta: MetaRecord = {
-  "invoke-inference-model-web-service": {
-    title: "Invoke Inference Model Web Service",
-  },
-  "ollama-connector": {
-    title: "Ollama Connector",
+  "attach-ai-model": {
+    title: "Attach AI Model",
   },
   "olm-ocr": {
     title: "Olm OCR",
   },
-  "upload-file-to-server": {
-    title: "Upload File to Server",
+  "vision-model": {
+    title: "Vision Model",
+  },
+  "inferencing-model": {
+    title: "Inferencing Model",
+  },
+  "speech-to-text-model": {
+    title: "Speech to Text Model",
+  },
+  "text-to-speech-model": {
+    title: "Text to Speech Model",
   },
 };
 
