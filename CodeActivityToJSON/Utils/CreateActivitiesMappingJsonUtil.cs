@@ -15,6 +15,7 @@ namespace CodeActivityToJSON.Utils
         public static List<string> _excludedCategories = new List<string>
         {
             "CodeActivitiesLibrary.AppIntegrations.M365ExcelActivities",
+            "CodeActivitiesLibrary.AppIntegrations.M365OutlookActivities",
             "None"
         };
 
