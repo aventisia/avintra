@@ -53,6 +53,7 @@ export const useSearchUserMultiSelect = () => {
           assignUsers({
             userId: id,
             queueId,
+            accessType:selectedValue
           }),
         ),
       );

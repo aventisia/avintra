@@ -1,7 +1,7 @@
 import { buttonVariants } from "@aventisia/ui/buttons";
 import { DropdownMenuItem } from "@aventisia/ui/dropdown-menu";
 import { cn } from "@aventisia/ui/lib";
-import { TrashIcon } from "@heroicons/react/24/outline";
+import { UserMinus2Icon } from "lucide-react";
 
 import { useRemoveAgentMutation } from "../../../hooks/useRemoveAgentMutation";
 
@@ -21,16 +21,16 @@ export const RemoveAgentAction = ({ agentId }: RemoveAgentActionProps) => {
     <DropdownMenuItem
       className={cn(
         buttonVariants({ variant: "dropdownCautionItem" }),
-        "group h-8",
+        "group h-7 !px-[0.3rem] text-xs",
       )}
       onClick={() => {
         removeAgent(agentId);
       }}
     >
-      <TrashIcon
+      <UserMinus2Icon
         className={cn(
           "mb-[2px] text-destructive group-focus:text-white",
-          "h-4 w-4",
+          "h-3.5 w-3.5",
         )}
       />
       Remove

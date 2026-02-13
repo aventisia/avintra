@@ -57,8 +57,13 @@ const AgentsList = () => {
                 >
                   {/* Content container */}
                   <p className="grow">{`${val.flowName} -v${val?.versionNumber}`}</p>
-
-                  <AgentsListItemActions id={val.id || ""} />
+                  <div className="flex items-center gap-2">
+                    <span className="-mt-0.5 text-2xs text-muted-foreground">
+                      {" "}
+                      {val.accessType?.replace(/([A-Z])/g, " $1")}
+                    </span>
+                    <AgentsListItemActions item={val} />
+                  </div>
                 </div>
               </CommandItem>
             );
