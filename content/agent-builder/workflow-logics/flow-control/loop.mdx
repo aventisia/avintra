@@ -1,0 +1,98 @@
+import { Callout } from "nextra/components";
+
+# Loop Node
+
+The **Loop node** is used when you want to repeatedly execute a set of actions based on a condition or for each item in a list. It is especially useful for automating tasks that require iteration, such as processing records, retrying operations, or polling for status updates.
+
+Think of the Loop node as your automation's repeat engine — running the same steps again and again until your specified condition is no longer met or until all items are processed.
+
+---
+
+## Repeat Method
+
+You can choose how the loop should repeat using the **Repeat Method** dropdown:
+
+- **Repeat based on condition**: The loop continues executing as long as the specified condition(s) are true.
+- **Repeat for every item in a list**: Executes the loop once for each item in the provided list.
+
+---
+
+## Configuring Loop Conditions
+
+Conditions determine whether the loop will continue to run.
+
+You can create one or more **condition groups**, combining conditions with **AND** and **OR** logic:
+
+- Use **+ AND** to add multiple conditions within a group that must *all* be true.
+- Use **+ OR** to create a new group of conditions. The loop will continue if *any one group* is true.
+
+---
+
+## Supported Operators
+
+### Basic Comparisons
+- **Is Equal To / Exactly Matches**: Match static or dynamic values (e.g., `status Is Equal To "Active"`).
+- **Is Greater Than / Is Less Than**: Check numerical or date values (e.g., `Balance Is Greater Than 5000`).
+
+### Boolean Checks
+- **Is True / Is False**: Use when evaluating flags or toggles (e.g., `isVerified Is True`).
+
+### Text Logic
+- **Contains (Text)**: `Comment Contains "error"`
+- **Does Not Contain (Text)**: `Name Does Not Contain "test"`
+- **Starts With / Ends With**: `Filename Starts With "invoice_"`, `Email Ends With "@domain.com"`
+- **Does Not Start With / Does Not End With**: Negation of prefix/suffix checks.
+- **Does Not Exactly Match**: `Status Does Not Exactly Match "Complete"`
+
+### Existence Checks
+- **Exists / Does Not Exist**: Useful when values are optional (e.g., `ErrorCode Exists`)
+- **Is Empty / Is Not Empty**: For strings, arrays, or lists (e.g., `PhoneNumber Is Not Empty`)
+
+### List Logic
+- **Contains (List)**: `AssignedRoles Contains (List) "Manager"`
+- **Does Not Contain (List)**: `Tags Does Not Contain (List) "Urgent"`
+
+### Date & Time
+- **After / Before**: `DueDate Before "2025-12-01"`
+- **Equals (DateTime)**: `ScheduledTime Equals "2025-07-09T10:00:00Z"`
+
+---
+
+## Example Configuration
+
+### Repeat based on condition
+
+**Group 1 (AND):**
+- `Status Is Equal To "Active"`
+- `Retries Is Less Than 3`
+
+**Group 2 (OR):**
+- `LastError Contains (Text) "Timeout"`
+- `RetryFlag Is True`
+
+In this setup, the loop continues if:
+- The status is active **and** the retry count is less than 3  
+**OR**
+- The last error message contains “Timeout” **or** the retry flag is true.
+
+---
+
+## Real-World Use Cases
+
+- **Polling external API** until a certain response is received.
+- **Retrying failed workflows** based on error flags and attempt counts.
+- **Processing records in a batch** where some items meet a retry condition.
+- **Validating form data** until required inputs are filled.
+- **Waiting on human approval** until status changes to “Approved”.
+
+---
+
+## Best Practices
+
+<Callout emoji="✅">
+Always keep loops deterministic. Add escape conditions to avoid infinite loops.
+</Callout>
+
+- Use logical grouping wisely. Favor **AND** inside a group and **OR** between groups.
+- Use `Is Not Empty` and `Exists` checks when waiting on dynamically populated values.
+- For list processing, consider using "Repeat for every item in list".
