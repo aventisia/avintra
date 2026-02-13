@@ -199,12 +199,10 @@ public class OrchestratorHub : Hub
                     await Clients.Group($"TENANT_{clientDataStore.TenantId}").SendAsync("machine_status_update", "A machine is offline now.");
                     _logger.LogInformation("Machine {ClientId} offline. Notified tenant group {TenantId}.", clientDataStore.ClientId, clientDataStore.TenantId);
                 }
-                else
-                {
-                    // Remove non-machine clients from their tenant group
-                    await Groups.RemoveFromGroupAsync(clientDataStore.ConnectionId, $"TENANT_{clientDataStore.TenantId}");
-                    _logger.LogInformation("Client {ConnectionId} removed from group TENANT_{TenantId}.", clientDataStore.ConnectionId, clientDataStore.TenantId);
-                }
+
+                // Remove non-machine clients from their tenant group
+                await Groups.RemoveFromGroupAsync(clientDataStore.ConnectionId, $"TENANT_{clientDataStore.TenantId}");
+                _logger.LogInformation("Client {ConnectionId} removed from group TENANT_{TenantId}.", clientDataStore.ConnectionId, clientDataStore.TenantId);
             }
 
             // Complete the disconnection process
