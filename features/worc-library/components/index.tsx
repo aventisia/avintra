@@ -44,7 +44,7 @@ const WorcLibrary = () => {
             <p className="text-sm sm:text-base text-muted-foreground px-2 sm:px-0">
               The Library of Worc brings together a rich catalog of ready-to-use
               automations and AI blueprints, empowering teams to build faster,
-              smarter, and at scale — no need to start from scratch.
+              smarter, and at scale no need to start from scratch.
             </p>
           </div>
 

@@ -4,8 +4,8 @@
 
 A **queue** is a container that can hold an unlimited number of items. Each queue item can include various types of data,
 such as invoice information or customer details, which can be processed by external systems like SAP or Salesforce.
-By default, the data in queue items is unstructured. However, for scenarios requiring a specific format—like integrations with
-external applications, processing machine-generated forms, or analytics—you can upload **custom JSON schemas** to enforce structure.
+By default, the data in queue items is unstructured. However, for scenarios requiring a specific format like integrations with
+external applications, processing machine-generated forms, or analytics you can upload **custom JSON schemas** to enforce structure.
 
 ### Key Features:
 
@@ -15,7 +15,7 @@ external applications, processing machine-generated forms, or analytics—you ca
   - Studio (via specific activities).
 - Once queue items are processed, they are considered **transactions**.
 
-# Queues Dashboard - Worc-space
+# Queues Dashboard - Worc
 
 The Queues section provides a centralized view of work items awaiting processing by automation agents. It helps you monitor throughput, backlog, and error rates at a glance.
 
@@ -114,7 +114,7 @@ You can upload a **custom JSON schema** when creating/editing a queue for the fo
   A unique name that identifies the queue. It helps users and systems refer to this queue clearly. Most platforms, like UiPath Orchestrator, limit this to around 50 characters. Choose a meaningful name to easily distinguish the queue.
 
 - **Description** (Optional):  
-  A brief explanation of the queue’s purpose or contents (e.g., “Queue of customer support requests”). While not mandatory, it helps team members quickly understand the queue's role. Typically limited to 250 characters.
+  A brief explanation of the queue's purpose or contents (e.g., “Queue of customer support requests”). While not mandatory, it helps team members quickly understand the queue's role. Typically limited to 250 characters.
 
 ---
 
@@ -136,7 +136,7 @@ You can upload a **custom JSON schema** when creating/editing a queue for the fo
 - Automatically retries items that fail during processing. Useful for transient errors (e.g., network issues). If unchecked, failed items require manual handling.
 - This optional checkbox enables automatic retry for items that fail during processing. If enabled, any item that ends up in a “Failed” status will be re-queued and retried up to the retry limit
   docs-prod-tm.trafficmanager.net
-- This is useful for recovering from transient errors (e.g. a temporary network glitch) without manual intervention. If this box is unchecked, failed items will remain failed until a user intervenes. In UiPath’s newer documentation, this is explicitly called out: “Failed items – retries any queue items that fail after creating the queue.”
+- This is useful for recovering from transient errors (e.g. a temporary network glitch) without manual intervention. If this box is unchecked, failed items will remain failed until a user intervenes. In UiPath's newer documentation, this is explicitly called out: “Failed items – retries any queue items that fail after creating the queue.”
   docs-prod-tm.trafficmanager.net
 
 - **Abandoned Items** (Optional):
@@ -150,4 +150,4 @@ You can upload a **custom JSON schema** when creating/editing a queue for the fo
 ## Schema Definitions
 
 - **Specific Data JSON Schema** (Required):  
-  Upload a JSON schema file that defines the structure of each queue item’s “specific data.” The system uses this to validate incoming data. If the item doesn't match the schema, it’s rejected. This ensures consistent, reliable data for processing. Validation only applies to new items.
+  Upload a JSON schema file that defines the structure of each queue item's “specific data.” The system uses this to validate incoming data. If the item doesn't match the schema, it's rejected. This ensures consistent, reliable data for processing. Validation only applies to new items.

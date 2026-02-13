@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 
 /**
- * Debounces a value — waits until the user stops typing before updating.
+ * Debounces a value waits until the user stops typing before updating.
  * @param value The input value to debounce
  * @param delay Delay in milliseconds (default: 300ms)
  */

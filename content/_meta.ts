@@ -8,7 +8,7 @@ const meta: MetaRecord = {
     title: "Sign In",
   },
   "worc": {
-    title: "Worc-Space",
+    title: "Worc",
     display: "hidden",
   },
   "agent-builder": {
