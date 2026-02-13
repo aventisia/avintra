@@ -67,4 +67,9 @@ public class QueueTransaction : IMustHaveTenant
     /// </summary>
     [ForeignKey("QueueId")]
     public virtual Queue? Queue { get; set; }
+
+    /// <summary>
+    /// Gets or sets the collection of work item events associated with this transaction.
+    /// </summary>
+    public virtual ICollection<WorkItemEvent>? WorkItemEvents { get; set; }
 }
