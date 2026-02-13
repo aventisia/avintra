@@ -1,0 +1,72 @@
+import { Callout, Steps } from "nextra/components";
+
+# Select Range In Excel Worksheet
+
+The **Select Range In Excel Worksheet** node allows you to target a specific range of cells in an Excel worksheet that is stored in OneDrive or SharePoint. This node is particularly useful when you want to interact with specific data ranges for tasks like data analysis, generating reports, or modifying selected data.
+
+## Configuration Options
+
+| Field Name                | Description                                                                                                                                 | Input Type           | Required? | Default Value |
+| ------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------- | -------------------- | --------- | ------------- |
+| **M365 Excel Credential** | The credentials required to authenticate with Microsoft 365 Excel services. This includes tenant ID, client ID, and client secret.          | Credentials Select   | Yes       | _(empty)_     |
+| **Drive and Item ID**     | Identifies the Excel file in OneDrive or SharePoint you want to work with. Format should be `driveId/items/itemId`.                         | Text                 | Yes       | _(empty)_     |
+| **Worksheet Name**        | The name of the worksheet where the specified range will be selected.                                                                       | Text                 | No        | Sheet1        |
+| **Range Address**         | Determines which cells to select within the specified worksheet. For example, `A1:B5` to select from cell A1 to B5.                         | Text                 | No        | A1            |
+
+## Expected Output Format
+
+The output of this node is a **Details of the specified range address** within the Excel file. The result will be a structured data object that can be used for further operations in your flow.
+
+## Step-by-Step Guide
+
+<Steps>
+### Step 1
+
+Add **Select Range In Excel Worksheet** node into your automation flow.
+
+### Step 2
+
+In the **M365 Excel Credential** field, select or provide your credentials to authenticate your connection to Excel.
+
+### Step 3
+
+In the **Drive and Item ID** field, enter the proper drive and item IDs for the Excel file you want to access. Ensure the format is correct as `driveId/items/itemId`.
+
+### Step 4
+
+Specify the **Worksheet Name** where your desired data exists. If you leave it blank, it will default to "Sheet1".
+
+### Step 5
+
+Enter the **Range Address** you wish to select, such as `A1` for a single cell or `A1:B5` for a range.
+
+### Step 6
+
+The output, named **Result**, will be generated containing the details of the specified range in the Excel file.
+</Steps>
+
+<Callout type="info" title="Note">
+  Ensure you have access permissions and valid credentials for the files and data you attempt to access.
+</Callout>
+
+## Input/Output Examples
+
+| Worksheet Name | Range Address | Output Value | Description                                  |
+| -------------- | ------------- | ------------ | -------------------------------------------- |
+| Sheet1         | A1            | Result       | Details of cell A1                           |
+| Employees      | A1:B5         | Result       | Information from cells A1 to B5 in "Employees" worksheet |
+
+## Common Mistakes & Troubleshooting
+
+| Problem                                 | Solution                                                                                                                                   |
+| --------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------ |
+| **Invalid Credential Error**            | Double-check your M365 credentials and ensure they include a valid tenant ID, client ID, and client secret.                                 |
+| **Incorrect Drive/Item ID Format**      | Verify the format in **Drive and Item ID** is `driveId/items/itemId`.                                                                      |
+| **Range Not Found**                     | Make sure the **Worksheet Name** and **Range Address** exist in the file. Misspellings can lead to range not being found.                  |
+| **Access Denied**                       | Confirm you have the necessary permissions for the Excel file in OneDrive or SharePoint.                                                   |
+
+## Real-World Use Cases
+
+- **Data Analysis**: Select specific data ranges for analysis, such as comparing quarterly sales figures.
+- **Report Generation**: Automatically extract specified data ranges for use in reporting templates.
+- **Task Automation**: Streamline processes by selecting data ranges that need updating or further processing in automated workflows.

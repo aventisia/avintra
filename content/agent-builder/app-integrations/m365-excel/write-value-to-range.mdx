@@ -1,0 +1,81 @@
+import { Callout, Steps } from "nextra/components";
+
+# Write Value To Range
+
+The **Write Value To Range** node allows you to update cells in an Excel worksheet stored on OneDrive or SharePoint using the Microsoft 365 Excel API. By specifying details like the Excel file's Drive and Item ID, worksheet name, range address, and the values you want to input, this node helps automate the process of writing data to a spreadsheet.
+
+This is particularly useful when you need to automate data entry tasks, bulk updates to spreadsheets, or integrate data from other processes directly into Excel files stored in Microsoft 365 environments.
+
+## Configuration Options
+
+| Field Name                      | Description                                                                                          | Input Type        | Required? | Default Value |
+| ------------------------------- | ---------------------------------------------------------------------------------------------------- | ----------------- | --------- | ------------- |
+| **M365 Excel API Credential**   | Credential for authenticating with Microsoft 365 Excel API (requires tenant ID, client ID, and secret). | Credentials Select | Yes       | _(empty)_     |
+| **Excel File (Drive and Item ID)** | The Drive ID and Item ID of the Excel file in OneDrive or SharePoint. Format: driveId/items/itemId. | Text              | Yes       | _(empty)_     |
+| **Worksheet Name**              | The name of the worksheet in the Excel file where the value will be written (e.g., 'Sheet1').       | Text              | Yes       | Sheet1        |
+| **Range Address**               | The address of the range in the worksheet where the value will be written (e.g., 'A1' or 'A1:B10'). | Text              | Yes       | A1            |
+| **Values to Write**             | The values to write to the specified range in the worksheet (e.g., `[[“Value1”, “Value2”]]`).       | Text              | Yes       | _(empty)_     |
+
+## Expected Output Format
+
+The output of this node, labeled **Write Result**, is a string that provides feedback on the success of the operation, including the result, status code, and message from the API confirming the data has been written to the specified Excel range.
+
+## Step-by-Step Guide
+
+<Steps>
+### Step 1
+
+Add the **Write Value To Range** node to your flow.
+
+### Step 2
+
+In the **M365 Excel API Credential** field, select or enter the credentials required for Microsoft 365 Excel API access.
+
+### Step 3
+
+In the **Excel File (Drive and Item ID)** field, enter the identifiers of the target Excel file in the format: `driveId/items/itemId`.
+
+### Step 4
+
+Specify the **Worksheet Name** where you wish to write data, such as 'Sheet1'.
+
+### Step 5
+
+Enter the **Range Address** in standard Excel format (e.g., 'A1' or 'A1:B10') to indicate where data should be written.
+
+### Step 6
+
+Provide the **Values to Write** to the specified range. Values should be structured as an array format like `[[“Value1”, “Value2”], [“Value3”, “Value4”]]` to match the grid layout of your target cells.
+
+### Step 7
+
+Execute the node to perform the write operation. Check the **Write Result** for confirmation and details of the operation's success.
+</Steps>
+
+<Callout type="info" title="Tip">
+  Ensure correct and valid M365 credentials are used; incorrect credentials will prevent data from being written to the Excel file.
+</Callout>
+
+## Input/Output Examples
+
+| Field                | Example Value                          | Notes                                                    |
+| -------------------- | -------------------------------------- | -------------------------------------------------------- |
+| Excel File (Drive and Item ID) | `b!1aDe5Q_GO5lkC_xx/items/01MJL5UTIFQ7YYRXXELZAYRXXXHK4FK5FX` | Use the file's unique identifiers from OneDrive or SharePoint. |
+| Worksheet Name       | `Sheet1`                               | The worksheet's exact name is crucial for correct targeting. |
+| Range Address        | `A1:B2`                                | Specifies a 2x2 range in the worksheet.                   |
+| Values to Write      | `[[“Header1”, “Header2”], [“Value1”, “Value2”]]` | Matching range and value structure avoids overwrite issues. |
+
+## Common Mistakes & Troubleshooting
+
+| Problem                                          | Solution                                                                                                   |
+| ------------------------------------------------ | ---------------------------------------------------------------------------------------------------------- |
+| **Invalid M365 Credentials**                     | Double-check credential details: tenant ID, client ID, and client secret must be correct.                  |
+| **Wrong Excel File ID**                          | Ensure the correct drive and item IDs are used. These IDs are unique to each file.                         |
+| **Range Overflow**                               | Make sure the values fit the specified range (e.g., don't send a 3x3 value array to a 2x2 range address).  |
+| **Unmatched Worksheet Name**                     | Verify that the worksheet name in Excel matches what you have entered exactly (case-sensitive).            |
+
+## Real-World Use Cases
+
+- **Sales Data Updates**: Automatically log daily sales data into a central Excel sheet stored in the cloud.
+- **Report Generations**: Populate recurring monthly report templates with fresh data direct from other systems.
+- **Student Grades Sheet**: Update student scores in a course spreadsheet directly after online tests or quizzes.

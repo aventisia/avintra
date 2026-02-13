@@ -1,0 +1,82 @@
+import { Callout, Steps } from "nextra/components";
+
+# Send WhatsApp Message
+
+The **Send WhatsApp Message** node allows you to send WhatsApp messages using the Twilio service. This node is useful for businesses that want to automate communication with customers via WhatsApp, send alerts, or share promotional content directly through messaging.
+
+## Configuration Options
+
+| Field Name                                       | Description                                                                                                          | Input Type        | Required? | Default Value |
+| ------------------------------------------------ | -------------------------------------------------------------------------------------------------------------------- | ----------------- | --------- | ------------- |
+| **Twilio Credential**                            | Select your Twilio credential, which contains the necessary authentication token and account ID for API requests.    | Credential Select | Yes       | _(empty)_     |
+| **Recipient Identification Method**              | Choose whether to identify the recipient by their phone number or Messaging Service SID.                             | Select            | Yes       | PhoneNumber   |
+| **Sender Phone Number / Messaging Service SID**  | Enter the Twilio phone number or service identifier from which the WhatsApp message will be sent.                   | Text              | Yes       | _(empty)_     |
+| **Recipient Phone Number**                       | Enter the recipient's phone number (this must be a valid Twilio-supported number).                                   | Text              | Yes       | _(empty)_     |
+| **Message Body**                                 | The content you want to send in the WhatsApp message.                                                                | Text              | Yes       | _(empty)_     |
+
+## Expected Output Format
+
+The output of this node is a **response from Twilio** indicated by `Result`. It contains information about whether the message was sent successfully or any error details.
+
+## Step-by-Step Guide
+
+<Steps>
+### Step 1
+
+Select the **Send WhatsApp Message** node from the available nodes panel.
+
+### Step 2
+
+In the **Twilio Credential** dropdown, select the appropriate Twilio credentials. If none appear, ensure credentials have been added in the settings.
+
+### Step 3
+
+In the **Recipient Identification Method** dropdown, choose how you will identify the recipient:
+
+- **Phone Number**: Use their phone number directly.
+- **Messaging Service SID**: Use Twilio Messaging Service SID for identification.
+
+### Step 4
+
+For **Sender Phone Number / Messaging Service SID**, enter the Twilio phone number or service identifier from which the message will be sent.
+
+### Step 5
+
+In **Recipient Phone Number**, provide the recipient's phone number. This must be formatted as a valid Twilio-supported number.
+
+### Step 6
+
+Enter your message in the **Message Body** field. This is the content that will be sent to the recipient's WhatsApp.
+
+### Step 7
+
+Once all fields are completed and verified, save your configuration. The `Result` will display Twilio's response after sending the message.
+
+</Steps>
+
+<Callout type="warning" title="Important Note">
+  Ensure that the recipient's phone number is supported by Twilio and WhatsApp. Double-check all numbers for accuracy to avoid delivery failures.
+</Callout>
+
+## Input/Output Examples
+
+| Identification Method | Sender Details   | Recipient Phone | Message Body            | Output               |
+| --------------------- | ---------------- | ----------------| ----------------------- | ---------------------|
+| Phone Number          | +12345678901     | +19876543210    | "Hello, this is a test."| Twilio Response Data |
+| Messaging Service SID | MGxxxxxxxxxxxxxx | +19876543210    | "Your appointment is set." | Twilio Response Data |
+
+## Common Mistakes & Troubleshooting
+
+| Problem                                        | Solution                                                                                                                                                    |
+| ---------------------------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| **Invalid Credential Error**                   | Make sure the correct Twilio credential is selected and configured properly.                                                                                |
+| **Unsupported Phone Number Format**            | Ensure recipient's phone number is in the correct international format and supported by Twilio.                                                             |
+| **Empty Message Body**                         | Verify the message body is not empty before sending, as this will fail to send a message.                                                                   |
+| **Unexpected Error Message from Twilio**       | Check Twilio's documentation for error codes and ensure all API permissions and settings are properly configured.                                           |
+
+## Real-World Use Cases
+
+- **Customer Support**: Use for sending automated responses or confirmation messages to customer inquiries on WhatsApp.
+- **Appointment Reminders**: Send timely reminders for appointments or bookings through WhatsApp.
+- **Order Updates**: Notify customers about their order status, shipping updates, or delivery confirmations.
+- **Marketing Campaigns**: Share promotional offers or new product launches with your customer base.

@@ -4,14 +4,17 @@ const meta: MetaRecord = {
   "browser-automation": {
     title: "Browser Automation",
   },
-  "ui-automation": {
-    title: "UI Automation",
-  },
-  "mouse-and-keyboard": {
-    title: "Mouse and Keyboard",
-  },
   clipboard: {
     title: "Clipboard",
+  },
+  "cmd-session": {
+    title: "CMD Session",
+  },
+  compression: {
+    title: "Compression",
+  },
+  "credential-manager": {
+    title: "Credential Manager",
   },
   file: {
     title: "File",
@@ -19,26 +22,23 @@ const meta: MetaRecord = {
   folder: {
     title: "Folder",
   },
-  system: {
-    title: "System",
+  "message-box": {
+    title: "Message Box",
   },
-  workstation: {
-    title: "Workstation",
+  "mouse-and-keyboard": {
+    title: "Mouse and Keyboard",
   },
   scripting: {
     title: "Scripting",
   },
-  "cmd-session": {
-    title: "CMD Session",
+  system: {
+    title: "System",
   },
-  "message-box": {
-    title: "Message Box",
+  "ui-automation": {
+    title: "UI Automation",
   },
-  compression: {
-    title: "Compression",
-  },
-  "credential-manager": {
-    title: "Credential Manager",
+  workstation: {
+    title: "Workstation",
   },
   xml: {
     title: "XML",

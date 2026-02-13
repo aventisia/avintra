@@ -1,0 +1,75 @@
+import { Callout, Steps } from "nextra/components";
+
+# Add New Worksheet
+
+The **Add New Worksheet** node allows you to add a new worksheet to an existing Excel file stored in OneDrive or SharePoint. This node uses the Microsoft 365 Excel API and requires valid M365 credentials, along with the Drive and Item ID of the target Excel file. You can also specify a name for the new worksheet. Once the worksheet is added, you will receive the details of the newly added worksheet along with a status code and message from the API.
+
+## Configuration Options
+
+| Field Name                 | Description                                                                                           | Input Type         | Required? | Default Value  |
+| -------------------------- | ----------------------------------------------------------------------------------------------------- | ------------------ | --------- | -------------- |
+| **M365 Excel Credential**  | Credentials for accessing M365, containing tenant ID, client ID, and client secret for API requests.  | Credentials Select | Yes       | _(empty)_      |
+| **Drive and Item ID**      | The Drive ID and Item ID for the Excel file in OneDrive or SharePoint. Format: driveId/items/itemId.  | Text               | Yes       | _(empty)_      |
+| **New Worksheet Name**     | Name for the new worksheet to be added.                                                               | Text               | No        | New Worksheet  |
+
+## Expected Output Format
+
+The output of this node provides **the details of the newly added worksheet**, which include the worksheet name, ID, and other pertinent information returned by the Excel API.
+
+- The output will be structured as an object containing worksheet details (e.g., `"WorksheetName": "Sheet1"`).
+
+## Step-by-Step Guide
+
+<Steps>
+### Step 1
+
+Add the **Add New Worksheet** node into your flow.
+
+### Step 2
+
+In the **M365 Excel Credential** field, select or provide credentials that contain the tenant ID, client ID, and client secret necessary for authentication.
+
+### Step 3
+
+Enter the **Drive and Item ID** for the specific Excel file where you want to add a new worksheet. Ensure the format is `driveId/items/itemId`.
+
+### Step 4
+
+Optionally, provide a **New Worksheet Name** for the worksheet you're adding. If left blank, it defaults to "New Worksheet".
+
+### Step 5
+
+Run the flow to execute the node. The node will add the worksheet and return the details as **Result**.
+
+</Steps>
+
+<Callout type="info" title="Tip">
+To ensure the "Drive and Item ID" is correct, verify it against the details of your OneDrive or SharePoint paths.
+</Callout>
+
+## Input/Output Examples
+
+| Field Name            | Example Value                          |
+| --------------------- | -------------------------------------- |
+| M365 Excel Credential | `(provided and valid credential)`      |
+| Drive and Item ID     | `driveId/items/itemId`                 |
+| New Worksheet Name    | `FinanceReport`                        |
+
+| Output Field | Output Example                                                                          |
+| ------------ | --------------------------------------------------------------------------------------- |
+| Result       | `{ "WorksheetName": "FinanceReport", "WorksheetId": "ws-12345", "StatusCode": "201" }` |
+
+## Common Mistakes & Troubleshooting
+
+| Problem                                               | Solution                                                                                                               |
+| ----------------------------------------------------- | ---------------------------------------------------------------------------------------------------------------------- |
+| **Invalid Credential Error**                          | Ensure your M365 Excel credentials are correct and active. Double-check tenant ID, client ID, and client secret.         |
+| **Incorrect Drive and Item ID Format**                | Make sure the Drive and Item ID is correctly formatted as `driveId/items/itemId`.                                        |
+| **Worksheet Name Already Exists**                     | If the new worksheet name is already in use, try specifying a different name for the new worksheet.                     |
+| **Access Denied Error**                               | Verify that your credentials have the necessary permissions to add a worksheet to the target Excel file in OneDrive/SharePoint. |
+
+## Real-World Use Cases
+
+- **Project Management**: Quickly add new sheets to track project phases or tasks in a central Excel file.
+- **Financial Reporting**: Append quarterly data by adding a new worksheet for each quarter in a financial report.
+- **Administrative Log**: Automatically update Excel sheets with new employee logs or records as data is collected.

@@ -1,29 +1,29 @@
 import type { MetaRecord } from "nextra";
 
 const meta: MetaRecord = {
-  variables: {
-    title: "Variables",
-  },
-  text: {
-    title: "Text",
-  },
-  ocr: {
-    title: "OCR",
-  },
-  "date-time": {
-    title: "Date Time",
-  },
-  database: {
-    title: "Database",
+  cryptography: {
+    title: "Cryptography",
   },
   "data-table": {
     title: "Data Table",
   },
-  cryptography: {
-    title: "Cryptography",
+  database: {
+    title: "Database",
+  },
+  "date-time": {
+    title: "Date Time",
   },
   "j-s-o-n": {
     title: "JSON",
+  },
+  ocr: {
+    title: "OCR",
+  },
+  text: {
+    title: "Text",
+  },
+  variables: {
+    title: "Variables",
   },
 };
 
