@@ -216,7 +216,9 @@ public class QueueTableService : IQueueTableService
                 {
                     UserId = _userId,
                     QueueId = newQueue.Id,
-                    AccessType = QueueWorkItemAccessTypesEnum.FullAccess
+                    AccessType = QueueWorkItemAccessTypesEnum.FullAccess,
+                    CreatedByUserId = _userId,
+                    LastModifiedByUserId = _userId
                 };
 
                 // Insert the new QueueUser into the database
