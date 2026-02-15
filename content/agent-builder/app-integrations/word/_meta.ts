@@ -7,6 +7,9 @@ const meta: MetaRecord = {
   "close-word": {
     title: "Close Word",
   },
+  "convert-word-to-pdf": {
+    title: "Convert Word to PDF",
+  },
   "extract-text-from-docx-file": {
     title: "Extract Text from DOCX File",
   },

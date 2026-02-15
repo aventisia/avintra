@@ -2,74 +2,65 @@ import { Callout, Steps } from "nextra/components";
 
 # Set Windows Environment Variable
 
-The **Set Windows Environment Variable** node allows you to modify or establish environment variables within your Windows operating system. This functionality is useful for configuring system settings or user-specific preferences that applications or the operating system uses to manage processes. When you want your changes to take immediate effect without needing a system restart, this node is particularly beneficial.
+The **Set Windows Environment Variable** node allows you to change or assign a value to a specific environment variable on your Windows system. This is useful for configuring system and user-specific settings that many applications rely on, such as system paths or user preferences.
 
-For example:
+By setting environment variables, you can:
 
-- Modifying the system PATH to include new directories for executables.
-- Setting user-specific variables for a project or software settings.
-- Configuring system-wide settings applicable to all users on the machine.
+- Modify how applications interact with the system.
+- Customize paths for temporary files or application directories.
+- Adjust system-level settings for different user scenarios.
 
 ## Configuration Options
 
-| Field Name                         | Description                                                                                      | Input Type | Required? | Default Value |
-| ---------------------------------- | ------------------------------------------------------------------------------------------------ | ---------- | --------- | ------------- |
-| **Environment Variable Name**      | The name of the environment variable to set.                                                     | Select     | Yes       | _(empty)_     |
-| **New Environment Variable Value** | The new value to set for the chosen environment variable.                                        | Text       | Yes       | _(empty)_     |
-| **Type**                           | Specifies whether to set the environment variable at the User or System level.                   | Select     | No        | User          |
-
-## Expected Output Format
-
-When this node executes successfully, the output is a **status message** indicating the success or failure of setting the environment variable.
-
-- The output message is a simple text status such as "Environment variable set successfully" or "Failed to set environment variable".
+| Field Name                     | Description                                                                                  | Input Type | Required? | Default Value |
+| ------------------------------ | ---------------------------------------------------------------------------------------------| ---------- | --------- | ------------- |
+| **Environment Variable Name**  | Select which environment variable you wish to modify.                                        | Select     | Yes       | _(empty)_     |
+| **New Environment Variable Value** | Specify the new value for the selected environment variable.                                | Text       | Yes       | _(empty)_     |
+| **Type**                       | Choose whether to set the variable at the User level or System level (machine-wide).          | Select     | No        | User          |
 
 ## Step-by-Step Guide
 
 <Steps>
 ### Step 1
 
-Add the **Set Windows Environment Variable** node to your workflow.
+Add the **Set Windows Environment Variable** node to your flow.
 
 ### Step 2
 
-In the **Environment Variable Name** dropdown, select the environment variable you wish to modify.
+In the **Environment Variable Name** dropdown, choose the variable you want to set. Options include common variables like **Path**, **Username**, and **Operating System**.
 
 ### Step 3
 
-Enter the value you want to assign to this environment variable in the **New Environment Variable Value** field.
+Enter the desired value in the **New Environment Variable Value** field. This will be the new value assigned to your chosen environment variable.
 
 ### Step 4
 
-Choose the **Type** of environment variable - either User (for current user-specific settings) or System (for system-wide settings). If you don't select anything, it defaults to "User".
+Select the **Type** from the dropdown to specify if you want the change to affect the current user or the whole system. Default is set to User.
 
 ### Step 5
 
-Once configured, run or save your workflow to apply the changes. The outcome will be displayed as a **status message**.
+The updated environment variable can now be accessed by other system processes or tools.
 
 </Steps>
 
-<Callout type="info" title="Note">
-  Changing system-level environment variables may require administrator privileges. Ensure you have the necessary permissions when setting System variables.
+<Callout type="info" title="Caution">
+  Changes to system environment variables can affect applications globally. Use the "System" type only if necessary and you have appropriate permissions.
 </Callout>
 
-## Input/Output Examples
+## Expected Output Format
 
-| Environment Variable Name | New Value        | Type  | Output Message                          |
-| ------------------------- | ---------------- | ----- | --------------------------------------- |
-| PATH                      | `C:\New\Path`    | User  | Status message displayed upon success.  |
-| TEMP                      | `D:\Temp`        | System| Status message displayed upon success.  |
+This node does not produce a visible output as it operates by changing system settings. However, other nodes can access the updated environment variable values after this operation.
 
 ## Common Mistakes & Troubleshooting
 
-| Problem                                              | Solution                                                                                                    |
-| ---------------------------------------------------- | ----------------------------------------------------------------------------------------------------------- |
-| **Variable not appearing in dropdown**               | Ensure that you are selecting from the list of predefined variables. Custom variables are not listed here.  |
-| **Permission Denied on System Variables**            | Check for necessary administrator privileges as changing system variables may not be allowed for all users. |
-| **No Status Message Displayed**                      | Verify if the node configuration is correct and if the workflow was run successfully.                       |
+| Problem                                            | Solution                                                                                      |
+| -------------------------------------------------- | --------------------------------------------------------------------------------------------- |
+| **Environment variable no effect**                 | Ensure the correct variable is selected and the value is properly entered.                    |
+| **Permissions error when setting System variable** | You may need administrative privileges to modify system-level environment variables.          |
+| **Changes not recognized by applications**         | Restarting your application or logging off and back into Windows may be required to apply changes. |
 
 ## Real-World Use Cases
 
-- **Software Development**: Easily adjust the system PATH for new builds or command-line tools needed during development.
-- **Custom User Configurations**: Setup personalized environment variables for scripts or applications specific to your workflow.
-- **System Administration**: Configure system-wide settings that all users and processes can access without manual edits on multiple user profiles.
+- **Custom Software Configuration**: Developers can use environment variables to switch between development and production configurations.
+- **Adjust System Utilities**: Modify system path for specific utility tools involving file management or systems/tools monitoring.
+- **User-Specific Settings**: Set user preferences for programs without directly altering application configurations files.

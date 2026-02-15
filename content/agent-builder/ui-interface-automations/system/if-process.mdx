@@ -2,74 +2,79 @@ import { Callout, Steps } from "nextra/components";
 
 # If Process
 
-The **If Process** node allows you to evaluate whether a specific process on your computer is running or not. This node is highly useful in workflow automation because it lets you create conditional paths based on the status of processes, such as applications or system services. By using the **If Process** node, you can execute different actions depending on whether a selected process is active or inactive.
+The **If Process** node is used to start a sequence of actions based on whether a specific process on your computer is currently running. This is useful when you need your workflow to proceed differently depending on the activity status of certain applications or services.
+
+For example:
+
+- Checking if a crucial application like "Google Chrome" is currently active.
+- Ensuring processes like "Visual Studio" are running before deploying code.
+- Monitoring background services such as "Audio Device Graph" to ensure smooth media performance.
 
 ## Configuration Options
 
-| Field Name   | Description                                                                                  | Input Type | Required? | Default Value |
-| ------------ | -------------------------------------------------------------------------------------------- | ---------- | --------- | ------------- |
-| **If process** (Condition) | The condition to evaluate: whether the process is **running** or **not running** on your system. | Select     | Yes       | _(empty)_     |
-| **Process name** | The name of the process you want to check (e.g., Chrome, Visual Studio).                  | Select     | Yes       | _(empty)_     |
-| **From User** | Toggle on to check if the process is running under a specific user account.                   | Switch     | No        | _(empty)_     |
-| **User name** | The username to check against. This only applies if **From User** is enabled.                | Text       | No        | _(empty)_     |
+| Field Name      | Description                                                                                               | Input Type | Required? | Default Value |
+| --------------- | --------------------------------------------------------------------------------------------------------- | ---------- | --------- | ------------- |
+| **Condition**   | Choose what condition to check (e.g., if the process is running or not).                                  | Select     | Yes       | _(empty)_     |
+| **Process Name**| Select the name of the process you want to check.                                                         | Select     | Yes       | _(empty)_     |
+| **From User**   | Check this if you want to verify the process under a specific user account.                               | Switch     | No        | _(empty)_     |
+| **User Name**   | Enter the user name to check the process. _Appears only if "From User" is enabled._                      | Text       | No        | _(empty)_     |
 
 ## Expected Output Format
 
-The output is a **Boolean value**, indicating whether the specified condition is met:
-
-- `true`: The process condition you set (running or not) is met.
-- `false`: The process condition is not met.
+The output of the **If Process** node does not produce a value itself but alters the execution flow based on the chosen condition.
 
 ## Step-by-Step Guide
 
 <Steps>
 ### Step 1
 
-Add the **If Process** node to your automation flow.
+Add the **If Process** node into your flow.
 
 ### Step 2
 
-In the **If process** field, select the condition you want to check:
+In the **Condition** dropdown, choose how you wish to check the process:
 
-- **Is Running**: To verify the process is currently active.
-- **Is Not Running**: To verify the process is currently inactive.
+- **Is Running**: Checks if the specified process is currently active.
+- **Is Not Running**: Checks if the specified process is inactive.
 
 ### Step 3
 
-In the **Process name** field, choose the process to evaluate from the dropdown list.
+Select the process name from the **Process Name** dropdown that you want to evaluate.
 
 ### Step 4
 
-(Optional) If you need to specify a user, enable **From User**. Then fill in the **User name** with the relevant account name.
+If you would like the check to be specific to a user, toggle the **From User** switch.
 
 ### Step 5
 
-Continue setting up your workflow by configuring other nodes based on the output (`true` or `false`) from the **If Process** node.
+If **From User** is enabled, enter the target user's name in the **User Name** field.
 
+### Step 6
+
+The flow will execute further actions based on whether the process meets the specified condition.
 </Steps>
 
 <Callout type="info" title="Note">
-  Ensure that you have the correct permissions to check processes running on your system, especially for processes that might require administrative rights.
+  The "User Name" field will only be active when "From User" is enabled. Ensure you want to specify a user before enabling it.
 </Callout>
 
 ## Input/Output Examples
 
-| Condition   | Process Name | From User | User Name | Output  |
-| ----------- | ------------ | --------- | --------- | ------- |
-| Is Running  | Chrome       | No        | _(n/a)_   | `true`  |
-| Is Running  | Idle         | Yes       | admin     | `false` |
-| Is Not Running | Dllhost   | No        | _(n/a)_   | `true`  |
+| Condition      | Process Name                       | From User | User Name | Execution Outcome             |
+| -------------- | ---------------------------------- | --------- | --------- | ------------------------------|
+| Is Running     | Google Chrome Browser              | Yes       | johndoe   | Continues if Chrome is running under johndoe. |
+| Is Not Running | Visual Studio Development Environment | No      | _(n/a)_   | Continues if Visual Studio is not running.    |
 
 ## Common Mistakes & Troubleshooting
 
-| Problem                                         | Solution                                                                                               |
-| ----------------------------------------------- | ------------------------------------------------------------------------------------------------------ |
-| **No output from node**                         | Check that the process name is correct and presently exists on your system.                            |
-| **Permission denied errors**                    | Ensure you have the necessary permissions to check the status of the specified process.                |
-| **Username not affecting output**               | Verify that **From User** is activated if checking against a specific username, and the name is correct.|
+| Problem                                   | Solution                                                                                                               |
+| ----------------------------------------- | --------------------------------------------------------------------------------------------------------------------- |
+| **Process not found**                     | Ensure the correct process name is selected from the list. Check if the process is currently available.              |
+| **User-specific check not working**       | Verify that "From User" is enabled and the correct user name is entered. Ensure that the username is spelled correctly.| 
+| **Unexpected behavior in flow execution** | Double-check the selected condition and if it matches your intended logic (Is Running vs. Is Not Running).            |
 
 ## Real-World Use Cases
 
-- **Monitoring Applications**: Automatically launch or close applications based on whether they are already running.
-- **System Checkpoints**: Implement checkpoints in scripts or services to run only if certain processes are active.
-- **User-Specific Actions**: Trigger workflows specific to a user's context if they are running particular processes.
+- **System Monitoring**: Automate alerts if critical processes like "Server Runtime" unexpectedly stop.
+- **Resource Management**: Initiate resources only when specific applications are inactive to save system resources.
+- **Security Checks**: Verify that security processes like "Intel Content Protection" are always active during secure transactions.

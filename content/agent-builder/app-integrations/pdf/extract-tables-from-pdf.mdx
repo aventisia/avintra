@@ -1,0 +1,66 @@
+import { Callout, Steps } from "nextra/components";
+
+# Extract Tables From PDF
+
+The **Extract Tables From PDF** node is designed to automatically extract tabular data from all pages of a specified PDF file. This feature is useful when you have PDF reports or documents containing tables that you need to analyze or input into other applications or workflows without manual re-entry.
+
+Common scenarios include extracting data from financial statements, performance reports, or any form of structured data stored within PDFs.
+
+## Configuration Options
+
+| Field Name      | Description                                   | Input Type | Required? | Default Value |
+| --------------- | --------------------------------------------- | ---------- | --------- | ------------- |
+| **PDF File Path** | The full file path to the PDF from which you want to extract tables. | Text       | Yes       | _(empty)_     |
+
+## Expected Output Format
+
+The output of this node is a **list of extracted tables** in a tabular format. Each table extracted is an object representing its data, facilitating further processing.
+
+## Step-by-Step Guide
+
+<Steps>
+
+### Step 1
+
+Add the **Extract Tables From PDF** node to your workflow.
+
+### Step 2
+
+In the **PDF File Path** field, enter the complete path to the PDF file you wish to extract tables from. Ensure that the file path is accurate and the file is accessible.
+
+### Step 3
+
+The node will process the specified PDF and generate a list of tables under the **Extracted Tables** output label. This list can be linked to subsequent nodes for further processing or data handling.
+
+</Steps>
+
+<Callout type="info" title="Note">
+  Ensure the PDF document is not password-protected or encrypted, as this may prevent the node from accessing the data within.
+</Callout>
+
+<Callout type="warning" title="Warning">
+  If the file path is incorrect, or the file format does not match the expected PDF standard, the extraction process will fail.
+</Callout>
+
+## Input/Output Examples
+
+| PDF File Path           | Output Value     |
+| ----------------------- | ---------------- |
+| `/documents/report.pdf` | ExtractedTables  |
+
+- **Input Example**: `/user/documents/q1_financials.pdf`
+- **Output Example**: A list of tables extracted, each represented as data objects.
+
+## Common Mistakes & Troubleshooting
+
+| Problem                                   | Solution                                      |
+| ----------------------------------------- | --------------------------------------------- |
+| **PDF File Path is not found**            | Double-check the file path for correctness.   |
+| **Tables not extracting properly**        | Ensure the PDF is formatted with proper tables. |
+| **Encrypted PDF file**                    | Disable encryption or use an unprotected file. |
+
+## Real-World Use Cases
+
+- **Financial Analysis**: Extract tables from quarterly financial statements for data review.
+- **Academic Research**: Automate extraction of tables from published papers for analysis.
+- **Inventory Management**: Retrieve tabled data from supplier PDFs for stock management input.

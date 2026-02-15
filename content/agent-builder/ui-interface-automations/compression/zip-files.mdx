@@ -2,75 +2,76 @@ import { Callout, Steps } from "nextra/components";
 
 # Zip Files
 
-The **Zip Files** node allows you to compress multiple files or entire folders into a single ZIP archive. This is particularly useful for situations where you need to group files for storage, send them as a package, or reduce their size for easier sharing.
+The **Zip Files** node allows you to compress one or more files or folders into a single ZIP archive. This is useful for reducing file size for storage or transfer, organizing multiple files into a single package, or preparing documents for distribution. 
 
-For example:
+Common use cases include:
 
-- Compressing project files for backup.
-- Sending multiple documents as a single attachment.
-- Reducing file sizes for storage efficiency.
+- Sending document packages via email.
+- Organizing project files into a compact archive.
+- Archiving old backups with reduced storage space.
 
 ## Configuration Options
 
-| Field Name             | Description                                                                                  | Input Type | Required? | Default Value |
-| ---------------------- | -------------------------------------------------------------------------------------------- | ---------- | --------- | ------------- |
-| **Source Paths**       | Enter file or folder paths you want to compress (use commas to separate multiple paths).     | Text       | Yes       | _(empty)_     |
-| **Type of Compression**| Choose the compression method for the ZIP archive.                                           | Select     | No        | Deflate       |
-| **Output Zip Path**    | Specify the full path where the ZIP file will be saved (e.g., `C:\temp\archive.zip`).        | Text       | Yes       | _(empty)_     |
+| Field Name          | Description                                                                 | Input Type | Required? | Default Value |
+| ------------------- | --------------------------------------------------------------------------- | ---------- | --------- | ------------- |
+| **Source Paths**    | Paths of the files/folders to compress. Accepts a list or comma-separated values. | Text       | Yes       | _(empty)_     |
+| **Compression Level** | Level of compression: Optimal, Fastest, or NoCompression.                   | Select     | No        | Optimal       |
+| **Output Zip Path** | Location where the resulting ZIP file will be saved.                           | Text       | Yes       | _(empty)_     |
 
 ## Expected Output Format
 
-The output is the **full path** to the created ZIP file.
-
-- Example: `"C:\\temp\\archive.zip"`
+The output is a string that provides the full path of the created ZIP archive.
 
 ## Step-by-Step Guide
 
 <Steps>
 ### Step 1
 
-Add the **Zip Files** node to your flow.
+Add **Zip Files** node into your flow.
 
 ### Step 2
 
-In the **Source Paths** field, input the file or folder paths you wish to compress. Use commas to separate multiple paths if you have more than one.
+In the **Source Paths** field, enter the file or folder paths you wish to compress. You can use a comma-separated list for multiple items.
 
 ### Step 3
 
-Select the **Type of Compression** from the dropdown menu. If unsure, the default "Deflate" is a standard choice that balances speed and compression ratio.
+Select the desired **Compression Level** from the dropdown:
+
+- **Optimal**: Balances compressed size and speed.
+- **Fastest**: Prioritizes speed over compression ratio.
+- **NoCompression**: Simply combines the files without reducing the size.
 
 ### Step 4
 
-In the **Output Zip Path** field, specify where you want the ZIP file to be saved on your computer.
+Specify the path in the **Output Zip Path** field where you want to save the generated ZIP file (e.g., `C:\temp\archive.zip`).
 
 ### Step 5
 
-Once configured, the node will output the full path of the created ZIP file as **OutputZipFullPath**, ready for use in other nodes or processes.
+Once configured, the full path to the resulting zip file will be available as **OutputZipFullPath** for further use.
 
 </Steps>
 
 <Callout type="info" title="Tip">
-  Ensure all paths entered exist and are correctly formatted to avoid errors.
+  Ensure that the **Output Zip Path** is correct and writable to avoid errors during zip creation.
 </Callout>
 
 ## Input/Output Examples
 
-| Source Paths                     | Type of Compression | Output Zip Path      | Output Zip Full Path               |
-| -------------------------------- | ------------------- | -------------------- | ---------------------------------- |
-| C:\Documents, C:\Photos          | Deflate             | C:\Archive\backup.zip| C:\Archive\backup.zip              |
-| C:\Project                       | None                | D:\Exports\project.zip| D:\Exports\project.zip             |
-| C:\Files1, C:\Files2\Doc.txt     | GZip                | E:\compressed.zip    | E:\compressed.zip                  |
+| Source Paths                         | Compression Level | Output Zip Path         | Output Value                           |
+| ------------------------------------ | ----------------- | ----------------------- | -------------------------------------- |
+| "C:\logs\", "C:\reports\report1.pdf" | Optimal           | "C:\archives\monthly.zip" | "C:\archives\monthly.zip"              |
+| "C:\photos\", "C:\videos\video.mp4"  | Fastest           | "D:\backups\media.zip"  | "D:\backups\media.zip"                 |
 
 ## Common Mistakes & Troubleshooting
 
-| Problem                                  | Solution                                                                                             |
-| ---------------------------------------- | ---------------------------------------------------------------------------------------------------- |
-| **Invalid Source Paths**                 | Double-check that the paths are correct and the files/folders exist at those locations.              |
-| **Output path inaccessible**             | Ensure you have write permissions for the directory where you're saving the ZIP file.                |
-| **File is not a ZIP format**             | Verify the file was saved with a ".zip" extension in the **Output Zip Path** field.                  |
+| Problem                                                                     | Solution                                                                                                                  |
+| --------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------- |
+| **Invalid or missing Source Paths**                                         | Double-check the file paths entered. Ensure they exist and are accessible.                                                |
+| **Output path not writable**                                                | Verify that the destination folder exists and you have write permissions.                                                 |
+| **Unexpected output due to incorrect Compression Level selection**          | Review the compression level setting. Use **Optimal** for balance or test other levels based on your specific needs.      |
 
 ## Real-World Use Cases
 
-- **Backup Projects**: Regularly compress working folders into ZIP files for backup.
-- **Emailing Attachments**: Combine and compress multiple files for easier email attachments.
-- **Document Archiving**: Compress completed documents for long-term storage without using excessive space.
+- **Email Attachments**: Compress large files into a zip before emailing to ensure it doesn't exceed size limits.
+- **Data Archives**: Compile project files into a single zip archive for easier backup and retrieval.
+- **Project Submissions**: Submit multiple files organized within a zip for easy download and unpacking by recipients.

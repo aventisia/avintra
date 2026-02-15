@@ -2,29 +2,25 @@ import { Callout, Steps } from "nextra/components";
 
 # Ping
 
-The **Ping** node helps you check if a remote computer is accessible over a network by sending a "ping" message. This is useful for diagnosing network connectivity issues or ensuring that networked devices are reachable.
+The **Ping** node is designed to check the accessibility of a remote computer over a network by sending a message and waiting for a response. This tool can be useful for determining if a server, website, or another network device is reachable and how long it takes for a message to travel there and back. You might use the Ping node to:
 
-For example:
-
-- Network troubleshooting: Verify if a server or website is online.
-- Monitoring: Check the accessibility of devices in automated workflows.
+- Verify network connectivity to a specified server or device.
+- Measure latency by checking the round-trip time for messages.
+- Troubleshoot network issues by identifying inaccessible hosts.
 
 ## Configuration Options
 
-| Field Name          | Description                                                           | Input Type | Required? | Default Value |
-| ------------------- | --------------------------------------------------------------------- | ---------- | --------- | ------------- |
-| **Host Name**       | The hostname or IP address of the device you want to ping.            | Text       | Yes       | _(empty)_     |
-| **Timeout**         | Maximum wait time for a ping response, in milliseconds.               | Text       | No        | _(empty)_     |
+| Field Name       | Description                                                                 | Input Type | Required? | Default Value |
+| ---------------- | --------------------------------------------------------------------------- | ---------- | --------- | ------------- |
+| **Host Name**    | The host name or IP address of the remote device you wish to ping.          | Text       | Yes       | _(empty)_     |
+| **Timeout**      | Maximum time to wait for a response, in milliseconds. Defaults to 5000 ms.  | Text       | No        | 5000          |
 
 ## Expected Output Format
 
-The outputs of this node provide detailed information about the ping operation:
+The output of this node consists of two values:
 
-- **Ping Result**: A message indicating if the ping was successful or failed ("success" or "failure").
-- **Round Trip Time**: The duration taken for the ping operation, measured in milliseconds.
-- **Status Message**: Additional status information about the ping operation.
-
-These outputs are configured within the node as **PingResult**, **RoundTripTime**, and **StatusMessages**, respectively.
+- **Ping Result**: Indicates whether the ping was successful or failed ("success" or "failure").
+- **Round Trip Time**: Shows the time in milliseconds it took for the message to travel to the remote device and back. 
 
 ## Step-by-Step Guide
 
@@ -35,43 +31,40 @@ Add the **Ping** node into your flow.
 
 ### Step 2
 
-In the **Host Name** field, enter the hostname or IP address of the server or device you wish to ping.
+In the **Host Name** field, enter the IP address or host name of the remote device you want to check.
 
 ### Step 3
 
-(Optional) Provide the **Timeout** value by specifying the maximum wait time for a response in milliseconds. If left empty, the default system timeout will apply.
+Optionally, fill in the **Timeout** field to specify the maximum wait time for a response. If left empty, it defaults to 5000 milliseconds.
 
 ### Step 4
 
-Review the outputs, which will show the results under **Ping Result**, the time it took under **Round Trip Time**, and any additional information in **Status Message**.
-
-### Step 5
-
-Use the ping results in subsequent nodes to respond to network availability or connectivity conditions.
+The results will appear as **PingResult** and **RoundTripTime** for further use in your flow.
 
 </Steps>
 
-<Callout type="info" title="Tip">
-  If you don't specify a **Timeout**, the system will use its default timeout setting. This can vary depending on system configurations.
+<Callout type="info" title="Network Reliability">
+  Frequent failures in ping results might indicate issues with the network or server
+  being unreachable.
 </Callout>
 
 ## Input/Output Examples
 
-| Host Name    | Timeout | Ping Result | Round Trip Time | Status Message           |
-| ------------ | ------- | ----------- | --------------- | ------------------------ |
-| `example.com`| 1000    | success     | 45              | "Ping successful."       |
-| `badsite.com`| 1000    | failure     | -               | "Host unreachable."      |
+| Host Name   | Timeout | Ping Result | Round Trip Time |
+| ----------- | ------- | ----------- | --------------- |
+| example.com | 3000    | Success     | 11 ms           |
+| 192.168.1.1 |         | Failure     | _(n/a)_         |
 
 ## Common Mistakes & Troubleshooting
 
-| Problem                                    | Solution                                                                                               |
-| ------------------------------------------ | ------------------------------------------------------------------------------------------------------ |
-| **Host Name is empty**                     | Ensure you enter a valid hostname or IP address in the **Host Name** field before proceeding.          |
-| **Ping Result shows "failure" unexpectedly** | Check if the network connection is working and the hostname/IP is correct.                             |
-| **Long Round Trip Time**                   | If the time is too long, consider setting a longer **Timeout** or check for network latency issues.    |
+| Problem                                      | Solution                                                                                  |
+| -------------------------------------------- | ----------------------------------------------------------------------------------------- |
+| **No Host Name entered**                     | Ensure that the **Host Name** field is filled with a valid IP address or domain name.     |
+| **Timeout too low leading to failures**      | Increase the **Timeout** if the network is slow, allowing more time for a response.       |
+| **Repeated failed pings when host is valid** | Check network connectivity or verify that the host is online and reachable.               |
 
 ## Real-World Use Cases
 
-- **Website Monitoring**: Regularly check if a website is accessible and measure response time for performance metrics.
-- **Server Management**: Automatically verify server accessibility and receive alerts if a server becomes unreachable.
-- **Network Troubleshooting**: Quickly identify if specific devices are accessible during network diagnostics.
+- **Server Monitoring**: Automatically check server availability at regular intervals to ensure uptime.
+- **Network Diagnostics**: Identify network bottlenecks by checking response times from various points.
+- **Device Status Checking**: Verify that connected devices are running and accessible within a network.

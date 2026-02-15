@@ -2,26 +2,21 @@ import { Callout, Steps } from "nextra/components";
 
 # Get Windows Environment Variable
 
-The **Get Windows Environment Variable** node is designed to retrieve the value of a specified environment variable from your Windows operating system. This can be particularly useful when you need to use system-specific information, like user names or system paths, within your automation tasks.
+The **Get Windows Environment Variable** node allows you to retrieve the value of specific environment variables on your Windows desktop. Environment variables store system-related values such as the number of processors, the operating system version, or user-specific paths like OneDrive. This node is useful for automating tasks that depend on these system configurations.
 
-For example, you can:
-- Fetch the current user's username.
-- Retrieve system paths for scripts and applications.
-- Obtain processor details for system diagnostics.
+For instance, you can retrieve the current user's username or find out where temporary files are stored.
 
 ## Configuration Options
 
-| Field Name                        | Description                                                                                  | Input Type | Required? | Default Value   |
-| --------------------------------- | -------------------------------------------------------------------------------------------- | ---------- | --------- | --------------- |
-| **Environment variable name**     | Select the name of the environment variable you wish to retrieve.                            | Select     | Yes       | USERNAME        |
-| **Search for variable only in scope** | Toggle whether to search for the variable exclusively within the defined scope.                | Switch     | No        | _(empty)_       |
-| **Scope**                         | Specify whether to search in the User or System environment variables. _Visible if the scope search is enabled._ | Select     | No        | User            |
+| Field Name                       | Description                                                                                      | Input Type | Required? | Default Value |
+| -------------------------------- | ------------------------------------------------------------------------------------------------ | ---------- | --------- | ------------- |
+| **Environment Variable Name**    | The name of the environment variable to retrieve.                                                | Select     | Yes       | USERNAME      |
+| **Search for variable only in scope** | Indicates whether to search for the variable only within the specified scope.                  | Switch     | No        | _(empty)_     |
+| **Scope**                        | Specifies the scope (User or System) for searching the environment variable.                     | Select     | No        | User          |
 
 ## Expected Output Format
 
-The expected output from this node is a **string value** representing the content of the selected environment variable.
-
-- Example output: `C:\Users\UserName` for the `USERNAME` variable.
+The output of the **Get Windows Environment Variable** node is a **string** value that represents the retrieved environment variable.
 
 ## Step-by-Step Guide
 
@@ -32,43 +27,44 @@ Add the **Get Windows Environment Variable** node into your flow.
 
 ### Step 2
 
-From the **Environment variable name** dropdown, select the variable whose value you want to retrieve.
+In the **Environment Variable Name** dropdown, select the environment variable you wish to retrieve. Examples include "Number of Processors", "Operating System", "Path", etc.
 
 ### Step 3
 
-Optionally, if you wish to limit the search to a specific scope, enable the **Search for variable only in scope** switch.
+If needed, toggle the **Search for variable only in scope** switch on to limit the search to a specific scope.
 
 ### Step 4
 
-If the scope is limited, choose the appropriate **Scope** (User or System) to specify where to look for the variable.
+If the switch is enabled, choose the **Scope** from the dropdown (User or System) to define where to look for the variable.
 
 ### Step 5
 
-The retrieved value will be available as **EnvironmentVariableValue** for use in further nodes.
+The retrieved value will be available as **Environment Variable Value** for use in subsequent nodes.
+
 </Steps>
 
 <Callout type="info" title="Tip">
-  The **Scope** option appears only when the **Search for variable only in scope** is turned on.
+  The **Scope** option only appears if "Search for variable only in scope" is enabled.
 </Callout>
 
 ## Input/Output Examples
 
-| Environment Variable Name | Search in Scope | Scope | Output Value                       | Output Type |
-| ------------------------- | ----------------| ----- | ---------------------------------- | ------------|
-| USERNAME                  | No              | _(n/a)_ | C:\Users\john_doe                  | String      |
-| OS                        | Yes             | System | Windows_NT                         | String      |
-| TEMP                      | Yes             | User   | C:\Users\john_doe\AppData\Local\Temp | String      |
+| Environment Variable Name | Search in Scope | Scope | Output Value          | Output Type |
+| ------------------------- | --------------- | ----- | --------------------- | ----------- |
+| USERNAME                  | No              | N/A   | johndoe               | String      |
+| PATH                      | Yes             | User  | C:\Users\johndoe\bin  | String      |
+| OS                        | Yes             | System| Windows_NT            | String      |
 
 ## Common Mistakes & Troubleshooting
 
-| Problem                                                    | Solution                                                                                                                          |
-| ---------------------------------------------------------- | --------------------------------------------------------------------------------------------------------------------------------- |
-| **Variable value not found**                               | Ensure you have selected the correct environment variable name.                                                                   |
-| **Scope options not visible**                              | Check if the **Search for variable only in scope** switch is enabled; otherwise, the **Scope** field won't be displayed.           |
-| **Unexpected output or empty value**                       | Confirm that the selected environment variable and scope (if used) actually have values on the current machine configuration.     |
+| Problem                                 | Solution                                                                                                                                    |
+| --------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------- |
+| **Variable not found**                  | Ensure the correct environment variable name is selected from the dropdown.                                                                 |
+| **Scope not applicable**                | The **Scope** field is active only when "Search for variable only in scope" is enabled. Verify this setting if you can't find the Scope option.                  |
+| **Empty result**                        | Check if the environment variable exists in the selected scope (User/System) or if it's enabled anymore.                                    |
 
 ## Real-World Use Cases
 
-- **Automating User-Specific Tasks**: Retrieve the current username for personalizing scripts or outputs.
-- **Configuring Application Paths**: Use system path variables to direct applications or scripts dynamically.
-- **System Diagnostics**: Collect environment information like OS type or processor details as part of a diagnostic tool.
+- **System Audits**: Retrieve information about the OS or processor architecture for auditing tasks.
+- **Directory Setup**: Access system paths to dynamically set up directory-based operations in automation flows.
+- **Custom User Scripts**: Use environment variables like the current user's directory for personalized script execution.
