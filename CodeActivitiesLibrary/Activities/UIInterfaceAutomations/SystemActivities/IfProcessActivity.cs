@@ -30,14 +30,13 @@ namespace CodeActivitiesLibrary.UiInterfaceAutomations.SystemActivities
         [Description("The name of the process to check.")]
         public InArgument<ProcessNameEnum> ProcessName { get; set; }
 
-
         [DisplayName("From User")]
         [Description("Indicates whether to check if the process is running under a specific user.")]
         public InArgument<bool> FromUser { get; set; }
 
-
         [DisplayName("User name")]
         [Description("The name of the user to check (only applicable if 'From User' is enabled).")]
+        [RenderIfCondition(nameof(FromUser), true)]
         public InArgument<string> UserName { get; set; }
 
         // ----------------------

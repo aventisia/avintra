@@ -75,7 +75,7 @@ namespace CodeActivitiesLibrary.AppIntegrations.PdfActivities
             {
                 StatusMessage.Set(context, $"Error extracting PDF text: {ex.Message}");
                 IsSuccess.Set(context, false);
-                ListOfPages.Set(context, new List<string>()); // Return empty list on error
+                ListOfPages.Set(context, new List<string>()); 
                 PageCount.Set(context, 0);
             }
         }

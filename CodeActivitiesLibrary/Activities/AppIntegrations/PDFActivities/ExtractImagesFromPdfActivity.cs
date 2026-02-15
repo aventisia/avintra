@@ -8,9 +8,9 @@ using UglyToad.PdfPig.Content;
 
 namespace CodeActivitiesLibrary.AppIntegrations.PdfActivities
 {
-    //[DisplayName("Extract Images from PDF")]
-    //[Description("Extracts images from a PDF file by specifying the source PDF file and the target folder.")]
-    //[ActivityMetaData(nodeImg:"/assets/PDF.svg")]
+    [DisplayName("Extract Images from PDF")]
+    [Description("Extracts images from a PDF file by specifying the source PDF file and the target folder.")]
+    [ActivityMetaData(nodeImg: "/assets/PDF.svg")]
     public class ExtractImagesFromPdfActivity : BaseCodeActivity
     {
         [RequiredArgument]
@@ -25,60 +25,53 @@ namespace CodeActivitiesLibrary.AppIntegrations.PdfActivities
 
         protected override void Execute(CodeActivityContext context)
         {
-            var status = "Operation completed successfully.";
-            var imageCount = 0;
+            var savedImageCount = 0;
+            var detectedImageCount = 0;
 
             try
             {
-                // Retrieve input arguments
                 var sourcePdfPath = SourcePdfPath.Get(context);
                 var targetFolder = TargetFolder.Get(context);
 
-                // Validate input paths
                 if (!File.Exists(sourcePdfPath))
                     throw new FileNotFoundException("Source PDF file not found.", sourcePdfPath);
 
                 if (!Directory.Exists(targetFolder))
                     Directory.CreateDirectory(targetFolder);
 
-                // Open the PDF document
                 using (var document = PdfDocument.Open(sourcePdfPath))
                 {
-                    // Process each page in the PDF
                     foreach (var page in document.GetPages())
                     {
-                        // Extract images from the current page
                         foreach (var image in page.GetImages())
                         {
-                            // Generate a unique filename for the image
-                            var imageName = $"image_{imageCount++}_{Guid.NewGuid()}.png";
+                            detectedImageCount++;
+
+                            // Try to convert image to PNG
+                            if (!image.TryGetPng(out var pngBytes))
+                            {
+                                // Image detected but NOT extractable as PNG
+                                continue;
+                            }
+
+                            var imageName = $"image_{savedImageCount}_{Guid.NewGuid()}.png";
                             var imagePath = Path.Combine(targetFolder, imageName);
 
-                            // Attempt to retrieve the PNG representation of the image
-                            if (!image.TryGetPng(out var img)) continue;
-                            // Save the image to disk
-                            using (var fs = new FileStream(imagePath, FileMode.Create, FileAccess.Write))
-                            {
-                                fs.Write(img, 0, img.Length);
-                            }
+                            File.WriteAllBytes(imagePath, pngBytes);
+                            savedImageCount++;
                         }
                     }
-
-                    // Update status message with the number of extracted images
-                    status = $"Successfully extracted {imageCount} images from '{sourcePdfPath}' to '{targetFolder}'.";
                 }
-
-                // Set success status and message
                 IsSuccess.Set(context, true);
-                StatusMessage.Set(context, status);
+                StatusMessage.Set(context, $"Detected {detectedImageCount} images. Saved {savedImageCount} images to '{targetFolder}'.");
             }
             catch (Exception ex)
             {
-                // Handle errors gracefully
-                status = $"Error extracting images from PDF: {ex.Message}";
                 IsSuccess.Set(context, false);
-                StatusMessage.Set(context, status);
+                StatusMessage.Set(context, $"Error extracting images: {ex.Message}");
             }
         }
+
+
     }
 }

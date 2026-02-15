@@ -49,13 +49,13 @@ namespace CodeActivitiesLibrary.UiInterfaceAutomations.SystemActivities.Enums
         [Display(Name = "Unknown", Description = "Unknown Environment Variable")]
         None,
 
-        [Display(Name = "OneDrive", Description = "OneDrive environment variable.")]
+        [Display(Name = "OneDrive", Description = "OneDrive environment variable")]
         OneDrive,
 
-        [Display(Name = "OneDrive Commercial", Description = "OneDrive Commercial environment variable.")]
+        [Display(Name = "OneDrive Commercial", Description = "OneDrive Commercial environment variable")]
         OneDriveCommercial,
 
-        [Display(Name = "OneDrive Consumer", Description = "OneDrive Consumer environment variable.")]
+        [Display(Name = "OneDrive Consumer", Description = "OneDrive Consumer environment variable")]
         OneDriveConsumer,
     }
 }

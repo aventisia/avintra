@@ -98,11 +98,11 @@ namespace CodeActivityToJSON
                 var directoryPath = Path.Combine(outputDir, Path.Combine(namespaceParts));
 
                 // Create the file path for the JSON file (for documentation)
-                Directory.CreateDirectory(directoryPath);
-                var fileName = Path.Combine(directoryPath, activityDisplayName.DisplayName + ".json");
+                //Directory.CreateDirectory(directoryPath);
+                //var fileName = Path.Combine(directoryPath, activityDisplayName.DisplayName + ".json");
 
                 // Create the file path for the JSON file (for form generation)
-                //var fileName = Path.Combine(outputDir, activity.Name + ".json");
+                var fileName = Path.Combine(outputDir, activity.Name + ".json");
 
                 // Write the JSON content to the file
                 File.WriteAllText(fileName, json);
@@ -115,7 +115,7 @@ namespace CodeActivityToJSON
         public static string GetOutputDirectoryToSaveJsonFiles()
         {
             // Get docs generation input folder (for documentation)
-            return @"C:\Users\Gaurav\Gitea\Aventisia\OpenAI Doc Generation\input";
+            // return @"C:\Users\Gaurav\Gitea\Aventisia\OpenAI Doc Generation\input";
 
             // Get user's agent builder directory (for form generation)
             var outputDir = Path.Combine(

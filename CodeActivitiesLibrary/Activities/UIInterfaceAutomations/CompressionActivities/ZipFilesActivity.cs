@@ -7,6 +7,7 @@ using System.Activities;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.IO;
+using System.IO.Compression;
 using System.Linq;
 
 namespace CodeActivitiesLibrary.UiInterfaceAutomations.CompressionActivities
@@ -21,10 +22,10 @@ namespace CodeActivitiesLibrary.UiInterfaceAutomations.CompressionActivities
         [Description("Accepts: string[], List<string>, or comma-separated string of file/folder paths.")]
         public InArgument<object> SourcePaths { get; set; }
 
-        [DisplayName("Type of Compression")]
-        [Description("The type of compression to use for the zip archive.")]
-        [DefaultValue(CompressionType.Deflate)]
-        public InArgument<CompressionType> TypeOfCompression { get; set; }
+        [DisplayName("Compression Level")]
+        [Description("The compression level to use: Optimal, Fastest, or NoCompression.")]
+        [DefaultValue(CompressionLevel.Optimal)]
+        public InArgument<CompressionLevel> CompressionLevelType { get; set; }
 
         [RequiredArgument]
         [DisplayName("Output Zip Path")]
@@ -34,221 +35,119 @@ namespace CodeActivitiesLibrary.UiInterfaceAutomations.CompressionActivities
         [DisplayName("Output Zip Full Path")]
         [Description("Returns the full path of the created ZIP file.")]
         public OutArgument<string> OutputZipFullPath { get; set; }
-
-        protected override void Execute(CodeActivityContext context)
-        {
-            try
+     
+            protected override void Execute(CodeActivityContext context)
             {
-                // -------------------------------
-                // 1. Get and Convert Source Paths
-                // -------------------------------
-                var input = SourcePaths.Get(context);
-                string[] sourcePaths;
-
-                if (input == null)
-                    throw new ArgumentException("SourcePaths cannot be null.");
-
-                if (input is string[] arr)
+                try
                 {
-                    sourcePaths = arr;
-                }
-                else if (input is IEnumerable<string> list)
-                {
-                    sourcePaths = list?.Where(s => !string.IsNullOrWhiteSpace(s)).ToArray() ?? Array.Empty<string>();
-                }
-                else if (input is string str && !string.IsNullOrWhiteSpace(str))
-                {
-                    // Remove common formatting artifacts: brackets, extra quotes
-                    str = str.Trim();
-                    if (str.StartsWith("[") && str.EndsWith("]"))
-                        str = str.Substring(1, str.Length - 2);
+                    var input = SourcePaths.Get(context);
+                    if (input == null)
+                        throw new ArgumentException("SourcePaths cannot be null.");
 
-                    sourcePaths = str.Split(new[] { ',' }, StringSplitOptions.RemoveEmptyEntries)
-                                     .Select(p => p.Trim().Trim('"', '\'').Trim()) // Remove surrounding quotes
-                                     .Where(p => !string.IsNullOrEmpty(p))
-                                     .ToArray();
-                }
-                else
-                {
-                    throw new ArgumentException(
-                        $"Cannot convert {input.GetType().Name} to string[]. " +
-                        "Expected: string[], List<string>, or comma-separated string.");
-                }
+                    string[] sourcePaths;
 
-                // Validate source paths
-                if (!sourcePaths.Any())
-                {
-                    IsSuccess.Set(context, false);
-                    StatusMessage.Set(context, "No valid source paths provided.");
-                    OutputZipFullPath.Set(context, null);
-                    return;
-                }
-
-                // -------------------------------
-                // 2. Handle Output Zip Path
-                // -------------------------------
-                var outputZipPath = OutputZipPath.Get(context)?.Trim();
-
-                if (string.IsNullOrWhiteSpace(outputZipPath))
-                {
-                    throw new ArgumentException("OutputZipPath cannot be null or empty.");
-                }
-
-                // Clean output path: remove surrounding quotes
-                outputZipPath = outputZipPath.Trim('"', '\'');
-
-                // Ensure directory exists
-                var zipDir = Path.GetDirectoryName(outputZipPath);
-                if (string.IsNullOrWhiteSpace(zipDir))
-                {
-                    zipDir = Environment.CurrentDirectory;
-                    outputZipPath = Path.Combine(zipDir, Path.GetFileName(outputZipPath));
-                }
-
-                if (!Directory.Exists(zipDir))
-                    Directory.CreateDirectory(zipDir);
-
-                // Ensure file ends with .zip
-                if (!outputZipPath.EndsWith(".zip", StringComparison.OrdinalIgnoreCase))
-                {
-                    var fileNameWithoutExt = Path.GetFileNameWithoutExtension(outputZipPath);
-                    outputZipPath = Path.Combine(zipDir, $"{fileNameWithoutExt}.zip");
-                }
-
-                // Delete existing ZIP file
-                if (File.Exists(outputZipPath))
-                    File.Delete(outputZipPath);
-
-                // -------------------------------
-                // 3. Validate & Normalize Source Paths
-                // -------------------------------
-                long totalSizeBytes = 0;
-                var validSourcePaths = new List<string>();
-
-                foreach (var rawPath in sourcePaths)
-                {
-                    // Strip extra quotes and trim
-                    var cleanedPath = rawPath?.Trim().Trim('"', '\'').Trim();
-                    if (string.IsNullOrWhiteSpace(cleanedPath))
-                        continue;
-
-                    // Check for illegal characters
-                    var illegalChars = Path.GetInvalidPathChars();
-                    if (cleanedPath.IndexOfAny(illegalChars) >= 0)
+                    if (input is string[])
                     {
-                        throw new ArgumentException($"Invalid path: contains illegal characters -> {cleanedPath}");
+                        sourcePaths = (string[])input;
                     }
-
-                    string fullPath;
-                    try
+                    else if (input is IEnumerable<string>)
                     {
-                        fullPath = Path.GetFullPath(cleanedPath);
+                        var list = (IEnumerable<string>)input;
+                        sourcePaths = list.Where(s => !string.IsNullOrWhiteSpace(s)).ToArray();
                     }
-                    catch (Exception ex)
+                    else if (input is string str && !string.IsNullOrWhiteSpace(str))
                     {
-                        throw new ArgumentException($"Invalid path format: '{cleanedPath}'", ex);
-                    }
-
-                    if (File.Exists(fullPath))
-                    {
-                        totalSizeBytes += new FileInfo(fullPath).Length;
-                        validSourcePaths.Add(fullPath);
-                    }
-                    else if (Directory.Exists(fullPath))
-                    {
-                        var files = Directory.GetFiles(fullPath, "*", SearchOption.AllDirectories);
-                        totalSizeBytes += files.Sum(f => new FileInfo(f).Length);
-                        validSourcePaths.Add(fullPath);
+                        sourcePaths = str.Split(new char[] { ',' }, StringSplitOptions.RemoveEmptyEntries)
+                                         .Select(p => p.Trim().Trim('"', '\'').Trim())
+                                         .Where(p => !string.IsNullOrEmpty(p))
+                                         .ToArray();
                     }
                     else
                     {
-                        throw new FileNotFoundException($"Path not found: {fullPath}");
+                        throw new ArgumentException(
+                            $"Unsupported input type: {input?.GetType().Name}. " +
+                            "Expected: string[], List<string>, or comma-separated string.");
                     }
-                }
 
-                if (!validSourcePaths.Any())
-                {
-                    IsSuccess.Set(context, false);
-                    StatusMessage.Set(context, "No valid files or folders found in source paths.");
-                    OutputZipFullPath.Set(context, null);
-                    return;
-                }
-
-                // Optional: Skip if less than 200MB
-                if (totalSizeBytes < 200 * 1024 * 1024)
-                {
-                    IsSuccess.Set(context, false);
-                    StatusMessage.Set(context, "Total size is less than 5MB. Skipped zipping.");
-                    OutputZipFullPath.Set(context, null);
-                    return;
-                }
-
-                // -------------------------------
-                // 4. Create ZIP Archive
-                // -------------------------------
-                using (var archive = ZipArchive.Create())
-                {
-                    foreach (var sourcePath in validSourcePaths)
+                    if (!sourcePaths.Any())
                     {
-                        var normalizedPath = Path.GetFullPath(sourcePath);
+                        IsSuccess.Set(context, false);
+                        StatusMessage.Set(context, "No valid source paths provided.");
+                        return;
+                    }
+                    var outputZipPath = OutputZipPath.Get(context)?.Trim();
+                    if (string.IsNullOrWhiteSpace(outputZipPath))
+                        throw new ArgumentException("OutputZipPath cannot be null or empty.");
 
-                        if (Directory.Exists(normalizedPath))
+                    outputZipPath = outputZipPath.Trim('"', '\'');
+                    if (!outputZipPath.EndsWith(".zip", StringComparison.OrdinalIgnoreCase))
+                        outputZipPath = Path.ChangeExtension(outputZipPath, ".zip");
+
+                    var zipDir = Path.GetDirectoryName(outputZipPath);
+                    if (!string.IsNullOrEmpty(zipDir) && !Directory.Exists(zipDir))
+                        Directory.CreateDirectory(zipDir);
+
+                    if (File.Exists(outputZipPath))
+                        File.Delete(outputZipPath);
+
+                    //  Collect All Files to Archive
+                    var allFiles = new List<Tuple<string, string>>();
+
+                    foreach (var rawPath in sourcePaths)
+                    {
+                        var cleanedPath = rawPath?.Trim().Trim('"', '\'').Trim();
+                        if (string.IsNullOrWhiteSpace(cleanedPath)) continue;
+
+                        var fullPath = Path.GetFullPath(cleanedPath);
+
+                        if (File.Exists(fullPath))
                         {
-                            AddDirectoryToZip(archive, normalizedPath, "");
+                            allFiles.Add(Tuple.Create(fullPath, Path.GetFileName(fullPath)));
                         }
-                        else if (File.Exists(normalizedPath))
+                        else if (Directory.Exists(fullPath))
                         {
-                            var entryName = Path.GetFileName(normalizedPath);
-                            archive.AddEntry(entryName, normalizedPath);
+                            var filesInDir = Directory.GetFiles(fullPath, "*", SearchOption.AllDirectories);
+                            foreach (var file in filesInDir)
+                            {
+                                var relativePath = file.Substring(fullPath.Length)
+                                    .TrimStart(Path.DirectorySeparatorChar, Path.AltDirectorySeparatorChar)
+                                    .Replace('\\', '/');
+                                allFiles.Add(Tuple.Create(file, relativePath));
+                            }
+                        }
+                        else
+                        {
+                            throw new FileNotFoundException($"Path not found: {fullPath}");
                         }
                     }
 
-                    var compressionType = TypeOfCompression.Get(context);
-                    archive.SaveTo(outputZipPath, compressionType);
+                    if (!allFiles.Any())
+                    {
+                        IsSuccess.Set(context, false);
+                        StatusMessage.Set(context, "No valid files found to archive.");
+                        return;
+                    }
+                    // Create ZIP Archive     
+                    var compressionLevel = CompressionLevelType.Get(context);
+
+                    using (var zipFileStream = new FileStream(outputZipPath, FileMode.Create))
+                    using (var archive = new System.IO.Compression.ZipArchive(zipFileStream, ZipArchiveMode.Create))
+                    {
+                        foreach (var fileEntry in allFiles)
+                        {
+                            archive.CreateEntryFromFile(fileEntry.Item1, fileEntry.Item2, compressionLevel);
+                        }
+                    }
+                    var finalPath = Path.GetFullPath(outputZipPath);
+                    IsSuccess.Set(context, true);
+                    StatusMessage.Set(context, $"Successfully created ZIP at '{finalPath}'.");
+                    OutputZipFullPath.Set(context, finalPath);
                 }
-
-                // -------------------------------
-                // 5. Set Outputs
-                // -------------------------------
-                var finalPath = Path.GetFullPath(outputZipPath);
-                IsSuccess.Set(context, true);
-                StatusMessage.Set(context, $"Successfully created ZIP at '{finalPath}'.");
-                OutputZipFullPath.Set(context, finalPath);
-            }
-            catch (ArgumentException)
-            {
-                throw; // Re-throw known argument errors
-            }
-            catch (Exception ex)
-            {
-                IsSuccess.Set(context, false);
-                StatusMessage.Set(context, $"Error zipping files: {ex.Message}");
-                OutputZipFullPath.Set(context, null);
-            }
-        }
-
-        private static void AddDirectoryToZip(IWritableArchive archive, string sourceDir, string destinationDir)
-        {
-            foreach (var filePath in Directory.GetFiles(sourceDir))
-            {
-                var relativePath = filePath.Substring(sourceDir.Length)
-                    .TrimStart(Path.DirectorySeparatorChar, Path.AltDirectorySeparatorChar);
-
-                var entryName = string.IsNullOrEmpty(destinationDir)
-                    ? relativePath
-                    : $"{destinationDir}/{relativePath.Replace('\\', '/')}";
-
-                archive.AddEntry(entryName, filePath);
-            }
-
-            foreach (var dirPath in Directory.GetDirectories(sourceDir))
-            {
-                var newDestinationDir = string.IsNullOrEmpty(destinationDir)
-                    ? Path.GetFileName(dirPath)
-                    : $"{destinationDir}/{Path.GetFileName(dirPath)}";
-
-                AddDirectoryToZip(archive, dirPath, newDestinationDir);
+                catch (Exception ex)
+                {
+                    IsSuccess.Set(context, false);
+                    StatusMessage.Set(context, $"Error zipping files: {ex.Message}");
+                }
             }
         }
     }
-}
