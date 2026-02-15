@@ -1426,6 +1426,14 @@
             "description": "Displays a folder selection dialog to let users choose a folder.",
             "docsLink": "https://docs.aventisia.com",
             "img": "/assets/MessageBox.svg"
+          },
+          {
+            "type": "activityNode",
+            "name": "DisplaySelectFromListDialogActivity",
+            "label": "Display Select From List Dialog",
+            "description": "Displays a dialog box with options that lets the user select from a list.",
+            "docsLink": "https://docs.aventisia.com",
+            "img": "/assets/MessageBox.svg"
           }
         ]
       },
@@ -2065,6 +2073,14 @@
             "description": "Closes a Word instance.",
             "docsLink": "https://docs.aventisia.com",
             "img": "/assets/Word.svg"
+          },
+          {
+            "type": "activityNode",
+            "name": "ConvertWordToPdfActivity",
+            "label": "Convert Word To PDF",
+            "description": "Converts a Word document (.doc/.docx) into a PDF file.",
+            "docsLink": "https://docs.aventisia.com",
+            "img": "/assets/wordToPdf.svg"
           },
           {
             "type": "activityNode",
@@ -3337,6 +3353,22 @@
         "actions": [
           {
             "type": "activityNode",
+            "name": "ExtractImagesFromPdfActivity",
+            "label": "Extract Images from PDF",
+            "description": "Extracts images from a PDF file by specifying the source PDF file and the target folder.",
+            "docsLink": "https://docs.aventisia.com",
+            "img": "/assets/PDF.svg"
+          },
+          {
+            "type": "activityNode",
+            "name": "ExtractTablesFromPdfActivity",
+            "label": "Extract Tables From PDF",
+            "description": "Extracts tabular text from all pages of a PDF file.",
+            "docsLink": "https://docs.aventisia.com",
+            "img": "/assets/PDF.svg"
+          },
+          {
+            "type": "activityNode",
             "name": "ExtractTextFromPdfActivity",
             "label": "Extract Text from PDF",
             "description": "Extracts text or images from a PDF file based on selection.",
@@ -3361,9 +3393,25 @@
           },
           {
             "type": "activityNode",
+            "name": "MergePdfFilesActivity",
+            "label": "Merge PDF Files",
+            "description": "Merges multiple PDF files into a new one.",
+            "docsLink": "https://docs.aventisia.com",
+            "img": "/assets/PDF.svg"
+          },
+          {
+            "type": "activityNode",
             "name": "SelectivePdfSplitterActivity",
             "label": "Smart PDF Page Splitter",
             "description": "Splits a PDF into pages based on selection mode: All, Odd, Even, Range, Specific Pages, or By Chunk Size.",
+            "docsLink": "https://docs.aventisia.com",
+            "img": "/assets/PDF.svg"
+          },
+          {
+            "type": "activityNode",
+            "name": "ValidatePdfExistanceActivity",
+            "label": "Validate PDF Content",
+            "description": "Validates whether a PDF file contains text or images based on the selected content type",
             "docsLink": "https://docs.aventisia.com",
             "img": "/assets/PDF.svg"
           }

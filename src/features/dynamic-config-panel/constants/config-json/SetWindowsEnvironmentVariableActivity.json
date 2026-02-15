@@ -97,17 +97,17 @@
         {
           "label": "OneDrive",
           "value": "OneDrive",
-          "description": "OneDrive environment variable."
+          "description": "OneDrive environment variable"
         },
         {
           "label": "OneDrive Commercial",
           "value": "OneDriveCommercial",
-          "description": "OneDrive Commercial environment variable."
+          "description": "OneDrive Commercial environment variable"
         },
         {
           "label": "OneDrive Consumer",
           "value": "OneDriveConsumer",
-          "description": "OneDrive Consumer environment variable."
+          "description": "OneDrive Consumer environment variable"
         }
       ]
     },
@@ -140,18 +140,6 @@
           "description": "Environment variables for the entire system (machine-level)."
         }
       ]
-    },
-    {
-      "direction": "Output",
-      "type": "config-panel-output",
-      "name": "StatusMessages",
-      "label": "StatusMessages",
-      "description": "",
-      "defaultValue": {
-        "value": "StatusMessages",
-        "enabled": true
-      },
-      "required": false
     }
   ]
 }
