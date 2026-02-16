@@ -106,18 +106,18 @@ public class AzureConnectorsService : IAzureConnectorsService
     {
         try
         {
-             // Validate payload format
-        if (payload is not System.Collections.Generic.IDictionary<string, object> dict)
-            return new { Error = "Invalid payload format. Expected Dictionary<string, object>." };
+            // Validate payload format
+            if (payload is not System.Collections.Generic.IDictionary<string, object> dict)
+                return new { Error = "Invalid payload format. Expected Dictionary<string, object>." };
 
             if (!dict.TryGetValue("containerName", out var toObj) || toObj == null)
-            return new { Error = "'containerName' is required in payload." };
-                string containerName = toObj?.ToString() ?? string.Empty;
-            
+                return new { Error = "'containerName' is required in payload." };
+            string containerName = toObj?.ToString() ?? string.Empty;
+
             if (!dict.TryGetValue("fileName", out var toFileObj) || toObj == null)
-            return new { Error = "'fileName' is required in payload." };
-                string fileName = toFileObj?.ToString() ?? string.Empty;
-            
+                return new { Error = "'fileName' is required in payload." };
+            string fileName = toFileObj?.ToString() ?? string.Empty;
+
             switch (azureAction)
             {
                 case AzureActionEnum.CreateBlobContainer:
@@ -175,20 +175,9 @@ public class AzureConnectorsService : IAzureConnectorsService
 
                 case AzureActionEnum.UploadFile:
                     {
-
                         var fileStream = (Stream)dict["fileStream"];
 
-                        // Sanitize filename : Azure has restrictions
-                        if (string.IsNullOrWhiteSpace(fileName) ||
-                            fileName.Contains('/') ||
-                            fileName.Contains('\\') ||
-                            fileName.Contains(':') ||
-                            fileName.Contains('*') ||
-                            fileName.Contains('?') ||
-                            fileName.Contains('"') ||
-                            fileName.Contains('<') ||
-                            fileName.Contains('>') ||
-                            fileName.Contains('|'))
+                        if (string.IsNullOrWhiteSpace(fileName))
                         {
                             return new { Error = "Invalid fileName format - contains illegal characters" };
                         }
@@ -201,19 +190,26 @@ public class AzureConnectorsService : IAzureConnectorsService
                         }
 
                         // Create clients
-                        // Get a client for the specified blob container.
                         var containerClient = blobServiceClient.GetBlobContainerClient(containerName);
-
                         await containerClient.CreateIfNotExistsAsync();
 
                         var blobClient = containerClient.GetBlobClient(fileName);
 
                         // Upload
-                        await blobClient.UploadAsync(fileStream,
-                            new BlobHttpHeaders { ContentType = contentType });
+                        if (fileStream.CanSeek)
+                        {
+                            fileStream.Position = 0;
+                        }
 
-                        _logger.LogInformation("Blob '{FileName}' uploaded successfully.", fileName);
+                        await blobClient.UploadAsync(fileStream, new BlobUploadOptions
+                        {
+                            HttpHeaders = new BlobHttpHeaders
+                            {
+                                ContentType = contentType
+                            }
+                        });
 
+                        _logger.LogInformation("File uploaded successfully");
                         return blobClient.Uri.ToString();
                     }
 
