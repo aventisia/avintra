@@ -5,7 +5,7 @@ meta {
 }
 
 post {
-  url: {{WORC_APIS_BASE_URL}}/cloud-connector/email-client/invoke
+  url: {{WORC_APIS_BASE_URL}}/cloud-connector/email/invoke
   body: json
   auth: none
 }
@@ -14,13 +14,16 @@ body:json {
   {
     "agentId": "00000000-0000-0000-0000-000000000000",
     "agentName": "Test",
-    "provider": "EmailClient",
+    "provider": "GeneralCredentials",
     "action": "ProcessEmailMessages",
-    "credentialId": "",
+    "credentialId": "DUMMY",
     "payload": {
-      "operation": "MoveToFolder",
-      "messageIds": "",
-      "acceptUntrustedCertificates": false
+      "operation":"MoveToFolder",
+      "messageUidsObj": [51001,51002,51000],
+      "acceptUntrustedCertificates": false,
+      "imapServer": "imap.gmail.com",
+      "imapPort": 993,
+      "mailFolder": "Inbox"
     }
   }
 }

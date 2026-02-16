@@ -5,7 +5,7 @@ meta {
 }
 
 post {
-  url: {{WORC_APIS_BASE_URL}}/cloud-connector/email-client/invoke
+  url: {{WORC_APIS_BASE_URL}}/cloud-connector/email/invoke
   body: json
   auth: none
 }
@@ -14,22 +14,24 @@ body:json {
   {
     "agentId": "00000000-0000-0000-0000-000000000000",
     "agentName": "Test",
-    "provider": "EmailClient",
-    "action": "SendEmailThroughEmailClient",
-    "credentialId": "",
+    "provider": "GeneralCredentials",
+    "action": "SendEmailMessage",
+    "credentialId": "DUMMY",
     "payload": {
-      "to": "mayuri@aventisia.com",
-      "from": "mayuri@aventisia.com",
-      "subject": "Test the sendGrid: ",
-      "body": "Hello, I am from aventisia",
+      "to": "mnarayankar94@gmail.com",
+      "from": "mayurinayaranakar901@gmail.com",
+      "subject": "Test Email from Cloud Connector",
+      "body": "This is a test email sent via MailKit",
       "cc": "",
       "bcc": "",
       "isHtml": false,
       "attachments": "",
-      "securityProtocol": "Auto",
-      "smtpNeedsAuth": false,
-      "acceptUntrustedCertificates": false,
-      "timeoutSeconds": 60
+      "securityProtocol":"StartSsl",//"Ssl",//"StartTls",
+      "smtpServerNeedsAuthentication": true,
+      "smtpServer": "smtp.gmail.com",
+      "serverPort":587,//587,465
+      "acceptUntrustedCertificates": true
+      
     }
   }
 }
