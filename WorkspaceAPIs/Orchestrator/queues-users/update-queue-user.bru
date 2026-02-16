@@ -1,0 +1,19 @@
+meta {
+  name: Update queue user
+  type: http
+  seq: 3
+}
+
+put {
+  url: {{WORC_APIS_BASE_URL}}/queue-user
+  body: json
+  auth: none
+}
+
+body:json {
+  {
+    "id": "{{QUEUE_USER_ID}}",
+    "queueId": "{{QUEUE_ID}}",
+    "userId": "{{USER_ID}}"
+  }
+}

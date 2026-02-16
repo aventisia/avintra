@@ -1,0 +1,24 @@
+meta {
+  name: Delete tenant
+  type: http
+  seq: 10
+}
+
+delete {
+  url: {{ACCOUNTS_APIS_BASE_URL}}/sa/tenant
+  body: none
+  auth: none
+}
+
+headers {
+  tntid: {{TENANT_ID}}
+}
+
+script:post-response {
+  if(res.getStatus() == 200){
+      bru.setGlobalEnvVar(
+        "TENANT_ID", 
+        "00000000-0000-0000-0000-000000000000"
+      );
+  }
+}

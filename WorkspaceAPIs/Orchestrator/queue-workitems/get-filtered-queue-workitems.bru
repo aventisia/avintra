@@ -1,0 +1,34 @@
+meta {
+  name: Get filtered queue workitems
+  type: http
+  seq: 7
+}
+
+post {
+  url: {{WORC_APIS_BASE_URL}}/queue/workitem/list
+  body: json
+  auth: none
+}
+
+body:json {
+  {
+    "queueId": "{{QUEUE_ID}}",
+    "queuePriority": [{
+      "field": "Name",
+      "OrderBy": "Ascending"
+    }],
+    "conditions": [
+      {
+        "field": "Id",
+        "comparisonOperator": "GreaterThan",
+        "value": "5"
+      },
+      {
+        "field": "Location",
+        "comparisonOperator": "EqualTo",
+        "value": "Washington"
+      }
+    ]
+  }
+  
+}
