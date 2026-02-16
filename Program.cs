@@ -88,13 +88,13 @@ app.UsePathBase(new PathString("/api"));
 
 app.UseRouting();
 
-app.UseCors("CorsPolicy");
+app.UseCors();
+
+app.UseRateLimiter();
 
 app.UseAuthentication();
 
 app.UseAuthorization();
-
-app.UseRateLimiter();
 
 app.UseMiddleware<TenantRouteAccessMiddleware>();
 
