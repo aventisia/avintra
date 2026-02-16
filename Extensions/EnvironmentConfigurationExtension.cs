@@ -108,13 +108,18 @@ public static class EnvironmentConfigurationExtension
             RAZORPAY_WEBHOOK_SECRET = GetRequiredEnvVar("RAZORPAY_WEBHOOK_SECRET");
         }
 
-        // Allowed hosts configuration
-        var allowedHosts = config["AllowedHosts"] ?? string.Empty;
-        if (string.IsNullOrEmpty(allowedHosts))
-        {
-            allowedHosts = $"localhost;{APP_BASE_URL}";
-        }
+        // CORS origins configuration
+        var EXTRA_CORS_ORIGINS = Environment.GetEnvironmentVariable("EXTRA_CORS_ORIGINS") ?? string.Empty;
+        var CORS_ORIGINS = string.IsNullOrEmpty(EXTRA_CORS_ORIGINS) 
+                            ? $"https://{APP_BASE_URL}" 
+                            : $"https://{APP_BASE_URL};{EXTRA_CORS_ORIGINS}";
         
+        // Allowed hosts configuration
+        var EXTRA_ALLOWED_HOSTS = Environment.GetEnvironmentVariable("EXTRA_ALLOWED_HOSTS") ?? string.Empty;
+        var ALLOWED_HOSTS = string.IsNullOrEmpty(EXTRA_ALLOWED_HOSTS) 
+                            ? $"localhost;{APP_BASE_URL}" 
+                            : $"localhost;{APP_BASE_URL};{EXTRA_ALLOWED_HOSTS}";
+
         // Build new configuration with sensitive data from environment variables
         return new ConfigurationBuilder()
             .AddConfiguration(config)
@@ -186,7 +191,9 @@ public static class EnvironmentConfigurationExtension
                     { "EnvironmentConfig:OtpNumberOfCharacters", OTP_NUMBER_OF_CHARACTERS },
                     { "EnvironmentConfig:OtpIsAlphaNumeric", OTP_IS_ALPHA_NUMERIC },
 
-                    { "AllowedHosts", allowedHosts }
+                    { "EnvironmentConfig:CorsOrigins", CORS_ORIGINS },
+
+                    { "AllowedHosts", ALLOWED_HOSTS }
                 }
             )
             .Build();
