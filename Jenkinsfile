@@ -1,3 +1,17 @@
+// Define a function to get the build mode based on the branch name
+def getBuildMode(branchName) {
+    switch(branchName) {
+        case 'dev':
+            return 'testing'
+        case 'uat':
+            return 'staging'
+        case 'main':
+            return 'production'
+        default:
+            error "Unsupported branch: ${branchName}"
+    }
+}
+
 // Define a function to get the target servers based on the branch name
 def getTargetServers(branchName) {
     switch(branchName) {
@@ -28,7 +42,7 @@ pipeline {
             steps {
                 echo 'Building...'
                 script {
-                    sh "npm run build"
+                    sh "npm run build:${getBuildMode(env.BRANCH_NAME)}"
                 }
             }
         }
