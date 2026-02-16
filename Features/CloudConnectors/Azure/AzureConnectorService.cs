@@ -107,7 +107,7 @@ public class AzureConnectorsService : IAzureConnectorsService
         try
         {
              // Validate payload format
-        if (payload is not System.Collections.Generic.IDictionary<string, JObject> dict)
+        if (payload is not System.Collections.Generic.IDictionary<string, object> dict)
             return new { Error = "Invalid payload format. Expected Dictionary<string, object>." };
 
             if (!dict.TryGetValue("containerName", out var toObj) || toObj == null)
