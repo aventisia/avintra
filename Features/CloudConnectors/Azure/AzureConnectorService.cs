@@ -106,35 +106,19 @@ public class AzureConnectorsService : IAzureConnectorsService
     {
         try
         {
-            Dictionary<string, object>? dict = null;
+             // Validate payload format
+        if (payload is not System.Collections.Generic.IDictionary<string, JObject> dict)
+            return new { Error = "Invalid payload format. Expected Dictionary<string, object>." };
 
-            if (payload is JsonElement jsonElement)
-            {
-                dict = System.Text.Json.JsonSerializer.Deserialize<Dictionary<string, object>>(
-                    jsonElement.GetRawText()
-                );
-            }
-            else if (payload is Dictionary<string, object> dictionary)
-            {
-                dict = dictionary;
-            }
-
-            if (dict == null)
-            {
-                return new { Error = "Invalid payload format." };
-            }
-
+            if (!dict.TryGetValue("containerName", out var toObj) || toObj == null)
+            return new { Error = "'containerName' is required in payload." };
+                string containerName = toObj?.ToString() ?? string.Empty;
+            
             switch (azureAction)
             {
                 case AzureActionEnum.CreateBlobContainer:
                     {
-                        if (!dict.TryGetValue("containerName", out var nameObj) ||
-                   string.IsNullOrWhiteSpace(nameObj?.ToString()))
-                        {
-                            return new { Error = "Missing containerName in payload." };
-                        }
 
-                        string containerName = nameObj.ToString();
                         var containerClient = blobServiceClient.GetBlobContainerClient(containerName);
                         await containerClient.CreateIfNotExistsAsync();
 
@@ -148,11 +132,7 @@ public class AzureConnectorsService : IAzureConnectorsService
 
                 case AzureActionEnum.GetContainerSize:
                     {
-                        if (!dict.TryGetValue("containerName", out var nameObj) ||
-                        !(nameObj is string containerName) || string.IsNullOrWhiteSpace(containerName))
-                        {
-                            return new { Error = "Missing or invalid 'containerName' in payload." };
-                        }
+
                         // Get a client for the specified blob container.
                         var containerClient = blobServiceClient.GetBlobContainerClient(containerName);
 
@@ -177,12 +157,6 @@ public class AzureConnectorsService : IAzureConnectorsService
                     }
                 case AzureActionEnum.DeleteContainer:
                     {
-                        if (!dict.TryGetValue("containerName", out var nameObj) ||
-                        !(nameObj is string containerName) || string.IsNullOrWhiteSpace(containerName))
-                        {
-                            return new { Error = "Missing or invalid 'containerName' in payload." };
-                        }
-
                         // Get a client for the specified blob container.
                         var containerClient = blobServiceClient.GetBlobContainerClient(containerName);
 
@@ -195,85 +169,73 @@ public class AzureConnectorsService : IAzureConnectorsService
                         };
                     }
 
-                case AzureActionEnum.UploadFile:
-                    {
-                        if (!dict.TryGetValue("containerName", out var nameObj) ||
-                     !(nameObj is string containerName) || string.IsNullOrWhiteSpace(containerName))
-                        {
-                            return new { Error = "Missing or invalid 'containerName' in payload." };
-                        }
-                        var fileStream = (Stream)dict["fileStream"];
-                        var fileName = (string)dict["fileName"];
+                // case AzureActionEnum.UploadFile:
+                //     {
 
-                        // Sanitize filename : Azure has restrictions
-                        if (string.IsNullOrWhiteSpace(fileName) ||
-                            fileName.Contains('/') ||
-                            fileName.Contains('\\') ||
-                            fileName.Contains(':') ||
-                            fileName.Contains('*') ||
-                            fileName.Contains('?') ||
-                            fileName.Contains('"') ||
-                            fileName.Contains('<') ||
-                            fileName.Contains('>') ||
-                            fileName.Contains('|'))
-                        {
-                            return new { Error = "Invalid fileName format - contains illegal characters" };
-                        }
+                //         var fileStream = (Stream)dict["fileStream"];
 
-                        string contentType = "application/octet-stream";
-                        if (dict.TryGetValue("contentType", out var contentTypeObj) &&
-                            contentTypeObj is string ct && !string.IsNullOrEmpty(ct))
-                        {
-                            contentType = ct;
-                        }
+                //         // Sanitize filename : Azure has restrictions
+                //         if (string.IsNullOrWhiteSpace(fileName) ||
+                //             fileName.Contains('/') ||
+                //             fileName.Contains('\\') ||
+                //             fileName.Contains(':') ||
+                //             fileName.Contains('*') ||
+                //             fileName.Contains('?') ||
+                //             fileName.Contains('"') ||
+                //             fileName.Contains('<') ||
+                //             fileName.Contains('>') ||
+                //             fileName.Contains('|'))
+                //         {
+                //             return new { Error = "Invalid fileName format - contains illegal characters" };
+                //         }
 
-                        // Create clients
-                        // Get a client for the specified blob container.
-                        var containerClient = blobServiceClient.GetBlobContainerClient(containerName);
+                //         string contentType = "application/octet-stream";
+                //         if (dict.TryGetValue("contentType", out var contentTypeObj) &&
+                //             contentTypeObj is string ct && !string.IsNullOrEmpty(ct))
+                //         {
+                //             contentType = ct;
+                //         }
 
-                        await containerClient.CreateIfNotExistsAsync();
+                //         // Create clients
+                //         // Get a client for the specified blob container.
+                //         var containerClient = blobServiceClient.GetBlobContainerClient(containerName);
 
-                        var blobClient = containerClient.GetBlobClient(fileName);
+                //         await containerClient.CreateIfNotExistsAsync();
 
-                        // Upload
-                        await blobClient.UploadAsync(fileStream,
-                            new BlobHttpHeaders { ContentType = contentType });
+                //         var blobClient = containerClient.GetBlobClient(fileName);
 
-                        _logger.LogInformation("Blob '{FileName}' uploaded successfully.", fileName);
+                //         // Upload
+                //         await blobClient.UploadAsync(fileStream,
+                //             new BlobHttpHeaders { ContentType = contentType });
 
-                        return blobClient.Uri.ToString();
-                    }
+                //         _logger.LogInformation("Blob '{FileName}' uploaded successfully.", fileName);
 
-                case AzureActionEnum.DownloadFile:
-                    {
-                        if (!dict.TryGetValue("containerName", out var nameObj) || !(nameObj is string containerName) ||
-                        string.IsNullOrWhiteSpace(containerName))
-                        {
-                            return new { Error = "Missing or invalid 'containerName' in payload." };
-                        }
-                        var fileName = (string)dict["fileName"];
+                //         return blobClient.Uri.ToString();
+                //     }
 
-                        // Get a client for the specified blob container.
-                        var containerClient = blobServiceClient.GetBlobContainerClient(containerName);
+                // case AzureActionEnum.DownloadFile:
+                //     {
+                //         // Get a client for the specified blob container.
+                //         var containerClient = blobServiceClient.GetBlobContainerClient(containerName);
 
-                        // Get a client for the specific blob (file) within the container.
-                        var blobClient = containerClient.GetBlobClient(fileName);
+                //         // Get a client for the specific blob (file) within the container.
+                //         var blobClient = containerClient.GetBlobClient(fileName);
 
-                        // Check if the blob exists before attempting to download.
-                        if (!await blobClient.ExistsAsync())
-                            throw new FileNotFoundException("Blob not found.", fileName);
+                //         // Check if the blob exists before attempting to download.
+                //         if (!await blobClient.ExistsAsync())
+                //             throw new FileNotFoundException("Blob not found.", fileName);
 
-                        // Download the blob.
-                        var response = await blobClient.DownloadAsync();
+                //         // Download the blob.
+                //         var response = await blobClient.DownloadAsync();
 
-                        // Return the blob content along with its MIME type and file name
-                        return new
-                        {
-                            Content = response.Value.Content,
-                            ContentType = response.Value.Details.ContentType ?? "application/octet-stream",
-                            Name = fileName,
-                        };
-                    }
+                //         // Return the blob content along with its MIME type and file name
+                //         return new
+                //         {
+                //             Content = response.Value.Content,
+                //             ContentType = response.Value.Details.ContentType ?? "application/octet-stream",
+                //             Name = fileName,
+                //         };
+                //     }
 
                 default:
                     return new { Error = "Invalid Azure action." };
