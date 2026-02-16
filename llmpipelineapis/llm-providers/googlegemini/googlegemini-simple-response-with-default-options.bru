@@ -1,5 +1,5 @@
 meta {
-  name: openai - simple response with default options
+  name: googlegemini - simple response with default options
   type: http
   seq: 2
 }
@@ -12,8 +12,8 @@ post {
 
 body:json {
   {
-    "provider": "openai",
-    "model": "gpt-4o-mini",
+    "provider": "googlegemini",
+    "model": "gemini-2.5-flash",
     "input": "Give me top 3 benefits of daily exercise",
     "files": null,
     "is_json_output": false,
@@ -23,7 +23,11 @@ body:json {
     "credential_id": null,
     "temperature": "1.0",
     "top_p": "1.0",
-    "stream": true
+    "stream": false,
+    "ref_type": "Platform",
+    "ref_id": "",
+    "ref_name": "",
+    "action": "imporve_prompt"
   }
 }
 

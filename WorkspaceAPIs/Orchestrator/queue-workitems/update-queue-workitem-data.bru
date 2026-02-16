@@ -1,0 +1,20 @@
+meta {
+  name: Update queue workitem data
+  type: http
+  seq: 6
+}
+
+put {
+  url: {{WORC_APIS_BASE_URL}}/queue/workitem
+  body: json
+  auth: none
+}
+
+body:json {
+  {
+    "id": "{{QUEUE_WORKITEM_ID}}",
+    "queueId": "{{QUEUE_ID}}",
+    "remarks": "This is test data",
+    "workItemData":  "{\n  \"Id\": 11,\n  \"Name\": \"Test_User1\",\n  \"Location\": \"India\",\n  \"Date\": \"2026-02-10T11:37:28.386Z\"\n}"
+  }
+}

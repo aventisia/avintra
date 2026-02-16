@@ -1,0 +1,46 @@
+meta {
+  name: openai - json response
+  type: http
+  seq: 3
+}
+
+post {
+  url: {{LLM_PIPELINE_APIS_BASE_URL}}/llm/generate
+  body: json
+  auth: inherit
+}
+
+body:json {
+  {
+    "provider": "openai",
+    "model": "gpt-4o-mini",
+    "input": [
+      {
+        "role": "system",
+        "content": "Return only a valid JSON object, without any code block markers or extra text."
+      },
+      {
+        "role": "user",
+        "content": "Give me top 3 benefits of daily exercise"
+      }
+    ],
+    "files": null,
+    "is_json_output": true,
+    "json_schema": null,
+    "max_output_tokens": null,
+    "is_byok_enabled": false,
+    "credential_id": null,
+    "temperature": "1.0",
+    "top_p": "1.0",
+    "stream": false,
+    "ref_type": "Platform",
+    "ref_id": "",
+    "ref_name": "",
+    "action": "imporve_prompt"
+  }
+}
+
+settings {
+  encodeUrl: true
+  timeout: 0
+}
