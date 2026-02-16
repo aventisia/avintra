@@ -85,13 +85,13 @@ app.UseRouting();
 
 app.UsePathBase(new PathString("/api"));
 
-app.UseCors("CorsPolicy");
+app.UseCors();
+
+app.UseRateLimiter();
 
 app.UseAuthentication();
 
 app.UseAuthorization();
-
-app.UseRateLimiter();
 
 app.UseMiddleware<SessionValidator>();
 
