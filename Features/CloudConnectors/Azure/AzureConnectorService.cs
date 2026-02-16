@@ -3,6 +3,7 @@ using Azure.Storage.Blobs;
 using Azure.Storage.Blobs.Models;
 using Azure.Storage.Blobs.Specialized;
 using Microsoft.Graph.Models;
+using System.Text.Json;
 
 namespace WorkspaceAPIs.Features.CloudConnectors.Azure;
 
@@ -103,23 +104,37 @@ public class AzureConnectorsService : IAzureConnectorsService
     private async Task<object?> TakeAzureBlobStorageAsync(AzureActionEnum azureAction, object payload, BlobServiceClient blobServiceClient)
 
     {
-        // Validate payload format
-        if (payload is not Dictionary<string, object> dict)
-            return new { Error = "Invalid payload format. Expected Dictionary<string, object>." };
-
         try
         {
+            Dictionary<string, object>? dict = null;
+
+            if (payload is JsonElement jsonElement)
+            {
+                dict = System.Text.Json.JsonSerializer.Deserialize<Dictionary<string, object>>(
+                    jsonElement.GetRawText()
+                );
+            }
+            else if (payload is Dictionary<string, object> dictionary)
+            {
+                dict = dictionary;
+            }
+
+            if (dict == null)
+            {
+                return new { Error = "Invalid payload format." };
+            }
 
             switch (azureAction)
             {
                 case AzureActionEnum.CreateBlobContainer:
                     {
                         if (!dict.TryGetValue("containerName", out var nameObj) ||
-                        !(nameObj is string containerName) ||string.IsNullOrWhiteSpace(containerName))
+                   string.IsNullOrWhiteSpace(nameObj?.ToString()))
                         {
-                            return new { Error = "Missing or invalid 'containerName' in payload." };
+                            return new { Error = "Missing containerName in payload." };
                         }
 
+                        string containerName = nameObj.ToString();
                         var containerClient = blobServiceClient.GetBlobContainerClient(containerName);
                         await containerClient.CreateIfNotExistsAsync();
 
@@ -134,7 +149,7 @@ public class AzureConnectorsService : IAzureConnectorsService
                 case AzureActionEnum.GetContainerSize:
                     {
                         if (!dict.TryGetValue("containerName", out var nameObj) ||
-                        !(nameObj is string containerName) ||string.IsNullOrWhiteSpace(containerName))
+                        !(nameObj is string containerName) || string.IsNullOrWhiteSpace(containerName))
                         {
                             return new { Error = "Missing or invalid 'containerName' in payload." };
                         }
@@ -163,7 +178,7 @@ public class AzureConnectorsService : IAzureConnectorsService
                 case AzureActionEnum.DeleteContainer:
                     {
                         if (!dict.TryGetValue("containerName", out var nameObj) ||
-                    !(nameObj is string containerName) ||string.IsNullOrWhiteSpace(containerName))
+                        !(nameObj is string containerName) || string.IsNullOrWhiteSpace(containerName))
                         {
                             return new { Error = "Missing or invalid 'containerName' in payload." };
                         }
@@ -183,7 +198,7 @@ public class AzureConnectorsService : IAzureConnectorsService
                 case AzureActionEnum.UploadFile:
                     {
                         if (!dict.TryGetValue("containerName", out var nameObj) ||
-                     !(nameObj is string containerName) ||string.IsNullOrWhiteSpace(containerName))
+                     !(nameObj is string containerName) || string.IsNullOrWhiteSpace(containerName))
                         {
                             return new { Error = "Missing or invalid 'containerName' in payload." };
                         }
@@ -231,7 +246,7 @@ public class AzureConnectorsService : IAzureConnectorsService
 
                 case AzureActionEnum.DownloadFile:
                     {
-                        if (!dict.TryGetValue("containerName", out var nameObj) ||!(nameObj is string containerName) ||
+                        if (!dict.TryGetValue("containerName", out var nameObj) || !(nameObj is string containerName) ||
                         string.IsNullOrWhiteSpace(containerName))
                         {
                             return new { Error = "Missing or invalid 'containerName' in payload." };
