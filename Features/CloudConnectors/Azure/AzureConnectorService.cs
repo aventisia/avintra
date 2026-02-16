@@ -50,7 +50,7 @@ public class AzureConnectorsService : IAzureConnectorsService
             }
             // Create Azure client
             var blobServiceClient = new BlobServiceClient(azureconnectionstring);
-            var azureResponse = await TakeAzureBlobStorageAsync(azureAction,cloudConnectorReqDto.Payload, blobServiceClient);
+            var azureResponse = await TakeAzureBlobStorageAsync(azureAction, cloudConnectorReqDto.Payload, blobServiceClient);
 
             if (azureResponse == null)
             {
@@ -114,7 +114,11 @@ public class AzureConnectorsService : IAzureConnectorsService
             {
                 case AzureActionEnum.CreateBlobContainer:
                     {
-                        var containerName = (string)payload;
+                        if (!dict.TryGetValue("containerName", out var nameObj) ||
+                        !(nameObj is string containerName) ||string.IsNullOrWhiteSpace(containerName))
+                        {
+                            return new { Error = "Missing or invalid 'containerName' in payload." };
+                        }
 
                         var containerClient = blobServiceClient.GetBlobContainerClient(containerName);
                         await containerClient.CreateIfNotExistsAsync();
@@ -129,8 +133,11 @@ public class AzureConnectorsService : IAzureConnectorsService
 
                 case AzureActionEnum.GetContainerSize:
                     {
-                        var containerName = (string)payload;
-
+                        if (!dict.TryGetValue("containerName", out var nameObj) ||
+                        !(nameObj is string containerName) ||string.IsNullOrWhiteSpace(containerName))
+                        {
+                            return new { Error = "Missing or invalid 'containerName' in payload." };
+                        }
                         // Get a client for the specified blob container.
                         var containerClient = blobServiceClient.GetBlobContainerClient(containerName);
 
@@ -155,7 +162,11 @@ public class AzureConnectorsService : IAzureConnectorsService
                     }
                 case AzureActionEnum.DeleteContainer:
                     {
-                        var containerName = (string)payload;
+                        if (!dict.TryGetValue("containerName", out var nameObj) ||
+                    !(nameObj is string containerName) ||string.IsNullOrWhiteSpace(containerName))
+                        {
+                            return new { Error = "Missing or invalid 'containerName' in payload." };
+                        }
 
                         // Get a client for the specified blob container.
                         var containerClient = blobServiceClient.GetBlobContainerClient(containerName);
@@ -171,10 +182,14 @@ public class AzureConnectorsService : IAzureConnectorsService
 
                 case AzureActionEnum.UploadFile:
                     {
-                        var containerName = (string)payload;
-                        var fileStream = (Stream)payload;
-                        var fileName = (string)payload;
-                       
+                        if (!dict.TryGetValue("containerName", out var nameObj) ||
+                     !(nameObj is string containerName) ||string.IsNullOrWhiteSpace(containerName))
+                        {
+                            return new { Error = "Missing or invalid 'containerName' in payload." };
+                        }
+                        var fileStream = (Stream)dict["fileStream"];
+                        var fileName = (string)dict["fileName"];
+
                         // Sanitize filename : Azure has restrictions
                         if (string.IsNullOrWhiteSpace(fileName) ||
                             fileName.Contains('/') ||
@@ -216,8 +231,12 @@ public class AzureConnectorsService : IAzureConnectorsService
 
                 case AzureActionEnum.DownloadFile:
                     {
-                        var containerName = (string)payload;
-                        var fileName = (string)payload;
+                        if (!dict.TryGetValue("containerName", out var nameObj) ||!(nameObj is string containerName) ||
+                        string.IsNullOrWhiteSpace(containerName))
+                        {
+                            return new { Error = "Missing or invalid 'containerName' in payload." };
+                        }
+                        var fileName = (string)dict["fileName"];
 
                         // Get a client for the specified blob container.
                         var containerClient = blobServiceClient.GetBlobContainerClient(containerName);
