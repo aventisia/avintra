@@ -12,7 +12,7 @@ public static class SecurityServicesExtension
 
         services.AddCors(options =>
         {
-            options.AddPolicy("CorsPolicy",
+            options.AddDefaultPolicy(
                 builder => builder.AllowAnyHeader()
                 .AllowAnyMethod()
                 .AllowCredentials()
