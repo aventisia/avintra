@@ -90,7 +90,9 @@ export const PlanFeatures = ({
     `${getCreditsLabel(credits, frequency === "Monthly")}`,
     `${getFeatureLabel(publishedItems, " published Agent", " published Agents", "Unlimited published Agents")}`,
     `${getFeatureLabel(historyRetentionDays, " day", " days", "Unlimited days")} of insights & workflow history`,
-    `${getFeatureLabel(spaces, " space", " spaces", "Unlimited spaces")}`,
+    ...(import.meta.env.MODE !== "production"
+      ? [`${getFeatureLabel(spaces, " space", " spaces", "Unlimited spaces")}`]
+      : []),
     `${getFeatureLabel(storageLimitMB, " MB storage", " MB storage", "Unlimited storage")}`,
     `${getFeatureLabel(users, " user", " users", "Unlimited users")}`,
   ];
