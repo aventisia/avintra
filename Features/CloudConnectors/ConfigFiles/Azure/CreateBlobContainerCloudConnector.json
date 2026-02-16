@@ -1,0 +1,34 @@
+{
+  "name": "CreateBlobContainer",
+  "description": "Creates a new blob container in the specified storage account. This container is used to store and organize blobs (files such as documents, images, videos, or other binary data) in a structured and scalable manner within cloud storage.",
+  "version": "1.0.0",
+  "author": "@gaurav",
+  "fields": [
+    {
+      "direction": "Input",
+      "type": "credentials-select",
+      "name": "__CredentialId__GeneralCredential",
+      "label": "AzureBlobStorage",
+      "description": "",
+      "defaultValue": ""
+    },
+    {
+        "direction":"Input",
+        "type":"text",
+        "name": "ContainerName",
+        "label": "Container Name",
+        "description":"Creates a new container with the specified name to store and manage related data"
+    },
+    {
+      "direction": "Output",
+      "type": "config-panel-output",
+      "name": "Result",
+      "label": "Result",
+      "description": "The blob container has been successfully created and is ready to store blobs.",
+      "defaultValue": {
+        "value": "Result",
+        "enabled": true
+      }
+    }
+  ]
+}
