@@ -87,5 +87,8 @@ public enum AppSecretTypesEnum
     /// Represents the credentials required for integrating with Azure Storage.
     /// </summary>
     [Description("Azure Storage Credentials")]
-    AzureStorage
+    AzureStorage,
+
+    EmailClient,
+    AzureBlobStorage
 }
