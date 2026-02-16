@@ -14,13 +14,14 @@ public class JobController : BaseApiController
     [HttpGet("list")]
     public async Task<ActionResult<ServiceResponse<IEnumerable<JobTableDto>>>> GetJobs(
         [FromQuery] DateTimeOffset? startDate,
-        [FromQuery] DateTimeOffset? endDate)
+        [FromQuery] DateTimeOffset? endDate,
+        [FromQuery] bool includeLogs = false)
     {
-        return ResultHelper(await _jobTableService.GetJobsAsync(startDate, endDate));
+        return ResultHelper(await _jobTableService.GetJobsAsync(startDate, endDate, includeLogs));
     }
 
     [HttpGet("logs/list")]
-    public async Task<ActionResult<ServiceResponse<IEnumerable<JobExecutionLogDto>>>> GetJobLogs(
+    public async Task<ActionResult<ServiceResponse<IEnumerable<JobTableDto>>>> GetJobLogs(
         [FromQuery] DateTimeOffset? startDate,
         [FromQuery] DateTimeOffset? endDate)
     {
@@ -28,7 +29,7 @@ public class JobController : BaseApiController
     }
 
     [HttpGet("{jobId}")]
-    public async Task<ActionResult<ServiceResponse<JobExecutionLogDto>>> GetJob(Guid jobId)
+    public async Task<ActionResult<ServiceResponse<JobTableDto>>> GetJob(Guid jobId)
     {
         return ResultHelper(await _jobTableService.GetJobByIdAsync(jobId));
     }
@@ -46,9 +47,9 @@ public class JobController : BaseApiController
     }
 
     [HttpPut]
-    public async Task<ActionResult<ServiceResponse<JobTableDto>>> UpdateJobAsync([FromBody] JobExecutionLogDto jobExecutionLogDto)
+    public async Task<ActionResult<ServiceResponse<JobTableDto>>> UpdateJobAsync([FromBody] JobTableDto jobTableDto)
     {
-        return ResultHelper(await _jobTableService.UpdateJobAsync(jobExecutionLogDto));
+        return ResultHelper(await _jobTableService.UpdateJobAsync(jobTableDto));
     }
 
     [HttpDelete("{jobId}")]

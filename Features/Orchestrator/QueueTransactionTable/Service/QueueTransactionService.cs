@@ -59,8 +59,9 @@ public class QueueTransactionService : IQueueTransactionService
     }
 
     // Retrieve all transactions for a specific queue using provided filter criteria
-    public async Task<ServiceResponse<IEnumerable<QueueTransactionDto>>> FindAllTransactionsAsync(FindQueueTransactionQuery queueTransactionQuery)
+    public async Task<ServiceResponse<IEnumerable<QueueTransactionDto>>> GetQueueTransactionItemsAsync(QueueFilterRequestDto queueFilterRequestDto)
     {
+        // Initialize ServiceResponse with failed response
         var serviceResponse = new ServiceResponse<IEnumerable<QueueTransactionDto>>
         {
             Data = null,
@@ -69,83 +70,137 @@ public class QueueTransactionService : IQueueTransactionService
 
         try
         {
-            Queue? queue = null;
+            var queue = await _unitOfWork.QueueRepo
+                .GetByConditionAsync(w => w.Id == queueFilterRequestDto.QueueId)
+                .FirstOrDefaultAsync();
 
-            // Determine whether to search by queue name or ID
-            if (!string.IsNullOrEmpty(queueTransactionQuery.QueueName))
-            {
-                queue = await _unitOfWork.QueueRepo
-                    .GetByConditionAsync(q => q.Name.ToLower() == queueTransactionQuery.QueueName.ToLower())
-                    .FirstOrDefaultAsync();
-
-                _logger.LogInformation("Looking up queue by name: {QueueName}", queueTransactionQuery.QueueName);
-            }
-            else
-            {
-                queue = await _unitOfWork.QueueRepo
-                    .GetByConditionAsync(q => q.Id == queueTransactionQuery.QueueId)
-                    .FirstOrDefaultAsync();
-
-                _logger.LogInformation("Looking up queue by ID: {QueueId}", queueTransactionQuery.QueueId);
-            }
-
-            // If queue not found, return with error
             if (queue == null)
             {
-                serviceResponse.Message = "Queue not found with the specified identifier.";
-                _logger.LogWarning("Queue not found for Name: {QueueName}, ID: {QueueId}", queueTransactionQuery.QueueName, queueTransactionQuery.QueueId);
+                _logger.LogWarning("Queue not found for Queue ID: {QueueId}", queueFilterRequestDto.QueueId);
+                serviceResponse.Message = "Queue not found.";
                 return serviceResponse;
             }
 
-            // Acquire the lock
+            // Ensure thread safety while processing
             await _semaphore.WaitAsync();
 
-            // Start building the query for queue transactions
-            var query = _unitOfWork.QueueTransactionRepo
-                .GetByConditionAsync(t => t.QueueId == queue.Id);
-
-            // Apply dynamic sorting based on SortColumn
-            query = queueTransactionQuery.SortBy switch
-            {
-                QueueItemSortSortByFieldsEnum.Status => queueTransactionQuery.IsAscending
-                    ? query.OrderBy(o => o.Status)
-                    : query.OrderByDescending(o => o.Status),
-
-                QueueItemSortSortByFieldsEnum.Date => queueTransactionQuery.IsAscending
-                    ? query.OrderBy(o => o.CreatedOn)
-                    : query.OrderByDescending(o => o.CreatedOn),
-
-                // QueueItemSortSortByFieldsEnum.Priority => queueTransactionQuery.IsAscending
-                //     ? query.OrderBy(o => o.Priority)
-                //     : query.OrderByDescending(o => o.Priority),
-
-                _ => query.OrderBy(o => o.CreatedOn)
-            };
-
-            // Execute query with included navigation properties
-            var queueTransactions = await query
-                .Include(t => t.Queue)
+            var transactions = await _unitOfWork.QueueTransactionRepo
+                .GetByConditionAsync(w => w.QueueId == queue.Id)
+                .Include(i => i.Queue)
                 .AsNoTracking()
-                .ProjectToType<QueueTransactionDto>()
                 .ToListAsync();
 
-            // Success response
-            serviceResponse.Data = queueTransactions;
+            // Parse JSON payload once for each transaction
+            var items = transactions
+                .Where(w => !string.IsNullOrWhiteSpace(w.PayloadData))
+                .Select(w => new
+                {
+                    Transaction = w,
+                    Payload = JObject.Parse(w.PayloadData!)
+                })
+                .ToList();
+
+            // Apply dynamic filters in memory
+            if (queueFilterRequestDto.Conditions.Any())
+            {
+                _logger.LogInformation("Applying {Count} filter conditions...", queueFilterRequestDto.Conditions.Count);
+
+                items = items.Where(item =>
+                {
+                    foreach (var condition in queueFilterRequestDto.Conditions)
+                    {
+                        var fieldValue = item.Payload[condition.Field]?.ToString();
+                        var compareValue = condition.Value;
+
+                        if (string.IsNullOrWhiteSpace(fieldValue))
+                            return false;
+
+                        bool match = condition.ComparisonOperator switch
+                        {
+                            // -------- STRING OPERATORS --------
+                            "EqualTo" => fieldValue == compareValue,
+                            "NotEqualTo" => fieldValue != compareValue,
+                            "Contains" => fieldValue.Contains(compareValue, StringComparison.OrdinalIgnoreCase),
+                            "DoesNotContain" => !fieldValue.Contains(compareValue, StringComparison.OrdinalIgnoreCase),
+                            "StartsWith" => fieldValue.StartsWith(compareValue, StringComparison.OrdinalIgnoreCase),
+                            "EndsWith" => fieldValue.EndsWith(compareValue, StringComparison.OrdinalIgnoreCase),
+
+                            // -------- NUMERIC OPERATORS --------
+                            "GreaterThan" => decimal.TryParse(fieldValue, out var number1) && decimal.TryParse(compareValue, out var number2) && number1 > number2,
+                            "LessThan" => decimal.TryParse(fieldValue, out var number1) && decimal.TryParse(compareValue, out var number2) && number1 < number2,
+                            "GreaterThanOrEqual" => decimal.TryParse(fieldValue, out var number1) && decimal.TryParse(compareValue, out var number2) && number1 >= number2,
+                            "LessThanOrEqual" => decimal.TryParse(fieldValue, out var number1) && decimal.TryParse(compareValue, out var number2) && number1 <= number2,
+
+                            // -------- DATE OPERATORS --------
+                            "DateAfter" => DateTimeOffset.TryParse(fieldValue, out var date1) && DateTimeOffset.TryParse(compareValue, out var date2) && date1 > date2,
+                            "DateBefore" => DateTimeOffset.TryParse(fieldValue, out var date1) && DateTimeOffset.TryParse(compareValue, out var date2) && date1 < date2,
+                            "DateOnOrAfter" => DateTimeOffset.TryParse(fieldValue, out var date1) && DateTimeOffset.TryParse(compareValue, out var date2) && date1 >= date2,
+                            "DateOnOrBefore" => DateTimeOffset.TryParse(fieldValue, out var date1) && DateTimeOffset.TryParse(compareValue, out var date2) && date1 <= date2,
+
+                            "IsNull" => string.IsNullOrWhiteSpace(fieldValue),
+                            "IsNotNull" => !string.IsNullOrWhiteSpace(fieldValue),
+                            _ => true
+                        };
+
+                        if (!match)
+                        {
+                            return false;
+                        }
+                    }
+
+                    return true;
+                }).ToList();
+            }
+
+            IEnumerable<dynamic> sorted = items;
+
+            // Apply dynamic sorting
+            if (queueFilterRequestDto.QueuePriority.Any())
+            {
+                _logger.LogInformation("Applying sorting priorities...");
+
+                foreach (var sort in queueFilterRequestDto.QueuePriority)
+                {
+                    sorted = sort.OrderBy.Equals("Ascending", StringComparison.OrdinalIgnoreCase)
+                        ? sorted.OrderBy(o => o.Payload[sort.Field]?.ToString())
+                        : sorted.OrderByDescending(o => o.Payload[sort.Field]?.ToString());
+                }
+            }
+            // Configure JSON serialization options
+            var options = new JsonSerializerOptions
+            {
+                ReferenceHandler = System.Text.Json.Serialization.ReferenceHandler.Preserve,
+                WriteIndented = false
+            };
+
+            // Serialize only the Transaction property from the sorted collection into JSON
+            var json = System.Text.Json.JsonSerializer.Serialize(
+                sorted.Select(s => s.Transaction),
+                options
+            );
+
+            // Deserialize the JSON back into a list of QueueTransactionDto objects, This effectively creates a deep copy of the transactions
+            var result = System.Text.Json.JsonSerializer.Deserialize<List<QueueTransactionDto>>(
+                json,
+                options
+            );
+
+            // Build success response
+            serviceResponse.Data = result;
             serviceResponse.StatusCode = 200;
             serviceResponse.Message = "Successfully retrieved queue transactions.";
 
-            _logger.LogInformation("Retrieved {Count} transactions for Queue ID: {QueueId}", queueTransactions.Count, queue.Id);
+            _logger.LogInformation("Completed successfully. Returning {Count} transactions for Queue ID: {QueueId}", result.Count, queue.Id);
         }
         catch (Exception ex)
         {
-            _logger.LogError(ex, "Error occurred while fetching transactions for queue. Name: {QueueName}, ID: {QueueId}",
-                queueTransactionQuery.QueueName, queueTransactionQuery.QueueId);
+            _logger.LogError(ex, "Error occurred while processing transactions for Queue ID: {QueueId}", queueFilterRequestDto?.QueueId);
         }
         finally
         {
-            // Release the lock
             _semaphore.Release();
         }
+
         return serviceResponse;
     }
 
@@ -430,19 +485,6 @@ public class QueueTransactionService : IQueueTransactionService
                 return serviceResponse;
             }
 
-            // Retrieve the full queue details including all transactions for uniqueness validation
-            var queue = await _unitOfWork.QueueRepo
-                .GetByConditionAsync(w => w.Id == queueTransaction.QueueId)
-                .Include(i => i.QueueTransactions)
-                .FirstOrDefaultAsync();
-
-            if (queue == null)
-            {
-                _logger.LogWarning("Queue ID {QueueId} associated with transaction {TransactionId} not found.", queueTransaction.QueueId, queueTransactionDto.Id);
-                serviceResponse.Message = "Associated queue not found.";
-                return serviceResponse;
-            }
-
             // Update the existing queue transaction entity with values from the DTO
             queueTransaction.Status = queueTransactionDto.Status;
             queueTransaction.LastModifiedOn = DateTimeOffset.UtcNow;
@@ -497,18 +539,7 @@ public class QueueTransactionService : IQueueTransactionService
                 return serviceResponse;
             }
 
-            // Retrieve the full queue details including all transactions for uniqueness validation
-            var queue = await _unitOfWork.QueueRepo
-                .GetByConditionAsync(w => w.Id == queueTransaction.QueueId)
-                .Include(i => i.QueueTransactions)
-                .FirstOrDefaultAsync();
-
-            if (queue == null)
-            {
-                _logger.LogWarning("Queue ID {QueueId} associated with transaction {TransactionId} not found.", queueTransaction.QueueId, queueTransactionDto.Id);
-                serviceResponse.Message = "Associated queue not found.";
-                return serviceResponse;
-            }
+            var queue = queueTransaction.Queue;
 
             // Deserialize the queue's input schema; fall back to empty list if schema is invalid or null
             var inputSchema = System.Text.Json.JsonSerializer.Deserialize<List<QueueSchemaDefinitionDto>>(

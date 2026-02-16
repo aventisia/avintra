@@ -7,13 +7,15 @@ public class OrchestratorHub : Hub
     private readonly IClientStatusStore _clientStatusStore;
     private readonly ILogger<OrchestratorHub> _logger;
     private readonly WorkspaceInternalDbContext _workspaceInternalDbContext;
+    private readonly EnvironmentConfig _environmentConfig;
 
     // Constructor to initialize dependencies
-    public OrchestratorHub(IClientStatusStore clientStatusStore, ILogger<OrchestratorHub> logger, WorkspaceInternalDbContext workspaceInternalDbContext)
+    public OrchestratorHub(IClientStatusStore clientStatusStore, ILogger<OrchestratorHub> logger, WorkspaceInternalDbContext workspaceInternalDbContext, EnvironmentConfig environmentConfig)
     {
         _clientStatusStore = clientStatusStore;
         _logger = logger;
         _workspaceInternalDbContext = workspaceInternalDbContext;
+        _environmentConfig = environmentConfig;
     }
 
     // Invoked when a client successfully connects to the hub.
@@ -85,18 +87,23 @@ public class OrchestratorHub : Hub
                 LastSeen = DateTimeOffset.UtcNow
             };
 
-            // Add or update the client status in the store
-            await _clientStatusStore.AddOrUpdateStatusAsync(clientDataStore);
-
-            // Add client to group based on their type (WebBrowser or DesktopApp)
-            if (clientType == ClientTypesEnum.WebBrowser || clientType == ClientTypesEnum.WorcDesktopApp)
+            // Additional logic for handling the case where the client is a machine
+            if (clientType == ClientTypesEnum.WorcMachine)
             {
-                await Groups.AddToGroupAsync(connectionId, $"TENANT_{tenantId}");
-                _logger.LogInformation("Client {ConnectionId} added to group TENANT_{TenantId}.", connectionId, tenantId);
+                // Adjust the clientDataStore if the client type is "WorcMachine"
+                clientDataStore.ClientId = userId;  // Assign clientId back to userId
+                clientDataStore.Type = ClientTypesEnum.WorcDesktopApp;  // Change to DesktopApp type
+
+                // Update or add the status for this new client type
+                await _clientStatusStore.AddOrUpdateStatusAsync(clientDataStore);
             }
 
-            // If the client is a machine, handle machine-specific logic
-            if (clientType == ClientTypesEnum.WorcMachine)
+            // Add client to group based on their type (WebBrowser or DesktopApp)
+            await Groups.AddToGroupAsync(connectionId, $"TENANT_{tenantId}");
+            _logger.LogInformation("Client {ConnectionId} added to group TENANT_{TenantId}.", connectionId, tenantId);
+
+            // If the client is a machine, handle machine-specific logic (e.g., job assignment)
+            if (clientType == ClientTypesEnum.WorcMachine && !_environmentConfig.OnPremExecutionDisabled)
             {
                 // Retrieve all FlowVersionIds associated with the current machine from the MachineFlow table
                 var flowVersionIds = await _workspaceInternalDbContext.MachineFlow
@@ -192,12 +199,10 @@ public class OrchestratorHub : Hub
                     await Clients.Group($"TENANT_{clientDataStore.TenantId}").SendAsync("machine_status_update", "A machine is offline now.");
                     _logger.LogInformation("Machine {ClientId} offline. Notified tenant group {TenantId}.", clientDataStore.ClientId, clientDataStore.TenantId);
                 }
-                else
-                {
-                    // Remove non-machine clients from their tenant group
-                    await Groups.RemoveFromGroupAsync(clientDataStore.ConnectionId, $"TENANT_{clientDataStore.TenantId}");
-                    _logger.LogInformation("Client {ConnectionId} removed from group TENANT_{TenantId}.", clientDataStore.ConnectionId, clientDataStore.TenantId);
-                }
+
+                // Remove non-machine clients from their tenant group
+                await Groups.RemoveFromGroupAsync(clientDataStore.ConnectionId, $"TENANT_{clientDataStore.TenantId}");
+                _logger.LogInformation("Client {ConnectionId} removed from group TENANT_{TenantId}.", clientDataStore.ConnectionId, clientDataStore.TenantId);
             }
 
             // Complete the disconnection process
@@ -218,6 +223,12 @@ public class OrchestratorHub : Hub
     {
         try
         {
+            // Check if execution is disabled in the current environment.
+            if (_environmentConfig.OnPremExecutionDisabled)
+            {
+                _logger.LogError("Execution is currently disabled in this environment. Job processing cannot be performed.");
+                return;
+            }
             // Log the attempt to execute the agent on a machine
             _logger.LogInformation("Attempting to execute agent {AgentId} on machine {MachineId}.", agentId, machineId);
 
@@ -362,6 +373,12 @@ public class OrchestratorHub : Hub
     // {
     //     try
     //     {
+    //         // Check if execution is disabled in the current environment.
+    //         if (_environmentConfig.OnPremExecutionDisabled)
+    //         {
+    //             _logger.LogError("Execution is currently disabled in this environment. Job processing cannot be performed.");
+    //             return;
+    //         }
     //         // Log the attempt to execute the agent on the specified machine
     //         _logger.LogInformation("Attempting to execute agent {AgentId} on machine {MachineId}.", executionCommandDto.AgentId, executionCommandDto.MachineId);
 

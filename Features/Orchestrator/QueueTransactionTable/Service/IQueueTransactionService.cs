@@ -10,11 +10,14 @@ public interface IQueueTransactionService
     Task<ServiceResponse<IEnumerable<QueueTransactionDto>>> GetAllTransactionsAsync(Guid queueId);
 
     /// <summary>
-    /// Retrieves all queue transactions that match the specified query parameters.
+    /// Retrieves a list of queue transaction items based on the specified filter request.
     /// </summary>
-    /// <param name="queueTransactionQuery">The query object containing filter criteria such as queue ID, name, status, date, and priority.</param>
-    /// <returns>A service response containing a collection of matching queue transactions.</returns>
-    Task<ServiceResponse<IEnumerable<QueueTransactionDto>>> FindAllTransactionsAsync(FindQueueTransactionQuery queueTransactionQuery);
+    /// <param name="queueFilterRequestDto">The filter request used to filter queue transactions, including sorting and conditions.</param>
+    /// <returns>The task result contains the service response with a list of filtered queue transaction items.</returns>
+    /// <remarks>
+    /// Use this method to get queue transactions that match specific filter criteria, such as sorting and conditions.
+    /// </remarks>
+    Task<ServiceResponse<IEnumerable<QueueTransactionDto>>> GetQueueTransactionItemsAsync(QueueFilterRequestDto queueFilterRequestDto);
 
     /// <summary>
     /// Retrieves the details of a specific queue transaction by its unique identifier.

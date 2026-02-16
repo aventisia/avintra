@@ -5,12 +5,14 @@ public class TimeTriggerExecutionJob : IJob
     private readonly WorkspaceInternalDbContext _workspaceInternalDbContext;
     private readonly ILogger<TimeTriggerExecutionJob> _logger;
     private readonly IJobsExecutorService _jobsExecutorService;
+    private readonly EnvironmentConfig _environmentConfig;
 
-    public TimeTriggerExecutionJob(WorkspaceInternalDbContext workspaceInternalDbContext, ILogger<TimeTriggerExecutionJob> logger, IJobsExecutorService jobsExecutorService)
+    public TimeTriggerExecutionJob(WorkspaceInternalDbContext workspaceInternalDbContext, ILogger<TimeTriggerExecutionJob> logger, IJobsExecutorService jobsExecutorService, EnvironmentConfig environmentConfig)
     {
         _workspaceInternalDbContext = workspaceInternalDbContext;
         _logger = logger;
         _jobsExecutorService = jobsExecutorService;
+        _environmentConfig = environmentConfig;
     }
 
     // Main method for Quartz job execution
@@ -22,6 +24,12 @@ public class TimeTriggerExecutionJob : IJob
             var currentUtcTime = DateTimeOffset.UtcNow;
 
             _logger.LogInformation($"Job started at {currentUtcTime:O}");
+            // Check if execution is disabled in the current environment.
+            if (_environmentConfig.OnPremExecutionDisabled)
+            {
+                _logger.LogError("Execution is currently disabled in this environment. Job processing cannot be performed.");
+                return;
+            }
 
             // Define the current minute time window
             var startOfCurrentMinute = currentUtcTime.Date.AddHours(currentUtcTime.Hour).AddMinutes(currentUtcTime.Minute);

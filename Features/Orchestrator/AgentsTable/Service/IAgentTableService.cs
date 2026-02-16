@@ -60,7 +60,7 @@ public interface IAgentTableService
     /// A <see cref="ServiceResponse{T}"/> containing a list of <see cref="AgentTableDto"/> objects representing the published flow versions matching the search criteria.
     /// </returns>
     Task<ServiceResponse<IEnumerable<AgentTableDto>>> SearchPublishFlowVersionsAsync(string searchKey);
- 
+
     /// <summary>
     /// Disables multiple flow versions based on the provided list of flow version IDs.
     /// </summary>
@@ -69,4 +69,10 @@ public interface IAgentTableService
     /// A <see cref="ServiceResponse{T}"/> containing a list of <see cref="bool"/> values where each boolean represents whether the corresponding flow version was successfully disabled (true) or failed (false).
     /// </returns>
     Task<ServiceResponse<bool>> DisableMultipleFlowVersionsAsync(IEnumerable<Guid> flowVersionIds);
+
+    /// <summary>
+    /// Gets the total count of published flow versions.
+    /// A <see cref="ServiceResponse{T}"/> with the count of published flow versions.
+    /// </returns>
+    Task<ServiceResponse<int>> GetTotalPublishedFlowVersionsAsync();
 }

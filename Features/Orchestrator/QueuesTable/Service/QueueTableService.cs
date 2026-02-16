@@ -5,15 +5,16 @@ public class QueueTableService : IQueueTableService
     private readonly ILogger<QueueTableService> _logger;
     private readonly IUnitOfWork _unitOfWork;
     private readonly Guid _userId;
+    private readonly Guid _tenantId;
 
     public QueueTableService(
         ILogger<QueueTableService> logger,
         IUnitOfWork unitOfWork,
-        IHttpContextAccessor httpContextAccessor,
-        IUploadFileService uploadFileService)
+        IHttpContextAccessor httpContextAccessor)
     {
-        // Set _userId
+        // Set _userId and _tenantId
         _userId = Guid.Parse(httpContextAccessor.HttpContext?.User?.FindFirstValue("uid") ?? Guid.Empty.ToString());
+        _tenantId = Guid.Parse(httpContextAccessor.HttpContext?.User?.FindFirstValue("tntid") ?? Guid.Empty.ToString());
 
         _logger = logger;
         _unitOfWork = unitOfWork;
@@ -206,6 +207,29 @@ public class QueueTableService : IQueueTableService
             {
                 _logger.LogInformation("Context SaveChanges failed while creating a new queue");
                 return serviceResponse;
+            }
+
+            // If the queue type is 'User', create an associated QueueUser entry
+            if (newQueue.Type == QueueTypesEnum.User)
+            {
+                var queueUser = new QueueUser()
+                {
+                    UserId = _userId,
+                    QueueId = newQueue.Id,
+                    AccessType = QueueWorkItemAccessTypesEnum.FullAccess,
+                    CreatedByUserId = _userId,
+                    LastModifiedByUserId = _userId
+                };
+
+                // Insert the new QueueUser into the database
+                await _unitOfWork.QueueUserRepo.InsertAsync(queueUser);
+
+                // Save changes to the database
+                if (!await _unitOfWork.SaveAsync())
+                {
+                    _logger.LogInformation("Context SaveChanges failed while creating a new queue user");
+                    return serviceResponse;
+                }
             }
 
             // Task successful
@@ -530,10 +554,8 @@ public class QueueTableService : IQueueTableService
         {
             // Check if the queue exists and belongs to the current user
             var queue = await _unitOfWork.QueueRepo
-                                            .GetByConditionAsync(w =>
-                                                w.Id == queueId &&
-                                                w.CreatedByUserId == _userId)
-                                            .Include(a => a.QueueFlowVersions)
+                                            .GetByConditionAsync(w => w.Id == queueId)
+                                            .Include(i => i.QueueFlowVersions)
                                             .FirstOrDefaultAsync();
 
             // Return an error if the queue doesn't exist
@@ -546,18 +568,16 @@ public class QueueTableService : IQueueTableService
 
             // Retrieve all agents for the current user
             var agents = await _unitOfWork.FlowVersionRepo
-                                            .GetByConditionAsync(w =>
-                                                w.IsPublished &&
-                                                w.CreatedByUserId == _userId)
-                                            .Include(f => f.Flow)
+                                            .GetByConditionAsync(w => w.IsPublished)
+                                            .Include(i => i.Flow)
                                             .ProjectToType<AssignAgentQueueDto>()
                                             .ToListAsync();
 
             // Set IsAssigned to true if the agent is already assigned to the queue
-            agents.ForEach(a =>
+            agents.ForEach(fe =>
             {
-                a.IsAssigned = (queue.QueueFlowVersions ?? Enumerable.Empty<QueueFlowVersion>()).Any(mf => mf.FlowVersionId == a.Id);
-                a.QueueId = queue.Id;
+                fe.IsAssigned = (queue.QueueFlowVersions ?? Enumerable.Empty<QueueFlowVersion>()).Any(a => a.FlowVersionId == fe.Id);
+                fe.QueueId = queue.Id;
             });
 
             // Return the agents along with their assignment status
@@ -575,4 +595,174 @@ public class QueueTableService : IQueueTableService
         return serviceResponse;
     }
 
+    // Assigns multiple users to a queue.
+    public async Task<ServiceResponse<bool>> AssignUsersAsync(Guid queueId, IEnumerable<Guid> userIds)
+    {
+        // Initialize serviceResponse with failure message
+        var serviceResponse = new ServiceResponse<bool>
+        {
+            Data = false,
+            Message = "Failed to assign users to the queue. Please try again."
+        };
+
+        try
+        {
+            // Ensure user IDs are unique.
+            if (userIds.Count() != userIds.Distinct().Count())
+            {
+                _logger.LogInformation("Duplicate user IDs detected.");
+                serviceResponse.Message = "User IDs cannot contain duplicates.";
+                return serviceResponse;
+            }
+
+            // Check if the queue exists
+            var queue = await _unitOfWork.QueueRepo
+                        .GetByConditionAsync(w => w.Id == queueId)
+                        .Include(i => i.QueueUsers)
+                        .FirstOrDefaultAsync();
+
+            if (queue == null)
+            {
+                // If the queue doesn't exist or doesn't belong to the current user, return failure.
+                _logger.LogInformation("Queue not found.");
+                serviceResponse.Message = "The queue does not exist or doesn't belong to you.";
+                return serviceResponse;
+            }
+
+            // Retrieve users and validate if their IDs are correct.
+            var validUsers = await _unitOfWork.WorkspaceUserRepo
+                        .GetByConditionAsync(u => userIds.Contains(u.Id))
+                        .AsNoTracking()
+                        .ToListAsync();
+
+            var invalidUserIds = userIds.Except(validUsers.Select(u => u.Id)).ToList();
+
+            if (invalidUserIds.Any())
+            {
+                // If any user IDs are invalid, return failure.
+                _logger.LogInformation("Invalid user IDs found: {InvalidUserIds}", string.Join(", ", invalidUserIds));
+                serviceResponse.Message = $"The following user IDs are invalid or do not belong to the current user: {string.Join(", ", invalidUserIds)}";
+                return serviceResponse;
+            }
+
+            // Identify users already assigned to the queue.
+            var currentQueueUsers = queue?.QueueUsers?.ToList() ?? new List<QueueUser>();
+            var currentlyAssignedUserIds = currentQueueUsers.Select(q => q.UserId).ToList();
+
+            // Determine the new users to assign and users to remove.
+            var usersToAssign = userIds.Except(currentlyAssignedUserIds).ToList();
+            var usersToRemove = currentlyAssignedUserIds.Except(userIds).ToList();
+
+            // If there are no changes (no users to assign or remove), return a message.
+            if (!usersToAssign.Any() && !usersToRemove.Any())
+            {
+                _logger.LogInformation("No changes made; the users are already correctly assigned to the queue.");
+                serviceResponse.Message = "No changes made to the queue assignments.";
+                return serviceResponse;
+            }
+
+            // Create new QueueUser entries for users to be assigned to the queue.
+            var newQueueUsers = usersToAssign.Select(userId => new QueueUser()
+            {
+                QueueId = queueId,
+                UserId = userId,
+                CreatedByUserId = _userId,
+                LastModifiedByUserId = _userId
+            }).ToList();
+
+            // Identify existing QueueUser entries for users to be removed.
+            var queueUsersToRemove = currentQueueUsers
+                .Where(q => usersToRemove.Contains(q.UserId))
+                .ToList();
+
+            // Begin the transaction to insert new users and remove the old ones.
+            if (newQueueUsers.Any())
+            {
+                await _unitOfWork.QueueUserRepo.InsertAsync(newQueueUsers);
+            }
+
+            if (queueUsersToRemove.Any())
+            {
+                _unitOfWork.QueueUserRepo.Delete(queueUsersToRemove);
+            }
+
+            // Attempt to save changes to the database.
+            if (!await _unitOfWork.SaveAsync())
+            {
+                // If saving fails, return failure response.
+                _logger.LogInformation("Database save operation failed while assigning or updating users.");
+                serviceResponse.Message = "Failed to update user assignments for the queue.";
+                return serviceResponse;
+            }
+
+            // Return success with the count of users assigned and removed.
+            serviceResponse.Data = true;
+            serviceResponse.StatusCode = 200;
+            serviceResponse.Message = $"{usersToAssign.Count} users assigned and {usersToRemove.Count} users removed from the queue.";
+        }
+        catch (Exception ex)
+        {
+            // Log any unexpected error.
+            _logger.LogError(ex, "An unexpected error occurred while assigning users to the queue.");
+            return serviceResponse;
+        }
+
+        // Return the service response.
+        return serviceResponse;
+    }
+
+    // Retrieve user list
+    public async Task<ServiceResponse<IEnumerable<AssignUserQueueDto>>> GetUsersAsync(Guid queueId)
+    {
+        // Initialize the response with a failed result
+        var serviceResponse = new ServiceResponse<IEnumerable<AssignUserQueueDto>>
+        {
+            Data = null,
+            Message = "Failed to retrieve users. Please try again."
+        };
+
+        try
+        {
+            // Check if the queue exists and belongs to the current user
+            var queue = await _unitOfWork.QueueRepo
+                                            .GetByConditionAsync(w => w.Id == queueId)
+                                            .Include(i => i.QueueUsers)
+                                            .FirstOrDefaultAsync();
+
+            // Return an error if the queue doesn't exist
+            if (queue == null)
+            {
+                _logger.LogInformation("Queue with ID {QueueId} not found for user {UserId}.", queueId, _userId);
+                serviceResponse.Message = "The queue does not exist.";
+                return serviceResponse;
+            }
+
+
+            // Retrieve all users for the current user
+            var users = await _unitOfWork.WorkspaceUserRepo
+                                            .GetByConditionAsync(w => w.TenantId == _tenantId)
+                                            .ProjectToType<AssignUserQueueDto>()
+                                            .ToListAsync();
+
+            // Set IsAssigned to true if the user is already assigned to the queue
+            users.ForEach(fe =>
+            {
+                fe.IsAssigned = (queue.QueueUsers ?? Enumerable.Empty<QueueUser>()).Any(a => a.UserId == fe.Id);
+                fe.QueueId = queue.Id;
+            });
+
+            // Return the users along with their assignment status
+            serviceResponse.Data = users;
+            serviceResponse.StatusCode = 200;
+            serviceResponse.Message = "Users retrieved successfully";
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex, "An unexpected error occurred while retrieving users for queue {QueueId}.", queueId);
+            serviceResponse.Message = "An error occurred while retrieving users from the queue.";
+            return serviceResponse;
+        }
+
+        return serviceResponse;
+    }
 }

@@ -19,6 +19,11 @@ public class Queue : BaseEntity, IMustHaveTenant
     public required string Name { get; set; }
 
     /// <summary>
+    /// Gets or sets the tyoe of the queue.
+    /// </summary>
+    public QueueTypesEnum Type { get; set; }
+
+    /// <summary>
     /// Gets or sets the description of the queue.
     /// This field is optional and can contain a maximum of 500 characters.
     /// </summary>
@@ -69,7 +74,12 @@ public class Queue : BaseEntity, IMustHaveTenant
     public virtual ICollection<QueueTransaction>? QueueTransactions { get; set; }
 
     /// <summary>
-    /// Configures the many-to-many relationship between machine flow and flow versions.
+    /// Configures the many-to-many relationship between queue and flow versions.
     /// </summary>   
     public virtual ICollection<QueueFlowVersion>? QueueFlowVersions { get; set; }
+
+    /// <summary>
+    /// Configures the many-to-many relationship between queue and users.
+    /// </summary>   
+    public virtual ICollection<QueueUser>? QueueUsers { get; set; }
 }

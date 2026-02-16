@@ -6,7 +6,7 @@ def getTargetServers(branchName) {
         case 'uat':
             return ['avuat.aventisia.com']
         case 'main':
-            return ['avweb.aventisia.com']
+            return ['avweb1.aventisia.com', 'avweb2.aventisia.com']
         default:
             error "Unsupported branch: ${branchName}"
     }
@@ -42,22 +42,31 @@ pipeline {
             steps {
                 script {
                     sshagent(credentials: ['aventisia_vps_ssh']) {
-                        // Set target servers based on branch
+                        // Get target servers based on branch
                         def targetServers = getTargetServers(env.BRANCH_NAME)
-                        for (server in targetServers) {
+
+                        echo "Database migration to ${targetServers.size()} server(s): ${targetServers.join(', ')}..."
+
+                        // Do migration on each target server
+                        targetServers.each { server ->
                             echo "Fetching env from ${server}..."
+
                             // Fetch the environment variables from the target server
                             sh "ssh -o StrictHostKeyChecking=no admin@${server} 'cat /etc/environment' > remote_env_vars"
+                            
                             // Read the fetched environment variables into a list
                             def envVars = readFile('remote_env_vars').split('\n').findAll { it.contains('=') }
+                            
                             // Export the variables in the current Jenkins environment
                             withEnv(envVars) {
-                                echo "Migrating database schema on ${server}..."
+                                echo 'Migrating database schema...'
                                 sh '''
                                     export ASPNETCORE_ENVIRONMENT=Production
                                     dotnet ef database update --context=WorkspaceDbContext
                                 '''
                             }
+                            
+                            echo "Successfully migrated database schema on ${server}"
                         }
                     }
                 }
@@ -73,13 +82,20 @@ pipeline {
             steps {
                 script {
                     sshagent(credentials: ['aventisia_vps_ssh']) {
-                        // Set target servers based on branch
+                        // Get target servers based on branch
                         def targetServers = getTargetServers(env.BRANCH_NAME)
-                        for (server in targetServers) {
+
+                        echo "Deploying to ${targetServers.size()} server(s): ${targetServers.join(', ')}..."
+
+                        // Do deployment on each target server
+                        targetServers.each { server ->
                             echo "Deploying to ${server}..."
+                        
                             // Deploy and restart service
                             sh "rsync -avz --delete ${WORKSPACE}/Published/* admin@${server}:/var/www/aventisia.com/apis/worc/"
                             sh "ssh admin@${server} 'sudo systemctl restart worc_apis.service'"
+                            
+                            echo "Successfully deployed to ${server}"
                         }
                     }
                 }

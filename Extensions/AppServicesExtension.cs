@@ -11,7 +11,7 @@ public static class AppServicesExtension
     public static void AddDbContextConfig(this IServiceCollection services, IConfiguration config)
     {
         var environmentConfig = Guard.Against.Null(config.GetSection("EnvironmentConfig").Get<EnvironmentConfig>(), message: "EnvironmentConfig cannot be null");
-        
+
         // Read PostgreSQL settings from environment variables or config
         var pgHost = environmentConfig.PostgresqlHost ?? "localhost";
         var pgPort = environmentConfig.PostgresqlPort.ToString() ?? "5432";
@@ -49,6 +49,8 @@ public static class AppServicesExtension
         config.Apply(new AgentTableMappingProfile());
         config.Apply(new QueueTableMappingProfile());
         config.Apply(new QueueTransactionMappingProfile());
+        config.Apply(new QueueUserMappingProfile());
+        config.Apply(new QueueFlowVersionMappingProfile());
         config.Apply(new JobTableMappingProfile());
         config.Apply(new KeyStoreMappingProfile());
         config.Apply(new VaultMappingProfile());
@@ -57,6 +59,7 @@ public static class AppServicesExtension
         config.Apply(new TimeTriggerMappingProfile());
         config.Apply(new AITaskMappingProfile());
         config.Apply(new OnPremModelMappingProfile());
+        config.Apply(new QueueWorkItemMappingProfile());
 
         services.AddSingleton(config);
     }
@@ -88,6 +91,8 @@ public static class AppServicesExtension
         services.AddScoped<IAgentTableService, AgentTableService>();
         services.AddScoped<IQueueTableService, QueueTableService>();
         services.AddScoped<IQueueTransactionService, QueueTransactionService>();
+        services.AddScoped<IQueueUserService, QueueUserService>();
+        services.AddScoped<IQueueFlowVersionService, QueueFlowVersionService>();
         services.AddScoped<IJobTableService, JobTableService>();
         services.AddScoped<IKeyStoreService, KeyStoreService>();
         services.AddScoped<IVaultService, VaultService>();
@@ -101,6 +106,8 @@ public static class AppServicesExtension
         services.AddScoped<IProjectUsageService, ProjectUsageService>();
         services.AddScoped<IOnPremModelService, OnPremModelService>();
         services.AddScoped<ILLMProviderService, LLMProviderService>();
+        services.AddScoped<IManageTenantService, ManageTenantService>();
+        services.AddScoped<IQueueWorkItemService, QueueWorkItemService>();
 
         // Cloud Connectors feature
         services.AddScoped<ICloudConnectorsVaultService, CloudConnectorsVaultService>();

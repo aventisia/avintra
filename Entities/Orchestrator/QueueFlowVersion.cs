@@ -16,6 +16,11 @@ public class QueueFlowVersion : BaseEntity, IMustHaveTenant
     public required Guid QueueId { get; set; }
 
     /// <summary>
+    /// Gets or sets the access type for the user or role on this queue flow version.
+    /// </summary>
+    public QueueWorkItemAccessTypesEnum AccessType { get; set; }
+
+    /// <summary>
     /// Represents the flow version associated with this Queue
     /// </summary>
     [ForeignKey("FlowVersionId")]

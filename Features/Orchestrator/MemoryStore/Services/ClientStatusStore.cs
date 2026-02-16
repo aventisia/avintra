@@ -32,17 +32,18 @@ public class ClientStatusStore : IClientStatusStore
         return Task.CompletedTask;
     }
 
-    // Removes a client from the store by its connection identifier (we'll update this to use clientId).
+    // Removes all clients from the store by their connection identifier.
     public Task RemoveClientByConnectionAsync(string connectionId)
     {
-        // Find the client by its connection ID.
-        var clientToRemove = ClientStore.Values
-            .FirstOrDefault(c => c.ConnectionId == connectionId);
+        // Find all clients with the matching connection ID
+        var clientsToRemove = ClientStore.Values
+            .Where(c => c.ConnectionId == connectionId)
+            .ToList();
 
-        // If found, remove the client from the store.
-        if (clientToRemove != null)
+        // If any clients are found, remove them from the store
+        foreach (var client in clientsToRemove)
         {
-            ClientStore.TryRemove(clientToRemove.ClientId, out _);
+            ClientStore.TryRemove(client.ClientId, out _);
         }
 
         return Task.CompletedTask;
@@ -64,7 +65,7 @@ public class ClientStatusStore : IClientStatusStore
         // Return null if no client found with the given connection ID.
         return Task.FromResult<ClientDataStore?>(null);
     }
-    
+
     // Retrieves the status of a client by their client ID.
     public Task<ClientDataStore?> GetStatusByClientIdAsync(Guid clientId)
     {
