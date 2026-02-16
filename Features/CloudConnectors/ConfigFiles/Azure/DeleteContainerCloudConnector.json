@@ -1,0 +1,33 @@
+{
+  "name": "DeleteContainer",
+  "description": "Delete container with the specified name to store and manage related data.",
+  "author": "@gaurav",
+  "fields": [
+    {
+      "direction": "Input",
+      "type": "credentials-select",
+      "name": "__CredentialId__GeneralCredential",
+      "label": "AzureBlobStorage",
+      "description": "",
+      "defaultValue": ""
+    },
+    {
+        "direction":"Input",
+        "type":"text",
+        "name": "ContainerName",
+        "label": "Container Name",
+        "description":"Delete container with the specified name to store and manage related data"
+    },
+    {
+      "direction": "Output",
+      "type": "config-panel-output",
+      "name": "Result",
+      "label": "Result",
+      "description": "The blob container has been successfully deleted and is ready to store blobs.",
+      "defaultValue": {
+        "value": "Result",
+        "enabled": true
+      }
+    }
+  ]
+}

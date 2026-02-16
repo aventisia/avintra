@@ -1,0 +1,34 @@
+{
+  "name": "UploadFile",
+  "description": "Uploads a file from the local system to an Azure Blob container.",
+  "version": "1.0.0",
+  "author": "@gaurav",
+  "fields": [
+    {
+      "direction": "Input",
+      "type": "credentials-select",
+      "name": "__CredentialId__GeneralCredential",
+      "label": "AzureBlobStorage",
+      "description": "",
+      "defaultValue": ""
+    },
+    {
+        "direction":"Input",
+        "type":"text",
+        "name": "ContainerName",
+        "label": "Container Name",
+        "description":"UploadFile a file to Azure Blob container."
+    },
+    {
+      "direction": "Output",
+      "type": "config-panel-output",
+      "name": "Result",
+      "label": "Result",
+      "description": "The blob container file has been UploadFile successfully",
+      "defaultValue": {
+        "value": "Result",
+        "enabled": true
+      }
+    }
+  ]
+}
