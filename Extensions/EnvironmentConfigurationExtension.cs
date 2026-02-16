@@ -24,22 +24,22 @@ public static class EnvironmentConfigurationExtension
 
         // Database and storage environment variables
         var POSTGRESQL_HOST = GetRequiredEnvVar("POSTGRESQL_HOST");
-        var POSTGRESQL_PORT = Environment.GetEnvironmentVariable("POSTGRESQL_PORT") ?? "5432";
+        var POSTGRESQL_PORT = Environment.GetEnvironmentVariable("POSTGRESQL_PORT") ?? config["EnvironmentConfig:PostgresqlPort"] ?? "5432";
         var POSTGRESQL_USERNAME = GetRequiredEnvVar("POSTGRESQL_USERNAME");
         var POSTGRESQL_PASSWORD = GetRequiredEnvVar("POSTGRESQL_PASSWORD");
         var AZURE_BLOB_STORAGE_CONNECTION_STRING = GetRequiredEnvVar("AZURE_BLOB_STORAGE_CONNECTION_STRING");
 
         // JWT environment variables
         var JWT_SECRET_KEY = GetRequiredEnvVar("JWT_SECRET_KEY");
-        var JWT_VALIDITY_IN_MINUTES = Environment.GetEnvironmentVariable("JWT_VALIDITY_IN_MINUTES") ?? "60";
-        var JWT_REFRESH_TOKEN_VALIDITY_IN_DAYS = Environment.GetEnvironmentVariable("JWT_REFRESH_TOKEN_VALIDITY_IN_DAYS") ?? "30";
+        var JWT_VALIDITY_IN_MINUTES = Environment.GetEnvironmentVariable("JWT_VALIDITY_IN_MINUTES") ?? config["EnvironmentConfig:JwtValidityInMinutes"] ?? "60";
+        var JWT_REFRESH_TOKEN_VALIDITY_IN_DAYS = Environment.GetEnvironmentVariable("JWT_REFRESH_TOKEN_VALIDITY_IN_DAYS") ?? config["EnvironmentConfig:JwtRefreshTokenValidityInDays"] ?? "30";
 
         // Encryption environment variables
         var AES_ENCRYPTION_KEY = GetRequiredEnvVar("AES_ENCRYPTION_KEY");
         var AES_INITIALIZATION_VECTOR = GetRequiredEnvVar("AES_INITIALIZATION_VECTOR");
 
         // Azure Entra ID environment variables
-        var AZURE_ENTRA_ID_ENABLED = bool.Parse(Environment.GetEnvironmentVariable("AZURE_ENTRA_ID_ENABLED") ?? "false");
+        var AZURE_ENTRA_ID_ENABLED = bool.Parse(Environment.GetEnvironmentVariable("AZURE_ENTRA_ID_ENABLED") ?? config["EnvironmentConfig:AzureEntraIdEnabled"] ?? "false");
         string AZURE_TENANT_ID = string.Empty;
         string AZURE_ENTRA_ID_CLIENT_ID = string.Empty;
         string AZURE_ENTRA_ID_CLIENT_SECRET = string.Empty;
@@ -65,24 +65,24 @@ public static class EnvironmentConfigurationExtension
         var OPENROUTER_API_KEY = Environment.GetEnvironmentVariable("OPENROUTER_API_KEY") ?? string.Empty;
 
         // Internal service URLs environment variables
-        var ACCOUNTS_API_BASE_URL = Environment.GetEnvironmentVariable("ACCOUNTS_API_BASE_URL") ?? "http://accounts-apis:4000";
-        var WORC_API_BASE_URL = Environment.GetEnvironmentVariable("WORC_API_BASE_URL") ?? "http://worc-apis:4001";
-        var AISTUDIO_API_BASE_URL = Environment.GetEnvironmentVariable("AISTUDIO_API_BASE_URL") ?? "http://aistudio-apis:4002";
-        var LLMPIPELINE_API_BASE_URL = Environment.GetEnvironmentVariable("LLMPIPELINE_API_BASE_URL") ?? "http://llmpipeline-apis:4003";
+        var ACCOUNTS_API_BASE_URL = Environment.GetEnvironmentVariable("ACCOUNTS_API_BASE_URL") ?? config["EnvironmentConfig:AccountsApiBaseUrl"] ?? "http://accounts-apis:4000";
+        var WORC_API_BASE_URL = Environment.GetEnvironmentVariable("WORC_API_BASE_URL") ?? config["EnvironmentConfig:WorcApiBaseUrl"] ?? "http://worc-apis:4001";
+        var AISTUDIO_API_BASE_URL = Environment.GetEnvironmentVariable("AISTUDIO_API_BASE_URL") ?? config["EnvironmentConfig:AiStudioApiBaseUrl"] ?? "http://aistudio-apis:4002";
+        var LLMPIPELINE_API_BASE_URL = Environment.GetEnvironmentVariable("LLMPIPELINE_API_BASE_URL") ?? config["EnvironmentConfig:LlmPipelineApiBaseUrl"] ?? "http://llmpipeline-apis:4003";
 
         // Sales and support emails environment variable
-        var SALES_EMAILS = Environment.GetEnvironmentVariable("SALES_EMAILS") ?? "";
+        var SALES_EMAILS = Environment.GetEnvironmentVariable("SALES_EMAILS") ?? config["EnvironmentConfig:SalesEmails"] ?? string.Empty;
 
         // Identity and security settings environment variables
-        var MAX_ACTIVE_SESSION_ALLOWED = Environment.GetEnvironmentVariable("MAX_ACTIVE_SESSION_ALLOWED") ?? "50";
-        var OBSOLETE_PWD_RETAIN_LIMIT = Environment.GetEnvironmentVariable("OBSOLETE_PWD_RETAIN_LIMIT") ?? "5";
-        var DEFAULT_LOCKOUT_TIME_SPAN_IN_MINUTES = Environment.GetEnvironmentVariable("DEFAULT_LOCKOUT_TIME_SPAN_IN_MINUTES") ?? "10";
-        var LOCKOUT_MAX_FAILED_ACCESS_ATTEMPTS = Environment.GetEnvironmentVariable("LOCKOUT_MAX_FAILED_ACCESS_ATTEMPTS") ?? "3";
+        var MAX_ACTIVE_SESSION_ALLOWED = Environment.GetEnvironmentVariable("MAX_ACTIVE_SESSION_ALLOWED") ?? config["EnvironmentConfig:MaxActiveSessionAllowed"] ?? "50";
+        var OBSOLETE_PWD_RETAIN_LIMIT = Environment.GetEnvironmentVariable("OBSOLETE_PWD_RETAIN_LIMIT") ?? config["EnvironmentConfig:ObsoletePwdRetainLimit"] ?? "5";
+        var DEFAULT_LOCKOUT_TIME_SPAN_IN_MINUTES = Environment.GetEnvironmentVariable("DEFAULT_LOCKOUT_TIME_SPAN_IN_MINUTES") ?? config["EnvironmentConfig:DefaultLockoutTimeSpanInMinutes"] ?? "10";
+        var LOCKOUT_MAX_FAILED_ACCESS_ATTEMPTS = Environment.GetEnvironmentVariable("LOCKOUT_MAX_FAILED_ACCESS_ATTEMPTS") ?? config["EnvironmentConfig:LockoutMaxFailedAccessAttempts"] ?? "3";
 
         // OTP settings environment variables
-        var OTP_VALIDITY_IN_MINUTES = Environment.GetEnvironmentVariable("OTP_VALIDITY_IN_MINUTES") ?? "5";
-        var OTP_NUMBER_OF_CHARACTERS = Environment.GetEnvironmentVariable("OTP_NUMBER_OF_CHARACTERS") ?? "6";
-        var OTP_IS_ALPHA_NUMERIC = Environment.GetEnvironmentVariable("OTP_IS_ALPHA_NUMERIC") ?? "false";
+        var OTP_VALIDITY_IN_MINUTES = Environment.GetEnvironmentVariable("OTP_VALIDITY_IN_MINUTES") ?? config["EnvironmentConfig:OtpValidityInMinutes"] ?? "5";
+        var OTP_NUMBER_OF_CHARACTERS = Environment.GetEnvironmentVariable("OTP_NUMBER_OF_CHARACTERS") ?? config["EnvironmentConfig:OtpNumberOfCharacters"] ?? "6";
+        var OTP_IS_ALPHA_NUMERIC = Environment.GetEnvironmentVariable("OTP_IS_ALPHA_NUMERIC") ?? config["EnvironmentConfig:OtpIsAlphaNumeric"] ?? "false";
 
         // Fetch tenant and instance metadata from GlobalAdmin API
         var globalAdminApiBaseUrl = Guard.Against.NullOrWhiteSpace(config["AppDefaultConfig:GlobalAdminApiBaseUrl"], message: "GlobalAdminApiUrl configuration cannot be null or empty");
@@ -97,7 +97,7 @@ public static class EnvironmentConfigurationExtension
         var ON_PREM_LOGIN_DISABLED = tenantValidationInfo.LoginDisabled;
 
         // Rozorpay payment gateway environment variables (Only if enabled and tenant type is Commercial)
-        var RAZORPAY_ENABLED = bool.Parse(Environment.GetEnvironmentVariable("RAZORPAY_ENABLED") ?? "false");
+        var RAZORPAY_ENABLED = bool.Parse(Environment.GetEnvironmentVariable("RAZORPAY_ENABLED") ?? config["EnvironmentConfig:RazorpayEnabled"] ?? "false");
         string RAZORPAY_KEY_ID = string.Empty;
         string RAZORPAY_KEY_SECRET = string.Empty;
         string RAZORPAY_WEBHOOK_SECRET = string.Empty;
@@ -110,14 +110,14 @@ public static class EnvironmentConfigurationExtension
 
         // CORS origins configuration
         var EXTRA_CORS_ORIGINS = Environment.GetEnvironmentVariable("EXTRA_CORS_ORIGINS") ?? string.Empty;
-        var CORS_ORIGINS = string.IsNullOrEmpty(EXTRA_CORS_ORIGINS) 
-                            ? $"https://{APP_BASE_URL}" 
+        var CORS_ORIGINS = string.IsNullOrEmpty(EXTRA_CORS_ORIGINS)
+                            ? $"https://{APP_BASE_URL}"
                             : $"https://{APP_BASE_URL};{EXTRA_CORS_ORIGINS}";
-        
+
         // Allowed hosts configuration
         var EXTRA_ALLOWED_HOSTS = Environment.GetEnvironmentVariable("EXTRA_ALLOWED_HOSTS") ?? string.Empty;
-        var ALLOWED_HOSTS = string.IsNullOrEmpty(EXTRA_ALLOWED_HOSTS) 
-                            ? $"localhost;{APP_BASE_URL}" 
+        var ALLOWED_HOSTS = string.IsNullOrEmpty(EXTRA_ALLOWED_HOSTS)
+                            ? $"localhost;{APP_BASE_URL}"
                             : $"localhost;{APP_BASE_URL};{EXTRA_ALLOWED_HOSTS}";
 
         // Build new configuration with sensitive data from environment variables
