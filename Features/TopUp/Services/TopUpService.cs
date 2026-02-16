@@ -55,7 +55,7 @@ namespace AccountsAPIs.Services
                     .SingleOrDefaultAsync();
 
                 // Check if the subscription is either not found or the next billing date is in the past.
-                if (tenantSubscription == null || tenantSubscription.NextBillingDate.Date < DateTimeOffset.UtcNow.Date)
+                if (tenantSubscription == null || (razorpayOrderRequestDto.Type == CreditTypesEnum.TopUp && tenantSubscription.NextBillingDate.Date < DateTimeOffset.UtcNow.Date))
                 {
                     _logger.LogWarning("Subscription not found or next billing date has passed for SubscriptionId: {SubscriptionId}", razorpayOrderRequestDto.SubscriptionId);
                     serviceResponse.Message = "Your subscription has expired. Please renew it before attempting to top up.";
@@ -64,7 +64,6 @@ namespace AccountsAPIs.Services
 
                 // Clean up string properties to remove unwanted leading/trailing spaces
                 razorpayOrderRequestDto = TrimDtoStringPropsUtil.TrimDtoStringProps(razorpayOrderRequestDto);
-
 
                 // Fetch tenant information based on tenant ID
                 var tenant = await _unitOfWork.TenantRepo.GetByConditionAsync(w => w.Id == _tenantId).FirstOrDefaultAsync();
