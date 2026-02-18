@@ -171,21 +171,17 @@ public class EmailConnectorsService : IEmailConnectorsService
                         {
                             secureOption = SecureSocketOptions.None;
                         }
-
-                        await client.ConnectAsync(smtpServer, serverPort, secureOption);
-
                         if (acceptUntrusted)
                         {
                             client.ServerCertificateValidationCallback = (_, _, _, _) => true;
                         }
-
+                        
                         await client.ConnectAsync(smtpServer, serverPort, secureOption);
-
                         if (needsAuth)
                         {
                             await client.AuthenticateAsync(username, password);
                         }
-
+                
                         await client.SendAsync(message);
                         await client.DisconnectAsync(true);
 
