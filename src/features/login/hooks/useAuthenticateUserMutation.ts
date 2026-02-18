@@ -1,6 +1,5 @@
 import {
   ADD_TENANT,
-  DEV_JWT_LS_KEY,
   NO_ACTIVE_SUBSCRIPTION,
   PWD_EXPIRED,
   TWO_FA_ENABLED,
@@ -61,11 +60,6 @@ export const useAuthenticateUserMutation = () => {
         }
 
         // ----------User is authenticated Now----------
-
-        // TODO: To be removed
-        if (import.meta.env.DEV) {
-          localStorage.setItem(DEV_JWT_LS_KEY, data.accessToken);
-        }
 
         // Check if backend message indicates incomplete tenant setup
         if (message.includes(ADD_TENANT)) {
