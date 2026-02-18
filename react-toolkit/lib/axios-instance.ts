@@ -22,6 +22,25 @@ const axiosInstance = axios.create({
   },
 });
 
+// List of URLs to skip the refresh logic
+const SKIP_REFRESH_URLS = [
+  "/auth/login",
+  "/auth/verify-2fa-code",
+  "/me/refresh-session",
+  "/me/my-session",
+  "/me/logoff",
+];
+
+const shouldSkipRefresh = (url: string) =>
+  SKIP_REFRESH_URLS.some((path) => url.endsWith(path));
+
+// Shared state for managing token refresh
+let isRefreshing = false;
+let failedRequestsQueue: Array<{
+  resolve: (value?: unknown) => void;
+  reject: (reason?: unknown) => void;
+}> = [];
+
 // Intercept request and add JWT token to the header if its DEV env
 axiosInstance.interceptors.request.use(
   (request) => {
@@ -52,22 +71,53 @@ axiosInstance.interceptors.response.use(
 
     // If response status is 401 and request is not login, verify-2fa-code, refresh-session, my-session, logoff
     if (
-      !originalRequest.url.includes("/auth/login") &&
-      !originalRequest.url.includes("/auth/verify-2fa-code") &&
-      !originalRequest.url.includes("/me/refresh-session") &&
-      !originalRequest.url.includes("/me/my-session") &&
-      !originalRequest.url.includes("/me/logoff") &&
+      originalRequest?.url &&
+      !shouldSkipRefresh(originalRequest.url) &&
       error.response.status === 401 &&
       !originalRequest._retry
     ) {
+      // If already refreshing, queue this request
+      if (isRefreshing) {
+        return new Promise((resolve, reject) => {
+          failedRequestsQueue.push({ resolve, reject });
+        })
+          .then(() => {
+            return axiosInstance(originalRequest);
+          })
+          .catch((err) => {
+            return Promise.reject(err);
+          });
+      }
+
       // Set original request retry to true
       originalRequest._retry = true;
 
-      // Refresh the session
-      await refreshSession();
+      // Set refreshing flag
+      isRefreshing = true;
 
-      // Return the original request
-      return axiosInstance(originalRequest);
+      try {
+        // Refresh the session (only once!)
+        await refreshSession();
+
+        // Process all queued requests
+        failedRequestsQueue.forEach((prom) => prom.resolve());
+        failedRequestsQueue = [];
+
+        // Return the original request
+        return axiosInstance(originalRequest);
+      } catch (refreshError) {
+        // Reject all queued requests
+        failedRequestsQueue.forEach((prom) => prom.reject(refreshError));
+        failedRequestsQueue = [];
+
+        // Redirect to login since refresh failed
+        redirectToLoginOn401Util();
+
+        return Promise.reject(refreshError);
+      } finally {
+        // Reset refreshing flag
+        isRefreshing = false;
+      }
     }
 
     // Set empty error message
@@ -96,7 +146,7 @@ axiosInstance.interceptors.response.use(
       case 429:
         return Promise.reject(errorMessage); // Return just the error message so that it can be used in the component to show toast notification and take action accordingly
       case 401:
-        if (error.config?.url.includes("/auth/login")) {
+        if (error.config?.url.endsWith("/auth/login")) {
           return Promise.reject(errorMessage);
         }
         toast.error(errorMessage);
