@@ -486,6 +486,10 @@ $RECYCLE.BIN/
 # Vim temporary swap files
 *.swp
 
-# Published folder
+# Custom ignore rules
 [Pp]ublished/
-update-database.sh
+.env.local
+wwwroot/
+TO-DELETE-*
+sample-*
+test-*
