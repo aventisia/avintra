@@ -164,6 +164,9 @@ public class AzureBlobStorageService : IAzureBlobStorageService
         // Get a client for the specified blob container.
         var containerClient = _blobServiceClient.GetBlobContainerClient(containerName);
 
+        // Ensure the container exists.
+        await containerClient.CreateIfNotExistsAsync();
+
         // Accumulator for the total size of all blobs in the container.
         long totalSize = 0;
 
