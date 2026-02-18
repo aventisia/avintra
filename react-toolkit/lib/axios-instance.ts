@@ -3,11 +3,7 @@ import { sleep } from "@aventisia/ui/utils";
 import axios from "axios";
 
 import { refreshSession } from "@/react-toolkit/apis/accounts-me-apis";
-import {
-  DEV_JWT_LS_KEY,
-  INVALID_CREDS,
-  REQUEST_TIMEOUT,
-} from "@/react-toolkit/constants";
+import { INVALID_CREDS, REQUEST_TIMEOUT } from "@/react-toolkit/constants";
 import { redirectToLoginOn401Util } from "@/react-toolkit/utils/redirect-util";
 /**
  * Creates an Axios instance with predefined configuration.
@@ -25,12 +21,6 @@ const axiosInstance = axios.create({
 // Intercept request and add JWT token to the header if its DEV env
 axiosInstance.interceptors.request.use(
   (request) => {
-    // Attach jwt from LS if its DEV env
-    if (import.meta.env.DEV) {
-      request.headers["Authorization"] =
-        `Bearer ${localStorage.getItem(DEV_JWT_LS_KEY)}`;
-    }
-
     // Include cookies with the request
     request.withCredentials = true;
 
