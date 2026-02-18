@@ -114,7 +114,6 @@ public class AzureConnectorsService : IAzureConnectorsService
                 return new { Error = "'containerName' is required in payload." };
             string containerName = toObj?.ToString() ?? string.Empty;
 
-            
             switch (azureAction)
             {
                 case AzureActionEnum.CreateBlobContainer:
@@ -170,8 +169,42 @@ public class AzureConnectorsService : IAzureConnectorsService
                         };
                     }
 
+                case AzureActionEnum.UploadFile:
+                    {
+                        // Validate localFilePath
+                        if (!dict.TryGetValue("localFilePath", out var pathObj) ||
+                            pathObj is not string localFilePath ||string.IsNullOrWhiteSpace(localFilePath))
+                        {
+                            return new { Error = "'localFilePath' is required in payload." };
+                        }
+
+                        if (!File.Exists(localFilePath))
+                        {
+                            return new { Error = $"File not found at path: {localFilePath}" };
+                        }
+                        var containerClient = blobServiceClient.GetBlobContainerClient(containerName);
+
+                        await containerClient.CreateIfNotExistsAsync();
+                       
+                        string fileName = Path.GetFileName(localFilePath);
+                        BlobClient blobClient = containerClient.GetBlobClient(fileName);
+                        await blobClient.UploadAsync(localFilePath, overwrite: true);
+
+                        return new
+                        {
+                            Success = true,
+                            BlobName = fileName,
+                            BlobUrl = blobClient.Uri.ToString()
+                        };
+                    }
+
                 // case AzureActionEnum.UploadFile:
                 //     {
+
+                //         if (!dict.TryGetValue("fileName", out var toFileNameObj) || toObj == null)
+                //             return new { Error = "'fileName' is required in payload." };
+                //         string fileName = toFileNameObj?.ToString() ?? string.Empty;
+
                 //         var fileStream = (Stream)dict["fileStream"];
 
                 //         if (string.IsNullOrWhiteSpace(fileName))
