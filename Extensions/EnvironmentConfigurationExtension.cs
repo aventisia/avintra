@@ -10,10 +10,14 @@ public static class EnvironmentConfigurationExtension
         bool isLocalhostEnvironment
     )
     {
-        // Skip environment variable loading for localhost environment
+        // Load .env.local file if it exists (for local development)
         if (isLocalhostEnvironment)
         {
-            return config;
+            var envLocalPath = Path.Combine(Directory.GetCurrentDirectory(), ".env.local");
+            if (File.Exists(envLocalPath))
+            {
+                DotNetEnv.Env.Load(envLocalPath);
+            }
         }
 
         // Basic environment variables
