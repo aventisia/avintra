@@ -6,6 +6,10 @@ import eslint from "vite-plugin-eslint2";
 
 // https://vitejs.dev/config/
 export default defineConfig({
+  server: {
+    host: true,
+    allowedHosts: ["local-worc.aventisia.com"],
+  },
   base: "/worc/",
   plugins: [
     react(),
