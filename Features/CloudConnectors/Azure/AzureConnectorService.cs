@@ -172,15 +172,20 @@ public class AzureConnectorsService : IAzureConnectorsService
                 case AzureActionEnum.UploadFile:
                     {
                         // Validate localFilePath
-                        if (!dict.TryGetValue("localFilePath", out var pathObj) ||
-                            pathObj is not string localFilePath ||string.IsNullOrWhiteSpace(localFilePath))
+                        if (!dict.TryGetValue("localFilePath", out var pathObj) ||pathObj == null)
                         {
-                            return new { Error = "'localFilePath' is required in payload." };
+                            return new { Error = "localFilePath' is required in payload." };
                         }
+                         string localFilePath = pathObj.ToString();
+                         
+                         if(!File.Exists(localFilePath))
+                         {
+                             return new { Error = $"File not found at path: {localFilePath}" };
+                         }
 
-                        if (!File.Exists(localFilePath))
+                        if (string.IsNullOrWhiteSpace(localFilePath))
                         {
-                            return new { Error = $"File not found at path: {localFilePath}" };
+                            return new { Error = $"local file path not found: {localFilePath}" };
                         }
                         var containerClient = blobServiceClient.GetBlobContainerClient(containerName);
 
