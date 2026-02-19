@@ -13,6 +13,7 @@ export const BranchNode1 = ({
   data: nodeData,
   targetPosition,
   sourcePosition,
+  selected,
 }: NodeProps<BranchNode1>) => {
   return (
     <>
@@ -25,12 +26,25 @@ export const BranchNode1 = ({
                 nodeData?.isDisabled && "opacity-50",
               )}
             >
-              <div className="grid place-items-center rounded-full border-2 border-[#7D76EC] bg-[#D1CFF8] px-2 text-sm hover:ring hover:ring-ring">
+              <div
+                className={cn(
+                  "grid place-items-center rounded-full border-2 border-[#7D76EC] bg-[#D1CFF8] px-2 text-sm hover:ring hover:ring-ring",
+                  selected && "border-primary bg-[#c9c7fa]",
+                  nodeData?.isCut && "border-red-400 opacity-60",
+                )}
+              >
                 <InputHandle
                   position={targetPosition}
                   className="rounded-full opacity-0"
                 />
-                <span className="max-w-60 truncate text-[#6159E8]">{nodeData?.label}</span>
+                <span
+                  className={cn(
+                    "max-w-60 truncate text-[#6159E8]",
+                    selected && "text-primary",
+                  )}
+                >
+                  {nodeData?.label}
+                </span>
                 <OutputHandle position={sourcePosition} />
               </div>
             </div>
@@ -40,6 +54,7 @@ export const BranchNode1 = ({
             className={cn(
               "flex h-7 w-[19.5rem] justify-center",
               nodeData?.isDisabled && "opacity-50",
+              nodeData?.isCut && "border-red-400 opacity-60",
             )}
           >
             <div className="grid h-7 w-fit place-items-center rounded-full border-2 border-slate-400 bg-slate-200 px-2 text-sm">

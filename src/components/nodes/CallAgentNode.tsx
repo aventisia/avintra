@@ -27,6 +27,7 @@ export const CallAgentNode = ({
           "flex h-[5.3rem] w-[19.5rem] overflow-clip rounded-lg border-2 border-[#3E37B3] bg-[#3E37B3] hover:ring hover:ring-ring",
           selected && "border-primary ring ring-ring",
           data?.isDisabled && "opacity-50",
+          data?.isCut && "border-red-400 opacity-60",
         )}
       >
         <div

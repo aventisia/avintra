@@ -45,6 +45,7 @@ type NodeDataType = {
   color?: string;
   isBlock?: boolean;
   isDisabled?: boolean;
+  isCut?: boolean;
   selectedAgent?: { [key: string]: string };
   selectedModel?: { [key: string]: string };
   selectedBlock?: { [key: string]: string };

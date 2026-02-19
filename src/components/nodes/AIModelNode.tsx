@@ -83,6 +83,7 @@ export const AIModelNode = ({
           data.color,
           selected && "border-primary ring ring-ring",
           data?.isDisabled && "opacity-50",
+          data?.isCut && "border-red-400 opacity-60",
         )}
       >
         <div

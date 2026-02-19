@@ -1,37 +1,56 @@
-import { Node } from "@xyflow/react";
-import { useCallback } from "react";
+import { useState, useCallback, useEffect } from "react";
+import { Node, Edge } from "@xyflow/react";
 
 // Key to store clipboard data in localStorage
-const CLIPBOARD_KEY = "flow-clipboard";
+const CLIPBOARD_KEY = "react-flow-clipboard";
 
-// Define the structure of clipboard data
-type Clipboard = {
-  node: Node | null;
-  operation: "cut" | "copy" | null;
-};
-
-// Custom hook to manage clipboard operations
+export interface FlowClipboard {
+  nodes: Node[];
+  edges: Edge[];
+  operation: "cut" | "copy";
+  flowId?: string;
+}
+// Custom hook to manage clipboard data
 export const useClipboard = () => {
-  // Retrieve clipboard data from localStorage
-  const getClipboard = useCallback((): Clipboard => {
-    const data = localStorage.getItem(CLIPBOARD_KEY);
-    return data ? JSON.parse(data) : { node: null, operation: null };
+  const [clipboardState, setClipboardState] = useState<FlowClipboard | null>(
+    null,
+  );
+
+  // Sync with local storage on mount
+  useEffect(() => {
+    const stored = localStorage.getItem(CLIPBOARD_KEY);
+    if (stored) {
+      try {
+        setClipboardState(JSON.parse(stored));
+      } catch (e) {
+        console.error("Failed to parse clipboard data", e);
+      }
+    }
+  }, []);
+
+  const getClipboard = useCallback((): FlowClipboard => {
+    const stored = localStorage.getItem(CLIPBOARD_KEY);
+    return stored
+      ? JSON.parse(stored)
+      : { nodes: [], edges: [], operation: "copy" };
   }, []);
 
   // Store clipboard data in localStorage
-  const setClipboard = useCallback((clipboard: Clipboard) => {
-    localStorage.setItem(CLIPBOARD_KEY, JSON.stringify(clipboard));
+  const setClipboard = useCallback((data: FlowClipboard) => {
+    localStorage.setItem(CLIPBOARD_KEY, JSON.stringify(data));
+    setClipboardState(data);
   }, []);
 
   // Clear clipboard data from localStorage
   const clearClipboard = useCallback(() => {
     localStorage.removeItem(CLIPBOARD_KEY);
+    setClipboardState(null);
   }, []);
 
-  // Return clipboard management functions
   return {
     getClipboard,
     setClipboard,
     clearClipboard,
+    hasClipboardData: !!clipboardState?.nodes?.length,
   };
 };

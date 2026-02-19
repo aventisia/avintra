@@ -35,6 +35,7 @@ import { SaveAsTemplateDialog } from "@/features/save-as-template/components/Sav
 import ImportFlow from "@/features/import-flow/components/ImportFlow";
 import ShortcutsDialog from "@/features/keyboard-shortcuts/KeyboardShortcutsDialog";
 import { useFetchConfigVariables } from "../hooks/useFetchConfigVariables";
+import { useCopyPasteShortcuts } from "../hooks/useCopyPasteShortcuts";
 
 /**
  * A custom extension of the ReactFlow component.
@@ -67,6 +68,8 @@ export const ReactFlowExt = () => {
 
   // Track ReactFlow selection change
   useTrackSelection();
+
+  useCopyPasteShortcuts()
 
   // Fetch flow details and set document title
   useFetchFlowToLoad();
