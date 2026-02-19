@@ -5,10 +5,6 @@ import path from "path";
 
 // https://vitejs.dev/config/
 export default defineConfig({
-  server: {
-    host: true,
-    allowedHosts: ["local-worc.aventisia.com"],
-  },
   base: "/agentbuilder/",
   plugins: [
     react(),
