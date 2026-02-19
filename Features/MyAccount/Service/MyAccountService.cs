@@ -224,9 +224,6 @@ public class MyAccountService : IMyAccountService
             _httpContext.Request.Cookies.TryGetValue(CookieNamesEnum.RefreshToken.ToString(), out var refreshToken);
             var userAgent = _httpContext.Request.Headers["User-Agent"].ToString();
 
-            // Log:1 Cookies Retrieved
-            _logger.LogInformation("Log:1 Cookies Retrieved: SessionId = {SessionIdString}, UserName = {UserName}, RefreshToken = {RefreshToken}, UserAgent = {UserAgent}", sessionIdString, userName, refreshToken, userAgent);
-
             // Set all cookies to blank
             _authHelperService.RemoveCookie(CookieNamesEnum.SessionId.ToString());
             _authHelperService.RemoveCookie(CookieNamesEnum.AccessToken.ToString());
@@ -367,9 +364,6 @@ public class MyAccountService : IMyAccountService
 
             // Create new RefreshToken
             var newRefreshToken = _authHelperService.CreateRefreshToken();
-
-            // Detach the entity from the DbContext
-            _unitOfWork.ActiveSessionRepo.Detach(activeSession);
 
             // Update info of activeSession instance
             activeSession.RefreshToken = newRefreshToken;
