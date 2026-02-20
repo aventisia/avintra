@@ -272,7 +272,7 @@ public class AzureConnectorsService : IAzureConnectorsService
                         {
                             return new { IsSuccess = false, Message = "Invalid base64 format for fileStream." };
                         }
-                        
+
                         if (fileStream == null)
                             return new { IsSuccess = false, Message = "'fileStream' must be a valid Stream object." };
 
@@ -334,6 +334,11 @@ public class AzureConnectorsService : IAzureConnectorsService
                         await downloadInfo.Value.Content.CopyToAsync(memoryStream);
                         memoryStream.Position = 0;
 
+                        // Convert stream to base64 string
+                        string base64Content = Convert.ToBase64String(memoryStream.ToArray());
+                        memoryStream.Dispose();
+                        downloadInfo.Value.Content.Dispose();
+                        
                         return new
                         {
                             IsSuccess = true,

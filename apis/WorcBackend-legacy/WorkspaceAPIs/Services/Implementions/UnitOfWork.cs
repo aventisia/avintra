@@ -20,7 +20,6 @@ public class UnitOfWork : IUnitOfWork
     public IProjectTemplateRepo ProjectTemplateRepo => new ProjectTemplateRepo(_workspaceDbContext);
     public ITemplateResourceRepo TemplateResourceRepo => new TemplateResourceRepo(_workspaceDbContext);
     public IFlowVersionRepo FlowVersionRepo => new FlowVersionRepo(_workspaceDbContext);
-    public ISubscriptionRepo SubscriptionRepo => new SubscriptionRepo(_workspaceDbContext);
     public IMachineRepo MachineRepo => new MachineRepo(_workspaceDbContext);
     public IMachineFlowRepo MachineFlowRepo => new MachineFlowRepo(_workspaceDbContext);
     public IQueueRepo QueueRepo => new QueueRepo(_workspaceDbContext);
