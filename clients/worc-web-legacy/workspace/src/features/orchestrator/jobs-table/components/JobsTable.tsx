@@ -10,7 +10,7 @@ import {
 } from "@aventisia/ui/data-table";
 import { useDataTable, useDocumentTitle } from "@aventisia/ui/hooks";
 import { Tabs, TabsList, TabsTrigger } from "@aventisia/ui/tabs";
-import { useCallback, useEffect, useState } from "react";
+import { useCallback, useEffect, useMemo, useState } from "react";
 import { useSearchParams } from "react-router-dom";
 
 import { SEARCH_COLUMN, TABLE_HEADING, TABLE_KEY } from "../constants";
@@ -74,11 +74,25 @@ export const JobsTable = () => {
   // Fetch Jobs data
   const { data } = useFetchJobsList();
 
+  const filteredColumns = useMemo(() => {
+    return jobsTableColumns.filter((col) => {
+      // Show actions only for Current & Scheduled
+      if (col.id === "actions") {
+        return tabValue !== "History";
+      }
+
+      // Show isPublished only for History
+      if (col.id === "isPublished") {
+        return tabValue === "History";
+      }
+
+      return true;
+    });
+  }, [tabValue]);
+
   // Create a React table for Jobs data
   const table = useDataTable(
-    jobsTableColumns.filter(
-      (col) => !(col.id === "actions" && tabValue === "History"), // Exclude "actions" when tab is "History"
-    ),
+    filteredColumns,
     data?.data || [],
     columnVisibility,
     sortState,

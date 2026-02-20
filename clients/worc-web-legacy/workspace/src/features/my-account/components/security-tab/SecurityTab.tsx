@@ -1,4 +1,4 @@
-import { Button } from "@aventisia/ui/buttons";
+import { SubmitButton } from "@aventisia/ui/buttons";
 import { CheckboxField, Form, InputField } from "@aventisia/ui/form";
 import type { z } from "zod";
 
@@ -69,7 +69,7 @@ export const SecurityTab = () => {
 
         <InputDivElement
           headingForInput="Log out From All Sessions"
-          isRequired={true}
+          isRequired={false}
           messageForInput="Please choose weather to log out from all your login sessions elsewhere."
         >
           <CheckboxField
@@ -80,14 +80,13 @@ export const SecurityTab = () => {
         </InputDivElement>
       </div>
       <div className="flex pt-5 md:justify-end">
-        <Button
+        <SubmitButton
           variant="default"
-          disabled={isPending}
           type="submit"
+          primaryText="Update"
           className="border-primary/50 w-full px-4 md:w-auto"
-        >
-          Update
-        </Button>
+          isPending={isPending}
+        />
       </div>
     </Form>
   );

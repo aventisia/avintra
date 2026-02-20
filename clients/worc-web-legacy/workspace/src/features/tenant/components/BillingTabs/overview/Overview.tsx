@@ -18,7 +18,7 @@ import CancelPlanDialog from "./CancelPlanDialog";
 import NextPaymentDetails from "./NextPaymentDetails";
 import { PlanFeatures } from "./PlanFeatures";
 import UpgradePlanDialog from "./upgrade-plan-dialog/UpgradePlanDialog";
-import UsageDetails from "./UsageDetails";
+import { UsageDetails } from "./UsageDetails";
 
 const Overview = () => {
   const { setOpen } = useCancelPlanDialogStore();
@@ -107,7 +107,9 @@ const Overview = () => {
                       setUpgradePlanDialogOpen(true);
                     }}
                     disabled={
-                      currentPlan.planName == "Starter" || isPaymentProcessing
+                      currentPlan.planName == "Starter" ||
+                      isPaymentProcessing ||
+                      !currentPlan.isActive
                     }
                     variant={"default"}
                     size={"icon6"}

@@ -1,7 +1,11 @@
 import { Checkbox } from "@aventisia/ui";
+import { Badge } from "@aventisia/ui/badge";
 import { DTColumnHeader } from "@aventisia/ui/data-table";
+import { cn } from "@aventisia/ui/lib";
 import { dateFormatter, getEnumValueByKey } from "@aventisia/ui/utils";
 import { ColumnDef } from "@tanstack/react-table";
+
+import { formatSecondsToCompactDuration } from "@/features/orchestrator/jobs-table/utils";
 
 import { TABLE_KEY } from "../constants";
 import { getColumnName } from "../constants/column-display-names";
@@ -81,32 +85,22 @@ export const onPremTenantsTableColumns: ColumnDef<OnPremTenantDto>[] = [
     ),
     cell: ({ row }) => (
       <div className="w-auto truncate font-medium">
-        {`${Number(row.getValue("executionTimeAllowed") ?? 0)?.toLocaleString(
-          "en-US",
-          {
-            maximumFractionDigits: 2,
-          },
-        )} Hours`}
+        {formatSecondsToCompactDuration(row.getValue("executionTimeAllowed"))}
       </div>
     ),
   },
   {
-    accessorKey: "executionTimeConsumed",
+    accessorKey: "consumedExecutionTime",
     header: ({ column }) => (
       <DTColumnHeader
         tableKey={TABLE_KEY}
         column={column}
-        title={getColumnName("executionTimeConsumed")}
+        title={getColumnName("consumedExecutionTime")}
       />
     ),
     cell: ({ row }) => (
       <div className="w-auto truncate font-medium">
-        {`${Number(row.getValue("executionTimeConsumed") ?? 0)?.toLocaleString(
-          "en-US",
-          {
-            maximumFractionDigits: 2,
-          },
-        )} Hours`}
+        {formatSecondsToCompactDuration(row.getValue("consumedExecutionTime"))}
       </div>
     ),
   },
@@ -141,19 +135,29 @@ export const onPremTenantsTableColumns: ColumnDef<OnPremTenantDto>[] = [
     ),
   },
   {
-    accessorKey: "lastAuthStatus",
+    accessorKey: "isAnyInstanceFailed",
     header: ({ column }) => (
       <DTColumnHeader
         tableKey={TABLE_KEY}
         column={column}
-        title={getColumnName("lastAuthStatus")}
+        title={getColumnName("isAnyInstanceFailed")}
       />
     ),
-    cell: ({ row }) => (
-      <div className="w-auto truncate font-medium">
-        {row.getValue("lastAuthStatus")}
-      </div>
-    ),
+    cell: ({ row }) => {
+      const isFailed = row.getValue("isAnyInstanceFailed");
+
+      return (
+        <Badge
+          className={cn(
+            isFailed == true
+              ? "bg-red-200 text-red-600"
+              : "bg-green-200 text-green-700",
+          )}
+        >
+          {isFailed == true ? "Failed" : "Success"}
+        </Badge>
+      );
+    },
   },
 
   {

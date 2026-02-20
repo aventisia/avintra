@@ -25,7 +25,7 @@ export const useCreateCodeMutationForEmailUpdate = () => {
         requestType: data.requestType,
         codeId: data.verificationCodeId,
       });
-
+      toast.success("Verification code has been sent to your email");
       // Go to next step - verify email
       setStepNo(2);
     },

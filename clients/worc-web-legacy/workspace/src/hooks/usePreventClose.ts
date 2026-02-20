@@ -42,7 +42,7 @@ export const usePreventClose = (isProcessing: boolean) => {
         event.preventDefault();
 
         window.alert(
-          "An agent execution is running. Please stop it before closing the app.",
+          "Agent execution in progress. Please stop the execution or wait for it to complete before closing the app.",
         );
       });
     };

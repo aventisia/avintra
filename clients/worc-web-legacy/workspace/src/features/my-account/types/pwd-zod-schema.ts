@@ -1,19 +1,20 @@
+import { reqError } from "@aventisia/ui/utils";
 import { z } from "zod";
 
 export const PwdZodSchema = z
   .object({
-    oldPwd: z.string({ required_error: "Please enter your current password." }),
+    oldPwd: z
+      .string({ required_error: "Please enter your current password." })
+      .min(8, { message: reqError("Old Password") }),
     newPwd: z
-      .string({ required_error: "Password must be greater than 8 charectors" })
-      .min(8)
-      .max(16),
+      .string()
+      .min(8, { message: "Password must be greater than 8 characters" })
+      .max(16, { message: "Password must be less than 16 characters" }),
     confirmNewPwd: z
-      .string({ required_error: "Password must be greater than 8 charectors" })
-      .min(8)
-      .max(16),
-    logoffFromOtherSessions: z.boolean({
-      required_error: "please select weather log out all sessions elsewhere.",
-    }),
+      .string()
+      .min(8, { message: "Password must be greater than 8 characters" })
+      .max(16, { message: "Password must be less than 16 characters" }),
+    logoffFromOtherSessions: z.boolean().default(false),
   })
   .superRefine(({ newPwd, confirmNewPwd }, ctx) => {
     if (newPwd !== confirmNewPwd) {

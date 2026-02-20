@@ -86,6 +86,22 @@ export const jobsTableColumns: ColumnDef<JobsTableDto>[] = [
       return true;
     },
   },
+  {
+    id: "isPublished",
+    accessorKey: "isPublished",
+    header: ({ column }) => (
+      <DTColumnHeader
+        tableKey={TABLE_KEY}
+        column={column}
+        title={getColumnName("isPublished")}
+      />
+    ),
+    cell: ({ row }) => (
+      <div className="w-auto truncate font-medium">
+        {row.getValue("isPublished") == true ? "Yes" : "No"}
+      </div>
+    ),
+  },
 
   {
     accessorKey: "startTime",

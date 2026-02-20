@@ -34,6 +34,7 @@ import { ExecutionLogsPage } from "./pages/orchestrator/ExecutionLogsPage";
 import { JobsPage } from "./pages/orchestrator/JobsPage";
 import { KeystorePage } from "./pages/orchestrator/KeystorePage";
 import { MachinesPage } from "./pages/orchestrator/MachinesPage";
+import { MyQueuePage } from "./pages/orchestrator/MyQueuePage";
 import { Orchestrator } from "./pages/orchestrator/Orchestrator";
 import { PublishedAgentsPage } from "./pages/orchestrator/PublishedAgentsPage";
 import { QueuesPage } from "./pages/orchestrator/QueuesPage";
@@ -78,7 +79,10 @@ const routerConfig: RouteObject[] = [
         path: "/assist/my-agents",
         element: <AgentsAssistPage />,
       },
-
+      {
+        path: "/assist/my-queue",
+        element: <MyQueuePage />,
+      },
       {
         path: "/account",
         element: <MyAccountPage />,

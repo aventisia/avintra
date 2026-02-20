@@ -1,19 +1,19 @@
 import { buttonVariants } from "@aventisia/ui/buttons";
 import { DropdownMenuItem } from "@aventisia/ui/dropdown-menu";
 import { cn } from "@aventisia/ui/lib";
-import { TrashIcon } from "@heroicons/react/24/outline";
+import { UserMinus2Icon } from "lucide-react";
 
 import { useRemoveUserMutation } from "../../../hooks/useRemoveUserMutation";
 
 interface RemoveUserActionProps {
-  agentId: string;
+  userId: string;
 }
 
 /**
  * Renders the delete action for a flow list item.
  * This component displays a dropdown menu item with a delete button.
  */
-export const RemoveUserAction = ({ agentId }: RemoveUserActionProps) => {
+export const RemoveUserAction = ({ userId }: RemoveUserActionProps) => {
   const { mutate: removeUser } = useRemoveUserMutation();
 
   // Return Delete alert dialog trigger
@@ -21,16 +21,16 @@ export const RemoveUserAction = ({ agentId }: RemoveUserActionProps) => {
     <DropdownMenuItem
       className={cn(
         buttonVariants({ variant: "dropdownCautionItem" }),
-        "group h-8",
+        "group h-7 !px-[0.3rem] text-xs",
       )}
       onClick={() => {
-        removeUser(agentId);
+        removeUser(userId);
       }}
     >
-      <TrashIcon
+      <UserMinus2Icon
         className={cn(
           "mb-[2px] text-destructive group-focus:text-white",
-          "h-4 w-4",
+          "h-3.5 w-3.5",
         )}
       />
       Remove

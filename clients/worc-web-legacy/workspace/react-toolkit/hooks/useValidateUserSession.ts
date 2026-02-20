@@ -3,7 +3,6 @@ import { useEffect } from "react";
 import { useShallow } from "zustand/react/shallow";
 
 import {
-  getMySession,
   refreshSession,
 } from "@/react-toolkit/apis/accounts-me-apis";
 import { useUserSessionStore } from "@/react-toolkit/stores/user-session-store";
@@ -25,7 +24,7 @@ export const useValidateUserSession = () => {
 
   // Validate user session
   const { mutate, isPending } = useMutation({
-    mutationFn: import.meta.env.DEV ? getMySession : refreshSession,
+    mutationFn : refreshSession,
     onSuccess: (httpResponse) => {
       // Return, If response is null
       if (!httpResponse) return;

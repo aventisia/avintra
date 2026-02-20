@@ -2,6 +2,7 @@ import { LoadingSpinner } from "@aventisia/ui";
 import { Button } from "@aventisia/ui/buttons";
 
 import { useSearchMultiSelect } from "../../hooks/useSearchMultiSelect";
+import { SelectType } from "../assign-users/SelectType";
 
 import { MultiSelector } from "./MultiSelector";
 
@@ -17,6 +18,8 @@ export const SearchAgents: React.FC = () => {
     searchData,
     isLoading,
     isError,
+    selectedValue,
+    setSelectedValue,
   } = useSearchMultiSelect();
 
   return (
@@ -34,6 +37,7 @@ export const SearchAgents: React.FC = () => {
           placeholder="Search..."
           maxHeight="300px"
         />
+        <SelectType value={selectedValue} onChange={setSelectedValue} />
       </div>
 
       {/* Actions */}

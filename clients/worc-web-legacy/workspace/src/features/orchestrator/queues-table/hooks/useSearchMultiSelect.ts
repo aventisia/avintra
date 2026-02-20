@@ -53,6 +53,7 @@ export const useSearchMultiSelect = () => {
           assignAgents({
             flowVersionId: id,
             queueId,
+            accessType: selectedValue,
           }),
         ),
       );
