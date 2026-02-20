@@ -1,0 +1,70 @@
+import { Callout, Steps } from "nextra/components";
+
+# Open CMD Session
+
+The **Open CMD Session** node allows you to initiate a new Command Prompt (CMD) session on your desktop. This is particularly useful when you need to run command-line operations within a specific directory or require a certain text encoding. You can choose from various encoding types if you decide to change the code page of the CMD session.
+
+Use this node when you need a controlled environment for executing command-line instructions with custom settings.
+
+## Configuration Options
+
+| Field Name          | Description                                                                        | Input Type | Required? | Default Value |
+| ------------------- | ---------------------------------------------------------------------------------- | ---------- | --------- | ------------- |
+| **Working Folder**  | The directory where the CMD session should start.                                  | Text       | Yes       | _(empty)_     |
+| **Change Code Page**| Specifies whether to change the code page in the CMD session.                      | Switch     | No        | false         |
+| **Encoding**        | The encoding to use if 'Change Code Page' is enabled (e.g., UTF8, ASCII).          | Select     | No        | UTF8          |
+
+## Expected Output Format
+
+The output from this node is a **CMD Session detail** containing the configuration of the opened session. This is marked as **CmdSession** for use in subsequent nodes or processes.
+
+## Step-by-Step Guide
+
+<Steps>
+### Step 1
+
+Add the **Open CMD Session** node to your process flow.
+
+### Step 2
+
+In the **Working Folder** field, enter the path of the directory where you want the CMD session to start.
+
+### Step 3
+
+If you intend to change the text encoding, toggle the **Change Code Page** switch to enable the option.
+
+### Step 4
+
+If **Change Code Page** is enabled, select the desired **Encoding** from the dropdown list. Options include **UTF8**, **UTF7**, **ASCII**, **Windows1252**, among others.
+
+### Step 5
+
+Once configured, the CMD session details will be available as **CmdSession** to be used in other connected nodes.
+
+</Steps>
+
+<Callout type="info" title="Note">
+  The **Encoding** dropdown is only visible if **Change Code Page** is turned on.
+</Callout>
+
+## Input/Output Examples
+
+| Working Folder   | Change Code Page | Encoding | Output Value (CmdSession) |
+| ---------------- | ---------------- | -------- | ------------------------- |
+| `C:\Projects`    | false            | _(n/a)_  | CmdSession                |
+| `D:\WorkFiles`   | true             | UTF8     | CmdSession                |
+| `E:\Documents`   | true             | ASCII    | CmdSession                |
+
+## Common Mistakes & Troubleshooting
+
+| Problem                                           | Solution                                                                                                                                       |
+| ------------------------------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------- |
+| **Encoding field not visible**                    | Ensure that the **Change Code Page** switch is enabled; otherwise, the **Encoding** selection will not appear.                                  |
+| **Invalid directory path in Working Folder**      | Double-check the directory path for any typos or errors. It should be an existing, accessible folder path on your desktop.                       |
+| **CMD Session not initiated**                     | Verify all mandatory fields are filled correctly and try toggling the input switch or changing the directory path to resolve execution issues.  |
+
+## Real-World Use Cases
+
+- **Automate Build Processes**: Start CMD sessions in project directories to automate software build commands.
+- **Batch File Execution**: Open CMD sessions with specific encoding to run batch files that require different text encodings.
+- **Debugging and Development**: Quickly access project directories from CMD to compile code or run scripts directly from the command line.

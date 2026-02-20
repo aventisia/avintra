@@ -1,0 +1,73 @@
+import { Callout, Steps } from "nextra/components";
+
+# Get Worksheet Names
+
+The **Get Worksheet Names** node retrieves a list of worksheet names from a specified Excel file stored in OneDrive or SharePoint. This is achieved by connecting to the Microsoft 365 Excel API. Use this node when you need to reference or manipulate data from specific worksheets within a workbook stored on your organization's Microsoft 365 account.
+
+For example:
+
+- Fetching worksheet names to ensure data is being imported from the correct sheets.
+- Automating reports by dynamically selecting worksheets based on their names.
+
+## Configuration Options
+
+| Field Name                | Description                                                                                           | Input Type         | Required? | Default Value  |
+| ------------------------- | ----------------------------------------------------------------------------------------------------- | ------------------ | --------- | -------------- |
+| **M365 Excel API Credential** | Credential for authenticating with Microsoft 365 Excel API (requires tenant ID, client ID, and client secret). | Credential Selector | Yes       | _(empty)_      |
+| **Excel File (Drive and Item ID)**    | The Drive ID and Item ID of the Excel file in OneDrive or SharePoint to retrieve worksheet names from. Format: `driveId/items/itemId`. | Text               | Yes       | _(empty)_      |
+
+## Expected Output Format
+
+The output from this node is a list of worksheet names in string text format, typically displayed as a series of entries. The output will also include the status code and message from the API call.
+
+- **Output Value**: `Result` (List of worksheet names)
+
+## Step-by-Step Guide
+
+<Steps>
+
+### Step 1
+
+Add the **Get Worksheet Names** node into your flow.
+
+### Step 2
+
+In the **M365 Excel API Credential** field, select or enter the credentials needed to authenticate your Microsoft 365 account.
+
+### Step 3
+
+In the **Excel File (Drive and Item ID)** field, enter the Drive and Item ID of the Excel file from which you want to retrieve the worksheet names. Ensure it follows the format: `driveId/items/itemId`.
+
+### Step 4
+
+Execute or run your flow to retrieve the list of worksheet names. The result will appear in the node output panel as **Worksheet Names Result**.
+
+</Steps>
+
+<Callout type="info" title="Note">
+  Make sure your credentials are up-to-date. Expired or incorrect credentials will prevent the node from authenticating with Microsoft 365 services.
+</Callout>
+
+## Input/Output Examples
+
+| Input Detail                               | Example Value                  |
+| ------------------------------------------ | ------------------------------ |
+| **Excel File (Drive and Item ID)**         | `driveRootId/items/item12345`  |
+
+| Output Name             | Example Output                                         |
+| ----------------------- | ------------------------------------------------------ |
+| **Worksheet Names Result** | `["Sheet1", "Finances", "Annual Report"]`            |
+
+## Common Mistakes & Troubleshooting
+
+| Problem                                                    | Solution                                                                                          |
+| ---------------------------------------------------------- | ------------------------------------------------------------------------------------------------- |
+| **Invalid or Expired Credentials**                         | Verify and update the M365 Excel API credentials. Ensure they are correctly configured with necessary permissions. |
+| **Incorrect Drive and Item ID Format**                     | Check to ensure the Drive and Item ID follows the correct format: `driveId/items/itemId`.         |
+| **Unable to Retrieve Worksheets**                          | Ensure that the Excel file is accessible and that you have the necessary permissions in OneDrive or SharePoint. |
+
+## Real-World Use Cases
+
+- **Data Management**: Automatically access specific worksheets for data preprocessing tasks.
+- **Business Reports**: Validate and select worksheets to automate report generation processes.
+- **Project Tracking**: Fetch worksheet names to dynamically update project timelines based on worksheet content.

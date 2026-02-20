@@ -1,0 +1,80 @@
+import { Callout, Steps } from "nextra/components";
+
+# Get XML Element Attribute
+
+The **Get XML Element Attribute** node allows users to extract the value of a specific attribute from an XML element using an XPath expression. This is useful when you need to retrieve and utilize attribute values from XML data in your automation processes, such as extracting user information from a database or processing configuration settings stored in XML format.
+
+## Configuration Options
+
+| Field Name           | Description                                                                 | Input Type | Required? | Default Value |
+| -------------------- | --------------------------------------------------------------------------- | ---------- | --------- | ------------- |
+| **XML Content**      | The XML content provided as a string.                                       | Text       | Yes       | _(empty)_     |
+| **XPath Expression** | The XPath expression used to locate the desired XML element.                | Text       | Yes       | _(empty)_     |
+| **Attribute Name**   | The name of the attribute whose value you want to retrieve.                 | Text       | Yes       | _(empty)_     |
+| **Get Value As**     | Specifies the format to return the attribute value: Text, Numeric, DateTime, or Boolean. | Select     | No        | TextValue    |
+
+## Expected Output Format
+
+The output from this node is a single attribute value from the XML, which can be formatted in different data types based on the selection made in the **Get Value As** option:
+
+- **Text Value**: Returns the attribute value as plain text (e.g., `"example"`).
+- **Numeric Value**: Converts the attribute value into a number (e.g., `42.0`).
+- **Date Time Value**: Converts into a DateTime format (e.g., `2023-11-01T00:00:00`).
+- **Boolean Value**: Converts into a Boolean value (`true` or `false`).
+
+## Step-by-Step Guide
+
+<Steps>
+### Step 1
+
+Add the **Get XML Element Attribute** node into your workflow.
+
+### Step 2
+
+In the **XML Content** field, enter the XML data as a string from which you want to extract an attribute.
+
+### Step 3
+
+In the **XPath Expression** field, specify the XPath query to locate the XML element of interest.
+
+### Step 4
+
+Fill in the **Attribute Name** field with the name of the attribute whose value you wish to retrieve.
+
+### Step 5
+
+Optional: In the **Get Value As** dropdown, choose the desired format for your attribute value. Options include Text, Numeric, DateTime, and Boolean.
+
+### Step 6
+
+The obtained value will be available as **XmlAttributeValue** for further use in other nodes.
+</Steps>
+
+<Callout type="info" title="Note">
+  Ensure that your XPath expression accurately identifies the element containing the desired attribute; incorrect XPath syntax may lead to empty results.
+</Callout>
+
+## Input/Output Examples
+
+| XML Content                            | XPath Expression | Attribute Name | Get Value As | Output Value         | Output Type        |
+| -------------------------------------- | ---------------- | -------------- | ------------ | -------------------- | ------------------ |
+| `<user id="1234" name="John Doe"/>`    | `//user`         | `name`         | TextValue    | `John Doe`           | String/Text        |
+| `<product price="19.99"/>`             | `//product`      | `price`        | NumericValue | `19.99`              | Number (Double)    |
+| `<event start="2023-11-01T08:00:00"/>` | `//event`        | `start`        | DateTimeValue| `2023-11-01T08:00:00`| DateTime           |
+| `<setting enabled="true"/>`            | `//setting`      | `enabled`      | BooleanValue | `true`               | Boolean (True/False) |
+
+## Common Mistakes & Troubleshooting
+
+| Problem                                                   | Solution                                                                                                           |
+| --------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------ |
+| **Invalid XML Content**                                   | Ensure that the XML string is well-formed and valid. Use an XML validator if necessary.                            |
+| **Incorrect XPath Expression**                            | Recheck the XPath expression for accuracy. Make sure it precisely points to the required element and considers namespaces if present. |
+| **Attribute Not Found**                                   | Verify the attribute name against the XML structure. Ensure spelling and case are correct.                         |
+| **Unexpected Conversion Results**                         | Double-check the selected format in **Get Value As**. For instance, attempting to convert non-numeric text into a NumericValue will fail. |
+
+## Real-World Use Cases
+
+- **User Management**: Extract user details, like an ID or name, from XML user profiles for processing or integration.
+- **E-commerce**: Retrieve product prices from XML product catalogs for pricing analysis or order processing.
+- **Event Scheduling**: Access dates and times for events to populate calendars or set reminders automatically.
+- **Configuration**: Read Boolean flags from XML configuration files to control application settings dynamically.

@@ -1,0 +1,66 @@
+import { Callout, Steps } from "nextra/components";
+
+# Inspect UltraTax Form
+
+The **Inspect UltraTax Form** node allows users to gather details and inspect elements within an UltraTax CS form. This function is particularly useful for audit purposes, usability checks, or when you need to verify that all elements are correct and present within a form. By setting up this node, you can capture essential information about a form element, including its name, position, and other attributes, and save these details to a JSON file for further analysis.
+
+## Configuration Options
+
+| Field Name                  | Description                                                                              | Input Type | Required? | Default Value |
+| --------------------------- | ---------------------------------------------------------------------------------------- | ---------- | --------- | ------------- |
+| **Form Element**            | The form element to inspect.                                                             | Text       | Yes       | _(empty)_     |
+| **Max Wait Time (seconds)** | Maximum time to wait to find the form element (in seconds).                              | Text       | Yes       | 5             |
+| **Number of Fields to Inspect** | Specify the number of fields to inspect.                                            | Text       | Yes       | _(empty)_     |
+| **Inspection Output File Path** | The full path where the JSON content with inspection details will be written.   | Text       | Yes       | _(empty)_     |
+
+## Expected Output Format
+
+The output of this node is a **JSON file** containing detailed information about the specified form elements. This JSON file will include attributes like element name and position.
+
+## Step-by-Step Guide
+
+<Steps>
+### Step 1
+
+Add the **Inspect UltraTax Form** node to your workflow.
+
+### Step 2
+
+In the **Form Element** field, enter the identifier for the form element you wish to inspect.
+
+### Step 3
+
+Enter the **Max Wait Time (seconds)**, specifying how long to wait while searching for the form element. The default value is 5 seconds.
+
+### Step 4
+
+In the **Number of Fields to Inspect** field, enter how many form fields you want to inspect.
+
+### Step 5
+
+Provide a valid file path in the **Inspection Output File Path** field. This path directs where the JSON file with the inspection details will be stored.
+
+### Step 6
+
+Run the node. The inspection details will be written to your specified JSON file location for review.
+
+</Steps>
+
+<Callout type="info" title="Tip">
+  Ensure the file path for **Inspection Output File Path** is correct and accessible to save the JSON inspection results.
+</Callout>
+
+## Common Mistakes & Troubleshooting
+
+| Problem                                                    | Solution                                                                                                   |
+| ---------------------------------------------------------- | ---------------------------------------------------------------------------------------------------------- |
+| **Form Element not found within specified wait time**      | Increase the **Max Wait Time (seconds)** to allow more time for the node to locate the form element.       |
+| **Invalid file path in Inspection Output File Path**       | Double-check the file path to ensure it's correct and the location is writable.                            |
+| **Number of Fields to Inspect not specified**              | Ensure you provide a number in the **Number of Fields to Inspect** field; it cannot be empty.              |
+| **Fields not inspecting correctly**                        | Confirm you're using correct identifiers for form elements and that elements are accessible in the context.|
+
+## Real-World Use Cases
+
+- **Form Compliance Audits**: Automatically verify and document form element attributes to ensure they meet compliance standards.
+- **UX Reviews**: Analyze form layout and element positions to improve user experience design.
+- **Quality Assurance**: Generate logs of form elements for testing purposes before software releases.

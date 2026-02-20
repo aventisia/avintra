@@ -1,0 +1,64 @@
+import { Callout, Steps } from "nextra/components";
+
+# Set Clipboard Text
+
+The **Set Clipboard Text** node is designed to help you copy text to your computer's clipboard automatically. This can be useful when you want to quickly transfer a piece of text for use in other applications, such as copying a URL, a snippet of information, or any text you frequently paste into documents.
+
+For example:
+
+- Copying a generated password to the clipboard for easy pasting into websites.
+- Transferring text data from one part of a process to another without manual copying.
+- Automating the process of filling forms by storing default text in the clipboard for repeated use.
+
+## Configuration Options
+
+| Field Name        | Description                                      | Input Type | Required? | Default Value |
+| ----------------- | ------------------------------------------------ | ---------- | --------- | ------------- |
+| **Clipboard Text** | The text you wish to set to the clipboard.       | Text       | No        | _(empty)_     |
+
+## Expected Output Format
+
+The node does not produce a visible output within the flow itself. Instead, its effect is seen as the text you specify is made available on your system's clipboard for pasting elsewhere.
+
+## Step-by-Step Guide
+
+<Steps>
+### Step 1
+
+Add **Set Clipboard Text** node into your flow.
+
+### Step 2
+
+In the **Clipboard Text** field, enter the text you want to be copied to the clipboard.
+
+### Step 3
+
+After completing your flow, execute it to copy the specified text into your clipboard. The text is now ready to be pasted into any application you choose.
+
+</Steps>
+
+<Callout type="info" title="Note">
+  The text entered in the **Clipboard Text** field can be updated at any time to copy a different text next time the node is executed.
+</Callout>
+
+## Input/Output Examples
+
+| Clipboard Text   | System Clipboard (Result) |
+| ---------------- | ------------------------- |
+| "Hello, World!"  | Hello, World!             |
+| `{User's Name}`  | `{User's Name}`             |
+| "www.example.com"| www.example.com           |
+
+## Common Mistakes & Troubleshooting
+
+| Problem                            | Solution                                                                  |
+| ---------------------------------- | ------------------------------------------------------------------------- |
+| **Text not appearing on clipboard**| Ensure the node is executed successfully within your flow.                |
+| **Clipboard Text field left empty**| Confirm that you have entered the desired text into the Clipboard Text field. |
+| **Old text being copied**          | If you're re-running a flow, ensure the Clipboard Text field is updated.  |
+
+## Real-World Use Cases
+
+- **Support Teams**: Store and copy frequently used responses or templates to the clipboard for quick pasting into email replies.
+- **Development**: Copy debugging information or error codes to the clipboard for logging.
+- **Personal Use**: Quickly copy URLs or notes to share between applications, such as messaging or documentation tools.

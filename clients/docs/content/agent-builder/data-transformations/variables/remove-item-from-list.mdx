@@ -1,0 +1,74 @@
+import { Callout, Steps } from "nextra/components";
+
+# Remove Item From List
+
+The **Remove Item From List** node helps you efficiently remove specific items from a list. You can remove an item either by specifying its position (index) in the list or by directly specifying its value. This is particularly useful for managing lists such as order items, task lists, or any collection of data where you need to dynamically edit and control the content.
+
+## Configuration Options
+
+| Field Name         | Description                                                      | Input Type | Required? | Default Value |
+| ------------------ | ---------------------------------------------------------------- | ---------- | --------- | ------------- |
+| **Remove Mode**    | Choose whether to remove an item by its position (index) or its value. | Select     | Yes       | _(empty)_     |
+| **Index To Remove**| Specify the zero-based position of the item to remove. _Only visible if Remove Mode is "Index"._ | Text       | No        | _(empty)_     |
+| **Value To Remove**| Specify the value of the item to remove. _Only visible if Remove Mode is "Value"._ | Text       | No        | _(empty)_     |
+| **Source List**    | Enter the list from which you want to remove the item.              | Text       | Yes       | _(empty)_     |
+
+## Expected Output Format
+
+The output of this node is the **Modified List**, which reflects the original list less the removed item(s). The data type of this output is a list/array that mirrors the format of the input list.
+
+## Step-by-Step Guide
+
+<Steps>
+### Step 1
+
+Add the **Remove Item From List** node into your flow.
+
+### Step 2
+
+Provide the **Source List**, which is the list you are working with.
+
+### Step 3
+
+In the **Remove Mode** dropdown, select your preferred method:
+
+- **Index**: To remove an item by its position in the list.
+- **Value**: To remove an item by specifying its value.
+
+### Step 4
+
+Depending on your selection in **Remove Mode**, fill in the respective field:
+
+- If **Index**, enter the position in **Index To Remove**.
+- If **Value**, enter the item in **Value To Remove**.
+
+### Step 5
+
+Once configured, the updated list without the removed item(s) will appear as **Modified List** for further operations.
+
+</Steps>
+
+<Callout type="info" title="Note">
+  The node only requires you to fill either **Index To Remove** or **Value To Remove** based on the selection in **Remove Mode**.
+</Callout>
+
+## Input/Output Examples
+
+| Remove Mode | Source List           | Index To Remove | Value To Remove | Output Value        |
+| ----------- | --------------------- | --------------- | --------------- | ------------------  |
+| Index       | `[5, 12, 19, 22]`     | 2               | _(n/a)_         | `[5, 12, 22]`       |
+| Value       | `["apple", "banana", "cherry"]` | _(n/a)_     | "banana"       | `["apple", "cherry"]` |
+
+## Common Mistakes & Troubleshooting
+
+| Problem                                  | Solution                                                                                   |
+| ---------------------------------------- | ------------------------------------------------------------------------------------------ |
+| **'Remove Mode' Not Selected**           | Ensure you have selected either **Index** or **Value** in the Remove Mode field.            |
+| **'IndexToRemove' or 'ValueToRemove' Missing** | Fill the appropriate field based on your **Remove Mode** choice.                            |
+| **Non-existent Index or Value**          | Verify the index or value exists in the provided list. Remove operation fails if not found. |
+
+## Real-World Use Cases
+
+- **Shopping Cart Management**: Quickly remove items from a shopping cart by specifying a product name or its position.
+- **To-Do List Updates**: Adjust a to-do list by removing completed tasks either by their order or description.
+- **Data Cleansing**: Manage datasets by removing unwanted entries based on specific known values or their order in the data sequence.

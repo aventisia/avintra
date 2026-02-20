@@ -1,0 +1,61 @@
+import { Callout, Steps } from "nextra/components";
+
+# Create FTP Directory
+
+The **Create FTP Directory** node lets you create a new folder or directory on an FTP server. This is useful for organizing files into specific folders, setting up directories for new projects, or ensuring files are categorized appropriately on your FTP server.
+
+For example:
+
+- Create a new directory for project-specific files.
+- Set up folders for categorizing uploads by date or type.
+- Prepare a structured directory system for easier file management.
+
+## Configuration Options
+
+| Field Name       | Description                                              | Input Type | Required? | Default Value |
+| ---------------- | -------------------------------------------------------- | ---------- | --------- | ------------- |
+| **FTP Connection** | The connection details for your FTP server.             | Text       | Yes       | _(empty)_     |
+| **Directory Name** | The name of the new directory you wish to create.       | Text       | Yes       | _(empty)_     |
+
+## Expected Output Format
+
+The output of this node does not directly provide a new value but upon successful execution, the specified directory will be created on your FTP server.
+
+## Step-by-Step Guide
+
+<Steps>
+### Step 1
+
+Add **Create FTP Directory** node into your flow.
+
+### Step 2
+
+In the **FTP Connection** field, enter the connection details for your FTP server. This typically includes information such as the server address, username, and password.
+
+### Step 3
+
+In the **Directory Name** field, enter the name you want to assign to the new directory on your FTP server.
+
+### Step 4
+
+Confirm the details and execute the node to create the directory on the FTP server.
+
+</Steps>
+
+<Callout type="info" title="Tip">
+  Ensure that your FTP connection credentials are correct and have the necessary permissions to create directories on the server.
+</Callout>
+
+## Common Mistakes & Troubleshooting
+
+| Problem                                    | Solution                                                                 |
+| ------------------------------------------ | ------------------------------------------------------------------------ |
+| **Invalid FTP credentials**                | Double-check your FTP connection details for accuracy (e.g., username, password). |
+| **Directory cannot be created**            | Check if a directory with the same name already exists or if you have permission to create directories. |
+| **Connection timeout errors**              | Make sure your server address is reachable and the network connection is stable.            |
+
+## Real-World Use Cases
+
+- **Media Organization**: Automatically create directories for organizing media files based on project or date.
+- **Automated Backups**: Set up directories to store daily, weekly, or monthly backup files automatically.
+- **Team Collaboration**: Create directories for different team projects ensuring organized and segregated file storage.

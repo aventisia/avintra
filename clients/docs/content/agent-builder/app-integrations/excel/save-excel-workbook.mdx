@@ -1,0 +1,78 @@
+import { Callout, Steps } from "nextra/components";
+
+# Save Excel Workbook
+
+The **Save Excel Workbook** node is designed to save an active Excel workbook as it is currently open or with a different path and format. This is particularly useful for users needing to automate the process of saving their Excel files routinely, ensuring data integrity and format compatibility.
+
+For example:
+
+- Save changes to an active workbook quickly without manually intervening.
+- Export a workbook to a different format for use in other applications.
+- Save a workbook with a new name or location for version control.
+
+## Configuration Options
+
+| Field Name        | Description                                                                                              | Input Type | Required? | Default Value    |
+| ----------------- | -------------------------------------------------------------------------------------------------------- | ---------- | --------- | ---------------- |
+| **Excel Application** | The Excel Application object containing the workbook to save.                                           | Text       | Yes       | _(empty)_        |
+| **Save Mode**     | Choose how you want to save the workbook: in the current format or with a new format and path.           | Select     | Yes       | SaveDocument     |
+| **Document Path** | Provide a path to save the workbook (only needed if "Save Mode" is "Save Document As").                 | Text       | No        | _(empty)_        |
+| **Document Format**| Choose a different format for saving your workbook (only needed if "Save Mode" is "Save Document As"). | Select     | No        | _(empty)_        |
+
+## Expected Output Format
+
+This node modifies an existing Excel workbook. There is no direct output value from this node, but the result is a successfully saved workbook in the specified format and location.
+
+## Step-by-Step Guide
+
+<Steps>
+### Step 1
+
+Add **Save Excel Workbook** node into your flow.
+
+### Step 2
+
+In the **Excel Application** field, specify the Excel application instance that contains the workbook you wish to save.
+
+### Step 3
+
+In the **Save Mode** dropdown menu, choose the mode of saving:
+
+- **Save Document**: Saves the workbook in its current format and location.
+- **Save Document As**: Saves the workbook to a specified path. Additional options for path and format appear.
+
+### Step 4
+
+If you selected **Save Document As**, fill in the additional fields:
+
+- **Document Path**: Specify the full file path where the workbook should be saved (e.g., `C:\Documents\Report.xlsx`).
+- **Document Format**: Choose the desired file format from the dropdown list (e.g., `CSV`, `Open XML Workbook`).
+
+</Steps>
+
+<Callout type="info" title="Important">
+  If you select "Save Document As" in the **Save Mode**, ensure you specify both the **Document Path** and **Document Format**.
+</Callout>
+
+## Input/Output Examples
+
+- **Save Document**: 
+  - No additional inputs, saves as is.
+  
+- **Save Document As**: 
+  - Input: Path: `C:\Users\example\report.csv`, Format: `CSV`
+  - Result: Workbook saved to specified path as CSV.
+
+## Common Mistakes & Troubleshooting
+
+| Problem                                             | Solution                                                            |
+| --------------------------------------------------- | ------------------------------------------------------------------- |
+| **Invalid File Path**                              | Ensure the path is correct and accessible by your application.      |
+| **Missing Document Path or Format**                | Check that both fields are populated when using "Save Document As". |
+| **Unsupported File Format**                        | Confirm the selected format is suitable for the workbook content.   |
+
+## Real-World Use Cases
+
+- **Monthly Reports**: Automate saving monthly financial reports in a secure location.
+- **Data Backups**: Ensure regular data backups by saving workbooks under timestamped filenames.
+- **Data Sharing**: Save workbooks in CSV format for sharing with team members who use different software.

@@ -1,0 +1,63 @@
+import { Callout, Steps } from "nextra/components";
+
+# Upload File to Blob Storage
+
+The **Upload File to Blob Storage** node enables you to upload a file from your local system to an Azure Blob container. This is useful for storing files in cloud storage so that they can be accessed or shared easily.
+
+For example:
+
+- Storing documents for secure, remote access.
+- Uploading backups to cloud storage for safety.
+- Sharing files across different geographical locations without manual transfers.
+
+## Configuration Options
+
+| Field Name             | Description                                                                      | Input Type | Required? | Default Value |
+| ---------------------- | -------------------------------------------------------------------------------- | ---------- | --------- | ------------- |
+| **Blob Container Client** | The BlobContainerClient instance used for the upload. This connects to Azure Blob Storage. | Text       | Yes       | _(empty)_     |
+| **File Path**          | The full path on your computer to the file you want to upload.                    | Text       | Yes       | _(empty)_     |
+
+## Expected Output Format
+
+The output of this node is the **URL of the uploaded blob** (a web address where the file can be accessed).
+
+- **Output**: Blob URL (e.g., `https://youraccount.blob.core.windows.net/container/filename`)
+
+## Step-by-Step Guide
+
+<Steps>
+### Step 1
+
+Add the **Upload File to Blob Storage** node into your flow.
+
+### Step 2
+
+In the **Blob Container Client** field, enter your blob container's client connection string or instance details. This ensures the connection to Azure Blob Storage.
+
+### Step 3
+
+In the **File Path** field, enter the full path to the file on your local system that you wish to upload.
+
+### Step 4
+
+Upon successful upload, the node will provide the file's blob URL as **BlobUrl**. This can be used for accessing the file directly from Azure.
+
+</Steps>
+
+<Callout type="info" title="Note">
+  Ensure that your credentials and connection string for the blob container are correct to avoid connection errors.
+</Callout>
+
+## Common Mistakes & Troubleshooting
+
+| Problem                                             | Solution                                                                                                                            |
+| --------------------------------------------------- | ----------------------------------------------------------------------------------------------------------------------------------- |
+| **Invalid Blob Container Client**                   | Verify your blob container connection details. The client information must be accurate and match your Azure setup requirements.      |
+| **File Path Not Found**                             | Make sure the file path entered exists on your local system and is correctly formatted. Check for typos or missing directories.     |
+| **Blob URL Not Generated**                          | If the Blob URL isn't displayed, ensure both input fields are filled correctly and the file is accessible and retry the upload.     |
+
+## Real-World Use Cases
+
+- **Remote Access to Company Documents**: Easily store files such as invoices, reports, or presentations that need to be accessed remotely by team members.
+- **Backup Storage**: Use Azure Blob Storage for file backups, ensuring files are stored securely and can be restored or accessed from anywhere.
+- **Cross-Region File Sharing**: Upload files that can be shared with different regions without the need for physical transfer or email attachments.

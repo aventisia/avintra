@@ -1,0 +1,76 @@
+import { Callout, Steps } from "nextra/components";
+
+# Move Window
+
+The **Move Window** node allows you to reposition any application window on your screen to specific coordinates specified by X and Y pixel values. Use this feature to organize your workspace by aligning windows in a way that suits your workflow, ensuring an efficient and tidy desktop environment.
+
+For example:
+
+- Reposition a chat application to the top-right corner of your monitor.
+- Align multiple windows side-by-side for easier multitasking.
+
+## Configuration Options
+
+| Field Name                        | Description                                                       | Input Type | Required? | Default Value |
+| --------------------------------- | ----------------------------------------------------------------- | ---------- | --------- | ------------- |
+| **Window**                        | Select the window you want to move.                               | Text       | Yes       | _(empty)_     |
+| **X Position**                    | Enter the new X position (in pixels) for the window.              | Text       | Yes       | _(empty)_     |
+| **Y Position**                    | Enter the new Y position (in pixels) for the window.              | Text       | Yes       | _(empty)_     |
+| **Is Window Moved Successfully**  | Indicates whether the window was moved successfully.              | Output     | No        | IsWindowMoved |
+
+## Expected Output Format
+
+The output of this node is a **boolean value** indicating the success of the operation.
+
+- If the window was moved successfully, the output will be **true**.
+- If the window movement failed, the output will be **false**.
+
+## Step-by-Step Guide
+
+<Steps>
+### Step 1
+
+Add **Move Window** node into your flow.
+
+### Step 2
+
+In the **Window** field, specify the window you want to reposition by entering its title or selecting it from a list of active windows.
+
+### Step 3
+
+In the **X Position** field, input the horizontal pixel position where you want the window to be moved.
+
+### Step 4
+
+In the **Y Position** field, input the vertical pixel position where you want the window to be moved.
+
+### Step 5
+
+Confirm the setup by checking if the **Is Window Moved Successfully** output indicates a successful action.
+</Steps>
+
+<Callout type="warning" title="Important">
+  Ensure the window name or title is correctly specified to avoid unsuccessful move operations.
+</Callout>
+
+## Input/Output Examples
+
+| Window Title       | X Position | Y Position | Is Window Moved Successfully | Output Type |
+| ------------------ | ---------- | ---------- | -----------------------------| ----------- |
+| "Chat App"         | 300        | 100        | true                         | Boolean     |
+| "Spreadsheet"      | 0          | 0          | true                         | Boolean     |
+| "Browser"          | -100       | 200        | false                        | Boolean     |
+
+## Common Mistakes & Troubleshooting
+
+| Problem                                      | Solution                                                                                 |
+| -------------------------------------------- | ---------------------------------------------------------------------------------------- |
+| **Incorrect window name entered**            | Verify and enter the exact name or title of the window you intend to move.               |
+| **Invalid X or Y positions**                 | Enter valid numerical values for the X and Y positions to ensure the window is moved correctly.    |
+| **Window not moving**                        | Double-check that the window is not minimized or closed before trying to move it.        |
+
+## Real-World Use Cases
+
+- **Organizing Workspaces**: Automatically arrange windows for a consistent workspace setup every morning.
+- **Remote Presentations**: Pre-arrange windows for screen sharing during online meetings.
+- **Accessibility Improvement**: Move windows to specific locations for users with accessibility needs.

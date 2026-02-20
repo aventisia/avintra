@@ -1,0 +1,85 @@
+import { Callout, Steps } from "nextra/components";
+
+# Display Input Dialog
+
+The **Display Input Dialog** node presents a dialog box to users, prompting them to enter text. This node is useful when you want to gather input directly from users during a flow, such as collecting a username, password or some configuration value. It supports different input types like plain text and password, making it versatile for various scenarios.
+
+## Configuration Options
+
+| Field Name                        | Description                                                                               | Input Type | Required? | Default Value |
+| --------------------------------- | ----------------------------------------------------------------------------------------- | ---------- | --------- | ------------- |
+| **Input Dialog Title**            | The title text displayed at the top of the input dialog.                                  | Text       | No        | _(empty)_     |
+| **Input Dialog Message**          | The main text content of the input dialog providing context or instructions to the user.  | Text       | No        | _(empty)_     |
+| **Default Value**                 | The default text pre-filled in the input field.                                           | Text       | No        | _(empty)_     |
+| **Input Type**                    | The type of input field: choose between Text or Password (masked input).                  | Select     | No        | _(empty)_     |
+| **Keep Input Dialog Always on Top** | Determines if the input dialog will remain on top of other windows.                        | Switch     | No        | _(empty)_     |
+
+## Expected Output Format
+
+The node outputs two key pieces of information:
+
+- **User Input**: The text entered by the user. This is a string value.
+- **Button Pressed**: Indicates which button (e.g., OK, Cancel) the user pressed to close the dialog. This is also a string value.
+
+## Step-by-Step Guide
+
+<Steps>
+### Step 1
+
+Add the **Display Input Dialog** node into your flow.
+
+### Step 2
+
+Enter the **Input Dialog Title** to be shown at the top of the dialog box for context.
+
+### Step 3
+
+Provide an **Input Dialog Message** if you want to include instructions or information for the user.
+
+### Step 4
+
+Set a **Default Value** if you want a pre-filled text in the input field.
+
+### Step 5
+
+Select the **Input Type** from the dropdown. Choose **Text** for plain text input or **Password** for a masked input field.
+
+### Step 6
+
+Switch on **Keep Input Dialog Always on Top** if you want the dialog to stay on top of all other windows.
+
+### Step 7
+
+Once configured, the node will collect user input and button-press information for further processing in your flow.
+
+</Steps>
+
+<Callout type="info" title="Note">
+  Ensure the **Input Dialog Title** and **Input Dialog Message** are clear and concise for better user understanding. Ensure input type matches the data you expect to collect.
+</Callout>
+
+## Input/Output Examples
+
+| Field Name          | Example Input       | Example Output            | Output Type |
+| ------------------- | ------------------- | ------------------------- | ----------- |
+| Input Dialog Title  | Enter Your Name     | _(n/a)_                   | _(n/a)_     |
+| Input Dialog Message| Please type below   | _(n/a)_                   | _(n/a)_     |
+| Default Value       | John Doe            | _(n/a)_                   | _(n/a)_     |
+| Input Type          | Text                | _(n/a)_                   | _(n/a)_     |
+| Keep On Top         | True                | _(n/a)_                   | _(n/a)_     |
+| User Input          | _(via user)_        | john.doe@example.com      | String      |
+| Button Pressed      | _(via user)_        | OK                        | String      |
+
+## Common Mistakes & Troubleshooting
+
+| Problem                                           | Solution                                                                                 |
+| ------------------------------------------------- | ---------------------------------------------------------------------------------------- |
+| **Dialog not appearing on top**                   | Ensure **Keep Input Dialog Always on Top** is enabled if the dialog is obscured by other windows. |
+| **Input not captured**                            | Double-check the **Input Type** and make sure it aligns with the data you are asking from the user. |
+| **Unexpected button result**                      | Ensure the dialog setup properly defines button options and captures the intended result.  |
+
+## Real-World Use Cases
+
+- **User Authentication**: Prompt users for username and password input securely.
+- **Configuration Settings**: Allow users to set configuration options interactively.
+- **Feedback Collection**: Gather text-based input for feedback or comments easily.

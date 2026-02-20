@@ -1,0 +1,105 @@
+import { Callout, Steps } from "nextra/components";
+
+# Get Email Details by ID
+
+The **Get Email Details by ID** node is designed to help you fetch emails from Outlook, using the Graph API, by specifying their unique message ID. This tool is handy for retrieving detailed information about an email, including attachments, whenever you need to process specific messages in workflows. 
+
+This can be particularly useful for:
+
+- Accessing email details for compliance or data processing.
+- Reviewing specific emails in automated workflows.
+- Gathering insights or extracting information from specific communications.
+
+## Configuration Options
+
+| Field Name         | Description                                                        | Input Type | Required? | Default Value |
+| ------------------ | ------------------------------------------------------------------ | ---------- | --------- | ------------- |
+| **Tenant ID**      | The Azure Active Directory tenant (directory) ID.                  | Text       | Yes       | _(empty)_     |
+| **Client ID**      | The Azure AD application (client) ID.                              | Text       | Yes       | _(empty)_     |
+| **Client Secret**  | The Azure AD application client secret.                            | Text       | Yes       | _(empty)_     |
+| **User Email**     | The email address of the mailbox owner.                            | Text       | Yes       | _(empty)_     |
+| **Message ID**     | The unique ID of the email message.                                | Text       | Yes       | _(empty)_     |
+| **Email Details**  | The full email message object returned as a JSON object.           | Output     | No        | EmailDetails  |
+
+## Expected Output Format
+
+The output of this node is a **JSON object** that represents the entire email message, including metadata, content, and attachments. This is structured data that can be used for further processing in your flow.
+
+## Step-by-Step Guide
+
+<Steps>
+### Step 1
+
+Add **Get Email Details by ID** node to your workflow.
+
+### Step 2
+
+Fill in the **Tenant ID**. This is your Azure Active Directory's (AAD) unique directory ID.
+
+### Step 3
+
+Enter the **Client ID** of your Azure AD application.
+
+### Step 4
+
+Input the **Client Secret** associated with your Azure AD application.
+
+### Step 5
+
+Specify the **User Email**. This should be the email address of the mailbox owner from which you want to retrieve messages.
+
+### Step 6
+
+Input the **Message ID** of the email you wish to fetch. This ID uniquely identifies the email in the mailbox.
+
+### Step 7
+
+Upon configuration, the node will output the **Email Details** in JSON format, which you can use for further action in your workflow.
+
+</Steps>
+
+<Callout type="info" title="Tip">
+  Ensure that your Azure AD configurations (Tenant ID, Client ID, and Client Secret) are correctly set up in your Azure portal for seamless integration.
+</Callout>
+
+## Input/Output Examples
+
+| Field          | Example Value                             |
+| -------------- | ----------------------------------------- |
+| Tenant ID      | `12345abc-def6-7890-ghij-123456klmnop`    |
+| Client ID      | `abc123-def456-ghi789-jkl012-mnop345`    |
+| Client Secret  | `yoursupersecretkey123`                   |
+| User Email     | `jane.doe@example.com`                    |
+| Message ID     | `AQMkAD…AAABEgAQAAA=`                    |
+
+Expected output in JSON structure:
+
+```json
+{
+  "subject": "Latest Project Updates",
+  "sender": "John Smith <john.smith@example.com>",
+  "receivedDateTime": "2023-10-01T12:34:56Z",
+  "bodyPreview": "Here is the summary of the latest project updates...",
+  "attachments": [
+    {
+      "name": "ProjectPlan.docx",
+      "size": 234567
+    }
+  ],
+  "internetMessageId": "<some-message-id@example.com>"
+}
+```
+
+## Common Mistakes & Troubleshooting
+
+| Problem                                      | Solution                                                                                   |
+| -------------------------------------------- | ------------------------------------------------------------------------------------------ |
+| **Incorrect Tenant ID or Client ID**         | Verify these details within your Azure portal to ensure they are correct.                  |
+| **Authorization Error**                      | Check if the Client Secret is correct and hasn't expired, and if the app has proper permissions.  |
+| **Email not found (wrong Message ID)**       | Double-check the Message ID. This should be a correct and existing ID in the user's mailbox.  |
+
+## Real-World Use Cases
+
+- **Automated Customer Support**: Retrieve specific customer emails automatically based on their message ID for support agents to review.
+- **Email Compliance Audits**: Automate fetching and archiving specific communications that need to be checked against compliance policies.
+- **Project Management**: Collect detailed information from emails that are key to ongoing projects or negotiations.

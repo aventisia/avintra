@@ -1,0 +1,68 @@
+import { Callout, Steps } from "nextra/components";
+
+# Download File from Blob Storage
+
+The **Download File from Blob Storage** node is used to download files from an Azure Blob container directly to a specified local path on your desktop. This can be particularly useful when you need to access or process files stored in the cloud locally for further analysis, reporting, or storage.
+
+For example:
+
+- Retrieving reports stored in Blob Storage for local review.
+- Downloading media files for local processing or playback.
+- Storing backups from cloud storage onto a local system.
+
+## Configuration Options
+
+| Field Name              | Description                                                                 | Input Type | Required? | Default Value  |
+|-------------------------|-----------------------------------------------------------------------------|------------|-----------|----------------|
+| **Blob Container Client** | The instance needed to connect and download from your Blob container.       | Text       | Yes       | _(empty)_      |
+| **Blob Name**             | The file name within the Blob container that you want to download.          | Text       | Yes       | _(empty)_      |
+| **Save Location**         | The directory path on your local system where the downloaded file will be saved. | Text       | Yes       | _(empty)_      |
+
+## Expected Output Format
+
+The output of this node is the **full local path** to the downloaded file, represented as a string.
+
+- The output will look like a path typical to your operating system format (e.g., `C:\Users\YourName\Downloads\file.txt` on Windows).
+
+## Step-by-Step Guide
+
+<Steps>
+### Step 1
+
+Add the **Download File from Blob Storage** node into your workflow.
+
+### Step 2
+
+In the **Blob Container Client** field, enter the connection details or instance required to access your Azure Blob container.
+
+### Step 3
+
+Specify the **Blob Name** which is the name of the file you wish to download from the container.
+
+### Step 4
+
+Provide the **Save Location** specifying where on your computer the downloaded file should be stored.
+
+### Step 5
+
+Upon execution, the downloaded file's path will be available as **DownloadedFilePath** for use in subsequent nodes or processes.
+
+</Steps>
+
+<Callout type="info" title="Important Note">
+Ensure that the specified Save Location has the necessary permissions configured to allow file saving, otherwise, the download will fail.
+</Callout>
+
+## Common Mistakes & Troubleshooting
+
+| Problem                                                    | Solution                                                                                                                                                  |
+|------------------------------------------------------------|-----------------------------------------------------------------------------------------------------------------------------------------------------------|
+| **Invalid Blob Container Client**                          | Verify the connection details for the BlobContainerClient to ensure they are correct and have the necessary permissions.                                    |
+| **Blob Name does not exist in the container**              | Check the exact file name within the Blob container, noting that it is case-sensitive.                                                                      |
+| **Save Location path is incorrect or inaccessible**        | Confirm that the directory path provided exists and has appropriate write permissions. Use forward slashes for directories to ensure path compatibility. |
+
+## Real-World Use Cases
+
+- **Data Retrieval for Analysis**: Download logs or datasets stored in the cloud to local systems for comprehensive analysis with standard tools.
+- **Local Processing of Multimedia**: Retrieve video or audio files stored in Blob to edit or transcode them locally.
+- **Backup Downloads**: Transferring backups or critical files from the cloud to local storage as a part of a disaster recovery strategy.

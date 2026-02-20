@@ -1,0 +1,76 @@
+import { Callout, Steps } from "nextra/components";
+
+# Close Excel Workbook
+
+The **Close Excel Workbook** node is designed to allow you to seamlessly close an open Excel workbook. This node is especially helpful when automating tasks where an Excel file is no longer needed, ensuring that resources are freed, and the Excel application can also be closed if desired.
+
+This node is useful for:
+
+- Automating the process of closing Excel files after processing data.
+- Ensuring Excel applications do not remain open unnecessarily, which can affect system performance.
+- Managing workflows by closing workbooks after data extraction or processing tasks.
+
+## Configuration Options
+
+| Field Name                   | Description                                                                           | Input Type | Required? | Default Value |
+| ---------------------------- | ------------------------------------------------------------------------------------- | ---------- | --------- | ------------- |
+| **Workbook Instance**        | The Excel Workbook instance to be closed.                                             | Text       | Yes       | _(empty)_     |
+| **Excel Application Instance** | The Excel Application instance to optionally quit after closing the workbook.        | Text       | No        | _(empty)_     |
+| **Save Before Closing**      | Whether to save the workbook before closing.                                          | Switch     | No        | true          |
+| **Quit Excel Application**   | Whether to quit the Excel Application after closing the workbook.                     | Switch     | No        | true          |
+
+## Expected Output Format
+
+The output of this node is a confirmation that the Excel workbook has been successfully closed. There is no additional data type output from this action.
+
+## Step-by-Step Guide
+
+<Steps>
+### Step 1
+
+Add the **Close Excel Workbook** node into your workflow.
+
+### Step 2
+
+In the **Workbook Instance** field, enter the identifier of the Excel workbook you wish to close.
+
+### Step 3
+
+(Optional) If you want to specify the Excel application instance to quit, fill in the **Excel Application Instance** field.
+
+### Step 4
+
+Decide if you want to save changes to the workbook before closing it by setting the **Save Before Closing** switch.
+
+- **Enabled (true)**: Saves the workbook before closing.
+- **Disabled (false)**: Closes without saving.
+
+### Step 5
+
+Use the **Quit Excel Application** switch to determine if the Excel application should close after the workbook is closed.
+
+- **Enabled (true)**: Quits Excel application post closing.
+- **Disabled (false)**: Leaves the Excel application open.
+
+### Step 6
+
+Confirm that the configurations are set properly, and execute the node to close the workbook.
+</Steps>
+
+<Callout type="info" title="Tip">
+  Specify the Excel application only if you wish to close the application as well, otherwise, it is optional.
+</Callout>
+
+## Common Mistakes & Troubleshooting
+
+| Problem                                                           | Solution                                                                                                             |
+| ----------------------------------------------------------------- | -------------------------------------------------------------------------------------------------------------------- |
+| **Workbook doesn't close**                                        | Ensure the correct **Workbook Instance** is provided and the instance still exists in your automation context.       |
+| **Changes not saved**                                             | Double-check if the **Save Before Closing** option is enabled if you intend to preserve changes before closing.      |
+| **Excel remains open**                                            | Verify if the **Quit Excel Application** switch is enabled if the Excel Application instance isn't quitting as expected. |
+
+## Real-World Use Cases
+
+- **Data Processing Automation**: Close workbooks after generating reports or data processing to ensure resources are efficiently managed.
+- **Invoicing Systems**: After updating records in Excel, automate closing the workbook to transition quickly to the next task.
+- **System Resource Management**: Ensure unused Excel applications do not consume system resources by automatically closing them when not needed.

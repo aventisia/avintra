@@ -1,0 +1,72 @@
+import { Callout, Steps } from "nextra/components";
+
+# Decrypt Text with AES
+
+The **Decrypt Text with AES** node is used to convert encrypted text back into its original readable form. This node utilizes the AES algorithm, a widely trusted encryption method, to decrypt text that has been encoded in Base64 format. It is especially useful for scenarios where you need to securely revert encrypted data to its unobfuscated version for analysis, display, or further processing.
+
+For example:
+
+- Decrypting sensitive messages that were previously encrypted for secure transmission.
+- Reverting encrypted configuration settings to their original form for application use.
+
+## Configuration Options
+
+| Field Name              | Description                                                                                                                                         | Input Type | Required? | Default Value |
+| ----------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------- | ---------- | --------- | ------------- |
+| **Ciphertext to Decrypt** | The Base64-encoded encrypted text you want to decrypt.                                                                                              | Text       | Yes       | _(empty)_     |
+| **Decryption Key**      | The key used for the decryption process. If the key is shorter than needed, it will be automatically hashed to reach an adequate length (16/24/32 bytes). | Text       | Yes       | _(empty)_     |
+| **Initialization Vector (IV)** | A critical component for decryption; must be exactly 16 characters long. It aligns the decryption starting point for security.                       | Text       | Yes       | _(empty)_     |
+
+## Expected Output Format
+
+The output of this node is a **plain text string**. This will be the original text before it was encrypted:
+
+- The decryption process will yield the original human-readable text initially secured by encryption.
+
+## Step-by-Step Guide
+
+<Steps>
+### Step 1
+
+Add **Decrypt Text with AES** node into your flow.
+
+### Step 2
+
+In the **Ciphertext to Decrypt** field, enter the Base64-encoded string that you wish to convert back into plain text.
+
+### Step 3
+
+In the **Decryption Key** field, provide the key used for encryption. If your key is short, it will be automatically hashed to the correct length for decryption.
+
+### Step 4
+
+Enter the **Initialization Vector (IV)** make sure it is exactly 16 characters long to ensure successful decryption.
+
+### Step 5
+
+The decrypted text will be available as **DecryptedText** for you to utilize in subsequent nodes or output.
+</Steps>
+
+<Callout type="important" title="Important Note">
+  Always ensure your decryption key and initialization vector (IV) are kept secure, as they are crucial for accessing the encrypted data.
+</Callout>
+
+## Input/Output Examples
+
+| Ciphertext to Decrypt     | Decryption Key  | Initialization Vector | Output (Decrypted Text) | Output Type   |
+| ------------------------- | --------------- | --------------------- | ----------------------- | ------------- |
+| `U2FsdGVkX1+IjW0jv21QKg==` | MySecretKey1234 | 1234567890123456      | Hello World             | String (Text) |
+
+## Common Mistakes & Troubleshooting
+
+| Problem                                           | Solution                                                                                                                                               |
+| ------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------ |
+| **Error due to incorrect key length**             | Ensure that your decryption key is provided correctly. If it's too short, it will be automatically hashed, but this means re-checking the expected output. |
+| **Initialization Vector (IV) not 16 characters**  | Verify that the IV entered is exactly 16 characters; adjust it to meet this requirement.                                                                 |
+| **Unreadable output**                             | Verify the correctness of all encryption parameters: the ciphertext, decryption key, and IV must all match the original encryption settings.              |
+
+## Real-World Use Cases
+
+- **Secure Communications**: Decrypt messages received from secure channels to access the content.
+- **Data Recovery**: Recover data exported from encrypted databases for business analytics.
+- **Application Configuration**: Decrypt settings files that were securely stored to ensure integrity and confidentiality.

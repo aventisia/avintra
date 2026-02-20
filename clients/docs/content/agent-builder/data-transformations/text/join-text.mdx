@@ -1,0 +1,85 @@
+import { Callout, Steps } from "nextra/components";
+
+# Join Text
+
+The **Join Text** node allows you to combine a list of text items into a single text string, using a specific delimiter to separate each item. This node is particularly helpful when you need to consolidate data lists into a formatted single line, such as preparing a CSV line or a user-comprehensible string.
+
+For example:
+
+- Combining separate words into a sentence.
+- Creating a comma-separated list from multiple inputs for export.
+- Formatting data to fit a specific input requirement in other applications.
+
+## Configuration Options
+
+| Field Name         | Description                                                                 | Input Type | Required? | Default Value |
+| ------------------ | --------------------------------------------------------------------------- | ---------- | --------- | ------------- |
+| **Text List**      | The list of strings to join.                                                | Text       | Yes       | _(empty)_     |
+| **Delimiter Type** | Specifies how to separate the items in the list: choose either Standard or Custom. | Select     | Yes       | _(empty)_     |
+| **Standard Delimiter**  | The standard delimiter (like Comma, Semicolon, Pipe). Appears only if Delimiter Type is "Standard". | Select     | No        | _(empty)_     |
+| **Custom Delimiter**    | The custom delimiter to use. Appears only if Delimiter Type is "Custom".        | Text       | No        | _(empty)_     |
+
+## Expected Output Format
+
+The output of this node is a **single text string**, where list items are joined using the specified delimiter.
+
+- Example output: `apple, banana, orange` or `apple|banana|orange`
+
+## Step-by-Step Guide
+
+<Steps>
+### Step 1
+
+Add **Join Text** node into your flow.
+
+### Step 2
+
+In the **Text List** field, enter the list of texts you want to join. Each item should be separated by a line break or entered as an item within a list interface.
+
+### Step 3
+
+In the **Delimiter Type** dropdown, choose the type of delimiter you want to use:
+
+- **Standard**: Select from predefined delimiters.
+- **Custom**: Enter your own delimiter.
+
+### Step 4
+
+If you chose **Standard** in the previous step, the **Standard Delimiter** dropdown will appear:
+
+- Choose from options like **None**, **Comma**, **Semicolon**, or **Pipe**.
+
+If you chose **Custom**, the **Custom Delimiter** field will appear:
+- Enter the character(s) you wish to use as a delimiter.
+
+### Step 5
+
+The combined text will be available as **Joined Text** for use in other nodes.
+
+</Steps>
+
+<Callout type="info" title="Note">
+  Ensure the **Text List** is correctly prepared by separating items you wish to join, as incorrect input may lead to undesired outputs.
+</Callout>
+
+## Input/Output Examples
+
+| Delimiter Type | Text List            | Delimiter        | Output Value              | Output Type     |
+| -------------- | -------------------- | ---------------- | ------------------------- | --------------- |
+| Standard       | apple, banana, orange | Comma            | apple, banana, orange     | Text (String)   |
+| Standard       | apple;banana;orange  | Semicolon        | apple;banana;orange       | Text (String)   |
+| Custom         | apple banana orange  | "_"              | apple_banana_orange       | Text (String)   |
+
+## Common Mistakes & Troubleshooting
+
+| Problem                                        | Solution                                                                                                                                         |
+| ---------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------ |
+| **Delimiter not applied correctly**            | Ensure you have chosen the correct **Delimiter Type** and specified a valid delimiter under **Standard Delimiter** or **Custom Delimiter**.      |
+| **Empty output**                               | Double-check that the **Text List** is not empty and contains valid items.                                                                       |
+| **No change in delimiter when switching types**  | If switching from Standard to Custom or vice versa, make sure to clear and specify the correct delimiter again.                                     |
+
+## Real-World Use Cases
+
+- **Report Generation**: Combining column values into a single CSV line for import/export operations.
+- **Profile Management**: Creating a formatted list of tags or hobbies for users.
+- **Messaging Systems**: Constructing a readable sentence from user responses or selected options for notifications.

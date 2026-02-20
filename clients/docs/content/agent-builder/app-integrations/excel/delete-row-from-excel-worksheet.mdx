@@ -1,0 +1,61 @@
+import { Callout, Steps } from "nextra/components";
+
+# Delete Row from Excel Worksheet
+
+The **Delete Row from Excel Worksheet** node allows you to remove a specific row from a given worksheet within an Excel workbook. This functionality is particularly useful when you need to clean up data, remove empty rows, or exclude certain entries from further processing or analysis in your spreadsheet. 
+
+Use this node when you want to programmatically control the data within your Excel files by excluding unwanted rows before any further operations.
+
+## Configuration Options
+
+| Field Name            | Description                                                | Input Type | Required? | Default Value |
+| --------------------- | ---------------------------------------------------------- | ---------- | --------- | ------------- |
+| **Worksheet Instance**| The Excel Worksheet object where the row will be deleted.  | Text       | Yes       | _(empty)_     |
+| **Row Index**         | The index (1-based) of the row to delete.                  | Text       | Yes       | _(empty)_     |
+
+## Expected Output Format
+
+The node itself does not produce an output value. It performs an action directly on the provided Excel worksheet object, modifying its content by deleting the specified row.
+
+## Step-by-Step Guide
+
+<Steps>
+### Step 1
+
+Initiate the **Delete Row from Excel Worksheet** node in your flow.
+
+### Step 2
+
+In the **Worksheet Instance** field, enter the reference or name of the Excel Worksheet from which you want to delete a row.
+
+### Step 3
+
+In the **Row Index** field, specify the 1-based index number of the row you want to remove. For example, enter `3` if you want to delete the third row.
+
+### Step 4
+
+Execute the flow to apply the deletion of the specified row from your worksheet.
+</Steps>
+
+<Callout type="info" title="Note">
+  Ensure that the **Row Index** provided is within the existing range of rows in the worksheet. Invalid indexes (e.g., a number greater than the total number of rows) will result in an error.
+</Callout>
+
+## Input/Output Examples
+
+- **Example 1**: To delete the second row from the worksheet named "SalesData", set **Worksheet Instance** to "SalesData" and **Row Index** to `2`. No direct output is returned but the row is removed.
+- **Example 2**: Removing the first row from a worksheet that erroneously includes header titles as regular data rows.
+
+## Common Mistakes & Troubleshooting
+
+| Problem                                     | Solution                                                                         |
+| ------------------------------------------- | --------------------------------------------------------------------------------- |
+| **Row not deleted**                         | Ensure the **Row Index** is a valid number and exists within the worksheet range. |
+| **Incorrect worksheet**                     | Double-check the **Worksheet Instance** input to ensure it's referencing the correct sheet. |
+| **Node fails with a range error**           | The **Row Index** might be set to a number greater than the total number of rows. |
+
+## Real-World Use Cases
+
+- **Data Cleaning**: Quickly remove redundant or empty rows from data sheets.
+- **Automating Updates**: Exclude outdated or irrelevant data entries by deleting specific rows.
+- **Pre-analysis Preparation**: Refine datasets before statistical analysis or reporting by removing unnecessary entries from your Excel worksheets.

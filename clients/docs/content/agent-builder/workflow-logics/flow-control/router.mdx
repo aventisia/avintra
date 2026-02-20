@@ -1,0 +1,147 @@
+# Router Node & Branch Conditions
+
+## Overview
+
+The **Router Node** is a powerful control element in the Agent Builder that allows your automation to **branch dynamically** based on conditions you define.  
+Think of it as a decision-making node that evaluates data and **routes the workflow accordingly**.
+
+Use this node when you want to guide the execution path based on **data-driven logic**, such as customer type, ticket priority, or process step.
+
+---
+
+## How the Router Works
+
+The Router evaluates one or more **branch conditions** and decides which part(s) of the workflow to execute next.  
+Each **branch** contains logic that is executed **only when its condition(s) evaluate to true**.
+
+You configure this logic via:
+- **Conditional Mode**
+- **Branch Conditions** (values, operators, and logic groups)
+
+---
+
+## Conditional Modes
+
+### 1. **Execute Only the First Matching Branch** (Default)
+
+- Evaluates conditions top-down.
+- Stops at the **first matching branch** and executes only that branch.
+- Ignores any subsequent branches, even if their conditions also match.
+- Ideal for **mutually exclusive** or **prioritized logic**.
+
+**Example**  
+Check for “Gold,” “Silver,” and “Bronze” customers.  
+If a customer qualifies for both Gold and Silver, only the Gold branch executes.
+
+---
+
+### 2. **Execute All Matching Branches**
+
+- Evaluates all branches.
+- Executes **every branch** where conditions are true.
+- Ideal when **multiple criteria** may apply and **parallel actions** are needed.
+
+**Example**  
+A support ticket is marked both “Urgent” and “Requires Manager Review” both branches run.
+
+---
+
+## Branch Conditions
+
+Each branch has a **set of conditions** that determine whether it should execute.
+
+### Components of a Condition
+
+- **First Value**: The variable or field to evaluate.
+- **Operator**: The rule or comparison method.
+- **Second Value**: Optional value to compare against.
+
+---
+
+### Logical Grouping of Conditions
+
+- **+ AND Group**: All conditions in this group must be true.
+- **+ OR Group**: At least one condition group must be true.
+
+---
+
+## Full List of Supported Operators
+
+### Basic Comparisons
+
+| Operator                | Description                         |
+|-------------------------|-------------------------------------|
+| Is Equal To             | Checks if values are equal          |
+| Exactly Matches         | Case-sensitive match                |
+| Does Not Exactly Match  | Case-sensitive mismatch             |
+| Is Greater Than         | First > Second                      |
+| Is Less Than            | First < Second                      |
+
+### Boolean Checks
+
+| Operator    | Description           |
+|-------------|-----------------------|
+| Is True     | Checks if value is true |
+| Is False    | Checks if value is false |
+
+### Text & String Logic
+
+| Operator                     | Description                             |
+|------------------------------|-----------------------------------------|
+| Contains (Text)              | Substring match                         |
+| Does Not Contain (Text)      | Excludes substring                      |
+| Starts With / Ends With      | Matches start/end of string             |
+| Does Not Start/End With      | Inverse checks                          |
+
+### Existence Checks
+
+| Operator         | Description                        |
+|------------------|------------------------------------|
+| Exists           | Checks if field exists             |
+| Does Not Exist   | Field is undefined or null         |
+| Is Empty         | Field/list is empty                |
+| Is Not Empty     | Field/list contains data           |
+
+### List-Based Operators
+
+| Operator                  | Description                        |
+|---------------------------|------------------------------------|
+| Contains (List)           | List includes specific item        |
+| Does Not Contain (List)   | List excludes specific item        |
+
+### Date & Time Operators
+
+| Operator           | Description                        |
+|--------------------|------------------------------------|
+| After              | Value is after given date/time     |
+| Before             | Value is before given date/time    |
+| Equals (DateTime)  | Exact match of date/time           |
+
+---
+
+## Example Use Cases
+
+| Use Case                              | Conditions Used                                           |
+|---------------------------------------|------------------------------------------------------------|
+| Route Premium Customers               | `CustomerType Is Equal To Premium` and `Balance > 10000`  |
+| Segregate Overdue Payments by Days    | `DueDate Before Today - 30 Days` (30, 60, 90 logic)        |
+| Filter Tickets with Specific Tags     | `AssignedTags Contains (List) urgent`                     |
+| Ensure Email Field is Provided        | `CustomerEmail Is Not Empty`                              |
+
+---
+
+## Best Practices
+
+- Order your branches carefully when using **“Execute First Match”**.
+- Keep conditions clear and non-overlapping where possible.
+- Use **“Execute All”** only when downstream logic supports **parallel execution**.
+- Group complex conditions using **AND**/**OR** blocks to match business logic cleanly.
+- Test each branch independently before going live.
+
+---
+
+## Pro Tip
+
+Use a **test payload** with different variable sets to ensure the Router behaves as expected across all condition branches.
+
+---

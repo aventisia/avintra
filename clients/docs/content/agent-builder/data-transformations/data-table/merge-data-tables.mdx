@@ -1,0 +1,77 @@
+import { Callout, Steps } from "nextra/components";
+
+# Merge Data Tables
+
+The **Merge Data Tables** node allows you to effortlessly combine two data tables into a single table. This is particularly useful for consolidating data from different sources and ensuring consistency across datasets. Whether your tables have matching or differing columns, this node provides options to address these differences smoothly.
+
+## Configuration Options
+
+| Field Name          | Description                                                                                     | Input Type | Required? | Default Value    |
+| ------------------- | ----------------------------------------------------------------------------------------------- | ---------- | --------- | ---------------- |
+| **First Data Table**| The primary data table to be merged.                                                            | Text       | Yes       | _(empty)_        |
+| **Second Data Table**| The secondary data table to be merged.                                                         | Text       | Yes       | _(empty)_        |
+| **Merge Mode**      | Choose how to handle columns in the second table that do not exist in the first table.          | Select     | Yes       | AddExtraColumns  |
+| **Merged Data Table**| The resulting combined data table.                                                             | Output     | No        | MergedDataTable  |
+
+## Expected Output Format
+
+The output of this node is a **merged data table** which contains entries from both the first and second data tables. The output form depends on the selected merge mode:
+
+- When using **Add Extra Columns**, all unique columns from both tables are included.
+- With **Ignore Extra Columns**, only columns that exist in the first table are retained.
+- Choosing **Error On Extra Columns** will stop the process and produce an error if there are column mismatches.
+
+## Step-by-Step Guide
+
+<Steps>
+### Step 1
+
+Add the **Merge Data Tables** node to your workflow.
+
+### Step 2
+
+In the **First Data Table** field, enter the name or identifier of the first table you wish to merge.
+
+### Step 3
+
+In the **Second Data Table** field, enter the name or identifier of the second table you wish to merge.
+
+### Step 4
+
+From the **Merge Mode** dropdown, select one of the following options:
+
+- **Add Extra Columns**: To include columns from the second table that are not in the first.
+- **Ignore Extra Columns**: To exclude such columns.
+- **Error On Extra Columns**: To trigger an error if extra, unmatched columns exist.
+
+### Step 5
+
+The merged data will be available in the **Merged Data Table** for subsequent operations in your process.
+
+</Steps>
+
+<Callout type="info" title="Tip">
+  If you're unsure about the structure of your data tables, start with **Add Extra Columns** to understand the full breadth of available data points.
+</Callout>
+
+## Input/Output Examples
+
+| First Data Table    | Second Data Table   | Merge Mode           | Output                      |
+| ------------------- | ------------------- | -------------------- | --------------------------- |
+| table1              | table2              | Add Extra Columns    | All columns from both tables|
+| table1              | table2              | Ignore Extra Columns | Only columns from table1    |
+| table1              | table2              | Error On Extra Columns | Error: Column Mismatch    |
+
+## Common Mistakes & Troubleshooting
+
+| Problem                                     | Solution                                                                 |
+| ------------------------------------------- | ------------------------------------------------------------------------ |
+| **Error on merge due to column mismatch**   | Switch to **Add Extra Columns** or correct column differences manually.  |
+| **Unexpected columns in the merged table**  | Review your **Merge Mode** selection; consider using **Ignore Extra Columns**. |
+| **Empty or incorrect data tables**          | Ensure table names/identifiers are correctly specified in the input fields. |
+
+## Real-World Use Cases
+
+- **Sales Data Compilation**: Combine regional sales data to get a comprehensive view across entire business units.
+- **Customer Information Consolidation**: Merge customer profiles from different departments for a unified customer view.
+- **Inventory Management**: Integrate supplier and warehouse stock data to streamline inventory tracking and forecasting.

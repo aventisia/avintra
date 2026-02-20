@@ -1,0 +1,76 @@
+import { Callout, Steps } from "nextra/components";
+
+# If File Exists
+
+The **If File Exists** node is used to check whether a file is present or absent in a specified location on your system. This node is essential in workflows where actions depend on file availability, allowing you to develop conditional processing paths based on the existence or absence of files.
+
+For example:
+
+- Verifying if a specific configuration file is available before executing subsequent steps.
+- Skipping or altering processing steps if a log file is already present.
+- Checking for the absence of a file to trigger a download process.
+
+## Configuration Options
+
+| Field Name    | Description                                                            | Input Type | Required? | Default Value |
+| ------------- | ---------------------------------------------------------------------- | ---------- | --------- | ------------- |
+| **Condition** | Determines whether to check for file presence ("Exists") or absence.   | Select     | Yes       | Exists        |
+| **File Path** | The complete path of the file you want to verify the existence of.     | Text       | Yes       | _(empty)_     |
+
+## Expected Output Format
+
+The output of this node, labeled as **Result**, is a **Boolean value**:
+
+- `True`: If the file meets the specified condition (exists or does not exist as per the selected option).
+- `False`: If the file does not meet the specified condition.
+
+## Step-by-Step Guide
+
+<Steps>
+### Step 1
+
+Add the **If File Exists** node into your flow.
+
+### Step 2
+
+In the **Condition** dropdown menu, select one of the options:
+
+- **Exists**: Choose this if you want to check that the file is present.
+- **Doesn't Exist**: Choose this if you want to check that the file is absent.
+
+### Step 3
+
+In the **File Path** field, enter the full path to the file you want to check.
+
+### Step 4
+
+Use the **Result** value in your workflow to conditionally determine the next steps based on the file's presence or absence.
+
+</Steps>
+
+<Callout type="warning" title="Important Note">
+  Make sure the file path is correct and accessible from your system to ensure accurate results.
+</Callout>
+
+## Input/Output Examples
+
+| Condition     | File Path                | Result Output | Output Type |
+| ------------- | ------------------------ | ------------- | ----------- |
+| Exists        | C:\files\config.txt      | True          | Boolean     |
+| Doesn't Exist | C:\files\log.txt         | False         | Boolean     |
+| Exists        | C:\files\missing.txt     | False         | Boolean     |
+| Doesn't Exist | C:\files\found.txt       | True          | Boolean     |
+
+## Common Mistakes & Troubleshooting
+
+| Problem                                               | Solution                                                                                                                                     |
+| ----------------------------------------------------- | -------------------------------------------------------------------------------------------------------------------------------------------- |
+| **Incorrect File Path**                               | Double-check the file path for typos and ensure it is entered correctly.                                                                     |
+| **File Access Permissions**                           | Ensure you have proper permissions to access the file system path specified.                                                                 |
+| **Unexpected Result**                                 | Verify that the correct condition is selected for the file existence check (either "Exists" or "Doesn't Exist").                             |
+
+## Real-World Use Cases
+
+- **Configuration Checks**: Ensure that necessary configuration files are in place before starting application processes.
+- **Log File Skips**: Skip steps that generate logs if the log file already exists, preventing duplication.
+- **Download Triggers**: Start resource downloads only if they are missing from the designated file directory.

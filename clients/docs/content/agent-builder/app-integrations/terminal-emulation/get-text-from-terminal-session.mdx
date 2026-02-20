@@ -1,0 +1,63 @@
+import { Callout, Steps } from "nextra/components";
+
+# Get Text from Terminal Session
+
+The **Get Text from Terminal Session** node enables you to extract text output from an active terminal session using a specific session ID. This node is particularly useful for capturing dynamic output from command-line tools or scripts that are running in a desktop environment, giving you the ability to retrieve and work with this data in your automation workflows.
+
+For example, you can:
+
+- Capture the output of a command executed in a terminal for logging or auditing.
+- Extract data from real-time terminal interactions for further processing.
+- Retrieve terminal session information to integrate with different applications.
+
+## Configuration Options
+
+| Field Name  | Description                                   | Input Type | Required? | Default Value |
+| ----------- | --------------------------------------------- | ---------- | --------- | ------------- |
+| **SessionId** | The session ID of the terminal session where you want to retrieve text. | Text       | Yes       | _(empty)_    |
+
+## Expected Output Format
+
+The output from this node is a **textual string**. It contains whatever text has been captured from the specified terminal session at the time of the query.
+
+## Step-by-Step Guide
+
+<Steps>
+
+### Step 1
+
+Add the **Get Text from Terminal Session** node into your flow.
+
+### Step 2
+
+In the **SessionId** field, enter the unique ID of the terminal session you wish to access.
+
+### Step 3
+
+Once the session ID is correctly entered, the node will retrieve and output the session text as **Result**, which you can use in subsequent nodes or for direct analysis.
+
+</Steps>
+
+<Callout type="info" title="Note">
+  Ensure that the session ID corresponds to an active terminal session from which you are allowed to retrieve text.
+</Callout>
+
+## Input/Output Examples
+
+| SessionId    | Output (Result)                                                      | Output Type |
+| ------------ | -------------------------------------------------------------------- | ----------- |
+| `session123` | "Login successful. System update in progress..."                    | Text        |
+
+## Common Mistakes & Troubleshooting
+
+| Problem                                           | Solution                                                                                     |
+| ------------------------------------------------- | -------------------------------------------------------------------------------------------- |
+| **Invalid SessionId**                             | Double-check that the session ID is correct and refers to an existing, active terminal session. |
+| **Empty Output**                                  | Ensure that the terminal session is active and producing text output at the time of retrieval. |
+| **Access Denied**                                 | Confirm that you have the necessary permissions to access the session output.                  |
+
+## Real-World Use Cases
+
+- **Monitoring and Alerts**: Extract output from a terminal to monitor for specific events or errors and trigger alerts based on the text patterns found.
+- **Logging**: Capture command-line output for audit trails or to maintain historical records.
+- **Dynamic Data Collection**: Use terminal output as a data source for analysis or decision-making processes in real-time applications.

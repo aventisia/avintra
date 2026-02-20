@@ -1,0 +1,72 @@
+import { Callout, Steps } from "nextra/components";
+
+# Validate DateTime Format
+
+The **Validate DateTime Format** node allows you to check if a given date and time string matches a specified format pattern. This node is useful when you need to ensure that date and time inputs conform to a particular format before further processing, which helps prevent errors in applications that require consistent data formats.
+
+For example:
+
+- Verifying user input to ensure it matches a required date-time structure.
+- Validating data consistency in data import/export processes.
+- Confirming that dates fit a specific pattern for reporting or logging.
+
+## Configuration Options
+
+| Field Name        | Description                                                                               | Input Type | Required? | Default Value |
+| ----------------- | ----------------------------------------------------------------------------------------- | ---------- | --------- | ------------- |
+| **DateTime String**   | The date and time string to validate.                                                     | Text       | Yes       | _(empty)_     |
+| **Expected Format**   | The expected format pattern to validate against (e.g., yyyy-MM-dd HH:mm:ss).             | Text       | Yes       | _(empty)_     |
+
+## Expected Output Format
+
+The output of this node is a **Boolean value**:
+
+- `true` if the input string matches the expected date-time format.
+- `false` if the input string does not match the expected format.
+
+## Step-by-Step Guide
+
+<Steps>
+### Step 1
+
+Add the **Validate DateTime Format** node to your workflow.
+
+### Step 2
+
+In the **DateTime String** field, enter the date and time string you want to validate.
+
+### Step 3
+
+In the **Expected Format** field, provide the pattern that the input should match (e.g., `yyyy-MM-dd HH:mm:ss`).
+
+### Step 4
+
+The result of the format validation will be available as **Is Format Valid** for further use in your automation workflow.
+</Steps>
+
+<Callout type="info" title="Note">
+  Ensure the date and time string adheres precisely to the pattern specified in the **Expected Format** field to avoid false negatives.
+</Callout>
+
+## Input/Output Examples
+
+| DateTime String          | Expected Format       | Output Value | Output Type |
+| ------------------------ | --------------------- | ------------ | ----------- |
+| 2023-10-15 14:30:00      | yyyy-MM-dd HH:mm:ss   | true         | Boolean     |
+| 2023/10/15 2:30 PM       | yyyy-MM-dd HH:mm:ss   | false        | Boolean     |
+| 10-15-2023 14:30:00      | dd-MM-yyyy HH:mm:ss   | true         | Boolean     |
+| October 15, 2023 14:30   | MMMM dd, yyyy HH:mm   | true         | Boolean     |
+
+## Common Mistakes & Troubleshooting
+
+| Problem                                                          | Solution                                                                                                                                       |
+| ---------------------------------------------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------- |
+| **Mismatched date format**                                       | Double-check if the Input DateTime string matches the specified Expected Format pattern.                                                      |
+| **Unexpected false output**                                      | Ensure there are no extra spaces or incorrect separators in the DateTime String that might prevent matching.                                  |
+| **Unsupported format symbols**                                   | Make sure the Expected Format uses valid datetime pattern symbols. Reference documentation or examples if in doubt.                           |
+
+## Real-World Use Cases
+
+- **User Input Validation**: Ensuring user-entered dates comply with a UI's format requirements (e.g., registration forms).
+- **Log File Processing**: Validating timestamps during log file analysis to maintain consistency.
+- **Data Integration**: Confirming imported date and time data adheres to system-specific formats before importing.

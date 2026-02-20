@@ -1,0 +1,66 @@
+import { Callout, Steps } from "nextra/components";
+
+# Focus Window
+
+The **Focus Window** node is designed to bring a specific window on your desktop to the foreground, making it the active window. This is particularly useful when automating tasks that require interaction with different applications or documents sequentially. For example, if you're running a sequence where different applications need data entries or confirmations, the "Focus Window" node ensures the correct window is active before proceeding.
+
+## Configuration Options
+
+| Field Name                         | Description                                         | Input Type | Required? | Default Value |
+| ---------------------------------- | --------------------------------------------------- | ---------- | --------- | ------------- |
+| **Window**                         | Select the window you want to focus.                | Text       | Yes       | _(empty)_     |
+| **Is Window Focused Successfully** | Indicates whether the window was focused successfully. | Output     | No        | IsWindowFocused |
+
+## Expected Output Format
+
+The output of this node is a confirmation status represented by a **boolean value**:
+
+- `true`: The window was successfully focused.
+- `false`: The window could not be focused.
+
+## Step-by-Step Guide
+
+<Steps>
+### Step 1
+
+Add **Focus Window** node into your flow.
+
+### Step 2
+
+In the **Window** field, specify the name or identifier of the window you wish to focus. This is typically the window title or a unique identifier that your system recognizes.
+
+### Step 3
+
+Execute your automation flow. The node will attempt to bring the specified window to the front.
+
+### Step 4
+
+Check the **Is Window Focused Successfully** output. A return value of `true` means the window is now active.
+
+</Steps>
+
+<Callout type="info" title="Note">
+  If the specified window does not exist or is not found, the operation will return `false`. Ensure the window name is accurate and that the application is running.
+</Callout>
+
+## Input/Output Examples
+
+| Window Name            | Is Window Focused Successfully | Output Type |
+| ---------------------- | ----------------------------- | ----------- |
+| "MyDocument - Word"    | true                          | Boolean     |
+| "Calculator"           | true                          | Boolean     |
+| "NonExistentWindow"    | false                         | Boolean     |
+
+## Common Mistakes & Troubleshooting
+
+| Problem                                                  | Solution                                                                                                                                                   |
+| -------------------------------------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| **Window not found**                                     | Ensure the window is open and the name specified is correct and visible in your system's task switcher or taskbar.                                         |
+| **Window not focused despite input being correct**       | Verify that there's no system restriction preventing window focus, such as settings that prevent applications from being focused without direct user input. |
+| **Automated actions not working post focus**             | Verify that the window was focused correctly (check the output status) and ensure your automation task allows for interactive focus changes.               |
+
+## Real-World Use Cases
+
+- **Data Entry Automation**: Focus a specific form window in sequence as part of a larger data processing task to ensure data is entered in the correct field.
+- **Multi-App Workflow**: Cycle through multiple applications in automation cycles to collate data or perform operations simultaneously.
+- **Support Desk Operations**: Quickly bring customer information or ticketing software to the front during call sequences or support sessions.

@@ -1,0 +1,85 @@
+import { Callout, Steps } from "nextra/components";
+
+# Display Select From List Dialog
+
+The **Display Select From List Dialog** node displays a pop-up dialog box that enables users to select one or more options from a provided list. This feature is useful in cases where you want users to choose from pre-defined options in a single, organized interface. It can guide user choices and streamline workflows by allowing selections such as dates, categories, or other listed values.
+
+## Configuration Options
+
+| Field Name                             | Description                                                                                  | Input Type | Required? | Default Value |
+| -------------------------------------- | -------------------------------------------------------------------------------------------- | ---------- | --------- | ------------- |
+| **Dialog Title**                       | The title text displayed at the top of the dialog window.                                    | Text       | No        | _(empty)_     |
+| **Dialog Message**                     | The message or prompt shown inside the dialog to guide the user.                             | Text       | No        | _(empty)_     |
+| **List to Choose From**                | A list of items from which the user can select one or more options.                          | Text       | No        | _(empty)_     |
+| **Keep Select Dialog Always On Top**   | If true, keeps the dialog window always on top of other windows.                             | Switch     | No        | _(empty)_     |
+| **Limit to List**                      | If true, limits user input to only the items in the provided list.                           | Switch     | No        | _(empty)_     |
+| **Allow Empty Selection**              | If true, allows the user to make no selection (optional choice).                             | Switch     | No        | _(empty)_     |
+| **Allow Multiple Selection**           | If true, allows the user to select multiple items from the list.                             | Switch     | No        | _(empty)_     |
+| **Preselect Items Starting With '+'**  | If true, preselects all items in the list that start with a '+' character.                   | Switch     | No        | _(empty)_     |
+
+## Expected Output Format
+
+The output of this node can include selected items, indices, and the action confirmation.
+
+- **Selected Item(s)**: Returns a single or multiple string of selected item(s), concatenated by commas if multiple.
+- **Selected Index(es)**: Returns the position(s) of the chosen item(s) as index number(s).
+- **Button Pressed**: Returns `true` if the OK button is pressed, `false` if Cancel or the dialog is closed without selection.
+
+## Step-by-Step Guide
+
+<Steps>
+### Step 1
+
+Add **Display Select From List Dialog** node into your flow.
+
+### Step 2
+
+In the **Dialog Title** field, enter an appropriate title for the dialog. This helps users understand the context of the choices.
+
+### Step 3
+
+Use the **Dialog Message** field to provide specific instructions or context to guide the users.
+
+### Step 4
+
+In the **List to Choose From** field, input the list of items from which you want users to select. Separate items with commas if needed.
+
+### Step 5
+
+Configure additional settings by toggling switches:
+- **Keep Select Dialog Always On Top**: Ensures the dialog remains visible over other windows.
+- **Limit to List**: Limits selection strictly to given items.
+- **Allow Empty Selection**: Permits no selection if this option is critical.
+- **Allow Multiple Selection**: Enables choosing more than one item if necessary.
+- **Preselect Items Starting With '+'**: Automatically selects items starting with a '+'.
+
+### Step 6
+
+Use the outputs such as **SelectedItem(s)**, **Selected Index(es)**, and **Button Pressed** for further processing in subsequent nodes.
+
+</Steps>
+
+<Callout type="info" title="Tip">
+Ensure your **List to Choose From** reflects all possible options to prevent user confusion.
+</Callout>
+
+## Input/Output Examples
+
+| Dialog Setup Example   | User Selection | Selected Item(s) Output | Selected Index(es) Output | Button Pressed Output |
+| ---------------------- | -------------- | ----------------------- | ------------------------ | --------------------- |
+| List: "Apple, Banana"  | Apple          | "Apple"                 | 0                       | true                  |
+| List: "A, B, C" + Multi | A, B          | "A, B"                  | 0, 1                    | true                  |
+
+## Common Mistakes & Troubleshooting
+
+| Problem                                      | Solution                                                                 |
+| -------------------------------------------- | ------------------------------------------------------------------------ |
+| **Dialog does not appear on top**            | Check the **Keep Select Dialog Always On Top** option is enabled.       |
+| **Can't select multiple items**              | Make sure **Allow Multiple Selection** is activated.                    |
+| **Items starting with '+' not preselected**  | Verify the **Preselect Items Starting With '+'** switch is turned on.   |
+
+## Real-World Use Cases
+
+- **Survey Tools**: Allow users to select multiple preferences or answers from a set list.
+- **Task Lists**: Help project managers choose team members for assignments quickly by selecting from a pre-loaded list.
+- **Reports Generation**: Enable selecting specific data points or columns to include in custom business reports.

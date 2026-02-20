@@ -1,0 +1,56 @@
+import { Callout, Steps } from "nextra/components";
+
+# Call Agent
+
+The **Call Agent** node enables the current workflow to invoke another agent (an automation sequence or process), allowing you to modularize tasks and reuse existing workflows easily. Use this node when you want to leverage an existing process without duplicating it, thus streamlining your automation flow.
+
+## Configuration Options
+
+Currently, this node does not have any configurable fields, making it simple to use as it directly connects and calls the specified agent without any extra settings.
+
+## Expected Output Format
+
+The **Call Agent** node does not produce a direct output; instead, it triggers the execution of another agent within your automation.
+
+## Step-by-Step Guide
+
+<Steps>
+### Step 1
+
+Add the **Call Agent** node into your flow where you need to invoke another agent.
+
+### Step 2
+
+Ensure the agent you wish to call exists and is correctly set up within your platform.
+
+### Step 3
+
+Connect this node to appropriate preceding and following nodes in your flow to ensure seamless execution.
+
+### Step 4
+
+Save and test your automation to verify that the correct agent is being called as expected.
+
+</Steps>
+
+<Callout type="info" title="Important Note">
+  Before deploying, ensure that the called agent is fully functional and has been tested separately to prevent issues in the main workflow.
+</Callout>
+
+## Input/Output Examples
+
+Because the **Call Agent** node serves to invoke another agent, it serves as an action step rather than providing direct input/output transformations. Think of it as a connector to another module.
+
+## Common Mistakes & Troubleshooting
+
+| Problem                                              | Solution                                                                                                      |
+| ---------------------------------------------------- | ------------------------------------------------------------------------------------------------------------- |
+| **Agent not being called**                           | Double-check that the desired agent is active and properly configured.                                        |
+| **Flow disruption**                                  | Ensure all nodes in the sequence are correctly linked and that there are no missing nodes in your automation. |
+| **Testing issues**                                   | Use the "Test" feature on separate agents first to confirm they work independently before integration.        |
+
+## Real-World Use Cases
+
+- **Customer Service Automation**: Call a specialized agent for handling specific parts of customer queries or processes.
+- **Sales Processes**: Seamlessly transfer data and invoke different sales process workflows without manual duplication.
+- **Data Processing Chains**: Streamline complex data operations by breaking them into smaller, reusable chunks tied together with the Call Agent node.

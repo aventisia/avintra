@@ -1,0 +1,76 @@
+import { Callout, Steps } from "nextra/components";
+
+# Search Emails
+
+The **Search Emails** node enables you to find specific emails in an inbox by using a filter query. This is particularly useful when you want to automate the process of locating emails based on specific criteria, such as those with a certain subject or from a particular sender. Automating email searches can save time and ensure important emails are not missed.
+
+## Configuration Options
+
+| Field Name       | Description                                                                 | Input Type | Required? | Default Value |
+| ---------------- | --------------------------------------------------------------------------- | ---------- | --------- | ------------- |
+| **Filter Query** | OData filter query, e.g., `subject eq 'Test'` for searching based on subject.| Text       | Yes       | _(empty)_     |
+| **User Email**   | The email address of the mailbox owner.                                      | Text       | Yes       | _(empty)_     |
+| **Tenant ID**    | The Azure AD Tenant ID (Directory ID).                                       | Text       | Yes       | _(empty)_     |
+| **Client ID**    | The Azure AD Application (Client) ID.                                         | Text       | Yes       | _(empty)_     |
+| **Client Secret**| The Azure AD Application Client Secret.                                        | Text       | Yes       | _(empty)_     |
+
+## Expected Output Format
+
+The output of this node is **Emails JSON**, which consists of email messages in JSON format after they have been retrieved based on the specified filter query.
+
+## Step-by-Step Guide
+
+<Steps>
+### Step 1
+
+Add **Search Emails** node to your flow.
+
+### Step 2
+
+In the **Filter Query** field, input the OData filter query to define the criteria for email searching, such as `from eq 'example@example.com'` or `subject eq 'Project Update'`.
+
+### Step 3
+
+Under **User Email**, enter the email address of the mailbox you want to search.
+
+### Step 4
+
+Fill in the **Tenant ID**, which is the Azure AD Tenant (Directory) ID.
+
+### Step 5
+
+Enter the **Client ID**, which is the Azure AD Application (Client) ID.
+
+### Step 6
+
+Provide the **Client Secret** associated with your Azure AD Application.
+
+### Step 7
+
+Upon completing these inputs, the node will process and output the searched emails as **Emails JSON**.
+
+</Steps>
+
+<Callout type="info" title="Security Tip">
+  Ensure your Azure AD credentials, especially **Client Secret**, are stored securely and not exposed or shared unnecessarily.
+</Callout>
+
+## Input/Output Examples
+
+| Filter Query            | User Email          | Example Output                                  |
+| ----------------------- | ------------------- | ----------------------------------------------- |
+| `subject eq 'Welcome'`  | john.doe@example.com| Emails containing subject "Welcome" in JSON format |
+
+## Common Mistakes & Troubleshooting
+
+| Problem                                                 | Solution                                                                                              |
+| ------------------------------------------------------- | ----------------------------------------------------------------------------------------------------- |
+| **Invalid Filter Query Format**                         | Make sure your filter query is in a valid OData format, e.g., `subject eq 'Important'`.             |
+| **Incorrect Email Address**                             | Double-check the email address provided under **User Email** to ensure it's valid.                    |
+| **Azure AD Credentials Error**                          | Verify the **Tenant ID**, **Client ID**, and **Client Secret**. These must be correct for authentication. |
+
+## Real-World Use Cases
+
+- **Sales Monitoring**: Automatically search and retrieve emails related to a specific sales promotion.
+- **Customer Support**: Quickly locate emails from key clients to streamline customer service responses.
+- **Project Management**: Gather all project-related communications by filtering on specific project tags or subjects.

@@ -1,0 +1,69 @@
+import { Callout, Steps } from "nextra/components";
+
+# Remove AWS ELB Listener Certificate
+
+The **Remove AWS ELB Listener Certificate** node allows you to remove a specific SSL/TLS certificate from a listener on an AWS Elastic Load Balancer (either ALB or NLB). This is useful if a certificate is no longer needed or has been updated, and you wish to clear it from the listener configuration to maintain security or operational consistency.
+
+## Configuration Options
+
+| Field Name                | Description                                                                           | Input Type | Required? | Default Value |
+| ------------------------- | ------------------------------------------------------------------------------------- | ---------- | --------- | ------------- |
+| **Credential to connect with** | Select the AWS credential to use for authentication (AWSServiceVaultId).                | Text       | Yes       | _(empty)_     |
+| **Listener ARN**          | The ARN of the listener (e.g., arn:aws:elasticloadbalancing:...:listener/...).       | Text       | Yes       | _(empty)_     |
+| **Certificate ARN**       | The ARN of the ACM certificate to remove from the listener.                           | Text       | Yes       | _(empty)_     |
+| **AWS Region**            | The AWS region where the load balancer is located (e.g., us-east-1). Default: us-east-1. | Text       | No        | us-east-1     |
+
+## Expected Output Format
+
+This node outputs a **JSON response** that includes:
+
+- **Response**: The raw JSON response from AWS ELB.
+- **Success**: Boolean indicating if the operation was successful.
+
+## Step-by-Step Guide
+
+<Steps>
+### Step 1
+
+Add the **Remove AWS ELB Listener Certificate** node into your flow.
+
+### Step 2
+
+In the **Credential to connect with** field, enter or select the AWS credential you will use for authentication.
+
+### Step 3
+
+Fill in the **Listener ARN** with the Amazon Resource Name of the listener from which you want to remove the certificate.
+
+### Step 4
+
+Provide the **Certificate ARN** for the certificate you wish to remove from the listener.
+
+### Step 5
+
+(Optional) Specify the **AWS Region**. If left blank, it defaults to `us-east-1`.
+
+### Step 6
+
+Review the settings, then execute the node to start the certificate removal process.
+
+</Steps>
+
+<Callout type="info" title="Note">
+  Ensure that the Listener ARN and Certificate ARN values are correctly copied from your AWS Management Console to prevent errors.
+</Callout>
+
+## Common Mistakes & Troubleshooting
+
+| Problem                                      | Solution                                                                                          |
+| -------------------------------------------- | ------------------------------------------------------------------------------------------------- |
+| **Invalid ARNs entered**                     | Double-check the ARN values. They must be correctly formatted and copied directly from AWS.       |
+| **Authentication failure**                   | Verify that the AWS credential is valid and has permissions to access ELB resources.              |
+| **Region mismatch**                          | Ensure the specified AWS region matches that of the load balancer.                                |
+| **No certificate found**                     | Confirm that the certificate is currently associated with the listener before trying to remove it. |
+
+## Real-World Use Cases
+
+- **Certificate Rollout**: During a certificate update process, quickly remove deprecated certificates from listeners to enforce the use of new certificates.
+- **Security Compliance**: Remove unused or invalid certificates to maintain compliance with security policies and regulations.
+- **Operational Maintenance**: Streamline and clean operational workflows by removing redundant SSL/TLS attachments from load balancers.

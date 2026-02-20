@@ -1,0 +1,53 @@
+import { Callout, Steps } from "nextra/components";
+
+# Close Connection
+
+The **Close Connection** node is designed to safely terminate an open FTP connection that you have previously established. This step is crucial in managing connections efficiently and ensuring that resources are not left unnecessarily connected, which can lead to resource wastage or errors. You would typically use this node after completing all FTP operations that require an open connection.
+
+## Configuration Options
+
+| Field Name        | Description                                    | Input Type | Required? | Default Value |
+| ----------------- | ---------------------------------------------- | ---------- | --------- | ------------- |
+| **Ftp Connection** | The FTP connection object to be closed.      | Text       | Yes       | _(empty)_     |
+
+## Expected Output Format
+
+The **Close Connection** node does not produce an output value itself. Instead, its successful execution results in the termination of the specified FTP connection.
+
+## Step-by-Step Guide
+
+<Steps>
+### Step 1
+
+Add the **Close Connection** node into your automation flow where you need to terminate an FTP connection.
+
+### Step 2
+
+In the **Ftp Connection** field, specify the FTP connection object you wish to close. Typically, this is the same object returned by an "Open Connection" node or similar setup node.
+
+### Step 3
+
+Ensure that all operations requiring an open FTP connection have been completed before closing the connection.
+
+### Step 4
+
+Confirm execution of the flow to close the FTP connection properly.
+</Steps>
+
+<Callout type="info" title="Note">
+  Always close FTP connections to prevent potential issues with resource limits or connection quotas imposed by your FTP server.
+</Callout>
+
+## Common Mistakes & Troubleshooting
+
+| Problem                                        | Solution                                                                                                                                 |
+| ---------------------------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------- |
+| **Connection not closing**                     | Verify that the correct FTP connection object is specified in the **Ftp Connection** field.                                               |
+| **Error: Connection already closed**           | Ensure that the connection has not already been terminated or is not being closed multiple times within the same flow.                    |
+| **Resource errors on FTP server**              | Confirm that all other expected operations with the connection are completed before attempting to use the **Close Connection** node.     |
+
+## Real-World Use Cases
+
+- **Scheduled File Transfers**: After transferring files to/from your server, use this node to close the connection immediately afterwards to free up server resources.
+- **Batch Processing**: In automated workflows that open connections for batch file operations, remember to close the connection to maintain server performance.
+- **Security Compliance**: Organizations requiring strict control over network resources can close unused connections promptly to enhance security measures.

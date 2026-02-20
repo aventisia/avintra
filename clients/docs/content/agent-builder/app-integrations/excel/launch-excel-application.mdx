@@ -1,0 +1,89 @@
+import { Callout, Steps } from "nextra/components";
+
+# Launch Excel Application
+
+The **Launch Excel Application** node allows you to open an existing Excel document or create a new one directly from your flow. This can be useful for starting Excel processing automatically as part of your task or automation. You can specify whether to open Excel visibly or in the background and apply additional options like opening a document as read-only or using specific protection passwords.
+
+## Configuration Options
+
+| Field Name               | Description                                                                                      | Input Type | Required? | Default Value   |
+| ------------------------ | ------------------------------------------------------------------------------------------------ | ---------- | --------- | --------------- |
+| **Launch Mode**          | Specify whether to open an existing Excel document or create a new workbook.                     | Select     | No        | OpenExisting    |
+| **Document Path**        | The path to the Excel document to open. Required if **Launch Mode** is **Open Existing**.         | Text       | No        | _(empty)_       |
+| **Make Instance Visible**| If true, the Excel application will be visible.                                                  | Switch     | No        | true            |
+| **Open as ReadOnly**     | If true, opens the document in read-only mode. Applicable if **Launch Mode** is **Open Existing**.| Switch     | No        | _(empty)_       |
+| **Nest Under New Process**| If true, launches Excel in a new process.                                                       | Switch     | No        | _(empty)_       |
+| **Use Machine Locale**   | If true, utilizes the machine's locale settings for Excel operations.                            | Switch     | No        | _(empty)_       |
+| **Read Protection Password** | Optional password to protect the document from modification. Applicable if **Launch Mode** is **Open Existing**.| Password    | No        | _(empty)_       |
+| **Write Protection Password**| Optional password to prevent the document from being saved. Applicable if **Launch Mode** is **Open Existing**.| Password   | No        | _(empty)_       |
+
+## Expected Output Format
+
+The node outputs two items:
+
+- **ExcelInstance**: This represents the Excel application object and can be used with other Excel related nodes.
+- **WorkbookInstance**: This represents the active or newly created Workbook object for further operations.
+
+## Step-by-Step Guide
+
+<Steps>
+### Step 1
+
+Add the **Launch Excel Application** node into your flow.
+
+### Step 2
+
+In the **Launch Mode** dropdown, choose whether to open an existing Excel document or create a new one:
+
+- **Open Existing**: Will allow you to specify a document path.
+- **New Workbook**: Starts a new, blank workbook.
+
+### Step 3
+
+If you selected **Open Existing** for Launch Mode, fill in the **Document Path** field with the path to your Excel file.
+
+### Step 4
+
+Decide if you want the Excel application to be visible by toggling the **Make Instance Visible** switch.
+
+### Step 5
+
+(Optional) If opening an existing document, you can choose to:
+
+- Enable **Open as ReadOnly** to prevent edits.
+- Set **Read Protection Password** and/or **Write Protection Password** for additional security.
+
+### Step 6
+
+If needed, enable options like **Nest Under New Process** or **Use Machine Locale** as required for your specific use-case.
+
+### Step 7
+
+Once configured, the node will output **ExcelInstance** and **WorkbookInstance** for further flow use.
+
+</Steps>
+
+<Callout type="info" title="Tip">
+  You don't need to fill out all fields. Depending on your chosen **Launch Mode**, some fields are automatically irrelevant and won't need your input.
+</Callout>
+
+## Input/Output Examples
+
+| Launch Mode     | Document Path | Make Instance Visible | Open as ReadOnly | Output Values                  |
+| --------------- | ------------- | --------------------- | ---------------- | ------------------------------ |
+| Open Existing   | C:\Files\report.xlsx | true                | false           | ExcelInstance, WorkbookInstance|
+| New Workbook    | _(n/a)_       | false                 | _(n/a)_          | ExcelInstance, WorkbookInstance|
+
+## Common Mistakes & Troubleshooting
+
+| Problem                                      | Solution                                                                                                 |
+| -------------------------------------------- | -------------------------------------------------------------------------------------------------------- |
+| **Excel won't launch visibly**               | Check if **Make Instance Visible** is set to true.                                                       |
+| **Error when opening a document**            | Verify that the **Document Path** is correct and that the file exists.                                   |
+| **Incorrect password errors**                | Confirm that the **Read/Write Protection Passwords** are entered correctly when required.                |
+
+## Real-World Use Cases
+
+- **Automating Monthly Reports**: Launch existing Excel files automatically for updating with new data.
+- **Batch Processing**: Open and modify multiple Excel files as part of a larger automation process.
+- **New Document Creation**: Kickstart new workbooks for capturing data entries during a workflow.

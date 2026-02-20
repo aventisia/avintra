@@ -1,0 +1,80 @@
+import { Callout, Steps } from "nextra/components";
+
+# Retrieve Emails from Outlook
+
+The **Retrieve Emails from Outlook** node allows you to automatically gather email messages from a specific Outlook folder on your desktop. You can choose to filter the emails by unread status or by certain keywords in the subject. This is invaluable for organizing your emails or processing them for reporting or follow-up tasks.
+
+For example:
+
+- Gathering emails from the "Inbox" for customer support issues.
+- Filtering unread emails to prioritize responses.
+- Collecting emails with specific subject lines for marketing campaigns.
+
+## Configuration Options
+
+| Field Name         | Description                                                                                 | Input Type  | Required? | Default Value |
+| ------------------ | ------------------------------------------------------------------------------------------- | ----------- | --------- | ------------- |
+| **Outlook Application** | This is the link to the Outlook application that will be used to fetch the emails.          | Text        | Yes       | _(empty)_     |
+| **Folder Name**    | The name of the Outlook folder from which you want to retrieve emails (e.g., 'Inbox').       | Text        | Yes       | Inbox         |
+| **Filter Subject** | Optional field to retrieve emails containing specific text in the subject line.              | Text        | No        | _(empty)_     |
+| **Only Unread**    | Toggle this option to true if you want to retrieve only unread emails.                       | Switch      | No        | False         |
+
+## Expected Output Format
+
+The output of this node is a **list of email messages**, formatted as MailItem objects. This list could include various fields like sender, subject, and body, depending on your configuration.
+
+- Each email is structured as an object with defined properties of standard email fields.
+
+## Step-by-Step Guide
+
+<Steps>
+### Step 1
+
+Add **Retrieve Emails from Outlook** node into your flow.
+
+### Step 2
+
+In the **Outlook Application** field, specify the Outlook application object that will be used to access emails.
+
+### Step 3
+
+Enter the **Folder Name** from which you wish to retrieve emails. Common options include "Inbox", "Sent", etc.
+
+### Step 4
+
+(Optional) Enter a specific keyword in the **Filter Subject** field if you only want emails containing this text in their subject.
+
+### Step 5
+
+(Optional) Use the **Only Unread** toggle if you want to filter out read emails and only retrieve unread ones.
+
+### Step 6
+
+The retrieved emails will be available as **EmailMessages** for use in subsequent nodes.
+
+</Steps>
+
+<Callout type="info" title="Tip">
+  Use specific folder names and subject filters to narrow down the email retrieval list effectively.
+</Callout>
+
+## Input/Output Examples
+
+| Folder Name | Filter Subject | Only Unread | Output Value | Output Type      |
+| ----------- | -------------- | ----------- | ------------ | ---------------- |
+| Inbox       | Meeting        | True        | EmailMessages| List of MailItems|
+| Sent        | _None_         | False       | EmailMessages| List of MailItems|
+
+## Common Mistakes & Troubleshooting
+
+| Problem                                       | Solution                                                                                                                                          |
+| --------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------- |
+| **Incorrect Folder Name**                     | Ensure that the folder name is correct and exists in your Outlook account. "Inbox", "Sent", etc., are commonly used names.                         |
+| **No Emails Retrieved**                       | Check that the folder contains emails, and adjust any strict filters like unread status or subject keywords.                                       |
+| **Format or Access Issues**                   | Verify that the Outlook Application is correctly specified and accessible from your desktop environment.                                           |
+
+## Real-World Use Cases
+
+- **Customer Support**: Retrieve all unread emails from the Support inbox to list and address new customer issues.
+- **Project Management**: Filter and fetch emails that relate to specific projects by keyword in their subjects.
+- **Marketing and Sales**: Gather emails sent from a marketing folder to analyze subject line effectiveness or customer engagement.

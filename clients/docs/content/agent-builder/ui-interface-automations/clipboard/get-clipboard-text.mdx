@@ -1,0 +1,71 @@
+import { Callout, Steps } from "nextra/components";
+
+# Get Clipboard Text
+
+The **Get Clipboard Text** node allows you to access and retrieve the text content currently stored in your system's clipboard. This is useful when you want to automate tasks that involve using copied text from one application to another without manually pasting the clipboard content each time.
+
+For example:
+
+- Extracting text copied from a document or web page for further processing.
+- Using clipboard content in different parts of your automated workflow.
+- Automatically accessing shared information across applications.
+
+## Configuration Options
+
+| Field Name                | Description                                   | Input Type          | Required? | Default Value          |
+| ------------------------- | --------------------------------------------- | ------------------- | --------- | ---------------------- |
+| **Clipboard Text Output** | The text retrieved from the clipboard.        | Config Panel Output | No        | ClipboardTextOutput    |
+
+## Expected Output Format
+
+The output of this node is a **string of text** (plain text format).
+
+- The text will be retrieved as a single string from the clipboard.
+- If the clipboard is empty or contains non-text data, the output will be empty or invalid text.
+
+## Step-by-Step Guide
+
+<Steps>
+### Step 1
+
+Add the **Get Clipboard Text** node into your flow.
+
+### Step 2
+
+Ensure the content you want to retrieve is currently copied to your system clipboard.
+
+### Step 3
+
+The text copied will automatically be set as **Clipboard Text Output** and can be used in subsequent nodes or actions in the flow.
+
+### Step 4
+
+Connect other nodes that need to use the clipboard text in their processes.
+
+</Steps>
+
+<Callout type="info" title="Tip">
+  Always verify the clipboard has the expected text content before initiating this node in your flow to ensure the text retrieved is accurate.
+</Callout>
+
+## Input/Output Examples
+
+| Example Scenario          | Clipboard Content | Output Value        | Output Type  |
+| ------------------------- | ----------------- | ------------------- | ------------ |
+| Copy from a document      | "Hello, World!"   | "Hello, World!"     | String (Text) |
+| Empty clipboard           | _(empty)_         | _(empty string)_    | String (Text) |
+| Non-text clipboard data   | Image copied      | _(empty string)_    | String (Text) |
+
+## Common Mistakes & Troubleshooting
+
+| Problem                                      | Solution                                                                                         |
+| -------------------------------------------- | ------------------------------------------------------------------------------------------------ |
+| **Clipboard is empty**                       | Ensure you've copied the desired text to the clipboard before activating the node.                |
+| **Output is not text**                       | Verify the clipboard contains text data, not images or other non-text content.                    |
+| **Unexpected text output**                   | Double-check the clipboard contents before running the node to ensure it holds the correct text.  |
+
+## Real-World Use Cases
+
+- **Automated Reporting**: Automatically collate text snippets copied from web reports into a single document.
+- **Data Transfer**: Quickly transfer clipboard text to another application in automated workflows.
+- **Content Management**: Access clipped text content as input for automated content generation or processing tasks.

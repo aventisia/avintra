@@ -1,0 +1,84 @@
+# Triggers
+
+Triggers allow you to execute jobs automatically based on predefined rules. From the **Triggers** page in Orchestrator, you can:
+
+- Create new triggers
+- Manage existing triggers
+- Manually start jobs based on existing processes
+
+---
+
+## Trigger Types
+
+### Based on Scope:
+
+- **Time Triggers**: Start automations at scheduled intervals.  
+  _[Learn more](#)_
+
+- **Queue Triggers**: Start automations when new items are added to queues.  
+  _[Learn more](#)_
+
+### Based on Where They Are Created:
+
+- **Outside the Workflow**:
+
+  - Created by folder admins in Orchestrator
+  - Includes both time and queue triggers
+
+- **Inside the Workflow**:
+  - Created at design-time by RPA developers using trigger activities
+  - Only **one trigger activity** is allowed per workflow
+
+> Triggers added in Studio are the only ones validated by Orchestrator as **package requirements**.  
+> These must be included during **process creation**, from the **Package Requirements** page.
+
+---
+
+## Non-Working Days
+
+Non-working days allow you to prevent triggers from executing on specific dates (e.g., public holidays, weekends).
+
+- Multiple **non-working day calendars** can be created per tenant
+- Each calendar can have its own list of dates
+- A **BankHoliday** calendar is available by default
+- Once non-business days pass, triggers resume as usual
+
+To apply restrictions:
+
+1. Go to the **Non-Working Days** tab under **Settings**
+2. Select a calendar in the **Non-working day restrictions** drop-down when creating/editing a trigger
+
+> Only **one calendar** can be selected per trigger  
+> Editing a calendar affects all associated triggers  
+> Adding/removing non-working days is **audited** at the tenant level
+
+---
+
+## Job Count Strategies
+
+The `Triggers.JobsCountStrategy` parameter controls how many jobs a trigger will launch. You can choose from:
+
+### 1. `PerProcess`
+
+- Takes into account pending jobs for the same process
+- Example:
+  - Trigger A: configured to launch 3 jobs
+  - Trigger B: configured to launch 5 jobs
+  - If A launches 3 jobs first, B will only launch **2** more jobs (total 5)
+
+### 2. `PerTrigger`
+
+- Each trigger is independent and tracks its own job count
+- Example:
+  - A trigger set to launch 9 jobs
+  - If 2 jobs have already completed, next run will launch **2** more (to make up the difference)
+
+### 3. `NoLimit`
+
+- Ignores all existing/pending jobs
+- Always launches the full number of jobs as configured
+- Example:
+  - Trigger is set to launch 5 jobs
+  - Every time it runs, it launches **5 new jobs**
+
+---

@@ -1,0 +1,68 @@
+import { Callout, Steps } from "nextra/components";
+
+# Merge PDF Files
+
+The **Merge PDF Files** node helps you combine several PDF documents into one single file. This is useful when you need to compile multiple reports, documents, or any PDF resources into a single document for easier sharing or storage.
+
+For example:
+
+- Gathering multiple contract documents into a single file.
+- Combining individual project reports into one comprehensive report.
+- Merging various presentation slides that are saved as PDFs into one continuous document.
+
+## Configuration Options
+
+| Field Name      | Description                                       | Input Type | Required? | Default Value |
+| --------------- | ------------------------------------------------- | ---------- | --------- | ------------- |
+| **PDF File Paths**  | The full paths to all PDF files you want to merge.  | Text       | Yes       | _(empty)_     |
+| **Output PDF Path** | The path where you want the new merged PDF to be saved. | Text       | Yes       | _(empty)_     |
+
+## Expected Output Format
+
+The output of this node is a **single PDF file** saved at the specified location in the **Output PDF Path**. This file contains all the pages from the input PDFs in the order they were listed.
+
+## Step-by-Step Guide
+
+<Steps>
+### Step 1
+
+Add **Merge PDF Files** node into your flow.
+
+### Step 2
+
+In the **PDF File Paths** field, enter the paths of the PDF files you want to merge. Make sure these paths are correct and the files exist at these locations.
+
+### Step 3
+
+In the **Output PDF Path** field, enter the path where you want the merged PDF file to be saved. Ensure the directory exists and you have write permissions.
+
+### Step 4
+
+Execute the flow to initiate the PDF merging process. The merged file will be available at the specified output path.
+
+</Steps>
+
+<Callout type="info" title="Tip">
+  Use absolute paths for both input and output fields to avoid any issues related to file access.
+</Callout>
+
+## Input/Output Examples
+
+| PDF File Paths           | Output PDF Path          | Output Type    |
+| ------------------------ | ------------------------ | -------------- |
+| `/docs/doc1.pdf, /docs/doc2.pdf` | `/output/mergedDocs.pdf` | PDF File (Path) |
+
+## Common Mistakes & Troubleshooting
+
+| Problem                                        | Solution                                                                                                                                 |
+| ---------------------------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------- |
+| **Missing Input Files**                        | Ensure all the paths for **PDF File Paths** are correct and the files exist.                                                            |
+| **Invalid Output Path**                        | Validate the **Output PDF Path** to make sure you have permission to write to the specified directory, and the directory exists.         |
+| **Empty Output**                               | Verify that there are no typos in the file paths and that each input file is a valid PDF.                                               |
+| **File Access Errors**                         | Check for permission issues on the paths accessed for both input and output files.                                                      |
+
+## Real-World Use Cases
+
+- **Legal Agreements**: Combine multiple signed agreements into one document for archival and record-keeping.
+- **Project Documentation**: Merge different sections of a project documentation into a comprehensive PDF report.
+- **Educational Materials**: Gather disparate lecture notes saved as PDFs into one continuous booklet for students.

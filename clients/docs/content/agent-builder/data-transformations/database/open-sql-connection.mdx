@@ -1,0 +1,64 @@
+import { Callout, Steps } from "nextra/components";
+
+# Open SQL Connection
+
+The **Open SQL Connection** node is designed to establish a new connection to a SQL database. Use this node when you need to interact with a database to retrieve, insert, update, or delete data. Establishing a SQL connection is a critical step when setting up database-driven applications, as it allows you to run queries and manage database interactions effectively.
+
+## Configuration Options
+
+| Field Name            | Description                                      | Input Type  | Required? | Default Value |
+| --------------------- | ------------------------------------------------ | ----------- | --------- | ------------- |
+| **Connection String** | The connection string to the database. This field requires specific details like server name, database name, user credentials, or trusted connection. | Text        | Yes       | _(empty)_     |
+| **SQL Connection**    | The opened SQL connection. This serves as the output for follow-up nodes that require database connectivity. | Output      | No        | SqlConnection |
+
+## Expected Output Format
+
+The output of this node is an **SQL Connection object**. This object represents an open and active connection to your SQL database that can be used by other nodes to perform various database operations.
+
+## Step-by-Step Guide
+
+<Steps>
+### Step 1
+
+Add the **Open SQL Connection** node to your flow.
+
+### Step 2
+
+In the **Connection String** field, enter the required connection string details for your database. This is usually a text string containing information about the server location, database name, and authentication credentials.
+
+### Step 3
+
+Ensure your connection string is correct and valid to avoid connection errors.
+
+### Step 4
+
+The opened connection will be available as **SQL Connection** for use in subsequent database-related nodes or activities.
+
+</Steps>
+
+<Callout type="info" title="Tip">
+  Ensure your database server is running and accessible from your machine to successfully open a connection.
+</Callout>
+
+## Input/Output Examples
+
+| Connection String                                                                                                                                                 | Output Value  | Output Type        |
+| ----------------------------------------------------------------------------------------------------------------------------------------------------------------- | ------------- | ------------------ |
+| Server=myServerAddress;Database=myDataBase;User Id=myUsername;Password=myPassword;                                                                                 | SqlConnection | SQL Connection     |
+| Server=myServerAddress;Database=myDataBase;Trusted_Connection=True;                                                                                                | SqlConnection | SQL Connection     |
+
+## Common Mistakes & Troubleshooting
+
+| Problem                                              | Solution                                                                                                                                          |
+| ---------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------- |
+| **Invalid connection string**                        | Double-check the details in your connection string, including server address, database name, and user credentials.                                |
+| **Server not accessible**                            | Make sure the database server is running and that your firewall or network settings allow connections.                                           |
+| **Unsupported authentication method**                | Verify that the authentication method used in the connection string is supported by your database server.                                          |
+| **Output not utilized**                              | Ensure subsequent nodes in your flow are configured to use the **SQL Connection** output.                                                         |
+
+## Real-World Use Cases
+
+- **Web Applications**: Establish connections to databases for dynamically retrieving data based on user input or application state.
+- **Data Migration**: Connect to source and destination databases for transferring data during migration processes.
+- **Automated Reports**: Gather data from a database for automatic report generation operations.
+- **Inventory Management**: Connect to a database to fetch up-to-date inventory levels for better stock management.

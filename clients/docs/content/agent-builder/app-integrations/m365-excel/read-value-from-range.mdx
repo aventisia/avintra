@@ -1,0 +1,76 @@
+import { Callout, Steps } from "nextra/components";
+
+# Read Value From Range
+
+The **Read Value From Range** node allows you to retrieve data from a specific range within a worksheet of an Excel file stored in OneDrive or SharePoint. It uses the Microsoft 365 Excel API to access the file. You will need to provide valid credentials for Microsoft 365, and specify various details about the Excel file and the desired range. This node is particularly useful for gathering data that needs to be processed or analyzed from external Excel files without manual downloads.
+
+In practical use, this might help automate data extraction from reports, sales records, or any data maintained in Excel documents hosted online.
+
+## Configuration Options
+
+| Field Name                       | Description                                                                                      | Input Type             | Required? | Default Value |
+| -------------------------------- | ------------------------------------------------------------------------------------------------ | ---------------------- | --------- | ------------- |
+| **M365 Excel API Credential**    | Credential for authenticating with Microsoft 365 Excel API (requires tenant ID, client ID, and client secret). | Credentials Select    | Yes       | _(empty)_     |
+| **Excel File (Drive and Item ID)** | The Drive ID and Item ID of the Excel file in OneDrive or SharePoint to read the value from. Format: `driveId/items/itemId`. | Text                  | Yes       | _(empty)_     |
+| **Worksheet Name**               | The name of the worksheet in the Excel file to read the value from (e.g., 'Sheet1').            | Text                  | No        | Sheet1        |
+| **Range Address**                | The address of the range in the worksheet to read the value from (e.g., 'A1' or 'A1:B10').      | Text                  | No        | A1            |
+
+## Expected Output Format
+
+The output from this node is the **Read Result** - which includes the values retrieved from the specified range in the worksheet. The data type is typically a list or an array if multiple cells are targeted, otherwise a single value if only one cell is specified.
+
+## Step-by-Step Guide
+
+<Steps>
+### Step 1
+
+Add the **Read Value From Range** node into your flow.
+
+### Step 2
+
+In the **M365 Excel API Credential** field, select your existing credentials. Ensure that the credentials include the necessary tenant ID, client ID, and client secret.
+
+### Step 3
+
+In the **Excel File (Drive and Item ID)** field, enter the combined Drive ID and Item ID of your target Excel file. Use the format `driveId/items/itemId` accurately to avoid connection issues.
+
+### Step 4
+
+In the **Worksheet Name** field, specify the worksheet you wish to read from. Default is 'Sheet1' but you can change it if your target worksheet has a different name.
+
+### Step 5
+
+In the **Range Address** field, define the exact range of cells you want to read, using standard Excel notation (e.g., 'A1', 'A1:B10').
+
+### Step 6
+
+Execute the node in your flow. The values from the specified range will be accessible as **Read Result**, allowing further processing in subsequent nodes.
+
+</Steps>
+
+<Callout type="info" title="Note">
+  Make sure your M365 credentials have the necessary permissions to access the specified file in OneDrive or SharePoint. Unauthorized access attempts will result in errors.
+</Callout>
+
+## Input/Output Examples
+
+| Range Address | Retrieved Value Example      | Output Type  |
+| ------------- | ---------------------------- | ------------ |
+| A1            | 123                          | Single Value |
+| A1:B2         | [123, 'Text', 456, 'Data']   | Array        |
+
+## Common Mistakes & Troubleshooting
+
+| Problem                                             | Solution                                                                                                                                                             |
+| ----------------------------------------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| **Invalid credentials error**                        | Check if the provided M365 credentials are correct and have permission to access the specified Excel file.                                                           |
+| **File/Range not found**                             | Ensure the Drive ID, Item ID, worksheet name, and range address are correctly entered.                                                                                |
+| **Incorrect Range Address format**                   | Verify that the range address follows Excel's format. For single cell, use 'A1'; for multiple cells, use 'A1:B10'.                                                    |
+| **No data returned**                                 | Confirm that the specified range contains data. If the cells are empty, no data will be read.                                                                        |
+
+## Real-World Use Cases
+
+- **Automated Reporting**: Automatically fetch key metrics from departmental reports stored online.
+- **Sales Data Analysis**: Access sales numbers from Excel sheets used in forecasting and trend analysis.
+- **Inventory Updates**: Extract current stock levels from Excel files maintained by warehouse systems.
+- **Financial Data Monitoring**: Periodically collect financial data points from spreadsheets for dashboards or BI tools.

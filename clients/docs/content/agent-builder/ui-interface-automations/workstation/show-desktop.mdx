@@ -1,0 +1,65 @@
+import { Callout, Steps } from "nextra/components";
+
+# Show Desktop
+
+The **Show Desktop** node helps you manage your desktop workspace by minimizing all open windows, restoring them, or toggling between the two states. This is particularly useful in scenarios where you need a quick view of your desktop or need to organize your workspace efficiently.
+
+For example:
+
+- Quickly minimize all open windows to access desktop shortcuts.
+- Restore all previously minimized windows to continue your work.
+- Toggle between the desktop view and your previous windows state.
+
+## Configuration Options
+
+| Field Name        | Description                                                   | Input Type | Required? | Default Value |
+| ----------------- | ------------------------------------------------------------- | ---------- | --------- | ------------- |
+| **Action**        | Choose the action to perform on your desktop and windows.     | Select     | No        | Show          |
+
+### Action Options
+
+- **Show Desktop**: Minimizes all open windows to show the desktop.
+- **Restore Windows**: Restores all minimized windows back to their previous state.
+- **Toggle**: Switches between showing the desktop and restoring windows.
+
+## Expected Output Format
+
+The output of this node is a **boolean value** indicating whether the desktop is currently visible (`true` for visible, `false` for not visible).
+
+## Step-by-Step Guide
+
+<Steps>
+### Step 1
+
+Add the **Show Desktop** node to your flow.
+
+### Step 2
+
+In the **Action** dropdown menu, select the action you want to apply:
+
+- **Show Desktop**: Minimizes all open windows.
+- **Restore Windows**: Restores all previously minimized windows.
+- **Toggle**: Toggles between showing the desktop and restoring windows.
+
+### Step 3
+
+The current desktop state (`IsDesktopVisible`) will be available for other nodes to use, depending on the action you selected.
+</Steps>
+
+<Callout type="info" title="Tip">
+  The **Action** field determines the operation on your desktop. Choose accordingly for the desired behavior.
+</Callout>
+
+## Common Mistakes & Troubleshooting
+
+| Problem                           | Solution                                                                                                       |
+| --------------------------------- | -------------------------------------------------------------------------------------------------------------- |
+| **Desktop not visible**           | Ensure you selected **Show Desktop** or **Toggle** if needing the desktop visible.                             |
+| **Windows not restoring**         | Make sure the **Action** is set to **Restore Windows** or **Toggle** to bring back the minimized windows.      |
+| **Unexpected toggle behavior**    | Verify that you are not repeatedly selecting the **Toggle** action accidentally in quick succession.           |
+
+## Real-World Use Cases
+
+- **Quick Access to Desktop Files**: Use **Show Desktop** to reduce clutter and quickly access files, shortcuts, or folders on the desktop.
+- **Presentation Preparation**: Toggle to clear the screen during meetings or to prepare for presentations by minimizing windows.
+- **Efficient Task Switching**: Manage your workspace efficiently by restoring windows or showing the desktop as needed in multitasking environments.

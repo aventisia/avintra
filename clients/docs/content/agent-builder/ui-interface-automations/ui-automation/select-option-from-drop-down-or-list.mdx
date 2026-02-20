@@ -1,0 +1,74 @@
+import { Callout, Steps } from "nextra/components";
+
+# Select Option from Drop-Down or List
+
+The **Select Option from Drop-Down or List** node allows you to automate the selection of an option from a drop-down menu or list UI element. This is particularly useful in automating and streamlining workflows that require choosing a specific option in applications or web interfaces. You can specify the option by its visible name or by its position in the list (starting from zero).
+
+For example:
+
+- Automatically selecting a specific product from a drop-down list on an order form.
+- Choosing a particular setting from a list of configuration options.
+
+## Configuration Options
+
+| Field Name                              | Description                                                                                         | Input Type | Required? | Default Value |
+| --------------------------------------- | --------------------------------------------------------------------------------------------------- | ---------- | --------- | ------------- |
+| **Drop-Down or List UI Element**        | The UI element representing the drop-down or list from which you want to select an option.          | Text       | Yes       | _(empty)_     |
+| **Option to Select (Name or Index)**    | Specify the option to select by its visible name or by its zero-based index (e.g., 0 for first).    | Text       | Yes       | _(empty)_     |
+| **Maximum Wait Time (seconds)**         | The maximum number of seconds to wait for the drop-down or list element to appear.                  | Text       | No        | 5             |
+
+## Expected Output Format
+
+The output of this node is a **boolean value** indicating the success of the operation:
+
+- **True**: The option was successfully selected.
+- **False**: The option could not be selected.
+
+## Step-by-Step Guide
+
+<Steps>
+### Step 1
+
+Add **Select Option from Drop-Down or List** node into your flow.
+
+### Step 2
+
+In the **Drop-Down or List UI Element** field, specify the identifier of the UI element that represents the drop-down or list.
+
+### Step 3
+
+In the **Option to Select (Name or Index)** field, enter the visible name of the option or its zero-based index number.
+
+### Step 4
+
+(Optional) Set the **Maximum Wait Time (seconds)** to define how long the operation should wait for the drop-down or list to become available. Defaults to 5 seconds.
+
+### Step 5
+
+Use the output labeled **Was Option Selected?** to determine if the option was chosen successfully in subsequent nodes.
+</Steps>
+
+<Callout type="warning" title="Important">
+  Ensure that the option name or index you provide accurately matches an available option in the drop-down or list.
+</Callout>
+
+## Input/Output Examples
+
+| UI Element Identifier | Option to Select | Maximum Wait Time | Was Option Selected? | Output Type |
+| --------------------- | ---------------- | ----------------- | -------------------- | ----------- |
+| `productDropDown`     | `2`              | 10                | true                 | Boolean     |
+| `ConfigList`          | `High Priority`  | 5                 | true                 | Boolean     |
+| `settingsDropdown`    | `0`              | 2                 | false                | Boolean     |
+
+## Common Mistakes & Troubleshooting
+
+| Problem                                             | Solution                                                                                                              |
+| --------------------------------------------------- | --------------------------------------------------------------------------------------------------------------------- |
+| **Option not found or selected**                     | Verify the option name or index matches exactly with those in the UI. Check for spelling or capitalization errors.     |
+| **Long wait times**                                  | Ensure the specified wait time is sufficient for the UI element to become visible, but not too long to delay workflows.|
+
+## Real-World Use Cases
+
+- **Automating Form Submissions**: Automatically select predetermined options in forms to save time and ensure consistency.
+- **Configuration Automation**: Quickly navigate and configure software settings by automatically selecting necessary options.
+- **Data Entry Simplification**: Streamline data entry tasks by automating the selection process in dropdowns with hundreds of choices.

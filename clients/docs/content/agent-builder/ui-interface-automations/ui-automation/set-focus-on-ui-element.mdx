@@ -1,0 +1,67 @@
+import { Callout, Steps } from "nextra/components";
+
+# Set Focus on UI Element
+
+The **Set Focus on UI Element** node allows you to concentrate user interaction on a specific UI element within your application. By setting focus on an element, you enable it to receive user inputs or interactions. This is particularly helpful in user onboarding processes, form handling, or when guiding a user through specific steps in your application.
+
+## Configuration Options
+
+| Field Name                     | Description                                                                           | Input Type | Required? | Default Value |
+| ------------------------------ | ------------------------------------------------------------------------------------- | ---------- | --------- | ------------- |
+| **UI Element**                 | The UI element to bring into focus.                                                   | Text       | Yes       | _(empty)_     |
+| **Max Wait Time (seconds)**    | Maximum time to wait to find the UI element (in seconds).                             | Text       | No        | 5             |
+| **Is Focus Set Successfully**  | True if the focus was set successfully, otherwise false.                              | Output     | No        | IsFocued      |
+
+## Expected Output Format
+
+The output is a **Boolean value** indicating the success of the operation:
+
+- **True**: The UI element was brought into focus successfully.
+- **False**: The UI element could not be focused within the specified wait time.
+
+## Step-by-Step Guide
+
+<Steps>
+### Step 1
+
+Add the **Set Focus on UI Element** node into your flow.
+
+### Step 2
+
+In the **UI Element** field, specify the identification path of the UI element you wish to focus on.
+
+### Step 3
+
+(Optional) In the **Max Wait Time (seconds)** field, enter the maximum number of seconds to wait for the UI element to become available to set focus. The default is 5 seconds.
+
+### Step 4
+
+The result, indicating whether the focus was set successfully, will be available as **Is Focus Set Successfully** for further use in your flow.
+
+</Steps>
+
+<Callout type="tip" title="Time Management">
+  To ensure efficient workflow, adjust the **Max Wait Time** according to the typical response times of your application. A shorter wait time can prevent unnecessary delays if the element is readily available.
+</Callout>
+
+## Input/Output Examples
+
+| UI Element Path | Max Wait Time (seconds) | Is Focus Set Successfully | Output Type |
+| --------------- | ------------------------ | ------------------------- | ----------- |
+| button.submit   | 5                        | True                      | Boolean     |
+| input.username  | 3                        | False                     | Boolean     |
+
+## Common Mistakes & Troubleshooting
+
+| Problem                                          | Solution                                                                                       |
+| ------------------------------------------------ | ---------------------------------------------------------------------------------------------- |
+| **UI Element not found**                         | Verify that the UI element's identification path is correct and corresponds to an existing element.  |
+| **Focus not set within Max Wait Time**           | Increase the **Max Wait Time** if the application takes longer to make UI elements available.          |
+| **Unexpected boolean output**                    | Double-check the logic of your flow to handle the boolean output correctly.                      |
+
+## Real-World Use Cases
+
+- **Form Navigation**: Automatically focus on the next input field after completing the current one to streamline data entry.
+- **User Onboarding**: Direct users' attention to key elements in tutorials or guided flows.
+- **Error Resolution**: Focus on a field or element that requires user attention due to validation errors.
+- **Application Automation**: Set focus for automated interaction testing or automation scripts that mimic user behavior.

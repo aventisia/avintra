@@ -1,0 +1,60 @@
+import { Callout, Steps } from "nextra/components";
+
+# Insert Row to Excel Worksheet
+
+The **Insert Row to Excel Worksheet** node is used to add a new row into an existing Excel worksheet. This can be useful when you want to insert additional data between existing rows without overwriting any information. For example, if you receive new entries that need to be inserted into a specific position in a report or data table.
+
+## Configuration Options
+
+| Field Name            | Description                                                                 | Input Type | Required? | Default Value |
+| --------------------- | --------------------------------------------------------------------------- | ---------- | --------- | ------------- |
+| **Worksheet Instance**| The Excel Worksheet object where the new row will be inserted.              | Text       | Yes       | _(empty)_     |
+| **Row Index**         | The 1-based index of the row where the new row should be inserted (above).  | Text       | Yes       | _(empty)_     |
+
+## Expected Output Format
+
+The output of this node does not return a value that you can use directly. Instead, it modifies the Excel worksheet by adding the specified row.
+
+## Step-by-Step Guide
+
+<Steps>
+### Step 1
+
+Add **Insert Row to Excel Worksheet** node into your flow.
+
+### Step 2
+
+In the **Worksheet Instance** field, specify the Excel Worksheet object where you want to add a new row.
+
+### Step 3
+
+In the **Row Index** field, enter the number of the row above which you want to insert the new row. Remember, this index is 1-based, so entering `1` inserts at the very top.
+
+### Step 4
+
+The node will execute to insert a new row into the Excel worksheet at the specified position.
+
+</Steps>
+
+<Callout type="info" title="Note">
+  Ensure that the "Worksheet Instance" is correctly set to an Excel Worksheet object to avoid errors.
+</Callout>
+
+## Input/Output Examples
+
+- **Worksheet Instance**: "SalesReportWorksheet"
+- **Row Index**: 5
+- **Effect**: A new row is inserted above row 5 in the "SalesReportWorksheet".
+
+## Common Mistakes & Troubleshooting
+
+| Problem                                      | Solution                                                                                          |
+| ---------------------------------------------| ------------------------------------------------------------------------------------------------- |
+| **Blank Worksheet Instance**                 | Make sure to specify a valid Excel Worksheet object.                                              |
+| **Invalid Row Index Error**                  | Verify that the Row Index is within the range of existing rows and is a valid number, starting at 1.|
+
+## Real-World Use Cases
+
+- **Monthly Reports**: Adding a new monthly data entry into an existing report.
+- **Data Management**: Dynamically inserting new sales records into a historical sales worksheet.
+- **Scheduling Tasks**: Insert new meeting or task entries into a team schedule without disturbing the current order.

@@ -1,0 +1,61 @@
+import { Callout, Steps } from "nextra/components";
+
+# Empty Recycle Bin
+
+The **Empty Recycle Bin** node is designed to help you quickly and efficiently clear out deleted files from your Windows recycle bin. This can be set to empty the recycle bin for just the current user or all users on the system, providing a simple way to maintain clean and clutter-free storage spaces. Use this function whenever you need to reclaim disk space or want to ensure no recoverable files are lingering in the recycle bin.
+
+## Configuration Options
+
+| Field Name          | Description                                                                                             | Input Type | Required? | Default Value  |
+| ------------------- | ------------------------------------------------------------------------------------------------------- | ---------- | --------- | -------------- |
+| **Scope**           | Determines if the action applies to the current user's recycle bin or all users' bins (admin required). | Select     | No        | CurrentUser    |
+| **Show Confirmation** | Displays a confirmation dialog before proceeding to empty the recycle bin.                              | Switch     | No        | false          |
+| **Show Progress**   | Displays a progress dialog while the recycle bin is being emptied.                                      | Switch     | No        | false          |
+
+## Expected Output Format
+
+This operation does not produce a direct output in terms of data or files. It performs a system-level task and confirms recycle bin clearance through a dialog if options are enabled.
+
+## Step-by-Step Guide
+
+<Steps>
+### Step 1
+
+Add **Empty Recycle Bin** node into your workflow.
+
+### Step 2
+
+In the **Scope** dropdown, select the extent of the action:
+
+- **Current User**: Clears only the current user's recycle bin.
+- **All Users**: Clears recycle bins for all users (requires admin privileges).
+
+### Step 3
+
+Decide on displaying interactions:
+
+- Toggle **Show Confirmation** to `On` if you want a confirmation prompt before the operation.
+- Switch **Show Progress** to `On` if you wish to see a progress dialog during the task.
+
+### Step 4
+
+Execute the node to clear the recycle bin as per your configured options.
+
+</Steps>
+
+<Callout type="warning" title="Admin Privileges Required">
+  Selecting **All Users** in the Scope will require administrative privileges to execute successfully. Make sure you have the necessary permissions.
+</Callout>
+
+## Common Mistakes & Troubleshooting
+
+| Problem                              | Solution                                                                                               |
+| ------------------------------------ | ------------------------------------------------------------------------------------------------------ |
+| **Scope not behaving as expected** | Ensure you selected the correct value in the Scope dropdown. Admin rights are needed for all users' bins. |
+| **Confirmation/Progress not showing** | Double-check that the toggles for **Show Confirmation** and **Show Progress** are enabled if desired.    |
+
+## Real-World Use Cases
+
+- **System Maintenance**: Regularly empty the recycle bin to free up space and declutter the system.
+- **Security Procedures**: Permanently delete files to ensure that sensitive information isn't recoverable.
+- **User Account Management**: Administratively clear all users' recycle bins for system-wide cleanup.

@@ -1,0 +1,92 @@
+@import "tailwindcss";
+@import "nextra-theme-docs/style.css";
+
+@variant dark (&:where(.dark *));
+
+@theme {
+  --color-primary: rgb(79, 70, 229);
+  --color-secondary: rgb(30, 27, 75);
+}
+
+:root {
+  --font-family: var(--font-inter), sans-serif;
+}
+
+body {
+  font-feature-settings:
+    "rlig" 1,
+    "calt" 1;
+  font-family: var(--font-family);
+  font-size: 0.9rem;
+  /* 14px */
+}
+
+h1 {
+  font-size: 1.875rem;
+  /* 30px */
+  border: none;
+}
+
+h2 {
+  font-size: 1.5rem;
+  /* 24px */
+}
+
+h3,
+.nextra-steps h3 {
+  font-size: 1.25rem;
+  /* 20px */
+}
+
+h4 {
+  font-size: 1.125rem;
+  /* 18px */
+}
+
+h5 {
+  font-size: 1rem;
+  /* 16px */
+}
+
+h6 {
+  font-size: 0.875rem;
+  /* 14px */
+}
+
+th {
+  text-align: left;
+}
+
+table {
+  font-size: 0.8rem;
+}
+
+img {
+  border: 3px solid rgba(78, 70, 229, 0.2);
+  border-radius: 0.5rem;
+}
+
+.home-content p {
+  margin-top: 1.5em;
+  line-height: 1.75em;
+}
+
+code.text-\[\.9em\] {
+  font-size: 14px;
+}
+
+@media screen and (max-width: 1200px) {
+  .home-content .hide-medium {
+    display: none;
+  }
+}
+
+@media screen and (max-width: 720px) {
+  .home-content p {
+    font-size: 0.9rem;
+  }
+
+  .home-content .hide-small {
+    display: none;
+  }
+}

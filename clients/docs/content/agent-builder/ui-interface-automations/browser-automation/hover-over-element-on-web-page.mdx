@@ -1,0 +1,71 @@
+import { Callout, Steps } from "nextra/components";
+
+# Hover Over Element on Web Page
+
+The **Hover Over Element on Web Page** node allows you to move the mouse cursor over a specified element on a webpage. This can be useful for triggering interactive functions or revealing hidden elements that appear when hovering, enhancing automated web-testing processes.
+
+## Configuration Options
+
+| Field Name           | Description                                                                 | Input Type | Required? | Default Value |
+| -------------------- | --------------------------------------------------------------------------- | ---------- | --------- | ------------- |
+| **Web Browser Instance** | Enter or choose the variable that contains the web browser instance to work with. | Text       | Yes       | _(empty)_     |
+| **Find Type**        | Specifies how to find the element (e.g., ID, XPath, CSS Selector).          | Select     | Yes       | XPath         |
+| **Value To Find**    | The value used to locate the element (e.g., 'username', '//input[@id=\'email\']'). | Text       | Yes       | _(empty)_     |
+| **Wait for Element** | If true, waits for the element to appear before hovering.                   | Switch     | No        | _(empty)_     |
+| **Timeout Seconds**  | Maximum time in seconds to wait for the element before failing.             | Text       | No        | 60            |
+
+## Expected Output Format
+
+The node does not produce a direct output value but performs an action (hover), affecting the state within the web session being automated.
+
+## Step-by-Step Guide
+
+<Steps>
+### Step 1
+
+Add **Hover Over Element on Web Page** node into your flow.
+
+### Step 2
+
+In the **Web Browser Instance** field, specify the browser instance that should perform the hover action.
+
+### Step 3
+
+Select a **Find Type** from the dropdown to determine how the element will be located on the webpage. Options include XPath, Id, Css Selector, and more.
+
+### Step 4
+
+Enter the **Value To Find** that corresponds to the element identifier based on the selected Find Type.
+
+### Step 5
+
+(Optional) Switch **Wait for Element** to ON if you want to ensure the element is present before attempting to hover. This is useful for dynamic pages where elements load asynchronously.
+
+### Step 6
+
+(Optional) Set the **Timeout Seconds**, which dictates how long the process should wait for the element to appear when "Wait for Element" is enabled.
+</Steps>
+
+<Callout type="warning" title="Important">
+  Make sure that the web page and the browser instance are active and correctly initialized in your flow before using this node.
+</Callout>
+
+## Input/Output Examples
+
+- **Example 1**: If Find Type is XPath and Value To Find is `//button[@id='submit']`, the node will hover over the button with the ID 'submit'.
+- **Example 2**: Using CSS Selector with `.nav-menu > li:hover` will interact with the webpage's navigation menu items.
+
+## Common Mistakes & Troubleshooting
+
+| Problem                                            | Solution                                                                                          |
+| -------------------------------------------------- | ------------------------------------------------------------------------------------------------- |
+| **Element not found**                              | Ensure the Value To Find is correct and matches the element's identifier on the webpage.          |
+| **Timeout occurs**                                 | Increase the Timeout Seconds value or check if the Wait for Element switch is appropriately set.  |
+| **Browser Instance not initialized**               | Verify the browser instance is active and correctly captured as a variable in your flow.          |
+| **Invalid Find Type**                              | Double-check that the selected Find Type is appropriate for the given Value To Find.              |
+
+## Real-World Use Cases
+
+- **Testing dynamic menus**: Automatically hover over menus to test drop-downs and flyouts.
+- **Reveal Hidden Elements**: Trigger hover effects to reveal hidden content like tooltips or submenus.
+- **Interactive website functions**: Ensure that hovering actions properly trigger visual effects or animations for testing interactive elements.

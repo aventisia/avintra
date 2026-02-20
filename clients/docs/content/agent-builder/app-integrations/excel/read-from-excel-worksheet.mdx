@@ -1,0 +1,98 @@
+import { Callout, Steps } from "nextra/components";
+
+# Read from Excel Worksheet
+
+The **Read from Excel Worksheet** node is designed to extract data from specified cells or ranges within an Excel worksheet. This can include reading from a single cell, a defined range, or even named ranges. It's particularly helpful for automating tasks that require information to be gathered from Excel spreadsheets, such as data analysis or report generation.
+
+## Configuration Options
+
+| Field Name                                | Description                                                                                                                                         | Input Type | Required? | Default Value       |
+|-------------------------------------------|-----------------------------------------------------------------------------------------------------------------------------------------------------|------------|-----------|---------------------|
+| **Worksheet Instance**                    | The Excel Worksheet object to read from. If left blank, defaults to the active worksheet.                                                           | Text       | Yes       | _(empty)_           |
+| **Retrieve Mode**                         | Select how data should be extracted: single cell, range of cells, selection, all values, or named cells.                                            | Select     | Yes       | SingleCell          |
+| **Start Column**                          | Starting column letter of the range to read, required if "Range of Cells" is chosen.                                                                | Text       | No        | _(empty)_           |
+| **Start Column Index**                    | Starting column index (1-based) for the range; takes precedence over Start Column if specified.                                                     | Text       | No        | _(empty)_           |
+| **Start Row**                             | Starting row number of the range to read, required if "Range of Cells" is chosen.                                                                   | Text       | No        | _(empty)_           |
+| **End Column**                            | Ending column letter of the range to read, required if "Range of Cells" is chosen.                                                                  | Text       | No        | _(empty)_           |
+| **End Column Index**                      | Ending column index (1-based) for the range; takes precedence over End Column if specified.                                                         | Text       | No        | _(empty)_           |
+| **End Row**                               | Ending row number of the range to read, required if "Range of Cells" is chosen.                                                                     | Text       | No        | _(empty)_           |
+| **Name**                                  | The name of the named range to read, required if "Values of Named Cells" is chosen.                                                                 | Text       | No        | _(empty)_           |
+| **Get Cell Contents as Text**             | Retrieve cell contents as text or raw values.                                                                                                       | Switch     | No        | _(empty)_           |
+| **First Line of Range Contains Column Names** | Treat the first row as column headers if true.                                                                                                    | Switch     | No        | _(empty)_           |
+| **Omit Empty Columns and Rows**           | Omit empty columns/rows at the ends, used only when reading named cells.                                                                            | Switch     | No        | _(empty)_           |
+
+## Expected Output Format
+
+The output of this node is presented as **ExcelData**, which is a DataTable containing the extracted values based on the specified retrieve mode.
+
+## Step-by-Step Guide
+
+<Steps>
+### Step 1
+
+Add the **Read from Excel Worksheet** node to your workflow.
+
+### Step 2
+
+Provide the **Worksheet Instance** to specify the Excel worksheet from which to read data. Leave blank to use the active worksheet.
+
+### Step 3
+
+Choose the **Retrieve Mode** to determine how you will gather data:
+
+- **SingleCell**: Read a single cell.
+- **RangeOfCells**: Read a specific range.
+- **Selection**: Use currently selected cells.
+- **AllAvailableValues**: Read all used ranges.
+- **ValuesOfNamedCells**: Extract from named ranges.
+
+### Step 4
+
+If you selected "Range of Cells" in **Retrieve Mode**, fill in the range details:
+
+- **Start Column/Index**: Set either the letter or index of the start column.
+- **End Column/Index**: Set either the letter or index of the end column.
+- **Start Row**: Provide the starting row number.
+- **End Row**: Provide the ending row number.
+
+### Step 5
+
+Set any additional options as needed:
+
+- Toggle **Get Cell Contents as Text** if you need textual representation.
+- Enable **First Line of Range Contains Column Names** if applicable.
+- Toggle **Omit Empty Columns and Rows** to clean up data.
+
+### Step 6
+
+Once configured, the data will be available as **ExcelData** for further processing in your flow.
+
+</Steps>
+
+<Callout type="info" title="Note">
+  Ensure that the specified range is valid for the worksheet to avoid errors. Only use settings relevant to your chosen Retrieve Mode to streamline your configuration process.
+</Callout>
+
+## Input/Output Examples
+
+| Retrieve Mode        | Example Input           | Output                               | Output Type         |
+|----------------------|-------------------------|--------------------------------------|---------------------|
+| SingleCell           | `B2`                    | `Sales Data` (if cell B2 contains it)| DataTable (Single)  |
+| RangeOfCells         | `A1:C3`                 | Table of values from A1 to C3        | DataTable (Multiple)|
+| Selection            | `Active Selection`      | Values from actively selected cells  | DataTable           |
+| AllAvailableValues   | `Entire Used Range`     | All data from used cells             | DataTable           |
+| ValuesOfNamedCells   | `NamedRange1`           | Data from the named range            | DataTable           |
+
+## Common Mistakes & Troubleshooting
+
+| Problem                                        | Solution                                                                                                                                           |
+|------------------------------------------------|----------------------------------------------------------------------------------------------------------------------------------------------------|
+| **Worksheet not specified**                    | Ensure you provide a Worksheet Instance or leave it blank to use the active sheet.                                                                 |
+| **Invalid range for selected mode**            | Double-check the starting and ending rows and columns for accuracy.                                                                                |
+| **Switches not toggling expected behavior**    | Verify that options like "First Line of Range Contains Column Names" or "Get Cell Contents as Text" are configured according to your data needs.   |
+
+## Real-World Use Cases
+
+- **Financial Analysis**: Extract specific sections of financial data across various worksheets to cross-compare performance metrics.
+- **Academic Records**: Pull student grades from selected spreadsheet areas for further analysis or report cards.
+- **Inventory Management**: Continuously extract and update inventory stock levels from different suppliers' sheets.

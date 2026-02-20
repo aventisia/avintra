@@ -1,0 +1,77 @@
+import { Callout, Steps } from "nextra/components";
+
+# Add New Worksheet
+
+The **Add New Worksheet** node enables you to insert a new worksheet into an existing Excel workbook. This can be particularly useful when you want to organize data into separate sheets without disrupting your current workbook's structure.
+
+For instance:
+
+- Adding a new sheet for the next month's data while keeping previous months in separate sheets.
+- Creating a new sheet to temporarily store data results or interim calculations.
+- Organizing sheets systematically by always adding new worksheets to the beginning or the end of the workbook.
+
+## Configuration Options
+
+| Field Name           | Description                                                                 | Input Type | Required? | Default Value |
+| -------------------- | --------------------------------------------------------------------------- | ---------- | --------- | ------------- |
+| **Workbook Instance**| The Excel Workbook object where the new worksheet will be added.            | Text       | Yes       | _(empty)_     |
+| **New Worksheet Name**| The name to assign to the newly created worksheet.                          | Text       | No        | _(empty)_     |
+| **Add Worksheet As** | Specifies whether to add the worksheet as the first or last sheet.          | Select     | Yes       | First         |
+
+## Expected Output Format
+
+The output of this node will confirm the successful addition of a new worksheet. No additional data or format is returned.
+
+- The output is a confirmation message if successful (e.g., `"New worksheet added successfully"`).
+
+## Step-by-Step Guide
+
+<Steps>
+### Step 1
+
+Add the **Add New Worksheet** node into your flow setup.
+
+### Step 2
+
+In the **Workbook Instance** field, enter or select the Excel Workbook object where you want the new worksheet to be added.
+
+### Step 3
+
+Optionally, fill in the **New Worksheet Name** field with the name of your choice for the worksheet. If left empty, Excel will name it automatically (e.g., "Sheet1").
+
+### Step 4
+
+Select your preference in the **Add Worksheet As** dropdown:
+
+- **First worksheet**: Insert the new sheet at the beginning of the workbook.
+- **Last worksheet**: Append the new sheet at the end of the workbook.
+
+### Step 5
+
+The new worksheet is now added to the workbook as per your configured settings.
+</Steps>
+
+<Callout type="info" title="Note">
+  Entering a distinct name in **New Worksheet Name** helps to better organize and identify different sheets quickly.
+</Callout>
+
+## Input/Output Examples
+
+| Workbook Instance  | New Worksheet Name | Add Worksheet As | Output Confirmation           |
+| ------------------ | ------------------ | ---------------- | ----------------------------- |
+| SalesDataWorkbook  | January Reports    | First            | "New worksheet added successfully" |
+| FinancialWorkbook  |                    | Last             | "New worksheet added successfully" |
+
+## Common Mistakes & Troubleshooting
+
+| Problem                                                     | Solution                                                                                                                                                  |
+| ----------------------------------------------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| **Workbook Instance field is empty**                        | Ensure you have selected or provided a valid Excel workbook object in the **Workbook Instance** field.                                                    |
+| **Duplicate worksheet name error**                          | Changing the **New Worksheet Name** to a unique name that isn't already used in the workbook can avoid this issue.                                        |
+| **Worksheet not added as intended location**                | Double-check the selection in the **Add Worksheet As** dropdown to ensure the worksheet is added to the desired position.                                 |
+
+## Real-World Use Cases
+
+- **Monthly Sales Reports**: Add a new worksheet each month to keep sales data organized by month.
+- **Project Tracking**: Create new sheets for different phases of a project to maintain clear separation and organization.
+- **Data Collection**: As new data sets are received, instantly add them in separate worksheets for easy access and analysis.

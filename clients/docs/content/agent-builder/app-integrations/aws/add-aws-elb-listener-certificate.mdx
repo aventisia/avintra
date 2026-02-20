@@ -1,0 +1,84 @@
+import { Callout, Steps } from "nextra/components";
+
+# Add AWS ELB Listener Certificate
+
+The **Add AWS ELB Listener Certificate** node enables you to attach a certificate to an AWS Elastic Load Balancer (ALB or NLB) listener. This node is particularly useful when you need to secure communications through your load balancer by adding SSL/TLS certificates.
+
+You might use this node if you:
+
+- Want to replace an expiring certificate with a new one.
+- Need to add a new certificate to an existing listener for enhanced security.
+- Plan to distribute traffic securely across your infrastructure using multiple certificates.
+
+## Configuration Options
+
+| Field Name                    | Description                                                                                                | Input Type | Required? | Default Value |
+| ----------------------------- | ---------------------------------------------------------------------------------------------------------- | ---------- | --------- | ------------- |
+| **Credential to connect with** | Select the AWS credential to use for authentication.                                                       | Text       | Yes       | _(empty)_     |
+| **Listener ARN**              | The ARN (Amazon Resource Name) of the listener you want to add the certificate to.                         | Text       | Yes       | _(empty)_     |
+| **Certificate ARN**           | The ARN of the ACM (AWS Certificate Manager) certificate to attach to the listener.                        | Text       | Yes       | _(empty)_     |
+| **AWS Region**                | The AWS region where the load balancer is located. Enter the full region code (e.g., us-east-1).            | Text       | No        | us-east-1     |
+
+## Expected Output Format
+
+The node outputs two pieces of information:
+
+- **API Response**: A raw JSON response indicating the details of the operation.
+- **Success**: A text confirmation (either "Success" or "Failure") indicating if the certificate addition was successful.
+
+## Step-by-Step Guide
+
+<Steps>
+### Step 1
+
+Add the **Add AWS ELB Listener Certificate** node into your flow.
+
+### Step 2
+
+In the **Credential to connect with** field, enter the identifier for the AWS credentials to authenticate your request.
+
+### Step 3
+
+Provide the **Listener ARN**, which is associated with the load balancer listener you wish to secure.
+
+### Step 4
+
+Enter the **Certificate ARN** for the ACM certificate you aim to attach to the listener.
+
+### Step 5
+
+(Optional) Specify the **AWS Region** where your listener is hosted. If no region is entered, it defaults to "us-east-1".
+
+### Step 6
+
+Once the above fields are populated, review your settings and add the node to initiate the process. The operation result will be visible as a **Success** or **Failure** in your flow execution panel.
+
+</Steps>
+
+<Callout type="warning" title="Important Note">
+  Ensure the credentials used have the necessary permissions on AWS to add certificates to load balancer listeners. Unauthorized requests will fail.
+</Callout>
+
+<Callout type="info" title="Tip">
+  It's helpful to verify the ARNs (both Listener and Certificate) and AWS region if you encounter errors. A mismatch in these values is a common source of issues.
+</Callout>
+
+## Input/Output Examples
+
+| Listener ARN                         | Certificate ARN                      | AWS Region | API Response Example                          | Success  |
+| ------------------------------------ | ------------------------------------ | ---------- | --------------------------------------------- | -------- |
+| arn:aws:elasticloadbalancing:xyz...  | arn:aws:acm:region:xyz...            | us-east-1  | `{ "HTTPStatusCode": 200, "Message": "OK" }`    | Success  |
+| arn:aws:elasticloadbalancing:xyz...  | arn:aws:acm:region:xyz...            | us-west-2  | `{ "HTTPStatusCode": 400, "Message": "Error" }` | Failure  |
+
+## Common Mistakes & Troubleshooting
+
+| Problem                                         | Solution                                                                                               |
+| ------------------------------------------------| ------------------------------------------------------------------------------------------------------ |
+| **Invalid ARN format**                          | Double-check the ARN structure for both listener and certificate. It should follow AWS ARN guidelines.  |
+| **Credentials not working**                     | Ensure that the AWS credentials used have permissions for the ELB service. Recheck your credential ID. |
+
+## Real-World Use Cases
+
+- **Certificate Renewal**: Easily update listeners with newly issued certificates to replace those nearing expiration.
+- **Multi-Region Setup**: Deploy certificates across different regions using the same automated flow.
+- **Security Audits**: Integrate with continuous security checks to ensure all listeners are secured with valid certificates.

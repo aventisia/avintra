@@ -1,0 +1,65 @@
+import { Callout, Steps } from "nextra/components";
+
+# Get Column Name on Excel Worksheet
+
+The **Get Column Name on Excel Worksheet** node is designed to help you retrieve the header name of a specific column in an Excel worksheet. This is particularly useful when you need to identify or verify column headings for data processing or reporting tasks.
+
+This node reads the first non-empty cell in the specified column and returns its content as the column name.
+
+## Configuration Options
+
+| Field Name           | Description                                                 | Input Type | Required? | Default Value  |
+| -------------------- | ----------------------------------------------------------- | ---------- | --------- | -------------- |
+| **Worksheet Instance** | The Excel Worksheet object from which to retrieve the column name. | Text       | Yes       | _(empty)_      |
+| **Column Index**     | The 1-based index of the column to retrieve the name from (e.g., 1 → first column). | Text       | Yes       | _(empty)_      |
+
+## Expected Output Format
+
+The output of this node is a **single text string** representing the column name found in the first non-empty cell of the specified column.
+
+- If the column header is "Sales Amount", the output will be "Sales Amount".
+
+## Step-by-Step Guide
+
+<Steps>
+### Step 1
+
+Add the **Get Column Name on Excel Worksheet** node into your flow.
+
+### Step 2
+
+In the **Worksheet Instance** field, enter the Excel Worksheet object you are working with. This is where the node will look for the column.
+
+### Step 3
+
+In the **Column Index** field, input the index number of the column you want to investigate. Remember, this is a 1-based index, so "1" refers to the first column.
+
+### Step 4
+
+The node will output the column name found in the first non-empty cell of the specified column as **ColumnName** for use in other nodes.
+
+</Steps>
+
+<Callout type="info" title="Tip">
+  Ensure the Excel worksheet is accessible and the column is not entirely empty, or the node may not be able to return a meaningful column name.
+</Callout>
+
+## Input/Output Examples
+
+| Worksheet Instance | Column Index | Output Value   | Output Type   |
+| ------------------ | ------------ | -------------- | ------------- |
+| "Sheet1"           | 1            | "First Name"   | Text (String) |
+| "Sheet1"           | 2            | "Monthly Sales" | Text (String) |
+
+## Common Mistakes & Troubleshooting
+
+| Problem                                                 | Solution                                                                                            |
+| ------------------------------------------------------- | --------------------------------------------------------------------------------------------------- |
+| **Empty or incorrect column index**                     | Double-check to ensure that you are entering a valid column index that corresponds to your worksheet. |
+| **Wrong worksheet input**                               | Verify the worksheet instance is correctly referenced and accessible at runtime.                    |
+
+## Real-World Use Cases
+
+- **Data Validation**: Verify column headers in imported worksheets to ensure data integrity before processing.
+- **Reporting**: Dynamically generate reports based on column names to ensure consistency across multiple datasets.
+- **Automation**: Automate tasks that require specific column headings, such as data extraction and transformation.

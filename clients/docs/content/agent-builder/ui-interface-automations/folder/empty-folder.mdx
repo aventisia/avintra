@@ -1,0 +1,60 @@
+import { Callout, Steps } from "nextra/components";
+
+# Empty Folder
+
+The **Empty Folder** node allows you to clear all contents within a specified folder while keeping the folder itself intact. This includes deleting files and can optionally include subdirectories. It's particularly useful for cleaning up temporary directories or preparing a folder structure for new data without losing the folder architecture.
+
+Use this node when you want to quickly erase the contents of a directory, such as when resetting application data or freeing up space.
+
+## Configuration Options
+
+| Field Name          | Description                                                             | Input Type | Required? | Default Value |
+| ------------------- | ----------------------------------------------------------------------- | ---------- | --------- | ------------- |
+| **Folder to Empty** | Specify the path of the folder whose contents should be deleted.        | Text       | Yes       | _(empty)_     |
+| **Include Subfolders** | Determines whether subfolders and their contents should also be deleted. | Switch     | No        | True          |
+
+## Expected Output Format
+
+This node does not produce a visible output or data type. It performs an action (emptying the specified folder) directly on the file system.
+
+## Step-by-Step Guide
+
+<Steps>
+### Step 1
+
+Add **Empty Folder** node into your flow.
+
+### Step 2
+
+In the **Folder to Empty** field, enter the path to the folder whose contents you want to delete.
+
+### Step 3
+
+Decide if you want to delete subfolders and their content as well. Toggle the **Include Subfolders** switch:
+
+- **On**: Deletes all files and included subfolders within the specified folder.
+- **Off**: Deletes only the files directly within the specified folder, leaving any subfolders.
+
+### Step 4
+
+Execute the flow to perform the emptying action. The specified folder will be cleared as per your settings.
+
+</Steps>
+
+<Callout type="warning" title="Caution">
+  Ensure that the specified folder path is correct. The action is irreversible, and deleted files cannot be recovered.
+</Callout>
+
+## Common Mistakes & Troubleshooting
+
+| Problem                                | Solution                                                                                               |
+| -------------------------------------- | ------------------------------------------------------------------------------------------------------ |
+| **Incorrect Folder Path**              | Verify the folder path to ensure it points to the correct directory. Complement paths with auto-complete features if available. |
+| **Files Not Deleted**                  | Make sure that there are no permissions restrictions on the folder that prevent file deletion.          |
+| **Subfolders Still Present**           | Double-check that **Include Subfolders** is turned on if you want to delete subdirectories as well.    |
+
+## Real-World Use Cases
+
+- **Application Cleanup**: Use this node to clean out application cache or temporary folders while keeping the folder structure.
+- **Data Preparation**: Empty folders to prepare for new data, ensuring residual files from previous operations don't interfere.
+- **Regular Maintenance**: Schedule the node to execute periodically, keeping directories clear of unnecessary files and subfolders.

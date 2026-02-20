@@ -1,0 +1,84 @@
+import { Callout, Steps } from "nextra/components";
+
+# Set Color In Excel Worksheet
+
+The **SetColorInExcelWorksheet** node enables you to apply a specific color to a designated range within an Excel worksheet located in OneDrive or SharePoint. This is particularly useful for highlighting important data, categorizing information, or improving the visual presentation of your Excel files.
+
+For example:
+
+- Highlighting header rows or specific cells with color for better visibility.
+- Categorizing data by colors for easier interpretation.
+- Using color to indicate data status or flag errors.
+
+## Configuration Options
+
+| Field Name               | Description                                                                                                                                  | Input Type          | Required? | Default Value |
+| ------------------------ | -------------------------------------------------------------------------------------------------------------------------------------------- | ------------------- | --------- | ------------- |
+| **M365 Excel Credential**| The M365 Excel credential containing valid tenant ID, client ID, and client secret which is used to authenticate API requests.                | Select Credentials  | Yes       | _(empty)_     |
+| **Drive and Item ID**    | The Drive ID and Item ID of the Excel file in OneDrive or SharePoint (format: driveId/items/itemId).                                            | Text                | Yes       | _(empty)_     |
+| **Worksheet Name**       | The name of the worksheet to apply the color.                                                                                                 | Text                | Yes       | Sheet1        |
+| **Range Address**        | The specific range of cells in the worksheet where color will be applied (e.g., A1:B10).                                                      | Text                | Yes       | A1            |
+| **Color**                | The color code to apply to the specified range; use Excel-friendly color codes (e.g., `#FF5733`, `RGB(255,0,0)`).                            | Text                | Yes       | None          |
+
+## Expected Output Format
+
+The output from this node, labeled as **Result**, is a string that confirms the details of the color application including the worksheet name, range, and the color applied.
+
+## Step-by-Step Guide
+
+<Steps>
+### Step 1
+
+Add the **SetColorInExcelWorksheet** node to your canvas.
+
+### Step 2
+
+Select the **M365 Excel Credential** from the credentials list. Ensure it contains valid authentication information.
+
+### Step 3
+
+Enter the **Drive and Item ID** of your Excel file in the format `driveId/items/itemId`.
+
+### Step 4
+
+Specify the **Worksheet Name** where you want to apply color. By default, this is set to "Sheet1".
+
+### Step 5
+
+Input the **Range Address** for the cells you wish to color, such as `A1:B10`.
+
+### Step 6
+
+Enter the **Color** code to set. Acceptable formats include hex codes like `#FF5733` or RGB values `RGB(255,0,0)`.
+
+### Step 7
+
+Once configured, the node will output the **Result**, detailing the color application specifics for further usage in your process.
+</Steps>
+
+<Callout type="info" title="Tip">
+  Ensure that the range address is correctly formatted to avoid application errors.
+</Callout>
+
+## Input/Output Examples
+
+| Worksheet Name | Range Address | Color Code    | Output Value                                              |
+| -------------- | ------------- | ------------- | --------------------------------------------------------- |
+| Sheet1         | A1:A5         | #FF5733       | "Color successfully applied to Sheet1 A1:A5 with #FF5733" |
+| Data           | B2:C4         | RGB(0,255,0)  | "Color successfully applied to Data B2:C4 with RGB(0,255,0)" |
+
+## Common Mistakes & Troubleshooting
+
+| Problem                                                         | Solution                                                                                                           |
+| --------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------ |
+| **Invalid Drive and Item ID**                                   | Ensure the ID is correctly formatted as `driveId/items/itemId`.                                                    |
+| **Range Address Errors**                                        | Verify the format and existence of the range in your Excel sheet.                                                  |
+| **Unsupported Color Format**                                    | Color must be specified in a recognizable format like hex or RGB; avoid ambiguous descriptions.                     |
+| **Authentication Failure**                                      | Check that M365 Excel Credential is valid and correctly selected.                                                  |
+
+## Real-World Use Cases
+
+- **School Reports**: Color-code students' performance across different subjects for easier grading.
+- **Performance Dashboards**: Highlight KPI achievements with colors to quickly spot positive and negative trends.
+- **Project Management**: Apply colors to timelines and Gantt charts to indicate milestones and deadlines.
+- **Data Sorting**: Distinguish between different categories in sales data with color coding.

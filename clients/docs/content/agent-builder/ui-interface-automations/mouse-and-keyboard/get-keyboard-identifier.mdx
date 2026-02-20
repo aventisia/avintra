@@ -1,0 +1,60 @@
+import { Callout, Steps } from "nextra/components";
+
+# Get Keyboard Identifier
+
+The **Get Keyboard Identifier** node allows you to retrieve the active keyboard layout identifier from your machine's registry. This can be useful when you need to determine the current keyboard setting on your system, especially when interacting with software or systems that depend on specific keyboard layouts for language or regional settings.
+
+For example:
+
+- Identifying the keyboard layout for language-specific applications.
+- Ensuring compatibility with software that requires particular keyboard inputs.
+
+## Configuration Options
+
+| Field Name              | Description                                           | Input Type | Required? | Default Value        |
+| ----------------------- | ----------------------------------------------------- | ---------- | --------- | -------------------- |
+| **Keyboard Layout ID**  | The registry key of the active keyboard identifier.   | Output     | No        | KeyboardLayoutId     |
+
+## Expected Output Format
+
+The output of this node is a **string value** representing the keyboard layout identifier (e.g., `00000409` for US English). This value is utilized in downstream nodes that require keyboard layout context.
+
+## Step-by-Step Guide
+
+<Steps>
+### Step 1
+
+Add **Get Keyboard Identifier** node into your flow.
+
+### Step 2
+
+Upon adding, the node automatically retrieves the current keyboard layout identifier from your system's registry.
+
+### Step 3
+
+The retrieved keyboard layout identifier will be available as **KeyboardLayoutId** for use in other nodes.
+
+</Steps>
+
+<Callout type="info" title="Note">
+  The node will not alter system settings; it merely reads and outputs the current keyboard layout setting.
+</Callout>
+
+## Input/Output Examples
+
+| Input  | Output Value  | Output Type             |
+| ------ | ------------- | ----------------------- |
+| _(n/a)_ | `00000409`   | String (Keyboard Layout ID) |
+
+## Common Mistakes & Troubleshooting
+
+| Problem                                      | Solution                                                                                      |
+| -------------------------------------------- | --------------------------------------------------------------------------------------------- |
+| **No output received**                       | Ensure the node is correctly placed in your flow and your system permissions allow registry access. |
+| **Unexpected output format**                 | The output should match standard keyboard layout ID formats. Confirm system registry settings. |
+
+## Real-World Use Cases
+
+- **Software Localization**: Developers can identify the keyboard layout to tailor software behavior or load appropriate resources.
+- **User Support**: IT support can fetch keyboard layouts to assist users facing input issues related to language settings.
+- **Configuration Management**: Automatically log or record keyboard layouts as part of system configuration documentation.

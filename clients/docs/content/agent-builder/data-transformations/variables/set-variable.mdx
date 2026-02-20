@@ -1,0 +1,71 @@
+import { Callout, Steps } from "nextra/components";
+
+# Set Variable
+
+The **Set Variable** node is designed to store and manage data within your workflow. It allows you to assign a specific value to a variable, which can be referenced or manipulated throughout your process. This feature is particularly useful when you need to reuse values, perform calculations, or handle data dynamically.
+
+For example:
+
+- Store temporary values needed for calculations.
+- Assign values based on user input or previous steps.
+- Keep track of dynamic data that changes during the workflow.
+
+## Configuration Options
+
+| Field Name        | Description                                                                                           | Input Type | Required? | Default Value |
+| ----------------- | ----------------------------------------------------------------------------------------------------- | ---------- | --------- | ------------- |
+| **Variable Name** | The name of the variable you want to set. This uniquely identifies the variable within the workflow.  | Text       | Yes       | _(empty)_     |
+| **Value To Set**  | The value you wish to store in the variable, which can be a text, number, list, object, or expression.| Text       | Yes       | _(empty)_     |
+
+## Expected Output Format
+
+The output of this node is stored in the variable you name. This value can be any data type depending on what you set: text, number, list, object, or even the result of an arithmetic expression.
+
+## Step-by-Step Guide
+
+<Steps>
+
+### Step 1
+
+Add **Set Variable** node into your flow.
+
+### Step 2
+
+In the **Variable Name** field, enter a unique name for your variable. This name will be used to reference the variable in other parts of your workflow.
+
+### Step 3
+
+In the **Value To Set** field, enter the value you wish to store. This can be a straightforward value or a more complex expression, depending on your needs.
+
+### Step 4
+
+The assigned value will automatically be available under the name specified in **Variable Name** for subsequent use in the workflow.
+
+</Steps>
+
+<Callout type="info" title="Note">
+  Ensure the variable name is unique within your workflow to avoid any unexpected overwrites.
+</Callout>
+
+## Input/Output Examples
+
+| Variable Name | Value To Set       | Output Variable Name | Output Value     | Output Type         |
+| ------------- | ------------------ | -------------------- | ---------------- | ------------------- |
+| "count"       | 10                 | "OutVariableValue"   | 10               | Number              |
+| "name"        | "Alice"            | "OutVariableValue"   | "Alice"          | Text                |
+| "list"        | "[1, 2, 3]"        | "OutVariableValue"   | [1, 2, 3]        | List                |
+| "expression"  | "5 + 2"            | "OutVariableValue"   | 7                | Number (Expression) |
+
+## Common Mistakes & Troubleshooting
+
+| Problem                                           | Solution                                                                                         |
+| ------------------------------------------------- | ----------------------------------------------------------------------------------------------- |
+| **Non-unique variable names**                     | Ensure each variable name is unique to prevent conflicts and unintended overwriting of values.   |
+| **Invalid arithmetic expressions**                | Double-check the expression for syntax errors. Only valid arithmetic expressions are supported.  |
+| **Empty variable name or value**                  | Both **Variable Name** and **Value To Set** fields are required. Ensure they are filled out.     |
+
+## Real-World Use Cases
+
+- **Dynamic Calculations**: Storing interim calculation values for future steps.
+- **User Data Handling**: Saving user input to be evaluated or displayed later in the process.
+- **Script Automation**: Reference previously set variables to automate tasks or decision-making logic.

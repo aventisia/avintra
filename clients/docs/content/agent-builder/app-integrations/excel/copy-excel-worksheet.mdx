@@ -1,0 +1,93 @@
+import { Callout, Steps } from "nextra/components";
+
+# Copy Excel Worksheet
+
+The **Copy Excel Worksheet** node allows you to duplicate a worksheet from one workbook into another workbook or within the same workbook. This is especially useful for preserving data, formatting, and layout consistency across multiple workbooks or for creating backup copies within a workbook.
+
+For example:
+
+- Copying a summary sheet from a template workbook into new project workbooks.
+- Duplicating a worksheet within the same workbook for version control or testing.
+
+## Configuration Options
+
+| Field Name              | Description                                                                                     | Input Type | Required? | Default Value    |
+| ----------------------- | ----------------------------------------------------------------------------------------------- | ---------- | --------- | ---------------- |
+| **Source Workbook**     | The Excel Workbook object containing the worksheet to copy.                                     | Text       | Yes       | _(empty)_        |
+| **Copy Mode**           | Specifies how to identify the worksheet to copy (by Name or Index).                             | Select     | Yes       | Name             |
+| **Worksheet Name**      | The name of the worksheet to copy. _Required if Copy Mode is "Name"._                           | Text       | No        | _(empty)_        |
+| **Worksheet Index**     | The index of the worksheet to copy. _Required if Copy Mode is "Index"._                         | Text       | No        | _(empty)_        |
+| **Target Workbook**     | The Excel Workbook where the worksheet will be copied. If not provided, copy occurs in the same workbook. | Text       | No        | _(empty)_        |
+| **Paste Position**      | Specifies where to paste the copied worksheet in the target workbook.                           | Select     | No        | LastWorksheet    |
+
+## Expected Output Format
+
+The output of this node is a **new worksheet object** within the specified target workbook. The copied worksheet will appear in the position defined by the Paste Position setting.
+
+## Step-by-Step Guide
+
+<Steps>
+
+### Step 1
+
+Add **Copy Excel Worksheet** node into your flow.
+
+### Step 2
+
+In the **Source Workbook** field, specify the Excel workbook containing the worksheet you wish to copy.
+
+### Step 3
+
+Select the **Copy Mode** to specify how the worksheet should be identified:
+
+- **Name**: Use the worksheet's name.
+- **Index**: Use the worksheet's position index.
+
+### Step 4
+
+Depending on your Copy Mode choice, fill in either the **Worksheet Name** or **Worksheet Index** field:
+
+- If **Name**: Enter the exact name of the worksheet.
+- If **Index**: Enter the position number (index) of the worksheet.
+
+### Step 5
+
+Specify the **Target Workbook** if you want to copy the worksheet to a different workbook. Leave blank to copy within the same workbook.
+
+### Step 6
+
+Choose the **Paste Position** to determine where the copied worksheet will appear in the target workbook:
+
+- **First worksheet**: Paste as the first sheet.
+- **Last worksheet**: Paste as the last sheet.
+
+### Step 7
+
+The copied worksheet will be available as **CopiedWorksheet** for further manipulation or use in other nodes.
+
+</Steps>
+
+<Callout type="info" title="Note">
+  If you do not provide a "Target Workbook," the worksheet will be copied within the same workbook.
+</Callout>
+
+## Input/Output Examples
+
+| Copy Mode | Worksheet Identifier | Target Workbook   | Paste Position | Output        |
+| --------- | -------------------- | ----------------- | -------------- | ------------- |
+| Name      | "Finance Report"     | ReportWorkbook.xlsx | FirstWorksheet | Worksheet object |
+| Index     | 2                    |                   | LastWorksheet  | Worksheet object |
+
+## Common Mistakes & Troubleshooting
+
+| Problem                                             | Solution                                                                                                                                                                          |
+| --------------------------------------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| **"Worksheet Name" or "Index" not found**           | Ensure that the worksheet name or index is correct and exists in the source workbook.                                                                                             |
+| **Target Workbook not updated**                     | Confirm that the target workbook is correctly specified, and its file path is accessible.                                                                                         |
+| **Worksheet not appearing in the desired position** | Check the Paste Position setting. If incorrect, adjust to either "First worksheet" or "Last worksheet" as needed.                                                                 |
+
+## Real-World Use Cases
+
+- **Project Management**: Duplicate a "Project Overview" sheet into each new project workbook for consistent tracking.
+- **Data Analysis**: Copy data analysis sheets between workbooks for comparative analysis.
+- **Report Generation**: Create template copies of commonly used report sheets for each reporting period.

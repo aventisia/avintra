@@ -1,0 +1,90 @@
+import { Callout, Steps } from "nextra/components";
+
+# Sort Data Table
+
+The **Sort Data Table** node allows you to organize your data by sorting rows within a table, based on the values in a specified column. You can choose to sort the data either in ascending or descending order. This functionality is essential when you need to analyze data trends, clean up data presentations, or ensure data consistency in reports.
+
+For example:
+
+- Sorting sales records by date to see the latest transactions first.
+- Arranging products by price to easily compare costs.
+- Organizing survey responses alphabetically by participant's name.
+
+## Configuration Options
+
+| Field Name            | Description                                                                                     | Input Type | Required? | Default Value |
+| --------------------- | ----------------------------------------------------------------------------------------------- | ---------- | --------- | ------------- |
+| **Data Table**        | The DataTable containing the data to be sorted.                                                 | Text       | Yes       | _(empty)_     |
+| **Specify Column With** | Choose whether to specify the column by name or index.                                               | Select     | Yes       | Name          |
+| **Column Name**       | The name of the column to sort by (used when 'Specify Column With' is set to 'Name').            | Text       | No        | _(empty)_     |
+| **Column Index**      | The index of the column to sort by (used when 'Specify Column With' is set to 'Index').          | Text       | No        | _(empty)_     |
+| **Order**             | Specifies whether to sort in ascending or descending order.                                     | Select     | Yes       | Ascending     |
+
+## Expected Output Format
+
+The output of this node is a **Sorted Data Table**, which is a Data Table that has been reordered based on the specified sorting criteria. The result will have the same columns and rows, just rearranged.
+
+## Step-by-Step Guide
+
+<Steps>
+### Step 1
+
+Add the **Sort Data Table** node to your workflow.
+
+### Step 2
+
+In the **Data Table** field, enter the name of the table you want to sort.
+
+### Step 3
+
+Select how you want to specify the column to sort by in the **Specify Column With** dropdown. Options are:
+
+- **Name**: Use the name of the column.
+- **Index**: Use the index number of the column.
+
+### Step 4
+
+If you chose **Name** in the previous step, enter the column name in the **Column Name** field.
+
+### Step 5
+
+If you chose **Index**, enter the column index number in the **Column Index** field.
+
+### Step 6
+
+In the **Order** dropdown, select either:
+
+- **Ascending** to sort from smallest to largest (or A to Z).
+- **Descending** to sort from largest to smallest (or Z to A).
+
+### Step 7
+
+The sorted table will be available as **SortedDataTable** for use in subsequent operations.
+
+</Steps>
+
+<Callout type="info" title="Tip">
+  Ensure that all values in the specified column are of the same data type (e.g., all numbers or all text) to avoid sorting issues.
+</Callout>
+
+## Input/Output Examples
+
+| Specify Column With | Column Name | Column Index | Order      | Output Value Type   |
+| ------------------- | ----------- | ------------ | ---------- | ------------------- |
+| Name                | Price       | _(n/a)_      | Ascending  | Sorted Data Table   |
+| Index               | _(n/a)_     | 2            | Descending | Sorted Data Table   |
+
+## Common Mistakes & Troubleshooting
+
+| Problem                                       | Solution                                                                                                            |
+| --------------------------------------------- | ------------------------------------------------------------------------------------------------------------------- |
+| **No column specified for sorting**           | Ensure you've chosen either **Name** or **Index** in the Specify Column With dropdown, and then filled the associated field. |
+| **Mismatched data types in column**           | Verify that all values in the column used for sorting are of a similar type and format (e.g., all numbers or all strings).  |
+| **Unexpected sorting results**                | Double-check your selected **Order** (Ascending or Descending) to ensure it aligns with your expectations.              |
+
+## Real-World Use Cases
+
+- **Inventory Management**: Sort inventory lists by stock level to prioritize restocking.
+- **Customer Data**: Order customer data by registration date for activity tracking.
+- **Sales Analysis**: Sort sales data by revenue to identify top-performing products.
+- **Event Planning**: Arrange attendee lists by last name for seamless check-in processes.

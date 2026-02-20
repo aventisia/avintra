@@ -1,0 +1,62 @@
+import { Callout, Steps } from "nextra/components";
+
+# Open Terminal Session
+
+The **Open Terminal Session** node enables you to initiate a new command line interface session within your desktop environment. This can be particularly useful for executing shell commands programmatically or managing system-level tasks without manual terminal input.
+
+This is valuable for:
+
+- Automating command line tasks.
+- Integrating command line operations into larger workflows.
+- Running scripts and capturing their outputs over several sessions.
+
+## Configuration Options
+
+| Field Name | Description                                              | Input Type | Required? | Default Value |
+| ---------- | -------------------------------------------------------- | ---------- | --------- | ------------- |
+| **Result** | Provides the session ID of the opened terminal session.  | Read-only  | No        | Result        |
+
+## Expected Output Format
+
+The output of this node is an identifier for the terminal session. This is a **session ID**, typically returning as a text value such as a string of characters or numbers that uniquely identify the session.
+
+## Step-by-Step Guide
+
+<Steps>
+### Step 1
+
+Add the **Open Terminal Session** node into your flow using the 'Add' option.
+
+### Step 2
+
+Configure any additional nodes to use the **Result** value for subsequent actions or processing. The **Result** will contain the session ID of the opened terminal session.
+
+### Step 3
+
+Link other nodes that require terminal session interaction using the session ID provided by the **Result** field.
+
+</Steps>
+
+<Callout type="info" title="Note">
+  Ensure you have the necessary permissions and environment settings to open terminal sessions on your desktop platform.
+</Callout>
+
+## Input/Output Examples
+
+| Example Input | Example Output | Output Description                      |
+| ------------- | -------------- | --------------------------------------- |
+| _(none)_      | 12345abc       | Example session ID returned as output.  |
+
+## Common Mistakes & Troubleshooting
+
+| Problem                                       | Solution                                                                                      |
+| --------------------------------------------- | --------------------------------------------------------------------------------------------- |
+| **Permission Errors**                         | Verify user permissions allow opening of terminal sessions. Adjust permissions if necessary.  |
+| **No Output or Session ID**                   | Double-check node connections and ensure environment supports terminal session initiation.    |
+| **Unexpected Closure of Terminal Session**   | Ensure terminal processes or dependent scripts are not terminating sessions prematurely.      |
+
+## Real-World Use Cases
+
+- **Deploy Scripts**: Automate deployment scripts execution through terminal commands.
+- **Monitoring Systems**: Initiate multiple terminal sessions for monitoring system logs or executing monitoring scripts.
+- **Batch Operations**: Run batch files or scripts automatically as part of a broader automation process.

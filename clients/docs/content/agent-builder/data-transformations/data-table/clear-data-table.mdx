@@ -1,0 +1,53 @@
+import { Callout, Steps } from "nextra/components";
+
+# Clear Data Table
+
+The **Clear Data Table** node is designed to empty out all rows from a specified data table while maintaining its structural integrity. This is useful when you need to refresh a data table, ensuring it contains no data but retains its columns and setup. Common usage scenarios include resetting tables before populating them with new data or clearing temporary data collections.
+
+## Configuration Options
+
+| Field Name     | Description                                                                | Input Type | Required? | Default Value |
+| -------------- | -------------------------------------------------------------------------- | ---------- | --------- | ------------- |
+| **Data Table** | The data table variable you intend to clear. It must be created or assigned earlier. | Text       | Yes       | _(empty)_     |
+
+## Expected Output Format
+
+There is no additional data output from this node except for the confirmation that the specified data table has been cleared of all rows. The table structure (columns and headers) remains intact and operational for subsequent actions.
+
+## Step-by-Step Guide
+
+<Steps>
+### Step 1
+
+Add the **Clear Data Table** node to your automation flow.
+
+### Step 2
+
+In the **Data Table** field, specify the data table variable you want to clear. Ensure this table has been created or exists in a previous step.
+
+### Step 3
+
+Execute your workflow. The data table will be emptied of all rows, but its structure, such as columns and headers, will be preserved.
+
+</Steps>
+
+<Callout type="info" title="Note">
+  The **Clear Data Table** node does not delete the table itself or alter its structural setup. It only removes the data within.
+</Callout>
+
+## Input/Output Examples
+
+- **Input**: Data Table assigned as `SalesDataTable`
+- **Output**: `SalesDataTable` is cleared of all entries. The table's original schema (columns and headers) remains unchanged.
+
+## Common Mistakes & Troubleshooting
+
+| Problem                                     | Solution                                                                            |
+| ------------------------------------------- | ----------------------------------------------------------------------------------- |
+| **No data table specified**                 | Ensure that the **Data Table** field is filled with an appropriate table variable.   |
+| **Table structure mistakenly thought lost** | Remember, this action only clears rows, not the structure of the table.             |
+
+## Real-World Use Cases
+
+- **Data Refresh**: Regularly clearing entries from a log table at the end of each day while preserving column definitions.
+- **Data Reprocessing**: Emptying temp tables used for batch data uploads before starting a new upload batch.

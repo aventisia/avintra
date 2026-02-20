@@ -1,0 +1,74 @@
+import { Callout, Steps } from "nextra/components";
+
+# Lock Workstation
+
+The **Lock Workstation** node is designed to enhance security by automatically locking your computer's display. This is especially useful in an office environment where you might step away from your desk frequently, as it ensures that unauthorized users cannot access your workstation in your absence.
+
+With this node, you can:
+
+- Lock your workstation to keep data secure.
+- Optionally use alternative locking methods if the standard lock operation is unsupported by your system.
+
+## Configuration Options
+
+| Field Name   | Description                                                                            | Input Type | Required? | Default Value |
+| ------------ | -------------------------------------------------------------------------------------- | ---------- | --------- | ------------- |
+| **Force Lock** | Activates alternative locking methods if the default lock fails.                   | Switch     | No        | False         |
+
+## Expected Output Format
+
+The output of this node consists of two configurable outputs:
+
+- **Success**: A boolean value indicating whether the workstation was successfully locked (e.g., `true` or `false`).
+- **Method Used**: A string describing which method was used to lock the workstation (e.g., `"Standard"` or `"Alternative"`).
+
+## Step-by-Step Guide
+
+<Steps>
+### Step 1
+
+Add the **Lock Workstation** node to your automation flow.
+
+### Step 2
+
+Locate the **Force Lock** toggle in the configuration panel.
+
+### Step 3
+
+Determine if you need to force the lock. If unsure or your system has issues with standard locking, enable the **Force Lock** toggle.
+
+### Step 4
+
+Execute the flow. The node will attempt to lock the workstation. 
+
+### Step 5
+
+The result will be available through the output values: **Success** and **Method Used**. Use these to verify the lock status in subsequent nodes.
+
+</Steps>
+
+<Callout type="info" title="Tip">
+  If you experience issues with locking your workstation using the standard method, consider turning on the **Force Lock** switch to employ alternate strategies.
+</Callout>
+
+## Input/Output Examples
+
+| Force Lock | Success | Method Used  | Explanation                                                             |
+| ---------- | ------- | ------------ | ----------------------------------------------------------------------- |
+| False      | true    | Standard     | Workstation locked successfully using the standard method.              |
+| True       | true    | Alternative  | Standard method failed, alternative method was used to lock successfully. |
+| False      | false   | N/A          | Locking failed due to insufficient permissions or system support.       |
+
+## Common Mistakes & Troubleshooting
+
+| Problem                                               | Solution                                                                                               |
+| ----------------------------------------------------- | ------------------------------------------------------------------------------------------------------ |
+| **Workstation does not lock**                         | Ensure your system supports the standard locking method. If problems persist, enable **Force Lock**.   |
+| **Incorrect output value for Success**                | Verify the conditions under which the node was executed and ensure correct flow setup.                 |
+| **Unexpected Method Used output**                     | Check system settings and ensure alternative methods are permissible if they were expected to be used. |
+
+## Real-World Use Cases
+
+- **Enhancing Security**: Automatically lock workstations in a shared office space to prevent unauthorized access.
+- **Remote Administration**: Use in remote work scenarios to ensure workstations are locked when not in use.
+- **Compliance Protocols**: Implement as part of security compliance to ensure data protection policies are enforced.

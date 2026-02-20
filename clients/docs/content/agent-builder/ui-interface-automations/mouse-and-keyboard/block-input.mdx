@@ -1,0 +1,56 @@
+import { Callout, Steps } from "nextra/components";
+
+# Block Input
+
+The **Block Input** node temporarily blocks user mouse and keyboard inputs during flow execution, allowing the automation to perform actions without any interference. This is particularly useful when you need a sequence to perform unattended and prevent accidental user interruptions.
+
+For example:
+
+- Ensure mouse movements and clicks by the user don't conflict with an ongoing automation process.
+- Stop keyboard inputs from affecting form entries that an automation is completing.
+
+## Configuration Options
+
+| Field Name | Description                                                  | Input Type | Required? | Default Value |
+| ---------- | ------------------------------------------------------------ | ---------- | --------- | ------------- |
+| **Block It** | Toggle to enable or disable blocking of user input.          | Switch     | No        | _(empty)_     |
+
+## Expected Output Format
+
+There is no data output from this node, as its function is related to controlling user input. No value is returned by this node.
+
+## Step-by-Step Guide
+
+<Steps>
+### Step 1
+
+Add **Block Input** node into your flow.
+
+### Step 2
+
+In the **Block It** field, use the toggle switch to enable or disable input blocking:
+
+- **Enable**: Prevents any mouse or keyboard input from the user during the automation.
+- **Disable**: Does not block user input, allowing normal interaction.
+
+### Step 3
+
+Proceed to the next steps in your flow as required.
+
+</Steps>
+
+<Callout type="warning" title="Important Note">
+  While blocking is enabled, regular user input (mouse and keyboard actions) will not be allowed until the node operation completes or is manually disabled. Ensure you have an exit strategy or means to regain control in emergencies.
+</Callout>
+
+## Common Mistakes & Troubleshooting
+
+| Problem                                           | Solution                                                                                           |
+| ------------------------------------------------- | -------------------------------------------------------------------------------------------------- |
+| **Toggle not responding**                         | Ensure the flow is in a state where the node can be activated. Double-check connections and flow state. |
+| **Unintentional blocking**                        | If input needs to remain unblocked, make sure the **Block It** toggle is set to "Disable".          |
+
+## Real-World Use Cases
+
+- **Unattended Processes**: Ensures that scheduled or unattended automation workflows proceed without interruption from users accidentally using their devices.
+- **Secure Operations**: Temporary lock to ensure secure inputs and actions without interference during sensitive data handling.

@@ -1,0 +1,71 @@
+import { Callout, Steps } from "nextra/components";
+
+# Retrieve Subfolders from Directory
+
+The **Retrieve Subfolders from Directory** node is designed to help you list the paths of all subdirectories contained within a specified main directory. This can be particularly useful when organizing files, managing folder structures, or preparing data for further processing in other nodes.
+
+For example:
+
+- Quickly gather a list of all project-related subfolders within a larger directory.
+- Fetch paths of specific directories for monitoring or automated processing.
+
+## Configuration Options
+
+| Field Name                | Description                                                                      | Input Type | Required? | Default Value |
+| ------------------------- | -------------------------------------------------------------------------------- | ---------- | --------- | ------------- |
+| **Source Folder Path**    | The full path of the directory from which subfolders will be retrieved.           | Text       | Yes       | _(empty)_     |
+| **Include Nested Subfolders** | Determines whether to include all nested subdirectories recursively.              | Switch     | No        | False         |
+| **Subfolder List**        | The collection of subfolder paths found in the specified directory.                | N/A (Output)   | No        | Subfolders    |
+
+## Expected Output Format
+
+The output of this node is a **list of folder paths**, each representing a subdirectory within the given source folder.
+
+- The paths in the list will be in string format, with each path representing a full directory path.
+- If "Include Nested Subfolders" is enabled, the list will include nested paths recursively, otherwise it will only list immediate subfolders.
+
+## Step-by-Step Guide
+
+<Steps>
+### Step 1
+
+Add the **Retrieve Subfolders from Directory** node into your flow.
+
+### Step 2
+
+In the **Source Folder Path** field, enter the path of the folder from which you wish to list subdirectories.
+
+### Step 3
+
+Toggle the **Include Nested Subfolders** switch if you want to include all nested subdirectories in the list. If left off, only the immediate subfolders will be listed.
+
+### Step 4
+
+The list of subfolder paths will be accessible as **Subfolder List** for use in subsequent nodes or actions.
+
+</Steps>
+
+<Callout type="info" title="Tip">
+  If you only need the subfolders from the top level, ensure the **Include Nested Subfolders** switch is turned off.
+</Callout>
+
+## Input/Output Examples
+
+| Source Folder Path        | Include Nested Subfolders | Output Value                                        | Output Type       |
+| ------------------------- | ------------------------- | --------------------------------------------------- | ----------------- |
+| `C:/Projects`             | False                     | ["C:/Projects/2021", "C:/Projects/Archives"]        | List of Strings   |
+| `C:/Projects`             | True                      | ["C:/Projects/2021", "C:/Projects/Archives", "C:/Projects/2021/April"] | List of Strings   |
+
+## Common Mistakes & Troubleshooting
+
+| Problem                                        | Solution                                                                                      |
+| ---------------------------------------------- | --------------------------------------------------------------------------------------------- |
+| **Path not found error**                       | Double-check the **Source Folder Path** to ensure it is correct and that the directory exists. |
+| **No output generated**                        | Make sure your source folder contains subdirectories and the **Source Folder Path** is correct. |
+| **Unexpected subdirectories listed**           | If additional unexpected folders are listed, verify the **Include Nested Subfolders** setting. |
+
+## Real-World Use Cases
+
+- **Project Management**: Easily list all team folders within a main project directory to assign tasks or email notifications.
+- **Data Backup**: Compile a list of subfolders for batch backup operations or to include in backup scripts.
+- **File Organization**: Quickly review all subdirectories for tasks, reports, or financial records within a department folder.

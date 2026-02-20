@@ -1,0 +1,66 @@
+import { Callout, Steps } from "nextra/components";
+
+# Write Text to JSON File
+
+The **Write Text to JSON File** node enables you to save data in JSON format to a specified location on your computer. This is useful when you need to store structured data, such as configurations or records, that can be easily read and shared with other applications or processes.
+
+Use cases include:
+
+- Saving application settings in a structured format.
+- Storing user data that applications can reload.
+- Transferring data between different software that supports JSON.
+
+## Configuration Options
+
+| Field Name      | Description                                                                 | Input Type | Required? | Default Value |
+| --------------- | --------------------------------------------------------------------------- | ---------- | --------- | ------------- |
+| **JSON Content** | The data you wish to save, formatted as a JSON string.                      | Text       | Yes       | _(empty)_     |
+| **File Path**    | The complete file path where you want the JSON data to be written.          | Text       | Yes       | _(empty)_     |
+
+## Expected Output Format
+
+This node writes the specified JSON content to a file. There is no data output from the node itself; however, the content is stored in `.json` file format at the specified path.
+
+## Step-by-Step Guide
+
+<Steps>
+### Step 1
+
+Add the **Write Text to JSON File** node to your automation flow.
+
+### Step 2
+
+In the **JSON Content** field, enter the data you want to write. Ensure it is structured in valid JSON format (e.g., objects, arrays).
+
+### Step 3
+
+In the **File Path** field, specify the full path including the filename where you wish to save the JSON data (e.g., `C:\Data\output.json`).
+
+### Step 4
+
+Review the configuration to ensure that both fields are filled correctly.
+
+### Step 5
+
+Execute the flow to save the content to the specified file.
+
+</Steps>
+
+<Callout type="warning" title="Important">
+  Ensure the file path provided has the correct permission settings to allow writing. Otherwise, the operation may fail.
+</Callout>
+
+## Common Mistakes & Troubleshooting
+
+| Problem                                                   | Solution                                                                                                                                                 |
+| --------------------------------------------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| **Invalid JSON Content**                                  | Validate your JSON content's structure to ensure it is properly formatted; consider using online JSON validators.                                         |
+| **Incorrect File Path**                                   | Double-check that the path is correct, includes the filename, and has the proper directory permissions.                                                  |
+| **Missing File Extension in Path**                        | Ensure you specify the file name with the correct extension (e.g., `file.json`).                                                                         |
+| **Permission Denied**                                     | Make sure the specified path has write access or is not in a restricted directory. Consider using a path within your user documents.                     |
+
+## Real-World Use Cases
+
+- **Application Settings Storage**: Save and reload user or application settings efficiently in a JSON format.
+- **Data Exchange**: Write specified data into JSON to easily transfer between different software platforms.
+- **Backup Configurations**: Regularly back up configuration files into JSON to ensure data safety and retrievability.

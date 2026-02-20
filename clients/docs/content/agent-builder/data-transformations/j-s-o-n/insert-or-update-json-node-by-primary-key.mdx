@@ -1,0 +1,87 @@
+import { Callout, Steps } from "nextra/components";
+
+# Insert or Update JSON Node by Primary Key
+
+The **Insert or Update JSON Node by Primary Key** allows you to locate an object within a JSON structure by matching a primary key value, and then insert or update a specified key-value pair within that object. This can be particularly useful for dynamically managing JSON data, such as updating configuration settings or modifying datasets for reporting.
+
+## Configuration Options
+
+| Field Name           | Description                                                                                   | Input Type | Required? | Default Value |
+| -------------------- | --------------------------------------------------------------------------------------------- | ---------- | --------- | ------------- |
+| **JSON Content**     | The root JSON structure where the search will begin. This should either be a JSON string or token. | Text       | Yes       | _(empty)_     |
+| **Primary Key Name** | The name of the key that uniquely identifies the target object (e.g., 'id', 'name').          | Text       | Yes       | _(empty)_     |
+| **Primary Key Value**| The value of the primary key, which is used to locate the object you wish to modify.          | Text       | Yes       | _(empty)_     |
+| **Target Key Name**  | The name of the key within the matched object that you wish to insert or update.              | Text       | Yes       | _(empty)_     |
+| **Target Key Value** | The new value to assign to the target key.                                                    | Text       | Yes       | _(empty)_     |
+
+## Expected Output Format
+
+The output of this node is an **updated JSON structure**, which reflects the new or modified key-value pair within the matched object.
+
+- The output will contain the complete JSON structure with the specified updates.
+- It will be available as `UpdatedJsonContent`.
+
+## Step-by-Step Guide
+
+<Steps>
+### Step 1
+
+Add **Insert or Update JSON Node by Primary Key** node into your workflow.
+
+### Step 2
+
+In the **JSON Content** field, enter the JSON data where you want to search and update.
+
+### Step 3
+
+Input the **Primary Key Name** that identifies the object you are targeting, such as `"id"`.
+
+### Step 4
+
+Enter the **Primary Key Value** to match the correct object (e.g., `"1234"`).
+
+### Step 5
+
+Specify the **Target Key Name** that you want to insert or update within the matched object.
+
+### Step 6
+
+Provide the **Target Key Value** you want to assign to the specified target key.
+
+### Step 7
+
+Check the output labeled **Updated JSON Content** for your modified JSON structure.
+
+</Steps>
+
+<Callout type="info" title="Tip">
+  Ensure that your JSON content is correctly formatted. Invalid JSON will lead to errors.
+</Callout>
+
+## Input/Output Examples
+
+### Example Input
+
+- **JSON Content**: `{ "users": [{"id":"1234", "name":"John Doe"}, {"id":"5678", "name":"Jane Smith"}] }`
+- **Primary Key Name**: `id`
+- **Primary Key Value**: `1234`
+- **Target Key Name**: `name`
+- **Target Key Value**: `Johnathan Doe`
+
+### Expected Output
+
+- **Updated JSON Content**: `{ "users": [{"id":"1234", "name":"Johnathan Doe"}, {"id":"5678", "name":"Jane Smith"}] }`
+
+## Common Mistakes & Troubleshooting
+
+| Problem                                               | Solution                                                                                           |
+| ----------------------------------------------------- | -------------------------------------------------------------------------------------------------- |
+| **Node not updating the JSON**                        | Verify that the **Primary Key Name** and **Primary Key Value** correctly match an object in your JSON structure. |
+| **JSON Format Error**                                 | Ensure your JSON content is valid. Use an online JSON validator tool to check this.                |
+| **Unexpected Output**                                 | Check that you've specified the correct **Target Key Name** and **Target Key Value**.              |
+
+## Real-World Use Cases
+
+- **Configuration Management**: Automatically update configuration settings for applications.
+- **User Data Updates**: Modify user records in a JSON dataset, such as changing a username or user preferences.
+- **Inventory Systems**: Adjust product details by updating JSON entries based on item IDs.

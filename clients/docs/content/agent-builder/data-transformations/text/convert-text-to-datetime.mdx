@@ -1,0 +1,73 @@
+import { Callout, Steps } from "nextra/components";
+
+# Convert Text to DateTime
+
+The **Convert Text to DateTime** node is designed to transform a textual representation of a date and/or time into a structured DateTime format. This is particularly useful when you have date or time information in text form and need to process it in a consistent DateTime format for reporting, scheduling, or further data processing tasks.
+
+For example:
+
+- Converting "2023-02-25" to a DateTime format.
+- Processing text input like "02/25/2023" using a specific format.
+- Translating time indications such as "2:30 PM" into a computer-readable DateTime format.
+
+## Configuration Options
+
+| Field Name          | Description                                                                                  | Input Type | Required? | Default Value   |
+| ------------------- | -------------------------------------------------------------------------------------------- | ---------- | --------- | --------------- |
+| **Text to Convert** | The text value that you want to convert into a DateTime.                                     | Text       | Yes       | _(empty)_       |
+| **Use Custom Format** | A toggle to decide whether to use a custom format string for conversion.                     | Switch     | No        | False           |
+| **Format String**   | The format string to interpret the input. Appears only if "Use Custom Format" is enabled.    | Text       | No        | _(empty)_       |
+
+## Expected Output Format
+
+The output of this node is a **DateTime value**, which can be used in further data processing or reporting. The converted DateTime is accessed using the label **ResultDateTime**.
+
+## Step-by-Step Guide
+
+<Steps>
+### Step 1
+
+Add **Convert Text to DateTime** node into your flow.
+
+### Step 2
+
+In the **Text to Convert** field, enter the text representing the date and/or time that you need to convert.
+
+### Step 3
+
+If your text follows a specific format that's not standard, enable the **Use Custom Format** switch.
+
+### Step 4
+
+If you've enabled **Use Custom Format**, the **Format String** field will appear. Enter the specific date/time format code (for example, `yyyy-MM-dd` for a year-month-day format).
+
+### Step 5
+
+The converted date and/or time can now be used as **ResultDateTime** in subsequent nodes.
+</Steps>
+
+<Callout type="important" title="Note">
+  Remember, enabling **Use Custom Format** without providing an accurate **Format String** may lead to conversion errors.
+</Callout>
+
+## Input/Output Examples
+
+| Use Custom Format | Input Text      | Format String | Output Value                         | Output Type  |
+| ----------------- | --------------- | ------------- | ------------------------------------ | ------------ |
+| No                | "2023-02-25"    | _(n/a)_       | DateTime equivalent of February 25, 2023 | DateTime    |
+| Yes               | "25-Feb-2023"   | `dd-MMM-yyyy` | DateTime equivalent of February 25, 2023 | DateTime    |
+| Yes               | "2:30 PM"       | `h:mm a`      | DateTime equivalent for 2:30 PM today | DateTime    |
+
+## Common Mistakes & Troubleshooting
+
+| Problem                                              | Solution                                                                                          |
+| ----------------------------------------------------- | ------------------------------------------------------------------------------------------------- |
+| **Format String option not visible**                  | Ensure you have enabled the **Use Custom Format** switch to reveal the **Format String** field.    |
+| **Conversion errors despite correct format**          | Double-check if the **Text to Convert** matches exactly with the supplied **Format String**.       |
+| **Unexpected results without custom format**          | If the text format isn't standard (e.g., "MM/dd/yyyy"), ensure there's no typo or formatting issue.|
+
+## Real-World Use Cases
+
+- **Event Scheduling**: Auto-convert event planning dates from text to DateTime for calendaring applications.
+- **Data Import**: Streamline date/time data transformation when importing information from text-based reports.
+- **User Input Processing**: Convert user-entered dates and times into a standardized format for backend processing.

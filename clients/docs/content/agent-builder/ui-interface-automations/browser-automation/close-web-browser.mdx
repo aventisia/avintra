@@ -1,0 +1,65 @@
+import { Callout, Steps } from "nextra/components";
+
+# Close Web Browser
+
+The **Close Web Browser** node is designed to help you manage your browser windows effortlessly by closing a specific web browser instance or all active browser windows at once. This node is particularly useful in automations where you need to ensure that browser windows are not left open once an operation is complete, thus saving system resources and maintaining efficiency.
+
+For example:
+
+- Closing a specific instance of a browser after a data entry task is completed.
+- Shutting down all browser windows in one action to ensure no residual tasks are running.
+
+## Configuration Options
+
+| Field Name             | Description                                                                          | Input Type | Required? | Default Value |
+| ---------------------- | ------------------------------------------------------------------------------------ | ---------- | --------- | ------------- |
+| **Web Browser Instance** | Specify the browser instance you wish to close.                                      | Text       | Yes       | _(empty)_     |
+| **Close All Instances**  | Enable this option to close all currently open browser windows instead of just one. | Switch     | No        | _(empty)_     |
+
+## Expected Output Format
+
+There is no direct output value from this node; its primary function is to perform an action on the specified browser instance(s).
+
+## Step-by-Step Guide
+
+<Steps>
+
+### Step 1
+
+Add **Close Web Browser** node into your automation flow.
+
+### Step 2
+
+In the **Web Browser Instance** field, input the identifier for the specific browser instance you want to close.
+
+### Step 3
+
+If you wish to close all browser instances, toggle the **Close All Instances** switch to "On".
+
+### Step 4
+
+Once configured, the node will close the selected browser instance or all instances based on your settings.
+
+</Steps>
+
+<Callout type="info" title="Note">
+  The **Close All Instances** option overrides the need for a specific browser instance input. If enabled, all browsers will be closed regardless of the input in **Web Browser Instance**.
+</Callout>
+
+## Input/Output Examples
+
+There are no specific data input/output examples since the action is performed directly on the browser windows.
+
+## Common Mistakes & Troubleshooting
+
+| Problem                                                 | Solution                                                                                  |
+| ------------------------------------------------------- | ----------------------------------------------------------------------------------------- |
+| **No instance closes**                                  | Ensure that the correct **Web Browser Instance** is specified and the instance is active.  |
+| **All instances close unintentionally**                 | Check that the **Close All Instances** switch is set according to your desired action.     |
+| **Error on non-existent instance**                      | Double-check the identifier for the **Web Browser Instance** to ensure it is valid.        |
+
+## Real-World Use Cases
+
+- **Data Security**: Automatically close browser instances after sensitive customer information is processed.
+- **Resource Management**: Close all browser windows at the end of a batch process to free up system memory.
+- **Automation Finishing Step**: Finalize an automation sequence by closing browsers, creating a clean endpoint.

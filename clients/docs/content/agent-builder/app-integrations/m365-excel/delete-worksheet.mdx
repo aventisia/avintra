@@ -1,0 +1,78 @@
+import { Callout, Steps } from "nextra/components";
+
+# Delete Worksheet
+
+The **Delete Worksheet** node allows you to remove a specific worksheet from an Excel file stored in OneDrive or SharePoint using the Microsoft 365 Excel API. This is particularly useful when you need to manage or clean up Excel files by deleting unnecessary or outdated worksheets programmatically.
+
+Use cases include:
+
+- Deleting temporary or outdated worksheets to avoid clutter in your Excel files.
+- Automating the cleanup of Excel files as part of a larger workflow.
+- Removing worksheets as a step in data processing or file management tasks.
+
+## Configuration Options
+
+| Field Name              | Description                                                                                                        | Input Type           | Required? | Default Value     |
+| ----------------------- | ------------------------------------------------------------------------------------------------------------------ | -------------------- | --------- | ----------------- |
+| **M365 Excel Credential** | The M365 Excel credential containing valid information like tenant ID, client ID, and client secret for authentication. | Credential Select    | Yes       | _(empty)_         |
+| **Drive and Item ID**   | The unique Drive ID and Item ID of the Excel file in OneDrive or SharePoint. Provide in this format: `driveId/items/itemId`. | Text                 | Yes       | _(empty)_         |
+| **Worksheet Name**      | The exact name of the worksheet you wish to delete.                                                                | Text                 | Yes       | Worksheet Name    |
+
+## Expected Output Format
+
+The output of this node provides a **status code and message** indicating the outcome of the delete operation. It tells you whether the worksheet was successfully deleted.
+
+- **Result**: A status message and code regarding the deletion operation.
+
+## Step-by-Step Guide
+
+<Steps>
+### Step 1
+
+Add the **Delete Worksheet** node into your workflow.
+
+### Step 2
+
+Select the **M365 Excel Credential** from the list. Ensure it contains valid tenant ID, client ID, and client secret for successful authentication.
+
+### Step 3
+
+In the **Drive and Item ID** field, enter the unique Drive ID and Item ID path of the target Excel file. Use the specified format: `driveId/items/itemId`.
+
+### Step 4
+
+Enter the **Worksheet Name** of the sheet you wish to delete. Ensure this matches exactly the worksheet's name in the target Excel file.
+
+### Step 5
+
+Execute the node to carry out the worksheet deletion process.
+
+Should be resulting in a **Result** status message indicating success or any errors encountered.
+
+</Steps>
+
+<Callout type="info" title="Tip">
+  Ensure the worksheet name is spelled exactly as it appears in the Excel file to avoid errors in deletion.
+</Callout>
+
+## Input/Output Examples
+
+| Drive and Item ID           | Worksheet Name | Result              |
+| --------------------------- | -------------- | ------------------- |
+| `drive123/items/item456`    | Sheet1         | Success: Sheet1 deleted |
+| `driveABC/items/itemDEF`    | Sheet2         | Error: Sheet2 not found |
+
+## Common Mistakes & Troubleshooting
+
+| Problem                                               | Solution                                                                 |
+| ----------------------------------------------------- | ------------------------------------------------------------------------ |
+| **Invalid Credentials**                               | Ensure your M365 credentials are up-to-date and include tenant ID, client ID, and client secret. |
+| **Incorrect Drive or Item ID Format**                 | Confirm you're using the correct format: `driveId/items/itemId`.          |
+| **Worksheet Name Case Sensitivity**                   | Double-check the worksheet name for case or typographical differences.    |
+| **Worksheet Not Found**                               | Verify the worksheet exists in the Excel file and the name is correct.   |
+
+## Real-World Use Cases
+
+- **Monthly Report Clean-up**: Automatically delete previous month's data sheets from a shared Excel file.
+- **Data Processing Flows**: Remove intermediate calculation sheets after processing is complete.
+- **File Management**: Clean outdated sheets from shared team documents for more efficient collaboration.

@@ -1,0 +1,66 @@
+import { Callout, Steps } from "nextra/components";
+
+# Start Service
+
+The **Start Service** node allows you to conveniently start a Windows service that is currently stopped. This node is useful when managing system or application service states within automated processes, ensuring that necessary services are running as required for various tasks or operations.
+
+## Configuration Options
+
+| Field Name              | Description                                                                                      | Input Type | Required? | Default Value |
+| ----------------------- | ------------------------------------------------------------------------------------------------ | ---------- | --------- | ------------- |
+| **Service to Start**    | Choose the service you wish to start from the predefined list.                                   | Select     | Yes       | _(empty)_     |
+| **Custom Service Name** | Optionally specify a custom service name not listed in the **Service to Start** options.         | Text       | No        | _(empty)_     |
+
+## Expected Output Format
+
+This node does not produce an output in the form of data or text but will update the status of the selected service to "started" within the system.
+
+## Step-by-Step Guide
+
+<Steps>
+### Step 1
+
+Add the **Start Service** node to your workflow.
+
+### Step 2
+
+In the **Service to Start** dropdown, select the service you wish to start. 
+
+- For example, choose **"SQL Server (MSSQLSERVER)"** if you want to start the SQL Server service.
+
+### Step 3
+
+Alternatively, if the service you need is not listed, enter its exact name in the **Custom Service Name** field.
+
+### Step 4
+
+Confirm your selection and save your workflow to activate the process.
+
+</Steps>
+
+<Callout type="info" title="Note">
+  You can only use the **Custom Service Name** if the service is not available in the dropdown list.
+</Callout>
+
+## Input/Output Examples
+
+One common application of this node might be as follows:
+
+- **Selected Service**: SQL Server (MSSQLSERVER)
+- **Custom Service Name**: _(leave blank if selected from the list)_
+
+After executing, the specified service will start running if it was previously stopped.
+
+## Common Mistakes & Troubleshooting
+
+| Problem                                         | Solution                                                                                             |
+| ----------------------------------------------- | ---------------------------------------------------------------------------------------------------- |
+| **Service does not start**                      | Verify that the service name is correctly spelled, especially if entered manually in **Custom Service Name**.        |
+| **Selecting the wrong service**                 | Double-check your selection in the **Service to Start** dropdown to ensure the correct service is chosen.           |
+| **Custom Service Name entered but service not listed** | Ensure that the service is not under **Service to Start** if using **Custom Service Name** field.        |
+
+## Real-World Use Cases
+
+- **Database Management**: Automatically ensure that essential database services like SQL Server are running before executing database scripts.
+- **System Maintenance**: Start specific services that require occasional manual restarting due to updates or maintenance tasks.
+- **Application Readiness**: Make sure application-specific services are running before user-access to optimize load times and user experience.

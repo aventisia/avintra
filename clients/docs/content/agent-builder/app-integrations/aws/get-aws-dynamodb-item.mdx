@@ -1,0 +1,83 @@
+import { Callout, Steps } from "nextra/components";
+
+# Get AWS DynamoDB Item
+
+The **Get AWS DynamoDB Item** node is used to retrieve specific items from an AWS DynamoDB table using its primary keys. This node simplifies accessing data stored in DynamoDB, making it easy for non-developers to use within their workflows. It allows you to specify which table and keys to query, and optionally simplifies the response to just the key values of the item.
+
+Being able to fetch database records seamlessly and integrate them into your workflow is valuable for tasks like reporting, auditing, or when supplementary data is needed for process decision-making.
+
+## Configuration Options
+
+| Field Name                       | Description                                                                                      | Input Type | Required? | Default Value |
+|----------------------------------|--------------------------------------------------------------------------------------------------|------------|-----------|---------------|
+| **Credential to connect with**   | Select the AWS credential to use for authentication.                                             | Text       | Yes       | _(empty)_     |
+| **Table Name or ID**             | The name of the DynamoDB table to retrieve an item from.                                         | Text       | Yes       | _(empty)_     |
+| **Keys**                         | The primary key(s) of the item to retrieve.                                                      | Text       | Yes       | _(empty)_     |
+| **Simplify**                     | If enabled, returns only the key values of the retrieved item.                                   | Switch     | No        | _(empty)_     |
+| **AWS Region**                   | The AWS region where the DynamoDB table is located (e.g., us-east-1). Default is "us-east-1".   | Text       | No        | us-east-1     |
+
+## Expected Output Format
+
+The output from this node can be in several formats depending on the configuration:
+
+- **API Response**: Raw JSON response from AWS DynamoDB.
+- **Retrieved Item**: The complete set of attribute values of the retrieved item.
+- **Key Values**: Only the key values of the retrieved item, if "Simplify" is turned on.
+
+## Step-by-Step Guide
+
+<Steps>
+### Step 1
+
+Add the **Get AWS DynamoDB Item** node into your flow.
+
+### Step 2
+
+In the **Credential to connect with** field, choose the appropriate AWS credential.
+
+### Step 3
+
+Enter the **Table Name or ID** representing the DynamoDB table you wish to query.
+
+### Step 4
+
+Specify the **Keys** for the item you wish to retrieve. These are the primary key(s) used to uniquely identify your item.
+
+### Step 5
+
+(Optional) Enable the **Simplify** switch to receive only the key values of the item, if desired.
+
+### Step 6
+
+Set the **AWS Region** to where your DynamoDB table is hosted. If unsure, use the default "us-east-1".
+
+### Step 7
+
+The retrieved item will appear as **Retrieved Item** or **Key Values** depending on whether you enabled the Simplify option.
+
+</Steps>
+
+<Callout type="info" title="Tip">
+  Ensure your AWS credentials have permission to read from the specified DynamoDB table.
+</Callout>
+
+## Input/Output Examples
+
+| AWS Region | Table Name     | Keys            | Simplify  | Output Type          | Example Output                               |
+|------------|----------------|-----------------|-----------|----------------------|---------------------------------------------|
+| us-east-1  | "Customers"    | "CustomerId:123"| Disabled  | Retrieved Item       | `{"Name":"John", "Email":"john@example.com"}` |
+| us-west-2  | "Products"     | "ProductId:456" | Enabled   | Key Values           | `{"ProductId":"456"}`                         |
+
+## Common Mistakes & Troubleshooting
+
+| Problem                                                | Solution                                                                                                                   |
+|--------------------------------------------------------|----------------------------------------------------------------------------------------------------------------------------|
+| **Incorrect keys specified**                            | Double-check the key values are correct and match what's in the table. Keys must correspond to the primary keys used.     |
+| **Region mismatch**                                     | Verify the AWS Region corresponds to where your table is actually located.                                                  |
+| **Permission errors**                                   | Make sure your AWS credentials allow you to access the DynamoDB table.                                                      |
+
+## Real-World Use Cases
+
+- **Customer Data Retrieval**: Automatically fetch customer data from a database for service inquiries or personalized communication.
+- **Inventory Check**: Quickly access product details stored in a database to update inventory levels or verify product information.
+- **Order Processing**: Retrieve order details from a centralized order management system to streamline the execution of tasks like shipping or billing.

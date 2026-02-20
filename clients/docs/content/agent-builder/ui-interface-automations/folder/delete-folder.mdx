@@ -1,0 +1,50 @@
+import { Callout, Steps } from "nextra/components";
+
+# Delete Folder
+
+The **Delete Folder** node allows you to remove a folder and all of its contents from your file system. Use this node when you need to clean up or free up space by permanently deleting folders that are no longer needed. Be cautious, as this action cannot be undone, and all data within the folder will be permanently erased.
+
+## Configuration Options
+
+| Field Name            | Description                                                          | Input Type | Required? | Default Value |
+| --------------------- | -------------------------------------------------------------------- | ---------- | --------- | ------------- |
+| **Folder to Delete**  | The full path of the folder you want to remove from the file system. | Text       | Yes       | _(empty)_     |
+
+## Expected Output Format
+
+The output of this node does not provide a direct data value. Instead, it performs the action of deleting the specified folder, and any subsequent nodes dependent on the presence of the folder may be affected.
+
+## Step-by-Step Guide
+
+<Steps>
+### Step 1
+
+Add the **Delete Folder** node to your workflow.
+
+### Step 2
+
+In the **Folder to Delete** field, enter the full path of the folder you wish to remove.
+
+### Step 3
+
+Proceed with your workflow, ensuring no subsequent nodes rely on the deleted folder unless recreated later in the flow.
+
+</Steps>
+
+<Callout type="warning" title="Caution">
+  Deleting a folder is a permanent action that cannot be undone. Ensure that you have backups or no longer need the data before proceeding.
+</Callout>
+
+## Common Mistakes & Troubleshooting
+
+| Problem                                  | Solution                                                                                             |
+| ---------------------------------------- | ---------------------------------------------------------------------------------------------------- |
+| **Incorrect Folder Path**                | Verify the folder path is correct and exists. Incorrect paths will result in failure to delete.      |
+| **Permission Denied**                    | Ensure you have necessary permissions to delete the folder. Sometimes administrative rights are needed. |
+| **Dependent Workflow Errors**            | Check subsequent workflow nodes for dependencies on the deleted folder and adjust them accordingly.  |
+
+## Real-World Use Cases
+
+- **Project Clean-Up**: Automatically remove old project folders after archiving data elsewhere to maintain a tidy workspace.
+- **Temporary Data Management**: Manage temporary application folders by ensuring they are deleted post-session to conserve disk space.
+- **Batch File Operations**: As part of a larger automation task, remove unnecessary folders to help other processes run smoothly.

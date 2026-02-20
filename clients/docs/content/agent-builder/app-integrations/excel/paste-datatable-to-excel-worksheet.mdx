@@ -1,0 +1,79 @@
+import { Callout, Steps } from "nextra/components";
+
+# Paste DataTable to Excel Worksheet
+
+The **Paste DataTable to Excel Worksheet** node is designed to facilitate the transfer of data from a data table directly into an Excel worksheet. This functionality is particularly useful when you want to automate data entry tasks, merge processed data into an existing Excel file, or populate spreadsheets for reporting purposes.
+
+For example:
+
+- Automating weekly sales reports by pasting data directly from a database into designated Excel worksheets.
+- Compiling summary data from various sources into a single Excel sheet for analysis or presentation.
+- Preparing data for detailed Excel-based calculations and manipulations.
+
+## Configuration Options
+
+| Field Name           | Description                                                                                   | Input Type | Required? | Default Value |
+| -------------------- | --------------------------------------------------------------------------------------------- | ---------- | --------- | ------------- |
+| **Worksheet Instance** | The Excel Worksheet object where the data will be pasted.                                     | Text       | Yes       | _(empty)_     |
+| **Data Table**       | The DataTable containing the data to paste into the Excel worksheet.                        | Text       | Yes       | _(empty)_     |
+| **Start Row**        | The row number where pasting should start.                                                   | Text       | Yes       | 1             |
+| **Start Column**     | The column number where pasting should start.                                                | Text       | Yes       | 1             |
+
+## Expected Output Format
+
+The result of this operation is the direct insertion of data from the provided DataTable into the specified Excel worksheet. This does not produce an output value in the flow but modifies the Excel Worksheet directly.
+
+## Step-by-Step Guide
+
+<Steps>
+### Step 1
+
+Add the **Paste DataTable to Excel Worksheet** node into your flow.
+
+### Step 2
+
+In the **Worksheet Instance** field, enter the reference to the target Excel Worksheet where you intend to paste the data.
+
+### Step 3
+
+Enter the name or reference of the **Data Table** containing the data you wish to paste into the worksheet.
+
+### Step 4
+
+Specify the **Start Row** in the worksheet where you want to begin pasting the data. The default starting row is 1.
+
+### Step 5
+
+Specify the **Start Column** in the worksheet where you want to begin pasting the data. The default starting column is 1.
+
+### Step 6
+
+Ensure all configurations are correct and proceed to execute the node to transfer data from the DataTable to the Excel worksheet.
+
+</Steps>
+
+<Callout type="info" title="Tip">
+  The **Start Row** and **Start Column** must refer to a valid position in the Excel worksheet, ensuring enough space is available to paste the entire DataTable.
+</Callout>
+
+## Input/Output Examples
+
+| Worksheet Instance | Data Table    | Start Row | Start Column | Description                               |
+| ------------------ | ------------- | --------- | ------------ | ----------------------------------------- |
+| "Sheet1"           | "SalesData"   | 1         | 1            | Pastes SalesData table to the start of Sheet1. |
+| "ReportSheet"      | "MonthlyData" | 5         | 2            | Pastes MonthlyData table starting from row 5 and column 2 in ReportSheet. |
+
+## Common Mistakes & Troubleshooting
+
+| Problem                                                   | Solution                                                                                                                                                 |
+| --------------------------------------------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| **Invalid Worksheet Reference**                           | Ensure the **Worksheet Instance** is a valid Excel worksheet that exists and is open when executing the node.                                             |
+| **Data Not Pasting Properly**                             | Check the **Start Row** and **Start Column** are correct and there is sufficient space to accommodate the DataTable within the worksheet.               |
+| **Worksheet Locked or ReadOnly**                          | Ensure the Excel worksheet is not protected or set to read-only mode, as this may prevent data from being pasted.                                        |
+| **Non-Existent Data Table**                               | Verify the Data Table reference is accurate and available in the context where the node is being used.                                                   |
+
+## Real-World Use Cases
+
+- **Budget Analysis Reports**: Automatically input budget data from multiple tables into a unified Excel report for analysis.
+- **Data Migration Projects**: Seamlessly transfer data from legacy systems into Excel for further processing and transformation.
+- **Performance Tracking**: Populate performance metrics directly into Excel spreadsheets for ongoing tracking and evaluation.

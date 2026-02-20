@@ -1,0 +1,69 @@
+import { Callout, Steps } from "nextra/components";
+
+# Move Cursor on Terminal Session
+
+The **Move Cursor on Terminal Session** node allows you to move the cursor within a terminal session to a specified position defined by X and Y coordinates. This is essential when you need to automate terminal tasks that require cursor movement for editing, navigation, or command execution.
+
+For example:
+
+- Quickly move the cursor to a specific line when automating script execution.
+- Navigate within terminal applications to adjust settings or configurations.
+- Efficiently edit files by moving the cursor to targeted text areas.
+
+## Configuration Options
+
+| Field Name  | Description                                       | Input Type | Required? | Default Value |
+| ----------- | ------------------------------------------------- | ---------- | --------- | ------------- |
+| **SessionId** | The session ID of the terminal session.          | Text       | Yes       | _(empty)_     |
+| **X**        | The X-coordinate of the target position.          | Text       | Yes       | _(empty)_     |
+| **Y**        | The Y-coordinate of the target position.          | Text       | Yes       | _(empty)_     |
+
+## Expected Output Format
+
+There is no direct output value from this node. Instead, it executes a cursor move operation within the specified terminal session, updating the terminal's state based on the provided coordinates.
+
+## Step-by-Step Guide
+
+<Steps>
+### Step 1
+
+Add the **Move Cursor on Terminal Session** node into your flow.
+
+### Step 2
+
+In the **SessionId** field, enter the ID of the terminal session you wish to control. This ensures that the cursor movement affects the correct terminal.
+
+### Step 3
+
+Enter the **X** coordinate to specify the horizontal position to which the cursor should move.
+
+### Step 4
+
+Enter the **Y** coordinate to specify the vertical position for the cursor.
+
+### Step 5
+
+Execute your automation, and the cursor will move to the specified position in the terminal session.
+</Steps>
+
+<Callout type="info" title="Tip">
+  Ensure the terminal session specified by **SessionId** is currently active. If the session is closed or inactive, the cursor movement will not occur.
+</Callout>
+
+## Input/Output Examples
+
+No standard input/output examples are applicable as this node directly manipulates the terminal session state without producing an output value.
+
+## Common Mistakes & Troubleshooting
+
+| Problem                                   | Solution                                                                                                                                 |
+|-------------------------------------------|------------------------------------------------------------------------------------------------------------------------------------------|
+| **Invalid SessionId entered**             | Verify that the SessionId corresponds to a valid, active terminal session.                                                                |
+| **Cursor does not move as expected**      | Check that both **X** and **Y** coordinates are within the boundaries of the terminal.                                                    |
+| **Empty Coordinates**                     | Ensure that both **X** and **Y** fields have been filled with numeric values representing the target coordinates in the terminal session. |
+
+## Real-World Use Cases
+
+- **Scripting Automation**: Quickly locate specific script lines for automation scripts that require precision in command execution.
+- **Configuration Management**: Move the cursor to specific configuration sections in terminal-based applications to make necessary adjustments.
+- **Text File Editing**: Efficiently edit specific parts of a text file by directing the cursor to begin modifications.

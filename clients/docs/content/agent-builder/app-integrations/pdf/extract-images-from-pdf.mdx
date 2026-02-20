@@ -1,0 +1,64 @@
+import { Callout, Steps } from "nextra/components";
+
+# Extract Images from PDF
+
+The **Extract Images from PDF** node allows you to extract all images from a specified PDF file and save them into a target folder of your choice. This node is particularly useful for batch processing images from PDFs, such as extracting product images from catalogs, media from reports, or for archiving purposes.
+
+## Configuration Options
+
+| Field Name         | Description                                          | Input Type | Required? | Default Value |
+| ------------------ | ---------------------------------------------------- | ---------- | --------- | ------------- |
+| **Source PDF Path**| The path to the source PDF file.                     | Text       | Yes       | _(empty)_     |
+| **Target Folder**  | The target folder to save the extracted images.      | Text       | Yes       | _(empty)_     |
+
+## Expected Output Format
+
+The output of this node consists of a series of image files, saved in the specified target folder. Images are typically saved in common formats like JPEG or PNG, depending on the images extracted from the PDF.
+
+## Step-by-Step Guide
+
+<Steps>
+### Step 1
+
+Add the **Extract Images from PDF** node into your flow.
+
+### Step 2
+
+In the **Source PDF Path** field, enter the full file path of the PDF from which you want to extract images. Make sure the path points to an existing file on your device.
+
+### Step 3
+
+In the **Target Folder** field, specify the folder location where you want the extracted images to be stored. Ensure the folder exists on your device before starting the extraction.
+
+### Step 4
+
+Once configured, execute the flow to extract the images from the specified PDF. The images will be saved in the target folder you specified.
+
+</Steps>
+
+<Callout type="info" title="Tip">
+  Ensure that you have access permission to the specified PDF file and the target folder, as this could affect the extraction process.
+</Callout>
+
+## Input/Output Examples
+
+- **Example Input**:
+  - **Source PDF Path**: `/documents/sample.pdf`
+  - **Target Folder**: `/images/output/`
+
+- **Expected Output**:
+  - Images extracted from `/documents/sample.pdf` saved as `/images/output/image1.jpg`, `/images/output/image2.png`, etc.
+
+## Common Mistakes & Troubleshooting
+
+| Problem                                     | Solution                                                                                                                                                           |
+| ------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
+| **File Not Found Error**                    | Ensure that the path specified in **Source PDF Path** is correct and the file exists.                                                                              |
+| **No Write Permission to Target Folder**    | Confirm that you have the necessary permissions to write to the specified target folder. If not, try selecting a different folder or contact your system admin.     |
+| **No Images Extracted**                     | Double-check that the PDF contains images. Some PDFs may not have extractable images if they are not embedded in a standard way.                                    |
+
+## Real-World Use Cases
+
+- **Digital Archives**: Extract images from historical document PDFs to create a digital image archive.
+- **Content Creation**: Gather product images from PDF catalogs for use in marketing materials or web platforms.
+- **Research Materials**: Extract graphs and charts from scientific papers for easy reference and comparison.

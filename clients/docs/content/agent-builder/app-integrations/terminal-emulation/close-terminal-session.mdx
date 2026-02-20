@@ -1,0 +1,54 @@
+import { Callout, Steps } from "nextra/components";
+
+# Close Terminal Session
+
+The **Close Terminal Session** node is designed to securely terminate an active terminal session. This is particularly useful to free up resources, maintain system security, and ensure unattended tasks don't consume unnecessary computing power by closing any terminal sessions that are no longer in use.
+
+For example:
+
+- Disconnecting from a terminal session after completing tasks to maintain security.
+- Ensuring resources are available for other tasks by ending inactive sessions.
+
+## Configuration Options
+
+| Field Name  | Description                                          | Input Type | Required? | Default Value |
+| ----------- | ---------------------------------------------------- | ---------- | --------- | ------------- |
+| **SessionId** | The session ID of the terminal session you want to close. | Text       | Yes       | _(empty)_      |
+
+## Expected Output Format
+
+The **Close Terminal Session** node does not return a direct output in terms of data or values. Instead, its function is to perform the action of closing the specified terminal session.
+
+## Step-by-Step Guide
+
+<Steps>
+### Step 1
+
+Add **Close Terminal Session** node into your flow.
+
+### Step 2
+
+In the **SessionId** field, enter the session ID of the terminal you wish to terminate. This value is required to identify which session to close.
+
+### Step 3
+
+Complete the flow by connecting the **Close Terminal Session** node with other nodes as needed, ensuring that the session closure fits the desired automation sequence.
+
+</Steps>
+
+<Callout type="info" title="Tip">
+  Make sure you have the correct session ID to avoid accidentally closing the wrong terminal session, which could interrupt active processes.
+</Callout>
+
+## Common Mistakes & Troubleshooting
+
+| Problem                                   | Solution                                                                                        |
+| ----------------------------------------- | ----------------------------------------------------------------------------------------------- |
+| **Invalid Session ID**                    | Verify that the session ID entered in the **SessionId** field is correct. Re-check any potential typos. |
+| **Session Not Closing**                   | Ensure that the session is actually active and that the session ID corresponds to an open terminal. |
+
+## Real-World Use Cases
+
+- **Remote Workstations**: Automatically close terminal sessions on remote workstations after processes complete to secure sensitive information.
+- **Development Environments**: Ensure that development or testing environments are not left open unintentionally by scripting terminal session closures at the end of tasks.
+- **Resource Management**: Free up system resources by ensuring only necessary terminal sessions remain open, thereby improving system performance.

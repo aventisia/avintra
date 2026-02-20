@@ -1,0 +1,80 @@
+import { Callout, Steps } from "nextra/components";
+
+# Select Radio Button on Web Page
+
+The **Select Radio Button on Web Page** node is designed to automate the task of interacting with radio button elements on web pages. This node enables you to select a specified radio button, offering the flexibility to choose the method of locating the element on the page. It is useful in scenarios where you need to automate form submissions, user preference selections, or any process requiring interaction with radio buttons.
+
+## Configuration Options
+
+| Field Name              | Description                                                                                       | Input Type | Required? | Default Value |
+| ----------------------- | ------------------------------------------------------------------------------------------------- | ---------- | --------- | ------------- |
+| **Web Browser Instance**| Enter or choose the variable that contains the web browser instance to work with.                 | Text       | Yes       | _(empty)_     |
+| **Find Type**           | Specifies how to find the element (e.g., ID, XPath, CssSelector).                                 | Select     | Yes       | XPath         |
+| **Value To Find**       | The value used to locate the element (e.g., 'username', '//input[@id='email']').                  | Text       | Yes       | _(empty)_     |
+| **Wait for Page Load**  | If true, waits for the page to fully load after selection.                                        | Switch     | No        | True          |
+| **Timeout for Page Load** | Maximum time in seconds to wait for the page to load.                                           | Text       | No        | 60            |
+| **Handle Dialog**       | Specifies what to do if a dialog appears after selecting the radio button.                        | Select     | No        | DoNothing     |
+| **Dialog Button to Press** | The name of the button to press if a dialog appears (e.g., 'Ok', 'Cancel').                    | Text       | No        | Ok            |
+
+## Expected Output Format
+
+This node doesn't produce an output value. Instead, it performs an action to select a radio button on a web page within the specified web browser instance.
+
+## Step-by-Step Guide
+
+<Steps>
+### Step 1
+
+Add **Select Radio Button on Web Page** node into your automation flow.
+
+### Step 2
+
+In the **Web Browser Instance** field, enter or choose the variable that represents the web browser context you are automating.
+
+### Step 3
+
+Select the **Find Type** method by which you will locate the radio button on the web page. Options include XPath, ID, CssSelector, among others.
+
+### Step 4
+
+In the **Value To Find** field, specify the exact value or expression (such as an XPath) necessary to identify the radio button element.
+
+### Step 5
+
+(Optional) Enable the **Wait for Page Load** switch if you want the node to pause until the web page is fully loaded after the radio button selection.
+
+### Step 6
+
+(Optional) Set **Timeout for Page Load** to define how long (in seconds) the node should wait for the page to fully load.
+
+### Step 7
+
+(Optional) In **Handle Dialog**, choose an action if a dialog pops up after choosing the radio button, such as closing or ignoring it.
+
+### Step 8
+
+(Optional) Specify the **Dialog Button to Press** in cases where interaction with a dialog is necessary.
+
+</Steps>
+
+<Callout type="info" title="Tip">
+  Use precise and accurate XPath or CSS selectors to ensure the proper radio button is selected without errors.
+</Callout>
+
+## Input/Output Examples
+
+Not applicable.
+
+## Common Mistakes & Troubleshooting
+
+| Problem                                                | Solution                                                                                                      |
+| ------------------------------------------------------ | ------------------------------------------------------------------------------------------------------------- |
+| **Element not found error**                            | Double-check the **Find Type** and **Value To Find** fields for accuracy and correctness.                     |
+| **Dialog not handled correctly**                       | Ensure you have selected an appropriate option in **Handle Dialog** and specified relevant settings correctly. |
+| **Page not loading in time**                           | Consider increasing the **Timeout for Page Load** value to accommodate for slower internet speed or page load. |
+
+## Real-World Use Cases
+
+- **User Surveys**: Automatically selecting specific options in survey forms.
+- **Form Processing**: Scripted interactions with web forms where radio button selections are required, like selecting gender or subscription types.
+- **Preference Settings**: Automating user interface settings or preferences that rely on radio button inputs.

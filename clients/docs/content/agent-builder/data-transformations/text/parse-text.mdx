@@ -1,0 +1,88 @@
+import { Callout, Steps } from "nextra/components";
+
+# Parse Text
+
+The **Parse Text** node helps you find occurrences of specific subtexts or patterns in large volumes of text data. It can be particularly useful when you need to locate and extract information using keywords or regular expressions within text fields, emails, or documents.
+
+For example:
+
+- Searching for a specific keyword in customer feedback.
+- Extracting all email addresses from a block of text.
+- Locating and counting occurrences of a term in a report.
+
+## Configuration Options
+
+| Field Name                | Description                                                                 | Input Type | Required? | Default Value  |
+| ------------------------- | --------------------------------------------------------------------------- | ---------- | --------- | -------------- |
+| **Text To Parse**         | The text you want the node to search through.                               | Text       | Yes       | _(empty)_      |
+| **Search Pattern**        | Keywords or regular expression pattern to search for.                       | Text       | Yes       | _(empty)_      |
+| **Is Regular Expression** | Treats the search pattern as a regular expression if true.                  | Switch     | No        | false          |
+| **Start Parsing At Position** | The position within the text to start the search.                           | Text       | No        | 0              |
+| **First Occurrence Only** | Returns only the first match if true.                                       | Switch     | No        | true           |
+| **Ignore Case**           | Ignores whether letters are uppercase or lowercase during the search.       | Switch     | No        | false          |
+
+## Expected Output Format
+
+The output is presented as `ParsedMatches`, a list of matches found, depending on the search criteria. This could vary from a single string to a list of strings if multiple occurrences are found and not limited to the first match.
+
+## Step-by-Step Guide
+
+<Steps>
+### Step 1
+
+Add the **Parse Text** node into your flow.
+
+### Step 2
+
+In the **Text To Parse** field, enter the text you would like to search through.
+
+### Step 3
+
+Specify the **Search Pattern** that you are looking for in the text.
+
+### Step 4
+
+Toggle **Is Regular Expression** if your search pattern is a regular expression.
+
+### Step 5
+
+Decide if you want to start searching from a specific position within the text by entering a value in **Start Parsing At Position**.
+
+### Step 6
+
+Select **First Occurrence Only** if you only wish to find the first instance of your search pattern.
+
+### Step 7
+
+Enable **Ignore Case** if you want the search to be case-insensitive.
+
+### Step 8
+
+View the results as **Parsed Matches** for use elsewhere in your project.
+</Steps>
+
+<Callout type="info" title="Tip">
+  Always test your regular expression pattern and search text on small data sets first to ensure accurate parsing.
+</Callout>
+
+## Input/Output Examples
+
+| Search Pattern | Text To Parse                  | Is Regular Expression | Output Value              | Output Type            |
+| -------------- | ------------------------------ | --------------------- | ------------------------- | ---------------------- |
+| email          | "Contact us at info@example.com" | false                  | ["info@example.com"]      | List of Strings        |
+| \d{3}-\d{2}    | "Order ID: 123-45, 678-90"     | true                   | ["123-45", "678-90"]     | List of Strings        |
+| apple          | "An apple a day keeps the doctor away" | false | ["apple"] | List of Strings        |
+
+## Common Mistakes & Troubleshooting
+
+| Problem                                  | Solution                                                                                                                                    |
+| ---------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------- |
+| **No matches found**                      | Double-check the Search Pattern and ensure the Text To Parse contains the expected text. Ensure Correct case settings if Ignore Case is off. |
+| **Regular expression syntax error**      | Review the regular expression pattern for any syntax errors. Make use of online regex testers to verify your pattern before use.             |
+| **Unexpected output**                    | Verify whether you have opted to ignore case or search from a specific start position as intended.                                          |
+
+## Real-World Use Cases
+
+- **Customer Feedback Analysis**: Extract keywords from customer reviews to analyze feedback trends.
+- **Data Mining in Emails**: Locate all email addresses within a batch of email texts quickly.
+- **Pattern Detection in Logs**: Search for specific error codes in server logs.

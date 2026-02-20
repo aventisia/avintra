@@ -1,0 +1,66 @@
+import { Callout, Steps } from "nextra/components";
+
+# Send Key to Terminal Session
+
+The **Send Key to Terminal Session** node is designed to send control keys (like "Enter" or "Tab") to an active terminal session. This is particularly useful when automating tasks in terminal-based applications where specific key inputs are required to navigate, execute commands, or interact with the session.
+
+## Configuration Options
+
+| Field Name    | Description                                                 | Input Type | Required? | Default Value |
+| ------------- | ----------------------------------------------------------- | ---------- | --------- | ------------- |
+| **SessionId** | The session ID of the terminal session you are interacting with. | Text       | Yes       | _(empty)_     |
+| **Key**       | The control key you wish to send (e.g., 'Enter', 'Tab').    | Text       | Yes       | _(empty)_     |
+
+## Expected Output Format
+
+The node doesn't produce an output value on its own but sends a key to the specified terminal session of type **Desktop Session**. Successful key delivery depends on the active target terminal receiving and processing the key.
+
+## Step-by-Step Guide
+
+<Steps>
+### Step 1
+
+Add **Send Key to Terminal Session** node to your workflow.
+
+### Step 2
+
+In the **SessionId** field, enter the ID of the terminal session you wish to target. This session must be active and previously established in your workflow.
+
+### Step 3
+
+In the **Key** field, input the control key you intend to send. Examples include `Enter`, `Tab`, `Esc`, etc. Ensure the key is applicable to the terminal session's context.
+
+### Step 4
+
+Verify that the intended terminal session is active and ready to receive inputs.
+
+### Step 5
+
+Proceed with other actions or end the workflow as per your requirements.
+
+</Steps>
+
+<Callout type="info" title="Note">
+  The **Send Key to Terminal Session** node doesn't provide a direct output but will confirm key press success indirectly within your terminal's workflow (e.g., by observing expected changes or outcomes).
+</Callout>
+
+## Input/Output Examples
+
+| SessionId   | Key   | Output         |
+| ----------- | ----- | -------------- |
+| `12345678`  | Enter | _(no output)_  |
+| `87654321`  | Tab   | _(no output)_  |
+
+## Common Mistakes & Troubleshooting
+
+| Problem                                     | Solution                                                           |
+| ------------------------------------------- | ------------------------------------------------------------------ |
+| **Invalid SessionId**                       | Ensure you are using a valid and active terminal `SessionId`.      |
+| **Incorrect Key Value**                     | Double-check the key name input. Use standard control key names.   |
+| **Session Inactive or Closed**              | Verify that the terminal session is still open and responsive.     |
+
+## Real-World Use Cases
+
+- **Automating Software Installations**: Use keys like `Enter` to proceed through installation steps in a terminal.
+- **Navigating Terminal Menus**: Employ `Tab` or `Arrow keys` to move within terminal applications.
+- **Script Execution**: Send `Enter` to execute a command in a terminal session after it's typed.

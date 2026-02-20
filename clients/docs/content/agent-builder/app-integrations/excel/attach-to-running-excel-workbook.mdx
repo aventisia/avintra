@@ -1,0 +1,63 @@
+import { Callout, Steps } from "nextra/components";
+
+# Attach to Running Excel Workbook
+
+The **Attach to Running Excel Workbook** node allows you to connect to an open instance of Microsoft Excel running on your computer. If a specific workbook is not open, this node can open it for you. This is particularly useful for automating tasks in Excel without the need to manually open files or create new Excel instances.
+
+- Quickly access and manipulate data in an existing Excel workbook.
+- Automate the process of opening frequently used workbooks.
+- Integrate Excel data into broader workflows without manual intervention.
+
+## Configuration Options
+
+| Field Name          | Description                                                                 | Input Type | Required? | Default Value |
+| ------------------- | --------------------------------------------------------------------------- | ---------- | --------- | ------------- |
+| **Excel Application** | The running Excel Application object to attach to.                           | Text       | Yes       | _(empty)_     |
+| **File Path**       | The full path of the Excel file to open or attach to in the running instance. | Text       | Yes       | _(empty)_     |
+
+## Expected Output Format
+
+The output of this node is a **workbook instance** that represents the attached or newly opened Excel workbook. The data type is defined as a custom `WorkbookInstance` type.
+
+## Step-by-Step Guide
+
+<Steps>
+### Step 1
+
+Add **Attach to Running Excel Workbook** node into your flow.
+
+### Step 2
+
+In the **Excel Application** field, specify the running Excel application instance you wish to connect to.
+
+### Step 3
+
+In the **File Path** field, enter the full file path of the Excel workbook you want to attach to. Make sure the path is correct and the file is accessible.
+
+### Step 4
+
+Once configured, the node will attempt to attach to the specified workbook. If the workbook is not currently open, it will open it for you.
+
+### Step 5
+
+Use the output **Workbook Instance** in subsequent nodes to perform actions on the targeted workbook.
+</Steps>
+
+<Callout type="info" title="Tip">
+  Ensure that the Excel application is running before using this node; otherwise, the node will not be able to attach to any workbook.
+</Callout>
+
+## Common Mistakes & Troubleshooting
+
+| Problem                             | Solution                                                                                                                                       |
+| ----------------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------- |
+| **File Path Incorrect**             | Double-check the file path for errors and ensure the file exists at the specified location.                                                    |
+| **Excel Not Running**               | Start the Excel application before using the node to attach to an Excel workbook.                                                              |
+| **Wrong Excel Application Instance** | Ensure the correct Excel application instance is specified if multiple instances are running.                                                |
+
+## Real-World Use Cases
+
+- **Monthly Reporting**: Automatically open and update monthly report templates stored in Excel.
+- **Data Extraction**: Seamlessly pull data from existing Excel workbooks into your automation workflows.
+- **Data Manipulation**: Attach to specific Excel files and apply transformations or calculations automatically.
+- **Project Tracking**: Easily update task lists or project schedules stored in Excel without manual data entry.

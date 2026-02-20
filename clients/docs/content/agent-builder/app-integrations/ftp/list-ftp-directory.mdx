@@ -1,0 +1,75 @@
+import { Callout, Steps } from "nextra/components";
+
+# List FTP Directory
+
+The **List FTP Directory** node is designed to help you explore the contents of directories on an FTP server. It allows you to list subdirectories and files within a specified directory of your FTP connection. This can be particularly useful for file management tasks, auditing directory contents, or fetching resources stored remotely.
+
+## Configuration Options
+
+| Field Name           | Description                                                                | Input Type | Required? | Default Value    |
+| -------------------- | -------------------------------------------------------------------------- | ---------- | --------- | ---------------- |
+| **FTP Connection**   | The FTP connection object.                                                 | Text       | Yes       | _(empty)_        |
+| **Directory Name**   | The name of the directory to list contents from.                           | Text       | Yes       | _(empty)_        |
+| **List Type**        | Specifies the type of items to list in the FTP directory.                  | Select     | No        | FilesAndFolders  |
+
+## Expected Output Format
+
+The output of this node is a **list of files and/or folders** contained in the specified directory.
+
+- If listing files and folders: the output is a list containing both.
+- If listing files only or folders only, the output corresponds to the selected type.
+
+## Step-by-Step Guide
+
+<Steps>
+### Step 1
+
+Add the **List FTP Directory** node to your flow.
+
+### Step 2
+
+In the **FTP Connection** field, specify the FTP connection. This is necessary to access the FTP server.
+
+### Step 3
+
+Enter the **Directory Name** of the directory you wish to explore. Ensure this directory exists on the FTP server.
+
+### Step 4
+
+Choose the **List Type** from the dropdown menu:
+
+- **Files and Folders**: List all contents including files and folders.
+- **Files**: List only files within the directory.
+- **Folders**: List only subdirectories.
+
+### Step 5
+
+Once configured, the node will output a list in the **Files and Folders Result** field, available for use in subsequent operations.
+
+</Steps>
+
+<Callout type="info" title="Note">
+If the specified directory does not exist, the node will result in an error. Confirm the directory location on the FTP server before running the node.
+</Callout>
+
+## Input/Output Examples
+
+| List Type            | Input Directory | Output                           |
+| -------------------- | --------------- | -------------------------------- |
+| Files and Folders    | /myfiles        | ['file1.txt', 'file2.doc', 'folder1'] |
+| Files                | /myfiles        | ['file1.txt', 'file2.doc']       |
+| Folders              | /myfiles        | ['folder1']                      |
+
+## Common Mistakes & Troubleshooting
+
+| Problem                                         | Solution                                                                                                   |
+| ----------------------------------------------- | ---------------------------------------------------------------------------------------------------------- |
+| **File not found or directory does not exist**  | Verify the directory name spelling and ensure the path exists on the FTP server.                           |
+| **Incorrect FTP connection information**        | Double-check the FTP connection details such as host, username, and password credentials.                  |
+| **Unexpected output**                           | Ensure the correct **List Type** is selected to match your desired output (Files, Folders, or both).       |
+
+## Real-World Use Cases
+
+- **Web Development**: Quickly audit files within a web server directory for updates or changes.
+- **Data Processing**: Automatically retrieve files to be processed or archived from a specified FTP directory.
+- **Maintenance Tasks**: List and monitor folder contents for system logs or report generation.

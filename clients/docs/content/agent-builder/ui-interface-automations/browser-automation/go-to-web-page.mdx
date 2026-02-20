@@ -1,0 +1,94 @@
+import { Callout, Steps } from "nextra/components";
+
+# Go To Web Page
+
+The **Go To Web Page** node is designed to automate web browsing tasks by navigating a web browser instance to a specified URL or controlling its browsing history. This node can perform several actions such as loading a web page, going back or forward in history, and reloading the page. It's particularly useful in workflows that involve data extraction or automation based on web content.
+
+For example:
+
+- Directing a browser to your company's homepage.
+- Testing web navigations by moving back and forth in the browser history.
+- Reloading a webpage to check for updated content.
+
+## Configuration Options
+
+| Field Name                 | Description                                                                             | Input Type | Required? | Default Value |
+| -------------------------- | --------------------------------------------------------------------------------------- | ---------- | --------- | ------------- |
+| **Web Browser Instance**   | Enter or choose the variable that contains the web browser instance to work with.       | Text       | Yes       | _(empty)_     |
+| **Navigate Action**        | Specifies the type of navigation action to perform.                                     | Select     | No        | ToUrl         |
+| **URL**                    | The URL to navigate to when 'Navigate Action' is 'To URL'.                              | Text       | No        | _(empty)_     |
+| **Wait for Page to Load**  | If true, waits for the page to fully load before continuing.                            | Switch     | No        | _(empty)_     |
+| **Timeout for Page Load**  | Maximum time in seconds to wait for the page to load.                                   | Text       | No        | 60            |
+| **Handle Dialog**          | Specifies what to do if a dialog appears after navigating.                              | Select     | No        | DoNothing     |
+| **Dialog Button to Press** | The name of the button to press if a dialog appears (e.g., 'Ok', 'Cancel').             | Text       | No        | Ok            |
+
+## Expected Output Format
+
+The output of this node is not a data value but an action: the browser navigates to the specified web page or modifies browsing as per the chosen settings.
+
+## Step-by-Step Guide
+
+<Steps>
+### Step 1
+
+Add the **Go To Web Page** node into your flow.
+
+### Step 2
+
+In the **Web Browser Instance** field, enter the variable that references your browser you are working with.
+
+### Step 3
+
+Select the **Navigate Action** you want to perform:
+- **To URL**: Navigates to the specified web page.
+- **Back**: Moves back one step in the browser history.
+- **Forward**: Moves forward in the browser history.
+- **Reload Web Page**: Refreshes the current web page.
+
+### Step 4
+
+If you chose **To URL** in Navigate Action, enter the desired web page address in the **URL** field.
+
+### Step 5
+
+(Optional) Enable **Wait for Page to Load** to ensure the page is fully loaded, and specify the **Timeout for Page Load** if needed.
+
+### Step 6
+
+(Optional) In the **Handle Dialog** dropdown, choose the preferred option for handling any dialogs that may appear, and set the **Dialog Button to Press** if applicable.
+
+</Steps>
+
+<Callout type="info" title="Note">
+Make sure the URL entered is complete and correct to avoid navigation errors. Double-check for any typing mistakes or invalid entries.
+</Callout>
+
+## Input/Output Examples
+
+**To URL**:
+- **Input Web Browser Instance**: MyBrowser
+- **Navigate Action**: To URL
+- **URL**: `https://www.example.com`
+- **Expected Action**: Browser navigates to `https://www.example.com`.
+
+**Back**:
+- **Navigate Action**: Back
+- **Expected Action**: Browser moves back one page in the history.
+
+**Reload Web Page**:
+- **Navigate Action**: Reload
+- **Expected Action**: Current web page is refreshed.
+
+## Common Mistakes & Troubleshooting
+
+| Problem                                               | Solution                                                                                                                                             |
+| ----------------------------------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------- |
+| **Invalid or incomplete URL**                         | Ensure that the URL is correctly spelled and includes `http://` or `https://`.                                                                       |
+| **Dialog handling not functioning**                   | Verify you have appropriately set the **Handle Dialog** and **Dialog Button to Press** options.                                                      |
+| **Page not loading as expected**                      | Check the **Wait for Page to Load** and adjust the **Timeout for Page Load** setting if necessary.                                                   |
+
+## Real-World Use Cases
+
+- **Automated Web Scraping**: Navigate to specific web pages and scrape data automatically.
+- **Routine Checks**: Reload a status page at regular intervals to check for updates.
+- **Testing Website Navigation**: Automatically go through a series of page views on a website to verify link functionality.

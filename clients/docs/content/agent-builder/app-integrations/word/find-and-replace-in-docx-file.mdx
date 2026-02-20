@@ -1,0 +1,83 @@
+import { Callout, Steps } from "nextra/components";
+
+# Find and Replace in DOCX file
+
+The **Find and Replace in DOCX file** node allows you to search for specific text within a Word document (.docx) and replace it with different text. This is especially useful for updating documents where certain words or phrases need to be changed consistently, such as replacing old company names with new ones, updating dates, or making corrections throughout a document.
+
+## Configuration Options
+
+| Field Name              | Description                                                                                           | Input Type | Required? | Default Value |
+| ----------------------- | ----------------------------------------------------------------------------------------------------- | ---------- | --------- | ------------- |
+| **Document Path**       | The full file path to the .docx document that you want to modify.                                     | Text       | Yes       | _(empty)_     |
+| **All Matches**         | Set to replace all occurrences of the text or just the first one.                                     | Switch     | No        | True          |
+| **Text to Find**        | The specific text you are searching for in the document.                                              | Text       | Yes       | _(empty)_     |
+| **Text to Replace With**| The new text that will replace the text found in the document.                                        | Text       | Yes       | _(empty)_     |
+| **Use Regular Expressions** | Treats the text to find as a .NET regular expression, allowing complex search patterns.          | Switch     | No        | False         |
+| **Save Document**       | Automatically saves the document after replacements are made.                                         | Switch     | No        | False         |
+
+## Expected Output Format
+
+This node produces no additional data or output values. The result is the modification of the specified .docx file, with text replaced as configured.
+
+## Step-by-Step Guide
+
+<Steps>
+### Step 1
+
+Add **Find and Replace in DOCX file** node into your flow.
+
+### Step 2
+
+In the **Document Path** field, enter the full path of the .docx document you wish to modify.
+
+### Step 3
+
+In the **Text to Find** field, specify the text you want to search for within the document.
+
+### Step 4
+
+In the **Text to Replace With** field, enter the text that should replace the found text.
+
+### Step 5
+
+(Optional) Toggle the **All Matches** switch if you want to replace all instances of the text instead of only the first occurrence.
+
+### Step 6
+
+(Optional) Toggle the **Use Regular Expressions** switch if your text search pattern uses regular expressions.
+
+### Step 7
+
+(Optional) Toggle the **Save Document** switch to automatically save the document after replacements are made.
+
+### Step 8
+
+Once configured, execute the node to perform the find and replace operation in the document.
+
+</Steps>
+
+<Callout type="info" title="Tip">
+  Ensure that the document path is correct and the document is not open in another application, as these could prevent changes from being saved correctly.
+</Callout>
+
+## Input/Output Examples
+
+| Document Path         | Text to Find | Text to Replace With | All Matches | Use Regex | Save Document | Result                                                    |
+| --------------------- | ------------ | -------------------- | ----------- | --------- | ------------- | --------------------------------------------------------- |
+| `C:\Documents\Report.docx` | "2022"       | "2023"               | True        | False    | True          | All instances of "2022" in the document are replaced with "2023", and the document is saved. |
+
+## Common Mistakes & Troubleshooting
+
+| Problem                                            | Solution                                                                                                    |
+| -------------------------------------------------- | ----------------------------------------------------------------------------------------------------------- |
+| **Document not found**                             | Double-check the file path and ensure it points to a valid .docx file.                                      |
+| **No changes saved**                                | Ensure the document is not open in another application and the **Save Document** option is enabled.         |
+| **Text not found in document**                      | Verify that the correct text or pattern is used, and check the **Use Regular Expressions** option if needed. |
+| **Unexpected text replacement results**             | If using regex, ensure patterns are correctly formatted for .NET regular expressions.                       |
+
+## Real-World Use Cases
+
+- **Updating Official Statements**: Quickly bulk replace outdated company names or phrases in policy documents.
+- **Legal Documents**: Change terms or names consistently throughout lengthy contracts or agreements.
+- **Mass Corrections**: Efficiently fix typos across multiple sections of reports or proposals.
+- **Creating Templates**: Replace placeholder text in templates to generate new content.

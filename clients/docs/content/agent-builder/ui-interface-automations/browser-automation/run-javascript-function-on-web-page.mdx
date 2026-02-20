@@ -1,0 +1,83 @@
+import { Callout, Steps } from "nextra/components";
+
+# Run JavaScript Function on Web Page
+
+The **Run JavaScript Function on Web Page** node allows you to execute custom JavaScript code directly on a webpage that is open in a web browser instance. Use this node when you need to automate tasks or retrieve data from a webpage by running JavaScript functions.
+
+For example:
+
+- Manipulating DOM elements like changing text or input values.
+- Extracting page information like the document title or specific data.
+- Interacting with third-party scripts on the page.
+
+## Configuration Options
+
+| Field Name           | Description                                                                                                                                     | Input Type | Required? | Default Value |
+| -------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------- | ---------- | --------- | ------------- |
+| **Web Browser Instance** | Enter or choose the variable that contains the web browser instance to work with.                                                                  | Text       | Yes       | _(empty)_     |
+| **JavaScript Function**  | The JavaScript function to execute (e.g., `document.getElementById("myId").value = "test";` or `return document.title`).                        | Text       | Yes       | _(empty)_     |
+| **Arguments**            | Optional arguments to pass to the script function.                                                                                             | Text       | No        | _(empty)_     |
+| **Timeout Seconds**      | Maximum time in seconds to wait for script execution before failing.                                                                           | Text       | No        | 60            |
+
+## Expected Output Format
+
+The output of this node is the **Result** of the JavaScript execution.
+
+- If the JavaScript function returns a value, this node will output that value.
+- If no value is returned, the output will be empty.
+
+## Step-by-Step Guide
+
+<Steps>
+### Step 1
+
+Add the **Run JavaScript Function on Web Page** node into your flow.
+
+### Step 2
+
+In the **Web Browser Instance** field, enter or select the variable that corresponds to your web browser session.
+
+### Step 3
+
+In the **JavaScript Function** field, type in the JavaScript code you wish to run on the web page.
+
+### Step 4
+
+(Optional) Provide any **Arguments** that your JavaScript function requires.
+
+### Step 5
+
+(Optional) Set the **Timeout Seconds** to specify how long the system should wait for the JavaScript execution to complete before it reports a timeout error (default is 60 seconds).
+
+### Step 6
+
+The outcome of the execution will be available as **Result** for use in subsequent nodes.
+
+</Steps>
+
+<Callout type="info" title="Tip">
+  Ensure that the JavaScript code you input is compatible with the structure of the web page you are working with.
+</Callout>
+
+## Input/Output Examples
+
+| JavaScript Function                         | Arguments      | Output Value          | Description                    |
+| ------------------------------------------- | -------------- | --------------------- | ------------------------------ |
+| `return document.title`                     | _(none)_       | "Page Title"          | Returns the title of the page. |
+| `document.getElementById("myId").value="X"` | _(none)_       | _(empty)_             | Sets the value of an element.  |
+| `return someFunction(arg1, arg2)`           | `"arg1, arg2"` | Result from function. | Executes function with args.   |
+
+## Common Mistakes & Troubleshooting
+
+| Problem                                     | Solution                                                                                                                                                                                           |
+| ------------------------------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| **Web Browser Instance is not valid**       | Ensure the web browser instance variable is correctly set and is active.                                                                                                                           |
+| **JavaScript Function syntax errors**       | Double-check your JavaScript syntax for errors or missing components.                                                                                                                              |
+| **No results are returned**                 | Verify that your JavaScript function includes a `return` statement if you expect a result.                                                                                                         |
+| **Timeout exceeded**                        | Increase the **Timeout Seconds** to allow more time for script execution if the webpage or script complexity causes slow processing.                                                                |
+
+## Real-World Use Cases
+
+- **Data Extraction**: Automatically gather data from a webpage for analysis without manual interventions.
+- **Page Interaction**: Change elements on the page or fill forms automatically.
+- **Dynamic Testing**: Test or verify the functionality of web elements dynamically by executing specific functions.

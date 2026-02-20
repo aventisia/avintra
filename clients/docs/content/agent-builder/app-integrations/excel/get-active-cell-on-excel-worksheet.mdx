@@ -1,0 +1,70 @@
+import { Callout, Steps } from "nextra/components";
+
+# Get Active Cell on Excel Worksheet
+
+The **Get Active Cell on Excel Worksheet** node lets you determine the address of the currently active cell in a specific Excel worksheet. This is useful when you need to identify which cell a user is currently working with, or to automate tasks based on the user's location within a spreadsheet.
+
+For example:
+
+- Retrieve the current cell where input is made.
+- Use the active cell as a reference point for further data manipulation.
+
+## Configuration Options
+
+| Field Name                 | Description                                                                     | Input Type | Required? | Default Value |
+| -------------------------- | ------------------------------------------------------------------------------- | ---------- | --------- | ------------- |
+| **Worksheet Instance**     | The Excel Worksheet instance from which to get the active cell.                 | Text       | Yes       | _(empty)_     |
+
+## Expected Output Format
+
+The output values of this node include:
+
+- **Active Cell Address**: A string indicating the address of the active cell (e.g., `'A1'`).
+- **Active Cell Column Index**: A numeric value representing the column number (e.g., `1` for column A).
+- **Active Cell Row Index**: A numeric value representing the row number (e.g., `1` for row 1).
+
+## Step-by-Step Guide
+
+<Steps>
+### Step 1
+
+Add the **Get Active Cell on Excel Worksheet** node to your flow.
+
+### Step 2
+
+Enter the instance of the worksheet in the **Worksheet Instance** field. This is necessary to identify the specific Excel sheet you are working within.
+
+### Step 3
+
+After entering the worksheet instance, the node will automatically retrieve and display the active cell's address and indices.
+
+### Step 4
+
+Use the outputs (`Active Cell Address`, `Active Cell Column Index`, and `Active Cell Row Index`) for your subsequent workflows or data processing steps.
+
+</Steps>
+
+<Callout type="info" title="Tip">
+  Ensure the worksheet instance is correctly referenced; an incorrect reference will prevent the node from fetching the active cell data.
+</Callout>
+
+## Input/Output Examples
+
+| Worksheet Instance | Active Cell Address | Active Cell Column Index | Active Cell Row Index |
+| ------------------ | -------------------- | ------------------------ | --------------------- |
+| ExampleWorksheet   | A1                  | 1                        | 1                     |
+| ExampleWorksheet   | B3                  | 2                        | 3                     |
+
+## Common Mistakes & Troubleshooting
+
+| Problem                                       | Solution                                                                                           |
+| --------------------------------------------- | -------------------------------------------------------------------------------------------------- |
+| **Incorrect Worksheet Instance Reference**    | Double-check the name and instance of the worksheet to ensure it is entered correctly.             |
+| **No Output Values**                          | Confirm that the worksheet is open and active on your desktop and that you've correctly added it.  |
+| **Unexpected Active Cell Detected**           | Make sure no other script or function is changing the active cell when running the automation.     |
+
+## Real-World Use Cases
+
+- **Data Entry Automation**: Use the active cell as a starting point for data entry automation, ensuring data is input in the correct location.
+- **User Context Tracking**: Track where users are interacting most with the data to optimize workflows.
+- **Dynamic Report Generation**: Generate reports starting from the position where a user currently focuses, personalizing outputs.

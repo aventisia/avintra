@@ -1,0 +1,82 @@
+import { Callout, Steps } from "nextra/components";
+
+# Pad Text
+
+The **Pad Text** node allows you to create a text string of a fixed length by adding specific characters to its left or right side. This is useful when you need to align text data consistently, such as formatting numbers, product codes, or ensuring text fields meet specified lengths in reports or data files.
+
+For example:
+
+- Padding a product code with zeros to ensure it's always 8 characters long.
+- Adding spaces to the right of names to align them in a list.
+
+## Configuration Options
+
+| Field Name           | Description                                                                 | Input Type | Required? | Default Value |
+| -------------------- | --------------------------------------------------------------------------- | ---------- | --------- | ------------- |
+| **Original Text**    | The original text you want to pad.                                          | Text       | Yes       | _(empty)_     |
+| **Padding Direction**| Specifies whether to pad the text on the left or right side.                | Select     | Yes       | _(empty)_     |
+| **Padding Character**| The character(s) to use for padding.                                        | Text       | Yes       | _(empty)_     |
+| **Total Length**     | The desired total length of the padded text.                                | Text       | Yes       | _(empty)_     |
+
+## Expected Output Format
+
+The output of this node is a **formatted text string** with the text padded to meet the specified total length.
+
+- The output will consist of the **original text** with additional **characters** padded to the left or right based on your configuration.
+
+## Step-by-Step Guide
+
+<Steps>
+### Step 1
+
+Add the **Pad Text** node into your flow.
+
+### Step 2
+
+In the **Original Text** field, enter the text you want to modify.
+
+### Step 3
+
+In the **Padding Direction** dropdown, select whether to pad on the left or right:
+
+- **Left**: Pads the text from the left side.
+- **Right**: Pads the text from the right side.
+
+### Step 4
+
+Enter the **Padding Character** or characters to use for padding.
+
+### Step 5
+
+Specify the **Total Length** that the final text should achieve, including the original text and padding.
+
+### Step 6
+
+The padded text will be available as **PaddedText** for use in other nodes.
+
+</Steps>
+
+<Callout type="info" title="Tip">
+  Make sure the **Total Length** specified is greater than or equal to the length of the **Original Text**. Otherwise, padding will not be applied.
+</Callout>
+
+## Input/Output Examples
+
+| Original Text | Padding Direction | Padding Character | Total Length | Output Value     | Output Type |
+| ------------- | ----------------- | ----------------- | ------------ | ---------------- | ----------- |
+| "12345"       | Left              | "0"               | 8            | "00012345"       | Text        |
+| "Text"        | Right             | " "               | 10           | "Text      "     | Text        |
+
+## Common Mistakes & Troubleshooting
+
+| Problem                                                  | Solution                                                                                                                                    |
+| -------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------- |
+| **Padding not applied**                                  | Ensure that **Total Length** is larger than the length of the **Original Text**.                                                            |
+| **Unexpected characters in output**                      | Verify the **Padding Character** field to ensure it contains the intended character or sequence of characters.                               |
+| **Equal Total Length and Original Text**                 | Padding will not occur if the **Total Length** is already equal to the length of the **Original Text**. Increase the total length to apply padding. |
+
+## Real-World Use Cases
+
+- **Consistent Identifier Lengths**: Pad numeric identifiers with leading zeros for databases or reports.
+- **Text Alignment in Tables**: Ensure text aligns properly in tables by adding spaces to reach a consistent length.
+- **Standardized Product Codes**: Format product codes to maintain a uniform appearance across systems.

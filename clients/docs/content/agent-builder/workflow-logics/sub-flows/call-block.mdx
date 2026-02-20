@@ -1,0 +1,51 @@
+import { Callout, Steps } from "nextra/components";
+
+# Call Block
+
+The **Call Block** node is designed to integrate custom logical blocks within your automation flow. A custom block can be considered as a reusable piece of logic that encapsulates a process, so you can simplify your overall flow by referring to it without having to recreate the logic each time. This node is particularly useful when you need recurring actions or checks across multiple parts of your automation.
+
+## Configuration Options
+
+There are no configurable fields for the Call Block node in the current version. It acts as a placeholder to invoke custom blocks defined within your automation environment.
+
+## Expected Output Format
+
+The **Call Block** node serves as a logical reference and does not produce a direct output. Its utility is in triggering the execution of defined custom processes or actions within a flow.
+
+## Step-by-Step Guide
+
+<Steps>
+### Step 1
+
+Add **Call Block** node into your flow where you want to incorporate the custom logic.
+
+### Step 2
+
+Link the **Call Block** node to the relevant entry and exit points within your flow, ensuring it interacts correctly with preceding and subsequent nodes.
+
+### Step 3
+
+Ensure that the custom logical block you wish to call through this node is already defined and can be executed from your current flow arrangement.
+
+</Steps>
+
+<Callout type="note" title="Important">
+  Currently, the **Call Block** node does not have specific settings or fields to configure. It serves as a connector to initiate custom logic.
+</Callout>
+
+## Input/Output Examples
+
+Since the **Call Block** node operates as a logical trigger, its input and output depend solely on the custom block it invokes. There are no standard examples as its behavior is dependent on the user's custom logic design.
+
+## Common Mistakes & Troubleshooting
+
+| Problem                                        | Solution                                                                                           |
+| ---------------------------------------------- | -------------------------------------------------------------------------------------------------- |
+| **Call Block seems inactive**                  | Ensure the custom logic it is supposed to trigger is correctly defined and connected in your flow. |
+| **Errors while executing custom logic**        | Check the integrity and compatibility of the custom block's logic outside this node.               |
+
+## Real-World Use Cases
+
+- **Recurring Data Validation**: Use the **Call Block** to trigger routine checks on data format or quality across multiple data points.
+- **Complex Process Repetition**: Simplify the automation flow by encapsulating a complex set of actions within a custom block that can be called multiple times.
+- **Conditional Logic Execution**: Utilize the **Call Block** to initiate different pathways based on prior conditional checks within your logic.

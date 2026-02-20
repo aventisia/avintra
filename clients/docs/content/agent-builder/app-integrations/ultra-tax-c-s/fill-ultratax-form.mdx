@@ -1,0 +1,68 @@
+import { Callout, Steps } from "nextra/components";
+
+# Fill UltraTax Form
+
+The **Fill UltraTax Form** node is designed to automate the process of filling out forms in the UltraTax CS platform. This tool allows you to seamlessly map and input data from a JSON file directly into form fields. By automating this task, it helps reduce manual data entry errors and saves time for users managing tax forms.
+
+Use this node when you have tax form data stored in JSON format and need to efficiently input it into UltraTax CS forms.
+
+## Configuration Options
+
+| Field Name                                       | Description                                                                                     | Input Type | Required? | Default Value |
+| ------------------------------------------------ | ----------------------------------------------------------------------------------------------- | ---------- | --------- | ------------- |
+| **Form Element**                                 | The specific form element to inspect and fill.                                                  | Text       | Yes       | _(empty)_     |
+| **Max Wait Time (seconds)**                      | The maximum number of seconds the system should wait while identifying the form element.        | Text       | Yes       | 5             |
+| **Number of Fields to Inspect**                  | Indicates how many fields are to be inspected and filled within the form.                       | Text       | Yes       | _(empty)_     |
+| **Form Fields to JSON Fields Mapping File Path** | The complete file path to where the form fields to JSON fields mapping is stored in a JSON file.| Text       | Yes       | _(empty)_     |
+| **JSON data to fill the form**                   | The actual JSON data that will be used to populate the form fields.                             | Text       | Yes       | _(empty)_     |
+
+## Expected Output Format
+
+This node doesn't produce a typical data output, as its primary function is to automate form filling within an application. The result is the completion of form fields based on input JSON data. The status of this operation (success or error) is generally handled within the application.
+
+## Step-by-Step Guide
+
+<Steps>
+### Step 1
+
+Add the **Fill UltraTax Form** node into your workflow.
+
+### Step 2
+
+In the **Form Element** field, specify the target form element you want to inspect and fill.
+
+### Step 3
+
+Set the **Max Wait Time (seconds)** to define how long the system should attempt to find the form element before timing out.
+
+### Step 4
+
+Enter the **Number of Fields to Inspect** based on how many fields you plan to fill out.
+
+### Step 5
+
+Provide the path to your **Form Fields to JSON Fields Mapping File** to establish the connection between form fields and your JSON data.
+
+### Step 6
+
+Supply the **JSON data to fill the form** with the appropriate content you wish to populate in the form fields.
+
+</Steps>
+
+<Callout type="warning" title="Important">
+  Ensure that the field mappings are correct and the JSON data is formatted properly, as incorrect mappings can lead to form errors.
+</Callout>
+
+## Common Mistakes & Troubleshooting
+
+| Problem                                         | Solution                                                                                                                   |
+| ----------------------------------------------- | -------------------------------------------------------------------------------------------------------------------------- |
+| **Form Element not found within Max Wait Time** | Increase the wait time or confirm that the form element ID is correct. Ensure UltraTax CS is running and accessible.        |
+| **JSON data isn't populating fields**           | Verify the JSON mapping file path is correct and that the JSON contains valid and expected data for the form fields.        |
+| **Errors due to incorrect JSON format**         | Double-check the JSON formatting and ensure it matches the expected structure for the form mapping.                         |
+
+## Real-World Use Cases
+
+- **Automating Tax Preparation**: Rapidly fill out complex tax forms using pre-existing client data stored in JSON files.
+- **Bulk Form Processing**: Automate the filling of multiple forms by preparing respective JSON files, saving significant time in tax season.
+- **Error Reduction**: Decrease user input errors in financial forms by standardizing data entry through automated JSON instead of manual inputs.

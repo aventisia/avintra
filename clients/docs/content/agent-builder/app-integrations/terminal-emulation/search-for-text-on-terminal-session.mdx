@@ -1,0 +1,65 @@
+import { Callout, Steps } from "nextra/components";
+
+# Search for Text on Terminal Session
+
+The **Search for Text on Terminal Session** node enables you to identify all instances of a specific text within a terminal session. This can be essential for analyzing logs, auditing command history, or simply finding specific entries during a terminal's activity.
+
+## Configuration Options
+
+| Field Name        | Description                                          | Input Type | Required? | Default Value |
+| ----------------- | ---------------------------------------------------- | ---------- | --------- | ------------- |
+| **SessionId**     | The session ID of the terminal session.              | Text       | Yes       | _(empty)_     |
+| **TextToSearchFor** | The text to search for within the session.           | Text       | Yes       | _(empty)_     |
+
+## Expected Output Format
+
+The output of this node is a **list of occurrences** of the specified text in the terminal session. Each occurrence is identified by its position or context within the session log.
+
+- Output is labeled as **Result**.
+- The output format is generally structured and includes information about each occurrence.
+
+## Step-by-Step Guide
+
+<Steps>
+### Step 1
+
+Add **Search for Text on Terminal Session** node into your flow.
+
+### Step 2
+
+Enter the **SessionId** for the specific terminal session you wish to search in the input field.
+
+### Step 3
+
+In the **TextToSearchFor** field, type the specific text string you want to locate within the terminal session.
+
+### Step 4
+
+The node will process the input and display all occurrences under the **Result** label, which will be available for use in other nodes.
+
+</Steps>
+
+<Callout type="info" title="Tip">
+  Ensure the Session ID is accurate to retrieve results from the correct terminal session.
+</Callout>
+
+## Input/Output Examples
+
+| SessionId | TextToSearchFor | Output (Result)                         |
+| --------- | --------------- | --------------------------------------- |
+| 12345     | error           | List of all lines containing "error"    |
+| 67890     | login           | List of all entries with "login" action |
+
+## Common Mistakes & Troubleshooting
+
+| Problem                                              | Solution                                                                                      |
+| ---------------------------------------------------- | --------------------------------------------------------------------------------------------- |
+| **Incorrect SessionId**                              | Verify and enter the correct session ID to ensure you're searching in the right session.      |
+| **TextToSearchFor left empty**                       | Ensure you have specified the text you want to search for; otherwise, there won't be any output.|
+| **Unexpected search results**                        | Double-check for typographical errors in the **TextToSearchFor** field.                       |
+
+## Real-World Use Cases
+
+- **Log Monitoring**: Quickly find all instances of errors or warnings in a system log.
+- **Security Auditing**: Search for unauthorized access attempts or specific login sessions.
+- **Analysis of Execution Flow**: Identify and review key commands or scripts executed during a session.

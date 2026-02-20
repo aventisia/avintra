@@ -1,0 +1,64 @@
+import { Callout, Steps } from "nextra/components";
+
+# Run .NET Script
+
+The **Run .NET Script** node enables you to execute a custom .NET script and retrieve its output for use in other parts of your workflow. This is particularly beneficial for those who need to integrate complex calculations or logic that can be defined within a .NET script.
+
+By using this node, you can:
+
+- Execute .NET scripts directly within your workflow.
+- Capture and use the output of these scripts for further processing.
+- Simplify complex operations that require scripting capabilities.
+
+## Configuration Options
+
+| Field Name         | Description                                     | Input Type | Required? | Default Value |
+| ------------------ | ----------------------------------------------- | ---------- | --------- | ------------- |
+| **.NET Script Code** | The script code you want to execute.           | Text       | Yes       | _(empty)_     |
+| **Script Output**  | Returns the output of the script execution.     | Display    | No        | ScriptOutput  |
+
+## Expected Output Format
+
+The output of this node is the **result of the .NET script execution**, which can be any type depending on your script, typically a string or number.
+
+## Step-by-Step Guide
+
+<Steps>
+### Step 1
+
+Add the **Run .NET Script** node into your flow.
+
+### Step 2
+
+In the **.NET Script Code** field, enter the .NET code you wish to execute. Ensure your script is correct and functional within a .NET context.
+
+### Step 3
+
+After execution, the result will be available as **ScriptOutput** and can be used in subsequent nodes.
+
+</Steps>
+
+<Callout type="info" title="Tip">
+  Ensure that the .NET script you enter is correctly structured to avoid runtime errors. Test your script independently if possible before using the node.
+</Callout>
+
+## Input/Output Examples
+
+| Input (.NET Script Code)           | Expected Output                          |
+| ---------------------------------- | ---------------------------------------- |
+| `Console.WriteLine("Hello World")` | _Outputs "Hello World" to the console._  |
+| `int x = 5 + 10; return x;`        | `15`                                     |
+
+## Common Mistakes & Troubleshooting
+
+| Problem                                        | Solution                                                                                   |
+| ---------------------------------------------- | ------------------------------------------------------------------------------------------ |
+| **Syntax errors in .NET Script Code**          | Double-check your script syntax and ensure it's correct for .NET.                          |
+| **No output from the script**                  | Verify that the script includes a return statement or output directive (like Console.WriteLine). |
+| **Unexpected results**                         | Check the script logic to ensure it performs the desired operation.                         |
+
+## Real-World Use Cases
+
+- **Custom Calculations**: Perform advanced mathematical operations or calculations leveraging .NET.
+- **Data Transformation**: Use scripts to transform data before sending it to other parts of your workflow.
+- **Conditional Logic**: Implement conditional operations that are complex to manage with basic workflow nodes.

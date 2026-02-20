@@ -1,0 +1,75 @@
+import { Callout, Steps } from "nextra/components";
+
+# Copy Cells from Excel Worksheet
+
+The **Copy Cells from Excel Worksheet** node enables you to effortlessly copy a range of cells from an Excel worksheet. This can be particularly useful if you need to transfer data within or across different Excel worksheets. Whether you want to copy a single cell, a named range, currently selected cells, or a specified range of cells, this node gives you the flexibility to manage Excel data seamlessly.
+
+## Configuration Options
+
+| Field Name            | Description                                                                 | Input Type | Required? | Default Value |
+| --------------------- | --------------------------------------------------------------------------- | ---------- | --------- | ------------- |
+| **Worksheet Instance**| The Excel Worksheet object from which to copy data.                         | Text       | Yes       | _(empty)_     |
+| **Copy Mode**         | Specifies how to copy cells: Single Cell, Named Cells, Selection, or Range. | Select     | Yes       | SingleCell    |
+| **Source Range Address** | The range address (e.g., 'A1:B10') in the source worksheet to copy.      | Text       | No        | _(empty)_     |
+| **Start Column**      | The starting column of the range to copy.                                   | Text       | No        | _(empty)_     |
+| **Start Row**         | The starting row of the range to copy.                                      | Text       | No        | _(empty)_     |
+| **End Column**        | The ending column of the range to copy.                                     | Text       | No        | _(empty)_     |
+| **End Row**           | The ending row of the range to copy.                                        | Text       | No        | _(empty)_     |
+| **Name**              | The name of the named range to copy.                                        | Text       | No        | _(empty)_     |
+
+<Callout type="info" title="Note">
+  Fields like **Source Range Address**, **Start Column**, **Start Row**, **End Column**, **End Row**, and **Name** are conditionally displayed based on the selected **Copy Mode**.
+</Callout>
+
+## Expected Output Format
+
+The output is a **copied range of cells** from the Excel sheet, ready to be pasted or processed further within your automation workflow.
+
+## Step-by-Step Guide
+
+<Steps>
+
+### Step 1
+
+Add the **Copy Cells from Excel Worksheet** node into your flow.
+
+### Step 2
+
+In the **Worksheet Instance** field, enter the Excel worksheet from which you wish to copy data.
+
+### Step 3
+
+Select the **Copy Mode** to determine how the cells should be copied:
+
+- **Single Cell**: Copies a specific cell by the column and row.
+- **Named Cells**: Copies values from named ranges.
+- **Selection**: Copies the currently selected range.
+- **Range of Cells**: Specifies a range using start and end columns/rows.
+
+### Step 4
+
+Provide additional details based on your selected **Copy Mode**:
+
+- If **Range of Cells**, enter the **Start Column**, **Start Row**, **End Column**, and **End Row**.
+- If **Named Cells**, specify the **Name** of the named range.
+
+### Step 5
+
+The copied data will be available for pasting into another worksheet or for further processing in your flow.
+
+</Steps>
+
+## Common Mistakes & Troubleshooting
+
+| Problem                                                   | Solution                                                        |
+| --------------------------------------------------------- | --------------------------------------------------------------- |
+| **Missing Worksheet Instance**                            | Ensure that the worksheet instance is specified in the field.   |
+| **Fields not displaying for Range of Cells**              | Ensure you select **Range of Cells** in the **Copy Mode** field. |
+| **Incorrect Range Address**                               | Double-check the range address format to ensure it is correct.  |
+
+## Real-World Use Cases
+
+- **Report Generation**: Automatically copying and pasting specific data ranges to compile reports.
+- **Data Backup**: Copying important data ranges from one worksheet to another for backup purposes.
+- **Collaboration**: Sharing specific data sections without exposing the entire worksheet.
+- **Data Analysis**: Copying specific cells or ranges to be processed further for analysis or visualization.

@@ -1,0 +1,76 @@
+import { Callout, Steps } from "nextra/components";
+
+# Detect Dominant Language (AWS Comprehend)
+
+The **Detect Dominant Language (AWS Comprehend)** node identifies the main language of a given text using the AWS Comprehend service. This can be particularly useful for applications that need to process or categorize text based on language, such as international customer support, translation services, or content localization.
+
+## Configuration Options
+
+| Field Name                       | Description                                                                                   | Input Type                    | Required? | Default Value      |
+|----------------------------------|-----------------------------------------------------------------------------------------------|-------------------------------|-----------|--------------------|
+| **Credential to connect with**   | Select the AWS credential to use for authentication (AWSServiceVaultId).                      | Text                          | Yes       | _(empty)_          |
+| **Text**                         | The text to analyze for the dominant language.                                                | Text                          | Yes       | _(empty)_          |
+| **Simplify**                     | If enabled, returns only the language code (e.g., 'en'). Otherwise, returns full response.   | Switch                        | No        | false              |
+| **AWS Region**                   | The AWS region where the Comprehend service is located (e.g., us-east-1).                     | Text                          | No        | us-east-1          |
+
+## Expected Output Format
+
+The output from this node can vary based on the `Simplify` setting:
+
+- **Simplified Output**: A language code string, such as `en`.
+- **Complex Output**: A JSON object with detailed language data, including confidence scores.
+
+## Step-by-Step Guide
+
+<Steps>
+
+### Step 1
+
+Add the **Detect Dominant Language (AWS Comprehend)** node to your workflow.
+
+### Step 2
+
+In the **Credential to connect with** field, enter or select your AWS credential identifier to authenticate the service.
+
+### Step 3
+
+Input the text you want analyzed in the **Text** field.
+
+### Step 4
+
+Choose your preferred **AWS Region** for the Comprehend service. If uncertain, the default `us-east-1` generally works well.
+
+### Step 5
+
+Decide if you want a simplified output by toggling the **Simplify** switch. Turning this on will provide just the language code.
+
+### Step 6
+
+The processed language will be available as **Detected Language** and potentially include **Confidence Score** and **API Response**.
+
+</Steps>
+
+<Callout type="info" title="Tip">
+  Use the **Simplify** option if you only need the basic language code to quicken processing.
+</Callout>
+
+## Input/Output Examples
+
+| Simplify | Input Text             | Detected Language | Confidence Score | API Response      |
+|----------|------------------------|-------------------|------------------|-------------------|
+| On       | "Hello World"          | en                | _(n/a)_          | _(n/a)_           |
+| Off      | "Bonjour le monde"     | fr                | 0.98             | `{ "Language": "fr", "Score": 0.98 }` |
+
+## Common Mistakes & Troubleshooting
+
+| Problem                                        | Solution                                                                                                                                                                  |
+|------------------------------------------------|---------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
+| **Authentication error**                       | Double-check the AWS credentials in use. Ensure they have the required permissions for the Comprehend service.                                                             |
+| **Unexpected or No Output**                    | Verify the **Text** input is correct and non-empty. Also, ensure AWS Region is configured correctly.                                                                      |
+| **Simplify not providing expected results**    | Remember, Simplify returns only the language code, while disabling it provides the entire output with scores.                                                             |
+
+## Real-World Use Cases
+
+- **Customer Support Systems**: Automatically detect and redirect queries based on language to appropriate support staff.
+- **Content Management**: Pre-process content to determine necessary translations based on detected languages.
+- **Market Research**: Analyze customer sentiment and discussions in multiple languages for targeted marketing strategies.
