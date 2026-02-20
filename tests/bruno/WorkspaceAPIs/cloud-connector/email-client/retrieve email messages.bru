@@ -1,0 +1,32 @@
+meta {
+  name: retrieve email messages
+  type: http
+  seq: 3
+}
+
+post {
+  url: {{WORC_APIS_BASE_URL}}/cloud-connector/email/invoke
+  body: json
+  auth: none
+}
+
+body:json {
+  {
+    "agentId": "00000000-0000-0000-0000-000000000000",
+    "agentName": "Test",
+    "provider": "GeneralCredentials",
+    "action": "RetrieveEmailMessages",
+    "credentialId": "DUMMY",
+    "payload": {
+      "mailFolder": "Inbox",
+      "imapServer": "imap.gmail.com",
+      "imapPort": 993,
+      "retrieveMode": "UnreadOnly",
+      "useSsl": true,
+      "acceptUntrusted": false,
+      "markAsRead": false,
+      "securityProtocol":"ssl",//"StartTls",
+      "topN": 10
+    }
+  }
+}
