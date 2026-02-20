@@ -17,7 +17,7 @@ export const SsoRedirectMain = () => {
     if (code) {
       validateEntraTokenMutation(code);
     }
-  });
+  }, [code]);
 
   return (
     <div className="flex h-screen w-full flex-col items-center justify-between p-3 pb-3 lg:w-[100%]">

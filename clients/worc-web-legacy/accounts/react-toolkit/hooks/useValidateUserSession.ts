@@ -1,8 +1,5 @@
 import { useOnboardingStore } from "@/features/on-boarding/stores/on-boarding-store";
-import {
-  getMySession,
-  refreshSession,
-} from "@/react-toolkit/apis/accounts-me-apis";
+import { refreshSession } from "@/react-toolkit/apis/accounts-me-apis";
 import { useUserSessionStore } from "@/react-toolkit/stores/user-session-store";
 import { setUserSessionLocally } from "@/react-toolkit/utils/user-session-utils";
 
@@ -11,11 +8,7 @@ import { useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { useShallow } from "zustand/react/shallow";
 
-import {
-  ADD_TENANT,
-  DEV_JWT_LS_KEY,
-  NO_ACTIVE_SUBSCRIPTION,
-} from "../constants";
+import { ADD_TENANT, NO_ACTIVE_SUBSCRIPTION } from "../constants";
 
 /**
  * Custom hook to validate user session and handle session refresh.
@@ -41,17 +34,12 @@ export const useValidateUserSession = () => {
 
   // Validate user session
   const { mutate, isPending } = useMutation({
-    mutationFn: import.meta.env.DEV ? getMySession : refreshSession,
+    mutationFn: refreshSession,
     onSuccess: (data) => {
       // Return, If response is null
       if (!data) return;
 
       // ----------User is authenticated Now----------
-
-      // TODO: To be removed
-      if (import.meta.env.DEV) {
-        localStorage.setItem(DEV_JWT_LS_KEY, data.data.accessToken);
-      }
 
       // Set authenticated user locally and session obj in store
       setUserSession(setUserSessionLocally(data.data));
@@ -64,8 +52,7 @@ export const useValidateUserSession = () => {
       } else {
         //User already onboarded
         navigate(
-          "/redirect?msg=Logging in...&url=" +
-            import.meta.env.VITE_WORC_PATH,
+          "/redirect?msg=Logging in...&url=" + import.meta.env.VITE_WORC_PATH,
         );
       }
     },
