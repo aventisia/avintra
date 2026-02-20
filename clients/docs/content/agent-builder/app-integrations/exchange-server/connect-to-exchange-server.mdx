@@ -1,0 +1,96 @@
+import { Callout, Steps } from "nextra/components";
+
+# Connect to Exchange Server
+
+The **Connect to Exchange Server** node is used to establish a connection with a Microsoft Exchange Server. This node is essential for automating tasks that involve accessing or managing email data on an Exchange server. By configuring the right connection options, users can connect to various Exchange server versions and utilize email-related services.
+
+- Use this node when you need to retrieve, send, or manipulate emails on an Exchange server.
+- Supports different versions of Exchange ranging from 2007 SP1 to 2013 SP1.
+
+## Configuration Options
+
+| Field Name              | Description                                                                                          | Input Type | Required? | Default Value |
+| ----------------------- | ---------------------------------------------------------------------------------------------------- | ---------- | --------- | ------------- |
+| **Exchange Server Version** | Select the Exchange server version you are connecting to (e.g., Exchange 2013 SP1).              | Select     | Yes       | _(none)_      |
+| **Connection Type**     | Choose how to connect to the Exchange server, either using Auto discovery or a server address.       | Select     | Yes       | _(none)_      |
+| **Email Address**       | The email address for auto-discovery (appears if Connection Type is Auto discovery).                  | Text       | No        | _(none)_      |
+| **Server Address**      | The URL or IP address of the server (appears if Connection Type is Exchange server address).          | Text       | No        | _(none)_      |
+| **Credentials**         | Select the authentication method: default Exchange credentials or user-defined credentials.           | Select     | No        | _(none)_      |
+| **Domain**              | Domain for user-defined credentials (appears if Credentials is User defined).                         | Text       | No        | _(none)_      |
+| **Username**            | Username for user-defined credentials (appears if Credentials is User defined).                       | Text       | No        | _(none)_      |
+| **Password**            | Password for user-defined credentials (appears if Credentials is User defined).                       | Password   | No        | _(none)_      |
+| **Timeout**             | Set the connection attempt timeout in seconds.                                                        | Text       | No        | 30            |
+
+## Expected Output Format
+
+The output of this node is an **Exchange Connection object**. This represents a successful connection to the Exchange server, which you can use in subsequent nodes to interact with emails or perform email-related automation.
+
+## Step-by-Step Guide
+
+<Steps>
+### Step 1
+
+Add the **Connect to Exchange Server** node to your automation flow.
+
+### Step 2
+
+Select the **Exchange Server Version** from the dropdown menu that matches your server's version.
+
+### Step 3
+
+Choose the **Connection Type**:
+
+- **Auto discovery**: Requires an email address.
+- **Exchange server address**: Requires a server address.
+
+### Step 4
+
+If you selected **Auto discovery**, enter the **Email Address** used for auto-discovery.
+
+### Step 5
+
+If you selected **Exchange server address**, provide the **Server Address**, such as URL or IP.
+
+### Step 6
+
+Under **Credentials**, select the desired authentication method:
+
+- **Exchange default** for using default credentials.
+- **User defined** for specifying domain, username, and password.
+
+### Step 7
+
+If selecting **User defined** credentials:
+
+- Enter **Domain**.
+- Enter **Username**.
+- Enter **Password**.
+
+### Step 8
+
+Set a **Timeout** value if needed (default is 30 seconds).
+
+### Step 9
+
+After configuring, the node will output an **Exchange Connection** object for use with other nodes.
+
+</Steps>
+
+<Callout type="warning" title="Important">
+  Ensure that all required fields are filled out correctly to establish a stable connection to the Exchange server.
+</Callout>
+
+## Common Mistakes & Troubleshooting
+
+| Problem                                               | Solution                                                                                  |
+| ----------------------------------------------------- | ----------------------------------------------------------------------------------------- |
+| **Connection not established**                        | Double-check server details, version, and credentials. Ensure you have internet access.   |
+| **Incorrect Email Address or Server Address**         | Verify the correct email or server address is entered. Adjust in respective fields.       |
+| **Credentials not accepted**                          | Make sure your username, domain, and password are correct. Select the correct auth type.  |
+| **Timeout errors**                                    | Increase the timeout value if connections take longer to establish.                       |
+
+## Real-World Use Cases
+
+- **Automating Email Retrieval**: Use this node to connect and retrieve emails from Exchange for processing or archiving.
+- **Email Alerts**: Set up alerts by automatically sending emails when certain conditions in your workflow are met.
+- **Batch Email Modification**: Apply changes like status updates or category labels across emails in the Exchange account.

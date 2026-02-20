@@ -1,0 +1,88 @@
+import { Callout, Steps } from "nextra/components";
+
+# Read Google Sheet Range
+
+The **Read Google Sheet Range** node is used to extract data from specific parts of a Google Sheet. This node is perfect for integrating spreadsheet data into your workflow or application, especially if you need to automate data retrieval from Google Sheets.
+
+You might use this node in scenarios such as:
+
+- Fetching data for reports or dashboards.
+- Integrating Google Sheets data with other applications or systems.
+- Regularly updating datasets from Google Sheets.
+
+## Configuration Options
+
+| Field Name        | Description                                                                                               | Input Type | Required? | Default Value |
+| ----------------- | --------------------------------------------------------------------------------------------------------- | ---------- | --------- | ------------- |
+| **Sheets Service** | The authenticated SheetsService instance (from 'Create Google Sheets Service Instance' activity).         | Text       | Yes       | _(empty)_     |
+| **Spreadsheet ID** | The ID of the Google Spreadsheet (from the URL: https://docs.google.com/spreadsheets/d/{spreadsheetId}/edit). | Text       | Yes       | _(empty)_     |
+| **Sheet Name**     | The name of the sheet tab (e.g., 'Sheet1', 'Data').                                                      | Text       | Yes       | _(empty)_     |
+| **Range**          | The cell range to read (e.g., 'A1:B10'). Use empty string or 'A1' for full column detection.             | Text       | Yes       | _(empty)_     |
+| **Run Delay (ms)** | Optional delay in milliseconds before executing the request. Helps avoid rate limits.                    | Text       | No        | 0             |
+
+## Expected Output Format
+
+The output of this node is a **2D list of values**, where:
+
+- Each inner list represents a row of data from the Google Sheet.
+- The data format is structured as `IList<IList<object>>`.
+
+For example, for a range specified as 'A1:B2', the output might look like this: `[[valueA1, valueB1], [valueA2, valueB2]]`.
+
+## Step-by-Step Guide
+
+<Steps>
+### Step 1
+
+Add the **Read Google Sheet Range** node into your flow.
+
+### Step 2
+
+In the **Sheets Service** field, provide the authenticated SheetsService instance. This is typically created using a 'Create Google Sheets Service Instance' node.
+
+### Step 3
+
+In the **Spreadsheet ID** field, enter the ID of the Google Spreadsheet. This can be found in the spreadsheet URL as part of `https://docs.google.com/spreadsheets/d/{spreadsheetId}/edit`.
+
+### Step 4
+
+Specify the **Sheet Name** for the tab you wish to read from (e.g., 'Sheet1').
+
+### Step 5
+
+Enter the **Range** to specify which cells to read (e.g., 'A1:B10'). If you want the whole column starting from A1, simply put 'A1'.
+
+### Step 6
+
+(Optional) Set the **Run Delay (ms)** if needed, to delay the request execution to avoid any API rate limits.
+
+### Step 7
+
+Once configured, the node will read the specified range and output the data as **ReadData** for further use.
+</Steps>
+
+<Callout type="info" title="Note">
+  The **Run Delay** is only necessary if you're encountering API request rate limits. Otherwise, you can leave it at `0`.
+</Callout>
+
+## Input/Output Examples
+
+| Spreadsheet ID         | Sheet Name | Range   | Output Value                        |
+| ---------------------- | ---------- | ------- | ----------------------------------- |
+| 1ABcD23EfGh456ijkLMnOp | Sheet1     | A1:B2   | [[valA1, valB1], [valA2, valB2]]    |
+| 1ABcD23EfGh456ijkLMnOp | Data       | A1      | [[valA1], [valA2], ..., [valAn]]    |
+
+## Common Mistakes & Troubleshooting
+
+| Problem                                 | Solution                                                                                                               |
+| --------------------------------------- | ---------------------------------------------------------------------------------------------------------------------- |
+| **Invalid Sheets Service**              | Ensure you have an active and authenticated SheetsService instance from the 'Create Google Sheets Service Instance'.    |
+| **Spreadsheet ID mismatch**             | Double-check the Spreadsheet ID from the URL. Copy it exactly as is from `https://docs.google.com/spreadsheets/d/{spreadsheetId}/edit`. |
+| **Sheet Name not found**                | Verify that the Sheet Name matches exactly with the tab name in Google Sheets.                                          |
+| **Range entered incorrectly**           | Confirm that the Range syntax (e.g., 'A1:B10') is correct and within the existing data range of the sheet.              |
+
+## Real-World Use Cases
+
+- **Data Integration**: Seamlessly pull data from a Google Sheet to populate applications or databases without manual entry.
+- **Automated Reporting**: Retrieve specific cell data to feed into automated reports or analytics dashboards.
+- **Batch Processing**: Extract dataset slices for processing tasks or workflow automation based on dynamic or user-specified conditions.

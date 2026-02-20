@@ -1,0 +1,86 @@
+import { Callout, Steps } from "nextra/components";
+
+# Insert Column Into Data Table
+
+The **Insert Column Into Data Table** node is used to add a new column to an existing data table. This feature is useful when you need to expand your data set by adding extra information, such as new data categories or calculated results, without altering your existing table structure.
+
+Use this node to:
+
+- Append additional information at the end of your data table.
+- Insert a column before a specific column index to maintain a desired column order.
+- Specify the data type for your new column, ensuring consistent data handling.
+
+## Configuration Options
+
+| Field Name       | Description                                                                            | Input Type | Required? | Default Value     |
+| ---------------- | -------------------------------------------------------------------------------------- | ---------- | --------- | ----------------- |
+| **Data Table**   | The data table where the new column will be inserted.                                  | Text       | Yes       | _(empty)_         |
+| **Column Name**  | The name of the new column you want to add to the data table.                          | Text       | Yes       | _(empty)_         |
+| **Data Type**    | The type of data that the new column will hold (String, Integer, Decimal, etc.).       | Select     | Yes       | _(empty)_         |
+| **Insert Location** | Choose if the new column should be added before a specific index or at the table's end. | Select     | No        | EndOfDataTable    |
+| **Column Index** | The index position where the new column should be inserted if not at the end.          | Text       | No        | _(empty)_         |
+
+## Expected Output Format
+
+The output of this node is a **modified data table** that includes the newly inserted column. The output can be used directly in subsequent processing steps.
+
+## Step-by-Step Guide
+
+<Steps>
+### Step 1
+
+Add the **Insert Column Into Data Table** node into your workflow.
+
+### Step 2
+
+In the **Data Table** field, specify the table you want to modify.
+
+### Step 3
+
+Provide a name for your new column in the **Column Name** field.
+
+### Step 4
+
+Select the appropriate **Data Type** for the new column from the dropdown menu.
+
+### Step 5
+
+In the **Insert Location** dropdown, select where you want the new column to be placed:
+- **Before Column Index**: Insert the column before a specific index.
+- **End of Data Table**: Append the column to the end.
+
+### Step 6
+
+If you selected **Before Column Index**, enter the index number in the **Column Index** field where the column should be placed.
+
+### Step 7
+
+The updated data table with the new column will be available as **ModifiedDataTable** for use in other nodes.
+
+</Steps>
+
+<Callout type="info" title="Note">
+  If you choose "End of Data Table" in the **Insert Location**, the **Column Index** field will not appear.
+</Callout>
+
+## Input/Output Examples
+
+| Input Data Table          | Insert Location    | Column Index | Output Data Table                      |
+| ------------------------- | ------------------ | ------------ | -------------------------------------- |
+| Name, Age, Country        | End of Data Table  | _(n/a)_      | Name, Age, Country, NewColumn          |
+| Name, Age, Country        | Before Column Index| 1            | Name, NewColumn, Age, Country          |
+| Temperature, Humidity     | End of Data Table  | _(n/a)_      | Temperature, Humidity, NewColumn       |
+
+## Common Mistakes & Troubleshooting
+
+| Problem                                                  | Solution                                                                 |
+| -------------------------------------------------------- | ------------------------------------------------------------------------ |
+| **Insert Location is "Before Column Index" but no index entered** | Ensure you enter the index position in the **Column Index** field.       |
+| **Non-existent table name in Data Table field**          | Verify that the data table name entered actually exists in your workflow. |
+| **Data Type not selected**                               | Always select a data type to ensure the column is correctly formatted.   |
+
+## Real-World Use Cases
+
+- **Academic Data**: Insert a "Grade" column into a student list to accommodate new evaluation scores.
+- **Order Tracking**: Add a "Status" column to existing order data to reflect processing updates.
+- **Survey Analysis**: Append demographic fields to survey responses for deeper insights.

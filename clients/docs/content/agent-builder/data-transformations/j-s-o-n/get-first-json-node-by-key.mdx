@@ -1,0 +1,73 @@
+import { Callout, Steps } from "nextra/components";
+
+# Get First JSON Node by Key
+
+The **Get First JSON Node by Key** node enables you to search through a JSON structure to find and return the first value associated with a specified key. This function is handy when dealing with complex JSON data and you need to extract specific information quickly.
+
+This is particularly useful for tasks like:
+
+- Extracting specific data fields from complex JSON responses.
+- Navigating and retrieving nested JSON information without needing manual searching.
+
+## Configuration Options
+
+| Field Name     | Description                                                                                   | Input Type | Required? | Default Value  |
+| -------------- | --------------------------------------------------------------------------------------------- | ---------- | --------- | -------------- |
+| **JSON Content** | The JSON data you want to search through. It can be a JSON string or a JToken.                | Text       | Yes       | _(empty)_      |
+| **Key to Find**   | The specific JSON key you wish to retrieve. The search is case-sensitive and recursive.       | Text       | Yes       | _(empty)_      |
+| **Result Node**   | This provides the first matching result from the search. Returns null if no match is found or an error occurs. | Config-panel-output | No | ResultNode |
+
+## Expected Output Format
+
+The output of this node is a **JSON token value**:
+
+- If the key is found, the output will be the value associated with that key.
+- If the key is not found, the output will be `null`.
+
+## Step-by-Step Guide
+
+<Steps>
+### Step 1
+
+Add **Get First JSON Node by Key** node into your flow.
+
+### Step 2
+
+In the **JSON Content** field, input the JSON data you want to search through. Ensure it's a valid JSON string or JToken.
+
+### Step 3
+
+In the **Key to Find** field, type the key name you are searching for. Remember, this search is case-sensitive.
+
+### Step 4
+
+Run your flow to execute the search. The first found value associated with the provided key will be available as **ResultNode**.
+
+</Steps>
+
+<Callout type="info" title="Tip">
+  Ensure your JSON string is correctly formatted to avoid unexpected errors or result as `null`.
+</Callout>
+
+## Input/Output Examples
+
+| JSON Content                  | Key to Find | Expected Output      | Output Type  |
+| ----------------------------- | ----------- | -------------------- | ------------ |
+| `{"id": 1, "name": "John"}`   | name        | "John"               | String       |
+| `{"order": {"id": 731}}`      | id          | 731                  | Number       |
+| `[{"x": 1}, {"y": 2}]`        | x           | 1                    | Number       |
+| `{"user": {"profile": "A"}}`  | profile     | "A"                  | String       |
+
+## Common Mistakes & Troubleshooting
+
+| Problem                                        | Solution                                                                                              |
+| ---------------------------------------------- | ---------------------------------------------------------------------------------------------------- |
+| **Invalid JSON Content**                       | Ensure that your JSON is properly formatted. Use a JSON validator if necessary.                       |
+| **Key Not Found**                              | Double-check the key input; it's case-sensitive. Verify capitalization and spelling.                  |
+| **Unexpected Result**                          | Make sure there are no duplicate keys, and only the first occurrence is returned.                     |
+
+## Real-World Use Cases
+
+- **API Data Extraction**: Retrieve specific data fields from large API response JSONs.
+- **Data Automation**: Automatically navigate and extract nested information for data processing tasks.
+- **Reporting**: Selectively extract data to generate specific reports from raw JSON inputs.

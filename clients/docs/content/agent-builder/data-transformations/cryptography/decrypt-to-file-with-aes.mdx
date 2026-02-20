@@ -1,0 +1,82 @@
+import { Callout, Steps } from "nextra/components";
+
+# Decrypt to File with AES
+
+The **Decrypt to File with AES** node is designed to decrypt files that have been encrypted using Advanced Encryption Standard (AES). This is particularly useful when you need to access data that has been securely stored in an encrypted format. The node supports various encoding formats for the encrypted files, such as Base64, Hex, and UTF-8.
+
+Possible scenarios include:
+
+- Decrypting sensitive documents previously encrypted for security.
+- Accessing data that must remain encrypted while stored but needs to be accessible during operations.
+- Converting secured files back to their original, readable format.
+
+## Configuration Options
+
+| Field Name                | Description                                                                                         | Input Type | Required? | Default Value |
+| ------------------------- | --------------------------------------------------------------------------------------------------- | ---------- | --------- | ------------- |
+| **Encrypted File Path**   | The path to the file containing the encrypted data.                                                 | Text       | Yes       | _(empty)_     |
+| **Decryption Key**        | Secret key used for decryption. Short keys will be hashed to 32 bytes (AES-256).                    | Text       | Yes       | _(empty)_     |
+| **Encoding Format**       | Encoding used for the encrypted content: Base64, Hex, or UTF8.                                     | Select     | Yes       | _(empty)_     |
+| **Initialization Vector** | 16-character IV used during encryption. Must match the one used during encryption.                 | Text       | Yes       | _(empty)_     |
+| **Output File Path**      | The path where the decrypted file should be saved.                                                 | Text       | Yes       | _(empty)_     |
+
+## Expected Output Format
+
+The output of this node will be a **new file at the specified output path** containing the decrypted data. The decrypted data will be in its original format, readable and accessible as intended before encryption.
+
+## Step-by-Step Guide
+
+<Steps>
+### Step 1
+
+Add the **Decrypt to File with AES** node into your flow.
+
+### Step 2
+
+In the **Encrypted File Path** field, provide the path to the file you wish to decrypt.
+
+### Step 3
+
+Enter the **Decryption Key** that was used to encrypt the file. Ensure it is correctly inputted, as incorrect keys will result in an inability to decrypt.
+
+### Step 4
+
+Select the **Encoding Format** that corresponds to the encoding of the encrypted file content (Base64, Hex, UTF8).
+
+### Step 5
+
+Input the **Initialization Vector (IV)**. This must be the exact 16-character IV used during the encryption process.
+
+### Step 6
+
+Specify the **Output File Path** where you want the decrypted file to be saved.
+
+### Step 7
+
+The file located at the specified output path will now contain the decrypted data, ready for use.
+
+</Steps>
+
+<Callout type="info" title="Tip">
+  Ensure the **Initialization Vector (IV)** matches exactly with the one used during encryption to avoid decryption failures.
+</Callout>
+
+## Input/Output Examples
+
+| Encrypted File Path | Decryption Key | Encoding Format | IV             | Output File Path | Output Description                  |
+| ------------------- | -------------- | --------------- | -------------- | --------------- | ----------------------------------- |
+| /path/to/encrypted  | mySecretKey    | Base64          | 1234567890123456 | /path/to/output | Outputs the original file contents. |
+
+## Common Mistakes & Troubleshooting
+
+| Problem                                      | Solution                                                                                                     |
+| -------------------------------------------- | ------------------------------------------------------------------------------------------------------------ |
+| **File not decrypting properly**             | Double-check the decryption key and ensure the correct encoding format and IV are used.                      |
+| **Incorrect path entries**                   | Ensure the file paths entered are accessible and correctly formatted, using absolute paths where necessary.  |
+| **Encoding format mismatch**                 | Ensure the encoding format selected matches the format used during encryption.                               |
+
+## Real-World Use Cases
+
+- **Confidential Document Management**: Decrypt important documents stored in encrypted file systems for viewing or processing.
+- **Data Recovery**: Access historical data that was encrypted for long-term storage but is needed for analysis.
+- **Secure Information Sharing**: Decrypt files received from partners or remote teams for secure collaboration.

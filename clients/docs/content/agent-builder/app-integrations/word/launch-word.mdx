@@ -1,0 +1,72 @@
+import { Callout, Steps } from "nextra/components";
+
+# Launch Word
+
+The **Launch Word** node is designed to either open a new Word application with a blank document or an existing document specified by the user. This is particularly useful for automating document processing, editing, or showing documents within workflows.
+
+You can choose to launch Word in a hidden mode or ensure the window appears on your screen, based on your needs.
+
+## Configuration Options
+
+| Field Name             | Description                                                                                      | Input Type | Required? | Default Value     |
+| ---------------------- | ------------------------------------------------------------------------------------------------ | ---------- | --------- | ----------------- |
+| **Launch Mode**        | Select whether to start a new blank document or open an existing file.                          | Select     | No        | BlankDocument     |
+| **Document Path**      | File path for an existing document to open. Necessary if the Launch Mode is "Open Existing Document". | Text       | No        | _(empty)_         |
+| **Make Instance Visible** | Choose whether the Word window should be visible upon launch.                                    | Switch     | No        | true              |
+
+## Expected Output Format
+
+The output of the Launch Word node is a **Word Instance** identifier. This identifier is used to refer to the specific Word application instance for subsequent actions, facilitating workflows where precise document handling is required.
+
+## Step-by-Step Guide
+
+<Steps>
+### Step 1
+
+Add the **Launch Word** node into your flow.
+
+### Step 2
+
+Select an option in the **Launch Mode** dropdown:
+
+- **Blank Document**: Starts a new session of Word with a new document.
+- **Open Existing Document**: Opens a specific document. You'll need to provide the file path.
+
+### Step 3
+
+If you chose **Open Existing Document**, enter the file path in the **Document Path** field.
+
+### Step 4
+
+Toggle the **Make Instance Visible** switch based on whether you want the Word application window to be visible.
+
+### Step 5
+
+The launched Word session will be accessible via the **Word Instance** value, to use in further Word-related nodes.
+
+</Steps>
+
+<Callout type="info" title="Note">
+  If "Open Existing Document" is selected in the **Launch Mode**, the **Document Path** field becomes essential and must have a valid file path.
+</Callout>
+
+## Input/Output Examples
+
+| Launch Mode            | Document Path                  | Make Instance Visible | Output Value   | Output Type   |
+| ---------------------- | ------------------------------ | --------------------- | -------------- | ------------- |
+| Blank Document         | _(n/a)_                        | true                  | WordInstance   | Word Instance |
+| Open Existing Document | C:\Documents\Report.docx       | false                 | WordInstance   | Word Instance |
+
+## Common Mistakes & Troubleshooting
+
+| Problem                                                  | Solution                                                                                     |
+| -------------------------------------------------------- | -------------------------------------------------------------------------------------------- |
+| **Document Path is empty but mode is 'Open Existing'**   | Ensure to enter a valid file path if you select 'Open Existing Document'.                     |
+| **Word application not visible**                         | Check if the **Make Instance Visible** option is set to 'true' if you want to see the window. |
+| **Invalid file path leads to error**                     | Verify the document path is correct and points to an actual file.                             |
+
+## Real-World Use Cases
+
+- **Proposal Preparation**: Start a blank document for new proposal writing.
+- **Report Access**: Quickly open monthly reports for review or editing.
+- **Hidden Processing**: Run document modifications in the background without displaying the Word application on the screen.

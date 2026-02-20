@@ -1,0 +1,76 @@
+import { Callout, Steps } from "nextra/components";
+
+# Send Mouse Click
+
+The **Send Mouse Click** node makes it possible to simulate a variety of mouse click actions on your computer's screen. This can be useful for automating tasks that require clicking buttons, selecting items, or performing other clickable actions within desktop applications. Use this node to automate interactions and simulate user actions that would typically require manual mouse usage.
+
+For example:
+
+- Automating form submissions by simulating a button click.
+- Selecting dropdown items without manual mouse manipulations.
+- Performing double-click actions on file icons to open them.
+
+## Configuration Options
+
+| Field Name            | Description                                                                        | Input Type | Required? | Default Value |
+| --------------------- | ---------------------------------------------------------------------------------- | ---------- | --------- | -------------- |
+| **Mouse Event to Send** | Choose the type of mouse event you want to simulate: Left, Right, or Double Click, etc. | Select     | Yes       | _(empty)_      |
+| **Wait**              | Time in milliseconds to wait before executing the mouse click.                      | Text       | No        | 0              |
+| **Move Mouse**        | Determine if the mouse should move to the current position before clicking.        | Switch     | No        | _(empty)_      |
+
+## Expected Output Format
+
+The output of this node does not contain a data value. Instead, it performs a mouse action (click) on your system. The result is a completed click action without any output in textual or numerical data form.
+
+## Step-by-Step Guide
+
+<Steps>
+### Step 1
+
+Add **Send Mouse Click** node into your automation flow.
+
+### Step 2
+
+In the **Mouse Event to Send** dropdown, select the mouse action you wish to perform:
+
+- **Left Click**: Simulates a standard left-button click.
+- **Right Click**: Performs a right-button click like opening context menus.
+- **Double Click**: Imitates a rapid double-click.
+- Additional options include mouse button down/up actions and middle clicks.
+
+### Step 3
+
+(Optional) Enter a value in the **Wait** field if you want the system to pause for a certain number of milliseconds before executing the mouse click. Default is `0` (no wait).
+
+### Step 4
+
+(Optional) Toggle the **Move Mouse** switch if you wish to ensure the cursor moves to the current position before sending the chosen mouse event. This can help in providing precise mouse movements before clicks.
+
+</Steps>
+
+<Callout type="tip">
+  For actions that require precision, like clicking small buttons, enabling **Move Mouse** may reduce errors from unexpected cursor positions.
+</Callout>
+
+## Input/Output Examples
+
+| Mouse Event           | Wait (ms) | Move Mouse | Action                                     |
+| --------------------- | --------- | ---------- | ------------------------------------------ |
+| Left Click            | 200       | Yes        | Waits for 200ms, moves mouse, then clicks. |
+| Right Click           | 0         | No         | Instantly sends a right click.             |
+| Double Click          | 500       | Yes        | Pause 500ms, adjust position, double-click.|
+| Left Button Down      | 100       | No         | Holds the left button after short pause.   |
+
+## Common Mistakes & Troubleshooting
+
+| Problem                                        | Solution                                                                                     |
+| ---------------------------------------------- | -------------------------------------------------------------------------------------------- |
+| **No action performed**                        | Ensure the **Mouse Event to Send** is selected. Without this, no mouse action will be triggered. |
+| **Unexpected click location**                  | If precise clicking is necessary, enable the **Move Mouse** option to reposition the cursor.   |
+| **Delay seems long**                           | Double-check the **Wait** field value. High values translate to noticeable pauses.             |
+
+## Real-World Use Cases
+
+- **Automating Application Workflows**: Seamlessly click through sequences in desktop apps.
+- **Testing GUI Applications**: Send clicks programmatically to verify button functionality.
+- **Routine Maintenance Tasks**: Automate regular tasks like opening files or directories with double-clicks.

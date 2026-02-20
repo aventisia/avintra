@@ -1,0 +1,89 @@
+import { Callout, Steps } from "nextra/components";
+
+# Press or Release Key
+
+The **Press or Release Key** node is designed to simulate keyboard inputs by either pressing and holding or releasing special modifier keys, such as Control, Alt, Shift, or the Windows key. This functionality is useful in automating repetitive tasks, testing scenarios, or when a specific key combination is required to perform an action on a desktop application.
+
+For example:
+
+- Pressing Ctrl + C to copy text.
+- Holding Alt key for navigating menus.
+- Releasing Shift after entering a capital letter.
+
+## Configuration Options
+
+| Field Name                   | Description                                                                                | Input Type | Required? | Default Value |
+| ---------------------------- | ------------------------------------------------------------------------------------------ | ---------- | --------- | ------------- |
+| **Action To Perform**        | Select whether to press or release the keys.                                               | Select     | Yes       | _(empty)_     |
+| **Control**                  | Toggle to include the Control key in the action.                                           | Switch     | No        | _(empty)_     |
+| **Alt**                      | Toggle to include the Alt key in the action.                                               | Switch     | No        | _(empty)_     |
+| **Shift**                    | Toggle to include the Shift key in the action.                                             | Switch     | No        | _(empty)_     |
+| **Win**                      | Toggle to include the Windows key in the action.                                           | Switch     | No        | _(empty)_     |
+| **Key To Press**             | The main key to simulate (e.g., A, Enter, Tab). Leave blank if only using modifiers.        | Select     | No        | _(empty)_     |
+| **Wait Before Releasing (ms)** | Optional delay in milliseconds before releasing the key (used when pressing only).        | Text       | No        | 0             |
+
+## Expected Output Format
+
+This node does not produce a data output. It performs a keyboard action directly on the operating system level.
+
+## Step-by-Step Guide
+
+<Steps>
+### Step 1
+
+Add the **Press or Release Key** node to your flow.
+
+### Step 2
+
+In the **Action To Perform** dropdown, select whether you want to "Press" or "Release" the key combination.
+
+### Step 3
+
+Toggle the switches for any modifier keys you want to include:
+- **Control**
+- **Alt**
+- **Shift**
+- **Win**
+
+### Step 4
+
+If you want to simulate a specific key along with the modifiers, select it from the **Key To Press** dropdown. 
+
+### Step 5
+
+(Optional) Enter a value in **Wait Before Releasing (ms)** if you want the key press to be delayed before releasing. This is only applicable when the action is set to "Press".
+
+### Step 6
+
+The action will execute with the specified key and modifier keys holding according to your configuration.
+</Steps>
+
+<Callout type="warning" title="Important">
+  Ensure the action you are automating does not interfere with critical systems or undesired application changes.
+</Callout>
+
+## Input/Output Examples
+
+While there is no direct data output, here are examples of configurations:
+
+- **Action To Perform**: Pressing Ctrl and C
+  - Configuration: `Control = On`, `Key To Press = C`
+  - Result: Copy action in applications like text editors.
+
+- **Action To Perform**: Releasing Ctrl + Alt
+  - Configuration: `Control = On`, `Alt = On`
+  - Result: Terminates holding of the selected modifiers.
+
+## Common Mistakes & Troubleshooting
+
+| Problem                                               | Solution                                                                                                                   |
+| ----------------------------------------------------- | -------------------------------------------------------------------------------------------------------------------------- |
+| **Keys not being recognized**                         | Double-check that the correct key or modifier is toggled and set.                                                          |
+| **Delay not behaving as expected**                    | Ensure the "Wait Before Releasing (ms)" field is correctly set with millisecond values.                                    |
+| **Inactivity or no action happening**                 | Verify that the node is placed correctly in the flow and that all required fields are configured adequately.                |
+
+## Real-World Use Cases
+
+- **Productivity Automation**: Use keypress actions to automate repetitive tasks like saving documents (Ctrl + S).
+- **Testing Routines**: Simulate keypresses for testing applications that rely on keyboard inputs.
+- **Navigation Shortcuts**: Utilize combinations to quickly navigate through system menus or applications using Alt or Windows key combinations.

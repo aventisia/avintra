@@ -1,0 +1,91 @@
+import { Callout, Steps } from "nextra/components";
+
+# Delete Range from Excel Worksheet
+
+The **Delete Range from Excel Worksheet** node allows you to remove specific cells or ranges of cells from an Excel worksheet. This is particularly useful when you need to clean up or restructure your data, such as removing unwanted data entries or clearing a section of your sheet.
+
+## Configuration Options
+
+| Field Name         | Description                                                                                      | Input Type | Required? | Default Value |
+| ------------------ | ------------------------------------------------------------------------------------------------ | ---------- | --------- | ------------- |
+| **Worksheet Instance** | The Excel Worksheet object from which you want to delete cells.                                | Text       | Yes       | _(empty)_     |
+| **Deletion Mode**      | Choose to delete a single cell or a range of cells.                                           | Select     | Yes       | RangeOfCells  |
+| **Start Column**       | The starting column of the range to delete (letter or number). Shows only for "Range of Cells".| Text       | No        | _(none)_      |
+| **End Column**         | The ending column of the range to delete (letter or number). Shows only for "Range of Cells".  | Text       | No        | _(none)_      |
+| **Start Row**          | The starting row of the range to delete. Appears only when "Range of Cells" is selected.      | Text       | No        | _(none)_      |
+| **End Row**            | The ending row of the range to delete. Appears only when "Range of Cells" is selected.        | Text       | No        | _(none)_      |
+| **Shift Direction**    | Defines how to move remaining cells after deletion: Up or Left.                               | Select     | No        | Up            |
+
+## Expected Output Format
+
+There is no direct output from this node; it modifies the specified Excel worksheet by removing the selected cells or ranges.
+
+## Step-by-Step Guide
+
+<Steps>
+### Step 1
+
+Add a **Delete Range from Excel Worksheet** node to your flow.
+
+### Step 2
+
+In the **Worksheet Instance** field, input the Excel Worksheet object you wish to modify.
+
+### Step 3
+
+Select the **Deletion Mode**:
+
+- **Single Cell**: Specify a single cell to delete.
+- **Range of Cells**: Delete a specified range of cells by entering the start and end points.
+
+### Step 4
+
+If you choose **Range of Cells**, complete the following:
+
+- **Start Column**: Enter the starting column for deletion.
+- **End Column**: Enter the ending column for deletion.
+- **Start Row**: Enter the starting row for deletion.
+- **End Row**: Enter the ending row for deletion.
+
+### Step 5
+
+Set the **Shift Direction** to determine how remaining cells will adjust. Choose either "Up" or "Left".
+
+### Step 6
+
+Execute the flow. The specified cells or range will be deleted from the worksheet based on your configurations.
+
+</Steps>
+
+<Callout type="warning" title="Caution">
+  Ensure that any important data is backed up before deletion, as this action cannot be undone in the flow.
+</Callout>
+
+## Input/Output Examples
+
+**Example 1**: Deleting a single cell at B2 with cells shifting up:
+- **Deletion Mode**: Single Cell
+- **Cell**: B2
+- **Shift Direction**: Up
+
+**Example 2**: Deleting a range from A1 to C3 with cells shifting left:
+- **Deletion Mode**: Range of Cells
+- **Start Column**: A
+- **End Column**: C
+- **Start Row**: 1
+- **End Row**: 3
+- **Shift Direction**: Left
+
+## Common Mistakes & Troubleshooting
+
+| Problem                                                   | Solution                                                                                         |
+| --------------------------------------------------------- | ------------------------------------------------------------------------------------------------ |
+| **Incorrect or empty Worksheet Instance**                 | Ensure the Excel Worksheet object field is populated with a valid reference.                     |
+| **Missing fields in Range of Cells mode**                 | Verify all required fields are shown by selecting "Range of Cells" in the **Deletion Mode** dropdown. |
+| **Unexpected data shift after deletion**                  | Double-check your **Shift Direction** setting and configuration of the **Deletion Mode**.          |
+
+## Real-World Use Cases
+
+- **Data Cleanup**: Remove outdated data entries from periodic reports.
+- **Template Preparation**: Erase placeholder data from template spreadsheets before new data entry.
+- **Conditional Formatting Preparation**: Clear ranges for fresh formatting or data input to avoid conflicts.

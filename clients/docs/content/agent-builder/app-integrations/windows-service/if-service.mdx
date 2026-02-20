@@ -1,0 +1,72 @@
+import { Callout, Steps } from "nextra/components";
+
+# If Service
+
+The **If Service** node is a powerful tool that helps you create automated workflows based on the status of various computer services. By checking whether a specific service is running, paused, stopped, or installed, you can trigger different actions in your flow. This is particularly useful for managing service-dependent operations or for initiating tasks only when certain conditions of a service are met.
+
+## Configuration Options
+
+| Field Name        | Description                                                   | Input Type | Required? | Default Value |
+| ----------------- | ------------------------------------------------------------- | ---------- | --------- | ------------- |
+| **If Service**    | Choose the condition to check for the service's status.       | Select     | Yes       | _(empty)_     |
+| **Service Name**  | Select the name of the service you want to check.             | Select     | Yes       | _(empty)_     |
+
+## Expected Output Format
+
+The output from the **If Service** node is a **boolean value** (`true` or `false`).
+
+- Output of `true` indicates that the service matches the specified condition.
+- Output of `false` means that it does not.
+
+## Step-by-Step Guide
+
+<Steps>
+### Step 1
+
+Add the **If Service** node to your flow.
+
+### Step 2
+
+In the **Service Name** dropdown, select the service you want to check. This could be any from the list, such as "Remote Procedure Call (RPC) Locator" or "Task Scheduler".
+
+### Step 3
+
+In the **If Service** dropdown, choose the condition you want to check for the chosen service's status. Options include:
+
+- **Is running**: Check if the service is currently running.
+- **Is stopped**: Check if the service has been stopped.
+- **Is installed**: Determine if the service is installed.
+- **Isn't installed**: Check if the service is not installed.
+- **Is paused**: Verify if the service is paused.
+
+### Step 4
+
+The node will output a value of `ConditionResult`, which you can use to control subsequent actions based on whether the service condition was met.
+
+</Steps>
+
+<Callout type="info" title="Tip">
+  Be sure to select both a service and a condition. Missing either will prevent the node from functioning correctly.
+</Callout>
+
+## Input/Output Examples
+
+| Service Name    | If Service   | Output       | Explanation                                         |
+| --------------- | ------------ | ------------ | --------------------------------------------------- |
+| Task Scheduler  | Is running   | `true`       | The Task Scheduler service is currently running.    |
+| Remote Registry | Is stopped   | `false`      | The Remote Registry service is not currently stopped.|
+
+## Common Mistakes & Troubleshooting
+
+| Problem                                      | Solution                                                                                 |
+| -------------------------------------------- | ---------------------------------------------------------------------------------------- |
+| **No service or condition selected**         | Ensure you've selected an option in both the **Service Name** and **If Service** fields. |
+| **Service not behaving as expected**         | Double-check the service's actual status and match it to the selected condition.         |
+| **Output always false**                      | Verify that both service name and condition inputs are correct and appropriate.          |
+
+## Real-World Use Cases
+
+- **System Monitoring**: Automatically alert or log information if critical services like SQL Server go down.
+- **Performance Optimization**: Ensure services run only as needed, freeing resources when not in use.
+- **Security Audits**: Verify and report on essential security services status such as Firewall or Antivirus.
+- **Automated Maintenance**: Pause certain services during system updates and resume afterwards.

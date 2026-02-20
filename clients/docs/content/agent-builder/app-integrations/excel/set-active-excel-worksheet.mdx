@@ -1,0 +1,72 @@
+import { Callout, Steps } from "nextra/components";
+
+# Set Active Excel Worksheet
+
+The **Set Active Excel Worksheet** node enables you to specify and activate a particular worksheet within an Excel workbook. You can select the worksheet either by its name or its position (index) within the workbook. This is useful when you need to focus on working with a specific section of data in a workbook, for tasks like data processing, reporting, or automated updates.
+
+## Configuration Options
+
+| Field Name          | Description                                                                                                                                   | Input Type | Required? | Default Value  |
+| ------------------- | --------------------------------------------------------------------------------------------------------------------------------------------- | ---------- | --------- | -------------- |
+| **Workbook Instance** | Specify the Excel Workbook object containing the worksheets you want to access.                                                            | Text       | Yes       | _(empty)_      |
+| **Selection Type**  | Choose how to locate the worksheet: by **Name** (name of the worksheet) or **Index** (the worksheet's position number, starting from 1).     | Select     | No        | Name           |
+| **Search Value**    | Enter the worksheet name (if using **Name**) or the worksheet index number (if using **Index**) for identifying the desired worksheet.       | Text       | No        | _(empty)_      |
+
+## Expected Output Format
+
+The output from this node is an **Excel Worksheet Instance**. This represents the activated worksheet within the workbook.
+
+- **Worksheet Instance**: Activated worksheet from the workbook, which can be used for further operations or data manipulation.
+
+## Step-by-Step Guide
+
+<Steps>
+### Step 1
+
+Add the **Set Active Excel Worksheet** node to your workflow.
+
+### Step 2
+
+In the **Workbook Instance** field, input the Excel Workbook object that contains the worksheets you want to access.
+
+### Step 3
+
+Select the **Selection Type**:
+
+- Choose **Name** if you wish to select a worksheet by its name.
+- Choose **Index** if you prefer to select a worksheet by its position number in the workbook.
+
+### Step 4
+
+In the **Search Value** field, enter either the name of the worksheet or its index number, depending on the selection type you chose.
+
+### Step 5
+
+Use the **Worksheet Instance** output to perform further operations on the activated worksheet.
+
+</Steps>
+
+<Callout type="info" title="Note">
+  Ensure your workbook contains the worksheet you're trying to activate by name or index to avoid errors. Index values start from 1.
+</Callout>
+
+## Input/Output Examples
+
+| Selection Type | Search Value | Output Value      | Output Type |
+| -------------- | ------------ | ----------------- | ----------- |
+| Name           | Sheet1       | WorksheetInstance | Excel Worksheet Instance |
+| Index          | 2            | WorksheetInstance | Excel Worksheet Instance |
+
+## Common Mistakes & Troubleshooting
+
+| Problem                                               | Solution                                                                                                                                           |
+| ----------------------------------------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------- |
+| **Worksheet not found by Name**                       | Double-check the spelling of the worksheet name and ensure it exists in the workbook. Names are case-sensitive.                                     |
+| **Invalid Index Value**                               | Ensure the index is a positive integer starting from 1, representing the worksheet's position in the workbook.                                      |
+| **No Workbook Instance provided**                     | Make sure the field is filled with a valid Excel Workbook object before proceeding with worksheet activation.                                       |
+
+## Real-World Use Cases
+
+- **Automated Reports**: Quickly activate and process a specific worksheet dedicated to report data within a larger workbook.
+- **Data Analysis**: Switch between worksheets to analyze or manipulate data programmatically, based on user input or conditions.
+- **Dynamic Updates**: Set the active worksheet for applying updates or formulas in response to real-time events or inputs.

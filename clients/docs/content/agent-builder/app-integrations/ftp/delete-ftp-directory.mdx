@@ -1,0 +1,57 @@
+import { Callout, Steps } from "nextra/components";
+
+# Delete FTP Directory
+
+The **Delete FTP Directory** node is used to remove a specific directory from an FTP server. This is particularly useful for automating the cleanup of file directories that are no longer needed, helping to conserve server space and maintain organized file structures.
+
+Use this node when you need to automatically delete directories on an FTP server after tasks such as file transfers are complete, or when removing outdated directories to ensure your server storage is utilized efficiently.
+
+## Configuration Options
+
+| Field Name        | Description                                   | Input Type | Required? | Default Value |
+| ----------------- | --------------------------------------------- | ---------- | --------- | ------------- |
+| **FTP Connection**| The connection details for accessing the FTP server. | Text       | Yes       | _(empty)_     |
+| **Directory Name**| The name of the directory you wish to delete. | Text       | Yes       | _(empty)_     |
+
+## Expected Output Format
+
+This node does not produce an output value in terms of data. Instead, it performs the action of deleting a directory on the FTP server.
+
+## Step-by-Step Guide
+
+<Steps>
+### Step 1
+
+Add **Delete FTP Directory** node into your flow.
+
+### Step 2
+
+In the **FTP Connection** field, enter your FTP connection details. Ensure this connection is active and has the necessary permissions to delete directories.
+
+### Step 3
+
+In the **Directory Name** field, enter the exact name of the directory you want to remove from the FTP server.
+
+### Step 4
+
+Ensure all details are correct and execute the node to delete the specified directory. Confirm that the directory no longer exists on your FTP server.
+
+</Steps>
+
+<Callout type="info" title="Tip">
+  Double-check the directory name for accuracy to avoid accidentally deleting the incorrect directory.
+</Callout>
+
+## Common Mistakes & Troubleshooting
+
+| Problem                                           | Solution                                                                                                 |
+| ------------------------------------------------- | -------------------------------------------------------------------------------------------------------- |
+| **Invalid FTP Connection Settings**               | Verify that the FTP connection details are correct and that you have logged in successfully.              |
+| **Directory Not Found**                           | Confirm the directory name is typed correctly. Check for typos or incorrect path settings.                |
+| **Permissions Error**                             | Ensure the FTP user account has the necessary permissions to delete directories.                          |
+
+## Real-World Use Cases
+
+- **Automated Cleanup**: Regularly empty directories after processing files to ensure server efficiency.
+- **Dynamic Directory Management**: Automatically remove specific directories when they are no longer needed to keep storage organized.
+- **Backup Management**: Clean up older directories after migrating data to another server or location.

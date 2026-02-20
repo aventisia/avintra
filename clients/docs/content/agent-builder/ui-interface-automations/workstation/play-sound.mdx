@@ -1,0 +1,93 @@
+import { Callout, Steps } from "nextra/components";
+
+# Play Sound
+
+The **Play Sound** node allows you to trigger audio playback either via standard system sounds (like alerts) or with custom WAV files from your desktop. You can control playback synchronization and volume, making it ideal for adding audio cues or alerts in automated workflows.
+
+For example:
+
+- Playing a beep sound to alert end of a process.
+- Playing a custom sound file for a notification.
+- Replaying sound alerts until acknowledged.
+
+## Configuration Options
+
+| Field Name           | Description                                                                 | Input Type  | Required? | Default Value |
+| -------------------- | --------------------------------------------------------------------------- | ----------- | --------- | ------------- |
+| **Play Sound From**  | Choose between a system sound and a custom WAV file.                         | Select      | Yes       | _(empty)_     |
+| **System Sound**     | The specific system sound to play (only if playing from system sounds).      | Select      | No        | _(empty)_     |
+| **WAV File Path**    | The complete file path to the WAV file, if using a custom sound.             | Text        | No        | _(empty)_     |
+| **Play Mode**        | Decide if you want to play sound synchronously (blocking) or asynchronously. | Select      | No        | Sync          |
+| **Volume**           | The audio playback level (0-100) - applies only to system sounds.            | Text        | No        | 100           |
+
+## Expected Output Format
+
+This node's outputs include:
+
+- **Played**: Returns a confirmation that the sound was played.
+- **Duration**: When available, returns the playback duration of the sound in milliseconds.
+
+## Step-by-Step Guide
+
+<Steps>
+
+### Step 1
+
+Add the **Play Sound** node to your automation flow.
+
+### Step 2
+
+In the **Play Sound From** field, select either **System** to use a predefined sound or **WAV file** to use a custom file.
+
+### Step 3
+
+If you chose **System** in the previous step:
+
+- Use the **System Sound** dropdown to select the specific sound like **Beep** or **Exclamation**.
+
+If you chose **WAV file**:
+
+- Enter the file path of the WAV file in the **WAV File Path** field.
+
+### Step 4
+
+Select the **Play Mode** from the options:
+
+- **Synchronous**: Blocks further actions until sound finishes.
+- **Asynchronous**: Plays sound without blocking subsequent actions.
+- **Repeat**: Plays the sound repeatedly.
+
+### Step 5
+
+Set the **Volume** level in the range of 0 to 100 if using a system sound.
+
+### Step 6
+
+Execute your flow. The indicators **Played** and **Duration** (if available) will provide the playback status and duration.
+
+</Steps>
+
+<Callout type="info" title="Note">
+  Ensure your system's volume is unmuted to hear the playback results.
+</Callout>
+
+## Input/Output Examples
+
+| Sound Source | System Sound  | WAV File Path    | Play Mode     | Volume | Output Played | Output Duration |
+| ------------ | ------------- | ---------------- | ------------- | ------ | ------------- | ----------------|
+| System       | Beep          | _(n/a)_          | Sync          | 75     | Played        | 1000 ms         |
+| WAV file     | _(n/a)_       | C:\sounds\alert.wav | Async     | _(n/a)_| Played        | 2000 ms         |
+
+## Common Mistakes & Troubleshooting
+
+| Problem                                  | Solution                                                                                                            |
+| ---------------------------------------- | ------------------------------------------------------------------------------------------------------------------- |
+| **No sound playback**                    | Ensure the correct sound source and path are selected. Confirm volume is set appropriately, especially for system sounds.   |
+| **Missing Duration output**              | Not all sounds provide a duration output; ensure the sound file supports duration metadata.                         |
+| **Incorrect system sound selection**     | Verify the sound name is chosen correctly from the list in the **System Sound** field.                             |
+
+## Real-World Use Cases
+
+- **Notification Alerts**: Play a sound alert for task completion or system notifications.
+- **Security Alarms**: Trigger a custom alert sound when unauthorized activity is detected.
+- **Guided Assistance**: Use sound cues for navigation or guided tutorials within the application.

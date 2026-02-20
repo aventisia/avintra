@@ -1,0 +1,80 @@
+import { Callout, Steps } from "nextra/components";
+
+# Update Data Table Item
+
+The **Update Data Table Item** node allows you to change the content of a specific cell in a data table. By providing the column name, row identifier, and a new value, you can directly update information in your table. This node is useful when you need to modify existing data without manually editing each entry.
+
+For example, you might use this to:
+- Correct errors in your data set.
+- Update pricing or stock information in a product inventory.
+- Change user details in a list of contacts.
+
+## Configuration Options
+
+| Field Name    | Description                                                                         | Input Type | Required? | Default Value |
+| ------------- | ----------------------------------------------------------------------------------- | ---------- | --------- | ------------- |
+| **Data Table**| The DataTable containing the data to be updated.                                    | Text       | Yes       | _(empty)_     |
+| **Column**    | The name of the column where the update should occur.                               | Text       | Yes       | _(empty)_     |
+| **Row**       | The row index or primary key value of the row to update.                            | Text       | Yes       | _(empty)_     |
+| **New Value** | The new value to set for the specified cell.                                        | Text       | Yes       | _(empty)_     |
+
+## Expected Output Format
+
+The output of this node is a **Modified Data Table**, where the specified cell is updated with the new value provided.
+
+- Output Type: Modified Data Table
+- Output Name: `ModifiedDataTable`
+
+## Step-by-Step Guide
+
+<Steps>
+### Step 1
+
+Add the **Update Data Table Item** node to your flow.
+
+### Step 2
+
+In the **Data Table** field, specify the table that contains the data you wish to update.
+
+### Step 3
+
+Enter the name of the **Column** where the update should occur.
+
+### Step 4
+
+Provide the **Row** index or primary key value for the cell you want to modify.
+
+### Step 5
+
+Input the **New Value** you want to set in the specified cell.
+
+### Step 6
+
+Once all fields are filled out, the system will update the Data Table, providing a modified version under `ModifiedDataTable`.
+
+</Steps>
+
+<Callout type="info" title="Important">
+  Ensure that the column name and row identifier you enter match exactly with those in your Data Table to avoid errors.
+</Callout>
+
+## Input/Output Examples
+
+| Data Table Name | Column     | Row | New Value | Resulting Data Table |
+|-----------------|------------|-----|-----------|----------------------|
+| EmployeeData    | Last Name  | 105 | Smith     | ModifiedDataTable    |
+| ProductCatalog  | Price      | SKU123 | 19.99  | ModifiedDataTable    |
+
+## Common Mistakes & Troubleshooting
+
+| Problem                                                | Solution                                                                                                                                           |
+|--------------------------------------------------------|----------------------------------------------------------------------------------------------------------------------------------------------------|
+| **Incorrect Column/Row Name**                          | Double-check the spelling and case of your column and row names. They must match exactly with those in your Data Table.                                                                  |
+| **Empty New Value Field**                              | Ensure a new value is entered for the update. The field cannot be left blank.                                                                      |
+| **Data Table Not Found**                               | Verify that the Data Table specified exists in your current session and is correctly spelled.                                                      |
+
+## Real-World Use Cases
+
+- **Employee Database Management**: Update employee role or status in a database.
+- **Inventory Adjustments**: Change product quantities or prices in a stock inventory table.
+- **Customer Records**: Modify contact details or account status in a customer record system.

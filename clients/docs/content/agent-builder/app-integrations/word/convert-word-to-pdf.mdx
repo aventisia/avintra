@@ -1,0 +1,67 @@
+import { Callout, Steps } from "nextra/components";
+
+# Convert Word to PDF
+
+The **Convert Word to PDF** node allows you to easily change your Word documents (.doc or .docx) into PDF files. This is especially useful for secure document sharing and ensuring that your formatting remains consistent across different devices and platforms.
+
+For example:
+
+- Sharing reports or presentations in a format accessible to all recipients.
+- Creating a universally accessible file for documents that should not be edited further.
+
+## Configuration Options
+
+| Field Name         | Description                                                                  | Input Type | Required? | Default Value   |
+| ------------------ | ---------------------------------------------------------------------------- | ---------- | --------- | --------------- |
+| **Input File Path**  | The complete path to the Word document you want to convert.                  | Text       | Yes       | _(empty)_       |
+| **Output File Path** | The full path where you want the PDF saved. If left empty, it saves in the same folder as the original file. | Text       | No        | _(empty)_       |
+
+## Expected Output Format
+
+The output of this node is a **PDF file** format. The converted PDF will maintain the layout and formatting of your original Word document.
+
+## Step-by-Step Guide
+
+<Steps>
+### Step 1
+
+Add **Convert Word to PDF** node into your workflow.
+
+### Step 2
+
+In the **Input File Path** field, enter the full path to the Word document you wish to convert. Make sure the file extension is either .doc or .docx.
+
+### Step 3
+
+In the **Output File Path** field, specify the location where you would like to save the converted PDF file. If you leave this field blank, the PDF will be saved in the same directory as the original Word document.
+
+### Step 4
+
+Execute the node to start the conversion process. Once completed, a new PDF file will be created at your specified location.
+
+</Steps>
+
+<Callout type="info" title="Tip">
+  Ensure the Word document is accessible and not open in another program while converting to prevent errors.
+</Callout>
+
+## Input/Output Examples
+
+| Input File         | Output Location                                                                       | Resulting File     |
+| ------------------ | -------------------------------------------------------------------------------------- | ------------------ |
+| `C:\Documents\report.docx` | Not specified (empty)                                                                | `C:\Documents\report.pdf` |
+| `C:\Documents\presentation.docx` | `C:\PDFs\presentation.pdf`                                                       | `C:\PDFs\presentation.pdf` |
+
+## Common Mistakes & Troubleshooting
+
+| Problem                                             | Solution                                                                                             |
+| --------------------------------------------------- | ---------------------------------------------------------------------------------------------------- |
+| **File not found error**                            | Ensure the path in **Input File Path** is correct and accessible.                                     |
+| **Output file not created in expected location**   | Double-check the **Output File Path** for typos or permission issues. Ensure path is correctly specified. |
+| **Permission denied**                              | Make sure the application has permission to access the folder paths specified. Close any open Word documents being converted. |
+
+## Real-World Use Cases
+
+- **Legal Documents**: Convert contracts and agreements for secure distribution where changes are not intended.
+- **Educational Materials**: Provide course content in PDF to prevent accidental edits and maintain consistency.
+- **Business Reports**: Share financial or analytical reports in a standardized format.

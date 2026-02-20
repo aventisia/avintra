@@ -1,0 +1,96 @@
+@import "tailwindcss";
+@import "nextra-theme-docs/style.css";
+
+@variant dark (&:where(.dark *));
+
+/* Theme configuration */
+@theme {
+  /* ===== Colors ===== */
+  --color-border: hsl(214.3 31.8% 91.4%);
+  --color-input: hsl(214.3 31.8% 91.4%);
+  --color-ring: rgba(78, 70, 229, 0.2);
+
+  --color-background: hsl(0 0% 100%);
+  --color-foreground: hsl(222.2 84% 4.9%);
+
+  --color-card: hsl(0 0% 100%);
+  --color-card-foreground: hsl(222.2 84% 4.9%);
+
+  --color-popover: hsl(0 0% 100%);
+  --color-popover-foreground: hsl(222.2 84% 4.9%);
+
+  --color-primary: rgb(79, 70, 229);
+  --color-primary-foreground: hsl(210 40% 98%);
+  --color-primary-50: hsl(224.3 76.3% 95%);
+  --color-primary-100: hsl(224.3 76.3% 90%);
+  --color-primary-200: hsl(224.3 76.3% 80%);
+  --color-primary-300: hsl(224.3 76.3% 70%);
+  --color-primary-400: hsl(224.3 76.3% 60%);
+  --color-primary-500: hsl(224.3 76.3% 48%);
+  --color-primary-600: hsl(224.3 76.3% 40%);
+  --color-primary-700: hsl(224.3 76.3% 30%);
+  --color-primary-800: hsl(224.3 76.3% 20%);
+  --color-primary-900: hsl(224.3 76.3% 10%);
+
+  --color-secondary: rgb(30, 27, 75);
+  --color-secondary-foreground: hsl(210 40% 98%);
+
+  --color-muted: hsl(210 40% 96.1%);
+  --color-muted-foreground: hsl(215.4 16.3% 46.9%);
+
+  --color-accent: hsl(226 100% 97%);
+  --color-accent-foreground: hsl(222.2 47.4% 11.2%);
+
+  --color-destructive: hsl(0 84.2% 60.2%);
+  --color-destructive-foreground: hsl(210 40% 98%);
+
+  /* ===== Radius ===== */
+  --radius-lg: 0.5rem;
+  --radius-md: calc(0.5rem - 2px);
+  --radius-sm: calc(0.5rem - 4px);
+}
+
+[data-theme="dark"] {
+  --acme-canvas-color: oklch(0.21 0.034 264.665);
+}
+@layer base {
+  .dark {
+    --color-border: hsl(217.2 32.6% 17.5%);
+    --color-input: hsl(217.2 32.6% 17.5%);
+    --color-ring: rgba(79, 70, 229, 0.4);
+
+    --color-background: rgb(17, 17, 17);
+    --color-foreground: hsl(210 40% 98%);
+
+    --color-card: hsl(222.2 84% 4.9%);
+    --color-card-foreground: hsl(210 40% 98%);
+
+    --color-popover: hsl(222.2 84% 4.9%);
+    --color-popover-foreground: hsl(210 40% 98%);
+
+    --color-primary: rgb(99, 102, 241); /* purple-500 */
+    --color-primary-foreground: hsl(210 40% 98%);
+    --color-primary-50: hsl(224.3 76.3% 15%);
+    --color-primary-100: hsl(224.3 76.3% 20%);
+    --color-primary-200: hsl(224.3 76.3% 25%);
+    --color-primary-300: hsl(224.3 76.3% 35%);
+    --color-primary-400: hsl(224.3 76.3% 45%);
+    --color-primary-500: hsl(224.3 76.3% 55%);
+    --color-primary-600: hsl(224.3 76.3% 65%);
+    --color-primary-700: hsl(224.3 76.3% 75%);
+    --color-primary-800: hsl(224.3 76.3% 85%);
+    --color-primary-900: hsl(224.3 76.3% 95%);
+
+    --color-secondary: hsl(217.2 32.6% 17.5%);
+    --color-secondary-foreground: hsl(210 40% 98%);
+
+    --color-muted: hsl(217.2 32.6% 17.5%);
+    --color-muted-foreground: hsl(215 20.2% 65.1%);
+
+    --color-accent: hsl(217.2 32.6% 22%);
+    --color-accent-foreground: hsl(210 40% 98%);
+
+    --color-destructive: hsl(0 62.8% 30.6%);
+    --color-destructive-foreground: hsl(210 40% 98%);
+  }
+}

@@ -1,0 +1,78 @@
+import { Callout, Steps } from "nextra/components";
+
+# Launch Browser
+
+The **Launch Browser** node enables you to open a web browser instance of either Microsoft Edge or Google Chrome directly from your automation workflow. This is particularly useful when you need to automate web tasks, navigate to a specific URL, or start a browsing session as part of your process.
+
+Common scenarios for using this node include:
+
+- Automatically opening a webpage for data entry or retrieval.
+- Starting a browser session in private mode for confidentiality.
+- Launching a browser window in a specific state (maximized or minimized).
+
+## Configuration Options
+
+| Field Name     | Description                                                                                  | Input Type | Required? | Default Value   |
+| -------------- | -------------------------------------------------------------------------------------------- | ---------- | --------- | --------------- |
+| **Browser Type** | Select the browser to launch: Microsoft Edge or Google Chrome.                               | Select     | Yes       | Microsoft Edge  |
+| **Launch Url**   | Enter the URL to open the browser with. Leave empty to open the browser homepage.           | Text       | No        | _(empty)_       |
+| **Browsing Mode** | Choose the browsing mode: normal or private/incognito.                                      | Select     | No        | Normal          |
+| **Window State**  | Define the initial state of the browser window: maximized or minimized.                     | Select     | No        | Maximized       |
+
+## Expected Output Format
+
+This node outputs a single **Web Browser** instance that you can use in subsequent nodes within your automation workflow. The output is identified as **WebBrowserInstance**.
+
+## Step-by-Step Guide
+
+<Steps>
+### Step 1
+
+Add the **Launch Browser** node into your flow.
+
+### Step 2
+
+Select the **Browser Type** from the dropdown menu. Choose either Microsoft Edge or Google Chrome.
+
+### Step 3
+
+(Optional) In the **Launch Url** field, input the URL you want the browser to open. If this field is left blank, the browser will start without navigating to any page.
+
+### Step 4
+
+(Optional) Choose the **Browsing Mode**. Select "Normal" for regular browsing or "Private" for incognito mode.
+
+### Step 5
+
+(Optional) Set the **Window State** to determine how the window initially appears. Choose "Maximized" or "Minimized".
+
+### Step 6
+
+The browser will launch as configured, and the **Web Browser** instance will be available for further automation steps.
+
+</Steps>
+
+<Callout type="info" title="Note">
+  You do not need to fill in all optional fields if the default settings meet your needs.
+</Callout>
+
+## Input/Output Examples
+
+| Browser Type    | Launch Url            | Browsing Mode | Window State | Output               |
+| --------------- | --------------------- | ------------- | ------------ | -------------------- |
+| Microsoft Edge  | https://www.example.com | Private       | Maximized    | WebBrowserInstance   |
+| Google Chrome   | _(empty)_             | Normal        | Minimized    | WebBrowserInstance   |
+
+## Common Mistakes & Troubleshooting
+
+| Problem                                              | Solution                                                                                                                                                        |
+| ---------------------------------------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| **Browser not launching**                            | Confirm that Microsoft Edge or Google Chrome is installed on the desktop.                                                                                       |
+| **Incorrect URL format**                             | Ensure the URL entered includes "http://" or "https://".                                                                                                        |
+| **Window state is not as expected**                  | Double-check the selected **Window State** setting.                                                                                                             |
+
+## Real-World Use Cases
+
+- **Daily Briefing**: Automatically open a browser to a news or information page each morning in private mode.
+- **Reporting Dashboard**: Launch a browser to view an analytics or reporting dashboard, ensuring it's open and visible in a maximized window.
+- **Web Testing Automation**: Use the browser instance as part of a sequence to automate testing of a website's functionality or user interface.

@@ -1,0 +1,72 @@
+import { Callout, Steps } from "nextra/components";
+
+# Get First Free Row on Column from Excel Worksheet
+
+The **Get First Free Row on Column from Excel Worksheet** node helps you find the first empty row in a specified column of your Excel worksheet. This is particularly useful when you need to insert new data and want to ensure you're not overwriting existing content.
+
+You might use this node if:
+
+- You're adding new entries to a list or database within an Excel worksheet.
+- You need to automate data append operations without risking data overwriting.
+
+## Configuration Options
+
+| Field Name           | Description                                                                 | Input Type | Required? | Default Value |
+| -------------------- | --------------------------------------------------------------------------- | ---------- | --------- | ------------- |
+| **Workbook Instance**| The Excel Workbook instance containing the target worksheet.                | Text       | Yes       | _(empty)_     |
+| **Worksheet Instance** | The target Excel worksheet instance to analyze.                           | Text       | Yes       | _(empty)_     |
+| **Column Index**     | The 1-based index of the column to check for the first free row.            | Text       | Yes       | _(empty)_     |
+| **First Free Row**   | Returns the first free row number in the specified column.                  | Output     | No        | FirstFreeRow  |
+
+## Expected Output Format
+
+The output is a **row number**, which indicates the first available empty row within the specified column of the worksheet (e.g., `5`).
+
+## Step-by-Step Guide
+
+<Steps>
+### Step 1
+
+Add the **Get First Free Row on Column from Excel Worksheet** node into your flow.
+
+### Step 2
+
+In the **Workbook Instance** field, enter your Excel workbook instance that contains the worksheet you want to work with.
+
+### Step 3
+
+Provide the **Worksheet Instance**, which is the specific worksheet within your workbook that you aim to analyze.
+
+### Step 4
+
+In the **Column Index** field, specify the 1-based index number of the column you want to check for the first free row.
+
+### Step 5
+
+The node will output the available row number as **First Free Row**, which can be used in subsequent nodes for your automation task.
+
+</Steps>
+
+<Callout type="info" title="Note">
+  Make sure the column index you enter correctly corresponds to the column you're targeting, as incorrect indices will lead to errors or inaccurate outputs.
+</Callout>
+
+## Input/Output Examples
+
+| Workbook Instance | Worksheet Instance | Column Index | Output Value  | Output Type       |
+| ----------------- | ------------------ | ------------ | ------------- | ----------------- |
+| OrdersDataSheet   | 2023Sales          | 3            | 5             | Row Number (Integer) |
+
+## Common Mistakes & Troubleshooting
+
+| Problem                                          | Solution                                                                                              |
+| ------------------------------------------------ | ----------------------------------------------------------------------------------------------------- |
+| **Incorrect Workbook or Worksheet entered**      | Ensure that the workbook and worksheet instances exist and are correctly named in your Excel file.     |
+| **Column Index out of range**                    | Verify that the column index isn't beyond the actual number of columns available in your worksheet.   |
+| **No Free Row Found**                            | Confirm there are truly empty rows in the column to avoid errors in automated processes.               |
+
+## Real-World Use Cases
+
+- **Data Entry Automation**: Automatically identify where new data should be inserted in a spreadsheet without overwriting previous entries.
+- **Inventory Management**: Track and log next available space for incoming inventory data in a controlled Excel environment.
+- **Error-Free Data Appending**: Safeguard against accidental data overwrites in shared workspace by finding empty rows programmatically.

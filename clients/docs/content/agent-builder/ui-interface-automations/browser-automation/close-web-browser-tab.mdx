@@ -1,0 +1,88 @@
+import { Callout, Steps } from "nextra/components";
+
+# Close Web Browser Tab
+
+The **Close Web Browser Tab** node allows you to automatically close a web browser tab based on different conditions. You can select whether to close the current tab, a tab by its title or URL, all tabs except the main tab, or close a tab after a set time duration. This node can be helpful for managing browser tabs in an automated workflow, preventing clutter, and maintaining focus on active tasks.
+
+## Configuration Options
+
+| Field Name         | Description                                                                                                | Input Type | Required? | Default Value |
+| ------------------ | ---------------------------------------------------------------------------------------------------------- | ---------- | --------- | ------------- |
+| **Web Browser Instance** | Reference the WebDriver instance for the browser session you want to manipulate.                          | Text       | Yes       | _(empty)_     |
+| **Close Mode**     | Decide how you want to close the tab(s): Current, By Title/URL, All Except Main, or After Timeout.          | Select     | No        | Current       |
+| **Match Type**     | Specify if you are matching tabs by their URL or Title when choosing to close by Title/URL.                  | Text       | No        | _(empty)_     |
+| **Match Criteria** | Provide the specific URL or Title used to identify tabs to close, applicable when using the By Title/URL mode. | Text       | No        | _(empty)_     |
+| **Timeout Seconds**| Enter the number of seconds to wait before automatically closing the tab, applicable when using After Timeout mode. | Text       | No        | 60            |
+
+## Expected Output Format
+
+This node does not produce a displayable output value but performs an action by closing the specified web browser tab(s).
+
+## Step-by-Step Guide
+
+<Steps>
+### Step 1
+
+Add the **Close Web Browser Tab** node into your automation flow.
+
+### Step 2
+
+In the **Web Browser Instance** field, input the identifier for your WebDriver instance that controls the browser.
+
+### Step 3
+
+For the **Close Mode**, select your preferred tab closing method:
+
+- **Current**: Closes the currently active tab.
+- **By Title or URL**: Allows closing tabs that have a specific title or URL.
+- **All Except Main**: Closes all tabs except the main tab of the browser.
+- **After Timeout**: Closes the tab after the specified timeout period.
+
+### Step 4
+
+If you chose **By Title or URL** for **Close Mode**, fill in:
+
+- **Match Type**: Indicate whether you're using Title or URL as the matching criterion.
+- **Match Criteria**: Type the specific title or URL fragment to match the tab(s) you want to close.
+
+### Step 5
+
+If you selected **After Timeout** in **Close Mode**, specify the desired timeout duration in the **Timeout Seconds** field.
+
+### Step 6
+
+The web browser tab(s) will be closed according to your selected criteria.
+
+</Steps>
+
+<Callout type="info" title="Note">
+  The "Match Type" and "Match Criteria" fields are only available when "Close Mode" is set to "By Title or URL". The "Timeout Seconds" field is only displayed when "Close Mode" is set to "After Timeout".
+</Callout>
+
+## Input/Output Examples
+
+- **Close Mode**: Current
+  - Closes the currently active tab immediately.
+  
+- **Close Mode**: By Title or URL
+  - **Match Type**: Title
+  - **Match Criteria**: Contains "Reports"
+  - Closes any tabs whose title contains the word "Reports".
+
+- **Close Mode**: After Timeout
+  - **Timeout Seconds**: 30
+  - Closes the tab after waiting for 30 seconds.
+
+## Common Mistakes & Troubleshooting
+
+| Problem                                               | Solution                                                                                                                                                       |
+| ----------------------------------------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| **Invalid Web Browser Instance**                      | Ensure the WebDriver instance is correctly referenced and active.                                                                                              |
+| **Tabs not closing by Title/URL**                     | Double-check Match Type and Match Criteria for typos or incorrect information.                                                                                 |
+| **Timeout not functioning**                           | Verify the Timeout Seconds field has a numerical value set and 'After Timeout' is correctly selected as the Close Mode.                                        |
+
+## Real-World Use Cases
+
+- **Automation Clean-up**: Automatically close pop-up ads or survey tabs that open during automation workflows.
+- **Focus Management**: Keep necessary tabs open by closing others that match specific criteria or after completing a task.
+- **Resource Management**: Free up system resources by closing redundant tabs automatically after use.

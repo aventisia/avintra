@@ -1,0 +1,86 @@
+import { Callout, Steps } from "nextra/components";
+
+# Get XML Element Value
+
+The **Get XML Element Value** node allows you to extract a specific value from an XML document using an XPath query. This node is particularly useful when you need to access specific data within an XML structure for further processing or integration in your workflows.
+
+For example:
+
+- Extract a customer's order details from an XML order file.
+- Retrieve configuration values from an XML setup file.
+- Check and extract specific data entries from complex XML files.
+
+## Configuration Options
+
+| Field Name          | Description                                                      | Input Type | Required? | Default Value |
+| ------------------- | ---------------------------------------------------------------- | ---------- | --------- | ------------- |
+| **XML Content**     | The XML content as a string.                                     | Text       | Yes       | _(empty)_     |
+| **XPath Expression**| The XPath expression to locate the XML element.                  | Text       | Yes       | _(empty)_     |
+| **Get Value As**    | Specifies how the XML element value should be returned.          | Select     | No        | TextValue     |
+
+## Expected Output Format
+
+The output of this node is the value of the specified XML element in the format chosen in the **Get Value As** field. Possible output formats include:
+
+- **Text Value**: Plain text (e.g., `"John Doe"`).
+- **Numeric Value**: A number (e.g., `42.0`).
+- **Date Time Value**: A date-time string (e.g., `2023-10-21T10:30:00`).
+- **Boolean Value**: A boolean (`true` or `false`).
+
+## Step-by-Step Guide
+
+<Steps>
+
+### Step 1
+
+Add **Get XML Element Value** node into your flow.
+
+### Step 2
+
+In the **XML Content** field, enter the XML data from which you want to extract information.
+
+### Step 3
+
+In the **XPath Expression** field, specify the XPath query to identify the XML element you need.
+
+### Step 4
+
+Select the desired format for the output value from the **Get Value As** dropdown:
+
+- **Text Value**: For plain text extraction.
+- **Numeric Value**: For extracting numbers.
+- **Date Time Value**: For extracting date or time values.
+- **Boolean Value**: For true/false values.
+
+### Step 5
+
+The extracted value will be available as **XmlElementValue** for use in other nodes.
+
+</Steps>
+
+<Callout type="info" title="Tip">
+  Make sure your XPath expression is correct. An incorrect XPath expression will result in no value being extracted.
+</Callout>
+
+## Input/Output Examples
+
+| XML Content                               | XPath Expression | Get Value As  | Output Value    | Output Type        |
+| ----------------------------------------- | ---------------- | ------------- | --------------- | ------------------ |
+| `<user><name>John Doe</name></user>`      | `/user/name`     | Text Value    | "John Doe"      | String (Text)      |
+| `<product><price>99.99</price></product>` | `/product/price` | Numeric Value | 99.99           | Number (Double)    |
+| `<date><created>2023-10-21</created></date>` | `/date/created` | DateTime Value| 2023-10-21T00:00:00 | DateTime         |
+| `<flag><active>true</active></flag>`      | `/flag/active`   | Boolean Value | true            | Boolean (true/false)|
+
+## Common Mistakes & Troubleshooting
+
+| Problem                                        | Solution                                                                                                                                   |
+| ---------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------ |
+| **XPath does not return a value**              | Confirm the XPath expression matches the XML structure. Use an online XPath tester for debugging.                                           |
+| **Entered XML is not well-formed**             | Ensure the XML content is valid. Missing or unmatched tags will cause errors.                                                              |
+| **Incorrect output format**                    | Double-check the **Get Value As** setting to ensure it matches your expected output format.                                                |
+
+## Real-World Use Cases
+
+- **Customer Data Retrieval**: Use XPath to quickly locate and extract customer data from XML documents for customer service processes.
+- **Configuration Management**: Extract and use setup values from an XML configuration file within your application workflows.
+- **Healthcare Records Processing**: Fetch specific health data from XML-based electronic health records for analysis and reporting.

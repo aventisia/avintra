@@ -1,0 +1,99 @@
+import { Callout, Steps } from "nextra/components";
+
+# Send Email Message Through Outlook
+
+The **Send Email Message Through Outlook** node enables you to send emails directly from Microsoft Outlook using your desktop setup. This is particularly useful for automating communications or sending bulk emails without manually opening Outlook. You can define recipients (including CC and BCC), add attachments, and customize email content directly through this node.
+
+## Configuration Options
+
+| Field Name          | Description                                                                     | Input Type | Required? | Default Value |
+| ------------------- | ------------------------------------------------------------------------------- | ---------- | --------- | ------------- |
+| **Outlook Application** | The Outlook Application object used to send the email.                         | Text       | Yes       | _(empty)_     |
+| **Recipient(s)**    | The email address(es) of the recipient(s). Separate multiple addresses using semicolons (;). | Text       | Yes       | _(empty)_     |
+| **CC Recipient(s)** | Optional: The CC email address(es), separated by semicolons (;).                 | Text       | No        | _(empty)_     |
+| **BCC Recipient(s)**| Optional: The BCC email address(es), separated by semicolons (;).                | Text       | No        | _(empty)_     |
+| **Subject**         | The subject line of the email.                                                  | Text       | Yes       | _(empty)_     |
+| **Body**            | The body content of the email message.                                          | Text       | Yes       | _(empty)_     |
+| **Is Body HTML**    | Determines whether the body should be interpreted as HTML.                      | Switch     | No        | False         |
+| **Save As Draft**   | If true, the email is saved as a draft instead of being sent immediately.       | Switch     | No        | False         |
+| **Attachments**     | Full path of any attachment files. Separate multiple paths with spaces.         | Text       | No        | _(empty)_     |
+
+## Expected Output Format
+
+This node does not produce an output value. Instead, it performs the action of sending an email through Outlook.
+
+## Step-by-Step Guide
+
+<Steps>
+### Step 1
+
+Choose the **Send Email Message Through Outlook** node from the available nodes to add it to your flow.
+
+### Step 2
+
+In the **Outlook Application** field, enter the application object or reference used to send the email.
+
+### Step 3
+
+Enter the recipient email addresses in the **Recipient(s)** field. Use semicolons (;) to separate multiple addresses.
+
+### Step 4
+
+If needed, enter any CC addresses in the **CC Recipient(s)** field. This is optional.
+
+### Step 5
+
+If needed, enter any BCC addresses in the **BCC Recipient(s)** field. This is optional.
+
+### Step 6
+
+Fill in the **Subject** field with the email's subject line.
+
+### Step 7
+
+Enter your message in the **Body** field. This can be plain text or HTML if necessary.
+
+### Step 8
+
+Opt to select the **Is Body HTML** switch if your body content is formatted in HTML.
+
+### Step 9
+
+If you wish to save the email as a draft, enable the **Save As Draft** switch.
+
+### Step 10
+
+Add any file attachments by specifying their full file paths in the **Attachments** field, using spaces to separate paths.
+
+</Steps>
+
+<Callout type="info" title="Tip">
+  To send emails correctly, ensure all recipient email addresses are valid and the Outlook application is properly configured on your desktop.
+</Callout>
+
+## Input/Output Examples
+
+While this node does not yield an output value, below are examples of how to configure the inputs:
+
+| Field            | Example Input                                                     |
+| ---------------- | ----------------------------------------------------------------- |
+| Recipient(s)     | john.doe@example.com; jane.smith@example.com                      |
+| CC Recipient(s)  | manager@example.com                                               |
+| BCC Recipient(s) | confidential@example.com                                          |
+| Subject          | Quarterly Sales Report                                            |
+| Body             | Dear Team, Please find attached the quarterly sales report. Regards, John |
+| Attachments      | C:\Documents\Report.pdf C:\Documents\Overview.xlsx                |
+
+## Common Mistakes & Troubleshooting
+
+| Problem                            | Solution                                                      |
+| ---------------------------------- | ------------------------------------------------------------- |
+| **Invalid email addresses**        | Double-check that all email addresses are correctly formatted. |
+| **Emails not sending**             | Ensure Outlook is configured correctly and is responsive.      |
+| **SMTP server issues**             | Check your Outlook configuration and internet connection.      |
+
+## Real-World Use Cases
+
+- **Client Notifications**: Send alerts or notifications to clients directly from your system.
+- **Automated Reporting**: Automatically distribute reports to team members or stakeholders.
+- **Newsletter Dispatch**: Manage bulk emailing campaigns through Outlook.

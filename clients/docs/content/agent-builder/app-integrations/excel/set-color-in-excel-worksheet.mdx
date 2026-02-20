@@ -1,0 +1,103 @@
+import { Callout, Steps } from "nextra/components";
+
+# Set Color in Excel Worksheet
+
+The **Set Color in Excel Worksheet** node enables you to fill the background of selected cells in an Excel worksheet with a specified color. This is particularly useful for highlighting important data, organizing information visually, or distinguishing different parts of your spreadsheet quickly and easily.
+
+## Configuration Options
+
+| Field Name                     | Description                                                                                 | Input Type | Required? | Default Value   |
+| ------------------------------ | ------------------------------------------------------------------------------------------- | ---------- | --------- | --------------- |
+| **Worksheet Instance (Optional)** | The Excel Worksheet object where the color will be applied. Defaults to the active worksheet. | Text       | Yes       | _(empty)_       |
+| **Selection Mode**             | Determines how cells are selected for coloring: single cell, range of cells, or named ranges. | Select     | Yes       | SingleCell      |
+| **Start Column**               | The starting column for coloring a single cell (e.g., 'A'). _Appears if Selection Mode is "Single Cell"._ | Text      | No        | _(empty)_       |
+| **Start Row**                  | The starting row for coloring a single cell (e.g., '1'). _Appears if Selection Mode is "Single Cell"._ | Text       | No        | _(empty)_       |
+| **Start Column (Range)**       | The starting column for a range of cells (e.g., 'A'). _Appears if Selection Mode is "Range of Cells"._ | Text       | No        | _(empty)_       |
+| **Start Row (Range)**          | The starting row for a range of cells (e.g., '1'). _Appears if Selection Mode is "Range of Cells"._ | Text       | No        | _(empty)_       |
+| **End Column**                 | The ending column for a range of cells (e.g., 'B'). _Appears if Selection Mode is "Range of Cells"._ | Text       | No        | _(empty)_       |
+| **End Row**                    | The ending row for a range of cells (e.g., '5'). _Appears if Selection Mode is "Range of Cells"._ | Text       | No        | _(empty)_       |
+| **Named Range**                | The name of the named range to color. _Appears if Selection Mode is "Named Cells"._ | Text       | No        | _(empty)_       |
+| **Color Format**               | Format of the color input: predefined names or hexadecimal values.                           | Select     | Yes       | Name            |
+| **Color Name**                 | The color to apply, selected from predefined names like 'Red', 'Green', etc. _Appears if Color Format is "Name"._ | Select     | No        | _(empty)_       |
+| **Color Hexadecimal Value**    | The hexadecimal value of the color (e.g., '#FF0000'). _Appears if Color Format is "Hexadecimal Value"._ | Text      | No        | _(empty)_       |
+
+## Expected Output Format
+
+The node does not produce a typical data output. Instead, it visually modifies the Excel worksheet by changing the background colors of selected cells as specified.
+
+## Step-by-Step Guide
+
+<Steps>
+### Step 1
+
+Add the **Set Color in Excel Worksheet** node to your flow.
+
+### Step 2
+
+In the **Worksheet Instance (Optional)** field, specify the worksheet to color cells if different from the active one.
+
+### Step 3
+
+Select the **Selection Mode**:
+
+- **Single Cell**: Use for a specific cell.
+- **Range of Cells**: Use for a block of cells.
+- **Named Cells**: Use for named ranges defined in the worksheet.
+
+### Step 4
+
+If you chose **Single Cell**, fill in **Start Column** and **Start Row**.
+
+### Step 5
+
+If you chose **Range of Cells**, fill in **Start Column (Range)**, **Start Row (Range)**, **End Column**, and **End Row**.
+
+### Step 6
+
+If you chose **Named Cells**, enter the **Named Range**.
+
+### Step 7
+
+Choose the **Color Format**:
+
+- **Name**: Select a color from the **Color Name** dropdown.
+- **Hexadecimal Value**: Enter a hex code in **Color Hexadecimal Value**.
+
+### Step 8
+
+Review your settings and proceed to apply the changes.
+
+</Steps>
+
+<Callout type="info" title="Tip">
+  Ensure that the column entries like 'A', 'B', and row entries are accurate for intended cell(s) coloring, especially when selecting ranges.
+</Callout>
+
+## Input/Output Examples
+
+- **Single Cell Example**: Color cell A1 to red.
+  - Selection Mode: Single Cell
+  - Start Column: A
+  - Start Row: 1
+  - Color Name: Red
+
+- **Range of Cells Example**: Color range A1:B10 to blue.
+  - Selection Mode: Range of Cells
+  - Start Column (Range): A
+  - Start Row (Range): 1
+  - End Column: B
+  - End Row: 10
+  - Color Name: Blue
+
+## Common Mistakes & Troubleshooting
+
+| Problem                                     | Solution                                                                                       |
+| ------------------------------------------- | ---------------------------------------------------------------------------------------------- |
+| **Incorrect cells colored**                 | Double-check column and row entries for accuracy.                                              |
+| **Color not changing**                      | Verify the worksheet instance is correct and ensure there are no active locks on the workbook. |
+
+## Real-World Use Cases
+
+- **Project Tracking**: Highlight overdue tasks or completed ones in project sheets.
+- **Financial Spreadsheets**: Color-code different expense types or income categories for clarity.
+- **Academic Records**: Mark attendance or subject proficiency visually in student records.

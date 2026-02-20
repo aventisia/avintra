@@ -1,0 +1,77 @@
+import { Callout, Steps } from "nextra/components";
+
+# Process Email Messages in Outlook
+
+The **Process Email Messages in Outlook** node allows you to efficiently manage your emails by moving or deleting a collection of messages directly in your Outlook desktop application. This is useful when organizing your inbox, clearing out unnecessary emails, or categorizing messages into specific folders.
+
+For example:
+
+- Quickly deleting unwanted emails.
+- Moving important messages into a dedicated folder for easier access later.
+
+## Configuration Options
+
+| Field Name         | Description                                                                                         | Input Type | Required? | Default Value |
+| ------------------ | --------------------------------------------------------------------------------------------------- | ---------- | --------- | ------------- |
+| **Outlook Application** | The Outlook application instance where the processing will occur.                                    | Text       | Yes       | _(empty)_     |
+| **Email Messages** | The list of email messages you want to process.                                                      | Text       | Yes       | _(empty)_     |
+| **Action Type**    | Choose whether to move or delete the selected email messages.                                        | Select     | Yes       | Delete       |
+| **Target Folder**  | If the action is "Move", specify the target folder (e.g., Inbox, Sent, Junk, Outbox).                | Text       | No        | _(empty)_     |
+
+## Expected Output Format
+
+This node does not produce a direct output. It modifies your email storage within the Outlook application by moving or deleting the specified messages.
+
+## Step-by-Step Guide
+
+<Steps>
+### Step 1
+
+Add the **Process Email Messages in Outlook** node into your flow.
+
+### Step 2
+
+In the **Outlook Application** field, enter your Outlook application instance.
+
+### Step 3
+
+In the **Email Messages** field, input the list of emails you want to process.
+
+### Step 4
+
+Use the **Action Type** dropdown to choose what to do with the emails:
+
+- **Delete**: Permanently removes the emails.
+- **Move**: Transfers emails to a specified folder.
+
+### Step 5
+
+If you selected **Move** as the Action Type, a **Target Folder** field will appear. Enter the name of the folder to move the emails to (e.g., Inbox).
+
+</Steps>
+
+<Callout type="info" title="Note">
+  The **Target Folder** field only appears when you select "Move" as the Action
+  Type. Ensure you specify the folder correctly to avoid processing errors.
+</Callout>
+
+## Input/Output Examples
+
+| Action Type | Email Messages | Target Folder | Outcome                                        |
+| ----------- | -------------- | ------------- | ---------------------------------------------- |
+| Delete      | message1, message2, message3 | _(n/a)_            | Emails are deleted.                            |
+| Move        | message4, message5           | Inbox          | Emails are moved to the Inbox folder.           |
+
+## Common Mistakes & Troubleshooting
+
+| Problem                                               | Solution                                                                                                                                                       |
+| ----------------------------------------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| **Target Folder not visible**                         | Ensure you have selected "Move" in the Action Type dropdown for the field to appear.                                                                         |
+| **Incorrect Outlook Application instance**            | Double-check that the Outlook Application field is correctly linked to your Outlook Desktop application.                                                       |
+| **Emails not moving or deleting**                     | Verify that the Email Messages field contains the correct email identifiers and that your Outlook application is correctly configured and running.             |
+
+## Real-World Use Cases
+
+- **Inbox Management**: Clean up your inbox by deleting unimportant emails in bulk.
+- **Organizing Communications**: Automatically move important messages to designated folders for better organization and future retrieval.
+- **Archiving**: Move older emails into an archive folder to keep your main inbox uncluttered.

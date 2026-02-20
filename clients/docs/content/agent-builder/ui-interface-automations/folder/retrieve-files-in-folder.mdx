@@ -1,0 +1,96 @@
+import { Callout, Steps } from "nextra/components";
+
+# Retrieve Files in Folder
+
+The **Retrieve Files in Folder** node helps you gather a list of files from a specific folder on your computer. You can choose to include files from subfolders and sort these files according to your preferences. This is particularly useful when you need to work with multiple files at once and want more control over which files to include or how they are organized.
+
+For example:
+
+- Collecting all text files from a folder and its subfolders for analysis.
+- Sorting image files by name to ensure sequential processing.
+- Retrieving documents and sorting them by their last modified date for review.
+
+## Configuration Options
+
+| Field Name              | Description                                                                 | Input Type | Required? | Default Value |
+| ----------------------- | --------------------------------------------------------------------------- | ---------- | --------- | ------------- |
+| **Folder Path**         | Specifies the path to the folder where files will be retrieved.             | Text       | No        | _(empty)_     |
+| **File Filter**         | A pattern to filter the files (e.g., `*.txt` for text files).               | Text       | No        | `*`           |
+| **Include Subfolders**  | Include files from all subfolders within the specified folder.              | Switch     | No        | True          |
+| **Fail on Denied Access** | The node will stop if access to any subfolder is denied.                    | Switch     | No        | True          |
+| **Sort By**             | Criterion to sort the retrieved files (e.g., `Name`, `LastWriteTime`).       | Select     | No        | NoSort        |
+| **Descending Order**    | Sorts files in descending order based on the primary sort criterion.        | Switch     | No        | False         |
+| **Then By**             | Secondary criterion for additional sorting of files.                        | Select     | No        | NoSort        |
+
+## Expected Output Format
+
+The output of this node is a list of file paths that match the specified criteria. They are accessible as `RetrievedFiles`. Each file will be represented by its path and any sorting applied as specified in the configuration.
+
+## Step-by-Step Guide
+
+<Steps>
+
+### Step 1
+
+Add the **Retrieve Files in Folder** node to your workflow.
+
+### Step 2
+
+In the **Folder Path** field, enter the path to the folder you wish to search for files.
+
+### Step 3
+
+For **File Filter**, specify a pattern to filter files. If you want all files, leave as `*`.
+
+### Step 4
+
+To include files from subfolders, toggle the **Include Subfolders** switch to 'On'.
+
+### Step 5
+
+If you want the operation to stop when access is denied to a folder, ensure **Fail on Denied Access** is switched 'On'.
+
+### Step 6
+
+Choose the **Sort By** criterion from the dropdown menu to organize the files.
+
+### Step 7
+
+If desired, toggle **Descending Order** to sort the files in reverse (high to low or Z to A).
+
+### Step 8
+
+Select a secondary criterion in **Then By** dropdown if you require additional sorting.
+
+### Step 9
+
+The retrieved and organized files will be available as `RetrievedFiles` for further processing in your workflow.
+
+</Steps>
+
+<Callout type="info" title="Tip">
+  Use careful path and file patterns to refine the list of files retrieved, especially in large directories.
+</Callout>
+
+## Input/Output Examples
+
+| Folder Path    | File Filter | Include Subfolders | Sort By | Output Value Example                                    |
+| -------------- | ----------- | ------------------ | ------- | ------------------------------------------------------- |
+| `/documents`   | *.txt       | Yes                | Name    | `/documents/file1.txt, /documents/sub/file2.txt`        |
+| `/images`      | *.jpg       | No                 | Size    | `/images/a.jpg, /images/b.jpg` (sorted by size)         |
+| `/reports`     | *           | Yes                | NoSort  | `/reports/January.pdf, /reports/February.pdf, ...`      |
+
+## Common Mistakes & Troubleshooting
+
+| Problem                                      | Solution                                                                 |
+| -------------------------------------------- | ------------------------------------------------------------------------ |
+| **Incorrect Folder Path**                    | Verify the folder path is accurately typed, and ensure it exists.        |
+| **Unexpected Files Retrieved**               | Check and correct the file filter used; ensure patterns match your goal. |
+| **Access Denied Error**                      | If access is denied, check folder permissions or switch off "Fail on Denied Access". |
+| **Not all files appearing**                  | Ensure "Include Subfolders" is activated if subfolder files are needed.  |
+
+## Real-World Use Cases
+
+- **Document Archiving**: Retrieve all document files from a folder hierarchy for archival, sorted by modification date.
+- **Media Management**: Gather all images from a specified directory for processing, sorted by file size.
+- **Data Extraction**: Collect specified format files from large folder systems for data extraction in analyses.

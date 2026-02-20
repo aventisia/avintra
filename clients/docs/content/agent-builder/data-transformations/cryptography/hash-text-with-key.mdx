@@ -1,0 +1,79 @@
+import { Callout, Steps } from "nextra/components";
+
+# Hash Text with Key
+
+The **Hash Text with Key** node allows you to convert a piece of text into a fixed-length, secure string (hash) using a specific key and hashing algorithm. This is useful for securely storing data, verifying data integrity, or anonymizing information.
+
+For example:
+
+- Hashing a password with a key for secure storage.
+- Generating a unique identifier for a text string.
+- Ensuring data integrity over transmissions or storage.
+
+## Configuration Options
+
+| Field Name           | Description                                                   | Input Type | Required? | Default Value |
+| -------------------- | ------------------------------------------------------------- | ---------- | --------- | ------------- |
+| **Text to Hash**     | The text you want to hash.                                    | Text       | Yes       | _(empty)_     |
+| **Key to Use**       | The key to use in hashing.                                    | Text       | Yes       | _(empty)_     |
+| **Hashing Algorithm**| The algorithm to use for hashing (e.g., SHA256, SHA512, MD5). | Select     | Yes       | _(empty)_     |
+
+## Expected Output Format
+
+The output of this node is a **hashed string**, which is a sequence of characters, typically represented as a hexadecimal number.
+
+- The hashed output will vary depending on the selected algorithm.
+
+## Step-by-Step Guide
+
+<Steps>
+### Step 1
+
+Add the **Hash Text with Key** node to your flow.
+
+### Step 2
+
+In the **Text to Hash** field, enter the text that you wish to hash.
+
+### Step 3
+
+Enter the **Key to Use** for hashing. This key will affect the resulting hash, making it unique.
+
+### Step 4
+
+Select an algorithm from the **Hashing Algorithm** dropdown to define how the text will be hashed:
+
+- **SHA256**
+- **SHA512**
+- **MD5**
+
+### Step 5
+
+The hashed text will be available under the identifier **HashedText** for use in other nodes.
+
+</Steps>
+
+<Callout type="info" title="Tip">
+  Choose an appropriate hashing algorithm based on your security needs. SHA512 is stronger than MD5 for most security applications.
+</Callout>
+
+## Input/Output Examples
+
+| Input Text  | Key  | Algorithm | Output Hashed Text                       |
+| ----------- | ---- | --------- | -----------------------------------------|
+| "password"  | "key123" | SHA256 | `f8d3addbb500f240a31060bb8a2f024a8112a165`|
+| "username"  | "anotherKey" | MD5  | `1f3870be274f6c49b3e31a0c6728957f`        |
+
+## Common Mistakes & Troubleshooting
+
+| Problem                                       | Solution                                                                                           |
+| --------------------------------------------- | -------------------------------------------------------------------------------------------------- |
+| **Output Hashed Text not available**          | Ensure all fields are correctly filled out. The node needs valid input text, key, and an algorithm.|
+| **Hashing Algorithm selection is empty**      | Ensure you select one of the available algorithms. Without this, the node cannot process the input.|
+| **Incorrect hash output**                     | Double-check the key and text inputs, as any variation will change the output. Ensure the key is correct. |
+
+## Real-World Use Cases
+
+- **Password Protection**: Hash passwords with a key before saving them in a database for enhanced security.
+- **Data Integrity Checks**: Use hashing to ensure files have not been altered during transmission by comparing hashes.
+- **Access Tokens**: Generate unique tokens for API control by hashing identifiers with a secret key.

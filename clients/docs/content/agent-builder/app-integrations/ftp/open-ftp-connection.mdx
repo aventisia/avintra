@@ -1,0 +1,86 @@
+import { Callout, Steps } from "nextra/components";
+
+# Open FTP Connection
+
+The **Open FTP Connection** node allows you to establish a connection with a remote FTP server. This is crucial when you need to upload, download, or manipulate files on a remote server. This node stores the connection as a variable, enabling you to reuse it in subsequent automation steps without requiring you to reconnect multiple times.
+
+Common uses include:
+
+- Transferring files between local and remote servers.
+- Automating backups by accessing and storing files remotely.
+- Synchronizing folders between different locations.
+
+## Configuration Options
+
+| Field Name    | Description                                          | Input Type | Required? | Default Value |
+| ------------- | ---------------------------------------------------- | ---------- | --------- | ------------- |
+| **Host**      | The FTP server URL (e.g., ftp.example.com).          | Text       | Yes       | _(empty)_     |
+| **Port**      | The port number for the FTP connection.              | Text       | No        | 21            |
+| **Active Mode** | If enabled, uses active mode for FTP connection.   | Switch     | No        | _(empty)_     |
+| **Username**  | The username for authentication.                     | Text       | Yes       | _(empty)_     |
+| **Password**  | The password for authentication.                     | Password   | Yes       | _(empty)_     |
+
+## Expected Output Format
+
+The output of this node is an **FTP Connection object**, which can be used in other nodes for FTP operations such as file transfers.
+
+## Step-by-Step Guide
+
+<Steps>
+### Step 1
+
+Add the **Open FTP Connection** node into your flow.
+
+### Step 2
+
+In the **Host** field, enter the URL of the FTP server you want to connect to.
+
+### Step 3
+
+Optionally, enter the **Port** number if your server uses a port other than the default (21).
+
+### Step 4
+
+Toggle the **Active Mode** switch if you want to enable active mode for the connection. This is useful if your network configuration requires it.
+
+### Step 5
+
+Enter your **Username** in the corresponding field for authentication.
+
+### Step 6
+
+Type your **Password** in the relevant field to authenticate with the server.
+
+### Step 7
+
+The established connection will be saved as a variable named **FtpConnection**, ready for use in subsequent nodes.
+
+</Steps>
+
+<Callout type="warning" title="Security Note">
+  Ensure that you have appropriate permissions and security measures in place when connecting to an FTP server. Avoid using public or unsecured networks when entering your credentials.
+</Callout>
+
+## Input/Output Examples
+
+| Field    | Example Value          | Description                                                   |
+| -------- | ---------------------- | ------------------------------------------------------------- |
+| Host     | ftp.example.com        | The server name or IP address of the FTP server.              |
+| Port     | 21                     | The network port to use for the connection (default is 21).   |
+| Username | user123                | The login username for the FTP server.                        |
+| Password | ••••••••               | A Password for the FTP account (hidden for security reasons). |
+| Output   | FtpConnection          | A variable storing the FTP connection object.                 |
+
+## Common Mistakes & Troubleshooting
+
+| Problem                                | Solution                                                                                              |
+| -------------------------------------- | ----------------------------------------------------------------------------------------------------- |
+| **Cannot connect to the server**       | Check that the server address and port number are correct, and ensure your network allows the connection. |
+| **Authentication failure**             | Verify your username and password. Ensure credentials are correctly entered.                           |
+| **Connection timeouts**                | Check your network conditions and retry connecting, or switch between active/passive FTP modes.        |
+
+## Real-World Use Cases
+
+- **Data Transfer**: Automate file uploads to a remote server for collaboration or storage.
+- **Backup Management**: Schedule automated backups to an FTP server to ensure data safety.
+- **Content Distribution**: Streamline the delivery of media files by storing them on accessible FTP servers.

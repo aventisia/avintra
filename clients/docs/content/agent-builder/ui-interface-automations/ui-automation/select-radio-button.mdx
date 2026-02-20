@@ -1,0 +1,76 @@
+import { Callout, Steps } from "nextra/components";
+
+# Select Radio Button
+
+The **Select Radio Button** node allows you to automate the process of selecting a radio button from a group, using either its name or its zero-based index. This node is beneficial when you want to automate form interactions, ensuring the correct radio button is selected without manual input.
+
+For example:
+
+- Programmatically selecting a preferred option in a survey.
+- Ensuring a default selection in a configuration setting.
+- Automating the selection process in repetitive test scenarios.
+
+## Configuration Options
+
+| Field Name              | Description                                                                              | Input Type | Required? | Default Value |
+| ----------------------- | ---------------------------------------------------------------------------------------- | ---------- | --------- | ------------- |
+| **UI Element**          | The radio button group you want to select from.                                          | Text       | Yes       | _(empty)_     |
+| **Radio Button Identifier** | The name or zero-based index of the radio button to select.                                | Text       | Yes       | _(empty)_     |
+| **Max Wait Time (seconds)** | Maximum time to wait to find the UI element (in seconds).                               | Text       | No        | 5             |
+
+## Expected Output Format
+
+The output of this node is a **boolean value**. It indicates whether the radio button was selected successfully:
+
+- `true`: The radio button was successfully selected.
+- `false`: The radio button could not be selected.
+
+## Step-by-Step Guide
+
+<Steps>
+### Step 1
+
+Add the **Select Radio Button** node into your flow.
+
+### Step 2
+
+In the **UI Element** field, specify the radio button group you want to select from.
+
+### Step 3
+
+In the **Radio Button Identifier** field, enter the name or the zero-based index of the radio button you wish to select.
+
+### Step 4
+
+(Optional) Set the **Max Wait Time (seconds)** to define how long the system should wait to find the desired UI element.
+
+### Step 5
+
+The result will be available as **Was Selected**, indicating success (`true`) or failure (`false`) of the radio button selection.
+
+</Steps>
+
+<Callout type="info" title="Note">
+  Ensure that the **Radio Button Identifier** accurately matches the target radio button's name or index to avoid errors.
+</Callout>
+
+## Input/Output Examples
+
+| UI Element        | Radio Button Identifier | Max Wait Time (seconds) | Output Value | Output Type |
+| ----------------- | ----------------------- | ----------------------- | ------------ | ----------- |
+| RadioButtonGroup1 | Option1                 | 5                       | true         | Boolean     |
+| RadioButtonGroup2 | 2                       | 3                       | false        | Boolean     |
+
+## Common Mistakes & Troubleshooting
+
+| Problem                                                      | Solution                                                                                                  |
+| ------------------------------------------------------------ | --------------------------------------------------------------------------------------------------------- |
+| **UI Element not found**                                     | Double-check the **UI Element** path to ensure it's correct.                                               |
+| **Incorrect Radio Button Identifier**                        | Verify the name or index used in the **Radio Button Identifier** and ensure it corresponds to a valid option. |
+| **Selection taking too long**                                | Consider increasing **Max Wait Time (seconds)** if UI elements load asynchronously or slowly.               |
+
+## Real-World Use Cases
+
+- **Survey Automation**: Automatically select a preferred survey response when testing or filling out forms.
+- **Preference Setting**: Pre-select user preferences in a settings menu.
+- **UI Testing**: Streamline the testing of multiple configurations by programmatically selecting different radio options.

@@ -1,0 +1,77 @@
+import { Callout, Steps } from "nextra/components";
+
+# Expand or Collapse UI Element
+
+The **Expand or Collapse UI Element** node is designed to control the expansion or collapse of user interface elements within your desktop applications. This can be particularly useful when navigating through elements like tree views or combo boxes in apps, enabling you to efficiently access nested information or hide unnecessary details.
+
+For example:
+
+- Expanding a folder within a tree view to reveal its contents.
+- Collapsing a menu to tidy up your interface.
+
+## Configuration Options
+
+| Field Name               | Description                                                                             | Input Type | Required? | Default Value |
+| ------------------------ | --------------------------------------------------------------------------------------- | ---------- | --------- | ------------- |
+| **UI Element**           | The UI element which you would like to expand or collapse.                              | Text       | Yes       | _(empty)_     |
+| **Action Type**          | Choose whether to expand or collapse the element.                                       | Select     | No        | Expand        |
+| **Max Wait Time (seconds)** | Maximum time to wait to find the UI element, in seconds.                               | Text       | No        | 5             |
+
+## Expected Output Format
+
+The output of this node is a **boolean value** indicating success or failure.
+
+- **Was Successful**: Returns `true` if the UI element was expanded or collapsed successfully, otherwise `false`.
+
+## Step-by-Step Guide
+
+<Steps>
+### Step 1
+
+Add the **Expand or Collapse UI Element** node into your automation flow.
+
+### Step 2
+
+In the **UI Element** field, specify the path or identification of the element you wish to target.
+
+### Step 3
+
+In the **Action Type** dropdown, select your desired action:
+
+- **Expand**: To open or reveal the contents of the UI element.
+- **Collapse**: To close or hide the contents of the UI element.
+
+### Step 4
+
+Set the **Max Wait Time (seconds)** if needed, to define how long the system should attempt to locate the specified UI element before timing out.
+
+### Step 5
+
+The result of the action will be available as **WasSuccessful** for further decision-making steps or logging.
+</Steps>
+
+<Callout type="info" title="Note">
+  Ensure the UI element identification path is correct to avoid operation failure.
+</Callout>
+
+## Input/Output Examples
+
+| UI Element         | Action Type | Max Wait Time (seconds) | Was Successful |
+| ------------------ | ----------- | ----------------------- | -------------- |
+| "Menu/Settings"    | Expand      | 5                       | true           |
+| "Folder/Documents" | Collapse    | 10                      | true           |
+| "List/Item1"       | Expand      | 3                       | false          |
+
+## Common Mistakes & Troubleshooting
+
+| Problem                                                  | Solution                                                                                                                             |
+| -------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------ |
+| **UI Element not found error**                           | Ensure that the **UI Element** path is correct and the element is present on the screen.                                              |
+| **Action did not execute within Max Wait Time**          | Increase the **Max Wait Time (seconds)** if your application is slow to respond or the UI element is nested deeply.                   |
+| **Incorrect action (expand/collapse) performed**         | Double-check the **Action Type** selected in the configuration.                                                                      |
+
+## Real-World Use Cases
+
+- **File Explorer Navigation**: Automatically expand directories to locate a file while logging the success of the operation.
+- **Settings Management**: Collapse UI sections upon closing a configuration panel to streamline the interface.
+- **Application Testing**: Expand UI elements to verify display content during automated GUI testing procedures.

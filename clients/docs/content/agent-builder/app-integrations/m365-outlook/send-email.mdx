@@ -1,0 +1,74 @@
+import { Callout, Steps } from "nextra/components";
+
+# Send Email
+
+The **Send Email** node allows you to send emails through Microsoft 365 using the Microsoft Graph API. This node is essential for automating email notifications, sending reports, or any communication tasks within your workflows. To use this node, you'll need proper permissions set up in Azure AD, including tenant and client details.
+
+## Configuration Options
+
+| Field Name              | Description                                                        | Input Type | Required? | Default Value |
+| ----------------------- | ------------------------------------------------------------------ | ---------- | --------- | ------------- |
+| **Email Message JSON**  | JSON string that represents the email message you want to send.    | Text       | Yes       | _(empty)_     |
+| **User Email**          | The email address of the mailbox owner.                            | Text       | Yes       | _(empty)_     |
+| **Tenant ID**           | The Azure AD Tenant ID (Directory ID).                             | Text       | Yes       | _(empty)_     |
+| **Client ID**           | The Azure AD Application (Client) ID.                              | Text       | Yes       | _(empty)_     |
+| **Client Secret**       | The Azure AD Application Client Secret.                            | Text       | Yes       | _(empty)_     |
+
+## Expected Output Format
+
+This node does not produce any direct output in the form of data values. Instead, it performs an action – sending an email. Ensure that the email details provided in the inputs are correct to avoid sending failures.
+
+## Step-by-Step Guide
+
+<Steps>
+### Step 1
+
+Add the **Send Email** node to your flow.
+
+### Step 2
+
+In the **Email Message JSON** field, enter the JSON string representing the email you want to send. Ensure the format matches the requirements of the Microsoft Graph API email message structure.
+
+### Step 3
+
+In the **User Email** field, input the owner's email address of the mailbox from which you're sending the email.
+
+### Step 4
+
+Enter your Azure AD **Tenant ID** in the corresponding field to specify the directory ID.
+
+### Step 5
+
+Provide the **Client ID** that identifies the Azure AD application used for sending the email.
+
+### Step 6
+
+Input the **Client Secret** for the Azure AD application, ensuring you keep this information secure.
+
+### Step 7
+
+Once configured, the email will be sent automatically upon the execution of the flow.
+</Steps>
+
+<Callout type="warning" title="Security Notice">
+  Ensure your **Client Secret** is stored securely and not exposed to unauthorized users, as it grants access to your email-sending capabilities.
+</Callout>
+
+## Input/Output Examples
+
+- **Input Example**: A JSON string for email details, e.g., `{ "subject": "Quarterly Report", "body": "Please find attached the report.", "toRecipients": ["recipient@example.com"] }`.
+- **No Direct Output**: This node's function is to perform the task of sending the email, not to provide data output.
+
+## Common Mistakes & Troubleshooting
+
+| Problem                                         | Solution                                                                                                                                                          |
+|-------------------------------------------------| ----------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| **Invalid Email JSON format**                   | Double-check the JSON string for correct syntax and necessary fields.                                                                                             |
+| **Incorrect Tenant ID, Client ID, or Secret**   | Ensure these credentials match those in your Azure AD setup. Incorrect details will prevent the email from being sent.                                            |
+| **Emails not being sent**                       | Confirm all fields are correctly filled and that your Azure AD app has the required permissions to send emails via Microsoft Graph API.                            |
+
+## Real-World Use Cases
+
+- **Automated Notifications**: Use this node to send automatic notifications for system events or updates.
+- **Report Distribution**: Automate the delivery of reports to designated recipients without manual intervention.
+- **Customer Communication**: Send personalized emails to customers based on a predefined schedule or triggers within your workflow.

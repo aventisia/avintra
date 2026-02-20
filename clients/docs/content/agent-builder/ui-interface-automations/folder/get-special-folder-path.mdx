@@ -1,0 +1,78 @@
+import { Callout, Steps } from "nextra/components";
+
+# Get Special Folder Path
+
+The **Get Special Folder Path** node allows you to retrieve the path of Windows special folders such as Desktop, My Music, Templates, and more. This helps in automating tasks that require access to these specific folder locations within your system.
+
+For example:
+
+- Accessing files stored in your Desktop folder.
+- Storing application settings in the Local Application Data folder.
+- Retrieving cache information from the Internet Cache folder.
+
+## Configuration Options
+
+| Field Name            | Description                                                                 | Input Type | Required? | Default Value |
+| --------------------- | --------------------------------------------------------------------------- | ---------- | --------- | ------------- |
+| **Special Folder Name** | Select the special folder whose path you wish to retrieve.                  | Select     | No        | Desktop       |
+
+## Expected Output Format
+
+The output of this node is a **string** that represents the file path to the chosen special folder (e.g., `C:\Users\YourUsername\Desktop`).
+
+## Step-by-Step Guide
+
+<Steps>
+### Step 1
+
+Add **Get Special Folder Path** node into your flow.
+
+### Step 2
+
+In the **Special Folder Name** dropdown, select the folder for which you want to retrieve the path. Available options include:
+
+- **Desktop**
+- **Music**
+- **Templates**
+- **ApplicationData**
+- **LocalApplicationData**
+- **InternetCache**
+- **Cookies**
+- **History**
+
+### Step 3
+
+Use the output, named **SpecialFolderPath**, in subsequent nodes or processes where this path is required.
+
+</Steps>
+
+<Callout type="info" title="Tip">
+  If you do not specify a folder, the default value is "Desktop", and the path to the Desktop folder will be retrieved.
+</Callout>
+
+## Input/Output Examples
+
+| Special Folder Name   | Path Example                            |
+| --------------------- | ---------------------------------------- |
+| Desktop               | `C:\Users\YourUsername\Desktop`          |
+| Music                 | `C:\Users\YourUsername\Music`            |
+| Templates             | `C:\Users\YourUsername\Templates`        |
+| ApplicationData       | `C:\Users\YourUsername\AppData\Roaming`  |
+| LocalApplicationData  | `C:\Users\YourUsername\AppData\Local`    |
+| InternetCache         | `C:\Users\YourUsername\AppData\Local\Microsoft\Windows\INetCache` |
+| Cookies               | `C:\Users\YourUsername\AppData\Local\Microsoft\Windows\INetCookies` |
+| History               | `C:\Users\YourUsername\AppData\Local\Microsoft\Windows\History` |
+
+## Common Mistakes & Troubleshooting
+
+| Problem                                      | Solution                                                                                         |
+| ---------------------------------------------| ------------------------------------------------------------------------------------------------ |
+| **No folder path retrieved**                  | Ensure you've selected a special folder from the dropdown.                                       |
+| **Wrong path output**                         | Double-check if the correct special folder is selected that matches your intended output         |
+| **Feature not working on non-Windows OS**     | This node is designed specifically for Windows OS as it deals with Windows-specific folders.     |
+
+## Real-World Use Cases
+
+- **File Management**: Quickly access or save files to specific directories like Desktop or Music for organization tasks.
+- **Data Retrieval**: Fetch paths for application data folders when backing up settings or transferring configurations.
+- **Cache Management**: Clean up Internet Cache or Cookies directories as part of a maintenance routine.

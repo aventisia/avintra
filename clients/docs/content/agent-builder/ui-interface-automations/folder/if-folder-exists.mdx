@@ -1,0 +1,70 @@
+import { Callout, Steps } from "nextra/components";
+
+# If Folder Exists
+
+The **If Folder Exists** node is designed to verify if a specified folder is present or absent on your system. This functionality is essential when you need to adjust workflows based on the existence of specific directories, such as verifying backup folders before proceeding with data operations, or ensuring a directory doesn't exist before creating a new one.
+
+## Configuration Options
+
+| Field Name     | Description                                                          | Input Type | Required? | Default Value |
+| -------------- | -------------------------------------------------------------------- | ---------- | --------- | ------------- |
+| **If Folder**  | Choose the condition to check: whether the folder exists or not.     | Select     | Yes       | Exists       |
+| **Folder Path**| Enter the directory path to check for its presence or absence.       | Text       | Yes       | _(empty)_     |
+
+## Expected Output Format
+
+The output of this node is a **boolean value**:
+
+- `true` if the folder meets the specified condition.
+- `false` if it does not.
+
+The output is available as **Result**.
+
+## Step-by-Step Guide
+
+<Steps>
+### Step 1
+
+Add the **If Folder Exists** node to your workflow.
+
+### Step 2
+
+In the **If Folder** dropdown, select the condition:
+
+- **Exists**: Passes if the folder exists at the specified path.
+- **Doesn't Exist**: Passes if the folder does not exist.
+
+### Step 3
+
+In the **Folder Path** field, enter the path of the folder you wish to check.
+
+### Step 4
+
+Use the resulting **Result** in subsequent nodes to adapt your flow according to the folder's presence or absence.
+
+</Steps>
+
+<Callout type="info" title="Note">
+  Ensure that the folder path is correct and accessible to avoid errors in processing.
+</Callout>
+
+## Input/Output Examples
+
+| Condition      | Folder Path           | Output Value | Output Type |
+| -------------- | --------------------- | ------------ | ----------- |
+| Exists         | `C:/Documents/Reports`| true         | Boolean     |
+| Doesn't Exist  | `C:/OldFiles/Archive` | false        | Boolean     |
+
+## Common Mistakes & Troubleshooting
+
+| Problem                                                    | Solution                                                                         |
+| ---------------------------------------------------------- | -------------------------------------------------------------------------------- |
+| **Incorrect folder path**                                  | Double-check the folder path for typos or incorrect directory separators.        |
+| **Unexpected false result**                                | Ensure the folder permissions and path visibility are set correctly.             |
+| **Condition does not trigger as expected**                 | Make sure the selected condition matches your intended check (exists vs. doesn't exist). |
+
+## Real-World Use Cases
+
+- **Backup Validation**: Verify if a backup folder exists before initiating a new data backup process.
+- **Deployment Setup**: Check if configuration directories aren't already present before software deployment.
+- **Data Cleanup**: Ensure log folders do not exist before deciding to create or reinitialize them.

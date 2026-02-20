@@ -1,0 +1,75 @@
+import { Callout, Steps } from "nextra/components";
+
+# Create Work Item
+
+The **Create Work Item** node allows you to add a new task or item to a specific queue. This is particularly useful in managing workflows where tasks need to be efficiently tracked and processed in a predetermined sequence.
+
+For example:
+
+- Adding a new order to a processing queue.
+- Distributing tasks for team members.
+- Tracking work items for project management.
+
+## Configuration Options
+
+| Field Name       | Description                                                                 | Input Type      | Required? | Default Value |
+| ---------------- | --------------------------------------------------------------------------- | --------------- | --------- | ------------- |
+| **Select Queue** | Choose the queue where the new work item will be created.                   | Queue Select    | Yes       | _(empty)_     |
+| **Work Item Data** | Provide the data payload for the work item in JSON format.                 | JSON Editor     | Yes       | _(empty)_     |
+| **Remark**       | Enter the remark for the work item.                                         | Text            | No        | _(empty)_     |
+| **Created WorkItem** | Returns the newly created work item.                                    | Config Panel Output | No     | CreatedWorkItem |
+
+## Expected Output Format
+
+The node outputs a **work item object**, which contains the information of the newly created work item in the specified queue.
+
+## Step-by-Step Guide
+
+<Steps>
+### Step 1
+
+Add **Create Work Item** node into your flow.
+
+### Step 2
+
+In the **Select Queue** dropdown, select the queue where you want to add the new work item.
+
+### Step 3
+
+In the **Work Item Data** field, enter the data for your work item using JSON format.
+
+### Step 4
+
+(Optional) In the **Remark** field, add any additional comments or notes for the work item.
+
+### Step 5
+
+The new work item will be output as **CreatedWorkItem**, which you can use in subsequent nodes.
+
+</Steps>
+
+<Callout type="info" title="Tip">
+  Ensure your JSON data in the **Work Item Data** field is correctly structured to avoid errors.
+</Callout>
+
+## Input/Output Examples
+
+| Field           | Example Value                                   | Description                                       |
+| --------------- | ----------------------------------------------- | ------------------------------------------------- |
+| Select Queue    | OrdersQueue                                    | The queue to which the work item is added.        |
+| Work Item Data  | `{ "customerId": "12345", "orderTotal": 150 }` | The data needed to process this particular item.  |
+| Remark          | "Priority processing required."                | An optional note about the work item.             |
+
+## Common Mistakes & Troubleshooting
+
+| Problem                         | Solution                                                                                                           |
+| ------------------------------- | ------------------------------------------------------------------------------------------------------------------ |
+| **Queue not selected**          | Ensure you select a queue from the dropdown to create the work item.                                               |
+| **Invalid JSON Format**         | Double-check that your JSON in **Work Item Data** is valid and correctly formatted.                                |
+| **Unexpected output value**     | Verify that all required fields are filled appropriately, and that output field **CreatedWorkItem** is properly used. |
+
+## Real-World Use Cases
+
+- **Order Management**: Automatically create work items for each new customer order to streamline processing.
+- **Project Task Allocation**: Assign tasks to specific team members by creating work items in their respective queues.
+- **Support Ticketing**: Generate a work item for each support request for organized tracking and resolution.

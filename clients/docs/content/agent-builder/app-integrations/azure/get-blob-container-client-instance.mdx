@@ -1,0 +1,55 @@
+import { Callout, Steps } from "nextra/components";
+
+# Get Blob Container Client Instance
+
+The **Get Blob Container Client Instance** node is designed to facilitate interaction with Azure Blob Storage by creating a connection to a specified container. This node is useful when you need to perform operations using a blob container, such as uploading or downloading files, by leveraging the BlobContainerClient instance.
+
+## Configuration Options
+
+| Field Name              | Description                                                    | Input Type | Required? | Default Value      |
+| ----------------------- | -------------------------------------------------------------- | ---------- | --------- | ------------------ |
+| **Connection String**   | The connection string for the Azure Blob Storage account.      | Text       | Yes       | _(empty)_          |
+| **Container Name**      | The name of the container in the storage account.              | Text       | Yes       | _(empty)_          |
+| **Blob Container Client** | The BlobContainerClient instance for the specified container and connection string. | Output     | No        | BlobContainerClient |
+
+## Expected Output Format
+
+The output of this node is a **BlobContainerClient instance**, which is not just text or numbers. This instance provides the methods needed to interact programmatically with the specified blob container.
+
+## Step-by-Step Guide
+
+<Steps>
+### Step 1
+
+Add the **Get Blob Container Client Instance** node into your process flow.
+
+### Step 2
+
+In the **Connection String** field, enter your Azure Blob Storage account's connection string. This is required to authenticate and establish a connection.
+
+### Step 3
+
+Enter the **Container Name** of the blob storage container you wish to connect to. This identifies which container the client will operate within.
+
+### Step 4
+
+The **Blob Container Client** instance is generated as the output, ready to be linked to other nodes in your process where blob operations are needed.
+</Steps>
+
+<Callout type="info" title="Note">
+  Ensure that your connection string is correctly configured to access the Azure account, and that the container name you enter exists within that account to prevent connection errors.
+</Callout>
+
+## Common Mistakes & Troubleshooting
+
+| Problem                                                 | Solution                                                                                                   |
+| ------------------------------------------------------- | ---------------------------------------------------------------------------------------------------------- |
+| **Invalid Connection String**                           | Verify that the correct connection string is used, including any necessary account key or access token.    |
+| **Non-existing Container Name**                         | Double-check the spelling of the container name and ensure it exists in your designated Azure account.     |
+| **Output Not Generated**                                | Make sure all required fields are correctly filled out; the node won't output the client instance otherwise.|
+
+## Real-World Use Cases
+
+- **File Management**: Integrate this node to programmatically manage blobs within Azure containers, such as uploading new documents or retrieving existing ones.
+- **Automated Backups**: Utilize the BlobContainerClient to automate backups of important files to Azure Blob Storage, ensuring secure and reliable storage.
+- **Data Processing Pipelines**: Establish a connection to blob containers for seamless data ingest and processing workflows within larger automation tasks.

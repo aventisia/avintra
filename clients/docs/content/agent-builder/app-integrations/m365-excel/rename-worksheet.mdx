@@ -1,0 +1,72 @@
+import { Callout, Steps } from "nextra/components";
+
+# Rename Worksheet
+
+The **Rename Worksheet** allows you to rename an existing worksheet within a specified Excel file stored in OneDrive or SharePoint. This is facilitated through Microsoft 365's Excel API, using your provided credentials and Excel file identifiers. This node is particularly beneficial when managing large sets of data across different worksheets or ensuring consistent naming conventions for your Excel files.
+
+## Configuration Options
+
+| Field Name             | Description                                                                                              | Input Type        | Required? | Default Value |
+| ---------------------- | -------------------------------------------------------------------------------------------------------- | ----------------- | --------- | ------------- |
+| **M365 Excel Credential** | Credentials needed for authenticating requests to Microsoft 365 APIs.                                  | Credential Select | Yes       | _(empty)_     |
+| **Drive and Item ID**  | The combination of IDs (driveId/items/itemId) that uniquely identify your Excel file in OneDrive/SharePoint. | Text              | Yes       | _(empty)_     |
+| **Worksheet Name**     | The current name of the worksheet you want to rename.                                                    | Text              | Yes       | Sheet1        |
+| **New Worksheet Name** | The new desired name for the worksheet.                                                                  | Text              | Yes       | NewSheet1     |
+
+## Expected Output Format
+
+The output of this node is a **result object** that contains information about the renamed worksheet. This includes success or error messages from the Microsoft 365 API.
+
+- **Output Value**: Returns `Result` with API status and message after renaming the worksheet.
+
+## Step-by-Step Guide
+
+<Steps>
+### Step 1
+
+Add the **Rename Worksheet** node into your flow.
+
+### Step 2
+
+Select your **M365 Excel Credential** from the dropdown to authenticate your API requests.
+
+### Step 3
+
+Enter the **Drive and Item ID** to specify the Excel file you want to access. Ensure you use the correct format: `driveId/items/itemId`.
+
+### Step 4
+
+Input the current **Worksheet Name** of the worksheet you wish to rename.
+
+### Step 5
+
+Specify the **New Worksheet Name** you desire for the worksheet.
+
+### Step 6
+
+Once configured, the node will process the renaming and return the **Result** containing details of the renamed worksheet.
+</Steps>
+
+<Callout type="warning" title="Important">
+  Ensure that your M365 credentials are correctly set up and have the necessary permissions to access and modify the Excel file.
+</Callout>
+
+## Input/Output Examples
+
+| Worksheet Name | New Worksheet Name | Result     | Output Type |
+| -------------- | ------------------ | ---------- | ----------- |
+| Sheet1         | Reports2023        | Result     | Object      |
+
+## Common Mistakes & Troubleshooting
+
+| Problem                                              | Solution                                                                                               |
+| ---------------------------------------------------- | ------------------------------------------------------------------------------------------------------ |
+| **Invalid credentials error**                        | Verify that your M365 Excel credentials are correctly set up and valid.                                |
+| **Incorrect Drive/Item ID format**                   | Make sure the Drive and Item ID is in the correct format: `driveId/items/itemId`.                      |
+| **Worksheet exists with the new name**               | Rename cannot occur if another worksheet with the new name already exists. Choose a unique new name.   |
+
+## Real-World Use Cases
+
+- **Data Consolidation**: Streamline data organization by renaming worksheets to reflect their contents more accurately.
+- **Report Generation**: Ensure consistent worksheet names across monthly or quarterly report files.
+- **Spreadsheet Management**: Easily update worksheet names to maintain clarity as data sets or reporting needs evolve.

@@ -1,0 +1,83 @@
+import { Callout, Steps } from "nextra/components";
+
+# Read Formula from Excel Cell
+
+The **Read Formula from Excel Cell** node enables you to access and extract the formula stored in a specific Excel cell or a named range within a worksheet. This can be helpful when you need to analyze, verify, or use the formula logic stored in a spreadsheet for further processing.
+
+For example:
+
+- Check the formula in a cell for accuracy.
+- Extract formulas for reporting or documentation purposes.
+- Use the logic in spreadsheet automation or validation workflows.
+
+## Configuration Options
+
+| Field Name           | Description                                                                                                                                      | Input Type | Required? | Default Value  |
+|----------------------|--------------------------------------------------------------------------------------------------------------------------------------------------|------------|-----------|----------------|
+| **Worksheet Instance** | The Excel Worksheet object where the formula is located. By default, uses the active worksheet if not specified.                             | Text       | Yes       | _(empty)_      |
+| **Reference Type**      | Choose whether you want to reference the formula using a cell address or a named range.                                                     | Select     | Yes       | CellAddress    |
+| **Cell Address**        | Specify the cell address from which the formula should be read (e.g., 'A1', 'B2'). Only needed if Reference Type is "Cell Address".         | Text       | No        | _(empty)_      |
+| **Named Range**         | Identify the name of the range to access the formula from. Only required if Reference Type is "Named Range".                                | Text       | No        | _(empty)_      |
+
+## Expected Output Format
+
+The output of this node is a **text string** representing the formula in the specified Excel cell or named range.
+
+- Example output: `=SUM(A1:A10)`, `=VLOOKUP(B1,Table,2,FALSE)`
+
+## Step-by-Step Guide
+
+<Steps>
+### Step 1
+
+Add the **Read Formula from Excel Cell** node into your workflow.
+
+### Step 2
+
+In the **Worksheet Instance** field, input the Excel worksheet object or leave it blank to use the active worksheet.
+
+### Step 3
+
+In the **Reference Type** dropdown, select how you prefer to locate the formula:
+
+- **Cell Address**: Choose this if you are using specific cell coordinates (e.g., 'A1').
+- **Named Range**: Choose this to use a defined named range in the worksheet.
+
+### Step 4
+
+If **Cell Address** is chosen, specify the cell address in the **Cell Address** field.
+
+### Step 5
+
+If **Named Range** is chosen, enter the defined name in the **Named Range** field.
+
+### Step 6
+
+Once configured, the formula from the selected cell or range will be retrievable under **Cell Formula** for further actions.
+
+</Steps>
+
+<Callout type="info" title="Tip">
+  By setting the appropriate Reference Type, either the "Cell Address" or "Named Range" field will appear for entry, depending on your selection.
+</Callout>
+
+## Input/Output Examples
+
+| Reference Type | Cell Address | Named Range | Output Formula      | Output Type |
+|----------------|--------------|-------------|---------------------|-------------|
+| Cell Address   | A1           | _(n/a)_     | =SUM(B1:B10)        | Text        |
+| Named Range    | _(n/a)_      | MyRange     | =AVERAGE(MyRange)   | Text        |
+
+## Common Mistakes & Troubleshooting
+
+| Problem                                                        | Solution                                                                                                                                   |
+|----------------------------------------------------------------|--------------------------------------------------------------------------------------------------------------------------------------------|
+| **Fields not appearing based on Reference Type selection**     | Ensure the correct "Reference Type" is selected. If "Cell Address" is chosen, the cell address field will show; likewise for "Named Range". |
+| **No formula returned**                                        | Verify the cell or range selected actually contains a formula. Also, confirm the worksheet is correctly referenced.                          |
+| **Incorrect Named Range**                                      | Double-check the named range is correctly defined in the Excel workbook and spelled accurately in the configuration panel.                  |
+
+## Real-World Use Cases
+
+- **Automated Spreadsheet Reviews**: Extract and log formulas from a range of cells to document and review spreadsheet logic.
+- **Dynamic Report Generation**: Capture formulas from report templates for dynamic data processing and visualization.
+- **Quality Assurance**: Audit the formulas across multiple worksheets for consistency or errors.

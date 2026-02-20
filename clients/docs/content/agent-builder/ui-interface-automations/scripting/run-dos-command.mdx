@@ -1,0 +1,68 @@
+import { Callout, Steps } from "nextra/components";
+
+# Run DOS Command
+
+The **Run DOS Command** node allows you to execute a DOS command or a console application silently in the background and capture its output once the execution is complete. This is particularly useful when you need to automate tasks that can be executed via command line instructions without user intervention.
+
+For example, you might want to:
+
+- Execute a script that renames files in a directory.
+- Retrieve system information using a DOS tool.
+- Run diagnostic commands and gather their outputs for reporting purposes.
+
+## Configuration Options
+
+| Field Name      | Description                                   | Input Type | Required? | Default Value |
+| --------------- | --------------------------------------------- | ---------- | --------- | ------------- |
+| **Command**     | The DOS command you want to execute.          | Text       | Yes       | _(empty)_     |
+| **Command Output** | Captures and shows the output from the executed command. | Config-panel-output | No  | "CommandOutput"  |
+
+## Expected Output Format
+
+The output of this node is a **text string** containing the result of the DOS command that was executed.
+
+- If the command successfully executes, you will get the command's output as a string.
+- If the command fails, the output may include error messages or a blank result depending on the command nature.
+
+## Step-by-Step Guide
+
+<Steps>
+### Step 1
+
+Add the **Run DOS Command** node to your automation workflow.
+
+### Step 2
+
+In the **Command** field, input the DOS command you wish to execute. Ensure it is a valid command that does not require interactive input.
+
+### Step 3
+
+Once the node is configured, it will execute the command silently, and upon completion, the result will be made available as **CommandOutput** for use in subsequent nodes.
+
+</Steps>
+
+<Callout type="info" title="Tip">
+  Ensure the DOS commands used are sufficiently tested independently to avoid unexpected behaviors in your workflow.
+</Callout>
+
+## Input/Output Examples
+
+| Action                          | Command                         | Command Output                                       | Output Type        |
+| ------------------------------- | ------------------------------- | ---------------------------------------------------- | ------------------ |
+| Retrieve directory listing      | `dir C:\Users\SampleFolder`      | List of files and folders within SampleFolder        | Text String |
+| System information              | `systeminfo`                     | Detailed text listing system specifications          | Text String |
+| Check network configuration     | `ipconfig`                       | Configuration of network interfaces                  | Text String |
+
+## Common Mistakes & Troubleshooting
+
+| Problem                                         | Solution                                                                                                  |
+| ----------------------------------------------- | --------------------------------------------------------------------------------------------------------- |
+| **Command not executing successfully**          | Double-check the command syntax for errors or unsupported instructions.                                    |
+| **Unexpected output from command**              | Ensure the command does not require user interaction or additional parameters not included in your input.  |
+| **Command Output is empty**                     | Verify whether the command has an actionable output or if it completed successfully with errors.           |
+
+## Real-World Use Cases
+
+- **System Maintenance**: Automate maintenance tasks such as cleaning temporary files using DOS batch scripts.
+- **Data Collection**: Run and collect output from commands that fetch system and network configurations.
+- **File Management**: Automate file handling tasks, such as renaming or moving files based on certain criteria.

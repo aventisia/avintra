@@ -1,0 +1,63 @@
+import { Callout, Steps } from "nextra/components";
+
+# Get All Excel Worksheets
+
+The **Get All Excel Worksheets** node allows you to extract the names of all worksheets contained within a given Excel workbook. This is particularly useful when you want to dynamically access, manage, or report on the content across multiple sheets within an Excel file.
+
+For example:
+
+- Automating document management where different worksheets store different data categories.
+- Collecting worksheet names for processing specific data from selected sheets.
+
+## Configuration Options
+
+| Field Name           | Description                                                            | Input Type | Required? | Default Value  |
+| -------------------- | ---------------------------------------------------------------------- | ---------- | --------- | -------------- |
+| **Workbook Instance** | The Excel Workbook object containing the worksheets to retrieve.       | Text       | Yes       | _(empty)_      |
+
+## Expected Output Format
+
+The output of this node is a **list of worksheet names** (as strings). Each string represents the name of a worksheet within the provided Excel workbook.
+
+- Output will be a list such as: `["Sheet1", "Sheet2", "Annual Report"]`.
+
+## Step-by-Step Guide
+
+<Steps>
+### Step 1
+
+Add **Get All Excel Worksheets** node into your flow.
+
+### Step 2
+
+In the **Workbook Instance** field, provide the Excel workbook object you want to retrieve worksheet names from.
+
+### Step 3
+
+Once configured, the node will return a list of worksheet names available in the workbook, stored as **WorksheetNames**.
+
+</Steps>
+
+<Callout type="info" title="Note">
+  Ensure that the input provided in **Workbook Instance** is an appropriate Excel workbook object to avoid errors.
+</Callout>
+
+## Input/Output Examples
+
+| Workbook Instance | Output Value                             | Output Type  |
+| ----------------- | ---------------------------------------- | ------------ |
+| MyWorkbook        | ["Sheet1", "Sheet2", "Annual Report"]    | List of Text |
+
+## Common Mistakes & Troubleshooting
+
+| Problem                                                  | Solution                                                                                                                                                     |
+| -------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------ |
+| **No worksheet names returned**                          | Ensure the workbook instance provided is valid and contains worksheets.                                                                                      |
+| **Incorrect object type in Workbook Instance**           | Verify that the input is an Excel workbook object and not another type such as a plain text file.                                                            |
+| **Worksheet names not as expected**                      | Double-check the workbook to ensure it contains the worksheets you expect.                                                                                   |
+
+## Real-World Use Cases
+
+- **Data Analysis Automation**: Quickly retrieve all available sheets for dynamic data analysis across multiple reports stored in one workbook.
+- **Report Generation**: Automate the process of generating summary reports by first listing all sheets and then processing each one for summary data.
+- **Project Tracking**: Capture spreadsheet sections by listing all sheets for task updates or project status checks from a unified Excel workbook.

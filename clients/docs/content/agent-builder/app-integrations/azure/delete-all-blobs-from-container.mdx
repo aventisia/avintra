@@ -1,0 +1,69 @@
+import { Callout, Steps } from "nextra/components";
+
+# Delete All Blobs from Container
+
+The **Delete All Blobs from Container** node is designed to help you manage your Azure Blob storage by allowing you to remove all blobs within a specified container. This can be particularly useful for routine clean-ups or when you need to reset the data stored in a container completely.
+
+This node is beneficial when you want to:
+
+- Quickly clear out an entire blob container's contents.
+- Ensure there are no residual files before uploading new data.
+- Free up space by deleting outdated or unnecessary files.
+
+## Configuration Options
+
+| Field Name             | Description                                                                          | Input Type | Required? | Default Value |
+| ---------------------- | ------------------------------------------------------------------------------------ | ---------- | --------- | ------------- |
+| **Blob Container Client** | The connection instance needed to access and delete all blobs from the container.    | Text       | Yes       | _(empty)_     |
+
+## Expected Output Format
+
+The output of this node is the **number of blobs** that were successfully deleted from the Azure Blob container.
+
+- Output Value: `BlobsDeletedCount`
+- Output Type: Number (e.g., `5` indicating five blobs were deleted)
+
+## Step-by-Step Guide
+
+<Steps>
+### Step 1
+
+Add the **Delete All Blobs from Container** node into your workflow.
+
+### Step 2
+
+In the **Blob Container Client** field, enter your specific BlobContainerClient instance to enable access to the container.
+
+### Step 3
+
+Run the node. It will process and attempt to delete all blobs within the specified container.
+
+### Step 4
+
+The result, **BlobsDeletedCount**, will show you how many blobs were deleted, which you can use for further actions or logging.
+
+</Steps>
+
+<Callout type="warning" title="Important">
+The deletion process will erase all blobs in the container permanently. Ensure that you have a backup if necessary.
+</Callout>
+
+## Input/Output Examples
+
+| Blob Container Client       | Output Value      | Output Description                 |
+| --------------------------- | ----------------- | ---------------------------------- |
+| _Your BlobContainerClient_  | 0                 | No blobs were found/deleted.       |
+| _Your BlobContainerClient_  | 15                | Fifteen blobs were successfully deleted. |
+
+## Common Mistakes & Troubleshooting
+
+| Problem                                             | Solution                                                                                                                                           |
+| --------------------------------------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------- |
+| **Blob Container Client is not provided**           | The node requires a valid BlobContainerClient instance. Please ensure you have configured the connection property correctly.                        |
+| **Connection issues while accessing the container** | Verify your network connection and the accessibility of the Azure Blob storage account. Is the client you're using to access Azure correctly set up? |
+
+## Real-World Use Cases
+
+- **Data Reset**: Quickly clear a blob container when testing or resetting an environment.
+- **Storage Management**: Regularly delete all blobs to manage storage limits or before uploading a new batch of data to a container.
+- **Automated Cleanup**: Integrate into a scheduled task to maintain organized and clean storage environments in Azure.

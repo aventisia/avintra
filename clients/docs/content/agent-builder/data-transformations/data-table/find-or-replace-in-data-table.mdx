@@ -1,0 +1,91 @@
+import { Callout, Steps } from "nextra/components";
+
+# Find or Replace in Data Table
+
+The **Find or Replace in Data Table** node allows you to search for specific text values within a data table and optionally replace them. This can be particularly useful for data cleaning, such as correcting typos in datasets, or updating specific information across multiple records.
+
+## Configuration Options
+
+| Field Name                    | Description                                                                                               | Input Type | Required? | Default Value |
+| ----------------------------- | --------------------------------------------------------------------------------------------------------- | ---------- | --------- | ------------- |
+| **Data Table**                | The data table to process.                                                                               | Text       | Yes       | _(empty)_     |
+| **Search Mode**               | Specifies whether to find or find and replace values.                                                    | Select     | Yes       | Find          |
+| **Text to Find**              | The value to find in the data table.                                                                     | Text       | No        | _(empty)_     |
+| **Text to Replace With**      | The value to replace with (required if 'Search Mode' is 'Find and Replace').                             | Text       | No        | _(empty)_     |
+| **All Matches**               | If true, processes all occurrences. If false, processes only the first occurrence.                       | Switch     | No        | _(empty)_     |
+| **Find Using a Regular Expression** | If true, uses regular expressions for matching.                                                   | Switch     | No        | _(empty)_     |
+| **Match Case**                | If true, performs a case-sensitive search.                                                               | Switch     | No        | _(empty)_     |
+| **Match Entire Cell Contents**| If true, matches only cells that contain exactly the specified text.                                    | Switch     | No        | _(empty)_     |
+| **Search By**                 | Specifies how to search the data table.                                                                 | Select     | No        | Everywhere    |
+| **Column Index or Name**      | The column index or name to search within (required if 'Search By' is 'On Column').                      | Text       | No        | _(empty)_     |
+
+## Expected Output Format
+
+The output of this node is a **set of rows** from the data table that match the specified search criteria.
+
+- Output is received as `MatchedRows` containing all rows that meet the search conditions.
+
+## Step-by-Step Guide
+
+<Steps>
+### Step 1
+
+Add the **Find or Replace in Data Table** node into your flow.
+
+### Step 2
+
+In the **Data Table** field, specify the data table you wish to search.
+
+### Step 3
+
+Select a **Search Mode** from the dropdown:
+
+- **Find**: Locate values within the data table.
+- **Find and Replace**: Locate values and replace them with specified text.
+
+### Step 4
+
+If needed, enter the value to find in **Text to Find**.
+
+### Step 5
+
+If you selected **Find and Replace** in Step 3, type the replacement text in **Text to Replace With**.
+
+### Step 6
+
+Set additional search criteria using options like **All Matches**, **Use Regular Expressions**, **Match Case**, and others based on your needs.
+
+### Step 7
+
+Choose **Search By** to either search everywhere or on a specific column. If selecting a column, specify it in **Column Index or Name**.
+
+### Step 8
+
+Once configured, the node will output the rows that match your criteria as **MatchedRows**.
+
+</Steps>
+
+<Callout type="info" title="Note">
+  If you choose **On Column** in the **Search By** dropdown, ensure you specify a valid column in **Column Index or Name**.
+</Callout>
+
+## Input/Output Examples
+
+| Search Mode     | Data Table Example                                      | Text to Find | Text to Replace With | Matched Rows Example                                                                            |
+| --------------- | ------------------------------------------------------- | ------------ | -------------------- | ----------------------------------------------------------------------------------------------- |
+| Find            | `[{"Name": "John Doe", "Email": "john@example.com"}]`     | John         | _(n/a)_              | `[{"Name": "John Doe", "Email": "john@example.com"}]`                                             |
+| Find and Replace| `[{"Product": "Laptop", "Price": "$500"}]`                | "$500"       | "$450"               | `[{"Product": "Laptop", "Price": "$450"}]`                                                        |
+
+## Common Mistakes & Troubleshooting
+
+| Problem                                            | Solution                                                                                      |
+| -------------------------------------------------- | --------------------------------------------------------------------------------------------- |
+| **Text to Replace With not showing up**            | Ensure that you have selected **"Find and Replace"** in the Search Mode dropdown.            |
+| **Non-matching rows**                              | Check your search criteria and ensure all relevant options are properly configured.           |
+| **No output received**                             | Make sure the Data Table field is correctly filled and matches your other input configurations. |
+
+## Real-World Use Cases
+
+- **Data Cleaning**: Correct typographical errors by searching for and replacing incorrect entries.
+- **Content Updates**: Update contact details in a list by finding old information and replacing it with the new.
+- **Inventory Management**: Replace outdated product prices efficiently across all entries in a dataset.

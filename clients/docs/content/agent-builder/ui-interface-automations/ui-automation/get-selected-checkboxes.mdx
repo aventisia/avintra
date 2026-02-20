@@ -1,0 +1,69 @@
+import { Callout, Steps } from "nextra/components";
+
+# Get Selected Checkboxes
+
+The **Get Selected Checkboxes** node retrieves the names of checkboxes currently selected within a specified checkbox group. It is beneficial when you need to extract user choices from forms or settings in applications, aiding in decision-making processes based on selected options.
+
+For example, you can use this node to:
+
+- Gather selected preferences in a settings menu.
+- Analyze inputs from a user survey with checkboxes.
+- Track selected features in a configuration panel.
+
+## Configuration Options
+
+| Field Name              | Description                                                                             | Input Type | Required? | Default Value |
+| ----------------------- | --------------------------------------------------------------------------------------- | ---------- | --------- | ------------- |
+| **UI Element**          | The UI element from which you need to read selected checkboxes.                         | Text       | Yes       | _(empty)_     |
+| **Max Wait Time (seconds)** | Maximum time to wait for locating the UI element (specified in seconds).               | Text       | No        | 5             |
+| **Selected Checkboxes** | Returns the list of selected checkbox names.                                            | Output     | No        | SelectedCheckboxes |
+
+## Expected Output Format
+
+The output of this node is a **list of strings**, with each string representing the name of a selected checkbox (e.g., `["CheckBox1", "CheckBox3"]`).
+
+## Step-by-Step Guide
+
+<Steps>
+### Step 1
+
+Add the **Get Selected Checkboxes** node to your flow.
+
+### Step 2
+
+In the **UI Element** field, provide the path or identifier of the UI element encompassing the checkboxes you want to check.
+
+### Step 3
+
+Optionally, specify the **Max Wait Time (seconds)** if the default time may not suffice for finding the element.
+
+### Step 4
+
+Upon execution, the node retrieves and lists the selected checkbox names under **Selected Checkboxes**.
+
+</Steps>
+
+<Callout type="info" title="Tip">
+  Ensure that the UI path or identifier provided accurately directs to the targeted checkbox group.
+</Callout>
+
+## Input/Output Examples
+
+| UI Element                         | Max Wait Time (seconds) | Output                     |
+| ---------------------------------- | ----------------------- | -------------------------- |
+| `#preferencesForm`                 | 10                      | `["Option1", "Option3"]`   |
+| `window.packagesSelectionCheckBox` | 5                       | `["FeatureA", "FeatureB"]` |
+
+## Common Mistakes & Troubleshooting
+
+| Problem                                               | Solution                                                                                                 |
+| ----------------------------------------------------- | -------------------------------------------------------------------------------------------------------- |
+| **Failing to retrieve selected checkboxes**           | Ensure the **UI Element** path is correct and accurately points to the checkbox group.                   |
+| **Timeout errors**                                    | Increase the **Max Wait Time (seconds)** if the element takes longer to appear.                          |
+| **Unexpected results**                                | Double-check that the UI element is not being updated or altered dynamically after being read.           |
+
+## Real-World Use Cases
+
+- **User Preferences**: Collect selected options in user preferences to enable or disable features dynamically.
+- **Survey Analysis**: Extract and analyze responses from a checkbox-based survey promptly.
+- **Configuration Management**: Track selected checkboxes within a configuration panel for validation checks or future use.

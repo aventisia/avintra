@@ -1,0 +1,79 @@
+import { Callout, Steps } from "nextra/components";
+
+# Encrypt Text with AES
+
+The **Encrypt Text with AES** node allows you to securely encrypt text using the Advanced Encryption Standard (AES). This is particularly useful for protecting sensitive information before sharing or storing it. By employing strong AES-256 encryption, this node ensures your data remains confidential and secure.
+
+Common applications include:
+- Encrypting sensitive messages or files.
+- Ensuring secure transmission of data.
+- Protecting stored data against unauthorized access.
+
+## Configuration Options
+
+| Field Name              | Description                                                                                       | Input Type | Required? | Default Value |
+|-------------------------|---------------------------------------------------------------------------------------------------|------------|-----------|---------------|
+| **Plaintext to Encrypt**| The text you want to encrypt.                                                                   | Text       | Yes       | _(empty)_     |
+| **Encryption Key**      | Secret key used for encryption. Short keys are automatically hashed securely to 32 bytes.       | Text       | Yes       | _(empty)_     |
+| **Initialization Vector (IV)** | 16-character IV used in encryption process.                                               | Text       | Yes       | _(empty)_     |
+| **Encoding Format**     | Encoding used for the encrypted output. Options include Base64, Hex, or UTF-8.                  | Select     | Yes       | _(empty)_     |
+
+## Expected Output Format
+
+The output of this node is an **encrypted text string**, formatted according to your chosen encoding:
+
+- **Base64**: Encodes binary data to an ASCII string using 64 characters.
+- **Hex**: Represents binary data as hexadecimal (base-16) numbers.
+- **UTF-8**: A character encoding capable of encoding all possible characters.
+
+## Step-by-Step Guide
+
+<Steps>
+### Step 1
+
+Add the **Encrypt Text with AES** node to your automation flow.
+
+### Step 2
+
+In the **Plaintext to Encrypt** field, enter the text you wish to encrypt.
+
+### Step 3
+
+Enter a strong **Encryption Key**. If the key is shorter than 32 characters, it will automatically be hashed to the required length for AES-256 encryption.
+
+### Step 4
+
+Provide a 16-character **Initialization Vector (IV)**, which adds randomness to the encryption process and improves security.
+
+### Step 5
+
+Select your preferred **Encoding Format** from the dropdown menu. Choose between Base64, Hex, or UTF-8 based on how you want to format the encrypted text.
+
+### Step 6
+
+The output will be available as **EncryptedText**, ready for use elsewhere in your workflow.
+</Steps>
+
+<Callout type="info" title="Tip">
+  Ensure that your **Encryption Key** and **IV** are stored securely, as they are critical for decrypting the data.
+</Callout>
+
+## Input/Output Examples
+
+| Plaintext Input | Encryption Key    | IV             | Encoding Format | Encrypted Output | Output Type    |
+|-----------------|-------------------|----------------|-----------------|------------------|----------------|
+| "Hello World!"  | "mysecretkey12345"| "1234567890123456" | Base64         | EncryptedText    | Encrypted String |
+
+## Common Mistakes & Troubleshooting
+
+| Problem                              | Solution                                                                                                                                 |
+|--------------------------------------|------------------------------------------------------------------------------------------------------------------------------------------|
+| **Invalid IV Length**                | Ensure the Initialization Vector (IV) is exactly 16 characters long to comply with AES requirements.                                     |
+| **Weak Encryption Key**              | For maximum security, use a strong encryption key (at least 32 characters) to avoid vulnerabilities.                                     |
+| **Output doesn't appear as expected**| Double-check the chosen encoding format. Ensure consistent use of the same encryption parameters for both encryption and decryption.     |
+
+## Real-World Use Cases
+
+- **Messaging Apps**: Securely encrypt chat messages to protect privacy.
+- **Secure Cloud Storage**: Encrypt files before uploading to cloud services to safeguard against unauthorized access.
+- **Financial Data Protection**: Encrypt sensitive financial information before storing in databases.

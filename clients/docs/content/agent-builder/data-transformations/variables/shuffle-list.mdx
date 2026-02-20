@@ -1,0 +1,58 @@
+import { Callout, Steps } from "nextra/components";
+
+# Shuffle List
+
+The **Shuffle List** node is designed to randomly reorder the items in a list. This can be particularly useful when you need to create a random sequence or order of elements, such as shuffling a deck of cards, rotating items, or running randomized tests on list data.
+
+## Configuration Options
+
+| Field Name         | Description                                     | Input Type | Required? | Default Value |
+| ------------------ | ----------------------------------------------- | ---------- | --------- | ------------- |
+| **List to Shuffle** | The list of items that you want to reorder randomly. | Text       | Yes       | _(empty)_     |
+
+## Expected Output Format
+
+The output of this node is a **list** where the items have been reordered in a random sequence. The output will be available as a list under **ShuffledList**.
+
+## Step-by-Step Guide
+
+<Steps>
+
+### Step 1
+
+Add the **Shuffle List** node into your workflow.
+
+### Step 2
+
+In the **List to Shuffle** field, enter the list of items you want to randomly reorder. This could be a list of numbers, names, or any other elements.
+
+### Step 3
+
+Once you have configured your list, the node will process it and produce a reordered version available as **ShuffledList**.
+
+</Steps>
+
+<Callout type="note" title="Note">
+  Ensure that your input in the **List to Shuffle** field is properly formatted as a list. Items should be separated by commas or another recognizable delimiter as per your specific project requirements.
+</Callout>
+
+## Input/Output Examples
+
+| Input List          | Output List Example   | Output Format  |
+| ------------------- | --------------------- | -------------- |
+| `1, 2, 3, 4, 5`     | `3, 5, 1, 4, 2`       | List (Randomly Ordered) |
+| `apple, banana, cherry` | `banana, cherry, apple` | List (Randomly Ordered) |
+
+## Common Mistakes & Troubleshooting
+
+| Problem                                       | Solution                                                                                                    |
+| --------------------------------------------- | ----------------------------------------------------------------------------------------------------------- |
+| **List does not reorder**                     | Check your input is correctly formatted as a list. Spaces and separators matter.                            |
+| **Output is the same as input**               | Run the operation again to ensure randomness. Each shuffle should ideally provide a new order.              |
+| **Output format issues**                      | Ensure the output is being captured correctly in a part of your workflow that expects a list format.         |
+
+## Real-World Use Cases
+
+- **Game Development**: Shuffle a deck of cards or inventory items to ensure fairness and unpredictability.
+- **Testing and Sampling**: Create randomized lists of participants or data points to avoid biases in testing scenarios.
+- **Scheduling**: Randomly order tasks or activities to add spontaneity or variety into scheduling systems.

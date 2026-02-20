@@ -1,0 +1,84 @@
+import { Callout, Steps } from "nextra/components";
+
+# Get Details of Element on Web Page
+
+The **Get Details of Element on Web Page** node allows you to retrieve the value of a specified attribute from an element on a webpage. This node is essential when you need to automate the process of extracting data from web pages, such as reading a user name from an input field or capturing the text of a button to use elsewhere in your automation task.
+
+## Configuration Options
+
+| Field Name            | Description                                                                                                                                  | Input Type | Required? | Default Value  |
+|-----------------------|----------------------------------------------------------------------------------------------------------------------------------------------|------------|-----------|----------------|
+| **Web Browser Instance** | Enter or choose the variable that contains the web browser instance to work with.                                                           | Text       | Yes       | _(empty)_      |
+| **Find Type**         | Specifies how to find the element (e.g., XPath, ID, CSS Selector).                                                                           | Select     | Yes       | XPath          |
+| **Value To Find**     | The value used to locate the element (such as `username`, or XPath expression `//input[@id='email']`).                                        | Text       | Yes       | _(empty)_      |
+| **Attribute Name**    | The name of the attribute whose value should be retrieved. Use 'Text' to get the inner text.                                                  | Text       | Yes       | Text           |
+| **Wait for Element**  | If true, waits for the element to appear before getting the attribute value.                                                                  | Switch     | No        | _(empty)_      |
+| **Timeout Seconds**   | Maximum time in seconds to wait for the element before the operation fails.                                                                   | Text       | No        | 60             |
+
+## Expected Output Format
+
+The output is the **value of the specified attribute** from the element found on the webpage. This will typically be a **string**, such as the text inside a button or the value of an input field.
+
+- Output is available as **AttributeValueOutput**.
+
+## Step-by-Step Guide
+
+<Steps>
+### Step 1
+
+Add **Get Details of Element on Web Page** node to your automation flow.
+
+### Step 2
+
+In the **Web Browser Instance** field, select or enter the browser instance variable you are using.
+
+### Step 3
+
+In the **Find Type** dropdown, select the method you want to use to locate the element, such as XPath, Id, or CssSelector.
+
+### Step 4
+
+Enter the **Value To Find**, which is the specific identifier based on your selected Find Type. For instance, an XPath expression like `//input[@id='username']`.
+
+### Step 5
+
+Input the **Attribute Name** you wish to extract from the element, like 'Text' for inner text value.
+
+### Step 6
+
+(Optional) Toggle **Wait for Element** if you want the node to wait until the element is present before attempting to get the attribute value.
+
+### Step 7
+
+(Optional) Set how long to wait for the element in **Timeout Seconds** if using Wait for Element.
+
+### Step 8
+
+Retrieve the attribute value as **AttributeValueOutput** in your subsequent nodes.
+</Steps>
+
+<Callout type="info" title="Note">
+  Ensure your browser instance is active and pointing to the correct webpage where the element exists before using this node.
+</Callout>
+
+## Input/Output Examples
+
+| Find Type | Value To Find           | Attribute Name | Input Example         | Output Value               | Output Type |
+|-----------|-------------------------|----------------|-----------------------|----------------------------|-------------|
+| XPath     | `//input[@id='username']` | Text           | `Username field XPath` | "JohnDoe"                  | String      |
+| CssSelector | `#submit-button`       | Title          | `Button color`        | "Submit your application"  | String      |
+
+## Common Mistakes & Troubleshooting
+
+| Problem                            | Solution                                                                                                                                              |
+|------------------------------------|-------------------------------------------------------------------------------------------------------------------------------------------------------|
+| **Element not found error**        | Verify the page is fully loaded and the Find Type and Value To Find are correct.                                                                      |
+| **Attribute value is empty**       | Ensure the Attribute Name is correctly entered and exists on the element.                                                                             |
+| **Timeout not effective**          | Check that the Wait for Element switch is enabled and the Timeout Seconds is appropriately set for the webpage load time.                             |
+| **Browser instance error**         | Confirm the correct browser instance is open and corresponds to the Web Browser Instance variable used in the node configuration.                      |
+
+## Real-World Use Cases
+
+- **Content Verification**: Check and validate specific elements on a webpage automatically during web testing.
+- **Data Extraction**: Retrieve information such as product prices or descriptions from e-commerce websites for analysis.
+- **Web Interactions**: Obtain button texts or status messages that guide next steps in automated workflows.

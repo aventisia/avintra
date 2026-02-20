@@ -1,0 +1,84 @@
+import { Callout, Steps } from "nextra/components";
+
+# Click Download Link on Web Page
+
+The **Click Download Link on Web Page** node allows you to automate the downloading of files from web pages by simulating a click action on a designated download link. This is useful for retrieving files from web-based applications or portals without manual intervention.
+
+This node is essential when you need to download reports, documents, or data files which are accessed via download links on a website.
+
+## Configuration Options
+
+| Field Name                  | Description                                                                                 | Input Type | Required? | Default Value |
+| --------------------------- | ------------------------------------------------------------------------------------------- | ---------- | --------- | ------------- |
+| **Web Browser Instance**    | Enter or choose the variable that contains the web browser instance to work with.           | Text       | Yes       | _(empty)_     |
+| **Find Type**               | Specifies how to find the element (e.g., ID, XPath, CssSelector).                           | Select     | Yes       | XPath         |
+| **Value To Find**           | The selector (XPath, ID, etc.) used to locate the download link on the page.                | Text       | Yes       | _(empty)_     |
+| **Destination Folder**      | The full path of the folder where the downloaded file will be saved.                        | Text       | Yes       | _(empty)_     |
+| **Wait for File to Download** | If true, waits until the file appears in the destination folder.                          | Switch     | No        | False         |
+| **Maximum Wait Time (Seconds)** | The maximum time to wait for the file to appear in the destination folder. *Only appears if "Wait for File to Download" is true.* | Text       | No        | 30            |
+
+## Expected Output Format
+
+The output of this node is a **string** that represents the full path of the downloaded file.
+
+For example, if the file is successfully downloaded and saved, you will receive a path string like `"C:/Downloads/myFile.pdf"`.
+
+## Step-by-Step Guide
+<Steps>
+### Step 1
+
+Add **Click Download Link on Web Page** node to your flow.
+
+### Step 2
+
+In the **Web Browser Instance** field, specify the browser instance you are using to interact with the web page.
+
+### Step 3
+
+Choose the method to find the download link by selecting an option from the **Find Type** dropdown such as XPath, ID, or CSS Selector.
+
+### Step 4
+
+Enter the selector for the download link in the **Value To Find** field to locate the link on the web page.
+
+### Step 5
+
+Specify the **Destination Folder** where you want the file to be downloaded.
+
+### Step 6
+
+(Optional) Toggle the **Wait for File to Download** switch if you want the operation to wait until the download is complete and the file appears in the destination folder.
+
+### Step 7
+
+If you have enabled the wait option, adjust the **Maximum Wait Time (Seconds)** to set how long the node should wait for the download to finish.
+
+### Step 8
+
+Once the file is downloaded, it will be accessible as **DownloadedFile** for further use in your automation process.
+
+</Steps>
+
+<Callout type="info" title="Note">
+  Each download requires an active web browser instance and correct element selectors to successfully click on the link.
+</Callout>
+
+## Input/Output Examples
+
+| Find Type | Value To Find | Destination Folder        | Output Value                          |
+| --------- | ------------- | ------------------------- | ------------------------------------- |
+| XPath     | `//a[@id='download-link']` | `C:/Downloads` | `C:/Downloads/downloaded-file.pdf`   |
+
+## Common Mistakes & Troubleshooting
+
+| Problem                                                   | Solution                                                                                                                                           |
+| --------------------------------------------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------- |
+| **Incorrect selector used**                               | Verify the selector in **Value To Find** matches an actual download link on your webpage.                                                         |
+| **File not appearing in the destination folder**          | Ensure the **Destination Folder** path is correct and accessible by the application.                                                              |
+| **Automation does not wait for download**                 | Enable **Wait for File to Download** and ensure **Maximum Wait Time (Seconds)** is set appropriately to allow enough time for file download. |
+
+## Real-World Use Cases
+
+- **Automated Report Download**: Schedule daily or weekly downloads of sales reports from a web portal.
+- **Document Retrieval**: Automate the download of policy documents from company intranet.
+- **Data Archiving**: Regularly download and archive data sets from online sources for backup purposes.

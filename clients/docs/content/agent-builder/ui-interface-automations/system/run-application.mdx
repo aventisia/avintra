@@ -1,0 +1,93 @@
+import { Callout, Steps } from "nextra/components";
+
+# Run Application
+
+The **Run Application** node enables you to open or execute applications and documents seamlessly within your workflow. This is particularly useful for automating tasks that involve launching external software or accessing specific files directly from your desktop environment.
+
+For example, you might use it to:
+
+- Launch an email client to send automated reports.
+- Open a document or spreadsheet automatically.
+- Run a program with specific command line arguments or in a preferred window style.
+
+## Configuration Options
+
+| Field Name                  | Description                                                                                                                                              | Input Type | Required? | Default Value |
+| --------------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------- | ---------- | --------- | ------------- |
+| **Application path**        | The path to the application or document to execute.                                                                                                      | Text       | Yes       | _(empty)_     |
+| **Command line arguments**  | Optional parameters to control how the application starts (e.g., a file to open or a silent mode flag).                                                  | Text       | No        | _(empty)_     |
+| **Working Directory**       | The folder the application uses as its "current location" when running. If empty, it defaults to the application's folder.                               | Text       | No        | _(empty)_     |
+| **Window style**            | Specifies how the application window should be displayed.                                                                                                | Select     | No        | _(empty)_     |
+| **After application launch**| Specifies the behavior after launching the application.                                                                                                  | Select     | No        | _(empty)_     |
+| **Timeout**                 | The maximum time (in seconds) to wait for the application to complete. (Appears only if "Continue Immediately" is selected in After application launch.)   | Text       | No        | 0             |
+
+## Expected Output Format
+
+The outputs of this node are two possible values:
+
+- **AppProcessId**: Returns the process ID of the launched application.
+- **AppExitCode**: Provides the exit code of the application if it completes, indicating whether it ran successfully or encountered errors.
+
+## Step-by-Step Guide
+
+<Steps>
+### Step 1
+
+Add **Run Application** node to your workflow.
+
+### Step 2
+
+In the **Application path** field, specify the full path to the application or document you wish to execute.
+
+### Step 3
+
+(Optional) Enter any **Command line arguments** if needed to control the application's behavior (e.g., opening a specific file).
+
+### Step 4
+
+(Optional) Specify the **Working Directory** if the application needs to access specific files or if running from a specific folder path is required.
+
+### Step 5
+
+(Optional) In the **Window style** dropdown, choose how you want the application window to be displayed (e.g., hidden, maximized).
+
+### Step 6
+
+(Optional) Select an option in **After application launch** to define how the node should proceed after starting the application.
+
+### Step 7
+
+If you selected **Continue Immediately**, specify a **Timeout** value indicating how long (in seconds) to wait for the application to end, if necessary.
+
+### Step 8
+
+The node will return an **AppProcessId** value to help track the running application and an **AppExitCode** to check if the application closed as expected.
+
+</Steps>
+
+<Callout type="info" title="Tip">
+  To improve efficiency, use the **Command line arguments** to automate repetitive tasks within the applications being launched.
+</Callout>
+
+## Input/Output Examples
+
+| Action                                | Input Values                                                                                        | Output                                               |
+| ------------------------------------- | --------------------------------------------------------------------------------------------------- | ---------------------------------------------------- |
+| Launch Notepad                        | Application path: `C:\Windows\System32\notepad.exe`                                                 | AppProcessId: (unique process ID)                    |
+| Open Excel file in silent mode        | Application path: `C:\Program Files\Microsoft Office\root\Office16\EXCEL.EXE`, <br/>Command line: `"/s /q"`   | AppProcessId: (unique process ID)                    |
+| Run script with config file           | Application path: `C:\MyScripts\run.bat`, <br/>Command line: `--config=config.json`, <br/>Working Directory: `C:\Config` | AppProcessId and AppExitCode (if applicable)         |
+
+## Common Mistakes & Troubleshooting
+
+| Problem                                        | Solution                                                                                                                                                           |
+| ---------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
+| **Application fails to launch**                | Ensure that the **Application path** is correctly specified and the application is installed.                                                                     |
+| **Timeout not working as expected**            | Make sure to specify a valid timeout value and select "Continue Immediately" in the **After application launch** field.                                            |
+| **Cannot find Working Directory**              | Verify the path entered in the **Working Directory** matches the expected location on the filesystem.                                                              |
+| **Unexpected window style**                    | Reconfirm your selection in the **Window style** option to ensure the desired display setting is chosen.                                                           |
+
+## Real-World Use Cases
+
+- **Automated Daily Reports**: Open spreadsheet files automatically and run macros at a specified time each day.
+- **System Maintenance Scripts**: Execute batch files or scripts with command line arguments from the automation, simplifying routine system tasks.
+- **Bulk Document Processing**: Automatically open and convert documents using command line tools or scripts.

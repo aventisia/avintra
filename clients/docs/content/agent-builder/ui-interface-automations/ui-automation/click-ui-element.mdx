@@ -1,0 +1,79 @@
+import { Callout, Steps } from "nextra/components";
+
+# Click UI Element
+
+The **Click UI Element** node is designed to simulate a click on a user interface (UI) element within a desktop application. It can perform the click using either UI Automation techniques or a standard mouse click. This functionality is commonly used in workflows where user interaction with UI elements needs to be automated, like clicking buttons, links, or other interactive elements in an application.
+
+For example:
+
+- Automatically clicking a "Submit" button after filling out a form.
+- Using UI automation to interact with elements not easily accessible by standard mouse controls.
+- Managing workflows that require dynamic UI interactions without the need for human intervention.
+
+## Configuration Options
+
+| Field Name                  | Description                                                                       | Input Type | Required? | Default Value       |
+| --------------------------- | --------------------------------------------------------------------------------- | ---------- | --------- | ------------------- |
+| **UI Element**              | The UI element which you would like to click.                                     | Text       | Yes       | _(empty)_           |
+| **Click Type**              | Type of click: UIAutomationClick or MouseClick.                                   | Select     | No        | UIAutomationClick   |
+| **Max Wait Time (seconds)** | Maximum time to wait to find the UI element (in seconds).                         | Text       | No        | 5                   |
+
+## Expected Output Format
+
+The output of this node is a **boolean value** indicating whether the click operation was successful.
+
+- The output will be `true` if the UI element was clicked successfully.
+- The output will be `false` if the click operation failed or the element wasn't found within the specified wait time.
+
+## Step-by-Step Guide
+
+<Steps>
+### Step 1
+
+Add the **Click UI Element** node into your flow.
+
+### Step 2
+
+In the **UI Element** field, specify the identification object path of the UI element you want to click.
+
+### Step 3
+
+In the **Click Type** dropdown, select the method for clicking the element:
+
+- **UI Automation Click**: Uses UI automation invoke pattern.
+- **Mouse Click**: Simulates a mouse click at the element's clickable point.
+
+### Step 4
+
+(Optional) In the **Max Wait Time (seconds)** field, enter the maximum time (in seconds) the node should wait to find the UI element. The default is 5 seconds.
+
+### Step 5
+
+The node will provide an output labeled **Button Clicked Successfully**. Use this boolean output to determine if the click was successful and continue the workflow accordingly.
+
+</Steps>
+
+<Callout type="info" title="Tip">
+  Always try to use **UI Automation Click** for more reliable element interaction, especially when dealing with complex UI structures.
+</Callout>
+
+## Input/Output Examples
+
+| UI Element   | Click Type             | Max Wait Time | Output Value | Output Explanation                               |
+| ------------ | ---------------------- | ------------- | ------------ | ----------------------------------------------- |
+| loginButton  | UIAutomationClick      | 5             | true         | The "loginButton" element was clicked successfully. |
+| submitButton | MouseClick             | 10            | false        | The "submitButton" element could not be clicked in the given time. |
+
+## Common Mistakes & Troubleshooting
+
+| Problem                                         | Solution                                                                                                                                                                  |
+| ----------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| **UI Element not found within wait time**       | Increase the **Max Wait Time** or ensure the UI element's identification path is correct.                                                                                 |
+| **Click operation has no effect on UI**         | Check if the element is visible and enabled. If not, ensure conditions meet those pre-requisites before trying the click operation.                                        |
+| **UI Automation Click fails on complex UI**     | Try switching to **Mouse Click**, especially in scenarios where UI elements are embedded deeply or require a more direct click interaction.                                |
+
+## Real-World Use Cases
+
+- **Automate Form Submissions**: Automatically submit forms by clicking the "Submit" button once all data is filled.
+- **Navigate Through Applications**: Use to click through buttons for automation testing or routine operations.
+- **Interactive Dashboards**: Automate user interaction in dashboards to change views or trigger updates.

@@ -1,0 +1,65 @@
+import { Callout, Steps } from "nextra/components";
+
+# Get File Drive and Item ID
+
+The **Get File Drive and Item ID** node helps you retrieve the Drive ID and Item ID for a specific file stored in OneDrive or SharePoint. This is particularly useful when you need to programmatically access, modify, or track files within the Microsoft 365 environment. All you need to provide are valid M365 credentials and the file URL, and the node will output the required identifiers.
+
+## Configuration Options
+
+| Field Name       | Description                                                                                                   | Input Type          | Required? | Default Value |
+| ---------------- | ------------------------------------------------------------------------------------------------------------- | ------------------- | --------- | ------------- |
+| **M365 Credential** | The M365 credential containing valid tenant ID, client ID, and client secret used to authenticate API requests. | Credential Setting  | Yes       | _(none)_      |
+| **File URL**     | The URL of the file located in OneDrive or SharePoint.                                                        | Text                | Yes       | _(empty)_     |
+
+## Expected Output Format
+
+The output from this node is a configuration panel output, which provides:
+
+- **Drive ID**: Identifies the drive where your file is stored.
+- **Item ID**: Identifies the specific file within the drive.
+
+These outputs will be collectively displayed as **Result**.
+
+## Step-by-Step Guide
+
+<Steps>
+### Step 1
+
+Add the **Get File Drive and Item ID** node into your flow.
+
+### Step 2
+
+In the **M365 Credential** field, select the credential that contains your valid Microsoft 365 authentication details. Ensure it includes your tenant ID, client ID, and client secret.
+
+### Step 3
+
+Enter the **File URL** of the desired file within OneDrive or SharePoint.
+
+### Step 4
+
+Once configured, execute the node to retrieve and view the **Drive ID** and **Item ID** from the **Result** output field.
+
+</Steps>
+
+<Callout type="info" title="Note">
+Ensure your M365 credentials are valid and have the necessary permissions to access files within OneDrive or SharePoint.
+</Callout>
+
+## Input/Output Examples
+
+| File URL | Drive ID | Item ID |
+| -------- | -------- | ------- |
+| `https://contoso.sharepoint.com/sites/documents/sample.xlsx` | `b!12345` | `01xYZA` |
+
+## Common Mistakes & Troubleshooting
+
+| Problem                                          | Solution                                                                                                         |
+| ------------------------------------------------ | ---------------------------------------------------------------------------------------------------------------- |
+| **Invalid Credentials**                          | Double-check your M365 Credential details (tenant ID, client ID, and client secret) to ensure they are correct.  |
+| **Incorrect or Inaccessible File URL**           | Verify the File URL. Confirm it is correctly formatted and that you have the necessary permissions to access it.  |
+
+## Real-World Use Cases
+
+- **Project Management**: Easily retrieve file identifiers to integrate with other workflow applications or automate file-based processes.
+- **Compliance Audits**: Track and verify access to specific files within an organization’s OneDrive or SharePoint repository.
+- **Data Inventory**: Programmatically gather file details for inclusion in data management and inventory systems.

@@ -1,0 +1,75 @@
+import { Callout, Steps } from "nextra/components";
+
+# Delete AWS ACM Certificate
+
+The **Delete AWS ACM Certificate** node is used to remove a specified Amazon Web Services (AWS) Certificate Manager (ACM) certificate. This is particularly useful when you need to manage AWS resources efficiently and remove certificates that are no longer required, freeing up resources or avoiding potential security risks from unused certificates.
+
+## Configuration Options
+
+| Field Name       | Description                                                                                  | Input Type | Required? | Default Value |
+| ---------------- | -------------------------------------------------------------------------------------------- | ---------- | --------- | ------------- |
+| **Credential to connect with** | Select the AWS credential to use for authentication (AWSServiceVaultId).         | Text       | Yes       | _(empty)_     |
+| **Certificate ARN**            | The Amazon Resource Name (ARN) of the ACM certificate to delete.                | Text       | Yes       | _(empty)_     |
+| **Bucket Name**               | Name of the S3 bucket where the certificate was imported (only required for imported certificates). | Text       | No        | _(empty)_     |
+| **Certificate Key**           | Key of the certificate in S3 (only required for imported certificates).         | Text       | No        | _(empty)_     |
+
+## Expected Output Format
+
+The output of this node includes:
+
+- **API Response**: This will provide a JSON result containing success or error details.
+- **Deletion Status**: A status message indicating if the deletion was "Success" or "Failed".
+
+## Step-by-Step Guide
+
+<Steps>
+### Step 1
+
+Add the **Delete AWS ACM Certificate** node into your flow.
+
+### Step 2
+
+In the **Credential to connect with** field, enter the AWS credentials by selecting an existing AWSServiceVaultId to authenticate your request.
+
+### Step 3
+
+In the **Certificate ARN** field, input the ARN of the ACM certificate you want to delete. The ARN is crucial for identifying the specific certificate.
+
+### Step 4
+
+(Optional) If your certificate is imported into an S3 bucket, fill in the **Bucket Name** and **Certificate Key** fields with the appropriate S3 details.
+
+### Step 5
+
+Review your entries and confirm the setup. The node will attempt to delete the specified ACM certificate and produce output results in **API Response** and **Deletion Status** fields.
+
+</Steps>
+
+<Callout type="warning" title="Important">
+  Ensure that you have the necessary permissions in your AWS account to delete certificates and manage S3 bucket contents if applicable.
+</Callout>
+
+## Input/Output Examples
+
+| Field Entry                       | Possible Value                                            | Description                                                        |
+| --------------------------------- | -------------------------------------------------------- | ------------------------------------------------------------------ |
+| **Credential to connect with**    | DefaultAWSServiceVaultId                                 | The AWS credential set used to authenticate the deletion process.  |
+| **Certificate ARN**               | arn:aws:acm:us-east-1:123456789012:certificate/abcdefg123456 | Unique identifier for the ACM certificate.                       |
+| **Bucket Name**                   | my-certificate-bucket                                    | Name of the S3 bucket containing the imported certificate.        |
+| **Certificate Key**               | my-certificate1.key                                      | Key associated with the certificate in the S3 bucket.             |
+
+## Common Mistakes & Troubleshooting
+
+| Problem                                                                | Solution                                                                                                                       |
+| ---------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------ |
+| **Invalid AWS credentials**                                                  | Check the AWSServiceVaultId entry to ensure correct AWS credentials with appropriate permissions.                               |
+| **Incorrect or missing Certificate ARN**                               | Double-check the ARN for typos or ensure it's entered correctly as the process won't succeed without a valid ARN.               |
+| **Bucket details required but missing for imported certificate**       | If the certificate was imported, make sure to provide both **Bucket Name** and **Certificate Key** details.                    |
+| **Deletion fails without error message**                               | Confirm that your IAM roles and policies allow for certificate deletions and check the **API Response** field for error details.|
+
+## Real-World Use Cases
+
+- **Security Management**: Periodically remove inactive certificates to maintain security best practices.
+- **Cost Optimization**: Delete unused certificates to prevent unnecessary costs associated with maintaining them.
+- **Resource Management**: Automatizing the cleanup of outdated certificates as part of infrastructure lifecycle management.
+- **Regulatory Compliance**: Ensure that only active and necessary certificates are kept to comply with industry regulations.

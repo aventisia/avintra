@@ -1,0 +1,67 @@
+import { Callout, Steps } from "nextra/components";
+
+# Folder to Copy
+
+The **Folder to Copy** node is used to duplicate a folder from one location to another on your computer. This is particularly helpful when you need to back up files, share folders between projects, or maintain an organized file structure by replicating folder contents. 
+
+This node lets you specify the source folder you want to duplicate, choose where it should be copied to, and decide what should happen if the folder already exists at the destination.
+
+## Configuration Options
+
+| Field Name             | Description                                                                 | Input Type | Required? | Default Value |
+| ---------------------- | --------------------------------------------------------------------------- | ---------- | --------- | ------------- |
+| **Folder to Copy**     | The path of the folder you want to duplicate.                               | Text       | Yes       | _(empty)_     |
+| **Destination Folder** | The path where the duplicated folder should be copied.                      | Text       | Yes       | _(empty)_     |
+| **If Folder Exists**   | Action to take if the destination folder already exists: do nothing or overwrite. | Select     | Yes       | DoNothing    |
+
+## Expected Output Format
+
+The output of this node is a **confirmation string** indicating the path of the copied folder. This output confirms that the folder copy action was successfully executed.
+
+Example output: `"C:/Backup/CopiedFolderName"`
+
+## Step-by-Step Guide
+
+<Steps>
+### Step 1
+
+Add the **Folder to Copy** node to your automation flow.
+
+### Step 2
+
+In the **Folder to Copy** field, input the path to the folder you want to duplicate.
+
+### Step 3
+
+In the **Destination Folder** field, specify the path where you'd like the folder to be copied.
+
+### Step 4
+
+Select the desired action from the **If Folder Exists** dropdown:
+
+- **Do nothing**: Skip copying if the folder already exists at the destination.
+- **Overwrite**: Replace the existing folder at the destination with the copied folder.
+
+### Step 5
+
+The newly copied folder path will be available as the **Copied Folder** output for further use in your flow.
+
+</Steps>
+
+<Callout type="info" title="Tip">
+Double-check the destination path to ensure the folder is copied to the correct location.
+</Callout>
+
+## Common Mistakes & Troubleshooting
+
+| Problem                                               | Solution                                                                                       |
+| ----------------------------------------------------- | ---------------------------------------------------------------------------------------------- |
+| **Invalid folder path entered**                       | Ensure that the path is correct and that the folder actually exists at that location.          |
+| **Folder not copying when it already exists**         | Review the **If Folder Exists** option; select **Overwrite** if you want to replace existing folders. |
+| **Missing required fields error**                     | Both **Folder to Copy** and **Destination Folder** fields must be filled out with valid paths. |
+
+## Real-World Use Cases
+
+- **Data Backups**: Create routine backups of important work folders by copying them to backup drives or cloud directories.
+- **Project Folder Setup**: Quickly replicate project folder structures for new projects using existing templates.
+- **File Management**: Simplify file organization by copying and sorting folders into categorized directories like "2023 Reports".

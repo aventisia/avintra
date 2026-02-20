@@ -1,0 +1,68 @@
+import { Callout, Steps } from "nextra/components";
+
+# Display Select Folder Dialog
+
+The **Display Select Folder Dialog** node provides a user-friendly interface for selecting a folder on your desktop. This can be particularly useful when you want users to specify a folder path for file operations, organizing files, or defining storage locations without needing to navigate through file paths manually.
+
+Common use cases include:
+
+- Allowing users to choose a destination folder for file downloads.
+- Enabling easy selection of folders for backup or data synchronization tasks.
+
+## Configuration Options
+
+| Field Name              | Description                                                                 | Input Type | Required? | Default Value |
+| ----------------------- | --------------------------------------------------------------------------- | ---------- | --------- | ------------- |
+| **Dialog Description**  | The description or title of the folder selection dialog window.             | Text       | Yes       | _(empty)_     |
+| **Initial Folder**      | The folder path where the dialog starts. Defaults to Desktop if left blank. | Text       | No        | _(empty)_     |
+| **Keep Dialog On Top**  | Keeps the dialog window on top of all other windows if set to true.         | Switch     | No        | _(empty)_     |
+
+## Expected Output Format
+
+The output of this node consists of two main values:
+
+- **Selected Folder**: The full path of the folder selected by the user. This is a text output containing the folder path (e.g., `C:\Users\Username\Documents`).
+- **Button Pressed**: A true/false value indicating whether the "OK" or "Cancel" button was used to close the dialog. Useful for flow control in your automation.
+
+## Step-by-Step Guide
+
+<Steps>
+### Step 1
+
+Add the **Display Select Folder Dialog** node into your flow.
+
+### Step 2
+
+Enter the text you want to display as the **Dialog Description**. This helps the user understand what the folder selection is intended for.
+
+### Step 3
+
+(Optional) Specify an **Initial Folder** where the dialog should open initially. If you leave this blank, it will default to the Desktop folder.
+
+### Step 4
+
+(Optional) Toggle **Keep Dialog On Top** if you want the dialog to remain above all other open windows.
+
+### Step 5
+
+The folder path selected by the user will be available as **Selected Folder**, and the **Button Pressed** output will indicate the user's action (OK or Cancel).
+
+</Steps>
+
+<Callout type="info" title="Tip">
+  It is a good practice to specify an **Initial Folder** if you know where users are most likely to be selecting folders from, as this can save time.
+</Callout>
+
+## Common Mistakes & Troubleshooting
+
+| Problem                                     | Solution                                                                                                                                                  |
+| ------------------------------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| **Dialog not appearing**                    | Verify that your flow is triggering the node correctly. Ensure that there are no preceding steps that prevent the dialog from being shown.                |
+| **Incorrect folder path as output**         | Double-check if the `Selected Folder` is being used in other parts of your automation and ensure there is no overwriting happening unintentionally.       |
+| **Keep Dialog On Top not functioning**      | Depending on system settings or permissions, the dialog might not stay on top. Make sure your application has the necessary permissions to enforce this.  |
+
+## Real-World Use Cases
+
+- **Project Setup**: When setting up a new project environment, prompt users to select a base folder for storing project files.
+- **Backup Configuration**: Offer a simple way for users to choose a backup location for their files.
+- **Customizable Workflow**: Allow users to direct processed files into a specific folder by selecting or re-selecting it as necessary.

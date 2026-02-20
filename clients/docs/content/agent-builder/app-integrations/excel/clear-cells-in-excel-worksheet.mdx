@@ -1,0 +1,95 @@
+import { Callout, Steps } from "nextra/components";
+
+# Clear Cells in Excel Worksheet
+
+The **Clear Cells in Excel Worksheet** node allows you to delete contents in specified cells of an Excel worksheet. This can be particularly useful when you need to reset data in a worksheet, clear old entries, or selectively remove unnecessary information.
+
+For example:
+- Clear a specific cell's content by directly specifying row and column.
+- Use a named range to clear multiple cells at once.
+- Define a range of cells to clear content from.
+- Remove cell data relative to the active cell in the worksheet.
+
+## Configuration Options
+
+| Field Name           | Description                                                                                      | Input Type | Required? | Default Value |
+| -------------------- | ------------------------------------------------------------------------------------------------ | ---------- | --------- | ------------- |
+| **Worksheet Instance** | The specific worksheet instance to clear cells from. If not entered, the active worksheet is used. | Text       | Yes       | _(empty)_     |
+| **Clear Mode**       | Select how to clear contents: single cell, named cells, a range of cells, or relative range.     | Select     | Yes       | SingleCell    |
+| **Column**           | Column letter or number of the target cell. Only for **Single Cell** mode.                        | Text       | No        | _(empty)_     |
+| **Row**              | Row number of the target cell. Only for **Single Cell** mode.                                     | Text       | No        | _(empty)_     |
+| **Name**             | Name of the named range or cell to clear. Only for **Named Cells** mode.                          | Text       | No        | _(empty)_     |
+| **Start Column**     | Starting column of the range to clear. Only for **Range of Cells** mode.                          | Text       | No        | _(empty)_     |
+| **End Column**       | Ending column of the range to clear. Only for **Range of Cells** mode.                            | Text       | No        | _(empty)_     |
+| **Start Row**        | Starting row of the range to clear. Only for **Range of Cells** mode.                             | Text       | No        | _(empty)_     |
+| **End Row**          | Ending row of the range to clear. Only for **Range of Cells** mode.                               | Text       | No        | _(empty)_     |
+| **X-Axis Direction** | Direction (Left/Right) to move from active cell. Only for **Range Relative to Active Cell** mode. | Select     | No        | Left          |
+| **Y-Axis Direction** | Direction (Above/Below) to move from active cell. Only for **Range Relative to Active Cell** mode. | Select     | No        | Above         |
+| **X Offset**         | Number of cells to move horizontally from the active cell. Only for **Range Relative to Active Cell** mode. | Text       | No        | _(empty)_     |
+| **Y Offset**         | Number of cells to move vertically from the active cell. Only for **Range Relative to Active Cell** mode. | Text       | No        | _(empty)_     |
+
+## Expected Output Format
+
+The node does not produce a direct output in terms of data. Its utility is in the actual modification of the Excel file by clearing the specified cells.
+
+## Step-by-Step Guide
+
+<Steps>
+### Step 1
+
+Add the **Clear Cells in Excel Worksheet** node into your flow.
+
+### Step 2
+
+In the **Worksheet Instance** field, specify the worksheet you want to clear cells from.
+
+### Step 3
+
+Choose a **Clear Mode** from the dropdown to determine how you will specify which cells to clear:
+
+- **Single Cell**: Clear a single cell by specifying its column and row.
+- **Named Cells**: Clear cells specified by a named range.
+- **Range of Cells**: Specify a range by defining start and end columns and rows.
+- **Range Relative to Active Cell**: Define a range by specifying direction and offset from the active cell.
+
+### Step 4
+
+Enter any additional details based on your chosen **Clear Mode**:
+
+- If you chose **Single Cell**, specify the **Column** and **Row**.
+- If you chose **Named Cells**, specify the **Name**.
+- If you chose **Range of Cells**, specify the **Start/End Columns** and **Start/End Rows**.
+- If you chose **Range Relative to Active Cell**, specify the **X-Axis Direction**, **Y-Axis Direction**, **X Offset**, and **Y Offset**.
+
+### Step 5
+
+Review your selections and settings. Execute the node to clear the specified cells in the worksheet.
+
+</Steps>
+
+<Callout type="info" title="Note">
+  Double-check the worksheet instance and clear mode settings to avoid clearing unintended data.
+</Callout>
+
+## Input/Output Examples
+
+| Clear Mode             | Example Input           | Expected Action                                  |
+| ---------------------- | ----------------------- | ------------------------------------------------ |
+| **Single Cell**        | Column: 'A', Row: 1     | Clears the content of cell A1                    |
+| **Named Cells**        | Name: 'SalesData'       | Clears all cells in the 'SalesData' named range  |
+| **Range of Cells**     | Start: A1, End: B10     | Clears all cells from A1 to B10                  |
+| **Range Relative to Active Cell** | X: 1, Y: 2   | Clears a relative range from active cell moving one right and two below |
+
+## Common Mistakes & Troubleshooting
+
+| Problem                                         | Solution                                                        |
+| ------------------------------------------------| ----------------------------------------------------------------|
+| **Forgot to specify Worksheet Instance**        | Make sure the worksheet instance is specified correctly.        |
+| **Clear Mode options not appearing**            | Ensure you have selected a clear mode and filled in prerequisite fields. |
+| **Wrong cells cleared**                         | Double-check all range and mode settings to confirm accuracy.   |
+
+## Real-World Use Cases
+
+- **Data Cleanup**: Easily clear outdated or incorrect entries in sales spreadsheets.
+- **Template Reset**: Prepare a worksheet by clearing old data, leaving formulas intact.
+- **Data Preparation**: Clear specific cells before generating reports to ensure accuracy.

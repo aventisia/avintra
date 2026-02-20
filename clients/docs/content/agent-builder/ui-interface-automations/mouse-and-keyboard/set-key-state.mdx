@@ -1,0 +1,61 @@
+import { Callout, Steps } from "nextra/components";
+
+# Set Key State
+
+The **Set Key State** node allows you to change the state of specific keyboard keys. You can use this node to toggle the Caps Lock, Num Lock, or Scroll Lock keys on or off. This is useful for automating tasks that require a specific key state, such as data entry processes or software that depends on these key settings.
+
+## Configuration Options
+
+| Field Name | Description                                                         | Input Type | Required? | Default Value |
+|------------|---------------------------------------------------------------------|------------|-----------|---------------|
+| **Key**    | Select which key you want to modify, e.g., 'Caps Lock', 'Num Lock'. | Select     | Yes       | _(empty)_     |
+| **State**  | Choose whether to turn the key 'On' or 'Off'.                       | Select     | Yes       | _(empty)_     |
+
+## Expected Output Format
+
+This node does not produce a visual or numeric output but instead changes the state of a key on your keyboard.
+
+## Step-by-Step Guide
+
+<Steps>
+### Step 1
+
+Add **Set Key State** node into your flow.
+
+### Step 2
+
+In the **Key** field, select the key you want to modify:
+
+- **Caps Lock**: Toggles the Caps Lock key state.
+- **Num Lock**: Toggles the Num Lock key state.
+- **Scroll Lock**: Toggles the Scroll Lock key state.
+
+### Step 3
+
+In the **State** field, choose the desired state:
+
+- **On**: Turns the chosen key on.
+- **Off**: Turns the chosen key off.
+
+### Step 4
+
+Once configured, the node will automatically adjust the key states as specified when executed.
+
+</Steps>
+
+<Callout type="info" title="Note">
+  This node does not visually change anything on the interface but modifies the hardware state of the keyboard keys.
+</Callout>
+
+## Common Mistakes & Troubleshooting
+
+| Problem                                   | Solution                                                                                                     |
+|-------------------------------------------|--------------------------------------------------------------------------------------------------------------|
+| **Key or State not selected**             | Ensure that both **Key** and **State** fields are selected before executing the node.                        |
+| **No change observed on the keyboard**    | Confirm the system supports controlling these keys programmatically; some systems may have locked key states.|
+
+## Real-World Use Cases
+
+- **Data Entry Automation**: Ensure Num Lock is on when entering numeric data into spreadsheets or databases.
+- **Writing Consistency**: Automatically toggle Caps Lock for specific sections of documents to maintain text casing.
+- **Software Configuration**: Enable or disable keys as per software requirements during installation or setup procedures.

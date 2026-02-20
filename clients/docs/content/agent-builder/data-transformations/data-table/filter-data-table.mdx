@@ -1,0 +1,75 @@
+import { Callout, Steps } from "nextra/components";
+
+# Filter Data Table
+
+The **Filter Data Table** node allows you to selectively extract rows from a data table based on specific conditions you set, known as filter expressions. This node is essential when you want to work only with data that meets certain criteria, such as entries above a certain age or items under a specific price range.
+
+For example:
+
+- Extracting all data records where the age is greater than 30.
+- Filtering out inventory items that are not in stock.
+- Selecting only rows from a sales report where the sales exceed a specific threshold.
+
+## Configuration Options
+
+| Field Name          | Description                                                                      | Input Type | Required? | Default Value      |
+| ------------------- | -------------------------------------------------------------------------------- | ---------- | --------- | ------------------ |
+| **Data Table**      | The data table you wish to filter.                                               | Text       | Yes       | _(empty)_          |
+| **Filter Expression** | The conditions for filtering the data table (e.g., "Age > 30").                 | Text       | Yes       | _(empty)_          |
+| **Match Case**      | Toggle for case-sensitive filtering (e.g., differentiates 'apple' from 'Apple'). | Switch     | No        | false              |
+
+## Expected Output Format
+
+The output of this node is a **filtered data table**, which includes only the rows that meet your specified conditions.
+
+- Output is labeled as `FilteredDataTable`, representing the newly created subset of the original data table.
+
+## Step-by-Step Guide
+
+<Steps>
+### Step 1
+
+Add **Filter Data Table** node into your flow.
+
+### Step 2
+
+In the **Data Table** field, enter the name or reference of the data table you want to filter.
+
+### Step 3
+
+Provide the **Filter Expression**. This is the condition that each row in your data table will be tested against (e.g., `Age > 30`).
+
+### Step 4
+
+(Optional) If you want the filter to be case-sensitive, toggle the **Match Case** switch to "true".
+
+### Step 5
+
+The processed output, named **FilteredDataTable**, will contain only the rows that meet the filter criteria. This can now be used in other nodes for further analysis or reporting.
+
+</Steps>
+
+<Callout type="info" title="Tip">
+  Carefully construct your filter expressions to avoid incorrect filtering results. Use the "Match Case" option if your conditions rely on case-sensitive data.
+</Callout>
+
+## Input/Output Examples
+
+| Filter Expression | Data Table Sample             | Match Case | Output Table Sample                        |
+| ----------------- | ----------------------------- | ---------- | ------------------------------------------ |
+| Age > 30          | `[{ "Name": "John", "Age": 45}, { "Name": "Jane", "Age": 28 }]` | false      | `[{ "Name": "John", "Age": 45 }]`            |
+| Price &lt;= 100      | `[{ "Product": "A", "Price": 150}, { "Product": "B", "Price": 95 }]` | false | `[{ "Product": "B", "Price": 95 }]`         |
+
+## Common Mistakes & Troubleshooting
+
+| Problem                                    | Solution                                                                                                       |
+| ------------------------------------------ | -------------------------------------------------------------------------------------------------------------- |
+| **Non-numeric value in numeric expression**| Ensure numeric-only fields in expressions are numbers (e.g., `"50"` instead of `50` for a text input).         |
+| **Empty output**                           | Check if your filter expression is too restrictive or if the data table input does not match the conditions.    |
+| **Case-sensitive issues**                  | Use "Match Case" toggle if the filter should differentiate based on letter casing.                             |
+
+## Real-World Use Cases
+
+- **Customer Segmentation**: Use filters to segment customers based on location or purchase history.
+- **Inventory Management**: Filter inventory lists for items below a certain stock level for reordering.
+- **Data Reporting**: Extract information from large datasets, like extracting all houses sold over $500,000 from real estate data.

@@ -1,0 +1,83 @@
+import { Callout, Steps } from "nextra/components";
+
+# Trim Text
+
+The **Trim Text** node allows you to clean up text data by removing specified characters from either the beginning, the end, or both ends of a text string. This can be useful for ensuring that your text data is formatted correctly before further processing or output.
+
+For example:
+
+- Removing unwanted spaces at the start or end of a string.
+- Cleaning off extra line breaks or tabs from text input.
+- Removing specific characters such as commas, periods, or other punctuations from the edges of text data.
+
+## Configuration Options
+
+| Field Name         | Description                                                                                                                                               | Input Type | Required? | Default Value |
+| ------------------ | --------------------------------------------------------------------------------------------------------------------------------------------------------- | ---------- | --------- | ------------- |
+| **Original Text**  | The original text from which you want to trim characters.                                                                                                | Text       | Yes       | _(empty)_     |
+| **Trim Mode**      | Choose whether to trim characters from the start, end, or both sides of the text.                                                                         | Select     | Yes       | TrimBoth     |
+| **What to Trim**   | Specify the characters you want to remove. Leave empty to remove only whitespace characters like spaces, tabs, or newlines.                                | Text       | Yes       | _(empty)_     |
+
+## Expected Output Format
+
+The output of this node is a **text string** that has had the specified characters removed as directed by the trim options.
+
+- If trimming from the start, the output will have no target characters at its beginning.
+- If trimming from the end, the output will have no target characters at its end.
+- If trimming from both ends, the output will be free of the target characters at both beginning and end.
+
+## Step-by-Step Guide
+
+<Steps>
+### Step 1
+
+Add **Trim Text** node into your flow.
+
+### Step 2
+
+In the **Original Text** field, input the text you want to modify by removing unwanted characters.
+
+### Step 3
+
+Select a **Trim Mode** from the dropdown options:
+
+- **Whitespace Characters from the Beginning**: Removes characters only from the start.
+- **Whitespace Characters from the End**: Removes characters only from the end.
+- **Whitespace Characters from Both Ends**: Removes characters from both the start and end.
+
+### Step 4
+
+In the **What to Trim** field, type in any specific characters you want to remove. If you leave this blank, it defaults to trimming whitespace.
+
+### Step 5
+
+The modified text will be output as **TrimmedText** for your use in subsequent nodes.
+
+</Steps>
+
+<Callout type="info" title="Note">
+  If you do not specify characters in the **What to Trim** field, the node will remove only whitespace by default.
+</Callout>
+
+## Input/Output Examples
+
+| Trim Mode       | Original Text          | Characters to Trim | Output Text          | Output Type |
+| --------------- | ---------------------- | ------------------ | -------------------- | ----------- |
+| TrimStart       | "  Hello, World!  "    | (none)             | "Hello, World!  "    | Text        |
+| TrimEnd         | "  Hello, World!  "    | (none)             | "  Hello, World!"    | Text        |
+| TrimBoth        | "--Hello, World!--"    | "-"                | "Hello, World!"      | Text        |
+| TrimBoth        | "  Hello,\nWorld!  "   | (none)              | "Hello,\nWorld!"     | Text        |
+
+## Common Mistakes & Troubleshooting
+
+| Problem                                      | Solution                                                                                                          |
+| -------------------------------------------- | ----------------------------------------------------------------------------------------------------------------- |
+| **No characters are trimmed**                | Ensure you have selected the correct Trim Mode and have input the text in the **Original Text** field.             |
+| **Unexpected characters remain**             | Verify the specified characters in the **What to Trim** field and ensure no additional spaces or characters exist. |
+| **Whitespace not removed as expected**       | If trimming whitespace, make sure that the **What to Trim** field is empty.                                        |
+
+## Real-World Use Cases
+
+- **Preparing User Input**: Clean up user-entered data by removing unexpected spaces or control characters.
+- **Data Integration**: Ensure data consistency when merging text from various systems by removing leading or trailing characters.
+- **Format Emails**: Easily remove extra spaces or newline characters from email templates or messages.

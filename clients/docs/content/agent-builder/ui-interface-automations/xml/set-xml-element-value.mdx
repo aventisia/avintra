@@ -1,0 +1,72 @@
+import { Callout, Steps } from "nextra/components";
+
+# Set XML Element Value
+
+The **Set XML Element Value** node is designed to modify an XML document by setting the value of a specific element within it. This node is useful when you need to update XML data, such as configuration files or data exchanged with services, by changing the content of specified elements without altering the entire document.
+
+For example, you can use this node to update a server configuration file's setting from "false" to "true", or alter the displayed name of an entity in a data exchange XML.
+
+## Configuration Options
+
+| Field Name         | Description                                                                      | Input Type | Required? | Default Value |
+| ------------------ | -------------------------------------------------------------------------------- | ---------- | --------- | ------------- |
+| **XML Content**    | The XML content provided as a string in which the changes will be made.          | Text       | Yes       | _(empty)_     |
+| **XPath Expression** | The XPath expression used to locate the specific XML element you wish to modify.| Text       | Yes       | _(empty)_     |
+| **Element Value**  | The new value you want to set for the targeted XML element.                      | Text       | Yes       | _(empty)_     |
+
+## Expected Output Format
+
+The output for this node is the **updated XML content** as a string. This will reflect the changes made using the specified XPath and Element Value.
+
+- The output variable is named **UpdatedXmlContent**.
+- The XML maintains its original structure with the modification applied to the specified element.
+
+## Step-by-Step Guide
+
+<Steps>
+### Step 1
+
+Add **Set XML Element Value** node into your flow.
+
+### Step 2
+
+In the **XML Content** field, input the XML data string that you want to modify.
+
+### Step 3
+
+In the **XPath Expression** field, enter the XPath expression to locate the XML element you wish to update.
+
+### Step 4
+
+In the **Element Value** field, specify the new value that you want to assign to the XML element.
+
+### Step 5
+
+Once all fields are correctly filled, the node will process the XML and output the **UpdatedXmlContent**, ready for further steps.
+
+</Steps>
+
+<Callout type="warning" title="Warning">
+  Ensure the XPath expression is correct, as an incorrect XPath will result in the element not being found and updated.
+</Callout>
+
+## Input/Output Examples
+
+| XPath Expression   | Input XML Content                                   | Element Value | Output XML Content                         |
+| ------------------ | ---------------------------------------------------- | ------------- | ------------------------------------------ |
+| `/bookstore/book/price` | `<bookstore><book><price>39.95</price></book></bookstore>` | 29.95         | `<bookstore><book><price>29.95</price></book></bookstore>` |
+
+## Common Mistakes & Troubleshooting
+
+| Problem                                      | Solution                                                                                                                                                        |
+| -------------------------------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| **XPath does not locate element**            | Verify that the XPath expression is correctly formulated and matches the XML structure. Use tools or online platforms to test XPath expressions if necessary.     |
+| **Element Value is not updated**             | Double-check that the **XML Content** and **XPath Expression** fields are correctly populated and that the XML is not malformed.                                 |
+| **Incorrect XML after update**               | Ensure that the XML content in the **Input** has only valid and properly nested elements, as invalid XML structures can lead to unsuccessful updates.             |
+
+## Real-World Use Cases
+
+- **Configuration Files**: Quickly update key-value pairs in XML-based configuration files, such as changing environment settings.
+- **Data Exchange**: Modify XML data exchanged between applications or services by updating essential data points without rewriting entire documents.
+- **Content Management**: Update specific parts of a large XML document for content management systems where direct manipulation of XML is required.
+- **User Settings**: Alter user preferences stored in XML format by adjusting specific settings based on user interactions or automation rules.

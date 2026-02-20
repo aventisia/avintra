@@ -1,0 +1,69 @@
+import { Callout, Steps } from "nextra/components";
+
+# Write to CMD Session
+
+The **Write to CMD Session** node allows you to send and execute commands in an open Command Prompt (CMD) session on your desktop. This is useful when you need to automate CMD tasks, such as managing files, running scripts, or any other batch processes that are typically done through the command line.
+
+For example:
+
+- List files in a directory using `dir`.
+- Run a batch file to automate routine tasks.
+- Navigate directories with `cd`.
+
+## Configuration Options
+
+| Field Name      | Description                                           | Input Type | Required? | Default Value |
+|-----------------|-------------------------------------------------------|------------|-----------|---------------|
+| **CMD Session** | The open CMD session where the command will be run.   | Text       | Yes       | _(empty)_     |
+| **Command**     | The specific command you wish to execute (e.g., `dir`).| Text      | Yes       | _(empty)_     |
+
+## Expected Output Format
+
+The output of this node is dependent on the command executed. Typically, the output will be text data representing the CMD session's response to the command you entered (such as directory listings or script results).
+
+## Step-by-Step Guide
+
+<Steps>
+### Step 1
+
+Add **Write to CMD Session** node into your automation flow.
+
+### Step 2
+
+In the **CMD Session** field, specify the process that represents the open CMD session you want to use. Ensure this session is active and accessible.
+
+### Step 3
+
+Enter the desired command in the **Command** field. This should be a valid CMD command like `dir`, `cd`, `echo Hello`, etc.
+
+### Step 4
+
+Execute the flow to run your command. The response from the CMD will be processed as output for subsequent nodes or actions as needed.
+
+</Steps>
+
+<Callout type="info" title="Tip">
+  Make sure the CMD session specified is open and actively running; otherwise, the command may not be executed properly.
+</Callout>
+
+## Input/Output Examples
+
+| CMD Session           | Command    | Output                     |
+|-----------------------|------------|----------------------------|
+| Active CMD Process    | `dir`      | List of directory contents |
+| Active CMD Process    | `echo Hi`  | `Hi`                       |
+| Active CMD Process    | `cd..`     | Navigated up one directory |
+
+## Common Mistakes & Troubleshooting
+
+| Problem                                          | Solution                                                                                           |
+|--------------------------------------------------|----------------------------------------------------------------------------------------------------|
+| **Invalid CMD Session**                          | Ensure that a valid process representing an open CMD session is entered in the CMD Session field.   |
+| **Unknown Command**                              | Check that the command is spelled correctly and is a valid CMD command.                             |
+| **No Output or Unexpected Result**               | Double-check that the CMD session is active and the command syntax is correct and complete.         |
+
+## Real-World Use Cases
+
+- **Automating System Maintenance**: Schedule commands to clean up temporary files, check disk space, etc.
+- **Batch File Execution**: Automatically run batch files without manually opening CMD.
+- **File Management Tasks**: List files, move directories, or copy files automatically.

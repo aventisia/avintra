@@ -1,0 +1,91 @@
+import { Callout, Steps } from "nextra/components";
+
+# Auto Fill Range in Excel Worksheet
+
+The **Auto Fill Range in Excel Worksheet** node allows you to automatically copy data from one set of cells to another within an Excel worksheet. This is particularly useful for reproducing data patterns, expanding datasets, or simply transferring information between different sections of a workbook without manual re-entry.
+
+Use this node when you need to:
+
+- Duplicate a column or row of data into a larger area.
+- Transfer data quickly from one part of a worksheet to another.
+- Automate repetitive data filling tasks across multiple Excel sheets.
+
+## Configuration Options
+
+| Field Name              | Description                                                                       | Input Type | Required? | Default Value    |
+| ----------------------- | --------------------------------------------------------------------------------- | ---------- | --------- | ---------------- |
+| **Worksheet Instance**  | The Excel Worksheet to use. Uses the active worksheet if none is specified.       | Text       | Yes       | _(empty)_        |
+| **Ranges Format**       | Defines how ranges are specified: select between specific cell ranges or names.   | Select     | Yes       | SpecificRanges   |
+| **Start Column**        | The starting column of the source range (e.g., 'A').                              | Text       | No        | _(empty)_        |
+| **Start Row**           | The starting row of the source range (e.g., '1').                                 | Text       | No        | _(empty)_        |
+| **Source End Column**   | The ending column of the source range (e.g., 'B').                                | Text       | No        | _(empty)_        |
+| **Source End Row**      | The ending row of the source range (e.g., '5').                                   | Text       | No        | _(empty)_        |
+| **Destination End Column** | The ending column of the target range (e.g., 'C').                             | Text       | No        | _(empty)_        |
+| **Destination End Row** | The ending row of the target range (e.g., '10').                                  | Text       | No        | _(empty)_        |
+| **Source Cells Name**   | Name of the named range for source data, if using named ranges.                   | Text       | No        | _(empty)_        |
+| **Destination Cells Name** | Name of the named range for the target, if using named ranges.                 | Text       | No        | _(empty)_        |
+
+## Expected Output Format
+
+There is no visible output from this node. However, the transformation is applied within the Excel file you specify.
+
+## Step-by-Step Guide
+
+<Steps>
+### Step 1
+
+Add **Auto Fill Range in Excel Worksheet** node into your process flow.
+
+### Step 2
+
+Enter the name of the worksheet in the **Worksheet Instance** field. If left empty, the active worksheet is used automatically.
+
+### Step 3
+
+In the **Ranges Format** dropdown, choose between:
+
+- **Specific Ranges**: If you are using explicit cell references.
+- **Named Cells**: If you are using named ranges.
+
+### Step 4
+
+If **Specific Ranges** is selected, fill in the following fields to define the source and target ranges:
+
+- **Start Column**: Enter the starting column of the source.
+- **Start Row**: Enter the starting row of the source.
+- **Source End Column**: Define the ending column of the source.
+- **Source End Row**: Define the ending row of the source.
+- **Destination End Column**: Set the ending column of the target.
+- **Destination End Row**: Set the ending row of the target.
+
+### Step 5
+
+If **Named Cells** is selected, specify:
+
+- **Source Cells Name** for the original data.
+- **Destination Cells Name** for the target area.
+
+### Step 6
+
+Execute the workflow to apply the transformations in the Excel worksheet.
+
+</Steps>
+
+<Callout type="info" title="Note">
+  When using named ranges, ensure they are defined in your worksheet in advance to avoid errors.
+</Callout>
+
+## Common Mistakes & Troubleshooting
+
+| Problem                                                        | Solution                                                               |
+| -------------------------------------------------------------- | ---------------------------------------------------------------------- |
+| **Worksheet does not exist**                                   | Verify that the worksheet name is correct and present in your workbook.|
+| **Specific Ranges fields not appearing**                       | Ensure **Specific Ranges** is selected in the **Ranges Format** dropdown.|
+| **Named range does not exist**                                 | Confirm that your named range is predefined in the Excel worksheet.    |
+| **Mismatched source/target dimensions**                        | Make sure the source and target ranges have compatible dimensions.     |
+
+## Real-World Use Cases
+
+- **Data Analysis**: Quickly duplicate sample data across different areas for scenario testing.
+- **Inventory Management**: Copy product data from one range to another for bulk updates or extensions.
+- **Financial Modeling**: Autofill trends in financial datasets to project future scenarios.

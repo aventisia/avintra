@@ -1,0 +1,82 @@
+import { Callout, Steps } from "nextra/components";
+
+# Change Text Case
+
+The **Change Text Case** node modifies a given text to a different letter case style. This can help standardize text formatting in documents or data entry, ensuring consistency across your content. Use this node to quickly adjust text to uppercase, lowercase, title case, or sentence case as per your needs.
+
+For example:
+
+- Convert a sentence to all lowercase for database entries.
+- Format headlines in title case for presentations.
+- Adjust text to uppercase for identification codes.
+
+## Configuration Options
+
+| Field Name        | Description                                                                      | Input Type | Required? | Default Value |
+| ----------------- | -------------------------------------------------------------------------------- | ---------- | --------- | ------------- |
+| **Text to Convert** | Enter the text you want to transform to a different case style.                 | Text       | No        | _(empty)_     |
+| **Convert To**    | Choose the target case format: Upper, Lower, Title, or Sentence.                 | Select     | No        | _(empty)_     |
+
+## Expected Output Format
+
+The output is the **converted text** string, formatted based on your selected case style.
+
+- For **UPPERCASE**: `THIS IS AN EXAMPLE`.
+- For **lowercase**: `this is an example`.
+- For **Title Case**: `This Is An Example`.
+- For **Sentence case**: `This is an example`.
+
+## Step-by-Step Guide
+
+<Steps>
+
+### Step 1
+
+Add a **Change Text Case** node to your workspace.
+
+### Step 2
+
+In the **Text to Convert** field, enter the text you wish to format.
+
+### Step 3
+
+From the **Convert To** dropdown menu, select the case transformation you need:
+
+- **UPPERCASE**: Converts all letters to uppercase.
+- **lowercase**: Converts all letters to lowercase.
+- **Sentence case**: Capitalizes the first letter of the sentence.
+- **Title Case**: Capitalizes the first letter of each word.
+
+### Step 4
+
+The formatted text will be available as **Result** for further use in your workflow.
+
+</Steps>
+
+<Callout type="info" title="Tip">
+  Use **Sentence case** primarily for regular sentences and **Title Case** for titles or headlines. Choose **UPPERCASE** or **lowercase** for text needing uniform casing.
+</Callout>
+
+## Input/Output Examples
+
+| Convert To       | Input Text                     | Output Text                   |
+| ---------------- | ------------------------------ | ----------------------------- |
+| UPPERCASE        | This is a Sample Text.         | THIS IS A SAMPLE TEXT.        |
+| lowercase        | This is a Sample Text.         | this is a sample text.        |
+| Sentence case    | this is a sample text.         | This is a sample text.        |
+| Title Case       | This is a sample text.         | This Is A Sample Text.        |
+
+## Common Mistakes & Troubleshooting
+
+| Problem                                                | Solution                                                                                              |
+| ------------------------------------------------------ | ----------------------------------------------------------------------------------------------------- |
+| **No conversion result appears**                       | Ensure the **Convert To** option is selected. Without this choice, the node cannot perform any operation.|
+| **Uppercase/lowercase not applying to non-letters**    | Note that numbers and symbols are not affected by case transformations; they remain unchanged.         |
+| **Input text remains unchanged**                       | Double-check selection in the **Convert To** dropdown and ensure text is present in the **Text to Convert** field.|
+
+## Real-World Use Cases
+
+- **Data Uniformity**: Convert user-input names to title case in a contact form.
+- **Document Formatting**: Ensure all policy documents begin with a capitalized sentence (Sentence case).
+- **Standardization in Codes**: Convert product codes or IDs to all uppercase for inventory systems.
+- **Content Creation**: Easily adjust text styles in blog titles or email subjects.

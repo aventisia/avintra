@@ -1,0 +1,84 @@
+import { Callout, Steps } from "nextra/components";
+
+# Get Many AWS ELB Listener Certificates
+
+The **Get Many AWS ELB Listener Certificates** node allows you to retrieve all certificates associated with a specific AWS Elastic Load Balancer (ALB/NLB) listener. This is useful for managing SSL/TLS certificates to ensure secure communication between clients and your applications.
+
+For example:
+
+- Retrieve all certificates for a particular listener to update or audit them.
+- Limit the number of certificates returned for focused processing or reporting.
+- Select specific AWS credentials to authenticate and access the listener's certificate information.
+
+## Configuration Options
+
+| Field Name                 | Description                                                                            | Input Type | Required? | Default Value |
+| -------------------------- | -------------------------------------------------------------------------------------- | ---------- | --------- | ------------- |
+| **Credential to connect with** | Select the AWS credential to use for authentication (AWSServiceVaultId).                | Text       | Yes       | _(empty)_     |
+| **Listener ARN**           | The ARN of the listener (e.g., arn:aws:elasticloadbalancing:...:listener/...).         | Text       | Yes       | _(empty)_     |
+| **Return All**             | If enabled, retrieves all certificates (no pagination). Otherwise, limits results by 'Limit'. | Switch     | No        | _(empty)_     |
+| **Limit**                  | Maximum number of certificates to return (max 100). Appears only if 'Return All' is not selected. | Text       | No        | 100           |
+| **AWS Region**             | The AWS region where the load balancer is located (e.g., us-east-1).                   | Text       | No        | us-east-1     |
+
+## Expected Output Format
+
+The output of this node includes:
+
+- **Certificates**: A list of certificates associated with the listener.
+- **API Response**: The raw JSON data returned from the AWS ELB.
+
+Both outputs are delivered as structured data that can be utilized in subsequent nodes for further processing or analysis.
+
+## Step-by-Step Guide
+
+<Steps>
+### Step 1
+
+Add **Get Many AWS ELB Listener Certificates** node into your flow.
+
+### Step 2
+
+In the **Credential to connect with** field, enter or select the AWS credential that will be used for authentication.
+
+### Step 3
+
+In the **Listener ARN** field, input the Amazon Resource Name (ARN) of the load balancer listener you wish to interrogate.
+
+### Step 4
+
+(Optional) Enable the **Return All** switch if you want to retrieve all certificates without pagination. If not enabled, use the **Limit** field to specify the maximum number of results you want, up to a maximum of 100.
+
+### Step 5
+
+(Optional) Specify the **AWS Region** where your Elastic Load Balancer is located. If unspecified, it defaults to `us-east-1`.
+
+### Step 6
+
+The list of retrieved certificates will be available as **Certificates**, and the full API response will be stored as **Response** for use in subsequent nodes.
+
+</Steps>
+
+<Callout type="info" title="Note">
+  If you select "Return All", the "Limit" field will not appear as it is not needed.
+</Callout>
+
+## Input/Output Examples
+
+| Credential to connect with | Listener ARN                       | Return All | Limit | AWS Region | Output                                         |
+| -------------------------- | ---------------------------------- | ---------- | ----- | ---------- | ---------------------------------------------- |
+| **MyAWSKey**               | arn:aws:elasticloadbalancing:...   | Yes        | N/A   | us-east-1  | List of Certificates, Complete API JSON        |
+| **MyAWSKey**               | arn:aws:elasticloadbalancing:...   | No         | 10    | us-west-2  | Up to 10 Certificates, Complete API JSON       |
+
+## Common Mistakes & Troubleshooting
+
+| Problem                                             | Solution                                                                                       |
+| --------------------------------------------------- | ---------------------------------------------------------------------------------------------- |
+| **Invalid AWS credentials**                         | Ensure your AWS credentials are valid and have the necessary permissions.                      |
+| **Listener ARN not found**                          | Verify the listener ARN is correct and exists within the specified region.                     |
+| **Exceeded certificate limit**                      | Use the **Return All** option or ensure the **Limit** is set to 100 or less.                   |
+
+## Real-World Use Cases
+
+- **SSL/TLS Management**: Check and update listener certificates for security compliance.
+- **Audit and Reporting**: Generate reports on certificate usage and validity for multiple load balancers.
+- **Maintenance Schedules**: Retrieve certificates for scheduled maintenance or renewal operations.

@@ -1,0 +1,81 @@
+import { Callout, Steps } from "nextra/components";
+
+# Save Word
+
+The **Save Word** node lets you save a Microsoft Word document that you've previously opened or worked on in your workflow. Use this node to store changes you've made, save a document under a new name or location, or change the document format.
+
+For example:
+
+- Regularly saving your document to avoid data loss.
+- Saving a copy of the document with a different name or in a different folder.
+- Converting and saving the document as a PDF.
+
+## Configuration Options
+
+| Field Name       | Description                                                                                   | Input Type | Required? | Default Value  |
+| ---------------- | --------------------------------------------------------------------------------------------- | ---------- | --------- | -------------- |
+| **Word Instance**| The specific Word instance to save. You must input the identifier of the Word document.       | Text       | Yes       | _(empty)_      |
+| **Save Mode**    | Indicates how you want to save the document: either as the same file or with a new name/location. | Select     | No        | SaveDocument   |
+| **Save Path**    | The location to save the document if "Save Document As" is selected.                           | Text       | No        | _(empty)_      |
+| **Save Format**  | Choose the format to save the document (.docx or .pdf), available when saving as a new file.  | Select     | No        | .docx          |
+
+## Expected Output Format
+
+The expected output from the **Save Word** node is a successfully saved document in the specified format and location. This node does not output a data value but confirms the action through process success logs.
+
+## Step-by-Step Guide
+
+<Steps>
+### Step 1
+
+Add the **Save Word** node to your workflow.
+
+### Step 2
+
+In the **Word Instance** field, input the identifier for the specific Word document you want to save.
+
+### Step 3
+
+Choose a **Save Mode**. Options are:
+
+- **Save Document**: Saves the document under its current name and location.
+- **Save Document As**: Opens additional fields for specifying a new name/location and format.
+
+### Step 4
+
+If you selected **Save Document As**:
+
+- In the **Save Path** field, enter the full path where you want to save the document.
+- In the **Save Format** field, select whether to save the document as a `.docx` or a `.pdf`.
+
+### Step 5
+
+Execute your workflow to save the document as configured.
+
+</Steps>
+
+<Callout type="info" title="Tip">
+  If you select "Save Document" mode, the "Save Path" and "Save Format" fields will not appear.
+</Callout>
+
+## Input/Output Examples
+
+| Save Mode         | Save Path              | Save Format | Output        |
+| ----------------- | ---------------------- | ----------- | ------------- |
+| Save Document     | _(n/a)_                | _(n/a)_     | Document is saved in its current state and location. |
+| Save Document As  | C:\Documents\NewFile   | .docx       | New file created at the specified path as a Word document. |
+| Save Document As  | C:\Documents\NewFile   | .pdf        | New file created at the specified path as a PDF document.  |
+
+## Common Mistakes & Troubleshooting
+
+| Problem                                                | Solution                                                                                                                       |
+| ------------------------------------------------------ | ------------------------------------------------------------------------------------------------------------------------------ |
+| **Word Instance not specified**                        | Ensure you have entered the correct identifier for the Word document to be saved.                                               |
+| **Save Path and Format not appearing**                 | Confirm that you selected **"Save Document As"** in the Save Mode dropdown. These additional fields are only available in this mode. |
+| **Unable to save file at a specified path**            | Verify the file path is correct and the location is accessible and writable.                                                    |
+
+## Real-World Use Cases
+
+- **Project Documentation**: Regularly save documents that are updated frequently to avoid losing changes.
+- **Contract Management**: Save unique copies of agreements in PDF when changes are made, ensuring the originals are preserved.
+- **Report Finalization**: Convert and save Word reports in PDF format for distribution to stakeholders.

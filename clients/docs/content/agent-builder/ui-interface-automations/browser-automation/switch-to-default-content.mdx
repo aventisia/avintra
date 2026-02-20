@@ -1,0 +1,67 @@
+import { Callout, Steps } from "nextra/components";
+
+# Switch To Default Content
+
+The **Switch To Default Content** node is used to reset the browser's focus to the main document when working within frames or iframes. This action is especially useful in web automation tasks where interactions within frames are completed, and you need to continue operations on the main page without interference.
+
+For instance, if you've been interacting with elements inside an iframe on a webpage and want to return to the main content to proceed with your automation script, this node ensures the switch is done seamlessly.
+
+## Configuration Options
+
+| Field Name           | Description                                                          | Input Type | Required? | Default Value |
+| -------------------- | -------------------------------------------------------------------- | ---------- | --------- | ------------- |
+| **Browser Instance** | The active IWebDriver instance representing the browser.             | Text       | Yes       | _(empty)_     |
+| **Switched**         | Shows if switching back was successful: `true` or `false`.             | Output     | No        | Switched      |
+
+## Expected Output Format
+
+The output of this node is a **boolean value** indicating the success status of the switch:
+
+- **`true`**: Successful switch back to the main document.
+- **`false`**: Failed to switch back (usually due to a disruption or error in the process).
+
+## Step-by-Step Guide
+
+<Steps>
+### Step 1
+
+Add the **Switch To Default Content** node to your flow.
+
+### Step 2
+
+In the **Browser Instance** field, input the active WebDriver instance you are currently using to interact with the webpage.
+
+### Step 3
+
+Once configured, the node will attempt to switch back to the default content (main document).
+
+### Step 4
+
+Check the Switched output status to confirm if the operation was successful (displayed as `true` or `false`).
+
+</Steps>
+
+<Callout type="info" title="Important Note">
+  Ensure that the **Browser Instance** provided is active and correctly initialized, as this will determine the success of the switch operation.
+</Callout>
+
+## Input/Output Examples
+
+| Browser Instance | Output Value | Output Type  |
+| -----------------| ------------ | ------------ |
+| MyWebDriver      | true         | Boolean      |
+| MyWebDriver      | false        | Boolean      |
+
+## Common Mistakes & Troubleshooting
+
+| Problem                                     | Solution                                                                                                                                              |
+|---------------------------------------------|-------------------------------------------------------------------------------------------------------------------------------------------------------|
+| **WebDriver instance is not working**       | Double-check if the **Browser Instance** is correctly assigned to an active, initialized WebDriver instance.                                           |
+| **Output is always `false`**                | This may occur if there are issues with the iframe's state or if the browser session has ended. Verify that the WebDriver session is active and valid. |
+| **Unable to switch back**                   | Ensure no unhandled exceptions within the iframe operation that could block the switch back to the main document.                                      |
+
+## Real-World Use Cases
+
+- **Switching Context**: After completing actions within a login form embedded in an iframe, switch back to the main page to access other sections.
+- **Web Navigation**: Return to interacting with the primary webpage after processing data from multiple iframe widgets.
+- **Form Submission**: Upon sending data through a form located in an iframe, use this node to switch back and handle the response displayed on the main site.

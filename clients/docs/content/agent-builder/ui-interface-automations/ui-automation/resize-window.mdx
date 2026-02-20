@@ -1,0 +1,77 @@
+import { Callout, Steps } from "nextra/components";
+
+# Resize Window
+
+The **Resize Window** node allows you to adjust the size of a specific window on your desktop to the desired width and height. This can be particularly useful when you need to organize multiple windows on your screen, optimize the space for better visibility, or prepare a window for capturing screenshots or presentations.
+
+For example:
+
+- Making a window smaller to fit multiple windows on your screen.
+- Enlarging a window to focus solely on its contents.
+- Standardizing window sizes for consistent visual presentation.
+
+## Configuration Options
+
+| Field Name              | Description                                             | Input Type | Required? | Default Value       |
+| ----------------------- | ------------------------------------------------------- | ---------- | --------- | ------------------- |
+| **Window**              | Select the window you want to resize.                   | Text       | Yes       | _(empty)_           |
+| **Width**               | Enter the new width for the window (in pixels).         | Text       | Yes       | _(empty)_           |
+| **Height**              | Enter the new height for the window (in pixels).        | Text       | Yes       | _(empty)_           |
+
+## Expected Output Format
+
+The output from this node is a **boolean value** indicating the success of the window resizing process.
+
+- **True**: The window was successfully resized.
+- **False**: The window could not be resized.
+
+## Step-by-Step Guide
+
+<Steps>
+### Step 1
+
+Add the **Resize Window** node into your flow.
+
+### Step 2
+
+In the **Window** field, select the window you intend to resize from the available options.
+
+### Step 3
+
+Input the desired **Width** for the window in pixels. Ensure this value is appropriate for your screen.
+
+### Step 4
+
+Input the desired **Height** for the window in pixels. Similar to width, make sure this fits your requirements.
+
+### Step 5
+
+The node will output a status indicating whether the window resizing was successful, available as **IsWindowResized**.
+
+</Steps>
+
+<Callout type="info" title="Tip">
+  Ensure that the width and height values correspond to a size that fits on your screen to prevent window positioning issues.
+</Callout>
+
+## Input/Output Examples
+
+| Window         | Width | Height | Output (IsWindowResized) | Output Type |
+| -------------- | ----- | ------ | ------------------------ | ----------- |
+| "Browser"      | 800   | 600    | True                     | Boolean     |
+| "Edit Document"| 1024  | 768    | True                     | Boolean     |
+| "Spreadsheet"  | 1600  | 1200   | True                     | Boolean     |
+
+## Common Mistakes & Troubleshooting
+
+| Problem                                      | Solution                                                                                                       |
+| -------------------------------------------- | -------------------------------------------------------------------------------------------------------------- |
+| **Window not resizing**                      | Check if the window you selected is open and can be resized. Some applications may restrict window resizing.   |
+| **Unintended window size**                   | Double-check the width and height inputs to ensure they match your intended dimensions.                        |
+| **Window displaced off-screen**              | Ensure the new dimensions fit within your screen resolution and reposition manually if necessary.              |
+
+## Real-World Use Cases
+
+- **Web Design**: Resize browser windows to specific dimensions for design testing.
+- **Data Entry**: Adjust document windows for optimal data entry space.
+- **Presentation Setup**: Prepare specific window sizes for screen sharing in virtual meetings.

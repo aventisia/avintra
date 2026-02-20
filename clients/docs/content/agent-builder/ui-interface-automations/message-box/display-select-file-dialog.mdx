@@ -1,0 +1,92 @@
+import { Callout, Steps } from "nextra/components";
+
+# Display Select File Dialog
+
+The **Display Select File Dialog** node opens a window that allows users to browse for and select one or more files from their computer. This is particularly useful in any scenario where you need a user to choose files to upload, view, or process further within your workflow.
+
+For example:
+
+- Choosing images to upload to a gallery.
+- Selecting document files for batch processing.
+- Allowing users to specify which files to include in a report generation task.
+
+## Configuration Options
+
+| Field Name               | Description                                                                           | Input Type  | Required? | Default Value  |
+| ------------------------ | ------------------------------------------------------------------------------------- | ----------- | --------- | -------------- |
+| **Dialog Title**         | The title of the file selection dialog window.                                        | Text        | Yes       | _(empty)_      |
+| **Initial Folder**       | The folder path where the dialog starts. Defaults to Desktop if left empty.           | Text        | No        | _(empty)_      |
+| **File Filter**          | Filter for file types (e.g., "Text Files (*.txt)|*.txt"). Defaults to All Files.      | Text        | No        | _(empty)_      |
+| **Keep Dialog On Top**   | Keeps the dialog on top of all other windows if set to true.                          | Switch      | No        | _(empty)_      |
+| **Allow Multiple Selection** | Allows user to select multiple files if set to true.                             | Switch      | No        | _(empty)_      |
+| **Check If File Exists** | Validates that the selected file(s) exist before returning.                           | Switch      | No        | _(empty)_      |
+
+## Expected Output Format
+
+The outputs of this node consist of:
+
+- **Selected Files**: A list of full paths to the files that the user selected.
+- **Button Pressed**: A boolean value indicating whether the user confirmed their selection (`True`) by clicking OK or canceled/closed the dialog (`False`).
+
+## Step-by-Step Guide
+
+<Steps>
+### Step 1
+
+Add **Display Select File Dialog** node into your flow.
+
+### Step 2
+
+In the **Dialog Title** field, enter the text you want to be displayed as the title in the file selection window.
+
+### Step 3
+
+(Optional) Specify the **Initial Folder** if you want the file dialog to open in a specific folder path. Leave empty to start in Desktop.
+
+### Step 4
+
+(Optional) Enter a **File Filter** to display only certain file types, like images or documents. Use standard filter syntax (e.g., `"Text Files (*.txt)|*.txt"`).
+
+### Step 5
+
+(Optional) Enable **Keep Dialog On Top** if you want the dialog to stay above all other windows.
+
+### Step 6
+
+(Optional) Use the **Allow Multiple Selection** switch to let the user select multiple files.
+
+### Step 7
+
+(Optional) Turn on **Check If File Exists** to ensure that any selected file truly exists.
+
+### Step 8
+
+The selected files and user interaction results will be available as **Selected Files** and **Button Pressed** outputs for further use in your flow.
+
+</Steps>
+
+<Callout type="info" title="Tip">
+  You can enable the **Allow Multiple Selection** option if you anticipate that users need to process or upload multiple files at once.
+</Callout>
+
+## Input/Output Examples
+
+| Dialog Title      | Initial Folder | File Filter      | Allow Multiple Selection | Check If File Exists | Output: Selected Files   | Output: Button Pressed |
+| ----------------- | -------------- | ---------------- | ------------------------ | -------------------- | -------------------------| ---------------------- |
+| "Choose an Image" | C:\Images      | "Image Files|*.jpg;*.png" | Yes                    | Yes                  | ["C:\Images\pic1.jpg"]   | True                   |
+| "Open Document"   |                | "All Files|*.*"  | No                       | No                   | []                       | False                  |
+
+## Common Mistakes & Troubleshooting
+
+| Problem                                                   | Solution                                                                                                             |
+| --------------------------------------------------------- | -------------------------------------------------------------------------------------------------------------------- |
+| **File dialog doesn't open in specified folder**          | Ensure the **Initial Folder** path is correct and exists on the user's machine.                                       |
+| **Cannot select multiple files**                          | Double-check if the **Allow Multiple Selection** option is set to true.                                               |
+| **File filter not working**                               | Verify that the **File Filter** syntax is correct, using designated formats like `"Text Files (*.txt)|*.txt"`.         |
+| **Unexpected 'File not found' errors**                    | Ensure **Check If File Exists** is enabled only when file existence validation is necessary.                           |
+
+## Real-World Use Cases
+
+- **Photo Upload**: A web app where users can choose photos from their computer to upload and display online.
+- **Document Editing**: Selecting multiple documents for batch editing or format conversion.
+- **Data Import**: Users can select CSV files to import into a data analysis tool or system.

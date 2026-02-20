@@ -1,0 +1,83 @@
+import { Callout, Steps } from "nextra/components";
+
+# Get Many AWS Certificate Manager Certificates
+
+The **Get Many AWS Certificate Manager Certificates** node is designed to help you list multiple certificates from AWS Certificate Manager (ACM) using the ListCertificates API. This node is particularly useful for users who need to manage or audit certificates stored in ACM, allowing for easy retrieval and display of certificate details.
+
+You may want to use this node when:
+
+- Fetching details of certificates as part of compliance checks.
+- Monitoring active certificates within a specific AWS region.
+- Reviewing certificate statuses for renewal or revocation planning.
+
+## Configuration Options
+
+| Field Name                     | Description                                                                                 | Input Type | Required? | Default Value |
+| ------------------------------ | ------------------------------------------------------------------------------------------- | ---------- | --------- | ------------- |
+| **AWS Credential (Vault ID)**  | Select the AWS credential used for authentication.                                           | Text       | Yes       | _(empty)_     |
+| **Return All**                 | Enable this to retrieve all certificates. If disabled, results are limited by 'Limit'.      | Switch     | No        | _(empty)_     |
+| **Limit**                      | Maximum number of certificates to retrieve. Set this if **Return All** is disabled.         | Text       | No        | 50            |
+| **AWS Region**                 | The AWS region where the certificates are located.                                          | Text       | No        | us-east-1     |
+
+## Expected Output Format
+
+The node outputs two main data types:
+
+1. **Certificates**: A list of certificate details including ARN, domain, status, creation date, and type.
+2. **API Response**: The raw JSON response from AWS Certificate Manager, providing complete output data.
+
+## Step-by-Step Guide
+
+<Steps>
+### Step 1
+
+Add the **Get Many AWS Certificate Manager Certificates** node into your flow.
+
+### Step 2
+
+In the **AWS Credential (Vault ID)** field, enter the ID of the AWS credentials you wish to use for authentication.
+
+### Step 3
+
+Decide if you want to fetch all certificates:
+
+- Switch **Return All** to "ON" if you want to receive all available certificates with pagination.
+- Leave **Return All** off to manually set a limit on how many certificates to retrieve (up to 100).
+
+### Step 4
+
+If **Return All** is off, enter a number in the **Limit** field to specify how many certificates you'd like to return.
+
+### Step 5
+
+In the **AWS Region** field, input the region where the certificates are located. If unsure, use the default `us-east-1`.
+
+### Step 6
+
+The output will be available as **Certificates** for details and **API Response** for the raw JSON data from ACM.
+</Steps>
+
+<Callout type="info" title="Tip">
+  Remember to configure your AWS credentials in a secure manner and verify they have permission to access Certificate Manager resources.
+</Callout>
+
+## Input/Output Examples
+
+| AWS Credential | Return All | Limit | AWS Region | Output Type              | Output Example                                         |
+| -------------- | ---------- | ----- | ---------- | ------------------------ | ------------------------------------------------------ |
+| my-aws-vault   | true       | _(n/a)_ | us-east-1 | Certificates             | List of certificate details including status and domain |
+| my-aws-vault   | false      | 10    | us-west-2 | API Response             | Full JSON response from ACM                             |
+
+## Common Mistakes & Troubleshooting
+
+| Problem                                           | Solution                                                                                                                                                               |
+| ------------------------------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| **No Certificates Returned**                      | Ensure that the **AWS Credential** is correct and has the required permissions. Check if you have specified the correct **AWS Region** where certificates are available.|
+| **Too Few Certificates Returned**                 | Verify the **Limit** value is set according to your needs if **Return All** is off.                                                                                    |
+| **Authentication Errors**                         | Double-check your AWS credentials. They must be valid and have access rights to list certificates in ACM.                                                              |
+
+## Real-World Use Cases
+
+- **Security Audits**: Quickly retrieve all certificates to perform security audits or checks.
+- **Expiration Monitoring**: Ensure critical certificates are monitored for expiry by regularly listing them.
+- **Multi-Region Certificate Management**: Manage and audit certificates across various AWS regions efficiently.

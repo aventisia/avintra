@@ -1,0 +1,101 @@
+import { Callout, Steps } from "nextra/components";
+
+# Scroll To Element or Position
+
+The **Scroll To Element or Position** node allows you to scroll the browser window to a specific element or coordinates on a webpage. This feature is useful when you need to ensure that a particular part of the webpage is visible for interaction or viewing, such as filling out forms, clicking buttons, or just displaying content.
+
+For example:
+
+- Scrolling to a login form when it is out of view.
+- Moving to a specific section of a webpage for data entry.
+- Scrolling to a coordinate to ensure precise control over the view.
+
+## Configuration Options
+
+| Field Name           | Description                                                                                                                                                          | Input Type | Required? | Default Value |
+| -------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ---------- | --------- | ------------- |
+| **Web Browser Instance** | Enter or choose the variable that contains the web browser instance to work with.                                                                                       | Text       | Yes       | _(empty)_     |
+| **Scroll Mode**       | Specifies how to scroll: by element or by coordinates.                                                                                                              | Select     | No        | ByElement    |
+| **Find Type**         | Specifies how to find the element (e.g., ID, XPath, CssSelector). Only appears when Scroll Mode is "By Element".                                                   | Select     | Yes       | XPath        |
+| **Value To Find**     | The value used to locate the element (e.g., 'username', '//input[@id="email"]'). Only appears when Scroll Mode is "By Element".                                   | Text       | No        | _(empty)_    |
+| **X Coordinate**      | Horizontal scroll position. Only used in 'By Coordinates' mode.                                                                                                    | Text       | No        | _(empty)_    |
+| **Y Coordinate**      | Vertical scroll position. Only used in 'By Coordinates' mode.                                                                                                      | Text       | No        | _(empty)_    |
+| **Wait For Element**  | If true, waits for the element to be present before scrolling.                                                                                                      | Switch     | No        | _(empty)_    |
+| **Timeout Seconds**   | Maximum time in seconds to wait for the element before failing.                                                                                                     | Text       | No        | 60           |
+| **Smooth Scroll**     | If true, scrolls smoothly instead of jumping to the target.                                                                                                        | Switch     | No        | _(empty)_    |
+
+## Expected Output Format
+
+This node does not produce any new output values. Its function is to perform an action (scrolling) within the web browser.
+
+## Step-by-Step Guide
+
+<Steps>
+### Step 1
+
+Add **Scroll To Element or Position** node into your flow.
+
+### Step 2
+
+In the **Web Browser Instance** field, enter the variable of the web browser instance you want to interact with.
+
+### Step 3
+
+In the **Scroll Mode** dropdown, choose how you want to perform the scroll:
+
+- **By Element**: Requires specifying an element using **Find Type** and **Value To Find**.
+- **By Coordinates**: Specify both **X Coordinate** and **Y Coordinate** to target a specific position.
+
+### Step 4
+
+For **By Element** mode, configure the following:
+
+- **Find Type**: Select how to locate the element (e.g., XPath, Id, Css Selector).
+- **Value To Find**: Provide the specific identifier for the element (e.g., 'button-submit', '/html/body/...').
+
+### Step 5
+
+For **By Coordinates** mode, enter:
+
+- **X Coordinate**: Specify the horizontal position.
+- **Y Coordinate**: Specify the vertical position.
+
+### Step 6
+
+Optionally, set additional options:
+
+- **Wait For Element**: Enable this to wait for the element's presence before scrolling (only applies to **By Element**).
+- **Timeout Seconds**: Set the max wait duration for element presence.
+- **Smooth Scroll**: Use this for a smooth scrolling effect.
+
+### Step 7
+
+Execute the node to scroll the webpage to the desired element or position.
+
+</Steps>
+
+<Callout type="info" title="Note">
+  Use **Smooth Scroll** if you prefer a more visually pleasant scrolling motion. It does not affect the outcome of the operation.
+</Callout>
+
+## Input/Output Examples
+
+| Scenario                 | Scroll Mode | Find Type | Value To Find         | X Coordinate | Y Coordinate | Output                            |
+| ------------------------ | ----------- | --------- | --------------------- | ------------ | ------------ | --------------------------------- |
+| Scroll to Form           | By Element  | CssSelector | '#login-form'          | _(n/a)_      | _(n/a)_      | Browser scrolls to the form area. |
+| Scroll to Banner         | By Coordinates | _(n/a)_   | _(n/a)_               | 0            | 250          | Page scrolls down to Y=250 pixels.|
+| Scroll to Submit Button  | By Element  | XPath     | '//button[@type="submit"]' | _(n/a)_    | _(n/a)_      | Button brought into view.         |
+
+## Common Mistakes & Troubleshooting
+
+| Problem                                         | Solution                                                                                                                                       |
+| ------------------------------------------------ | ---------------------------------------------------------------------------------------------------------------------------------------------- |
+| **No scrolling occurring**                      | Ensure the **Web Browser Instance** is correctly set up and active. Also verify that all required fields are filled correctly in the configuration.       |
+| **ScrollMode mismatch with fields**             | Make sure to adjust the fields according to the selected **Scroll Mode**. E.g., for **By Element**, ensure **Find Type** and **Value To Find** are used. |
+| **Element not found using Find Type**           | Check the accuracy and syntax of **Value To Find**. Cross-check with the webpage's HTML to confirm identifiers are correct.                             |
+
+## Real-World Use Cases
+
+- Automatically scroll to form fields that need input to enhance user interaction during form automation.
+- Ensure specific website headers or alerts are visible for validation processes.
+- Precisely navigate to product details in e-commerce sites for automated data extraction.

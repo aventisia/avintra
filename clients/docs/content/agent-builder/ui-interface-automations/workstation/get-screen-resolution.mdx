@@ -1,0 +1,75 @@
+import { Callout, Steps } from "nextra/components";
+
+# Get Screen Resolution
+
+The **Get Screen Resolution** node is designed to help you gather important details about the display setup of your system. It retrieves information like the width, height, bit depth, and refresh rate of your monitor(s). This node can be extremely useful for applications or tasks that rely on display settings, such as graphics and video configurations.
+
+Typical uses include:
+- Obtaining display settings for optimal graphic configurations.
+- Ensuring compatibility with different screen setups in multi-monitor environments.
+- Troubleshooting display issues by verifying monitor configurations.
+
+## Configuration Options
+
+| Field Name         | Description                                                                                      | Input Type | Required? | Default Value  |
+| ------------------ | ------------------------------------------------------------------------------------------------ | ---------- | --------- | -------------- |
+| **Monitor Selection** | Specify whether to get info for the primary, all, or a specific monitor                        | Select     | No        | Primary        |
+| **Monitor Index**     | Zero-based index of the monitor to check (only used when Selection is "Specific Monitor Index")| Text       | No        | _(empty)_      |
+
+## Expected Output Format
+
+The output of this node consists of the screen resolution details. The specific content depends on your selection:
+
+- **Primary Monitor Selection**: Outputs `ScreenDetail`.
+- **All Monitors Selection**: Outputs `ScreenDetails`, which may include the information for multiple monitors.
+
+## Step-by-Step Guide
+
+<Steps>
+### Step 1
+
+Add the **Get Screen Resolution** node into your flow.
+
+### Step 2
+
+Select an option in the **Monitor Selection** dropdown to specify which monitor(s) information you want:
+
+- **Primary Monitor**: Gets the resolution info for the main monitor.
+- **All Monitors**: Gets the resolution info for all connected monitors.
+- **Specific Monitor Index**: Get info for a specific monitor; fill in **Monitor Index**.
+
+### Step 3
+
+If **Specific Monitor Index** is selected, enter the monitor's zero-based **Monitor Index** in the provided field.
+
+### Step 4
+
+The screen resolution details will be available as **ScreenDetail** or **ScreenDetails** for other nodes to use in your workflow.
+
+</Steps>
+
+<Callout type="info" title="Note">
+  The **Monitor Index** field only appears if you've selected **Specific Monitor Index** in the Monitor Selection dropdown. Ensure the index is correct to avoid errors.
+</Callout>
+
+## Input/Output Examples
+
+| Monitor Selection       | Monitor Index | Output Value    | Output Type       |
+| ----------------------- | ------------- | --------------- | ----------------- |
+| Primary Monitor         | _(n/a)_       | ScreenDetail    | Details Object    |
+| All Monitors            | _(n/a)_       | ScreenDetails   | Details List      |
+| Specific Monitor Index  | 1             | ScreenDetail    | Details Object    |
+
+## Common Mistakes & Troubleshooting
+
+| Problem                                             | Solution                                                                                                     |
+| --------------------------------------------------- | ------------------------------------------------------------------------------------------------------------ |
+| **Monitor Index field missing**                      | This field only appears if you select **Specific Monitor Index**. Check your Monitor Selection setting.      |
+| **Incorrect monitor index resulting in no output**  | Re-check the index of your monitors. Monitor indexes start at 0.                                             |
+| **Expected multiple outputs for All Monitors**      | Ensure that multiple monitors are connected. The All Monitors option fetches the details for all connected monitors. |
+
+## Real-World Use Cases
+
+- **Graphic Design Software Configuration**: Use monitor info to adjust application settings for ideal visual output.
+- **Video Game Setup**: Gather display information to provide users with optimized graphics settings.
+- **Technical Support**: Verify monitor configurations remotely for troubleshooting hardware issues.

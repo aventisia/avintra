@@ -1,0 +1,74 @@
+import { Callout, Steps } from "nextra/components";
+
+# Run VBScript
+
+The **Run VBScript** node allows you to execute custom scripts written in VBScript language. This is useful for automating tasks that require capabilities beyond standard no-code operations or interacting with applications and data using VBScript.
+
+You can use this node to:
+
+- Run existing VBScript to perform automated tasks on your desktop.
+- Integrate complex logic and operations that VBScript supports.
+- Retrieve and use outputs from your VBScript code in subsequent steps.
+
+## Configuration Options
+
+| Field Name       | Description                           | Input Type | Required? | Default Value |
+| ---------------- | ------------------------------------- | ---------- | --------- | ------------- |
+| **VBScript Code**| The VBScript code to execute.         | Text       | Yes       | _(empty)_     |
+
+## Expected Output Format
+
+The output of this node is the **result produced by the VBScript code**, which can be varied based on what your script is designed to do.
+
+- If your script performs calculations: output could be a number.
+- If it processes strings: output could be text.
+- It entirely depends on your script's logic and what it returns.
+
+## Step-by-Step Guide
+
+<Steps>
+### Step 1
+
+Add **Run VBScript** node into your flow.
+
+### Step 2
+
+In the **VBScript Code** field, enter or paste the VBScript code you wish to execute.
+
+### Step 3
+
+Once executed, the output of your script can be retrieved as **ScriptOutput** and used in your flow.
+
+</Steps>
+
+<Callout type="warning" title="Caution">
+  Ensure that the VBScript you provide is correct and does not include harmful or unintended operations that could affect your system.
+</Callout>
+
+## Input/Output Examples
+
+### Example Input
+
+```vbscript
+Dim x
+x = 5 + 3
+MsgBox x
+```
+
+### Expected Output
+
+Depending on your flow's design, the result could appear as a message box displaying `8` or utilize the output value in further processing.
+
+## Common Mistakes & Troubleshooting
+
+| Problem                                         | Solution                                                                                                                |
+| ----------------------------------------------- | ----------------------------------------------------------------------------------------------------------------------- |
+| **VBScript error message**                      | Check the script syntax to ensure it's valid and correct VBScript.                                                       |
+| **No output or unexpected output**                   | Verify your script logic. It should include output instructions (e.g., using `MsgBox` within your VBScript code).                |
+| **Security or permission error**            | Ensure that your operating environment allows executing VBScript and does not have restrictions blocking script execution. |
+
+## Real-World Use Cases
+
+- **Application Interaction**: Perform repetitive tasks on your desktop applications using VBScript automation commands.
+- **Data Processing**: Use VBScript for complex data manipulation that goes beyond built-in operations.
+- **System Reporting**: Generate reports by executing a VBScript that extracts and processes desktop application data.

@@ -1,0 +1,70 @@
+import { Callout, Steps } from "nextra/components";
+
+# Append Line to Text
+
+The **Append Line to Text** node is designed to seamlessly add a new line of text to an existing piece of text. This can be particularly beneficial when managing text data where you need to dynamically build or modify content by adding new information.
+
+For example:
+
+- Adding notes or comments to an existing document.
+- Building a multiline message or paragraph by appending lines.
+- Modifying textual data by adding extra lines of information.
+
+## Configuration Options
+
+| Field Name   | Description                                           | Input Type | Required? | Default Value |
+| ------------ | ----------------------------------------------------- | ---------- | --------- | ------------- |
+| **OriginalText** | The existing text you want to append a line to.        | Text       | No        | _(empty)_     |
+| **NewLine**      | The new line of text you want to add to the original. | Text       | No        | _(empty)_     |
+
+## Expected Output Format
+
+The output of this node is a **single string of text**, which includes the original text followed by the newly appended line. This results in a written paragraph or message with successive lines.
+
+## Step-by-Step Guide
+
+<Steps>
+### Step 1
+
+Add **Append Line to Text** node into your flow.
+
+### Step 2
+
+In the **OriginalText** field, input the text you want to extend with a new line.
+
+### Step 3
+
+In the **NewLine** field, enter the line of text you wish to append to the original text.
+
+### Step 4
+
+The newly combined text will be available as **ResultOutput** for further use in your automation flows.
+
+</Steps>
+
+<Callout type="info" title="Tip">
+  You can leave either the **OriginalText** or **NewLine** fields empty if you want to use only the value from the other field.
+</Callout>
+
+## Input/Output Examples
+
+| Original Text                | New Line          | Output Value                           | Output Type |
+| ---------------------------- | ----------------- | -------------------------------------- | ----------- |
+| "Hello, world!"              | "Welcome!"        | "Hello, world!\nWelcome!"              | String      |
+| "Dear Customer,"             | "Thank you!"      | "Dear Customer,\nThank you!"           | String      |
+| _(empty)_                    | "Start fresh."    | "Start fresh."                         | String      |
+| "Existing content here."     | _(empty)_         | "Existing content here."               | String      |
+
+## Common Mistakes & Troubleshooting
+
+| Problem                                         | Solution                                                                                                                                                   |
+| ------------------------------------------------| ---------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| **No output or missing text**                   | Ensure at least one of the fields (**OriginalText** or **NewLine**) contains a value. Without input, there will be no meaningful output.                     |
+| **Unexpected text format**                      | Confirm that you're entering text properly, ensuring that newline characters or special symbols are used as intended by your use case.                       |
+
+## Real-World Use Cases
+
+- **Customer SMS/Email**: Append personalized greetings or messages to templates before sending.
+- **Log Generation**: Continuously append log messages or error descriptions to a log file.
+- **Dynamic FAQ Updates**: Add new information to FAQs or help documentation on-the-fly.
+- **Social Media**: Create posts by stacking comments or replies as new lines.

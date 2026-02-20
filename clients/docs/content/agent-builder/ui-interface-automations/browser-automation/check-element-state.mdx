@@ -1,0 +1,90 @@
+import { Callout, Steps } from "nextra/components";
+
+# Check Element State
+
+The **Check Element State** node allows you to verify the condition of a web element by checking if it is visible, enabled, or selected. This is useful when you need to make decisions based on the presence and state of elements in a web application, ensuring that your automated processes only proceed when the required conditions are met.
+
+For example:
+
+- Ensuring a button is enabled before attempting to click it.
+- Verifying that an element is visible on the page before interacting with it.
+- Checking if a checkbox or radio button is selected as expected.
+
+## Configuration Options
+
+| Field Name          | Description                                                                                     | Input Type | Required? | Default Value |
+| ------------------- | ----------------------------------------------------------------------------------------------- | ---------- | --------- | ------------- |
+| **Web Browser Instance** | Enter or choose the variable that contains the web browser instance to work with.            | Text       | Yes       | _(empty)_     |
+| **Find Type**       | Specifies how to find the element (e.g., ID, XPath, CssSelector).                               | Select     | Yes       | XPath         |
+| **Value To Find**   | The value used to locate the element (e.g., 'username', '//input[@id="email"]').                | Text       | Yes       | _(empty)_     |
+| **State To Check**  | Specifies which state to verify: Visible, Enabled, Selected.                                    | Select     | Yes       | Visible       |
+| **Wait For Element**| If true, waits for the element to appear before checking its state.                             | Switch     | No        | _(empty)_     |
+| **Timeout Seconds** | Maximum time in seconds to wait for the element before failing.                                 | Text       | No        | 60            |
+
+## Expected Output Format
+
+The output of this node is a **Boolean value**:
+
+- `true` if the element meets the specified state condition (e.g., is visible, enabled, or selected).
+- `false` otherwise.
+
+## Step-by-Step Guide
+
+<Steps>
+
+### Step 1
+
+Add the **Check Element State** node into your flow.
+
+### Step 2
+
+In the **Web Browser Instance** field, enter the variable that represents the web browser instance you are working with.
+
+### Step 3
+
+In the **Find Type** dropdown, select the method you'll use to locate the element (e.g., XPath, ID, CssSelector).
+
+### Step 4
+
+Enter the specific identifier for the element in **Value To Find** (e.g., an XPath expression or an ID value).
+
+### Step 5
+
+Select the state you want to check from the **State To Check** options: Visible, Enabled, or Selected.
+
+### Step 6
+
+(Optional) Enable **Wait For Element** if you need the node to wait for the element to appear on the page.
+
+### Step 7
+
+(Optional) Set the **Timeout Seconds** to define how long to wait for the element.
+
+</Steps>
+
+<Callout type="warn" title="Note">
+Ensure that the **Web Browser Instance** is correctly set and active before running this node, or element checks may fail.
+</Callout>
+
+## Input/Output Examples
+
+| Find Type | Value To Find               | State To Check | Wait For Element | Timeout Seconds | Is State Met | Output Type |
+| --------- | --------------------------- | -------------- | ---------------- | --------------- | ------------ | ----------- |
+| XPath     | `//button[@id="submit"]`    | Visible        | true             | 30              | true         | Boolean     |
+| CssSelector | `.login-button`            | Enabled        | false            | _(default)_     | false        | Boolean     |
+| ID        | `username`                  | Selected       | true             | 60              | false        | Boolean     |
+
+## Common Mistakes & Troubleshooting
+
+| Problem                                         | Solution                                                                                                                                                             |
+| ----------------------------------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| **Element not found**                           | Check the **Find Type** and **Value To Find** fields for accuracy. Verify the element's presence on the page manually.                                               |
+| **State not as expected**                       | Ensure the correct **State To Check** was selected. Double-check web page conditions that might affect the element's state (e.g., modal dialogs covering elements). |
+| **Timeout errors**                              | Increase the **Timeout Seconds** if elements take longer to appear due to page load issues.                                                                          |
+| **Empty Web Browser Instance**                  | Ensure the browser instance is initialized and assigned to a variable before calling this node.                                                                      |
+
+## Real-World Use Cases
+
+- **Form Submission**: Verify that a submit button is enabled before attempting to submit a form.
+- **User Interface Testing**: Ensure elements like error messages or pop-ups appear as expected based on user actions.
+- **Dynamic Content Handling**: Check the selection status of toggles or options in dynamic web content.

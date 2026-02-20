@@ -1,0 +1,56 @@
+import { Callout, Steps } from "nextra/components";
+
+# Convert File to Binary Data
+
+The **Convert File to Binary Data** node is used to transform a file into a binary format. This is particularly useful when you need to process file data that can be efficiently manipulated or transferred in its binary form.
+
+This node is ideal when you need to:
+
+- Prepare files for storage in systems that require binary input.
+- Transfer files over networks where binary data is necessary.
+- Perform operations on the raw binary data of the file for further computational processing.
+
+## Configuration Options
+
+| Field Name   | Description                                      | Input Type | Required? | Default Value |
+| ------------ | ------------------------------------------------ | ---------- | --------- | ------------- |
+| **File Path** | The full path of the file you wish to convert.   | Text       | Yes       | _(empty)_     |
+
+## Expected Output Format
+
+The output of this node is **binary data**, represented as a string or buffer that encodes the raw bytes of the file. This format is suitable for any application or process that consumes binary file data.
+
+## Step-by-Step Guide
+
+<Steps>
+### Step 1
+
+Add the **Convert File to Binary Data** node into your flow.
+
+### Step 2
+
+In the **File Path** field, enter the full path to the file you wish to convert into binary data.
+
+### Step 3
+
+After processing, the node outputs its result as **BinaryData**, which can be used in downstream nodes for further operations.
+
+</Steps>
+
+<Callout type="info" title="Tip">
+  Ensure the file path entered in **File Path** is accessible from the desktop platform where this node runs.
+</Callout>
+
+## Common Mistakes & Troubleshooting
+
+| Problem                                        | Solution                                                                                      |
+| ----------------------------------------------- | --------------------------------------------------------------------------------------------- |
+| **File does not convert to binary**             | Check that the file path is correct and the file exists at the specified location.            |
+| **Output not received as expected**             | Verify your other nodes are correctly configured to utilize the **BinaryData** output.        |
+| **Permission errors accessing file**            | Ensure you have the necessary read permissions for the file in the specified path.            |
+
+## Real-World Use Cases
+
+- **Secure Data Transmission**: Convert files to send securely over the web in binary format.
+- **Archival and Storage Systems**: Store images, documents, or other files as binary in databases or cloud storage.
+- **Data Analysis**: Prepare binary file data for input into a data analysis pipeline needing byte-level precision.

@@ -1,0 +1,89 @@
+import { Callout, Steps } from "nextra/components";
+
+# Format DateTime
+
+The **Format DateTime** node is designed to transform DateTime values into a formatted string in either predefined or user-defined patterns. This is particularly beneficial when presenting date and time in a compatible format for reports, logs, or further data manipulation.
+
+For instance, you can:
+
+- Convert a DateTime object into a standard date string like "MM/DD/YYYY".
+- Create a custom format such as "YYYYMMDD" for sorting or comparisons.
+- Display full date and time details with both short and long formats.
+
+## Configuration Options
+
+| Field Name               | Description                                                                                       | Input Type | Required? | Default Value |
+| ------------------------ | ------------------------------------------------------------------------------------------------- | ---------- | --------- | ------------- |
+| **DateTime Value**       | The DateTime value you want to format.                                                            | Text       | No        | _(empty)_     |
+| **Format Option**        | Choose whether to apply a standard or custom format to the DateTime value.                        | Select     | No        | Standard     |
+| **Standard Format**      | Select a predefined DateTime format. This field appears only when "Standard" is selected.         | Select     | No        | ShortDate    |
+| **Custom Format String** | Enter a custom format pattern. This field appears only when "Custom" is selected.                | Text       | No        | _(empty)_     |
+
+## Expected Output Format
+
+The output of this node is a **formatted date-time string** based on the chosen format. You may expect:
+
+- A standard format like "01/01/2025" or "Monday, January 1, 2025".
+- A custom string according to the specified pattern, e.g., "20250101".
+
+## Step-by-Step Guide
+
+<Steps>
+### Step 1
+
+Add the **Format DateTime** node into your flow.
+
+### Step 2
+
+Enter the DateTime value you wish to format in the **DateTime Value** field.
+
+### Step 3
+
+In the **Format Option** dropdown, select the formatting method:
+
+- **Standard Format**: Use predefined forms like short date, long date, etc.
+- **Custom Format**: Specify your pattern for the DateTime output.
+
+### Step 4
+
+If you choose **Standard Format**, select from listed options in **Standard Format**:
+
+- Options include patterns like **Short Date**, **Long Time**, etc.
+
+### Step 5
+
+If **Custom Format** is selected, input the desired format pattern in **Custom Format String** field.
+
+### Step 6
+
+Your formatted DateTime string will be produced as **Formatted DateTime String** for use in subsequent processes.
+
+</Steps>
+
+<Callout type="info" title="Note">
+  Selecting **Custom Format** allows for extensive flexibility, however, ensure correctness of the format string to avoid errors.
+</Callout>
+
+## Input/Output Examples
+
+| Format Option     | DateTime Value       | Standard Format | Custom Format String | Output Value                      | Output Type      |
+| ----------------- | -------------------- | --------------- | -------------------- | --------------------------------- | ---------------- |
+| Standard Format   | 01/01/2025 15:30     | Long Date       | _(n/a)_              | Wednesday, January 1, 2025        | String (DateTime) |
+| Standard Format   | 01/01/2025 15:30     | Short Time      | _(n/a)_              | 15:30 PM                          | String (Time)     |
+| Custom Format     | 2025-01-01T15:30:00Z | _(n/a)_         | yyyyMMdd             | 20250101                          | String (Custom)   |
+
+## Common Mistakes & Troubleshooting
+
+| Problem                                           | Solution                                                                                                             |
+| ------------------------------------------------- | -------------------------------------------------------------------------------------------------------------------- |
+| **Incorrect DateTime Value**                      | Ensure the DateTime value is valid and in the correct format. Avoid using incompatible types or empty strings.       |
+| **Standard Format Options not visible**           | Double-check that "Standard" is selected in **Format Option** to display these options.                              |
+| **Custom Format Errors**                          | Verify the custom format string is correct and adheres to DateTime formatting standards.                             |
+| **Unexpected Output**                             | Revisit selected format options and ensure DateTime is correctly entered and optional fields are properly configured. |
+
+## Real-World Use Cases
+
+- **Localized Time Display**: Format DateTime for user interfaces based on local or regional preferences.
+- **Data Import/Export**: Prepare date and time data for importing into or exporting from systems requiring specific formats.
+- **Report Generation**: Standardize DateTime display for consistent reporting across documents.
+- **Audit Trails**: Generate formatted timestamps for logs and audit trails with granularity and clarity.

@@ -1,0 +1,74 @@
+import { Callout, Steps } from "nextra/components";
+
+# Validate PDF Existance
+
+The **Validate PDF Existance** node is a handy tool for checking whether a PDF file contains specific types of content: either text or images. This is particularly useful when you need to categorize or process PDFs based on their content type, ensuring that you only work with documents that meet specific criteria.
+
+For example:
+
+- Verify that a PDF contains readable text before extracting data.
+- Check for the presence of images in a PDF document for image-based processing.
+
+## Configuration Options
+
+| Field Name          | Description                                                                   | Input Type | Required? | Default Value |
+| ------------------- | ----------------------------------------------------------------------------- | ---------- | --------- | ------------- |
+| **PDF File Path**   | The full file path of the PDF document you want to validate.                   | Text       | Yes       | _(empty)_     |
+| **PDF Content Type**| Choose whether to validate the PDF for text or image content.                 | Select     | Yes       | _(empty)_     |
+| **Does Pdf Contain**| Indicates whether the requested content type exists in the PDF (True/False output).| Output     | No        | Result        |
+
+## Expected Output Format
+
+The output of the **Validate PDF Existance** node is a **Boolean value** (`true` or `false`).
+
+- `true`: Indicates that the specified content type (Text or Image) exists in the PDF.
+- `false`: Indicates that the specified content type does not exist in the PDF.
+
+## Step-by-Step Guide
+
+<Steps>
+### Step 1
+
+Add the **Validate PDF Existance** node into your flow.
+
+### Step 2
+
+In the **PDF File Path** field, enter the complete file path of the PDF document you wish to verify.
+
+### Step 3
+
+In the **PDF Content Type** dropdown, select which content type to validate:
+
+- **Text**: To check if the PDF contains text.
+- **Images**: To check if the PDF contains images.
+
+### Step 4
+
+The result indicating whether the PDF contains the specified content type will be available as **Does Pdf Contain** for use in subsequent nodes.
+
+</Steps>
+
+<Callout type="info" title="Note">
+  Ensure the file path is correct and accessible by the system to avoid input errors.
+</Callout>
+
+## Input/Output Examples
+
+| PDF File Path | PDF Content Type | Result (Output) | Output Type |
+| ------------- | ---------------- | --------------- | ----------- |
+| /files/sample.pdf | Text            | true            | Boolean     |
+| /documents/image-only.pdf | Text     | false           | Boolean     |
+
+## Common Mistakes & Troubleshooting
+
+| Problem                                             | Solution                                                                                                          |
+| --------------------------------------------------- | ----------------------------------------------------------------------------------------------------------------- |
+| **Incorrect PDF File Path**                         | Double-check the file path. Ensure it is accurate and that the PDF can be accessed by the platform.               |
+| **Content Type not recognized**                     | Verify that the correct content type is selected. Text and Images should be confirmed in the dropdown selection.  |
+| **False output for Text content**                   | Ensure the PDF has digitally readable text rather than scanned images of text.                                     |
+
+## Real-World Use Cases
+
+- **Content Verification**: Before processing a batch of PDFs, ensure they contain the necessary type of content (text or image) for your business needs.
+- **Document Management Systems**: Automatically sort or label PDFs based on their content type to streamline retrieval and categorization.
+- **Pre-Processing Verification**: Validate the necessary content is present before running complex operations like data extraction or image processing.

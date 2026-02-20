@@ -1,0 +1,61 @@
+import { Callout, Steps } from "nextra/components";
+
+# Invoke FTP Command
+
+The **Invoke FTP Command** node enables you to execute specific FTP (File Transfer Protocol) commands directly on an FTP server. This is particularly useful when you need to manage files or directories on an FTP server without using a separate FTP client application. Using this node, you can streamline FTP operations such as retrieving directory listings, uploading or downloading files, and more as part of your automation workflows.
+
+## Configuration Options
+
+| Field Name         | Description                                    | Input Type | Required? | Default Value |
+| ------------------ | ---------------------------------------------- | ---------- | --------- | ------------- |
+| **FTP Connection** | The FTP connection object to use for commands. | Text       | Yes       | _(empty)_     |
+| **Command**        | The specific FTP command you want to execute.  | Text       | Yes       | _(empty)_     |
+
+## Expected Output Format
+
+The output from this node depends on the command executed and the server response. Generally, it will be a text-based server response indicating the result of the command execution (e.g., a list of files, confirmation of a file uploaded, etc.).
+
+## Step-by-Step Guide
+
+<Steps>
+### Step 1
+
+Add the **Invoke FTP Command** node into your automation workflow.
+
+### Step 2
+
+In the **FTP Connection** field, enter the details of the FTP connection that you will use. Ensure that the connection is active and correctly configured.
+
+### Step 3
+
+Enter the desired FTP command in the **Command** field. This should be a valid FTP command that your server supports, such as `LIST`, `GET`, `PUT`, or other similar commands.
+
+### Step 4
+
+Once configured, execute the node to send the command to the FTP server. Monitor the output to ensure that the command was successfully executed.
+
+</Steps>
+
+<Callout type="info" title="Tip">
+  Make sure your FTP server supports the command you are sending. Some servers may have restrictions or require certain permissions.
+</Callout>
+
+## Input/Output Examples
+
+| Command | Expected Server Response                 | Output Value Example                      |
+| ------- | ---------------------------------------- | ----------------------------------------- |
+| LIST    | Server returns a list of directory files | `"file1.txt\nfile2.txt\nsubdirectory/"` |
+
+## Common Mistakes & Troubleshooting
+
+| Problem                                         | Solution                                                                                          |
+| ----------------------------------------------- | ------------------------------------------------------------------------------------------------- |
+| **Connection issues**                           | Verify that the FTP connection settings are correct and the server is reachable.                  |
+| **Invalid FTP command**                         | Ensure the command is spelled correctly and is compatible with your particular FTP server setup.  |
+| **Empty output or unexpected server response**  | Check if the command requires additional parameters or a specific context to yield successful results. |
+
+## Real-World Use Cases
+
+- **Automated Backups**: Use commands to regularly download critical files from an FTP server for local backups.
+- **Log Retrievals**: Automatically pull log files from web or application servers hosted on FTP for daily report compilation.
+- **Directory Maintenance**: List directories or clean up files from FTP storage as part of routine maintenance tasks.

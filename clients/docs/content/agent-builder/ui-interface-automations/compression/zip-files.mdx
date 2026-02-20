@@ -1,0 +1,77 @@
+import { Callout, Steps } from "nextra/components";
+
+# Zip Files
+
+The **Zip Files** node allows you to compress one or more files or folders into a single ZIP archive. This is useful for reducing file size for storage or transfer, organizing multiple files into a single package, or preparing documents for distribution. 
+
+Common use cases include:
+
+- Sending document packages via email.
+- Organizing project files into a compact archive.
+- Archiving old backups with reduced storage space.
+
+## Configuration Options
+
+| Field Name          | Description                                                                 | Input Type | Required? | Default Value |
+| ------------------- | --------------------------------------------------------------------------- | ---------- | --------- | ------------- |
+| **Source Paths**    | Paths of the files/folders to compress. Accepts a list or comma-separated values. | Text       | Yes       | _(empty)_     |
+| **Compression Level** | Level of compression: Optimal, Fastest, or NoCompression.                   | Select     | No        | Optimal       |
+| **Output Zip Path** | Location where the resulting ZIP file will be saved.                           | Text       | Yes       | _(empty)_     |
+
+## Expected Output Format
+
+The output is a string that provides the full path of the created ZIP archive.
+
+## Step-by-Step Guide
+
+<Steps>
+### Step 1
+
+Add **Zip Files** node into your flow.
+
+### Step 2
+
+In the **Source Paths** field, enter the file or folder paths you wish to compress. You can use a comma-separated list for multiple items.
+
+### Step 3
+
+Select the desired **Compression Level** from the dropdown:
+
+- **Optimal**: Balances compressed size and speed.
+- **Fastest**: Prioritizes speed over compression ratio.
+- **NoCompression**: Simply combines the files without reducing the size.
+
+### Step 4
+
+Specify the path in the **Output Zip Path** field where you want to save the generated ZIP file (e.g., `C:\temp\archive.zip`).
+
+### Step 5
+
+Once configured, the full path to the resulting zip file will be available as **OutputZipFullPath** for further use.
+
+</Steps>
+
+<Callout type="info" title="Tip">
+  Ensure that the **Output Zip Path** is correct and writable to avoid errors during zip creation.
+</Callout>
+
+## Input/Output Examples
+
+| Source Paths                         | Compression Level | Output Zip Path         | Output Value                           |
+| ------------------------------------ | ----------------- | ----------------------- | -------------------------------------- |
+| "C:\logs\", "C:\reports\report1.pdf" | Optimal           | "C:\archives\monthly.zip" | "C:\archives\monthly.zip"              |
+| "C:\photos\", "C:\videos\video.mp4"  | Fastest           | "D:\backups\media.zip"  | "D:\backups\media.zip"                 |
+
+## Common Mistakes & Troubleshooting
+
+| Problem                                                                     | Solution                                                                                                                  |
+| --------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------- |
+| **Invalid or missing Source Paths**                                         | Double-check the file paths entered. Ensure they exist and are accessible.                                                |
+| **Output path not writable**                                                | Verify that the destination folder exists and you have write permissions.                                                 |
+| **Unexpected output due to incorrect Compression Level selection**          | Review the compression level setting. Use **Optimal** for balance or test other levels based on your specific needs.      |
+
+## Real-World Use Cases
+
+- **Email Attachments**: Compress large files into a zip before emailing to ensure it doesn't exceed size limits.
+- **Data Archives**: Compile project files into a single zip archive for easier backup and retrieval.
+- **Project Submissions**: Submit multiple files organized within a zip for easy download and unpacking by recipients.

@@ -1,0 +1,112 @@
+import { Callout, Steps } from "nextra/components";
+
+# Synchronize Directories
+
+The **Synchronize Directories** node synchronizes a local directory on your computer with a directory on a remote FTP server. This can be useful for maintaining consistency between files on your local machine and those stored remotely, making it ideal for backup processes, collaborative environments where multiple users need the same data, or simply ensuring that you have the latest versions of files accessible.
+
+Common scenarios include:
+
+- Uploading your local project files to an FTP server during development.
+- Downloading updated resources from an online directory for offline use.
+- Keeping mutual directories in sync for collaboration purposes.
+
+## Configuration Options
+
+| Field Name                      | Description                                                                                           | Input Type | Required? | Default Value                  |
+| ------------------------------- | ----------------------------------------------------------------------------------------------------- | ---------- | --------- | ------------------------------ |
+| **FTP Connection**              | The connection details to the FTP server you are syncing with.                                        | Text       | Yes       | _(empty)_                      |
+| **Local Directory**             | The path to the folder on your computer you wish to sync.                                             | Text       | Yes       | _(empty)_                      |
+| **Remote Directory**            | The path to the folder on the FTP server you want to sync with.                                       | Text       | Yes       | _(empty)_                      |
+| **Sync Mode**                   | The direction of synchronization: upload, download, or both.                                          | Select     | No        | Upload                         |
+| **File Comparison Method**      | How to determine if a file should be synchronized: by size, name, or date.                            | Select     | No        | By Name and Size               |
+| **Delete Files Not Present Locally** | Remove files from target that are not in the source during sync.                                   | Switch     | No        | _(empty)_                      |
+| **Include Subdirectories**      | Whether to include folders within the specified directory during sync.                                | Switch     | No        | _(empty)_                      |
+| **Overwrite Mode**              | Conditions under which existing files should be overwritten.                                          | Select     | No        | IfNewerOrSizeDifferent         |
+| **Timeout Seconds**             | How long to wait before a timeout error if the sync is taking too long.                               | Text       | No        | 30                             |
+
+## Expected Output Format
+
+The node outputs the results of the synchronization process:
+- **Files Transferred**: Number of files that have been successfully synchronized.
+- **Directories Created**: Number of directories created as part of the synchronization.
+
+Both outputs are numerical values representing the count of files and directories processed.
+
+## Step-by-Step Guide
+
+<Steps>
+### Step 1
+
+Add the **Synchronize Directories** node into your workflow.
+
+### Step 2
+
+In the **FTP Connection** field, enter your FTP connection details.
+
+### Step 3
+
+Specify the **Local Directory** path on your machine you intend to sync.
+
+### Step 4
+
+Enter the **Remote Directory** path on the FTP server.
+
+### Step 5
+
+Select your desired **Sync Mode** from the dropdown:
+- **Upload**: Sync files from local to remote directory.
+- **Download**: Sync files from remote directory to local.
+- **Bidirectional**: Sync files in both directions.
+
+### Step 6
+
+(Optional) Adjust the **File Comparison Method** to dictate how files are compared for updates.
+
+### Step 7
+
+(Optional) Toggle **Delete Files Not Present Locally** if you want to clean up files in the target directory that aren't in the source.
+
+### Step 8
+
+(Optional) Toggle **Include Subdirectories** to ensure all subdirectories in the specified path are included in the sync.
+
+### Step 9
+
+(Optional) Choose an **Overwrite Mode** to determine the conditions under which files are overwritten.
+
+### Step 10
+
+(Optional) Set your **Timeout Seconds** for how long it should wait before giving up on the sync due to delays.
+
+### Step 11
+
+Run your workflow. Check the **Files Transferred** and **Directories Created** outputs to verify the synchronization results.
+
+</Steps>
+
+<Callout type="info" title="Note">
+  Ensure your FTP connection is active to prevent synchronization interruptions.
+</Callout>
+
+## Input/Output Examples
+
+| Sync Mode    | Local Directory | Remote Directory | Files Transferred | Directories Created | 
+| ------------ | --------------- | ---------------- | ----------------- | ------------------- |
+| Upload       | C:\Projects     | /ftp/backup      | 12                | 5                   |
+| Download     | C:\Data         | /ftp/files       | 8                 | 2                   |
+| Bidirectional| C:\SyncFolder   | /ftp/sync        | 20                | 10                  |
+
+## Common Mistakes & Troubleshooting
+
+| Problem                                          | Solution                                                                                         |
+| ------------------------------------------------ | ------------------------------------------------------------------------------------------------ |
+| **Incorrect FTP Credentials**                    | Double-check FTP connection information and re-enter if necessary.                               |
+| **Failure to transfer files or directories**     | Ensure that both local and remote directories exist and are accessible.                          |
+| **Timeouts preventing successful sync**          | Increase **Timeout Seconds** if network speeds are slower or syncing large directories.          |
+| **Unexpected deletions with 'Delete Files...**   | Use with caution, ensure the right source directory is always specified to avoid accidental loss. |
+
+## Real-World Use Cases
+
+- **Website Management**: Seamlessly manage website files by syncing local updates directly to a server.
+- **Remote Backups**: Ensure automated data backup by syncing local files to a remote server regularly.
+- **Collaboration**: Synchronize and share updated project files across team members working remotely.

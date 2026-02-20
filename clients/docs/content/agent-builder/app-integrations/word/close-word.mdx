@@ -1,0 +1,74 @@
+import { Callout, Steps } from "nextra/components";
+
+# Close Word
+
+The **Close Word** node is designed to close an active instance of Microsoft Word. This node is particularly useful when you have finished working with a Word document and want to automate its closing process. Whether you need to save changes, save the document under a new name, or simply close without saving, this node provides you with the necessary options.
+
+## Configuration Options
+
+| Field Name              | Description                                                                                                | Input Type | Required? | Default Value        |
+| ----------------------- | ---------------------------------------------------------------------------------------------------------- | ---------- | --------- | -------------------- |
+| **Word Instance**       | The specific Word instance you want to close.                                                              | Text       | Yes       | _(empty)_            |
+| **Before Closing Word** | Decide whether to save the document before closing.                                                       | Select     | No        | DoNotSaveDocument    |
+| **Save Path**           | Specify the file path to save the document if you chose 'Save document as'. (Appears if 'Save document as' is selected) | Text       | No        | _(empty)_            |
+| **Save Format**         | Choose the file format for saving the document (.docx or .pdf). (Appears if 'Save document as' is selected) | Select     | No        | Docx                 |
+
+## Expected Output Format
+
+The output of this node does not produce any direct data. Instead, it simply executes the action of closing the specified Word instance according to your configuration.
+
+## Step-by-Step Guide
+
+<Steps>
+### Step 1
+
+Add the **Close Word** node to your workflow.
+
+### Step 2
+
+In the **Word Instance** field, specify the Word instance you wish to close. This is mandatory to ensure the correct document is targeted.
+
+### Step 3
+
+Select what action to perform before closing Word in the **Before Closing Word** dropdown:
+
+- **Do not save document**: Closes Word without saving any changes.
+- **Save document**: Saves all changes to the existing document before closing.
+- **Save document as**: Saves the document under a new name and/or format before closing.
+
+### Step 4
+
+If you selected **Save document as**, the **Save Path** text field becomes visible, where you need to enter the desired file path for saving the document.
+
+### Step 5
+
+Also, if **Save document as** is selected, choose the **Save Format** (.docx or .pdf) for saving the document.
+
+</Steps>
+
+<Callout type="warning" title="Important">
+Ensure that the Word instance specified exists and is active, otherwise, the node will not perform any action.
+</Callout>
+
+## Input/Output Examples
+
+| Before Closing Word    | Save Path          | Save Format | Behavior                                                                 |
+| ---------------------- | ------------------ | ----------- | ----------------------------------------------------------------------- |
+| Do Not Save Document   | _(n/a)_            | _(n/a)_     | Closes the Word instance without saving changes.                        |
+| Save Document          | _(n/a)_            | _(n/a)_     | Saves changes to the current file path and closes the document.         |
+| Save Document As       | C:\example\file    | .docx       | Saves the document as a `.docx` at the specified path and closes it.    |
+| Save Document As       | D:\docs\file-name  | .pdf        | Saves the document as a `.pdf` at the specified path before closing.    |
+
+## Common Mistakes & Troubleshooting
+
+| Problem                                      | Solution                                                                                       |
+| -------------------------------------------- | ---------------------------------------------------------------------------------------------- |
+| **Word instance not available**              | Check that the correct Word instance identifier is entered and that Word is running.            |
+| **Save Path not specified**                  | When 'Save document as' is selected, ensure a valid file path is entered in the Save Path field.|
+| **Incorrect file format selected**           | Confirm that the desired Save Format corresponds to your needs (.docx or .pdf).                |
+
+## Real-World Use Cases
+
+- **Automated Report Workflow**: Close a Word report once all entries are updated, choosing to save or discard changes.
+- **Document Finalization**: Save a final version of a document in PDF after edits, then close Word to prepare the file for distribution.
+- **Backup Procedures**: Convert Word documents to a different format and path as part of a backup process before closing.

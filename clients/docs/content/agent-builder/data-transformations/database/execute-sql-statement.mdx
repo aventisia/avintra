@@ -1,0 +1,82 @@
+import { Callout, Steps } from "nextra/components";
+
+# Execute SQL Statement
+
+The **Execute SQL Statement** node allows you to connect to a database and execute an SQL statement directly from the platform. This node is particularly useful for users who need to interact with a database for operations such as data retrieval, updates, or other SQL commands. This enables seamless integration of database tasks into broader automation workflows.
+
+Common use cases include:
+- Running queries to extract data for reports or analysis.
+- Updating database records as part of a business process.
+- Executing stored procedures for complex database operations.
+
+## Configuration Options
+
+| Field Name         | Description                                                              | Input Type | Required? | Default Value |
+| ------------------ | ------------------------------------------------------------------------ | ---------- | --------- | ------------- |
+| **Connection String**   | The connection string to the database. Used to establish the database connection. | Text       | Yes       | _(empty)_     |
+| **SQL Statement**       | The SQL command you wish to execute. This could be a query or update command.  | Text       | Yes       | _(empty)_     |
+| **Operation Type**      | The type of SQL operation: 'Non-Query', 'Scalar', or 'DataSet'.   | Select     | No        | _(empty)_     |
+
+## Expected Output Format
+
+The result from the Execute SQL Statement node will depend on the operation type selected:
+
+- **Non-Query**: Executes an operation that does not return data, such as an UPDATE or DELETE command.
+- **Scalar**: Returns a single value, typically the result of an aggregate SQL function.
+- **DataSet**: Returns a data set, which can be multiple rows and columns of data.
+
+The executable output value is stored in the **ResultDataTable**.
+
+## Step-by-Step Guide
+
+<Steps>
+### Step 1
+
+Add the **Execute SQL Statement** node into your flow from the node selection panel.
+
+### Step 2
+
+Enter your database connection details in the **Connection String** field. This should contain all necessary information to connect to your database.
+
+### Step 3
+
+In the **SQL Statement** field, input the SQL command you desire to execute. Ensure that the command syntax is correct according to the database you're using.
+
+### Step 4
+
+Select an **Operation Type**:
+- **Non-Query**: For SQL statements like INSERT, UPDATE, or DELETE.
+- **Scalar**: When you need a single data value, such as a count or total.
+- **DataSet**: To retrieve multiple rows of data in a tabular form.
+
+### Step 5
+
+Once configured, the result is accessible within the workflow as **ResultDataTable**, ready to be used in subsequent nodes or actions.
+
+</Steps>
+
+<Callout type="info" title="Tip">
+  Ensure that your connection string is correct and tested outside the platform to avoid connection issues.
+</Callout>
+
+## Input/Output Examples
+
+| SQL Statement          | Operation Type | Expected Output  | Output Type          |
+| ---------------------- | -------------- | ---------------- | -------------------- |
+| `SELECT COUNT(*) FROM employees` | Scalar        | 100              | Number               |
+| `UPDATE employees SET status = 'active' WHERE department = 'sales'` | Non-Query     | No direct output | _(None)_             |
+| `SELECT * FROM employees WHERE department = 'IT'` | DataSet       | DataRows         | Table (ResultDataTable) |
+
+## Common Mistakes & Troubleshooting
+
+| Problem                                              | Solution                                                                                      |
+| ---------------------------------------------------- | --------------------------------------------------------------------------------------------- |
+| **Unable to connect to the database**                | Double-check your **Connection String** for typos or incorrect credentials.                    |
+| **SQL Statement syntax error**                       | Validate your SQL statement using a database management tool to ensure it's written correctly. |
+| **No output for expected result**                    | Verify the selected **Operation Type** matches the SQL intention and inspect database logs for more details. |
+
+## Real-World Use Cases
+
+- **Customer Data Retrieval**: Automate extracting customer data for targeted email campaigns.
+- **Sales Updates**: Automatically update sales records in real-time as transactions occur.
+- **Inventory Management**: Run stock level reports to generate reorder alerts or forecasts.

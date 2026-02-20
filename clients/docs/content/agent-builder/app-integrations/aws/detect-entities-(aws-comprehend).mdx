@@ -1,0 +1,74 @@
+import { Callout, Steps } from "nextra/components";
+
+# Detect Entities (AWS Comprehend)
+
+The **Detect Entities (AWS Comprehend)** node helps identify named entities within a text using AWS Comprehend. Named entities can include people, organizations, locations, and more. This can be particularly helpful for processing and understanding text data to extract meaningful information automatically.
+
+## Configuration Options
+
+| Field Name                      | Description                                                                                                | Input Type | Required? | Default Value |
+| ------------------------------- | ---------------------------------------------------------------------------------------------------------- | ---------- | --------- | ------------- |
+| **Credential to connect with**  | Select the AWS credential for authentication. This is necessary to access AWS Comprehend services.         | Text       | Yes       | _(empty)_     |
+| **Language Code**               | The language in which the input text is written. Important for accurate entity recognition.                | Text       | Yes       | _(empty)_     |
+| **Text**                        | The text you want to analyze for named entities.                                                          | Text       | Yes       | _(empty)_     |
+| **AWS Region**                  | The AWS region where the Comprehend service is running. Default is `us-east-1`, but can be changed if needed. | Text       | No        | _(empty)_     |
+
+## Expected Output Format
+
+The output consists of:
+
+- **Detected Entities**: A list of named entities identified by AWS Comprehend. This includes the entity type and its confidence score.
+- **API Response**: The raw JSON response from AWS that contains detailed extraction results.
+
+## Step-by-Step Guide
+
+<Steps>
+### Step 1
+
+Add **Detect Entities (AWS Comprehend)** node into your flow.
+
+### Step 2
+
+Select your AWS credential in the **Credential to connect with** field. This is essential for service communication.
+
+### Step 3
+
+Enter the **Language Code** for your text. Common codes include `en` for English, `es` for Spanish, etc.
+
+### Step 4
+
+In the **Text** field, input the text you wish to analyze for entities.
+
+### Step 5
+
+(Optional) Specify the **AWS Region** where your Comprehend service is hosted if other than the default `us-east-1`.
+
+### Step 6
+
+The detected entities will be available as **Entities** and the raw API response as **Response**.
+</Steps>
+
+<Callout type="info" title="Tip">
+  Make sure your AWS credentials have permission to access the Comprehend service. Incorrect configurations may lead to access errors.
+</Callout>
+
+## Input/Output Examples
+
+| Language Code | Input Text                                   | Detected Entities                  | API Response |
+| ------------- | -------------------------------------------- | ---------------------------------- | ------------ |
+| `en`          | "Amazon is based in Seattle."                | [Person: Amazon, Location: Seattle]| `{...}`      |
+| `es`          | "Pedro vive en Madrid y trabaja en Microsoft." | [Person: Pedro, Location: Madrid, Organization: Microsoft] | `{...}` |
+
+## Common Mistakes & Troubleshooting
+
+| Problem                                            | Solution                                                                                  |
+| -------------------------------------------------- | ----------------------------------------------------------------------------------------- |
+| **Invalid AWS credentials**                        | Ensure the selected AWS credential is correct and has necessary permissions.              |
+| **Incorrect language code**                        | Verify the language code matches the language of the text entered.                        |
+| **Empty or poorly formatted text**                 | Make sure the text field is filled and formatted correctly for better entity detection.   |
+
+## Real-World Use Cases
+
+- **Customer Feedback Analysis**: Extract names and locations from customer reviews for demographic insights.
+- **Document Processing**: Automatically identify and categorize entities in large volumes of documents.
+- **Market Research**: Analyze news articles to detect company names, leaders, and geographical information.

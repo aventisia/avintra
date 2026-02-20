@@ -1,0 +1,80 @@
+import { Callout, Steps } from "nextra/components";
+
+# Wait For Process
+
+The **Wait For Process** node is designed to monitor specific processes on your desktop. It waits for a process to either start running or to stop, based on your configuration. This can be useful for automating tasks that need to occur after certain applications launch or close.
+
+For example:
+
+- Launch another process automatically when a critical application starts.
+- Trigger cleanup tasks when a user logs out or closes an application.
+- Monitor system resources by observing the start and stop of intensive processes.
+
+## Configuration Options
+
+| Field Name                | Description                                                                            | Input Type | Required? | Default Value |
+| ------------------------- | -------------------------------------------------------------------------------------- | ---------- | --------- | ------------- |
+| **Process Name**          | The name of the process to monitor, chosen from a list of common applications.         | Select     | Yes       | _(empty)_     |
+| **From User**             | Specifies if the process should be tied to specific user activity.                     | Switch     | No        | _(empty)_     |
+| **User Name**             | The username associated with the process. This is needed if "From User" is checked.    | Text       | No        | _(empty)_     |
+| **Wait For Process To**   | Choose whether to wait for the process to start or stop.                               | Select     | No        | _(empty)_     |
+| **Fail With Timeout Error** | Determines if the activity should terminate when a timeout occurs.                    | Switch     | No        | _(empty)_     |
+| **Duration (Seconds)**    | The maximum duration to wait before timing out, optional if "Fail With Timeout Error" is selected. | Text    | No        | _(empty)_     |
+
+Note: The **User Name** field only appears when the **From User** switch is enabled, and **Duration (Seconds)** only appears if **Fail With Timeout Error** is enabled.
+
+## Expected Output Format
+
+This node does not produce a direct data value output but triggers the next sequence once the specified process condition is met.
+
+## Step-by-Step Guide
+
+<Steps>
+### Step 1
+
+Add the **Wait For Process** node into your flow.
+
+### Step 2
+
+In the **Process Name** dropdown, select the application or process you wish to monitor from the list.
+
+### Step 3
+
+Optionally, toggle the **From User** switch if the process monitoring should be scoped to a specific user session.
+
+### Step 4
+
+If **From User** is enabled, enter the **User Name** in the corresponding field.
+
+### Step 5
+
+Choose an option in the **Wait For Process To** dropdown either **Start** or **Stop** to specify the condition to wait for.
+
+### Step 6
+
+Optionally, toggle **Fail With Timeout Error** if you want the node to fail when the specified wait duration is reached. If enabled, enter the **Duration (Seconds)** in the field.
+
+### Step 7
+
+Once the process condition is met, the node can trigger subsequent actions in your workflow.
+
+</Steps>
+
+<Callout type="info" title="Important Note">
+  Checking the box for **From User** without providing a **User Name** will result in the node not functioning as expected. Ensure both are configured if user-specific monitoring is needed.
+</Callout>
+
+## Common Mistakes & Troubleshooting
+
+| Problem                                                      | Solution                                                                                              |
+| ------------------------------------------------------------ | ----------------------------------------------------------------------------------------------------- |
+| **Process does not trigger despite being active**            | Verify that you have selected the correct process name from the list.                                 |
+| **User-specific process not detected**                       | Make sure that both **From User** is enabled and the correct **User Name** is entered.                |
+| **Timeout settings not effective**                           | Ensure **Fail With Timeout Error** is enabled and **Duration (Seconds)** is correctly configured.      |
+| **Fields are unexpectedly hidden**                           | Ensure you have correctly toggled **From User** and **Fail With Timeout Error** to display hidden fields.|
+
+## Real-World Use Cases
+
+- **Automatic System Maintenance**: Perform system cleanup tasks once a user logs out by monitoring the user's last active application.
+- **Web Browser Monitoring**: Start recording user sessions when a browser process like Google Chrome starts.
+- **Resource Allocation**: Free resources or halt operations when a high-demand application, such as Visual Studio, finishes running.

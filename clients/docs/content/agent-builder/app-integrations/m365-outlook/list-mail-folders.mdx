@@ -1,0 +1,78 @@
+import { Callout, Steps } from "nextra/components";
+
+# List Mail Folders
+
+The **List Mail Folders** node retrieves all the mail folders from a specified user's mailbox using the Microsoft Graph API. This node is useful for users who need to organize and manage their mailbox folders, such as listing, verifying, or processing emails stored in various folders.
+
+For example:
+
+- Quickly list all folders to understand how emails are organized.
+- Verify access to specific folders for administrative purposes.
+- Prepare data for further processing, like moving emails between folders.
+
+## Configuration Options
+
+| Field Name        | Description                                                | Input Type | Required? | Default Value |
+| ----------------- | ---------------------------------------------------------- | ---------- | --------- | ------------- |
+| **User Email**    | The email address of the mailbox owner.                    | Text       | Yes       | _(empty)_     |
+| **Tenant ID**     | Azure Active Directory tenant (directory) ID.              | Text       | Yes       | _(empty)_     |
+| **Client ID**     | Azure AD application (client) ID.                          | Text       | Yes       | _(empty)_     |
+| **Client Secret** | Azure AD application client secret.                        | Text       | Yes       | _(empty)_     |
+
+## Expected Output Format
+
+The output of this node is a **JSON array** containing the user's mail folders.
+
+- The output will be returned as **MailFolders** which can be further used within other nodes or processes in your flow.
+
+## Step-by-Step Guide
+
+<Steps>
+### Step 1
+
+Add the **List Mail Folders** node to your flow.
+
+### Step 2
+
+In the **User Email** field, enter the email address of the mailbox owner whose folders you wish to list.
+
+### Step 3
+
+Enter the **Tenant ID**. This should be the Azure Active Directory tenant ID associated with the email account.
+
+### Step 4
+
+Provide the **Client ID** belonging to your Azure AD application.
+
+### Step 5
+
+Enter the **Client Secret** of your Azure AD application. Ensure that you keep this information confidential.
+
+### Step 6
+
+Once configured, the node will output the list of mail folders as **MailFolders** in JSON format.
+</Steps>
+
+<Callout type="warning" title="Security Note">
+  Ensure your **Client Secret** is secure and not shared with unauthorized individuals to avoid security risks.
+</Callout>
+
+## Input/Output Examples
+
+| User Email          | Tenant ID     | Client ID     | Client Secret | Output                      | Output Data Type |
+| ------------------- | ------------- | ------------- | ------------- | --------------------------- | ---------------- |
+| user@example.com    | 12345-tenant  | abcde-client  | ***secret***  | `[{"id":"inbox"}, {...}]`   | JSON Array       |
+
+## Common Mistakes & Troubleshooting
+
+| Problem                                                      | Solution                                                                                                |
+| ------------------------------------------------------------ | ------------------------------------------------------------------------------------------------------- |
+| **Authentication Failure**                                   | Verify your **Tenant ID**, **Client ID**, and **Client Secret** to ensure they are correct and up-to-date.|
+| **Invalid Email Address**                                    | Ensure the **User Email** is correct and belongs to the right mailbox.                                  |
+| **Missing Output**                                           | Double-check all required fields are filled and there are no typographical errors.                     |
+
+## Real-World Use Cases
+
+- **Email Management**: System administrators can list user mail folders to manage email access and content effectively.
+- **Project Organization**: Automatically gather and sort emails into folders for project tracking and organization.
+- **Data Analysis**: Prepare a comprehensive folder inventory before conducting detailed email analysis or archival.

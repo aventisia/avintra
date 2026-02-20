@@ -1,0 +1,79 @@
+import { Callout, Steps } from "nextra/components";
+
+# Find and Replace Words in Word Document
+
+The **Find and Replace Words in Word Document** node helps you efficiently locate specific text within a Word document and replace it with different text. This is useful for updating document content quickly, such as correcting repeated typos or standardizing terminology across a document.
+
+For example:
+- Replacing outdated names with the current ones across reports.
+- Changing product codes or terms in proposals.
+- Quickly correcting consistent spelling mistakes.
+
+## Configuration Options
+
+| Field Name                | Description                                                                 | Input Type | Required? | Default Value |
+| ------------------------- | --------------------------------------------------------------------------- | ---------- | --------- | ------------- |
+| **Word Instance**         | The specific Word instance to use for the operation.                        | Text       | Yes       | _(empty)_     |
+| **All Matches**           | Choose to replace all occurrences (`true`) or just the first found (`false`).| Switch     | No        | false         |
+| **Text to Find**          | The text string you want to search for in the document.                     | Text       | Yes       | _(empty)_     |
+| **Text to Replace With**  | The text that will replace occurrences of the found text.                   | Text       | Yes       | _(empty)_     |
+| **Use Wildcards**         | Toggle to use special wildcard patterns in your search.                     | Switch     | No        | false         |
+| **Match Case**            | Ensure case sensitivity in search when using wildcards.                     | Switch     | No        | true          |
+| **Match Whole Words Only** | Match only complete words, not parts of words, when using wildcards.       | Switch     | No        | true          |
+
+## Expected Output Format
+
+The output of this node is an **updated Word document** with the specified text replaced according to the configuration. No additional data is output.
+
+## Step-by-Step Guide
+
+<Steps>
+### Step 1
+
+Add **Find and Replace Words in Word Document** node to your workflow.
+
+### Step 2
+
+Select the **Word Instance** you want to perform the operation on. Ensure the document is open in this instance.
+
+### Step 3
+
+In the **Text to Find** field, type the text you want to search for in the document.
+
+### Step 4
+
+In the **Text to Replace With** field, enter the text that will replace the found text.
+
+### Step 5
+
+If you wish to replace all occurrences of the text, enable **All Matches**. Leave it off to replace only the first occurrence.
+
+### Step 6
+
+Optionally, toggle **Use Wildcards** if you need advanced search patterns.
+
+- If enabled, consider adjusting **Match Case** and **Match Whole Words Only** settings to refine your search as needed.
+
+### Step 7
+
+Once configured, confirm your settings to execute the find and replace operation.
+
+</Steps>
+
+<Callout type="info" title="Tip">
+  Use wildcards for advanced searching. For example, using a wildcard pattern like `"b*t"` can match any word starting with 'b' and ending with 't'.
+</Callout>
+
+## Common Mistakes & Troubleshooting
+
+| Problem                                             | Solution                                                                                                          |
+| --------------------------------------------------- | ----------------------------------------------------------------------------------------------------------------- |
+| **Word Instance not found or incorrect**            | Ensure the Word document is open in the specified instance.                                                       |
+| **Text not being replaced as expected**             | Verify your text inputs for accuracy and check if case sensitivity or whole word settings are influencing results.|
+| **Wildcards not functioning properly**              | Double-check your wildcard patterns and settings. Make sure conditions like **Match Case** and **Whole Words** are correctly toggled.|
+
+## Real-World Use Cases
+
+- **Brand Updates**: Quickly replace an old brand name with a new one across all company documents.
+- **Template Adjustments**: Update place-holder text in document templates with actual data.
+- **Spelling Corrections**: Standardize spelling across large documents where certain terms were consistently misspelled.

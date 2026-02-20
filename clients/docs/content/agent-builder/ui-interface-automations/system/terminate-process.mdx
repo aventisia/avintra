@@ -1,0 +1,86 @@
+import { Callout, Steps } from "nextra/components";
+
+# Terminate Process
+
+The **Terminate Process** node is designed to immediately stop a running process on your desktop. This node is useful when you need to programmatically end processes that are no longer needed, potentially freeing up system resources or handling processes that may have become unresponsive.
+
+For example:
+
+- Stopping unnecessary background applications to optimize system performance.
+- Ending applications that were started by mistake or are no longer required.
+- Managing multiple instances of applications by terminating specific processes.
+
+## Configuration Options
+
+| Field Name         | Description                                                                                      | Input Type | Required? | Default Value |
+| ------------------ | ------------------------------------------------------------------------------------------------ | ---------- | --------- | ------------- |
+| **Specify Process By** | Choose how to identify the process you want to terminate: by its name or by its numeric ID. | Select     | Yes       | _(empty)_     |
+| **Process Name**     | The name of the process to stop. Applicable only if **Specify Process By** is set to "Process Name".  | Text       | No        | _(empty)_     |
+| **Process ID**       | The numeric ID of the process to stop. Applicable only if **Specify Process By** is set to "Process ID".  | Text       | No        | _(empty)_     |
+| **From User**        | Toggle to check if the process is running under a specific user.                                | Switch     | No        | _(empty)_     |
+| **User Name**        | The username to verify. This field appears only if **From User** is enabled.                    | Text       | No        | _(empty)_     |
+
+## Expected Output Format
+
+The node outputs a **Status Message** to inform you about the operation's success or failure. This is a simple textual message.
+
+## Step-by-Step Guide
+
+<Steps>
+### Step 1
+
+Add the **Terminate Process** node to your workflow.
+
+### Step 2
+
+In the **Specify Process By** dropdown, choose how you want to identify the process:
+
+- **Process Name**: Use this if you know the name of the process (e.g., `notepad`).
+- **Process ID**: Use this if you have the numeric ID of the process.
+
+### Step 3
+
+If you chose **Process Name** in the previous step, enter the name of the process in the **Process Name** field.
+
+### Step 4
+
+If you chose **Process ID**, enter the corresponding numeric ID in the **Process ID** field.
+
+### Step 5
+
+(Optional) Use the **From User** switch if you need to terminate a process for a specific user.
+
+### Step 6
+
+If **From User** is enabled, enter the username in the **User Name** field.
+
+### Step 7
+
+Upon configuration, the status of the operation will be available as a **Status Message**, which you can use for further logic or user notification.
+
+</Steps>
+
+<Callout type="info" title="Note">
+  Ensure that you have the necessary permissions to terminate processes to avoid access-related issues.
+</Callout>
+
+## Input/Output Examples
+
+| Specify Process By | Process Name | Process ID | From User | User Name | Status Message                              |
+| ------------------ | ------------ | ---------- | --------- | --------- | ------------------------------------------- |
+| Process Name       | notepad      | _(n/a)_    | Off       | _(n/a)_   | Process 'notepad' terminated successfully.  |
+| Process ID         | _(n/a)_      | 1234       | On        | alice     | Process with ID 1234 for user 'alice' terminated successfully. |
+
+## Common Mistakes & Troubleshooting
+
+| Problem                                    | Solution                                                                                                 |
+| ------------------------------------------ | -------------------------------------------------------------------------------------------------------- |
+| **Process does not terminate**              | Verify that the specified process name or ID is correct and that you have the necessary permissions.      |
+| **Fields not appearing correctly**         | Make sure you have selected the correct option in **Specify Process By** to reveal the appropriate fields. |
+| **Access denied errors**                   | Check your user permissions and ensure that you are allowed to terminate processes on the system.         |
+
+## Real-World Use Cases
+
+- **Routine Maintenance**: Regularly terminate unnecessary processes to keep system performance optimal.
+- **Automation Scripts**: Use within scripts to manage application lifecycle without manual intervention.
+- **Troubleshooting**: Quickly end an unresponsive process that causes system slowdowns during diagnosis.

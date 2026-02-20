@@ -1,0 +1,69 @@
+import { Callout, Steps } from "nextra/components";
+
+# Find JSON Nodes by Key
+
+The **Find JSON Nodes by Key** node is designed to help you search through complex JSON data structures to easily locate and extract all values associated with a specific key. This node is particularly useful when working with nested JSON data, ensuring that you efficiently retrieve every instance of a key across all hierarchical levels.
+
+For example, you might use this to:
+- Retrieve all instances of a specific field across varied segments of your data structure.
+- Validate the presence and value of repeated keys in data sets.
+
+## Configuration Options
+
+| Field Name       | Description                                                                                            | Input Type | Required? | Default Value |
+| ---------------- | ------------------------------------------------------------------------------------------------------ | ---------- | --------- | ------------- |
+| **JSON Content** | The JSON data you want to search through. Enter this as a JSON string or JToken.                       | Text       | Yes       | _(empty)_     |
+| **Key to Find**  | The specific JSON key you are searching for in the structure. This search is both recursive and case-sensitive. | Text       | Yes       | _(empty)_     |
+
+## Expected Output Format
+
+The output is a **list of matching JSON elements** (JTokens) found by the specified key.
+
+- The list will contain each value associated with the key you searched for.
+- If no matches are found, the output will be an empty list.
+
+## Step-by-Step Guide
+
+<Steps>
+### Step 1
+
+Add the **Find JSON Nodes by Key** node into your flow.
+
+### Step 2
+
+In the **JSON Content** field, input the JSON string or JToken you want to search through. Ensure that the JSON syntax is correct.
+
+### Step 3
+
+In the **Key to Find** field, enter the key name you wish to locate within the JSON content. Remember, the search will consider case sensitivity.
+
+### Step 4
+
+The results of your search will be available as **ResultList**, accessible for subsequent use in your workflow.
+</Steps>
+
+<Callout type="info" title="Tip">
+  Ensure JSON is properly structured; incorrect syntax may lead to errors when the node attempts to parse it.
+</Callout>
+
+## Input/Output Examples
+
+| JSON Content Example                                                           | Key to Find | Output (Result List)                                              |
+| ------------------------------------------------------------------------------ | ----------- | ----------------------------------------------------------------- |
+| `{ "name": "Alice", "details": {"age": 30}, "friend": {"name": "Bob"}}`       | `name`      | `['Alice', 'Bob']`                                                |
+| `{"product": {"id": 1, "name": "Book", "tags": [{"name": "Education"}, {"name": "Arts"}]}}` | `name`      | `['Book', 'Education', 'Arts']`                                   |
+| `{"employee": {"name": "John", "manager": {"name": "Doe"}}}`                   | `location`  | `[]` (empty list, as key doesn't exist)                           |
+
+## Common Mistakes & Troubleshooting
+
+| Problem                                               | Solution                                                                                   |
+| ----------------------------------------------------- | ------------------------------------------------------------------------------------------ |
+| **Invalid JSON input**                                | Ensure the JSON string is correctly formatted and not missing braces or commas.             |
+| **Case Sensitivity**                                  | Double-check the casing of the key you're searching for; it must match exactly.             |
+| **Empty Result List**                                 | Make sure the key really exists in the given JSON structure. It's possible no such keys exist.|
+
+## Real-World Use Cases
+
+- **Data Analysis**: Extract all instances of a repeating key across multiple data sets for further processing.
+- **Configuration Management**: Identify repeated configuration options across nested system settings.
+- **JSON Debugging**: Quickly spot redundant or missing values in JSON files by repeatedly occurring keys.

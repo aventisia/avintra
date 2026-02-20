@@ -1,0 +1,75 @@
+import { Callout, Steps } from "nextra/components";
+
+# Rename Excel Worksheet
+
+The **Rename Excel Worksheet** node allows you to change the name of a specific worksheet within an Excel workbook. This feature is particularly useful when organizing or updating Excel files to better reflect their contents or purpose.
+
+Consider using this node when:
+
+- You need to standardize worksheet names across multiple files.
+- The current worksheet name does not appropriately describe its content.
+- Automating updates to Excel workbooks to keep them organized.
+
+## Configuration Options
+
+| Field Name             | Description                                                                                                 | Input Type | Required? | Default Value |
+| ---------------------- | ----------------------------------------------------------------------------------------------------------- | ---------- | --------- | ------------- |
+| **Worksheet Instance** | The Excel Worksheet object used to access the workbook containing the target sheet.                         | Text       | Yes       | _(empty)_     |
+| **Selection Type**     | Specifies whether to select the worksheet by Name or Index.                                                 | Select     | Yes       | Name          |
+| **Search Value**       | The worksheet name (if selection type is 'Name') or index (if selection type is 'Index').                   | Text       | Yes       | _(empty)_     |
+| **New Worksheet Name** | The new name to assign to the selected worksheet.                                                           | Text       | Yes       | _(empty)_     |
+
+## Expected Output Format
+
+There is no direct output value from this node; it performs an action to rename the worksheet in the Excel file.
+
+## Step-by-Step Guide
+
+<Steps>
+### Step 1
+
+Add the **Rename Excel Worksheet** node into your flow.
+
+### Step 2
+
+In the **Worksheet Instance** field, specify the Excel Worksheet object you are working with.
+
+### Step 3
+
+Select the **Selection Type** from the dropdown:
+
+- **Name**: Choose this option if you want to select the worksheet by its current name.
+- **Index**: Select this if you prefer to access the worksheet by its numerical position in the workbook (starting from 1).
+
+### Step 4
+
+Enter the **Search Value**:
+
+- If you selected **Name**, input the current name of the worksheet.
+- If you selected **Index**, input the numerical position of the worksheet.
+
+### Step 5
+
+In the **New Worksheet Name** field, type in the new name you wish to assign to the worksheet.
+
+The worksheet will be renamed once this configuration is completed.
+
+</Steps>
+
+<Callout type="warning" title="Important Note">
+Make sure the new worksheet name does not contain any invalid characters such as: `:/\?*[]`. Excel does not allow these in sheet names.
+</Callout>
+
+## Common Mistakes & Troubleshooting
+
+| Problem                                               | Solution                                                                                     |
+| ----------------------------------------------------- | -------------------------------------------------------------------------------------------- |
+| **Worksheet not found**                               | Ensure the correct name or index is provided in the **Search Value** field.                  |
+| **Duplicate worksheet name error**                    | Make sure the **New Worksheet Name** is unique in the workbook.                              |
+| **Invalid characters in new name**                    | Avoid using characters like `:/\?*[]` in the **New Worksheet Name**.                         |
+
+## Real-World Use Cases
+
+- **Monthly Report Updates**: Rename worksheets in monthly financial reports based on the month for easy identification.
+- **Consistent Naming Conventions**: Ensure all sheets adhere to a specific format, aiding in data management and retrieval.
+- **Preparation for Data Sharing**: Rename worksheets for clarity before sharing with stakeholders or teams.

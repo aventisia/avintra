@@ -1,0 +1,75 @@
+import { Callout, Steps } from "nextra/components";
+
+# Move File(s)
+
+The **Move File(s)** node is designed to transfer one or more files from their current location to a specified folder. It's popular for organizing files, backing up data, or ensuring files are in the correct directories for processing.
+
+For example:
+
+- Organizing documents by moving text files from a "Downloads" to "Documents" folder.
+- Automating backups by moving files to a designated backup folder.
+- Ensuring necessary files are in the correct folders for batch processing.
+
+## Configuration Options
+
+| Field Name            | Description                                                                                | Input Type | Required? | Default Value |
+| --------------------- | ------------------------------------------------------------------------------------------ | ---------- | --------- | ------------- |
+| **File(s) to move**   | The path(s) of the file(s) to move. Supports wildcards like `*.txt` to select multiple files. | Text       | Yes       | _(empty)_     |
+| **Destination folder**| The path to the folder where the files should be moved.                                    | Text       | Yes       | _(empty)_     |
+| **If file exists**    | Choose what to do if a file with the same name exists in the destination folder.            | Select     | Yes       | DoNothing     |
+
+## Expected Output Format
+
+The output of this node is the **file path** of the successfully moved file, named as `MovedFile`. This path can be used for further processing or logging.
+
+## Step-by-Step Guide
+
+<Steps>
+### Step 1
+
+Add the **Move File(s)** node to your flow.
+
+### Step 2
+
+In the **File(s) to move** field, enter the path(s) of the file(s) you want to move. You can use wildcards to select multiple files at once, such as `C:/Documents/*.txt`.
+
+### Step 3
+
+In the **Destination folder** field, provide the path to the destination folder where you want the files to be moved. Ensure the folder exists to avoid errors.
+
+### Step 4
+
+Set the **If file exists** dropdown to define what should happen if a file with the same name exists in the destination:
+
+- **Do nothing**: Skips moving the file.
+- **Overwrite**: Deletes the existing destination file before moving the new file.
+
+### Step 5
+
+Check for the output `MovedFile` to confirm the path of the moved file after execution.
+
+</Steps>
+
+<Callout type="warning" title="Important">
+  Ensure that the destination folder exists. The move operation will fail if the folder does not exist, as new folders are not automatically created.
+</Callout>
+
+## Input/Output Examples
+
+| File(s) to move  | Destination folder       | If file exists | Output Value | Output Type   |
+| ---------------- | ------------------------ | -------------- | ------------ | ------------- |
+| C:/Reports/*.csv | D:/Backup/Reports/2023/  | Overwrite      | MovedFile    | File Path     |
+
+## Common Mistakes & Troubleshooting
+
+| Problem                                              | Solution                                                                                                                                               |
+| ---------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------ |
+| **Destination folder not found**                     | Ensure the path is correct and that the destination folder exists on your system.                                                                      |
+| **No files moved with wildcard**                     | Double-check the file path and wildcard format to ensure they correctly match file names (`*.txt`, `fileName?.*`, etc.).                               |
+| **File already exists and not moved**                | Review the **If file exists** setting. If set to "Do nothing", files will not be moved if a file with the same name already exists in the destination.  |
+
+## Real-World Use Cases
+
+- **File Organization**: Automate sorting and organizing multiple files into designated folders.
+- **Data Backup**: Regularly move important files to a secure backup location.
+- **Project Management**: Move completed project files to a finalized location for archiving or review.

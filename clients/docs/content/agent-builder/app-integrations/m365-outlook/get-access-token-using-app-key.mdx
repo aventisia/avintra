@@ -1,0 +1,66 @@
+import { Callout, Steps } from "nextra/components";
+
+# Get Access Token Using App Key
+
+The **Get Access Token Using App Key** node allows you to securely acquire a Microsoft Graph API access token using client credentials. This is particularly useful for authenticating server-to-server calls to Microsoft services without user intervention. You would use this node when you need to automate tasks involving Microsoft's cloud-based services, ensuring all API calls are authenticated with a valid token.
+
+## Configuration Options
+
+| Field Name      | Description                                                    | Input Type | Required? | Default Value |
+|-----------------|----------------------------------------------------------------|------------|-----------|---------------|
+| **Tenant ID**   | The Azure Active Directory tenant (directory) ID.              | Text       | Yes       | _(empty)_     |
+| **Client ID**   | The Azure AD application (client) ID.                          | Text       | Yes       | _(empty)_     |
+| **Client Secret**| The Azure AD application client secret.                       | Text       | Yes       | _(empty)_     |
+
+## Expected Output Format
+
+The output of this node is an **Access Token**, which is a string used for authentication when making requests to the Microsoft Graph API. You will find this as **MS365AccessToken** within the flow for further use.
+
+## Step-by-Step Guide
+
+<Steps>
+### Step 1
+
+Add the **Get Access Token Using App Key** node into your flow.
+
+### Step 2
+
+In the **Tenant ID** field, enter your Azure Active Directory tenant ID. This is necessary to identify the directory you are connecting to.
+
+### Step 3
+
+In the **Client ID** field, input your Azure AD application's client ID. This uniquely identifies your application's client in Azure.
+
+### Step 4
+
+In the **Client Secret** field, provide the client secret associated with your Azure application. This secret acts as a password to authenticate your application.
+
+### Step 5
+
+Once all fields are correctly filled, the node will output an **Access Token** as **MS365AccessToken**. Utilize this token for authenticated API requests in your workflow.
+
+</Steps>
+
+<Callout type="warning" title="Security Notice">
+  Ensure your **Client Secret** is protected and not exposed, as it grants access to your Azure AD application.
+</Callout>
+
+## Input/Output Examples
+
+| Tenant ID       | Client ID     | Client Secret | Output (Access Token)    |
+|-----------------|---------------|---------------|--------------------------|
+| `abcd-1234-efgh-5678` | `1234-5678-9012-3456` | `secret-key-example` | `eyJhbGciOiJIUzI1N...` |
+
+## Common Mistakes & Troubleshooting
+
+| Problem                                           | Solution                                                                                           |
+|---------------------------------------------------|----------------------------------------------------------------------------------------------------|
+| **Invalid Client ID or Client Secret**            | Verify that you have copied the correct Client ID and Client Secret from your Azure AD application. |
+| **Empty Access Token**                            | Ensure that all required fields are filled and that there is connectivity to the Azure AD service.  |
+| **Expired Client Secret**                         | Regularly update your Client Secret in Azure to avoid expiration issues. Reconfigure with the new secret. |
+
+## Real-World Use Cases
+
+- **Automated Data Integration**: Use the access token to authenticate and migrate data between Microsoft services programmatically.
+- **Secure Application Development**: Develop back-end services that interact with Microsoft Graph securely using tokens.
+- **Batch Processing**: Automate tasks such as generating reports or synchronizing directories without manual login, leveraging the access token for API access.

@@ -1,0 +1,78 @@
+import { Callout, Steps } from "nextra/components";
+
+# Execute XPath Expression
+
+The **Execute XPath Expression** node allows you to query XML content using an XPath expression. XPath is a language used for selecting nodes from an XML document. This node is useful for extracting specific data from XML files based on patterns or conditions you define.
+
+For example:
+
+- Retrieve specific elements or attributes from an XML document.
+- Select nodes based on their values or hierarchical position.
+
+## Configuration Options
+
+| Field Name             | Description                                                                                                        | Input Type | Required? | Default Value |
+| ---------------------- | ------------------------------------------------------------------------------------------------------------------ | ---------- | --------- | ------------- |
+| **XML Content**        | The XML content to query with XPath.                                                                               | Text       | Yes       | _(empty)_     |
+| **XPath Expression**   | The XPath expression to execute.                                                                                   | Text       | Yes       | _(empty)_     |
+| **Get First Value Only** | If true, only the first matching node will be returned. If false, all matching nodes will be returned as a list. | Switch     | No        | false         |
+
+## Expected Output Format
+
+The output can be either a **single string value** or a **list of string values** based on your configuration:
+
+- If "Get First Value Only" is enabled: a single string value or `null`.
+- If not: a list of string values matching the XPath expression.
+
+## Step-by-Step Guide
+
+<Steps>
+### Step 1
+
+Add **Execute XPath Expression** node into your flow.
+
+### Step 2
+
+In the **XML Content** field, enter the XML data you want to search using XPath.
+
+### Step 3
+
+In the **XPath Expression** field, enter the XPath expression you want to execute on the XML content.
+
+### Step 4
+
+If needed, toggle **Get First Value Only**:
+
+- Enable this if you only want the first matching result.
+- Keep it disabled to get all matching results as a list.
+
+### Step 5
+
+The output will be available as **XPathResult** or **XPathResults** for use in other nodes.
+
+</Steps>
+
+<Callout type="info" title="Tip">
+  When not sure about your XPath, test using smaller snippets of XML to ensure accuracy.
+</Callout>
+
+## Input/Output Examples
+
+| XML Content                                 | XPath Expression  | Get First Value Only | Output        | Output Type    |
+| ------------------------------------------- | ----------------- | -------------------- | ------------- | -------------- |
+| `<items><item>Apple</item><item>Banana</item></items>` | `//item`          | true                 | `Apple`       | String         |
+| `<items><item>Apple</item><item>Banana</item></items>` | `//item`          | false                | `["Apple", "Banana"]` | List of Strings |
+
+## Common Mistakes & Troubleshooting
+
+| Problem                                       | Solution                                                                                  |
+| --------------------------------------------- | ----------------------------------------------------------------------------------------- |
+| **No results returned**                       | Check your XML structure and XPath expression for accuracy.                               |
+| **XPath Errors**                              | Ensure XPath syntax is correct and matches the XML's node structure.                      |
+| **Empty output despite XML input**            | Make sure the XML input is well-formed and matches what your XPath expects.               |
+
+## Real-World Use Cases
+
+- **Data Extraction**: Pull specific data from customer or product XML feeds.
+- **Configuration Management**: Read and extract settings from XML configuration files.
+- **Report Generation**: Extract relevant XML data for use in generating reports.

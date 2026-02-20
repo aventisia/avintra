@@ -1,0 +1,80 @@
+import { Callout, Steps } from "nextra/components";
+
+# Detect Sentiment (AWS Comprehend)
+
+The **Detect Sentiment (AWS Comprehend)** node analyzes the sentiment of a given text, determining whether it is positive, negative, neutral, or mixed. It utilizes AWS Comprehend, a natural language processing service, to provide sentiment analysis. This is particularly useful for understanding customer feedback, social media sentiment, or any text-based data where emotional context is relevant.
+
+## Configuration Options
+
+| Field Name                 | Description                                                                           | Input Type | Required? | Default Value       |
+| -------------------------- | ------------------------------------------------------------------------------------- | ---------- | --------- | ------------------- |
+| **Credential to connect with** | Select the AWS credential to use for authentication.                                | Text       | Yes       | _(empty)_           |
+| **Language Code**          | The language of the input text (e.g., `en` for English).                              | Text       | Yes       | _(empty)_           |
+| **Text**                   | The text to analyze for sentiment.                                                    | Text       | Yes       | _(empty)_           |
+| **AWS Region**             | The AWS region where the Comprehend service is located (e.g., `us-east-1`).           | Text       | No        | us-east-1           |
+
+## Expected Output Format
+
+The output from this node consists of:
+
+- **Sentiment**: A string indicating the sentiment (e.g., "POSITIVE", "NEGATIVE", "NEUTRAL", "MIXED").
+- **Confidence Score**: A decimal number (0–1) showing the confidence level of the detected sentiment.
+- **API Response**: Raw JSON response providing detailed data from AWS Comprehend.
+
+## Step-by-Step Guide
+
+<Steps>
+### Step 1
+
+Add **Detect Sentiment (AWS Comprehend)** node into your flow.
+
+### Step 2
+
+In the **Credential to connect with** field, enter or select the AWS credential you wish to use for connecting to AWS Comprehend.
+
+### Step 3
+
+Enter the **Language Code** for the text. For example, use `en` for English.
+
+### Step 4
+
+In the **Text** field, input the text you want to analyze for sentiment.
+
+### Step 5
+
+Optional: Specify the **AWS Region** where the Comprehend service is located if it is different from the default `us-east-1`.
+
+### Step 6
+
+The sentiment analysis will be processed, and results will be available as **Sentiment**, **Confidence Score**, and **API Response** outputs.
+
+</Steps>
+
+<Callout type="info" title="Tip">
+  Ensure that the credentials used have appropriate permissions to access AWS Comprehend services.
+</Callout>
+
+## Input/Output Examples
+
+| Input Text                     | Language Code | Sentiment  | Confidence Score |
+| ------------------------------ | ------------- | ---------- | ---------------- |
+| "I love this product!"         | en            | POSITIVE   | 0.95             |
+| "This service is terrible."    | en            | NEGATIVE   | 0.88             |
+| "The product is okay."         | en            | NEUTRAL    | 0.70             |
+| "Some aspects are good, some bad." | en         | MIXED      | 0.65             |
+
+## Common Mistakes & Troubleshooting
+
+| Problem                                              | Solution                                                                                                   |
+| ---------------------------------------------------- | ---------------------------------------------------------------------------------------------------------- |
+| **Missing Credentials**                              | Ensure you provide valid AWS credentials for the **Credential to connect with** field.                      |
+| **Invalid Language Code**                            | Double-check the **Language Code** to make sure it's supported by AWS Comprehend.                          |
+| **Empty Text Field**                                 | Ensure that the **Text** field contains input data for analysis.                                           |
+| **Incorrect AWS Region Configuration**               | If receiving errors about region, verify the **AWS Region** is correct and supported by AWS Comprehend.     |
+
+## Real-World Use Cases
+
+- **Customer Feedback Analysis**: Automatically detect sentiment in customer reviews or feedback surveys to improve services.
+- **Social Media Monitoring**: Analyze tweets or posts to assess overall sentiment towards a brand or product.
+- **Market Research**: Gauge public sentiment on market trends or new products.
+- **Content Moderation**: Monitor online content to ensure compliance with community guidelines by detecting negative sentiments.

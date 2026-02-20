@@ -1,0 +1,51 @@
+import { Callout, Steps } from "nextra/components";
+
+# Break Loop
+
+The **Break Loop** node is used to immediately exit a loop structure within your workflow. This is essential when you want to stop executing further iterations of a loop once a particular condition is met or when a process no longer needs to repeat. By using this node, you can prevent unnecessary processing and efficiently manage the workflow path.
+
+## Configuration Options
+
+This node does not have any configuration fields. Simply placing it within the loop structure you wish to exit is sufficient to activate its functionality.
+
+## Expected Output Format
+
+The **Break Loop** node does not produce a direct output value like a number or text. Its function is to control the flow by ending a loop in execution.
+
+## Step-by-Step Guide
+
+<Steps>
+### Step 1
+
+Add the **Break Loop** node to the part of your workflow where you wish to exit the loop.
+
+### Step 2
+
+Position the node appropriately within your loop structure. The node should be placed at a point where the loop needs to be interrupted.
+
+### Step 3
+
+Ensure that the conditions for using the Break Loop are well-defined. It should ideally follow a decision-making node that determines when to terminate the loop.
+
+### Step 4
+
+Proceed with your workflow execution. The loop will terminate and progress to the next node immediately after the **Break Loop** is activated.
+
+</Steps>
+
+<Callout type="warning" title="Warning">
+  Make sure that the **Break Loop** node is used within a loop structure; it is ineffective outside of a loop context.
+</Callout>
+
+## Common Mistakes & Troubleshooting
+
+| Problem                                             | Solution                                                                                           |
+| --------------------------------------------------- | -------------------------------------------------------------------------------------------------- |
+| **Break Loop not functioning**                      | Ensure that the node is placed within a loop and that the workflow path is leading to this node.   |
+| **Unintended loop continuation**                    | Check that conditions triggering the **Break Loop** are clearly and correctly defined in the logic. |
+
+## Real-World Use Cases
+
+- **Data Processing**: Exit a loop processing a list of items once a certain item meets a required condition (e.g., finding the first defective product).
+- **User Input**: Stop a repeat sequence upon receiving specific user input indicating that further repetition is unnecessary.
+- **Inventory Checks**: Exit the loop when inventory exceeds a certain threshold, reducing unnecessary item checks.
