@@ -29,6 +29,7 @@ global using WorkspaceAPIs.Features.CloudConnectors.M365.Excel;
 
 global using System.ComponentModel.DataAnnotations;
 global using System.ComponentModel.DataAnnotations.Schema;
+global using System.Linq.Expressions;
 global using System.Net.Http.Headers;
 global using System.Security.Claims;
 global using System.Text;

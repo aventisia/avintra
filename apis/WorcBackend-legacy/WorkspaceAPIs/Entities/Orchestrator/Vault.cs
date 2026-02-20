@@ -1,6 +1,7 @@
 namespace WorkspaceAPIs.Entities;
 
 /// <summary>
+/// TODO: Need to remove if AppSecret is there
 /// Represents a configuration item within the system that holds settings or values related to a tenant.
 /// </summary>
 [Table("Vaults")]
