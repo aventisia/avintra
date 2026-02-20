@@ -13,8 +13,11 @@ import { useShallow } from "zustand/react/shallow";
 import AppBanner from "./AppBanner";
 import AppHeader from "./AppHeader";
 import { AppRedirectPage } from "./AppRedirectPage";
-import { isVisible } from "@/features/action-selector/utils/action-visibilty";
+import { canWeRenderNodeOrCategory } from "@/features/action-selector/utils/action-visibilty";
 import { deploymentType } from "@/react-toolkit/types/user-session-types";
+import { useCurrentFlowStore } from "@/stores/current-flow-store";
+import { usePreventClose } from "@/hooks/usePreventClose";
+import useTauriUserMetadata from "@/hooks/useTauriUserMetadata";
 
 export const AppLayout = () => {
   const [loading, setLoading] = useState(true);
@@ -25,6 +28,20 @@ export const AppLayout = () => {
       appBanner: state.appBanner,
     })),
   );
+
+  // Get setExecutionState action from current flow store
+  const { executionState } = useCurrentFlowStore(
+    useShallow((state) => ({
+      executionState: state.executionState,
+    })),
+  );
+
+  // Prevent closing the Tauri app while an execution is in progress
+  usePreventClose(
+    executionState === "executing" || executionState === "paused",
+  );
+
+  useTauriUserMetadata();
 
   // Redirect to relaunch URL if available (if app is inside Tauri)
   // useRedirectOnRelaunch();
@@ -57,7 +74,7 @@ export const AppLayout = () => {
         // Filter Action Categories based on visibility
         actionCategories: primary.actionCategories
           .filter((actionCategory) =>
-            isVisible(actionCategory.visibility, deploymentType),
+            canWeRenderNodeOrCategory(actionCategory.doNotRenderIf, deploymentType),
           )
 
           // For visible categories, also filter individual actions
@@ -65,7 +82,7 @@ export const AppLayout = () => {
             ...actionCategory,
 
             actions: actionCategory.actions?.filter((action) =>
-              isVisible(action.visibility, deploymentType),
+              canWeRenderNodeOrCategory(action.doNotRenderIf, deploymentType),
             ),
           }))
 

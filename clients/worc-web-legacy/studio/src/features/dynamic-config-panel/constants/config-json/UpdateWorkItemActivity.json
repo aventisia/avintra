@@ -1,43 +1,63 @@
 {
   "name": "UpdateWorkItem",
   "label": "Update Work Item",
-  "description": "Updates the fields or status of an existing work item.",
+  "discription": "Updates the fields or status of an existing work item.",
   "version": "1.0.0",
   "auther": "@aventisia",
-  "supportedPlatforms": ["desktop"],
+  "supportedPlatforms": [
+    "desktop"
+  ],
   "errorHandling": "standard",
   "testScreenType": "standard",
   "fields": [
     {
       "direction": "Input",
       "type": "text",
-      "name": "WorItemId",
+      "name": "WorkItemId",
       "label": "WorkItem ID",
       "description": "Enter the unique identifier of the work item you want to update.",
-      "defaultValue": ""
+      "defaultValue": "",
+      "required": true
     },
-
     {
       "direction": "Input",
       "type": "select",
       "name": "Status",
       "label": "Status",
       "description": "Select the new status to assign to the work item.",
-      "defaultValue": "auto",
+      "defaultValue": "Pending",
+      "required": false,
       "selectOptions": [
-        { "label": "Pending", "value": "Pending" },
-        { "label": "In Progress", "value": "InProgress" },
-        { "label": "Completed", "value": "Completed" },
-        { "label": "Completed", "value": "Completed" }
+        {
+          "label": "Pending",
+          "value": "Pending",
+          "description": "Work item is pending and not yet started."
+        },
+        {
+          "label": "In Progress",
+          "value": "InProgress",
+          "description": "Work item is currently being processed."
+        },
+        {
+          "label": "Completed",
+          "value": "Completed",
+          "description": "Work item has been completed successfully."
+        },
+        {
+          "label": "Failed",
+          "value": "Failed",
+          "description": "Work item processing has failed."
+        }
       ]
     },
     {
       "direction": "Input",
       "type": "text",
-      "name": "WorkItemRemark",
+      "name": "Remark",
       "label": "Remark",
       "description": "Enter the remark for the work item.",
-      "defaultValue": ""
+      "defaultValue": "",
+      "required": false
     },
     {
       "direction": "Input",
@@ -45,18 +65,24 @@
       "name": "ShouldUpdateWorkItemData",
       "label": "Update WorkItem Data",
       "description": "Enable this option if you also want to update the data payload of the work item.",
-      "defaultValue": false
+      "defaultValue": false,
+      "required": false
     },
     {
       "direction": "Input",
       "type": "json-editor",
-      "name": "UpdateWorkItemData",
+      "name": "WorkItemData",
       "label": "Work Item Data",
       "description": "Provide the updated work item data in JSON format. This will replace the existing data stored with the work item.",
       "defaultValue": "",
       "required": true,
       "renderIf": {
-        "conditions": [{ "field": "ShouldUpdateWorkItemData", "equals": true }]
+        "conditions": [
+          {
+            "field": "ShouldUpdateWorkItemData",
+            "equals": true
+          }
+        ]
       }
     },
     {

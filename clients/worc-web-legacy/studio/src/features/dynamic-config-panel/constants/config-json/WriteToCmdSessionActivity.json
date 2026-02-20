@@ -24,18 +24,9 @@
       "type": "text",
       "name": "Command",
       "label": "Command",
-      "description": "The command to execute in the CMD session.",
+      "description": "The command to execute in the CMD session.ex:dir \u003E",
       "defaultValue": "",
       "required": true
-    },
-    {
-      "direction": "Input",
-      "type": "switch",
-      "name": "SendEnterAfterCommand",
-      "label": "Send \u003CEnter\u003E After Command",
-      "description": "Specifies whether to send an Enter key after the command.",
-      "defaultValue": true,
-      "required": false
     }
   ]
 }

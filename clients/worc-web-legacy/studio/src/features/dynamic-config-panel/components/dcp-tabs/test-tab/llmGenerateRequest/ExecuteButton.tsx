@@ -11,17 +11,7 @@ import { UseMutateFunction } from "@tanstack/react-query";
 import { useShallow } from "zustand/react/shallow";
 import { readFileAsBase64 } from "./readFileUsingTauri";
 import { IS_TAURI } from "@/constants";
-
-interface ModelConfigType {
-  is_byok_enabled: boolean;
-  provider: string;
-  credential_id: string;
-  model: string;
-  temperature: number;
-  top_p: number;
-  is_json_output: boolean;
-  max_output_tokens: number;
-}
+import { ModelConfigType } from "@/types/model-config-type";
 
 interface ExecutionButtonProps {
   mutate: UseMutateFunction<

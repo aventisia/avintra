@@ -13,7 +13,7 @@ const TestTabContent = ({
   return (
     <div>
       {type == "llmGenerateRequest" && <ModelTestContent formData={formData} />}
-      {type == "standard" && <StandardTestContent formData={formData} />}
+      {type == "standard" && <StandardTestContent />}
     </div>
   );
 };

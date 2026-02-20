@@ -54,9 +54,7 @@
             "label": "Conversational Model",
             "description": "Manages multi-turn interactions with human-like understanding and memory to guide users through complex tasks.",
             "docsLink": null,
-            "visibility": {
-              "showInProd": false
-            },
+            "doNotRenderIf": ["production"],
             "icon": "",
             "img": "/assets/ConversationModel.svg"
           },
@@ -84,9 +82,7 @@
             "label": "Image Model",
             "description": "Generates new visual assets or modifies existing images based on precise descriptive text instructions.",
             "docsLink": null,
-            "visibility": {
-              "showInProd": false
-            },
+            "doNotRenderIf": ["production"],
             "icon": "",
             "img": "/assets/ImageModel.svg"
           },
@@ -96,9 +92,7 @@
             "label": "Video Model",
             "description": "Creates high-fidelity video footage or applies cinematic edits to existing clips for dynamic content pipelines.",
             "docsLink": null,
-            "visibility": {
-              "showInProd": false
-            },
+            "doNotRenderIf": ["production"],
             "icon": "",
             "img": "/assets/VideoModel.svg"
           },
@@ -108,9 +102,7 @@
             "label": "Deep Research Model",
             "description": "An autonomous agent that plans and executes multi-step web searches to synthesize cited, evidence-based reports.",
             "docsLink": null,
-            "visibility": {
-              "showInProd": false
-            },
+            "doNotRenderIf": ["production"],
             "icon": "",
             "img": "/assets/DeepSearchModel.svg"
           }
