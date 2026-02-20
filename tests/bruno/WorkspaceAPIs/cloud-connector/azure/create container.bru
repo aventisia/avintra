@@ -1,0 +1,24 @@
+meta {
+  name: create container
+  type: http
+  seq: 1
+}
+
+post {
+  url: {{WORC_APIS_BASE_URL}}/cloud-connector/azure/invoke
+  body: json
+  auth: none
+}
+
+body:json {
+  {
+    "agentId": "00000000-0000-0000-0000-000000000000",
+    "agentName": "Test",
+    "provider": "AzureBlobStorage",
+    "action": "CreateBlobContainer",
+  "credentialId": "DUMMY",
+    "payload": {
+       "containerName": "test1"
+    }
+  }
+}

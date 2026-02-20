@@ -1,0 +1,37 @@
+meta {
+  name: send email
+  type: http
+  seq: 1
+}
+
+post {
+  url: {{WORC_APIS_BASE_URL}}/cloud-connector/email/invoke
+  body: json
+  auth: none
+}
+
+body:json {
+  {
+    "agentId": "00000000-0000-0000-0000-000000000000",
+    "agentName": "Test",
+    "provider": "GeneralCredentials",
+    "action": "SendEmailMessage",
+    "credentialId": "DUMMY",
+    "payload": {
+      "to": "mnarayankar94@gmail.com",
+      "from": "mayurinayaranakar901@gmail.com",
+      "subject": "Test Email from Cloud Connector",
+      "body": "This is a test email sent via MailKit",
+      "cc": "",
+      "bcc": "",
+      "isHtml": false,
+      "attachments": "",
+      "securityProtocol":"StartSsl",//"Ssl",//"StartTls",
+      "smtpServerNeedsAuthentication": true,
+      "smtpServer": "smtp.gmail.com",
+      "serverPort":587,//587,465
+      "acceptUntrustedCertificates": true
+      
+    }
+  }
+}

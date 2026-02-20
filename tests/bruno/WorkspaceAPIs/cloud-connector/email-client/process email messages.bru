@@ -1,0 +1,29 @@
+meta {
+  name: process email messages
+  type: http
+  seq: 2
+}
+
+post {
+  url: {{WORC_APIS_BASE_URL}}/cloud-connector/email/invoke
+  body: json
+  auth: none
+}
+
+body:json {
+  {
+    "agentId": "00000000-0000-0000-0000-000000000000",
+    "agentName": "Test",
+    "provider": "GeneralCredentials",
+    "action": "ProcessEmailMessages",
+    "credentialId": "DUMMY",
+    "payload": {
+      "operation":"MoveToFolder",
+      "messageUidsObj": [51001,51002,51000],
+      "acceptUntrustedCertificates": false,
+      "imapServer": "imap.gmail.com",
+      "imapPort": 993,
+      "mailFolder": "Inbox"
+    }
+  }
+}
