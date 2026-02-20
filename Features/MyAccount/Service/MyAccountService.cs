@@ -370,15 +370,42 @@ public class MyAccountService : IMyAccountService
             activeSession.SessionExpiresOn = refreshTokenExpiresOn;
             activeSession.LastRefreshOn = DateTimeOffset.UtcNow;
 
-            // Update ActiveSession
-            _unitOfWork.ActiveSessionRepo.Update(activeSession);
-
-            // Update ActiveSession failed
-            if (!await _unitOfWork.SaveAsync())
+            // Update ActiveSession with concurrency handling
+            // This handles React Strict Mode causing duplicate refresh requests
+            try
             {
-                _logger.LogInformation("Log:12 Failed to save updated session data for user {UserName} and sessionId {SessionId}", user.UserName, sessionIdString);
-                _logger.LogInformation($"Context SaveChanges failed while refreshing active session for {user.UserName} and sessionId {sessionIdString}");
-                return serviceResponse;
+                _unitOfWork.ActiveSessionRepo.Update(activeSession);
+
+                // Update ActiveSession failed
+                if (!await _unitOfWork.SaveAsync())
+                {
+                    _logger.LogInformation("Log:12 Failed to save updated session data for user {UserName} and sessionId {SessionId}", user.UserName, sessionIdString);
+                    _logger.LogInformation($"Context SaveChanges failed while refreshing active session for {user.UserName} and sessionId {sessionIdString}");
+                    return serviceResponse;
+                }
+            }
+            catch (DbUpdateConcurrencyException)
+            {
+                // Another concurrent request already refreshed this session (e.g., React Strict Mode double-call)
+                // Re-fetch the updated session and use its tokens
+                _logger.LogInformation("Log:12a Concurrent session refresh detected for user {UserName} and sessionId {SessionId}. Using existing refreshed session.", user.UserName, sessionIdString);
+
+                // Re-fetch the session that was updated by the concurrent request
+                activeSession = await _unitOfWork.ActiveSessionRepo
+                    .GetByConditionAsync(w => w.Id == sessionId && w.UserId == user.Id)
+                    .AsNoTracking()
+                    .SingleOrDefaultAsync();
+
+                if (activeSession == null)
+                {
+                    _logger.LogWarning("Log:12b Session disappeared after concurrency conflict for user {UserName}", user.UserName);
+                    serviceResponse.Message = invalidcredentials;
+                    return serviceResponse;
+                }
+
+                // Use the tokens from the already-refreshed session
+                newRefreshToken = activeSession.RefreshToken;
+                refreshTokenExpiresOn = activeSession.SessionExpiresOn;
             }
 
             // Append SessionId, Jwt/AccessToken, RefreshToken, and Username to cookies
