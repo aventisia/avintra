@@ -3,8 +3,10 @@ namespace AccountsAPIs.Entities;
 /// <summary>
 /// Represents the association between a user and a space, including user-specific status or metadata within that space.
 /// </summary>
-public class SpaceUser : BaseEntity
+public class SpaceUser : BaseEntity, IMustHaveTenant
 {
+    public Guid TenantId { get; set; }
+    
     /// <summary>
     /// Gets or sets the ID of the space to which the user is linked.
     /// </summary>
