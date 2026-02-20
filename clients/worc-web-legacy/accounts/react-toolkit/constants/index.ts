@@ -43,13 +43,6 @@ const USER_PREFERENCES_LS_KEY = "userPreferences";
 const SESSION_EXPIRED_LS_KEY = "sessionExpired";
 
 /**
- * Local storage key for the development JSON Web Token (JWT).
- * This key is used to store the JWT in the browser's local storage
- * during development.
- */
-const DEV_JWT_LS_KEY = "dev_jwt";
-
-/**
  * Local storage key for storing the billing info form data.
  */
 const BILLING_INFO_KEY = "billingInfo";
@@ -76,7 +69,6 @@ export {
   INVALID_CREDS,
   USER_PREFERENCES_LS_KEY,
   SESSION_EXPIRED_LS_KEY,
-  DEV_JWT_LS_KEY,
   USER_NAME_LS_KEY,
   REQUEST_TIMEOUT,
   COPYRIGHT_TEXT,

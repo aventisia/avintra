@@ -1,5 +1,4 @@
 import {
-  DEV_JWT_LS_KEY,
   SESSION_EXPIRED_LS_KEY,
 } from "@/react-toolkit/constants";
 import { UserSessionDto } from "@/react-toolkit/dtos/response/user-session-dto";
@@ -14,11 +13,7 @@ const setUserSessionLocally = (
   userSession: UserSessionDto,
 ): IUserSessionStore => {
   // Decode jwt basis env. DO NOT REMOVE DEV CONDITION
-  const decodedJwt = jwtDecode<IJwtPayload>(
-    import.meta.env.DEV
-      ? localStorage.getItem(DEV_JWT_LS_KEY) || ""
-      : userSession.accessToken,
-  );
+  const decodedJwt = jwtDecode<IJwtPayload>(userSession.accessToken);
 
   // Set user session status in local storage
   localStorage.setItem(SESSION_EXPIRED_LS_KEY, "false");

@@ -1,7 +1,6 @@
 import { refreshSession } from "@/react-toolkit/apis/accounts-me-apis";
 import {
   ADD_TENANT,
-  DEV_JWT_LS_KEY,
   NO_ACTIVE_SUBSCRIPTION,
   SESSION_EXPIRED_LS_KEY,
 } from "@/react-toolkit/constants";
@@ -30,11 +29,6 @@ export const useValidateUserSessionForLoginPage = () => {
 
       // Set authenticated user locally
       setUserSessionLocally(httpResponse.data);
-
-      // TODO: To be removed
-      if (import.meta.env.DEV) {
-        localStorage.setItem(DEV_JWT_LS_KEY, httpResponse.data.accessToken);
-      }
 
       // Check if backend message indicates incomplete tenant setup
       if (
