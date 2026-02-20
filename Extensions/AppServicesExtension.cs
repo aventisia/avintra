@@ -43,7 +43,6 @@ public static class AppServicesExtension
         config.Apply(new FlowLogMappingProfile());
         config.Apply(new ProjectTemplateMappingProfile());
         config.Apply(new FlowVersionMappingProfile());
-        config.Apply(new SubscriptionMappingProfile());
         config.Apply(new MachinesMappingProfile());
         config.Apply(new MachineFlowMappingProfile());
         config.Apply(new AgentTableMappingProfile());
@@ -85,7 +84,6 @@ public static class AppServicesExtension
         services.AddScoped<IProjectTemplateService, ProjectTemplateService>();
         services.AddScoped<IPublicTemplateService, PublicTemplateService>();
         services.AddScoped<IFlowVersionService, FlowVersionService>();
-        services.AddScoped<ISubscriptionService, SubscriptionService>();
         services.AddScoped<IMachineService, MachineService>();
         services.AddScoped<IMachineFlowService, MachineFlowService>();
         services.AddScoped<IAgentTableService, AgentTableService>();
