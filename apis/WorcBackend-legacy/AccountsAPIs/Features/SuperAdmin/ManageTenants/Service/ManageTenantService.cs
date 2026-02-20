@@ -7,7 +7,7 @@ public class ManageTenantService : IManageTenantService
     private readonly ICurrentTenantService _currentTenantService;
     private readonly IAzureBlobStorageService _azureBlobStorageService;
     private readonly Guid _userId;
-    private readonly Guid _tenantId;
+    private readonly Guid _userTenantId;
     private readonly string _jwt;
     private readonly EnvironmentConfig _environmentConfig;
 
@@ -22,7 +22,7 @@ public class ManageTenantService : IManageTenantService
     {
         // Set _userId
         _userId = Guid.Parse(httpContextAccessor.HttpContext?.User?.FindFirstValue("uid") ?? Guid.Empty.ToString());
-        _tenantId = Guid.Parse(httpContextAccessor.HttpContext?.User?.FindFirstValue("tntid") ?? Guid.Empty.ToString());
+        _userTenantId = Guid.Parse(httpContextAccessor.HttpContext?.User?.FindFirstValue("tntid") ?? Guid.Empty.ToString());
         _jwt = GetJwtOfRequestUtil.GetJwtOfRequest(httpContextAccessor.HttpContext) ?? "jwt-not-found";
 
         _logger = logger;
@@ -44,31 +44,31 @@ public class ManageTenantService : IManageTenantService
 
         try
         {
-            // Check if the current tenant ID is the same as the tenant ID to delete If the tenant tries to delete itself, we prevent it.
-            if (_currentTenantService.CurrentTenantId == _tenantId)
+            // Check if the user's (requester) tenant ID is the same as the tenant ID to delete If the user tries to delete their own tenant, we prevent it.
+            if (_currentTenantService.CurrentTenantId == _userTenantId)
             {
-                _logger.LogWarning($"Attempt to delete current tenant. TenantId: {_tenantId}. Operation is not allowed.");
+                _logger.LogWarning($"Attempt to delete user's own tenant. TenantId: {_userTenantId}. Operation is not allowed.");
                 serviceResponse.Message = "You cannot delete your own tenant.";
                 return serviceResponse;
             }
 
-            // Fetch tenant ID from current tenant service, which should be used for deletion
-            var tenantId = _currentTenantService.CurrentTenantId;
+            // Fetch tenant ID from current tenant service (set via passing tenantId in the header), which should be used for deletion
+            var tenantIdToBeDeleted = _currentTenantService.CurrentTenantId;
 
             // Fetch tenant from repository with deletion constraints
-            _logger.LogInformation($"Attempting to fetch tenant record for deletion. TenantId: {tenantId}");
+            _logger.LogInformation($"Attempting to fetch tenant record for deletion. TenantId: {tenantIdToBeDeleted}");
             var tenant = await _unitOfWork.TenantRepo
                 .GetByConditionAsync(w =>
                     w.IsEditable &&
-                    w.Id != _tenantId && // Exclude the current tenant from being deleted
-                    w.Id == tenantId)
+                    w.Id != _userTenantId && // Exclude the current tenant from being deleted
+                    w.Id == tenantIdToBeDeleted)
                 .AsNoTracking()
                 .SingleOrDefaultAsync();
 
             // Check if tenant exists
             if (tenant == null)
             {
-                _logger.LogInformation($"Tenant not found. TenantId: {tenantId}");
+                _logger.LogInformation($"Tenant not found. TenantId: {tenantIdToBeDeleted}. It may have already been deleted or is not eligible for deletion.");
                 serviceResponse.Message = "Tenant does not exist or is not eligible for deletion.";
                 return serviceResponse;
             }
@@ -94,9 +94,6 @@ public class ManageTenantService : IManageTenantService
                 serviceResponse.Message = "Cannot delete a tenant with existing billing history.";
                 return serviceResponse;
             }
-
-            // Log successful validation of the tenant for deletion
-            _logger.LogInformation($"Tenant validation passed. TenantId: {tenant.Id}, Name: {tenant.Name}");
 
             // First, delete the tenant's related data (payment history, subscriptions, etc.)
             bool deletionSuccess = await DeleteTenantRelatedDataAsync(tenant);
@@ -222,226 +219,82 @@ public class ManageTenantService : IManageTenantService
             }
 
             // After successfully deleting tenant data from external APIs, proceed with the local database cleanup.
-            // --- Payment Related Records ---
 
-            // Retrieve and delete payment history records (transactions associated with the tenant)
-            var paymentHistories = await _unitOfWork.PaymentHistoryRepo.GetByConditionAsync(w => w.TenantId == tenant.Id).ToListAsync();
-            if (paymentHistories.Any())
-            {
-                _logger.LogInformation($"Deleting {paymentHistories.Count} PaymentHistory records for tenant ID: {tenant.Id}");
-                _unitOfWork.PaymentHistoryRepo.Delete(paymentHistories);
-                if (!await _unitOfWork.SaveAsync())
-                {
-                    _logger.LogError("Context SaveChanges failed while deleting PaymentHistory records.");
-                    return false;
-                }
-            }
+            // Delete PaymentHistory
+            if (!await DeleteEntitiesAsync(_unitOfWork.PaymentHistoryRepo, w => w.TenantId == tenant.Id, nameof(PaymentHistory), tenant.Id))
+                return false;
 
-            // Retrieve and delete payment methods (stored payment methods for the tenant)
-            var paymentMethods = await _unitOfWork.PaymentMethodRepo.GetByConditionAsync(w => w.TenantId == tenant.Id).ToListAsync();
-            if (paymentMethods.Any())
-            {
-                _logger.LogInformation($"Deleting {paymentMethods.Count} PaymentMethod records for tenant ID: {tenant.Id}");
-                _unitOfWork.PaymentMethodRepo.Delete(paymentMethods);
-                if (!await _unitOfWork.SaveAsync())
-                {
-                    _logger.LogError("Context SaveChanges failed while deleting PaymentMethod records.");
-                    return false;
-                }
-            }
+            // Delete PaymentMethod
+            if (!await DeleteEntitiesAsync(_unitOfWork.PaymentMethodRepo, w => w.TenantId == tenant.Id, nameof(PaymentMethod), tenant.Id))
+                return false;
 
-            // --- Subscription Related Records ---
+            // Delete CreditUsage
+            if (!await DeleteEntitiesAsync(_unitOfWork.CreditUsageRepo, w => w.TenantId == tenant.Id, nameof(CreditUsage), tenant.Id))
+                return false;
 
-            // Retrieve and delete credit usage records (how the tenant has used credits)
-            var creditUsages = await _unitOfWork.CreditUsageRepo.GetByConditionAsync(w => w.TenantId == tenant.Id).ToListAsync();
-            if (creditUsages.Any())
-            {
-                _logger.LogInformation($"Deleting {creditUsages.Count} CreditUsage records for tenant ID: {tenant.Id}");
-                _unitOfWork.CreditUsageRepo.Delete(creditUsages);
-                if (!await _unitOfWork.SaveAsync())
-                {
-                    _logger.LogError("Context SaveChanges failed while deleting CreditUsage records.");
-                    return false;
-                }
-            }
+            // Delete TenantCredit
+            if (!await DeleteEntitiesAsync(_unitOfWork.TenantCreditRepo, w => w.TenantId == tenant.Id, nameof(TenantCredit), tenant.Id))
+                return false;
 
-            // Retrieve and delete tenant credits (remaining credits for the tenant)
-            var tenantCredits = await _unitOfWork.TenantCreditRepo.GetByConditionAsync(w => w.TenantId == tenant.Id).ToListAsync();
-            if (tenantCredits.Any())
-            {
-                _logger.LogInformation($"Deleting {tenantCredits.Count} TenantCredit records for tenant ID: {tenant.Id}");
-                _unitOfWork.TenantCreditRepo.Delete(tenantCredits);
-                if (!await _unitOfWork.SaveAsync())
-                {
-                    _logger.LogError("Context SaveChanges failed while deleting TenantCredit records.");
-                    return false;
-                }
-            }
+            // Delete BillingHistory
+            if (!await DeleteEntitiesAsync(_unitOfWork.BillingHistoryRepo, w => w.TenantId == tenant.Id, nameof(BillingHistory), tenant.Id))
+                return false;
 
-            // Retrieve and delete billing history records (historical billing details for the tenant)
-            var billingHistories = await _unitOfWork.BillingHistoryRepo.GetByConditionAsync(w => w.TenantId == tenant.Id).ToListAsync();
-            if (billingHistories.Any())
-            {
-                _logger.LogInformation($"Deleting {billingHistories.Count} BillingHistory records for tenant ID: {tenant.Id}");
-                _unitOfWork.BillingHistoryRepo.Delete(billingHistories);
-                if (!await _unitOfWork.SaveAsync())
-                {
-                    _logger.LogError("Context SaveChanges failed while deleting BillingHistory records.");
-                    return false;
-                }
-            }
+            // Delete BillingDetail
+            if (!await DeleteEntitiesAsync(_unitOfWork.BillingDetailRepo, w => w.TenantId == tenant.Id, nameof(BillingDetail), tenant.Id))
+                return false;
 
-            // Retrieve and delete billing details (billing information associated with the tenant)
-            var billingDetails = await _unitOfWork.BillingDetailRepo.GetByConditionAsync(w => w.TenantId == tenant.Id).ToListAsync();
-            if (billingDetails.Any())
-            {
-                _logger.LogInformation($"Deleting {billingDetails.Count} BillingDetail records for tenant ID: {tenant.Id}");
-                _unitOfWork.BillingDetailRepo.Delete(billingDetails);
-                if (!await _unitOfWork.SaveAsync())
-                {
-                    _logger.LogError("Context SaveChanges failed while deleting BillingDetail records.");
-                    return false;
-                }
-            }
+            // Delete TenantSubscription
+            if (!await DeleteEntitiesAsync(_unitOfWork.TenantSubscriptionRepo, w => w.TenantId == tenant.Id, nameof(TenantSubscription), tenant.Id))
+                return false;
 
-            // Retrieve and delete tenant subscriptions (current subscriptions the tenant is active in)
-            var tenantSubscriptions = await _unitOfWork.TenantSubscriptionRepo.GetByConditionAsync(w => w.TenantId == tenant.Id).ToListAsync();
-            if (tenantSubscriptions.Any())
-            {
-                _logger.LogInformation($"Deleting {tenantSubscriptions.Count} TenantSubscription records for tenant ID: {tenant.Id}");
-                _unitOfWork.TenantSubscriptionRepo.Delete(tenantSubscriptions);
-                if (!await _unitOfWork.SaveAsync())
-                {
-                    _logger.LogError("Context SaveChanges failed while deleting TenantSubscription records.");
-                    return false;
-                }
-            }
+            // Delete SpaceUser - DeleteBehavior.Cascade set with Space
+            
+            // Delete Space
+            if (!await DeleteEntitiesAsync(_unitOfWork.SpaceRepo, w => w.TenantId == tenant.Id, nameof(Space), tenant.Id))
+                return false;
 
-            // --- Space and Integration Records ---
+            // Delete AppIntegration
+            if (!await DeleteEntitiesAsync(_unitOfWork.AppIntegrationRepo, w => w.TenantId == tenant.Id, nameof(AppIntegration), tenant.Id))
+                return false;
 
-            // Retrieve and delete spaces (physical or logical spaces associated with the tenant)
-            var spaces = await _unitOfWork.SpaceRepo.GetByConditionAsync(w => w.TenantId == tenant.Id).ToListAsync();
-            if (spaces.Any())
-            {
-                _logger.LogInformation($"Deleting {spaces.Count} Space records for tenant ID: {tenant.Id}");
-                _unitOfWork.SpaceRepo.Delete(spaces);
-                if (!await _unitOfWork.SaveAsync())
-                {
-                    _logger.LogError("Context SaveChanges failed while deleting Space records.");
-                    return false;
-                }
-            }
+            // --- Get user IDs of tenant users to delete related records where - No TenantId, only UserId
+            var tenantUserIds = await _unitOfWork.AccountUserRepo.GetByConditionAsync(w => w.TenantId == tenant.Id).Select(s => s.Id).ToListAsync();
 
-            // Retrieve and delete app integrations (third-party integrations associated with the tenant)
-            var appIntegrations = await _unitOfWork.AppIntegrationRepo.GetByConditionAsync(w => w.TenantId == tenant.Id).ToListAsync();
-            if (appIntegrations.Any())
-            {
-                _logger.LogInformation($"Deleting {appIntegrations.Count} AppIntegration records for tenant ID: {tenant.Id}");
-                _unitOfWork.AppIntegrationRepo.Delete(appIntegrations);
-                if (!await _unitOfWork.SaveAsync())
-                {
-                    _logger.LogError("Context SaveChanges failed while deleting AppIntegration records.");
-                    return false;
-                }
-            }
+            // Delete SessionLog (No TenantId, only UserId)
+            if (!await DeleteEntitiesAsync(_unitOfWork.SessionLogRepo, w => tenantUserIds.Contains(w.UserId), nameof(SessionLog), tenant.Id))
+                return false;
 
-            // --- Session and Log Records ---
+            // Delete ObsoletePwd (No TenantId, only UserId)
+            if (!await DeleteEntitiesAsync(_unitOfWork.ObsoletePwdRepo, w => tenantUserIds.Contains(w.UserId), nameof(ObsoletePwd), tenant.Id))
+                return false;
 
-            // Retrieve and delete session logs (logs related to tenant's active sessions)
-            var sessionLogs = await _unitOfWork.SessionLogRepo.GetByConditionAsync(w => w.UserId == tenant.Id).ToListAsync();
-            if (sessionLogs.Any())
-            {
-                _logger.LogInformation($"Deleting {sessionLogs.Count} SessionLog records for tenant ID: {tenant.Id}");
-                _unitOfWork.SessionLogRepo.Delete(sessionLogs);
-                if (!await _unitOfWork.SaveAsync())
-                {
-                    _logger.LogError("Context SaveChanges failed while deleting SessionLog records.");
-                    return false;
-                }
-            }
+            // Delete AuditLog (No TenantId, only UserId)
+            if (!await DeleteEntitiesAsync(_unitOfWork.AuditLogRepo, w => tenantUserIds.Contains(w.UserId), nameof(AuditLog), tenant.Id))
+                return false;
 
-            // Retrieve and delete audit logs (audit trail related to tenant actions)
-            var auditLogs = await _unitOfWork.AuditLogRepo.GetByConditionAsync(w => w.UserId == tenant.Id).ToListAsync();
-            if (auditLogs.Any())
-            {
-                _logger.LogInformation($"Deleting {auditLogs.Count} AuditLog records for tenant ID: {tenant.Id}");
-                _unitOfWork.AuditLogRepo.Delete(auditLogs);
-                if (!await _unitOfWork.SaveAsync())
-                {
-                    _logger.LogError("Context SaveChanges failed while deleting AuditLog records.");
-                    return false;
-                }
-            }
+            // Delete ActiveSession (No TenantId, only UserId)
+            if (!await DeleteEntitiesAsync(_unitOfWork.ActiveSessionRepo, w => tenantUserIds.Contains(w.UserId), nameof(ActiveSession), tenant.Id))
+                return false;
 
-            // Retrieve and delete active sessions (sessions that are currently active for the tenant)
-            var activeSessions = await _unitOfWork.ActiveSessionRepo.GetByConditionAsync(w => w.UserId == tenant.Id).ToListAsync();
-            if (activeSessions.Any())
-            {
-                _logger.LogInformation($"Deleting {activeSessions.Count} ActiveSession records for tenant ID: {tenant.Id}");
-                _unitOfWork.ActiveSessionRepo.Delete(activeSessions);
-                if (!await _unitOfWork.SaveAsync())
-                {
-                    _logger.LogError("Context SaveChanges failed while deleting ActiveSession records.");
-                    return false;
-                }
-            }
+            // Delete RolePermission (No TenantId, only RoleId) - DeleteBehavior.Cascade set with AccountRole
+            
+            // Delete AccountUserRole (No TenantId, only UserId) - DeleteBehavior.Cascade set with AccountUser
+            
+            // Delete AccountRole
+            if (!await DeleteEntitiesAsync(_unitOfWork.AccountRoleRepo, w => w.TenantId == tenant.Id, nameof(AccountRole), tenant.Id))
+                return false;
 
-            // --- Roles and Permissions ---
+            // --- Get user emails of tenant users to delete related records where - No TenantId, only Email
+            var tenantUserEmails = await _unitOfWork.AccountUserRepo.GetByConditionAsync(w => w.TenantId == tenant.Id).Select(s => s.Email).ToListAsync();
 
-            // Retrieve and delete account roles (roles associated with the tenant's accounts)
-            var accountRoles = await _unitOfWork.AccountRoleRepo.GetByConditionAsync(w => w.TenantId == tenant.Id).ToListAsync();
-            if (accountRoles.Any())
-            {
-                _logger.LogInformation($"Deleting {accountRoles.Count} AccountRole records for tenant ID: {tenant.Id}");
-                _unitOfWork.AccountRoleRepo.Delete(accountRoles);
-                if (!await _unitOfWork.SaveAsync())
-                {
-                    _logger.LogError("Context SaveChanges failed while deleting AccountRole records.");
-                    return false;
-                }
-            }
+            // Delete VerificationCode (No TenantId, only Email)
+            if (!await DeleteEntitiesAsync(_unitOfWork.VerificationCodeRepo, w => tenantUserEmails.Contains(w.Email), nameof(VerificationCode), tenant.Id))
+                return false;
 
-            // --- User and Code Records ---
+            // Delete AccountUser - DeleteBehavior.Cascade set with Tenant
 
-            // Retrieve and delete obsolete passwords (expired or unused passwords for the tenant)
-            var obsoletePwds = await _unitOfWork.ObsoletePwdRepo.GetByConditionAsync(w => w.UserId == tenant.Id).ToListAsync();
-            if (obsoletePwds.Any())
-            {
-                _logger.LogInformation($"Deleting {obsoletePwds.Count} ObsoletePwd records for tenant ID: {tenant.Id}");
-                _unitOfWork.ObsoletePwdRepo.Delete(obsoletePwds);
-                if (!await _unitOfWork.SaveAsync())
-                {
-                    _logger.LogError("Context SaveChanges failed while deleting ObsoletePwd records.");
-                    return false;
-                }
-            }
-
-            // Retrieve and delete verification codes (verification codes associated with the tenant's email)
-            var verificationCodes = await _unitOfWork.VerificationCodeRepo.GetByConditionAsync(w => w.Email == tenant.Id.ToString()).ToListAsync();
-            if (verificationCodes.Any())
-            {
-                _logger.LogInformation($"Deleting {verificationCodes.Count} VerificationCode records for tenant ID: {tenant.Id}");
-                _unitOfWork.VerificationCodeRepo.Delete(verificationCodes);
-                if (!await _unitOfWork.SaveAsync())
-                {
-                    _logger.LogError("Context SaveChanges failed while deleting VerificationCode records.");
-                    return false;
-                }
-            }
-
-            // // Retrieve and delete tenant users (users associated with the tenant)
-            // var tenantUsers = await _unitOfWork.AccountUserRepo.GetByConditionAsync(w => w.TenantId == tenant.Id).ToListAsync();
-            // if (tenantUsers.Any())
-            // {
-            //     // _logger.LogInformation($"Deleting {tenantUsers.Count} AccountUser records for tenant ID: {tenant.Id}");
-            //     // _unitOfWork.AccountUserRepo.Delete(tenantUsers);
-            //     // if (!await _unitOfWork.SaveAsync())
-            //     // {
-            //     //     _logger.LogError("Context SaveChanges failed while deleting AccountUser records.");
-            //     //     return false;
-            //     // }
-            // }
-
+            // Return true, we can proceed to delete tenant record
             return true;
         }
         catch (Exception ex)
@@ -449,5 +302,34 @@ public class ManageTenantService : IManageTenantService
             _logger.LogError($"Error while deleting related data for tenant ID: {tenant.Id}, Exception: {ex.Message}");
             return false;
         }
+    }
+
+
+    // Helper: To delete entities with a common pattern
+    private async Task<bool> DeleteEntitiesAsync<TEntity>(
+        IRepositoryBase<TEntity, AccountsDbContext> repository,
+        Expression<Func<TEntity, bool>> condition,
+        string entityName,
+        Guid tenantId) where TEntity : class
+    {
+        // Get entities based on the provided condition
+        var entities = await repository.GetByConditionAsync(condition).ToListAsync();
+
+        // Nothing to delete
+        if (!entities.Any())
+            return true;
+
+        // Delete entities and log the operation
+        _logger.LogInformation($"Deleting {entities.Count} {entityName} records for tenant ID: {tenantId}");
+        repository.Delete(entities);
+
+        // Save changes and check for success
+        if (!await _unitOfWork.SaveAsync())
+        {
+            _logger.LogError($"Context SaveChanges failed while deleting {entityName} records.");
+            return false;
+        }
+
+        return true;
     }
 }

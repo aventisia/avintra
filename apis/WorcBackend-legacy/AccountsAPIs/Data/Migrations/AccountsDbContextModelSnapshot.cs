@@ -1104,6 +1104,9 @@ namespace AccountsAPIs.Data.Migrations
                     b.Property<Guid>("SpaceId")
                         .HasColumnType("uuid");
 
+                    b.Property<Guid>("TenantId")
+                        .HasColumnType("uuid");
+
                     b.Property<Guid>("UserId")
                         .HasColumnType("uuid");
 
