@@ -136,14 +136,26 @@ public class AzureBlobStorageService : IAzureBlobStorageService
         await containerClient.CreateIfNotExistsAsync();
     }
 
-    // Deletes a blob container if it exists.
-    public async Task DeleteContainerAsync(string containerName)
+    // Deletes the blob container if it exists.
+    public async Task<bool> RemoveContainerAsync(string containerName)
     {
-        // Get a client for the specified blob container.
+        // Get the container client.
         var containerClient = _blobServiceClient.GetBlobContainerClient(containerName);
 
-        // Delete the container only if it exists to avoid throwing an exception.
-        await containerClient.DeleteIfExistsAsync();
+        // Check if the container exists.
+        var containerExists = await containerClient.ExistsAsync();
+
+        // If the container does not exist, log the message and return true (no need to delete).
+        if (!containerExists)
+        {
+            _logger.LogInformation($"Blob container '{containerName}' does not exist. No action needed.");
+            return true;
+        }
+
+        // Delete the container if it exists and return whether it was successful.
+        var result = await containerClient.DeleteIfExistsAsync();
+
+        return result.Value;
     }
 
     // Calculates the total size of all blobs within a container.
@@ -151,6 +163,9 @@ public class AzureBlobStorageService : IAzureBlobStorageService
     {
         // Get a client for the specified blob container.
         var containerClient = _blobServiceClient.GetBlobContainerClient(containerName);
+
+        // Ensure the container exists.
+        await containerClient.CreateIfNotExistsAsync();
 
         // Accumulator for the total size of all blobs in the container.
         long totalSize = 0;

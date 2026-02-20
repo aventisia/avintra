@@ -8,23 +8,15 @@ public static class SecurityServicesExtension
     public static void CorsPolicyConfig(this IServiceCollection services, IConfiguration config)
     {
         var environmentConfig = Guard.Against.Null(config.GetSection("EnvironmentConfig").Get<EnvironmentConfig>(), message: "EnvironmentConfig cannot be null");
-        var corsOrigins = config.GetSection("CorsOrigins").Get<List<string>>();
-
-        if (corsOrigins == null || !corsOrigins.Any())
-        {
-            corsOrigins = new List<string>
-            {
-                $"https://{environmentConfig.AppBaseUrl}"
-            };
-        }   
+        var corsOrigins = environmentConfig.CorsOrigins.Split(';', StringSplitOptions.RemoveEmptyEntries).ToArray();
 
         services.AddCors(options =>
         {
-            options.AddPolicy("CorsPolicy",
+            options.AddDefaultPolicy(
                 builder => builder.AllowAnyHeader()
                 .AllowAnyMethod()
                 .AllowCredentials()
-                .WithOrigins(corsOrigins.ToArray()));
+                .WithOrigins(corsOrigins));
         });
     }
 

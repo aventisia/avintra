@@ -82,6 +82,26 @@ public class TenantResolver
                     $"https://{environmentConfig.AppBaseUrl}",
                     $"{environmentConfig.JwtSecretKey}");
 
+                // Get user roles from the JWT, defaulting to an empty list if not present
+                var currentUserRoles = jwtInfo?.UserRoles ?? new List<string>();
+
+                // Check if tenant ID should be taken from the request header for a specific endpoint
+                if (currentUserRoles.Contains("SA") &&
+                    appDefaultConfig.TenantIdInHeaderEndpoints != null &&
+                    appDefaultConfig.TenantIdInHeaderEndpoints.Contains(currentEndpoint))
+                {
+                    // Try to get the tenant ID from the custom header "tntid"
+                    context.Request.Headers.TryGetValue("tntid", out var tenantIdRequestFromHeader);
+
+                    // If the header contains a valid tenant ID, set it and extract user info from JWT
+                    if (!string.IsNullOrEmpty(tenantIdRequestFromHeader))
+                    {
+                        tenantId = tenantIdRequestFromHeader.ToString() ?? "Unknown"; // Set tenant ID from header
+                        userId = jwtInfo?.UserId ?? "Unknown"; // Extract user ID from JWT
+                        return; // Exit after successfully setting tenant and user
+                    }
+                }
+
                 // JWTInfo found
                 if (jwtInfo != null)
                 {
@@ -97,7 +117,6 @@ public class TenantResolver
 
             // Get tenantId from custom request header
             context.Request.Headers.TryGetValue("tntid", out var tenantIdFromHeader);
-
             // tid not found in request header
             if (!string.IsNullOrEmpty(tenantIdFromHeader))
             {

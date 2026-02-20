@@ -79,4 +79,7 @@ public class EnvironmentConfig
     public int OtpValidityInMinutes { get; set; }
     public int OtpNumberOfCharacters { get; set; }
     public bool OtpIsAlphaNumeric { get; set; }
+
+    // Cors Origins
+    public string CorsOrigins { get; set; } = string.Empty;
 }
