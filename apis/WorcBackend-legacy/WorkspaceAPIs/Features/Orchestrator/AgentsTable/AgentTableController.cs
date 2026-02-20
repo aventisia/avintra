@@ -74,4 +74,11 @@ public class AgentTableController : BaseApiController
     {
         return ResultHelper(await _agentTableService.DisableMultipleFlowVersionsAsync(flowVersionIds));
     }
+
+    // Retrieves the total count of published flow versions for a specific flow or all flows.
+    [HttpGet("total-published")]
+    public async Task<ActionResult<ServiceResponse<int>>> GetTotalPublishedFlowVersionsAsync()
+    {
+        return ResultHelper(await _agentTableService.GetTotalPublishedFlowVersionsAsync());
+    }
 }

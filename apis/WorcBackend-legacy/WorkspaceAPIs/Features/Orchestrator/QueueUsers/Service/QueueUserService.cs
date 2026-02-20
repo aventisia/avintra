@@ -18,6 +18,45 @@ public class QueueUserService : IQueueUserService
         _unitOfWork = unitOfWork;
     }
 
+    // Retrieves the queues that the user is associated with
+    public async Task<ServiceResponse<IEnumerable<QueuesTableDto>>> GetMyQueuesAsync()
+    {
+        // Initialize the response with a default failure message
+        var serviceResponse = new ServiceResponse<IEnumerable<QueuesTableDto>>
+        {
+            Data = null,
+            Message = "Failed to retrieve your queues. Please try again later."
+        };
+
+        try
+        {
+            // Attempt to retrieve the list of users in the specified queue
+            var queueUsers = await _unitOfWork.QueueUserRepo
+                .GetByConditionAsync(q => q.UserId == _userId)
+                .OrderByDescending(q => q.CreatedOn)
+                .Include(i => i.Queue)
+                    .ThenInclude(i2 => i2.CreatedByUser)
+                .Include(i => i.Queue)
+                    .ThenInclude(i2 => i2.LastModifiedByUser)
+                .Include(i => i.LastModifiedByUser)
+                .ToListAsync();
+            var queues = queueUsers.Select(s => s.Queue).ToList();
+
+            // On successful retrieval of queue users
+            serviceResponse.Data = queues.Adapt<List<QueuesTableDto>>();
+            serviceResponse.StatusCode = 200;
+            serviceResponse.Message = "Queues retrieved successfully.";
+            _logger.LogInformation($"Fetched {queueUsers.Count} users for User ID: {_userId}");
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError($"An error occurred while retrieving your queues for User ID: {_userId}. Exception: {ex.Message}");
+            return serviceResponse;
+        }
+
+        return serviceResponse;
+    }
+
     // Fetches all queue users for a specific Queue
     public async Task<ServiceResponse<IEnumerable<QueueUserDto>>> GetQueueUsersAsync(Guid queueId)
     {

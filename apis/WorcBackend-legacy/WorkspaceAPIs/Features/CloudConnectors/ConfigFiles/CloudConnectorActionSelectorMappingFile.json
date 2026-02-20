@@ -181,6 +181,104 @@
                "img": "/assets/Twilio.svg"
             }
           ]
+      },
+      {
+        "label": "Email",
+        "description": "Work with Email services",
+        "icon": null,
+        "img": "/assets/Email.svg",
+        "listType": null,
+        "actions": 
+        [
+            {
+              "type": "cloudConnectorNode",
+              "name": "Email/SendEmailMessage",
+              "label": "Send email message",
+              "description": "Send email message using an mailkit ",
+              "docsLink": "https://docs.aventisia.com",
+              "icon": null,
+              "img": "/assets/Email.svg"
+            },
+            {
+
+              "type": "cloudConnectorNode",
+              "name": "Email/ProcessEmailMessages",
+              "label": "Process email messages",
+              "description": "Process email messages using an mailkit ",
+              "docsLink": "https://docs.aventisia.com",
+              "icon": null,
+              "img": "/assets/Email.svg"
+            },
+            {
+
+              "type": "cloudConnectorNode",
+              "name": "Email/RetrieveEmailMessages",
+              "label": "Retrieve email messages",
+              "description": "Retrieve email messages using an mailkit ",
+              "docsLink": "https://docs.aventisia.com",
+              "icon": null,
+              "img": "/assets/Email.svg"
+            }
+        ]
+      },
+      {
+        "label": "AzureBlobStorage",
+        "description": "Work with Azure Blob Storage services",
+        "icon": null,
+        "img": "/assets/Azure.svg",
+        "listType": null,
+        "actions": 
+        [
+          {
+              "type": "cloudConnectorNode",
+              "name": "Azure/CreateBlobContainer",
+              "label": "Create Blob Container",
+              "description": "Creates a new blob container in the specified storage account.",
+              "docsLink": "https://docs.aventisia.com",
+              "icon": null,
+              "img": "/assets/Azure.svg"
+            },
+            {
+
+              "type": "cloudConnectorNode",
+              "name": "Azure/DeleteContainer",
+              "label": "Delete Container",
+              "description": "Delete container with the specified name to store and manage related data.",
+              "docsLink": "https://docs.aventisia.com",
+              "icon": null,
+              "img": "/assets/Azure.svg"
+            },
+            {
+
+              "type": "cloudConnectorNode",
+              "name": "Azure/GetContainerSize",
+              "label": "Retrieve Container Size",
+              "description": "Retrieve the container size from the storage account.",
+              "docsLink": "https://docs.aventisia.com",
+              "icon": null,
+              "img": "/assets/Azure.svg"
+            },
+             {
+
+              "type": "cloudConnectorNode",
+              "name": "Azure/UploadFile",
+              "label": "Upload File",
+              "description": "Upload file to Azure Blob storage account.",
+              "docsLink": "https://docs.aventisia.com",
+              "icon": null,
+              "img": "/assets/Azure.svg"
+            },
+             {
+
+              "type": "cloudConnectorNode",
+              "name": "Azure/DownloadFile",
+              "label": "Download File",
+              "description": "Downloads a file from an Azure Blob container.",
+              "docsLink": "https://docs.aventisia.com",
+              "icon": null,
+              "img": "/assets/Azure.svg"
+            }
+        ]
       }
     ]
   }

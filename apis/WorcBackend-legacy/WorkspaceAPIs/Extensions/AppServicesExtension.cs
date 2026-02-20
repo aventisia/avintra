@@ -1,3 +1,5 @@
+using WorkspaceAPIs.Features.CloudConnectors.Azure;
+using WorkspaceAPIs.Features.CloudConnectors.Email;
 using WorkspaceAPIs.Features.CloudConnectors.LLMProvider;
 using WorkspaceAPIs.Features.CloudConnectors.SendGrid;
 using WorkspaceAPIs.Features.CloudConnectors.Twilio;
@@ -57,6 +59,7 @@ public static class AppServicesExtension
         config.Apply(new TimeTriggerMappingProfile());
         config.Apply(new AITaskMappingProfile());
         config.Apply(new OnPremModelMappingProfile());
+        config.Apply(new QueueWorkItemMappingProfile());
 
         services.AddSingleton(config);
     }
@@ -103,6 +106,8 @@ public static class AppServicesExtension
         services.AddScoped<IProjectUsageService, ProjectUsageService>();
         services.AddScoped<IOnPremModelService, OnPremModelService>();
         services.AddScoped<ILLMProviderService, LLMProviderService>();
+        services.AddScoped<IManageTenantService, ManageTenantService>();
+        services.AddScoped<IQueueWorkItemService, QueueWorkItemService>();
 
         // Cloud Connectors feature
         services.AddScoped<ICloudConnectorsVaultService, CloudConnectorsVaultService>();
@@ -111,6 +116,8 @@ public static class AppServicesExtension
         services.AddScoped<ISendGridConnectorsService, SendGridConnectorsService>();
         services.AddScoped<ITwilioConnectorsService, TwilioConnectorsService>();
         services.AddScoped<ILLMProviderConnectorsService, LLMProviderConnectorsService>();
+        services.AddScoped<IEmailConnectorsService, EmailConnectorsService>();
+        services.AddScoped<IAzureConnectorsService,AzureConnectorsService>();
         // Common services
         services.AddScoped<IUnitOfWork, UnitOfWork>();
     }

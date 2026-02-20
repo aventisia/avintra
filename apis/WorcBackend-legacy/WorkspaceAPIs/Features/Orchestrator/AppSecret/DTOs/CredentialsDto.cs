@@ -395,3 +395,12 @@ public class AzureStorageCredentialsDto
     /// </summary>
     public string Key { get; set; } = string.Empty;
 }
+
+public class AzureBolbStorageCredentialsDto
+{
+     /// <summary>
+    /// Gets or sets the ConnectionString.
+    /// </summary>
+    public string ConnectionString {get;set;} = string.Empty;
+}
+
