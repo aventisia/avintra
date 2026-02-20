@@ -1,6 +1,6 @@
 {
   "name": "MarkEmailAsRead",
-  "label": "Mark Email as Read/Unread",
+  "label": "Mark Email as Read or Unread",
   "discription": "Marks an email as read or unread using Microsoft Graph API.",
   "version": "1.0.0",
   "auther": "@aventisia",

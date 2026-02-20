@@ -3,41 +3,64 @@
     "label": "Workflow Logics",
     "description": "Core actions to build the foundation of any automation flow",
     "icon": "AutomationEssentialsIcon",
-    "img": null,
     "actionCategories": [
       {
-        "label": "Subflows",
-        "description": "Set rules and manage the course of the flow",
-        "icon": null,
-        "img": "/function.png",
-        "listType": null,
+        "label": "Queue Management",
+        "description": "Create, retrieve, update, move, and delete work items in queues",
+        "img": "/assets/Queue.svg",
+        "doNotRenderIf": [
+          "production"
+        ],
         "actions": [
           {
-            "type": "blockNode",
-            "name": "CallBlockActivity",
-            "label": "Call Block",
-            "description": "Use to add custom block",
+            "type": "activityNode",
+            "name": "MoveWorkItemActivity",
+            "label": "Move Work Item",
+            "description": "Moves a work item from one queue to another.",
             "docsLink": "https://docs.aventisia.com",
-            "icon": "BlockNodeIcon",
-            "img": "/function.png"
+            "img": "/assets/Queue.svg",
+            "doNotRenderIf": [
+              "production"
+            ]
           },
           {
-            "type": "callAgentNode",
-            "name": "CallAgentActivity",
-            "label": "Call Agent",
-            "description": "Use this to call another agent within the current agent",
+            "type": "activityNode",
+            "name": "DeleteWorkItemActivity",
+            "label": "Delete Work Item",
+            "description": "Deletes a work item permanently from the queue.",
             "docsLink": "https://docs.aventisia.com",
-            "icon": "CallAgentIcon",
-            "img": "/function.png"
+            "img": "/assets/Queue.svg"
+          },
+          {
+            "type": "activityNode",
+            "name": "UpdateWorkItemActivity",
+            "label": "Update Work Item",
+            "description": "Updates the fields or status of an existing work item.",
+            "docsLink": "https://docs.aventisia.com",
+            "img": "/assets/Queue.svg"
+          },
+          {
+            "type": "activityNode",
+            "name": "GetWorkItemActivity",
+            "label": "Get Work Item",
+            "description": "Retrieves a work item from the specified queue using its identifier.",
+            "docsLink": "https://docs.aventisia.com",
+            "img": "/assets/Queue.svg"
+          },
+          {
+            "type": "activityNode",
+            "name": "CreateWorkItemActivity",
+            "label": "Create Work Item",
+            "description": "Creates a new work item in the specified queue.",
+            "docsLink": "https://docs.aventisia.com",
+            "img": "/assets/Queue.svg"
           }
         ]
       },
       {
         "label": "Flow control",
         "description": "Control the flow of execution based on predefined rules, enabling decision-making, repetition of actions, and iteration through collections.",
-        "icon": null,
         "img": "/assets/BreakLoop.svg",
-        "listType": null,
         "actions": [
           {
             "type": "conditionalNode",
@@ -63,8 +86,10 @@
             "label": "Break Loop",
             "description": "Breaks out of the current loop in the workflow execution.",
             "docsLink": "https://docs.aventisia.com",
-            "icon": null,
-            "img": "/assets/BreakLoop.svg"
+            "img": "/assets/BreakLoop.svg",
+            "doNotRenderIf": [
+              "production"
+            ]
           },
           {
             "type": "activityNode",
@@ -72,68 +97,32 @@
             "label": "Wait",
             "description": "Pauses the workflow execution for a specified number of seconds.",
             "docsLink": "https://docs.aventisia.com",
-            "icon": null,
             "img": "/assets/Wait.svg"
           }
         ]
       },
       {
-        "label": "Queue Management",
-        "description": "Create, retrieve, update, move, and delete work items in queues",
-        "icon": null,
-        "img": "/assets/Queue.svg",
-        "listType": null,
-        "visibility": {
-          "showInProd": false
-        },
+        "label": "Sub Flows",
+        "description": "Set rules and manage the course of the flow",
+        "img": "/function.png",
         "actions": [
           {
-            "type": "activityNode",
-            "name": "CreateWorkItemActivity",
-            "label": "Create Work Item",
-            "description": "Creates a new work item in the specified queue.",
+            "type": "blockNode",
+            "name": "CallBlockActivity",
+            "label": "Call Block",
+            "description": "Use to add custom block",
             "docsLink": "https://docs.aventisia.com",
-            "icon": null,
-            "img": "/assets/Queue.svg"
+            "icon": "BlockNodeIcon",
+            "img": "/function.png"
           },
           {
-            "type": "activityNode",
-            "name": "GetWorkItemActivity",
-            "label": "Get Work Item",
-            "description": "Retrieves a work item from the specified queue using its identifier.",
+            "type": "callAgentNode",
+            "name": "CallAgentActivity",
+            "label": "Call Agent",
+            "description": "Use this to call another agent within the current agent",
             "docsLink": "https://docs.aventisia.com",
-            "icon": null,
-            "img": "/assets/Queue.svg"
-          },
-          {
-            "type": "activityNode",
-            "name": "UpdateWorkItemActivity",
-            "label": "Update Work Item",
-            "description": "Updates the fields or status of an existing work item.",
-            "docsLink": "https://docs.aventisia.com",
-            "icon": null,
-            "img": "/assets/Queue.svg"
-          },
-          {
-            "type": "activityNode",
-            "name": "DeleteWorkItemActivity",
-            "label": "Delete Work Item",
-            "description": "Deletes a work item permanently from the queue.",
-            "docsLink": "https://docs.aventisia.com",
-            "icon": null,
-            "img": "/assets/Queue.svg"
-          },
-          {
-            "type": "activityNode",
-            "name": "MoveWorkItemActivity",
-            "label": "Move Work Item",
-            "description": "Moves a work item from one queue to another.",
-            "docsLink": "https://docs.aventisia.com",
-            "icon": null,
-            "img": "/assets/Queue.svg",
-            "visibility": {
-              "showInProd": false
-            }
+            "icon": "CallAgentIcon",
+            "img": "/function.png"
           }
         ]
       }
@@ -143,14 +132,11 @@
     "label": "Data Transformations",
     "description": "Clean, transform, and structure your data with ease",
     "icon": "DataTransformationsIcon",
-    "img": null,
     "actionCategories": [
       {
         "label": "Variables",
         "description": "Create and manage variables of different datatypes",
-        "icon": null,
         "img": "/assets/Variables.svg",
-        "listType": null,
         "actions": [
           {
             "type": "activityNode",
@@ -158,7 +144,6 @@
             "label": "Add Item to List",
             "description": "Adds one or more items to a list. Converts types if necessary.",
             "docsLink": "https://docs.aventisia.com",
-            "icon": null,
             "img": "/assets/Variables.svg"
           },
           {
@@ -167,7 +152,6 @@
             "label": "Clear List",
             "description": "Removes all elements from the specified list.",
             "docsLink": "https://docs.aventisia.com",
-            "icon": null,
             "img": "/assets/Variables.svg"
           },
           {
@@ -176,7 +160,6 @@
             "label": "Convert Custom Object to JSON",
             "description": "Converts a custom object into its JSON representation.",
             "docsLink": "https://docs.aventisia.com",
-            "icon": null,
             "img": "/assets/Variables.svg"
           },
           {
@@ -185,7 +168,6 @@
             "label": "Convert JSON to Custom Object",
             "description": "Converts a JSON string into a strongly-typed custom object.",
             "docsLink": "https://docs.aventisia.com",
-            "icon": null,
             "img": "/assets/Variables.svg"
           },
           {
@@ -194,7 +176,6 @@
             "label": "Create New List",
             "description": "Creates a new empty list to be used in other activities.",
             "docsLink": "https://docs.aventisia.com",
-            "icon": null,
             "img": "/assets/Variables.svg"
           },
           {
@@ -203,7 +184,6 @@
             "label": "Decrease Variable",
             "description": "Decreases a numeric variable by a specified value.",
             "docsLink": "https://docs.aventisia.com",
-            "icon": null,
             "img": "/assets/Variables.svg"
           },
           {
@@ -212,7 +192,6 @@
             "label": "Find Common List Items",
             "description": "Finds common items between two lists and returns them as a new list.",
             "docsLink": "https://docs.aventisia.com",
-            "icon": null,
             "img": "/assets/Variables.svg"
           },
           {
@@ -221,7 +200,6 @@
             "label": "Generate Random Number",
             "description": "Generates a random number or list of numbers within a specified range.",
             "docsLink": "https://docs.aventisia.com",
-            "icon": null,
             "img": "/assets/Variables.svg"
           },
           {
@@ -230,7 +208,6 @@
             "label": "Increase Variable",
             "description": "Increases a numeric variable by a specified value.",
             "docsLink": "https://docs.aventisia.com",
-            "icon": null,
             "img": "/assets/Variables.svg"
           },
           {
@@ -239,7 +216,6 @@
             "label": "Merge Lists",
             "description": "Merges two lists into a new list. The original lists remain unchanged.",
             "docsLink": "https://docs.aventisia.com",
-            "icon": null,
             "img": "/assets/Variables.svg"
           },
           {
@@ -248,7 +224,6 @@
             "label": "Parse Fragmented JSON List",
             "description": "Converts a list of JSON string fragments (e.g., from Add Item to List) into a list of proper objects.",
             "docsLink": "https://docs.aventisia.com",
-            "icon": null,
             "img": "/function.png"
           },
           {
@@ -257,7 +232,6 @@
             "label": "Remove Duplicate Items From List",
             "description": "Removes duplicate items from a list using case-sensitive or case-insensitive comparison.",
             "docsLink": "https://docs.aventisia.com",
-            "icon": null,
             "img": "/assets/Variables.svg"
           },
           {
@@ -266,7 +240,6 @@
             "label": "Remove Item From List",
             "description": "Removes an item from a list by index or value.",
             "docsLink": "https://docs.aventisia.com",
-            "icon": null,
             "img": "/assets/Variables.svg"
           },
           {
@@ -275,7 +248,6 @@
             "label": "Retrieve Data Table Column Into List",
             "description": "Extracts data from a specified column of a data table into a list. The column can be identified by name or index.",
             "docsLink": "https://docs.aventisia.com",
-            "icon": null,
             "img": "/assets/Variables.svg"
           },
           {
@@ -284,7 +256,6 @@
             "label": "Reverse List",
             "description": "Reverses the order of items in a list.",
             "docsLink": "https://docs.aventisia.com",
-            "icon": null,
             "img": "/assets/Variables.svg"
           },
           {
@@ -293,7 +264,6 @@
             "label": "Set Variable",
             "description": "Sets the value of a named variable within the workflow context. Supports arithmetic expressions for ValueToSet.",
             "docsLink": "https://docs.aventisia.com",
-            "icon": null,
             "img": "/assets/Variables.svg"
           },
           {
@@ -302,7 +272,6 @@
             "label": "Shuffle List",
             "description": "Randomly reorders the items in a list.",
             "docsLink": "https://docs.aventisia.com",
-            "icon": null,
             "img": "/assets/Variables.svg"
           },
           {
@@ -311,7 +280,6 @@
             "label": "Sort List",
             "description": "Sorts a list by one or more properties. Supports ascending or descending order.",
             "docsLink": "https://docs.aventisia.com",
-            "icon": null,
             "img": "/assets/Variables.svg"
           },
           {
@@ -320,7 +288,6 @@
             "label": "Subtract Lists",
             "description": "Removes items from the first list that exist in the second list.",
             "docsLink": "https://docs.aventisia.com",
-            "icon": null,
             "img": "/assets/Variables.svg"
           },
           {
@@ -329,7 +296,6 @@
             "label": "Truncate Number",
             "description": "Gets the integral or fractional digits of a numeric value, or rounds up/down the value to a specified number of decimal places.",
             "docsLink": "https://docs.aventisia.com",
-            "icon": null,
             "img": "/assets/Variables.svg"
           }
         ]
@@ -337,9 +303,7 @@
       {
         "label": "Text",
         "description": "Text manipulation and transformation.",
-        "icon": null,
         "img": "/assets/Text.svg",
-        "listType": null,
         "actions": [
           {
             "type": "activityNode",
@@ -347,7 +311,6 @@
             "label": "Append Line to Text",
             "description": "Appends a new line of text to the original text.",
             "docsLink": "https://docs.aventisia.com",
-            "icon": null,
             "img": "/assets/Text.svg"
           },
           {
@@ -356,7 +319,6 @@
             "label": "Change Text Case",
             "description": "Converts the input text to the specified case format.",
             "docsLink": "https://docs.aventisia.com",
-            "icon": null,
             "img": "/assets/Text.svg"
           },
           {
@@ -365,7 +327,6 @@
             "label": "Convert Number to Text",
             "description": "Converts a numeric value into text with specified formatting options.",
             "docsLink": "https://docs.aventisia.com",
-            "icon": null,
             "img": "/assets/Text.svg"
           },
           {
@@ -374,7 +335,6 @@
             "label": "Convert Text to DateTime",
             "description": "Converts a text representation of a date and/or time value to a DateTime value.",
             "docsLink": "https://docs.aventisia.com",
-            "icon": null,
             "img": "/assets/Text.svg"
           },
           {
@@ -383,7 +343,6 @@
             "label": "Convert Text to Number",
             "description": "Converts a text representation of a number to a numeric value.",
             "docsLink": "https://docs.aventisia.com",
-            "icon": null,
             "img": "/assets/Text.svg"
           },
           {
@@ -392,7 +351,6 @@
             "label": "Create HTML Content",
             "description": "Generates rich HTML content and stores it in a variable.",
             "docsLink": "https://docs.aventisia.com",
-            "icon": null,
             "img": "/assets/Text.svg"
           },
           {
@@ -401,7 +359,6 @@
             "label": "Create Random Text",
             "description": "Generates a text of specified length consisting of random characters.",
             "docsLink": "https://docs.aventisia.com",
-            "icon": null,
             "img": "/assets/Text.svg"
           },
           {
@@ -410,7 +367,6 @@
             "label": "Escape Text for Regular Expression",
             "description": "Escapes a minimal set of characters for use in regular expressions by replacing them with their escape codes.",
             "docsLink": "https://docs.aventisia.com",
-            "icon": null,
             "img": "/assets/Text.svg"
           },
           {
@@ -419,7 +375,6 @@
             "label": "Extract Substring from Text",
             "description": "Retrieves a substring from the original text based on start index and length.",
             "docsLink": "https://docs.aventisia.com",
-            "icon": null,
             "img": "/assets/Text.svg"
           },
           {
@@ -428,7 +383,6 @@
             "label": "Join Text",
             "description": "Converts a list into a text value by separating its items with a specified delimiter.",
             "docsLink": "https://docs.aventisia.com",
-            "icon": null,
             "img": "/assets/Text.svg"
           },
           {
@@ -437,7 +391,6 @@
             "label": "Pad Text",
             "description": "Creates a fixed-length text by adding characters to the left or right of an existing text.",
             "docsLink": "https://docs.aventisia.com",
-            "icon": null,
             "img": "/assets/Text.svg"
           },
           {
@@ -446,7 +399,6 @@
             "label": "Parse Text",
             "description": "Parses a text to find the first or all occurrences of a specified subtext or regular expression pattern.",
             "docsLink": "https://docs.aventisia.com",
-            "icon": null,
             "img": "/assets/Text.svg"
           },
           {
@@ -455,7 +407,6 @@
             "label": "Recognize Entities in Text",
             "description": "Identifies specific entities in text, such as dates, numbers, emails, URLs, etc., across multiple languages.",
             "docsLink": "https://docs.aventisia.com",
-            "icon": null,
             "img": "/assets/Text.svg"
           },
           {
@@ -464,7 +415,6 @@
             "label": "Replace Text",
             "description": "Replaces all occurrences of a specified subtext with another text. It can also be used with regular expressions.",
             "docsLink": "https://docs.aventisia.com",
-            "icon": null,
             "img": "/assets/Text.svg"
           },
           {
@@ -473,7 +423,6 @@
             "label": "Reverse Text",
             "description": "Reverses the order of characters in a given text string.",
             "docsLink": "https://docs.aventisia.com",
-            "icon": null,
             "img": "/assets/Text.svg"
           },
           {
@@ -482,7 +431,6 @@
             "label": "Split Text",
             "description": "Creates a list containing the substrings of a text that is separated by a specified delimiter or regular expression.",
             "docsLink": "https://docs.aventisia.com",
-            "icon": null,
             "img": "/assets/Text.svg"
           },
           {
@@ -491,7 +439,6 @@
             "label": "Trim Text",
             "description": "Removes specified characters from the start, end, or both ends of a text string.",
             "docsLink": "https://docs.aventisia.com",
-            "icon": null,
             "img": "/assets/Text.svg"
           }
         ]
@@ -499,9 +446,7 @@
       {
         "label": "OCR",
         "description": "Optical character recognition from images and documents.",
-        "icon": null,
         "img": "/assets/OCR.svg",
-        "listType": null,
         "actions": [
           {
             "type": "activityNode",
@@ -509,7 +454,6 @@
             "label": "Extract Text with OCR",
             "description": "Extracts text from an image file using Tesseract OCR engine.",
             "docsLink": "https://docs.aventisia.com",
-            "icon": null,
             "img": "/assets/OCR.svg"
           }
         ]
@@ -517,17 +461,22 @@
       {
         "label": "JSON",
         "description": "Transform data to and from JSON format, including parsing, serialization, and deserialization.",
-        "icon": null,
         "img": "/assets/JSON.svg",
-        "listType": null,
         "actions": [
+          {
+            "type": "activityNode",
+            "name": "DeleteJSONNodeWithPrimaryKeyActivity",
+            "label": "Delete JSON Node by Primary Key",
+            "description": "Recursively searches for an object with a matching primary key-value pair and deletes it from the structure.",
+            "docsLink": "https://docs.aventisia.com",
+            "img": "/assets/JSON.svg"
+          },
           {
             "type": "activityNode",
             "name": "DeserializeJSONTextActivity",
             "label": "Deserialize JSON Text",
             "description": "Parses a JSON string into a JToken object.",
             "docsLink": "https://docs.aventisia.com",
-            "icon": null,
             "img": "/assets/JSON.svg"
           },
           {
@@ -536,7 +485,6 @@
             "label": "Get First JSON Node by Key",
             "description": "Recursively searches through a JSON structure and returns the first value associated with the specified key.",
             "docsLink": "https://docs.aventisia.com",
-            "icon": null,
             "img": "/assets/JSON.svg"
           },
           {
@@ -545,7 +493,6 @@
             "label": "Find JSON Nodes by Key",
             "description": "Recursively searches through a JSON structure and returns all values associated with the specified key.",
             "docsLink": "https://docs.aventisia.com",
-            "icon": null,
             "img": "/assets/JSON.svg"
           },
           {
@@ -554,7 +501,6 @@
             "label": "Insert or Update JSON Node by Primary Key",
             "description": "Searches recursively through a JSON structure to find an object where a primary key matches a given value. If found, inserts or updates a specified key-value pair.",
             "docsLink": "https://docs.aventisia.com",
-            "icon": null,
             "img": "/assets/JSON.svg"
           },
           {
@@ -563,7 +509,6 @@
             "label": "Read JSON File",
             "description": "Reads the contents of a JSON file from the specified file path.",
             "docsLink": "https://docs.aventisia.com",
-            "icon": null,
             "img": "/assets/JSON.svg"
           },
           {
@@ -572,7 +517,6 @@
             "label": "Serialize JSON Token",
             "description": "Converts a JToken or object into both JSON string and JToken.",
             "docsLink": "https://docs.aventisia.com",
-            "icon": null,
             "img": "/assets/JSON.svg"
           },
           {
@@ -581,7 +525,6 @@
             "label": "Write Text to JSON File",
             "description": "Writes the provided content as JSON to the specified file path.",
             "docsLink": "https://docs.aventisia.com",
-            "icon": null,
             "img": "/assets/JSON.svg"
           }
         ]
@@ -589,9 +532,7 @@
       {
         "label": "DateTime",
         "description": "Date and time manipulation.",
-        "icon": null,
         "img": "/assets/DateTime.svg",
-        "listType": null,
         "actions": [
           {
             "type": "activityNode",
@@ -599,7 +540,6 @@
             "label": "Add Time to DateTime",
             "description": "Adds a specified time value to the given DateTime based on the selected time unit.",
             "docsLink": "https://docs.aventisia.com",
-            "icon": null,
             "img": "/assets/DateTime.svg"
           },
           {
@@ -608,7 +548,6 @@
             "label": "Format DateTime",
             "description": "Formats a DateTime value into a standard or custom string format.",
             "docsLink": "https://docs.aventisia.com",
-            "icon": null,
             "img": "/assets/DateTime.svg"
           },
           {
@@ -617,7 +556,6 @@
             "label": "Get Current Date and Time",
             "description": "This activity retrieves the current date and time based on the specified retrieval type and time zone.",
             "docsLink": "https://docs.aventisia.com",
-            "icon": null,
             "img": "/assets/DateTime.svg"
           },
           {
@@ -626,7 +564,6 @@
             "label": "Validate DateTime Format",
             "description": "Checks if the input string matches the specified date and time format.",
             "docsLink": "https://docs.aventisia.com",
-            "icon": null,
             "img": "/assets/DateTime.svg"
           },
           {
@@ -635,7 +572,6 @@
             "label": "Subtract Dates",
             "description": "Computes the time difference between two DateTime values in the selected unit (Seconds, Minutes, Hours, or Days).",
             "docsLink": "https://docs.aventisia.com",
-            "icon": null,
             "img": "/assets/DateTime.svg"
           }
         ]
@@ -643,9 +579,7 @@
       {
         "label": "Database",
         "description": "Database operations and data access.",
-        "icon": null,
         "img": "/assets/Database.svg",
-        "listType": null,
         "actions": [
           {
             "type": "activityNode",
@@ -653,7 +587,6 @@
             "label": "Close SQL Connection",
             "description": "Close an open connection to a database",
             "docsLink": "https://docs.aventisia.com",
-            "icon": null,
             "img": "/assets/Database.svg"
           },
           {
@@ -662,7 +595,6 @@
             "label": "Execute SQL Statement",
             "description": "Connect to a database and execute an SQL statement",
             "docsLink": "https://docs.aventisia.com",
-            "icon": null,
             "img": "/assets/Database.svg"
           },
           {
@@ -671,7 +603,6 @@
             "label": "Open SQL Connection",
             "description": "Open a new connection to a database",
             "docsLink": "https://docs.aventisia.com",
-            "icon": null,
             "img": "/assets/Database.svg"
           }
         ]
@@ -679,9 +610,7 @@
       {
         "label": "Data Table",
         "description": "Manipulate and transform data tables.",
-        "icon": null,
         "img": "/assets/DataTable.svg",
-        "listType": null,
         "actions": [
           {
             "type": "activityNode",
@@ -689,7 +618,6 @@
             "label": "Clear Data Table",
             "description": "Removes all rows from a data table while preserving its structure.",
             "docsLink": "https://docs.aventisia.com",
-            "icon": null,
             "img": "/assets/DataTable.svg"
           },
           {
@@ -698,7 +626,6 @@
             "label": "Convert Data Table to CSV Text",
             "description": "Converts a data table into a CSV (comma-separated values) text representation.",
             "docsLink": "https://docs.aventisia.com",
-            "icon": null,
             "img": "/assets/DataTable.svg"
           },
           {
@@ -707,7 +634,6 @@
             "label": "Create Data Table",
             "description": "Creates a new data table. If an existing data table is provided, it will be cloned.",
             "docsLink": "https://docs.aventisia.com",
-            "icon": null,
             "img": "/assets/DataTable.svg"
           },
           {
@@ -716,7 +642,6 @@
             "label": "Delete Column From Data Table",
             "description": "Deletes a data table column at the specified column index or column name.",
             "docsLink": "https://docs.aventisia.com",
-            "icon": null,
             "img": "/assets/DataTable.svg"
           },
           {
@@ -725,7 +650,6 @@
             "label": "Delete Duplicate Rows From Data Table",
             "description": "Deletes all rows that are exact duplicates from the data table.",
             "docsLink": "https://docs.aventisia.com",
-            "icon": null,
             "img": "/assets/DataTable.svg"
           },
           {
@@ -734,7 +658,6 @@
             "label": "Delete Empty Rows From Data Table",
             "description": "Deletes rows from a data table where one or more cells are empty.",
             "docsLink": "https://docs.aventisia.com",
-            "icon": null,
             "img": "/assets/DataTable.svg"
           },
           {
@@ -743,7 +666,6 @@
             "label": "Delete Row From Data Table",
             "description": "Deletes a row from a data table based on its zero-based index.",
             "docsLink": "https://docs.aventisia.com",
-            "icon": null,
             "img": "/assets/DataTable.svg"
           },
           {
@@ -752,7 +674,6 @@
             "label": "Filter Data Table",
             "description": "Filters the data table rows based on the applied rules.",
             "docsLink": "https://docs.aventisia.com",
-            "icon": null,
             "img": "/assets/DataTable.svg"
           },
           {
@@ -761,7 +682,6 @@
             "label": "Find or Replace in Data Table",
             "description": "Finds and/or replaces data table values.",
             "docsLink": "https://docs.aventisia.com",
-            "icon": null,
             "img": "/assets/DataTable.svg"
           },
           {
@@ -770,7 +690,6 @@
             "label": "Insert Column Into Data Table",
             "description": "Inserts a new column into the data table either at the end or before a specific column index.",
             "docsLink": "https://docs.aventisia.com",
-            "icon": null,
             "img": "/assets/DataTable.svg"
           },
           {
@@ -779,7 +698,6 @@
             "label": "Insert Row Into Data Table",
             "description": "Inserts a new row into the data table at the specified location.",
             "docsLink": "https://docs.aventisia.com",
-            "icon": null,
             "img": "/assets/DataTable.svg"
           },
           {
@@ -788,7 +706,6 @@
             "label": "Join Data Tables",
             "description": "Joins two data tables based on the specified join rule.",
             "docsLink": "https://docs.aventisia.com",
-            "icon": null,
             "img": "/assets/DataTable.svg"
           },
           {
@@ -797,7 +714,6 @@
             "label": "Merge Data Tables",
             "description": "Merges two data tables together, specifying the merging behavior in case their columns are different.",
             "docsLink": "https://docs.aventisia.com",
-            "icon": null,
             "img": "/assets/DataTable.svg"
           },
           {
@@ -806,7 +722,6 @@
             "label": "Read From CSV Text",
             "description": "Generates a data table from a CSV text.",
             "docsLink": "https://docs.aventisia.com",
-            "icon": null,
             "img": "/assets/DataTable.svg"
           },
           {
@@ -815,7 +730,6 @@
             "label": "Sort Data Table",
             "description": "Sorts the data table rows in ascending or descending order by the specified column, provided that all its values have the same data type.",
             "docsLink": "https://docs.aventisia.com",
-            "icon": null,
             "img": "/assets/DataTable.svg"
           },
           {
@@ -824,7 +738,6 @@
             "label": "Update Data Table Item",
             "description": "Updates a specific cell in a DataTable by specifying the column, row, and new value.",
             "docsLink": "https://docs.aventisia.com",
-            "icon": null,
             "img": "/assets/DataTable.svg"
           }
         ]
@@ -832,9 +745,7 @@
       {
         "label": "Cryptography",
         "description": "Encrypt, decrypt, and hash data.",
-        "icon": null,
         "img": "/assets/Cryptography.svg",
-        "listType": null,
         "actions": [
           {
             "type": "activityNode",
@@ -842,7 +753,6 @@
             "label": "Decrypt Text with AES",
             "description": "Decrypts a Base64-encoded string using AES with optional key hashing for short keys.",
             "docsLink": "https://docs.aventisia.com",
-            "icon": null,
             "img": "/assets/Cryptography.svg"
           },
           {
@@ -851,7 +761,6 @@
             "label": "Decrypt to File with AES",
             "description": "Decrypts an encrypted file using AES. Supports Base64, Hex, and UTF8-encoded inputs.",
             "docsLink": "https://docs.aventisia.com",
-            "icon": null,
             "img": "/assets/Cryptography.svg"
           },
           {
@@ -860,7 +769,6 @@
             "label": "Encrypt from File with AES",
             "description": "Encrypts the contents of a file using AES. Supports Base64, Hex encoding for output.",
             "docsLink": "https://docs.aventisia.com",
-            "icon": null,
             "img": "/assets/Cryptography.svg"
           },
           {
@@ -869,7 +777,6 @@
             "label": "Encrypt Text with AES",
             "description": "Encrypts a string using AES encryption. Short keys are hashed securely to 32 bytes.",
             "docsLink": "https://docs.aventisia.com",
-            "icon": null,
             "img": "/assets/Cryptography.svg"
           },
           {
@@ -878,7 +785,6 @@
             "label": "Hash from File",
             "description": "Hash the contents of a file, using a specified algorithm",
             "docsLink": "https://docs.aventisia.com",
-            "icon": null,
             "img": "/assets/Cryptography.svg"
           },
           {
@@ -887,7 +793,6 @@
             "label": "Hash from File with Key",
             "description": "Hash the contents of a file with a key, using a specified algorithm",
             "docsLink": "https://docs.aventisia.com",
-            "icon": null,
             "img": "/assets/Cryptography.svg"
           },
           {
@@ -896,7 +801,6 @@
             "label": "Hash Text",
             "description": "Hash a string, using a specified algorithm",
             "docsLink": "https://docs.aventisia.com",
-            "icon": null,
             "img": "/assets/Cryptography.svg"
           },
           {
@@ -905,7 +809,6 @@
             "label": "Hash Text with Key",
             "description": "Hash a string with a key, using a specified algorithm",
             "docsLink": "https://docs.aventisia.com",
-            "icon": null,
             "img": "/assets/Cryptography.svg"
           }
         ]
@@ -916,14 +819,11 @@
     "label": "UI Interface Automations",
     "description": "Automate your desktop with actions that mimic user interactions, from mouse clicks to keyboard entries",
     "icon": "UIAutomationAndUserActionsIcon",
-    "img": null,
     "actionCategories": [
       {
         "label": "XML",
         "description": "Read, write, and manipulate XML data.",
-        "icon": null,
         "img": "/assets/XML.svg",
-        "listType": null,
         "actions": [
           {
             "type": "activityNode",
@@ -931,7 +831,6 @@
             "label": "Execute XPath Expression",
             "description": "Executes an XPath expression on the provided XML content and returns the result.",
             "docsLink": "https://docs.aventisia.com",
-            "icon": null,
             "img": "/assets/XML.svg"
           },
           {
@@ -940,7 +839,6 @@
             "label": "Get XML Element Attribute",
             "description": "Gets the value of an attribute of an XML element.",
             "docsLink": "https://docs.aventisia.com",
-            "icon": null,
             "img": "/assets/XML.svg"
           },
           {
@@ -949,7 +847,6 @@
             "label": "Get XML Element Value",
             "description": "Gets the value of an XML element based on the provided XPath query.",
             "docsLink": "https://docs.aventisia.com",
-            "icon": null,
             "img": "/assets/XML.svg"
           },
           {
@@ -958,7 +855,6 @@
             "label": "Insert XML Element",
             "description": "Inserts a new XML element into an existing XML document.",
             "docsLink": "https://docs.aventisia.com",
-            "icon": null,
             "img": "/assets/XML.svg"
           },
           {
@@ -967,7 +863,6 @@
             "label": "Read XML from File",
             "description": "Reads the contents of an XML file into a variable.",
             "docsLink": "https://docs.aventisia.com",
-            "icon": null,
             "img": "/assets/XML.svg"
           },
           {
@@ -976,7 +871,6 @@
             "label": "Remove XML Element",
             "description": "Removes one or more XML elements from an XML document.",
             "docsLink": "https://docs.aventisia.com",
-            "icon": null,
             "img": "/assets/XML.svg"
           },
           {
@@ -985,7 +879,6 @@
             "label": "Remove XML Element Attribute",
             "description": "Removes an attribute from an XML element.",
             "docsLink": "https://docs.aventisia.com",
-            "icon": null,
             "img": "/assets/XML.svg"
           },
           {
@@ -994,7 +887,6 @@
             "label": "Set XML Element Attribute",
             "description": "Sets the value of an attribute of an XML element.",
             "docsLink": "https://docs.aventisia.com",
-            "icon": null,
             "img": "/assets/XML.svg"
           },
           {
@@ -1003,7 +895,6 @@
             "label": "Set XML Element Value",
             "description": "Sets the value of an XML element.",
             "docsLink": "https://docs.aventisia.com",
-            "icon": null,
             "img": "/assets/XML.svg"
           },
           {
@@ -1012,7 +903,6 @@
             "label": "Write XML to File",
             "description": "Writes the contents of an XML node or string into a file.",
             "docsLink": "https://docs.aventisia.com",
-            "icon": null,
             "img": "/assets/XML.svg"
           }
         ]
@@ -1020,9 +910,7 @@
       {
         "label": "Workstation",
         "description": "Automate workstation and desktop environment tasks.",
-        "icon": null,
         "img": "/assets/Workstation.svg",
-        "listType": null,
         "actions": [
           {
             "type": "activityNode",
@@ -1030,7 +918,6 @@
             "label": "Control Screensaver",
             "description": "Enables, disables, starts, or stops the screensaver.",
             "docsLink": "https://docs.aventisia.com",
-            "icon": null,
             "img": "/assets/Workstation.svg"
           },
           {
@@ -1039,7 +926,6 @@
             "label": "Empty Recycle Bin",
             "description": "Deletes all files from the Windows recycle bin for all users or current user.",
             "docsLink": "https://docs.aventisia.com",
-            "icon": null,
             "img": "/assets/Workstation.svg"
           },
           {
@@ -1048,7 +934,6 @@
             "label": "Get Default Printer",
             "description": "Gets the name of the default printer using multiple methods.",
             "docsLink": "https://docs.aventisia.com",
-            "icon": null,
             "img": "/assets/Workstation.svg"
           },
           {
@@ -1057,7 +942,6 @@
             "label": "Get Screen Resolution",
             "description": "Gets the width, height, bit depth, and refresh rate of one or all monitors.",
             "docsLink": "https://docs.aventisia.com",
-            "icon": null,
             "img": "/assets/Workstation.svg"
           },
           {
@@ -1066,7 +950,6 @@
             "label": "Lock Workstation",
             "description": "Locks the workstation's display to protect it from unauthorized use. Optionally forces lock even if workstation doesn't support it.",
             "docsLink": "https://docs.aventisia.com",
-            "icon": null,
             "img": "/assets/Workstation.svg"
           },
           {
@@ -1075,7 +958,6 @@
             "label": "Log Off User",
             "description": "Logs off the current user with various methods and options.",
             "docsLink": "https://docs.aventisia.com",
-            "icon": null,
             "img": "/assets/Workstation.svg"
           },
           {
@@ -1084,7 +966,6 @@
             "label": "Play Sound",
             "description": "Plays a sound from a WAV file or system sound with options for sync/async playback and volume control.",
             "docsLink": "https://docs.aventisia.com",
-            "icon": null,
             "img": "/assets/Workstation.svg"
           },
           {
@@ -1093,7 +974,6 @@
             "label": "Print Document",
             "description": "Prints documents with advanced options including printer selection and print settings.",
             "docsLink": "https://docs.aventisia.com",
-            "icon": null,
             "img": "/assets/Workstation.svg"
           },
           {
@@ -1102,7 +982,6 @@
             "label": "Set Screen Resolution",
             "description": "Sets the width, height, bit count, and frequency of a selected monitor.",
             "docsLink": "https://docs.aventisia.com",
-            "icon": null,
             "img": "/assets/Workstation.svg"
           },
           {
@@ -1111,7 +990,6 @@
             "label": "Show Desktop",
             "description": "Minimizes or restores all windows to show/hide the desktop.",
             "docsLink": "https://docs.aventisia.com",
-            "icon": null,
             "img": "/assets/Workstation.svg"
           },
           {
@@ -1120,7 +998,6 @@
             "label": "Shutdown Computer",
             "description": "Shuts down, restarts, sleeps, or hibernates the computer.",
             "docsLink": "https://docs.aventisia.com",
-            "icon": null,
             "img": "/assets/Workstation.svg"
           },
           {
@@ -1129,7 +1006,6 @@
             "label": "Take Screenshot",
             "description": "Takes a screenshot of all screens, primary screen, or a specific screen and saves it to clipboard or file.",
             "docsLink": "https://docs.aventisia.com",
-            "icon": null,
             "img": "/assets/Workstation.svg"
           }
         ]
@@ -1137,9 +1013,7 @@
       {
         "label": "UI Automation",
         "description": "Automate user interface interactions in windows and applications.",
-        "icon": null,
         "img": "/assets/UIAutomation.svg",
-        "listType": null,
         "actions": [
           {
             "type": "activityNode",
@@ -1147,7 +1021,6 @@
             "label": "Click UI Element",
             "description": "Invokes or clicks a UI element using UI Automation or mouse click.",
             "docsLink": "https://docs.aventisia.com",
-            "icon": null,
             "img": "/assets/UIAutomation.svg"
           },
           {
@@ -1156,7 +1029,6 @@
             "label": "Close Window",
             "description": "Closes the selected application window.",
             "docsLink": "https://docs.aventisia.com",
-            "icon": null,
             "img": "/assets/UIAutomation.svg"
           },
           {
@@ -1165,7 +1037,6 @@
             "label": "Expand or Collapse UI Element",
             "description": "Expands or collapses a UI element (such as a tree item or combo box) by searching for it using a property and value.",
             "docsLink": "https://docs.aventisia.com",
-            "icon": null,
             "img": "/assets/UIAutomation.svg"
           },
           {
@@ -1174,7 +1045,6 @@
             "label": "Focus Window",
             "description": "Brings the selected window to the front and makes it active.",
             "docsLink": "https://docs.aventisia.com",
-            "icon": null,
             "img": "/assets/UIAutomation.svg"
           },
           {
@@ -1183,7 +1053,6 @@
             "label": "Get Selected Item from Drop-Down List",
             "description": "Reads and returns the selected item from a drop-down list in a window using the property you choose.",
             "docsLink": "https://docs.aventisia.com",
-            "icon": null,
             "img": "/assets/UIAutomation.svg"
           },
           {
@@ -1192,7 +1061,6 @@
             "label": "Get Selected Checkboxes",
             "description": "Retrieves the names of the selected checkboxes in a checkbox group or the state of a specific checkbox.",
             "docsLink": "https://docs.aventisia.com",
-            "icon": null,
             "img": "/assets/UIAutomation.svg"
           },
           {
@@ -1201,7 +1069,6 @@
             "label": "Get Selected Radio Button",
             "description": "Retrieves the name of the selected radio button in a radio button group or the state of a specific radio button.",
             "docsLink": "https://docs.aventisia.com",
-            "icon": null,
             "img": "/assets/UIAutomation.svg"
           },
           {
@@ -1210,7 +1077,6 @@
             "label": "Get Text from Text Box",
             "description": "Reads and returns the text from a text box or editable field in a window using the UI element you provide.",
             "docsLink": "https://docs.aventisia.com",
-            "icon": null,
             "img": "/assets/UIAutomation.svg"
           },
           {
@@ -1219,7 +1085,6 @@
             "label": "Get UI Element Details",
             "description": "Get information like position, text, or state from a UI element in a window.",
             "docsLink": "https://docs.aventisia.com",
-            "icon": null,
             "img": "/assets/UIAutomation.svg"
           },
           {
@@ -1228,7 +1093,6 @@
             "label": "Get Window",
             "description": "Finds a desktop window by name using UI Automation.",
             "docsLink": "https://docs.aventisia.com",
-            "icon": null,
             "img": "/assets/UIAutomation.svg"
           },
           {
@@ -1237,7 +1101,6 @@
             "label": "Move Window",
             "description": "Moves a window to the position you choose on the screen.",
             "docsLink": "https://docs.aventisia.com",
-            "icon": null,
             "img": "/assets/UIAutomation.svg"
           },
           {
@@ -1246,7 +1109,6 @@
             "label": "Populate Text Field in Window",
             "description": "Fills a text box or editable field in a window with the specified text using the method you choose.",
             "docsLink": "https://docs.aventisia.com",
-            "icon": null,
             "img": "/assets/UIAutomation.svg"
           },
           {
@@ -1255,7 +1117,6 @@
             "label": "Resize Window",
             "description": "Change the size of a window to the width and height you want.",
             "docsLink": "https://docs.aventisia.com",
-            "icon": null,
             "img": "/assets/UIAutomation.svg"
           },
           {
@@ -1264,7 +1125,6 @@
             "label": "Select Radio Button",
             "description": "Selects a radio button in a group by its name or zero-based index.",
             "docsLink": "https://docs.aventisia.com",
-            "icon": null,
             "img": "/assets/UIAutomation.svg"
           },
           {
@@ -1273,7 +1133,6 @@
             "label": "Select UI Element",
             "description": "Selects the provided UI element, such as a list item, tab item or combo box option, using UI Automation.",
             "docsLink": "https://docs.aventisia.com",
-            "icon": null,
             "img": "/assets/UIAutomation.svg"
           },
           {
@@ -1282,7 +1141,6 @@
             "label": "Set Checkbox State",
             "description": "Checks or unchecks a checkbox UI element by searching for it by name within a parent element.",
             "docsLink": "https://docs.aventisia.com",
-            "icon": null,
             "img": "/assets/UIAutomation.svg"
           },
           {
@@ -1291,7 +1149,6 @@
             "label": "Select Option from Drop-Down or List",
             "description": "Selects an option from a drop-down or list UI element by specifying the option's visible name or its zero-based index.",
             "docsLink": "https://docs.aventisia.com",
-            "icon": null,
             "img": "/assets/UIAutomation.svg"
           },
           {
@@ -1300,7 +1157,6 @@
             "label": "Set Focus on UI Element",
             "description": "Brings the specified UI element into focus, allowing further interaction.",
             "docsLink": "https://docs.aventisia.com",
-            "icon": null,
             "img": "/assets/UIAutomation.svg"
           },
           {
@@ -1309,7 +1165,6 @@
             "label": "Set Window State",
             "description": "Change the window to normal, maximized, or minimized state.",
             "docsLink": "https://docs.aventisia.com",
-            "icon": null,
             "img": "/assets/UIAutomation.svg"
           }
         ]
@@ -1317,9 +1172,7 @@
       {
         "label": "System",
         "description": "Perform system-level operations and checks.",
-        "icon": null,
         "img": "/assets/System.svg",
-        "listType": null,
         "actions": [
           {
             "type": "activityNode",
@@ -1327,7 +1180,6 @@
             "label": "Delete Windows Environment Variable",
             "description": "Deletes an environment variable from a given scope.",
             "docsLink": "https://docs.aventisia.com",
-            "icon": null,
             "img": "/assets/System.svg"
           },
           {
@@ -1336,7 +1188,6 @@
             "label": "Get windows environment variable",
             "description": "Retrieves the value of an environment variable.",
             "docsLink": "https://docs.aventisia.com",
-            "icon": null,
             "img": "/assets/System.svg"
           },
           {
@@ -1345,7 +1196,6 @@
             "label": "If process",
             "description": "Marks the beginning of a conditional block of actions depending on whether a process is running or not.",
             "docsLink": "https://docs.aventisia.com",
-            "icon": null,
             "img": "/assets/System.svg"
           },
           {
@@ -1354,7 +1204,6 @@
             "label": "Ping",
             "description": "Sends a message to determine whether a remote computer is accessible over the network.",
             "docsLink": "https://docs.aventisia.com",
-            "icon": null,
             "img": "/assets/System.svg"
           },
           {
@@ -1363,7 +1212,6 @@
             "label": "Run Application",
             "description": "Executes an application or opens a document by executing the associated application.",
             "docsLink": "https://docs.aventisia.com",
-            "icon": null,
             "img": "/assets/System.svg"
           },
           {
@@ -1372,7 +1220,6 @@
             "label": "Set windows environment variable",
             "description": "Sets an environment variable to a given value.",
             "docsLink": "https://docs.aventisia.com",
-            "icon": null,
             "img": "/assets/System.svg"
           },
           {
@@ -1381,7 +1228,6 @@
             "label": "Terminate process",
             "description": "Immediately stops a running process.",
             "docsLink": "https://docs.aventisia.com",
-            "icon": null,
             "img": "/assets/System.svg"
           },
           {
@@ -1390,7 +1236,6 @@
             "label": "Wait For Process",
             "description": "Waits for a specific process to start or stop.",
             "docsLink": "https://docs.aventisia.com",
-            "icon": null,
             "img": "/assets/System.svg"
           }
         ]
@@ -1398,9 +1243,7 @@
       {
         "label": "Scripting",
         "description": "Run scripts and automate tasks using scripting languages.",
-        "icon": null,
         "img": "/assets/Scripting.svg",
-        "listType": null,
         "actions": [
           {
             "type": "activityNode",
@@ -1408,7 +1251,6 @@
             "label": "Run DOS Command",
             "description": "Runs a DOS command or console application in invisible mode and retrieves its output upon completion.",
             "docsLink": "https://docs.aventisia.com",
-            "icon": null,
             "img": "/assets/Scripting.svg"
           },
           {
@@ -1417,7 +1259,6 @@
             "label": "Run .NET Script",
             "description": "Executes some custom .NET script and retrieves its output into a variable.",
             "docsLink": "https://docs.aventisia.com",
-            "icon": null,
             "img": "/assets/Scripting.svg"
           },
           {
@@ -1426,7 +1267,6 @@
             "label": "Run JavaScript",
             "description": "Executes some custom JavaScript code and retrieves its output into a variable.",
             "docsLink": "https://docs.aventisia.com",
-            "icon": null,
             "img": "/assets/Scripting.svg"
           },
           {
@@ -1435,7 +1275,6 @@
             "label": "Run PowerShell Script",
             "description": "Executes some custom PowerShell script and retrieves its output into a variable.",
             "docsLink": "https://docs.aventisia.com",
-            "icon": null,
             "img": "/assets/Scripting.svg"
           },
           {
@@ -1444,7 +1283,6 @@
             "label": "Run Python Script",
             "description": "Executes some custom Python script and retrieves its output into a variable.",
             "docsLink": "https://docs.aventisia.com",
-            "icon": null,
             "img": "/assets/Scripting.svg"
           },
           {
@@ -1453,7 +1291,6 @@
             "label": "Run VBScript",
             "description": "Executes custom VBScript code and retrieves its output.",
             "docsLink": "https://docs.aventisia.com",
-            "icon": null,
             "img": "/assets/Scripting.svg"
           }
         ]
@@ -1461,9 +1298,7 @@
       {
         "label": "Mouse and Keyboard",
         "description": "Automate mouse and keyboard actions.",
-        "icon": null,
         "img": "/assets/MouseAndKeyboard.svg",
-        "listType": null,
         "actions": [
           {
             "type": "activityNode",
@@ -1471,7 +1306,6 @@
             "label": "Block Input",
             "description": "Blocks user mouse and keyboard input, so that the flow can perform mouse and keyboard actions without interference from the user.",
             "docsLink": "https://docs.aventisia.com",
-            "icon": null,
             "img": "/assets/MouseAndKeyboard.svg"
           },
           {
@@ -1480,7 +1314,6 @@
             "label": "Get Keyboard Identifier",
             "description": "Retrieves the active keyboard identifier from the machine's registry.",
             "docsLink": "https://docs.aventisia.com",
-            "icon": null,
             "img": "/assets/MouseAndKeyboard.svg"
           },
           {
@@ -1489,7 +1322,6 @@
             "label": "Get Mouse Position",
             "description": "Retrieves the current position of the mouse cursor on the screen in pixel coordinates.",
             "docsLink": "https://docs.aventisia.com",
-            "icon": null,
             "img": "/assets/MouseAndKeyboard.svg"
           },
           {
@@ -1498,7 +1330,6 @@
             "label": "Move Mouse",
             "description": "Moves the mouse cursor to a specific position on the screen.",
             "docsLink": "https://docs.aventisia.com",
-            "icon": null,
             "img": "/assets/MouseAndKeyboard.svg"
           },
           {
@@ -1507,7 +1338,6 @@
             "label": "Move Mouse to Image",
             "description": "Moves the mouse cursor to the center of a specified image on the screen using template matching.",
             "docsLink": "https://docs.aventisia.com",
-            "icon": null,
             "img": "/assets/MouseAndKeyboard.svg"
           },
           {
@@ -1516,7 +1346,6 @@
             "label": "Press or Release Key",
             "description": "Presses (and holds) or releases one or more modifier keys (Alt, Control, Shift, Win). Supports combinations like Ctrl+Alt.",
             "docsLink": "https://docs.aventisia.com",
-            "icon": null,
             "img": "/assets/MouseAndKeyboard.svg"
           },
           {
@@ -1525,7 +1354,6 @@
             "label": "Send Keys",
             "description": "Sends keys to the specified target (foreground window, UI element, window handle, or title/class).",
             "docsLink": "https://docs.aventisia.com",
-            "icon": null,
             "img": "/assets/MouseAndKeyboard.svg"
           },
           {
@@ -1534,7 +1362,6 @@
             "label": "Send Mouse Click",
             "description": "Sends a mouse click event to the specified location.",
             "docsLink": "https://docs.aventisia.com",
-            "icon": null,
             "img": "/assets/MouseAndKeyboard.svg"
           },
           {
@@ -1543,7 +1370,6 @@
             "label": "Set Key State",
             "description": "Sets the state (on or off) for the keys Caps Lock, Num Lock, or Scroll Lock.",
             "docsLink": "https://docs.aventisia.com",
-            "icon": null,
             "img": "/assets/MouseAndKeyboard.svg"
           },
           {
@@ -1552,7 +1378,6 @@
             "label": "Wait for Mouse",
             "description": "Suspends the execution of the flow until the mouse pointer changes to or from the specified cursor.",
             "docsLink": "https://docs.aventisia.com",
-            "icon": null,
             "img": "/assets/MouseAndKeyboard.svg"
           },
           {
@@ -1561,7 +1386,6 @@
             "label": "Wait for Shortcut Key",
             "description": "Pauses the flow run until a specific shortcut key is pressed.",
             "docsLink": "https://docs.aventisia.com",
-            "icon": null,
             "img": "/assets/MouseAndKeyboard.svg"
           }
         ]
@@ -1569,9 +1393,7 @@
       {
         "label": "Message Box",
         "description": "Display message boxes and dialogs.",
-        "icon": null,
         "img": "/assets/MessageBox.svg",
-        "listType": null,
         "actions": [
           {
             "type": "activityNode",
@@ -1579,7 +1401,6 @@
             "label": "Display Input Dialog",
             "description": "Displays a dialog box that prompts the user to enter text.",
             "docsLink": "https://docs.aventisia.com",
-            "icon": null,
             "img": "/assets/MessageBox.svg"
           },
           {
@@ -1588,7 +1409,6 @@
             "label": "Display Message",
             "description": "Displays a message box",
             "docsLink": "https://docs.aventisia.com",
-            "icon": null,
             "img": "/assets/MessageBox.svg"
           },
           {
@@ -1597,7 +1417,6 @@
             "label": "Display Select File Dialog",
             "description": "Displays a file selection dialog to let users choose one or more files.",
             "docsLink": "https://docs.aventisia.com",
-            "icon": null,
             "img": "/assets/MessageBox.svg"
           },
           {
@@ -1606,7 +1425,14 @@
             "label": "Display Select Folder Dialog",
             "description": "Displays a folder selection dialog to let users choose a folder.",
             "docsLink": "https://docs.aventisia.com",
-            "icon": null,
+            "img": "/assets/MessageBox.svg"
+          },
+          {
+            "type": "activityNode",
+            "name": "DisplaySelectFromListDialogActivity",
+            "label": "Display Select From List Dialog",
+            "description": "Displays a dialog box with options that lets the user select from a list.",
+            "docsLink": "https://docs.aventisia.com",
             "img": "/assets/MessageBox.svg"
           }
         ]
@@ -1614,9 +1440,7 @@
       {
         "label": "Folder",
         "description": "Folder operations such as create, delete, move, and list.",
-        "icon": null,
         "img": "/assets/Folder.svg",
-        "listType": null,
         "actions": [
           {
             "type": "activityNode",
@@ -1624,7 +1448,6 @@
             "label": "Folder to Copy",
             "description": "The path of the source folder that you want to copy the folder",
             "docsLink": "https://docs.aventisia.com",
-            "icon": null,
             "img": "/assets/Folder.svg"
           },
           {
@@ -1633,7 +1456,6 @@
             "label": "Create Folder",
             "description": "Generates a new folder within the specified parent directory using a given folder name.",
             "docsLink": "https://docs.aventisia.com",
-            "icon": null,
             "img": "/assets/Folder.svg"
           },
           {
@@ -1642,7 +1464,6 @@
             "label": "Delete Folder",
             "description": "Removes the specified folder and its contents from the file system.",
             "docsLink": "https://docs.aventisia.com",
-            "icon": null,
             "img": "/assets/Folder.svg"
           },
           {
@@ -1651,7 +1472,6 @@
             "label": "Empty Folder",
             "description": "Removes all files and subdirectories within the specified folder, preserving the folder itself.",
             "docsLink": "https://docs.aventisia.com",
-            "icon": null,
             "img": "/assets/Folder.svg"
           },
           {
@@ -1660,7 +1480,6 @@
             "label": "Find File in Folder",
             "description": "Finds a single file in a folder (and optionally subfolders) based on criteria like largest, smallest, newest, oldest, etc.",
             "docsLink": "https://docs.aventisia.com",
-            "icon": null,
             "img": "/assets/Folder.svg"
           },
           {
@@ -1669,7 +1488,6 @@
             "label": "Retrieve Files in Folder",
             "description": "This activity retrieves the list of files in a specified folder, with options to include subfolders and sort the results.",
             "docsLink": "https://docs.aventisia.com",
-            "icon": null,
             "img": "/assets/Folder.svg"
           },
           {
@@ -1678,7 +1496,6 @@
             "label": "Get Special Folder Path",
             "description": "This activity retrieves the path of a Windows special folder, such as Desktop, My Pictures, Internet Cache, etc.",
             "docsLink": "https://docs.aventisia.com",
-            "icon": null,
             "img": "/assets/Folder.svg"
           },
           {
@@ -1687,7 +1504,6 @@
             "label": "Retrieve Subfolders from Directory",
             "description": "Returns a list of subfolder paths within the specified directory.",
             "docsLink": "https://docs.aventisia.com",
-            "icon": null,
             "img": "/assets/Folder.svg"
           },
           {
@@ -1696,7 +1512,6 @@
             "label": "If Folder Exists",
             "description": "Checks whether the specified folder exists or doesn't exist based on the selected condition.",
             "docsLink": "https://docs.aventisia.com",
-            "icon": null,
             "img": "/assets/Folder.svg"
           },
           {
@@ -1705,7 +1520,6 @@
             "label": "Move Folder",
             "description": "This activity moves an existing folder to a specified destination folder.",
             "docsLink": "https://docs.aventisia.com",
-            "icon": null,
             "img": "/assets/Folder.svg"
           },
           {
@@ -1714,7 +1528,6 @@
             "label": "Rename Folder",
             "description": "This activity renames an existing folder by specifying the original folder path and the new folder name.",
             "docsLink": "https://docs.aventisia.com",
-            "icon": null,
             "img": "/assets/Folder.svg"
           }
         ]
@@ -1722,9 +1535,7 @@
       {
         "label": "File",
         "description": "File operations such as copy, move, and conversion.",
-        "icon": null,
         "img": "/assets/File.svg",
-        "listType": null,
         "actions": [
           {
             "type": "activityNode",
@@ -1732,7 +1543,6 @@
             "label": "Convert Base64 to Text",
             "description": "Converts a Base64-encoded string to plain text.",
             "docsLink": "https://docs.aventisia.com",
-            "icon": null,
             "img": "/assets/File.svg"
           },
           {
@@ -1741,7 +1551,6 @@
             "label": "Convert Binary Data to File",
             "description": "Converts binary data (byte[] or Base64 string) to a file at the specified path.",
             "docsLink": "https://docs.aventisia.com",
-            "icon": null,
             "img": "/assets/File.svg"
           },
           {
@@ -1750,7 +1559,6 @@
             "label": "Convert File to Binary Data",
             "description": "Converts a file to binary data.",
             "docsLink": "https://docs.aventisia.com",
-            "icon": null,
             "img": "/assets/File.svg"
           },
           {
@@ -1759,7 +1567,6 @@
             "label": "Copy File(s)",
             "description": "Copies one or more files into a destination folder.",
             "docsLink": "https://docs.aventisia.com",
-            "icon": null,
             "img": "/assets/File.svg"
           },
           {
@@ -1768,7 +1575,6 @@
             "label": "Delete File(s)",
             "description": "Deletes one or more files.",
             "docsLink": "https://docs.aventisia.com",
-            "icon": null,
             "img": "/assets/File.svg"
           },
           {
@@ -1777,7 +1583,6 @@
             "label": "Get File Path Components",
             "description": "Extracts various parts (directory, name, extension) from the given file path.",
             "docsLink": "https://docs.aventisia.com",
-            "icon": null,
             "img": "/assets/File.svg"
           },
           {
@@ -1786,7 +1591,6 @@
             "label": "Get Temporary File",
             "description": "Creates a uniquely named empty temporary file on disk and returns its FileInfo object.",
             "docsLink": "https://docs.aventisia.com",
-            "icon": null,
             "img": "/assets/File.svg"
           },
           {
@@ -1795,7 +1599,6 @@
             "label": "If File Exists",
             "description": "Checks if a file exists or does not exist and marks the beginning of a conditional block.",
             "docsLink": "https://docs.aventisia.com",
-            "icon": null,
             "img": "/assets/File.svg"
           },
           {
@@ -1804,7 +1607,6 @@
             "label": "Move File(s)",
             "description": "Moves one or more files into a destination folder.",
             "docsLink": "https://docs.aventisia.com",
-            "icon": null,
             "img": "/assets/File.svg"
           },
           {
@@ -1813,7 +1615,6 @@
             "label": "Read from CSV File",
             "description": "Reads a CSV file into a DataTable.",
             "docsLink": "https://docs.aventisia.com",
-            "icon": null,
             "img": "/assets/File.svg"
           },
           {
@@ -1822,7 +1623,6 @@
             "label": "Read Text from File",
             "description": "Reads all text content from the specified file.",
             "docsLink": "https://docs.aventisia.com",
-            "icon": null,
             "img": "/assets/File.svg"
           },
           {
@@ -1831,7 +1631,6 @@
             "label": "Rename File(s)",
             "description": "Renames one or more files with advanced schemes including datetime and sequential numbering.",
             "docsLink": "https://docs.aventisia.com",
-            "icon": null,
             "img": "/assets/File.svg"
           },
           {
@@ -1840,7 +1639,6 @@
             "label": "Wait For File",
             "description": "Suspends running the flow until a file is created or deleted.",
             "docsLink": "https://docs.aventisia.com",
-            "icon": null,
             "img": "/assets/File.svg"
           },
           {
@@ -1849,7 +1647,6 @@
             "label": "Write Text to File",
             "description": "Writes the given text to the specified file using either Replace or Append mode.",
             "docsLink": "https://docs.aventisia.com",
-            "icon": null,
             "img": "/assets/File.svg"
           },
           {
@@ -1858,7 +1655,6 @@
             "label": "Write to CSV File",
             "description": "Writes a data table, data row, or list to a CSV file.",
             "docsLink": "https://docs.aventisia.com",
-            "icon": null,
             "img": "/assets/File.svg"
           }
         ]
@@ -1866,9 +1662,7 @@
       {
         "label": "Credential Manager",
         "description": "Manage credentials such as usernames and passwords securely using windows credential manager.",
-        "icon": null,
         "img": "/assets/CredentialManager.svg",
-        "listType": null,
         "actions": [
           {
             "type": "activityNode",
@@ -1876,7 +1670,6 @@
             "label": "Get Account Password from Credential Manager",
             "description": "Retrieves the password for a stored credential from Windows Credential Manager.",
             "docsLink": "https://docs.aventisia.com",
-            "icon": null,
             "img": "/assets/CredentialManager.svg"
           },
           {
@@ -1885,7 +1678,6 @@
             "label": "Get Credential Manager Credentials",
             "description": "Retrieves stored credentials from Windows Credential Manager for a specified target.",
             "docsLink": "https://docs.aventisia.com",
-            "icon": null,
             "img": "/assets/CredentialManager.svg"
           },
           {
@@ -1894,7 +1686,6 @@
             "label": "Remove Credential Manager Credentials",
             "description": "Removes stored credentials from Windows Credential Manager for a specified target.",
             "docsLink": "https://docs.aventisia.com",
-            "icon": null,
             "img": "/assets/CredentialManager.svg"
           },
           {
@@ -1903,7 +1694,6 @@
             "label": "Save Credential Manager Credentials",
             "description": "Saves credentials to Windows Credential Manager for a specified target.",
             "docsLink": "https://docs.aventisia.com",
-            "icon": null,
             "img": "/assets/CredentialManager.svg"
           },
           {
@@ -1912,7 +1702,6 @@
             "label": "Update Account Password in Credential Manager",
             "description": "Updates the password for an existing credential in Windows Credential Manager.",
             "docsLink": "https://docs.aventisia.com",
-            "icon": null,
             "img": "/assets/CredentialManager.svg"
           }
         ]
@@ -1920,9 +1709,7 @@
       {
         "label": "Compression",
         "description": "Compress and decompress files and folders.",
-        "icon": null,
         "img": "/assets/Compression.svg",
-        "listType": null,
         "actions": [
           {
             "type": "activityNode",
@@ -1930,7 +1717,6 @@
             "label": "Unzip Files",
             "description": "Extracts files from a ZIP archive to a specified destination folder.",
             "docsLink": "https://docs.aventisia.com",
-            "icon": null,
             "img": "/assets/Compression.svg"
           },
           {
@@ -1939,7 +1725,6 @@
             "label": "Zip Files",
             "description": "Compress one or more files or folders into a zip archive.",
             "docsLink": "https://docs.aventisia.com",
-            "icon": null,
             "img": "/assets/Compression.svg"
           }
         ]
@@ -1947,9 +1732,7 @@
       {
         "label": "CMD Session",
         "description": "Automate command prompt session operations.",
-        "icon": null,
         "img": "/assets/CMDSession.svg",
-        "listType": null,
         "actions": [
           {
             "type": "activityNode",
@@ -1957,7 +1740,6 @@
             "label": "Close CMD Session",
             "description": "Closes a previously opened CMD session.",
             "docsLink": "https://docs.aventisia.com",
-            "icon": null,
             "img": "/assets/CMDSession.svg"
           },
           {
@@ -1966,7 +1748,6 @@
             "label": "Open CMD Session",
             "description": "Opens a new CMD session with optional encoding settings.",
             "docsLink": "https://docs.aventisia.com",
-            "icon": null,
             "img": "/assets/CMDSession.svg"
           },
           {
@@ -1975,7 +1756,6 @@
             "label": "Read from CMD Session",
             "description": "Reads the output of a CMD session.",
             "docsLink": "https://docs.aventisia.com",
-            "icon": null,
             "img": "/assets/CMDSession.svg"
           },
           {
@@ -1984,7 +1764,6 @@
             "label": "Wait for Text on CMD Session",
             "description": "Waits for a specific text on a previously opened CMD session.",
             "docsLink": "https://docs.aventisia.com",
-            "icon": null,
             "img": "/assets/CMDSession.svg"
           },
           {
@@ -1993,7 +1772,6 @@
             "label": "Write to CMD Session",
             "description": "Executes a command on an open CMD session.",
             "docsLink": "https://docs.aventisia.com",
-            "icon": null,
             "img": "/assets/CMDSession.svg"
           }
         ]
@@ -2001,9 +1779,7 @@
       {
         "label": "Clipboard",
         "description": "Clipboard operations and automation.",
-        "icon": null,
         "img": "/assets/Clipboard.svg",
-        "listType": null,
         "actions": [
           {
             "type": "activityNode",
@@ -2011,7 +1787,6 @@
             "label": "Clear Clipboard Contents",
             "description": "Clears all contents from the system clipboard.",
             "docsLink": "https://docs.aventisia.com",
-            "icon": null,
             "img": "/assets/Clipboard.svg"
           },
           {
@@ -2020,7 +1795,6 @@
             "label": "Get Clipboard Text",
             "description": "Retrieves the text currently stored in the system clipboard.",
             "docsLink": "https://docs.aventisia.com",
-            "icon": null,
             "img": "/assets/Clipboard.svg"
           },
           {
@@ -2029,7 +1803,6 @@
             "label": "Set Clipboard Text",
             "description": "Sets the specified text to the system clipboard.",
             "docsLink": "https://docs.aventisia.com",
-            "icon": null,
             "img": "/assets/Clipboard.svg"
           }
         ]
@@ -2037,9 +1810,7 @@
       {
         "label": "Browser Automation",
         "description": "Automate web browser interactions.",
-        "icon": null,
         "img": "/assets/BrowserAutomation.svg",
-        "listType": null,
         "actions": [
           {
             "type": "activityNode",
@@ -2047,7 +1818,6 @@
             "label": "Check Element State",
             "description": "Verifies if an element is visible, enabled, or selected.",
             "docsLink": "https://docs.aventisia.com",
-            "icon": null,
             "img": "/assets/BrowserAutomation.svg"
           },
           {
@@ -2056,7 +1826,6 @@
             "label": "Click Download Link on Web Page",
             "description": "Simulates clicking a download link on a web page and saves the file to the specified folder.",
             "docsLink": "https://docs.aventisia.com",
-            "icon": null,
             "img": "/assets/BrowserAutomation.svg"
           },
           {
@@ -2065,7 +1834,6 @@
             "label": "Click on Web Page",
             "description": "Simulates clicking a UI element (e.g., link, button) on a web page.",
             "docsLink": "https://docs.aventisia.com",
-            "icon": null,
             "img": "/assets/BrowserAutomation.svg"
           },
           {
@@ -2074,7 +1842,6 @@
             "label": "Close Web Browser",
             "description": "Closes a web browser instance or all instances if needed.",
             "docsLink": "https://docs.aventisia.com",
-            "icon": null,
             "img": "/assets/BrowserAutomation.svg"
           },
           {
@@ -2083,7 +1850,6 @@
             "label": "Close Web Browser Tab",
             "description": "Closes web browser tabs based on various conditions (current, by title/URL, all except main, timeout-based).",
             "docsLink": "https://docs.aventisia.com",
-            "icon": null,
             "img": "/assets/BrowserAutomation.svg"
           },
           {
@@ -2092,7 +1858,6 @@
             "label": "Create New Tab",
             "description": "Creates a new tab in the web browser and optionally navigates to a specified URL.",
             "docsLink": "https://docs.aventisia.com",
-            "icon": null,
             "img": "/assets/BrowserAutomation.svg"
           },
           {
@@ -2101,7 +1866,6 @@
             "label": "Extract Data From Web Page",
             "description": "Extracts data from a specified UI element on a web page using configurable parameters.",
             "docsLink": "https://docs.aventisia.com",
-            "icon": null,
             "img": "/assets/BrowserAutomation.svg"
           },
           {
@@ -2110,7 +1874,6 @@
             "label": "Focus on Web Page",
             "description": "Focuses a specific text field in a web browser. Optionally waits for page load and handles dialogs.",
             "docsLink": "https://docs.aventisia.com",
-            "icon": null,
             "img": "/assets/BrowserAutomation.svg"
           },
           {
@@ -2119,7 +1882,6 @@
             "label": "Get Checkbox Value",
             "description": "Retrieves the current value (checked/unchecked) of a checkbox element on a web page.",
             "docsLink": "https://docs.aventisia.com",
-            "icon": null,
             "img": "/assets/BrowserAutomation.svg"
           },
           {
@@ -2128,7 +1890,6 @@
             "label": "Get Details of Element on Web Page",
             "description": "Retrieves the value of a specified attribute from a selected UI element in a web browser.",
             "docsLink": "https://docs.aventisia.com",
-            "icon": null,
             "img": "/assets/BrowserAutomation.svg"
           },
           {
@@ -2137,7 +1898,6 @@
             "label": "Get Details of Web Page",
             "description": "Retrieves specific information about a web page such as title, description, URL, or source code.",
             "docsLink": "https://docs.aventisia.com",
-            "icon": null,
             "img": "/assets/BrowserAutomation.svg"
           },
           {
@@ -2146,7 +1906,6 @@
             "label": "Get Element Attribute Value",
             "description": "Retrieves the value of an element's attribute from a web page.",
             "docsLink": "https://docs.aventisia.com",
-            "icon": null,
             "img": "/assets/BrowserAutomation.svg"
           },
           {
@@ -2155,7 +1914,6 @@
             "label": "Get Element Siblings",
             "description": "Finds and returns all sibling elements of the specified web element.",
             "docsLink": "https://docs.aventisia.com",
-            "icon": null,
             "img": "/assets/BrowserAutomation.svg"
           },
           {
@@ -2164,7 +1922,6 @@
             "label": "Get Parent Element",
             "description": "Finds and returns the parent element of the specified web element.",
             "docsLink": "https://docs.aventisia.com",
-            "icon": null,
             "img": "/assets/BrowserAutomation.svg"
           },
           {
@@ -2173,7 +1930,6 @@
             "label": "Go To Web Page",
             "description": "Navigates a web browser instance to a specified URL, back, forward, or reload.",
             "docsLink": "https://docs.aventisia.com",
-            "icon": null,
             "img": "/assets/BrowserAutomation.svg"
           },
           {
@@ -2182,7 +1938,6 @@
             "label": "Hover Over Element on Web Page",
             "description": "Moves the mouse cursor over a specified element on a web page.",
             "docsLink": "https://docs.aventisia.com",
-            "icon": null,
             "img": "/assets/BrowserAutomation.svg"
           },
           {
@@ -2191,7 +1946,6 @@
             "label": "If Web Page Contains",
             "description": "Checks if a web page contains a specific UI element or text. Optionally checks if the element is enabled or disabled.",
             "docsLink": "https://docs.aventisia.com",
-            "icon": null,
             "img": "/assets/BrowserAutomation.svg"
           },
           {
@@ -2200,7 +1954,6 @@
             "label": "Launch Browser",
             "description": "Launches a web browser instance of Microsoft Edge or Google Chrome.",
             "docsLink": "https://docs.aventisia.com",
-            "icon": null,
             "img": "/assets/BrowserAutomation.svg"
           },
           {
@@ -2209,7 +1962,6 @@
             "label": "Populate Text Field on Web Page",
             "description": "Fills a specified text field in a web browser with provided text. Supports plain or encrypted input.",
             "docsLink": "https://docs.aventisia.com",
-            "icon": null,
             "img": "/assets/BrowserAutomation.svg"
           },
           {
@@ -2218,7 +1970,6 @@
             "label": "Press Button on Web Page",
             "description": "Simulates clicking a UI button element on a web page. Optionally waits for the new page to load and handles pop-up dialogs.",
             "docsLink": "https://docs.aventisia.com",
-            "icon": null,
             "img": "/assets/BrowserAutomation.svg"
           },
           {
@@ -2227,7 +1978,6 @@
             "label": "Run JavaScript Function on Web Page",
             "description": "Executes a custom JavaScript function in the context of the current web page.",
             "docsLink": "https://docs.aventisia.com",
-            "icon": null,
             "img": "/assets/BrowserAutomation.svg"
           },
           {
@@ -2236,7 +1986,6 @@
             "label": "Scroll To Element or Position",
             "description": "Scrolls the browser window to a specified element or coordinates.",
             "docsLink": "https://docs.aventisia.com",
-            "icon": null,
             "img": "/assets/BrowserAutomation.svg"
           },
           {
@@ -2245,7 +1994,6 @@
             "label": "Select Radio Button on Web Page",
             "description": "Simulates selecting a radio button element on a web page.",
             "docsLink": "https://docs.aventisia.com",
-            "icon": null,
             "img": "/assets/BrowserAutomation.svg"
           },
           {
@@ -2254,7 +2002,6 @@
             "label": "Set Checkbox State on Web Page",
             "description": "Sets the state (checked/unchecked) of a checkbox element on a web page.",
             "docsLink": "https://docs.aventisia.com",
-            "icon": null,
             "img": "/assets/BrowserAutomation.svg"
           },
           {
@@ -2263,7 +2010,6 @@
             "label": "Set Drop-Down List Value on Web Page",
             "description": "Sets or clears the value of a drop-down list element on a web page.",
             "docsLink": "https://docs.aventisia.com",
-            "icon": null,
             "img": "/assets/BrowserAutomation.svg"
           },
           {
@@ -2272,7 +2018,22 @@
             "label": "Set Element Attribute Value",
             "description": "Sets the value of a specified attribute of a web element.",
             "docsLink": "https://docs.aventisia.com",
-            "icon": null,
+            "img": "/assets/BrowserAutomation.svg"
+          },
+          {
+            "type": "activityNode",
+            "name": "SwitchToDefaultContentActivity",
+            "label": "Switch To Default Content",
+            "description": "Switches the Selenium WebDriver context back to the main document or top window (exiting all frames/iframe contexts).",
+            "docsLink": "https://docs.aventisia.com",
+            "img": "/function.png"
+          },
+          {
+            "type": "activityNode",
+            "name": "SwitchToIframeActivity",
+            "label": "Switch To Iframe",
+            "description": "Switches the browser context to a specified iframe using the provided locator type and value (e.g., ID, Name, XPath, or CSS Selector).",
+            "docsLink": "https://docs.aventisia.com",
             "img": "/assets/BrowserAutomation.svg"
           },
           {
@@ -2281,7 +2042,6 @@
             "label": "Switch To Tab",
             "description": "Switches control to a browser tab using index, title, or partial URL.",
             "docsLink": "https://docs.aventisia.com",
-            "icon": null,
             "img": "/assets/BrowserAutomation.svg"
           }
         ]
@@ -2292,14 +2052,11 @@
     "label": "App Integrations",
     "description": "Seamlessly integrate with apps and services such as Twilio, Slack, and more",
     "icon": "AppIntegrationsIcon",
-    "img": null,
     "actionCategories": [
       {
         "label": "Word",
         "description": "Automate Microsoft Word document operations.",
-        "icon": null,
         "img": "/assets/Word.svg",
-        "listType": null,
         "actions": [
           {
             "type": "activityNode",
@@ -2307,7 +2064,6 @@
             "label": "Attach to Running Word",
             "description": "Attaches to a Word document that's already open, or opens it if needed.",
             "docsLink": "https://docs.aventisia.com",
-            "icon": null,
             "img": "/assets/Word.svg"
           },
           {
@@ -2316,8 +2072,15 @@
             "label": "Close Word",
             "description": "Closes a Word instance.",
             "docsLink": "https://docs.aventisia.com",
-            "icon": null,
             "img": "/assets/Word.svg"
+          },
+          {
+            "type": "activityNode",
+            "name": "ConvertWordToPdfActivity",
+            "label": "Convert Word To PDF",
+            "description": "Converts a Word document (.doc/.docx) into a PDF file.",
+            "docsLink": "https://docs.aventisia.com",
+            "img": "/assets/wordToPdf.svg"
           },
           {
             "type": "activityNode",
@@ -2325,7 +2088,6 @@
             "label": "Extract text from DOCX file",
             "description": "Reads text content from a .docx document using Open XML SDK.",
             "docsLink": "https://docs.aventisia.com",
-            "icon": null,
             "img": "/assets/Word.svg"
           },
           {
@@ -2334,7 +2096,6 @@
             "label": "Find and Replace in DOCX file",
             "description": "Finds text and replaces it with another in a .docx document using Open XML SDK.",
             "docsLink": "https://docs.aventisia.com",
-            "icon": null,
             "img": "/assets/Word.svg"
           },
           {
@@ -2343,7 +2104,6 @@
             "label": "Find and Replace Words in Word Document",
             "description": "Finds text and replaces it with another in the active document of a Word instance.",
             "docsLink": "https://docs.aventisia.com",
-            "icon": null,
             "img": "/assets/Word.svg"
           },
           {
@@ -2352,7 +2112,6 @@
             "label": "Insert Image in Word Document",
             "description": "Inserts an image into a Word file at a specified location.",
             "docsLink": "https://docs.aventisia.com",
-            "icon": null,
             "img": "/assets/Word.svg"
           },
           {
@@ -2361,7 +2120,6 @@
             "label": "Launch Word",
             "description": "Launches a new Word instance or opens a Word document.",
             "docsLink": "https://docs.aventisia.com",
-            "icon": null,
             "img": "/assets/Word.svg"
           },
           {
@@ -2370,7 +2128,6 @@
             "label": "Read from Word Document",
             "description": "Reads the text content from a document of a Word instance.",
             "docsLink": "https://docs.aventisia.com",
-            "icon": null,
             "img": "/assets/Word.svg"
           },
           {
@@ -2379,7 +2136,6 @@
             "label": "Save Word",
             "description": "Saves a previously launched Word instance.",
             "docsLink": "https://docs.aventisia.com",
-            "icon": null,
             "img": "/assets/Word.svg"
           },
           {
@@ -2388,7 +2144,6 @@
             "label": "Write to Word Document",
             "description": "Writes or appends text to a Word file.",
             "docsLink": "https://docs.aventisia.com",
-            "icon": null,
             "img": "/assets/Word.svg"
           }
         ]
@@ -2396,9 +2151,7 @@
       {
         "label": "Windows Service",
         "description": "Manage and interact with Windows Services.",
-        "icon": null,
         "img": "/assets/WindowsService.svg",
-        "listType": null,
         "actions": [
           {
             "type": "activityNode",
@@ -2406,7 +2159,6 @@
             "label": "If Service",
             "description": "Marks the beginning of a If Service block of actions depending on whether a service is running, paused, stopped, or installed.",
             "docsLink": "https://docs.aventisia.com",
-            "icon": null,
             "img": "/assets/WindowsService.svg"
           },
           {
@@ -2415,7 +2167,6 @@
             "label": "Pause Service",
             "description": "Pauses a running Windows service.",
             "docsLink": "https://docs.aventisia.com",
-            "icon": null,
             "img": "/assets/WindowsService.svg"
           },
           {
@@ -2424,7 +2175,6 @@
             "label": "Resume Service",
             "description": "Resumes a paused Windows service.",
             "docsLink": "https://docs.aventisia.com",
-            "icon": null,
             "img": "/assets/WindowsService.svg"
           },
           {
@@ -2433,7 +2183,6 @@
             "label": "Start Service",
             "description": "Starts a stopped Windows service.",
             "docsLink": "https://docs.aventisia.com",
-            "icon": null,
             "img": "/assets/WindowsService.svg"
           },
           {
@@ -2442,7 +2191,6 @@
             "label": "Stop Service",
             "description": "Stops a running Windows service.",
             "docsLink": "https://docs.aventisia.com",
-            "icon": null,
             "img": "/assets/WindowsService.svg"
           },
           {
@@ -2451,7 +2199,6 @@
             "label": "Wait for Service",
             "description": "Suspends the execution of the automation until a service is running, paused, or stopped on the computer.",
             "docsLink": "https://docs.aventisia.com",
-            "icon": null,
             "img": "/assets/WindowsService.svg"
           }
         ]
@@ -2459,12 +2206,10 @@
       {
         "label": "UltraTax CS (Thomson Reuters)",
         "description": "Activities for integrating with UltraTax CS by Thomson Reuters.",
-        "icon": null,
         "img": "/assets/ThomsonReuters.svg",
-        "listType": null,
-        "visibility": {
-          "allowedDeploymentTypes": ["Commercial"]
-        },
+        "doNotRenderIf": [
+          "enterprise"
+        ],
         "actions": [
           {
             "type": "activityNode",
@@ -2472,7 +2217,6 @@
             "label": "Fill UltraTax Form",
             "description": "Fill an UltraTax CS form by inspecting UI elements and mapping them to a JSON content",
             "docsLink": "https://docs.aventisia.com",
-            "icon": null,
             "img": "/assets/ThomsonReuters.svg"
           },
           {
@@ -2481,7 +2225,6 @@
             "label": "Inspect UltraTax Form",
             "description": "Get inspection details of a UI element in an UltraTax CS form, such as name, position etc.",
             "docsLink": "https://docs.aventisia.com",
-            "icon": null,
             "img": "/assets/ThomsonReuters.svg"
           }
         ]
@@ -2489,9 +2232,7 @@
       {
         "label": "Terminal Emulation",
         "description": "Automate terminal and mainframe interactions.",
-        "icon": null,
         "img": "/assets/TerminalEmulation.svg",
-        "listType": null,
         "actions": [
           {
             "type": "activityNode",
@@ -2499,7 +2240,6 @@
             "label": "Close Terminal Session",
             "description": "Close an open terminal session.",
             "docsLink": "https://docs.aventisia.com",
-            "icon": null,
             "img": "/assets/TerminalEmulation.svg"
           },
           {
@@ -2508,7 +2248,6 @@
             "label": "Get Text from Terminal Session",
             "description": "Get text from a terminal session.",
             "docsLink": "https://docs.aventisia.com",
-            "icon": null,
             "img": "/assets/TerminalEmulation.svg"
           },
           {
@@ -2517,7 +2256,6 @@
             "label": "Move Cursor on Terminal Session",
             "description": "Move the terminal's cursor to the specified position.",
             "docsLink": "https://docs.aventisia.com",
-            "icon": null,
             "img": "/assets/TerminalEmulation.svg"
           },
           {
@@ -2526,7 +2264,6 @@
             "label": "Open Terminal Session",
             "description": "Open a new terminal session.",
             "docsLink": "https://docs.aventisia.com",
-            "icon": null,
             "img": "/assets/TerminalEmulation.svg"
           },
           {
@@ -2535,7 +2272,6 @@
             "label": "Search for Text on Terminal Session",
             "description": "Search for all occurrences of a specific text on a terminal session.",
             "docsLink": "https://docs.aventisia.com",
-            "icon": null,
             "img": "/assets/TerminalEmulation.svg"
           },
           {
@@ -2544,7 +2280,6 @@
             "label": "Send Key to Terminal Session",
             "description": "Send a control key to a terminal session.",
             "docsLink": "https://docs.aventisia.com",
-            "icon": null,
             "img": "/assets/TerminalEmulation.svg"
           },
           {
@@ -2553,7 +2288,6 @@
             "label": "Set Text on Terminal Session",
             "description": "Set text on a terminal session.",
             "docsLink": "https://docs.aventisia.com",
-            "icon": null,
             "img": "/assets/TerminalEmulation.svg"
           },
           {
@@ -2562,7 +2296,6 @@
             "label": "Wait for Text on Terminal Session",
             "description": "Wait for a specific text to appear on a terminal session.",
             "docsLink": "https://docs.aventisia.com",
-            "icon": null,
             "img": "/assets/TerminalEmulation.svg"
           }
         ]
@@ -2570,12 +2303,10 @@
       {
         "label": "ServiceNow",
         "description": "Perform ServiceNow operations including incident management, user and configuration management, attachment handling, and record manipulation. Authenticate via Basic Auth or OAuth2 and securely reuse credentials across actions.",
-        "icon": null,
         "img": "/assets/ServiceNow.svg",
-        "listType": null,
-        "visibility": {
-          "allowedDeploymentTypes": ["Commercial"]
-        },
+        "doNotRenderIf": [
+          "enterprise"
+        ],
         "actions": [
           {
             "type": "activityNode",
@@ -2583,7 +2314,6 @@
             "label": "Delete ServiceNow Attachment",
             "description": "Deletes an attachment from ServiceNow using only Credential ID (BasicAuth token or OAuth2 token).",
             "docsLink": "https://docs.aventisia.com",
-            "icon": null,
             "img": "/assets/ServiceNow.svg"
           },
           {
@@ -2592,7 +2322,6 @@
             "label": "Get Many ServiceNow Attachments",
             "description": "Retrieves multiple attachments from a ServiceNow table or record using a stored credential. Optionally downloads file contents.",
             "docsLink": "https://docs.aventisia.com",
-            "icon": null,
             "img": "/assets/ServiceNow.svg"
           },
           {
@@ -2601,7 +2330,6 @@
             "label": "Get ServiceNow Attachment",
             "description": "Retrieves metadata for a ServiceNow attachment by sys_id using a stored credential (Bearer token). Optionally downloads the file content.",
             "docsLink": "https://docs.aventisia.com",
-            "icon": null,
             "img": "/assets/ServiceNow.svg"
           },
           {
@@ -2610,7 +2338,6 @@
             "label": "Upload ServiceNow Attachment",
             "description": "Uploads a file as an attachment to a record in ServiceNow using a Bearer token.",
             "docsLink": "https://docs.aventisia.com",
-            "icon": null,
             "img": "/assets/ServiceNow.svg"
           },
           {
@@ -2619,7 +2346,6 @@
             "label": "Get Many Business Services",
             "description": "Retrieves multiple Business Services from ServiceNow using a stored credential. Supports pagination.",
             "docsLink": "https://docs.aventisia.com",
-            "icon": null,
             "img": "/assets/ServiceNow.svg"
           },
           {
@@ -2628,7 +2354,6 @@
             "label": "Get Many Configuration Items",
             "description": "Retrieves multiple Configuration Items (CIs) from ServiceNow using a stored credential. Supports pagination.",
             "docsLink": "https://docs.aventisia.com",
-            "icon": null,
             "img": "/assets/ServiceNow.svg"
           },
           {
@@ -2637,7 +2362,6 @@
             "label": "Create ServiceNow Credential",
             "description": "Creates a new ServiceNow credential using either Basic Auth or OAuth2.",
             "docsLink": "https://docs.aventisia.com",
-            "icon": null,
             "img": "/assets/ServiceNow.svg"
           },
           {
@@ -2646,7 +2370,6 @@
             "label": "Get Many Departments",
             "description": "Retrieves multiple Departments from ServiceNow using a stored credential. Supports pagination.",
             "docsLink": "https://docs.aventisia.com",
-            "icon": null,
             "img": "/assets/ServiceNow.svg"
           },
           {
@@ -2655,7 +2378,6 @@
             "label": "Get Many Dictionary Entries",
             "description": "Retrieves multiple Dictionary entries from ServiceNow using a stored credential. Supports pagination.",
             "docsLink": "https://docs.aventisia.com",
-            "icon": null,
             "img": "/assets/ServiceNow.svg"
           },
           {
@@ -2664,7 +2386,6 @@
             "label": "Create ServiceNow Incident",
             "description": "Creates a new incident in ServiceNow using a stored credential ID or token.",
             "docsLink": "https://docs.aventisia.com",
-            "icon": null,
             "img": "/assets/ServiceNow.svg"
           },
           {
@@ -2673,7 +2394,6 @@
             "label": "Delete ServiceNow Incident",
             "description": "Deletes a ServiceNow incident by sys_id using a stored Credential ID / Token.",
             "docsLink": "https://docs.aventisia.com",
-            "icon": null,
             "img": "/assets/ServiceNow.svg"
           },
           {
@@ -2682,7 +2402,6 @@
             "label": "Get All ServiceNow Incidents",
             "description": "Retrieves all or limited incidents from ServiceNow using a stored credential. Supports pagination.",
             "docsLink": "https://docs.aventisia.com",
-            "icon": null,
             "img": "/assets/ServiceNow.svg"
           },
           {
@@ -2691,7 +2410,6 @@
             "label": "Get ServiceNow Incident",
             "description": "Retrieves a single incident from ServiceNow by sys_id using a stored credential.",
             "docsLink": "https://docs.aventisia.com",
-            "icon": null,
             "img": "/assets/ServiceNow.svg"
           },
           {
@@ -2700,7 +2418,6 @@
             "label": "Update ServiceNow Incident",
             "description": "Updates an existing ServiceNow incident by sys_id using a stored credential.",
             "docsLink": "https://docs.aventisia.com",
-            "icon": null,
             "img": "/assets/ServiceNow.svg"
           },
           {
@@ -2709,7 +2426,6 @@
             "label": "Create ServiceNow Table Record",
             "description": "Creates a new record in a specified ServiceNow table using InstanceUrl + Credential ID/Token.",
             "docsLink": "https://docs.aventisia.com",
-            "icon": null,
             "img": "/assets/ServiceNow.svg"
           },
           {
@@ -2718,7 +2434,6 @@
             "label": "Delete ServiceNow Table Record",
             "description": "Deletes a record from a ServiceNow table using the record sys_id and credential ID (BasicAuth → Base64(username:password) or OAuth2 → Bearer token).",
             "docsLink": "https://docs.aventisia.com",
-            "icon": null,
             "img": "/assets/ServiceNow.svg"
           },
           {
@@ -2727,7 +2442,6 @@
             "label": "Get Many ServiceNow Table Records",
             "description": "Retrieves multiple records from a ServiceNow table using only the provided Credential ID or token. Supports pagination.",
             "docsLink": "https://docs.aventisia.com",
-            "icon": null,
             "img": "/assets/ServiceNow.svg"
           },
           {
@@ -2736,7 +2450,6 @@
             "label": "Get ServiceNow Table Record",
             "description": "Retrieves a specific record from a ServiceNow table by sys_id using a stored credential.",
             "docsLink": "https://docs.aventisia.com",
-            "icon": null,
             "img": "/assets/ServiceNow.svg"
           },
           {
@@ -2745,7 +2458,6 @@
             "label": "Update ServiceNow Table Record",
             "description": "Updates an existing record in a specified ServiceNow table by sys_id using a stored credential.",
             "docsLink": "https://docs.aventisia.com",
-            "icon": null,
             "img": "/assets/ServiceNow.svg"
           },
           {
@@ -2754,7 +2466,6 @@
             "label": "Create ServiceNow User",
             "description": "Creates a new user in ServiceNow using a stored credential.",
             "docsLink": "https://docs.aventisia.com",
-            "icon": null,
             "img": "/assets/ServiceNow.svg"
           },
           {
@@ -2763,7 +2474,6 @@
             "label": "Delete ServiceNow User",
             "description": "Deletes a user from ServiceNow by sys_id using a stored credential.",
             "docsLink": "https://docs.aventisia.com",
-            "icon": null,
             "img": "/assets/ServiceNow.svg"
           },
           {
@@ -2772,7 +2482,6 @@
             "label": "Get All ServiceNow Users",
             "description": "Retrieves multiple users from ServiceNow using a stored credential. Supports pagination.",
             "docsLink": "https://docs.aventisia.com",
-            "icon": null,
             "img": "/assets/ServiceNow.svg"
           },
           {
@@ -2781,7 +2490,6 @@
             "label": "Get ServiceNow User",
             "description": "Retrieves a user from ServiceNow by sys_id or username using a stored credential.",
             "docsLink": "https://docs.aventisia.com",
-            "icon": null,
             "img": "/assets/ServiceNow.svg"
           },
           {
@@ -2790,7 +2498,6 @@
             "label": "Update ServiceNow User",
             "description": "Updates an existing user in ServiceNow by sys_id using the provided CredentialId directly.",
             "docsLink": "https://docs.aventisia.com",
-            "icon": null,
             "img": "/assets/ServiceNow.svg"
           }
         ]
@@ -2798,12 +2505,10 @@
       {
         "label": "SAP",
         "description": "Perform SAP Actions.",
-        "icon": null,
         "img": "/assets/SAP.svg",
-        "listType": null,
-        "visibility": {
-          "allowedDeploymentTypes": ["Commercial"]
-        },
+        "doNotRenderIf": [
+          "enterprise"
+        ],
         "actions": [
           {
             "type": "activityNode",
@@ -2811,7 +2516,6 @@
             "label": "Call Transaction",
             "description": "Calls an SAP transaction code with optional prefix (/n, /o, or none).",
             "docsLink": "https://docs.aventisia.com",
-            "icon": null,
             "img": "/assets/SAP.svg"
           },
           {
@@ -2820,7 +2524,14 @@
             "label": "Click Picture on Screen",
             "description": "Clicks a picture displayed on an SAP GUI screen.",
             "docsLink": "https://docs.aventisia.com",
-            "icon": null,
+            "img": "/assets/SAP.svg"
+          },
+          {
+            "type": "activityNode",
+            "name": "ClickToolbarButtonActivity",
+            "label": "Click Toolbar Button",
+            "description": "Clicks a specified toolbar button. Supports Healing Agent mode.",
+            "docsLink": "https://docs.aventisia.com",
             "img": "/assets/SAP.svg"
           },
           {
@@ -2829,7 +2540,6 @@
             "label": "Expand ALV Hierarchical Table",
             "description": "Expands a row in an SAP ALV Hierarchical Table by clicking the expansion icon.",
             "docsLink": "https://docs.aventisia.com",
-            "icon": null,
             "img": "/assets/SAP.svg"
           },
           {
@@ -2838,7 +2548,14 @@
             "label": "Expand ALV Tree",
             "description": "Expands parent ALV tree to the selected node.",
             "docsLink": "https://docs.aventisia.com",
-            "icon": null,
+            "img": "/assets/SAP.svg"
+          },
+          {
+            "type": "activityNode",
+            "name": "ExpandTreeActivity",
+            "label": "Expand Tree",
+            "description": "Expands a tree node using a specified path (e.g., 'Menu → Submenu → Item').",
+            "docsLink": "https://docs.aventisia.com",
             "img": "/assets/SAP.svg"
           },
           {
@@ -2847,7 +2564,6 @@
             "label": "Create Account",
             "description": "Creates a new account in SAP Cloud for Customer.",
             "docsLink": "https://docs.aventisia.com",
-            "icon": null,
             "img": "/assets/SAP.svg"
           },
           {
@@ -2856,7 +2572,6 @@
             "label": "Create Company Lead",
             "description": "Creates a company-associated lead in SAP Cloud for Customer.",
             "docsLink": "https://docs.aventisia.com",
-            "icon": null,
             "img": "/assets/SAP.svg"
           },
           {
@@ -2865,7 +2580,6 @@
             "label": "Create Contact",
             "description": "Creates a new contact in SAP Cloud for Customer.",
             "docsLink": "https://docs.aventisia.com",
-            "icon": null,
             "img": "/assets/SAP.svg"
           },
           {
@@ -2874,7 +2588,6 @@
             "label": "Create Individual Lead",
             "description": "Creates an individual lead not associated with any company in SAP Cloud for Customer.",
             "docsLink": "https://docs.aventisia.com",
-            "icon": null,
             "img": "/assets/SAP.svg"
           },
           {
@@ -2883,7 +2596,6 @@
             "label": "Delete Record",
             "description": "Deletes a record in SAP Cloud for Customer.",
             "docsLink": "https://docs.aventisia.com",
-            "icon": null,
             "img": "/assets/SAP.svg"
           },
           {
@@ -2892,7 +2604,6 @@
             "label": "Get Record",
             "description": "Retrieves a record in SAP Cloud for Customer.",
             "docsLink": "https://docs.aventisia.com",
-            "icon": null,
             "img": "/assets/SAP.svg"
           },
           {
@@ -2901,7 +2612,6 @@
             "label": "Insert Record",
             "description": "Inserts a new record in SAP Cloud for Customer.",
             "docsLink": "https://docs.aventisia.com",
-            "icon": null,
             "img": "/assets/SAP.svg"
           },
           {
@@ -2910,7 +2620,6 @@
             "label": "List All Records",
             "description": "Lists all records for a specified entity in SAP Cloud for Customer.",
             "docsLink": "https://docs.aventisia.com",
-            "icon": null,
             "img": "/assets/SAP.svg"
           },
           {
@@ -2919,7 +2628,6 @@
             "label": "SAP Cloud for Customer HTTP Request",
             "description": "Performs HTTP requests to interact with SAP Cloud for Customer using OAuth 2.0 authentication.",
             "docsLink": "https://docs.aventisia.com",
-            "icon": null,
             "img": "/assets/SAP.svg"
           },
           {
@@ -2928,7 +2636,6 @@
             "label": "Update Account",
             "description": "Updates account information in SAP Cloud for Customer.",
             "docsLink": "https://docs.aventisia.com",
-            "icon": null,
             "img": "/assets/SAP.svg"
           },
           {
@@ -2937,7 +2644,6 @@
             "label": "Update Contact",
             "description": "Updates contact information in SAP Cloud for Customer.",
             "docsLink": "https://docs.aventisia.com",
-            "icon": null,
             "img": "/assets/SAP.svg"
           },
           {
@@ -2946,7 +2652,6 @@
             "label": "Update Lead",
             "description": "Updates lead information in SAP Cloud for Customer.",
             "docsLink": "https://docs.aventisia.com",
-            "icon": null,
             "img": "/assets/SAP.svg"
           },
           {
@@ -2955,7 +2660,6 @@
             "label": "Update Record",
             "description": "Updates a record in SAP Cloud for Customer.",
             "docsLink": "https://docs.aventisia.com",
-            "icon": null,
             "img": "/assets/SAP.svg"
           },
           {
@@ -2964,7 +2668,6 @@
             "label": "Wait for an Event on SAP Cloud for Customer and Resume",
             "description": "Pauses and resumes a workflow based on specific events occurring in SAP Cloud for Customer.",
             "docsLink": "https://docs.aventisia.com",
-            "icon": null,
             "img": "/assets/SAP.svg"
           },
           {
@@ -2973,7 +2676,6 @@
             "label": "Add Quick Expense",
             "description": "Adds a quick expense in SAP Concur for later linking to a report.",
             "docsLink": "https://docs.aventisia.com",
-            "icon": null,
             "img": "/assets/SAP.svg"
           },
           {
@@ -2982,7 +2684,6 @@
             "label": "Add Quick Expense with Receipt",
             "description": "Adds a quick expense entry with a receipt file in SAP Concur.",
             "docsLink": "https://docs.aventisia.com",
-            "icon": null,
             "img": "/assets/SAP.svg"
           },
           {
@@ -2991,7 +2692,6 @@
             "label": "Delete Record in SAP Concur",
             "description": "Deletes a record in SAP Concur using DELETE request.",
             "docsLink": "https://docs.aventisia.com",
-            "icon": null,
             "img": "/assets/SAP.svg"
           },
           {
@@ -3000,7 +2700,6 @@
             "label": "Get Record in SAP Concur",
             "description": "Retrieves a single record by ID from SAP Concur.",
             "docsLink": "https://docs.aventisia.com",
-            "icon": null,
             "img": "/assets/SAP.svg"
           },
           {
@@ -3009,7 +2708,6 @@
             "label": "Insert Record to SAP Concur",
             "description": "Inserts a new expense or quick expense record into SAP Concur using OAuth 2.0.",
             "docsLink": "https://docs.aventisia.com",
-            "icon": null,
             "img": "/assets/SAP.svg"
           },
           {
@@ -3018,7 +2716,6 @@
             "label": "List All Records in SAP Concur",
             "description": "Retrieves a list of all records from a specified endpoint.",
             "docsLink": "https://docs.aventisia.com",
-            "icon": null,
             "img": "/assets/SAP.svg"
           },
           {
@@ -3027,7 +2724,6 @@
             "label": "Replace Record in SAP Concur",
             "description": "Updates an existing record in SAP Concur using PUT request.",
             "docsLink": "https://docs.aventisia.com",
-            "icon": null,
             "img": "/assets/SAP.svg"
           },
           {
@@ -3036,7 +2732,6 @@
             "label": "SAP Concur HTTP Request",
             "description": "Perform custom HTTP requests to SAP Concur using existing connector and connection.",
             "docsLink": "https://docs.aventisia.com",
-            "icon": null,
             "img": "/assets/SAP.svg"
           },
           {
@@ -3045,7 +2740,6 @@
             "label": "Upload Receipt Image",
             "description": "Uploads receipt files to SAP Concur, supporting formats like PDF, JPG, JPEG, and PNG.",
             "docsLink": "https://docs.aventisia.com",
-            "icon": null,
             "img": "/assets/SAP.svg"
           },
           {
@@ -3054,7 +2748,6 @@
             "label": "Wait for an Event on SAP Concur and Resume",
             "description": "Pauses and resumes a workflow based on specific events occurring in SAP Concur.",
             "docsLink": "https://docs.aventisia.com",
-            "icon": null,
             "img": "/assets/SAP.svg"
           },
           {
@@ -3063,7 +2756,6 @@
             "label": "SAP Login",
             "description": "Logs into SAP GUI using provided credentials.",
             "docsLink": "https://docs.aventisia.com",
-            "icon": null,
             "img": "/assets/SAP.svg"
           },
           {
@@ -3072,7 +2764,6 @@
             "label": "SAP Logon",
             "description": "Logs on to an SAP system by interacting with the SAP Logon Pad.",
             "docsLink": "https://docs.aventisia.com",
-            "icon": null,
             "img": "/assets/SAP.svg"
           },
           {
@@ -3081,7 +2772,6 @@
             "label": "Delete Record",
             "description": "Deletes a record in SAP OData.",
             "docsLink": "https://docs.aventisia.com",
-            "icon": null,
             "img": "/assets/SAP.svg"
           },
           {
@@ -3090,7 +2780,6 @@
             "label": "Insert Record",
             "description": "Inserts a new record in SAP OData.",
             "docsLink": "https://docs.aventisia.com",
-            "icon": null,
             "img": "/assets/SAP.svg"
           },
           {
@@ -3099,7 +2788,6 @@
             "label": "List All Entity Records",
             "description": "Lists all records for a specified entity using SAP OData services.",
             "docsLink": "https://docs.aventisia.com",
-            "icon": null,
             "img": "/assets/SAP.svg"
           },
           {
@@ -3108,7 +2796,6 @@
             "label": "SAP OData HTTP Request",
             "description": "Perform HTTP requests to interact with SAP OData using existing connector and connection.",
             "docsLink": "https://docs.aventisia.com",
-            "icon": null,
             "img": "/assets/SAP.svg"
           },
           {
@@ -3117,7 +2804,6 @@
             "label": "Update Record",
             "description": "Updates a record in SAP OData.",
             "docsLink": "https://docs.aventisia.com",
-            "icon": null,
             "img": "/assets/SAP.svg"
           },
           {
@@ -3126,7 +2812,6 @@
             "label": "Save Image",
             "description": "Saves a screenshot of a UI element or region to disk.",
             "docsLink": "https://docs.aventisia.com",
-            "icon": null,
             "img": "/assets/SAP.svg"
           },
           {
@@ -3135,7 +2820,6 @@
             "label": "Select Menu Item",
             "description": "Selects a menu item from the SAP GUI menu bar using a path (e.g., 'System → Log Off').",
             "docsLink": "https://docs.aventisia.com",
-            "icon": null,
             "img": "/assets/SAP.svg"
           }
         ]
@@ -3143,12 +2827,10 @@
       {
         "label": "Salesforce",
         "description": "Work with Salesforce Actions.",
-        "icon": null,
         "img": "/assets/Salesforce.svg",
-        "listType": null,
-        "visibility": {
-          "allowedDeploymentTypes": ["Commercial"]
-        },
+        "doNotRenderIf": [
+          "enterprise"
+        ],
         "actions": [
           {
             "type": "activityNode",
@@ -3156,7 +2838,6 @@
             "label": "Add Note to Salesforce Account",
             "description": "Adds a note (CaseComment or custom) to a Salesforce Account via related object or custom logic.",
             "docsLink": "https://docs.aventisia.com",
-            "icon": null,
             "img": "/assets/Salesforce.svg"
           },
           {
@@ -3165,7 +2846,6 @@
             "label": "Create Salesforce Account",
             "description": "Creates a new Account record in Salesforce using the provided credentials and account details.",
             "docsLink": "https://docs.aventisia.com",
-            "icon": null,
             "img": "/assets/Salesforce.svg"
           },
           {
@@ -3174,7 +2854,6 @@
             "label": "Create or Update Salesforce Account",
             "description": "Creates a new Account in Salesforce if it doesn't exist, or updates it if it does. Uses Name as the identifier.",
             "docsLink": "https://docs.aventisia.com",
-            "icon": null,
             "img": "/assets/Salesforce.svg"
           },
           {
@@ -3183,7 +2862,6 @@
             "label": "Delete Salesforce Account",
             "description": "Deletes an existing Account record from Salesforce by its ID.",
             "docsLink": "https://docs.aventisia.com",
-            "icon": null,
             "img": "/assets/Salesforce.svg"
           },
           {
@@ -3192,7 +2870,6 @@
             "label": "Get Salesforce Account",
             "description": "Retrieves a single Account record from Salesforce by its ID.",
             "docsLink": "https://docs.aventisia.com",
-            "icon": null,
             "img": "/assets/Salesforce.svg"
           },
           {
@@ -3201,7 +2878,6 @@
             "label": "Get Salesforce Account Summary",
             "description": "Retrieves summary information about an Account, such as count of related contacts, opportunities, etc.",
             "docsLink": "https://docs.aventisia.com",
-            "icon": null,
             "img": "/assets/Salesforce.svg"
           },
           {
@@ -3210,7 +2886,6 @@
             "label": "Get Multiple Salesforce Accounts",
             "description": "Retrieves multiple Account records from Salesforce using SOQL query.",
             "docsLink": "https://docs.aventisia.com",
-            "icon": null,
             "img": "/assets/Salesforce.svg"
           },
           {
@@ -3219,7 +2894,6 @@
             "label": "Update Salesforce Account",
             "description": "Updates an existing Account record in Salesforce using the provided credentials and account details.",
             "docsLink": "https://docs.aventisia.com",
-            "icon": null,
             "img": "/assets/Salesforce.svg"
           },
           {
@@ -3228,7 +2902,6 @@
             "label": "Create Salesforce Attachment",
             "description": "Creates a new Attachment record in Salesforce linked to a parent record (e.g., Account, Contact).",
             "docsLink": "https://docs.aventisia.com",
-            "icon": null,
             "img": "/assets/Salesforce.svg"
           },
           {
@@ -3237,7 +2910,6 @@
             "label": "Delete Salesforce Attachment",
             "description": "Deletes an existing Attachment record in Salesforce by its ID.",
             "docsLink": "https://docs.aventisia.com",
-            "icon": null,
             "img": "/assets/Salesforce.svg"
           },
           {
@@ -3246,7 +2918,6 @@
             "label": "Get Salesforce Attachment",
             "description": "Retrieves a single Attachment record from Salesforce by its ID.",
             "docsLink": "https://docs.aventisia.com",
-            "icon": null,
             "img": "/assets/Salesforce.svg"
           },
           {
@@ -3255,7 +2926,6 @@
             "label": "Get Salesforce Attachment Summary",
             "description": "Retrieves summary information about attachments linked to a parent record, such as the total count.",
             "docsLink": "https://docs.aventisia.com",
-            "icon": null,
             "img": "/assets/Salesforce.svg"
           },
           {
@@ -3264,7 +2934,6 @@
             "label": "Get Many Salesforce Attachments",
             "description": "Retrieves multiple Attachment records from Salesforce using SOQL query.",
             "docsLink": "https://docs.aventisia.com",
-            "icon": null,
             "img": "/assets/Salesforce.svg"
           },
           {
@@ -3273,7 +2942,6 @@
             "label": "Update Salesforce Attachment",
             "description": "Updates an existing Attachment record in Salesforce.",
             "docsLink": "https://docs.aventisia.com",
-            "icon": null,
             "img": "/assets/Salesforce.svg"
           },
           {
@@ -3282,7 +2950,6 @@
             "label": "Add a Comment to a Case",
             "description": "Adds a comment to an existing Case in Salesforce.",
             "docsLink": "https://docs.aventisia.com",
-            "icon": null,
             "img": "/assets/Salesforce.svg"
           },
           {
@@ -3291,7 +2958,6 @@
             "label": "Create Salesforce Case",
             "description": "Creates a new Case record in Salesforce using the provided credentials and case details.",
             "docsLink": "https://docs.aventisia.com",
-            "icon": null,
             "img": "/assets/Salesforce.svg"
           },
           {
@@ -3300,7 +2966,6 @@
             "label": "Delete a Case",
             "description": "Deletes an existing Case record in Salesforce.",
             "docsLink": "https://docs.aventisia.com",
-            "icon": null,
             "img": "/assets/Salesforce.svg"
           },
           {
@@ -3309,7 +2974,6 @@
             "label": "Get a Case",
             "description": "Retrieves a single Case record by ID from Salesforce.",
             "docsLink": "https://docs.aventisia.com",
-            "icon": null,
             "img": "/assets/Salesforce.svg"
           },
           {
@@ -3318,7 +2982,6 @@
             "label": "Get a Case Summary",
             "description": "Retrieves metadata about the Case object (fields, types, etc.).",
             "docsLink": "https://docs.aventisia.com",
-            "icon": null,
             "img": "/assets/Salesforce.svg"
           },
           {
@@ -3327,7 +2990,6 @@
             "label": "Get Many Cases",
             "description": "Retrieves multiple Case records using a SOQL query.",
             "docsLink": "https://docs.aventisia.com",
-            "icon": null,
             "img": "/assets/Salesforce.svg"
           },
           {
@@ -3336,7 +2998,6 @@
             "label": "Update Salesforce Case",
             "description": "Updates an existing Case record in Salesforce using the provided credentials and updated field values.",
             "docsLink": "https://docs.aventisia.com",
-            "icon": null,
             "img": "/assets/Salesforce.svg"
           },
           {
@@ -3345,7 +3006,6 @@
             "label": "Add Contact to Campaign",
             "description": "Adds a Contact to a Salesforce Campaign by creating a CampaignMember record.",
             "docsLink": "https://docs.aventisia.com",
-            "icon": null,
             "img": "/assets/Salesforce.svg"
           },
           {
@@ -3354,7 +3014,6 @@
             "label": "Add Note to Salesforce Contact",
             "description": "Adds a note (CaseComment or custom) to a Salesforce Contact via related object or custom logic.",
             "docsLink": "https://docs.aventisia.com",
-            "icon": null,
             "img": "/assets/Salesforce.svg"
           },
           {
@@ -3363,7 +3022,6 @@
             "label": "Create Salesforce Contact",
             "description": "Creates a new Contact record in Salesforce using the provided credentials and contact details.",
             "docsLink": "https://docs.aventisia.com",
-            "icon": null,
             "img": "/assets/Salesforce.svg"
           },
           {
@@ -3372,7 +3030,6 @@
             "label": "Create or Update Salesforce Contact",
             "description": "Creates a new Contact in Salesforce if it doesn't exist, or updates it if it does. Uses Email as the identifier.",
             "docsLink": "https://docs.aventisia.com",
-            "icon": null,
             "img": "/assets/Salesforce.svg"
           },
           {
@@ -3381,7 +3038,6 @@
             "label": "Delete Salesforce Contact",
             "description": "Deletes an existing Contact record in Salesforce by its ID.",
             "docsLink": "https://docs.aventisia.com",
-            "icon": null,
             "img": "/assets/Salesforce.svg"
           },
           {
@@ -3390,7 +3046,6 @@
             "label": "Get Salesforce Contact",
             "description": "Retrieves a single Contact record from Salesforce by its ID.",
             "docsLink": "https://docs.aventisia.com",
-            "icon": null,
             "img": "/assets/Salesforce.svg"
           },
           {
@@ -3399,7 +3054,6 @@
             "label": "Get Salesforce Contact Summary",
             "description": "Retrieves summary information about a Contact, such as count of related opportunities, cases, etc.",
             "docsLink": "https://docs.aventisia.com",
-            "icon": null,
             "img": "/assets/Salesforce.svg"
           },
           {
@@ -3408,7 +3062,6 @@
             "label": "Get Many Salesforce Contacts",
             "description": "Retrieves multiple Contact records from Salesforce using SOQL query.",
             "docsLink": "https://docs.aventisia.com",
-            "icon": null,
             "img": "/assets/Salesforce.svg"
           },
           {
@@ -3417,7 +3070,6 @@
             "label": "Update Salesforce Contact",
             "description": "Updates an existing Contact record in Salesforce.",
             "docsLink": "https://docs.aventisia.com",
-            "icon": null,
             "img": "/assets/Salesforce.svg"
           },
           {
@@ -3426,7 +3078,6 @@
             "label": "Create a custom object",
             "description": "Creates a new custom object record in Salesforce.",
             "docsLink": "https://docs.aventisia.com",
-            "icon": null,
             "img": "/assets/Salesforce.svg"
           },
           {
@@ -3435,7 +3086,6 @@
             "label": "Create or update a custom object",
             "description": "Creates a new custom object or updates an existing one in Salesforce using an external ID field.",
             "docsLink": "https://docs.aventisia.com",
-            "icon": null,
             "img": "/assets/Salesforce.svg"
           },
           {
@@ -3444,7 +3094,6 @@
             "label": "Delete a custom object",
             "description": "Deletes a custom object in Salesforce by its ID.",
             "docsLink": "https://docs.aventisia.com",
-            "icon": null,
             "img": "/assets/Salesforce.svg"
           },
           {
@@ -3453,7 +3102,6 @@
             "label": "Get a custom object",
             "description": "Retrieves a single custom object from Salesforce by its ID.",
             "docsLink": "https://docs.aventisia.com",
-            "icon": null,
             "img": "/assets/Salesforce.svg"
           },
           {
@@ -3462,7 +3110,6 @@
             "label": "Get many custom objects",
             "description": "Retrieves multiple custom objects from Salesforce using SOQL or default query.",
             "docsLink": "https://docs.aventisia.com",
-            "icon": null,
             "img": "/assets/Salesforce.svg"
           },
           {
@@ -3471,7 +3118,6 @@
             "label": "Update a custom object",
             "description": "Updates an existing custom object in Salesforce with new field values.",
             "docsLink": "https://docs.aventisia.com",
-            "icon": null,
             "img": "/assets/Salesforce.svg"
           },
           {
@@ -3480,7 +3126,6 @@
             "label": "Upload Document",
             "description": "Uploads a document to Salesforce as a ContentVersion (Salesforce File).",
             "docsLink": "https://docs.aventisia.com",
-            "icon": null,
             "img": "/assets/Salesforce.svg"
           },
           {
@@ -3489,7 +3134,6 @@
             "label": "Get Many Flows",
             "description": "Retrieves multiple Salesforce flows. Use 'Return All' to get all records without limit.",
             "docsLink": "https://docs.aventisia.com",
-            "icon": null,
             "img": "/assets/Salesforce.svg"
           },
           {
@@ -3498,7 +3142,6 @@
             "label": "Invoke Flow",
             "description": "Invokes a Salesforce flow with input variables or JSON parameters.",
             "docsLink": "https://docs.aventisia.com",
-            "icon": null,
             "img": "/assets/Salesforce.svg"
           },
           {
@@ -3507,7 +3150,6 @@
             "label": "Add a lead to a campaign",
             "description": "Adds an existing lead to a Salesforce campaign.",
             "docsLink": "https://docs.aventisia.com",
-            "icon": null,
             "img": "/assets/Salesforce.svg"
           },
           {
@@ -3516,7 +3158,6 @@
             "label": "Add a note to a lead",
             "description": "Adds a text note to a Salesforce lead.",
             "docsLink": "https://docs.aventisia.com",
-            "icon": null,
             "img": "/assets/Salesforce.svg"
           },
           {
@@ -3525,7 +3166,6 @@
             "label": "Create a lead",
             "description": "Creates a new lead in Salesforce.",
             "docsLink": "https://docs.aventisia.com",
-            "icon": null,
             "img": "/assets/Salesforce.svg"
           },
           {
@@ -3534,7 +3174,6 @@
             "label": "Create or update a lead",
             "description": "Creates a new lead or updates an existing one using external ID field.",
             "docsLink": "https://docs.aventisia.com",
-            "icon": null,
             "img": "/assets/Salesforce.svg"
           },
           {
@@ -3543,7 +3182,6 @@
             "label": "Delete a lead",
             "description": "Deletes a lead from Salesforce by its ID.",
             "docsLink": "https://docs.aventisia.com",
-            "icon": null,
             "img": "/assets/Salesforce.svg"
           },
           {
@@ -3552,7 +3190,6 @@
             "label": "Get a lead",
             "description": "Retrieves a single lead from Salesforce by its ID using the Salesforce REST API.",
             "docsLink": "https://docs.aventisia.com",
-            "icon": null,
             "img": "/assets/Salesforce.svg"
           },
           {
@@ -3561,7 +3198,6 @@
             "label": "Get a lead summary",
             "description": "Retrieves a summary of a lead's information from Salesforce.",
             "docsLink": "https://docs.aventisia.com",
-            "icon": null,
             "img": "/assets/Salesforce.svg"
           },
           {
@@ -3570,7 +3206,6 @@
             "label": "Get many leads",
             "description": "Retrieves multiple leads from Salesforce using SOQL or default query.",
             "docsLink": "https://docs.aventisia.com",
-            "icon": null,
             "img": "/assets/Salesforce.svg"
           },
           {
@@ -3579,7 +3214,6 @@
             "label": "Update a lead",
             "description": "Updates an existing lead in Salesforce.",
             "docsLink": "https://docs.aventisia.com",
-            "icon": null,
             "img": "/assets/Salesforce.svg"
           },
           {
@@ -3588,7 +3222,6 @@
             "label": "Add Note to Opportunity",
             "description": "Adds a text note to a Salesforce opportunity.",
             "docsLink": "https://docs.aventisia.com",
-            "icon": null,
             "img": "/assets/Salesforce.svg"
           },
           {
@@ -3597,7 +3230,6 @@
             "label": "Create Opportunity",
             "description": "Creates a new opportunity in Salesforce.",
             "docsLink": "https://docs.aventisia.com",
-            "icon": null,
             "img": "/assets/Salesforce.svg"
           },
           {
@@ -3606,7 +3238,6 @@
             "label": "Create or Update Opportunity",
             "description": "Creates a new opportunity or updates an existing one using an external ID field.",
             "docsLink": "https://docs.aventisia.com",
-            "icon": null,
             "img": "/assets/Salesforce.svg"
           },
           {
@@ -3615,7 +3246,6 @@
             "label": "Get Many Opportunities",
             "description": "Retrieves multiple Salesforce opportunities using SOQL.",
             "docsLink": "https://docs.aventisia.com",
-            "icon": null,
             "img": "/assets/Salesforce.svg"
           },
           {
@@ -3624,7 +3254,6 @@
             "label": "Get Opportunity",
             "description": "Retrieves a Salesforce opportunity by its ID.",
             "docsLink": "https://docs.aventisia.com",
-            "icon": null,
             "img": "/assets/Salesforce.svg"
           },
           {
@@ -3633,7 +3262,6 @@
             "label": "Get Opportunity Summary",
             "description": "Retrieves a summary of a Salesforce opportunity by its ID.",
             "docsLink": "https://docs.aventisia.com",
-            "icon": null,
             "img": "/assets/Salesforce.svg"
           },
           {
@@ -3642,7 +3270,6 @@
             "label": "Update Opportunity",
             "description": "Updates an existing opportunity in Salesforce.",
             "docsLink": "https://docs.aventisia.com",
-            "icon": null,
             "img": "/assets/Salesforce.svg"
           },
           {
@@ -3651,7 +3278,6 @@
             "label": "Performs A Search Query",
             "description": "Performs a search query in Salesforce using SOQL-like syntax.",
             "docsLink": "https://docs.aventisia.com",
-            "icon": null,
             "img": "/assets/Salesforce.svg"
           },
           {
@@ -3660,7 +3286,6 @@
             "label": "Create Task",
             "description": "Creates a new task in Salesforce.",
             "docsLink": "https://docs.aventisia.com",
-            "icon": null,
             "img": "/assets/Salesforce.svg"
           },
           {
@@ -3669,7 +3294,6 @@
             "label": "Delete Task",
             "description": "Deletes a Salesforce task by its ID.",
             "docsLink": "https://docs.aventisia.com",
-            "icon": null,
             "img": "/assets/Salesforce.svg"
           },
           {
@@ -3678,7 +3302,6 @@
             "label": "Get All Tasks",
             "description": "Retrieves multiple Salesforce tasks using SOQL.",
             "docsLink": "https://docs.aventisia.com",
-            "icon": null,
             "img": "/assets/Salesforce.svg"
           },
           {
@@ -3687,7 +3310,6 @@
             "label": "Get Task",
             "description": "Retrieves a Salesforce task by its ID.",
             "docsLink": "https://docs.aventisia.com",
-            "icon": null,
             "img": "/assets/Salesforce.svg"
           },
           {
@@ -3696,7 +3318,6 @@
             "label": "Get Task Summary",
             "description": "Retrieves a summary of a Salesforce task by its ID.",
             "docsLink": "https://docs.aventisia.com",
-            "icon": null,
             "img": "/assets/Salesforce.svg"
           },
           {
@@ -3705,7 +3326,6 @@
             "label": "Update Task",
             "description": "Updates an existing task in Salesforce.",
             "docsLink": "https://docs.aventisia.com",
-            "icon": null,
             "img": "/assets/Salesforce.svg"
           },
           {
@@ -3714,7 +3334,6 @@
             "label": "Get Many Users",
             "description": "Retrieves multiple Salesforce user records using SOQL.",
             "docsLink": "https://docs.aventisia.com",
-            "icon": null,
             "img": "/assets/Salesforce.svg"
           },
           {
@@ -3723,7 +3342,6 @@
             "label": "Get User",
             "description": "Retrieves a Salesforce user record by its ID.",
             "docsLink": "https://docs.aventisia.com",
-            "icon": null,
             "img": "/assets/Salesforce.svg"
           }
         ]
@@ -3731,17 +3349,30 @@
       {
         "label": "PDF",
         "description": "Work with PDF documents.",
-        "icon": null,
         "img": "/assets/PDF.svg",
-        "listType": null,
         "actions": [
+          {
+            "type": "activityNode",
+            "name": "ExtractImagesFromPdfActivity",
+            "label": "Extract Images from PDF",
+            "description": "Extracts images from a PDF file by specifying the source PDF file and the target folder.",
+            "docsLink": "https://docs.aventisia.com",
+            "img": "/assets/PDF.svg"
+          },
+          {
+            "type": "activityNode",
+            "name": "ExtractTablesFromPdfActivity",
+            "label": "Extract Tables From PDF",
+            "description": "Extracts tabular text from all pages of a PDF file.",
+            "docsLink": "https://docs.aventisia.com",
+            "img": "/assets/PDF.svg"
+          },
           {
             "type": "activityNode",
             "name": "ExtractTextFromPdfActivity",
             "label": "Extract Text from PDF",
             "description": "Extracts text or images from a PDF file based on selection.",
             "docsLink": "https://docs.aventisia.com",
-            "icon": null,
             "img": "/assets/PDF.svg"
           },
           {
@@ -3750,7 +3381,6 @@
             "label": "PDF Regex Contains",
             "description": "Checks if the PDF contains text matching a regular expression pattern (case-sensitive).",
             "docsLink": "https://docs.aventisia.com",
-            "icon": null,
             "img": "/assets/PDF.svg"
           },
           {
@@ -3759,7 +3389,14 @@
             "label": "Get PDF Pages Text in List",
             "description": "Extracts text from each page of a PDF file and returns a list of page texts.",
             "docsLink": "https://docs.aventisia.com",
-            "icon": null,
+            "img": "/assets/PDF.svg"
+          },
+          {
+            "type": "activityNode",
+            "name": "MergePdfFilesActivity",
+            "label": "Merge PDF Files",
+            "description": "Merges multiple PDF files into a new one.",
+            "docsLink": "https://docs.aventisia.com",
             "img": "/assets/PDF.svg"
           },
           {
@@ -3768,7 +3405,14 @@
             "label": "Smart PDF Page Splitter",
             "description": "Splits a PDF into pages based on selection mode: All, Odd, Even, Range, Specific Pages, or By Chunk Size.",
             "docsLink": "https://docs.aventisia.com",
-            "icon": null,
+            "img": "/assets/PDF.svg"
+          },
+          {
+            "type": "activityNode",
+            "name": "ValidatePdfExistanceActivity",
+            "label": "Validate PDF Content",
+            "description": "Validates whether a PDF file contains text or images based on the selected content type",
+            "docsLink": "https://docs.aventisia.com",
             "img": "/assets/PDF.svg"
           }
         ]
@@ -3776,9 +3420,7 @@
       {
         "label": "Outlook",
         "description": "Automate Microsoft Outlook operations.",
-        "icon": null,
         "img": "/assets/Outlook.svg",
-        "listType": null,
         "actions": [
           {
             "type": "activityNode",
@@ -3786,7 +3428,6 @@
             "label": "Close Outlook Application",
             "description": "Closes an Outlook application instance and releases COM resources.",
             "docsLink": "https://docs.aventisia.com",
-            "icon": null,
             "img": "/assets/Outlook.svg"
           },
           {
@@ -3795,7 +3436,6 @@
             "label": "Launch Outlook Application",
             "description": "Launches an Outlook application instance. Optionally connects to a specific profile.",
             "docsLink": "https://docs.aventisia.com",
-            "icon": null,
             "img": "/assets/Outlook.svg"
           },
           {
@@ -3804,7 +3444,6 @@
             "label": "Process Email Messages in Outlook",
             "description": "Moves or deletes a collection of email messages in Outlook.",
             "docsLink": "https://docs.aventisia.com",
-            "icon": null,
             "img": "/assets/Outlook.svg"
           },
           {
@@ -3813,7 +3452,6 @@
             "label": "Retrieve Emails from Outlook",
             "description": "Retrieves email messages from a specified Outlook folder. Optionally filters by unread status or subject.",
             "docsLink": "https://docs.aventisia.com",
-            "icon": null,
             "img": "/assets/Outlook.svg"
           },
           {
@@ -3822,7 +3460,6 @@
             "label": "Save Outlook Email Messages",
             "description": "Saves selected Outlook email messages (.msg files) to a specified location.",
             "docsLink": "https://docs.aventisia.com",
-            "icon": null,
             "img": "/assets/Outlook.svg"
           }
         ]
@@ -3830,9 +3467,7 @@
       {
         "label": "M365 Outlook",
         "description": "Activities for integrating with Microsoft 365 Outlook services.",
-        "icon": null,
         "img": "/assets/M365.svg",
-        "listType": null,
         "actions": [
           {
             "type": "activityNode",
@@ -3840,7 +3475,6 @@
             "label": "Create Draft Email",
             "description": "Creates a draft email message in the user's mailbox using Microsoft Graph API.",
             "docsLink": "https://docs.aventisia.com",
-            "icon": null,
             "img": "/assets/M365.svg"
           },
           {
@@ -3849,7 +3483,6 @@
             "label": "Delete Email",
             "description": "Deletes an email from the mailbox using its Message ID via Microsoft Graph API.",
             "docsLink": "https://docs.aventisia.com",
-            "icon": null,
             "img": "/assets/M365.svg"
           },
           {
@@ -3858,7 +3491,6 @@
             "label": "Download Attachments",
             "description": "Downloads all attachments for a specified email message using Microsoft Graph API.",
             "docsLink": "https://docs.aventisia.com",
-            "icon": null,
             "img": "/assets/M365.svg"
           },
           {
@@ -3867,7 +3499,6 @@
             "label": "Get Access Token Using App Key",
             "description": "Acquires a Microsoft Graph API access token using client credentials (App Key flow).",
             "docsLink": "https://docs.aventisia.com",
-            "icon": null,
             "img": "/assets/M365.svg"
           },
           {
@@ -3876,7 +3507,6 @@
             "label": "Get Email Details by ID",
             "description": "Fetches full email details (including attachments) from Outlook using the Graph API by message ID.",
             "docsLink": "https://docs.aventisia.com",
-            "icon": null,
             "img": "/assets/M365.svg"
           },
           {
@@ -3885,7 +3515,6 @@
             "label": "Get Emails",
             "description": "Retrieves top 10 emails from the Inbox folder using Microsoft Graph API.",
             "docsLink": "https://docs.aventisia.com",
-            "icon": null,
             "img": "/assets/M365.svg"
           },
           {
@@ -3894,16 +3523,14 @@
             "label": "List Mail Folders",
             "description": "Lists all mail folders for a user's mailbox using Microsoft Graph API.",
             "docsLink": "https://docs.aventisia.com",
-            "icon": null,
             "img": "/assets/M365.svg"
           },
           {
             "type": "activityNode",
             "name": "MarkEmailAsReadActivity",
-            "label": "Mark Email as Read/Unread",
+            "label": "Mark Email as Read or Unread",
             "description": "Marks an email as read or unread using Microsoft Graph API.",
             "docsLink": "https://docs.aventisia.com",
-            "icon": null,
             "img": "/assets/M365.svg"
           },
           {
@@ -3912,7 +3539,6 @@
             "label": "Move Email To Folder",
             "description": "Moves an email to a specified folder using Microsoft Graph API.",
             "docsLink": "https://docs.aventisia.com",
-            "icon": null,
             "img": "/assets/M365.svg"
           },
           {
@@ -3921,7 +3547,6 @@
             "label": "Reply to Email",
             "description": "Replies to an email using Message ID.",
             "docsLink": "https://docs.aventisia.com",
-            "icon": null,
             "img": "/assets/M365.svg"
           },
           {
@@ -3930,7 +3555,6 @@
             "label": "Search Emails",
             "description": "Searches inbox emails using a filter query (e.g., subject eq 'Test')",
             "docsLink": "https://docs.aventisia.com",
-            "icon": null,
             "img": "/assets/M365.svg"
           },
           {
@@ -3939,7 +3563,6 @@
             "label": "Send Email",
             "description": "Sends an email via the Microsoft Graph API using application permissions.",
             "docsLink": "https://docs.aventisia.com",
-            "icon": null,
             "img": "/assets/M365.svg"
           }
         ]
@@ -3947,9 +3570,7 @@
       {
         "label": "HTTP",
         "description": "Perform HTTP requests and integrations.",
-        "icon": null,
         "img": "/assets/HTTP.svg",
-        "listType": null,
         "actions": [
           {
             "type": "activityNode",
@@ -3957,7 +3578,6 @@
             "label": "Download from Web",
             "description": "Downloads text or a file from the web and stores it in memory or saves it to a file.",
             "docsLink": "https://docs.aventisia.com",
-            "icon": null,
             "img": "/assets/HTTP.svg"
           },
           {
@@ -3966,7 +3586,6 @@
             "label": "Invoke Web Service",
             "description": "Invokes a web service (REST or SOAP) and returns the response text.",
             "docsLink": "https://docs.aventisia.com",
-            "icon": null,
             "img": "/assets/HTTP.svg"
           }
         ]
@@ -3974,9 +3593,7 @@
       {
         "label": "Google Workspace",
         "description": "Perform Google Workspace requests and integrations.",
-        "icon": null,
         "img": "/assets/GoogleWorkspace.svg",
-        "listType": null,
         "actions": [
           {
             "type": "activityNode",
@@ -3984,7 +3601,6 @@
             "label": "Append Row to Google Sheet",
             "description": "Appends a single row of data to a Google Sheet at the next available row in the specified range.",
             "docsLink": "https://docs.aventisia.com",
-            "icon": null,
             "img": "/assets/GoogleWorkspace.svg"
           },
           {
@@ -3993,7 +3609,6 @@
             "label": "Create Google Sheets Service Instance",
             "description": "Creates and returns a SheetsService instance using Google service account credentials.",
             "docsLink": "https://docs.aventisia.com",
-            "icon": null,
             "img": "/assets/GoogleWorkspace.svg"
           },
           {
@@ -4002,7 +3617,6 @@
             "label": "Delete Range or Cell in Google Sheet",
             "description": "Deletes (clears) the values from a specified cell or range in a Google Sheet. Formatting, formulas, and comments are preserved.",
             "docsLink": "https://docs.aventisia.com",
-            "icon": null,
             "img": "/assets/GoogleWorkspace.svg"
           },
           {
@@ -4011,7 +3625,6 @@
             "label": "Read Google Sheet Range",
             "description": "Reads data from a specified range in a Google Sheet using the Sheets API.",
             "docsLink": "https://docs.aventisia.com",
-            "icon": null,
             "img": "/assets/GoogleWorkspace.svg"
           },
           {
@@ -4020,7 +3633,6 @@
             "label": "Update Cell or Range in Google Sheet",
             "description": "Updates a specific cell or range in a Google Sheet with the provided values.",
             "docsLink": "https://docs.aventisia.com",
-            "icon": null,
             "img": "/assets/GoogleWorkspace.svg"
           }
         ]
@@ -4028,9 +3640,7 @@
       {
         "label": "FTP",
         "description": "Transfer files and folders via FTP.",
-        "icon": null,
         "img": "/assets/FTP.svg",
-        "listType": null,
         "actions": [
           {
             "type": "activityNode",
@@ -4038,7 +3648,6 @@
             "label": "Change Working Directory",
             "description": "Sets the current working directory for an FTP connection.",
             "docsLink": "https://docs.aventisia.com",
-            "icon": null,
             "img": "/assets/FTP.svg"
           },
           {
@@ -4047,7 +3656,6 @@
             "label": "Close Connection",
             "description": "Closes an open FTP connection.",
             "docsLink": "https://docs.aventisia.com",
-            "icon": null,
             "img": "/assets/FTP.svg"
           },
           {
@@ -4056,7 +3664,6 @@
             "label": "Create FTP Directory",
             "description": "Creates a directory on an FTP server.",
             "docsLink": "https://docs.aventisia.com",
-            "icon": null,
             "img": "/assets/FTP.svg"
           },
           {
@@ -4065,7 +3672,6 @@
             "label": "Delete FTP Directory",
             "description": "Deletes a directory from an FTP server.",
             "docsLink": "https://docs.aventisia.com",
-            "icon": null,
             "img": "/assets/FTP.svg"
           },
           {
@@ -4074,7 +3680,6 @@
             "label": "Delete FTP File",
             "description": "Deletes a single file from an FTP server.",
             "docsLink": "https://docs.aventisia.com",
-            "icon": null,
             "img": "/assets/FTP.svg"
           },
           {
@@ -4083,7 +3688,6 @@
             "label": "Download File(s) from FTP",
             "description": "Downloads one or more files from an FTP server.",
             "docsLink": "https://docs.aventisia.com",
-            "icon": null,
             "img": "/assets/FTP.svg"
           },
           {
@@ -4092,7 +3696,6 @@
             "label": "Download Folder from FTP",
             "description": "Downloads one or more folders from an FTP server.",
             "docsLink": "https://docs.aventisia.com",
-            "icon": null,
             "img": "/assets/FTP.svg"
           },
           {
@@ -4101,7 +3704,6 @@
             "label": "Invoke FTP Command",
             "description": "Invokes the given literal FTP command on the server.",
             "docsLink": "https://docs.aventisia.com",
-            "icon": null,
             "img": "/assets/FTP.svg"
           },
           {
@@ -4110,7 +3712,6 @@
             "label": "List FTP Directory",
             "description": "Retrieves subdirectories and files in the current directory of an FTP connection.",
             "docsLink": "https://docs.aventisia.com",
-            "icon": null,
             "img": "/assets/FTP.svg"
           },
           {
@@ -4119,7 +3720,6 @@
             "label": "Open FTP Connection",
             "description": "Establishes a specific connection to a remote FTP server and stores that connection as a variable for later use.",
             "docsLink": "https://docs.aventisia.com",
-            "icon": null,
             "img": "/assets/FTP.svg"
           },
           {
@@ -4128,7 +3728,6 @@
             "label": "Open Secure FTP Connection",
             "description": "Establishes a secure connection to an FTP server using SSL/TLS or SSH.",
             "docsLink": "https://docs.aventisia.com",
-            "icon": null,
             "img": "/assets/FTP.svg"
           },
           {
@@ -4137,7 +3736,6 @@
             "label": "Rename FTP File",
             "description": "Renames a file that resides on an FTP server.",
             "docsLink": "https://docs.aventisia.com",
-            "icon": null,
             "img": "/assets/FTP.svg"
           },
           {
@@ -4146,7 +3744,6 @@
             "label": "Synchronize Directories",
             "description": "Synchronizes the local directory with a remote FTP directory.",
             "docsLink": "https://docs.aventisia.com",
-            "icon": null,
             "img": "/assets/FTP.svg"
           },
           {
@@ -4155,7 +3752,6 @@
             "label": "Upload File to FTP",
             "description": "Uploads a single file to an FTP server.",
             "docsLink": "https://docs.aventisia.com",
-            "icon": null,
             "img": "/assets/FTP.svg"
           },
           {
@@ -4164,7 +3760,6 @@
             "label": "Upload Folder(s) to FTP",
             "description": "Uploads one or more local folders to a remote FTP/FTPS server.",
             "docsLink": "https://docs.aventisia.com",
-            "icon": null,
             "img": "/assets/FTP.svg"
           }
         ]
@@ -4172,9 +3767,7 @@
       {
         "label": "Exchange Server",
         "description": "Integrate with Microsoft Exchange Server.",
-        "icon": null,
         "img": "/assets/ExchangeServer.svg",
-        "listType": null,
         "actions": [
           {
             "type": "activityNode",
@@ -4182,7 +3775,6 @@
             "label": "Connect to Exchange Server",
             "description": "Open a new connection to an Exchange server.",
             "docsLink": "https://docs.aventisia.com",
-            "icon": null,
             "img": "/assets/ExchangeServer.svg"
           },
           {
@@ -4191,7 +3783,6 @@
             "label": "Process Exchange Email Messages",
             "description": "Move, delete, or mark as unread an email message (or a list of email messages).",
             "docsLink": "https://docs.aventisia.com",
-            "icon": null,
             "img": "/assets/ExchangeServer.svg"
           },
           {
@@ -4200,7 +3791,6 @@
             "label": "Retrieve Exchange Email Messages",
             "description": "Retrieves email messages from the specified Exchange server.",
             "docsLink": "https://docs.aventisia.com",
-            "icon": null,
             "img": "/assets/ExchangeServer.svg"
           },
           {
@@ -4209,7 +3799,6 @@
             "label": "Send Exchange Email Message",
             "description": "Creates and sends a new email message using an Exchange connection.",
             "docsLink": "https://docs.aventisia.com",
-            "icon": null,
             "img": "/assets/ExchangeServer.svg"
           }
         ]
@@ -4217,9 +3806,7 @@
       {
         "label": "Excel",
         "description": "Automate Excel file operations.",
-        "icon": null,
         "img": "/assets/Excel.svg",
-        "listType": null,
         "actions": [
           {
             "type": "activityNode",
@@ -4227,7 +3814,6 @@
             "label": "Activate Cell in Excel Worksheet",
             "description": "Activates a specific cell in the given worksheet based on absolute position, relative offset, or named range.",
             "docsLink": "https://docs.aventisia.com",
-            "icon": null,
             "img": "/assets/Excel.svg"
           },
           {
@@ -4236,7 +3822,6 @@
             "label": "Add New Worksheet",
             "description": "Adds a new worksheet to the specified Excel workbook.",
             "docsLink": "https://docs.aventisia.com",
-            "icon": null,
             "img": "/assets/Excel.svg"
           },
           {
@@ -4245,7 +3830,6 @@
             "label": "Append Range to Excel Worksheet",
             "description": "Appends a range of data (e.g., from a DataTable) to the active worksheet of an Excel.",
             "docsLink": "https://docs.aventisia.com",
-            "icon": null,
             "img": "/assets/Excel.svg"
           },
           {
@@ -4254,7 +3838,6 @@
             "label": "Attach to Running Excel Workbook",
             "description": "Attaches to a running Excel instance and opens the specified workbook if not already open.",
             "docsLink": "https://docs.aventisia.com",
-            "icon": null,
             "img": "/assets/Excel.svg"
           },
           {
@@ -4263,7 +3846,6 @@
             "label": "Auto Fill Range in Excel Worksheet",
             "description": "Copies data from a source range to a target range in the specified or active worksheet of an Excel workbook.",
             "docsLink": "https://docs.aventisia.com",
-            "icon": null,
             "img": "/assets/Excel.svg"
           },
           {
@@ -4272,7 +3854,6 @@
             "label": "Clear Cells in Excel Worksheet",
             "description": "Clears a specified range or named cell in the provided worksheet or workbook.",
             "docsLink": "https://docs.aventisia.com",
-            "icon": null,
             "img": "/assets/Excel.svg"
           },
           {
@@ -4281,7 +3862,6 @@
             "label": "Close Excel Application",
             "description": "Closes the active Excel application instance and optionally saves changes.",
             "docsLink": "https://docs.aventisia.com",
-            "icon": null,
             "img": "/assets/Excel.svg"
           },
           {
@@ -4290,7 +3870,6 @@
             "label": "Close Excel Workbook",
             "description": "Closes the specified Excel workbook and optionally quits the Excel application.",
             "docsLink": "https://docs.aventisia.com",
-            "icon": null,
             "img": "/assets/Excel.svg"
           },
           {
@@ -4299,7 +3878,6 @@
             "label": "Copy Cells from Excel Worksheet",
             "description": "Copies a specified range of cells from an Excel worksheet for later use or pasting into another worksheet.",
             "docsLink": "https://docs.aventisia.com",
-            "icon": null,
             "img": "/assets/Excel.svg"
           },
           {
@@ -4308,7 +3886,6 @@
             "label": "Copy Excel Worksheet",
             "description": "Copies a worksheet to another workbook or within the same workbook, preserving data, formatting, and structure.",
             "docsLink": "https://docs.aventisia.com",
-            "icon": null,
             "img": "/assets/Excel.svg"
           },
           {
@@ -4317,7 +3894,6 @@
             "label": "Copy Range from Excel Worksheet to DataTable",
             "description": "Copies a specified range of cells from the provided Excel worksheet into a DataTable.",
             "docsLink": "https://docs.aventisia.com",
-            "icon": null,
             "img": "/assets/Excel.svg"
           },
           {
@@ -4326,7 +3902,6 @@
             "label": "Delete Column from Excel Worksheet",
             "description": "Deletes a specific column from the specified Excel worksheet instance.",
             "docsLink": "https://docs.aventisia.com",
-            "icon": null,
             "img": "/assets/Excel.svg"
           },
           {
@@ -4335,7 +3910,6 @@
             "label": "Delete Excel Worksheet",
             "description": "Deletes a specific worksheet from its parent Excel workbook.",
             "docsLink": "https://docs.aventisia.com",
-            "icon": null,
             "img": "/assets/Excel.svg"
           },
           {
@@ -4344,7 +3918,6 @@
             "label": "Delete Range from Excel Worksheet",
             "description": "Deletes a range of cells or a single cell from the specified Excel worksheet.",
             "docsLink": "https://docs.aventisia.com",
-            "icon": null,
             "img": "/assets/Excel.svg"
           },
           {
@@ -4353,7 +3926,6 @@
             "label": "Delete Row from Excel Worksheet",
             "description": "Deletes a specific row from the specified worksheet of an Excel workbook.",
             "docsLink": "https://docs.aventisia.com",
-            "icon": null,
             "img": "/assets/Excel.svg"
           },
           {
@@ -4362,7 +3934,6 @@
             "label": "Filter Cells in Excel Worksheet",
             "description": "Filters cells in the specified Excel worksheet based on criteria applied to a specific column.",
             "docsLink": "https://docs.aventisia.com",
-            "icon": null,
             "img": "/assets/Excel.svg"
           },
           {
@@ -4371,7 +3942,6 @@
             "label": "Find and Replace in Excel Worksheet",
             "description": "Finds text and replaces it with another in the specified Excel worksheet.",
             "docsLink": "https://docs.aventisia.com",
-            "icon": null,
             "img": "/assets/Excel.svg"
           },
           {
@@ -4380,7 +3950,6 @@
             "label": "Get Active Cell on Excel Worksheet",
             "description": "Gets the address of the currently active cell in the specified Excel worksheet.",
             "docsLink": "https://docs.aventisia.com",
-            "icon": null,
             "img": "/assets/Excel.svg"
           },
           {
@@ -4389,7 +3958,6 @@
             "label": "Get Active Excel Worksheet",
             "description": "Retrieves the name and index of the currently active worksheet in a given Excel workbook.",
             "docsLink": "https://docs.aventisia.com",
-            "icon": null,
             "img": "/assets/Excel.svg"
           },
           {
@@ -4398,7 +3966,6 @@
             "label": "Get All Excel Worksheets",
             "description": "Retrieves all worksheet names from the provided Excel workbook instance, optionally filtered by a specific worksheet instance.",
             "docsLink": "https://docs.aventisia.com",
-            "icon": null,
             "img": "/assets/Excel.svg"
           },
           {
@@ -4407,7 +3974,6 @@
             "label": "Get Column Name on Excel Worksheet",
             "description": "Gets the name of a column by reading the first non-empty cell in the specified column of an Excel worksheet.",
             "docsLink": "https://docs.aventisia.com",
-            "icon": null,
             "img": "/assets/Excel.svg"
           },
           {
@@ -4416,7 +3982,6 @@
             "label": "Get First Free Column or Row from Excel Worksheet",
             "description": "Retrieves the first free column and/or row from the specified worksheet. Useful for appending new data.",
             "docsLink": "https://docs.aventisia.com",
-            "icon": null,
             "img": "/assets/Excel.svg"
           },
           {
@@ -4425,7 +3990,6 @@
             "label": "Get First Free Row on Column from Excel Worksheet",
             "description": "Retrieves the first free row number for a specific column from the given worksheet.",
             "docsLink": "https://docs.aventisia.com",
-            "icon": null,
             "img": "/assets/Excel.svg"
           },
           {
@@ -4434,7 +3998,6 @@
             "label": "Get Selected Cell Range from Excel Worksheet",
             "description": "Retrieves the currently selected cell range in the provided Excel worksheet as first column, first row, last column, and last row indices.",
             "docsLink": "https://docs.aventisia.com",
-            "icon": null,
             "img": "/assets/Excel.svg"
           },
           {
@@ -4443,7 +4006,6 @@
             "label": "Get Table Range from Excel Worksheet",
             "description": "Retrieves the range address (e.g., 'A1:B10') of a specified table or pivot table in the provided Excel worksheet.",
             "docsLink": "https://docs.aventisia.com",
-            "icon": null,
             "img": "/assets/Excel.svg"
           },
           {
@@ -4452,7 +4014,6 @@
             "label": "Insert Column to Excel Worksheet",
             "description": "Inserts a new column to the left of the specified column in the provided Excel worksheet.",
             "docsLink": "https://docs.aventisia.com",
-            "icon": null,
             "img": "/assets/Excel.svg"
           },
           {
@@ -4461,7 +4022,6 @@
             "label": "Insert Row to Excel Worksheet",
             "description": "Inserts a new row above the specified row in the provided Excel worksheet.",
             "docsLink": "https://docs.aventisia.com",
-            "icon": null,
             "img": "/assets/Excel.svg"
           },
           {
@@ -4470,7 +4030,6 @@
             "label": "Launch Excel Application",
             "description": "Launches a new Excel application instance or opens an existing Excel document.",
             "docsLink": "https://docs.aventisia.com",
-            "icon": null,
             "img": "/assets/Excel.svg"
           },
           {
@@ -4479,7 +4038,6 @@
             "label": "Lookup Range in Excel Worksheet",
             "description": "Performs a LOOKUP operation in an Excel worksheet. Searches for a lookup value in a single row or column and returns a value from the same position in another row or column.",
             "docsLink": "https://docs.aventisia.com",
-            "icon": null,
             "img": "/assets/Excel.svg"
           },
           {
@@ -4488,7 +4046,6 @@
             "label": "Open Excel Workbook",
             "description": "Opens or reuses an Excel workbook in an existing Excel instance by workbook name.",
             "docsLink": "https://docs.aventisia.com",
-            "icon": null,
             "img": "/assets/Excel.svg"
           },
           {
@@ -4497,7 +4054,6 @@
             "label": "Paste Range Cells to Excel Worksheet",
             "description": "Pastes a range of cells from a source worksheet to a specified range or named area in a target worksheet.",
             "docsLink": "https://docs.aventisia.com",
-            "icon": null,
             "img": "/assets/Excel.svg"
           },
           {
@@ -4506,7 +4062,6 @@
             "label": "Paste DataTable to Excel Worksheet",
             "description": "Pastes a DataTable of data to the specified Excel worksheet starting at the given row and column.",
             "docsLink": "https://docs.aventisia.com",
-            "icon": null,
             "img": "/assets/Excel.svg"
           },
           {
@@ -4515,7 +4070,6 @@
             "label": "Read Formula from Excel Cell",
             "description": "Reads the formula from a specific cell or named range in Excel.",
             "docsLink": "https://docs.aventisia.com",
-            "icon": null,
             "img": "/assets/Excel.svg"
           },
           {
@@ -4524,7 +4078,6 @@
             "label": "Read from Excel Worksheet",
             "description": "Reads values from a specified cell range in the given Excel worksheet.",
             "docsLink": "https://docs.aventisia.com",
-            "icon": null,
             "img": "/assets/Excel.svg"
           },
           {
@@ -4533,7 +4086,6 @@
             "label": "Rename Excel Worksheet",
             "description": "Renames a specific worksheet in the given Excel instance based on name or index.",
             "docsLink": "https://docs.aventisia.com",
-            "icon": null,
             "img": "/assets/Excel.svg"
           },
           {
@@ -4542,7 +4094,6 @@
             "label": "Resize Columns or Rows in Excel Worksheet",
             "description": "Resizes the width of columns or the height of rows in the provided Excel worksheet.",
             "docsLink": "https://docs.aventisia.com",
-            "icon": null,
             "img": "/assets/Excel.svg"
           },
           {
@@ -4551,7 +4102,6 @@
             "label": "Run Excel Macro",
             "description": "Runs a specified VBA macro in the provided Excel workbook.",
             "docsLink": "https://docs.aventisia.com",
-            "icon": null,
             "img": "/assets/Excel.svg"
           },
           {
@@ -4560,7 +4110,6 @@
             "label": "Save Excel Workbook",
             "description": "Saves the active Excel workbook.",
             "docsLink": "https://docs.aventisia.com",
-            "icon": null,
             "img": "/assets/Excel.svg"
           },
           {
@@ -4569,7 +4118,6 @@
             "label": "Select Cells in Excel Worksheet",
             "description": "Selects a specific range of cells in the given Excel worksheet or workbook.",
             "docsLink": "https://docs.aventisia.com",
-            "icon": null,
             "img": "/assets/Excel.svg"
           },
           {
@@ -4578,7 +4126,6 @@
             "label": "Set Active Excel Worksheet",
             "description": "Activates a specific worksheet in the provided Excel workbook by name or index and outputs the active worksheet instance.",
             "docsLink": "https://docs.aventisia.com",
-            "icon": null,
             "img": "/assets/Excel.svg"
           },
           {
@@ -4587,7 +4134,6 @@
             "label": "Set Color in Excel Worksheet",
             "description": "Fills the background of a selected range of cells with the specified color.",
             "docsLink": "https://docs.aventisia.com",
-            "icon": null,
             "img": "/assets/Excel.svg"
           },
           {
@@ -4596,7 +4142,6 @@
             "label": "Write Array Values to Excel Worksheet",
             "description": "Writes a value or array of values to a row or range in an Excel worksheet.",
             "docsLink": "https://docs.aventisia.com",
-            "icon": null,
             "img": "/assets/Excel.svg"
           },
           {
@@ -4605,7 +4150,6 @@
             "label": "Write to Excel Worksheet",
             "description": "Writes a value to a specific cell or range of cells in an Excel worksheet.",
             "docsLink": "https://docs.aventisia.com",
-            "icon": null,
             "img": "/assets/Excel.svg"
           },
           {
@@ -4614,7 +4158,6 @@
             "label": "Write Values to Specific Excel Columns",
             "description": "Writes a list of values to user-specified Excel columns in a single row (e.g., value1→A, value2→D, value3→G).",
             "docsLink": "https://docs.aventisia.com",
-            "icon": null,
             "img": "/assets/Excel.svg"
           }
         ]
@@ -4622,9 +4165,7 @@
       {
         "label": "Email",
         "description": "Send, receive, and manage emails.",
-        "icon": null,
         "img": "/assets/Email.svg",
-        "listType": null,
         "actions": [
           {
             "type": "activityNode",
@@ -4632,7 +4173,6 @@
             "label": "Process Email Messages",
             "description": "Moves, deletes, or marks as unread an email (or a list of emails) retrieved by a Retrieve email messages action.",
             "docsLink": "https://docs.aventisia.com",
-            "icon": null,
             "img": "/assets/Email.svg"
           },
           {
@@ -4641,7 +4181,6 @@
             "label": "Retrieve Email Messages",
             "description": "Retrieves email messages from an IMAP server.",
             "docsLink": "https://docs.aventisia.com",
-            "icon": null,
             "img": "/assets/Email.svg"
           },
           {
@@ -4650,7 +4189,6 @@
             "label": "Send Email",
             "description": "Creates and sends a new email message using MailKit.",
             "docsLink": "https://docs.aventisia.com",
-            "icon": null,
             "img": "/assets/Email.svg"
           }
         ]
@@ -4658,9 +4196,7 @@
       {
         "label": "Azure",
         "description": "Perform Azure requests and integrations.",
-        "icon": null,
         "img": "/assets/Azure.svg",
-        "listType": null,
         "actions": [
           {
             "type": "activityNode",
@@ -4668,7 +4204,6 @@
             "label": "Delete All Blobs from Container",
             "description": "Deletes all blobs in the specified Azure Blob container. Returns the number of successfully deleted blobs.",
             "docsLink": "https://docs.aventisia.com",
-            "icon": null,
             "img": "/assets/Azure.svg"
           },
           {
@@ -4677,7 +4212,6 @@
             "label": "Delete Blob from Container",
             "description": "Deletes a specified blob from the Azure Blob container.",
             "docsLink": "https://docs.aventisia.com",
-            "icon": null,
             "img": "/assets/Azure.svg"
           },
           {
@@ -4686,7 +4220,6 @@
             "label": "Download File from Blob Storage",
             "description": "Downloads a file from an Azure Blob container to a specified local path.",
             "docsLink": "https://docs.aventisia.com",
-            "icon": null,
             "img": "/assets/Azure.svg"
           },
           {
@@ -4695,7 +4228,6 @@
             "label": "Get Blob Container Client Instance",
             "description": "Creates and returns a BlobContainerClient instance for the specified container and connection string.",
             "docsLink": "https://docs.aventisia.com",
-            "icon": null,
             "img": "/assets/Azure.svg"
           },
           {
@@ -4704,7 +4236,6 @@
             "label": "Upload File to Blob Storage",
             "description": "Uploads a file from the local system to an Azure Blob container.",
             "docsLink": "https://docs.aventisia.com",
-            "icon": null,
             "img": "/assets/Azure.svg"
           }
         ]
@@ -4712,9 +4243,7 @@
       {
         "label": "AWS",
         "description": "Activities for integrating with Amazon Web Services (AWS), including authentication, resource management, and service operations.",
-        "icon": null,
         "img": "/assets/AWS.svg",
-        "listType": null,
         "actions": [
           {
             "type": "activityNode",
@@ -4722,7 +4251,6 @@
             "label": "Delete AWS ACM Certificate",
             "description": "Deletes an AWS Certificate Manager (ACM) certificate using AWS credentials resolved from environment or IAM role.",
             "docsLink": "https://docs.aventisia.com",
-            "icon": null,
             "img": "/assets/AWS.svg"
           },
           {
@@ -4731,7 +4259,6 @@
             "label": "Get AWS Certificate Manager Certificate",
             "description": "Retrieves the certificate body and chain from AWS Certificate Manager using the Certificate ARN.",
             "docsLink": "https://docs.aventisia.com",
-            "icon": null,
             "img": "/assets/AWS.svg"
           },
           {
@@ -4740,7 +4267,6 @@
             "label": "Get AWS Certificate Manager Certificate Metadata",
             "description": "Retrieves metadata for an AWS Certificate Manager (ACM) certificate using the DescribeCertificate API.",
             "docsLink": "https://docs.aventisia.com",
-            "icon": null,
             "img": "/assets/AWS.svg"
           },
           {
@@ -4749,7 +4275,6 @@
             "label": "Get Many AWS Certificate Manager Certificates",
             "description": "Lists multiple AWS Certificate Manager (ACM) certificates using the ListCertificates API.",
             "docsLink": "https://docs.aventisia.com",
-            "icon": null,
             "img": "/assets/AWS.svg"
           },
           {
@@ -4758,7 +4283,6 @@
             "label": "Renew AWS ACM Certificate",
             "description": "Renews an AWS Certificate Manager (ACM) certificate using AWS credentials from AWE Credential Vault.",
             "docsLink": "https://docs.aventisia.com",
-            "icon": null,
             "img": "/assets/AWS.svg"
           },
           {
@@ -4767,7 +4291,6 @@
             "label": "Detect Dominant Language (AWS Comprehend)",
             "description": "Identifies the dominant language of a given text using AWS Comprehend.",
             "docsLink": "https://docs.aventisia.com",
-            "icon": null,
             "img": "/assets/AWS.svg"
           },
           {
@@ -4776,7 +4299,6 @@
             "label": "Detect Entities (AWS Comprehend)",
             "description": "Identifies named entities (e.g., PERSON, ORGANIZATION, LOCATION) in a given text using AWS Comprehend.",
             "docsLink": "https://docs.aventisia.com",
-            "icon": null,
             "img": "/assets/AWS.svg"
           },
           {
@@ -4785,7 +4307,6 @@
             "label": "Detect Sentiment (AWS Comprehend)",
             "description": "Analyzes the sentiment of a given text using AWS Comprehend.",
             "docsLink": "https://docs.aventisia.com",
-            "icon": null,
             "img": "/assets/AWS.svg"
           },
           {
@@ -4794,7 +4315,6 @@
             "label": "Add AWS ELB Listener Certificate",
             "description": "Adds a certificate to an AWS Elastic Load Balancer (ALB/NLB) listener.",
             "docsLink": "https://docs.aventisia.com",
-            "icon": null,
             "img": "/assets/AWS.svg"
           },
           {
@@ -4803,7 +4323,6 @@
             "label": "Create AWS ELB Load Balancer",
             "description": "Creates an Application or Network Load Balancer in AWS Elastic Load Balancing (ALB/NLB).",
             "docsLink": "https://docs.aventisia.com",
-            "icon": null,
             "img": "/assets/AWS.svg"
           },
           {
@@ -4812,7 +4331,6 @@
             "label": "Delete AWS ELB Load Balancer",
             "description": "Deletes an Application or Network Load Balancer in AWS Elastic Load Balancing (ALB/NLB).",
             "docsLink": "https://docs.aventisia.com",
-            "icon": null,
             "img": "/assets/AWS.svg"
           },
           {
@@ -4821,7 +4339,6 @@
             "label": "Get AWS ELB Load Balancer",
             "description": "Retrieves details of an Application or Network Load Balancer in AWS Elastic Load Balancing (ALB/NLB).",
             "docsLink": "https://docs.aventisia.com",
-            "icon": null,
             "img": "/assets/AWS.svg"
           },
           {
@@ -4830,7 +4347,6 @@
             "label": "Get Many AWS ELB Listener Certificates",
             "description": "Retrieves all certificates associated with an AWS Elastic Load Balancer (ALB/NLB) listener.",
             "docsLink": "https://docs.aventisia.com",
-            "icon": null,
             "img": "/assets/AWS.svg"
           },
           {
@@ -4839,7 +4355,6 @@
             "label": "Get Many AWS ELB Load Balancers",
             "description": "Retrieves multiple load balancers from AWS Elastic Load Balancing (ALB/NLB).",
             "docsLink": "https://docs.aventisia.com",
-            "icon": null,
             "img": "/assets/AWS.svg"
           },
           {
@@ -4848,7 +4363,6 @@
             "label": "Remove AWS ELB Listener Certificate",
             "description": "Removes a certificate from an AWS Elastic Load Balancer (ALB/NLB) listener.",
             "docsLink": "https://docs.aventisia.com",
-            "icon": null,
             "img": "/assets/AWS.svg"
           },
           {
@@ -4857,7 +4371,6 @@
             "label": "Create or Update AWS DynamoDB Item",
             "description": "Creates or updates an item in AWS DynamoDB using the PutItem API.",
             "docsLink": "https://docs.aventisia.com",
-            "icon": null,
             "img": "/assets/AWS.svg"
           },
           {
@@ -4866,7 +4379,6 @@
             "label": "Delete AWS DynamoDB Item",
             "description": "Deletes an item from AWS DynamoDB using the DeleteItem API.",
             "docsLink": "https://docs.aventisia.com",
-            "icon": null,
             "img": "/assets/AWS.svg"
           },
           {
@@ -4875,7 +4387,6 @@
             "label": "Get AWS DynamoDB Item",
             "description": "Retrieves an item from AWS DynamoDB using the GetItem API. Always returns all attributes.",
             "docsLink": "https://docs.aventisia.com",
-            "icon": null,
             "img": "/assets/AWS.svg"
           },
           {
@@ -4884,7 +4395,6 @@
             "label": "Get Many AWS DynamoDB Items",
             "description": "Retrieves multiple items from AWS DynamoDB using Query or Scan API.",
             "docsLink": "https://docs.aventisia.com",
-            "icon": null,
             "img": "/assets/AWS.svg"
           }
         ]

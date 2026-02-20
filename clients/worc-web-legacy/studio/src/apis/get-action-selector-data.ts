@@ -84,7 +84,6 @@ export async function getActionSelectorData(): Promise<PrimaryCategoryType[]> {
   }
 
   // Explicitly import AI Integrations module
-
   const aiIntegrationsJson =
     "../features/action-selector/constants/_AIIntegrationsActionSelectorData.json";
 

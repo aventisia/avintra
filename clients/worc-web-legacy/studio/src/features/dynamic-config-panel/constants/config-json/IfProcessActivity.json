@@ -158,7 +158,15 @@
       "label": "User name",
       "description": "The name of the user to check (only applicable if \u0027From User\u0027 is enabled).",
       "defaultValue": "",
-      "required": false
+      "required": false,
+      "renderIf": {
+        "conditions": [
+          {
+            "field": "FromUser",
+            "equals": true
+          }
+        ]
+      }
     }
   ]
 }

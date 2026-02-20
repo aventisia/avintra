@@ -108,9 +108,7 @@ export const DCPForm = () => {
                 ?.filter(
                   (key) =>
                     import.meta.env.MODE !== "production" ||
-                    (key !== "Memory" &&
-                      key !== "Tools" &&
-                      key !== "Schema"),
+                    (key !== "Memory" && key !== "Tools" && key !== "Schema"),
                 )
                 ?.map((key) => (
                   <DCPTabsTrigger
@@ -126,6 +124,7 @@ export const DCPForm = () => {
                     <DCPTabsTrigger
                       tabValue="Test"
                       className="flex items-center gap-1 text-primary hover:text-primary"
+                      handleClick={() => onSubmit(form.getValues())}
                     >
                       <PlayIcon className="h-3 w-3" />
                       <span> Test</span>

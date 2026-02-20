@@ -97,17 +97,17 @@
         {
           "label": "OneDrive",
           "value": "OneDrive",
-          "description": "OneDrive environment variable."
+          "description": "OneDrive environment variable"
         },
         {
           "label": "OneDrive Commercial",
           "value": "OneDriveCommercial",
-          "description": "OneDrive Commercial environment variable."
+          "description": "OneDrive Commercial environment variable"
         },
         {
           "label": "OneDrive Consumer",
           "value": "OneDriveConsumer",
-          "description": "OneDrive Consumer environment variable."
+          "description": "OneDrive Consumer environment variable"
         }
       ]
     },

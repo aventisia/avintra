@@ -17,7 +17,7 @@ import { useEffect, useRef, useState } from "react";
 
 const defaultConditionObj = {
   Field: "",
-  ComparisonOperator: "EqualTo",
+  Operator: "EqualTo",
   Value: "",
   Id: crypto.randomUUID(), // Generate a unique ID for the new field
 };
@@ -57,7 +57,7 @@ export const QueueConditionGroupsField = (field: DCPFieldSchemaType) => {
 
   // Controllers
   const { field: queueSelectField } = useController({
-    name: "SelectQueue",
+    name: "QueueId",
     control,
   });
 
