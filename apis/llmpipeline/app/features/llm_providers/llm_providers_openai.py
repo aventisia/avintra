@@ -82,12 +82,12 @@ class OpenAIProvider(BaseLLMProvider):
                 # Log response data for debugging (pretty-printed for readability)
                 logger.info(f"OpenAI response data:\n{json.dumps(response_data, indent=2)}")
                 
+                # Extract output text using robust helper method
+                raw_output = self.extract_output_text_from_response(response_data)
+                
                 # Handle is_json_output if requested
-                if llm_request.is_json_output:
-                    output = extract_json_from_llm_response(response_data.get("output", [{}])[0].get("content", [{}])[0].get("text", ""))
-                else:
-                    output = response_data.get("output", [{}])[0].get("content", [{}])[0].get("text", "")
-            
+                output = extract_json_from_llm_response(raw_output) if llm_request.is_json_output else raw_output
+                
                 # Return final llm response
                 return self.create_final_llm_response(llm_request, default_llm_response_obj, start_time, output, jwt, response_data)
         except Exception as e:
@@ -183,8 +183,14 @@ class OpenAIProvider(BaseLLMProvider):
                             
                             # Break if completed and yield the final llm response
                             if event_type in ("completed", "incomplete", "failed"):
-                                output = extract_json_from_llm_response(buffer_output) if llm_request.is_json_output else ""
                                 full_response = chunk.get("response", {})
+                                
+                                # Extract output text using robust helper method
+                                raw_output = self.extract_output_text_from_response(full_response)
+                                
+                                # Handle is_json_output if requested
+                                output = extract_json_from_llm_response(raw_output) if llm_request.is_json_output else raw_output
+                                
                                 final_llm_response = self.create_final_llm_response(llm_request, default_llm_response_obj, start_time, output, jwt, full_response)
                                 yield final_llm_response.model_dump_json() + "\n"
                                 break
@@ -275,6 +281,28 @@ class OpenAIProvider(BaseLLMProvider):
 
         # Return both payload and headers
         return request_payload, request_headers
+    
+    # Helper: Extract output text from OpenAI response structure
+    def extract_output_text_from_response(self, response_data: dict) -> str:
+        """
+        Robustly extract text from OpenAI response by finding the output with type 'message'
+        and content with type 'output_text', regardless of their position in the arrays.
+        """
+        output_array = response_data.get("output", [])
+        
+        # Find the message object in the output array
+        for output_item in output_array:
+            if output_item.get("type") == "message":
+                content_array = output_item.get("content", [])
+                
+                # Find the output_text object in the content array
+                for content_item in content_array:
+                    if content_item.get("type") == "output_text":
+                        return content_item.get("text", "")
+        
+        # Fallback: return empty string if structure not found
+        logger.warning("Could not find output_text in OpenAI response structure")
+        return ""
     
     # Helper: Create llm_response object with default values
     def create_initial_llm_response_with_defaults(self, llm_request: LLMRequest) -> LLMResponse:
