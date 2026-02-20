@@ -22,9 +22,6 @@ public class InstanceUsageStartupService : IHostedService
         var currentDateTime = DateTimeOffset.UtcNow;
         string errorMessage = string.Empty;
 
-        // Log that the job started
-        _logger.LogInformation($"Instance usage startup task started at {currentDateTime:O}");
-
         try
         {
             // Create a scope and resolve IInstanceService
@@ -61,10 +58,6 @@ public class InstanceUsageStartupService : IHostedService
                     // errorMessage = "Login is disabled. Please contact the support team.";
                     // throw new InvalidOperationException(errorMessage);
                 }
-
-                // Log successful completion of the startup task
-                _logger.LogInformation($"Instance usage startup task completed successfully at {currentDateTime:O}");
-
             }
         }
         catch (Exception ex)
