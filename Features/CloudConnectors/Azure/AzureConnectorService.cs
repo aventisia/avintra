@@ -260,7 +260,19 @@ public class AzureConnectorsService : IAzureConnectorsService
                         if (!dict.TryGetValue("fileStream", out var fileStreamObj) || fileStreamObj == null)
                             return new { IsSuccess = false, Message = "'fileStream' is required in payload." };
 
-                        var fileStream = fileStreamObj as Stream;
+                        // Convert base64 string to Stream
+                        Stream fileStream = null;
+                        try
+                        {
+                            string base64Content = fileStreamObj.ToString();
+                            byte[] fileBytes = Convert.FromBase64String(base64Content);
+                            fileStream = new MemoryStream(fileBytes);
+                        }
+                        catch (FormatException)
+                        {
+                            return new { IsSuccess = false, Message = "Invalid base64 format for fileStream." };
+                        }
+                        
                         if (fileStream == null)
                             return new { IsSuccess = false, Message = "'fileStream' must be a valid Stream object." };
 
