@@ -79,9 +79,9 @@ app.UseStaticFiles();
 
 app.UseCookiePolicy();
 
-app.UseRouting();
-
 app.UsePathBase(new PathString("/api"));
+
+app.UseRouting();
 
 app.UseCors();
 
