@@ -1,0 +1,96 @@
+{
+  "version": "2.0.0",
+  "tasks": [
+    {
+      "label": "accounts",
+      "type": "shell",
+      "command": "npm run dev",
+      "options": {
+        "cwd": "${workspaceFolder}/clients/worc-web-legacy/accounts"
+      },
+      "isBackground": true
+    },
+    {
+      "label": "worc",
+      "type": "shell",
+      "command": "npm run dev",
+      "options": {
+        "cwd": "${workspaceFolder}/clients/worc-web-legacy/workspace"
+      },
+      "isBackground": true
+    },
+    {
+      "label": "agentbuilder",
+      "type": "shell",
+      "command": "npm run dev",
+      "options": {
+        "cwd": "${workspaceFolder}/clients/worc-web-legacy/studio"
+      },
+      "isBackground": true
+    },
+    {
+      "label": "aistudio",
+      "type": "shell",
+      "command": "npm run dev",
+      "options": {
+        "cwd": "${workspaceFolder}/clients/worc-web-legacy/ml-model-builder"
+      },
+      "isBackground": true
+    },
+    {
+      "label": "accounts_apis",
+      "type": "shell",
+      "command": "dotnet run",
+      "options": {
+        "cwd": "${workspaceFolder}/apis/WorcBackend-legacy/AccountsAPIs"
+      },
+      "isBackground": true
+    },
+    {
+      "label": "worc_apis",
+      "type": "shell",
+      "command": "dotnet run",
+      "options": {
+        "cwd": "${workspaceFolder}/apis/WorcBackend-legacy/WorkspaceAPIs"
+      },
+      "isBackground": true
+    },
+    {
+      "label": "aistudio_apis",
+      "type": "shell",
+      "command": "dotnet run",
+      "options": {
+        "cwd": "${workspaceFolder}/apis/WorcBackend-legacy/MLModelBuilderAPIs"
+      },
+      "isBackground": true,
+      "presentation": {
+        "panel": "dedicated"
+      }
+    },
+    {
+      "label": "llmpipeline_apis",
+      "type": "shell",
+      "command": "ENV=local ./venv/bin/uvicorn app.main:app --port 4003 --reload",
+      "options": { "cwd": "${workspaceFolder}/apis/llmpipeline" },
+      "isBackground": true
+    },
+    {
+      "label": "Run Frontends",
+      "dependsOn": ["accounts", "worc", "agentbuilder", "aistudio"]
+    },
+    {
+      "label": "Run Backends",
+      "dependsOn": [
+        "accounts_apis",
+        "worc_apis",
+        "aistudio_apis",
+        "llmpipeline_apis"
+      ]
+    },
+    {
+      "label": "Run All",
+      "dependsOn": ["Run Frontends", "Run Backends"],
+      "group": { "kind": "build", "isDefault": true }
+    }
+  ]
+}
