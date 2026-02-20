@@ -209,6 +209,29 @@ public class QueueTableService : IQueueTableService
                 return serviceResponse;
             }
 
+            // If the queue type is 'User', create an associated QueueUser entry
+            if (newQueue.Type == QueueTypesEnum.User)
+            {
+                var queueUser = new QueueUser()
+                {
+                    UserId = _userId,
+                    QueueId = newQueue.Id,
+                    AccessType = QueueWorkItemAccessTypesEnum.FullAccess,
+                    CreatedByUserId = _userId,
+                    LastModifiedByUserId = _userId
+                };
+
+                // Insert the new QueueUser into the database
+                await _unitOfWork.QueueUserRepo.InsertAsync(queueUser);
+
+                // Save changes to the database
+                if (!await _unitOfWork.SaveAsync())
+                {
+                    _logger.LogInformation("Context SaveChanges failed while creating a new queue user");
+                    return serviceResponse;
+                }
+            }
+
             // Task successful
             serviceResponse.Data = newQueue.Adapt<QueuesTableDto>();
             serviceResponse.StatusCode = 200;

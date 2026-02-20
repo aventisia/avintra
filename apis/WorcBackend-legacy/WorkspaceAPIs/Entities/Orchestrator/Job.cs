@@ -78,6 +78,11 @@ public class Job
     public DateTimeOffset CreatedOn { get; set; } = DateTimeOffset.UtcNow;
 
     /// <summary>
+    /// Gets or sets a value that indicates whether the flow version is published or unpublished.
+    /// </summary>
+    public bool IsPublished { get; set; }
+
+    /// <summary>
     /// Gets or sets the navigation property to the flow version associated with this job.
     /// </summary>
     public virtual FlowVersion? FlowVersion { get; set; }

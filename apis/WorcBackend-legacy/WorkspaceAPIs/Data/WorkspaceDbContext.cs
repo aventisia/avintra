@@ -66,6 +66,8 @@ public class WorkspaceDbContext : DbContext
         modelBuilder.Entity<Machine>().Property(e => e.Environment).HasConversion(new EnumToStringConverter<EnvironmentTypesEnum>());
         modelBuilder.Entity<Queue>().Property(e => e.Type).HasConversion(new EnumToStringConverter<QueueTypesEnum>());
         modelBuilder.Entity<QueueTransaction>().Property(e => e.Status).HasConversion(new EnumToStringConverter<QueueTransactionStatusTypesEnum>());
+        modelBuilder.Entity<QueueUser>().Property(e => e.AccessType).HasConversion(new EnumToStringConverter<QueueWorkItemAccessTypesEnum>());
+        modelBuilder.Entity<QueueFlowVersion>().Property(e => e.AccessType).HasConversion(new EnumToStringConverter<QueueWorkItemAccessTypesEnum>());
         modelBuilder.Entity<KeyStore>().Property(e => e.Type).HasConversion(new EnumToStringConverter<KeyStoreTypesEnum>());
         modelBuilder.Entity<KeyStore>().Property(e => e.AccessLevel).HasConversion(new EnumToStringConverter<AccessLevelTypesEnum>());
         modelBuilder.Entity<TimeTrigger>().Property(e => e.Frequency).HasConversion(new EnumToStringConverter<TriggerFrequencyTypesEnum>());
@@ -76,6 +78,7 @@ public class WorkspaceDbContext : DbContext
         modelBuilder.Entity<Job>().Property(e => e.TriggerType).HasConversion(new EnumToStringConverter<TriggerTypesEnum>());
         modelBuilder.Entity<OnPremModel>().Property(e => e.ProviderType).HasConversion(new EnumToStringConverter<OnPremModelProviderEnum>());
         modelBuilder.Entity<OnPremModel>().Property(e => e.Status).HasConversion(new EnumToStringConverter<OnPremModelStatusEnum>());
+        modelBuilder.Entity<WorkItemEvent>().Property(e => e.EventType).HasConversion(new EnumToStringConverter<WorkItemEventTypesEnum>());
 
         // Configure One-to-One relationship between Notification and WorkspaceUser
         modelBuilder.Entity<Notification>().HasOne(one => one.CreatedByUser).WithMany().HasForeignKey(f => f.CreatedByUserId).OnDelete(DeleteBehavior.Restrict);
@@ -115,11 +118,42 @@ public class WorkspaceDbContext : DbContext
         // Configure Many-to-Many relationship between queue and user
         modelBuilder.Entity<Queue>().HasMany(many => many.QueueUsers).WithOne(one => one.Queue).HasForeignKey(fKey => fKey.QueueId).IsRequired();
         modelBuilder.Entity<FlowVersion>().HasMany(many => many.QueueFlowVersions).WithOne(one => one.FlowVersion).HasForeignKey(fKey => fKey.FlowVersionId).IsRequired();
+        // Configure one-to-many relationship between FlowVersion and TriggerFlowVersions
+        modelBuilder.Entity<TimeTriggersFlowVersion>().HasOne(one => one.Trigger).WithMany(many => many.TimeTriggerFlowVersions).HasForeignKey(fKey => fKey.FlowVersionId).IsRequired();
 
-        // Configure Many-to-Many relationship between trigger and flow version
-        modelBuilder.Entity<TimeTrigger>().HasMany(many => many.TimeTriggerFlowVersions).WithOne(one => one.Trigger).HasForeignKey(fKey => fKey.TriggerId).IsRequired();
-        modelBuilder.Entity<FlowVersion>().HasMany(many => many.TriggerFlowVersions).WithOne(one => one.FlowVersion).HasForeignKey(fKey => fKey.FlowVersionId).IsRequired();
+        // Configure one-to-many relationship between EncryptedKeyValue and AppSecret
+        modelBuilder.Entity<EncryptedKeyValue>().HasOne(one => one.AppSecret).WithMany(many => many.EncryptedKeyValues).HasForeignKey(fKey => fKey.AppSecretId).OnDelete(DeleteBehavior.Cascade);
 
+        // Configure one-to-many relationship between TimeTriggersFlowVersion and Trigger
+        modelBuilder.Entity<TimeTriggersFlowVersion>().HasOne(one => one.Trigger).WithMany(many => many.TimeTriggerFlowVersions).HasForeignKey(fKey => fKey.TriggerId).OnDelete(DeleteBehavior.Cascade);
+
+        // Configure one-to-many relationship between QueueFlowVersion and Queue
+        modelBuilder.Entity<QueueFlowVersion>().HasOne(one => one.Queue).WithMany(many => many.QueueFlowVersions).HasForeignKey(fKey => fKey.QueueId).OnDelete(DeleteBehavior.Cascade);
+        modelBuilder.Entity<WorkItemEvent>().HasOne(one => one.WorkItem).WithMany(many => many.WorkItemEvents).HasForeignKey(fKey => fKey.WorkItemId).OnDelete(DeleteBehavior.Cascade);
+
+        // Configure one-to-many relationship between QueueUser and Queue
+        modelBuilder.Entity<QueueUser>().HasOne(one => one.Queue).WithMany(many => many.QueueUsers).HasForeignKey(fKey => fKey.QueueId).OnDelete(DeleteBehavior.Cascade);
+
+        // Configure one-to-many relationship between MachineFlow and Machine
+        modelBuilder.Entity<MachineFlow>().HasOne(one => one.Machine).WithMany(many => many.MachineFlows).HasForeignKey(fKey => fKey.MachineId).OnDelete(DeleteBehavior.Cascade);
+
+        // Configure one-to-many relationship between FlowComment and Flow
+        modelBuilder.Entity<FlowComment>().HasOne(one => one.Flow).WithMany(many => many.FlowComments).HasForeignKey(fKey => fKey.FlowId).OnDelete(DeleteBehavior.Cascade);
+
+        // Configure one-to-many relationship between FlowLog and Flow
+        modelBuilder.Entity<FlowLog>().HasOne(one => one.Flow).WithMany(many => many.FlowLog).HasForeignKey(fKey => fKey.FlowId).OnDelete(DeleteBehavior.Cascade);
+
+        // Configure one-to-many relationship between FlowUser and Flow
+        modelBuilder.Entity<FlowUser>().HasOne(one => one.Flow).WithMany(many => many.FlowUsers).HasForeignKey(fKey => fKey.FlowId).OnDelete(DeleteBehavior.Cascade);
+
+        // Configure one-to-many relationship between TemplateResource and ProjectTemplate
+        modelBuilder.Entity<TemplateResource>().HasOne(one => one.ProjectTemplate).WithMany(many => many.TemplateResources).HasForeignKey(fKey => fKey.ProjectTemplateId).OnDelete(DeleteBehavior.Cascade);
+
+        // Configure one-to-many relationship between SupportTicketRemark and SupportTicket
+        modelBuilder.Entity<SupportTicketRemark>().HasOne(one => one.SupportTicket).WithMany(many => many.SupportTicketRemarks).HasForeignKey(fKey => fKey.SupportTicketId).OnDelete(DeleteBehavior.Cascade);
+
+        // Configure one-to-many relationship between NotificationUser and Notification
+        modelBuilder.Entity<NotificationUser>().HasOne(one => one.Notification).WithMany(many => many.NotificationUsers).HasForeignKey(fKey => fKey.NotificationId).OnDelete(DeleteBehavior.Cascade);
     }
     // On Save Changes - write tenant Id to table
     public override int SaveChanges()

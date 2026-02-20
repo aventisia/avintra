@@ -31,6 +31,11 @@ public class QueueFlowVersionDto
     public string? QueueName { get; set; }
 
     /// <summary>
+    /// Gets or sets the access type for the user or role on this queue flow version.
+    /// </summary>
+    public QueueWorkItemAccessTypesEnum AccessType { get; set; }
+
+    /// <summary>
     /// Gets or sets the version number of a flow version record
     /// </summary>
     public int VersionNumber { get; set; }

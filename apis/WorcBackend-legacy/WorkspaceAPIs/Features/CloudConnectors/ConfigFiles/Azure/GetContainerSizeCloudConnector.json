@@ -1,0 +1,33 @@
+{
+  "name": "GetContainerSize",
+  "description": "Retrieve container size.",
+  "author": "@gaurav",
+  "fields": [
+    {
+      "direction": "Input",
+      "type": "credentials-select",
+      "name": "__CredentialId__GeneralCredential",
+      "label": "AzureBlobStorage",
+      "description": "",
+      "defaultValue": ""
+    },
+    {
+        "direction":"Input",
+        "type":"text",
+        "name": "ContainerName",
+        "label": "Container Name",
+        "description":"Retrieve the container size from the storage account."
+    },
+    {
+      "direction": "Output",
+      "type": "config-panel-output",
+      "name": "Result",
+      "label": "Result",
+      "description": "The blob container has retrievd successfully.",
+      "defaultValue": {
+        "value": "Result",
+        "enabled": true
+      }
+    }
+  ]
+}

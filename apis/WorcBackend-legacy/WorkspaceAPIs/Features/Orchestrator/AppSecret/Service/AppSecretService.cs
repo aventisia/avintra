@@ -894,6 +894,22 @@ public class AppSecretService : IAppSecretService
                     }
                     break;
                 }
+                case nameof (AppSecretTypesEnum.AzureBlobStorage):
+                {
+                      // Deserialize JSON into AzureBlobStorageCredentialsDto
+                    var azureBlobCredentials = System.Text.Json.JsonSerializer.Deserialize<AzureBolbStorageCredentialsDto>(rawJson, jsonOptions);
+                    if (azureBlobCredentials != null)
+                    {
+                        validationResult.EncryptedValues["ConnectionString"] = _encryptionService.EncryptString(azureBlobCredentials.ConnectionString);
+                        azureBlobCredentials.ConnectionString = string.Empty;
+                        sanitizedDataJson = System.Text.Json.JsonSerializer.Serialize(azureBlobCredentials, jsonOptions);
+                    }
+                    else
+                    {
+                        validationResult.Remark = "Invalid connection string: required fields missing or format incorrect.";
+                    }
+                    break;
+                }
 
             // Default case for unsupported credential types
             default:

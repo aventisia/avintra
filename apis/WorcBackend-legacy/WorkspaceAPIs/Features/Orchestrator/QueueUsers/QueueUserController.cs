@@ -12,6 +12,13 @@ public class QueueUserController : BaseApiController
         _queueUserService = queueUserService;
     }
 
+    // Get my quesu list
+    [HttpGet("my-queues")]
+    public async Task<ActionResult<ServiceResponse<IEnumerable<QueuesTableDto>>>> GetMyQueues()
+    {
+        return ResultHelper(await _queueUserService.GetMyQueuesAsync());
+    }
+
     // Get a list of queue users for a specific Queue
     [HttpGet("{queueId}/list")]
     public async Task<ActionResult<ServiceResponse<IEnumerable<QueueUserDto>>>> GetQueueUsersAsync(Guid queueId)

@@ -46,6 +46,11 @@ public class QueueUserDto
     public string? QueueName { get; set; }
 
     /// <summary>
+    /// Gets or sets the access type for the user on the queue (e.g., FullAccess, View, Create, etc.).
+    /// </summary>
+    public QueueWorkItemAccessTypesEnum AccessType { get; set; }
+
+    /// <summary>
     /// Gets or sets a flag indicating whether the user is disabled. This is nullable to distinguish between `true`, `false`, and `null`.
     /// </summary>
     public bool? IsDisabled { get; set; }

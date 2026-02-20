@@ -12,6 +12,11 @@ public class QueueUser : BaseEntity, IMustHaveTenant
     public Guid TenantId { get; set; }
 
     /// <summary>
+    /// Gets or sets the access type for the user on the queue (e.g., FullAccess, View, Create, etc.).
+    /// </summary>
+    public QueueWorkItemAccessTypesEnum AccessType { get; set; }
+
+    /// <summary>
     /// Gets or sets the queue this user is associated with.
     /// </summary>
     [ForeignKey("QueueId")]
