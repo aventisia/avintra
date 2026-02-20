@@ -337,6 +337,7 @@ public class AzureConnectorsService : IAzureConnectorsService
                         // Convert stream to base64 string
                         string base64Content = Convert.ToBase64String(memoryStream.ToArray());
                         memoryStream.Dispose();
+                        downloadInfo.Value.Content.Dispose();
                         
                         return new
                         {
