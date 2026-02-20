@@ -483,13 +483,10 @@ $RECYCLE.BIN/
 # Vim temporary swap files
 *.swp
 
-# Ignore Published folder
+# Custom ignore rules
 [Pp]ublished/
-
-# Ignore wwwroot folder
+.env.local
 wwwroot/
-
-# Ignore extra files/folders
 TO-DELETE-*
 sample-*
 test-*

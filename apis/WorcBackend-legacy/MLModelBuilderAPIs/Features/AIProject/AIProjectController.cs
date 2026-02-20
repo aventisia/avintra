@@ -60,5 +60,12 @@ namespace MLModelBuilderAPIs.Controllers
     {
       return ResultHelper(await _aiProjectService.GetAIProjectByIdAsync(aiProjecrId));
     }
+
+    // Retrieves the total count of published ai models.
+    [HttpGet("total-published")]
+    public async Task<ActionResult<ServiceResponse<int>>> GetTotalAIProjectVersions()
+    {
+      return ResultHelper(await _aiProjectService.GetTotalAIProjectVersionsAsync());
+    }
   }
 }

@@ -6,7 +6,7 @@ public static class AppServicesExtension
     public static void AddDbContextConfig(this IServiceCollection services, IConfiguration config)
     {
         var environmentConfig = Guard.Against.Null(config.GetSection("EnvironmentConfig").Get<EnvironmentConfig>(), message: "EnvironmentConfig cannot be null");
-        
+
         // Read PostgreSQL settings from environment variables or config
         var pgHost = environmentConfig.PostgresqlHost ?? "localhost";
         var pgPort = environmentConfig.PostgresqlPort.ToString() ?? "5432";
@@ -63,6 +63,7 @@ public static class AppServicesExtension
         services.AddScoped<IMLModelTemplateService, MLModelTemplateService>();
         services.AddScoped<IAIProjectUserService, AIProjectUserService>();
         services.AddScoped<IConversationHistoryService, ConversationHistoryService>();
+        services.AddScoped<IManageTenantService, ManageTenantService>();
 
         // Common services
         services.AddScoped<IUnitOfWork, UnitOfWork>();
