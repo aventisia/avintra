@@ -73,6 +73,7 @@ export const VerifyEmail = () => {
           <Button
             className="me-auto text-sm font-normal"
             variant={"link"}
+            type="button"
             onClick={() => setStepNo(1)}
           >
             <Lucide icon="ArrowLeft" className="h-6 w-6" />

@@ -16,6 +16,7 @@ export interface QueueAgentsDto {
   /** Name of the queue that the flow version is associated with */
   queueName?: string | null;
 
+  accessType?: string;
   /**
    * Flag indicating whether the queue flow version is disabled.
    * Nullable to distinguish between `true`, `false`, and `null`

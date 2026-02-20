@@ -4,10 +4,10 @@ export const columnVisibilityState = {
   name: true,
   type: true,
   executionTimeAllowed: true,
-  executionTimeConsumed: true,
+  consumedExecutionTime: true,
   contractStartDate: false,
   contractRenewalDate: true,
-  lastAuthStatus: true,
+  isAnyInstanceFailed: true,
   createdBy: false,
   createdOn: false,
 };

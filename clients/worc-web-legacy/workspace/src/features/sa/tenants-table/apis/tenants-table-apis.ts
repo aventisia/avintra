@@ -100,7 +100,9 @@ const updateTenant = (updatedTenant: TenantsTableDto) => {
  */
 const deleteTenant = (id: string) => {
   return axiosInstance
-    .delete<IHttpResponse<boolean>>(`${baseAPIURL}/${id}`)
+    .delete<
+      IHttpResponse<boolean>
+    >(`${import.meta.env.VITE_ACCOUNTS_API_PATH}/sa/tenant`, { headers: { tntid: id } })
     .then((res) => res.data);
 };
 

@@ -25,6 +25,15 @@ export const insertQueueAgent = (queueAgent: QueueAgentsDto) => {
 };
 
 /**
+ * Updates an existing queue agent.
+ */
+export const updateQueueAgent = (updatedAgent: QueueAgentsDto) => {
+  return axiosInstance
+    .put<IHttpResponse<QueueAgentsDto>>(`${baseAPIURL}`, updatedAgent)
+    .then((res) => res.data);
+};
+
+/**
  * Deletes(removes) a queue agent by its ID.
  */
 export const deleteQueueAgent = (id: string) => {

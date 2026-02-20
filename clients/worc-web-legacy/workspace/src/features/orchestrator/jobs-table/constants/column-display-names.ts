@@ -10,6 +10,7 @@ export const columnDisplayNames: KeyValueLookupType[] = [
   { key: "startTime", value: "Start Time" },
   { key: "endTime", value: "End Time" },
   { key: "duration", value: "Duration" },
+  { key: "isPublished", value: "Is Published" },
   { key: "retryCount", value: "Retry Count" },
   { key: "versionNumber", value: "Version" },
   { key: "executedBy", value: "Executed By" },

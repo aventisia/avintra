@@ -9,6 +9,9 @@ import {
   getDataTablePreferences,
 } from "@aventisia/ui/data-table";
 import { useDataTable, useDocumentTitle } from "@aventisia/ui/hooks";
+import { ScrollArea, ScrollBar } from "@aventisia/ui/scroll";
+import { useBaseLayoutStore } from "@aventisia/ui/stores";
+import { useShallow } from "zustand/react/shallow";
 
 import { SEARCH_COLUMN, TABLE_HEADING, TABLE_KEY } from "../constants";
 import { columnDisplayNames } from "../constants/column-display-names";
@@ -34,6 +37,13 @@ export const TenantsTable = () => {
     columnVisibilityState,
   );
 
+  // Get the state and actions from the base layout store
+  const { sidebarExpand } = useBaseLayoutStore(
+    useShallow((state) => ({
+      sidebarExpand: state.sidebarExpand,
+    })),
+  );
+
   // Fetch tenants data
   const { data } = useFetchTenants();
 
@@ -43,6 +53,7 @@ export const TenantsTable = () => {
     data?.data || [],
     columnVisibility,
     sortState,
+    true,
     true,
   );
 
@@ -71,10 +82,19 @@ export const TenantsTable = () => {
             </div>
 
             {/* Data table to render data */}
-            <DataTable
-              table={table}
-              columnsLength={tenantsTableColumns.length}
-            />
+            <ScrollArea
+              className={
+                sidebarExpand
+                  ? "md:w-[calc(100vw-var(--sidebar-max-width)-3.5rem)]"
+                  : "md:w-[calc(100vw-var(--sidebar-min-width)-3.5rem)]"
+              }
+            >
+              <DataTable
+                table={table}
+                columnsLength={tenantsTableColumns.length}
+              />
+              <ScrollBar orientation="horizontal" />
+            </ScrollArea>
           </TenantCrudDialog>
 
           {/* Data table Pagination component */}

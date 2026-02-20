@@ -74,8 +74,13 @@ const UsersList = () => {
                       </span>
                     </div>
                   </div>
-
-                  <UsersListItemActions id={val.id || ""} />
+                  <div className="flex items-center gap-2">
+                    <span className="text-2xs text-muted-foreground">
+                      {" "}
+                      {val.accessType?.replace(/([A-Z])/g, " $1")}
+                    </span>
+                    <UsersListItemActions item={val} />
+                  </div>
                 </div>
               </CommandItem>
             );

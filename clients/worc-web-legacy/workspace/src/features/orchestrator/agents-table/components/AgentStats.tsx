@@ -43,8 +43,8 @@ export const AgentStats = ({ data }: StatsProps) => {
         // description={`${stats?.agents} Agents & ${stats?.models} AI Models`}
       />
       <StatsCard
-        title={"Total Deployed Machines"}
-        key={"Total Deployed Machines"}
+        title={"Total Hosts"}
+        key={"Total Hosts"}
         mainText={stats?.totalMachineCount ?? 0}
         icon={<Monitor stroke="var(--primary)" className="h-10 w-10" />}
       />

@@ -23,6 +23,8 @@ export interface QueueUserDto {
   /** Name of the queue that the user is associated with */
   queueName?: string | null;
 
+  accessType?: string;
+
   /**
    * Flag indicating whether the user is disabled.
    * Nullable to distinguish between true, false, and null

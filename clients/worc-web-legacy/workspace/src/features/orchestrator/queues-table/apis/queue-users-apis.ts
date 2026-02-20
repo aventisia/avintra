@@ -36,6 +36,14 @@ const insertQueueUser = (newQueueUser: QueueUserDto) => {
     .post<IHttpResponse<QueueUserDto>>(`${queueUserApiUrl}`, newQueueUser)
     .then((res) => res.data);
 };
+/**
+ * Updates an existing queue user.
+ */
+const updateQueueUser = (updatedUser: QueueUserDto) => {
+  return axiosInstance
+    .put<IHttpResponse<QueueUserDto>>(`${queueUserApiUrl}`, updatedUser)
+    .then((res) => res.data);
+};
 
 /**
  * Delete queue user.
@@ -46,4 +54,10 @@ const deleteQueueUser = (id: string) => {
     .then((res) => res.data);
 };
 
-export { getSearchUser, getQueueUsers, insertQueueUser, deleteQueueUser };
+export {
+  getSearchUser,
+  getQueueUsers,
+  insertQueueUser,
+  updateQueueUser,
+  deleteQueueUser,
+};

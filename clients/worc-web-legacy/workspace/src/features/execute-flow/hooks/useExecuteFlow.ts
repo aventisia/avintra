@@ -60,7 +60,7 @@ export default function useExecuteFlow() {
     if (isEnterprise && !hasActivePlan) {
       // Show toast notification for inactive plan
       toast.error(
-        "Your enterprise plan is inactive. Please activate a plan to continue.",
+        "This action is currently unavailable. Please contact your administrator or support.",
       );
       return;
     }

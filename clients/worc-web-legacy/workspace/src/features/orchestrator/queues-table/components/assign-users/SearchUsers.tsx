@@ -4,6 +4,7 @@ import { Button } from "@aventisia/ui/buttons";
 import { useSearchUserMultiSelect } from "../../hooks/useSearchUserMultiSelect";
 
 import { MultiSelector } from "./MultiSelector";
+import { SelectType } from "./SelectType";
 
 export const SearchUsers: React.FC = () => {
   const {
@@ -17,6 +18,8 @@ export const SearchUsers: React.FC = () => {
     searchData,
     isLoading,
     isError,
+    selectedValue,
+    setSelectedValue,
   } = useSearchUserMultiSelect();
 
   return (
@@ -34,6 +37,7 @@ export const SearchUsers: React.FC = () => {
           placeholder="Search..."
           maxHeight="300px"
         />
+        <SelectType value={selectedValue} onChange={setSelectedValue} />
       </div>
 
       {/* Actions */}

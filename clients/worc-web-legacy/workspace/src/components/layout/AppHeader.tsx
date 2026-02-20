@@ -1,11 +1,16 @@
+import { Button } from "@aventisia/ui/buttons";
 import {
   Header,
   HeaderContainer,
   SearchBox,
   SidebarOnDialog,
 } from "@aventisia/ui/layout";
+import { cn } from "@aventisia/ui/lib";
+import { Tooltip } from "@aventisia/ui/tooltip";
+import { DownloadIcon } from "lucide-react";
 import { useShallow } from "zustand/react/shallow";
 
+import { IS_TAURI } from "@/constants/constants";
 import { AvailableCredits } from "@/features/available-credits/AvailableCredits";
 import { UnreadNotifications } from "@/react-toolkit/features/unread-notifications/components/unread-notifications";
 import { UserAccountModal } from "@/react-toolkit/features/user-account/UserAccountModal";
@@ -39,7 +44,27 @@ const AppHeader: React.FC = () => {
           {userSession?.deploymentType == "Commercial" ? (
             <AvailableCredits />
           ) : null}
-          <UnreadNotifications />
+          <div className="flex items-center gap-2.5">
+            {!IS_TAURI ? (
+              <Tooltip content="Download Desktop App">
+                <Button
+                  className={cn("hover:bg-white/10")}
+                  variant={"ghost"}
+                  size={"icon8"}
+                  onClick={() => {
+                    window.open(
+                      `${import.meta.env.VITE_ACCOUNTS_API_PATH}/desktop-app/download/`,
+                      "_blank",
+                    );
+                  }}
+                >
+                  <DownloadIcon className="h-[1.2rem] w-[1.2rem] text-white/80" />
+                </Button>
+              </Tooltip>
+            ) : null}
+
+            <UnreadNotifications />
+          </div>
           <UserAccountModal />
         </div>
       </Header>

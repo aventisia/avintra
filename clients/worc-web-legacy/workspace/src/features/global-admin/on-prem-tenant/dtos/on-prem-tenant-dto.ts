@@ -20,7 +20,10 @@ export interface OnPremTenantDto {
    */
   executionTimeAllowed: number;
 
-  executionTimeConsumed?: number;
+  /**
+   * Total execution time consumed by the tenant.
+   */
+  consumedExecutionTime: number;
 
   /** Contract start date  */
   contractStartDate: Date | string;
@@ -40,7 +43,7 @@ export interface OnPremTenantDto {
   /** Tenant-provided email address */
   tenantEmails?: string | null;
 
-  lastAuthStatus?: string;
+  isAnyInstanceFailed?: boolean;
 
   /** User who created the tenant */
   createdByUser?: string | null;
