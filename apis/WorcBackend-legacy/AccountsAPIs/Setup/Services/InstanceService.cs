@@ -39,61 +39,67 @@ public class InstanceService : IInstanceService
 
         try
         {
-            // Log the start of the metric collection process
-            _logger.LogInformation("Initiating metric collection for source: {Source}", source);
-
-            // Fetch metrics from the external API
-            HttpResponseMessage httpResponse = await RequestExternalAPIUtil.RequestExternalAPI(
-                CrudTypesEnum.Read,
-                $"{_environmentConfig.WorcApiBaseUrl}/api/project/usage",
-                null);
-
-            // Handle unsuccessful API response
-            if (!httpResponse.IsSuccessStatusCode)
-            {
-                _logger.LogError("Failed to fetch metrics from the external API. Status: {StatusCode}, Reason: {ReasonPhrase}",
-                    httpResponse.StatusCode, httpResponse.ReasonPhrase);
-
-                serviceResponse.Message = "Failed to retrieve metrics from external API.";
-                return serviceResponse;
-            }
-
-            // Deserialize the response content from the external API
-            var responseContent = await httpResponse.Content.ReadAsStringAsync();
-            var externalServiceResponse = Newtonsoft.Json.JsonConvert.DeserializeObject<ServiceResponse<List<ProjectUsageMetricDto>>>(
-                responseContent,
-                new Newtonsoft.Json.JsonSerializerSettings
+            var last7DayUsageMetrics = Enumerable.Range(1, 7)
+                .Select(i => new ProjectUsageMetricDto
                 {
-                    MissingMemberHandling = Newtonsoft.Json.MissingMemberHandling.Ignore,
-                    ContractResolver = new Newtonsoft.Json.Serialization.CamelCasePropertyNamesContractResolver()
-                });
+                    Date = DateTimeOffset.UtcNow.AddDays(-i).Date,
+                })
+                .OrderBy(x => x.Date)
+                .ToList();
 
-            // Validate the external API response
-            if (externalServiceResponse.StatusCode != 200 || externalServiceResponse.Data == null)
+            if (!string.Equals(source, "StartupService", StringComparison.OrdinalIgnoreCase))
             {
-                _logger.LogError("Deserialization failed or response contains invalid data: {ResponseContent}", responseContent);
-                serviceResponse.Message = "Invalid response data from external API.";
-                return serviceResponse;
-            }
+                // Fetch metrics from the external API
+                HttpResponseMessage httpResponse = await RequestExternalAPIUtil.RequestExternalAPI(
+                    CrudTypesEnum.Read,
+                    $"{_environmentConfig.WorcApiBaseUrl}/api/project/usage",
+                    null);
 
+                // Handle unsuccessful API response
+                if (!httpResponse.IsSuccessStatusCode)
+                {
+                    _logger.LogError("Failed to fetch metrics from the external API. Status: {StatusCode}, Reason: {ReasonPhrase}",
+                        httpResponse.StatusCode, httpResponse.ReasonPhrase);
+
+                    serviceResponse.Message = "Failed to retrieve metrics from external API.";
+                    return serviceResponse;
+                }
+
+                // Deserialize the response content from the external API
+                var responseContent = await httpResponse.Content.ReadAsStringAsync();
+                var externalServiceResponse = Newtonsoft.Json.JsonConvert.DeserializeObject<ServiceResponse<List<ProjectUsageMetricDto>>>(
+                    responseContent,
+                    new Newtonsoft.Json.JsonSerializerSettings
+                    {
+                        MissingMemberHandling = Newtonsoft.Json.MissingMemberHandling.Ignore,
+                        ContractResolver = new Newtonsoft.Json.Serialization.CamelCasePropertyNamesContractResolver()
+                    });
+
+                // Validate the external API response
+                if (externalServiceResponse.StatusCode != 200 || externalServiceResponse.Data == null)
+                {
+                    _logger.LogError("Deserialization failed or response contains invalid data: {ResponseContent}", responseContent);
+                    serviceResponse.Message = "Invalid response data from external API.";
+                    return serviceResponse;
+                }
+
+                last7DayUsageMetrics = externalServiceResponse.Data;
+            }
             // Fetch all user data to calculate the user count for each day (up to today)
             var userData = _unitOfWork.AccountUserRepo.GetAllAsync().AsQueryable();
 
             // For each day's metric, calculate the total number of users up until the given date
-            foreach (var data in externalServiceResponse.Data)
+            foreach (var data in last7DayUsageMetrics)
             {
                 // Fetch the user count for each date (up to today for each date in the Last7DayUsages)
                 data.Users = await userData.Where(w => w.CreatedOn.Date <= data.Date).CountAsync();
             }
 
             // Add the fetched usage data to the `Last7DayUsages` list in the response
-            serviceResponse.Data.Last7DayUsages.AddRange(externalServiceResponse.Data);
+            serviceResponse.Data.Last7DayUsages.AddRange(last7DayUsageMetrics);
 
             serviceResponse.Message = "Project data collected successfully";
             serviceResponse.StatusCode = 200;
-
-            // Log the successful completion of data collection
-            _logger.LogInformation("Metrics successfully collected for {Source}. Total metrics collected: {Count} entries.", source, externalServiceResponse.Data.Count);
         }
         catch (Exception ex)
         {
@@ -110,9 +116,6 @@ public class InstanceService : IInstanceService
     {
         try
         {
-            // Log the start of posting metrics to the external API
-            _logger.LogInformation("Posting metrics to external API for validation.");
-
             var httpClient = new HttpClient();
 
             // Add the API Key and Instance details to the headers for authentication
@@ -158,8 +161,6 @@ public class InstanceService : IInstanceService
             {
                 _logger.LogError("Failed to deserialize the API response or the data is invalid: {ResponseContent}", responseContent);
             }
-
-            _logger.LogInformation("Metrics posted successfully to the external API.");
 
             // Update runtime application settings from the API response
             _environmentConfig.OnPremExecutionDisabled = externalServiceResponse.Data.Enforcement.IsExecutionDisabled;

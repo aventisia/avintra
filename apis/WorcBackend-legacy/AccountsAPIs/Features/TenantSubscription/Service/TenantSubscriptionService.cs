@@ -7,6 +7,8 @@ public class TenantSubscriptionService : ITenantSubscriptionService
     private readonly ILogger<TenantSubscriptionService> _logger;
     private readonly IEmailService _emailService;
     private readonly EnvironmentConfig _environmentConfig;
+    private readonly ICurrentTenantService _currentTenantService;
+    private readonly IAzureBlobStorageService _azureBlobStorageService;
     private readonly Guid _userId;
     private readonly Guid _tenantId;
     private readonly string? _username;
@@ -17,7 +19,9 @@ public class TenantSubscriptionService : ITenantSubscriptionService
         IHttpContextAccessor httpContextAccessor,
         ITopUpService topUpService,
         IEmailService emailService,
-        EnvironmentConfig environmentConfig)
+        EnvironmentConfig environmentConfig,
+        ICurrentTenantService currentTenantService,
+        IAzureBlobStorageService azureBlobStorageService)
     {
         _unitOfWork = unitOfWork;
         _logger = logger;
@@ -31,6 +35,8 @@ public class TenantSubscriptionService : ITenantSubscriptionService
         _topUpService = topUpService;
         _emailService = emailService;
         _environmentConfig = environmentConfig;
+        _currentTenantService = currentTenantService;
+        _azureBlobStorageService = azureBlobStorageService;
     }
 
     // Retrieves all tenant subscriptions from the database including the creator user.
@@ -693,6 +699,8 @@ public class TenantSubscriptionService : ITenantSubscriptionService
 
             // Extract the current subscription plan for easier reference
             var currentPlan = tenantSubscription.Plan;
+            var sizeInBytes = await _azureBlobStorageService.GetContainerSizeAsync(_currentTenantService.CurrentTenantContainerName);
+            var sizeInMB = Math.Ceiling((double)sizeInBytes / (1024 * 1024)); // Apply ceiling first
 
             if (currentPlan != null)
             {
@@ -740,8 +748,9 @@ public class TenantSubscriptionService : ITenantSubscriptionService
                         },
                         new ResourceUsageDto()
                         {
+
                             ResourceName = "Storage",
-                            Used = 0,
+                            Used = sizeInMB,
                             Limit = currentPlan.StorageLimitMB,
                             Unit = "MB"
                         }

@@ -25,7 +25,7 @@ public class UserProfileDto
     /// <summary>
     /// Gets or sets the date of birth of the user. 
     /// </summary>
-    public DateTime DateOfBirth { get; set; }
+    public DateTime? DateOfBirth { get; set; }
 
     /// <summary>
     /// Gets or sets the phone number of the user. Max-20.
@@ -42,34 +42,4 @@ public class UserProfileDto
     /// Gets or sets the country of the user. Max-100.
     /// </summary>
     public CountriesEnum? Country { get; set; }
-
-    // /// <summary>
-    // /// Gets or sets the address of the user. Max-100.
-    // /// </summary>
-    // [StringLength(100)]
-    // public string? AddressLine1 { get; set; }
-
-    // /// <summary>
-    // /// Gets or sets the address of the user. Max-100.
-    // /// </summary>
-    // [StringLength(100)]
-    // public string? AddressLine2 { get; set; }
-
-    // /// <summary>
-    // /// Gets or sets the state or province of the user. Max-100.
-    // /// </summary>
-    // [StringLength(100)]
-    // public string? StateOrProvince { get; set; }
-
-    // /// <summary>
-    // /// Gets or sets the city of the user. Max-100.
-    // /// </summary>
-    // [StringLength(100)]
-    // public string? City { get; set; }
-
-    // /// <summary>
-    // /// Gets or sets the Zip or postal code of the user. Max-10.
-    // /// </summary>
-    // [StringLength(10)]
-    // public string? ZipOrPostalCode { get; set; }
 }

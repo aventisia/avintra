@@ -1678,7 +1678,8 @@ namespace AccountsAPIs.Data.Migrations
 
                     b.HasOne("AccountsAPIs.Entities.Tenant", "Tenant")
                         .WithMany("Users")
-                        .HasForeignKey("TenantId");
+                        .HasForeignKey("TenantId")
+                        .OnDelete(DeleteBehavior.Cascade);
 
                     b.Navigation("CreatedByUser");
 

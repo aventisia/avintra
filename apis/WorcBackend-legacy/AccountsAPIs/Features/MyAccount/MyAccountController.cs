@@ -67,7 +67,7 @@ public class MyAccountController(
 
     //Update email of the user (request is from MyAcccount) -------Endpoint not tested, should be tested while deployement
     [HttpPost("update-email")]
-    public async Task<ActionResult<ServiceResponse<EmailUpdateDto>>> UpdateEmail([FromBody] EmailUpdateDto emailUpdateDto)
+    public async Task<ActionResult<ServiceResponse<UserSessionDto>>> UpdateEmail([FromBody] EmailUpdateDto emailUpdateDto)
     {
         return ResultHelper(await _myAccountService.UpdateEmailAsync(emailUpdateDto));
     }

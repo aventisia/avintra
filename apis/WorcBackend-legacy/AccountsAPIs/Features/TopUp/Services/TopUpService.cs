@@ -41,13 +41,8 @@ namespace AccountsAPIs.Services
 
             try
             {
-                // Log the details of the incoming top-up request for traceability
-                _logger.LogInformation("Received top-up request. Amount: {Amount}, Currency: {Currency}, Credits: {Credits}, Include Tax: {IncludeTax}",
-                                        razorpayOrderRequestDto.Amount, razorpayOrderRequestDto.Currency, razorpayOrderRequestDto.Credits, razorpayOrderRequestDto.IncludeTax);
-
                 // Clean up string properties to remove unwanted leading/trailing spaces
                 razorpayOrderRequestDto = TrimDtoStringPropsUtil.TrimDtoStringProps(razorpayOrderRequestDto);
-
 
                 // Fetch tenant information based on tenant ID
                 var tenant = await _unitOfWork.TenantRepo.GetByConditionAsync(w => w.Id == _tenantId).FirstOrDefaultAsync();
@@ -57,6 +52,24 @@ namespace AccountsAPIs.Services
                 {
                     // Return an error message if the tenant is not found
                     serviceResponse.Message = "Tenant not found";
+                    return serviceResponse;
+                }
+
+
+                // Retrieve the tenant's subscription based on the provided tenant ID and ensure the subscription is active.
+                var tenantSubscription = await _unitOfWork.TenantSubscriptionRepo
+                    .GetByConditionAsync(w =>
+                        w.TenantId == tenant.Id &&
+                        w.IsActive
+                    )
+                    .AsNoTracking()
+                    .SingleOrDefaultAsync();
+
+                // Check if the subscription is either not found or the next billing date is in the past.
+                if (razorpayOrderRequestDto.Type == CreditTypesEnum.TopUp && (tenantSubscription == null || tenantSubscription.NextBillingDate.Date < DateTimeOffset.UtcNow.Date))
+                {
+                    _logger.LogWarning("Subscription not found or next billing date has passed for SubscriptionId: {SubscriptionId}", razorpayOrderRequestDto.SubscriptionId);
+                    serviceResponse.Message = "Your subscription has expired. Please renew it before attempting to top up.";
                     return serviceResponse;
                 }
 
