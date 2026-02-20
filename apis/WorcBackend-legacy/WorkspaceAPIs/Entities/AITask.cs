@@ -1,6 +1,7 @@
 namespace WorkspaceAPIs.Entities;
 
 /// <summary>
+/// TODO: Since this is not Tenant specific, we can keep this entity in AccountsDb or WorcDb only on single place. Need to decide on that.
 /// Represents a predefined task for executing AI-related operations. 
 /// This task stores the configuration for LLM (Large Language Model) execution including the 
 /// input prompts, model settings, and output preferences.
