@@ -224,9 +224,6 @@ public class MyAccountService : IMyAccountService
             _httpContext.Request.Cookies.TryGetValue(CookieNamesEnum.RefreshToken.ToString(), out var refreshToken);
             var userAgent = _httpContext.Request.Headers["User-Agent"].ToString();
 
-            // Log:1 Cookies Retrieved
-            _logger.LogInformation("Log:1 Cookies Retrieved: SessionId = {SessionIdString}, UserName = {UserName}, RefreshToken = {RefreshToken}, UserAgent = {UserAgent}", sessionIdString, userName, refreshToken, userAgent);
-
             // Set all cookies to blank
             _authHelperService.RemoveCookie(CookieNamesEnum.SessionId.ToString());
             _authHelperService.RemoveCookie(CookieNamesEnum.AccessToken.ToString());
@@ -368,23 +365,47 @@ public class MyAccountService : IMyAccountService
             // Create new RefreshToken
             var newRefreshToken = _authHelperService.CreateRefreshToken();
 
-            // Detach the entity from the DbContext
-            _unitOfWork.ActiveSessionRepo.Detach(activeSession);
-
             // Update info of activeSession instance
             activeSession.RefreshToken = newRefreshToken;
             activeSession.SessionExpiresOn = refreshTokenExpiresOn;
             activeSession.LastRefreshOn = DateTimeOffset.UtcNow;
 
-            // Update ActiveSession
-            _unitOfWork.ActiveSessionRepo.Update(activeSession);
-
-            // Update ActiveSession failed
-            if (!await _unitOfWork.SaveAsync())
+            // Update ActiveSession with concurrency handling
+            // This handles React Strict Mode causing duplicate refresh requests
+            try
             {
-                _logger.LogInformation("Log:12 Failed to save updated session data for user {UserName} and sessionId {SessionId}", user.UserName, sessionIdString);
-                _logger.LogInformation($"Context SaveChanges failed while refreshing active session for {user.UserName} and sessionId {sessionIdString}");
-                return serviceResponse;
+                _unitOfWork.ActiveSessionRepo.Update(activeSession);
+
+                // Update ActiveSession failed
+                if (!await _unitOfWork.SaveAsync())
+                {
+                    _logger.LogInformation("Log:12 Failed to save updated session data for user {UserName} and sessionId {SessionId}", user.UserName, sessionIdString);
+                    _logger.LogInformation($"Context SaveChanges failed while refreshing active session for {user.UserName} and sessionId {sessionIdString}");
+                    return serviceResponse;
+                }
+            }
+            catch (DbUpdateConcurrencyException)
+            {
+                // Another concurrent request already refreshed this session (e.g., React Strict Mode double-call)
+                // Re-fetch the updated session and use its tokens
+                _logger.LogInformation("Log:12a Concurrent session refresh detected for user {UserName} and sessionId {SessionId}. Using existing refreshed session.", user.UserName, sessionIdString);
+
+                // Re-fetch the session that was updated by the concurrent request
+                activeSession = await _unitOfWork.ActiveSessionRepo
+                    .GetByConditionAsync(w => w.Id == sessionId && w.UserId == user.Id)
+                    .AsNoTracking()
+                    .SingleOrDefaultAsync();
+
+                if (activeSession == null)
+                {
+                    _logger.LogWarning("Log:12b Session disappeared after concurrency conflict for user {UserName}", user.UserName);
+                    serviceResponse.Message = invalidcredentials;
+                    return serviceResponse;
+                }
+
+                // Use the tokens from the already-refreshed session
+                newRefreshToken = activeSession.RefreshToken;
+                refreshTokenExpiresOn = activeSession.SessionExpiresOn;
             }
 
             // Append SessionId, Jwt/AccessToken, RefreshToken, and Username to cookies
@@ -673,11 +694,11 @@ public class MyAccountService : IMyAccountService
         return serviceResponse;
     }
 
-    //Update user's email
-    public async Task<ServiceResponse<EmailUpdateDto>> UpdateEmailAsync(EmailUpdateDto emailUpdateDto)
+    // Update user's email
+    public async Task<ServiceResponse<UserSessionDto>> UpdateEmailAsync(EmailUpdateDto emailUpdateDto)
     {
-        //Initialize ServiceResponse with Failed response
-        var serviceResponse = new ServiceResponse<EmailUpdateDto>()
+        // Initialize ServiceResponse with Failed response
+        var serviceResponse = new ServiceResponse<UserSessionDto>()
         {
             Data = null,
             Message = "Failed to update your email. Please try again later"
@@ -685,13 +706,13 @@ public class MyAccountService : IMyAccountService
 
         try
         {
-            //set method name
+            // Set method name for logging purposes
             var methodName = nameof(UpdateEmailAsync);
 
-            // Get user
+            // Get the current user using their username
             var user = await _userManager.FindByNameAsync(_userName);
 
-            // User doesn't exist
+            // Check if the user exists, return error message if not
             if (user == null)
             {
                 _logger.LogInformation(userNotFoundTemplate, methodName, _userName);
@@ -699,12 +720,12 @@ public class MyAccountService : IMyAccountService
                 return serviceResponse;
             }
 
-            // Get Verification secret code
+            // Get the verification code based on the provided ID
             var verificationCode = await _unitOfWork.VerificationCodeRepo
-            .GetByConditionAsync(w => w.Id == emailUpdateDto.VerificationCodeId)
-            .SingleOrDefaultAsync();
+                .GetByConditionAsync(w => w.Id == emailUpdateDto.VerificationCodeId)
+                .SingleOrDefaultAsync();
 
-            // Verification secret code not found
+            // Handle case where the verification code is not found
             if (verificationCode == null)
             {
                 _logger.LogInformation($"Verification code not found for email {emailUpdateDto.Email}");
@@ -712,15 +733,15 @@ public class MyAccountService : IMyAccountService
                 return serviceResponse;
             }
 
-            // Match Verification secret code
+            // Check if the provided secret code matches and has not expired
             var verificationCodeMatches = verificationCode.SecretCode.Equals(emailUpdateDto.SecretCode)
                 && DateTimeOffset.UtcNow < verificationCode.ExpiresOn;
 
-            // Delete Verification secret Code
+            // Delete the verification code after use to prevent re-use
             _unitOfWork.VerificationCodeRepo.Delete(verificationCode);
             await _unitOfWork.SaveAsync();
 
-            // Secret code did not match
+            // If the verification code does not match or is expired, return error message
             if (!verificationCodeMatches)
             {
                 _logger.LogInformation($"Invalid verification code for email {emailUpdateDto.Email}");
@@ -728,13 +749,15 @@ public class MyAccountService : IMyAccountService
                 return serviceResponse;
             }
 
-            // Update account User using UserManager
+            // Update the user's email and username to the new email address
             user.Email = emailUpdateDto.Email;
+            user.UserName = emailUpdateDto.Email;
 
+            // Generate a token for email change and attempt to change the email
             var token = await _userManager.GenerateChangeEmailTokenAsync(user, emailUpdateDto.Email);
             var identityResult = await _userManager.ChangeEmailAsync(user, emailUpdateDto.Email, token);
 
-            // User Update-Job failed
+            // If the email change fails, log and return error message
             if (!identityResult.Succeeded)
             {
                 _logger.LogInformation("Failed while updating user");
@@ -742,24 +765,69 @@ public class MyAccountService : IMyAccountService
                 return serviceResponse;
             }
 
-            // Update the security stamp to invalidate old cookies
+            // Update the user's security stamp to invalidate any old cookies
             await _userManager.UpdateSecurityStampAsync(user);
 
-            // Re-sign the user in to refresh the authentication cookie
+            // Refresh the sign-in session to apply the new email
             await _signInManager.RefreshSignInAsync(user);
 
-            // Task successful
+            // Attempt to update the user data in other connected databases
+            var response = await _authHelperService.CreateOrUpdateUserInOtherDbsAsync(user, CrudTypesEnum.Update, _jwt);
+
+            // If updating in other databases fails, return error message
+            if (!response)
+            {
+                _logger.LogInformation("Failed while updating user in other databases");
+                serviceResponse.Message = "User's email update failed in other databases";
+                return serviceResponse;
+            }
+
+
+
+            // Get any active sessions for the user and delete them
+            var activeSessions = await _unitOfWork.ActiveSessionRepo.GetByConditionAsync(w => w.UserId == user.Id).ToListAsync();
+            if (activeSessions.Any())
+            {
+                _unitOfWork.ActiveSessionRepo.Delete(activeSessions);
+                if (!await _unitOfWork.SaveAsync())
+                {
+                    _logger.LogWarning($"Failed to save after deleting {activeSessions.Count} active session(s) for user {user.UserName}.");
+                }
+            }
+            // Fetch the updated user with their tenant details
+            user = await _unitOfWork.AccountUserRepo
+                .GetByConditionAsync(w => EF.Functions.ILike(user.Email, w.UserName))
+                .AsSplitQuery()
+                .Include(i => i.Tenant)
+                .Include(i => i.UserRoles)
+                        .ThenInclude(i1 => i1.Role)
+                            .ThenInclude(i2 => i2.RolePermissions)
+                                .ThenInclude(i3 => i3.Permission)
+                .AsNoTracking()
+                .SingleOrDefaultAsync();
+
+            // Create a new session for the user with the updated email
+            var activeSession = await _authService.CreateUserSessionAsync(user);
+            if (activeSession.StatusCode != 200)
+            {
+                // Log the error with relevant details
+                _logger.LogError($"Failed to create user session. Status Code: {activeSession.StatusCode}, User ID: {user.Id}, Email: {user.Email}");
+                return serviceResponse;
+            }
+
+            // Log success and set response message
             _logger.LogInformation($"{methodName}: Email has been updated for account {_userName}");
-            serviceResponse.Data = emailUpdateDto;
+            serviceResponse.Data = activeSession.Data;
             serviceResponse.StatusCode = 200;
             serviceResponse.Message = "Your email has been updated successfully";
         }
         catch (Exception ex)
         {
-            _logger.LogError(ex, "Error occured while performing {Name}", ex.TargetSite.Name);
-
+            _logger.LogError(ex, "Error occurred while performing {Name}", ex.TargetSite.Name);
             return serviceResponse;
         }
+
+        // Return the service response, which will be success or failure based on the flow
         return serviceResponse;
     }
 
@@ -1035,7 +1103,7 @@ public class MyAccountService : IMyAccountService
     //Update user's profile details updateUserProfileDto
     public async Task<ServiceResponse<UserProfileDto>> UpdateUserProfileAsync(UserProfileDto userProfileDto)
     {
-        //Initialize ServiceResponse with Failed response
+        // Initialize ServiceResponse with failed response by default
         var serviceResponse = new ServiceResponse<UserProfileDto>()
         {
             Data = null,
@@ -1044,13 +1112,13 @@ public class MyAccountService : IMyAccountService
 
         try
         {
-            //set method name
+            // Set method name for logging purposes
             var methodName = nameof(UpdateUserProfileAsync);
 
-            // Get user
+            // Get the user from the UserManager using the username
             var user = await _userManager.FindByNameAsync(_userName);
 
-            // User doesn't exist
+            // If user doesn't exist, log and return a failure response
             if (user == null)
             {
                 _logger.LogInformation(userNotFoundTemplate, methodName, _userName);
@@ -1058,15 +1126,21 @@ public class MyAccountService : IMyAccountService
                 return serviceResponse;
             }
 
+            // If DateOfBirth is provided, update the user's DateOfBirth
+            if (userProfileDto.DateOfBirth.HasValue)
+                user.DateOfBirth = userProfileDto.DateOfBirth.Value;
+
+            // Update user's other details like First Name, Last Name, Phone Number, Gender, and Country
             user.FirstName = userProfileDto.FirstName;
             user.LastName = userProfileDto.LastName;
-            user.DateOfBirth = userProfileDto.DateOfBirth;
             user.PhoneNumber = userProfileDto.PhoneNumber;
             user.Gender = userProfileDto.Gender;
             user.Country = userProfileDto.Country;
+
+            // Attempt to update the user information in the UserManager
             var updateUserResult = await _userManager.UpdateAsync(user);
 
-            // User Update-Job failed
+            // If the update fails, log the failure and return a failure response
             if (!updateUserResult.Succeeded)
             {
                 _logger.LogInformation("Failed while updating user's profile");
@@ -1074,7 +1148,17 @@ public class MyAccountService : IMyAccountService
                 return serviceResponse;
             }
 
-            // Task successful
+            //Update user in other databases
+            var response = await _authHelperService.CreateOrUpdateUserInOtherDbsAsync(user, CrudTypesEnum.Update, _jwt);
+
+            if (!response)
+            {
+                _logger.LogInformation("Failed while updating user in other databases");
+                serviceResponse.Message = "User's name update failed in other databases";
+                return serviceResponse;
+            }
+
+            // If the update is successful, log success and set the success response
             _logger.LogInformation("{MethodName}: profile has been updated for account {_UserName}", methodName, _userName);
             serviceResponse.Data = userProfileDto;
             serviceResponse.StatusCode = 200;
@@ -1082,9 +1166,11 @@ public class MyAccountService : IMyAccountService
         }
         catch (Exception ex)
         {
-            _logger.LogError(ex, "Error occured while performing {Name}", ex.TargetSite.Name);
+            _logger.LogError(ex, "Error occurred while performing {Name}", ex.TargetSite.Name);
             return serviceResponse;
         }
+
+        // Return the final service response (either success or failure)
         return serviceResponse;
     }
 

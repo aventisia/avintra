@@ -105,7 +105,7 @@ public class ResourceUsageDto
     /// <summary>
     /// Gets or sets the amount of the resource that has been used.
     /// </summary>
-    public int Used { get; set; }
+    public double Used { get; set; }
 
     /// <summary>
     /// Gets or sets the total amount of the resource included in the plan.

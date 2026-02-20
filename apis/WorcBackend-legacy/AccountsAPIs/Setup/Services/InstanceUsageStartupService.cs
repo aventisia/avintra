@@ -22,9 +22,6 @@ public class InstanceUsageStartupService : IHostedService
         var currentDateTime = DateTimeOffset.UtcNow;
         string errorMessage = string.Empty;
 
-        // Log that the job started
-        _logger.LogInformation($"Instance usage startup task started at {currentDateTime:O}");
-
         try
         {
             // Create a scope and resolve IInstanceService
@@ -49,22 +46,18 @@ public class InstanceUsageStartupService : IHostedService
                 // Fail if contract has not started
                 if (_environmentConfig.OnPremContractStart.Date > currentDateTime.Date)
                 {
-                    _logger.LogError("Contract has not started. Startup cannot continue. Please contact the support team.");
-                    errorMessage = "Contract has not started. Please contact the support team";
-                    throw new InvalidOperationException(errorMessage);
+                    _logger.LogError("Contract has not started. Please contact the support team.");
+                    // errorMessage = "Contract has not started. Please contact the support team";
+                    // throw new InvalidOperationException(errorMessage);
                 }
 
                 // Fail if login is disabled
                 if (_environmentConfig.OnPremLoginDisabled)
                 {
-                    _logger.LogError("Login is disabled. Startup cannot continue. Please contact the support team.");
-                    errorMessage = "Login is disabled. Please contact the support team.";
-                    throw new InvalidOperationException(errorMessage);
+                    _logger.LogError("Login is disabled. Please contact the support team.");
+                    // errorMessage = "Login is disabled. Please contact the support team.";
+                    // throw new InvalidOperationException(errorMessage);
                 }
-
-                // Log successful completion of the startup task
-                _logger.LogInformation($"Instance usage startup task completed successfully at {currentDateTime:O}");
-
             }
         }
         catch (Exception ex)

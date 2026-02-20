@@ -61,11 +61,11 @@ public class TenantsTableController : BaseApiController
         return ResultHelper(await _tenantsTableService.UpdateTenantAsync(tenantsTableDto));
     }
 
-    // Deletes a tenant by its ID.
-    [HttpDelete("{id}")]
-    public async Task<ActionResult<ServiceResponse<bool>>> DeleteTenant(Guid id)
+    // Deletes a tenant by its ID (tenantId in the query parameters)
+    [HttpDelete("records")]
+    public async Task<ActionResult<ServiceResponse<bool>>> DeleteTenant([FromQuery] Guid tenantId)
     {
-        return ResultHelper(await _tenantsTableService.DeleteTenantAsync(id));
+        return ResultHelper(await _tenantsTableService.DeleteTenantAsync(tenantId));
     }
 
     // Disable multiple tenants by their IDs.
