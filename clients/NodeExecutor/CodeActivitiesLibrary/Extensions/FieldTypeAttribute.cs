@@ -20,6 +20,8 @@ namespace CodeActivitiesLibrary.Extensions
         ConfigPanelOutput,
         ModelSelect,
         CredentialsSelect,
+        QueueSelect,
+        JsonEditor,
         ConfigPanelModelOutput
     }
 

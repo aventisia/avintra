@@ -9,7 +9,7 @@ using System.Threading.Tasks;
 using CodeActivitiesLibrary.Extensions;
 using Newtonsoft.Json;
 
-namespace CodeActivitiesLibrary.AIIntegrations.AIStudioActivities
+namespace CodeActivitiesLibrary.AiIntegrations.AiStudioActivities
 {
     [DisplayName("Olm OCR")]
     [Description("Uploads a PDF file to remote OCR API and returns the markdown result.")]

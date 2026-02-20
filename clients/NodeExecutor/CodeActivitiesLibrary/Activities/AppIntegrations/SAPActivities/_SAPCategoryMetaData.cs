@@ -6,7 +6,8 @@ namespace CodeActivitiesLibrary.AppIntegrations.SAPActivities
         primaryCategory: "App Integrations",
         label: "SAP",
         description: "Perform SAP Actions.",
-        img: "/assets/SAP.svg")]
+        img: "/assets/SAP.svg",
+        doNotRenderIf: "enterprise")]
     internal sealed class _SAPCategoryMetaData 
     {
 

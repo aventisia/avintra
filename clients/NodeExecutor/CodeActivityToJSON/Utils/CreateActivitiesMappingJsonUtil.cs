@@ -14,16 +14,13 @@ namespace CodeActivityToJSON.Utils
     {
         public static List<string> _excludedCategories = new List<string>
         {
-            "CodeActivitiesLibrary.AppIntegrations.TwilioActivities",
             "CodeActivitiesLibrary.AppIntegrations.M365ExcelActivities",
-            "CodeActivitiesLibrary.AppIntegrations.SendGridActivities",
             "None"
         };
 
         public static List<string> _excludedActivities = new List<string>
         {
             "InvokeSoapWebServiceActivity",
-            "SendEmailThroughSendGridActivity",
             "ConditionalBranchActivity",
         };
 
@@ -43,7 +40,8 @@ namespace CodeActivityToJSON.Utils
 
             var settings = new JsonSerializerSettings
             {
-                ContractResolver = new CamelCasePropertyNamesContractResolver()
+                ContractResolver = new CamelCasePropertyNamesContractResolver(),
+                NullValueHandling = NullValueHandling.Ignore
             };
 
             // Deserialize the base JSON content
@@ -77,11 +75,12 @@ namespace CodeActivityToJSON.Utils
                         // Create ActionCategory object
                         var actionCategory = new ActionCategory
                         {
-                            Label = attribute.Label,
-                            Description = attribute.Description,
-                            Icon = attribute.Icon,
-                            Img = attribute.Img,
-                            ListType = attribute.ListType,
+                            Label = attribute?.Label,
+                            Description = attribute?.Description,
+                            Icon = attribute?.Icon,
+                            Img = attribute?.Img,
+                            ListType = attribute?.ListType,
+                            DoNotRenderIf = attribute?.DoNotRenderIf != null ? attribute?.DoNotRenderIf.Split(',').ToList() : null,
                             Actions = new List<NodeAction>()
                         };
 
@@ -104,11 +103,6 @@ namespace CodeActivityToJSON.Utils
                             var description = activity.GetCustomAttributes(typeof(DescriptionAttribute), false).FirstOrDefault() as DescriptionAttribute;
                             if (displayName == null || description == null) continue;
 
-                            if (activity.Name == "ApplyConditionalFormattingActivity")
-                            {
-                                Console.WriteLine("Debug");
-                            }
-
                             // Add the activity to the action category
                             actionCategory.Actions.Add(new NodeAction
                             {
@@ -118,7 +112,8 @@ namespace CodeActivityToJSON.Utils
                                 Description = description.Description,
                                 DocsLink = activityMetaData?.DocsLink ?? "https://docs.aventisia.com",
                                 Img = activityMetaData?.NodeImg ?? "/function.png",
-                                Icon = activityMetaData?.NodeIcon ?? null
+                                Icon = activityMetaData?.NodeIcon ?? null,
+                                DoNotRenderIf = activityMetaData?.DoNotRenderIf != null ? activityMetaData?.DoNotRenderIf.Split(',').ToList() : null,
                             });
                         }
 

@@ -84,7 +84,6 @@ namespace CodeActivitiesLibrary.UiInterfaceAutomations.BrowserAutomationActiviti
                     throw new ArgumentException("Web browser instance cannot be null.");
 
                 Screenshot fullPageScreenshot;
-                ImageFormat imgFormat;
 
                 switch (captureMode)
                 {

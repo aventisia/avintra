@@ -282,6 +282,7 @@
     <Compile Include="Activities\AppIntegrations\PDFActivities\GetPdfPagesTextToListActivity.cs" />
     <Compile Include="Activities\AppIntegrations\PDFActivities\MergePdfFilesActivity.cs" />
     <Compile Include="Activities\AppIntegrations\PDFActivities\SelectivePdfSplitterActivity.cs" />
+    <Compile Include="Activities\AppIntegrations\PDFActivities\ValidatePdfExistanceActivity.cs" />
     <Compile Include="Activities\AppIntegrations\PDFActivities\_PDFCategoryMetaData.cs" />
     <Compile Include="Activities\AppIntegrations\SalesforceActivities\AccountAction\AddNoteToAccountActivity.cs" />
     <Compile Include="Activities\AppIntegrations\SalesforceActivities\AccountAction\CreateAccountActivity.cs" />
@@ -397,8 +398,6 @@
     <Compile Include="Activities\AppIntegrations\SAPActivities\SaveImageActivity.cs" />
     <Compile Include="Activities\AppIntegrations\SAPActivities\SelectMenuItemActivity.cs" />
     <Compile Include="Activities\AppIntegrations\SAPActivities\_SAPCategoryMetaData.cs" />
-    <Compile Include="Activities\AppIntegrations\SendGridActivities\SendEmailThroughSendGridActivity.cs" />
-    <Compile Include="Activities\AppIntegrations\SendGridActivities\_SendGridCategoryMetaData.cs" />
     <Compile Include="Activities\AppIntegrations\ServiceNowActivities\AttachmentAction\DeleteServiceNowAttachmentActivity.cs" />
     <Compile Include="Activities\AppIntegrations\ServiceNowActivities\AttachmentAction\GetManyServiceNowAttachmentsActivity.cs" />
     <Compile Include="Activities\AppIntegrations\ServiceNowActivities\AttachmentAction\GetServiceNowAttachmentActivity.cs" />
@@ -436,10 +435,6 @@
     <Compile Include="Activities\AppIntegrations\TerminalEmulationActivities\SetTextOnTerminalSessionActivity.cs" />
     <Compile Include="Activities\AppIntegrations\TerminalEmulationActivities\WaitForTextOnTerminalSessionActivity.cs" />
     <Compile Include="Activities\AppIntegrations\TerminalEmulationActivities\_TerminalEmulationCategoryMetaData.cs" />
-    <Compile Include="Activities\AppIntegrations\TwilioActivities\SendTextSmsActivity.cs" />
-    <Compile Include="Activities\AppIntegrations\TwilioActivities\SendWhatsappMessageActivity.cs" />
-    <Compile Include="Activities\AppIntegrations\TwilioActivities\SendWhatsappTemplateMessageActivity.cs" />
-    <Compile Include="Activities\AppIntegrations\TwilioActivities\_TwilioCategoryMetaData.cs" />
     <Compile Include="Activities\AppIntegrations\UltraTaxCSActivities\FillUltraTaxFormActivity.cs" />
     <Compile Include="Activities\AppIntegrations\UltraTaxCSActivities\InspectUltraTaxFormActivity.cs" />
     <Compile Include="Activities\AppIntegrations\UltraTaxCSActivities\Helpers\UltraTaxFormHelper.cs" />
@@ -455,6 +450,7 @@
     <Compile Include="Activities\AppIntegrations\WindowsServiceActivities\_WindowsServiceCategoryMetaData.cs" />
     <Compile Include="Activities\AppIntegrations\WordActivities\AttachToRunningWordActivity.cs" />
     <Compile Include="Activities\AppIntegrations\WordActivities\CloseWordActivity.cs" />
+    <Compile Include="Activities\AppIntegrations\WordActivities\ConvertWordToPdfActivity.cs" />
     <Compile Include="Activities\AppIntegrations\WordActivities\Enum\RetrieveOptionEnum.cs" />
     <Compile Include="Activities\AppIntegrations\WordActivities\Enum\SaveFormatEnum.cs" />
     <Compile Include="Activities\AppIntegrations\WordActivities\ExtractTextFromDocxFileActivity.cs" />
@@ -791,26 +787,24 @@
     <Compile Include="Activities\UIInterfaceAutomations\XMLActivities\SetXmlElementValueActivity.cs" />
     <Compile Include="Activities\UIInterfaceAutomations\XMLActivities\WriteXmlToFileActivity.cs" />
     <Compile Include="Activities\UIInterfaceAutomations\XMLActivities\_XMLCategoryMetaData.cs" />
-    <Compile Include="Activities\WorkflowLogics\ConditionalsLoopsActivities\CallBlockActivity.cs" />
-    <Compile Include="Activities\WorkflowLogics\ConditionalsLoopsActivities\CallAgentActivity.cs" />
-    <Compile Include="Activities\WorkflowLogics\ConditionalsLoopsActivities\ConditionalBranchActivity.cs" />
-    <Compile Include="Activities\WorkflowLogics\ConditionalsLoopsActivities\ConditionalActivity.cs" />
-    <Compile Include="Activities\WorkflowLogics\ConditionalsLoopsActivities\LoopActivity.cs" />
-    <Compile Include="Activities\WorkflowLogics\ConditionalsLoopsActivities\_ConditionalsLoopsCategoryMetaData.cs" />
+    <Compile Include="Activities\WorkflowLogics\SubFlowsActivities\CallBlockActivity.cs" />
+    <Compile Include="Activities\WorkflowLogics\SubFlowsActivities\CallAgentActivity.cs" />
+    <Compile Include="Activities\WorkflowLogics\FlowControlActivities\ConditionalBranchActivity.cs" />
+    <Compile Include="Activities\WorkflowLogics\FlowControlActivities\ConditionalActivity.cs" />
+    <Compile Include="Activities\WorkflowLogics\FlowControlActivities\LoopActivity.cs" />
+    <Compile Include="Activities\WorkflowLogics\SubFlowsActivities\_SubFlowsCategoryMetaData.cs" />
     <Compile Include="Activities\WorkflowLogics\FlowControlActivities\BreakLoopActivity.cs" />
-    <Compile Include="Activities\WorkflowLogics\FlowControlActivities\CommentActivity.cs" />
-    <Compile Include="Activities\WorkflowLogics\FlowControlActivities\EndActivity.cs" />
-    <Compile Include="Activities\WorkflowLogics\FlowControlActivities\EndRegionActivity.cs" />
-    <Compile Include="Activities\WorkflowLogics\FlowControlActivities\ExitSubflowActivity.cs" />
-    <Compile Include="Activities\WorkflowLogics\FlowControlActivities\GetLastErrorActivity.cs" />
-    <Compile Include="Activities\WorkflowLogics\FlowControlActivities\GoToActivity.cs" />
-    <Compile Include="Activities\WorkflowLogics\FlowControlActivities\LabelActivity.cs" />
-    <Compile Include="Activities\WorkflowLogics\FlowControlActivities\RegionActivity.cs" />
-    <Compile Include="Activities\WorkflowLogics\FlowControlActivities\RunDesktopFlowActivity.cs" />
-    <Compile Include="Activities\WorkflowLogics\FlowControlActivities\RunSubflowActivity.cs" />
+    <Compile Include="Activities\WorkflowLogics\FlowControlActivities\ExitFlowActivity.cs" />
+    <Compile Include="Activities\WorkflowLogics\FlowControlActivities\GoToNodeActivity.cs" />
     <Compile Include="Activities\WorkflowLogics\FlowControlActivities\StopFlowActivity.cs" />
     <Compile Include="Activities\WorkflowLogics\FlowControlActivities\WaitActivity.cs" />
     <Compile Include="Activities\WorkflowLogics\FlowControlActivities\_FlowControlCategoryMetaData.cs" />
+    <Compile Include="Activities\WorkflowLogics\QueueManagement\MoveWorkItemActivity.cs" />
+    <Compile Include="Activities\WorkflowLogics\QueueManagement\DeleteWorkItemActivity.cs" />
+    <Compile Include="Activities\WorkflowLogics\QueueManagement\UpdateWorkItemActivity.cs" />
+    <Compile Include="Activities\WorkflowLogics\QueueManagement\GetWorkItemActivity.cs" />
+    <Compile Include="Activities\WorkflowLogics\QueueManagement\CreateWorkItemActivity.cs" />
+    <Compile Include="Activities\WorkflowLogics\QueueManagement\_QueueManagementCategoryMetaData.cs" />
     <Compile Include="Extensions\ActivityCategoryMetadataAttribute.cs" />
     <Compile Include="Extensions\ActivityMetaDataAttribute.cs" />
     <Compile Include="Extensions\BaseAsyncCodeActivity.cs" />
@@ -847,31 +841,31 @@
   </ItemGroup>
   <ItemGroup>
     <PackageReference Include="AWSSDK.CertificateManager">
-      <Version>4.0.1.12</Version>
+      <Version>4.0.2.14</Version>
     </PackageReference>
     <PackageReference Include="AWSSDK.Comprehend">
-      <Version>4.0.1.1</Version>
+      <Version>4.0.2.13</Version>
     </PackageReference>
     <PackageReference Include="AWSSDK.DynamoDBv2">
-      <Version>4.0.6.1</Version>
+      <Version>4.0.14</Version>
     </PackageReference>
     <PackageReference Include="AWSSDK.ElasticLoadBalancingV2">
-      <Version>4.0.2.1</Version>
+      <Version>4.0.6.9</Version>
     </PackageReference>
     <PackageReference Include="Azure.Identity">
-      <Version>1.17.0</Version>
+      <Version>1.17.1</Version>
     </PackageReference>
     <PackageReference Include="Azure.Storage.Blobs">
-      <Version>12.25.0</Version>
+      <Version>12.27.0</Version>
     </PackageReference>
     <PackageReference Include="BouncyCastle.Cryptography">
-      <Version>2.6.1</Version>
+      <Version>2.6.2</Version>
     </PackageReference>
     <PackageReference Include="CredentialManagement">
       <Version>1.0.2</Version>
     </PackageReference>
     <PackageReference Include="DocumentFormat.OpenXml">
-      <Version>3.3.0</Version>
+      <Version>3.4.1</Version>
     </PackageReference>
     <PackageReference Include="FlaUI.Core">
       <Version>5.0.0</Version>
@@ -883,28 +877,28 @@
       <Version>5.0.0</Version>
     </PackageReference>
     <PackageReference Include="FluentFTP">
-      <Version>52.1.0</Version>
+      <Version>53.0.2</Version>
     </PackageReference>
     <PackageReference Include="Google.Apis.Sheets.v4">
-      <Version>1.70.0.3819</Version>
+      <Version>1.72.0.3966</Version>
     </PackageReference>
     <PackageReference Include="MailKit">
-      <Version>4.12.1</Version>
+      <Version>4.14.1</Version>
     </PackageReference>
     <PackageReference Include="Microsoft.CodeAnalysis.CSharp">
-      <Version>4.14.0</Version>
+      <Version>5.0.0</Version>
     </PackageReference>
     <PackageReference Include="Microsoft.CodeAnalysis.CSharp.Scripting">
-      <Version>4.14.0</Version>
+      <Version>5.0.0</Version>
     </PackageReference>
     <PackageReference Include="Microsoft.Exchange.WebServices">
       <Version>2.2.0</Version>
     </PackageReference>
     <PackageReference Include="Microsoft.Extensions.Logging.Abstractions">
-      <Version>9.0.6</Version>
+      <Version>10.0.3</Version>
     </PackageReference>
     <PackageReference Include="Microsoft.Identity.Client">
-      <Version>4.74.0</Version>
+      <Version>4.82.1</Version>
     </PackageReference>
     <PackageReference Include="Microsoft.Office.Interop.Outlook">
       <Version>15.0.4797.1004</Version>
@@ -913,13 +907,13 @@
       <Version>15.0.4797.1004</Version>
     </PackageReference>
     <PackageReference Include="Newtonsoft.Json">
-      <Version>13.0.3</Version>
+      <Version>13.0.4</Version>
     </PackageReference>
     <PackageReference Include="NUnit">
-      <Version>4.3.2</Version>
+      <Version>4.4.0</Version>
     </PackageReference>
     <PackageReference Include="PdfPig">
-      <Version>0.1.11-alpha-20250602-89abf</Version>
+      <Version>0.1.13</Version>
     </PackageReference>
     <PackageReference Include="PdfSharpCore">
       <Version>1.3.67</Version>
@@ -931,37 +925,37 @@
       <Version>1.4.0</Version>
     </PackageReference>
     <PackageReference Include="Selenium.Support">
-      <Version>4.34.0</Version>
+      <Version>4.40.0</Version>
     </PackageReference>
     <PackageReference Include="Selenium.WebDriver">
-      <Version>4.34.0</Version>
+      <Version>4.40.0</Version>
     </PackageReference>
     <PackageReference Include="SendGrid">
       <Version>9.29.3</Version>
     </PackageReference>
     <PackageReference Include="SharpCompress">
-      <Version>0.40.0</Version>
+      <Version>0.46.0</Version>
     </PackageReference>
     <PackageReference Include="SSH.NET">
-      <Version>2025.0.0</Version>
+      <Version>2025.1.0</Version>
     </PackageReference>
     <PackageReference Include="System.Configuration.ConfigurationManager">
-      <Version>10.0.0</Version>
+      <Version>10.0.3</Version>
     </PackageReference>
     <PackageReference Include="System.Formats.Asn1">
-      <Version>9.0.6</Version>
+      <Version>10.0.3</Version>
     </PackageReference>
     <PackageReference Include="System.IO.Compression.ZipFile">
       <Version>4.3.0</Version>
     </PackageReference>
     <PackageReference Include="System.Linq.Dynamic.Core">
-      <Version>1.6.7</Version>
+      <Version>1.7.1</Version>
     </PackageReference>
     <PackageReference Include="System.Memory">
       <Version>4.6.3</Version>
     </PackageReference>
     <PackageReference Include="System.Text.Json">
-      <Version>9.0.6</Version>
+      <Version>10.0.3</Version>
     </PackageReference>
     <PackageReference Include="System.Threading.Tasks.Extensions">
       <Version>4.6.3</Version>
@@ -973,7 +967,7 @@
       <Version>5.2.0</Version>
     </PackageReference>
     <PackageReference Include="Twilio">
-      <Version>7.12.0</Version>
+      <Version>7.14.3</Version>
     </PackageReference>
     <PackageReference Include="WebDriverManager">
       <Version>2.17.6</Version>

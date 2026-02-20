@@ -13,10 +13,6 @@ namespace CodeActivitiesLibrary.UiInterfaceAutomations.SystemActivities
     [ActivityMetaData(nodeImg: "/assets/System.svg")]
     public class SetWindowsEnvironmentVariableActivity : BaseCodeActivity
     {
-        // ----------------------
-        // Input Arguments
-        // ----------------------
-
         [RequiredArgument]
         [DisplayName("Environment variable name")]
         [Description("The name of the environment variable to set.")]
@@ -27,21 +23,10 @@ namespace CodeActivitiesLibrary.UiInterfaceAutomations.SystemActivities
         [Description("The new value to set for the environment variable.")]
         public InArgument<string> NewEnvironmentVariableValue { get; set; }
 
-
         [DisplayName("Type")]
         [Description("Specifies whether to set the environment variable at the User or System level.")]
         [DefaultValue(ScopeEnum.User)]
         public InArgument<ScopeEnum> Type { get; set; }
-
-        // ----------------------
-        // Output Arguments
-        // ----------------------
-
-        public OutArgument<string> StatusMessages { get; set; }
-
-        // ----------------------
-        // Execution Logic
-        // ----------------------
 
         protected override void Execute(CodeActivityContext context)
         {
@@ -99,35 +84,22 @@ namespace CodeActivitiesLibrary.UiInterfaceAutomations.SystemActivities
         private static string GetEnvVarName(EnvVarNameEnum envVarName)
         {
             switch (envVarName)
-            {
-                case EnvVarNameEnum.NUMBER_OF_PROCESSORS:
-                    return "NUMBER_OF_PROCESSORS";
-                case EnvVarNameEnum.OS:
-                    return "OS";
-                case EnvVarNameEnum.PATH:
-                    return "Path";
-                case EnvVarNameEnum.PATHEXT:
-                    return "PATHEXT";
-                case EnvVarNameEnum.PROCESSOR_ARCHITECTURE:
-                    return "PROCESSOR_ARCHITECTURE";
-                case EnvVarNameEnum.PROCESSOR_IDENTIFIER:
-                    return "PROCESSOR_IDENTIFIER";
-                case EnvVarNameEnum.PROCESSOR_LEVEL:
-                    return "PROCESSOR_LEVEL";
-                case EnvVarNameEnum.PROCESSOR_REVISION:
-                    return "PROCESSOR_REVISION";
-                case EnvVarNameEnum.PSMODULEPATH:
-                    return "PSModulePath";
+            {          
+                case EnvVarNameEnum.OneDrive:
+                    return "OneDrive";
+                case EnvVarNameEnum.OneDriveConsumer:
+                    return "OneDriveConsumer";
+                case EnvVarNameEnum.OneDriveCommercial:
+                    return "OneDriveCommercial";
                 case EnvVarNameEnum.TEMP:
                     return "TEMP";
                 case EnvVarNameEnum.TMP:
                     return "TMP";
                 case EnvVarNameEnum.USERNAME:
                     return "USERNAME";
-                case EnvVarNameEnum.WINDIR:
-                    return "windir";
-                case EnvVarNameEnum.ZES_ENABLE_SYSMAN:
-                    return "ZES_ENABLE_SYSMAN";
+                case EnvVarNameEnum.PATH:
+                    return "Path";
+               // case EnvVarNameEnum.
                 default:
                     throw new ArgumentException("Invalid environment variable name.");
             }

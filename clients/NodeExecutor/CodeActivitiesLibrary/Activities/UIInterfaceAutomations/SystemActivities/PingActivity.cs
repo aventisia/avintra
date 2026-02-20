@@ -10,44 +10,24 @@ namespace CodeActivitiesLibrary.UiInterfaceAutomations.SystemActivities
     [Description("Sends a message to determine whether a remote computer is accessible over the network.")]
     [ActivityMetaData(nodeImg: "/assets/System.svg")]
     public class PingActivity : BaseCodeActivity
-    {
-        // ----------------------
-        // Input Arguments
-        // ----------------------
-
+    {       
         [RequiredArgument]
-
         [DisplayName("Host name")]
         [Description("The host name or IP address to ping.")]
         public InArgument<string> HostName { get; set; }
 
-
         [DisplayName("Timeout")]
         [Description("The maximum time (in milliseconds) to wait for a response.")]
+        [DefaultValue(5000)]
         public InArgument<int> Timeout { get; set; }
-
-        // ----------------------
-        // Output Arguments
-        // ----------------------
-
-
+        
         [DisplayName("Ping Result")]
         [Description("The status of the ping message (success or failure).")]
         public OutArgument<bool> PingResult { get; set; }
 
-
         [DisplayName("Round Trip Time")]
         [Description("The number of milliseconds taken for the Ping to complete.")]
-        public OutArgument<bool> RoundTripTime { get; set; }
-
-
-        [DisplayName("Status Message")]
-        [Description("Provides status information about the operation.")]
-        public OutArgument<string> StatusMessages { get; set; }
-
-        // ----------------------
-        // Execution Logic
-        // ----------------------
+        public OutArgument<int> RoundTripTime { get; set; }
 
         protected override void Execute(CodeActivityContext context)
         {
@@ -72,7 +52,7 @@ namespace CodeActivitiesLibrary.UiInterfaceAutomations.SystemActivities
 
                     // Set output arguments
                     PingResult.Set(context, reply.Status == IPStatus.Success);
-                    RoundTripTime.Set(context, reply.Status == IPStatus.Success);
+                    RoundTripTime.Set(context, reply.RoundtripTime);
                 }
                 IsSuccess.Set(context, true);
                 StatusMessage.Set(context, "Ping completed successfully.");
@@ -82,7 +62,7 @@ namespace CodeActivitiesLibrary.UiInterfaceAutomations.SystemActivities
                 IsSuccess.Set(context, false);
                 StatusMessage.Set(context, $"Error pinging host: {ex.Message}");
                 PingResult.Set(context, false);
-                RoundTripTime.Set(context, false); // Indicate failure with negative value
+                RoundTripTime.Set(context, -1);
             }
         }
     }

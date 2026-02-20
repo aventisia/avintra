@@ -11,66 +11,41 @@ namespace CodeActivitiesLibrary.UiInterfaceAutomations.CmdSessionActivities
     [ActivityMetaData(nodeImg: "/assets/CMDSession.svg")]
     public class CloseCmdSessionActivity : BaseCodeActivity
     {
-        // ----------------------
-        // Input Arguments
-        // ----------------------
-
         [RequiredArgument]
         [DisplayName("CMD Session")]
         [Description("The process representing the open CMD session.")]
         public InArgument<Process> CmdSession { get; set; }
 
-
-        // ----------------------
-        // Execution Logic
-        // ----------------------
-
         protected override void Execute(CodeActivityContext context)
         {
-            var status = "Success";
-
             try
             {
-                var cmdSession = CmdSession.Get(context);
-
-                if (cmdSession == null)
-                    throw new ArgumentException("CMD session cannot be null.");
-
-                if (!cmdSession.HasExited)
+                var process = CmdSession.Get(context);
+                if (process == null)
                 {
-                    try
-                    {
-                        cmdSession.StandardInput.WriteLine("exit");
-                        cmdSession.StandardInput.Flush();
-                        if (!cmdSession.WaitForExit(2000)) // Wait up to 2 seconds
-                        {
-                            cmdSession.Kill(); // Force close if not responding
-                        }
-
-                        status += ": CMD session closed gracefully.";
-                    }
-                    catch
-                    {
-                        cmdSession.Kill();
-                        status += ": CMD session forcibly killed.";
-                    }
-                }
-                else
-                {
-                    status += ": CMD session already exited.";
+                    IsSuccess.Set(context, true);
+                    StatusMessage.Set(context, "CMD session was already null.");
+                    return;
                 }
 
-                status += $" Successfully closed CMD session.";
+                if (!process.HasExited)
+                {
+                    process.StandardInput.WriteLine("exit");
+                    process.StandardInput.Flush();
+                    process.WaitForExit(3000);
+                    if (!process.HasExited)
+                        process.Kill();
+                }
+
+                process.Dispose();
                 IsSuccess.Set(context, true);
-                StatusMessage.Set(context, status);
+                StatusMessage.Set(context, "CMD session closed successfully.");
             }
             catch (Exception ex)
             {
-                status = $"Error closing CMD session: {ex.Message}";
                 IsSuccess.Set(context, false);
-                StatusMessage.Set(context, status);
+                StatusMessage.Set(context, $"Error closing CMD session: {ex.Message}");
             }
         }
     }
-
 }

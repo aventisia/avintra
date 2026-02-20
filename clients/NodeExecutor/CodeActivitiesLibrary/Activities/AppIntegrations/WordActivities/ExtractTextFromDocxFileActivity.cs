@@ -27,7 +27,6 @@ namespace CodeActivitiesLibrary.AppIntegrations.WordActivities
 
         [DisplayName("Bookmark Name")]
         [Description("The name of the bookmark to retrieve content from.")]
-        [RequiredArgument]
         [RenderIfCondition(nameof(Retrieve), RetrieveOptionEnum.Bookmark)]
         public InArgument<string> BookmarkName { get; set; }
 
