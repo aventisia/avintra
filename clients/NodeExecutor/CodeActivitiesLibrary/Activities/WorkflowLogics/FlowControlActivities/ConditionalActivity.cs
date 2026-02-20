@@ -3,9 +3,9 @@ using System.Activities;
 using System.ComponentModel;
 using System.ComponentModel.DataAnnotations;
 
-namespace CodeActivitiesLibrary.WorkflowLogics.ConditionalsLoopsActivities
+namespace CodeActivitiesLibrary.WorkflowLogics.FlowControlActivities
 {
-    [ActivityMetaData(nodeType: "conditionalNode", nodeIcon: "ConditionalNodeIcon")]
+    [ActivityMetaData(nodeType: "conditionalNode", nodeIcon: "ConditionalNodeIcon", nodeImg: null)]
     [DisplayName("Router")]
     [Description("Use conditions to decide which direction the flow should take")]
     public class ConditionalActivity : BaseCodeActivity

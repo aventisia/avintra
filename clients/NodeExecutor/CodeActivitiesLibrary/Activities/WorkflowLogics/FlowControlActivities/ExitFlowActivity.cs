@@ -3,8 +3,8 @@ using System.Activities;
 
 namespace CodeActivitiesLibrary.WorkflowLogics.FlowControlActivities
 {
-    //[DisplayName("Exit Subflow"), Description("Exits the current subflow and returns to the caller.")]
-    public class ExitSubflowActivity : Extensions.BaseNativeActivity
+    //[DisplayName("Exit flow"), Description("Exits the current subflow and returns to the caller.")]
+    public class ExitFlowActivity : Extensions.BaseNativeActivity
     {
 
 

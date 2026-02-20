@@ -96,10 +96,11 @@ namespace CodeActivitiesLibrary.UiInterfaceAutomations.CompressionActivities
         {
             try
             {
-                using (var archive = ZipArchive.Open(archivePath, new ReaderOptions()
-                {
-                    Password = password
-                }))
+                var readerOptions = string.IsNullOrEmpty(password) 
+                    ? null 
+                    : ReaderOptions.ForEncryptedArchive(password);
+
+                using (var archive = ZipArchive.OpenArchive(archivePath, readerOptions))
                 {
                     foreach (var entry in archive.Entries)
                     {
@@ -107,14 +108,16 @@ namespace CodeActivitiesLibrary.UiInterfaceAutomations.CompressionActivities
                         var fileName = Path.GetFileName(entry.Key);
                         if (!string.IsNullOrEmpty(includeMask) && !MatchesMask(fileName, includeMask)) continue;
                         if (!string.IsNullOrEmpty(excludeMask) && MatchesMask(fileName, excludeMask)) continue;
+                        
                         var destinationPath = Path.Combine(destinationFolder, entry.Key);
                         var destDir = Path.GetDirectoryName(destinationPath);
                         Directory.CreateDirectory(destDir);
-                        entry.WriteToDirectory(destinationFolder, new ExtractionOptions
+                        
+                        using (var entryStream = entry.OpenEntryStream())
+                        using (var fileStream = File.Create(destinationPath))
                         {
-                            ExtractFullPath = true,
-                            Overwrite = true
-                        });
+                            entryStream.CopyTo(fileStream);
+                        }
                     }
                 }
 

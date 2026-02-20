@@ -10,9 +10,9 @@ using UglyToad.PdfPig.Writer;
 
 namespace CodeActivitiesLibrary.AppIntegrations.PdfActivities
 {
-    //[DisplayName("Merge PDF Files")]
-    //[Description("Merges multiple PDF files into a new one.")]
-    //[ActivityMetaData(nodeImg:"/assets/PDF.svg")]
+    [DisplayName("Merge PDF Files")]
+    [Description("Merges multiple PDF files into a new one.")]
+    [ActivityMetaData(nodeImg: "/assets/PDF.svg")]
     public class MergePdfFilesActivity : BaseCodeActivity
     {
         [RequiredArgument]
@@ -40,25 +40,33 @@ namespace CodeActivitiesLibrary.AppIntegrations.PdfActivities
                 if (string.IsNullOrWhiteSpace(outputPdfPath))
                     throw new ArgumentException("Output PDF path must be specified.");
 
+                var outputDir = Path.GetDirectoryName(outputPdfPath);
+                if (!string.IsNullOrEmpty(outputDir) && !Directory.Exists(outputDir))
+                    Directory.CreateDirectory(outputDir);
+
                 if (File.Exists(outputPdfPath))
-                    File.Delete(outputPdfPath); // Optional: overwrite existing
+                    File.Delete(outputPdfPath);
 
                 using (var writer = new PdfDocumentBuilder())
                 {
                     foreach (var filePath in pdfFilePaths)
                     {
                         if (!File.Exists(filePath))
-                            throw new FileNotFoundException("One or more PDF files were not found.", filePath);
+                            throw new FileNotFoundException($"PDF file not found: '{filePath}'", filePath);
 
                         using (var document = PdfDocument.Open(filePath))
-                            writer.AddPage(document, document.NumberOfPages + 1);
+                        {
+                            // Add ALL pages from this document (1-based indexing)
+                            for (int pageNumber = 1; pageNumber <= document.NumberOfPages; pageNumber++)
+                            {
+                                writer.AddPage(document, pageNumber);
+                            }
+                        }
                     }
+                    var pdfBytes = writer.Build();
+                    File.WriteAllBytes(outputPdfPath, pdfBytes);
 
-                    var pdf = writer.Build();
-                    using (var stream = new FileStream(outputPdfPath, FileMode.Create, FileAccess.Write))
-                        stream.Write(pdf, 0, pdf.Length);
-
-                    status = $"Successfully merged {pdfFilePaths.Count()} PDF file(s) into '{outputPdfPath}'.";
+                    status = $"Successfully merged {pdfFilePaths.Count} PDF file(s) into '{outputPdfPath}'.";
                     IsSuccess.Set(context, true);
                     StatusMessage.Set(context, status);
                 }

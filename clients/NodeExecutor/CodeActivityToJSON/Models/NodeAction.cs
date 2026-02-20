@@ -1,4 +1,6 @@
-﻿namespace CodeActivityToJSON.Models
+﻿using System.Collections.Generic;
+
+namespace CodeActivityToJSON.Models
 {
     internal class NodeAction
     {
@@ -9,5 +11,6 @@
         public string DocsLink { get; set; }
         public string Icon { get; set; }
         public string Img { get; set; }
+        public List<string> DoNotRenderIf { get; set; }
     }
 }

@@ -3,9 +3,9 @@ using System.Activities;
 using System.ComponentModel;
 using System.ComponentModel.DataAnnotations;
 
-namespace CodeActivitiesLibrary.WorkflowLogics.ConditionalsLoopsActivities
+namespace CodeActivitiesLibrary.WorkflowLogics.SubFlowsActivities
 {
-    [ActivityMetaData(nodeType: "callAgentNode", nodeIcon: "CallAgentIcon")]
+    [ActivityMetaData(nodeType: "callAgentNode", nodeIcon: "CallAgentIcon", nodeImg: null)]
     [DisplayName("Call Agent")]
     [Description("Use this to call another agent within the current agent")]
     public class CallAgentActivity : BaseCodeActivity

@@ -10,7 +10,7 @@ using System.Text;
 using System.Threading.Tasks;
 using Newtonsoft.Json.Linq;
 
-namespace CodeActivitiesLibrary.AIIntegrations.AIStudioActivities 
+namespace CodeActivitiesLibrary.AiIntegrations.AiStudioActivities
 {
     [DisplayName("Ollama Connector")]
     [Description("Invokes Ollama models (Generate or Chat mode) via its local REST API and returns the response.")]

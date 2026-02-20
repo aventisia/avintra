@@ -4,8 +4,8 @@ using System.ComponentModel;
 
 namespace CodeActivitiesLibrary.WorkflowLogics.FlowControlActivities
 {
-    //[DisplayName("Go To"), Description("Transfers execution to the specified label.")]
-    public class GoToActivity : Extensions.BaseNativeActivity
+    //[DisplayName("Go To"), Description("Transfers execution to the specified node.")]
+    public class GoToNodeActivity : Extensions.BaseNativeActivity
     {
         [RequiredArgument, Category("Input"), Description("Label to transfer execution to.")]
         public InArgument<string> Label { get; set; }

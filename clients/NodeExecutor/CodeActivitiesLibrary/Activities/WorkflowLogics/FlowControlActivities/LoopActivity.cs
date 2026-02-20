@@ -3,9 +3,9 @@ using System.Activities;
 using System.ComponentModel;
 using System.ComponentModel.DataAnnotations;
 
-namespace CodeActivitiesLibrary.WorkflowLogics.ConditionalsLoopsActivities
+namespace CodeActivitiesLibrary.WorkflowLogics.FlowControlActivities
 {
-    [ActivityMetaData(nodeType: "forLoopNode", nodeIcon: "LoopNodeIcon")]
+    [ActivityMetaData(nodeType: "forLoopNode", nodeIcon: "LoopNodeIcon", nodeImg: null)]
     [DisplayName("Loop")]
     [Description("Use this to keep doing something again and again, as long as certain conditions are met.")]
     public class LoopActivity : BaseCodeActivity

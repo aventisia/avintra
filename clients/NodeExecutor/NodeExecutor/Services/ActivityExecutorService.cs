@@ -1,6 +1,6 @@
-﻿using CodeActivitiesLibrary.AIIntegrations.AIStudioActivities;
+﻿using CodeActivitiesLibrary.AiIntegrations.AiStudioActivities;
 using CodeActivitiesLibrary.AppIntegrations.CloudConnectorsActivities;
-using CodeActivitiesLibrary.WorkflowLogics.ConditionalsLoopsActivities;
+using CodeActivitiesLibrary.WorkflowLogics.FlowControlActivities;
 using DynamicExpresso;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;

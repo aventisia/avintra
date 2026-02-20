@@ -7,13 +7,11 @@ using System.Windows.Forms;
 
 namespace CodeActivitiesLibrary.UiInterfaceAutomations.MessageBoxActivities
 {
-    //[DisplayName("Display Select From List Dialog")]
-    //[Description("Displays a dialog box with options that lets the user select from a list.")]
-    //[ActivityMetaData(nodeImg: "/assets/MessageBox.svg")]
+    [DisplayName("Display Select From List Dialog")]
+    [Description("Displays a dialog box with options that lets the user select from a list.")]
+    [ActivityMetaData(nodeImg: "/assets/MessageBox.svg")]
     public class DisplaySelectFromListDialogActivity : BaseCodeActivity
     {
-
-
         [DisplayName("Dialog Title")]
         [Description("The title text displayed at the top of the dialog window.")]
         public InArgument<string> DialogTitle { get; set; }

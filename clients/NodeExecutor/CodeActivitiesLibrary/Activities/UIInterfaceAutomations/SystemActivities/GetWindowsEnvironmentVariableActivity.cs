@@ -111,6 +111,14 @@ namespace CodeActivitiesLibrary.UiInterfaceAutomations.SystemActivities
                     return "windir";
                 case EnvVarNameEnum.ZES_ENABLE_SYSMAN:
                     return "ZES_ENABLE_SYSMAN";
+                case EnvVarNameEnum.None:
+                    return "None";
+                case EnvVarNameEnum.OneDrive:
+                    return "OneDrive";
+                case EnvVarNameEnum.OneDriveConsumer:
+                    return "OneDriveConsumer";
+                case EnvVarNameEnum.OneDriveCommercial:
+                    return "OneDriveCommercial";
                 default:
                     throw new ArgumentException("Invalid environment variable name.");
             }
