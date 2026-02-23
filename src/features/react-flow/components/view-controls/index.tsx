@@ -7,8 +7,9 @@ import { useShallow } from "zustand/react/shallow";
 import { VCActionButton } from "./VCActionButton";
 import { VCBContainer } from "./VCBContainer";
 import { VCBToggleCursor } from "./VCBToggleCursor";
+import { memo } from "react";
 
-export const ViewControls = () => {
+export const ViewControls = memo(() => {
   // Get Studio Preferences store state
   const { cursorToggle, zoomControls } = useStudioPreferencesStore(
     useShallow((state) => ({
@@ -44,4 +45,4 @@ export const ViewControls = () => {
       </div>
     </Panel>
   );
-};
+});

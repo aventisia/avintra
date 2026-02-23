@@ -1,4 +1,5 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
+import { toast } from "@aventisia/ui/sonner";
 import { useState, useCallback } from "react";
 
 // Type for the hook's return value
@@ -38,6 +39,7 @@ export const useJsonDownload = (): UseJsonDownloadProps => {
         // Clean up
         document.body.removeChild(link);
         URL.revokeObjectURL(url);
+        toast.success("Agent Exported Successfully");
       } catch (error: unknown) {
         console.error("Error downloading JSON:", error);
       } finally {
