@@ -4,7 +4,6 @@ import { NodeHeader } from "@/components/node-container/node-header/NodeHeader";
 import { NodeHeading } from "@/components/node-container/node-header/NodeHeading";
 import { NodeImage } from "@/components/node-container/node-header/NodeImage";
 import { NodeDescription } from "@/components/node-container/NodeDescription";
-import { ReactFlowContextMenu } from "@/features/react-flow/components/context-menu";
 import { useGroupToggle } from "@/features/react-flow/hooks/useGroupToggle";
 import { NodeDataType } from "@/types/node-data-type";
 import { Separator } from "@aventisia/ui";
@@ -54,7 +53,7 @@ const BaseNode: React.FC<BaseNodeProps> = ({
   };
 
   return (
-    <ReactFlowContextMenu>
+    <>
       <div className={nodeData?.isGroupHead ? "relative" : ""}>
         {nodeData?.isGroupHead &&
           !nodeData?.isExpanded &&
@@ -112,7 +111,7 @@ const BaseNode: React.FC<BaseNodeProps> = ({
           {children}
         </NodeContainer>
       </div>
-    </ReactFlowContextMenu>
+    </>
   );
 };
 

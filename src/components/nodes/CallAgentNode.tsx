@@ -2,7 +2,6 @@ import { InputHandle } from "@/components/handles/InputHandle";
 import { OutputHandle } from "@/components/handles/OutputHandle";
 import { NodeDataType } from "@/types/node-data-type";
 import { Node, NodeProps } from "@xyflow/react";
-import { ReactFlowContextMenu } from "@/features/react-flow/components/context-menu";
 import { cn } from "@aventisia/ui/lib";
 import { OpenNodeConfig } from "../node-container/node-header/OpenNodeConfig";
 import { BotIcon, GripVertical } from "lucide-react";
@@ -23,7 +22,7 @@ export const CallAgentNode = memo(
     id,
   }: NodeProps<CallAgentNode>) => {
     return (
-      <ReactFlowContextMenu>
+      <>
         <div
           className={cn(
             "flex h-[5.3rem] w-[19.5rem] overflow-clip rounded-lg border-2 border-[#3E37B3] bg-[#3E37B3] hover:ring hover:ring-ring",
@@ -57,7 +56,7 @@ export const CallAgentNode = memo(
             </div>
           </OpenNodeConfig>
         </div>
-      </ReactFlowContextMenu>
+      </>
     );
   },
 );

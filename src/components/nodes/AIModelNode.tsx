@@ -1,15 +1,12 @@
 import { InputHandle } from "@/components/handles/InputHandle";
 import { OutputHandle } from "@/components/handles/OutputHandle";
 import { NodeDataType, NodeInputType } from "@/types/node-data-type";
-import { Node, NodeProps } from "@xyflow/react";
-import { ReactFlowContextMenu } from "@/features/react-flow/components/context-menu";
+import { Node, NodeProps, useReactFlow } from "@xyflow/react";
 import { cn } from "@aventisia/ui/lib";
 import { OpenNodeConfig } from "../node-container/node-header/OpenNodeConfig";
 import { BrainCircuitIcon, GripVertical } from "lucide-react";
-import { useShallow } from "zustand/react/shallow";
 import { Badge } from "@aventisia/ui/badge";
 import { memo, useEffect } from "react";
-import { useReactFlowExtStore } from "@/stores/react-flow-ext-store";
 import { ModelConfigType } from "@/types/model-config-type";
 
 type AIModelNode = Node<NodeDataType, "aiNode">;
@@ -22,13 +19,7 @@ export const AIModelNode = memo(
     targetPosition,
     id,
   }: NodeProps<AIModelNode>) => {
-    const { nodes, setNodes } = useReactFlowExtStore(
-      useShallow((state) => ({
-        nodes: state.nodes,
-        setNodes: state.setNodes,
-      })),
-    );
-
+    const { updateNodeData } = useReactFlow();
     useEffect(() => {
       if (data.type !== "aiNode") return;
       const isNewMod = ["Attach AI Model", "Create AI Model"].includes(
@@ -39,22 +30,10 @@ export const AIModelNode = memo(
           ? data?.selectedModel?.name
           : "AI Model";
         if (newLabel) {
-          // Find the node by id and update its label
-          const updatedNodes = nodes.map((node: Node) => {
-            if (node.id === id) {
-              return {
-                ...node,
-                data: {
-                  ...node.data,
-                  label: newLabel,
-                },
-              };
-            }
-            return node;
+          //  node by id and update its label
+          updateNodeData(id, {
+            label: newLabel,
           });
-
-          // Update the nodes in the store
-          setNodes(updatedNodes);
         }
       }
     }, [data.label, data?.selectedModel]);
@@ -77,7 +56,7 @@ export const AIModelNode = memo(
       : (data?.selectedModel?.llMs as unknown as string[]);
 
     return (
-      <ReactFlowContextMenu>
+      <>
         <div
           className={cn(
             "flex h-[7.25rem] w-[19.5rem] overflow-clip rounded-lg border-2 border-[#7D76EC] bg-[#7D76EC] hover:ring hover:ring-ring",
@@ -128,7 +107,7 @@ export const AIModelNode = memo(
         </div>
         <InputHandle position={targetPosition} />
         <OutputHandle position={sourcePosition} />
-      </ReactFlowContextMenu>
+      </>
     );
   },
 );

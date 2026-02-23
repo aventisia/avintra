@@ -3,7 +3,6 @@ import { Node, NodeProps } from "@xyflow/react";
 import { OutputHandle } from "@/components/handles/OutputHandle";
 import { OpenNodeConfig } from "../node-container/node-header/OpenNodeConfig";
 import { NodeDataType } from "@/types/node-data-type";
-import { ReactFlowContextMenu } from "@/features/react-flow/components/context-menu";
 import { cn } from "@aventisia/ui/lib";
 import { memo } from "react";
 
@@ -19,7 +18,7 @@ export const BranchNode1 = memo(
   }: NodeProps<BranchNode1>) => {
     return (
       <>
-        <ReactFlowContextMenu>
+        <>
           {nodeData?.name === "ConditionalBranchActivity" ? (
             <OpenNodeConfig {...{ nodeData, nodeId }}>
               <div
@@ -69,7 +68,7 @@ export const BranchNode1 = memo(
               </div>
             </div>
           )}
-        </ReactFlowContextMenu>
+        </>
       </>
     );
   },
