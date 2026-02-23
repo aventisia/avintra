@@ -106,17 +106,15 @@ public class EmailService : IEmailService
             using (var client = new SmtpClient())
             {
 
-                // Use no encryption for "Localhost" environment, otherwise use SSL encryption.
-                var socketOptions = _webHostEnvironment.IsEnvironment("Localhost") ? SecureSocketOptions.None : SecureSocketOptions.SslOnConnect;
+                // Set SSL options
+                var socketOptions = SecureSocketOptions.SslOnConnect;
 
                 // Connects to the SMTP server using the specified host, port, and security options.
                 await client.ConnectAsync(_environmentConfig.SmtpHost, _environmentConfig.SmtpPort, socketOptions);
 
-                // If not in "Localhost" environment, authenticate with the SMTP server using the provided credentials.
-                if (!_webHostEnvironment.IsEnvironment("Localhost"))
-                {
-                    await client.AuthenticateAsync(_environmentConfig.SmtpUser, _environmentConfig.SmtpPassword);
-                }
+                // Authenticate with the SMTP server using the provided credentials.
+                await client.AuthenticateAsync(_environmentConfig.SmtpUser, _environmentConfig.SmtpPassword);
+                
                 // Sends the email.
                 await client.SendAsync(message);
                 await client.DisconnectAsync(true);
