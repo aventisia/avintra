@@ -294,23 +294,27 @@ public class AuthService : IAuthService
                     // Try to add user in other databases
                     var createUserInOtherDbsResult = await _authHelperService.CreateOrUpdateUserInOtherDbsAsync(user, CrudTypesEnum.Create, jwt);
 
-                    // // Failed to add user in other databases
+                    // Failed to add user in other databases
                     if (!createUserInOtherDbsResult) return serviceResponse;
 
-                    // Update user's IsCreatedInOtherDbs status
-                    user.IsCreatedInOtherDbs = true;
-                    _unitOfWork.AccountUserRepo.Update(user);
+                    // Update user's IsCreatedInOtherDbs status using direct database update to avoid tracking conflicts
+                    var updateResult = await _unitOfWork.AccountUserRepo
+                        .GetByConditionAsync(w => w.Id == user.Id)
+                        .ExecuteUpdateAsync(setters => setters.SetProperty(u => u.IsCreatedInOtherDbs, true));
 
                     // Update AccountUser job failed
-                    if (!await _unitOfWork.SaveAsync())
+                    if (updateResult == 0)
                     {
-                        _logger.LogInformation($"Context SaveChanges failed while updating user creation status for {user.UserName}");
+                        _logger.LogInformation($"Failed to update user creation status for {user.UserName}");
                         return serviceResponse;
                     }
+
+                    // Update the in-memory user object to reflect the change
+                    user.IsCreatedInOtherDbs = true;
                 }
-                catch
+                catch (Exception ex)
                 {
-                    // Try catch important because on create-account request AccountUserRepo.Update will throw unnecessary exception
+                    _logger.LogError($"Error occurred while creating user in other databases for {user.UserName}. Exception: {ex}");
                 }
             }
 
