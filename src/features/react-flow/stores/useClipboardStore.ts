@@ -15,7 +15,8 @@ interface ClipboardState {
   clearClipboard: () => void;
 }
 
-const CLIPBOARD_KEY = "react-flow-clipboard";
+// Exported so other files can reference the exact key if needed
+export const CLIPBOARD_KEY = "react-flow-clipboard";
 
 // Safely hydrate the clipboard from LocalStorage on initial load
 const getInitialClipboard = (): FlowClipboard | null => {
@@ -39,3 +40,14 @@ export const useClipboardStore = create<ClipboardState>((set) => ({
     set({ clipboard: null });
   },
 }));
+
+// Cross-tab Synchronization
+// This instantly updates Zustand in Tab B when Tab A copies something to localStorage
+if (typeof window !== "undefined") {
+  window.addEventListener("storage", (e) => {
+    if (e.key === CLIPBOARD_KEY) {
+      const newValue = e.newValue ? JSON.parse(e.newValue) : null;
+      useClipboardStore.setState({ clipboard: newValue });
+    }
+  });
+}
