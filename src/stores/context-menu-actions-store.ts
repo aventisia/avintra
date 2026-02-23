@@ -1,32 +1,27 @@
-import { Edge, Node } from "@xyflow/react";
 import { create } from "zustand";
+import { Node, Edge } from "@xyflow/react";
 
-// Define the state type
-type State = {
-  /** To keep track of the selected node */
+export interface MenuPosition {
+  top?: number;
+  left?: number;
+  right?: number;
+  bottom?: number;
+}
+
+interface ContextMenuState {
   selectedNode: Node | null;
-
-  /** To keep track of the selected node */
   selectedEdge: Edge | null;
-};
-
-// Define the actions type
-type Actions = {
-  /** To select a node */
+  menu: MenuPosition | null;
   setSelectedNode: (node: Node | null) => void;
-
-  /** To select a edge */
   setSelectedEdge: (edge: Edge | null) => void;
-};
+  setMenu: (menu: MenuPosition | null) => void;
+}
 
-// Create Zustand store
-export const useContextMenuActionsStore = create<State & Actions>((set) => ({
+export const useContextMenuActionsStore = create<ContextMenuState>((set) => ({
   selectedNode: null,
   selectedEdge: null,
-
-  // Action to set the selected node
+  menu: null,
   setSelectedNode: (node) => set({ selectedNode: node }),
-
-  // Action to set the selected edge
   setSelectedEdge: (edge) => set({ selectedEdge: edge }),
+  setMenu: (menu) => set({ menu }),
 }));

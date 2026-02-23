@@ -1,6 +1,7 @@
 import { Background, BackgroundVariant } from "@xyflow/react";
+import { memo } from "react";
 
-export const BackgroundExt = () => {
+export const BackgroundExt = memo(() => {
   return (
     <Background
       variant={BackgroundVariant.Dots}
@@ -9,4 +10,4 @@ export const BackgroundExt = () => {
       className="!bg-slate-200"
     />
   );
-};
+});

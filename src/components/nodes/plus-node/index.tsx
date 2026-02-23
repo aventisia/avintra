@@ -6,31 +6,31 @@ import { PlusNodeTrigger } from "./PlusNodeTrigger";
 import { useNodeSelectorStore } from "@/features/action-selector/stores/action-selector-store";
 import { NodeSelector } from "@/features/action-selector/components";
 import { ActionSelectorOriginType } from "@/types/action-selector-origin-type";
+import { memo } from "react";
 
-export const PlusNode = ({
-  id,
-  type,
-  targetPosition,
-  sourcePosition,
-}: NodeProps) => {
-  // Get setOrigin from store
-  const { setOrigin } = useNodeSelectorStore(
-    useShallow((state) => ({
-      setOrigin: state.setOrigin,
-    })),
-  );
+export const PlusNode = memo(
+  ({ id, type, targetPosition, sourcePosition }: NodeProps) => {
+    // Get setOrigin from store
+    const { setOrigin } = useNodeSelectorStore(
+      useShallow((state) => ({
+        setOrigin: state.setOrigin,
+      })),
+    );
 
-  return (
-    <>
-      <NodeSelector>
-        <PlusNodeTrigger
-          onClick={() => setOrigin(type as ActionSelectorOriginType, id)}
-        />
-      </NodeSelector>
+    return (
+      <>
+        <NodeSelector>
+          <PlusNodeTrigger
+            onClick={() => setOrigin(type as ActionSelectorOriginType, id)}
+          />
+        </NodeSelector>
 
-      <InputHandle position={targetPosition} className="opacity-0" />
+        <InputHandle position={targetPosition} className="opacity-0" />
 
-      <OutputHandle position={sourcePosition} className="opacity-0" />
-    </>
-  );
-};
+        <OutputHandle position={sourcePosition} className="opacity-0" />
+      </>
+    );
+  },
+);
+
+PlusNode.displayName = "PlusNode";

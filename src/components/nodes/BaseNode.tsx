@@ -4,7 +4,6 @@ import { NodeHeader } from "@/components/node-container/node-header/NodeHeader";
 import { NodeHeading } from "@/components/node-container/node-header/NodeHeading";
 import { NodeImage } from "@/components/node-container/node-header/NodeImage";
 import { NodeDescription } from "@/components/node-container/NodeDescription";
-import { ReactFlowContextMenu } from "@/features/react-flow/components/context-menu";
 import { useGroupToggle } from "@/features/react-flow/hooks/useGroupToggle";
 import { NodeDataType } from "@/types/node-data-type";
 import { Separator } from "@aventisia/ui";
@@ -54,14 +53,16 @@ const BaseNode: React.FC<BaseNodeProps> = ({
   };
 
   return (
-    <ReactFlowContextMenu>
+    <>
       <div className={nodeData?.isGroupHead ? "relative" : ""}>
         {nodeData?.isGroupHead &&
           !nodeData?.isExpanded &&
           Array.from({ length: renderCount }).map((_, i) => (
             <div
               key={i}
-              className={`absolute inset-0 left-${renderCount - i} top-${renderCount - i} -z-10 h-[5.3rem] w-[19.5rem] overflow-clip rounded-lg border-2 border-slate-500 bg-white hover:ring hover:ring-ring ${nodeData?.isDisabled && "opacity-50"} `}
+              className={`absolute inset-0 left-${renderCount - i} top-${renderCount - i} -z-10 h-[5.3rem] w-[19.5rem] overflow-clip rounded-lg border-2 border-slate-500 bg-white hover:ring hover:ring-ring ${nodeData?.isDisabled && "opacity-50"} ${
+                nodeData?.isCut && "border-red-400 opacity-60"
+              }`}
             />
           ))}
         <NodeContainer {...{ nodeId, nodeData, selected }} {...props}>
@@ -110,7 +111,7 @@ const BaseNode: React.FC<BaseNodeProps> = ({
           {children}
         </NodeContainer>
       </div>
-    </ReactFlowContextMenu>
+    </>
   );
 };
 

@@ -28,6 +28,7 @@ export const NodeContainer = ({
         className,
         selected && "border-primary ring ring-ring",
         nodeData?.isDisabled && "opacity-50",
+        nodeData?.isCut && "border-red-400 opacity-60",
       )}
       {...props}
     >
