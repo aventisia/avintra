@@ -30,29 +30,23 @@
     },
     {
       "direction": "Input",
-      "type": "switch",
-      "name": "IsRegularExpression",
-      "label": "Is Regular Expression",
-      "description": "Specifies whether the \u0027Text to Wait For\u0027 is a regular expression.",
-      "defaultValue": false,
-      "required": false
-    },
-    {
-      "direction": "Input",
-      "type": "switch",
-      "name": "IgnoreCase",
-      "label": "Ignore Case",
-      "description": "Specifies whether to ignore case when matching the text.",
-      "defaultValue": true,
-      "required": false
-    },
-    {
-      "direction": "Input",
       "type": "text",
-      "name": "Timeout",
-      "label": "Timeout",
-      "description": "The maximum time (in seconds) to wait before timing out. Use 0 for no timeout.",
-      "defaultValue": 10,
+      "name": "TimeoutMs",
+      "label": "Timeout (ms)",
+      "description": "Maximum time to wait in milliseconds. Default: 5000.",
+      "defaultValue": 5000,
+      "required": false
+    },
+    {
+      "direction": "Output",
+      "type": "config-panel-output",
+      "name": "Found",
+      "label": "Found",
+      "description": "Test the result, wait for text is true or false",
+      "defaultValue": {
+        "value": "Found",
+        "enabled": true
+      },
       "required": false
     }
   ]

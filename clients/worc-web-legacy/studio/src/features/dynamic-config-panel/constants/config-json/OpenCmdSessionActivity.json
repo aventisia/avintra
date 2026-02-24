@@ -31,56 +31,56 @@
     {
       "direction": "Input",
       "type": "select",
-      "name": "Encoding",
+      "name": "TextEncoding",
       "label": "Encoding",
       "description": "The encoding to use if \u0027Change Code Page\u0027 is enabled.",
       "defaultValue": "UTF8",
       "required": false,
       "selectOptions": [
         {
-          "label": "UTF8",
+          "label": "UTF-8",
           "value": "UTF8",
-          "description": ""
+          "description": "UTF-8 : Unicode (UTF-8)"
         },
         {
-          "label": "UTF7",
+          "label": "UTF-7",
           "value": "UTF7",
-          "description": ""
+          "description": "UTF-7 : Unicode (UTF-7)"
         },
         {
           "label": "ASCII",
           "value": "ASCII",
-          "description": ""
+          "description": "ASCII : US-ASCII"
         },
         {
-          "label": "Windows1252",
+          "label": "Windows-1252",
           "value": "Windows1252",
-          "description": ""
+          "description": "Windows-1252 : Western European (Windows)"
         },
         {
-          "label": "ISO8859_1",
+          "label": "ISO-8859-1",
           "value": "ISO8859_1",
-          "description": ""
+          "description": "ISO-8859-1 : Latin-1"
         },
         {
-          "label": "ISCIIAssamese",
+          "label": "x-iscii-as",
           "value": "ISCIIAssamese",
-          "description": ""
+          "description": "x-iscii-as : ISCII Assamese"
         },
         {
-          "label": "ISCIIOriya",
+          "label": "x-iscii-or",
           "value": "ISCIIOriya",
-          "description": ""
+          "description": "x-iscii-or : ISCII Oriya"
         },
         {
-          "label": "ISCIIMalayalam",
+          "label": "x-iscii-ma",
           "value": "ISCIIMalayalam",
-          "description": ""
+          "description": "x-iscii-ma : ISCII Malayalam"
         },
         {
-          "label": "ISCIIKannada",
+          "label": "x-iscii-ka",
           "value": "ISCIIKannada",
-          "description": ""
+          "description": "x-iscii-ka : ISCII Kannada"
         }
       ],
       "renderIf": {
@@ -97,7 +97,7 @@
       "type": "config-panel-output",
       "name": "CmdSession",
       "label": "CMD Session",
-      "description": "Details of the opened CMD session.",
+      "description": "Holds the CMD process instance for reuse in subsequent activities.",
       "defaultValue": {
         "value": "CmdSession",
         "enabled": true

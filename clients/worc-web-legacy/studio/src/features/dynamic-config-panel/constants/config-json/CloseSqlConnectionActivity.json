@@ -1,7 +1,7 @@
 {
   "name": "CloseSqlConnection",
   "label": "Close SQL Connection",
-  "discription": "Close an open connection to a database",
+  "discription": "Closes an open SQL database connection",
   "version": "1.0.0",
   "auther": "@aventisia",
   "supportedPlatforms": [
@@ -15,7 +15,7 @@
       "type": "text",
       "name": "SqlConnection",
       "label": "SQL Connection",
-      "description": "The SQL connection to close.",
+      "description": "The SQL connection metadata returned from OpenSqlConnectionActivity.",
       "defaultValue": "",
       "required": true
     }
