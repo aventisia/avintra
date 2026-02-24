@@ -1,0 +1,32 @@
+meta {
+  name: Rename mail folder
+  type: http
+  seq: 4
+}
+
+post {
+  url: {{WORC_APIS_BASE_URL}}/cloud-connector/m365/outlook/invoke
+  body: json
+  auth: bearer
+}
+
+auth:bearer {
+  token: {{ACCESS_TOKEN}}
+}
+
+body:json {
+  {
+    "agentId": "00000000-0000-0000-0000-000000000000",
+    "agentName": "Test",
+    "provider": "M365Outlook",
+    "action": "RenameMailFolder",
+    "credentialId": "DUMMY",
+    "payload": {
+      "MailboxAddress": "{{MAILBOX_ADDRESS}}", 
+      "DisplayName": "Cloud_Connection_MailFolder_Renamed1",
+      "FolderId": "Folder_Id",
+      "IsHidden": false
+    }
+  }
+  
+}
