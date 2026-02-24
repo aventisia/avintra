@@ -1,6 +1,7 @@
 using WorkspaceAPIs.Features.CloudConnectors.Azure;
 using WorkspaceAPIs.Features.CloudConnectors.Email;
 using WorkspaceAPIs.Features.CloudConnectors.LLMProvider;
+using WorkspaceAPIs.Features.CloudConnectors.M365.SharePoint;
 using WorkspaceAPIs.Features.CloudConnectors.SendGrid;
 using WorkspaceAPIs.Features.CloudConnectors.Twilio;
 
@@ -115,7 +116,9 @@ public static class AppServicesExtension
         services.AddScoped<ITwilioConnectorsService, TwilioConnectorsService>();
         services.AddScoped<ILLMProviderConnectorsService, LLMProviderConnectorsService>();
         services.AddScoped<IEmailConnectorsService, EmailConnectorsService>();
-        services.AddScoped<IAzureConnectorsService,AzureConnectorsService>();
+        services.AddScoped<IAzureConnectorsService, AzureConnectorsService>();
+        services.AddScoped<IM365OutlookConnectorsService, M365OutlookConnectorsService>();
+        services.AddScoped<IM365SharePointConnectorsService, M365SharePointConnectorsService>();
         // Common services
         services.AddScoped<IUnitOfWork, UnitOfWork>();
     }

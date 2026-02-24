@@ -169,87 +169,6 @@ public class AzureConnectorsService : IAzureConnectorsService
                         };
                     }
 
-
-                // case AzureActionEnum.UploadFile:
-                //     {
-                //         // Validate localFilePath
-                //         if (!dict.TryGetValue("localFilePath", out var pathObj) ||pathObj == null)
-                //         {
-                //             return new { Error = "localFilePath' is required in payload." };
-                //         }
-                //          string localFilePath = pathObj.ToString();
-
-                //          if(!File.Exists(localFilePath))
-                //          {
-                //              return new { Error = $"File not found at path: {localFilePath}" };
-                //          }
-
-                //         if (string.IsNullOrWhiteSpace(localFilePath))
-                //         {
-                //             return new { Error = $"local file path not found: {localFilePath}" };
-                //         }
-                //         var containerClient = blobServiceClient.GetBlobContainerClient(containerName);
-
-                //         await containerClient.CreateIfNotExistsAsync();
-
-                //         string fileName = Path.GetFileName(localFilePath);
-                //         BlobClient blobClient = containerClient.GetBlobClient(fileName);
-                //         await blobClient.UploadAsync(localFilePath, overwrite: true);
-
-                //         return new
-                //         {
-                //             Success = true,
-                //             BlobName = fileName,
-                //             BlobUrl = blobClient.Uri.ToString()
-                //         };
-                //     }
-
-                // case AzureActionEnum.UploadBlockBlobFromStreamFile:
-                //     {
-
-                //         if (!dict.TryGetValue("fileName", out var toFileNameObj) || toObj == null)
-                //             return new { Error = "'fileName' is required in payload." };
-                //         string fileName = toFileNameObj?.ToString() ?? string.Empty;
-
-                //         var fileStream = (Stream)dict["fileStream"];
-
-                //         if (string.IsNullOrWhiteSpace(fileName))
-                //         {
-                //             return new { Error = "Invalid fileName format - contains illegal characters" };
-                //         }
-
-                //         string contentType = "application/octet-stream";
-                //         if (dict.TryGetValue("contentType", out var contentTypeObj) &&
-                //             contentTypeObj is string ct && !string.IsNullOrEmpty(ct))
-                //         {
-                //             contentType = ct;
-                //         }
-
-                //         // Create clients
-                //         var containerClient = blobServiceClient.GetBlobContainerClient(containerName);
-                //         await containerClient.CreateIfNotExistsAsync();
-
-                //         var blobClient = containerClient.GetBlobClient(fileName);
-
-                //         // Upload
-                //         if (fileStream.CanSeek)
-                //         {
-                //             fileStream.Position = 0;
-                //         }
-
-                //         await blobClient.UploadAsync(fileStream, new BlobUploadOptions
-                //         {
-                //             HttpHeaders = new BlobHttpHeaders
-                //             {
-                //                 ContentType = contentType
-                //             }
-                //         });
-
-                //         _logger.LogInformation("File uploaded successfully");
-                //         return blobClient.Uri.ToString();
-                //     }
-
-
                 case AzureActionEnum.UploadFile:
                     {
                         if (!dict.TryGetValue("fileName", out var fileNameObj) || fileNameObj == null)
@@ -327,28 +246,68 @@ public class AzureConnectorsService : IAzureConnectorsService
                         var blobClient = containerClient.GetBlobClient(fileName);
 
                         if (!await blobClient.ExistsAsync())
+                        {
                             return new { IsSuccess = false, Message = $"File '{fileName}' not found." };
+                        }
 
-                        var downloadInfo = await blobClient.DownloadAsync();
                         var memoryStream = new MemoryStream();
-                        await downloadInfo.Value.Content.CopyToAsync(memoryStream);
+                        await blobClient.DownloadToAsync(memoryStream);
                         memoryStream.Position = 0;
 
-                        // Convert stream to base64 string
-                        string base64Content = Convert.ToBase64String(memoryStream.ToArray());
-                        memoryStream.Dispose();
-                        downloadInfo.Value.Content.Dispose();
-                        
+                        var properties = await blobClient.GetPropertiesAsync();
                         return new
                         {
                             IsSuccess = true,
                             Message = "File downloaded successfully.",
-                            FileName = fileName,
-                            ContentType = downloadInfo.Value.Details.ContentType,
-                            FileStream = memoryStream,
+                            FileName = Path.GetFileName(fileName),
+                            FileBase64 = Convert.ToBase64String(memoryStream.ToArray()),
+                            ContentType = properties.Value.ContentType ?? "application/octet-stream",
                             BlobUrl = blobClient.Uri.ToString()
                         };
                     }
+
+                case AzureActionEnum.DownloadFileToLocation:
+                    {
+                        if (!dict.TryGetValue("fileName", out var fileNameObj) || fileNameObj == null)
+                            return new { IsSuccess = false, Message = "'fileName' is required in payload." };
+
+                        string fileName = fileNameObj?.ToString() ?? string.Empty;
+
+                        if (!dict.TryGetValue("localSavePath", out var localSavePathObj) || localSavePathObj == null)
+                            return new { IsSucess = false, Message = "localSavePath is required" };
+
+                        string localSavePath = localSavePathObj?.ToString() ?? string.Empty;
+
+                        var containerClient = blobServiceClient.GetBlobContainerClient(containerName);
+                        var blobClient = containerClient.GetBlobClient(fileName);
+
+                        if (!await blobClient.ExistsAsync())
+                        {
+                            return new
+                            {
+                                IsSuccess = false,
+                                Message = $"Blob '{fileName}' not found."
+                            };
+                        }
+
+                        var directoryPath = Path.GetDirectoryName(localSavePath);
+                        if (!Directory.Exists(directoryPath))
+                        {
+                            Directory.CreateDirectory(directoryPath);
+                        }
+
+                       
+                        await blobClient.DownloadToAsync(localSavePath);
+
+                        return new
+                        {
+                            IsSuccess = true,
+                            Message = "File downloaded and saved successfully.",
+                            SavedPath = localSavePath,
+                            BlobUrl = blobClient.Uri.ToString()
+                        };
+                    }
+
                 default:
                     return new { Error = "Invalid Azure action." };
             }

@@ -1,0 +1,123 @@
+{
+  "name": "GetEmails",
+  "description": "Retrieves email messages from a Microsoft 365 Outlook mailbox using Microsoft Graph API. Supports filtering by folder, sender, recipients, subject, unread status, importance, and attachment presence.",
+  "version": "1.0.0",
+  "author": "rahmat",
+  "fields": [
+    {
+      "direction": "Input",
+      "type": "credentials-select",
+      "name": "__CredentialId__M365",
+      "label": "M365 Outlook Credential",
+      "description": "Microsoft 365 credential used to authenticate and access mailbox data through Microsoft Graph API.",
+      "defaultValue": ""
+    },
+    {
+      "direction": "Input",
+      "type": "text",
+      "name": "MailboxAddress",
+      "label": "Mailbox Address",
+      "description": "Mailbox address to retrieve emails from. Leave empty to use the authenticated user's mailbox.",
+      "defaultValue": ""
+    },
+    {
+      "direction": "Input",
+      "type": "text",
+      "name": "Folder",
+      "label": "Mailbox Folder",
+      "description": "The folder to retrieve emails from (e.g., Inbox, Archive, SentItems).",
+      "defaultValue": "Archive"
+    },
+    {
+      "direction": "Input",
+      "type": "text",
+      "name": "FromFilter",
+      "label": "Filter by Sender",
+      "description": "Retrieve emails received from the specified sender email address.",
+      "defaultValue": "amuthan.cp12@gmail.com"
+    },
+    {
+      "direction": "Input",
+      "type": "text",
+      "name": "ToFilter",
+      "label": "Filter by Recipient (To)",
+      "description": "Retrieve emails sent to the specified recipient email address.",
+      "defaultValue": ""
+    },
+    {
+      "direction": "Input",
+      "type": "text",
+      "name": "CcFilter",
+      "label": "Filter by CC",
+      "description": "Retrieve emails where the specified address appears in the CC field.",
+      "defaultValue": ""
+    },
+    {
+      "direction": "Input",
+      "type": "boolean",
+      "name": "UnreadOnly",
+      "label": "Unread Messages Only",
+      "description": "If true, retrieves only unread emails.",
+      "defaultValue": false
+    },
+    {
+      "direction": "Input",
+      "type": "boolean",
+      "name": "OnlyWithAttachments",
+      "label": "Only Emails with Attachments",
+      "description": "If true, retrieves only emails that contain attachments.",
+      "defaultValue": false
+    },
+    {
+      "direction": "Input",
+      "type": "boolean",
+      "name": "IncludeAttachments",
+      "label": "Include Attachments",
+      "description": "If true, includes attachment details in the retrieved emails.",
+      "defaultValue": false
+    },
+    {
+      "direction": "Input",
+      "type": "text",
+      "name": "SubjectContains",
+      "label": "Subject Contains",
+      "description": "Retrieve emails where the subject contains the specified text.",
+      "defaultValue": ""
+    },
+    {
+      "direction": "Input",
+      "type": "boolean",
+      "name": "Count",
+      "label": "Count Only",
+      "description": "If true, returns only the count of emails matching the criteria.",
+      "defaultValue": false
+    },
+    {
+      "direction": "Input",
+      "type": "number",
+      "name": "Top",
+      "label": "Maximum Results",
+      "description": "Specifies the maximum number of emails to retrieve.",
+      "defaultValue": 2
+    },
+    {
+      "direction": "Input",
+      "type": "number",
+      "name": "Skip",
+      "label": "Skip",
+      "description": "Number of emails to skip from the top of the result set.",
+      "defaultValue": 0
+    },
+    {
+      "direction": "Output",
+      "type": "config-panel-output",
+      "name": "Result",
+      "label": "Result",
+      "description": "Returns the list of retrieved emails including metadata such as subject, sender, recipients, body preview, and attachments if included.",
+      "defaultValue": {
+        "value": "Result",
+        "enabled": true
+      }
+    }
+  ]
+}

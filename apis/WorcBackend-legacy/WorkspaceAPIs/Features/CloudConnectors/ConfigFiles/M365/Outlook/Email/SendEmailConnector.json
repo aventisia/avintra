@@ -1,0 +1,122 @@
+{
+  "name": "SendEmail",
+  "description": "Sends an email using Microsoft 365 Outlook via Microsoft Graph API. Supports recipients, CC, BCC, content type, importance, sensitivity, and optional saving to Sent Items.",
+  "version": "1.0.1",
+  "author": "rahmat",
+  "fields": [
+    {
+      "direction": "Input",
+      "type": "credentials-select",
+      "name": "__CredentialId__M365",
+      "label": "M365 Outlook Credential",
+      "description": "The Microsoft 365 credential containing OAuth details required to authenticate and send the email.",
+      "defaultValue": ""
+    },
+    {
+      "direction": "Input",
+      "type": "text",
+      "name": "To",
+      "label": "To",
+      "description": "Primary recipient email address(es). Separate multiple addresses with semicolons (;).",
+      "defaultValue": "email@domain.com"
+    },
+    {
+      "direction": "Input",
+      "type": "text",
+      "name": "From",
+      "label": "From (Send As)",
+      "description": "The sender's email address. The credential must have 'Send As' permissions for this address.",
+      "defaultValue": ""
+    },
+    {
+      "direction": "Input",
+      "type": "text",
+      "name": "Subject",
+      "label": "Subject",
+      "description": "The subject line of the email message.",
+      "defaultValue": "Test the Outlook:"
+    },
+    {
+      "direction": "Input",
+      "type": "text",
+      "name": "CC",
+      "label": "CC",
+      "description": "Carbon copy recipient email address(es). Separate multiple addresses with semicolons (;).",
+      "defaultValue": ""
+    },
+    {
+      "direction": "Input",
+      "type": "text",
+      "name": "BCC",
+      "label": "BCC",
+      "description": "Blind carbon copy recipient email address(es). Separate multiple addresses with semicolons (;).",
+      "defaultValue": ""
+    },
+    {
+      "direction": "Input",
+      "type": "dropdown",
+      "name": "ContentType",
+      "label": "Content Type",
+      "description": "The format of the email body content.",
+      "options": [
+        "Text",
+        "HTML"
+      ],
+      "defaultValue": "Text"
+    },
+    {
+      "direction": "Input",
+      "type": "multiline-text",
+      "name": "Content",
+      "label": "Content",
+      "description": "The body of the email message. Can contain plain text or HTML depending on the content type.",
+      "defaultValue": "Hello, I am from aventisia"
+    },
+    {
+      "direction": "Input",
+      "type": "dropdown",
+      "name": "Importance",
+      "label": "Importance",
+      "description": "The priority level of the email.",
+      "options": [
+        "Low",
+        "Normal",
+        "High"
+      ],
+      "defaultValue": "Normal"
+    },
+    {
+      "direction": "Input",
+      "type": "dropdown",
+      "name": "Sensitivity",
+      "label": "Sensitivity",
+      "description": "Specifies the sensitivity of the email.",
+      "options": [
+        "Normal",
+        "Personal",
+        "Private",
+        "Confidential"
+      ],
+      "defaultValue": "Normal"
+    },
+    {
+      "direction": "Input",
+      "type": "boolean",
+      "name": "SaveToSentItems",
+      "label": "Save to Sent Items",
+      "description": "Indicates whether the sent email should be saved in the Sent Items folder.",
+      "defaultValue": false
+    },
+    {
+      "direction": "Output",
+      "type": "config-panel-output",
+      "name": "Result",
+      "label": "Result",
+      "description": "Returns the status and details of the sent email.",
+      "defaultValue": {
+        "value": "Result",
+        "enabled": true
+      }
+    }
+  ]
+}

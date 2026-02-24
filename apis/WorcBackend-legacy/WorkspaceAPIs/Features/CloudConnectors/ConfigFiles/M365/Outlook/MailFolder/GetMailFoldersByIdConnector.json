@@ -1,0 +1,43 @@
+{
+  "name": "GetEmailsByFolder",
+  "description": "Retrieves a list of emails from a specified folder within a Microsoft 365 mailbox using the Microsoft Graph API.",
+  "version": "1.0.0",
+  "author": "rahmat",
+  "fields": [
+    {
+      "direction": "Input",
+      "type": "credentials-select",
+      "name": "__CredentialId__M365",
+      "label": "Microsoft 365 Credentials",
+      "description": "Microsoft 365 credentials used to authenticate and access mailbox data through the Microsoft Graph API.",
+      "defaultValue": ""
+    },
+    {
+      "direction": "Input",
+      "type": "text",
+      "name": "MailboxAddress",
+      "label": "Mailbox Address",
+      "description": "The email address of the mailbox from which emails will be retrieved. If left empty, the authenticated user's mailbox will be used.",
+      "defaultValue": ""
+    },
+    {
+      "direction": "Input",
+      "type": "text",
+      "name": "FolderId",
+      "label": "Folder ID",
+      "description": "The unique ID of the folder from which emails will be retrieved.",
+      "defaultValue": "folder_id"
+    },
+    {
+      "direction": "Output",
+      "type": "config-panel-output",
+      "name": "Result",
+      "label": "Emails List",
+      "description": "Returns a list of emails from the specified folder, including metadata such as subject, sender, recipients, and body preview.",
+      "defaultValue": {
+        "value": "Result",
+        "enabled": true
+      }
+    }
+  ]
+}
