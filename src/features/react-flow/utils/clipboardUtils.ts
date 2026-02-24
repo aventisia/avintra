@@ -70,7 +70,25 @@ export const generatePastedSubgraph = (
         newData.conditional2DefaultBranchEdgeId;
     }
 
-    return { ...node, id: newId, selected: true, data: newData };
+    // Remap customParentId for Branch End Nodes
+    if (newData.customParentId && typeof newData.customParentId === "string") {
+      newData.customParentId =
+        idMap.get(newData.customParentId) || newData.customParentId;
+    }
+
+    // Safely remap the native React Flow parentId if it exists on the node
+    const mappedParentId =
+      node.parentId && typeof node.parentId === "string"
+        ? idMap.get(node.parentId) || node.parentId
+        : undefined;
+
+    const newNode: Node = { ...node, id: newId, selected: true, data: newData };
+
+    if (mappedParentId) {
+      newNode.parentId = mappedParentId;
+    }
+
+    return newNode;
   });
 
   // 3. Map edges and safely clone custom SVG marker IDs
