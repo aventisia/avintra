@@ -7,12 +7,28 @@ import { toast } from "@aventisia/ui/sonner";
 import { Edge } from "@xyflow/react";
 import { useContextMenuActionsStore } from "@/stores/context-menu-actions-store";
 import { MARKER_ARROW_PREFIX } from "@/constants";
+import { useDagreAutoLayout } from "@/hooks/useDagreAutoLayout";
 
 export function useNodeGrouping() {
-  const { selectedNode } = useContextMenuActionsStore();
+  const { selectedNode, setMenu, setSelectedNode, setSelectedEdge } =
+    useContextMenuActionsStore(
+      useShallow((state) => ({
+        selectedNode: state.selectedNode,
+        setMenu: state.setMenu,
+        setSelectedNode: state.setSelectedNode,
+        setSelectedEdge: state.setSelectedEdge,
+      })),
+    );
+  const autoLayout = useDagreAutoLayout();
+
+  const resetContextMenu = () => {
+    setMenu(null);
+    setSelectedNode(null);
+    setSelectedEdge(null);
+  };
 
   // Get ReactFlowExt store state & actions
-  const { nodes, edges, setNodes, setEdges } = useReactFlowExtStore(
+  const { nodes, edges } = useReactFlowExtStore(
     useShallow((state) => ({
       nodes: state.nodes,
       setNodes: state.setNodes,
@@ -157,8 +173,10 @@ export function useNodeGrouping() {
 
     const finalEdges = tempEdge ? [...edges, tempEdge] : [...edges];
 
-    setNodes(updatedNodes);
-    setEdges(finalEdges);
+    // setNodes(updatedNodes);
+    // setEdges(finalEdges);
+    autoLayout({ newNodes: updatedNodes, newEdges: finalEdges });
+    resetContextMenu();
   };
 
   const ungroupNodes = () => {
@@ -187,8 +205,10 @@ export function useNodeGrouping() {
       (edge) => !(edge.data?.isTemporary && edge.id.includes(groupId)),
     );
 
-    setNodes(updatedNodes);
-    setEdges(updatedEdges);
+    // setNodes(updatedNodes);
+    // setEdges(updatedEdges);
+    autoLayout({ newNodes: updatedNodes, newEdges: updatedEdges });
+    resetContextMenu();
   };
   return { groupNodes, ungroupNodes };
 }

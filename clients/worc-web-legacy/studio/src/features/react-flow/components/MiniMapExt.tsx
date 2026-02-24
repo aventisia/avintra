@@ -1,8 +1,9 @@
 import { useStudioPreferencesStore } from "@/stores/studio-preferences-store";
 import { MiniMap } from "@xyflow/react";
+import { memo } from "react";
 import { useShallow } from "zustand/react/shallow";
 
-export const MiniMapExt = () => {
+export const MiniMapExt = memo(() => {
   // Get Studio Preferences store state
   const { miniMap } = useStudioPreferencesStore(
     useShallow((state) => ({
@@ -24,4 +25,4 @@ export const MiniMapExt = () => {
       )}
     </>
   );
-};
+});

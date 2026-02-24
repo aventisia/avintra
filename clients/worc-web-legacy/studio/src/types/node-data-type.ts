@@ -45,6 +45,9 @@ type NodeDataType = {
   color?: string;
   isBlock?: boolean;
   isDisabled?: boolean;
+  isCut?: boolean;
+  clipboardGroupId?:string
+  clipboardGroupHead?:boolean
   selectedAgent?: { [key: string]: string };
   selectedModel?: { [key: string]: string };
   selectedBlock?: { [key: string]: string };

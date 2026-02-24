@@ -4,25 +4,17 @@ import { createPlusEdgeObj } from "@/utils/create-edges/create-plus-edge-obj";
 import { createNodesAndEdgesUtil } from "@/utils/create-node-and-edges-util";
 import { Edge } from "@xyflow/react";
 import { useCallback } from "react";
-import { useShallow } from "zustand/react/shallow";
 import { useDagreAutoLayout } from "./useDagreAutoLayout";
 
 export const useAddFirstNodeToBranch = () => {
-  // Get ReactFlowExt store state & actions
-  const { nodes, edges } = useReactFlowExtStore(
-    useShallow((state) => ({
-      nodes: state.nodes,
-      edges: state.edges,
-    })),
-  );
-
-  // Auto layout the flow
   const autoLayout = useDagreAutoLayout();
 
   // Handler to add first node to branch
   const addFirstNodeToBranch = useCallback(
     (nodeData: NodeDataType, plusNodeId: string) => {
-      // Get branch start node edge
+      // JIT State Fetching: Get latest state instantly without subscribing
+      const { nodes, edges } = useReactFlowExtStore.getState();
+
       const branchStartNodeEdge = edges.find(
         (edge) => edge.target === plusNodeId,
       ) as Edge;
@@ -87,7 +79,7 @@ export const useAddFirstNodeToBranch = () => {
       // Auto organize node & edge
       autoLayout({ newNodes: updatedNodes, newEdges: updatedEdges });
     },
-    [edges, nodes, autoLayout],
+    [autoLayout],
   );
 
   // Return the handler

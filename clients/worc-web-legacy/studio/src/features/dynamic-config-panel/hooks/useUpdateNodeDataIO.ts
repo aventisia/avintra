@@ -1,6 +1,6 @@
 import { useReactFlowExtStore } from "@/stores/react-flow-ext-store";
 import { NodeInputType, NodeOutputType } from "@/types/node-data-type";
-import { Node } from "@xyflow/react";
+import { useReactFlow } from "@xyflow/react";
 import { useShallow } from "zustand/react/shallow";
 import { useDynamicConfigPanelStore } from "../stores/dcp-store";
 
@@ -8,16 +8,17 @@ import { useDynamicConfigPanelStore } from "../stores/dcp-store";
  * Hook to update a node's input/output data and flowVariablesObject in the ReactFlow store.
  */
 export const useUpdateNodeDataIO = () => {
+  const { updateNodeData } = useReactFlow();
+
   // Get ReactFlowExt store state & actions
-  const { nodes, flowVariablesObject, setNodes, setFlowVariablesObject } =
-    useReactFlowExtStore(
-      useShallow((state) => ({
-        nodes: state.nodes,
-        flowVariablesObject: state.flowVariablesObject,
-        setNodes: state.setNodes,
-        setFlowVariablesObject: state.setFlowVariablesObject,
-      })),
-    );
+  const { flowVariablesObject, setFlowVariablesObject } = useReactFlowExtStore(
+    useShallow((state) => ({
+      nodes: state.nodes,
+      flowVariablesObject: state.flowVariablesObject,
+      setNodes: state.setNodes,
+      setFlowVariablesObject: state.setFlowVariablesObject,
+    })),
+  );
 
   const { nodeData, setNodeData } = useDynamicConfigPanelStore(
     useShallow((state) => ({
@@ -41,38 +42,24 @@ export const useUpdateNodeDataIO = () => {
     selectedBlock?: { [key: string]: string }, // block param
     selectedModel?: { [key: string]: string }, // model param
   ) => {
-    // Find the node by id and update its inputs and outputs
-    const updatedNodes = nodes.map((node: Node) => {
-      if (node.id === nodeId) {
-        // Set valid node label
-        const validNodeLabel =
-          typeof nodeLabel === "string" && nodeLabel.length > 0
-            ? nodeLabel
-            : node.data.label;
+    //  node by id and update its inputs and outputs
 
-        // Set nodeData
-        if (nodeData) {
-          setNodeData({ ...nodeData, inputs: newInputs, outputs: newOutputs });
-        }
+    // Set nodeData
+    if (nodeData) {
+      setNodeData({ ...nodeData, inputs: newInputs, outputs: newOutputs });
+    }
+    // Set valid node label
+    const validNodeLabel =
+      typeof nodeLabel === "string" && nodeLabel.length > 0 && nodeLabel;
 
-        return {
-          ...node,
-          data: {
-            ...node.data,
-            label: validNodeLabel,
-            inputs: newInputs,
-            outputs: newOutputs,
-            ...(selectedAgent !== undefined && { selectedAgent }), //  agent add if defined
-            ...(selectedBlock !== undefined && { selectedBlock }), //  block add if defined
-            ...(selectedModel !== undefined && { selectedModel }), //  model add if defined
-          },
-        };
-      }
-      return node;
+    updateNodeData(nodeId, {
+      inputs: newInputs,
+      outputs: newOutputs,
+      ...(validNodeLabel && { label: validNodeLabel }), //  node label
+      ...(selectedAgent !== undefined && { selectedAgent }), //  agent add if defined
+      ...(selectedBlock !== undefined && { selectedBlock }), //  block add if defined
+      ...(selectedModel !== undefined && { selectedModel }), //  model add if defined
     });
-
-    // Update the nodes in the store
-    setNodes(updatedNodes);
   };
 
   /**
