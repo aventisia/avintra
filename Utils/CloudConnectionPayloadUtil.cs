@@ -31,4 +31,37 @@ public static class CloudConnectionPayloadUtil
         if (payload == null) return defaultValue;
         return payload.ContainsKey(key) && int.TryParse(payload[key]?.ToString(), out var i) ? i : defaultValue;
     }
+
+    /// <summary>
+    /// Appends a query parameter to a URL, ensuring proper formatting.
+    /// </summary>
+    /// <param name="url">The base URL.</param>
+    /// <param name="key">The key of the query parameter.</param>
+    /// <param name="value">The value of the query parameter.</param>
+    /// <returns>The URL with the appended query parameter.</returns>
+    public static string AppendQueryParameter(string url, string key, string value)
+    {
+        var queryParam = $"{Uri.EscapeDataString(key)}={Uri.EscapeDataString(value)}";
+
+        return url.Contains("?")
+            ? $"{url}&{queryParam}"
+            : $"{url}?{queryParam}";
+    }
+
+    /// <summary>
+    /// Safely retrieves a list of values from the payload dictionary.
+    /// Returns an empty list if the key doesn't exist or if the value is not a valid list.
+    /// </summary>
+    public static List<T> GetList<T>(Dictionary<string, object> payload, string key)
+    {
+        if (payload == null || !payload.ContainsKey(key)) return new List<T>();
+
+        // Try to cast the value to a list of type T, return empty list if not successful
+        if (payload[key] is List<object> listObj)
+        {
+            return listObj.Cast<T>().ToList();
+        }
+
+        return new List<T>();
+    }
 }
