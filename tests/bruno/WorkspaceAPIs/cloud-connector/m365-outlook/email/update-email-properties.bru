@@ -1,0 +1,33 @@
+meta {
+  name: Update email properties
+  type: http
+  seq: 4
+}
+
+post {
+  url: {{WORC_APIS_BASE_URL}}/cloud-connector/m365/outlook/invoke
+  body: json
+  auth: bearer
+}
+
+auth:bearer {
+  token: {{ACCESS_TOKEN}}
+}
+
+body:json {
+  {
+    "agentId": "00000000-0000-0000-0000-000000000000",
+    "agentName": "Test",
+    "provider": "M365Outlook",
+    "action": "UpdateAllEmailProperties",
+    "credentialId": "DUMMY",
+    "payload": {
+      "MailboxAddress": "contact@aventisia.com",
+      "MessageId": "AAMkAGIzMzYxYmEyLTBlMjctNDBmNi04ZjcyLWJjYzMwMjI2NDI5YQBGAAAAAACmgkrdTS3ATqcjKICk77O7BwDB5qP7LiE2QYd7aQ-ZaTnZAAAAAAEMAADB5qP7LiE2QYd7aQ-ZaTnZAAJ6-PimAAA=",
+      "IsRead": false,
+      "FlagStatus": "notFlagged",
+      "Categories": [],
+      "Importance": "Normal"
+    }
+  }
+}

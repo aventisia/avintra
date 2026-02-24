@@ -1,0 +1,42 @@
+meta {
+  name: Get emails
+  type: http
+  seq: 2
+}
+
+post {
+  url: {{WORC_APIS_BASE_URL}}/cloud-connector/m365/outlook/invoke
+  body: json
+  auth: bearer
+}
+
+auth:bearer {
+  token: {{ACCESS_TOKEN}}
+}
+
+body:json {
+  {
+    "agentId": "00000000-0000-0000-0000-000000000000",
+    "agentName": "Test",
+    "provider": "M365Outlook",
+    "action": "GetEmails",
+    "credentialId": "DUMMY",
+    "payload": {
+      "MailboxAddress": "{{MAILBOX_ADDRESS}}",
+      "Folder": "Archive",
+      "FromFilter": "amuthan.cp12@gmail.com",
+      "ToFilter": "",
+      "CcFilter": "",
+      "ToOrCcFilter": "",
+      "UnreadOnly": false,
+      "Importance": "",
+      "OnlyWithAttachments": false,
+      "IncludeAttachments": false,
+      "SubjectContains": "",
+      //"Search": "find attached my automation agent submission for the practical task",
+      "Count": false,
+      "Top": 2,
+      "Skip": 0
+    }
+  }
+}

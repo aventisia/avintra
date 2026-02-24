@@ -1,0 +1,30 @@
+meta {
+  name: Get mail folders
+  type: http
+  seq: 2
+}
+
+post {
+  url: {{WORC_APIS_BASE_URL}}/cloud-connector/m365/outlook/invoke
+  body: json
+  auth: bearer
+}
+
+auth:bearer {
+  token: {{ACCESS_TOKEN}}
+}
+
+body:json {
+  {
+    "agentId": "00000000-0000-0000-0000-000000000000",
+    "agentName": "Test",
+    "provider": "M365Outlook",
+    "action": "GetMailFolders",
+    "credentialId": "DUMMY",
+    "payload": {
+      "MailboxAddress": "{{MAILBOX_ADDRESS}}",
+      "IncludeHiddenFolders": false
+    }
+  }
+  
+}
