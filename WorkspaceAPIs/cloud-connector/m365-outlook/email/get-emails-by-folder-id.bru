@@ -1,0 +1,29 @@
+meta {
+  name: Get emails by folder id
+  type: http
+  seq: 6
+}
+
+post {
+  url: {{WORC_APIS_BASE_URL}}/cloud-connector/m365/outlook/invoke
+  body: json
+  auth: bearer
+}
+
+auth:bearer {
+  token: {{ACCESS_TOKEN}}
+}
+
+body:json {
+  {
+    "agentId": "00000000-0000-0000-0000-000000000000",
+    "agentName": "Test",
+    "provider": "M365Outlook",
+    "action": "GetEmailsByFolder",
+    "credentialId": "DUMMY",
+    "payload": {
+      "MailboxAddress": "{{MY_EMAIL}}",
+      "FolderId": "AAMkAGIzMzYxYmEyLTBlMjctNDBmNi04ZjcyLWJjYzMwMjI2NDI5YQAuAAAAAACmgkrdTS3ATqcjKICk77O7AQDB5qP7LiE2QYd7aQ-ZaTnZAAAAAAEKAAA="
+    }
+  }
+}
