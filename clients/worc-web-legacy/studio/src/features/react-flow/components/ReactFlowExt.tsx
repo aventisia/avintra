@@ -1,65 +1,46 @@
 import { CustomEdgeTypeObj } from "@/constants/custom-edge-type-obj";
 import { CustomNodeTypeObj } from "@/constants/custom-node-type-obj";
 import { defaultEdgeOptions } from "@/constants/default-edge-options";
-import { DCPDialog } from "@/features/dynamic-config-panel";
 import { useTrackSelection } from "@/hooks/useTrackSelection";
 import { useContextMenuActionsStore } from "@/stores/context-menu-actions-store";
 import { useReactFlowExtStore } from "@/stores/react-flow-ext-store";
-import {
-  Edge,
-  EdgeMouseHandler,
-  Node,
-  NodeMouseHandler,
-  ReactFlow,
-} from "@xyflow/react";
+import { Edge, Node, OnSelectionChangeParams, ReactFlow } from "@xyflow/react";
 import "@xyflow/react/dist/style.css";
-import { useCallback, useMemo } from "react";
+import { useCallback, useMemo, useRef } from "react";
 import { useShallow } from "zustand/react/shallow";
 import { useConfirmDelete } from "../hooks/useConfirmDelete";
 import { useFetchFlowToLoad } from "../hooks/useFetchFlowToLoad";
 import { useOnNodeDelete } from "../hooks/useOnNodeDelete";
 import { useUpdateFlowSilently } from "../hooks/useUpdateFlowSilently";
 import "../styles/override-node-style.css";
+import "../styles/override-edge-style.css";
 import "../styles/override-panel-style.css";
 import "../styles/remove-attribution.css";
 import { BackgroundExt } from "./BackgroundExt";
 import { MiniMapExt } from "./MiniMapExt";
 import { ViewControls } from "./view-controls";
-import ExecutionLogDialog from "@/features/flow-execution-log/components";
-import SearchCommandDialog from "@/features/search/componets";
-import { FlowSettings } from "@/features/flow-settings/components";
-import AddInputsOutputsDialog from "@/features/add-input-output/components/AddInputsOutputsDialog";
-import { FlowBlockCrudDialog } from "@/features/flow-block/components/flow-block-crud-dialog";
-import ShareAccessDialog from "@/features/share-access/components";
-import { SaveAsTemplateDialog } from "@/features/save-as-template/components/SaveAsTemplateDialog";
-import ImportFlow from "@/features/import-flow/components/ImportFlow";
-import ShortcutsDialog from "@/features/keyboard-shortcuts/KeyboardShortcutsDialog";
+
 import { useFetchConfigVariables } from "../hooks/useFetchConfigVariables";
+import { useCopyPasteShortcuts } from "../hooks/useCopyPasteShortcuts";
+import { ReactFlowContextMenu } from "./context-menu";
+import { ReactFlowDialogWrapper } from "./ReactFlowDialogWrapper";
 
 /**
  * A custom extension of the ReactFlow component.
  */
 export const ReactFlowExt = () => {
   // Get ReactFlowExt store state & actions
-  const {
-    nodes,
-    edges,
-    panOnDrag,
-    // isPublished,
-    onNodesChange,
-    onEdgesChange,
-    onConnect,
-  } = useReactFlowExtStore(
-    useShallow((state) => ({
-      nodes: state.nodes,
-      edges: state.edges,
-      panOnDrag: state.panOnDrag,
-      onNodesChange: state.onNodesChange,
-      onEdgesChange: state.onEdgesChange,
-      onConnect: state.onConnect,
-      isPublished: state.isPublished,
-    })),
-  );
+  const { nodes, edges, panOnDrag, onNodesChange, onEdgesChange, onConnect } =
+    useReactFlowExtStore(
+      useShallow((state) => ({
+        nodes: state.nodes,
+        edges: state.edges,
+        panOnDrag: state.panOnDrag,
+        onNodesChange: state.onNodesChange,
+        onEdgesChange: state.onEdgesChange,
+        onConnect: state.onConnect,
+      })),
+    );
 
   // Memoize the custom node, edges types
   const customNodeTypeObjMemo = useMemo(() => CustomNodeTypeObj, []);
@@ -67,6 +48,7 @@ export const ReactFlowExt = () => {
 
   // Track ReactFlow selection change
   useTrackSelection();
+  useCopyPasteShortcuts();
 
   // Fetch flow details and set document title
   useFetchFlowToLoad();
@@ -83,64 +65,127 @@ export const ReactFlowExt = () => {
   const { onNodesDelete } = useOnNodeDelete();
 
   // Setter functions for context menu node
-  const { setSelectedNode, setSelectedEdge } = useContextMenuActionsStore();
+  const { setSelectedNode, setSelectedEdge, setMenu } =
+    useContextMenuActionsStore();
 
-  // Define onNodeContextMenu handler
-  const onNodeContextMenu: NodeMouseHandler = useCallback(
-    (_: React.MouseEvent, node: Node) => {
+  const reactFlowWrapper = useRef<HTMLDivElement>(null);
+
+  const calculateMenuPosition = (
+    event: MouseEvent | React.MouseEvent<Element, MouseEvent>,
+  ) => {
+    const pane = reactFlowWrapper.current?.getBoundingClientRect();
+    if (!pane) return null;
+
+    return {
+      top:
+        event.clientY < pane.height - 300
+          ? event.clientY - pane.top
+          : undefined,
+      left:
+        event.clientX < pane.width - 250
+          ? event.clientX - pane.left
+          : undefined,
+      right:
+        event.clientX >= pane.width - 250
+          ? pane.width - event.clientX + pane.left
+          : undefined,
+      bottom:
+        event.clientY >= pane.height - 300
+          ? pane.height - event.clientY + pane.top
+          : undefined,
+    };
+  };
+
+  const onNodeContextMenu = useCallback(
+    (event: React.MouseEvent, node: Node) => {
+      event.preventDefault();
+      const position = calculateMenuPosition(event);
+      if (!position) return;
+
       setSelectedNode(node);
+      setSelectedEdge(null);
+      setMenu(position);
+
       if (import.meta.env.MODE !== "production") console.log("NODE:", node);
     },
-    [setSelectedNode],
+    [setSelectedNode, setSelectedEdge, setMenu],
   );
 
   // Define onEdgeContextMenu handler
-  const onEdgeContextMenu: EdgeMouseHandler = useCallback(
-    (_: React.MouseEvent, edge: Edge) => {
+  const onEdgeContextMenu = useCallback(
+    (event: React.MouseEvent, edge: Edge) => {
+      event.preventDefault();
+      const position = calculateMenuPosition(event);
+      if (!position) return;
+
       setSelectedEdge(edge);
+      setSelectedNode(null);
+      setMenu(position);
     },
-    [setSelectedEdge],
+    [setSelectedNode, setSelectedEdge, setMenu],
+  );
+
+  const onPaneContextMenu = useCallback(
+    (event: MouseEvent | React.MouseEvent<Element, MouseEvent>) => {
+      event.preventDefault();
+      const position = calculateMenuPosition(event);
+      if (!position) return;
+
+      setSelectedNode(null);
+      setSelectedEdge(null);
+      setMenu(position);
+    },
+    [setSelectedNode, setSelectedEdge, setMenu],
+  );
+
+  const onPaneClick = useCallback(() => {
+    setMenu(null);
+  }, [setMenu]);
+
+  const handleSelectionChange = useCallback(
+    ({ nodes }: OnSelectionChangeParams) => {
+      setSelectedNode(nodes[0] || null);
+    },
+    [],
   );
 
   // Render ReactFlow component
   return (
-    <DCPDialog>
-      <ReactFlow
-        fitView
-        minZoom={0.1}
-        panOnDrag={panOnDrag}
-        panOnScroll
-        defaultEdgeOptions={defaultEdgeOptions}
-        nodeTypes={customNodeTypeObjMemo}
-        edgeTypes={customEdgesTypeObjMemo}
-        nodes={nodes}
-        edges={edges}
-        onNodesChange={onNodesChange}
-        onNodesDelete={onNodesDelete}
-        onEdgesChange={onEdgesChange}
-        onBeforeDelete={() => onBeforeDelete({ nodes, edges })}
-        onConnect={onConnect}
-        deleteKeyCode={"Delete"}
-        onNodeContextMenu={onNodeContextMenu}
-        onEdgeContextMenu={onEdgeContextMenu}
-        // TODO: Toggles Reactflows interactivity - we can use this to lock the flow
-        // nodesDraggable={!isLocked}
-        // nodesConnectable={!isLocked}
-        // elementsSelectable={!isLocked}
-      >
-        <ViewControls />
-        <BackgroundExt />
-        <MiniMapExt />
-      </ReactFlow>
-      <ExecutionLogDialog />
-      <SearchCommandDialog />
-      <ShareAccessDialog />
-      <AddInputsOutputsDialog />
-      <FlowSettings />
-      <FlowBlockCrudDialog />
-      <SaveAsTemplateDialog />
-      <ShortcutsDialog />
-      <ImportFlow />
-    </DCPDialog>
+    <>
+      <div ref={reactFlowWrapper} className="relative h-full w-full">
+        <ReactFlow
+          fitView
+          minZoom={0.1}
+          panOnDrag={panOnDrag}
+          panOnScroll
+          defaultEdgeOptions={defaultEdgeOptions}
+          nodeTypes={customNodeTypeObjMemo}
+          edgeTypes={customEdgesTypeObjMemo}
+          nodes={nodes}
+          edges={edges}
+          onNodesChange={onNodesChange}
+          onNodesDelete={onNodesDelete}
+          onSelectionChange={handleSelectionChange}
+          onEdgesChange={onEdgesChange}
+          onBeforeDelete={() => onBeforeDelete({ nodes, edges })}
+          onConnect={onConnect}
+          deleteKeyCode={"Delete"}
+          onNodeContextMenu={onNodeContextMenu}
+          onEdgeContextMenu={onEdgeContextMenu}
+          onPaneContextMenu={onPaneContextMenu}
+          onPaneClick={onPaneClick}
+          // onlyRenderVisibleElements
+          snapToGrid={true}
+          snapGrid={[16, 16]}
+        >
+          <ViewControls />
+          <BackgroundExt />
+          <MiniMapExt />
+        </ReactFlow>
+        <ReactFlowContextMenu />
+      </div>
+
+      <ReactFlowDialogWrapper />
+    </>
   );
 };

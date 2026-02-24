@@ -10,24 +10,14 @@ import { createPlusEdgeObj } from "@/utils/create-edges/create-plus-edge-obj";
 import { MARKER_ARROW_PREFIX } from "@/constants";
 
 export const useAddNodeFromEdge = () => {
-  // Get ReactFlowExt store state & actions
-  const { nodes, edges } = useReactFlowExtStore(
+  // Get state and actions from the DynamicConfigPanel store
+  const { setNodeId, setShowDialog, setNodeData } = useDynamicConfigPanelStore(
     useShallow((state) => ({
-      nodes: state.nodes,
-      edges: state.edges,
+      setNodeId: state.setNodeId,
+      setShowDialog: state.setShowDialog,
+      setNodeData: state.setNodeData,
     })),
   );
-
-  // Get state and actions from the DynamicConfigPanel store
-  const { showDialog, setShowDialog, setNodeData, setNodeId } =
-    useDynamicConfigPanelStore(
-      useShallow((state) => ({
-        showDialog: state.showDialog,
-        setNodeId: state.setNodeId,
-        setShowDialog: state.setShowDialog,
-        setNodeData: state.setNodeData,
-      })),
-    );
 
   // Auto layout the flow
   const autoLayout = useDagreAutoLayout();
@@ -35,14 +25,17 @@ export const useAddNodeFromEdge = () => {
   // Handler to add new node from plus label of step edge
   const addNodeFromEdge = useCallback(
     (nodeData: NodeDataType, stepEdgeId: string) => {
-      // Get step edge
+      // JIT State Fetching: Grab the absolute latest nodes and edges only when clicked
+      const { nodes, edges } = useReactFlowExtStore.getState();
+
       const stepEdge = edges.find((edge) => edge.id === stepEdgeId) as Edge;
+      if (!stepEdge) return;
 
       const isTempEdge = stepEdge?.data?.isTemporary;
 
       if (isTempEdge) {
-        const realSourceId = stepEdge.data?.originalSource;
-        const realTargetId = stepEdge.data?.originalTarget;
+        const realSourceId = stepEdge.data?.originalSource as string;
+        const realTargetId = stepEdge.data?.originalTarget as string;
         const groupHeadId = stepEdge.source;
 
         const realSourceNode = nodes.find((n) => n.id === realSourceId);
@@ -57,7 +50,7 @@ export const useAddNodeFromEdge = () => {
           nodeData,
         );
 
-        // ✅ Insert after the realSource (last node of group)
+        // Insert after the realSource (last node of group)
         const realSourceIndex = nodes.findIndex((n) => n.id === realSourceId);
         const updatedNodes = [
           ...nodes.slice(0, realSourceIndex + 1),
@@ -65,7 +58,7 @@ export const useAddNodeFromEdge = () => {
           ...nodes.slice(realSourceIndex + 1),
         ];
 
-        // 🧹 Remove:
+        // Remove:
         // 1. Temp edge from groupHead → next
         // 2. Real edge from last-in-group → next
         const cleanedEdges = edges.filter((e) => {
@@ -80,13 +73,13 @@ export const useAddNodeFromEdge = () => {
           return !(isOriginalEdgeToNext || isTriggeredTempEdge);
         });
 
-        // ➕ Add new edge from new node to real target
+        // Add new edge from new node to real target
         const newToNextEdge: Edge = createPlusEdgeObj(
           lastNode.id,
-          realTargetId as string,
+          realTargetId,
         );
 
-        // 🔁 Add temp edge from group head to new node (collapsed view)
+        // Add temp edge from group head to new node (collapsed view)
         const updatedTempEdge: Edge = {
           id: `temp-${groupHeadNode?.data?.groupId}-${lastNode.id}`,
           source: groupHeadId,
@@ -111,7 +104,7 @@ export const useAddNodeFromEdge = () => {
 
         // Show config panel
         setNodeData(nodeData);
-        setShowDialog(!showDialog);
+        setShowDialog(true);
         setNodeId(lastNode.id);
 
         autoLayout({ newNodes: updatedNodes, newEdges: finalEdges });
@@ -164,21 +157,13 @@ export const useAddNodeFromEdge = () => {
 
       // Open Config dialog when new node added
       setNodeData(nodeData);
-      setShowDialog(!showDialog);
+      setShowDialog(true);
       setNodeId(lastNode.id);
 
       // Auto organize node & edge
       autoLayout({ newNodes: updatedNodes, newEdges: updatedEdges2 });
     },
-    [
-      edges,
-      nodes,
-      setNodeData,
-      setShowDialog,
-      showDialog,
-      setNodeId,
-      autoLayout,
-    ],
+    [setNodeData, setShowDialog, setNodeId, autoLayout],
   );
 
   // Return the handler

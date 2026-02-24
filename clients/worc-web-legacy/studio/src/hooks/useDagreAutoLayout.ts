@@ -1,24 +1,22 @@
-import { AUTO_LAYOUT_ANIMATION_DURATION } from "@/constants";
+import { NODE_HEIGHT, NODE_WIDTH } from "@/constants";
 import { nodeDimensionLookup } from "@/constants/node-dimension-lookup";
 import { LayoutDirectionType } from "@/react-toolkit/types/user-preferences-type";
 import { useReactFlowExtStore } from "@/stores/react-flow-ext-store";
 import { useStudioPreferencesStore } from "@/stores/studio-preferences-store";
 import { CustomNodeType } from "@/types/custom-node-type";
 import dagre from "@dagrejs/dagre";
-import { Edge, Node, Position } from "@xyflow/react";
-import { timer } from "d3-timer";
+import { Edge, Node, Position, useReactFlow } from "@xyflow/react";
 import { useCallback } from "react";
-import { useShallow } from "zustand/react/shallow";
 
 // Get the minlen for the edge based on the node type
 const getEdgeMinlen = (
   sourceNodeType?: CustomNodeType,
   targetNodeType?: CustomNodeType,
 ) => {
-  if (targetNodeType === "branchNode1") return 18;
-  if (targetNodeType === "branchEndNode") return 7;
-  if (sourceNodeType === "mergeBranchesNode") return 6;
-  return 8;
+  if (targetNodeType === "branchNode1") return 2; // 2 ranks * 40px = 80px gap
+  if (targetNodeType === "branchEndNode") return 1; // 1 rank * 40px = 40px gap
+  if (sourceNodeType === "mergeBranchesNode") return 1;
+  return 1; // Default 40px gap
 };
 
 // Function to layout the elements using dagre
@@ -37,27 +35,28 @@ const getLayoutedElements = (
   dagreGraph.setGraph({
     rankdir: direction, // Direction for rank nodes. Can be TB, BT, LR, or RL, where T = top, B = bottom, L = left, and R = right.
     nodesep: 200, // Number of pixels that separate nodes horizontally in the layout.
-    ranksep: 5, // Number of pixels between each rank in the layout.
+    ranksep: 40, // Number of pixels between each rank in the layout.
   });
-
-  // Set nodes to the dagre graph
+  const nodeMap = new Map<string, Node>();
   nodes.forEach((node) => {
-    dagreGraph.setNode(node.id, {
-      ...nodeDimensionLookup[node.type as CustomNodeType], // Set the width and height of the node
-    });
+    nodeMap.set(node.id, node);
+    const dimensions = nodeDimensionLookup[node.type as CustomNodeType] || {
+      width: NODE_WIDTH,
+      height: NODE_HEIGHT,
+    };
+    dagreGraph.setNode(node.id, { ...dimensions });
   });
 
-  // Set edges to the dagre graph
+  const edgeTargetToSourceMap = new Map<string, string>();
   edges.forEach((edge) => {
-    // Get the source and target nodes
-    const sourceNode = nodes.find((n) => n.id === edge.source) as Node;
-    const targetNode = nodes.find((n) => n.id === edge.target) as Node;
-
+    edgeTargetToSourceMap.set(edge.target, edge.source);
+    const sourceNode = nodeMap.get(edge.source);
+    const targetNode = nodeMap.get(edge.target);
     dagreGraph.setEdge(edge.source, edge.target, {
       minlen: getEdgeMinlen(
         sourceNode?.type as CustomNodeType,
         targetNode?.type as CustomNodeType,
-      ), // Set the minlen for the edge. It multiplies the ranksep value.
+      ),
     });
   });
 
@@ -70,13 +69,9 @@ const getLayoutedElements = (
   // Group branchNode1s by their parent node to adjust their positions later
   nodes.forEach((node) => {
     if (node.type === "branchNode1") {
-      // Find the parent node by its target edge
-      const parentNode = edges.find((edge) => edge.target === node.id);
-      if (parentNode) {
-        const parentId = parentNode.source;
-        if (!siblingGroups[parentId]) {
-          siblingGroups[parentId] = [];
-        }
+      const parentId = edgeTargetToSourceMap.get(node.id);
+      if (parentId) {
+        if (!siblingGroups[parentId]) siblingGroups[parentId] = [];
         siblingGroups[parentId].push(node);
       }
     }
@@ -87,11 +82,14 @@ const getLayoutedElements = (
     const nodeWithPosition = dagreGraph.node(node.id);
 
     // Get the width and height of the node
-    const nodeDimension = nodeDimensionLookup[node.type as CustomNodeType];
+    const nodeDimension = nodeDimensionLookup[node.type as CustomNodeType] || {
+      width: NODE_WIDTH,
+      height: NODE_HEIGHT,
+    };
 
     // If the node is a branchNode1 and it has siblings, adjust the y-position
     if (node.type === "branchNode1") {
-      const parentId = edges.find((edge) => edge.target === node.id)?.source;
+      const parentId = edgeTargetToSourceMap.get(node.id);
       if (parentId && siblingGroups[parentId]) {
         // Get the parent node's position (we'll use this for the siblings' position)
         const parentNodePosition = dagreGraph.node(parentId);
@@ -104,19 +102,15 @@ const getLayoutedElements = (
       }
     }
 
-    const newNode: Node = {
+    return {
       ...node,
       targetPosition: direction === "LR" ? Position.Left : Position.Top,
       sourcePosition: direction === "LR" ? Position.Right : Position.Bottom,
-
       position: {
         x: nodeWithPosition.x - nodeDimension.width / 2,
         y: nodeWithPosition.y - nodeDimension.height / 2,
       },
     };
-
-    // Return updated node
-    return newNode;
   });
 
   return { nodes: adjustedNodes, edges };
@@ -126,33 +120,22 @@ const getLayoutedElements = (
  * Custom hook that applies the Dagre auto layout algorithm to the nodes and edges of a graph.
  */
 export const useDagreAutoLayout = () => {
-  // Get ReactFlowExt store state & actions
-  const { nodes, edges, setNodes, setEdges } = useReactFlowExtStore(
-    useShallow((state) => ({
-      nodes: state.nodes,
-      edges: state.edges,
-      setNodes: state.setNodes,
-      setEdges: state.setEdges,
-    })),
-  );
-
-  // Get Studio Preferences store state
-  const { layoutDirection } = useStudioPreferencesStore(
-    useShallow((state) => ({
-      layoutDirection: state.studioPreferences.layoutDirection,
-    })),
-  );
+  const { getNodes, getEdges } = useReactFlow();
 
   /** Organize the nodes and edges using the Dagre auto layout algorithm */
   const autoLayout = useCallback(
     (newNodesEdgesObj?: { newNodes: Node[]; newEdges: Edge[] }) => {
-      const currentNodes = newNodesEdgesObj?.newNodes || nodes;
-      const currentEdges = newNodesEdgesObj?.newEdges || edges;
+      const currentNodes = newNodesEdgesObj?.newNodes || getNodes();
+      const currentEdges = newNodesEdgesObj?.newEdges || getEdges();
+      const { layoutDirection } =
+        useStudioPreferencesStore.getState().studioPreferences;
+      const { setNodes, setEdges } = useReactFlowExtStore.getState();
 
-      // 💡 Filter only visible nodes
+      if (currentNodes.length === 0) return;
+
       const visibleNodes = currentNodes.filter((node) => !node.hidden);
 
-      // 💡 Filter edges where both source and target are visible
+      // Filter edges where both source and target are visible
       const visibleNodeIds = new Set(visibleNodes.map((n) => n.id));
       const visibleEdges = currentEdges.filter(
         (edge) =>
@@ -161,7 +144,7 @@ export const useDagreAutoLayout = () => {
           edge.targetHandle !== "for-loop-repeat", // filter loop-back edge
       );
 
-      // 🧠 Layout only visible nodes and edges
+      //  Layout only visible nodes and edges
       const { nodes: layoutedVisibleNodes } = getLayoutedElements(
         visibleNodes,
         visibleEdges,
@@ -173,46 +156,35 @@ export const useDagreAutoLayout = () => {
         layoutedVisibleNodes.map((node) => [node.id, node]),
       );
 
-      // ✅ Rebuild full nodes array in original order
+      // Rebuild full nodes array in original order
       const allLayoutedNodes = currentNodes.map(
         (originalNode) =>
           layoutedNodeMap.has(originalNode.id)
             ? layoutedNodeMap.get(originalNode.id)! // Replace with layouted node
             : originalNode, // Keep hidden node untouched
       );
-
-      // Animate layout with D3 timer
-      const duration = AUTO_LAYOUT_ANIMATION_DURATION;
-
       const startPositions = currentNodes.map((node) => node.position);
       const endPositions = allLayoutedNodes.map((node) => node.position);
+      const interpolatedNodes = allLayoutedNodes.map((node, index) => ({
+        ...node,
+        position: {
+          x:
+            startPositions[index]?.x +
+            (endPositions[index]?.x - startPositions[index]?.x),
+          y:
+            startPositions[index]?.y +
+            (endPositions[index]?.y - startPositions[index]?.y),
+        },
+      }));
 
-      // Animate using D3
-      const d3Timer = timer((elapsed: number) => {
-        const progress = Math.min(elapsed / duration, 1);
+      // Set the nodes with the interpolated positions
+      setNodes(interpolatedNodes);
 
-        const interpolatedNodes = allLayoutedNodes.map((node, index) => ({
-          ...node,
-          position: {
-            x:
-              startPositions[index]?.x +
-              (endPositions[index]?.x - startPositions[index]?.x) * progress,
-            y:
-              startPositions[index]?.y +
-              (endPositions[index]?.y - startPositions[index]?.y) * progress,
-          },
-        }));
-
-        // Set the nodes with the interpolated positions
-        setNodes(interpolatedNodes);
-
-        // Stop the timer if the progress reaches 100%
-        if (progress === 1) d3Timer.stop();
-      });
-
-      setEdges([...currentEdges]);
+      if (newNodesEdgesObj?.newEdges) {
+        setEdges([...currentEdges]);
+      }
     },
-    [nodes, edges, layoutDirection, setNodes, setEdges],
+    [getNodes, getEdges],
   );
 
   // Return the auto layout function

@@ -25,7 +25,7 @@ const PromptConfigField = ({
   rows,
   disabled,
 }: PromptConfigFieldProps) => {
-  const { control } = useFormContext();
+  const { control, setValue } = useFormContext();
   const { field: promptField } = useController({ name, control });
   const { showCustomAlertDialog } = useShowAlertHandler();
 
@@ -38,6 +38,7 @@ const PromptConfigField = ({
 
     const applyTemplate = () => {
       promptField.onChange(templateContent);
+      setValue("json_schema", "");
     };
 
     if (promptField.value) {
