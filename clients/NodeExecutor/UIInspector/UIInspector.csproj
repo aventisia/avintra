@@ -1,5 +1,6 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
-<Project ToolsVersion="15.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+<Project ToolsVersion="15.0"
+  xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <Import Project="$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props" Condition="Exists('$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props')" />
   <PropertyGroup>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
@@ -226,7 +227,7 @@
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <PropertyGroup>
-    <PostBuildEvent>xcopy "$(TargetDir)*.*" "$(ProjectDir)..\..\worc-desktop-app\src-tauri\binaries\ui-inspector\" /E /Y /I;
-xcopy "$(TargetDir)*.*" "%LOCALAPPDATA%\WorcDesktopApp\binaries\ui-inspector\" /E /Y /I;</PostBuildEvent>
+    <PostBuildEvent>xcopy "$(TargetDir)*.*" "$(ProjectDir)..\..\worc-desktop-app\src-tauri\binaries\ui-inspector" /E /Y /I
+xcopy "$(TargetDir)*.*" "%LOCALAPPDATA%\WorcDesktopApp\binaries\ui-inspector" /E /Y /I</PostBuildEvent>
   </PropertyGroup>
 </Project>
