@@ -1,5 +1,6 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
-<Project ToolsVersion="15.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+<Project ToolsVersion="15.0"
+  xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <Import Project="$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props" Condition="Exists('$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props')" />
   <PropertyGroup>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
@@ -166,6 +167,7 @@
     <Compile Include="Activities\AppIntegrations\ExcelActivities\OpenWorkbookActivity.cs" />
     <Compile Include="Activities\AppIntegrations\ExcelActivities\PasteCellsToExcelWorksheetActivity.cs" />
     <Compile Include="Activities\AppIntegrations\ExcelActivities\PasteDataTableToExcelWorksheetActivity.cs" />
+    <Compile Include="Activities\AppIntegrations\ExcelActivities\QueryExcelWorksheetActivity.cs" />
     <Compile Include="Activities\AppIntegrations\ExcelActivities\ReadFormulaFromExcelActivity.cs" />
     <Compile Include="Activities\AppIntegrations\ExcelActivities\ReadFromExcelWorksheetActivity.cs" />
     <Compile Include="Activities\AppIntegrations\ExcelActivities\RenameExcelWorksheetActivity.cs" />
@@ -275,7 +277,7 @@
     <Compile Include="Activities\AppIntegrations\OutlookActivities\SendEmailMessageThroughOutlookActivity.cs" />
     <Compile Include="Activities\AppIntegrations\OutlookActivities\_OutlookCategoryMetaData.cs" />
     <Compile Include="Activities\AppIntegrations\PDFActivities\ExtractImagesFromPdfActivity.cs" />
-    <Compile Include="Activities\AppIntegrations\PDFActivities\ExtractPdfPagesToNewPdfFileActivity.cs" />
+    <Compile Include="Activities\AppIntegrations\PDFActivities\ExtractPdfPagesFromOldToNewPdfActivity.cs" />
     <Compile Include="Activities\AppIntegrations\PDFActivities\ExtractTablesFromPdfActivity.cs" />
     <Compile Include="Activities\AppIntegrations\PDFActivities\ExtractTextFromPdfActivity.cs" />
     <Compile Include="Activities\AppIntegrations\PDFActivities\FindPdfTextActivity.cs" />
@@ -502,6 +504,7 @@
     <Compile Include="Activities\DataTransformations\DataTableActivities\SortDataTableActivity.cs" />
     <Compile Include="Activities\DataTransformations\DataTableActivities\UpdateDataTableItemActivity.cs" />
     <Compile Include="Activities\DataTransformations\DataTableActivities\_DataTableCategoryMetaData.cs" />
+    <Compile Include="Activities\DataTransformations\DatabaseActivities\Helpers\SqlConnectionManager.cs" />
     <Compile Include="Activities\DataTransformations\DatabaseActivities\CloseSqlConnectionActivity.cs" />
     <Compile Include="Activities\DataTransformations\DatabaseActivities\ExecuteSqlStatementActivity.cs" />
     <Compile Include="Activities\DataTransformations\DatabaseActivities\OpenSqlConnectionActivity.cs" />
@@ -623,6 +626,7 @@
     <Compile Include="Activities\UIInterfaceAutomations\ClipboardActivities\GetClipboardTextActivity.cs" />
     <Compile Include="Activities\UIInterfaceAutomations\ClipboardActivities\SetClipboardTextActivity.cs" />
     <Compile Include="Activities\UIInterfaceAutomations\ClipboardActivities\_ClipboardCategoryMetaData.cs" />
+    <Compile Include="Activities\UIInterfaceAutomations\CMDSessionActivities\Helpers\CmdSessionStateHelper.cs" />
     <Compile Include="Activities\UIInterfaceAutomations\CMDSessionActivities\CloseCmdSessionActivity.cs" />
     <Compile Include="Activities\UIInterfaceAutomations\CMDSessionActivities\OpenCmdSessionActivity.cs" />
     <Compile Include="Activities\UIInterfaceAutomations\CMDSessionActivities\ReadFromCmdSessionActivity.cs" />

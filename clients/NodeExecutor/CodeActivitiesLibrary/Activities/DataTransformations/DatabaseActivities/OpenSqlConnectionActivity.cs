@@ -1,4 +1,6 @@
-﻿using CodeActivitiesLibrary.Extensions;
+﻿using CodeActivitiesLibrary.DataTransformations.DatabaseActivities.Helpers;
+using CodeActivitiesLibrary.Extensions;
+using Newtonsoft.Json.Linq;
 using System;
 using System.Activities;
 using System.ComponentModel;
@@ -17,26 +19,36 @@ namespace CodeActivitiesLibrary.DataTransformations.DatabaseActivities
         public InArgument<string> ConnectionString { get; set; }
 
         [DisplayName("SQL Connection")]
-        [Description("The opened SQL connection.")]
-        public OutArgument<SqlConnection> SqlConnection { get; set; }
+        [Description("The opened SQL connection metadata.")]
+        public OutArgument<JToken> SqlConnection { get; set; }
 
         protected override void Execute(CodeActivityContext context)
         {
             var connectionString = ConnectionString.Get(context);
-            SqlConnection connection = null;
 
             try
             {
-                connection = new SqlConnection(connectionString);
+                var connection = new SqlConnection(connectionString);
                 connection.Open();
-                SqlConnection.Set(context, connection);
 
+                var connectionId = SqlConnectionManager.Add(connection);
+
+                var result = new JObject
+                {
+                    ["ConnectionId"] = connectionId,
+                    ["State"] = connection.State.ToString(),
+                    ["Database"] = connection.Database,
+                    ["DataSource"] = connection.DataSource,
+                    ["OpenedAtUtc"] = DateTime.UtcNow
+                };
+
+                SqlConnection.Set(context, result);
                 IsSuccess.Set(context, true);
                 StatusMessage.Set(context, "Database connection opened successfully.");
             }
             catch (Exception ex)
             {
-                SqlConnection.Set(context, null);
+                SqlConnection.Set(context, JValue.CreateNull());
                 IsSuccess.Set(context, false);
                 StatusMessage.Set(context, $"Error opening database connection: {ex.Message}");
             }

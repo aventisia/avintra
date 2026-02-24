@@ -1,4 +1,5 @@
 ﻿using CodeActivitiesLibrary.Extensions;
+using CodeActivitiesLibrary.UiInterfaceAutomations.CMDSessionActivities.Helpers;
 using System;
 using System.Activities;
 using System.ComponentModel;
@@ -11,71 +12,33 @@ namespace CodeActivitiesLibrary.UiInterfaceAutomations.CmdSessionActivities
     [ActivityMetaData(nodeImg: "/assets/CMDSession.svg")]
     public class ReadFromCmdSessionActivity : BaseCodeActivity
     {
-        // ----------------------
-        // Input Arguments
-        // ----------------------
-
         [RequiredArgument]
         [DisplayName("CMD Session")]
         [Description("The process representing the CMD session.")]
         public InArgument<Process> CmdSession { get; set; }
 
-
-        [DisplayName("Separate Output from Error")]
-        [Description("Specifies whether to separate standard output from standard error.")]
-        public InArgument<bool> SeparateOutputFromError { get; set; } = new InArgument<bool>(true);
-
-        // ----------------------
-        // Output Arguments
-        // ----------------------
-
-
         [DisplayName("CmdOutput")]
         [Description("The CMD session's standard output.")]
         public OutArgument<string> CmdOutput { get; set; }
 
-
-        [DisplayName("CmdError")]
-        [Description("The CMD session's standard error (if separated).")]
-        public OutArgument<string> CmdError { get; set; }
-
-        // ----------------------
-        // Execution Logic
-        // ----------------------
-
         protected override void Execute(CodeActivityContext context)
         {
-
             try
             {
-                var cmdSession = CmdSession.Get(context);
-                var separateOutputFromError = SeparateOutputFromError.Get(context);
+                var process = CmdSession.Get(context);
+                if (process == null || process.HasExited)
+                    throw new InvalidOperationException("CMD session is not active.");
 
-                if (cmdSession == null)
-                    throw new ArgumentException("CMD session cannot be null.");
-
-                string stdout = "";
-                string stderr = "";
-
-                // Try reading available output immediately
-                using (var stdOutReader = cmdSession.StandardOutput)
-                using (var stdErrReader = cmdSession.StandardError)
+                var buffer = CmdSessionStateHelper.GetBuffer(process);
+                string output;
+                lock (buffer)
                 {
-                    stdout = stdOutReader.ReadToEnd();
-                    stderr = stdErrReader.ReadToEnd();
+                    output = buffer.ToString();
+                    buffer.Clear(); 
                 }
 
-                CmdOutput.Set(context, stdout);
-
-                if (separateOutputFromError)
-                {
-                    CmdError.Set(context, stderr);
-                }
-                else
-                {
-                    // Combine stdout and stderr into a single output
-                    CmdOutput.Set(context, $"{stdout}{stderr}");
-                }
+                CmdOutput.Set(context, output);
+               
                 IsSuccess.Set(context, true);
                 StatusMessage.Set(context, "Successfully read output from CMD session.");
             }
