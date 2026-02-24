@@ -125,17 +125,17 @@ namespace CodeActivityToJSON.Utils
 
             // Save the primary categories to JSON file
             // var outputFilePath = Path.Combine(outputDir, "_ActionSelectorData.json");
-            var outputFilePath = Path.Combine(
-                Environment.GetFolderPath(Environment.SpecialFolder.UserProfile),
-                "Gitea",
-                "Aventisia",
-                "agent-builder",
+            var outputFilePath = Path.GetFullPath(Path.Combine(
+                AppDomain.CurrentDomain.BaseDirectory,
+                "..", "..", "..", "..",
+                "worc-web-legacy",
+                "studio",
                 "src",
                 "features",
                 "action-selector",
                 "constants",
                 "_ActionSelectorData.json"
-            );
+            ));
 
             using (var writer = new StreamWriter(outputFilePath))
             {

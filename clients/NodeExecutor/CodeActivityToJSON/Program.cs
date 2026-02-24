@@ -118,18 +118,18 @@ namespace CodeActivityToJSON
             // return @"C:\Users\Gaurav\Gitea\Aventisia\OpenAI Doc Generation\input";
 
             // Get user's agent builder directory (for form generation)
-            var outputDir = Path.Combine(
-                Environment.GetFolderPath(Environment.SpecialFolder.UserProfile),
-                "Gitea",
-                "Aventisia",
-                "agent-builder",
+            var outputDir = Path.GetFullPath(Path.Combine(
+                AppDomain.CurrentDomain.BaseDirectory,
+                "..", "..", "..", "..",
+                "worc-web-legacy",
+                "studio",
                 "src",
                 "features",
                 "dynamic-config-panel",
                 "constants",
                 "config-json"
-            );
-
+            ));
+            
             // If the directory already exists, delete it
             if (Directory.Exists(outputDir))
                 Directory.Delete(outputDir, true);
