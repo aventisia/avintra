@@ -1,0 +1,51 @@
+{
+  "name": "MoveEmailToFolder",
+  "description": "Moves a specified email message to a target folder in a Microsoft 365 Outlook mailbox using Microsoft Graph API.",
+  "version": "1.0.0",
+  "author": "rahmat",
+  "fields": [
+    {
+      "direction": "Input",
+      "type": "credentials-select",
+      "name": "__CredentialId__M365",
+      "label": "M365 Outlook Credential",
+      "description": "Microsoft 365 credential used to authenticate and access mailbox data through Microsoft Graph API.",
+      "defaultValue": ""
+    },
+    {
+      "direction": "Input",
+      "type": "text",
+      "name": "MailboxAddress",
+      "label": "Mailbox Address",
+      "description": "Mailbox address containing the email. Leave empty to use the authenticated user's mailbox.",
+      "defaultValue": ""
+    },
+    {
+      "direction": "Input",
+      "type": "text",
+      "name": "MessageId",
+      "label": "Message ID",
+      "description": "The unique ID of the email message to move.",
+      "defaultValue": "MessageId"
+    },
+    {
+      "direction": "Input",
+      "type": "text",
+      "name": "FolderId",
+      "label": "Target Folder ID",
+      "description": "The unique ID of the folder to move the email into.",
+      "defaultValue": "Folder_Id"
+    },
+    {
+      "direction": "Output",
+      "type": "config-panel-output",
+      "name": "Result",
+      "label": "Result",
+      "description": "Returns the result of the move operation, including the new folder location of the email.",
+      "defaultValue": {
+        "value": "Result",
+        "enabled": true
+      }
+    }
+  ]
+}

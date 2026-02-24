@@ -1,0 +1,51 @@
+{
+  "name": "GetEmailById",
+  "description": "Retrieves a single email message from a Microsoft 365 Outlook mailbox using its Message ID. Optionally includes attachment details.",
+  "version": "1.0.0",
+  "author": "rahmat",
+  "fields": [
+    {
+      "direction": "Input",
+      "type": "credentials-select",
+      "name": "__CredentialId__M365",
+      "label": "M365 Outlook Credential",
+      "description": "Microsoft 365 credential used to authenticate and access mailbox data through Microsoft Graph API.",
+      "defaultValue": ""
+    },
+    {
+      "direction": "Input",
+      "type": "text",
+      "name": "MailboxAddress",
+      "label": "Mailbox Address",
+      "description": "Mailbox address to retrieve the email from. Leave empty to use the authenticated user's mailbox.",
+      "defaultValue": ""
+    },
+    {
+      "direction": "Input",
+      "type": "text",
+      "name": "MessageId",
+      "label": "Message ID",
+      "description": "The unique ID of the email message to retrieve.",
+      "defaultValue": "MessageId"
+    },
+    {
+      "direction": "Input",
+      "type": "boolean",
+      "name": "IncludeAttachments",
+      "label": "Include Attachments",
+      "description": "If true, includes attachment details in the retrieved email.",
+      "defaultValue": false
+    },
+    {
+      "direction": "Output",
+      "type": "config-panel-output",
+      "name": "Result",
+      "label": "Result",
+      "description": "Returns the details of the retrieved email including subject, sender, recipients, body content, and attachments if requested.",
+      "defaultValue": {
+        "value": "Result",
+        "enabled": true
+      }
+    }
+  ]
+}

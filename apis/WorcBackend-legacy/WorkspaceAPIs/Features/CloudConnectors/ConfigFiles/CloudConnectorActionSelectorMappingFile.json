@@ -279,6 +279,115 @@
               "img": "/assets/Azure.svg"
             }
         ]
+      },
+      {
+        "label": "M365 Outlook",
+        "description": "Send emails using Microsoft Outlook via Office 365.",
+        "icon": null,
+        "img": "/assets/M365.svg",
+        "listType": null,
+        "actions": [
+          {
+            "type": "cloudConnectorNode",
+            "name": "M365/OutLook/SendEmailConnector",
+            "label": "Send Email",
+            "description": "Sends an email from a Microsoft 365 Outlook mailbox using the Microsoft Graph API.",
+            "docsLink": "https://docs.aventisia.com",
+            "icon": null,
+            "img": "/assets/M365.svg"
+          },
+          {
+            "type": "cloudConnectorNode",
+            "name": "M365/OutLook/GetEmailsConnector",
+            "label": "Get Emails",
+            "description": "Retrieves email messages from a Microsoft 365 Outlook mailbox using the Microsoft Graph API.",
+            "docsLink": "https://docs.aventisia.com",
+            "icon": null,
+            "img": "/assets/M365.svg"
+          },
+          {
+            "type": "cloudConnectorNode",
+            "name": "M365/OutLook/GetEmailByIdConnector",
+            "label": "Get Email By ID",
+            "description": "Retrieves a single email message from a Microsoft 365 Outlook mailbox by its Message ID using the Microsoft Graph API.",
+            "docsLink": "https://docs.aventisia.com",
+            "icon": null,
+            "img": "/assets/M365.svg"
+          },
+          {
+            "type": "cloudConnectorNode",
+            "name": "M365/OutLook/GetEmailsByFolderConnector",
+            "label": "Get Emails By Folder",
+            "description": "Retrieves all email messages from a specified folder in a Microsoft 365 Outlook mailbox using the Microsoft Graph API.",
+            "docsLink": "https://docs.aventisia.com",
+            "icon": null,
+            "img": "/assets/M365.svg"
+          },
+          {
+            "type": "cloudConnectorNode",
+            "name": "M365/OutLook/MoveEmailToFolderConnector",
+            "label": "Move Email To Folder",
+            "description": "Moves a specified email message to a target folder in a Microsoft 365 Outlook mailbox using the Microsoft Graph API.",
+            "docsLink": "https://docs.aventisia.com",
+            "icon": null,
+            "img": "/assets/M365.svg"
+          },
+          {
+            "type": "cloudConnectorNode",
+            "name": "M365/OutLook/UpdateAllEmailPropertiesConnector",
+            "label": "Update All Email Properties",
+            "description": "Updates multiple properties of an email message, including read status, flag status, categories, and importance in a Microsoft 365 Outlook mailbox using the Microsoft Graph API.",
+            "docsLink": "https://docs.aventisia.com",
+            "icon": null,
+            "img": "/assets/M365.svg"
+          },
+
+          {
+            "type": "cloudConnectorNode",
+            "name": "M365/OutLook/CreateMailFolderConnector",
+            "label": "Create Mail Folder",
+            "description": "Creates a new mail folder in a Microsoft 365 Outlook mailbox using Microsoft Graph API.",
+            "docsLink": "https://docs.aventisia.com",
+            "icon": null,
+            "img": "/assets/M365.svg"
+          },
+          {
+            "type": "cloudConnectorNode",
+            "name": "M365/OutLook/GetMailFoldersById",
+            "label": "Get Mail Folders by ID",
+            "description": "Fetches subfolders within a specified parent folder from a Microsoft 365 Outlook mailbox using the Microsoft Graph API.",
+            "docsLink": "https://docs.aventisia.com",
+            "icon": null,
+            "img": "/assets/M365.svg"
+          },
+          {
+            "type": "cloudConnectorNode",
+            "name": "M365/OutLook/DeleteMailFolderConnector",
+            "label": "Delete Mail Folder",
+            "description": "Deletes an existing mail folder from a Microsoft 365 Outlook mailbox using Microsoft Graph API.",
+            "docsLink": "https://docs.aventisia.com",
+            "icon": null,
+            "img": "/assets/M365.svg"
+          },
+          {
+            "type": "cloudConnectorNode",
+            "name": "M365/OutLook/GetMailFoldersConnector",
+            "label": "Get Mail Folders",
+            "description": "Retrieves the list of mail folders from a Microsoft 365 Outlook mailbox, with an option to include hidden folders.",
+            "docsLink": "https://docs.aventisia.com",
+            "icon": null,
+            "img": "/assets/M365.svg"
+          },
+          {
+            "type": "cloudConnectorNode",
+            "name": "M365/OutLook/RenameMailFolderConnector",
+            "label": "Rename Mail Folder",
+            "description": "Renames an existing mail folder and optionally updates its visibility in a Microsoft 365 Outlook mailbox.",
+            "docsLink": "https://docs.aventisia.com",
+            "icon": null,
+            "img": "/assets/M365.svg"
+          }
+        ]
       }
     ]
   }

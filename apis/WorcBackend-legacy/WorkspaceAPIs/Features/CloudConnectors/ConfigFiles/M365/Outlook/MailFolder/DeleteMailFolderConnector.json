@@ -1,0 +1,43 @@
+{
+  "name": "DeleteMailFolder",
+  "description": "Deletes a specified mail folder from a Microsoft 365 mailbox using the Microsoft Graph API.",
+  "version": "1.0.0",
+  "author": "rahmat",
+  "fields": [
+    {
+      "direction": "Input",
+      "type": "credentials-select",
+      "name": "__CredentialId__M365",
+      "label": "Microsoft 365 Credentials",
+      "description": "The Microsoft 365 credentials used to authenticate and access mailbox data via the Microsoft Graph API.",
+      "defaultValue": ""
+    },
+    {
+      "direction": "Input",
+      "type": "text",
+      "name": "MailboxAddress",
+      "label": "Mailbox Address",
+      "description": "The email address of the mailbox from which the folder will be deleted. If left empty, it defaults to the authenticated user's mailbox.",
+      "defaultValue": ""
+    },
+    {
+      "direction": "Input",
+      "type": "text",
+      "name": "FolderId",
+      "label": "Folder ID",
+      "description": "The unique ID of the folder to be deleted from the specified mailbox.",
+      "defaultValue": "folder_Id"
+    },
+    {
+      "direction": "Output",
+      "type": "config-panel-output",
+      "name": "Result",
+      "label": "Deletion Result",
+      "description": "The result of the folder deletion, including success or failure status and any error messages.",
+      "defaultValue": {
+        "value": "Result",
+        "enabled": true
+      }
+    }
+  ]
+}

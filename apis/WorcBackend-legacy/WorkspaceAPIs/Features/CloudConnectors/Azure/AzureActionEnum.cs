@@ -6,5 +6,6 @@ public enum AzureActionEnum
     DeleteContainer,
     GetContainerSize,
     UploadFile,
-    DownloadFile
+    DownloadFile,
+    DownloadFileToLocation
 }

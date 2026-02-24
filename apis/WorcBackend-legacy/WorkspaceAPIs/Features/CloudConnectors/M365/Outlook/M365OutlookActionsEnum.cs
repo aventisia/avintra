@@ -1,0 +1,63 @@
+namespace WorkspaceAPIs.Features.CloudConnectors.M365.Outlook;
+
+public enum M365OutlookActionsEnum
+{
+    // Email Sending
+    SendEmail,
+    SendEmailWithAttachments,
+    SendDraftEmail,
+
+    // Read / Get Emails
+    GetEmails,
+    GetEmailById,
+    GetEmailByIdWithAttachments,
+    GetEmailsBySearchCriteria,
+    GetAllEmails,
+    GetUnreadEmails,
+
+    // Email Management
+    ReplyToEmail,
+    ReplyAllToEmail,
+    ForwardEmail,
+    DeleteEmail,
+    MoveEmailToFolder,
+    UpdateAllEmailProperties,
+
+    // Drafts
+    CreateDraftEmail,
+    UpdateDraftEmail,
+    DeleteDraftEmail,
+
+    // Attachments
+    GetAttachmentsFromEmail,
+    AddAttachmentToDraft,
+    DownloadAttachment,
+
+    // Folders
+    GetEmailsByFolder,
+    GetMailFolders,
+    CreateMailFolder,
+    RenameMailFolder,
+    DeleteMailFolder,
+
+    // Categories
+    AddCategoryToEmail,
+    RemoveCategoryFromEmail,
+    GetCategories,
+
+    // Calendar (Optional but common in Outlook APIs)
+    CreateCalendarEvent,
+    UpdateCalendarEvent,
+    DeleteCalendarEvent,
+    GetCalendarEvents,
+
+    // Contacts (Optional Outlook capability)
+    CreateContact,
+    UpdateContact,
+    DeleteContact,
+    GetContacts,
+
+    // User Info
+    GetMailboxSettings,
+    GetUserProfile
+}

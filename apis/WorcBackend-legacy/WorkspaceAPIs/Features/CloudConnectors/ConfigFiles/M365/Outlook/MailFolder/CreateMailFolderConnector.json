@@ -1,0 +1,51 @@
+{
+  "name": "CreateMailFolder",
+  "description": "Creates a new folder in a specified Microsoft 365 mailbox using the Microsoft Graph API.",
+  "version": "1.0.0",
+  "author": "rahmat",
+  "fields": [
+    {
+      "direction": "Input",
+      "type": "credentials-select",
+      "name": "__CredentialId__M365",
+      "label": "Microsoft 365 Credentials",
+      "description": "The Microsoft 365 credentials used to authenticate and access mailbox data through the Microsoft Graph API.",
+      "defaultValue": ""
+    },
+    {
+      "direction": "Input",
+      "type": "text",
+      "name": "MailboxAddress",
+      "label": "Mailbox Address",
+      "description": "The email address of the mailbox where the folder will be created. If provided, it targets a shared or delegated mailbox. If left empty, the request will fail.",
+      "defaultValue": ""
+    },
+    {
+      "direction": "Input",
+      "type": "text",
+      "name": "DisplayName",
+      "label": "Folder Name",
+      "description": "The name to assign to the newly created folder.",
+      "defaultValue": ""
+    },
+    {
+      "direction": "Input",
+      "type": "boolean",
+      "name": "IsHidden",
+      "label": "Visibility",
+      "description": "Indicates whether the folder should be hidden from the mailbox view. Set to 'true' to hide, or 'false' to make it visible.",
+      "defaultValue": false
+    },
+    {
+      "direction": "Output",
+      "type": "config-panel-output",
+      "name": "Result",
+      "label": "Creation Result",
+      "description": "The result of the folder creation, including the folder ID and any associated error messages.",
+      "defaultValue": {
+        "value": "Result",
+        "enabled": true
+      }
+    }
+  ]
+}
