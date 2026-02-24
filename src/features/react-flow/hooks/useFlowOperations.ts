@@ -854,35 +854,41 @@ export const useFlowOperations = () => {
 
           const newEdgesBlock = [branchEntryEdge, ...newEdges, branchExitEdge];
 
+          // Calculate precise array index for Master Nodes Array Injection
+          let masterNodeInsertIndex = -1;
           if (nextBranchId) {
-            const nextBranchNodeIndex = nextNodes.findIndex(
+            masterNodeInsertIndex = nextNodes.findIndex(
               (n) => n.id === nextBranchId,
             );
-            if (nextBranchNodeIndex !== -1) {
-              nextNodes = [
-                ...nextNodes.slice(0, nextBranchNodeIndex),
-                ...newNodes,
-                ...nextNodes.slice(nextBranchNodeIndex),
-              ];
-            } else {
-              nextNodes = [...nextNodes, ...newNodes];
-            }
-            const nextBranchEdgeIndex = nextEdges.findIndex(
+          }
+          if (masterNodeInsertIndex === -1 && mergeNodeId) {
+            masterNodeInsertIndex = nextNodes.findIndex(
+              (n) => n.id === mergeNodeId,
+            );
+          }
+          if (masterNodeInsertIndex === -1) {
+            masterNodeInsertIndex = nextNodes.length;
+          }
+
+          nextNodes.splice(masterNodeInsertIndex, 0, ...newNodes);
+
+          // Calculate precise array index for Master Edges Array Injection
+          let masterEdgeInsertIndex = -1;
+          if (nextBranchId) {
+            masterEdgeInsertIndex = nextEdges.findIndex(
               (e) => e.source === parentNode.id && e.target === nextBranchId,
             );
-            if (nextBranchEdgeIndex !== -1) {
-              nextEdges = [
-                ...nextEdges.slice(0, nextBranchEdgeIndex),
-                ...newEdgesBlock,
-                ...nextEdges.slice(nextBranchEdgeIndex),
-              ];
-            } else {
-              nextEdges = [...nextEdges, ...newEdgesBlock];
-            }
-          } else {
-            nextNodes = [...nextNodes, ...newNodes];
-            nextEdges = [...nextEdges, ...newEdgesBlock];
           }
+          if (masterEdgeInsertIndex === -1 && mergeNodeId) {
+            masterEdgeInsertIndex = nextEdges.findIndex(
+              (e) => e.target === mergeNodeId,
+            );
+          }
+          if (masterEdgeInsertIndex === -1) {
+            masterEdgeInsertIndex = nextEdges.length;
+          }
+
+          nextEdges.splice(masterEdgeInsertIndex, 0, ...newEdgesBlock);
         }
       }
 
