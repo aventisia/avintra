@@ -54,7 +54,6 @@ export const TenantsTable = () => {
     columnVisibility,
     sortState,
     true,
-    true,
   );
 
   // Return the rendered DataTable component.
