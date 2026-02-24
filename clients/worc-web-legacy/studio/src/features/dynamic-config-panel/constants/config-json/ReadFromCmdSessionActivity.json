@@ -20,15 +20,6 @@
       "required": true
     },
     {
-      "direction": "Input",
-      "type": "switch",
-      "name": "SeparateOutputFromError",
-      "label": "Separate Output from Error",
-      "description": "Specifies whether to separate standard output from standard error.",
-      "defaultValue": true,
-      "required": false
-    },
-    {
       "direction": "Output",
       "type": "config-panel-output",
       "name": "CmdOutput",
@@ -36,18 +27,6 @@
       "description": "The CMD session\u0027s standard output.",
       "defaultValue": {
         "value": "CmdOutput",
-        "enabled": true
-      },
-      "required": false
-    },
-    {
-      "direction": "Output",
-      "type": "config-panel-output",
-      "name": "CmdError",
-      "label": "CmdError",
-      "description": "The CMD session\u0027s standard error (if separated).",
-      "defaultValue": {
-        "value": "CmdError",
         "enabled": true
       },
       "required": false

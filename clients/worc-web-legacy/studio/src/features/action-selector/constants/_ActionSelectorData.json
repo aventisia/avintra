@@ -585,7 +585,7 @@
             "type": "activityNode",
             "name": "CloseSqlConnectionActivity",
             "label": "Close SQL Connection",
-            "description": "Close an open connection to a database",
+            "description": "Closes an open SQL database connection",
             "docsLink": "https://docs.aventisia.com",
             "img": "/assets/Database.svg"
           },
@@ -593,7 +593,7 @@
             "type": "activityNode",
             "name": "ExecuteSqlStatementActivity",
             "label": "Execute SQL Statement",
-            "description": "Connect to a database and execute an SQL statement",
+            "description": "Connect to a database and execute an SQL statement.",
             "docsLink": "https://docs.aventisia.com",
             "img": "/assets/Database.svg"
           },
@@ -1384,7 +1384,7 @@
             "type": "activityNode",
             "name": "WaitForShortcutKeyActivity",
             "label": "Wait for Shortcut Key",
-            "description": "Pauses the flow run until a specific shortcut key is pressed.",
+            "description": "Pauses the flow run until a specific shortcut key combination is pressed.",
             "docsLink": "https://docs.aventisia.com",
             "img": "/assets/MouseAndKeyboard.svg"
           }
@@ -3361,6 +3361,14 @@
           },
           {
             "type": "activityNode",
+            "name": "ExtractPdfPagesFromOldToNewPdfActivity",
+            "label": "Extract PDF Pages from existing PDF to New PDF file",
+            "description": "Extracts specific pages from a PDF file and saves them as a New PDF file.",
+            "docsLink": "https://docs.aventisia.com",
+            "img": "/assets/PDF.svg"
+          },
+          {
+            "type": "activityNode",
             "name": "ExtractTablesFromPdfActivity",
             "label": "Extract Tables From PDF",
             "description": "Extracts tabular text from all pages of a PDF file.",
@@ -4061,6 +4069,14 @@
             "name": "PasteDataTableToExcelWorksheetActivity",
             "label": "Paste DataTable to Excel Worksheet",
             "description": "Pastes a DataTable of data to the specified Excel worksheet starting at the given row and column.",
+            "docsLink": "https://docs.aventisia.com",
+            "img": "/assets/Excel.svg"
+          },
+          {
+            "type": "activityNode",
+            "name": "QueryExcelWorksheetActivity",
+            "label": "Query Excel Worksheet",
+            "description": "Executes a SQL query on an Excel worksheet and returns the result as a DataTable.",
             "docsLink": "https://docs.aventisia.com",
             "img": "/assets/Excel.svg"
           },

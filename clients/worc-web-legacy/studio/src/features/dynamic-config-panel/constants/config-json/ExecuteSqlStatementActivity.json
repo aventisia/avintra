@@ -1,7 +1,7 @@
 {
   "name": "ExecuteSqlStatement",
   "label": "Execute SQL Statement",
-  "discription": "Connect to a database and execute an SQL statement",
+  "discription": "Connect to a database and execute an SQL statement.",
   "version": "1.0.0",
   "auther": "@aventisia",
   "supportedPlatforms": [
@@ -12,12 +12,58 @@
   "fields": [
     {
       "direction": "Input",
-      "type": "text",
+      "type": "select",
+      "name": "ConnectionMode",
+      "label": "Connection Mode",
+      "description": "",
+      "defaultValue": "",
+      "required": true,
+      "selectOptions": [
+        {
+          "label": "Use Connection String",
+          "value": "UseConnectionString",
+          "description": ""
+        },
+        {
+          "label": "Use Existing Connection",
+          "value": "UseExistingConnection",
+          "description": ""
+        }
+      ]
+    },
+    {
+      "direction": "Input",
+      "type": "password",
       "name": "ConnectionString",
       "label": "Connection String",
       "description": "The connection string to the database.",
       "defaultValue": "",
-      "required": true
+      "required": false,
+      "renderIf": {
+        "conditions": [
+          {
+            "field": "ConnectionMode",
+            "equals": "UseConnectionString"
+          }
+        ]
+      }
+    },
+    {
+      "direction": "Input",
+      "type": "text",
+      "name": "ExistingConnection",
+      "label": "Existing SQL Connection",
+      "description": "The Existing connection string to the database.",
+      "defaultValue": "",
+      "required": false,
+      "renderIf": {
+        "conditions": [
+          {
+            "field": "ConnectionMode",
+            "equals": "UseExistingConnection"
+          }
+        ]
+      }
     },
     {
       "direction": "Input",
@@ -35,22 +81,22 @@
       "label": "Operation Type",
       "description": "The type of SQL operation to perform.",
       "defaultValue": "",
-      "required": false,
+      "required": true,
       "selectOptions": [
         {
           "label": "Non-Query",
           "value": "NonQuery",
-          "description": "Execute a non-query SQL statement."
+          "description": "Execute INSERT, UPDATE, DELETE statements."
         },
         {
           "label": "Scalar",
           "value": "Scalar",
-          "description": "Execute a SQL statement and return a scalar value."
+          "description": "Execute a SQL statement and return a single value."
         },
         {
           "label": "DataSet",
           "value": "DataSet",
-          "description": "Execute a SQL statement and return a data set."
+          "description": "Execute a SQL statement and return a result set as DataTable."
         }
       ]
     },

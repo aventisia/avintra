@@ -24,7 +24,7 @@
       "type": "config-panel-output",
       "name": "SqlConnection",
       "label": "SQL Connection",
-      "description": "The opened SQL connection.",
+      "description": "The opened SQL connection metadata.",
       "defaultValue": {
         "value": "SqlConnection",
         "enabled": true
