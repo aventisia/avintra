@@ -1,9 +1,9 @@
 ﻿using CodeActivitiesLibrary.Extensions;
+using CodeActivitiesLibrary.UiInterfaceAutomations.CMDSessionActivities.Helpers;
 using System;
 using System.Activities;
 using System.ComponentModel;
 using System.Diagnostics;
-using System.Text.RegularExpressions;
 using System.Threading;
 
 namespace CodeActivitiesLibrary.UiInterfaceAutomations.CmdSessionActivities
@@ -13,10 +13,6 @@ namespace CodeActivitiesLibrary.UiInterfaceAutomations.CmdSessionActivities
     [ActivityMetaData(nodeImg: "/assets/CMDSession.svg")]
     public class WaitForTextOnCmdSessionActivity : BaseCodeActivity
     {
-        // ----------------------
-        // Input Arguments
-        // ----------------------
-
         [RequiredArgument]
         [DisplayName("CMD Session")]
         [Description("The process representing the open CMD session.")]
@@ -27,88 +23,51 @@ namespace CodeActivitiesLibrary.UiInterfaceAutomations.CmdSessionActivities
         [Description("The text or regular expression to wait for in the CMD session output.")]
         public InArgument<string> TextToWaitFor { get; set; }
 
+        [DisplayName("Timeout (ms)")]
+        [Description("Maximum time to wait in milliseconds. Default: 5000.")]
+        [DefaultValue(5000)]
+        public InArgument<int> TimeoutMs { get; set; }
 
-        [DisplayName("Is Regular Expression")]
-        [Description("Specifies whether the 'Text to Wait For' is a regular expression.")]
-        public InArgument<bool> IsRegularExpression { get; set; } = new InArgument<bool>(false);
-
-
-        [DisplayName("Ignore Case")]
-        [Description("Specifies whether to ignore case when matching the text.")]
-        public InArgument<bool> IgnoreCase { get; set; } = new InArgument<bool>(true);
-
-
-        [DisplayName("Timeout")]
-        [Description("The maximum time (in seconds) to wait before timing out. Use 0 for no timeout.")]
-        public InArgument<int> Timeout { get; set; } = new InArgument<int>(10); // Default timeout
-
-        // ----------------------
-        // Execution Logic
-        // ----------------------
+        [DisplayName("Found")]
+        [Description("Test the result, wait for text is true or false")]
+        public OutArgument<bool> Found { get; set; }
 
         protected override void Execute(CodeActivityContext context)
         {
-            var status = "Success";
-
             try
             {
-                var cmdSession = CmdSession.Get(context);
-                var textToWaitFor = TextToWaitFor.Get(context);
-                var isRegularExpression = IsRegularExpression.Get(context);
-                var ignoreCase = IgnoreCase.Get(context);
-                var timeoutSeconds = Timeout.Get(context);
+                var process = CmdSession.Get(context);
+                var searchText = TextToWaitFor.Get(context);
+                var timeout = TimeoutMs.Get(context);
 
-                if (cmdSession == null)
-                    throw new ArgumentException("CMD session cannot be null.");
+                if (process == null || process.HasExited)
+                    throw new InvalidOperationException("CMD session is not active.");
+                if (string.IsNullOrEmpty(searchText))
+                    throw new ArgumentException("Search text cannot be null or empty.");
 
-                if (string.IsNullOrWhiteSpace(textToWaitFor))
-                    throw new ArgumentException("Text to wait for cannot be empty.");
+                var startTime = DateTime.UtcNow;
+                var buffer = CmdSessionStateHelper.GetBuffer(process);
 
-                // Gracefully wait for process start
-                if (!cmdSession.HasExited && !cmdSession.Responding)
-                    Thread.Sleep(500);
-
-                RegexOptions regexOptions = ignoreCase ? RegexOptions.IgnoreCase : RegexOptions.None;
-                string output = string.Empty;
-                bool textFound = false;
-                DateTime startTime = DateTime.Now;
-                using (var reader = cmdSession.StandardOutput)
+                while ((DateTime.UtcNow - startTime).TotalMilliseconds < timeout)
                 {
-                    while (!textFound && !cmdSession.HasExited &&
-                           (timeoutSeconds == 0 || output.Length < 1024 * 1024)) // limit buffer size
+                    string currentOutput;
+                    lock (buffer)
+                        currentOutput = buffer.ToString();
+
+                    if (currentOutput.Contains(searchText))
                     {
-                        string line = reader.ReadLine();
-                        if (line != null)
-                        {
-                            output += line + Environment.NewLine;
-
-                            if (isRegularExpression)
-                                textFound = Regex.IsMatch(output, textToWaitFor, regexOptions);
-                            else
-                                textFound = output.Contains(textToWaitFor);
-
-                            if (textFound) break;
-                        }
-
-                        if (timeoutSeconds > 0 && timeoutSeconds <= (DateTime.Now - startTime).TotalSeconds)
-                            break;
-
-                        Thread.Sleep(100); // Avoid CPU overuse
+                        Found.Set(context, true);
+                        IsSuccess.Set(context, true);
+                        StatusMessage.Set(context, $"Text '{searchText}' found.");
+                        return;
                     }
+
+                    Thread.Sleep(100);
                 }
 
-                if (textFound)
-                {
-                    status += $" Successfully found text: '{textToWaitFor}'";
-                    IsSuccess.Set(context, true);
-                }
-                else
-                {
-                    status = $"Text not found: '{textToWaitFor}'";
-                    IsSuccess.Set(context, false);
-                }
-
-                StatusMessage.Set(context, status);
+                Found.Set(context, false);
+                IsSuccess.Set(context, true);
+                StatusMessage.Set(context, $"Timeout ({timeout}ms): Text not found.");
             }
             catch (Exception ex)
             {

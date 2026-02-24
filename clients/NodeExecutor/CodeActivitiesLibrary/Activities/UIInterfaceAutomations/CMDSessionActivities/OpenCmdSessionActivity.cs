@@ -1,8 +1,11 @@
 ﻿using CodeActivitiesLibrary.Extensions;
+using CodeActivitiesLibrary.UiInterfaceAutomations.CMDSessionActivities.Helpers;
 using System;
 using System.Activities;
 using System.ComponentModel;
+using System.ComponentModel.DataAnnotations;
 using System.Diagnostics;
+using System.Text;
 
 namespace CodeActivitiesLibrary.UiInterfaceAutomations.CmdSessionActivities
 {
@@ -11,123 +14,127 @@ namespace CodeActivitiesLibrary.UiInterfaceAutomations.CmdSessionActivities
     [ActivityMetaData(nodeImg: "/assets/CMDSession.svg")]
     public class OpenCmdSessionActivity : BaseCodeActivity
     {
-        // ----------------------
-        // Input Arguments
-        // ----------------------
-
         [RequiredArgument]
         [DisplayName("Working Folder")]
         [Description("The directory where the CMD session should start.")]
         public InArgument<string> WorkingFolder { get; set; }
 
-
         [DisplayName("Change Code Page")]
         [Description("Specifies whether to change the code page in the CMD session.")]
-        public InArgument<bool> ChangeCodePage { get; set; } = new InArgument<bool>(false);
-
+        [DefaultValue(false)]
+        public InArgument<bool> ChangeCodePage { get; set; }
 
         [DisplayName("Encoding")]
         [Description("The encoding to use if 'Change Code Page' is enabled.")]
         [DefaultValue(EncodingEnum.UTF8)]
         [RenderIfCondition(nameof(ChangeCodePage), true)]
-        public InArgument<EncodingEnum> Encoding { get; set; } =
-            new InArgument<EncodingEnum>(EncodingEnum.UTF8);
-
-        // ----------------------
-        // Output Arguments
-        // ----------------------
-
+        public InArgument<EncodingEnum> TextEncoding { get; set; }
 
         [DisplayName("CMD Session")]
-        [Description("Details of the opened CMD session.")]
-        public OutArgument<string> CmdSession { get; set; }
-
-        // ----------------------
-        // Execution Logic
-        // ----------------------
+        [Description("Holds the CMD process instance for reuse in subsequent activities.")]
+        public OutArgument<Process> CmdSession { get; set; }
 
         protected override void Execute(CodeActivityContext context)
         {
-            var status = "Success";
-
             try
             {
-                var workingFolder = WorkingFolder.Get(context);
+                var workingFolder = WorkingFolder.Get(context) ?? Environment.CurrentDirectory;
+                if (!System.IO.Directory.Exists(workingFolder))
+                    throw new ArgumentException($"Working folder does not exist: {workingFolder}");
+
                 var changeCodePage = ChangeCodePage.Get(context);
-                var encoding = Encoding.Get(context);
+                var encodingEnum = changeCodePage ? TextEncoding.Get(context) : EncodingEnum.UTF8;
 
-                if (string.IsNullOrWhiteSpace(workingFolder))
-                    throw new ArgumentException("Working folder cannot be empty.");
-
-                // Start CMD process
-                using (var process = new Process())
+                var startInfo = new ProcessStartInfo
                 {
-                    var processStartInfo = new ProcessStartInfo
-                    {
-                        FileName = "cmd.exe",
-                        WorkingDirectory = workingFolder,
-                        UseShellExecute = false,
-                        CreateNoWindow = true,
-                        RedirectStandardInput = true,
-                        RedirectStandardOutput = true,
-                        RedirectStandardError = true
-                    };
+                    FileName = "cmd.exe",
+                    WorkingDirectory = workingFolder,
+                    UseShellExecute = false,
+                    CreateNoWindow = true,
+                    RedirectStandardInput = true,
+                    RedirectStandardOutput = true,
+                    RedirectStandardError = true,
+                    StandardOutputEncoding = GetDotNetEncoding(encodingEnum),
+                    StandardErrorEncoding = GetDotNetEncoding(encodingEnum)
+                };
 
+                var process = new Process { StartInfo = startInfo };
+                CmdSessionStateHelper.AttachOutputCapture(process);
+                process.Start();
 
-                    // Set encoding if required
-                    if (changeCodePage)
-                    {
-                        var codePageCommand = GetCodePageCommand(encoding);
-                        process.StartInfo.Arguments = $"/K chcp {codePageCommand}";
-                    }
+                process.BeginOutputReadLine();
+                process.BeginErrorReadLine();
 
-                    process.StartInfo = processStartInfo;
-                    process.Start();
-
-                    // Store the CMD session details (e.g., PID or command used)
-                    var cmdSessionDetails = $"CMD Session started in {workingFolder}";
-                    if (changeCodePage)
-                    {
-                        cmdSessionDetails += $" with encoding: {GetEncodingDescription(encoding)}";
-                    }
-
-                    CmdSession.Set(context, process);
-                    status += $" Successfully opened CMD session in '{workingFolder}'. {cmdSessionDetails}";
-                    IsSuccess.Set(context, true);
-                    StatusMessage.Set(context, status);
+                // Optionally change code page
+                if (changeCodePage)
+                {
+                    string codePage = GetCodePageCommand(encodingEnum);
+                    process.StandardInput.WriteLine($"chcp {codePage}");
+                    process.StandardInput.Flush();
                 }
+
+                // Suppress command echoing for cleaner output
+                process.StandardInput.WriteLine("@echo off");
+                process.StandardInput.Flush();
+                CmdSession.Set(context, process);            
+                IsSuccess.Set(context, true);
+                StatusMessage.Set(context, $"Background CMD session opened. PID: {process.Id}, Encoding: {encodingEnum}");
             }
             catch (Exception ex)
             {
-                status = $"Error opening CMD session: {ex.Message}";
-                CmdSession.Set(context, null);
                 IsSuccess.Set(context, false);
-                StatusMessage.Set(context, status);
+                StatusMessage.Set(context, $"Failed to open CMD session: {ex.Message}");
             }
         }
 
         // ----------------------
         // Helper Methods
         // ----------------------
+        private static Encoding GetDotNetEncoding(EncodingEnum encoding)
+        {
+            switch (encoding)
+            {
+                case EncodingEnum.UTF8:
+                    return Encoding.UTF8;
+                case EncodingEnum.UTF7:
+                    return Encoding.UTF7;
+                case EncodingEnum.ASCII:
+                    return Encoding.ASCII;
+                case EncodingEnum.Windows1252:
+                    return Encoding.GetEncoding(1252);
+                case EncodingEnum.ISO8859_1:
+                    return Encoding.GetEncoding(28591);
+                case EncodingEnum.ISCIIAssamese:
+                    return Encoding.GetEncoding(57009);
+                case EncodingEnum.ISCIIOriya:
+                    return Encoding.GetEncoding(57007);
+                case EncodingEnum.ISCIIMalayalam:
+                    return Encoding.GetEncoding(57006);
+                case EncodingEnum.ISCIIKannada:
+                    return Encoding.GetEncoding(57008);
+                default:
+                    return Encoding.UTF8;
+            }
+        }
 
         private static string GetCodePageCommand(EncodingEnum encoding)
         {
             switch (encoding)
             {
                 case EncodingEnum.UTF8:
-                    return "65001"; // UTF-8
+                    return "65001";
                 case EncodingEnum.UTF7:
-                    return "65000"; // UTF-7
+                    return "65000"; 
                 case EncodingEnum.ASCII:
-                    return "20127"; // ASCII
+                    return "20127";
                 case EncodingEnum.Windows1252:
-                    return "1252"; // Windows-1252
+                    return "1252"; 
                 case EncodingEnum.ISO8859_1:
-                    return "28591"; // ISO-8859-1
+                    return "28591"; 
                 case EncodingEnum.ISCIIAssamese:
-                    return "57009"; // ISCII Assamese
+                    return "57009"; 
                 case EncodingEnum.ISCIIOriya:
-                    return "57007"; // ISCII Oriya
+                    return "57007";
                 case EncodingEnum.ISCIIMalayalam:
 
                 default:
@@ -160,33 +167,35 @@ namespace CodeActivitiesLibrary.UiInterfaceAutomations.CmdSessionActivities
             }
         }
 
-        // ----------------------
         // Enums
-        // ----------------------
 
         public enum EncodingEnum
         {
-            [Description("UTF-8 : Unicode (UTF-8)")]
+            [Display(Name = "UTF-8", Description = "UTF-8 : Unicode (UTF-8)")]
             UTF8,
 
-            [Description("UTF-7 : Unicode (UTF-7)")]
+            [Display(Name = "UTF-7", Description = "UTF-7 : Unicode (UTF-7)")]
             UTF7,
-            [Description("ASCII : US-ASCII")] ASCII,
 
-            [Description("Windows-1252 : Western European (Windows)")]
+            [Display(Name = "ASCII", Description = "ASCII : US-ASCII")]
+            ASCII,
+
+            [Display(Name = "Windows-1252", Description = "Windows-1252 : Western European (Windows)")]
             Windows1252,
-            [Description("ISO-8859-1 : Latin-1")] ISO8859_1,
 
-            [Description("x-iscii-as : ISCII Assamese")]
+            [Display(Name = "ISO-8859-1", Description = "ISO-8859-1 : Latin-1")]
+            ISO8859_1,
+
+            [Display(Name = "x-iscii-as", Description = "x-iscii-as : ISCII Assamese")]
             ISCIIAssamese,
 
-            [Description("x-iscii-or : ISCII Oriya")]
+            [Display(Name = "x-iscii-or", Description = "x-iscii-or : ISCII Oriya")]
             ISCIIOriya,
 
-            [Description("x-iscii-ma : ISCII Malayalam")]
+            [Display(Name = "x-iscii-ma", Description = "x-iscii-ma : ISCII Malayalam")]
             ISCIIMalayalam,
 
-            [Description("x-iscii-ka : ISCII Kannada")]
+            [Display(Name = "x-iscii-ka", Description = "x-iscii-ka : ISCII Kannada")]
             ISCIIKannada,
         }
     }

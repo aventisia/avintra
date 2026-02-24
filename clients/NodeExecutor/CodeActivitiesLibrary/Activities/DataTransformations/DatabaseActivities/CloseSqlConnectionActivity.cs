@@ -1,4 +1,6 @@
-﻿using CodeActivitiesLibrary.Extensions;
+﻿using CodeActivitiesLibrary.DataTransformations.DatabaseActivities.Helpers;
+using CodeActivitiesLibrary.Extensions;
+using Newtonsoft.Json.Linq;
 using System;
 using System.Activities;
 using System.ComponentModel;
@@ -8,39 +10,46 @@ using System.Data.SqlClient;
 namespace CodeActivitiesLibrary.DataTransformations.DatabaseActivities
 {
     [DisplayName("Close SQL Connection")]
-    [Description("Close an open connection to a database")]
+    [Description("Closes an open SQL database connection")]
     [ActivityMetaData(nodeImg: "/assets/Database.svg")]
     public class CloseSqlConnectionActivity : BaseCodeActivity
     {
         [RequiredArgument]
         [DisplayName("SQL Connection")]
-        [Description("The SQL connection to close.")]
-        public InArgument<SqlConnection> SqlConnection { get; set; }
+        [Description("The SQL connection metadata returned from OpenSqlConnectionActivity.")]
+        public InArgument<JToken> SqlConnection { get; set; }
 
         protected override void Execute(CodeActivityContext context)
         {
-            var connection = SqlConnection.Get(context);
+            var connectionToken = SqlConnection.Get(context);
 
             try
             {
-                if (connection != null && connection.State == ConnectionState.Open)
+                if (connectionToken == null || connectionToken.Type == JTokenType.Null)
+                    throw new ArgumentException("SQL Connection token is required.");
+
+                var connectionId = connectionToken["ConnectionId"]?.ToString();
+
+                if (string.IsNullOrWhiteSpace(connectionId))
+                    throw new ArgumentException("ConnectionId not found in SQL Connection token.");
+
+                var connection = SqlConnectionManager.Get(connectionId);
+
+                if (connection != null && connection.State != ConnectionState.Closed)
                 {
                     connection.Close();
-                    IsSuccess.Set(context, true);
-                    StatusMessage.Set(context, "Database connection closed successfully.");
+                    connection.Dispose();
                 }
-                else
-                {
-                    IsSuccess.Set(context, false);
-                    StatusMessage.Set(context, "Connection was already closed or is null.");
-                }
+
+                SqlConnectionManager.Remove(connectionId);
+                IsSuccess.Set(context, true);
+                StatusMessage.Set(context, "Database connection closed successfully.");
             }
             catch (Exception ex)
             {
                 IsSuccess.Set(context, false);
                 StatusMessage.Set(context, $"Error closing database connection: {ex.Message}");
             }
-
         }
     }
 }
