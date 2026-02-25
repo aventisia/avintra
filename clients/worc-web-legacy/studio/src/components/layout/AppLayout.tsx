@@ -93,6 +93,7 @@ export const AppLayout = () => {
       setActionSelectorData(filtered);
     });
 
+    // eslint-disable-next-line react-hooks/set-state-in-effect
     setLoading(false);
   }, [setActionSelectorData, userSession?.deploymentType]);
 

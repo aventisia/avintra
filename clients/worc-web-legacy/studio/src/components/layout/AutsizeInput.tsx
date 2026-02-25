@@ -6,7 +6,7 @@ import {
   InputHTMLAttributes,
 } from "react";
 
-interface AutoSizeInputProps extends InputHTMLAttributes<HTMLInputElement> {}
+type AutoSizeInputProps = InputHTMLAttributes<HTMLInputElement>
 
 const AutoSizeInput = forwardRef<HTMLInputElement, AutoSizeInputProps>(
   ({ value = "", placeholder = "", className = "", ...props }, ref) => {

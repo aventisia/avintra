@@ -60,7 +60,7 @@ const ImportFlow = () => {
         flowVariablesObject: JSON.stringify(flowVariablesObject),
         versionId,
       });
-    } catch (error) {
+    } catch  {
       toast.error("Error processing the imported file");
     }
   };
