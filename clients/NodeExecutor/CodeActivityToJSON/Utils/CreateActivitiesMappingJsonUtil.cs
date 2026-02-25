@@ -125,22 +125,15 @@ namespace CodeActivityToJSON.Utils
 
             // Save the primary categories to JSON file
             // var outputFilePath = Path.Combine(outputDir, "_ActionSelectorData.json");
-            var outputFilePath = Path.GetFullPath(Path.Combine(
-                AppDomain.CurrentDomain.BaseDirectory,
-                "..", "..", "..", "..",
-                "worc-web-legacy",
-                "studio",
-                "src",
-                "features",
-                "action-selector",
-                "constants",
-                "_ActionSelectorData.json"
-            ));
-
+            var outputFilePath = $@"\\wsl$\Ubuntu\home\{Environment.UserName.ToLower()}\gitea\aventisia\worc-platform\clients\worc-web-legacy\studio\src\features\action-selector\constants\_ActionSelectorData.json";
+            
             using (var writer = new StreamWriter(outputFilePath))
             {
+                // Set NewLine to Unix line ending (LF)
+                writer.NewLine = "\n";
                 var json = JsonConvert.SerializeObject(primaryCategories, Formatting.Indented, settings);
-                writer.Write(json);
+                var jsonWithUnixLineEndings = json.Replace("\r\n", "\n");
+                writer.Write(jsonWithUnixLineEndings);
                 Console.WriteLine($"Activities mapping JSON saved");
             }
         }
