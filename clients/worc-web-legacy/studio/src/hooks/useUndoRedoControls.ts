@@ -3,29 +3,21 @@ import { useShallow } from "zustand/react/shallow";
 
 /**
  * Hook to extract Undo/Redo actions and their availability states for UI components.
- * Automatically triggers re-renders when the history stack indexes change.
  */
 export const useUndoRedoControls = () => {
-  const { undo, redo, historyStep, historyMax } = useReactFlowExtStore(
+  const { undo, redo, past, future } = useReactFlowExtStore(
     useShallow((state) => ({
       undo: state.undo,
       redo: state.redo,
-      historyStep: state.historyStep,
-      historyMax: state.historyMax,
+      past: state.past,
+      future: state.future,
     })),
   );
-
+  console.log("past", past.length);
   return {
-    /** Function to asynchronously revert the flow to the previous state */
     undo,
-
-    /** Function to asynchronously advance the flow to the next state */
     redo,
-
-    /** Flag to indicate if there are past states available to undo */
-    canUndo: historyStep > 0,
-
-    /** Flag to indicate if there are future states available to redo */
-    canRedo: historyStep < historyMax,
+    canUndo: past.length > 1,
+    canRedo: future.length > 0,
   };
 };
