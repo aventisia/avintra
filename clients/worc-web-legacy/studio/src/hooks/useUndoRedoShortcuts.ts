@@ -6,11 +6,11 @@ import { useReactFlowExtStore } from "@/stores/react-flow-ext-store";
  */
 export const useUndoRedoShortcuts = () => {
   useEffect(() => {
-    const handleKeyDown = async (event: KeyboardEvent) => {
+    const handleKeyDown = (event: KeyboardEvent) => {
       // Determine OS to support both Command and Control keys
-      const ctrlOrCmd = event.ctrlKey;
+      const ctrlOrCmd = event.ctrlKey || event.metaKey;
 
-      // Guard: Prevent intercepting shortcuts while typing in inputs or textareas
+      //  Prevent intercepting shortcuts while typing in inputs or textareas
       const activeElement = document.activeElement as HTMLElement;
       if (
         activeElement &&
@@ -22,29 +22,19 @@ export const useUndoRedoShortcuts = () => {
       // Undo / Redo (Shift variant) logic
       if (ctrlOrCmd && event.key.toLowerCase() === "z") {
         event.preventDefault();
-
-        const { undo, redo, historyStep, historyMax } =
-          useReactFlowExtStore.getState();
+        const { undo, redo, past, future } = useReactFlowExtStore.getState();
 
         if (event.shiftKey) {
-          if (historyStep < historyMax) {
-            await redo();
-          }
+          if (future.length > 0) redo();
         } else {
-          if (historyStep > 0) {
-            await undo();
-          }
+          if (past.length > 1) undo();
         }
       }
 
-      // Standard Windows Redo logic
       if (ctrlOrCmd && event.key.toLowerCase() === "y") {
         event.preventDefault();
-        const { redo, historyStep, historyMax } =
-          useReactFlowExtStore.getState();
-        if (historyStep < historyMax) {
-          await redo();
-        }
+        const { redo, future } = useReactFlowExtStore.getState();
+        if (future.length > 0) redo();
       }
     };
 

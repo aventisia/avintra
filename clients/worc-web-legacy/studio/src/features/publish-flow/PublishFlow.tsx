@@ -1,11 +1,11 @@
-import { Button } from "@aventisia/ui/buttons";
 import { usePublishFlowMutation } from "../react-flow/hooks/usePublishFlow";
 import { useQuery } from "@tanstack/react-query";
 import { useLocation } from "react-router-dom";
 import { useMemo } from "react";
 import { getFlowToLoad } from "../react-flow/apis/react-flow-apis";
-import { Loader2 } from "lucide-react";
+import { RocketIcon } from "lucide-react";
 import { useShowAlertHandler } from "@aventisia/ui/hooks";
+import { SimpleDDMenuItem } from "@aventisia/ui/dropdown-menu";
 
 const PublishFlow = () => {
   const location = useLocation();
@@ -38,9 +38,10 @@ const PublishFlow = () => {
     }
   };
   return (
-    <Button
-      size={"sm"}
-      className="mr-2.5"
+    <SimpleDDMenuItem
+      size="md"
+      Icon={RocketIcon}
+      content="Publish"
       onClick={() =>
         showCustomAlertDialog({
           confirmActionFn: () => handlePublish(),
@@ -50,11 +51,8 @@ const PublishFlow = () => {
           isDestructive: false,
         })
       }
-      disabled={flowsData?.data.isPublished}
-    >
-      {isPending && <Loader2 className="mr-1 h-3.5 w-3.5 animate-spin" />}
-      Publish
-    </Button>
+      disabled={flowsData?.data.isPublished || isPending}
+    />
   );
 };
 

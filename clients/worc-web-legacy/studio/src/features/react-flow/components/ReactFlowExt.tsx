@@ -4,14 +4,19 @@ import { defaultEdgeOptions } from "@/constants/default-edge-options";
 import { useTrackSelection } from "@/hooks/useTrackSelection";
 import { useContextMenuActionsStore } from "@/stores/context-menu-actions-store";
 import { useReactFlowExtStore } from "@/stores/react-flow-ext-store";
-import { Edge, Node, OnSelectionChangeParams, ReactFlow } from "@xyflow/react";
+import {
+  Edge,
+  Node,
+  OnSelectionChangeParams,
+  ReactFlow,
+  useOnViewportChange,
+} from "@xyflow/react";
 import "@xyflow/react/dist/style.css";
 import { useCallback, useMemo, useRef } from "react";
 import { useShallow } from "zustand/react/shallow";
 import { useConfirmDelete } from "../hooks/useConfirmDelete";
 import { useFetchFlowToLoad } from "../hooks/useFetchFlowToLoad";
 import { useOnNodeDelete } from "../hooks/useOnNodeDelete";
-import { useUpdateFlowSilently } from "../hooks/useUpdateFlowSilently";
 import "../styles/override-node-style.css";
 import "../styles/override-edge-style.css";
 import "../styles/override-panel-style.css";
@@ -24,29 +29,33 @@ import { useFetchConfigVariables } from "../hooks/useFetchConfigVariables";
 import { useCopyPasteShortcuts } from "../hooks/useCopyPasteShortcuts";
 import { ReactFlowContextMenu } from "./context-menu";
 import { ReactFlowDialogWrapper } from "./ReactFlowDialogWrapper";
-import { useIDBHistoryTracker } from "@/hooks/useIDBHistoryTracker.ts";
+import { useHistoryTracker } from "@/hooks/useHistoryTracker";
 import { useUndoRedoShortcuts } from "@/hooks/useUndoRedoShortcuts";
-import { useSearchParams } from "react-router-dom";
 
 /**
  * A custom extension of the ReactFlow component.
  */
 export const ReactFlowExt = () => {
-  // Extract parameters from URL
-  const [searchParams] = useSearchParams();
-  const versionId = searchParams.get("v") || "unknown_version";
   // Get ReactFlowExt store state & actions
-  const { nodes, edges, panOnDrag, onNodesChange, onEdgesChange, onConnect } =
-    useReactFlowExtStore(
-      useShallow((state) => ({
-        nodes: state.nodes,
-        edges: state.edges,
-        panOnDrag: state.panOnDrag,
-        onNodesChange: state.onNodesChange,
-        onEdgesChange: state.onEdgesChange,
-        onConnect: state.onConnect,
-      })),
-    );
+  const {
+    nodes,
+    edges,
+    panOnDrag,
+    onNodesChange,
+    onEdgesChange,
+    onConnect,
+    setViewport,
+  } = useReactFlowExtStore(
+    useShallow((state) => ({
+      nodes: state.nodes,
+      edges: state.edges,
+      panOnDrag: state.panOnDrag,
+      onNodesChange: state.onNodesChange,
+      onEdgesChange: state.onEdgesChange,
+      onConnect: state.onConnect,
+      setViewport: state.setViewport,
+    })),
+  );
 
   // Memoize the custom node, edges types
   const customNodeTypeObjMemo = useMemo(() => CustomNodeTypeObj, []);
@@ -56,16 +65,13 @@ export const ReactFlowExt = () => {
   useTrackSelection();
   useCopyPasteShortcuts();
 
-  useIDBHistoryTracker(versionId); // Initialize background database tracking
+  useHistoryTracker(); // Initialize background  tracking
   useUndoRedoShortcuts(); // Initialize keyboard shortcuts
 
   // Fetch flow details and set document title
   useFetchFlowToLoad();
 
   useFetchConfigVariables();
-
-  // Save flow silently
-  useUpdateFlowSilently();
 
   // Confirm delete handler
   const { onBeforeDelete } = useConfirmDelete();
@@ -104,6 +110,12 @@ export const ReactFlowExt = () => {
           : undefined,
     };
   };
+
+  useOnViewportChange({
+    onChange: (viewport) => {
+      setViewport(viewport);
+    },
+  });
 
   const onNodeContextMenu = useCallback(
     (event: React.MouseEvent, node: Node) => {

@@ -1,6 +1,7 @@
 import { MARKER_ARROW_PREFIX } from "@/constants";
 import { DCPFieldSchemaType } from "@/features/dynamic-config-panel";
 import { FlowVariablesObjectType } from "@/types/flow-variables-object-type";
+import { HistoryState } from "@/utils/history-equality-checker";
 import {
   Connection,
   Edge,
@@ -16,7 +17,8 @@ import {
   applyNodeChanges,
 } from "@xyflow/react";
 import { create } from "zustand";
-import { HistoryDB } from "@/utils/idb-history-manager";
+
+const MAX_HISTORY_STEPS = 100;
 
 type State = {
   /** Nodes of currently opened flow */
@@ -49,12 +51,10 @@ type State = {
   /** Flow Viewport */
   viewport: Viewport;
 
-  historyStep: number;
-  historyMax: number;
+  past: HistoryState[];
+  future: HistoryState[];
   isRestoringHistory: boolean;
-
-  /** The active session identifier combining flow ID and version ID */
-  versionId: string;
+  savedSnapshot: HistoryState | null;
 };
 
 type Actions = {
@@ -99,8 +99,15 @@ type Actions = {
     origin: "Node" | "Edge" | "Pane" | "Selection" | null,
   ) => void;
 
-  undo: () => Promise<void>;
-  redo: () => Promise<void>;
+  hydrateFlow: (
+    nodes: Node[],
+    edges: Edge[],
+    variables: FlowVariablesObjectType[],
+  ) => void;
+  setSavedSnapshot: (snapshot: HistoryState) => void;
+  commitSnapshot: (snapshot: HistoryState) => void;
+  undo: () => void;
+  redo: () => void;
 };
 
 export const useReactFlowExtStore = create<State & Actions>((set, get) => ({
@@ -114,32 +121,25 @@ export const useReactFlowExtStore = create<State & Actions>((set, get) => ({
   contextMenuOrigin: null,
   isPublished: false,
   viewport: { x: 0, y: 0, zoom: 1 },
-  historyStep: 0,
-  historyMax: 0,
+
+  past: [],
+  future: [],
   isRestoringHistory: false,
-  versionId: "",
+  savedSnapshot: null,
 
   onNodesChange: (changes: NodeChange[]) => {
-    set({
-      isSavePending: true,
-      nodes: applyNodeChanges(changes, get().nodes),
-    });
+    set({ nodes: applyNodeChanges(changes, get().nodes) });
   },
 
   onEdgesChange: (changes: EdgeChange[]) => {
-    set({
-      isSavePending: true,
-      edges: applyEdgeChanges(changes, get().edges),
-    });
+    set({ edges: applyEdgeChanges(changes, get().edges) });
   },
 
   //onConnect triggers only when two nodes are connected manually
   onConnect: (connection: Connection) => {
     // Create a unique id for the edge
     const id = window.crypto.randomUUID();
-
     set({
-      isSavePending: true,
       edges: addEdge(
         {
           ...connection,
@@ -152,81 +152,88 @@ export const useReactFlowExtStore = create<State & Actions>((set, get) => ({
     });
   },
 
-  setNodes: (nodes: Node[]) => {
-    set({ isSavePending: true, nodes });
-  },
-
-  setIsPublished: (isPublished: boolean) => {
-    set({ isPublished });
-  },
-
-  setEdges: (edges: Edge[]) => {
-    set({ isSavePending: true, edges });
-  },
-
-  setFlowVariablesObject: (variables: FlowVariablesObjectType[]) => {
-    set({ flowVariablesObject: variables });
-  },
-
-  setConfigVariables: (variables: string[]) => {
-    set({ configVariables: variables });
-  },
-
-  setInputOutputObject: (inputOutputObject: DCPFieldSchemaType[]) => {
-    set({ inputOutputObject });
-  },
-
-  togglePanOnDrag: (value) => {
+  setNodes: (nodes: Node[]) => set({ nodes }),
+  setEdges: (edges: Edge[]) => set({ edges }),
+  setIsPublished: (isPublished: boolean) => set({ isPublished }),
+  setFlowVariablesObject: (variables: FlowVariablesObjectType[]) =>
+    set({ flowVariablesObject: variables }),
+  setConfigVariables: (variables: string[]) =>
+    set({ configVariables: variables }),
+  setInputOutputObject: (inputOutputObject: DCPFieldSchemaType[]) =>
+    set({ inputOutputObject }),
+  togglePanOnDrag: (value) =>
     set((state) => ({
       panOnDrag: typeof value === "boolean" ? value : !state.panOnDrag,
-    }));
+    })),
+  setIsSavePending: (isSavePending: boolean) => set({ isSavePending }),
+  setContextMenuOrigin: (contextMenuOrigin) => set({ contextMenuOrigin }),
+  setViewport: (viewport) => set({ viewport }),
+
+  hydrateFlow: (nodes, edges, variables) => {
+    const baseline: HistoryState = {
+      nodes,
+      edges,
+      flowVariablesObject: variables,
+    };
+    set({
+      nodes,
+      edges,
+      flowVariablesObject: variables,
+      past: [baseline],
+      future: [],
+      savedSnapshot: baseline,
+      isSavePending: false,
+    });
   },
 
-  setIsSavePending: (isSavePending: boolean) => {
-    set({ isSavePending });
+  setSavedSnapshot: (snapshot) => {
+    set({ savedSnapshot: snapshot, isSavePending: false });
   },
 
-  setContextMenuOrigin: (contextMenuOrigin) => {
-    set({ contextMenuOrigin });
+  commitSnapshot: (snapshot) => {
+    set((state) => {
+      const newPast = [...state.past, snapshot];
+      if (newPast.length > MAX_HISTORY_STEPS) newPast.shift();
+      return { past: newPast, future: [] };
+    });
   },
 
-  setViewport: (viewport) => {
-    set({ viewport });
-  },
+  undo: () => {
+    set((state) => {
+      if (state.past.length < 2) return state;
 
-  undo: async () => {
-    const { historyStep, versionId } = get();
-    if (historyStep <= 0 || !versionId) return;
+      const previousState = state.past[state.past.length - 2];
+      const currentStateObj: HistoryState = {
+        nodes: state.nodes,
+        edges: state.edges,
+        flowVariablesObject: state.flowVariablesObject,
+      };
 
-    const targetStep = historyStep - 1;
-    const snapshot = await HistoryDB.getSnapshot(versionId, targetStep);
-
-    if (snapshot) {
-      set({
+      return {
+        past: state.past.slice(0, -1),
+        future: [currentStateObj, ...state.future],
+        nodes: previousState.nodes,
+        edges: previousState.edges,
+        flowVariablesObject: previousState.flowVariablesObject,
         isRestoringHistory: true,
-        nodes: snapshot.nodes,
-        edges: snapshot.edges,
-        flowVariablesObject: snapshot.flowVariablesObject,
-        historyStep: targetStep,
-      });
-    }
+      };
+    });
   },
 
-  redo: async () => {
-    const { historyStep, historyMax, versionId } = get();
-    if (historyStep >= historyMax || !versionId) return;
+  redo: () => {
+    set((state) => {
+      if (state.future.length === 0) return state;
 
-    const targetStep = historyStep + 1;
-    const snapshot = await HistoryDB.getSnapshot(versionId, targetStep);
+      const nextState = state.future[0];
 
-    if (snapshot) {
-      set({
+      return {
+        past: [...state.past, nextState],
+        future: state.future.slice(1),
+        nodes: nextState.nodes,
+        edges: nextState.edges,
+        flowVariablesObject: nextState.flowVariablesObject,
         isRestoringHistory: true,
-        nodes: snapshot.nodes,
-        edges: snapshot.edges,
-        flowVariablesObject: snapshot.flowVariablesObject,
-        historyStep: targetStep,
-      });
-    }
+      };
+    });
   },
 }));

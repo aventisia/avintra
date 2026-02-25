@@ -29,6 +29,7 @@ export const useFetchFlowToLoad = () => {
     setFlowVariablesObject,
     setInputOutputObject,
     setIsPublished,
+    hydrateFlow,
     setViewport: setViewportState,
   } = useReactFlowExtStore(
     useShallow((state) => ({
@@ -38,6 +39,7 @@ export const useFetchFlowToLoad = () => {
       setInputOutputObject: state.setInputOutputObject,
       setIsPublished: state.setIsPublished,
       setViewport: state.setViewport,
+      hydrateFlow: state.hydrateFlow,
     })),
   );
 
@@ -77,7 +79,7 @@ export const useFetchFlowToLoad = () => {
     // Check if 'v' query parameter exists
     if (!searchParams.has("v")) {
       searchParams.set("v", data.data.versionId);
-      setSearchParams(searchParams);
+      setSearchParams(searchParams, { replace: true });
     }
 
     // Parse react flow object
@@ -98,7 +100,7 @@ export const useFetchFlowToLoad = () => {
       setEdges(flow.edges);
       setFlowVariablesObject(flowVarObjs || []);
       setInputOutputObject(inputOutputObj || []);
-
+      hydrateFlow(flow.nodes, flow.edges, flowVarObjs);
       //set viewport state for react flow oject ext(only for reference its not for ReactFLow)
       setViewportState(flow.viewport);
       // If flow has more than 2 nodes then set the saved viewport

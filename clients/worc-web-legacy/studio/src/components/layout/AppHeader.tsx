@@ -1,7 +1,6 @@
 import { ExecuteFlow } from "@/features/execute-flow";
 import { FlowComments } from "@/features/flow-comments/components/FlowComments";
 import { FlowVersions } from "@/features/flow-versions/components";
-import { PublishFlow } from "@/features/publish-flow/PublishFlow";
 import { StudioPreferences } from "@/features/studio-preferences/components";
 import { useUserSessionStore } from "@/react-toolkit/stores/user-session-store";
 import { Avatar, AvatarFallback } from "@aventisia/ui/avatar";
@@ -20,6 +19,7 @@ import { FlowParticipantsFacePile } from "@/features/share-access/components/sha
 import { DefaultTenantsEnum } from "@/react-toolkit/enums/default-tenants-enum";
 import AgentName from "./AgentName";
 import { AvailableCredits } from "@/features/available-credits/AvailableCredits";
+import SaveFlow from "@/features/react-flow/components/save-flow/SaveFlow";
 
 const AppHeader: React.FC = () => {
   // Get user session state and actions
@@ -94,7 +94,7 @@ const AppHeader: React.FC = () => {
               <FlowComments className="mt-0 mlg:mt-4" />
             </div>
           )}
-          <PublishFlow />
+          <SaveFlow />
           {!isAssist && (
             <div className="flex items-center">
               <Tooltip content="More">

@@ -25,6 +25,7 @@ import { useSaveAsTemplateStore } from "@/features/save-as-template/stores/save-
 import { useExportFlow } from "@/hooks/useExportFlow";
 import { useImportStore } from "@/features/import-flow/stores/import-flow-store";
 import { useKeyboardShortcutsStore } from "@/features/keyboard-shortcuts/stores/keyboard-shortcuts-store";
+import { PublishFlow } from "@/features/publish-flow/PublishFlow";
 
 export const HeaderActionMenu: React.FC = () => {
   // Get flow execution store state & actions
@@ -91,6 +92,7 @@ export const HeaderActionMenu: React.FC = () => {
         align="end"
         className="mt-0 w-[13rem] min-w-[13rem] mlg:mt-4"
       >
+        <PublishFlow />
         {/* <FlowLogHeader /> */}
         <SimpleDDMenuItem
           size="md"
