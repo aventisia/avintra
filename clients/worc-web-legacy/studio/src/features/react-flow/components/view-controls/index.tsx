@@ -7,6 +7,7 @@ import { useShallow } from "zustand/react/shallow";
 import { VCActionButton } from "./VCActionButton";
 import { VCBContainer } from "./VCBContainer";
 import { VCBToggleCursor } from "./VCBToggleCursor";
+import { VCBUndoRedo } from "./VCBUndoRedo";
 import { memo } from "react";
 
 export const ViewControls = memo(() => {
@@ -21,6 +22,9 @@ export const ViewControls = memo(() => {
   return (
     <Panel position="bottom-left">
       <div className="flex flex-col items-end space-y-4">
+        {/* Undo and Redo Controls */}
+        <VCBUndoRedo />
+
         {zoomControls && (
           <VCBContainer>
             {/* Fit view button */}
