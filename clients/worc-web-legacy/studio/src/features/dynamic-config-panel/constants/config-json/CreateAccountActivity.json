@@ -1,7 +1,7 @@
 {
   "name": "CreateAccount",
   "label": "Create Salesforce Account",
-  "discription": "Creates a new Account record in Salesforce using the provided credentials and account details.",
+  "description": "Creates a new Account record in Salesforce using the provided credentials and account details.",
   "version": "1.0.0",
   "auther": "@aventisia",
   "supportedPlatforms": [

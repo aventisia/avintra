@@ -1,7 +1,7 @@
 {
   "name": "AddQuickExpenseWithReceipt",
   "label": "Add Quick Expense with Receipt",
-  "discription": "Adds a quick expense entry with a receipt file in SAP Concur.",
+  "description": "Adds a quick expense entry with a receipt file in SAP Concur.",
   "version": "1.0.0",
   "auther": "@aventisia",
   "supportedPlatforms": [

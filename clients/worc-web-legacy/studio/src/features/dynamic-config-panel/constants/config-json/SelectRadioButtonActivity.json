@@ -1,7 +1,7 @@
 {
   "name": "SelectRadioButton",
   "label": "Select Radio Button",
-  "discription": "Selects a radio button in a group by its name or zero-based index.",
+  "description": "Selects a radio button in a group by its name or zero-based index.",
   "version": "1.0.0",
   "auther": "@aventisia",
   "supportedPlatforms": [

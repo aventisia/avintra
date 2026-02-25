@@ -1,7 +1,7 @@
 {
   "name": "AddItemToList",
   "label": "Add Item to List",
-  "discription": "Adds one or more items to a list. Converts types if necessary.",
+  "description": "Adds one or more items to a list. Converts types if necessary.",
   "version": "1.0.0",
   "auther": "@aventisia",
   "supportedPlatforms": [

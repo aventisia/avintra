@@ -1,7 +1,7 @@
 {
   "name": "OpenWorkbook",
   "label": "Open Excel Workbook",
-  "discription": "Opens or reuses an Excel workbook in an existing Excel instance by workbook name.",
+  "description": "Opens or reuses an Excel workbook in an existing Excel instance by workbook name.",
   "version": "1.0.0",
   "auther": "@aventisia",
   "supportedPlatforms": [

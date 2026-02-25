@@ -1,7 +1,7 @@
 {
   "name": "UpdateTask",
   "label": "Update Task",
-  "discription": "Updates an existing task in Salesforce.",
+  "description": "Updates an existing task in Salesforce.",
   "version": "1.0.0",
   "auther": "@aventisia",
   "supportedPlatforms": [

@@ -1,7 +1,7 @@
 {
   "name": "ConvertBinaryDataToFile",
   "label": "Convert Binary Data to File",
-  "discription": "Converts binary data (byte[] or Base64 string) to a file at the specified path.",
+  "description": "Converts binary data (byte[] or Base64 string) to a file at the specified path.",
   "version": "1.0.0",
   "auther": "@aventisia",
   "supportedPlatforms": [

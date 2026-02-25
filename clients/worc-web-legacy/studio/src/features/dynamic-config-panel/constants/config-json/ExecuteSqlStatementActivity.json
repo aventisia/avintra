@@ -1,7 +1,7 @@
 {
   "name": "ExecuteSqlStatement",
   "label": "Execute SQL Statement",
-  "discription": "Connect to a database and execute an SQL statement.",
+  "description": "Connect to a database and execute an SQL statement.",
   "version": "1.0.0",
   "auther": "@aventisia",
   "supportedPlatforms": [

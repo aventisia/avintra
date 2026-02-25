@@ -1,7 +1,7 @@
 {
   "name": "ReadFromCsvFile",
   "label": "Read from CSV File",
-  "discription": "Reads a CSV file into a DataTable.",
+  "description": "Reads a CSV file into a DataTable.",
   "version": "1.0.0",
   "auther": "@aventisia",
   "supportedPlatforms": [

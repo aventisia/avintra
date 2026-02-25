@@ -1,7 +1,7 @@
 {
   "name": "ClickPictureOnScreen",
   "label": "Click Picture on Screen",
-  "discription": "Clicks a picture displayed on an SAP GUI screen.",
+  "description": "Clicks a picture displayed on an SAP GUI screen.",
   "version": "1.0.0",
   "auther": "@aventisia",
   "supportedPlatforms": [

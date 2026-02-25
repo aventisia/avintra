@@ -1,7 +1,7 @@
 {
   "name": "UpdateExcelRange",
   "label": "Update Excel Range (HTTP)",
-  "discription": "Updates values in a specified Excel range using Microsoft Graph HTTP PATCH.",
+  "description": "Updates values in a specified Excel range using Microsoft Graph HTTP PATCH.",
   "version": "1.0.0",
   "auther": "@aventisia",
   "supportedPlatforms": [

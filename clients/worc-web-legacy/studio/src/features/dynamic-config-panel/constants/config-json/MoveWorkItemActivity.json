@@ -1,7 +1,7 @@
 {
   "name": "MoveWorkItem",
   "label": "Move Work Item",
-  "discription": "Moves a work item from one queue to another.",
+  "description": "Moves a work item from one queue to another.",
   "version": "1.0.0",
   "auther": "@aventisia",
   "supportedPlatforms": [

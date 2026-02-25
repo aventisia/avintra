@@ -1,7 +1,7 @@
 {
   "name": "ConvertCustomObjectToJson",
   "label": "Convert Custom Object to JSON",
-  "discription": "Converts a custom object into its JSON representation.",
+  "description": "Converts a custom object into its JSON representation.",
   "version": "1.0.0",
   "auther": "@aventisia",
   "supportedPlatforms": [

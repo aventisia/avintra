@@ -1,7 +1,7 @@
 {
   "name": "AddLeadToCampaign",
   "label": "Add a lead to a campaign",
-  "discription": "Adds an existing lead to a Salesforce campaign.",
+  "description": "Adds an existing lead to a Salesforce campaign.",
   "version": "1.0.0",
   "auther": "@aventisia",
   "supportedPlatforms": [

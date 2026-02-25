@@ -1,7 +1,7 @@
 {
   "name": "ProcessEmailMessagesInOutlook",
   "label": "Process Email Messages in Outlook",
-  "discription": "Moves or deletes a collection of email messages in Outlook.",
+  "description": "Moves or deletes a collection of email messages in Outlook.",
   "version": "1.0.0",
   "auther": "@aventisia",
   "supportedPlatforms": [

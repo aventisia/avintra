@@ -1,7 +1,7 @@
 {
   "name": "GetManyAttachments",
   "label": "Get Many Salesforce Attachments",
-  "discription": "Retrieves multiple Attachment records from Salesforce using SOQL query.",
+  "description": "Retrieves multiple Attachment records from Salesforce using SOQL query.",
   "version": "1.0.0",
   "auther": "@aventisia",
   "supportedPlatforms": [

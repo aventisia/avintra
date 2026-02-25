@@ -1,7 +1,7 @@
 {
   "name": "DeleteContact",
   "label": "Delete Salesforce Contact",
-  "discription": "Deletes an existing Contact record in Salesforce by its ID.",
+  "description": "Deletes an existing Contact record in Salesforce by its ID.",
   "version": "1.0.0",
   "auther": "@aventisia",
   "supportedPlatforms": [

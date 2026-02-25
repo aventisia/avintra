@@ -1,7 +1,7 @@
 {
   "name": "RenewAcmCertificate",
   "label": "Renew AWS ACM Certificate",
-  "discription": "Renews an AWS Certificate Manager (ACM) certificate using AWS credentials from AWE Credential Vault.",
+  "description": "Renews an AWS Certificate Manager (ACM) certificate using AWS credentials from AWE Credential Vault.",
   "version": "1.0.0",
   "auther": "@aventisia",
   "supportedPlatforms": [

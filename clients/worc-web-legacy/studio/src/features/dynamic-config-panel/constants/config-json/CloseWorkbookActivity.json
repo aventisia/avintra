@@ -1,7 +1,7 @@
 {
   "name": "CloseWorkbook",
   "label": "Close Excel Workbook",
-  "discription": "Closes the specified Excel workbook and optionally quits the Excel application.",
+  "description": "Closes the specified Excel workbook and optionally quits the Excel application.",
   "version": "1.0.0",
   "auther": "@aventisia",
   "supportedPlatforms": [

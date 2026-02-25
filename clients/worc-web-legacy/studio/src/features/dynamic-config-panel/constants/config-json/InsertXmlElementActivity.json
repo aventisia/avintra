@@ -1,7 +1,7 @@
 {
   "name": "InsertXmlElement",
   "label": "Insert XML Element",
-  "discription": "Inserts a new XML element into an existing XML document.",
+  "description": "Inserts a new XML element into an existing XML document.",
   "version": "1.0.0",
   "auther": "@aventisia",
   "supportedPlatforms": [

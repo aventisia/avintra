@@ -1,7 +1,7 @@
 {
   "name": "GetUiElementDetails",
   "label": "Get UI Element Details",
-  "discription": "Get information like position, text, or state from a UI element in a window.",
+  "description": "Get information like position, text, or state from a UI element in a window.",
   "version": "1.0.0",
   "auther": "@aventisia",
   "supportedPlatforms": [

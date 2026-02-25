@@ -1,7 +1,7 @@
 {
   "name": "CloseSqlConnection",
   "label": "Close SQL Connection",
-  "discription": "Closes an open SQL database connection",
+  "description": "Closes an open SQL database connection",
   "version": "1.0.0",
   "auther": "@aventisia",
   "supportedPlatforms": [

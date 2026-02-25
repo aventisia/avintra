@@ -1,7 +1,7 @@
 {
   "name": "WaitForProcess",
   "label": "Wait For Process",
-  "discription": "Waits for a specific process to start or stop.",
+  "description": "Waits for a specific process to start or stop.",
   "version": "1.0.0",
   "auther": "@aventisia",
   "supportedPlatforms": [

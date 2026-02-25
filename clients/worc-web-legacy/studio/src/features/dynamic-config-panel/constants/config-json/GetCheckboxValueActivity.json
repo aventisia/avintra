@@ -1,7 +1,7 @@
 {
   "name": "GetCheckboxValue",
   "label": "Get Checkbox Value",
-  "discription": "Retrieves the current value (checked/unchecked) of a checkbox element on a web page.",
+  "description": "Retrieves the current value (checked/unchecked) of a checkbox element on a web page.",
   "version": "1.0.0",
   "auther": "@aventisia",
   "supportedPlatforms": [

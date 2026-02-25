@@ -1,7 +1,7 @@
 {
   "name": "GetWindow",
   "label": "Get Window",
-  "discription": "Finds a desktop window by name using UI Automation.",
+  "description": "Finds a desktop window by name using UI Automation.",
   "version": "1.0.0",
   "auther": "@aventisia",
   "supportedPlatforms": [

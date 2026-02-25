@@ -1,7 +1,7 @@
 {
   "name": "SetCheckboxStateOnWebPage",
   "label": "Set Checkbox State on Web Page",
-  "discription": "Sets the state (checked/unchecked) of a checkbox element on a web page.",
+  "description": "Sets the state (checked/unchecked) of a checkbox element on a web page.",
   "version": "1.0.0",
   "auther": "@aventisia",
   "supportedPlatforms": [

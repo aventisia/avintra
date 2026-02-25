@@ -1,7 +1,7 @@
 {
   "name": "GetSelectedRadioButton",
   "label": "Get Selected Radio Button",
-  "discription": "Retrieves the name of the selected radio button in a radio button group or the state of a specific radio button.",
+  "description": "Retrieves the name of the selected radio button in a radio button group or the state of a specific radio button.",
   "version": "1.0.0",
   "auther": "@aventisia",
   "supportedPlatforms": [

@@ -1,7 +1,7 @@
 {
   "name": "GetActiveExcelWorksheet",
   "label": "Get Active Excel Worksheet",
-  "discription": "Retrieves the name and index of the currently active worksheet in a given Excel workbook.",
+  "description": "Retrieves the name and index of the currently active worksheet in a given Excel workbook.",
   "version": "1.0.0",
   "auther": "@aventisia",
   "supportedPlatforms": [

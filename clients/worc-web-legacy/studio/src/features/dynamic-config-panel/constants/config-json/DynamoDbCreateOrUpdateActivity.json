@@ -1,7 +1,7 @@
 {
   "name": "DynamoDbCreateOrUpdate",
   "label": "Create or Update AWS DynamoDB Item",
-  "discription": "Creates or updates an item in AWS DynamoDB using the PutItem API.",
+  "description": "Creates or updates an item in AWS DynamoDB using the PutItem API.",
   "version": "1.0.0",
   "auther": "@aventisia",
   "supportedPlatforms": [

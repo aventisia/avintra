@@ -1,7 +1,7 @@
 {
   "name": "GetManyServiceNowAttachments",
   "label": "Get Many ServiceNow Attachments",
-  "discription": "Retrieves multiple attachments from a ServiceNow table or record using a stored credential. Optionally downloads file contents.",
+  "description": "Retrieves multiple attachments from a ServiceNow table or record using a stored credential. Optionally downloads file contents.",
   "version": "1.0.0",
   "auther": "@aventisia",
   "supportedPlatforms": [

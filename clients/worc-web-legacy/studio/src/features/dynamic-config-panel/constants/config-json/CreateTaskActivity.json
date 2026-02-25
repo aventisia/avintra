@@ -1,7 +1,7 @@
 {
   "name": "CreateTask",
   "label": "Create Task",
-  "discription": "Creates a new task in Salesforce.",
+  "description": "Creates a new task in Salesforce.",
   "version": "1.0.0",
   "auther": "@aventisia",
   "supportedPlatforms": [

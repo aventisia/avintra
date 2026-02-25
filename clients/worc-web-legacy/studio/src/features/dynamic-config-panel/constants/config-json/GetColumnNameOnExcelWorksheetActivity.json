@@ -1,7 +1,7 @@
 {
   "name": "GetColumnNameOnExcelWorksheet",
   "label": "Get Column Name on Excel Worksheet",
-  "discription": "Gets the name of a column by reading the first non-empty cell in the specified column of an Excel worksheet.",
+  "description": "Gets the name of a column by reading the first non-empty cell in the specified column of an Excel worksheet.",
   "version": "1.0.0",
   "auther": "@aventisia",
   "supportedPlatforms": [

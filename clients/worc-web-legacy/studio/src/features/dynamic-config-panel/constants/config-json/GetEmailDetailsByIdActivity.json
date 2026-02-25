@@ -1,7 +1,7 @@
 {
   "name": "GetEmailDetailsById",
   "label": "Get Email Details by ID",
-  "discription": "Fetches full email details (including attachments) from Outlook using the Graph API by message ID.",
+  "description": "Fetches full email details (including attachments) from Outlook using the Graph API by message ID.",
   "version": "1.0.0",
   "auther": "@aventisia",
   "supportedPlatforms": [

@@ -1,7 +1,7 @@
 {
   "name": "MoveEmailToFolder",
   "label": "Move Email To Folder",
-  "discription": "Moves an email to a specified folder using Microsoft Graph API.",
+  "description": "Moves an email to a specified folder using Microsoft Graph API.",
   "version": "1.0.0",
   "auther": "@aventisia",
   "supportedPlatforms": [

@@ -1,7 +1,7 @@
 {
   "name": "ImportFromCSV",
   "label": "Import CSV to Worksheet (HTTP)",
-  "discription": "Imports CSV data into an Excel worksheet starting from cell A1.",
+  "description": "Imports CSV data into an Excel worksheet starting from cell A1.",
   "version": "1.0.0",
   "auther": "@aventisia",
   "supportedPlatforms": [

@@ -1,7 +1,7 @@
 {
   "name": "DeserializeJSONText",
   "label": "Deserialize JSON Text",
-  "discription": "Parses a JSON string into a JToken object.",
+  "description": "Parses a JSON string into a JToken object.",
   "version": "1.0.0",
   "auther": "@aventisia",
   "supportedPlatforms": [

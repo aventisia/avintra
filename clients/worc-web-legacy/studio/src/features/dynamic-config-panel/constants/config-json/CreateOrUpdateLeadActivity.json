@@ -1,7 +1,7 @@
 {
   "name": "CreateOrUpdateLead",
   "label": "Create or update a lead",
-  "discription": "Creates a new lead or updates an existing one using external ID field.",
+  "description": "Creates a new lead or updates an existing one using external ID field.",
   "version": "1.0.0",
   "auther": "@aventisia",
   "supportedPlatforms": [

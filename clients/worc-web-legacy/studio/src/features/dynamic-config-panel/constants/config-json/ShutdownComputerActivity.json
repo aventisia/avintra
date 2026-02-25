@@ -1,7 +1,7 @@
 {
   "name": "ShutdownComputer",
   "label": "Shutdown Computer",
-  "discription": "Shuts down, restarts, sleeps, or hibernates the computer.",
+  "description": "Shuts down, restarts, sleeps, or hibernates the computer.",
   "version": "1.0.0",
   "auther": "@aventisia",
   "supportedPlatforms": [

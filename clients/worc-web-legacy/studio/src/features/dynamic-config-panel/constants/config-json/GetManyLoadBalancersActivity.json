@@ -1,7 +1,7 @@
 {
   "name": "GetManyLoadBalancers",
   "label": "Get Many AWS ELB Load Balancers",
-  "discription": "Retrieves multiple load balancers from AWS Elastic Load Balancing (ALB/NLB).",
+  "description": "Retrieves multiple load balancers from AWS Elastic Load Balancing (ALB/NLB).",
   "version": "1.0.0",
   "auther": "@aventisia",
   "supportedPlatforms": [

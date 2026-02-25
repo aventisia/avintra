@@ -1,7 +1,7 @@
 {
   "name": "GetJSONNodeList",
   "label": "Find JSON Nodes by Key",
-  "discription": "Recursively searches through a JSON structure and returns all values associated with the specified key.",
+  "description": "Recursively searches through a JSON structure and returns all values associated with the specified key.",
   "version": "1.0.0",
   "auther": "@aventisia",
   "supportedPlatforms": [

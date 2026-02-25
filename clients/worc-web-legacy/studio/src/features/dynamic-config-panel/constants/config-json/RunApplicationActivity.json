@@ -1,7 +1,7 @@
 {
   "name": "RunApplication",
   "label": "Run Application",
-  "discription": "Executes an application or opens a document by executing the associated application.",
+  "description": "Executes an application or opens a document by executing the associated application.",
   "version": "1.0.0",
   "auther": "@aventisia",
   "supportedPlatforms": [

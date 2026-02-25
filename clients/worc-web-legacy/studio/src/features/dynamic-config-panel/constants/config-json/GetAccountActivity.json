@@ -1,7 +1,7 @@
 {
   "name": "GetAccount",
   "label": "Get Salesforce Account",
-  "discription": "Retrieves a single Account record from Salesforce by its ID.",
+  "description": "Retrieves a single Account record from Salesforce by its ID.",
   "version": "1.0.0",
   "auther": "@aventisia",
   "supportedPlatforms": [

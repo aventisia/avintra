@@ -1,7 +1,7 @@
 {
   "name": "CheckElementState",
   "label": "Check Element State",
-  "discription": "Verifies if an element is visible, enabled, or selected.",
+  "description": "Verifies if an element is visible, enabled, or selected.",
   "version": "1.0.0",
   "auther": "@aventisia",
   "supportedPlatforms": [

@@ -1,7 +1,7 @@
 {
   "name": "DisplayMessage",
   "label": "Display Message",
-  "discription": "Displays a message box",
+  "description": "Displays a message box",
   "version": "1.0.0",
   "auther": "@aventisia",
   "supportedPlatforms": [

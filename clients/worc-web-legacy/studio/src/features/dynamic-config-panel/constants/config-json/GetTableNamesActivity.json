@@ -1,7 +1,7 @@
 {
   "name": "GetTableNames",
   "label": "Get Table Names",
-  "discription": "Returns all table names in the workbook.",
+  "description": "Returns all table names in the workbook.",
   "version": "1.0.0",
   "auther": "@aventisia",
   "supportedPlatforms": [

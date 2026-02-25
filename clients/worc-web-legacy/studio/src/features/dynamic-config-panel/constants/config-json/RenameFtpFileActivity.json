@@ -1,7 +1,7 @@
 {
   "name": "RenameFtpFile",
   "label": "Rename FTP File",
-  "discription": "Renames a file that resides on an FTP server.",
+  "description": "Renames a file that resides on an FTP server.",
   "version": "1.0.0",
   "auther": "@aventisia",
   "supportedPlatforms": [

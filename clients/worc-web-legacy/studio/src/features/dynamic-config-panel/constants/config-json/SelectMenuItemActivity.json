@@ -1,7 +1,7 @@
 {
   "name": "SelectMenuItem",
   "label": "Select Menu Item",
-  "discription": "Selects a menu item from the SAP GUI menu bar using a path (e.g., \u0027System \u2192 Log Off\u0027).",
+  "description": "Selects a menu item from the SAP GUI menu bar using a path (e.g., \u0027System \u2192 Log Off\u0027).",
   "version": "1.0.0",
   "auther": "@aventisia",
   "supportedPlatforms": [

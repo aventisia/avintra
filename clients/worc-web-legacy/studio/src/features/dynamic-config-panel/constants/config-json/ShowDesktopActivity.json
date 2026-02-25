@@ -1,7 +1,7 @@
 {
   "name": "ShowDesktop",
   "label": "Show Desktop",
-  "discription": "Minimizes or restores all windows to show/hide the desktop.",
+  "description": "Minimizes or restores all windows to show/hide the desktop.",
   "version": "1.0.0",
   "auther": "@aventisia",
   "supportedPlatforms": [

@@ -1,7 +1,7 @@
 {
   "name": "SetWindowsEnvironmentVariable",
   "label": "Set windows environment variable",
-  "discription": "Sets an environment variable to a given value.",
+  "description": "Sets an environment variable to a given value.",
   "version": "1.0.0",
   "auther": "@aventisia",
   "supportedPlatforms": [

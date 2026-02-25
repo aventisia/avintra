@@ -1,7 +1,7 @@
 {
   "name": "ReadFromCsvText",
   "label": "Read From CSV Text",
-  "discription": "Generates a data table from a CSV text.",
+  "description": "Generates a data table from a CSV text.",
   "version": "1.0.0",
   "auther": "@aventisia",
   "supportedPlatforms": [

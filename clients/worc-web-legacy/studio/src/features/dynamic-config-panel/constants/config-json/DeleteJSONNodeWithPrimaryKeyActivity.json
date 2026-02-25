@@ -1,7 +1,7 @@
 {
   "name": "DeleteJSONNodeWithPrimaryKey",
   "label": "Delete JSON Node by Primary Key",
-  "discription": "Recursively searches for an object with a matching primary key-value pair and deletes it from the structure.",
+  "description": "Recursively searches for an object with a matching primary key-value pair and deletes it from the structure.",
   "version": "1.0.0",
   "auther": "@aventisia",
   "supportedPlatforms": [

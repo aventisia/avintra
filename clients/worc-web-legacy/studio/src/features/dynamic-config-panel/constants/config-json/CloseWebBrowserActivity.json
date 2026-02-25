@@ -1,7 +1,7 @@
 {
   "name": "CloseWebBrowser",
   "label": "Close Web Browser",
-  "discription": "Closes a web browser instance or all instances if needed.",
+  "description": "Closes a web browser instance or all instances if needed.",
   "version": "1.0.0",
   "auther": "@aventisia",
   "supportedPlatforms": [

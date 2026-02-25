@@ -1,7 +1,7 @@
 {
   "name": "SearchEmails",
   "label": "Search Emails",
-  "discription": "Searches inbox emails using a filter query (e.g., subject eq \u0027Test\u0027)",
+  "description": "Searches inbox emails using a filter query (e.g., subject eq \u0027Test\u0027)",
   "version": "1.0.0",
   "auther": "@aventisia",
   "supportedPlatforms": [

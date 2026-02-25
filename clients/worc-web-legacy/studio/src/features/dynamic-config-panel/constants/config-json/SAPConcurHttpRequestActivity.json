@@ -1,7 +1,7 @@
 {
   "name": "SAPConcurHttpRequest",
   "label": "SAP Concur HTTP Request",
-  "discription": "Perform custom HTTP requests to SAP Concur using existing connector and connection.",
+  "description": "Perform custom HTTP requests to SAP Concur using existing connector and connection.",
   "version": "1.0.0",
   "auther": "@aventisia",
   "supportedPlatforms": [

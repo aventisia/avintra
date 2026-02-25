@@ -1,7 +1,7 @@
 {
   "name": "DeleteRecordCustomer",
   "label": "Delete Record",
-  "discription": "Deletes a record in SAP Cloud for Customer.",
+  "description": "Deletes a record in SAP Cloud for Customer.",
   "version": "1.0.0",
   "auther": "@aventisia",
   "supportedPlatforms": [

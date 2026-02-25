@@ -1,7 +1,7 @@
 {
   "name": "RunPythonScript",
   "label": "Run Python Script",
-  "discription": "Executes some custom Python script and retrieves its output into a variable.",
+  "description": "Executes some custom Python script and retrieves its output into a variable.",
   "version": "1.0.0",
   "auther": "@aventisia",
   "supportedPlatforms": [

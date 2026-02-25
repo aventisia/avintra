@@ -1,7 +1,7 @@
 {
   "name": "WriteTextToFile",
   "label": "Write Text to File",
-  "discription": "Writes the given text to the specified file using either Replace or Append mode.",
+  "description": "Writes the given text to the specified file using either Replace or Append mode.",
   "version": "1.0.0",
   "auther": "@aventisia",
   "supportedPlatforms": [

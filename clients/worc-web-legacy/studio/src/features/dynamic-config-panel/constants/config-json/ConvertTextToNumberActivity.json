@@ -1,7 +1,7 @@
 {
   "name": "ConvertTextToNumber",
   "label": "Convert Text to Number",
-  "discription": "Converts a text representation of a number to a numeric value.",
+  "description": "Converts a text representation of a number to a numeric value.",
   "version": "1.0.0",
   "auther": "@aventisia",
   "supportedPlatforms": [

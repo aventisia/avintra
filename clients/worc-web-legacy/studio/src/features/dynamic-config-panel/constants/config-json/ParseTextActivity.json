@@ -1,7 +1,7 @@
 {
   "name": "ParseText",
   "label": "Parse Text",
-  "discription": "Parses a text to find the first or all occurrences of a specified subtext or regular expression pattern.",
+  "description": "Parses a text to find the first or all occurrences of a specified subtext or regular expression pattern.",
   "version": "1.0.0",
   "auther": "@aventisia",
   "supportedPlatforms": [

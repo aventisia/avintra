@@ -1,7 +1,7 @@
 {
   "name": "AddToDateTime",
   "label": "Add Time to DateTime",
-  "discription": "Adds a specified time value to the given DateTime based on the selected time unit.",
+  "description": "Adds a specified time value to the given DateTime based on the selected time unit.",
   "version": "1.0.0",
   "auther": "@aventisia",
   "supportedPlatforms": [

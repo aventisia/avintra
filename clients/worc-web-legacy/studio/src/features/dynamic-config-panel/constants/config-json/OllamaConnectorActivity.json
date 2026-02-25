@@ -1,7 +1,7 @@
 {
   "name": "OllamaConnector",
   "label": "Ollama Connector",
-  "discription": "Invokes Ollama models (Generate or Chat mode) via its local REST API and returns the response.",
+  "description": "Invokes Ollama models (Generate or Chat mode) via its local REST API and returns the response.",
   "version": null,
   "auther": null,
   "supportedPlatforms": [],

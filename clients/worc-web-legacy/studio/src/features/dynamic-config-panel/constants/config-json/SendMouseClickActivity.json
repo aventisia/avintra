@@ -1,7 +1,7 @@
 {
   "name": "SendMouseClick",
   "label": "Send Mouse Click",
-  "discription": "Sends a mouse click event to the specified location.",
+  "description": "Sends a mouse click event to the specified location.",
   "version": "1.0.0",
   "auther": "@aventisia",
   "supportedPlatforms": [

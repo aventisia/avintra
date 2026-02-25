@@ -1,7 +1,7 @@
 {
   "name": "ProcessEmailMessages",
   "label": "Process Email Messages",
-  "discription": "Moves, deletes, or marks as unread an email (or a list of emails) retrieved by a Retrieve email messages action.",
+  "description": "Moves, deletes, or marks as unread an email (or a list of emails) retrieved by a Retrieve email messages action.",
   "version": "1.0.0",
   "auther": "@aventisia",
   "supportedPlatforms": [

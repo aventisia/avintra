@@ -1,7 +1,7 @@
 {
   "name": "DeleteColumnFromDataTable",
   "label": "Delete Column From Data Table",
-  "discription": "Deletes a data table column at the specified column index or column name.",
+  "description": "Deletes a data table column at the specified column index or column name.",
   "version": "1.0.0",
   "auther": "@aventisia",
   "supportedPlatforms": [

@@ -1,7 +1,7 @@
 {
   "name": "GetServiceNowIncident",
   "label": "Get ServiceNow Incident",
-  "discription": "Retrieves a single incident from ServiceNow by sys_id using a stored credential.",
+  "description": "Retrieves a single incident from ServiceNow by sys_id using a stored credential.",
   "version": "1.0.0",
   "auther": "@aventisia",
   "supportedPlatforms": [

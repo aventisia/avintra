@@ -1,7 +1,7 @@
 {
   "name": "CopyCellsFromExcelWorksheet",
   "label": "Copy Cells from Excel Worksheet",
-  "discription": "Copies a specified range of cells from an Excel worksheet for later use or pasting into another worksheet.",
+  "description": "Copies a specified range of cells from an Excel worksheet for later use or pasting into another worksheet.",
   "version": "1.0.0",
   "auther": "@aventisia",
   "supportedPlatforms": [

@@ -1,7 +1,7 @@
 {
   "name": "CreateServiceNowTableRecord",
   "label": "Create ServiceNow Table Record",
-  "discription": "Creates a new record in a specified ServiceNow table using InstanceUrl \u002B Credential ID/Token.",
+  "description": "Creates a new record in a specified ServiceNow table using InstanceUrl \u002B Credential ID/Token.",
   "version": "1.0.0",
   "auther": "@aventisia",
   "supportedPlatforms": [

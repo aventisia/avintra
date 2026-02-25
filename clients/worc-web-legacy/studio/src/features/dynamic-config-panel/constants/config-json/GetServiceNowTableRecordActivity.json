@@ -1,7 +1,7 @@
 {
   "name": "GetServiceNowTableRecord",
   "label": "Get ServiceNow Table Record",
-  "discription": "Retrieves a specific record from a ServiceNow table by sys_id using a stored credential.",
+  "description": "Retrieves a specific record from a ServiceNow table by sys_id using a stored credential.",
   "version": "1.0.0",
   "auther": "@aventisia",
   "supportedPlatforms": [

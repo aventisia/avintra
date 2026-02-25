@@ -1,7 +1,7 @@
 {
   "name": "UpdateRecord",
   "label": "Update Record",
-  "discription": "Updates a record in SAP OData.",
+  "description": "Updates a record in SAP OData.",
   "version": "1.0.0",
   "auther": "@aventisia",
   "supportedPlatforms": [

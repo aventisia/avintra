@@ -1,7 +1,7 @@
 {
   "name": "FindAndReplaceInDocxFile",
   "label": "Find and Replace in DOCX file",
-  "discription": "Finds text and replaces it with another in a .docx document using Open XML SDK.",
+  "description": "Finds text and replaces it with another in a .docx document using Open XML SDK.",
   "version": "1.0.0",
   "auther": "@aventisia",
   "supportedPlatforms": [

@@ -1,7 +1,7 @@
 {
   "name": "SetScreenResolution",
   "label": "Set Screen Resolution",
-  "discription": "Sets the width, height, bit count, and frequency of a selected monitor.",
+  "description": "Sets the width, height, bit count, and frequency of a selected monitor.",
   "version": "1.0.0",
   "auther": "@aventisia",
   "supportedPlatforms": [

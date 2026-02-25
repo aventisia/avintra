@@ -1,7 +1,7 @@
 {
   "name": "ConnectToExchangeServer",
   "label": "Connect to Exchange Server",
-  "discription": "Open a new connection to an Exchange server.",
+  "description": "Open a new connection to an Exchange server.",
   "version": "1.0.0",
   "auther": "@aventisia",
   "supportedPlatforms": [

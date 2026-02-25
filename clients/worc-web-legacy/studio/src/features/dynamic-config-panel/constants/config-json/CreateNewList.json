@@ -1,7 +1,7 @@
 {
   "name": "CreateNewList",
   "label": "Create New List",
-  "discription": "Creates a new empty list to be used in other activities.",
+  "description": "Creates a new empty list to be used in other activities.",
   "version": "1.0.0",
   "auther": "@aventisia",
   "supportedPlatforms": [

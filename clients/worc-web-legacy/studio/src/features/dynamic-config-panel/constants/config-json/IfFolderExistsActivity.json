@@ -1,7 +1,7 @@
 {
   "name": "IfFolderExists",
   "label": "If Folder Exists",
-  "discription": "Checks whether the specified folder exists or doesn\u0027t exist based on the selected condition.",
+  "description": "Checks whether the specified folder exists or doesn\u0027t exist based on the selected condition.",
   "version": "1.0.0",
   "auther": "@aventisia",
   "supportedPlatforms": [

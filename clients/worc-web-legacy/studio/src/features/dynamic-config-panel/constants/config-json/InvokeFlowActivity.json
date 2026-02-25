@@ -1,7 +1,7 @@
 {
   "name": "InvokeFlow",
   "label": "Invoke Flow",
-  "discription": "Invokes a Salesforce flow with input variables or JSON parameters.",
+  "description": "Invokes a Salesforce flow with input variables or JSON parameters.",
   "version": "1.0.0",
   "auther": "@aventisia",
   "supportedPlatforms": [

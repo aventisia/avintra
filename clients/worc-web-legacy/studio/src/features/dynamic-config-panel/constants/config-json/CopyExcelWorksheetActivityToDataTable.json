@@ -1,7 +1,7 @@
 {
   "name": "CopyExcelWorksheetToDataTable",
   "label": "Copy Range from Excel Worksheet to DataTable",
-  "discription": "Copies a specified range of cells from the provided Excel worksheet into a DataTable.",
+  "description": "Copies a specified range of cells from the provided Excel worksheet into a DataTable.",
   "version": "1.0.0",
   "auther": "@aventisia",
   "supportedPlatforms": [

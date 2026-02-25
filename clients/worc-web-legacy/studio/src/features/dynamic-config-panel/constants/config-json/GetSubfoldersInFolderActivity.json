@@ -1,7 +1,7 @@
 {
   "name": "GetSubfoldersInFolder",
   "label": "Retrieve Subfolders from Directory",
-  "discription": "Returns a list of subfolder paths within the specified directory.",
+  "description": "Returns a list of subfolder paths within the specified directory.",
   "version": "1.0.0",
   "auther": "@aventisia",
   "supportedPlatforms": [

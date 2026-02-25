@@ -1,7 +1,7 @@
 {
   "name": "DisplaySelectFolderDialog",
   "label": "Display Select Folder Dialog",
-  "discription": "Displays a folder selection dialog to let users choose a folder.",
+  "description": "Displays a folder selection dialog to let users choose a folder.",
   "version": "1.0.0",
   "auther": "@aventisia",
   "supportedPlatforms": [

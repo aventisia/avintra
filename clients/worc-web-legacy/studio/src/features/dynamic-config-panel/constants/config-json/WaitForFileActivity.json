@@ -1,7 +1,7 @@
 {
   "name": "WaitForFile",
   "label": "Wait For File",
-  "discription": "Suspends running the flow until a file is created or deleted.",
+  "description": "Suspends running the flow until a file is created or deleted.",
   "version": "1.0.0",
   "auther": "@aventisia",
   "supportedPlatforms": [

@@ -1,7 +1,7 @@
 {
   "name": "ReverseText",
   "label": "Reverse Text",
-  "discription": "Reverses the order of characters in a given text string.",
+  "description": "Reverses the order of characters in a given text string.",
   "version": "1.0.0",
   "auther": "@aventisia",
   "supportedPlatforms": [

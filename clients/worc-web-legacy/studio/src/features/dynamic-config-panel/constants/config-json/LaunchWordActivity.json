@@ -1,7 +1,7 @@
 {
   "name": "LaunchWord",
   "label": "Launch Word",
-  "discription": "Launches a new Word instance or opens a Word document.",
+  "description": "Launches a new Word instance or opens a Word document.",
   "version": "1.0.0",
   "auther": "@aventisia",
   "supportedPlatforms": [

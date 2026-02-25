@@ -1,7 +1,7 @@
 {
   "name": "GetWorkbookInfo",
   "label": "Get Workbook Info (HTTP)",
-  "discription": "Gets metadata (author, created date, modified date) for a workbook.",
+  "description": "Gets metadata (author, created date, modified date) for a workbook.",
   "version": "1.0.0",
   "auther": "@aventisia",
   "supportedPlatforms": [

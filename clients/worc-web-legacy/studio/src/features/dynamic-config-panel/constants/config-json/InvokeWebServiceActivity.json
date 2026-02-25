@@ -1,7 +1,7 @@
 {
   "name": "InvokeWebService",
   "label": "Invoke Web Service",
-  "discription": "Invokes a web service (REST or SOAP) and returns the response text.",
+  "description": "Invokes a web service (REST or SOAP) and returns the response text.",
   "version": "1.0.0",
   "auther": "@aventisia",
   "supportedPlatforms": [

@@ -1,7 +1,7 @@
 {
   "name": "GetServiceNowUser",
   "label": "Get ServiceNow User",
-  "discription": "Retrieves a user from ServiceNow by sys_id or username using a stored credential.",
+  "description": "Retrieves a user from ServiceNow by sys_id or username using a stored credential.",
   "version": "1.0.0",
   "auther": "@aventisia",
   "supportedPlatforms": [

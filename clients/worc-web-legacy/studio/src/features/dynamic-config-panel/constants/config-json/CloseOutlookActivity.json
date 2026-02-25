@@ -1,7 +1,7 @@
 {
   "name": "CloseOutlook",
   "label": "Close Outlook Application",
-  "discription": "Closes an Outlook application instance and releases COM resources.",
+  "description": "Closes an Outlook application instance and releases COM resources.",
   "version": "1.0.0",
   "auther": "@aventisia",
   "supportedPlatforms": [

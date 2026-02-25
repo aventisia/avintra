@@ -1,7 +1,7 @@
 {
   "name": "SortList",
   "label": "Sort List",
-  "discription": "Sorts a list by one or more properties. Supports ascending or descending order.",
+  "description": "Sorts a list by one or more properties. Supports ascending or descending order.",
   "version": "1.0.0",
   "auther": "@aventisia",
   "supportedPlatforms": [

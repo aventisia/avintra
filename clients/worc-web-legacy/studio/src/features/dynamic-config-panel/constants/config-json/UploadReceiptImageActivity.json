@@ -1,7 +1,7 @@
 {
   "name": "UploadReceiptImage",
   "label": "Upload Receipt Image",
-  "discription": "Uploads receipt files to SAP Concur, supporting formats like PDF, JPG, JPEG, and PNG.",
+  "description": "Uploads receipt files to SAP Concur, supporting formats like PDF, JPG, JPEG, and PNG.",
   "version": "1.0.0",
   "auther": "@aventisia",
   "supportedPlatforms": [

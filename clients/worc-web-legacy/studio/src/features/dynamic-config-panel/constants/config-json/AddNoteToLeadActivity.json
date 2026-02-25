@@ -1,7 +1,7 @@
 {
   "name": "AddNoteToLead",
   "label": "Add a note to a lead",
-  "discription": "Adds a text note to a Salesforce lead.",
+  "description": "Adds a text note to a Salesforce lead.",
   "version": "1.0.0",
   "auther": "@aventisia",
   "supportedPlatforms": [

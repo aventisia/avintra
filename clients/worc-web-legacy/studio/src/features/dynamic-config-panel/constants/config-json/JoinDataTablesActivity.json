@@ -1,7 +1,7 @@
 {
   "name": "JoinDataTables",
   "label": "Join Data Tables",
-  "discription": "Joins two data tables based on the specified join rule.",
+  "description": "Joins two data tables based on the specified join rule.",
   "version": "1.0.0",
   "auther": "@aventisia",
   "supportedPlatforms": [

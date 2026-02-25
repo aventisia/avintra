@@ -1,7 +1,7 @@
 {
   "name": "MoveFolder",
   "label": "Move Folder",
-  "discription": "This activity moves an existing folder to a specified destination folder.",
+  "description": "This activity moves an existing folder to a specified destination folder.",
   "version": "1.0.0",
   "auther": "@aventisia",
   "supportedPlatforms": [

@@ -1,7 +1,7 @@
 {
   "name": "GetManyConfigurationItems",
   "label": "Get Many Configuration Items",
-  "discription": "Retrieves multiple Configuration Items (CIs) from ServiceNow using a stored credential. Supports pagination.",
+  "description": "Retrieves multiple Configuration Items (CIs) from ServiceNow using a stored credential. Supports pagination.",
   "version": "1.0.0",
   "auther": "@aventisia",
   "supportedPlatforms": [

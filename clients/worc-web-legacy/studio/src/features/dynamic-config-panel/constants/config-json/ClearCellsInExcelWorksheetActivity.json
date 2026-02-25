@@ -1,7 +1,7 @@
 {
   "name": "ClearCellsInExcelWorksheet",
   "label": "Clear Cells in Excel Worksheet",
-  "discription": "Clears a specified range or named cell in the provided worksheet or workbook.",
+  "description": "Clears a specified range or named cell in the provided worksheet or workbook.",
   "version": "1.0.0",
   "auther": "@aventisia",
   "supportedPlatforms": [

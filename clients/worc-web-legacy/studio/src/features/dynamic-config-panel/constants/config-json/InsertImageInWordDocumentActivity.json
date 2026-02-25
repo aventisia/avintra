@@ -1,7 +1,7 @@
 {
   "name": "InsertImageInWordDocument",
   "label": "Insert Image in Word Document",
-  "discription": "Inserts an image into a Word file at a specified location.",
+  "description": "Inserts an image into a Word file at a specified location.",
   "version": "1.0.0",
   "auther": "@aventisia",
   "supportedPlatforms": [

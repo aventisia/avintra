@@ -1,7 +1,7 @@
 {
   "name": "CreateRandomText",
   "label": "Create Random Text",
-  "discription": "Generates a text of specified length consisting of random characters.",
+  "description": "Generates a text of specified length consisting of random characters.",
   "version": "1.0.0",
   "auther": "@aventisia",
   "supportedPlatforms": [

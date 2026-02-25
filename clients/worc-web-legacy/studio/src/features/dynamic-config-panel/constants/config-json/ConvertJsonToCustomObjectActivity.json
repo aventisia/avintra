@@ -1,7 +1,7 @@
 {
   "name": "ConvertJsonToCustomObject",
   "label": "Convert JSON to Custom Object",
-  "discription": "Converts a JSON string into a strongly-typed custom object.",
+  "description": "Converts a JSON string into a strongly-typed custom object.",
   "version": "1.0.0",
   "auther": "@aventisia",
   "supportedPlatforms": [

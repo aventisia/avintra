@@ -1,7 +1,7 @@
 {
   "name": "ExtractDataFromWebPage",
   "label": "Extract Data From Web Page",
-  "discription": "Extracts data from a specified UI element on a web page using configurable parameters.",
+  "description": "Extracts data from a specified UI element on a web page using configurable parameters.",
   "version": "1.0.0",
   "auther": "@aventisia",
   "supportedPlatforms": [

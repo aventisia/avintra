@@ -1,7 +1,7 @@
 {
   "name": "DecryptToFileWithAes",
   "label": "Decrypt to File with AES",
-  "discription": "Decrypts an encrypted file using AES. Supports Base64, Hex, and UTF8-encoded inputs.",
+  "description": "Decrypts an encrypted file using AES. Supports Base64, Hex, and UTF8-encoded inputs.",
   "version": "1.0.0",
   "auther": "@aventisia",
   "supportedPlatforms": [

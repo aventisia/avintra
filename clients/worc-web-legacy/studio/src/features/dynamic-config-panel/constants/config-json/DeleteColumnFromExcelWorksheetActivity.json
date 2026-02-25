@@ -1,7 +1,7 @@
 {
   "name": "DeleteColumnFromExcelWorksheet",
   "label": "Delete Column from Excel Worksheet",
-  "discription": "Deletes a specific column from the specified Excel worksheet instance.",
+  "description": "Deletes a specific column from the specified Excel worksheet instance.",
   "version": "1.0.0",
   "auther": "@aventisia",
   "supportedPlatforms": [

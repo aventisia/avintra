@@ -1,7 +1,7 @@
 {
   "name": "CreateOpportunity",
   "label": "Create Opportunity",
-  "discription": "Creates a new opportunity in Salesforce.",
+  "description": "Creates a new opportunity in Salesforce.",
   "version": "1.0.0",
   "auther": "@aventisia",
   "supportedPlatforms": [

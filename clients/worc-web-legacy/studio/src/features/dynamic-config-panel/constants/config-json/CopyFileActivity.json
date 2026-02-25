@@ -1,7 +1,7 @@
 {
   "name": "CopyFile",
   "label": "Copy File(s)",
-  "discription": "Copies one or more files into a destination folder.",
+  "description": "Copies one or more files into a destination folder.",
   "version": "1.0.0",
   "auther": "@aventisia",
   "supportedPlatforms": [

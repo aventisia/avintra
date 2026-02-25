@@ -1,7 +1,7 @@
 {
   "name": "ChangeTextCase",
   "label": "Change Text Case",
-  "discription": "Converts the input text to the specified case format.",
+  "description": "Converts the input text to the specified case format.",
   "version": "1.0.0",
   "auther": "@aventisia",
   "supportedPlatforms": [
