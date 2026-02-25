@@ -16,6 +16,7 @@ import {
   applyNodeChanges,
 } from "@xyflow/react";
 import { create } from "zustand";
+import { HistoryDB } from "@/utils/idb-history-manager";
 
 type State = {
   /** Nodes of currently opened flow */
@@ -47,6 +48,13 @@ type State = {
 
   /** Flow Viewport */
   viewport: Viewport;
+
+  historyStep: number;
+  historyMax: number;
+  isRestoringHistory: boolean;
+
+  /** The active session identifier combining flow ID and version ID */
+  versionId: string;
 };
 
 type Actions = {
@@ -90,6 +98,9 @@ type Actions = {
   setContextMenuOrigin: (
     origin: "Node" | "Edge" | "Pane" | "Selection" | null,
   ) => void;
+
+  undo: () => Promise<void>;
+  redo: () => Promise<void>;
 };
 
 export const useReactFlowExtStore = create<State & Actions>((set, get) => ({
@@ -103,6 +114,10 @@ export const useReactFlowExtStore = create<State & Actions>((set, get) => ({
   contextMenuOrigin: null,
   isPublished: false,
   viewport: { x: 0, y: 0, zoom: 1 },
+  historyStep: 0,
+  historyMax: 0,
+  isRestoringHistory: false,
+  versionId: "",
 
   onNodesChange: (changes: NodeChange[]) => {
     set({
@@ -177,5 +192,41 @@ export const useReactFlowExtStore = create<State & Actions>((set, get) => ({
 
   setViewport: (viewport) => {
     set({ viewport });
+  },
+
+  undo: async () => {
+    const { historyStep, versionId } = get();
+    if (historyStep <= 0 || !versionId) return;
+
+    const targetStep = historyStep - 1;
+    const snapshot = await HistoryDB.getSnapshot(versionId, targetStep);
+
+    if (snapshot) {
+      set({
+        isRestoringHistory: true,
+        nodes: snapshot.nodes,
+        edges: snapshot.edges,
+        flowVariablesObject: snapshot.flowVariablesObject,
+        historyStep: targetStep,
+      });
+    }
+  },
+
+  redo: async () => {
+    const { historyStep, historyMax, versionId } = get();
+    if (historyStep >= historyMax || !versionId) return;
+
+    const targetStep = historyStep + 1;
+    const snapshot = await HistoryDB.getSnapshot(versionId, targetStep);
+
+    if (snapshot) {
+      set({
+        isRestoringHistory: true,
+        nodes: snapshot.nodes,
+        edges: snapshot.edges,
+        flowVariablesObject: snapshot.flowVariablesObject,
+        historyStep: targetStep,
+      });
+    }
   },
 }));

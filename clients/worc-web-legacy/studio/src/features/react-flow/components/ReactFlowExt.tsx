@@ -24,11 +24,17 @@ import { useFetchConfigVariables } from "../hooks/useFetchConfigVariables";
 import { useCopyPasteShortcuts } from "../hooks/useCopyPasteShortcuts";
 import { ReactFlowContextMenu } from "./context-menu";
 import { ReactFlowDialogWrapper } from "./ReactFlowDialogWrapper";
+import { useIDBHistoryTracker } from "@/hooks/useIDBHistoryTracker.ts";
+import { useUndoRedoShortcuts } from "@/hooks/useUndoRedoShortcuts";
+import { useSearchParams } from "react-router-dom";
 
 /**
  * A custom extension of the ReactFlow component.
  */
 export const ReactFlowExt = () => {
+  // Extract parameters from URL
+  const [searchParams] = useSearchParams();
+  const versionId = searchParams.get("v") || "unknown_version";
   // Get ReactFlowExt store state & actions
   const { nodes, edges, panOnDrag, onNodesChange, onEdgesChange, onConnect } =
     useReactFlowExtStore(
@@ -49,6 +55,9 @@ export const ReactFlowExt = () => {
   // Track ReactFlow selection change
   useTrackSelection();
   useCopyPasteShortcuts();
+
+  useIDBHistoryTracker(versionId); // Initialize background database tracking
+  useUndoRedoShortcuts(); // Initialize keyboard shortcuts
 
   // Fetch flow details and set document title
   useFetchFlowToLoad();
