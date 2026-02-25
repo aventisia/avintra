@@ -1,7 +1,7 @@
 {
   "name": "ReplyToEmail",
   "label": "Reply to Email",
-  "discription": "Replies to an email using Message ID.",
+  "description": "Replies to an email using Message ID.",
   "version": "1.0.0",
   "auther": "@aventisia",
   "supportedPlatforms": [

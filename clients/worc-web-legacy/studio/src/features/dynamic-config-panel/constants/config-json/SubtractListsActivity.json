@@ -1,7 +1,7 @@
 {
   "name": "SubtractLists",
   "label": "Subtract Lists",
-  "discription": "Removes items from the first list that exist in the second list.",
+  "description": "Removes items from the first list that exist in the second list.",
   "version": "1.0.0",
   "auther": "@aventisia",
   "supportedPlatforms": [

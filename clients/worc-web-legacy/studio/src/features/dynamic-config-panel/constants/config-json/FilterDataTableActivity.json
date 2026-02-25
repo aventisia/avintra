@@ -1,7 +1,7 @@
 {
   "name": "FilterDataTable",
   "label": "Filter Data Table",
-  "discription": "Filters the data table rows based on the applied rules.",
+  "description": "Filters the data table rows based on the applied rules.",
   "version": "1.0.0",
   "auther": "@aventisia",
   "supportedPlatforms": [

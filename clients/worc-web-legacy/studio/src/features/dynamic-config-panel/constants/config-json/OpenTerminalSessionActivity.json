@@ -1,7 +1,7 @@
 {
   "name": "OpenTerminalSession",
   "label": "Open Terminal Session",
-  "discription": "Open a new terminal session.",
+  "description": "Open a new terminal session.",
   "version": "1.0.0",
   "auther": "@aventisia",
   "supportedPlatforms": [

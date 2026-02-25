@@ -1,7 +1,7 @@
 {
   "name": "CloseTerminalSession",
   "label": "Close Terminal Session",
-  "discription": "Close an open terminal session.",
+  "description": "Close an open terminal session.",
   "version": "1.0.0",
   "auther": "@aventisia",
   "supportedPlatforms": [

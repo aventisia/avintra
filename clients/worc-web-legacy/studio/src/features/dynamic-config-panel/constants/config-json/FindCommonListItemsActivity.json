@@ -1,7 +1,7 @@
 {
   "name": "FindCommonListItems",
   "label": "Find Common List Items",
-  "discription": "Finds common items between two lists and returns them as a new list.",
+  "description": "Finds common items between two lists and returns them as a new list.",
   "version": "1.0.0",
   "auther": "@aventisia",
   "supportedPlatforms": [

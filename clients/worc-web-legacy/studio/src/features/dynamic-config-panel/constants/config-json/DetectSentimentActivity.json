@@ -1,7 +1,7 @@
 {
   "name": "DetectSentiment",
   "label": "Detect Sentiment (AWS Comprehend)",
-  "discription": "Analyzes the sentiment of a given text using AWS Comprehend.",
+  "description": "Analyzes the sentiment of a given text using AWS Comprehend.",
   "version": "1.0.0",
   "auther": "@aventisia",
   "supportedPlatforms": [

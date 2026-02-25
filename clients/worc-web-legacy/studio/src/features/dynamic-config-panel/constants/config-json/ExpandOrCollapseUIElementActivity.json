@@ -1,7 +1,7 @@
 {
   "name": "ExpandOrCollapseUIElement",
   "label": "Expand or Collapse UI Element",
-  "discription": "Expands or collapses a UI element (such as a tree item or combo box) by searching for it using a property and value.",
+  "description": "Expands or collapses a UI element (such as a tree item or combo box) by searching for it using a property and value.",
   "version": "1.0.0",
   "auther": "@aventisia",
   "supportedPlatforms": [

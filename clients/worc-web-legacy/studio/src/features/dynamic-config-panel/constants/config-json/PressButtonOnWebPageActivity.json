@@ -1,7 +1,7 @@
 {
   "name": "PressButtonOnWebPage",
   "label": "Press Button on Web Page",
-  "discription": "Simulates clicking a UI button element on a web page. Optionally waits for the new page to load and handles pop-up dialogs.",
+  "description": "Simulates clicking a UI button element on a web page. Optionally waits for the new page to load and handles pop-up dialogs.",
   "version": "1.0.0",
   "auther": "@aventisia",
   "supportedPlatforms": [

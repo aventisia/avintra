@@ -1,7 +1,7 @@
 {
   "name": "SendEmailM365",
   "label": "Send Email",
-  "discription": "Sends an email via the Microsoft Graph API using application permissions.",
+  "description": "Sends an email via the Microsoft Graph API using application permissions.",
   "version": "1.0.0",
   "auther": "@aventisia",
   "supportedPlatforms": [

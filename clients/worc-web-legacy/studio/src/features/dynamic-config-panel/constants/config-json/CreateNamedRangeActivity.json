@@ -1,7 +1,7 @@
 {
   "name": "CreateNamedRange",
   "label": "Create Named Range (HTTP)",
-  "discription": "Creates a named range in an Excel workbook using Microsoft Graph HTTP POST.",
+  "description": "Creates a named range in an Excel workbook using Microsoft Graph HTTP POST.",
   "version": "1.0.0",
   "auther": "@aventisia",
   "supportedPlatforms": [

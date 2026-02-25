@@ -1,7 +1,7 @@
 {
   "name": "CreateOrUpdateAccount",
   "label": "Create or Update Salesforce Account",
-  "discription": "Creates a new Account in Salesforce if it doesn\u0027t exist, or updates it if it does. Uses Name as the identifier.",
+  "description": "Creates a new Account in Salesforce if it doesn\u0027t exist, or updates it if it does. Uses Name as the identifier.",
   "version": "1.0.0",
   "auther": "@aventisia",
   "supportedPlatforms": [

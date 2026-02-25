@@ -1,7 +1,7 @@
 {
   "name": "SetWorkbookProperties",
   "label": "Set Workbook Properties (HTTP)",
-  "discription": "Sets metadata properties like Title, Author, and Keywords for a workbook.",
+  "description": "Sets metadata properties like Title, Author, and Keywords for a workbook.",
   "version": "1.0.0",
   "auther": "@aventisia",
   "supportedPlatforms": [

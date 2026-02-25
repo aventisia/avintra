@@ -1,7 +1,7 @@
 {
   "name": "GetManyServiceNowTableRecords",
   "label": "Get Many ServiceNow Table Records",
-  "discription": "Retrieves multiple records from a ServiceNow table using only the provided Credential ID or token. Supports pagination.",
+  "description": "Retrieves multiple records from a ServiceNow table using only the provided Credential ID or token. Supports pagination.",
   "version": "1.0.0",
   "auther": "@aventisia",
   "supportedPlatforms": [

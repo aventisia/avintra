@@ -1,7 +1,7 @@
 {
   "name": "GetLeadSummary",
   "label": "Get a lead summary",
-  "discription": "Retrieves a summary of a lead\u0027s information from Salesforce.",
+  "description": "Retrieves a summary of a lead\u0027s information from Salesforce.",
   "version": "1.0.0",
   "auther": "@aventisia",
   "supportedPlatforms": [

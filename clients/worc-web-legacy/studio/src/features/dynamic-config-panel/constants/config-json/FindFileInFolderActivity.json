@@ -1,7 +1,7 @@
 {
   "name": "FindFileInFolder",
   "label": "Find File in Folder",
-  "discription": "Finds a single file in a folder (and optionally subfolders) based on criteria like largest, smallest, newest, oldest, etc.",
+  "description": "Finds a single file in a folder (and optionally subfolders) based on criteria like largest, smallest, newest, oldest, etc.",
   "version": "1.0.0",
   "auther": "@aventisia",
   "supportedPlatforms": [

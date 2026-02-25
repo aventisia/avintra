@@ -1,7 +1,7 @@
 {
   "name": "CopyExcelWorksheet",
   "label": "Copy Excel Worksheet",
-  "discription": "Copies a worksheet to another workbook or within the same workbook, preserving data, formatting, and structure.",
+  "description": "Copies a worksheet to another workbook or within the same workbook, preserving data, formatting, and structure.",
   "version": "1.0.0",
   "auther": "@aventisia",
   "supportedPlatforms": [

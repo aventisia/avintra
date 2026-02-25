@@ -1,7 +1,7 @@
 {
   "name": "GetManyCertificates",
   "label": "Get Many AWS Certificate Manager Certificates",
-  "discription": "Lists multiple AWS Certificate Manager (ACM) certificates using the ListCertificates API.",
+  "description": "Lists multiple AWS Certificate Manager (ACM) certificates using the ListCertificates API.",
   "version": "1.0.0",
   "auther": "@aventisia",
   "supportedPlatforms": [

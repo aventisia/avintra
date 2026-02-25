@@ -1,7 +1,7 @@
 {
   "name": "GetContact",
   "label": "Get Salesforce Contact",
-  "discription": "Retrieves a single Contact record from Salesforce by its ID.",
+  "description": "Retrieves a single Contact record from Salesforce by its ID.",
   "version": "1.0.0",
   "auther": "@aventisia",
   "supportedPlatforms": [

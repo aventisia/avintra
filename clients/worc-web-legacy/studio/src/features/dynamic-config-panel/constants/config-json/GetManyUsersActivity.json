@@ -1,7 +1,7 @@
 {
   "name": "GetManyUsers",
   "label": "Get Many Users",
-  "discription": "Retrieves multiple Salesforce user records using SOQL.",
+  "description": "Retrieves multiple Salesforce user records using SOQL.",
   "version": "1.0.0",
   "auther": "@aventisia",
   "supportedPlatforms": [

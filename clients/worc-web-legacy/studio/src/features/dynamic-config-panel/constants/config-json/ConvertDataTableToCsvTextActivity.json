@@ -1,7 +1,7 @@
 {
   "name": "ConvertDataTableToCsvText",
   "label": "Convert Data Table to CSV Text",
-  "discription": "Converts a data table into a CSV (comma-separated values) text representation.",
+  "description": "Converts a data table into a CSV (comma-separated values) text representation.",
   "version": "1.0.0",
   "auther": "@aventisia",
   "supportedPlatforms": [

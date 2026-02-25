@@ -1,7 +1,7 @@
 {
   "name": "RetrieveEmailsFromOutlook",
   "label": "Retrieve Emails from Outlook",
-  "discription": "Retrieves email messages from a specified Outlook folder. Optionally filters by unread status or subject.",
+  "description": "Retrieves email messages from a specified Outlook folder. Optionally filters by unread status or subject.",
   "version": "1.0.0",
   "auther": "@aventisia",
   "supportedPlatforms": [

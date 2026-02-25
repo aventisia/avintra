@@ -1,7 +1,7 @@
 {
   "name": "InvokeInferenceModelWebService",
   "label": "Invoke Inference Model Web Service",
-  "discription": "Invokes an AI model web service and returns the response text.",
+  "description": "Invokes an AI model web service and returns the response text.",
   "version": null,
   "auther": null,
   "supportedPlatforms": [],

@@ -1,7 +1,7 @@
 {
   "name": "StopService",
   "label": "Stop Service",
-  "discription": "Stops a running Windows service.",
+  "description": "Stops a running Windows service.",
   "version": "1.0.0",
   "auther": "@aventisia",
   "supportedPlatforms": [

@@ -1,7 +1,7 @@
 {
   "name": "ListAllRecords",
   "label": "List All Records",
-  "discription": "Lists all records for a specified entity in SAP Cloud for Customer.",
+  "description": "Lists all records for a specified entity in SAP Cloud for Customer.",
   "version": "1.0.0",
   "auther": "@aventisia",
   "supportedPlatforms": [

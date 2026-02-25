@@ -1,7 +1,7 @@
 {
   "name": "EmptyFolder",
   "label": "Empty Folder",
-  "discription": "Removes all files and subdirectories within the specified folder, preserving the folder itself.",
+  "description": "Removes all files and subdirectories within the specified folder, preserving the folder itself.",
   "version": "1.0.0",
   "auther": "@aventisia",
   "supportedPlatforms": [

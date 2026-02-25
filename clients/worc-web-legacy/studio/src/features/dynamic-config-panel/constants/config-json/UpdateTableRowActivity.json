@@ -1,7 +1,7 @@
 {
   "name": "UpdateTableRow",
   "label": "Update Table Row",
-  "discription": "Updates a row in a table in the workbook.",
+  "description": "Updates a row in a table in the workbook.",
   "version": "1.0.0",
   "auther": "@aventisia",
   "supportedPlatforms": [

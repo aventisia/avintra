@@ -1,7 +1,7 @@
 {
   "name": "InsertRecordCustomer",
   "label": "Insert Record",
-  "discription": "Inserts a new record in SAP Cloud for Customer.",
+  "description": "Inserts a new record in SAP Cloud for Customer.",
   "version": "1.0.0",
   "auther": "@aventisia",
   "supportedPlatforms": [

@@ -1,7 +1,7 @@
 {
   "name": "ReadXmlFromFile",
   "label": "Read XML from File",
-  "discription": "Reads the contents of an XML file into a variable.",
+  "description": "Reads the contents of an XML file into a variable.",
   "version": "1.0.0",
   "auther": "@aventisia",
   "supportedPlatforms": [

@@ -1,7 +1,7 @@
 {
   "name": "CreateNewTab",
   "label": "Create New Tab",
-  "discription": "Creates a new tab in the web browser and optionally navigates to a specified URL.",
+  "description": "Creates a new tab in the web browser and optionally navigates to a specified URL.",
   "version": "1.0.0",
   "auther": "@aventisia",
   "supportedPlatforms": [

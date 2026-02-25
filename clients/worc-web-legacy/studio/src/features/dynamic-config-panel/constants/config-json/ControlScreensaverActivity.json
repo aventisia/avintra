@@ -1,7 +1,7 @@
 {
   "name": "ControlScreensaver",
   "label": "Control Screensaver",
-  "discription": "Enables, disables, starts, or stops the screensaver.",
+  "description": "Enables, disables, starts, or stops the screensaver.",
   "version": "1.0.0",
   "auther": "@aventisia",
   "supportedPlatforms": [

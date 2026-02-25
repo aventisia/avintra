@@ -1,7 +1,7 @@
 {
   "name": "ChangeFtpWorkingDirectory",
   "label": "Change Working Directory",
-  "discription": "Sets the current working directory for an FTP connection.",
+  "description": "Sets the current working directory for an FTP connection.",
   "version": "1.0.0",
   "auther": "@aventisia",
   "supportedPlatforms": [

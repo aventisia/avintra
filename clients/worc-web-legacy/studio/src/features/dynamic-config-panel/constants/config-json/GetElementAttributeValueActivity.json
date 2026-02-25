@@ -1,7 +1,7 @@
 {
   "name": "GetElementAttributeValue",
   "label": "Get Element Attribute Value",
-  "discription": "Retrieves the value of an element\u0027s attribute from a web page.",
+  "description": "Retrieves the value of an element\u0027s attribute from a web page.",
   "version": "1.0.0",
   "auther": "@aventisia",
   "supportedPlatforms": [

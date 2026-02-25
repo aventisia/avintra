@@ -1,7 +1,7 @@
 {
   "name": "CallAgent",
   "label": "Call Agent",
-  "discription": "Use this to call another agent within the current agent",
+  "description": "Use this to call another agent within the current agent",
   "version": "1.0.0",
   "auther": "@aventisia",
   "supportedPlatforms": [

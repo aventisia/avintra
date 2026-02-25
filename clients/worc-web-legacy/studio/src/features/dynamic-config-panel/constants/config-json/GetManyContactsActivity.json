@@ -1,7 +1,7 @@
 {
   "name": "GetManyContacts",
   "label": "Get Many Salesforce Contacts",
-  "discription": "Retrieves multiple Contact records from Salesforce using SOQL query.",
+  "description": "Retrieves multiple Contact records from Salesforce using SOQL query.",
   "version": "1.0.0",
   "auther": "@aventisia",
   "supportedPlatforms": [

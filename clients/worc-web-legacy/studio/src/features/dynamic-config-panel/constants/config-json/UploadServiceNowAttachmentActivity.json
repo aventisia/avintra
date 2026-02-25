@@ -1,7 +1,7 @@
 {
   "name": "UploadServiceNowAttachment",
   "label": "Upload ServiceNow Attachment",
-  "discription": "Uploads a file as an attachment to a record in ServiceNow using a Bearer token.",
+  "description": "Uploads a file as an attachment to a record in ServiceNow using a Bearer token.",
   "version": "1.0.0",
   "auther": "@aventisia",
   "supportedPlatforms": [

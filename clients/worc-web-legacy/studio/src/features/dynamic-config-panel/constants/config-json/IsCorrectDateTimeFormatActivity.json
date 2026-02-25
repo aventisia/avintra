@@ -1,7 +1,7 @@
 {
   "name": "IsCorrectDateTimeFormat",
   "label": "Validate DateTime Format",
-  "discription": "Checks if the input string matches the specified date and time format.",
+  "description": "Checks if the input string matches the specified date and time format.",
   "version": "1.0.0",
   "auther": "@aventisia",
   "supportedPlatforms": [

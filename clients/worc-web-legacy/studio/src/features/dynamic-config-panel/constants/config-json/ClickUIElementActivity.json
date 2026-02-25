@@ -1,7 +1,7 @@
 {
   "name": "ClickUIElement",
   "label": "Click UI Element",
-  "discription": "Invokes or clicks a UI element using UI Automation or mouse click.",
+  "description": "Invokes or clicks a UI element using UI Automation or mouse click.",
   "version": "1.0.0",
   "auther": "@aventisia",
   "supportedPlatforms": [

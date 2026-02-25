@@ -1,7 +1,7 @@
 {
   "name": "CloseCmdSession",
   "label": "Close CMD Session",
-  "discription": "Closes a previously opened CMD session.",
+  "description": "Closes a previously opened CMD session.",
   "version": "1.0.0",
   "auther": "@aventisia",
   "supportedPlatforms": [

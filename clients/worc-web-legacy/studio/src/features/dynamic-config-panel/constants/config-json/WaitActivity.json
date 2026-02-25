@@ -1,7 +1,7 @@
 {
   "name": "Wait",
   "label": "Wait",
-  "discription": "Pauses the workflow execution for a specified number of seconds.",
+  "description": "Pauses the workflow execution for a specified number of seconds.",
   "version": "1.0.0",
   "auther": "@aventisia",
   "supportedPlatforms": [

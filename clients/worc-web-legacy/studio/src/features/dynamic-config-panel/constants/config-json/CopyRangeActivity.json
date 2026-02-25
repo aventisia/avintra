@@ -1,7 +1,7 @@
 {
   "name": "CopyRange",
   "label": "Copy Range (HTTP)",
-  "discription": "Copies a range of cells to another location in the workbook.",
+  "description": "Copies a range of cells to another location in the workbook.",
   "version": "1.0.0",
   "auther": "@aventisia",
   "supportedPlatforms": [

@@ -1,7 +1,7 @@
 {
   "name": "CreateAttachment",
   "label": "Create Salesforce Attachment",
-  "discription": "Creates a new Attachment record in Salesforce linked to a parent record (e.g., Account, Contact).",
+  "description": "Creates a new Attachment record in Salesforce linked to a parent record (e.g., Account, Contact).",
   "version": "1.0.0",
   "auther": "@aventisia",
   "supportedPlatforms": [

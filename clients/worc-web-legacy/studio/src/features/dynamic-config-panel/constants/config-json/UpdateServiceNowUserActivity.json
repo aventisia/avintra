@@ -1,7 +1,7 @@
 {
   "name": "UpdateServiceNowUser",
   "label": "Update ServiceNow User",
-  "discription": "Updates an existing user in ServiceNow by sys_id using the provided CredentialId directly.",
+  "description": "Updates an existing user in ServiceNow by sys_id using the provided CredentialId directly.",
   "version": "1.0.0",
   "auther": "@aventisia",
   "supportedPlatforms": [

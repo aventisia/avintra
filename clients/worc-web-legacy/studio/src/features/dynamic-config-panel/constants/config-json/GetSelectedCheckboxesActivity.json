@@ -1,7 +1,7 @@
 {
   "name": "GetSelectedCheckboxes",
   "label": "Get Selected Checkboxes",
-  "discription": "Retrieves the names of the selected checkboxes in a checkbox group or the state of a specific checkbox.",
+  "description": "Retrieves the names of the selected checkboxes in a checkbox group or the state of a specific checkbox.",
   "version": "1.0.0",
   "auther": "@aventisia",
   "supportedPlatforms": [

@@ -1,7 +1,7 @@
 {
   "name": "GetXmlElementAttribute",
   "label": "Get XML Element Attribute",
-  "discription": "Gets the value of an attribute of an XML element.",
+  "description": "Gets the value of an attribute of an XML element.",
   "version": "1.0.0",
   "auther": "@aventisia",
   "supportedPlatforms": [

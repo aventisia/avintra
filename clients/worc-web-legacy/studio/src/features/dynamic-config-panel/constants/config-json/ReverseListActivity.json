@@ -1,7 +1,7 @@
 {
   "name": "ReverseList",
   "label": "Reverse List",
-  "discription": "Reverses the order of items in a list.",
+  "description": "Reverses the order of items in a list.",
   "version": "1.0.0",
   "auther": "@aventisia",
   "supportedPlatforms": [

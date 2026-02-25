@@ -1,7 +1,7 @@
 {
   "name": "GetRecord",
   "label": "Get Record",
-  "discription": "Retrieves a record in SAP OData.",
+  "description": "Retrieves a record in SAP OData.",
   "version": "1.0.0",
   "auther": "@aventisia",
   "supportedPlatforms": [

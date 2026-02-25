@@ -1,7 +1,7 @@
 {
   "name": "ClearRange",
   "label": "Clear Excel Range (HTTP)",
-  "discription": "Clears all values in an Excel range using Microsoft Graph HTTP PATCH.",
+  "description": "Clears all values in an Excel range using Microsoft Graph HTTP PATCH.",
   "version": "1.0.0",
   "auther": "@aventisia",
   "supportedPlatforms": [

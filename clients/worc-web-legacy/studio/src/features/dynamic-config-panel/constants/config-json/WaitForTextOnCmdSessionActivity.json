@@ -1,7 +1,7 @@
 {
   "name": "WaitForTextOnCmdSession",
   "label": "Wait for Text on CMD Session",
-  "discription": "Waits for a specific text on a previously opened CMD session.",
+  "description": "Waits for a specific text on a previously opened CMD session.",
   "version": "1.0.0",
   "auther": "@aventisia",
   "supportedPlatforms": [

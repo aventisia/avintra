@@ -1,7 +1,7 @@
 {
   "name": "FindAndReplaceInDataTable",
   "label": "Find or Replace in Data Table",
-  "discription": "Finds and/or replaces data table values.",
+  "description": "Finds and/or replaces data table values.",
   "version": "1.0.0",
   "auther": "@aventisia",
   "supportedPlatforms": [

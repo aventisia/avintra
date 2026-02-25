@@ -1,7 +1,7 @@
 {
   "name": "ExpandALVHierarchicalTable",
   "label": "Expand ALV Hierarchical Table",
-  "discription": "Expands a row in an SAP ALV Hierarchical Table by clicking the expansion icon.",
+  "description": "Expands a row in an SAP ALV Hierarchical Table by clicking the expansion icon.",
   "version": "1.0.0",
   "auther": "@aventisia",
   "supportedPlatforms": [

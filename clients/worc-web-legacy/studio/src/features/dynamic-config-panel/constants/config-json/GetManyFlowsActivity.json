@@ -1,7 +1,7 @@
 {
   "name": "GetManyFlows",
   "label": "Get Many Flows",
-  "discription": "Retrieves multiple Salesforce flows. Use \u0027Return All\u0027 to get all records without limit.",
+  "description": "Retrieves multiple Salesforce flows. Use \u0027Return All\u0027 to get all records without limit.",
   "version": "1.0.0",
   "auther": "@aventisia",
   "supportedPlatforms": [

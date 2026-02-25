@@ -1,7 +1,7 @@
 {
   "name": "GetManyListenerCertificates",
   "label": "Get Many AWS ELB Listener Certificates",
-  "discription": "Retrieves all certificates associated with an AWS Elastic Load Balancer (ALB/NLB) listener.",
+  "description": "Retrieves all certificates associated with an AWS Elastic Load Balancer (ALB/NLB) listener.",
   "version": "1.0.0",
   "auther": "@aventisia",
   "supportedPlatforms": [

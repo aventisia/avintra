@@ -1,7 +1,7 @@
 {
   "name": "ReadStatusBar",
   "label": "Read Status Bar",
-  "discription": "Reads the status bar message from the active SAP session.",
+  "description": "Reads the status bar message from the active SAP session.",
   "version": "1.0.0",
   "auther": "@aventisia",
   "supportedPlatforms": [

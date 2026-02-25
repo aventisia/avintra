@@ -1,7 +1,7 @@
 {
   "name": "FillUltraTaxForm",
   "label": "Fill UltraTax Form",
-  "discription": "Fill an UltraTax CS form by inspecting UI elements and mapping them to a JSON content",
+  "description": "Fill an UltraTax CS form by inspecting UI elements and mapping them to a JSON content",
   "version": "1.0.0",
   "auther": "@aventisia",
   "supportedPlatforms": [

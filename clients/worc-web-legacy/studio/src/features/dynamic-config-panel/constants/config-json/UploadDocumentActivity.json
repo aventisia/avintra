@@ -1,7 +1,7 @@
 {
   "name": "UploadDocument",
   "label": "Upload Document",
-  "discription": "Uploads a document to Salesforce as a ContentVersion (Salesforce File).",
+  "description": "Uploads a document to Salesforce as a ContentVersion (Salesforce File).",
   "version": "1.0.0",
   "auther": "@aventisia",
   "supportedPlatforms": [

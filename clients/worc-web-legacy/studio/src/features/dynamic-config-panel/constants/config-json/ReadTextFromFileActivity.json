@@ -1,7 +1,7 @@
 {
   "name": "ReadTextFromFile",
   "label": "Read Text from File",
-  "discription": "Reads all text content from the specified file.",
+  "description": "Reads all text content from the specified file.",
   "version": "1.0.0",
   "auther": "@aventisia",
   "supportedPlatforms": [

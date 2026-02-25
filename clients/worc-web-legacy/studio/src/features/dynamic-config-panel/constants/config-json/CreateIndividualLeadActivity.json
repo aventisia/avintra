@@ -1,7 +1,7 @@
 {
   "name": "CreateIndividualLead",
   "label": "Create Individual Lead",
-  "discription": "Creates an individual lead not associated with any company in SAP Cloud for Customer.",
+  "description": "Creates an individual lead not associated with any company in SAP Cloud for Customer.",
   "version": "1.0.0",
   "auther": "@aventisia",
   "supportedPlatforms": [

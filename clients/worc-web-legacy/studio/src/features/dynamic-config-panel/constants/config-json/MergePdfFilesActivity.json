@@ -1,7 +1,7 @@
 {
   "name": "MergePdfFiles",
   "label": "Merge PDF Files",
-  "discription": "Merges multiple PDF files into a new one.",
+  "description": "Merges multiple PDF files into a new one.",
   "version": "1.0.0",
   "auther": "@aventisia",
   "supportedPlatforms": [

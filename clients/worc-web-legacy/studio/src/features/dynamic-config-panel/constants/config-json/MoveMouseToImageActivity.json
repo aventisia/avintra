@@ -1,7 +1,7 @@
 {
   "name": "MoveMouseToImage",
   "label": "Move Mouse to Image",
-  "discription": "Moves the mouse cursor to the center of a specified image on the screen using template matching.",
+  "description": "Moves the mouse cursor to the center of a specified image on the screen using template matching.",
   "version": "1.0.0",
   "auther": "@aventisia",
   "supportedPlatforms": [

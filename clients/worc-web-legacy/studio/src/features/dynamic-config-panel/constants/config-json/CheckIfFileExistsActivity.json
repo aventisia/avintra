@@ -1,7 +1,7 @@
 {
   "name": "CheckIfFileExists",
   "label": "Check If File Exists (HTTP)",
-  "discription": "Checks if a workbook exists in OneDrive or SharePoint.",
+  "description": "Checks if a workbook exists in OneDrive or SharePoint.",
   "version": "1.0.0",
   "auther": "@aventisia",
   "supportedPlatforms": [

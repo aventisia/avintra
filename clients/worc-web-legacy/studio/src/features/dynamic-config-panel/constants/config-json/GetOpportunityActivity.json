@@ -1,7 +1,7 @@
 {
   "name": "GetOpportunity",
   "label": "Get Opportunity",
-  "discription": "Retrieves a Salesforce opportunity by its ID.",
+  "description": "Retrieves a Salesforce opportunity by its ID.",
   "version": "1.0.0",
   "auther": "@aventisia",
   "supportedPlatforms": [

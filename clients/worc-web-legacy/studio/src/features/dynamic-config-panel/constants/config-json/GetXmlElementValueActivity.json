@@ -1,7 +1,7 @@
 {
   "name": "GetXmlElementValue",
   "label": "Get XML Element Value",
-  "discription": "Gets the value of an XML element based on the provided XPath query.",
+  "description": "Gets the value of an XML element based on the provided XPath query.",
   "version": "1.0.0",
   "auther": "@aventisia",
   "supportedPlatforms": [

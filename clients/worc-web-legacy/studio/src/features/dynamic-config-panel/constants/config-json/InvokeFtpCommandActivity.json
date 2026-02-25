@@ -1,7 +1,7 @@
 {
   "name": "InvokeFtpCommand",
   "label": "Invoke FTP Command",
-  "discription": "Invokes the given literal FTP command on the server.",
+  "description": "Invokes the given literal FTP command on the server.",
   "version": "1.0.0",
   "auther": "@aventisia",
   "supportedPlatforms": [

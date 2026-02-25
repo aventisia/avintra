@@ -1,7 +1,7 @@
 {
   "name": "AppendRow",
   "label": "Append Row to Google Sheet",
-  "discription": "Appends a single row of data to a Google Sheet at the next available row in the specified range.",
+  "description": "Appends a single row of data to a Google Sheet at the next available row in the specified range.",
   "version": "1.0.0",
   "auther": "@aventisia",
   "supportedPlatforms": [

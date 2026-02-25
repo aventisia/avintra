@@ -1,7 +1,7 @@
 {
   "name": "UploadFileToAIModel",
   "label": "Upload File to Server",
-  "discription": "Uploads a file to a web API endpoint using multipart/form-data and returns the uploaded file ID .",
+  "description": "Uploads a file to a web API endpoint using multipart/form-data and returns the uploaded file ID .",
   "version": null,
   "auther": null,
   "supportedPlatforms": [],

@@ -1,7 +1,7 @@
 {
   "name": "SelectivePdfSplitter",
   "label": "Smart PDF Page Splitter",
-  "discription": "Splits a PDF into pages based on selection mode: All, Odd, Even, Range, Specific Pages, or By Chunk Size.",
+  "description": "Splits a PDF into pages based on selection mode: All, Odd, Even, Range, Specific Pages, or By Chunk Size.",
   "version": "1.0.0",
   "auther": "@aventisia",
   "supportedPlatforms": [

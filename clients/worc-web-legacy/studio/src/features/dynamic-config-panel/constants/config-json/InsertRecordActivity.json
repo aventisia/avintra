@@ -1,7 +1,7 @@
 {
   "name": "InsertRecord",
   "label": "Insert Record",
-  "discription": "Inserts a new record in SAP OData.",
+  "description": "Inserts a new record in SAP OData.",
   "version": "1.0.0",
   "auther": "@aventisia",
   "supportedPlatforms": [

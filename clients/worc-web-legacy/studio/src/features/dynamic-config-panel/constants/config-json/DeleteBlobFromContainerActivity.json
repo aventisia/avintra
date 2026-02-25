@@ -1,7 +1,7 @@
 {
   "name": "DeleteBlobFromContainer",
   "label": "Delete Blob from Container",
-  "discription": "Deletes a specified blob from the Azure Blob container.",
+  "description": "Deletes a specified blob from the Azure Blob container.",
   "version": "1.0.0",
   "auther": "@aventisia",
   "supportedPlatforms": [

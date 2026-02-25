@@ -1,7 +1,7 @@
 {
   "name": "CreateCase",
   "label": "Create Salesforce Case",
-  "discription": "Creates a new Case record in Salesforce using the provided credentials and case details.",
+  "description": "Creates a new Case record in Salesforce using the provided credentials and case details.",
   "version": "1.0.0",
   "auther": "@aventisia",
   "supportedPlatforms": [

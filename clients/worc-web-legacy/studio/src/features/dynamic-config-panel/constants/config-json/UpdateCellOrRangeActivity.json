@@ -1,7 +1,7 @@
 {
   "name": "UpdateCellOrRange",
   "label": "Update Cell or Range in Google Sheet",
-  "discription": "Updates a specific cell or range in a Google Sheet with the provided values.",
+  "description": "Updates a specific cell or range in a Google Sheet with the provided values.",
   "version": "1.0.0",
   "auther": "@aventisia",
   "supportedPlatforms": [

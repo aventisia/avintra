@@ -1,7 +1,7 @@
 {
   "name": "GetAccountSummary",
   "label": "Get Salesforce Account Summary",
-  "discription": "Retrieves summary information about an Account, such as count of related contacts, opportunities, etc.",
+  "description": "Retrieves summary information about an Account, such as count of related contacts, opportunities, etc.",
   "version": "1.0.0",
   "auther": "@aventisia",
   "supportedPlatforms": [

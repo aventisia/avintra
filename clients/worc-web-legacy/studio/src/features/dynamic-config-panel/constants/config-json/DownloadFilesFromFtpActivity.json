@@ -1,7 +1,7 @@
 {
   "name": "DownloadFilesFromFtp",
   "label": "Download File(s) from FTP",
-  "discription": "Downloads one or more files from an FTP server.",
+  "description": "Downloads one or more files from an FTP server.",
   "version": "1.0.0",
   "auther": "@aventisia",
   "supportedPlatforms": [

@@ -1,7 +1,7 @@
 {
   "name": "SetDropDownListValue",
   "label": "Select Option from Drop-Down or List",
-  "discription": "Selects an option from a drop-down or list UI element by specifying the option\u0027s visible name or its zero-based index.",
+  "description": "Selects an option from a drop-down or list UI element by specifying the option\u0027s visible name or its zero-based index.",
   "version": "1.0.0",
   "auther": "@aventisia",
   "supportedPlatforms": [

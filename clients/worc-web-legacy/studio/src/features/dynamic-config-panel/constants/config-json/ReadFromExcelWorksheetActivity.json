@@ -1,7 +1,7 @@
 {
   "name": "ReadFromExcelWorksheet",
   "label": "Read from Excel Worksheet",
-  "discription": "Reads values from a specified cell range in the given Excel worksheet.",
+  "description": "Reads values from a specified cell range in the given Excel worksheet.",
   "version": "1.0.0",
   "auther": "@aventisia",
   "supportedPlatforms": [

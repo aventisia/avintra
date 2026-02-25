@@ -1,7 +1,7 @@
 {
   "name": "LaunchExcel",
   "label": "Launch Excel Application",
-  "discription": "Launches a new Excel application instance or opens an existing Excel document.",
+  "description": "Launches a new Excel application instance or opens an existing Excel document.",
   "version": "1.0.0",
   "auther": "@aventisia",
   "supportedPlatforms": [

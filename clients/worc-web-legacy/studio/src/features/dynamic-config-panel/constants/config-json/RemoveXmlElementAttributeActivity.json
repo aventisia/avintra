@@ -1,7 +1,7 @@
 {
   "name": "RemoveXmlElementAttribute",
   "label": "Remove XML Element Attribute",
-  "discription": "Removes an attribute from an XML element.",
+  "description": "Removes an attribute from an XML element.",
   "version": "1.0.0",
   "auther": "@aventisia",
   "supportedPlatforms": [

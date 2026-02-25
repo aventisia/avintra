@@ -1,7 +1,7 @@
 {
   "name": "ReadJSONFile",
   "label": "Read JSON File",
-  "discription": "Reads the contents of a JSON file from the specified file path.",
+  "description": "Reads the contents of a JSON file from the specified file path.",
   "version": "1.0.0",
   "auther": "@aventisia",
   "supportedPlatforms": [

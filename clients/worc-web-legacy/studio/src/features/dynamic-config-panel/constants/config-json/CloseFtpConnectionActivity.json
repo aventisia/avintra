@@ -1,7 +1,7 @@
 {
   "name": "CloseFtpConnection",
   "label": "Close Connection",
-  "discription": "Closes an open FTP connection.",
+  "description": "Closes an open FTP connection.",
   "version": "1.0.0",
   "auther": "@aventisia",
   "supportedPlatforms": [

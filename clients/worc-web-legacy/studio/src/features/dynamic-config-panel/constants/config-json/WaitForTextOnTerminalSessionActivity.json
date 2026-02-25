@@ -1,7 +1,7 @@
 {
   "name": "WaitForTextOnTerminalSession",
   "label": "Wait for Text on Terminal Session",
-  "discription": "Wait for a specific text to appear on a terminal session.",
+  "description": "Wait for a specific text to appear on a terminal session.",
   "version": "1.0.0",
   "auther": "@aventisia",
   "supportedPlatforms": [

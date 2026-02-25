@@ -1,7 +1,7 @@
 {
   "name": "SetDropDownListValueOnWebPage",
   "label": "Set Drop-Down List Value on Web Page",
-  "discription": "Sets or clears the value of a drop-down list element on a web page.",
+  "description": "Sets or clears the value of a drop-down list element on a web page.",
   "version": "1.0.0",
   "auther": "@aventisia",
   "supportedPlatforms": [

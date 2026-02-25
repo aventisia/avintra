@@ -1,7 +1,7 @@
 {
   "name": "AddNoteToAccount",
   "label": "Add Note to Salesforce Account",
-  "discription": "Adds a note (CaseComment or custom) to a Salesforce Account via related object or custom logic.",
+  "description": "Adds a note (CaseComment or custom) to a Salesforce Account via related object or custom logic.",
   "version": "1.0.0",
   "auther": "@aventisia",
   "supportedPlatforms": [

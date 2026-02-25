@@ -1,7 +1,7 @@
 {
   "name": "DeleteRowFromExcelWorksheet",
   "label": "Delete Row from Excel Worksheet",
-  "discription": "Deletes a specific row from the specified worksheet of an Excel workbook.",
+  "description": "Deletes a specific row from the specified worksheet of an Excel workbook.",
   "version": "1.0.0",
   "auther": "@aventisia",
   "supportedPlatforms": [

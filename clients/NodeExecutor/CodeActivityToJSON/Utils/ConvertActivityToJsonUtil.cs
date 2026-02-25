@@ -28,7 +28,7 @@ namespace CodeActivityToJSON.Utils
             {
                 ["name"] = activityType.Name.Replace("Activity", ""),
                 ["label"] = activityDisplayNameAttr?.DisplayName,
-                ["discription"] = activityDescriptionAttr?.Description,
+                ["description"] = activityDescriptionAttr?.Description,
                 ["version"] = activityMetaDataAttr?.Version,
                 ["auther"] = activityMetaDataAttr?.Author,
                 ["supportedPlatforms"] = supportedPlatformsList,

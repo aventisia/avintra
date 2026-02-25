@@ -1,7 +1,7 @@
 {
   "name": "PopulateTextField",
   "label": "Populate Text Field on Web Page",
-  "discription": "Fills a specified text field in a web browser with provided text. Supports plain or encrypted input.",
+  "description": "Fills a specified text field in a web browser with provided text. Supports plain or encrypted input.",
   "version": "1.0.0",
   "auther": "@aventisia",
   "supportedPlatforms": [

@@ -1,7 +1,7 @@
 {
   "name": "DeleteDuplicateRowsFromDataTable",
   "label": "Delete Duplicate Rows From Data Table",
-  "discription": "Deletes all rows that are exact duplicates from the data table.",
+  "description": "Deletes all rows that are exact duplicates from the data table.",
   "version": "1.0.0",
   "auther": "@aventisia",
   "supportedPlatforms": [

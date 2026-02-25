@@ -1,7 +1,7 @@
 {
   "name": "ZipFiles",
   "label": "Zip Files",
-  "discription": "Compress one or more files or folders into a zip archive.",
+  "description": "Compress one or more files or folders into a zip archive.",
   "version": "1.0.0",
   "auther": "@aventisia",
   "supportedPlatforms": [

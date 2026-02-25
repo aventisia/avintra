@@ -1,7 +1,7 @@
 {
   "name": "CreateLoadBalancer",
   "label": "Create AWS ELB Load Balancer",
-  "discription": "Creates an Application or Network Load Balancer in AWS Elastic Load Balancing (ALB/NLB).",
+  "description": "Creates an Application or Network Load Balancer in AWS Elastic Load Balancing (ALB/NLB).",
   "version": "1.0.0",
   "auther": "@aventisia",
   "supportedPlatforms": [

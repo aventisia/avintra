@@ -1,7 +1,7 @@
 {
   "name": "MoveCursorOnTerminalSession",
   "label": "Move Cursor on Terminal Session",
-  "discription": "Move the terminal\u0027s cursor to the specified position.",
+  "description": "Move the terminal\u0027s cursor to the specified position.",
   "version": "1.0.0",
   "auther": "@aventisia",
   "supportedPlatforms": [

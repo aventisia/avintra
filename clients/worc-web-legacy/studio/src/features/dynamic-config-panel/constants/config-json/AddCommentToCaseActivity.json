@@ -1,7 +1,7 @@
 {
   "name": "AddCommentToCase",
   "label": "Add a Comment to a Case",
-  "discription": "Adds a comment to an existing Case in Salesforce.",
+  "description": "Adds a comment to an existing Case in Salesforce.",
   "version": "1.0.0",
   "auther": "@aventisia",
   "supportedPlatforms": [

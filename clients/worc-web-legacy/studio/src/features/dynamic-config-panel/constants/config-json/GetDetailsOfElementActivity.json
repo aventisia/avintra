@@ -1,7 +1,7 @@
 {
   "name": "GetDetailsOfElement",
   "label": "Get Details of Element on Web Page",
-  "discription": "Retrieves the value of a specified attribute from a selected UI element in a web browser.",
+  "description": "Retrieves the value of a specified attribute from a selected UI element in a web browser.",
   "version": "1.0.0",
   "auther": "@aventisia",
   "supportedPlatforms": [

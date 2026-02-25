@@ -1,7 +1,7 @@
 {
   "name": "ClearDataTable",
   "label": "Clear Data Table",
-  "discription": "Removes all rows from a data table while preserving its structure.",
+  "description": "Removes all rows from a data table while preserving its structure.",
   "version": "1.0.0",
   "auther": "@aventisia",
   "supportedPlatforms": [

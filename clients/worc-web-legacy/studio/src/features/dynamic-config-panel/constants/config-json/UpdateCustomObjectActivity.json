@@ -1,7 +1,7 @@
 {
   "name": "UpdateCustomObject",
   "label": "Update a custom object",
-  "discription": "Updates an existing custom object in Salesforce with new field values.",
+  "description": "Updates an existing custom object in Salesforce with new field values.",
   "version": "1.0.0",
   "auther": "@aventisia",
   "supportedPlatforms": [

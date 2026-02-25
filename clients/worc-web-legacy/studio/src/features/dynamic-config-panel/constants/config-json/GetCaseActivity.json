@@ -1,7 +1,7 @@
 {
   "name": "GetCase",
   "label": "Get a Case",
-  "discription": "Retrieves a single Case record by ID from Salesforce.",
+  "description": "Retrieves a single Case record by ID from Salesforce.",
   "version": "1.0.0",
   "auther": "@aventisia",
   "supportedPlatforms": [

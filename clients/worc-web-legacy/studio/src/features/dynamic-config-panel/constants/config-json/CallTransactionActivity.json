@@ -1,7 +1,7 @@
 {
   "name": "CallTransaction",
   "label": "Call Transaction",
-  "discription": "Calls an SAP transaction code with optional prefix (/n, /o, or none).",
+  "description": "Calls an SAP transaction code with optional prefix (/n, /o, or none).",
   "version": "1.0.0",
   "auther": "@aventisia",
   "supportedPlatforms": [

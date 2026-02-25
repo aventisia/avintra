@@ -1,7 +1,7 @@
 {
   "name": "DownloadAttachments",
   "label": "Download Attachments",
-  "discription": "Downloads all attachments for a specified email message using Microsoft Graph API.",
+  "description": "Downloads all attachments for a specified email message using Microsoft Graph API.",
   "version": "1.0.0",
   "auther": "@aventisia",
   "supportedPlatforms": [

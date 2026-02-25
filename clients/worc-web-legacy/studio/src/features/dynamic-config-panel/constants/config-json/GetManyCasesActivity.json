@@ -1,7 +1,7 @@
 {
   "name": "GetManyCases",
   "label": "Get Many Cases",
-  "discription": "Retrieves multiple Case records using a SOQL query.",
+  "description": "Retrieves multiple Case records using a SOQL query.",
   "version": "1.0.0",
   "auther": "@aventisia",
   "supportedPlatforms": [

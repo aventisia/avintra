@@ -1,7 +1,7 @@
 {
   "name": "IfFileExists",
   "label": "If File Exists",
-  "discription": "Checks if a file exists or does not exist and marks the beginning of a conditional block.",
+  "description": "Checks if a file exists or does not exist and marks the beginning of a conditional block.",
   "version": "1.0.0",
   "auther": "@aventisia",
   "supportedPlatforms": [

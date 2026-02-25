@@ -1,7 +1,7 @@
 {
   "name": "DeleteOpportunity",
   "label": "Delete Opportunity",
-  "discription": "Deletes a Salesforce opportunity by its ID.",
+  "description": "Deletes a Salesforce opportunity by its ID.",
   "version": "1.0.0",
   "auther": "@aventisia",
   "supportedPlatforms": [

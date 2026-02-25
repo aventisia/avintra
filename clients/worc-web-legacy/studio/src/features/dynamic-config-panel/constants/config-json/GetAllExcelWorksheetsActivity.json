@@ -1,7 +1,7 @@
 {
   "name": "GetAllExcelWorksheets",
   "label": "Get All Excel Worksheets",
-  "discription": "Retrieves all worksheet names from the provided Excel workbook instance, optionally filtered by a specific worksheet instance.",
+  "description": "Retrieves all worksheet names from the provided Excel workbook instance, optionally filtered by a specific worksheet instance.",
   "version": "1.0.0",
   "auther": "@aventisia",
   "supportedPlatforms": [

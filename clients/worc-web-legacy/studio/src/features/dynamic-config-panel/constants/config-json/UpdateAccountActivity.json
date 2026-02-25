@@ -1,7 +1,7 @@
 {
   "name": "UpdateAccount",
   "label": "Update Salesforce Account",
-  "discription": "Updates an existing Account record in Salesforce using the provided credentials and account details.",
+  "description": "Updates an existing Account record in Salesforce using the provided credentials and account details.",
   "version": "1.0.0",
   "auther": "@aventisia",
   "supportedPlatforms": [

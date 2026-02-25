@@ -1,7 +1,7 @@
 {
   "name": "SwitchToIframe",
   "label": "Switch To Iframe",
-  "discription": "Switches the browser context to a specified iframe using the provided locator type and value (e.g., ID, Name, XPath, or CSS Selector).",
+  "description": "Switches the browser context to a specified iframe using the provided locator type and value (e.g., ID, Name, XPath, or CSS Selector).",
   "version": "1.0.0",
   "auther": "@aventisia",
   "supportedPlatforms": [

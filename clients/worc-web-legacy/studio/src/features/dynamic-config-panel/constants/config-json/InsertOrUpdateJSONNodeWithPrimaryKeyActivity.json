@@ -1,7 +1,7 @@
 {
   "name": "InsertOrUpdateJSONNodeWithPrimaryKey",
   "label": "Insert or Update JSON Node by Primary Key",
-  "discription": "Searches recursively through a JSON structure to find an object where a primary key matches a given value. If found, inserts or updates a specified key-value pair.",
+  "description": "Searches recursively through a JSON structure to find an object where a primary key matches a given value. If found, inserts or updates a specified key-value pair.",
   "version": "1.0.0",
   "auther": "@aventisia",
   "supportedPlatforms": [

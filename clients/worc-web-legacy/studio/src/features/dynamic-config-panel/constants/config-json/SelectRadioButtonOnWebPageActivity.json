@@ -1,7 +1,7 @@
 {
   "name": "SelectRadioButtonOnWebPage",
   "label": "Select Radio Button on Web Page",
-  "discription": "Simulates selecting a radio button element on a web page.",
+  "description": "Simulates selecting a radio button element on a web page.",
   "version": "1.0.0",
   "auther": "@aventisia",
   "supportedPlatforms": [

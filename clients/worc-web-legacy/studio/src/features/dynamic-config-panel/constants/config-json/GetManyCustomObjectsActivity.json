@@ -1,7 +1,7 @@
 {
   "name": "GetManyCustomObjects",
   "label": "Get many custom objects",
-  "discription": "Retrieves multiple custom objects from Salesforce using SOQL or default query.",
+  "description": "Retrieves multiple custom objects from Salesforce using SOQL or default query.",
   "version": "1.0.0",
   "auther": "@aventisia",
   "supportedPlatforms": [

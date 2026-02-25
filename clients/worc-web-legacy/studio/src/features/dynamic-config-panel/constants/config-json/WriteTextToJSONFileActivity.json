@@ -1,7 +1,7 @@
 {
   "name": "WriteTextToJSONFile",
   "label": "Write Text to JSON File",
-  "discription": "Writes the provided content as JSON to the specified file path.",
+  "description": "Writes the provided content as JSON to the specified file path.",
   "version": "1.0.0",
   "auther": "@aventisia",
   "supportedPlatforms": [

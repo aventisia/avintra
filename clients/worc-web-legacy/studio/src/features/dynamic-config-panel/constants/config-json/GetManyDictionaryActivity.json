@@ -1,7 +1,7 @@
 {
   "name": "GetManyDictionary",
   "label": "Get Many Dictionary Entries",
-  "discription": "Retrieves multiple Dictionary entries from ServiceNow using a stored credential. Supports pagination.",
+  "description": "Retrieves multiple Dictionary entries from ServiceNow using a stored credential. Supports pagination.",
   "version": "1.0.0",
   "auther": "@aventisia",
   "supportedPlatforms": [

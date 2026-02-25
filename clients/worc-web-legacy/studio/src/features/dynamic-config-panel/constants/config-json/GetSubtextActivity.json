@@ -1,7 +1,7 @@
 {
   "name": "GetSubtext",
   "label": "Extract Substring from Text",
-  "discription": "Retrieves a substring from the original text based on start index and length.",
+  "description": "Retrieves a substring from the original text based on start index and length.",
   "version": "1.0.0",
   "auther": "@aventisia",
   "supportedPlatforms": [

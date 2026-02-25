@@ -1,7 +1,7 @@
 {
   "name": "ListAllEntityRecords",
   "label": "List All Entity Records",
-  "discription": "Lists all records for a specified entity using SAP OData services.",
+  "description": "Lists all records for a specified entity using SAP OData services.",
   "version": "1.0.0",
   "auther": "@aventisia",
   "supportedPlatforms": [

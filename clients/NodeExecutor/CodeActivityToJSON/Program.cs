@@ -104,8 +104,9 @@ namespace CodeActivityToJSON
                 // Create the file path for the JSON file (for form generation)
                 var fileName = Path.Combine(outputDir, activity.Name + ".json");
 
-                // Write the JSON content to the file
-                File.WriteAllText(fileName, json);
+                // Write the JSON content to the file with Unix line endings (LF)
+                var jsonWithUnixLineEndings = json.Replace("\r\n", "\n");
+                File.WriteAllText(fileName, jsonWithUnixLineEndings);
             }
             Console.WriteLine("Task complete");
             Console.ReadLine();
@@ -118,17 +119,7 @@ namespace CodeActivityToJSON
             // return @"C:\Users\Gaurav\Gitea\Aventisia\OpenAI Doc Generation\input";
 
             // Get user's agent builder directory (for form generation)
-            var outputDir = Path.GetFullPath(Path.Combine(
-                AppDomain.CurrentDomain.BaseDirectory,
-                "..", "..", "..", "..",
-                "worc-web-legacy",
-                "studio",
-                "src",
-                "features",
-                "dynamic-config-panel",
-                "constants",
-                "config-json"
-            ));
+            var outputDir = $@"\\wsl$\Ubuntu\home\{Environment.UserName.ToLower()}\gitea\aventisia\worc-platform\clients\worc-web-legacy\studio\src\features\dynamic-config-panel\constants\config-json";
             
             // If the directory already exists, delete it
             if (Directory.Exists(outputDir))

@@ -1,7 +1,7 @@
 {
   "name": "CreateOrUpdateCustomObject",
   "label": "Create or update a custom object",
-  "discription": "Creates a new custom object or updates an existing one in Salesforce using an external ID field.",
+  "description": "Creates a new custom object or updates an existing one in Salesforce using an external ID field.",
   "version": "1.0.0",
   "auther": "@aventisia",
   "supportedPlatforms": [

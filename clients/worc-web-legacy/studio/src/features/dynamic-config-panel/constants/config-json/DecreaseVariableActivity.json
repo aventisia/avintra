@@ -1,7 +1,7 @@
 {
   "name": "DecreaseVariable",
   "label": "Decrease Variable",
-  "discription": "Decreases a numeric variable by a specified value.",
+  "description": "Decreases a numeric variable by a specified value.",
   "version": "1.0.0",
   "auther": "@aventisia",
   "supportedPlatforms": [

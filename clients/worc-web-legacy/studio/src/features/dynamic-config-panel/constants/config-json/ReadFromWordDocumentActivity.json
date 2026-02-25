@@ -1,7 +1,7 @@
 {
   "name": "ReadFromWordDocument",
   "label": "Read from Word Document",
-  "discription": "Reads the text content from a document of a Word instance.",
+  "description": "Reads the text content from a document of a Word instance.",
   "version": "1.0.0",
   "auther": "@aventisia",
   "supportedPlatforms": [

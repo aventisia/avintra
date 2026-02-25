@@ -1,7 +1,7 @@
 {
   "name": "SaveExcel",
   "label": "Save Excel Workbook",
-  "discription": "Saves the active Excel workbook.",
+  "description": "Saves the active Excel workbook.",
   "version": "1.0.0",
   "auther": "@aventisia",
   "supportedPlatforms": [

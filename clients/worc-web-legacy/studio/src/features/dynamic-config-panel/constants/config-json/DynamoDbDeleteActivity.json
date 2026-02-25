@@ -1,7 +1,7 @@
 {
   "name": "DynamoDbDelete",
   "label": "Delete AWS DynamoDB Item",
-  "discription": "Deletes an item from AWS DynamoDB using the DeleteItem API.",
+  "description": "Deletes an item from AWS DynamoDB using the DeleteItem API.",
   "version": "1.0.0",
   "auther": "@aventisia",
   "supportedPlatforms": [

@@ -1,7 +1,7 @@
 {
   "name": "DeleteServiceNowAttachmentById",
   "label": "Delete ServiceNow Attachment",
-  "discription": "Deletes an attachment from ServiceNow using only Credential ID (BasicAuth token or OAuth2 token).",
+  "description": "Deletes an attachment from ServiceNow using only Credential ID (BasicAuth token or OAuth2 token).",
   "version": "1.0.0",
   "auther": "@aventisia",
   "supportedPlatforms": [

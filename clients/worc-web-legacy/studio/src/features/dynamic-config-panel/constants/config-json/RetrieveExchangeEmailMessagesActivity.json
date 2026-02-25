@@ -1,7 +1,7 @@
 {
   "name": "RetrieveExchangeEmailMessages",
   "label": "Retrieve Exchange Email Messages",
-  "discription": "Retrieves email messages from the specified Exchange server.",
+  "description": "Retrieves email messages from the specified Exchange server.",
   "version": "1.0.0",
   "auther": "@aventisia",
   "supportedPlatforms": [

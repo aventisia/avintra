@@ -1,7 +1,7 @@
 {
   "name": "GetCellValue",
   "label": "Get Cell Value (HTTP)",
-  "discription": "Reads the value of a single Excel cell using Microsoft Graph HTTP GET.",
+  "description": "Reads the value of a single Excel cell using Microsoft Graph HTTP GET.",
   "version": "1.0.0",
   "auther": "@aventisia",
   "supportedPlatforms": [

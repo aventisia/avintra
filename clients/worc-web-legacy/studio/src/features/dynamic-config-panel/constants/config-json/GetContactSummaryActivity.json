@@ -1,7 +1,7 @@
 {
   "name": "GetContactSummary",
   "label": "Get Salesforce Contact Summary",
-  "discription": "Retrieves summary information about a Contact, such as count of related opportunities, cases, etc.",
+  "description": "Retrieves summary information about a Contact, such as count of related opportunities, cases, etc.",
   "version": "1.0.0",
   "auther": "@aventisia",
   "supportedPlatforms": [

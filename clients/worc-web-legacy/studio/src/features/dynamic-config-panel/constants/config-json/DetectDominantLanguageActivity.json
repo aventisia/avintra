@@ -1,7 +1,7 @@
 {
   "name": "DetectDominantLanguage",
   "label": "Detect Dominant Language (AWS Comprehend)",
-  "discription": "Identifies the dominant language of a given text using AWS Comprehend.",
+  "description": "Identifies the dominant language of a given text using AWS Comprehend.",
   "version": "1.0.0",
   "auther": "@aventisia",
   "supportedPlatforms": [
