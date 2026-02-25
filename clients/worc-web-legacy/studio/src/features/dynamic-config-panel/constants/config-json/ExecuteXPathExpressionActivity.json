@@ -1,7 +1,7 @@
 {
   "name": "ExecuteXPathExpression",
   "label": "Execute XPath Expression",
-  "discription": "Executes an XPath expression on the provided XML content and returns the result.",
+  "description": "Executes an XPath expression on the provided XML content and returns the result.",
   "version": "1.0.0",
   "auther": "@aventisia",
   "supportedPlatforms": [

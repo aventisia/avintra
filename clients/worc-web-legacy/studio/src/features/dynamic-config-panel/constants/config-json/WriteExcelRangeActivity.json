@@ -1,7 +1,7 @@
 {
   "name": "WriteExcelRange",
   "label": "Write Excel Range (HTTP)",
-  "discription": "Writes values to an Excel range using Microsoft Graph HTTP PATCH.",
+  "description": "Writes values to an Excel range using Microsoft Graph HTTP PATCH.",
   "version": "1.0.0",
   "auther": "@aventisia",
   "supportedPlatforms": [

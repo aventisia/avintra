@@ -1,7 +1,7 @@
 {
   "name": "DynamoDbGetMany",
   "label": "Get Many AWS DynamoDB Items",
-  "discription": "Retrieves multiple items from AWS DynamoDB using Query or Scan API.",
+  "description": "Retrieves multiple items from AWS DynamoDB using Query or Scan API.",
   "version": "1.0.0",
   "auther": "@aventisia",
   "supportedPlatforms": [

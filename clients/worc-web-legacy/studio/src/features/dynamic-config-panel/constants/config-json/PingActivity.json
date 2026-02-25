@@ -1,7 +1,7 @@
 {
   "name": "Ping",
   "label": "Ping",
-  "discription": "Sends a message to determine whether a remote computer is accessible over the network.",
+  "description": "Sends a message to determine whether a remote computer is accessible over the network.",
   "version": "1.0.0",
   "auther": "@aventisia",
   "supportedPlatforms": [

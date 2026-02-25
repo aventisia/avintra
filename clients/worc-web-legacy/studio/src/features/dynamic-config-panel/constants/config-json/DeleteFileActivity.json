@@ -1,7 +1,7 @@
 {
   "name": "DeleteFile",
   "label": "Delete File(s)",
-  "discription": "Deletes one or more files.",
+  "description": "Deletes one or more files.",
   "version": "1.0.0",
   "auther": "@aventisia",
   "supportedPlatforms": [

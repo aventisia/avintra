@@ -1,7 +1,7 @@
 {
   "name": "RemoveItemFromList",
   "label": "Remove Item From List",
-  "discription": "Removes an item from a list by index or value.",
+  "description": "Removes an item from a list by index or value.",
   "version": "1.0.0",
   "auther": "@aventisia",
   "supportedPlatforms": [

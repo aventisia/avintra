@@ -1,7 +1,7 @@
 {
   "name": "GetManyDepartments",
   "label": "Get Many Departments",
-  "discription": "Retrieves multiple Departments from ServiceNow using a stored credential. Supports pagination.",
+  "description": "Retrieves multiple Departments from ServiceNow using a stored credential. Supports pagination.",
   "version": "1.0.0",
   "auther": "@aventisia",
   "supportedPlatforms": [

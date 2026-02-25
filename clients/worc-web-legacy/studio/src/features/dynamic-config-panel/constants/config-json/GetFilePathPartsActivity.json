@@ -1,7 +1,7 @@
 {
   "name": "GetFilePathParts",
   "label": "Get File Path Components",
-  "discription": "Extracts various parts (directory, name, extension) from the given file path.",
+  "description": "Extracts various parts (directory, name, extension) from the given file path.",
   "version": "1.0.0",
   "auther": "@aventisia",
   "supportedPlatforms": [

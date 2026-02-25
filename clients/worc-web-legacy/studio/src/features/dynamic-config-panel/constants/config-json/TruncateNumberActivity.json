@@ -1,7 +1,7 @@
 {
   "name": "TruncateNumber",
   "label": "Truncate Number",
-  "discription": "Gets the integral or fractional digits of a numeric value, or rounds up/down the value to a specified number of decimal places.",
+  "description": "Gets the integral or fractional digits of a numeric value, or rounds up/down the value to a specified number of decimal places.",
   "version": "1.0.0",
   "auther": "@aventisia",
   "supportedPlatforms": [

@@ -1,7 +1,7 @@
 {
   "name": "MergeDataTables",
   "label": "Merge Data Tables",
-  "discription": "Merges two data tables together, specifying the merging behavior in case their columns are different.",
+  "description": "Merges two data tables together, specifying the merging behavior in case their columns are different.",
   "version": "1.0.0",
   "auther": "@aventisia",
   "supportedPlatforms": [

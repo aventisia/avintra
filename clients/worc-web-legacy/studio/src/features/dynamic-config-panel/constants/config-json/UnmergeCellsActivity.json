@@ -1,7 +1,7 @@
 {
   "name": "UnmergeCells",
   "label": "Unmerge Cells (HTTP)",
-  "discription": "Unmerges a previously merged range of Excel cells in a workbook stored in OneDrive or SharePoint.",
+  "description": "Unmerges a previously merged range of Excel cells in a workbook stored in OneDrive or SharePoint.",
   "version": "1.0.0",
   "auther": "@aventisia",
   "supportedPlatforms": [

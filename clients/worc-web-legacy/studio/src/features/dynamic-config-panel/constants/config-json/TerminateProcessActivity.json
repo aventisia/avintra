@@ -1,7 +1,7 @@
 {
   "name": "TerminateProcess",
   "label": "Terminate process",
-  "discription": "Immediately stops a running process.",
+  "description": "Immediately stops a running process.",
   "version": "1.0.0",
   "auther": "@aventisia",
   "supportedPlatforms": [

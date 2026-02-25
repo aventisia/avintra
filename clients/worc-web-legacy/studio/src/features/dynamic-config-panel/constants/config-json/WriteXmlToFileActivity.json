@@ -1,7 +1,7 @@
 {
   "name": "WriteXmlToFile",
   "label": "Write XML to File",
-  "discription": "Writes the contents of an XML node or string into a file.",
+  "description": "Writes the contents of an XML node or string into a file.",
   "version": "1.0.0",
   "auther": "@aventisia",
   "supportedPlatforms": [

@@ -1,7 +1,7 @@
 {
   "name": "SetRowHeight",
   "label": "Set Row Height (HTTP)",
-  "discription": "Sets the height of a specific row in an Excel worksheet.",
+  "description": "Sets the height of a specific row in an Excel worksheet.",
   "version": "1.0.0",
   "auther": "@aventisia",
   "supportedPlatforms": [

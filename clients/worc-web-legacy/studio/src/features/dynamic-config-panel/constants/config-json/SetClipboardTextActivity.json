@@ -1,7 +1,7 @@
 {
   "name": "SetClipboardText",
   "label": "Set Clipboard Text",
-  "discription": "Sets the specified text to the system clipboard.",
+  "description": "Sets the specified text to the system clipboard.",
   "version": "1.0.0",
   "auther": "@aventisia",
   "supportedPlatforms": [

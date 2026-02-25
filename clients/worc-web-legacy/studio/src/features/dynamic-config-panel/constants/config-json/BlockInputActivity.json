@@ -1,7 +1,7 @@
 {
   "name": "BlockInput",
   "label": "Block Input",
-  "discription": "Blocks user mouse and keyboard input, so that the flow can perform mouse and keyboard actions without interference from the user.",
+  "description": "Blocks user mouse and keyboard input, so that the flow can perform mouse and keyboard actions without interference from the user.",
   "version": "1.0.0",
   "auther": "@aventisia",
   "supportedPlatforms": [

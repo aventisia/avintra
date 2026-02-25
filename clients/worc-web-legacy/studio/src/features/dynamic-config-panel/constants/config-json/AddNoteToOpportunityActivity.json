@@ -1,7 +1,7 @@
 {
   "name": "AddNoteToOpportunity",
   "label": "Add Note to Opportunity",
-  "discription": "Adds a text note to a Salesforce opportunity.",
+  "description": "Adds a text note to a Salesforce opportunity.",
   "version": "1.0.0",
   "auther": "@aventisia",
   "supportedPlatforms": [

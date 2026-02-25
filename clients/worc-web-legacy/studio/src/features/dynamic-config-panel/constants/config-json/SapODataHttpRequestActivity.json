@@ -1,7 +1,7 @@
 {
   "name": "SapODataHttpRequest",
   "label": "SAP OData HTTP Request",
-  "discription": "Perform HTTP requests to interact with SAP OData using existing connector and connection.",
+  "description": "Perform HTTP requests to interact with SAP OData using existing connector and connection.",
   "version": "1.0.0",
   "auther": "@aventisia",
   "supportedPlatforms": [

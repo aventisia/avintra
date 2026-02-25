@@ -1,7 +1,7 @@
 {
   "name": "GetDetailsOfWebPage",
   "label": "Get Details of Web Page",
-  "discription": "Retrieves specific information about a web page such as title, description, URL, or source code.",
+  "description": "Retrieves specific information about a web page such as title, description, URL, or source code.",
   "version": "1.0.0",
   "auther": "@aventisia",
   "supportedPlatforms": [

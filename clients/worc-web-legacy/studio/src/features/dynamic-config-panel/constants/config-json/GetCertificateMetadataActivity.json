@@ -1,7 +1,7 @@
 {
   "name": "GetCertificateMetadata",
   "label": "Get AWS Certificate Manager Certificate Metadata",
-  "discription": "Retrieves metadata for an AWS Certificate Manager (ACM) certificate using the DescribeCertificate API.",
+  "description": "Retrieves metadata for an AWS Certificate Manager (ACM) certificate using the DescribeCertificate API.",
   "version": "1.0.0",
   "auther": "@aventisia",
   "supportedPlatforms": [

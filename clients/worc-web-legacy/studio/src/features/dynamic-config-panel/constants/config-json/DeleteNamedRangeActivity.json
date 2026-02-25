@@ -1,7 +1,7 @@
 {
   "name": "DeleteNamedRange",
   "label": "Delete Named Range (HTTP)",
-  "discription": "Deletes a named range in an Excel workbook using Microsoft Graph HTTP DELETE.",
+  "description": "Deletes a named range in an Excel workbook using Microsoft Graph HTTP DELETE.",
   "version": "1.0.0",
   "auther": "@aventisia",
   "supportedPlatforms": [

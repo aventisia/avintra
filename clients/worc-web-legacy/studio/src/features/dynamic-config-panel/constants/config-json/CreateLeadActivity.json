@@ -1,7 +1,7 @@
 {
   "name": "CreateLead",
   "label": "Create a lead",
-  "discription": "Creates a new lead in Salesforce.",
+  "description": "Creates a new lead in Salesforce.",
   "version": "1.0.0",
   "auther": "@aventisia",
   "supportedPlatforms": [

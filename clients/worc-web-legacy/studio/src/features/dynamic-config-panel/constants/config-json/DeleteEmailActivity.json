@@ -1,7 +1,7 @@
 {
   "name": "DeleteEmail",
   "label": "Delete Email",
-  "discription": "Deletes an email from the mailbox using its Message ID via Microsoft Graph API.",
+  "description": "Deletes an email from the mailbox using its Message ID via Microsoft Graph API.",
   "version": "1.0.0",
   "auther": "@aventisia",
   "supportedPlatforms": [

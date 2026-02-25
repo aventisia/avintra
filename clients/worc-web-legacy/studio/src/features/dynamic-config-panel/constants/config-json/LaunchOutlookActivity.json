@@ -1,7 +1,7 @@
 {
   "name": "LaunchOutlook",
   "label": "Launch Outlook Application",
-  "discription": "Launches an Outlook application instance. Optionally connects to a specific profile.",
+  "description": "Launches an Outlook application instance. Optionally connects to a specific profile.",
   "version": "1.0.0",
   "auther": "@aventisia",
   "supportedPlatforms": [

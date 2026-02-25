@@ -1,7 +1,7 @@
 {
   "name": "OpenSecureFtpConnection",
   "label": "Open Secure FTP Connection",
-  "discription": "Establishes a secure connection to an FTP server using SSL/TLS or SSH.",
+  "description": "Establishes a secure connection to an FTP server using SSL/TLS or SSH.",
   "version": "1.0.0",
   "auther": "@aventisia",
   "supportedPlatforms": [

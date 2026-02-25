@@ -1,7 +1,7 @@
 {
   "name": "UploadFileToBlobStorage",
   "label": "Upload File to Blob Storage",
-  "discription": "Uploads a file from the local system to an Azure Blob container.",
+  "description": "Uploads a file from the local system to an Azure Blob container.",
   "version": "1.0.0",
   "auther": "@aventisia",
   "supportedPlatforms": [

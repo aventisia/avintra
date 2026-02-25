@@ -1,7 +1,7 @@
 {
   "name": "UpdateAttachment",
   "label": "Update Salesforce Attachment",
-  "discription": "Updates an existing Attachment record in Salesforce.",
+  "description": "Updates an existing Attachment record in Salesforce.",
   "version": "1.0.0",
   "auther": "@aventisia",
   "supportedPlatforms": [

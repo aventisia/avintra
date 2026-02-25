@@ -1,7 +1,7 @@
 {
   "name": "GetActiveCellOnExcelWorksheet",
   "label": "Get Active Cell on Excel Worksheet",
-  "discription": "Gets the address of the currently active cell in the specified Excel worksheet.",
+  "description": "Gets the address of the currently active cell in the specified Excel worksheet.",
   "version": "1.0.0",
   "auther": "@aventisia",
   "supportedPlatforms": [

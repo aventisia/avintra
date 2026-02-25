@@ -1,7 +1,7 @@
 {
   "name": "SendKeys",
   "label": "Send Keys",
-  "discription": "Sends keys to the specified target (foreground window, UI element, window handle, or title/class).",
+  "description": "Sends keys to the specified target (foreground window, UI element, window handle, or title/class).",
   "version": "1.0.0",
   "auther": "@aventisia",
   "supportedPlatforms": [

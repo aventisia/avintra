@@ -1,7 +1,7 @@
 {
   "name": "ClickToolbarButton",
   "label": "Click Toolbar Button",
-  "discription": "Clicks a specified toolbar button. Supports Healing Agent mode.",
+  "description": "Clicks a specified toolbar button. Supports Healing Agent mode.",
   "version": "1.0.0",
   "auther": "@aventisia",
   "supportedPlatforms": [

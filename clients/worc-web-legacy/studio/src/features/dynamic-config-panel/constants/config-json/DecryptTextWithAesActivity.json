@@ -1,7 +1,7 @@
 {
   "name": "DecryptTextWithAes",
   "label": "Decrypt Text with AES",
-  "discription": "Decrypts a Base64-encoded string using AES with optional key hashing for short keys.",
+  "description": "Decrypts a Base64-encoded string using AES with optional key hashing for short keys.",
   "version": "1.0.0",
   "auther": "@aventisia",
   "supportedPlatforms": [

@@ -1,7 +1,7 @@
 {
   "name": "ReadFromCmdSession",
   "label": "Read from CMD Session",
-  "discription": "Reads the output of a CMD session.",
+  "description": "Reads the output of a CMD session.",
   "version": "1.0.0",
   "auther": "@aventisia",
   "supportedPlatforms": [

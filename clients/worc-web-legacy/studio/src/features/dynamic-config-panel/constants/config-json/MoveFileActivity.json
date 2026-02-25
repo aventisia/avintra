@@ -1,7 +1,7 @@
 {
   "name": "MoveFile",
   "label": "Move File(s)",
-  "discription": "Moves one or more files into a destination folder.",
+  "description": "Moves one or more files into a destination folder.",
   "version": "1.0.0",
   "auther": "@aventisia",
   "supportedPlatforms": [

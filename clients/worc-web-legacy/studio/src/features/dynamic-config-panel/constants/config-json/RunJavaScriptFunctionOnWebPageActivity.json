@@ -1,7 +1,7 @@
 {
   "name": "RunJavaScriptFunctionOnWebPage",
   "label": "Run JavaScript Function on Web Page",
-  "discription": "Executes a custom JavaScript function in the context of the current web page.",
+  "description": "Executes a custom JavaScript function in the context of the current web page.",
   "version": "1.0.0",
   "auther": "@aventisia",
   "supportedPlatforms": [

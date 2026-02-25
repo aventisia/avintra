@@ -1,7 +1,7 @@
 {
   "name": "GoToWebPage",
   "label": "Go To Web Page",
-  "discription": "Navigates a web browser instance to a specified URL, back, forward, or reload.",
+  "description": "Navigates a web browser instance to a specified URL, back, forward, or reload.",
   "version": "1.0.0",
   "auther": "@aventisia",
   "supportedPlatforms": [

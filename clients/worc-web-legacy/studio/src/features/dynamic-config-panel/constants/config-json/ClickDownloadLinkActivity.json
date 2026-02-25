@@ -1,7 +1,7 @@
 {
   "name": "ClickDownloadLink",
   "label": "Click Download Link on Web Page",
-  "discription": "Simulates clicking a download link on a web page and saves the file to the specified folder.",
+  "description": "Simulates clicking a download link on a web page and saves the file to the specified folder.",
   "version": "1.0.0",
   "auther": "@aventisia",
   "supportedPlatforms": [

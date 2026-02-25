@@ -1,7 +1,7 @@
 {
   "name": "DisplayInputDialog",
   "label": "Display Input Dialog",
-  "discription": "Displays a dialog box that prompts the user to enter text.",
+  "description": "Displays a dialog box that prompts the user to enter text.",
   "version": "1.0.0",
   "auther": "@aventisia",
   "supportedPlatforms": [

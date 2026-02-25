@@ -1,7 +1,7 @@
 {
   "name": "PerformAQuery",
   "label": "Performs A Search Query",
-  "discription": "Performs a search query in Salesforce using SOQL-like syntax.",
+  "description": "Performs a search query in Salesforce using SOQL-like syntax.",
   "version": "1.0.0",
   "auther": "@aventisia",
   "supportedPlatforms": [

@@ -1,7 +1,7 @@
 {
   "name": "DeleteAttachment",
   "label": "Delete Salesforce Attachment",
-  "discription": "Deletes an existing Attachment record in Salesforce by its ID.",
+  "description": "Deletes an existing Attachment record in Salesforce by its ID.",
   "version": "1.0.0",
   "auther": "@aventisia",
   "supportedPlatforms": [

@@ -1,7 +1,7 @@
 {
   "name": "UploadFoldersToFtp",
   "label": "Upload Folder(s) to FTP",
-  "discription": "Uploads one or more local folders to a remote FTP/FTPS server.",
+  "description": "Uploads one or more local folders to a remote FTP/FTPS server.",
   "version": "1.0.0",
   "auther": "@aventisia",
   "supportedPlatforms": [

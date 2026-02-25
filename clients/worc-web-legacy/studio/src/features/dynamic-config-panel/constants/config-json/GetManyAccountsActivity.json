@@ -1,7 +1,7 @@
 {
   "name": "GetManyAccounts",
   "label": "Get Multiple Salesforce Accounts",
-  "discription": "Retrieves multiple Account records from Salesforce using SOQL query.",
+  "description": "Retrieves multiple Account records from Salesforce using SOQL query.",
   "version": "1.0.0",
   "auther": "@aventisia",
   "supportedPlatforms": [

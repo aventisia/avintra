@@ -1,7 +1,7 @@
 {
   "name": "MoveWindow",
   "label": "Move Window",
-  "discription": "Moves a window to the position you choose on the screen.",
+  "description": "Moves a window to the position you choose on the screen.",
   "version": "1.0.0",
   "auther": "@aventisia",
   "supportedPlatforms": [

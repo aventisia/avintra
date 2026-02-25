@@ -1,7 +1,7 @@
 {
   "name": "ValidatePdfExistance",
   "label": "Validate PDF Content",
-  "discription": "Validates whether a PDF file contains text or images based on the selected content type",
+  "description": "Validates whether a PDF file contains text or images based on the selected content type",
   "version": "1.0.0",
   "auther": "@aventisia",
   "supportedPlatforms": [

@@ -1,7 +1,7 @@
 {
   "name": "SetElementAttributeValue",
   "label": "Set Element Attribute Value",
-  "discription": "Sets the value of a specified attribute of a web element.",
+  "description": "Sets the value of a specified attribute of a web element.",
   "version": "1.0.0",
   "auther": "@aventisia",
   "supportedPlatforms": [

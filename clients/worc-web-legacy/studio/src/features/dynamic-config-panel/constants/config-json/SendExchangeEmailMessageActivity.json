@@ -1,7 +1,7 @@
 {
   "name": "SendExchangeEmailMessage",
   "label": "Send Exchange Email Message",
-  "discription": "Creates and sends a new email message using an Exchange connection.",
+  "description": "Creates and sends a new email message using an Exchange connection.",
   "version": "1.0.0",
   "auther": "@aventisia",
   "supportedPlatforms": [

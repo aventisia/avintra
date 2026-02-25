@@ -1,7 +1,7 @@
 {
   "name": "DownloadFromWeb",
   "label": "Download from Web",
-  "discription": "Downloads text or a file from the web and stores it in memory or saves it to a file.",
+  "description": "Downloads text or a file from the web and stores it in memory or saves it to a file.",
   "version": "1.0.0",
   "auther": "@aventisia",
   "supportedPlatforms": [

@@ -1,7 +1,7 @@
 {
   "name": "ProtectSheet",
   "label": "Protect Sheet (HTTP)",
-  "discription": "Protects an Excel worksheet with an optional password.",
+  "description": "Protects an Excel worksheet with an optional password.",
   "version": "1.0.0",
   "auther": "@aventisia",
   "supportedPlatforms": [

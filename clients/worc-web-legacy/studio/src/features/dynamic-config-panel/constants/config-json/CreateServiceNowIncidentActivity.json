@@ -1,7 +1,7 @@
 {
   "name": "CreateServiceNowIncident",
   "label": "Create ServiceNow Incident",
-  "discription": "Creates a new incident in ServiceNow using a stored credential ID or token.",
+  "description": "Creates a new incident in ServiceNow using a stored credential ID or token.",
   "version": "1.0.0",
   "auther": "@aventisia",
   "supportedPlatforms": [

@@ -1,7 +1,7 @@
 {
   "name": "CloseWindow",
   "label": "Close Window",
-  "discription": "Closes the selected application window.",
+  "description": "Closes the selected application window.",
   "version": "1.0.0",
   "auther": "@aventisia",
   "supportedPlatforms": [

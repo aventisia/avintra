@@ -1,7 +1,7 @@
 {
   "name": "UpdateCase",
   "label": "Update Salesforce Case",
-  "discription": "Updates an existing Case record in Salesforce using the provided credentials and updated field values.",
+  "description": "Updates an existing Case record in Salesforce using the provided credentials and updated field values.",
   "version": "1.0.0",
   "auther": "@aventisia",
   "supportedPlatforms": [

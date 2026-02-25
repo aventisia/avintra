@@ -1,7 +1,7 @@
 {
   "name": "GetTableRangeFromExcelWorksheet",
   "label": "Get Table Range from Excel Worksheet",
-  "discription": "Retrieves the range address (e.g., \u0027A1:B10\u0027) of a specified table or pivot table in the provided Excel worksheet.",
+  "description": "Retrieves the range address (e.g., \u0027A1:B10\u0027) of a specified table or pivot table in the provided Excel worksheet.",
   "version": "1.0.0",
   "auther": "@aventisia",
   "supportedPlatforms": [

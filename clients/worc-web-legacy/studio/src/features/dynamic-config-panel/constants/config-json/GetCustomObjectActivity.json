@@ -1,7 +1,7 @@
 {
   "name": "GetCustomObject",
   "label": "Get a custom object",
-  "discription": "Retrieves a single custom object from Salesforce by its ID.",
+  "description": "Retrieves a single custom object from Salesforce by its ID.",
   "version": "1.0.0",
   "auther": "@aventisia",
   "supportedPlatforms": [

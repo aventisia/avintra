@@ -1,7 +1,7 @@
 {
   "name": "WriteToWordDocument",
   "label": "Write to Word Document",
-  "discription": "Writes or appends text to a Word file.",
+  "description": "Writes or appends text to a Word file.",
   "version": "1.0.0",
   "auther": "@aventisia",
   "supportedPlatforms": [

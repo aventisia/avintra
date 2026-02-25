@@ -1,7 +1,7 @@
 {
   "name": "ReadGoogleSheetRange",
   "label": "Read Google Sheet Range",
-  "discription": "Reads data from a specified range in a Google Sheet using the Sheets API.",
+  "description": "Reads data from a specified range in a Google Sheet using the Sheets API.",
   "version": "1.0.0",
   "auther": "@aventisia",
   "supportedPlatforms": [

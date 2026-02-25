@@ -1,7 +1,7 @@
 {
   "name": "PrintDocument",
   "label": "Print Document",
-  "discription": "Prints documents with advanced options including printer selection and print settings.",
+  "description": "Prints documents with advanced options including printer selection and print settings.",
   "version": "1.0.0",
   "auther": "@aventisia",
   "supportedPlatforms": [

@@ -1,7 +1,7 @@
 {
   "name": "GetFirstFreeColumnRowFromExcelWorksheet",
   "label": "Get First Free Column or Row from Excel Worksheet",
-  "discription": "Retrieves the first free column and/or row from the specified worksheet. Useful for appending new data.",
+  "description": "Retrieves the first free column and/or row from the specified worksheet. Useful for appending new data.",
   "version": "1.0.0",
   "auther": "@aventisia",
   "supportedPlatforms": [

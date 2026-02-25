@@ -1,7 +1,7 @@
 {
   "name": "CreateWorkItem",
   "label": "Create Work Item",
-  "discription": "Creates a new work item in the specified queue.",
+  "description": "Creates a new work item in the specified queue.",
   "version": "1.0.0",
   "auther": "@aventisia",
   "supportedPlatforms": [

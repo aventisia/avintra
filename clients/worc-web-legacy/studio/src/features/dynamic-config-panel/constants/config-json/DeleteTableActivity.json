@@ -1,7 +1,7 @@
 {
   "name": "DeleteTable",
   "label": "Delete Table (HTTP)",
-  "discription": "Deletes an Excel table from a workbook.",
+  "description": "Deletes an Excel table from a workbook.",
   "version": "1.0.0",
   "auther": "@aventisia",
   "supportedPlatforms": [

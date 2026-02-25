@@ -1,7 +1,7 @@
 {
   "name": "ApplyConditionalFormatting",
   "label": "Apply Conditional Formatting (HTTP)",
-  "discription": "Applies conditional formatting to a range of cells.",
+  "description": "Applies conditional formatting to a range of cells.",
   "version": "1.0.0",
   "auther": "@aventisia",
   "supportedPlatforms": [

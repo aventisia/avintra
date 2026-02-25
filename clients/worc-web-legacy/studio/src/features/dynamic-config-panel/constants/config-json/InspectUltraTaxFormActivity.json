@@ -1,7 +1,7 @@
 {
   "name": "InspectUltraTaxForm",
   "label": "Inspect UltraTax Form",
-  "discription": "Get inspection details of a UI element in an UltraTax CS form, such as name, position etc.",
+  "description": "Get inspection details of a UI element in an UltraTax CS form, such as name, position etc.",
   "version": "1.0.0",
   "auther": "@aventisia",
   "supportedPlatforms": [

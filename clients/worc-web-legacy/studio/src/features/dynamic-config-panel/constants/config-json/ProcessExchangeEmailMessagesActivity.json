@@ -1,7 +1,7 @@
 {
   "name": "ProcessExchangeEmailMessages",
   "label": "Process Exchange Email Messages",
-  "discription": "Move, delete, or mark as unread an email message (or a list of email messages).",
+  "description": "Move, delete, or mark as unread an email message (or a list of email messages).",
   "version": "1.0.0",
   "auther": "@aventisia",
   "supportedPlatforms": [

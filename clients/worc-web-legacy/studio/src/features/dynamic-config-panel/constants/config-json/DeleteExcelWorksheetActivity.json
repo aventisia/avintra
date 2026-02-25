@@ -1,7 +1,7 @@
 {
   "name": "DeleteExcelWorksheet",
   "label": "Delete Excel Worksheet",
-  "discription": "Deletes a specific worksheet from its parent Excel workbook.",
+  "description": "Deletes a specific worksheet from its parent Excel workbook.",
   "version": "1.0.0",
   "auther": "@aventisia",
   "supportedPlatforms": [

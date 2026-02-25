@@ -1,7 +1,7 @@
 {
   "name": "LogOffUser",
   "label": "Log Off User",
-  "discription": "Logs off the current user with various methods and options.",
+  "description": "Logs off the current user with various methods and options.",
   "version": "1.0.0",
   "auther": "@aventisia",
   "supportedPlatforms": [

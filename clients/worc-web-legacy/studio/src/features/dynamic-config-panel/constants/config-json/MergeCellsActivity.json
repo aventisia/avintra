@@ -1,7 +1,7 @@
 {
   "name": "MergeCells",
   "label": "Merge Cells (HTTP)",
-  "discription": "Merges a range of Excel cells.",
+  "description": "Merges a range of Excel cells.",
   "version": "1.0.0",
   "auther": "@aventisia",
   "supportedPlatforms": [

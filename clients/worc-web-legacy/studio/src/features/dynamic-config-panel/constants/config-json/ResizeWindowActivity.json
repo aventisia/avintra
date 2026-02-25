@@ -1,7 +1,7 @@
 {
   "name": "ResizeWindow",
   "label": "Resize Window",
-  "discription": "Change the size of a window to the width and height you want.",
+  "description": "Change the size of a window to the width and height you want.",
   "version": "1.0.0",
   "auther": "@aventisia",
   "supportedPlatforms": [

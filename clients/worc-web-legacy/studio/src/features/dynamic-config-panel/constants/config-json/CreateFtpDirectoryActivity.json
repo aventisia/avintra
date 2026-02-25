@@ -1,7 +1,7 @@
 {
   "name": "CreateFtpDirectory",
   "label": "Create FTP Directory",
-  "discription": "Creates a directory on an FTP server.",
+  "description": "Creates a directory on an FTP server.",
   "version": "1.0.0",
   "auther": "@aventisia",
   "supportedPlatforms": [

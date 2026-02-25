@@ -1,7 +1,7 @@
 {
   "name": "WaitForEventOnSapConcur",
   "label": "Wait for an Event on SAP Concur and Resume",
-  "discription": "Pauses and resumes a workflow based on specific events occurring in SAP Concur.",
+  "description": "Pauses and resumes a workflow based on specific events occurring in SAP Concur.",
   "version": "1.0.0",
   "auther": "@aventisia",
   "supportedPlatforms": [

@@ -1,7 +1,7 @@
 {
   "name": "AddNewWorksheet",
   "label": "Add New Worksheet",
-  "discription": "Adds a new worksheet to the specified Excel workbook.",
+  "description": "Adds a new worksheet to the specified Excel workbook.",
   "version": "1.0.0",
   "auther": "@aventisia",
   "supportedPlatforms": [

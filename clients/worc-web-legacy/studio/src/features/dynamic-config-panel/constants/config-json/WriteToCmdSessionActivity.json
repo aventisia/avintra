@@ -1,7 +1,7 @@
 {
   "name": "WriteToCmdSession",
   "label": "Write to CMD Session",
-  "discription": "Executes a command on an open CMD session.",
+  "description": "Executes a command on an open CMD session.",
   "version": "1.0.0",
   "auther": "@aventisia",
   "supportedPlatforms": [

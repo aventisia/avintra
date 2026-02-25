@@ -1,7 +1,7 @@
 {
   "name": "ResizeColumnsRowsInExcelWorksheet",
   "label": "Resize Columns or Rows in Excel Worksheet",
-  "discription": "Resizes the width of columns or the height of rows in the provided Excel worksheet.",
+  "description": "Resizes the width of columns or the height of rows in the provided Excel worksheet.",
   "version": "1.0.0",
   "auther": "@aventisia",
   "supportedPlatforms": [

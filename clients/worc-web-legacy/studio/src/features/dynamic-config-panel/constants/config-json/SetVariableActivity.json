@@ -1,7 +1,7 @@
 {
   "name": "SetVariable",
   "label": "Set Variable",
-  "discription": "Sets the value of a named variable within the workflow context. Supports arithmetic expressions for ValueToSet.",
+  "description": "Sets the value of a named variable within the workflow context. Supports arithmetic expressions for ValueToSet.",
   "version": "1.0.0",
   "auther": "@aventisia",
   "supportedPlatforms": [

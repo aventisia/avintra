@@ -1,7 +1,7 @@
 {
   "name": "GetDropDownSelectedItem",
   "label": "Get Selected Item from Drop-Down List",
-  "discription": "Reads and returns the selected item from a drop-down list in a window using the property you choose.",
+  "description": "Reads and returns the selected item from a drop-down list in a window using the property you choose.",
   "version": "1.0.0",
   "auther": "@aventisia",
   "supportedPlatforms": [

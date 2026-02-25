@@ -1,7 +1,7 @@
 {
   "name": "SetFocusOnElement",
   "label": "Set Focus on UI Element",
-  "discription": "Brings the specified UI element into focus, allowing further interaction.",
+  "description": "Brings the specified UI element into focus, allowing further interaction.",
   "version": "1.0.0",
   "auther": "@aventisia",
   "supportedPlatforms": [

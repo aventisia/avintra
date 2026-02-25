@@ -1,7 +1,7 @@
 {
   "name": "SetColumnWidth",
   "label": "Set Column Width (HTTP)",
-  "discription": "Sets the width of a specific column in an Excel worksheet.",
+  "description": "Sets the width of a specific column in an Excel worksheet.",
   "version": "1.0.0",
   "auther": "@aventisia",
   "supportedPlatforms": [

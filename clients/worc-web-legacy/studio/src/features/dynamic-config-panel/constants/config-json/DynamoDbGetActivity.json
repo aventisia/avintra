@@ -1,7 +1,7 @@
 {
   "name": "DynamoDbGet",
   "label": "Get AWS DynamoDB Item",
-  "discription": "Retrieves an item from AWS DynamoDB using the GetItem API. Always returns all attributes.",
+  "description": "Retrieves an item from AWS DynamoDB using the GetItem API. Always returns all attributes.",
   "version": "1.0.0",
   "auther": "@aventisia",
   "supportedPlatforms": [

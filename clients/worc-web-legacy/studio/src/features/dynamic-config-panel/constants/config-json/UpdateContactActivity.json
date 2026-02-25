@@ -1,7 +1,7 @@
 {
   "name": "UpdateContact",
   "label": "Update Salesforce Contact",
-  "discription": "Updates an existing Contact record in Salesforce.",
+  "description": "Updates an existing Contact record in Salesforce.",
   "version": "1.0.0",
   "auther": "@aventisia",
   "supportedPlatforms": [

@@ -1,7 +1,7 @@
 {
   "name": "SubtractDates",
   "label": "Subtract Dates",
-  "discription": "Computes the time difference between two DateTime values in the selected unit (Seconds, Minutes, Hours, or Days).",
+  "description": "Computes the time difference between two DateTime values in the selected unit (Seconds, Minutes, Hours, or Days).",
   "version": "1.0.0",
   "auther": "@aventisia",
   "supportedPlatforms": [

@@ -1,7 +1,7 @@
 {
   "name": "SortTableOrRange",
   "label": "Sort Table or Range",
-  "discription": "Applies sorting to a table or range in the workbook.",
+  "description": "Applies sorting to a table or range in the workbook.",
   "version": "1.0.0",
   "auther": "@aventisia",
   "supportedPlatforms": [

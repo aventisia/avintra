@@ -1,7 +1,7 @@
 {
   "name": "PopulateTextFieldInWindow",
   "label": "Populate Text Field in Window",
-  "discription": "Fills a text box or editable field in a window with the specified text using the method you choose.",
+  "description": "Fills a text box or editable field in a window with the specified text using the method you choose.",
   "version": "1.0.0",
   "auther": "@aventisia",
   "supportedPlatforms": [

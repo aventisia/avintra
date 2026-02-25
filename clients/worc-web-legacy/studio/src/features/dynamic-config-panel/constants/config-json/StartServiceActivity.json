@@ -1,7 +1,7 @@
 {
   "name": "StartService",
   "label": "Start Service",
-  "discription": "Starts a stopped Windows service.",
+  "description": "Starts a stopped Windows service.",
   "version": "1.0.0",
   "auther": "@aventisia",
   "supportedPlatforms": [

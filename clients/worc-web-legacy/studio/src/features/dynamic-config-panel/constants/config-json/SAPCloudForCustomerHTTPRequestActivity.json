@@ -1,7 +1,7 @@
 {
   "name": "SAPCloudForCustomerHTTPRequest",
   "label": "SAP Cloud for Customer HTTP Request",
-  "discription": "Performs HTTP requests to interact with SAP Cloud for Customer using OAuth 2.0 authentication.",
+  "description": "Performs HTTP requests to interact with SAP Cloud for Customer using OAuth 2.0 authentication.",
   "version": "1.0.0",
   "auther": "@aventisia",
   "supportedPlatforms": [

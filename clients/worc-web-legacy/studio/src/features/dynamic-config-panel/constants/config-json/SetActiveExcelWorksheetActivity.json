@@ -1,7 +1,7 @@
 {
   "name": "SetActiveExcelWorksheet",
   "label": "Set Active Excel Worksheet",
-  "discription": "Activates a specific worksheet in the provided Excel workbook by name or index and outputs the active worksheet instance.",
+  "description": "Activates a specific worksheet in the provided Excel workbook by name or index and outputs the active worksheet instance.",
   "version": "1.0.0",
   "auther": "@aventisia",
   "supportedPlatforms": [

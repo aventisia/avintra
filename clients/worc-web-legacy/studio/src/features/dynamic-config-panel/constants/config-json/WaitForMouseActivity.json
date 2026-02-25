@@ -1,7 +1,7 @@
 {
   "name": "WaitForMouse",
   "label": "Wait for Mouse",
-  "discription": "Suspends the execution of the flow until the mouse pointer changes to or from the specified cursor.",
+  "description": "Suspends the execution of the flow until the mouse pointer changes to or from the specified cursor.",
   "version": "1.0.0",
   "auther": "@aventisia",
   "supportedPlatforms": [

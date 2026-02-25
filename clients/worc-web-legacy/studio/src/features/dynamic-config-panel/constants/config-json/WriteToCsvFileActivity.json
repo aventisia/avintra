@@ -1,7 +1,7 @@
 {
   "name": "WriteToCsvFile",
   "label": "Write to CSV File",
-  "discription": "Writes a data table, data row, or list to a CSV file.",
+  "description": "Writes a data table, data row, or list to a CSV file.",
   "version": "1.0.0",
   "auther": "@aventisia",
   "supportedPlatforms": [

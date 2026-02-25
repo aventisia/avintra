@@ -1,7 +1,7 @@
 {
   "name": "DeleteCertificate",
   "label": "Delete AWS ACM Certificate",
-  "discription": "Deletes an AWS Certificate Manager (ACM) certificate using AWS credentials resolved from environment or IAM role.",
+  "description": "Deletes an AWS Certificate Manager (ACM) certificate using AWS credentials resolved from environment or IAM role.",
   "version": "1.0.0",
   "auther": "@aventisia",
   "supportedPlatforms": [

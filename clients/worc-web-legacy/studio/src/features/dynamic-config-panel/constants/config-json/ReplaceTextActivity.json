@@ -1,7 +1,7 @@
 {
   "name": "ReplaceText",
   "label": "Replace Text",
-  "discription": "Replaces all occurrences of a specified subtext with another text. It can also be used with regular expressions.",
+  "description": "Replaces all occurrences of a specified subtext with another text. It can also be used with regular expressions.",
   "version": "1.0.0",
   "auther": "@aventisia",
   "supportedPlatforms": [

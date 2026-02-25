@@ -1,7 +1,7 @@
 {
   "name": "SelectCellsInExcelWorksheet",
   "label": "Select Cells in Excel Worksheet",
-  "discription": "Selects a specific range of cells in the given Excel worksheet or workbook.",
+  "description": "Selects a specific range of cells in the given Excel worksheet or workbook.",
   "version": "1.0.0",
   "auther": "@aventisia",
   "supportedPlatforms": [

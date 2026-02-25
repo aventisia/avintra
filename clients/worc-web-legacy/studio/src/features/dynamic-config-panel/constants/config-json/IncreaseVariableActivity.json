@@ -1,7 +1,7 @@
 {
   "name": "IncreaseVariable",
   "label": "Increase Variable",
-  "discription": "Increases a numeric variable by a specified value.",
+  "description": "Increases a numeric variable by a specified value.",
   "version": "1.0.0",
   "auther": "@aventisia",
   "supportedPlatforms": [

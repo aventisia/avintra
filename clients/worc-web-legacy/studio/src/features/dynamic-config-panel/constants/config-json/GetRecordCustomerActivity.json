@@ -1,7 +1,7 @@
 {
   "name": "GetRecordCustomer",
   "label": "Get Record",
-  "discription": "Retrieves a record in SAP Cloud for Customer.",
+  "description": "Retrieves a record in SAP Cloud for Customer.",
   "version": "1.0.0",
   "auther": "@aventisia",
   "supportedPlatforms": [

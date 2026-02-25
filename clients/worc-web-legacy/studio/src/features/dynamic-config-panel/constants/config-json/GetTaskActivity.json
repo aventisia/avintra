@@ -1,7 +1,7 @@
 {
   "name": "GetTask",
   "label": "Get Task",
-  "discription": "Retrieves a Salesforce task by its ID.",
+  "description": "Retrieves a Salesforce task by its ID.",
   "version": "1.0.0",
   "auther": "@aventisia",
   "supportedPlatforms": [

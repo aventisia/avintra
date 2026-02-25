@@ -1,7 +1,7 @@
 {
   "name": "RemoveXmlElement",
   "label": "Remove XML Element",
-  "discription": "Removes one or more XML elements from an XML document.",
+  "description": "Removes one or more XML elements from an XML document.",
   "version": "1.0.0",
   "auther": "@aventisia",
   "supportedPlatforms": [

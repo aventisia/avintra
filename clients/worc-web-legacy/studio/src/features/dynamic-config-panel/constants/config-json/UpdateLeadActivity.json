@@ -1,7 +1,7 @@
 {
   "name": "UpdateLead",
   "label": "Update a lead",
-  "discription": "Updates an existing lead in Salesforce.",
+  "description": "Updates an existing lead in Salesforce.",
   "version": "1.0.0",
   "auther": "@aventisia",
   "supportedPlatforms": [

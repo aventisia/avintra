@@ -1,7 +1,7 @@
 {
   "name": "OpenCmdSession",
   "label": "Open CMD Session",
-  "discription": "Opens a new CMD session with optional encoding settings.",
+  "description": "Opens a new CMD session with optional encoding settings.",
   "version": "1.0.0",
   "auther": "@aventisia",
   "supportedPlatforms": [

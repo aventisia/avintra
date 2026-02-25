@@ -1,7 +1,7 @@
 {
   "name": "GetAccessTokenUsingAppKey",
   "label": "Get Access Token Using App Key",
-  "discription": "Acquires a Microsoft Graph API access token using client credentials (App Key flow).",
+  "description": "Acquires a Microsoft Graph API access token using client credentials (App Key flow).",
   "version": "1.0.0",
   "auther": "@aventisia",
   "supportedPlatforms": [

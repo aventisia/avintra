@@ -1,7 +1,7 @@
 {
   "name": "WriteToExcelWorksheet",
   "label": "Write to Excel Worksheet",
-  "discription": "Writes a value to a specific cell or range of cells in an Excel worksheet.",
+  "description": "Writes a value to a specific cell or range of cells in an Excel worksheet.",
   "version": "1.0.0",
   "auther": "@aventisia",
   "supportedPlatforms": [

@@ -1,7 +1,7 @@
 {
   "name": "WaitForShortcutKey",
   "label": "Wait for Shortcut Key",
-  "discription": "Pauses the flow run until a specific shortcut key combination is pressed.",
+  "description": "Pauses the flow run until a specific shortcut key combination is pressed.",
   "version": "1.0.0",
   "auther": "@aventisia",
   "supportedPlatforms": [

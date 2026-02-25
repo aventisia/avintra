@@ -1,7 +1,7 @@
 {
   "name": "SaveOutlookEmailMessages",
   "label": "Save Outlook Email Messages",
-  "discription": "Saves selected Outlook email messages (.msg files) to a specified location.",
+  "description": "Saves selected Outlook email messages (.msg files) to a specified location.",
   "version": "1.0.0",
   "auther": "@aventisia",
   "supportedPlatforms": [

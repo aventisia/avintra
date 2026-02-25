@@ -1,7 +1,7 @@
 {
   "name": "CreateHtmlContent",
   "label": "Create HTML Content",
-  "discription": "Generates rich HTML content and stores it in a variable.",
+  "description": "Generates rich HTML content and stores it in a variable.",
   "version": "1.0.0",
   "auther": "@aventisia",
   "supportedPlatforms": [

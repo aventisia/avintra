@@ -1,7 +1,7 @@
 {
   "name": "ReadFormulaFromExcel",
   "label": "Read Formula from Excel Cell",
-  "discription": "Reads the formula from a specific cell or named range in Excel.",
+  "description": "Reads the formula from a specific cell or named range in Excel.",
   "version": "1.0.0",
   "auther": "@aventisia",
   "supportedPlatforms": [

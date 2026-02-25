@@ -1,7 +1,7 @@
 {
   "name": "DeleteRecordSapConcur",
   "label": "Delete Record in SAP Concur",
-  "discription": "Deletes a record in SAP Concur using DELETE request.",
+  "description": "Deletes a record in SAP Concur using DELETE request.",
   "version": "1.0.0",
   "auther": "@aventisia",
   "supportedPlatforms": [

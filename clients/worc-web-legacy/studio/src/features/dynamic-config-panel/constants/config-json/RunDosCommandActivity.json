@@ -1,7 +1,7 @@
 {
   "name": "RunDosCommand",
   "label": "Run DOS Command",
-  "discription": "Runs a DOS command or console application in invisible mode and retrieves its output upon completion.",
+  "description": "Runs a DOS command or console application in invisible mode and retrieves its output upon completion.",
   "version": "1.0.0",
   "auther": "@aventisia",
   "supportedPlatforms": [

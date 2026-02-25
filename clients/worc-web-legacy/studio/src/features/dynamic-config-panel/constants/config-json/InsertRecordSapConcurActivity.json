@@ -1,7 +1,7 @@
 {
   "name": "InsertRecordSapConcur",
   "label": "Insert Record to SAP Concur",
-  "discription": "Inserts a new expense or quick expense record into SAP Concur using OAuth 2.0.",
+  "description": "Inserts a new expense or quick expense record into SAP Concur using OAuth 2.0.",
   "version": "1.0.0",
   "auther": "@aventisia",
   "supportedPlatforms": [

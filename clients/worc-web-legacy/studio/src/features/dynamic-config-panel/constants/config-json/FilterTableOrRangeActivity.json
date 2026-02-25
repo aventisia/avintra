@@ -1,7 +1,7 @@
 {
   "name": "FilterTableOrRange",
   "label": "Filter Table or Range",
-  "discription": "Applies filter conditions to a table or range in the workbook.",
+  "description": "Applies filter conditions to a table or range in the workbook.",
   "version": "1.0.0",
   "auther": "@aventisia",
   "supportedPlatforms": [

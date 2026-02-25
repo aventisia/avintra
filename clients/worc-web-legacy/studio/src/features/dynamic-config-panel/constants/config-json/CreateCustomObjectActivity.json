@@ -1,7 +1,7 @@
 {
   "name": "CreateCustomObject",
   "label": "Create a custom object",
-  "discription": "Creates a new custom object record in Salesforce.",
+  "description": "Creates a new custom object record in Salesforce.",
   "version": "1.0.0",
   "auther": "@aventisia",
   "supportedPlatforms": [

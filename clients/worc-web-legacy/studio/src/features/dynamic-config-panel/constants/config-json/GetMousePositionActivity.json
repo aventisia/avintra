@@ -1,7 +1,7 @@
 {
   "name": "GetMousePosition",
   "label": "Get Mouse Position",
-  "discription": "Retrieves the current position of the mouse cursor on the screen in pixel coordinates.",
+  "description": "Retrieves the current position of the mouse cursor on the screen in pixel coordinates.",
   "version": "1.0.0",
   "auther": "@aventisia",
   "supportedPlatforms": [

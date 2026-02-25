@@ -1,7 +1,7 @@
 {
   "name": "AppendLineToText",
   "label": "Append Line to Text",
-  "discription": "Appends a new line of text to the original text.",
+  "description": "Appends a new line of text to the original text.",
   "version": "1.0.0",
   "auther": "@aventisia",
   "supportedPlatforms": [

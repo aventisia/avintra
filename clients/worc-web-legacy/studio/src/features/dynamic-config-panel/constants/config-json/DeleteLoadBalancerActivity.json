@@ -1,7 +1,7 @@
 {
   "name": "DeleteLoadBalancer",
   "label": "Delete AWS ELB Load Balancer",
-  "discription": "Deletes an Application or Network Load Balancer in AWS Elastic Load Balancing (ALB/NLB).",
+  "description": "Deletes an Application or Network Load Balancer in AWS Elastic Load Balancing (ALB/NLB).",
   "version": "1.0.0",
   "auther": "@aventisia",
   "supportedPlatforms": [

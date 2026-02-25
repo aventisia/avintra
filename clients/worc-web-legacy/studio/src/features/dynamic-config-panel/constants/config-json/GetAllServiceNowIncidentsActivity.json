@@ -1,7 +1,7 @@
 {
   "name": "GetAllServiceNowIncidents",
   "label": "Get All ServiceNow Incidents",
-  "discription": "Retrieves all or limited incidents from ServiceNow using a stored credential. Supports pagination.",
+  "description": "Retrieves all or limited incidents from ServiceNow using a stored credential. Supports pagination.",
   "version": "1.0.0",
   "auther": "@aventisia",
   "supportedPlatforms": [

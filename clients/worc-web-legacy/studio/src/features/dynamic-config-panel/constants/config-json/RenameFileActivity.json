@@ -1,7 +1,7 @@
 {
   "name": "RenameFile",
   "label": "Rename File(s)",
-  "discription": "Renames one or more files with advanced schemes including datetime and sequential numbering.",
+  "description": "Renames one or more files with advanced schemes including datetime and sequential numbering.",
   "version": "1.0.0",
   "auther": "@aventisia",
   "supportedPlatforms": [

@@ -1,7 +1,7 @@
 {
   "name": "RemoveListenerCertificate",
   "label": "Remove AWS ELB Listener Certificate",
-  "discription": "Removes a certificate from an AWS Elastic Load Balancer (ALB/NLB) listener.",
+  "description": "Removes a certificate from an AWS Elastic Load Balancer (ALB/NLB) listener.",
   "version": "1.0.0",
   "auther": "@aventisia",
   "supportedPlatforms": [

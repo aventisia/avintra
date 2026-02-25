@@ -1,7 +1,7 @@
 {
   "name": "MoveMouse",
   "label": "Move Mouse",
-  "discription": "Moves the mouse cursor to a specific position on the screen.",
+  "description": "Moves the mouse cursor to a specific position on the screen.",
   "version": "1.0.0",
   "auther": "@aventisia",
   "supportedPlatforms": [

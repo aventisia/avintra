@@ -1,7 +1,7 @@
 {
   "name": "EncryptTextWithAes",
   "label": "Encrypt Text with AES",
-  "discription": "Encrypts a string using AES encryption. Short keys are hashed securely to 32 bytes.",
+  "description": "Encrypts a string using AES encryption. Short keys are hashed securely to 32 bytes.",
   "version": "1.0.0",
   "auther": "@aventisia",
   "supportedPlatforms": [

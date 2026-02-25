@@ -1,7 +1,7 @@
 {
   "name": "ClearList",
   "label": "Clear List",
-  "discription": "Removes all elements from the specified list.",
+  "description": "Removes all elements from the specified list.",
   "version": "1.0.0",
   "auther": "@aventisia",
   "supportedPlatforms": [

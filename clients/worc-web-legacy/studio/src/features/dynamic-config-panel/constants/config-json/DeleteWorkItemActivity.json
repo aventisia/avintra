@@ -1,7 +1,7 @@
 {
   "name": "DeleteWorkItem",
   "label": "Delete Work Item",
-  "discription": "Deletes a work item permanently from the queue.",
+  "description": "Deletes a work item permanently from the queue.",
   "version": "1.0.0",
   "auther": "@aventisia",
   "supportedPlatforms": [
