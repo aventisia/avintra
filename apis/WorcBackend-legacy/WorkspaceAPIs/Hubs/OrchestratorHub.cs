@@ -87,6 +87,9 @@ public class OrchestratorHub : Hub
                 LastSeen = DateTimeOffset.UtcNow
             };
 
+            // Update or add the status for this new client type
+            await _clientStatusStore.AddOrUpdateStatusAsync(clientDataStore);
+
             // Additional logic for handling the case where the client is a machine
             if (clientType == ClientTypesEnum.WorcMachine)
             {
