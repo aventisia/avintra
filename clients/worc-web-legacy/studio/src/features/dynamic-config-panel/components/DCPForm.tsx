@@ -31,6 +31,7 @@ export const DCPForm = () => {
     watch,
     nodeConfig,
     isFormReady,
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
     nodeConfigZodSchema,
     nodeId,
     nodeUniqueName,

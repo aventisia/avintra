@@ -87,7 +87,7 @@ export const useFileUpload = () => {
         // If valid, set the uploaded data and show the dialog
         setUploadedData(content);
         setShowDialog(true);
-      } catch (err) {
+      } catch  {
         // Show error if there was an issue parsing the content
         toast.error("Error parsing file content");
       }

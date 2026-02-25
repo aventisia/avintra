@@ -57,7 +57,7 @@ export const FlowVersions = () => {
           selectedVersion.id || "",
           selectedVersion.versionNumber || null,
         );
-      } catch (error) {
+      } catch  {
         throw new Error(
           "You don't have access to this agent. Please contact the admin.",
         );
