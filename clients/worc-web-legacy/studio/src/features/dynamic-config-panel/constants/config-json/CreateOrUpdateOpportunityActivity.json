@@ -1,7 +1,7 @@
 {
   "name": "CreateOrUpdateOpportunity",
   "label": "Create or Update Opportunity",
-  "discription": "Creates a new opportunity or updates an existing one using an external ID field.",
+  "description": "Creates a new opportunity or updates an existing one using an external ID field.",
   "version": "1.0.0",
   "auther": "@aventisia",
   "supportedPlatforms": [

@@ -1,7 +1,7 @@
 {
   "name": "TakeScreenshot",
   "label": "Take Screenshot",
-  "discription": "Takes a screenshot of all screens, primary screen, or a specific screen and saves it to clipboard or file.",
+  "description": "Takes a screenshot of all screens, primary screen, or a specific screen and saves it to clipboard or file.",
   "version": "1.0.0",
   "auther": "@aventisia",
   "supportedPlatforms": [

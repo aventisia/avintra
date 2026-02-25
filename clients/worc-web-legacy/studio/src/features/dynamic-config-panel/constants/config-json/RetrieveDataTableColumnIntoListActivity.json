@@ -1,7 +1,7 @@
 {
   "name": "RetrieveDataTableColumnIntoList",
   "label": "Retrieve Data Table Column Into List",
-  "discription": "Extracts data from a specified column of a data table into a list. The column can be identified by name or index.",
+  "description": "Extracts data from a specified column of a data table into a list. The column can be identified by name or index.",
   "version": "1.0.0",
   "auther": "@aventisia",
   "supportedPlatforms": [

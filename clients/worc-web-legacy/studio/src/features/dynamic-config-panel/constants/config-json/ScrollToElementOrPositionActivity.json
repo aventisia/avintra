@@ -1,7 +1,7 @@
 {
   "name": "ScrollToElementOrPosition",
   "label": "Scroll To Element or Position",
-  "discription": "Scrolls the browser window to a specified element or coordinates.",
+  "description": "Scrolls the browser window to a specified element or coordinates.",
   "version": "1.0.0",
   "auther": "@aventisia",
   "supportedPlatforms": [

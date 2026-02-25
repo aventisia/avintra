@@ -1,7 +1,7 @@
 {
   "name": "RecognizeEntitiesInText",
   "label": "Recognize Entities in Text",
-  "discription": "Identifies specific entities in text, such as dates, numbers, emails, URLs, etc., across multiple languages.",
+  "description": "Identifies specific entities in text, such as dates, numbers, emails, URLs, etc., across multiple languages.",
   "version": "1.0.0",
   "auther": "@aventisia",
   "supportedPlatforms": [

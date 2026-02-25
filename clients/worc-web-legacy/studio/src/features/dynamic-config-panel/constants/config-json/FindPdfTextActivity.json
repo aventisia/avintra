@@ -1,7 +1,7 @@
 {
   "name": "FindPdfText",
   "label": "PDF Regex Contains",
-  "discription": "Checks if the PDF contains text matching a regular expression pattern (case-sensitive).",
+  "description": "Checks if the PDF contains text matching a regular expression pattern (case-sensitive).",
   "version": "1.0.0",
   "auther": "@aventisia",
   "supportedPlatforms": [

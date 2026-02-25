@@ -1,7 +1,7 @@
 {
   "name": "DeleteRow",
   "label": "Delete Row from Table",
-  "discription": "Deletes a row from a table in Excel using Microsoft Graph HTTP POST.",
+  "description": "Deletes a row from a table in Excel using Microsoft Graph HTTP POST.",
   "version": "1.0.0",
   "auther": "@aventisia",
   "supportedPlatforms": [

@@ -1,7 +1,7 @@
 {
   "name": "AddListenerCertificate",
   "label": "Add AWS ELB Listener Certificate",
-  "discription": "Adds a certificate to an AWS Elastic Load Balancer (ALB/NLB) listener.",
+  "description": "Adds a certificate to an AWS Elastic Load Balancer (ALB/NLB) listener.",
   "version": "1.0.0",
   "auther": "@aventisia",
   "supportedPlatforms": [

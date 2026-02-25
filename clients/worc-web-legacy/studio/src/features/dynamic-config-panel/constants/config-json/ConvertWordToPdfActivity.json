@@ -1,7 +1,7 @@
 {
   "name": "ConvertWordToPdf",
   "label": "Convert Word To PDF",
-  "discription": "Converts a Word document (.doc/.docx) into a PDF file.",
+  "description": "Converts a Word document (.doc/.docx) into a PDF file.",
   "version": "1.0.0",
   "auther": "@aventisia",
   "supportedPlatforms": [

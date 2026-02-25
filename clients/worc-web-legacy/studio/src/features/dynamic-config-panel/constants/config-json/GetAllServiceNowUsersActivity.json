@@ -1,7 +1,7 @@
 {
   "name": "GetAllServiceNowUsers",
   "label": "Get All ServiceNow Users",
-  "discription": "Retrieves multiple users from ServiceNow using a stored credential. Supports pagination.",
+  "description": "Retrieves multiple users from ServiceNow using a stored credential. Supports pagination.",
   "version": "1.0.0",
   "auther": "@aventisia",
   "supportedPlatforms": [

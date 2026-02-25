@@ -1,7 +1,7 @@
 {
   "name": "GetFirstFreeRowOnColumnFromExcelWorksheet",
   "label": "Get First Free Row on Column from Excel Worksheet",
-  "discription": "Retrieves the first free row number for a specific column from the given worksheet.",
+  "description": "Retrieves the first free row number for a specific column from the given worksheet.",
   "version": "1.0.0",
   "auther": "@aventisia",
   "supportedPlatforms": [

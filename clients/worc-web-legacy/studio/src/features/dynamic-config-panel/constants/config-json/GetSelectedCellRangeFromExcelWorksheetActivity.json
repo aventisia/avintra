@@ -1,7 +1,7 @@
 {
   "name": "GetSelectedCellRangeFromExcelWorksheet",
   "label": "Get Selected Cell Range from Excel Worksheet",
-  "discription": "Retrieves the currently selected cell range in the provided Excel worksheet as first column, first row, last column, and last row indices.",
+  "description": "Retrieves the currently selected cell range in the provided Excel worksheet as first column, first row, last column, and last row indices.",
   "version": "1.0.0",
   "auther": "@aventisia",
   "supportedPlatforms": [

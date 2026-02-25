@@ -1,7 +1,7 @@
 {
   "name": "FindAndReplaceCellsInExcelWorksheet",
   "label": "Find and Replace in Excel Worksheet",
-  "discription": "Finds text and replaces it with another in the specified Excel worksheet.",
+  "description": "Finds text and replaces it with another in the specified Excel worksheet.",
   "version": "1.0.0",
   "auther": "@aventisia",
   "supportedPlatforms": [

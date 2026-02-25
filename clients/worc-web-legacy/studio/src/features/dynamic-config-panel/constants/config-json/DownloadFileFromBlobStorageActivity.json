@@ -1,7 +1,7 @@
 {
   "name": "DownloadFileFromBlobStorage",
   "label": "Download File from Blob Storage",
-  "discription": "Downloads a file from an Azure Blob container to a specified local path.",
+  "description": "Downloads a file from an Azure Blob container to a specified local path.",
   "version": "1.0.0",
   "auther": "@aventisia",
   "supportedPlatforms": [

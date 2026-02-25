@@ -1,7 +1,7 @@
 {
   "name": "AddWorksheet",
   "label": "Add Worksheet (HTTP)",
-  "discription": "Adds a new worksheet to an Excel workbook using Microsoft Graph HTTP POST.",
+  "description": "Adds a new worksheet to an Excel workbook using Microsoft Graph HTTP POST.",
   "version": "1.0.0",
   "auther": "@aventisia",
   "supportedPlatforms": [

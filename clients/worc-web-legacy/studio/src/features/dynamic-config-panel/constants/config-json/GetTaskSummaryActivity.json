@@ -1,7 +1,7 @@
 {
   "name": "GetTaskSummary",
   "label": "Get Task Summary",
-  "discription": "Retrieves a summary of a Salesforce task by its ID.",
+  "description": "Retrieves a summary of a Salesforce task by its ID.",
   "version": "1.0.0",
   "auther": "@aventisia",
   "supportedPlatforms": [

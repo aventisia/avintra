@@ -1,7 +1,7 @@
 {
   "name": "UpdateServiceNowTableRecord",
   "label": "Update ServiceNow Table Record",
-  "discription": "Updates an existing record in a specified ServiceNow table by sys_id using a stored credential.",
+  "description": "Updates an existing record in a specified ServiceNow table by sys_id using a stored credential.",
   "version": "1.0.0",
   "auther": "@aventisia",
   "supportedPlatforms": [

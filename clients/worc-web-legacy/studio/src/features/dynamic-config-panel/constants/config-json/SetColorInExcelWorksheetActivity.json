@@ -1,7 +1,7 @@
 {
   "name": "SetColorInExcelWorksheet",
   "label": "Set Color in Excel Worksheet",
-  "discription": "Fills the background of a selected range of cells with the specified color.",
+  "description": "Fills the background of a selected range of cells with the specified color.",
   "version": "1.0.0",
   "auther": "@aventisia",
   "supportedPlatforms": [

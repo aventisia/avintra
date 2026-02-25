@@ -1,7 +1,7 @@
 {
   "name": "DeleteLead",
   "label": "Delete a lead",
-  "discription": "Deletes a lead from Salesforce by its ID.",
+  "description": "Deletes a lead from Salesforce by its ID.",
   "version": "1.0.0",
   "auther": "@aventisia",
   "supportedPlatforms": [

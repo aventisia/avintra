@@ -1,7 +1,7 @@
 {
   "name": "UnzipFiles",
   "label": "Unzip Files",
-  "discription": "Extracts files from a ZIP archive to a specified destination folder.",
+  "description": "Extracts files from a ZIP archive to a specified destination folder.",
   "version": "1.0.0",
   "auther": "@aventisia",
   "supportedPlatforms": [

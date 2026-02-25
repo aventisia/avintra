@@ -1,7 +1,7 @@
 {
   "name": "SetXmlElementValue",
   "label": "Set XML Element Value",
-  "discription": "Sets the value of an XML element.",
+  "description": "Sets the value of an XML element.",
   "version": "1.0.0",
   "auther": "@aventisia",
   "supportedPlatforms": [

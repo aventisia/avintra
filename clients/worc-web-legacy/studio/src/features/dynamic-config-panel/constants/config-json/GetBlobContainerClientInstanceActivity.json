@@ -1,7 +1,7 @@
 {
   "name": "GetBlobContainerClientInstance",
   "label": "Get Blob Container Client Instance",
-  "discription": "Creates and returns a BlobContainerClient instance for the specified container and connection string.",
+  "description": "Creates and returns a BlobContainerClient instance for the specified container and connection string.",
   "version": "1.0.0",
   "auther": "@aventisia",
   "supportedPlatforms": [

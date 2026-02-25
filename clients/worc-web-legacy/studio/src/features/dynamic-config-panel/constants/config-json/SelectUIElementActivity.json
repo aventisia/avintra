@@ -1,7 +1,7 @@
 {
   "name": "SelectUIElement",
   "label": "Select UI Element",
-  "discription": "Selects the provided UI element, such as a list item, tab item or combo box option, using UI Automation.",
+  "description": "Selects the provided UI element, such as a list item, tab item or combo box option, using UI Automation.",
   "version": "1.0.0",
   "auther": "@aventisia",
   "supportedPlatforms": [

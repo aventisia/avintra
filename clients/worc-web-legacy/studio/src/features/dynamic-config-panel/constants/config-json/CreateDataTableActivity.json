@@ -1,7 +1,7 @@
 {
   "name": "CreateDataTable",
   "label": "Create Data Table",
-  "discription": "Creates a new data table. If an existing data table is provided, it will be cloned.",
+  "description": "Creates a new data table. If an existing data table is provided, it will be cloned.",
   "version": "1.0.0",
   "auther": "@aventisia",
   "supportedPlatforms": [

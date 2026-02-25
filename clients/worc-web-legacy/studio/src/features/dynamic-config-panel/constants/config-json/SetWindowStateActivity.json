@@ -1,7 +1,7 @@
 {
   "name": "SetWindowState",
   "label": "Set Window State",
-  "discription": "Change the window to normal, maximized, or minimized state.",
+  "description": "Change the window to normal, maximized, or minimized state.",
   "version": "1.0.0",
   "auther": "@aventisia",
   "supportedPlatforms": [

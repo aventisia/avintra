@@ -1,7 +1,7 @@
 {
   "name": "GetTextFromTerminalSession",
   "label": "Get Text from Terminal Session",
-  "discription": "Get text from a terminal session.",
+  "description": "Get text from a terminal session.",
   "version": "1.0.0",
   "auther": "@aventisia",
   "supportedPlatforms": [

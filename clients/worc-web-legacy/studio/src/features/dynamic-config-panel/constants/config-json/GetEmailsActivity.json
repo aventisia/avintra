@@ -1,7 +1,7 @@
 {
   "name": "GetEmails",
   "label": "Get Emails",
-  "discription": "Retrieves top 10 emails from the Inbox folder using Microsoft Graph API.",
+  "description": "Retrieves top 10 emails from the Inbox folder using Microsoft Graph API.",
   "version": "1.0.0",
   "auther": "@aventisia",
   "supportedPlatforms": [

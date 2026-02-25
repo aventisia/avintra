@@ -1,7 +1,7 @@
 {
   "name": "RemoveDuplicateItemsFromList",
   "label": "Remove Duplicate Items From List",
-  "discription": "Removes duplicate items from a list using case-sensitive or case-insensitive comparison.",
+  "description": "Removes duplicate items from a list using case-sensitive or case-insensitive comparison.",
   "version": "1.0.0",
   "auther": "@aventisia",
   "supportedPlatforms": [

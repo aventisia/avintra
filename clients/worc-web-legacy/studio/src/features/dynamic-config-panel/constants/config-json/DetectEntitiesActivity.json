@@ -1,7 +1,7 @@
 {
   "name": "DetectEntities",
   "label": "Detect Entities (AWS Comprehend)",
-  "discription": "Identifies named entities (e.g., PERSON, ORGANIZATION, LOCATION) in a given text using AWS Comprehend.",
+  "description": "Identifies named entities (e.g., PERSON, ORGANIZATION, LOCATION) in a given text using AWS Comprehend.",
   "version": "1.0.0",
   "auther": "@aventisia",
   "supportedPlatforms": [

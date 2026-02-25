@@ -1,7 +1,7 @@
 {
   "name": "JoinText",
   "label": "Join Text",
-  "discription": "Converts a list into a text value by separating its items with a specified delimiter.",
+  "description": "Converts a list into a text value by separating its items with a specified delimiter.",
   "version": "1.0.0",
   "auther": "@aventisia",
   "supportedPlatforms": [

@@ -1,7 +1,7 @@
 {
   "name": "FormatDateTime",
   "label": "Format DateTime",
-  "discription": "Formats a DateTime value into a standard or custom string format.",
+  "description": "Formats a DateTime value into a standard or custom string format.",
   "version": "1.0.0",
   "auther": "@aventisia",
   "supportedPlatforms": [

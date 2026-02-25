@@ -1,7 +1,7 @@
 {
   "name": "CreateDraftEmail",
   "label": "Create Draft Email",
-  "discription": "Creates a draft email message in the user\u0027s mailbox using Microsoft Graph API.",
+  "description": "Creates a draft email message in the user\u0027s mailbox using Microsoft Graph API.",
   "version": "1.0.0",
   "auther": "@aventisia",
   "supportedPlatforms": [

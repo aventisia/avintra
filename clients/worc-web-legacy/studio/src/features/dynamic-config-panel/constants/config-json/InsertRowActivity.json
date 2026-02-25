@@ -1,7 +1,7 @@
 {
   "name": "InsertRow",
   "label": "Insert Row (HTTP)",
-  "discription": "Inserts a new row into an Excel table using Microsoft Graph HTTP POST.",
+  "description": "Inserts a new row into an Excel table using Microsoft Graph HTTP POST.",
   "version": "1.0.0",
   "auther": "@aventisia",
   "supportedPlatforms": [

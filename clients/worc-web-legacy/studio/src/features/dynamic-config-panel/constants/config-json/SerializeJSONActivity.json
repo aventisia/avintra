@@ -1,7 +1,7 @@
 {
   "name": "SerializeJSON",
   "label": "Serialize JSON Token",
-  "discription": "Converts a JToken or object into both JSON string and JToken.",
+  "description": "Converts a JToken or object into both JSON string and JToken.",
   "version": "1.0.0",
   "auther": "@aventisia",
   "supportedPlatforms": [

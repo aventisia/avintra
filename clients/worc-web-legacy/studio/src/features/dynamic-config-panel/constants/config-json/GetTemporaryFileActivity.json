@@ -1,7 +1,7 @@
 {
   "name": "GetTemporaryFile",
   "label": "Get Temporary File",
-  "discription": "Creates a uniquely named empty temporary file on disk and returns its FileInfo object.",
+  "description": "Creates a uniquely named empty temporary file on disk and returns its FileInfo object.",
   "version": "1.0.0",
   "auther": "@aventisia",
   "supportedPlatforms": [

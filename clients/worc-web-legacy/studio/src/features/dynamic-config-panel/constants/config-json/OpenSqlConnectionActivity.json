@@ -1,7 +1,7 @@
 {
   "name": "OpenSqlConnection",
   "label": "Open SQL Connection",
-  "discription": "Open a new connection to a database",
+  "description": "Open a new connection to a database",
   "version": "1.0.0",
   "auther": "@aventisia",
   "supportedPlatforms": [

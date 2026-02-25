@@ -1,7 +1,7 @@
 {
   "name": "UpdateRecordCustomer",
   "label": "Update Record",
-  "discription": "Updates a record in SAP Cloud for Customer.",
+  "description": "Updates a record in SAP Cloud for Customer.",
   "version": "1.0.0",
   "auther": "@aventisia",
   "supportedPlatforms": [

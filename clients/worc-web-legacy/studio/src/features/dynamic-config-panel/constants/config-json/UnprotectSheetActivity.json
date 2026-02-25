@@ -1,7 +1,7 @@
 {
   "name": "UnprotectSheet",
   "label": "Unprotect Sheet (HTTP)",
-  "discription": "Removes protection from an Excel worksheet.",
+  "description": "Removes protection from an Excel worksheet.",
   "version": "1.0.0",
   "auther": "@aventisia",
   "supportedPlatforms": [

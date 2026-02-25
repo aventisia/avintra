@@ -1,7 +1,7 @@
 {
   "name": "HoverMouseOverElement",
   "label": "Hover Over Element on Web Page",
-  "discription": "Moves the mouse cursor over a specified element on a web page.",
+  "description": "Moves the mouse cursor over a specified element on a web page.",
   "version": "1.0.0",
   "auther": "@aventisia",
   "supportedPlatforms": [

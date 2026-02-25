@@ -1,7 +1,7 @@
 {
   "name": "GetWorksheetNames",
   "label": "Get Worksheet Names",
-  "discription": "Returns all worksheet names in the workbook.",
+  "description": "Returns all worksheet names in the workbook.",
   "version": "1.0.0",
   "auther": "@aventisia",
   "supportedPlatforms": [

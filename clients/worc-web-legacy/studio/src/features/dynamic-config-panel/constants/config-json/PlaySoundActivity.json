@@ -1,7 +1,7 @@
 {
   "name": "PlaySound",
   "label": "Play Sound",
-  "discription": "Plays a sound from a WAV file or system sound with options for sync/async playback and volume control.",
+  "description": "Plays a sound from a WAV file or system sound with options for sync/async playback and volume control.",
   "version": "1.0.0",
   "auther": "@aventisia",
   "supportedPlatforms": [

@@ -1,7 +1,7 @@
 {
   "name": "DeleteServiceNowUser",
   "label": "Delete ServiceNow User",
-  "discription": "Deletes a user from ServiceNow by sys_id using a stored credential.",
+  "description": "Deletes a user from ServiceNow by sys_id using a stored credential.",
   "version": "1.0.0",
   "auther": "@aventisia",
   "supportedPlatforms": [

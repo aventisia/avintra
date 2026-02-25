@@ -1,7 +1,7 @@
 {
   "name": "GetRecordSapConcur",
   "label": "Get Record in SAP Concur",
-  "discription": "Retrieves a single record by ID from SAP Concur.",
+  "description": "Retrieves a single record by ID from SAP Concur.",
   "version": "1.0.0",
   "auther": "@aventisia",
   "supportedPlatforms": [

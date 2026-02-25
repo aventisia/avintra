@@ -1,7 +1,7 @@
 {
   "name": "SwitchToDefaultContent",
   "label": "Switch To Default Content",
-  "discription": "Switches the Selenium WebDriver context back to the main document or top window (exiting all frames/iframe contexts).",
+  "description": "Switches the Selenium WebDriver context back to the main document or top window (exiting all frames/iframe contexts).",
   "version": null,
   "auther": null,
   "supportedPlatforms": [],

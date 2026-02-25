@@ -1,7 +1,7 @@
 {
   "name": "IfProcess",
   "label": "If process",
-  "discription": "Marks the beginning of a conditional block of actions depending on whether a process is running or not.",
+  "description": "Marks the beginning of a conditional block of actions depending on whether a process is running or not.",
   "version": "1.0.0",
   "auther": "@aventisia",
   "supportedPlatforms": [

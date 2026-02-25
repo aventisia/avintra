@@ -1,7 +1,7 @@
 {
   "name": "SynchronizeDirectories",
   "label": "Synchronize Directories",
-  "discription": "Synchronizes the local directory with a remote FTP directory.",
+  "description": "Synchronizes the local directory with a remote FTP directory.",
   "version": "1.0.0",
   "auther": "@aventisia",
   "supportedPlatforms": [

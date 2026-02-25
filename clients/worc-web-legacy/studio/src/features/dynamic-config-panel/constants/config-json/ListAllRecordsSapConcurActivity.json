@@ -1,7 +1,7 @@
 {
   "name": "ListAllRecordsSapConcur",
   "label": "List All Records in SAP Concur",
-  "discription": "Retrieves a list of all records from a specified endpoint.",
+  "description": "Retrieves a list of all records from a specified endpoint.",
   "version": "1.0.0",
   "auther": "@aventisia",
   "supportedPlatforms": [

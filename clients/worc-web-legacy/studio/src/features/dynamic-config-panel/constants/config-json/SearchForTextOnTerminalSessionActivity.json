@@ -1,7 +1,7 @@
 {
   "name": "SearchForTextOnTerminalSession",
   "label": "Search for Text on Terminal Session",
-  "discription": "Search for all occurrences of a specific text on a terminal session.",
+  "description": "Search for all occurrences of a specific text on a terminal session.",
   "version": "1.0.0",
   "auther": "@aventisia",
   "supportedPlatforms": [

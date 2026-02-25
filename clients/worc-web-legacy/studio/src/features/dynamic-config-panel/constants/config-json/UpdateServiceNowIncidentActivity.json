@@ -1,7 +1,7 @@
 {
   "name": "UpdateServiceNowIncident",
   "label": "Update ServiceNow Incident",
-  "discription": "Updates an existing ServiceNow incident by sys_id using a stored credential.",
+  "description": "Updates an existing ServiceNow incident by sys_id using a stored credential.",
   "version": "1.0.0",
   "auther": "@aventisia",
   "supportedPlatforms": [

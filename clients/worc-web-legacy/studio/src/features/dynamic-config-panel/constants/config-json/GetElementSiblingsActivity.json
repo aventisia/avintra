@@ -1,7 +1,7 @@
 {
   "name": "GetElementSiblings",
   "label": "Get Element Siblings",
-  "discription": "Finds and returns all sibling elements of the specified web element.",
+  "description": "Finds and returns all sibling elements of the specified web element.",
   "version": "1.0.0",
   "auther": "@aventisia",
   "supportedPlatforms": [

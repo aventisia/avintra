@@ -1,7 +1,7 @@
 {
   "name": "GetCurrentDateTime",
   "label": "Get Current Date and Time",
-  "discription": "This activity retrieves the current date and time based on the specified retrieval type and time zone.",
+  "description": "This activity retrieves the current date and time based on the specified retrieval type and time zone.",
   "version": "1.0.0",
   "auther": "@aventisia",
   "supportedPlatforms": [

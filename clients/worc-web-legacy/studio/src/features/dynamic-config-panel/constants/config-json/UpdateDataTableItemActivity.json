@@ -1,7 +1,7 @@
 {
   "name": "UpdateDataTableItem",
   "label": "Update Data Table Item",
-  "discription": "Updates a specific cell in a DataTable by specifying the column, row, and new value.",
+  "description": "Updates a specific cell in a DataTable by specifying the column, row, and new value.",
   "version": "1.0.0",
   "auther": "@aventisia",
   "supportedPlatforms": [

@@ -1,7 +1,7 @@
 {
   "name": "CloseWebBrowserTab",
   "label": "Close Web Browser Tab",
-  "discription": "Closes web browser tabs based on various conditions (current, by title/URL, all except main, timeout-based).",
+  "description": "Closes web browser tabs based on various conditions (current, by title/URL, all except main, timeout-based).",
   "version": "1.0.0",
   "auther": "@aventisia",
   "supportedPlatforms": [

@@ -1,7 +1,7 @@
 {
   "name": "EmptyRecycleBin",
   "label": "Empty Recycle Bin",
-  "discription": "Deletes all files from the Windows recycle bin for all users or current user.",
+  "description": "Deletes all files from the Windows recycle bin for all users or current user.",
   "version": "1.0.0",
   "auther": "@aventisia",
   "supportedPlatforms": [

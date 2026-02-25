@@ -1,7 +1,7 @@
 {
   "name": "TrimText",
   "label": "Trim Text",
-  "discription": "Removes specified characters from the start, end, or both ends of a text string.",
+  "description": "Removes specified characters from the start, end, or both ends of a text string.",
   "version": "1.0.0",
   "auther": "@aventisia",
   "supportedPlatforms": [

@@ -1,7 +1,7 @@
 {
   "name": "GetOpportunitySummary",
   "label": "Get Opportunity Summary",
-  "discription": "Retrieves a summary of a Salesforce opportunity by its ID.",
+  "description": "Retrieves a summary of a Salesforce opportunity by its ID.",
   "version": "1.0.0",
   "auther": "@aventisia",
   "supportedPlatforms": [

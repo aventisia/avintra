@@ -1,7 +1,7 @@
 {
   "name": "ConvertTextToDateTime",
   "label": "Convert Text to DateTime",
-  "discription": "Converts a text representation of a date and/or time value to a DateTime value.",
+  "description": "Converts a text representation of a date and/or time value to a DateTime value.",
   "version": "1.0.0",
   "auther": "@aventisia",
   "supportedPlatforms": [

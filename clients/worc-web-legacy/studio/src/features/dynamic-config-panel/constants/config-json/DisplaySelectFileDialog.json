@@ -1,7 +1,7 @@
 {
   "name": "DisplaySelectFileDialog",
   "label": "Display Select File Dialog",
-  "discription": "Displays a file selection dialog to let users choose one or more files.",
+  "description": "Displays a file selection dialog to let users choose one or more files.",
   "version": "1.0.0",
   "auther": "@aventisia",
   "supportedPlatforms": [

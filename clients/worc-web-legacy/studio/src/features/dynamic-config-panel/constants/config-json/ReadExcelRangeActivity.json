@@ -1,7 +1,7 @@
 {
   "name": "ReadExcelRange",
   "label": "Read Excel Range (HTTP)",
-  "discription": "Reads values from an Excel range using Microsoft Graph HTTP GET.",
+  "description": "Reads values from an Excel range using Microsoft Graph HTTP GET.",
   "version": "1.0.0",
   "auther": "@aventisia",
   "supportedPlatforms": [

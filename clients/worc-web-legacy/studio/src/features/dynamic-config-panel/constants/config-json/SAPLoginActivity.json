@@ -1,7 +1,7 @@
 {
   "name": "SAPLogin",
   "label": "SAP Login",
-  "discription": "Logs into SAP GUI using provided credentials.",
+  "description": "Logs into SAP GUI using provided credentials.",
   "version": "1.0.0",
   "auther": "@aventisia",
   "supportedPlatforms": [

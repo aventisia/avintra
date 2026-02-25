@@ -1,7 +1,7 @@
 {
   "name": "PauseService",
   "label": "Pause Service",
-  "discription": "Pauses a running Windows service.",
+  "description": "Pauses a running Windows service.",
   "version": "1.0.0",
   "auther": "@aventisia",
   "supportedPlatforms": [

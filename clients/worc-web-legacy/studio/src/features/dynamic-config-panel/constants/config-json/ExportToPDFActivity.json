@@ -1,7 +1,7 @@
 {
   "name": "ExportToPDF",
   "label": "Export Worksheet to PDF (HTTP)",
-  "discription": "Exports an Excel worksheet to PDF.",
+  "description": "Exports an Excel worksheet to PDF.",
   "version": "1.0.0",
   "auther": "@aventisia",
   "supportedPlatforms": [

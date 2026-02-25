@@ -1,7 +1,7 @@
 {
   "name": "AddTable",
   "label": "Add Table to Worksheet",
-  "discription": "Adds a table to a worksheet in Excel using Microsoft Graph HTTP POST.",
+  "description": "Adds a table to a worksheet in Excel using Microsoft Graph HTTP POST.",
   "version": "1.0.0",
   "auther": "@aventisia",
   "supportedPlatforms": [

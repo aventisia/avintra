@@ -1,7 +1,7 @@
 {
   "name": "SendEmail",
   "label": "Send Email",
-  "discription": "Creates and sends a new email message using MailKit.",
+  "description": "Creates and sends a new email message using MailKit.",
   "version": "1.0.0",
   "auther": "@aventisia",
   "supportedPlatforms": [

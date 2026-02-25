@@ -1,7 +1,7 @@
 {
   "name": "GetScreenResolution",
   "label": "Get Screen Resolution",
-  "discription": "Gets the width, height, bit depth, and refresh rate of one or all monitors.",
+  "description": "Gets the width, height, bit depth, and refresh rate of one or all monitors.",
   "version": "1.0.0",
   "auther": "@aventisia",
   "supportedPlatforms": [

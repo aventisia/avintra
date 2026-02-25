@@ -1,7 +1,7 @@
 {
   "name": "DeleteWorksheet",
   "label": "Delete Worksheet",
-  "discription": "Deletes a worksheet from the workbook using Microsoft Graph HTTP DELETE.",
+  "description": "Deletes a worksheet from the workbook using Microsoft Graph HTTP DELETE.",
   "version": "1.0.0",
   "auther": "@aventisia",
   "supportedPlatforms": [

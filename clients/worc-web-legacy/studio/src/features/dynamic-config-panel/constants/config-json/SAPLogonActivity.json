@@ -1,7 +1,7 @@
 {
   "name": "SAPLogon",
   "label": "SAP Logon",
-  "discription": "Logs on to an SAP system by interacting with the SAP Logon Pad.",
+  "description": "Logs on to an SAP system by interacting with the SAP Logon Pad.",
   "version": "1.0.0",
   "auther": "@aventisia",
   "supportedPlatforms": [

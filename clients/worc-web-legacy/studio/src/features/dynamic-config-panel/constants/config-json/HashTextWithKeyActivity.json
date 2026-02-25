@@ -1,7 +1,7 @@
 {
   "name": "HashTextWithKey",
   "label": "Hash Text with Key",
-  "discription": "Hash a string with a key, using a specified algorithm",
+  "description": "Hash a string with a key, using a specified algorithm",
   "version": "1.0.0",
   "auther": "@aventisia",
   "supportedPlatforms": [

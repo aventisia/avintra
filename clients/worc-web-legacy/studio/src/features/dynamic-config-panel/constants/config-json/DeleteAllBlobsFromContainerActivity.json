@@ -1,7 +1,7 @@
 {
   "name": "DeleteAllBlobsFromContainer",
   "label": "Delete All Blobs from Container",
-  "discription": "Deletes all blobs in the specified Azure Blob container. Returns the number of successfully deleted blobs.",
+  "description": "Deletes all blobs in the specified Azure Blob container. Returns the number of successfully deleted blobs.",
   "version": "1.0.0",
   "auther": "@aventisia",
   "supportedPlatforms": [

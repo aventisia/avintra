@@ -1,7 +1,7 @@
 {
   "name": "DeleteWindowsEnvironmentVariable",
   "label": "Delete Windows Environment Variable",
-  "discription": "Deletes an environment variable from a given scope.",
+  "description": "Deletes an environment variable from a given scope.",
   "version": "1.0.0",
   "auther": "@aventisia",
   "supportedPlatforms": [

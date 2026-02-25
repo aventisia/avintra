@@ -1,7 +1,7 @@
 {
   "name": "MergeLists",
   "label": "Merge Lists",
-  "discription": "Merges two lists into a new list. The original lists remain unchanged.",
+  "description": "Merges two lists into a new list. The original lists remain unchanged.",
   "version": "1.0.0",
   "auther": "@aventisia",
   "supportedPlatforms": [

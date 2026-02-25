@@ -1,7 +1,7 @@
 {
   "name": "ListFtpDirectory",
   "label": "List FTP Directory",
-  "discription": "Retrieves subdirectories and files in the current directory of an FTP connection.",
+  "description": "Retrieves subdirectories and files in the current directory of an FTP connection.",
   "version": "1.0.0",
   "auther": "@aventisia",
   "supportedPlatforms": [

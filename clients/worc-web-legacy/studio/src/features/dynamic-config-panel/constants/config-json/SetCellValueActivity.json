@@ -1,7 +1,7 @@
 {
   "name": "SetCellValue",
   "label": "Set Cell Value (HTTP)",
-  "discription": "Sets the value of a single Excel cell using Microsoft Graph HTTP PATCH.",
+  "description": "Sets the value of a single Excel cell using Microsoft Graph HTTP PATCH.",
   "version": "1.0.0",
   "auther": "@aventisia",
   "supportedPlatforms": [

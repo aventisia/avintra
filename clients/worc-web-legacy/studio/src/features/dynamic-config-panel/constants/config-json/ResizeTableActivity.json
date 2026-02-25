@@ -1,7 +1,7 @@
 {
   "name": "ResizeTable",
   "label": "Resize Table (HTTP)",
-  "discription": "Resizes an existing Excel table to a new range.",
+  "description": "Resizes an existing Excel table to a new range.",
   "version": "1.0.0",
   "auther": "@aventisia",
   "supportedPlatforms": [

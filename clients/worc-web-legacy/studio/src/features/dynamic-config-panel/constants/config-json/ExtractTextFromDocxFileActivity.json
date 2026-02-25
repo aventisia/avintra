@@ -1,7 +1,7 @@
 {
   "name": "ExtractTextFromDocxFile",
   "label": "Extract text from DOCX file",
-  "discription": "Reads text content from a .docx document using Open XML SDK.",
+  "description": "Reads text content from a .docx document using Open XML SDK.",
   "version": "1.0.0",
   "auther": "@aventisia",
   "supportedPlatforms": [

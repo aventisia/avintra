@@ -1,7 +1,7 @@
 {
   "name": "OlmOCR",
   "label": "Olm OCR",
-  "discription": "Uploads a PDF file to remote OCR API and returns the markdown result.",
+  "description": "Uploads a PDF file to remote OCR API and returns the markdown result.",
   "version": null,
   "auther": null,
   "supportedPlatforms": [],

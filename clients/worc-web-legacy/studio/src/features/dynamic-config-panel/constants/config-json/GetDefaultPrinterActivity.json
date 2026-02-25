@@ -1,7 +1,7 @@
 {
   "name": "GetDefaultPrinter",
   "label": "Get Default Printer",
-  "discription": "Gets the name of the default printer using multiple methods.",
+  "description": "Gets the name of the default printer using multiple methods.",
   "version": "1.0.0",
   "auther": "@aventisia",
   "supportedPlatforms": [

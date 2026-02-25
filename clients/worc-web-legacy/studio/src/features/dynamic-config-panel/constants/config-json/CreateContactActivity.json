@@ -1,7 +1,7 @@
 {
   "name": "CreateContact",
   "label": "Create Salesforce Contact",
-  "discription": "Creates a new Contact record in Salesforce using the provided credentials and contact details.",
+  "description": "Creates a new Contact record in Salesforce using the provided credentials and contact details.",
   "version": "1.0.0",
   "auther": "@aventisia",
   "supportedPlatforms": [

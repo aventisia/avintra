@@ -1,7 +1,7 @@
 {
   "name": "IfWebPageContains",
   "label": "If Web Page Contains",
-  "discription": "Checks if a web page contains a specific UI element or text. Optionally checks if the element is enabled or disabled.",
+  "description": "Checks if a web page contains a specific UI element or text. Optionally checks if the element is enabled or disabled.",
   "version": "1.0.0",
   "auther": "@aventisia",
   "supportedPlatforms": [

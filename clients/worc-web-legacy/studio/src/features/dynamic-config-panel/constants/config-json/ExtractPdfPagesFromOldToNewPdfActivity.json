@@ -1,7 +1,7 @@
 {
   "name": "ExtractPdfPagesFromOldToNewPdf",
   "label": "Extract PDF Pages from existing PDF to New PDF file",
-  "discription": "Extracts specific pages from a PDF file and saves them as a New PDF file.",
+  "description": "Extracts specific pages from a PDF file and saves them as a New PDF file.",
   "version": "1.0.0",
   "auther": "@aventisia",
   "supportedPlatforms": [

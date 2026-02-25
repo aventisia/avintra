@@ -1,7 +1,7 @@
 {
   "name": "SaveWord",
   "label": "Save Word",
-  "discription": "Saves a previously launched Word instance.",
+  "description": "Saves a previously launched Word instance.",
   "version": "1.0.0",
   "auther": "@aventisia",
   "supportedPlatforms": [

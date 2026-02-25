@@ -1,7 +1,7 @@
 {
   "name": "CloseWord",
   "label": "Close Word",
-  "discription": "Closes a Word instance.",
+  "description": "Closes a Word instance.",
   "version": "1.0.0",
   "auther": "@aventisia",
   "supportedPlatforms": [

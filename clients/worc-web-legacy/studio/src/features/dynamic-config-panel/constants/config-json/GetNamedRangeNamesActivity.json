@@ -1,7 +1,7 @@
 {
   "name": "GetNamedRangeNames",
   "label": "Get Named Range Names",
-  "discription": "Returns all named ranges in the workbook.",
+  "description": "Returns all named ranges in the workbook.",
   "version": "1.0.0",
   "auther": "@aventisia",
   "supportedPlatforms": [

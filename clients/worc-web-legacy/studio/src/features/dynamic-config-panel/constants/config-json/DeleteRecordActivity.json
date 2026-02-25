@@ -1,7 +1,7 @@
 {
   "name": "DeleteRecord",
   "label": "Delete Record",
-  "discription": "Deletes a record in SAP OData.",
+  "description": "Deletes a record in SAP OData.",
   "version": "1.0.0",
   "auther": "@aventisia",
   "supportedPlatforms": [

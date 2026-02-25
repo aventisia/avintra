@@ -1,7 +1,7 @@
 {
   "name": "GetTextBoxText",
   "label": "Get Text from Text Box",
-  "discription": "Reads and returns the text from a text box or editable field in a window using the UI element you provide.",
+  "description": "Reads and returns the text from a text box or editable field in a window using the UI element you provide.",
   "version": "1.0.0",
   "auther": "@aventisia",
   "supportedPlatforms": [

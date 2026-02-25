@@ -1,7 +1,7 @@
 {
   "name": "SaveImage",
   "label": "Save Image",
-  "discription": "Saves a screenshot of a UI element or region to disk.",
+  "description": "Saves a screenshot of a UI element or region to disk.",
   "version": "1.0.0",
   "auther": "@aventisia",
   "supportedPlatforms": [

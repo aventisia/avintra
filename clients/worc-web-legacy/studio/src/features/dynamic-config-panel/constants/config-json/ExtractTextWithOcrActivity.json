@@ -1,7 +1,7 @@
 {
   "name": "ExtractTextWithOcr",
   "label": "Extract Text with OCR",
-  "discription": "Extracts text from an image file using Tesseract OCR engine.",
+  "description": "Extracts text from an image file using Tesseract OCR engine.",
   "version": "1.0.0",
   "auther": "@aventisia",
   "supportedPlatforms": [

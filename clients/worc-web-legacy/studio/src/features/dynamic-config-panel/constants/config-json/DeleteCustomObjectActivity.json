@@ -1,7 +1,7 @@
 {
   "name": "DeleteCustomObject",
   "label": "Delete a custom object",
-  "discription": "Deletes a custom object in Salesforce by its ID.",
+  "description": "Deletes a custom object in Salesforce by its ID.",
   "version": "1.0.0",
   "auther": "@aventisia",
   "supportedPlatforms": [

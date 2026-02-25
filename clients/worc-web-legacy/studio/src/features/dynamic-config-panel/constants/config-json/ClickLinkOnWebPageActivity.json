@@ -1,7 +1,7 @@
 {
   "name": "ClickLinkOnWebPage",
   "label": "Click on Web Page",
-  "discription": "Simulates clicking a UI element (e.g., link, button) on a web page.",
+  "description": "Simulates clicking a UI element (e.g., link, button) on a web page.",
   "version": "1.0.0",
   "auther": "@aventisia",
   "supportedPlatforms": [

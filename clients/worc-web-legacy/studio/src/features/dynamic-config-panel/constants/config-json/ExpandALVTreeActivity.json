@@ -1,7 +1,7 @@
 {
   "name": "ExpandALVTree",
   "label": "Expand ALV Tree",
-  "discription": "Expands parent ALV tree to the selected node.",
+  "description": "Expands parent ALV tree to the selected node.",
   "version": "1.0.0",
   "auther": "@aventisia",
   "supportedPlatforms": [

@@ -1,7 +1,7 @@
 {
   "name": "OpenFtpConnection",
   "label": "Open FTP Connection",
-  "discription": "Establishes a specific connection to a remote FTP server and stores that connection as a variable for later use.",
+  "description": "Establishes a specific connection to a remote FTP server and stores that connection as a variable for later use.",
   "version": "1.0.0",
   "auther": "@aventisia",
   "supportedPlatforms": [

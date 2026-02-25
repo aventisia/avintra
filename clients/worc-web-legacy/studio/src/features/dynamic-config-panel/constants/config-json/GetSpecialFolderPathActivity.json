@@ -1,7 +1,7 @@
 {
   "name": "GetSpecialFolderPath",
   "label": "Get Special Folder Path",
-  "discription": "This activity retrieves the path of a Windows special folder, such as Desktop, My Pictures, Internet Cache, etc.",
+  "description": "This activity retrieves the path of a Windows special folder, such as Desktop, My Pictures, Internet Cache, etc.",
   "version": "1.0.0",
   "auther": "@aventisia",
   "supportedPlatforms": [

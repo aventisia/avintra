@@ -1,7 +1,7 @@
 {
   "name": "DeleteServiceNowIncident",
   "label": "Delete ServiceNow Incident",
-  "discription": "Deletes a ServiceNow incident by sys_id using a stored Credential ID / Token.",
+  "description": "Deletes a ServiceNow incident by sys_id using a stored Credential ID / Token.",
   "version": "1.0.0",
   "auther": "@aventisia",
   "supportedPlatforms": [

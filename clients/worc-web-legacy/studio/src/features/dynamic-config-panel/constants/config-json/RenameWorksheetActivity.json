@@ -1,7 +1,7 @@
 {
   "name": "RenameWorksheet",
   "label": "Rename Worksheet (HTTP)",
-  "discription": "Renames an existing worksheet in a workbook.",
+  "description": "Renames an existing worksheet in a workbook.",
   "version": "1.0.0",
   "auther": "@aventisia",
   "supportedPlatforms": [

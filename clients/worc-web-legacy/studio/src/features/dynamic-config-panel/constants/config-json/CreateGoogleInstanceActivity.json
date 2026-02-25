@@ -1,7 +1,7 @@
 {
   "name": "CreateGoogleInstance",
   "label": "Create Google Sheets Service Instance",
-  "discription": "Creates and returns a SheetsService instance using Google service account credentials.",
+  "description": "Creates and returns a SheetsService instance using Google service account credentials.",
   "version": "1.0.0",
   "auther": "@aventisia",
   "supportedPlatforms": [

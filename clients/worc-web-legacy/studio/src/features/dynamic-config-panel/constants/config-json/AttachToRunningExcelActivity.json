@@ -1,7 +1,7 @@
 {
   "name": "AttachToRunningExcel",
   "label": "Attach to Running Excel Workbook",
-  "discription": "Attaches to a running Excel instance and opens the specified workbook if not already open.",
+  "description": "Attaches to a running Excel instance and opens the specified workbook if not already open.",
   "version": "1.0.0",
   "auther": "@aventisia",
   "supportedPlatforms": [

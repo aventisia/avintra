@@ -1,7 +1,7 @@
 {
   "name": "RunVbScript",
   "label": "Run VBScript",
-  "discription": "Executes custom VBScript code and retrieves its output.",
+  "description": "Executes custom VBScript code and retrieves its output.",
   "version": "1.0.0",
   "auther": "@aventisia",
   "supportedPlatforms": [

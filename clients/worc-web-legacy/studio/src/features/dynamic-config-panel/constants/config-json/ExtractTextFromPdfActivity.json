@@ -1,7 +1,7 @@
 {
   "name": "ExtractTextFromPdf",
   "label": "Extract Text from PDF",
-  "discription": "Extracts text or images from a PDF file based on selection.",
+  "description": "Extracts text or images from a PDF file based on selection.",
   "version": "1.0.0",
   "auther": "@aventisia",
   "supportedPlatforms": [

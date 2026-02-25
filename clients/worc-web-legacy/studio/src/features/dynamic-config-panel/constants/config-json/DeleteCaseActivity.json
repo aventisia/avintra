@@ -1,7 +1,7 @@
 {
   "name": "DeleteCase",
   "label": "Delete a Case",
-  "discription": "Deletes an existing Case record in Salesforce.",
+  "description": "Deletes an existing Case record in Salesforce.",
   "version": "1.0.0",
   "auther": "@aventisia",
   "supportedPlatforms": [

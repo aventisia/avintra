@@ -1,7 +1,7 @@
 {
   "name": "RetrieveEmailMessages",
   "label": "Retrieve Email Messages",
-  "discription": "Retrieves email messages from an IMAP server.",
+  "description": "Retrieves email messages from an IMAP server.",
   "version": "1.0.0",
   "auther": "@aventisia",
   "supportedPlatforms": [

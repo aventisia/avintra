@@ -1,7 +1,7 @@
 {
   "name": "FormatRange",
   "label": "Format Excel Range (HTTP)",
-  "discription": "Applies font color, fill color, and bold formatting to an Excel range using Microsoft Graph HTTP PATCH.",
+  "description": "Applies font color, fill color, and bold formatting to an Excel range using Microsoft Graph HTTP PATCH.",
   "version": "1.0.0",
   "auther": "@aventisia",
   "supportedPlatforms": [

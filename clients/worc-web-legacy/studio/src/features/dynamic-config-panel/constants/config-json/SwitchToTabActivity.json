@@ -1,7 +1,7 @@
 {
   "name": "SwitchToTab",
   "label": "Switch To Tab",
-  "discription": "Switches control to a browser tab using index, title, or partial URL.",
+  "description": "Switches control to a browser tab using index, title, or partial URL.",
   "version": "1.0.0",
   "auther": "@aventisia",
   "supportedPlatforms": [

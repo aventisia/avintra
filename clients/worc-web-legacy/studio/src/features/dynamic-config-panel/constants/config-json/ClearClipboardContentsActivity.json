@@ -1,7 +1,7 @@
 {
   "name": "ClearClipboardContents",
   "label": "Clear Clipboard Contents",
-  "discription": "Clears all contents from the system clipboard.",
+  "description": "Clears all contents from the system clipboard.",
   "version": "1.0.0",
   "auther": "@aventisia",
   "supportedPlatforms": [

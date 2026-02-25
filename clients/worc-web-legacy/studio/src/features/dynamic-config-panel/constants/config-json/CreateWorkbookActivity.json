@@ -1,7 +1,7 @@
 {
   "name": "CreateWorkbook",
   "label": "Create Workbook (HTTP)",
-  "discription": "Creates a new Excel workbook in OneDrive/SharePoint using Microsoft Graph HTTP PUT.",
+  "description": "Creates a new Excel workbook in OneDrive/SharePoint using Microsoft Graph HTTP PUT.",
   "version": "1.0.0",
   "auther": "@aventisia",
   "supportedPlatforms": [

@@ -1,7 +1,7 @@
 {
   "name": "SetCheckboxState",
   "label": "Set Checkbox State",
-  "discription": "Checks or unchecks a checkbox UI element by searching for it by name within a parent element.",
+  "description": "Checks or unchecks a checkbox UI element by searching for it by name within a parent element.",
   "version": "1.0.0",
   "auther": "@aventisia",
   "supportedPlatforms": [

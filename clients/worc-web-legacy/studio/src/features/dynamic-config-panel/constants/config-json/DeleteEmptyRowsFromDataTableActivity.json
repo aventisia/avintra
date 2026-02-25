@@ -1,7 +1,7 @@
 {
   "name": "DeleteEmptyRowsFromDataTable",
   "label": "Delete Empty Rows From Data Table",
-  "discription": "Deletes rows from a data table where one or more cells are empty.",
+  "description": "Deletes rows from a data table where one or more cells are empty.",
   "version": "1.0.0",
   "auther": "@aventisia",
   "supportedPlatforms": [

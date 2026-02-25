@@ -1,7 +1,7 @@
 {
   "name": "AttachToRunningWord",
   "label": "Attach to Running Word",
-  "discription": "Attaches to a Word document that\u0027s already open, or opens it if needed.",
+  "description": "Attaches to a Word document that\u0027s already open, or opens it if needed.",
   "version": "1.0.0",
   "auther": "@aventisia",
   "supportedPlatforms": [

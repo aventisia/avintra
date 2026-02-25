@@ -1,7 +1,7 @@
 {
   "name": "AddQuickExpense",
   "label": "Add Quick Expense",
-  "discription": "Adds a quick expense in SAP Concur for later linking to a report.",
+  "description": "Adds a quick expense in SAP Concur for later linking to a report.",
   "version": "1.0.0",
   "auther": "@aventisia",
   "supportedPlatforms": [
