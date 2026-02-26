@@ -48,24 +48,43 @@ pipeline {
                 script {
                     echo 'Detecting changes in monorepo...'
                     
-                    // Detect changes in each component
-                    def aspnetToolkitChanged = hasChangesInPath('apis/WorcBackend-legacy/AspNetToolkit')
+                    // Check if this is a manual/retry build
+                    def isManualBuild = currentBuild.getBuildCauses('hudson.model.Cause$UserIdCause').size() > 0
                     
-                    // If AspNetToolkit changed, all .NET APIs need to be rebuilt
-                    env.BUILD_ACCOUNTS_API = (hasChangesInPath('apis/WorcBackend-legacy/AccountsAPIs') || aspnetToolkitChanged) ? 'true' : 'false'
-                    env.BUILD_WORC_API = (hasChangesInPath('apis/WorcBackend-legacy/WorkspaceAPIs') || aspnetToolkitChanged) ? 'true' : 'false'
-                    env.BUILD_AISTUDIO_API = (hasChangesInPath('apis/WorcBackend-legacy/MLModelBuilderAPIs') || aspnetToolkitChanged) ? 'true' : 'false'
-                    env.BUILD_LLMPIPELINE_API = hasChangesInPath('apis/llmpipeline') ? 'true' : 'false'
-                    env.BUILD_DOCS_CLIENT = hasChangesInPath('clients/docs') ? 'true' : 'false'
-                    env.BUILD_ACCOUNTS_CLIENT = hasChangesInPath('clients/worc-web-legacy/accounts') ? 'true' : 'false'
-                    env.BUILD_WORC_CLIENT = hasChangesInPath('clients/worc-web-legacy/workspace') ? 'true' : 'false'
-                    env.BUILD_AGENTBUILDER_CLIENT = hasChangesInPath('clients/worc-web-legacy/studio') ? 'true' : 'false'
-                    env.BUILD_AISTUDIO_CLIENT = hasChangesInPath('clients/worc-web-legacy/ml-model-builder') ? 'true' : 'false'
-                    env.BUILD_ASPNET_TOOLKIT = aspnetToolkitChanged ? 'true' : 'false'
+                    if (isManualBuild) {
+                        echo 'Manual build detected - rebuilding all components'
+                        env.BUILD_ACCOUNTS_API = 'true'
+                        env.BUILD_WORC_API = 'true'
+                        env.BUILD_AISTUDIO_API = 'true'
+                        env.BUILD_LLMPIPELINE_API = 'true'
+                        env.BUILD_DOCS_CLIENT = 'true'
+                        env.BUILD_ACCOUNTS_CLIENT = 'true'
+                        env.BUILD_WORC_CLIENT = 'true'
+                        env.BUILD_AGENTBUILDER_CLIENT = 'true'
+                        env.BUILD_AISTUDIO_CLIENT = 'true'
+                        env.BUILD_ASPNET_TOOLKIT = 'true'
+                    } else {
+                        echo 'Automatic build - detecting changes...'
+                        
+                        // Detect changes in each component
+                        def aspnetToolkitChanged = hasChangesInPath('apis/WorcBackend-legacy/AspNetToolkit')
+                        
+                        // If AspNetToolkit changed, all .NET APIs need to be rebuilt
+                        env.BUILD_ACCOUNTS_API = (hasChangesInPath('apis/WorcBackend-legacy/AccountsAPIs') || aspnetToolkitChanged) ? 'true' : 'false'
+                        env.BUILD_WORC_API = (hasChangesInPath('apis/WorcBackend-legacy/WorkspaceAPIs') || aspnetToolkitChanged) ? 'true' : 'false'
+                        env.BUILD_AISTUDIO_API = (hasChangesInPath('apis/WorcBackend-legacy/MLModelBuilderAPIs') || aspnetToolkitChanged) ? 'true' : 'false'
+                        env.BUILD_LLMPIPELINE_API = hasChangesInPath('apis/llmpipeline') ? 'true' : 'false'
+                        env.BUILD_DOCS_CLIENT = hasChangesInPath('clients/docs') ? 'true' : 'false'
+                        env.BUILD_ACCOUNTS_CLIENT = hasChangesInPath('clients/worc-web-legacy/accounts') ? 'true' : 'false'
+                        env.BUILD_WORC_CLIENT = hasChangesInPath('clients/worc-web-legacy/workspace') ? 'true' : 'false'
+                        env.BUILD_AGENTBUILDER_CLIENT = hasChangesInPath('clients/worc-web-legacy/studio') ? 'true' : 'false'
+                        env.BUILD_AISTUDIO_CLIENT = hasChangesInPath('clients/worc-web-legacy/ml-model-builder') ? 'true' : 'false'
+                        env.BUILD_ASPNET_TOOLKIT = aspnetToolkitChanged ? 'true' : 'false'
+                    }
                     
                     echo """
                     Changed components:
-                    - AspNetToolkit: ${env.BUILD_ASPNET_TOOLKIT} ${aspnetToolkitChanged ? '(triggers all .NET APIs)' : ''}
+                    - AspNetToolkit: ${env.BUILD_ASPNET_TOOLKIT}
                     - Accounts API: ${env.BUILD_ACCOUNTS_API}
                     - Worc API: ${env.BUILD_WORC_API}
                     - AI Studio API: ${env.BUILD_AISTUDIO_API}
@@ -349,7 +368,7 @@ pipeline {
                                         echo "Deploying Accounts Client to ${targetServers.size()} server(s)..."
                                         
                                         targetServers.each { server ->
-                                            sh "rsync -avz --delete ${WORKSPACE}/clients/worc-web-legacy/accounts/out/* admin@${server}:/var/www/aventisia.com/clients/accounts/"
+                                            sh "rsync -avz --delete ${WORKSPACE}/clients/worc-web-legacy/accounts/dist/* admin@${server}:/var/www/aventisia.com/clients/accounts/"
                                             echo "Successfully deployed Accounts Client to ${server}"
                                         }
                                     }
@@ -392,7 +411,7 @@ pipeline {
                                         echo "Deploying Worc Client to ${targetServers.size()} server(s)..."
                                         
                                         targetServers.each { server ->
-                                            sh "rsync -avz --delete ${WORKSPACE}/clients/worc-web-legacy/workspace/out/* admin@${server}:/var/www/aventisia.com/clients/worc/"
+                                            sh "rsync -avz --delete ${WORKSPACE}/clients/worc-web-legacy/workspace/dist/* admin@${server}:/var/www/aventisia.com/clients/worc/"
                                             echo "Successfully deployed Worc Client to ${server}"
                                         }
                                     }
@@ -435,7 +454,7 @@ pipeline {
                                         echo "Deploying Agent Builder Client to ${targetServers.size()} server(s)..."
                                         
                                         targetServers.each { server ->
-                                            sh "rsync -avz --delete ${WORKSPACE}/clients/worc-web-legacy/studio/out/* admin@${server}:/var/www/aventisia.com/clients/agentbuilder/"
+                                            sh "rsync -avz --delete ${WORKSPACE}/clients/worc-web-legacy/studio/dist/* admin@${server}:/var/www/aventisia.com/clients/agentbuilder/"
                                             echo "Successfully deployed Agent Builder Client to ${server}"
                                         }
                                     }
@@ -478,7 +497,7 @@ pipeline {
                                         echo "Deploying AI Studio Builder Client to ${targetServers.size()} server(s)..."
                                         
                                         targetServers.each { server ->
-                                            sh "rsync -avz --delete ${WORKSPACE}/clients/worc-web-legacy/ml-model-builder/out/* admin@${server}:/var/www/aventisia.com/clients/aistudio/"
+                                            sh "rsync -avz --delete ${WORKSPACE}/clients/worc-web-legacy/ml-model-builder/dist/* admin@${server}:/var/www/aventisia.com/clients/aistudio/"
                                             echo "Successfully deployed AI Studio Builder Client to ${server}"
                                         }
                                     }
