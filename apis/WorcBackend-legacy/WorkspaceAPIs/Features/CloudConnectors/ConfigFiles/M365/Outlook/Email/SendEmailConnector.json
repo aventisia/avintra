@@ -2,7 +2,7 @@
   "name": "SendEmail",
   "description": "Sends an email using Microsoft 365 Outlook via Microsoft Graph API. Supports recipients, CC, BCC, content type, importance, sensitivity, and optional saving to Sent Items.",
   "version": "1.0.1",
-  "author": "rahmat",
+  "author": "@rahmat",
   "fields": [
     {
       "direction": "Input",

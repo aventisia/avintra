@@ -1,0 +1,56 @@
+{
+  "name": "CheckInFile",
+  "description": "Checks in a file in Microsoft 365 SharePoint via Microsoft Graph API, optionally with a comment and check-in type.",
+  "version": "1.0.0",
+  "author": "@rahmat",
+  "fields": [
+    {
+      "direction": "Input",
+      "type": "credentials-select",
+      "name": "__CredentialId__M365",
+      "label": "M365 Credential",
+      "description": "Microsoft 365 credential used to authenticate and check in files in SharePoint via Microsoft Graph API.",
+      "defaultValue": ""
+    },
+    {
+      "direction": "Input",
+      "type": "text",
+      "name": "FilePath",
+      "label": "File Path",
+      "description": "The full SharePoint file URL to check in (e.g., https://company.sharepoint.com/sites/SiteName/Shared Documents/File.txt).",
+      "defaultValue": ""
+    },
+    {
+      "direction": "Input",
+      "type": "text",
+      "name": "Comment",
+      "label": "Check-In Comment",
+      "description": "Optional comment describing the changes made to the file.",
+      "defaultValue": ""
+    },
+    {
+      "direction": "Input",
+      "type": "select",
+      "name": "CheckInType",
+      "label": "Check-In Type",
+      "description": "Specifies the type of check-in. Options: Minor, Major, Simple.",
+      "defaultValue": "Simple",
+      "options": [
+        { "label": "Minor", "value": "Minor" },
+        { "label": "Major", "value": "Major" },
+        { "label": "Simple", "value": "Simple" }
+      ]
+    },
+    {
+      "direction": "Output",
+      "type": "config-panel-output",
+      "name": "Result",
+      "label": "Result",
+      "description": "Returns metadata of the checked-in file, including ID, URL, check-in status, and applied comment.",
+      "defaultValue": {
+        "value": "Result",
+        "enabled": true
+      }
+    }
+  ]
+}

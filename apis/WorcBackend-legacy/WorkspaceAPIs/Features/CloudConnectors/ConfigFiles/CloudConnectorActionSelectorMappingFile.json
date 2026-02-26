@@ -353,7 +353,7 @@
           },
           {
             "type": "cloudConnectorNode",
-            "name": "M365/OutLook/GetMailFoldersById",
+            "name": "M365/OutLook/GetMailFoldersByIdConnector",
             "label": "Get Mail Folders by ID",
             "description": "Fetches subfolders within a specified parent folder from a Microsoft 365 Outlook mailbox using the Microsoft Graph API.",
             "docsLink": "https://docs.aventisia.com",
@@ -386,6 +386,157 @@
             "docsLink": "https://docs.aventisia.com",
             "icon": null,
             "img": "/assets/M365.svg"
+          }
+        ]
+      },
+      {
+        "label": "M365 SharePoint",
+        "description": "Manage files, folders, lists, and sites in Microsoft 365 SharePoint via Microsoft Graph API.",
+        "icon": null,
+        "img": "/assets/M365SharePoint.svg",
+        "listType": null,
+        "actions": [
+          {
+            "type": "cloudConnectorNode",
+            "name": "M365/SharePoint/GetSitesConnector",
+            "label": "Get SharePoint Sites",
+            "description": "Retrieves all Microsoft 365 SharePoint sites accessible via Microsoft Graph API.",
+            "docsLink": "https://docs.aventisia.com",
+            "icon": null,
+            "img": "/assets/M365SharePoint.svg"
+          },
+          {
+            "type": "cloudConnectorNode",
+            "name": "M365/SharePoint/GetSiteByIdConnector",
+            "label": "Get SharePoint Site By ID",
+            "description": "Retrieves a specific Microsoft 365 SharePoint site by its unique Site ID using Microsoft Graph API.",
+            "docsLink": "https://docs.aventisia.com",
+            "icon": null,
+            "img": "/assets/M365SharePoint.svg"
+          },
+          {
+            "type": "cloudConnectorNode",
+            "name": "M365/SharePoint/GetSiteByUrlConnector",
+            "label": "Get SharePoint Site By URL",
+            "description": "Retrieves a specific Microsoft 365 SharePoint site by its full URL using Microsoft Graph API.",
+            "docsLink": "https://docs.aventisia.com",
+            "icon": null,
+            "img": "/assets/M365SharePoint.svg"
+          },
+          {
+            "type": "cloudConnectorNode",
+            "name": "M365/SharePoint/SearchSitesConnector",
+            "label": "Search SharePoint Sites",
+            "description": "Searches Microsoft 365 SharePoint sites by keyword using Microsoft Graph API.",
+            "docsLink": "https://docs.aventisia.com",
+            "icon": null,
+            "img": "/assets/M365SharePoint.svg"
+          },
+          {
+            "type": "cloudConnectorNode",
+            "name": "M365/SharePoint/GetFileByPathConnector",
+            "label": "Get SharePoint File By Path",
+            "description": "Retrieves a specific file from Microsoft 365 SharePoint using its full path via Microsoft Graph API.",
+            "docsLink": "https://docs.aventisia.com",
+            "icon": null,
+            "img": "/assets/M365SharePoint.svg"
+          },
+          {
+            "name": "M365/SharePoint/UploadFileConnector",
+            "label": "Upload File to SharePoint",
+            "description": "Uploads a file to a Microsoft 365 SharePoint document library or folder using Microsoft Graph API.",
+            "docsLink": "https://docs.aventisia.com",
+            "icon": null,
+            "img": "/assets/M365SharePoint.svg"
+          },
+          {
+            "type": "cloudConnectorNode",
+            "name": "M365/SharePoint/GetDriveFilesConnector",
+            "label": "Get Files From SharePoint Folder",
+            "description": "Retrieves the list of files and folders from a specified SharePoint document library or folder using Microsoft Graph API.",
+            "docsLink": "https://docs.aventisia.com",
+            "icon": null,
+            "img": "/assets/M365SharePoint.svg"
+          },
+          {
+              "type": "cloudConnectorNode",
+            "name": "M365/SharePoint/UpdateFileConnector",
+            "label": "Update SharePoint File",
+            "description": "Updates a file in a Microsoft 365 SharePoint document library, such as renaming it, using Microsoft Graph API.",
+            "docsLink": "https://docs.aventisia.com",
+            "icon": null,
+            "img": "/assets/M365SharePoint.svg"
+          },
+          {
+            "type": "cloudConnectorNode",
+            "name": "M365/SharePoint/DeleteFileConnector",
+            "label": "Delete SharePoint File",
+            "description": "Deletes a specified file from a Microsoft 365 SharePoint document library using Microsoft Graph API.",
+            "docsLink": "https://docs.aventisia.com",
+            "icon": null,
+            "img": "/assets/M365SharePoint.svg"
+          },
+          {
+            "type": "cloudConnectorNode",
+            "name": "M365/OutLook/GetMailFoldersConnector",
+            "label": "Get Mail Folders",
+            "description": "Retrieves the list of mail folders from a Microsoft 365 Outlook mailbox, with an option to include hidden folders.",
+            "docsLink": "https://docs.aventisia.com",
+            "icon": null,
+            "img": "/assets/M365.svg"
+          },
+          {
+            "type": "cloudConnectorNode",
+            "name": "M365/SharePoint/DownloadFileConnector",
+            "label": "Download SharePoint File",
+            "description": "Downloads a specific file from a Microsoft 365 SharePoint document library using Microsoft Graph API.",
+            "docsLink": "https://docs.aventisia.com",
+            "icon": null,
+            "img": "/assets/M365SharePoint.svg"
+          },
+          {
+            "type": "cloudConnectorNode",
+            "name": "M365/SharePoint/CopyFileConnector",
+            "label": "Copy SharePoint File",
+            "description": "Copies a file within a Microsoft 365 SharePoint document library or to another folder using Microsoft Graph API.",
+            "docsLink": "https://docs.aventisia.com",
+            "icon": null,
+            "img": "/assets/M365SharePoint.svg"
+          },
+          {
+            "type": "cloudConnectorNode",
+            "name": "M365/SharePoint/MoveFileConnector",
+            "label": "Move SharePoint File",
+            "description": "Moves a file from one location to another within a Microsoft 365 SharePoint document library using Microsoft Graph API.",
+            "docsLink": "https://docs.aventisia.com",
+            "icon": null,
+            "img": "/assets/M365SharePoint.svg"
+          },
+          {
+            "type": "cloudConnectorNode",
+            "name": "M365/SharePoint/CheckOutFileConnector",
+            "label": "Check Out SharePoint File",
+            "description": "Checks out a file in a Microsoft 365 SharePoint document library, preventing others from editing it until checked back in, using Microsoft Graph API.",
+            "docsLink": "https://docs.aventisia.com",
+            "icon": null,
+            "img": "/assets/M365SharePoint.svg"
+          },
+          {
+            "type": "cloudConnectorNode",
+            "name": "M365/SharePoint/CheckInFileConnector",
+            "label": "Check In SharePoint File",
+            "description": "Checks in a file in a Microsoft 365 SharePoint document library, optionally adding a comment and specifying the check-in type, using Microsoft Graph API.",
+            "docsLink": "https://docs.aventisia.com",
+            "icon": null,
+            "img": "/assets/M365SharePoint.svg"
+          },
+          {
+            "type": "cloudConnectorNode",
+            "name": "M365/SharePoint/GetFileVersionsConnector",
+            "label": "Get SharePoint File Versions",
+            "description": "Retrieves the version history of a file in a Microsoft 365 SharePoint document library using Microsoft Graph API, including version IDs, check-in comments, and metadata.",
+            "docsLink": "https://docs.aventisia.com",
+            "img": "/assets/M365SharePoint.svg"
           }
         ]
       }

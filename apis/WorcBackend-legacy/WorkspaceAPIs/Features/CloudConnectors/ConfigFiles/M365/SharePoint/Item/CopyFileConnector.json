@@ -1,0 +1,51 @@
+{
+  "name": "CopyFile",
+  "description": "Copies a file within Microsoft 365 SharePoint via Microsoft Graph API.",
+  "version": "1.0.0",
+  "author": "@rahmat",
+  "fields": [
+    {
+      "direction": "Input",
+      "type": "credentials-select",
+      "name": "__CredentialId__M365",
+      "label": "M365 Credential",
+      "description": "Microsoft 365 credential used to authenticate and copy files in SharePoint via Microsoft Graph API.",
+      "defaultValue": ""
+    },
+    {
+      "direction": "Input",
+      "type": "text",
+      "name": "FilePath",
+      "label": "Source File Path",
+      "description": "The full SharePoint file URL to copy (e.g., https://company.sharepoint.com/sites/SiteName/Shared Documents/File.txt).",
+      "defaultValue": ""
+    },
+    {
+      "direction": "Input",
+      "type": "text",
+      "name": "DrivePath",
+      "label": "Destination Folder Path",
+      "description": "The full SharePoint folder URL where the file should be copied (e.g., https://company.sharepoint.com/sites/SiteName/Shared Documents/Folder).",
+      "defaultValue": ""
+    },
+    {
+      "direction": "Input",
+      "type": "text",
+      "name": "FileName",
+      "label": "New File Name",
+      "description": "The name for the copied file in the destination folder.",
+      "defaultValue": ""
+    },
+    {
+      "direction": "Output",
+      "type": "config-panel-output",
+      "name": "Result",
+      "label": "Result",
+      "description": "Returns metadata of the copied file, including ID, URL, and properties.",
+      "defaultValue": {
+        "value": "Result",
+        "enabled": true
+      }
+    }
+  ]
+}
