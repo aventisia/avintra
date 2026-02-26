@@ -11,6 +11,7 @@ public interface IUnitOfWork
     ISupportTicketRemarkRepo SupportTicketRemarkRepo { get; }
     IFlowLogRepo FlowLogRepo { get; }
     IFlowVersionRepo FlowVersionRepo { get; }
+    IFlowVersionHistoryRepo FlowVersionHistoryRepo { get; }
     IMachineRepo MachineRepo { get; }
     IMachineFlowRepo MachineFlowRepo { get; }
     IProjectTemplateRepo ProjectTemplateRepo { get; }
