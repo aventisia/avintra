@@ -7,51 +7,90 @@ const modules = import.meta.glob(
 );
 
 function mergeActionSelectorData(
-  existingData: PrimaryCategoryType[],
-  newData: PrimaryCategoryType[],
+  existingL1Categories: PrimaryCategoryType[],
+  newL1Categories: PrimaryCategoryType[],
 ) {
-  const mergedData: PrimaryCategoryType[] = [];
+  const mergedL1Categories: PrimaryCategoryType[] = [];
 
-  // Loop through existing data and merge in new actionCategories from newData
-  existingData.forEach((existingCategory) => {
-    // Find matching category in newData
-    const newDataCategory = newData.find(
-      (category) => category.label === existingCategory.label,
+  // Loop through existing data and merge in new actionCategories from newL1Categories
+  existingL1Categories.forEach((existingL1Category) => {
+    // Find matching L1 category in newL1Categories by label
+    const newL1Category = newL1Categories.find(
+      (newL1Category) => newL1Category.label === existingL1Category.label,
     );
 
-    if (!newDataCategory) {
-      // If not found in newData, push as is
-      mergedData.push(existingCategory);
+    if (!newL1Category) {
+      // If not found in newL1Categories, push as is
+      mergedL1Categories.push(existingL1Category);
     } else {
-      // Merge: keep all existing actionCategories, add only new ones from newData
-      const mergedActionCategories = [
-        ...existingCategory.actionCategories,
-        ...newDataCategory.actionCategories.filter(
-          (newActionCat) =>
-            !existingCategory.actionCategories.some(
-              (existingActionCat) =>
-                existingActionCat.label === newActionCat.label,
-            ),
-        ),
-      ];
-      mergedData.push({
-        ...existingCategory,
-        actionCategories: mergedActionCategories,
+      // Merge L2 Categories (actionCategories)
+      const mergedL2Categories = existingL1Category.actionCategories.map(
+        (existingL2Category) => {
+          // Find matching L2 category in newL1Category by label
+          const newL2Category = newL1Category.actionCategories.find(
+            (newL2Category) => newL2Category.label === existingL2Category.label,
+          );
+
+          if (!newL2Category) {
+            // If not found in new data, return as is
+            return existingL2Category;
+          } else {
+            // Merge L3 (actions) if both have actions
+            if (existingL2Category.actions && newL2Category.actions) {
+              const mergedActions = [
+                ...existingL2Category.actions,
+                ...newL2Category.actions.filter(
+                  (newL3Action) =>
+                    !existingL2Category.actions!.some(
+                      (existingL3Action) => existingL3Action.name === newL3Action.name,
+                    ),
+                ),
+              ];
+              return {
+                ...existingL2Category,
+                actions: mergedActions,
+              };
+            } else if (newL2Category.actions) {
+              // If only new has actions, use those
+              return {
+                ...existingL2Category,
+                actions: newL2Category.actions,
+              };
+            } else {
+              // Otherwise keep existing
+              return existingL2Category;
+            }
+          }
+        },
+      );
+
+      // Add new L2 categories that don't exist in existing data
+      const newL2Categories = newL1Category.actionCategories.filter(
+        (newL2Category) =>
+          !existingL1Category.actionCategories.some(
+            (existingL2Category) =>
+              existingL2Category.label === newL2Category.label,
+          ),
+      );
+
+      mergedL1Categories.push({
+        ...existingL1Category,
+        actionCategories: [...mergedL2Categories, ...newL2Categories],
       });
     }
   });
 
-  // Add any new top-level categories from newData that don't exist in existingData
-  newData.forEach((newCategory) => {
-    const existingCategory = existingData.find(
-      (category) => category.label === newCategory.label,
+  // Add any new L1 categories from newL1Categories that don't exist in existingL1Categories
+  newL1Categories.forEach((newL1Category) => {
+    const existingL1Category = existingL1Categories.find(
+      (category) => category.label === newL1Category.label,
     );
-    if (!existingCategory) {
-      mergedData.push(newCategory);
+    if (!existingL1Category) {
+      mergedL1Categories.push(newL1Category);
     }
   });
 
-  return mergedData;
+  return mergedL1Categories;
 }
 
 /**
