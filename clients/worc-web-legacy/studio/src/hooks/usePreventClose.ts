@@ -3,50 +3,89 @@ import { getCurrentWindow } from "@tauri-apps/api/window";
 import { useEffect, useRef } from "react";
 
 /**
- * Prevent window close while a process is running.
+ * Prevent window close while a agent is executing or has unsaved changes.
  */
-export const usePreventClose = (isProcessing: boolean) => {
+export const usePreventClose = ({
+  hasUnsavedChanges,
+  isProcessing,
+}: {
+  isProcessing?: boolean;
+  hasUnsavedChanges?: boolean;
+}) => {
   // Keeps latest processing state inside the Tauri listener
   const isProcessingRef = useRef(isProcessing);
+  const hasUnsavedChangesRef = useRef(hasUnsavedChanges);
 
-  // Prevents duplicate alerts from multiple close events
-  const lastBlockedAtRef = useRef<number | null>(null);
+  const isPromptingRef = useRef(false);
+  const forceCloseRef = useRef(false);
 
   useEffect(() => {
     isProcessingRef.current = isProcessing;
-  }, [isProcessing]);
+    hasUnsavedChangesRef.current = hasUnsavedChanges;
+  }, [isProcessing, hasUnsavedChanges]);
 
   useEffect(() => {
-    if (import.meta.env.MODE === "production") return;
-
     if (!IS_TAURI) return;
-
     const appWindow = getCurrentWindow();
     let unlisten: (() => void) | null = null;
 
-    const setupListener = async () => {
+    const setup = async () => {
       unlisten = await appWindow.onCloseRequested((event) => {
-        // Allow close if nothing is running
-        if (!isProcessingRef.current) return;
+        // 1. Allow forced programmatic closes to pass immediately
+        if (forceCloseRef.current) return;
 
-        const now = Date.now();
-
-        // Block duplicate close events for the same click
-        if (lastBlockedAtRef.current && now - lastBlockedAtRef.current < 500) {
+        // 2. If a dialog is already open, strictly block any new events
+        if (isPromptingRef.current) {
           event.preventDefault();
           return;
         }
 
-        lastBlockedAtRef.current = now;
-        event.preventDefault();
+        // CASE 1: Hard Block - Agent executing
+        if (isProcessingRef.current) {
+          // Prevent default IMMEDIATELY before doing anything else
+          event.preventDefault();
 
-        window.alert(
-          "Agent execution in progress. Please stop the execution or wait for it to complete before closing the app.",
-        );
+          isPromptingRef.current = true;
+
+          // Defer the alert so IPC can tell Rust the close is prevented
+          setTimeout(() => {
+            window.alert(
+              "Agent execution in progress. Please stop the execution or wait for it to complete before closing the app.",
+            );
+            isPromptingRef.current = false;
+          }, 50);
+
+          return;
+        }
+
+        // CASE 2: Soft Block - Unsaved workflow changes
+        if (hasUnsavedChangesRef.current) {
+          // Prevent default IMMEDIATELY
+          event.preventDefault();
+
+          isPromptingRef.current = true;
+
+          // Defer the confirm dialog to free up the thread
+          setTimeout(async () => {
+            const userWantsToExit = window.confirm(
+              "Changes you made may not be saved.",
+            );
+
+            isPromptingRef.current = false;
+
+            if (userWantsToExit) {
+              forceCloseRef.current = true;
+              // destroy() forces an immediate shutdown, bypassing the close event loop
+              await appWindow.destroy();
+            }
+          }, 50);
+
+          return;
+        }
       });
     };
 
-    setupListener();
+    setup();
 
     return () => {
       if (unlisten) unlisten();

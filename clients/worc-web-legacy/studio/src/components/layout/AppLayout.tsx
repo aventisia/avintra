@@ -37,9 +37,9 @@ export const AppLayout = () => {
   );
 
   // Prevent closing the Tauri app while an execution is in progress
-  usePreventClose(
-    executionState === "executing" || executionState === "paused",
-  );
+  usePreventClose({
+    isProcessing: executionState === "executing" || executionState === "paused",
+  });
 
   useTauriUserMetadata();
 
@@ -74,7 +74,10 @@ export const AppLayout = () => {
         // Filter Action Categories based on visibility
         actionCategories: primary.actionCategories
           .filter((actionCategory) =>
-            canWeRenderNodeOrCategory(actionCategory.doNotRenderIf, deploymentType),
+            canWeRenderNodeOrCategory(
+              actionCategory.doNotRenderIf,
+              deploymentType,
+            ),
           )
 
           // For visible categories, also filter individual actions
