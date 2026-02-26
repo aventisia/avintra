@@ -33,6 +33,7 @@ public class WorkspaceDbContext : DbContext
         modelBuilder.Entity<MachineFlow>().HasQueryFilter(qf => qf.TenantId == CurrentTenantId);
         modelBuilder.Entity<FlowUser>().HasQueryFilter(qf => qf.TenantId == CurrentTenantId);
         modelBuilder.Entity<FlowVersion>().HasQueryFilter(qf => qf.TenantId == CurrentTenantId);
+        modelBuilder.Entity<FlowVersionHistory>().HasQueryFilter(qf => qf.TenantId == CurrentTenantId);
         modelBuilder.Entity<Queue>().HasQueryFilter(qf => qf.TenantId == CurrentTenantId);
         modelBuilder.Entity<QueueFlowVersion>().HasQueryFilter(qf => qf.TenantId == CurrentTenantId);
         modelBuilder.Entity<QueueTransaction>().HasQueryFilter(qf => qf.TenantId == CurrentTenantId);
@@ -50,7 +51,7 @@ public class WorkspaceDbContext : DbContext
         modelBuilder.Entity<WorkspaceUser>().HasIndex(index => index.UserName).IsUnique();
         modelBuilder.Entity<Flow>().HasIndex(index => new { index.CreatedByUserId, index.Name }).IsUnique();
         modelBuilder.Entity<SupportTicket>().HasIndex(index => index.TicketNumber).IsUnique();
-        
+
         // Enum to string conversion
         modelBuilder.Entity<Notification>().Property(e => e.Type).HasConversion(new EnumToStringConverter<NotificationTypesEnum>());
         modelBuilder.Entity<Flow>().Property(e => e.Type).HasConversion(new EnumToStringConverter<FlowTypesEnum>());
@@ -76,7 +77,7 @@ public class WorkspaceDbContext : DbContext
         modelBuilder.Entity<OnPremModel>().Property(e => e.ProviderType).HasConversion(new EnumToStringConverter<OnPremModelProviderEnum>());
         modelBuilder.Entity<OnPremModel>().Property(e => e.Status).HasConversion(new EnumToStringConverter<OnPremModelStatusEnum>());
         modelBuilder.Entity<WorkItemEvent>().Property(e => e.EventType).HasConversion(new EnumToStringConverter<WorkItemEventTypesEnum>());
-        
+
         // Configure Many-to-Many relationship between User and Notification
         modelBuilder.Entity<WorkspaceUser>().HasMany(many => many.NotificationUsers).WithOne(one => one.User).HasForeignKey(fKey => fKey.UserId).IsRequired();
         modelBuilder.Entity<Notification>().HasMany(many => many.NotificationUsers).WithOne(one => one.Notification).HasForeignKey(fKey => fKey.NotificationId).IsRequired();
@@ -84,7 +85,7 @@ public class WorkspaceDbContext : DbContext
         // Configure Many-to-Many relationship between Machine and flow
         modelBuilder.Entity<Machine>().HasMany(many => many.MachineFlows).WithOne(one => one.Machine).HasForeignKey(fKey => fKey.MachineId).IsRequired();
         modelBuilder.Entity<FlowVersion>().HasMany(many => many.MachineFlows).WithOne(one => one.FlowVersion).HasForeignKey(fKey => fKey.FlowVersionId).IsRequired();
-        
+
         // Configure Many-to-Many relationship between queue and user (@rahmat, this does not seems to be correct many to many relationship)
         modelBuilder.Entity<Queue>().HasMany(many => many.QueueUsers).WithOne(one => one.Queue).HasForeignKey(fKey => fKey.QueueId).IsRequired();
         modelBuilder.Entity<FlowVersion>().HasMany(many => many.QueueFlowVersions).WithOne(one => one.FlowVersion).HasForeignKey(fKey => fKey.FlowVersionId).IsRequired();
@@ -118,12 +119,13 @@ public class WorkspaceDbContext : DbContext
         // Configure One-to-One relationship between SupportTicket and WorkspaceUser
         modelBuilder.Entity<SupportTicket>().HasOne(one => one.CreatedByUser).WithMany().HasForeignKey(f => f.CreatedByUserId).OnDelete(DeleteBehavior.Restrict);
         modelBuilder.Entity<SupportTicket>().HasOne(one => one.LastModifiedByUser).WithMany().HasForeignKey(f => f.LastModifiedByUserId).OnDelete(DeleteBehavior.Restrict);
-        
+
         // Configure One-to-Many relationship between FlowVersion and TriggerFlowVersions (@rahmat, Validate)
-        modelBuilder.Entity<TimeTriggersFlowVersion>().HasOne(one => one.Trigger).WithMany(many => many.TimeTriggerFlowVersions).HasForeignKey(fKey => fKey.FlowVersionId).IsRequired().OnDelete(DeleteBehavior.Cascade);;
+        modelBuilder.Entity<TimeTriggersFlowVersion>().HasOne(one => one.Trigger).WithMany(many => many.TimeTriggerFlowVersions).HasForeignKey(fKey => fKey.FlowVersionId).IsRequired().OnDelete(DeleteBehavior.Cascade); ;
 
         // Configure One-to-Many relationship between TimeTriggersFlowVersion and Trigger (@rahmat, Validate)
         modelBuilder.Entity<TimeTriggersFlowVersion>().HasOne(one => one.Trigger).WithMany(many => many.TimeTriggerFlowVersions).HasForeignKey(fKey => fKey.TriggerId).OnDelete(DeleteBehavior.Cascade);
+        modelBuilder.Entity<FlowVersionHistory>().HasOne(one => one.FlowVersion).WithMany(many => many.FlowVersionHistories).HasForeignKey(fKey => fKey.FlowVersionId).OnDelete(DeleteBehavior.Cascade);
     }
     // On Save Changes - write tenant Id to table
     public override int SaveChanges()
@@ -169,6 +171,7 @@ public class WorkspaceDbContext : DbContext
     public DbSet<ProjectTemplate> ProjectTemplates { get; set; }
     public DbSet<TemplateResource> TemplateResources { get; set; }
     public DbSet<FlowVersion> FlowVersions { get; set; }
+    public DbSet<FlowVersionHistory> FlowVersionHistories { get; set; }
     public DbSet<Queue> Queues { get; set; }
     public DbSet<QueueTransaction> QueueTransactions { get; set; }
     public DbSet<QueueUser> QueueUsers { get; set; }
