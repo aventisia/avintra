@@ -3,13 +3,13 @@ namespace WorkspaceAPIs.Features.CloudConnectors.M365.SharePoint;
 public enum M365SharePointActionsEnum
 {
     // File / Document Library Actions
-    GetFileById,
-    GetFileByPath,
-    GetFilesInFolder,
     UploadFile,
     UpdateFile,
     DeleteFile,
     DownloadFile,
+    GetFileById,
+    GetFileByPath,
+    GetDriveFiles,
     CopyFile,
     MoveFile,
     CheckOutFile,
@@ -36,10 +36,10 @@ public enum M365SharePointActionsEnum
     DeleteList,
 
     // Site Actions
+    GetSites,
+    CreateSite,
     GetSiteById,
     GetSiteByUrl,
-    GetSubSites,
-    CreateSubSite,
     UpdateSiteProperties,
     DeleteSite,
 
