@@ -2,7 +2,7 @@
   "name": "GetEmailsByFolder",
   "description": "Retrieves a list of emails from a specified folder within a Microsoft 365 mailbox using the Microsoft Graph API.",
   "version": "1.0.0",
-  "author": "rahmat",
+  "author": "@rahmat",
   "fields": [
     {
       "direction": "Input",

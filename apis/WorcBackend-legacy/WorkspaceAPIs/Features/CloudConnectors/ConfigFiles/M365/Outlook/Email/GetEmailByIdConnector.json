@@ -2,7 +2,7 @@
   "name": "GetEmailById",
   "description": "Retrieves a single email message from a Microsoft 365 Outlook mailbox using its Message ID. Optionally includes attachment details.",
   "version": "1.0.0",
-  "author": "rahmat",
+  "author": "@rahmat",
   "fields": [
     {
       "direction": "Input",

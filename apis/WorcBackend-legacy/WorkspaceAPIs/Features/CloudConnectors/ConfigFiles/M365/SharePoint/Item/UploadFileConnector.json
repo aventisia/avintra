@@ -1,0 +1,59 @@
+{
+  "name": "UploadFile",
+  "description": "Uploads a file or item to Microsoft 365 SharePoint via Microsoft Graph API.",
+  "version": "1.0.0",
+  "author": "@rahmat",
+  "fields": [
+    {
+      "direction": "Input",
+      "type": "credentials-select",
+      "name": "__CredentialId__M365",
+      "label": "M365 Credential",
+      "description": "Microsoft 365 credential used to authenticate and upload files via Microsoft Graph API.",
+      "defaultValue": ""
+    },
+    {
+      "direction": "Input",
+      "type": "text",
+      "name": "DrivePath",
+      "label": "Drive Path",
+      "description": "The full SharePoint folder URL where the file will be uploaded (e.g., https://company.sharepoint.com/sites/SiteName/Shared Documents/Folder).",
+      "defaultValue": ""
+    },
+    {
+      "direction": "Input",
+      "type": "text",
+      "name": "FileName",
+      "label": "File Name",
+      "description": "The name of the file to create or replace in the target folder.",
+      "defaultValue": ""
+    },
+    {
+      "direction": "Input",
+      "type": "text",
+      "name": "ContentType",
+      "label": "Content Type",
+      "description": "The MIME type of the file (e.g., text/plain, application/json) or 'Base64' if content is base64-encoded.",
+      "defaultValue": "text/plain"
+    },
+    {
+      "direction": "Input",
+      "type": "text",
+      "name": "ContentBytes",
+      "label": "Content Bytes",
+      "description": "The file content as UTF-8 text or Base64 string depending on ContentType.",
+      "defaultValue": ""
+    },
+    {
+      "direction": "Output",
+      "type": "config-panel-output",
+      "name": "Result",
+      "label": "Result",
+      "description": "Returns metadata of the uploaded file, including ID, URL, and properties.",
+      "defaultValue": {
+        "value": "Result",
+        "enabled": true
+      }
+    }
+  ]
+}

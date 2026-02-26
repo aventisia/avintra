@@ -2,7 +2,7 @@
   "name": "UpdateAllEmailProperties",
   "description": "Updates multiple properties of an email message in a Microsoft 365 Outlook mailbox, including read status, flag status, categories, and importance.",
   "version": "1.0.0",
-  "author": "rahmat",
+  "author": "@rahmat",
   "fields": [
     {
       "direction": "Input",

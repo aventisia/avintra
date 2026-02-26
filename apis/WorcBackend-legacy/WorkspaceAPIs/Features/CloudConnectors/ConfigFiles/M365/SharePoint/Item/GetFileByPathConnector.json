@@ -1,0 +1,35 @@
+{
+  "name": "GetFileByPath",
+  "description": "Retrieves a file or item from Microsoft 365 SharePoint using its full path via Microsoft Graph API.",
+  "version": "1.0.0",
+  "author": "@rahmat",
+  "fields": [
+    {
+      "direction": "Input",
+      "type": "credentials-select",
+      "name": "__CredentialId__M365",
+      "label": "M365 Credential",
+      "description": "Microsoft 365 credential used to authenticate and access SharePoint files via Microsoft Graph API.",
+      "defaultValue": ""
+    },
+    {
+      "direction": "Input",
+      "type": "text",
+      "name": "FilePath",
+      "label": "File Path",
+      "description": "The full path of the file in SharePoint or OneDrive (e.g., https://company.sharepoint.com/sites/SiteName/Shared Documents/File.txt).",
+      "defaultValue": ""
+    },
+    {
+      "direction": "Output",
+      "type": "config-panel-output",
+      "name": "Result",
+      "label": "Result",
+      "description": "Returns the file metadata and content details.",
+      "defaultValue": {
+        "value": "Result",
+        "enabled": true
+      }
+    }
+  ]
+}

@@ -1,0 +1,35 @@
+{
+  "name": "GetDriveFiles",
+  "description": "Retrieves the list of files and folders from a Microsoft 365 SharePoint folder via Microsoft Graph API.",
+  "version": "1.0.0",
+  "author": "@rahmat",
+  "fields": [
+    {
+      "direction": "Input",
+      "type": "credentials-select",
+      "name": "__CredentialId__M365",
+      "label": "M365 Credential",
+      "description": "Microsoft 365 credential used to authenticate and retrieve items from SharePoint via Microsoft Graph API.",
+      "defaultValue": ""
+    },
+    {
+      "direction": "Input",
+      "type": "text",
+      "name": "DrivePath",
+      "label": "Drive Path",
+      "description": "The full SharePoint folder URL whose items should be retrieved (e.g., https://company.sharepoint.com/sites/SiteName/Shared Documents/Folder).",
+      "defaultValue": ""
+    },
+    {
+      "direction": "Output",
+      "type": "config-panel-output",
+      "name": "Result",
+      "label": "Result",
+      "description": "Returns a list of items (files and folders) in the specified folder, including metadata like name, ID, and URL.",
+      "defaultValue": {
+        "value": "Result",
+        "enabled": true
+      }
+    }
+  ]
+}

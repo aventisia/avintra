@@ -2,7 +2,7 @@
   "name": "CreateMailFolder",
   "description": "Creates a new folder in a specified Microsoft 365 mailbox using the Microsoft Graph API.",
   "version": "1.0.0",
-  "author": "rahmat",
+  "author": "@rahmat",
   "fields": [
     {
       "direction": "Input",

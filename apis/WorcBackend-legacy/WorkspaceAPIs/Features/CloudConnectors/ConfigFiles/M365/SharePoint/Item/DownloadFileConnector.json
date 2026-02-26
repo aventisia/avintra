@@ -1,0 +1,35 @@
+{
+  "name": "DownloadFile",
+  "description": "Downloads a file from Microsoft 365 SharePoint via Microsoft Graph API.",
+  "version": "1.0.0",
+  "author": "@rahmat",
+  "fields": [
+    {
+      "direction": "Input",
+      "type": "credentials-select",
+      "name": "__CredentialId__M365",
+      "label": "M365 Credential",
+      "description": "Microsoft 365 credential used to authenticate and download files from SharePoint via Microsoft Graph API.",
+      "defaultValue": ""
+    },
+    {
+      "direction": "Input",
+      "type": "text",
+      "name": "FilePath",
+      "label": "File Path",
+      "description": "The full SharePoint file URL to download (e.g., https://company.sharepoint.com/sites/SiteName/Shared Documents/File.pdf).",
+      "defaultValue": ""
+    },
+    {
+      "direction": "Output",
+      "type": "config-panel-output",
+      "name": "Result",
+      "label": "Result",
+      "description": "Returns the file content (as Base64 or byte array) and metadata such as file name, size, and URL.",
+      "defaultValue": {
+        "value": "Result",
+        "enabled": true
+      }
+    }
+  ]
+}

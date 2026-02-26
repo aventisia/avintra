@@ -2,7 +2,7 @@
   "name": "GetMailFolders",
   "description": "Retrieves a list of mail folders from a specified Microsoft 365 mailbox using the Microsoft Graph API. Allows you to include or exclude hidden folders.",
   "version": "1.0.0",
-  "author": "rahmat",
+  "author": "@rahmat",
   "fields": [
     {
       "direction": "Input",

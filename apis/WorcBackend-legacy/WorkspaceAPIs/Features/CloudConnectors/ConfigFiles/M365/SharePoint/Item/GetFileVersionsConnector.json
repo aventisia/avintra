@@ -1,0 +1,35 @@
+{
+  "name": "GetFileVersions",
+  "description": "Retrieves the version history of a file in Microsoft 365 SharePoint via Microsoft Graph API.",
+  "version": "1.0.0",
+  "author": "@rahmat",
+  "fields": [
+    {
+      "direction": "Input",
+      "type": "credentials-select",
+      "name": "__CredentialId__M365",
+      "label": "M365 Credential",
+      "description": "Microsoft 365 credential used to authenticate and retrieve file versions in SharePoint via Microsoft Graph API.",
+      "defaultValue": ""
+    },
+    {
+      "direction": "Input",
+      "type": "text",
+      "name": "FilePath",
+      "label": "File Path",
+      "description": "The full SharePoint file URL to retrieve versions for (e.g., https://company.sharepoint.com/sites/SiteName/Shared Documents/File.txt).",
+      "defaultValue": ""
+    },
+    {
+      "direction": "Output",
+      "type": "config-panel-output",
+      "name": "Result",
+      "label": "Result",
+      "description": "Returns the version history of the file, including version IDs, modified dates, and metadata for each version.",
+      "defaultValue": {
+        "value": "Result",
+        "enabled": true
+      }
+    }
+  ]
+}

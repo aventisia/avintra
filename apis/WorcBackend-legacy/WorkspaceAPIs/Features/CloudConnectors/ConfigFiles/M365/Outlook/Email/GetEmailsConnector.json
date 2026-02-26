@@ -2,7 +2,7 @@
   "name": "GetEmails",
   "description": "Retrieves email messages from a Microsoft 365 Outlook mailbox using Microsoft Graph API. Supports filtering by folder, sender, recipients, subject, unread status, importance, and attachment presence.",
   "version": "1.0.0",
-  "author": "rahmat",
+  "author": "@rahmat",
   "fields": [
     {
       "direction": "Input",

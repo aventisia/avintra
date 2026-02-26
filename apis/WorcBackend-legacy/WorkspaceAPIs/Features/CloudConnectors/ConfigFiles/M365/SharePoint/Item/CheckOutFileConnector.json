@@ -1,0 +1,35 @@
+{
+  "name": "CheckOutFile",
+  "description": "Checks out a file in Microsoft 365 SharePoint via Microsoft Graph API to enable editing.",
+  "version": "1.0.0",
+  "author": "@rahmat",
+  "fields": [
+    {
+      "direction": "Input",
+      "type": "credentials-select",
+      "name": "__CredentialId__M365",
+      "label": "M365 Credential",
+      "description": "Microsoft 365 credential used to authenticate and check out files in SharePoint via Microsoft Graph API.",
+      "defaultValue": ""
+    },
+    {
+      "direction": "Input",
+      "type": "text",
+      "name": "FilePath",
+      "label": "File Path",
+      "description": "The full SharePoint file URL to check out (e.g., https://company.sharepoint.com/sites/SiteName/Shared Documents/File.txt).",
+      "defaultValue": ""
+    },
+    {
+      "direction": "Output",
+      "type": "config-panel-output",
+      "name": "Result",
+      "label": "Result",
+      "description": "Returns metadata of the checked-out file, including ID, URL, and checkout status.",
+      "defaultValue": {
+        "value": "Result",
+        "enabled": true
+      }
+    }
+  ]
+}
