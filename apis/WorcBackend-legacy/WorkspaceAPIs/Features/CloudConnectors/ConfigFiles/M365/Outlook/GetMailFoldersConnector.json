@@ -22,7 +22,7 @@
     },
     {
       "direction": "Input",
-      "type": "boolean",
+      "type": "switch",
       "name": "IncludeHiddenFolders",
       "label": "Include Hidden Folders",
       "description": "Specifies whether hidden folders should be included in the list of retrieved folders. Set to 'true' to include hidden folders, 'false' to exclude them.",

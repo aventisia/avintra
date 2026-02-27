@@ -30,7 +30,7 @@
     },
     {
       "direction": "Input",
-      "type": "boolean",
+      "type": "switch",
       "name": "IsHidden",
       "label": "Visibility",
       "description": "Indicates whether the folder should be hidden from the mailbox view. Set to 'true' to hide, or 'false' to make it visible.",

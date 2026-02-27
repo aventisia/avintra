@@ -26,11 +26,11 @@
       "name": "MessageId",
       "label": "Message ID",
       "description": "The unique ID of the email message to retrieve.",
-      "defaultValue": "MessageId"
+      "defaultValue": ""
     },
     {
       "direction": "Input",
-      "type": "boolean",
+      "type": "switch",
       "name": "IncludeAttachments",
       "label": "Include Attachments",
       "description": "If true, includes attachment details in the retrieved email.",

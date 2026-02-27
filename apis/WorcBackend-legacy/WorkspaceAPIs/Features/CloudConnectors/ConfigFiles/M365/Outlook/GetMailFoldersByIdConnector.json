@@ -26,7 +26,7 @@
       "name": "FolderId",
       "label": "Folder ID",
       "description": "The unique ID of the folder from which emails will be retrieved.",
-      "defaultValue": "folder_id"
+      "defaultValue": ""
     },
     {
       "direction": "Output",

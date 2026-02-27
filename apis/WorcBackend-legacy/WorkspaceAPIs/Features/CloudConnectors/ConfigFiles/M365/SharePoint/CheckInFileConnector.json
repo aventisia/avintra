@@ -33,12 +33,24 @@
       "type": "select",
       "name": "CheckInType",
       "label": "Check-In Type",
-      "description": "Specifies the type of check-in. Options: Minor, Major, Simple.",
+      "description": "Specifies the type of check-in.",
       "defaultValue": "Simple",
-      "options": [
-        { "label": "Minor", "value": "Minor" },
-        { "label": "Major", "value": "Major" },
-        { "label": "Simple", "value": "Simple" }
+      "selectOptions": [
+        {
+          "label": "Minor",
+          "value": "Minor",
+          "description": "Minor check-in type"
+        },
+        {
+          "label": "Major",
+          "value": "Major",
+          "description": "Major check-in type"
+        },
+        {
+          "label": "Simple",
+          "value": "Simple",
+          "description": "Simple check-in type"
+        }
       ]
     },
     {
