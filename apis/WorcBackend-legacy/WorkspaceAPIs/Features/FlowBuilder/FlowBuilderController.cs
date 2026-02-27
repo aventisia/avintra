@@ -19,11 +19,11 @@ public class FlowBuilderController : BaseApiController
         return ResultHelper(await _flowBuilderService.GetFlowToLoadAsync(flowId, versionId));
     }
 
-    // Updates the flow's nodes, edges, etc. silently in the background whenever the user makes any changes
-    [HttpPut("silent-update")]
-    public async Task<ActionResult<ServiceResponse<bool>>> UpdateFlowSilently([FromBody] FlowSilentUpdateDto flowSilentUpdateDto)
+    // Updates the flow's nodes, edges, etc. and saves the flow version in the database.
+    [HttpPut("save")]
+    public async Task<ActionResult<ServiceResponse<bool>>> SaveFlow([FromBody] FlowSilentUpdateDto flowSilentUpdateDto)
     {
-        return ResultHelper(await _flowBuilderService.UpdateFlowSilentlyAsync(flowSilentUpdateDto));
+        return ResultHelper(await _flowBuilderService.SaveFlowVersionAsync(flowSilentUpdateDto));
     }
 
     // Updates the IsPublished,flow's nodes, edges, etc. silently in the background whenever the user makes any changes
