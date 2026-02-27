@@ -1,0 +1,21 @@
+meta {
+  name: Required - Get flow to load
+  type: http
+  seq: 2
+}
+
+get {
+  url: {{WORC_APIS_BASE_URL}}/flow/load/{{FLOW_ID}}
+  body: none
+  auth: bearer
+}
+
+auth:bearer {
+  token: {{ACCESS_TOKEN}}
+}
+
+script:post-response {
+  if(res.getStatus() == 200){
+      bru.setGlobalEnvVar("FLOW_VERSION_ID", res.getBody().data.versionId);
+  }
+}

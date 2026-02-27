@@ -1,0 +1,29 @@
+meta {
+  name: Clone as flow version
+  type: http
+  seq: 7
+}
+
+post {
+  url: {{WORC_APIS_BASE_URL}}/flow-version-history/clone-flow-version
+  body: json
+  auth: bearer
+}
+
+auth:bearer {
+  token: {{ACCESS_TOKEN}}
+}
+
+body:json {
+  {
+    "id": "{{FLOW_VERSION_HISTORY_ID}}",
+    "flowVersionId": "{{FLOW_VERSION_ID}}",
+    "versionNumber": 1,
+    "flowId": "{{FLOW_ID}}",
+    "flowName": "test_agent",
+    "createdBy": "Rahmat Ali",
+    "createdByUsername": "rahmat@aventisia.com",
+    "createdOn": "2026-02-27T05:20:12.375132+00:00",
+    "createdByUserInitials": "RA"
+  }
+}
