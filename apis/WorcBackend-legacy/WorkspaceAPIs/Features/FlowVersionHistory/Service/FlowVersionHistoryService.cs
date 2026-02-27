@@ -33,6 +33,7 @@ public class FlowVersionHistoryService : IFlowVersionHistoryService
             // Sort the results by CreatedOn in descending order to get the latest versions first
             var records = await _unitOfWork.FlowVersionHistoryRepo
                 .GetByConditionAsync(w => w.FlowVersionId == flowVersionId)
+                .Include(i => i.CreatedByUser)
                 .Include(i => i.FlowVersion)
                     .ThenInclude(i2 => i2.Flow)
                 .OrderByDescending(o => o.CreatedOn)
@@ -69,6 +70,7 @@ public class FlowVersionHistoryService : IFlowVersionHistoryService
             // Attempt to find the flow version history by its Id
             var flowVersionHistory = await _unitOfWork.FlowVersionHistoryRepo
                 .GetByConditionAsync(w => w.Id == flowVersionHistoryId)
+                .Include(i => i.CreatedByUser)
                 .Include(i => i.FlowVersion)
                     .ThenInclude(i2 => i2.Flow)
                 .SingleOrDefaultAsync();
@@ -289,5 +291,98 @@ public class FlowVersionHistoryService : IFlowVersionHistoryService
 
         // Return the final service response
         return serviceResponse;
+    }
+
+    public async Task<ServiceResponse<bool>> CreateHistoryIfReactFlowChangedAsync(FlowVersion flowVersion, FlowSilentUpdateDto flowSilentUpdateDto)
+    {
+        // Initialize the service response with default values (no changes detected)
+        var serviceResponse = new ServiceResponse<bool>
+        {
+            Data = false,
+            Message = "No changes detected in React flow."
+        };
+
+        try
+        {
+            // Helper method: Normalize JSON string for accurate comparison
+            // Converts null/empty strings to "{}" and serializes JSON in a consistent format
+            string NormalizeJson(string? json)
+            {
+                if (string.IsNullOrWhiteSpace(json))
+                    return "{}";
+
+                using var doc = JsonDocument.Parse(json);
+                return System.Text.Json.JsonSerializer.Serialize(doc.RootElement);
+            }
+
+            // Compare existing and new ReactFlow JSON after normalization
+            bool hasChanged = NormalizeJson(flowVersion.ReactFlowObject) != NormalizeJson(flowSilentUpdateDto.ReactFlowObject);
+
+            // Exit early if no changes detected
+            if (!hasChanged)
+            {
+                serviceResponse.StatusCode = 200;
+                serviceResponse.Message = "React flow content has not changed. No history record created.";
+                return serviceResponse;
+            }
+
+            // Create a new FlowVersionHistory record using the OLD values
+            // This preserves the previous state before any changes, which is crucial for versioning
+            var flowVersionHistory = new FlowVersionHistory
+            {
+                FlowVersionId = flowVersion.Id,
+                ReactFlowObject = flowSilentUpdateDto.ReactFlowObject,
+                FlowVariablesObject = flowSilentUpdateDto.FlowVariablesObject,
+                InputOutputObject = flowSilentUpdateDto.InputOutputObject,
+                CreatedByUserId = _userId,
+                LastModifiedByUserId = _userId,
+                CreatedOn = DateTimeOffset.UtcNow
+            };
+
+            // Insert the new history record into the repository
+            await _unitOfWork.FlowVersionHistoryRepo.InsertAsync(flowVersionHistory);
+
+            // Save changes to the database and check for failure
+            if (!await _unitOfWork.SaveAsync())
+            {
+                _logger.LogWarning("SaveChanges failed while inserting flow version history record.");
+                return serviceResponse;
+            }
+
+            // Fetch all history records for this FlowVersion, ordered by newest first
+            var flowVersionHistories = await _unitOfWork.FlowVersionHistoryRepo
+                .GetByConditionAsync(x => x.FlowVersionId == flowVersion.Id)
+                .OrderByDescending(x => x.CreatedOn)
+                .AsNoTracking()
+                .ToListAsync();
+
+            // Keep only the latest 100 history records to avoid excessive data growth
+            if (flowVersionHistories.Count > 100)
+            {
+                var historiesToDelete = flowVersionHistories.Skip(100).ToList();
+
+                _unitOfWork.FlowVersionHistoryRepo.Delete(historiesToDelete);
+
+                // Save changes after deleting old records and check for failure
+                if (!await _unitOfWork.SaveAsync())
+                {
+                    _logger.LogWarning("SaveChanges failed while deleting old flow version history records.");
+                    return serviceResponse;
+                }
+            }
+
+            // Successfully created a new history record
+            serviceResponse.StatusCode = 200;
+            serviceResponse.Data = true;
+            serviceResponse.Message = "Flow version history record created successfully.";
+
+            return serviceResponse;
+        }
+        catch (Exception ex)
+        {
+            // Log any unexpected exceptions
+            _logger.LogError(ex, $"Error occurred while creating history for FlowVersionId: {flowVersion.Id}");
+            return serviceResponse;
+        }
     }
 }

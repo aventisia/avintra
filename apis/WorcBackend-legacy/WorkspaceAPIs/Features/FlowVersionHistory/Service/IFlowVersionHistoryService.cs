@@ -43,4 +43,14 @@ public interface IFlowVersionHistoryService
     /// <param name="flowVersionHistoryIds">A collection of unique identifiers of the records to delete.</param>
     /// <returns>A <see cref="ServiceResponse{T}"/> indicating whether the deletions were successful.</returns>
     Task<ServiceResponse<bool>> DeleteMultipleAsync(IEnumerable<Guid> flowVersionHistoryIds);
+
+    /// <summary>
+    /// Creates a history record for the flow version if the ReactFlow JSON has been modified.
+    /// </summary>
+    /// <param name="flowVersion">The existing flow version entity to compare against.</param>
+    /// <param name="flowSilentUpdateDto">The DTO containing the updated ReactFlow JSON.</param>
+    /// <returns>
+    /// A <see cref="ServiceResponse{T}"/> indicating whether a new history record was successfully created.
+    /// </returns>
+    Task<ServiceResponse<bool>> CreateHistoryIfReactFlowChangedAsync(FlowVersion flowVersion, FlowSilentUpdateDto flowSilentUpdateDto);
 }
