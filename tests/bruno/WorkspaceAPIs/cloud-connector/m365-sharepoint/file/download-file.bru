@@ -1,0 +1,29 @@
+meta {
+  name: Download file
+  type: http
+  seq: 6
+}
+
+post {
+  url: {{WORC_APIS_BASE_URL}}/cloud-connector/m365/sharepoint/invoke
+  body: json
+  auth: bearer
+}
+
+auth:bearer {
+  token: {{ACCESS_TOKEN}}
+}
+
+body:json {
+  {
+    "agentId": "00000000-0000-0000-0000-000000000000",
+    "agentName": "Test",
+    "provider": "M365Outlook",
+    "action": "DownloadFile",
+    "credentialId": "DUMMY",
+    "payload": {
+      "FilePath": "https://aventisia.sharepoint.com/sites/AventisiasProducts/Shared%20Documents/Product%20Development/Aventisia%20Brand%20Guidelines.pdf"
+    }
+  }
+  
+}
