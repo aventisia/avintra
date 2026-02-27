@@ -1,0 +1,25 @@
+meta {
+  name: Update flow silently
+  type: http
+  seq: 3
+}
+
+put {
+  url: {{WORC_APIS_BASE_URL}}/flow/save
+  body: json
+  auth: bearer
+}
+
+auth:bearer {
+  token: {{ACCESS_TOKEN}}
+}
+
+body:json {
+  {
+    "id": "{{FLOW_ID}}",
+    "thumbnail": "none",
+    "reactFlowObject": "{\"nodes\":[{\"id\":\"ec04c0b0-6fab-4b88-902e-3373450deb4b\",\"type\":\"triggerNode\",\"data\":{\"type\":\"triggerNode\",\"category\":\"Triggers\",\"name\":\"manualTrigger\",\"label\":\"Manual trigger\",\"description\":\"Start your flow clicking the execute button\",\"icon\":\"ManualTriggerIcon\"},\"position\":{\"x\":128,\"y\":0},\"sourcePosition\":\"bottom\",\"deletable\":false,\"dragHandle\":\".custom-drag-handle\",\"measured\":{\"width\":56,\"height\":24},\"targetPosition\":\"top\"},{\"id\":\"c6e7f4db-ca87-415a-9a6d-5bbdae428b93\",\"type\":\"activityNode\",\"dragHandle\":\".custom-drag-handle\",\"data\":{\"type\":\"activityNode\",\"name\":\"GetEmailsActivity\",\"label\":\"Get Emails\",\"description\":\"Retrieves top 10 emails from the Inbox folder using Microsoft Graph API.\",\"docsLink\":\"https://docs.aventisia.com\",\"img\":\"/assets/M365.svg\"},\"position\":{\"x\":0,\"y\":64},\"deletable\":true,\"draggable\":true,\"selectable\":true,\"targetPosition\":\"top\",\"sourcePosition\":\"bottom\",\"measured\":{\"width\":312,\"height\":85}},{\"id\":\"93639df4-c3e4-4e38-93b5-6167490a2b3b\",\"type\":\"flowEndNode\",\"position\":{\"x\":128,\"y\":189},\"deletable\":false,\"draggable\":true,\"selectable\":false,\"targetPosition\":\"top\",\"sourcePosition\":\"bottom\",\"measured\":{\"width\":56,\"height\":24}}],\"edges\":[{\"id\":\"9f8a4d62-bc03-4525-984f-b5026f449a7b\",\"source\":\"ec04c0b0-6fab-4b88-902e-3373450deb4b\",\"target\":\"c6e7f4db-ca87-415a-9a6d-5bbdae428b93\",\"markerEnd\":\"markerArrow_9f8a4d62-bc03-4525-984f-b5026f449a7b\",\"deletable\":true,\"label\":\"plus\"},{\"id\":\"a9720ff5-157a-4c88-9242-b2d76c86cfc8\",\"source\":\"c6e7f4db-ca87-415a-9a6d-5bbdae428b93\",\"target\":\"93639df4-c3e4-4e38-93b5-6167490a2b3b\",\"markerEnd\":\"markerArrow_a9720ff5-157a-4c88-9242-b2d76c86cfc8\",\"deletable\":true,\"label\":\"plus\"}],\"viewport\":{\"x\":624,\"y\":92.5,\"zoom\":2}}",
+    "inputOutputObject": "",
+    "versionId": "{{FLOW_VERSION_ID}}"
+  }
+}
