@@ -1,9 +1,9 @@
 use serde::Serialize;
-use std::sync::atomic::{ AtomicU64, AtomicU8, Ordering };
+use std::sync::atomic::{AtomicU64, AtomicU8, Ordering};
 use std::sync::Arc;
 use tauri::async_runtime::JoinHandle;
-use tauri::{ ipc::Channel, AppHandle, State, Url };
-use tauri_plugin_updater::{ Update, UpdaterExt };
+use tauri::{ipc::Channel, AppHandle, State, Url};
+use tauri_plugin_updater::{Update, UpdaterExt};
 use tokio::sync::Mutex;
 
 /* STATE MANAGEMENT
@@ -64,9 +64,9 @@ pub struct UpdateMetadata {
  */
 #[derive(Serialize, Clone, Debug)]
 pub struct DownloadProgress {
-    pub downloaded: u64, // cumulative bytes downloaded so far
-    pub total: Option<u64>, // total size if known
-    pub percentage: u8, // best-effort percentage (0–100)
+    pub downloaded: u64,        // cumulative bytes downloaded so far
+    pub total: Option<u64>,     // total size if known
+    pub percentage: u8,         // best-effort percentage (0–100)
     pub status: ProgressStatus, // current phase of update lifecycle
 }
 
@@ -118,7 +118,7 @@ impl UpdateError {
 pub async fn check_update_for_domain(
     app: AppHandle,
     state: State<'_, PendingUpdate>,
-    domain: String
+    domain: String,
 ) -> Result<UpdateMetadata, UpdateError> {
     let current_version = app.package_info().version.to_string();
 
@@ -135,9 +135,8 @@ pub async fn check_update_for_domain(
 
     println!("[updater] checking update at {}", endpoint);
 
-    let url = Url::parse(&endpoint).map_err(|e|
-        UpdateError::new("URL_PARSE_ERROR", e.to_string())
-    )?;
+    let url =
+        Url::parse(&endpoint).map_err(|e| UpdateError::new("URL_PARSE_ERROR", e.to_string()))?;
 
     // Build updater dynamically so we can control the endpoint
     let update = app
@@ -146,7 +145,8 @@ pub async fn check_update_for_domain(
         .map_err(|e| UpdateError::new("BUILDER_ERROR", e.to_string()))?
         .build()
         .map_err(|e| UpdateError::new("BUILD_ERROR", e.to_string()))?
-        .check().await
+        .check()
+        .await
         .map_err(|e| UpdateError::new("CHECK_ERROR", e.to_string()))?;
 
     let mut state_lock = state.0.lock().await;
@@ -203,7 +203,7 @@ pub async fn check_update_for_domain(
 #[tauri::command]
 pub async fn download_update(
     state: State<'_, PendingUpdate>,
-    on_progress: Channel<DownloadProgress>
+    on_progress: Channel<DownloadProgress>,
 ) -> Result<(), UpdateError> {
     // Preparation: Get the update object and clone the state ARC for the background task
     let (update, state_arc) = {
@@ -220,7 +220,8 @@ pub async fn download_update(
             return Ok(());
         }
 
-        let update = lock.update
+        let update = lock
+            .update
             .clone()
             .ok_or_else(|| UpdateError::new("NO_UPDATE", "No pending update"))?;
         (update, state.0.clone())
@@ -245,54 +246,57 @@ pub async fn download_update(
         let last_sent_percentage = Arc::new(AtomicU8::new(255));
         let last_sent_bytes = Arc::new(AtomicU64::new(0));
 
-        let download_result = update.download(
-            {
-                let downloaded_bytes = downloaded_bytes.clone();
-                let total_bytes = total_bytes.clone();
-                let last_pct = last_sent_percentage.clone();
-                let last_bytes = last_sent_bytes.clone();
-                let progress_channel = progress_channel.clone();
+        let download_result = update
+            .download(
+                {
+                    let downloaded_bytes = downloaded_bytes.clone();
+                    let total_bytes = total_bytes.clone();
+                    let last_pct = last_sent_percentage.clone();
+                    let last_bytes = last_sent_bytes.clone();
+                    let progress_channel = progress_channel.clone();
 
-                // Progress Callback
-                move |chunk_length, total_opt| {
-                    let chunk = chunk_length as u64;
-                    let cumulative = downloaded_bytes.fetch_add(chunk, Ordering::Relaxed) + chunk;
+                    // Progress Callback
+                    move |chunk_length, total_opt| {
+                        let chunk = chunk_length as u64;
+                        let cumulative =
+                            downloaded_bytes.fetch_add(chunk, Ordering::Relaxed) + chunk;
 
-                    if let Some(total) = total_opt {
-                        total_bytes.store(total as u64, Ordering::Relaxed);
+                        if let Some(total) = total_opt {
+                            total_bytes.store(total as u64, Ordering::Relaxed);
+                        }
+                        let total = total_bytes.load(Ordering::Relaxed);
+                        let total_opt = if total > 0 { Some(total) } else { None };
+
+                        let percentage = if total > 0 {
+                            (((cumulative as f64) / (total as f64)) * 100.0).min(99.0) as u8
+                        } else {
+                            0
+                        };
+
+                        // Throttling: Only send updates if % changed significantly or bytes > 2MB
+                        // This prevents spamming the frontend channel
+                        let pct_delta = percentage.saturating_sub(last_pct.load(Ordering::Relaxed));
+                        let byte_delta =
+                            cumulative.saturating_sub(last_bytes.load(Ordering::Relaxed));
+
+                        if last_pct.load(Ordering::Relaxed) == 255
+                            || pct_delta >= 2
+                            || byte_delta >= 2_000_000
+                        {
+                            last_pct.store(percentage, Ordering::Relaxed);
+                            last_bytes.store(cumulative, Ordering::Relaxed);
+                            let _ = progress_channel.send(DownloadProgress {
+                                downloaded: cumulative,
+                                total: total_opt,
+                                percentage,
+                                status: ProgressStatus::Downloading,
+                            });
+                        }
                     }
-                    let total = total_bytes.load(Ordering::Relaxed);
-                    let total_opt = if total > 0 { Some(total) } else { None };
-
-                    let percentage = if total > 0 {
-                        (((cumulative as f64) / (total as f64)) * 100.0).min(99.0) as u8
-                    } else {
-                        0
-                    };
-
-                    // Throttling: Only send updates if % changed significantly or bytes > 2MB
-                    // This prevents spamming the frontend channel
-                    let pct_delta = percentage.saturating_sub(last_pct.load(Ordering::Relaxed));
-                    let byte_delta = cumulative.saturating_sub(last_bytes.load(Ordering::Relaxed));
-
-                    if
-                        last_pct.load(Ordering::Relaxed) == 255 ||
-                        pct_delta >= 2 ||
-                        byte_delta >= 2_000_000
-                    {
-                        last_pct.store(percentage, Ordering::Relaxed);
-                        last_bytes.store(cumulative, Ordering::Relaxed);
-                        let _ = progress_channel.send(DownloadProgress {
-                            downloaded: cumulative,
-                            total: total_opt,
-                            percentage,
-                            status: ProgressStatus::Downloading,
-                        });
-                    }
-                }
-            },
-            || {} // on_download_finish (handled in the match block below)
-        ).await;
+                },
+                || {}, // on_download_finish (handled in the match block below)
+            )
+            .await;
 
         match download_result {
             Ok(bytes) => {
@@ -339,15 +343,17 @@ pub async fn download_update(
 pub async fn install_update(
     app: AppHandle,
     state: State<'_, PendingUpdate>,
-    on_progress: Channel<DownloadProgress>
+    on_progress: Channel<DownloadProgress>,
 ) -> Result<(), UpdateError> {
     let (update, bytes) = {
         let mut lock = state.0.lock().await;
         // Take ownership of bytes (consumes the download)
-        let bytes = lock.content
+        let bytes = lock
+            .content
             .take()
             .ok_or_else(|| UpdateError::new("NO_DOWNLOAD", "Update not downloaded"))?;
-        let update = lock.update
+        let update = lock
+            .update
             .clone()
             .ok_or_else(|| UpdateError::new("NO_UPDATE", "No pending update"))?;
         (update, bytes)

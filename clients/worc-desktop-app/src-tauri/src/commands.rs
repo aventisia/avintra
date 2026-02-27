@@ -1,5 +1,5 @@
-use std::process::Command;
 use serde::Serialize;
+use std::process::Command;
 
 #[tauri::command]
 pub fn launch_desktop_executor(
@@ -89,7 +89,7 @@ pub struct UserMetadata {
 /// App Version: Extracted from Cargo.toml at compile time
 #[tauri::command]
 pub fn get_user_metadata() -> Result<UserMetadata, String> {
-    // Get unique OS installation identifier  
+    // Get unique OS installation identifier
     #[cfg(target_os = "windows")]
     let os_id = {
         use winreg::enums::*;
@@ -112,20 +112,23 @@ pub fn get_user_metadata() -> Result<UserMetadata, String> {
         // Try primary location (systemd standard)
         if let Ok(guid) = fs::read_to_string("/etc/machine-id") {
             guid.trim().to_string()
-        } 
+        }
         // Fallback to D-Bus location
         else if let Ok(guid) = fs::read_to_string("/var/lib/dbus/machine-id") {
             guid.trim().to_string()
         } else {
-            return Err("Cannot read machine-id from /etc/machine-id or /var/lib/dbus/machine-id".into());
+            return Err(
+                "Cannot read machine-id from /etc/machine-id or /var/lib/dbus/machine-id".into(),
+            );
         }
     };
 
     #[cfg(not(any(target_os = "windows", target_os = "linux")))]
-    let os_id: String = return Err("OS installation GUID is only available on Windows and Linux".into());
+    let os_id: String =
+        return Err("OS installation GUID is only available on Windows and Linux".into());
 
     // Get currently logged-in username
-    
+
     #[cfg(target_os = "windows")]
     let username = {
         // Read USERNAME environment variable (e.g., "john.doe", "Administrator")
@@ -136,12 +139,12 @@ pub fn get_user_metadata() -> Result<UserMetadata, String> {
     #[cfg(target_os = "linux")]
     let username = {
         // Read USER environment variable (e.g., "john", "root")
-        std::env::var("USER")
-            .map_err(|_| "Failed to get USER environment variable".to_string())?
+        std::env::var("USER").map_err(|_| "Failed to get USER environment variable".to_string())?
     };
 
     #[cfg(not(any(target_os = "windows", target_os = "linux")))]
-    let username: String = return Err("Username retrieval is only available on Windows and Linux".into());
+    let username: String =
+        return Err("Username retrieval is only available on Windows and Linux".into());
 
     // Get app version from Cargo.toml at compile time
 
