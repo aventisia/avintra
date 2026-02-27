@@ -1,7 +1,9 @@
+import { IS_TAURI } from "@/constants";
 import { axiosInstance } from "@/react-toolkit/lib/axios-instance";
 import { PrimaryCategoryType } from "../features/action-selector/types/primary-category-type";
+import { loadJsonFromTauriResources } from "../utils/tauri-resource-loader";
 
-// Glob all JSON files in the constants folder
+// Glob all JSON files in the constants folder (used in web mode)
 const modules = import.meta.glob(
   "../features/action-selector/constants/*.json",
 );
@@ -42,7 +44,8 @@ function mergeActionSelectorData(
                 ...newL2Category.actions.filter(
                   (newL3Action) =>
                     !existingL2Category.actions!.some(
-                      (existingL3Action) => existingL3Action.name === newL3Action.name,
+                      (existingL3Action) =>
+                        existingL3Action.name === newL3Action.name,
                     ),
                 ),
               ];
@@ -94,32 +97,51 @@ function mergeActionSelectorData(
 }
 
 /**
- * Loads the action selector data from the JSON file in src.
+ * Loads the action selector data from the JSON file.
+ * When running in Tauri, loads from bundled resources.
+ * When running in web, loads from bundled modules.
  */
 export async function getActionSelectorData(): Promise<PrimaryCategoryType[]> {
-  const desktopNodesJson =
-    "../features/action-selector/constants/_ActionSelectorData.json";
+  let finalNodeList: PrimaryCategoryType[];
 
-  // Get default Desktop automation modules
-  const loader = modules[desktopNodesJson];
-  if (!loader) throw new Error("Action selector data JSON not found");
-  const desktopNodesModule = (await loader()) as {
-    default: PrimaryCategoryType[];
-  };
-  let finalNodeList: PrimaryCategoryType[] = desktopNodesModule.default;
+  // Load desktop nodes
+  if (IS_TAURI) {
+    // Load desktop nodes mapping file from Tauri bundled resources
+    finalNodeList = await loadJsonFromTauriResources<PrimaryCategoryType[]>(
+      "action-selector/_ActionSelectorData.json",
+    );
 
-  // Fetch Cloud Connector module from remote URL using axiosInstance
-  try {
-    const response = await axiosInstance
-      .get<
-        PrimaryCategoryType[]
-      >(`${import.meta.env.VITE_WORC_API_PATH}/cloud-connector/config-file/CloudConnectorActionSelectorMappingFile.json`)
-      .then((res) => res.data);
-    if (response) {
-      finalNodeList = mergeActionSelectorData(finalNodeList, response);
+    // Load Cloud Connectors mapping file from Tauri bundled resources
+    const cloudConnectors = await loadJsonFromTauriResources<
+      PrimaryCategoryType[]
+    >("action-selector/CloudConnectorActionSelectorMappingFile.json");
+    if (cloudConnectors) {
+      finalNodeList = mergeActionSelectorData(finalNodeList, cloudConnectors);
     }
-  } catch (error) {
-    console.error("Cloud Connector mapping file fetch error:", error);
+  } else {
+    // Load desktop nodes from web bundled modules
+    const desktopNodesJson =
+      "../features/action-selector/constants/_ActionSelectorData.json";
+    const loader = modules[desktopNodesJson];
+    if (!loader) throw new Error("Action selector data JSON not found");
+    const desktopNodesModule = (await loader()) as {
+      default: PrimaryCategoryType[];
+    };
+    finalNodeList = desktopNodesModule.default;
+
+    // Fetch Cloud Connector module from remote URL using axiosInstance
+    try {
+      const response = await axiosInstance
+        .get<
+          PrimaryCategoryType[]
+        >(`${import.meta.env.VITE_WORC_API_PATH}/cloud-connector/config-file/CloudConnectorActionSelectorMappingFile.json`)
+        .then((res) => res.data);
+      if (response) {
+        finalNodeList = mergeActionSelectorData(finalNodeList, response);
+      }
+    } catch (error) {
+      console.error("Cloud Connector mapping file fetch error:", error);
+    }
   }
 
   // Explicitly import AI Integrations module

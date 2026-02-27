@@ -9,6 +9,11 @@
     "process:default",
     "store:default",
     "os:default",
+    "fs:default",
+    {
+      "identifier": "fs:allow-app-read-recursive",
+      "allow": [{ "path": "$RESOURCE/**" }]
+    },
     "core:window:allow-destroy",
     "core:window:allow-close",
     {

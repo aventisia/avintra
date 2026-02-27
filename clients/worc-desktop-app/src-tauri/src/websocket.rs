@@ -1,9 +1,9 @@
 use futures_util::{SinkExt, StreamExt};
+use once_cell::sync::OnceCell;
 use std::net::SocketAddr;
 use std::sync::{Arc, Mutex};
 use tokio::net::TcpListener;
 use tokio_tungstenite::accept_async;
-use once_cell::sync::OnceCell;
 
 static WEBSOCKET_PORT: OnceCell<u16> = OnceCell::new();
 
