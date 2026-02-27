@@ -26,7 +26,7 @@
       "name": "Folder",
       "label": "Mailbox Folder",
       "description": "The folder to retrieve emails from (e.g., Inbox, Archive, SentItems).",
-      "defaultValue": "Archive"
+      "defaultValue": ""
     },
     {
       "direction": "Input",
@@ -34,7 +34,7 @@
       "name": "FromFilter",
       "label": "Filter by Sender",
       "description": "Retrieve emails received from the specified sender email address.",
-      "defaultValue": "amuthan.cp12@gmail.com"
+      "defaultValue": ""
     },
     {
       "direction": "Input",
@@ -54,7 +54,7 @@
     },
     {
       "direction": "Input",
-      "type": "boolean",
+      "type": "switch",
       "name": "UnreadOnly",
       "label": "Unread Messages Only",
       "description": "If true, retrieves only unread emails.",
@@ -62,7 +62,7 @@
     },
     {
       "direction": "Input",
-      "type": "boolean",
+      "type": "switch",
       "name": "OnlyWithAttachments",
       "label": "Only Emails with Attachments",
       "description": "If true, retrieves only emails that contain attachments.",
@@ -70,7 +70,7 @@
     },
     {
       "direction": "Input",
-      "type": "boolean",
+      "type": "switch",
       "name": "IncludeAttachments",
       "label": "Include Attachments",
       "description": "If true, includes attachment details in the retrieved emails.",
@@ -86,7 +86,7 @@
     },
     {
       "direction": "Input",
-      "type": "boolean",
+      "type": "switch",
       "name": "Count",
       "label": "Count Only",
       "description": "If true, returns only the count of emails matching the criteria.",
@@ -98,7 +98,7 @@
       "name": "Top",
       "label": "Maximum Results",
       "description": "Specifies the maximum number of emails to retrieve.",
-      "defaultValue": 2
+      "defaultValue": ""
     },
     {
       "direction": "Input",
@@ -106,7 +106,7 @@
       "name": "Skip",
       "label": "Skip",
       "description": "Number of emails to skip from the top of the result set.",
-      "defaultValue": 0
+      "defaultValue": ""
     },
     {
       "direction": "Output",

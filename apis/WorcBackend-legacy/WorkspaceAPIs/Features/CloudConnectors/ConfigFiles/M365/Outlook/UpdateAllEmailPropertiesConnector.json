@@ -30,7 +30,7 @@
     },
     {
       "direction": "Input",
-      "type": "boolean",
+      "type": "switch",
       "name": "IsRead",
       "label": "Is Read",
       "description": "Marks the email as read (true) or unread (false).",
@@ -42,7 +42,7 @@
       "name": "FlagStatus",
       "label": "Flag Status",
       "description": "Specifies the flag status of the email. Options include 'flagged' or 'notFlagged'.",
-      "defaultValue": "notFlagged"
+      "defaultValue": ""
     },
     {
       "direction": "Input",
@@ -54,16 +54,28 @@
     },
     {
       "direction": "Input",
-      "type": "dropdown",
+      "type": "select",
       "name": "Importance",
       "label": "Importance",
       "description": "Sets the priority level of the email.",
-      "options": [
-        "Low",
-        "Normal",
-        "High"
-      ],
-      "defaultValue": "Normal"
+      "defaultValue": "Normal",
+      "selectOptions": [
+        {
+          "label": "Low",
+          "value": "Low",
+          "description": "Low priority"
+        },
+        {
+          "label": "Normal",
+          "value": "Normal",
+          "description": "Normal priority"
+        },
+        {
+          "label": "High",
+          "value": "High",
+          "description": "High priority"
+        }
+      ]
     },
     {
       "direction": "Output",

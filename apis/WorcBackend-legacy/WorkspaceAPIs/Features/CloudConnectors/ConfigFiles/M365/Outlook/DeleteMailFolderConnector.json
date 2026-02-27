@@ -26,7 +26,7 @@
       "name": "FolderId",
       "label": "Folder ID",
       "description": "The unique ID of the folder to be deleted from the specified mailbox.",
-      "defaultValue": "folder_Id"
+      "defaultValue": ""
     },
     {
       "direction": "Output",

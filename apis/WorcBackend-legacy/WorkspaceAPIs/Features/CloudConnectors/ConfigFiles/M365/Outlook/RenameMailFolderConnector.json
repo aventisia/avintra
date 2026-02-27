@@ -26,7 +26,7 @@
       "name": "DisplayName",
       "label": "New Folder Name",
       "description": "The new name to assign to the folder.",
-      "defaultValue": "Cloud_Connection_MailFolder_Renamed1"
+      "defaultValue": ""
     },
     {
       "direction": "Input",
@@ -34,11 +34,11 @@
       "name": "FolderId",
       "label": "Folder ID",
       "description": "The unique ID of the folder to be renamed.",
-      "defaultValue": "Folder_Id"
+      "defaultValue": ""
     },
     {
       "direction": "Input",
-      "type": "boolean",
+      "type": "switch",
       "name": "IsHidden",
       "label": "Visibility",
       "description": "Indicates whether the folder should be hidden from the mailbox view after renaming. Set to 'true' to hide, or 'false' to make it visible.",
