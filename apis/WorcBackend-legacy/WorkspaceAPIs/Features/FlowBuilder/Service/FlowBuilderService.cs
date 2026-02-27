@@ -5,13 +5,15 @@ public class FlowBuilderService : IFlowBuilderService
     private readonly ILogger<FlowBuilderService> _logger;
     private readonly IUnitOfWork _unitOfWork;
     private readonly IUserManagementGuardService _userManagementGuardService;
+    private readonly IFlowVersionHistoryService _flowVersionHistoryService;
     private readonly Guid _userId;
 
     public FlowBuilderService(
         ILogger<FlowBuilderService> logger,
         IUnitOfWork unitOfWork,
         IHttpContextAccessor httpContextAccessor,
-        IUserManagementGuardService userManagementGuardService)
+        IUserManagementGuardService userManagementGuardService,
+        IFlowVersionHistoryService flowVersionHistoryService)
     {
         // Set _userId
         _userId = Guid.Parse(httpContextAccessor.HttpContext?.User?.FindFirstValue("uid") ?? Guid.Empty.ToString());
@@ -19,6 +21,7 @@ public class FlowBuilderService : IFlowBuilderService
         _logger = logger;
         _unitOfWork = unitOfWork;
         _userManagementGuardService = userManagementGuardService;
+        _flowVersionHistoryService = flowVersionHistoryService;
     }
 
     // Retrieves the flow version record to load when the user opens it in the studio.
@@ -245,6 +248,8 @@ public class FlowBuilderService : IFlowBuilderService
 
             flowSilentUpdateDto.VersionId = flowVersion.Id;
 
+            await _flowVersionHistoryService.CreateHistoryIfReactFlowChangedAsync(flowVersion, flowSilentUpdateDto);
+
             // Map the updated properties from the DTO to the flow version
             flowSilentUpdateDto.Adapt(flowVersion);
             flowVersion.LastModifiedByUserId = _userId;
@@ -259,6 +264,7 @@ public class FlowBuilderService : IFlowBuilderService
                 _logger.LogInformation("Failed to save changes while updating flow version silently.");
                 return serviceResponse;
             }
+
 
             // Successful update, log and return success
             serviceResponse.Data = true;
