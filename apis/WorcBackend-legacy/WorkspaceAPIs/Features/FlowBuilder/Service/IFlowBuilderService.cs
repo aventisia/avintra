@@ -14,11 +14,12 @@ public interface IFlowBuilderService
     Task<ServiceResponse<LoadFlowDto>> GetFlowToLoadAsync(Guid flowId, Guid? versionId);
 
     /// <summary>
-    /// Updates the flow's nodes, edges, etc. silently in the background whenever the user makes any changes
+    /// Updates the flow's nodes, edges, etc., and saves the latest data to the current flow version. 
+    /// If any changes are detected, it will increment the version number and store the flow version history.
     /// </summary>
-    /// <param name="flowSilentUpdateDto">The data required to update the flow silently.</param>
-    /// <returns>The task result contains the service response indicating whether the update job was successful.</returns>
-    Task<ServiceResponse<bool>> UpdateFlowSilentlyAsync(FlowSilentUpdateDto flowSilentUpdateDto);
+    /// <param name="flowSilentUpdateDto">The data required to update the flow and save the latest data to the current version or create a new version if necessary.</param>
+    /// <returns>A task result containing a service response indicating whether the update or version save was successful.</returns>
+    Task<ServiceResponse<bool>> SaveFlowVersionAsync(FlowSilentUpdateDto flowSilentUpdateDto);
 
     /// <summary>
     /// Publishes the flow version in the background whenever the user makes changes, without manual action.

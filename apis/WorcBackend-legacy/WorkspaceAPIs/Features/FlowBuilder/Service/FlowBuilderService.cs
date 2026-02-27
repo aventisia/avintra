@@ -196,37 +196,38 @@ public class FlowBuilderService : IFlowBuilderService
         return serviceResponse;
     }
 
-    // Updates the flow version nodes, edges, and viewport in the background when the user makes changes
-    public async Task<ServiceResponse<bool>> UpdateFlowSilentlyAsync(FlowSilentUpdateDto flowSilentUpdateDto)
+    // Saves the flow version nodes, edges, and viewport in the background when the user makes changes. 
+    // It creates a new flow version and stores version history if changes are detected.
+    public async Task<ServiceResponse<bool>> SaveFlowVersionAsync(FlowSilentUpdateDto flowSilentUpdateDto)
     {
         // Initialize ServiceResponse with failed response
         var serviceResponse = new ServiceResponse<bool>
         {
             Data = false,
-            Message = "Failed to update the flow version. Please try again."
+            Message = "Failed to save the flow version. Please try again."
         };
 
         try
         {
             // Validate that the flow version exists and is owned by the current user
             var flowVersion = await _unitOfWork.FlowVersionRepo
-                                        .GetByConditionAsync(w =>
-                                            w.Id == flowSilentUpdateDto.VersionId &&
-                                            w.FlowId == flowSilentUpdateDto.Id &&
-                                            (
-                                                w.CreatedByUserId == _userId ||
-                                                (w.Flow.FlowUsers != null && w.Flow.FlowUsers.Any(a => a.UserId == _userId))
-                                            )
-                                        )
-                                        .Include(i => i.Flow)
-                                        .ThenInclude(i2 => i2.FlowUsers)
-                                        .OrderByDescending(a => a.CreatedOn)
-                                        .SingleOrDefaultAsync();
+                .GetByConditionAsync(w =>
+                    w.Id == flowSilentUpdateDto.VersionId &&
+                    w.FlowId == flowSilentUpdateDto.Id &&
+                    (
+                        w.CreatedByUserId == _userId ||
+                        (w.Flow.FlowUsers != null && w.Flow.FlowUsers.Any(a => a.UserId == _userId))
+                    )
+                )
+                .Include(i => i.Flow)
+                .ThenInclude(i2 => i2.FlowUsers)
+                .OrderByDescending(a => a.CreatedOn)
+                .SingleOrDefaultAsync();
 
-            // Flow version does not exist, log and return failure
+            // If no flow version is found, log and return failure
             if (flowVersion == null)
             {
-                _logger.LogInformation($"No flow version found for Id {flowSilentUpdateDto.Id}. The flow version could not be updated.");
+                _logger.LogInformation($"No flow version found for Id {flowSilentUpdateDto.VersionId}. The flow version could not be saved.");
                 serviceResponse.Message = "Flow version does not exist.";
                 return serviceResponse;
             }
@@ -238,16 +239,17 @@ public class FlowBuilderService : IFlowBuilderService
                 (w.Type == ProjectUserAccessEnum.Owner || w.Type == ProjectUserAccessEnum.Edit)
             );
 
-            // Allow access if the user is the creator, else check if they have access
+            // Allow access if the user is the creator, else check if they have access (Owner/Edit)
             if (flowVersion.Flow.CreatedByUserId != _userId && flowUserAccess == null)
             {
                 _logger.LogWarning($"User {_userId} is not authorized to modify this flow.");
                 serviceResponse.Message = "You don't have access to modify this flow.";
                 return serviceResponse;
             }
-
             flowSilentUpdateDto.VersionId = flowVersion.Id;
 
+
+            // Create a flow version history record if there are changes in the ReactFlow data
             await _flowVersionHistoryService.CreateHistoryIfReactFlowChangedAsync(flowVersion, flowSilentUpdateDto);
 
             // Map the updated properties from the DTO to the flow version
@@ -257,19 +259,18 @@ public class FlowBuilderService : IFlowBuilderService
 
             // Attempt to update the flow version
             _unitOfWork.FlowVersionRepo.Update(flowVersion);
-
             // Save changes to the database, log failure if saving fails
             if (!await _unitOfWork.SaveAsync())
             {
-                _logger.LogInformation("Failed to save changes while updating flow version silently.");
+                _logger.LogInformation("Failed to save changes while saving flow version silently.");
                 return serviceResponse;
             }
 
 
-            // Successful update, log and return success
+            // Successful save, log and return success
             serviceResponse.Data = true;
             serviceResponse.StatusCode = 200;
-            serviceResponse.Message = "Flow version updated successfully.";
+            serviceResponse.Message = "Flow version saved successfully.";
         }
         catch (Exception ex)
         {
