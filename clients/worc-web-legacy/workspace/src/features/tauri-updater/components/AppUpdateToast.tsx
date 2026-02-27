@@ -1,17 +1,17 @@
 import { Button } from "@aventisia/ui/buttons";
 import { toast } from "@aventisia/ui/sonner";
-import {
-  X,
-  AlertCircle,
-  InfoIcon,
-  DownloadIcon,
-  RefreshCcw,
-} from "lucide-react";
 import { useEffect, useRef, useState } from "react";
 
 import { IS_TAURI } from "@/constants/constants";
 import { Progress } from "@/features/tenant/shared/Progress";
 
+import {
+  ArrowDownTrayIcon,
+  ArrowPathIcon,
+  ExclamationCircleIcon,
+  InformationCircleIcon,
+  XMarkIcon,
+} from "@heroicons/react/24/outline";
 import { useAppUpdater } from "../hooks/useAppUpdater";
 
 interface AppUpdateToastProps {
@@ -119,38 +119,36 @@ export function AppUpdateToast({
       return;
     if (toastIdRef.current) return;
 
-    const id = toast.info(
+    const id = toast(
       <div className="w-full space-y-3">
-        <p className="flex items-center gap-2 text-sm">
-          <InfoIcon className="h-2 w-2" />
-          <span className="text-secondary">
-            {isReadyToInstall
-              ? `Update ready: v${updateInfo.version}`
-              : `New version available: v${updateInfo.version}`}
-          </span>
+        <p className="flex items-center gap-1 text-sm text-foreground">
+          <InformationCircleIcon className="!size-4 stroke-[1.5]" />
+          {isReadyToInstall ? "Update ready: " : "New version available: "}
+          <span className="font-medium">v{updateInfo.version}</span>
         </p>
-
         <div className="flex justify-end gap-2">
           {isReadyToInstall ? (
             <Button
               size="xs"
+              className="gap-2"
               onClick={() => {
                 dismissToast(); // Clear "Ready" toast -> Show "Install Progress" toast
                 installUpdate();
               }}
             >
-              <RefreshCcw className="mr-2 h-2 w-2" />
+              <ArrowPathIcon className="!size-4 stroke-[1.7]" />
               Update
             </Button>
           ) : (
             <Button
               size="xs"
+              className="gap-2"
               onClick={() => {
                 dismissToast(); // Clear "Available" toast -> Show "Download Progress" toast
                 downloadUpdate();
               }}
             >
-              <DownloadIcon className="mr-2 h-2 w-2" />
+              <ArrowDownTrayIcon className="!size-4 stroke-[1.8]" />
               Download
             </Button>
           )}
@@ -158,7 +156,6 @@ export function AppUpdateToast({
           <Button
             size="xs"
             variant="outline"
-            className="text-secondary"
             onClick={() => {
               setHasIgnored(true); // "Later" -> Close and don't show again
               dismissToast();
@@ -170,7 +167,7 @@ export function AppUpdateToast({
       </div>,
       {
         duration: Infinity,
-        className: "w-96 py-2",
+        className: "w-96 p-3 bg-accent border",
         onDismiss: () => {
           toastIdRef.current = null;
         },
@@ -189,9 +186,9 @@ export function AppUpdateToast({
 
     // Create toast if one doesn't exist
     if (!toastIdRef.current) {
-      toastIdRef.current = toast.info("Preparing...", {
+      toastIdRef.current = toast("Preparing...", {
         duration: Infinity,
-        className: "w-96 py-2",
+        className: "w-96 p-3 bg-accent border",
       });
     }
 
@@ -220,60 +217,58 @@ export function AppUpdateToast({
       downloading &&
       (progress.status === "PENDING" || progress.status === "DOWNLOADING");
 
-    toast.info(
-      <div className="w-full space-y-3">
-        <div className="flex items-center gap-2 text-sm">
+    toast(
+      <div className="w-full space-y-2 px-1">
+        <div className="flex items-center gap-1.5">
           {isError ? (
-            <AlertCircle className="h-2 w-2 text-red-500" />
+            <ExclamationCircleIcon className="!size-4 stroke-[1.8] text-destructive" />
           ) : (
-            <DownloadIcon className="h-2 w-2" />
+            <ArrowDownTrayIcon className="!size-4 stroke-[1.8]" />
           )}
-          <span className="text-secondary">{getStatusText()}</span>
+          <div className="flex w-full justify-between text-sm text-foreground">
+            <div className="space-x-1">
+              <span>{getStatusText()}</span>
+              {!isError && (
+                <span className="font-medium">{progress.percentage}%</span>
+              )}
+            </div>
+            {!isError && progress.total && (
+              <span className="text-xs font-medium text-muted-foreground">
+                {(progress.downloaded / 1024 / 1024).toFixed(1)}mb of{" "}
+                {(progress.total / 1024 / 1024).toFixed(1)}mb
+              </span>
+            )}
+          </div>
         </div>
 
         {!isError && (
-          <>
-            <Progress
-              value={progress.percentage}
-              className="!w-full bg-accent"
-            />
-            <div className="flex justify-between text-xs text-muted-foreground">
-              <span>{progress.percentage}%</span>
-              {progress.total && (
-                <span>
-                  {(progress.downloaded / 1024 / 1024).toFixed(1)} MB /{" "}
-                  {(progress.total / 1024 / 1024).toFixed(1)} MB
-                </span>
-              )}
-            </div>
-          </>
+          <div className="flex items-center gap-1">
+            <Progress value={progress.percentage} className="bg-primary-100" />
+            {canCancel && (
+              <Button
+                size="icon6"
+                variant="ghost"
+                className="group size-6 !min-w-6 rounded-full hover:bg-destructive focus-visible:bg-destructive"
+                onClick={() => {
+                  cancelDownload();
+                  // Treat cancel as "Ignore for now" so the Main Toast doesn't pop back up instantly
+                  setHasIgnored(true);
+                  dismissToast();
+                }}
+              >
+                <XMarkIcon className="!size-4 stroke-[2] text-destructive group-hover:text-white" />
+              </Button>
+            )}
+          </div>
         )}
 
         {isError && error && (
-          <p className="text-xs text-red-500">{error.message}</p>
-        )}
-
-        {canCancel && (
-          <div className="flex justify-end">
-            <Button
-              size="xs"
-              variant="outline"
-              onClick={() => {
-                cancelDownload();
-                // Treat cancel as "Ignore for now" so the Main Toast doesn't pop back up instantly
-                setHasIgnored(true);
-                dismissToast();
-              }}
-              className="text-secondary"
-            >
-              <X className="mr-1 h-2 w-2" />
-              Cancel
-            </Button>
-          </div>
+          <p className="text-xs text-destructive">{error.message}</p>
         )}
       </div>,
       {
         id: toastIdRef.current,
+        className: "w-96 p-3 bg-accent border",
         duration: isError ? 5000 : Infinity,
       },
     );
