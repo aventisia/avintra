@@ -1,28 +1,33 @@
 import { IS_TAURI } from "@/constants";
+import { useReactFlowExtStore } from "@/stores/react-flow-ext-store";
 import { getCurrentWindow } from "@tauri-apps/api/window";
 import { useEffect, useRef } from "react";
+import { useShallow } from "zustand/react/shallow";
 
 /**
  * Prevent window close while a agent is executing or has unsaved changes.
  */
 export const usePreventClose = ({
-  hasUnsavedChanges,
   isProcessing,
 }: {
   isProcessing?: boolean;
-  hasUnsavedChanges?: boolean;
 }) => {
+  // Get ReactFlowExt store state & actions
+  const { isSavePending } = useReactFlowExtStore(
+    useShallow((state) => ({ isSavePending: state.isSavePending })),
+  );
+
   // Keeps latest processing state inside the Tauri listener
   const isProcessingRef = useRef(isProcessing);
-  const hasUnsavedChangesRef = useRef(hasUnsavedChanges);
+  const hasUnsavedChangesRef = useRef(isSavePending);
 
   const isPromptingRef = useRef(false);
   const forceCloseRef = useRef(false);
 
   useEffect(() => {
     isProcessingRef.current = isProcessing;
-    hasUnsavedChangesRef.current = hasUnsavedChanges;
-  }, [isProcessing, hasUnsavedChanges]);
+    hasUnsavedChangesRef.current = isSavePending;
+  }, [isProcessing, isSavePending]);
 
   useEffect(() => {
     if (!IS_TAURI) return;
