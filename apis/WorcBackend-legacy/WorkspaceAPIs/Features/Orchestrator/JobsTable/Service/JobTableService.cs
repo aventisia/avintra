@@ -714,6 +714,9 @@ public class JobTableService : IJobTableService
             job.Status = JobStatusTypesEnum.Abort;
             job.EndTime = DateTimeOffset.UtcNow;
 
+            // Update job in the repository
+            _unitOfWork.JobRepo.Update(job);
+
             // Try to save the changes to the database.
             if (!await _unitOfWork.SaveAsync())
             {
