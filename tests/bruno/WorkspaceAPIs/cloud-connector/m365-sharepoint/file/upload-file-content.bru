@@ -1,0 +1,31 @@
+meta {
+  name: Upload file content
+  type: http
+  seq: 2
+}
+
+post {
+  url: {{WORC_APIS_BASE_URL}}/cloud-connector/m365/sharepoint/invoke
+  body: json
+  auth: bearer
+}
+
+auth:bearer {
+  token: {{ACCESS_TOKEN}}
+}
+
+body:json {
+  {
+    "agentId": "00000000-0000-0000-0000-000000000000",
+    "agentName": "Test",
+    "provider": "M365Outlook",
+    "action": "UploadFile",
+    "credentialId": "DUMMY",
+    "payload": {
+      "DrivePath": "https://aventisia.sharepoint.com/sites/AventisiasProducts/Shared%20Documents/Product%20Development",
+      "FileName": "cloud_connector_base64.txt",
+      "ContentType": "text/plain",
+      "ContentBytes": "This is test"
+    }
+  }
+}

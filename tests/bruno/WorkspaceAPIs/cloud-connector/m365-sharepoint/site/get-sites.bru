@@ -1,0 +1,27 @@
+meta {
+  name: Get sites
+  type: http
+  seq: 1
+}
+
+post {
+  url: {{WORC_APIS_BASE_URL}}/cloud-connector/m365/sharepoint/invoke
+  body: json
+  auth: bearer
+}
+
+auth:bearer {
+  token: {{ACCESS_TOKEN}}
+}
+
+body:json {
+  {
+    "agentId": "00000000-0000-0000-0000-000000000000",
+    "agentName": "Test",
+    "provider": "M365Outlook",
+    "action": "GetSites",
+    "credentialId": "DUMMY",
+    "payload": { }
+  }
+  
+}

@@ -1,0 +1,29 @@
+meta {
+  name: Get site by id
+  type: http
+  seq: 2
+}
+
+post {
+  url: {{WORC_APIS_BASE_URL}}/cloud-connector/m365/sharepoint/invoke
+  body: json
+  auth: bearer
+}
+
+auth:bearer {
+  token: {{ACCESS_TOKEN}}
+}
+
+body:json {
+  {
+    "agentId": "00000000-0000-0000-0000-000000000000",
+    "agentName": "Test",
+    "provider": "M365Outlook",
+    "action": "GetSiteById",
+    "credentialId": "DUMMY",
+    "payload": { 
+      "SiteId": "aventisia-my.sharepoint.com,369a5ecf-0e99-41f4-b4d7-cb602a8e5a60,21381e7d-4dde-4cf4-a608-ec26b25caf95"
+    }
+  }
+  
+}
