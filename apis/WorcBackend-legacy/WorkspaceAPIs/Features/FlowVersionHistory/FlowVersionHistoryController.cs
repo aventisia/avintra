@@ -53,4 +53,18 @@ public class FlowVersionHistoryController : BaseApiController
     {
         return ResultHelper(await _flowVersionHistoryService.DeleteMultipleAsync(flowVersionHistoryIds));
     }
+
+    // Creates a new flow version history record by cloning a flow.
+    [HttpPost("clone-flow")]
+    public async Task<ActionResult<ServiceResponse<FlowVersionHistoryDto>>> CloneFlow([FromBody] FlowVersionHistoryDto flowVersionHistoryDto)
+    {
+        return ResultHelper(await _flowVersionHistoryService.CloneFlowAsync(flowVersionHistoryDto));
+    }
+
+    // Creates a new flow version history record by cloning a specific flow version.
+    [HttpPost("clone-flow-version")]
+    public async Task<ActionResult<ServiceResponse<FlowVersionHistoryDto>>> CloneFlowVersion([FromBody] FlowVersionHistoryDto flowVersionHistoryDto)
+    {
+        return ResultHelper(await _flowVersionHistoryService.CloneFlowVersionAsync(flowVersionHistoryDto));
+    }
 }
