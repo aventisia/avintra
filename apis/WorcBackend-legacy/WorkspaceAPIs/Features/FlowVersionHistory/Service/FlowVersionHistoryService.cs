@@ -385,4 +385,177 @@ public class FlowVersionHistoryService : IFlowVersionHistoryService
             return serviceResponse;
         }
     }
+
+    // Clones an entire flow and creates a new flow version history record.
+    public async Task<ServiceResponse<FlowVersionHistoryDto>> CloneFlowAsync(FlowVersionHistoryDto flowVersionHistoryDto)
+    {
+        // Initialize the service response with failure values by default
+        var serviceResponse = new ServiceResponse<FlowVersionHistoryDto>
+        {
+            StatusCode = 400,
+            Message = "Failed to clone the flow. Please try again."
+        };
+
+        try
+        {
+            // Retrieve the flow version history record along with its associated flow and version data
+            var flowVersionHistory = await _unitOfWork.FlowVersionHistoryRepo
+                .GetByConditionAsync(w => w.Id == flowVersionHistoryDto.Id)
+                .Include(i => i.FlowVersion)
+                    .ThenInclude(i2 => i2.Flow)
+                .SingleOrDefaultAsync();
+
+            if (flowVersionHistory == null)
+            {
+                serviceResponse.Message = "Flow version history record not found.";
+                return serviceResponse;
+            }
+
+            // Generate a unique name for the new flow by appending a number (e.g., Flow #1, Flow #2, etc.)
+            var baseName = flowVersionHistory.FlowVersion.Flow.Name;
+            string flowName = baseName;
+            int counter = 1;
+
+            // Loop to find a unique flow name by checking the database
+            while (await _unitOfWork.FlowRepo.GetByConditionAsync(w => w.Name.ToLower() == flowName.ToLower()).AnyAsync())
+            {
+                flowName = $"{baseName} #{counter}";
+                counter++;
+            }
+            // Generate a more concise description for the cloned flow
+            var flowDescription = $"Clone of '{baseName}' (created on {flowVersionHistory.FlowVersion.CreatedOn:MMMM dd, yyyy}). " +
+                                  $"Type: {flowVersionHistory.FlowVersion.Flow.Type}. Cloned on {DateTime.UtcNow:MMMM dd, yyyy}.";
+
+            // Create a new Flow entity by copying relevant data from the original flow
+            var flow = new Flow
+            {
+                Name = flowName,
+                Type = flowVersionHistory.FlowVersion.Flow.Type,
+                Description = flowDescription,
+                CreatedByUserId = _userId,
+                LastModifiedByUserId = _userId
+            };
+
+            // Insert the newly cloned flow into the repository
+            await _unitOfWork.FlowRepo.InsertAsync(flow);
+
+            // Attempt to save the newly created flow record to the database
+            if (!await _unitOfWork.SaveAsync())
+            {
+                _logger.LogWarning("Failed to save cloned flow version history.");
+                return serviceResponse;
+            }
+
+            // Create a new flow version associated with the cloned flow
+            var flowVersion = new FlowVersion
+            {
+                FlowId = flow.Id,
+                ReactFlowObject = flowVersionHistory.ReactFlowObject,
+                InputOutputObject = flowVersionHistory.InputOutputObject,
+                FlowVariablesObject = flowVersionHistory.FlowVariablesObject,
+                VersionNumber = 1, // Starting version number
+                CreatedByUserId = _userId,
+                LastModifiedByUserId = _userId
+            };
+
+            // Insert the newly cloned flow version into the repository
+            await _unitOfWork.FlowVersionRepo.InsertAsync(flowVersion);
+
+            // Attempt to save the newly created flow version record
+            if (!await _unitOfWork.SaveAsync())
+            {
+                _logger.LogWarning("Failed to save cloned flow version history.");
+                return serviceResponse;
+            }
+
+            // Update the DTO with the newly created flow and version details
+            flowVersionHistoryDto.FlowId = flow.Id;
+            flowVersionHistoryDto.FlowName = flow.Name;
+            flowVersionHistoryDto.FlowVersionId = flowVersion.Id;
+            flowVersionHistoryDto.VersionNumber = flowVersion.VersionNumber;
+
+            // Set success status and message
+            serviceResponse.Data = flowVersionHistoryDto;
+            serviceResponse.StatusCode = 200;
+            serviceResponse.Message = "Flow cloned successfully, and flow version history record created.";
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex, "An exception occurred while cloning flow version history.");
+        }
+
+        return serviceResponse;
+    }
+
+    // Clones a specific version of a flow and creates a flow version history record.
+    public async Task<ServiceResponse<FlowVersionHistoryDto>> CloneFlowVersionAsync(FlowVersionHistoryDto flowVersionHistoryDto)
+    {
+        // Initialize the service response with failure values by default
+        var serviceResponse = new ServiceResponse<FlowVersionHistoryDto>
+        {
+            StatusCode = 400,
+            Message = "Failed to clone the flow version. Please try again."
+        };
+
+        try
+        {
+            // Retrieve the flow version history record using the version ID from the DTO
+            var flowVersionHistory = await _unitOfWork.FlowVersionHistoryRepo
+                .GetByConditionAsync(w => w.Id == flowVersionHistoryDto.Id)
+                .Include(i => i.FlowVersion)
+                    .ThenInclude(i2 => i2.Flow)
+                .SingleOrDefaultAsync();
+
+            if (flowVersionHistory == null)
+            {
+                serviceResponse.Message = "Flow version history not found.";
+                return serviceResponse;
+            }
+
+            // Retrieve the flow version data and increment the version number for the cloned version
+            var latestVersion = await _unitOfWork.FlowVersionRepo
+                .GetByConditionAsync(w => w.FlowId == flowVersionHistory.FlowVersion.FlowId)
+                .OrderByDescending(o => o.VersionNumber)
+                .FirstOrDefaultAsync();
+
+            var newVersionNumber = (latestVersion?.VersionNumber ?? 0) + 1;
+
+            // Create a new flow version entry by cloning the data from the specific version
+            var flowVersion = new FlowVersion
+            {
+                FlowId = flowVersionHistory.FlowVersion.FlowId,
+                ReactFlowObject = flowVersionHistory.ReactFlowObject,
+                FlowVariablesObject = flowVersionHistory.FlowVariablesObject,
+                InputOutputObject = flowVersionHistory.InputOutputObject,
+                VersionNumber = newVersionNumber,
+                CreatedByUserId = _userId,
+                LastModifiedByUserId = _userId
+            };
+
+            // Insert the newly cloned flow version into the repository
+            await _unitOfWork.FlowVersionRepo.InsertAsync(flowVersion);
+
+            // Attempt to save the new flow version record
+            if (!await _unitOfWork.SaveAsync())
+            {
+                _logger.LogWarning("Failed to save cloned flow version history.");
+                return serviceResponse;
+            }
+
+            // Update the DTO with the newly created flow version details
+            flowVersionHistoryDto.FlowVersionId = flowVersion.Id;
+            flowVersionHistoryDto.VersionNumber = flowVersion.VersionNumber;
+
+            // Set success status and message
+            serviceResponse.Data = flowVersionHistoryDto;
+            serviceResponse.StatusCode = 200;
+            serviceResponse.Message = "Flow version cloned successfully, and flow version history record created.";
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex, "An exception occurred while cloning flow version history.");
+        }
+
+        return serviceResponse;
+    }
 }

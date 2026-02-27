@@ -53,4 +53,18 @@ public interface IFlowVersionHistoryService
     /// A <see cref="ServiceResponse{T}"/> indicating whether a new history record was successfully created.
     /// </returns>
     Task<ServiceResponse<bool>> CreateHistoryIfReactFlowChangedAsync(FlowVersion flowVersion, FlowSilentUpdateDto flowSilentUpdateDto);
+
+    /// <summary>
+    /// Creates a flow version history record by cloning a flow.
+    /// </summary>
+    /// <param name="flowVersionHistoryDto">The flow version history DTO representing the record to create.</param>
+    /// <returns>A <see cref="ServiceResponse{T}"/> containing the newly created flow version history DTO.</returns>
+    Task<ServiceResponse<FlowVersionHistoryDto>> CloneFlowAsync(FlowVersionHistoryDto flowVersionHistoryDto);
+
+    /// <summary>
+    /// Creates a flow version history record by cloning a specific flow version.
+    /// </summary>
+    /// <param name="flowVersionHistoryDto">The flow version history DTO representing the record to create.</param>
+    /// <returns>A <see cref="ServiceResponse{T}"/> containing the newly created flow version history DTO.</returns>
+    Task<ServiceResponse<FlowVersionHistoryDto>> CloneFlowVersionAsync(FlowVersionHistoryDto flowVersionHistoryDto);
 }
