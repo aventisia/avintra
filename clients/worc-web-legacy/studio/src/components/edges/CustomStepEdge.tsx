@@ -4,6 +4,7 @@ import { ChevronMarkerEnd } from "./ChevronMarkerEnd";
 import { EdgeLabelContainer } from "./EdgeLabelContainer";
 import "./override-edge-style.css";
 import { memo } from "react";
+import { useIsVersionHistoryRoute } from "@/features/version-history/hooks/useIsVersionHistoryRoute";
 
 export const CustomStepEdge = memo(
   ({
@@ -28,6 +29,8 @@ export const CustomStepEdge = memo(
       targetPosition,
     });
 
+    const isAgentHistory = useIsVersionHistoryRoute();
+
     return (
       <>
         {markerEnd ? <ChevronMarkerEnd edgeId={id} /> : null}
@@ -38,7 +41,7 @@ export const CustomStepEdge = memo(
           style={style}
           className="stroke-[1.5]"
         />
-        {label ? (
+        {label && !isAgentHistory ? (
           <EdgeLabelContainer
             edgeId={id}
             label={label}

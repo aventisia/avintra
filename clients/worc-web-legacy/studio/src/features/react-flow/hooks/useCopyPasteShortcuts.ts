@@ -40,7 +40,6 @@ export const useCopyPasteShortcuts = () => {
   useHotkeys(
     ["meta+shift+v", "ctrl+shift+v"],
     () => {
-      console.log("Selected Nodes", selectedNode);
       if (!selectedNode) return;
 
       // const firstNode = selectedNodes[0];

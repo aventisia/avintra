@@ -14,6 +14,7 @@ import { LoadingSpinner } from "@aventisia/ui";
 const ImproveWithAIButton = ({
   form,
   name,
+  disabled,
 }: {
   form: UseFormReturn<
     {
@@ -23,6 +24,7 @@ const ImproveWithAIButton = ({
     undefined
   >;
   name: string;
+  disabled: boolean;
 }) => {
   const { currentFlow } = useCurrentFlowStore(
     useShallow((state) => ({
@@ -109,7 +111,7 @@ const ImproveWithAIButton = ({
       variant="outline"
       size="sm"
       type="button"
-      disabled={isPending || !form.watch(name)}
+      disabled={disabled || isPending || !form.watch(name)}
       className={cn(
         "flex w-36 items-center gap-2 rounded-full border-primary text-primary transition-all duration-200",
         isPending ? "cursor-wait" : "hover:bg-primary hover:text-white",

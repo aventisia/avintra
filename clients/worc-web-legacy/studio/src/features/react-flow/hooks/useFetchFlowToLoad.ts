@@ -125,4 +125,6 @@ export const useFetchFlowToLoad = () => {
     setIsPublished,
     setInputOutputObject,
   ]);
+
+  return { isLoading };
 };

@@ -39,7 +39,7 @@ export const SearchCommandDialog = () => {
         })),
     ),
   );
-  console.log("SearchCommandDialog");
+
   // Stable hotkey handler
   useHotkeys(
     "ctrl+k",

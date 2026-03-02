@@ -10,6 +10,7 @@ import {
 import { AppLayout } from "./components/layout/AppLayout";
 import { FlowPage } from "./pages/FlowPage";
 import { AgentsAssistPage } from "./pages/AgentsAssistPage";
+import { AgentHistoryPage } from "./pages/AgentHistoryPage";
 
 const queryClient = new QueryClient({
   defaultOptions: {
@@ -33,6 +34,10 @@ const router = createBrowserRouter(
         {
           path: "/agent",
           element: <FlowPage />,
+        },
+        {
+          path: "/agent-history",
+          element: <AgentHistoryPage />,
         },
         {
           path: "/agents-assist",

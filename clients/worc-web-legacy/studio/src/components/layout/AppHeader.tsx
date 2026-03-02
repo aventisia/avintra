@@ -20,6 +20,11 @@ import { DefaultTenantsEnum } from "@/react-toolkit/enums/default-tenants-enum";
 import AgentName from "./AgentName";
 import { AvailableCredits } from "@/features/available-credits/AvailableCredits";
 import SaveFlow from "@/features/react-flow/components/save-flow/SaveFlow";
+import { useIsVersionHistoryRoute } from "@/features/version-history/hooks/useIsVersionHistoryRoute";
+import { VersionHistoryTrigger } from "@/features/version-history/components/version-history/VersionHistoryTrigger";
+import { X } from "lucide-react";
+import { useNavigate } from "react-router-dom";
+import { useCarryParams } from "@/features/version-history/hooks/useForwardQueryParams";
 
 const AppHeader: React.FC = () => {
   // Get user session state and actions
@@ -33,10 +38,15 @@ const AppHeader: React.FC = () => {
     userSession?.tenantName === DefaultTenantsEnum.IndividualUsers;
 
   const isAssist = useIsAgentsAssist();
+  const isAgentHistory = useIsVersionHistoryRoute();
 
   const goBack = () => {
     window.location.href = `${import.meta.env.VITE_WORC_PATH}`;
   };
+
+  const navigate = useNavigate();
+
+  const withQueryParams = useCarryParams(["f", "v"]);
 
   return (
     <HeaderContainer className="bg-slate-200">
@@ -44,7 +54,7 @@ const AppHeader: React.FC = () => {
         <div className="flex w-2/5 items-center gap-3 text-white">
           {/* Back Button */}
           {!isAssist && (
-            <Tooltip content="Back">
+            <Tooltip content="Back to Worc">
               <Button
                 size="icon8"
                 variant="ghost"
@@ -69,40 +79,69 @@ const AppHeader: React.FC = () => {
             <AvailableCredits />
           ) : null}{" "}
         </div>
-        <div className="flex w-2/5 justify-end">
-          <div>
-            {isIndividualUser ? (
-              <Avatar className={cn("flex h-7 w-7")}>
-                <AvatarFallback className="bg-[#aba7e7] text-xs font-bold capitalize tracking-wider text-secondary">
-                  {userSession ? userSession?.userInitials : "--"}
-                </AvatarFallback>
-              </Avatar>
-            ) : null}
-          </div>
-          {!isAssist && (
-            <div className="mx-4 flex items-center gap-1 text-white">
-              {!isIndividualUser ? <FlowParticipantsFacePile /> : null}
-
-              <ExecuteFlow />
-
-              <SearchCommandTrigger />
-              {import.meta.env.MODE !== "production" ? (
-                <SettingsTrigger />
+        {!isAgentHistory ? (
+          <div className="flex w-2/5 justify-end">
+            <div>
+              {isIndividualUser ? (
+                <Avatar className={cn("flex h-7 w-7")}>
+                  <AvatarFallback className="bg-[#aba7e7] text-xs font-bold capitalize tracking-wider text-secondary">
+                    {userSession ? userSession?.userInitials : "--"}
+                  </AvatarFallback>
+                </Avatar>
               ) : null}
+            </div>
+            {!isAssist && (
+              <div className="mx-4 flex items-center gap-1 text-white">
+                {!isIndividualUser ? <FlowParticipantsFacePile /> : null}
 
-              <StudioPreferences className="mt-0 mlg:mt-4" />
-              <FlowComments className="mt-0 mlg:mt-4" />
-            </div>
-          )}
-          <SaveFlow />
-          {!isAssist && (
-            <div className="flex items-center">
-              <Tooltip content="More">
-                <HeaderActionMenu />
-              </Tooltip>
-            </div>
-          )}
-        </div>
+                <ExecuteFlow />
+
+                <SearchCommandTrigger />
+
+                <VersionHistoryTrigger />
+
+                {import.meta.env.MODE !== "production" ? (
+                  <SettingsTrigger />
+                ) : null}
+
+                <StudioPreferences className="mt-0 mlg:mt-4" />
+                <FlowComments className="mt-0 mlg:mt-4" />
+              </div>
+            )}
+            <SaveFlow />
+            {!isAssist && (
+              <div className="flex items-center">
+                <Tooltip content="More">
+                  <HeaderActionMenu />
+                </Tooltip>
+              </div>
+            )}
+          </div>
+        ) : (
+          <div className="flex w-2/5 items-center justify-end gap-1">
+            <Button
+              variant={"ghost"}
+              size={"xs"}
+              className={
+                "group flex h-7 max-w-[15rem] gap-2 rounded-full bg-white/10 pl-3 pr-2.5 font-bold text-white/80 hover:bg-white/20 hover:text-white/80"
+              }
+            >
+              View Only
+            </Button>
+            <Tooltip content="Close">
+              <Button
+                size="icon8"
+                variant="ghost"
+                className="hover:bg-white/10"
+                onClick={() =>
+                  navigate(withQueryParams("/agent"), { replace: true })
+                }
+              >
+                <X className="h-4 w-4 text-white/80" />
+              </Button>
+            </Tooltip>
+          </div>
+        )}
       </Header>
     </HeaderContainer>
   );

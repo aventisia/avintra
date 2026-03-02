@@ -13,7 +13,7 @@ export const useUndoRedoControls = () => {
       future: state.future,
     })),
   );
-  console.log("past", past.length);
+
   return {
     undo,
     redo,

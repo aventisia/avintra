@@ -135,7 +135,7 @@ const PanelHeader = React.forwardRef<HTMLDivElement, PanelHeaderProps>(
       <div
         ref={ref}
         className={cn(
-          "bg-muted/50 flex items-center justify-between border-b border-border p-3",
+          "flex h-12 items-center justify-between gap-2 border-b pl-4 pr-2 text-lg tracking-wide",
           className,
         )}
       >
@@ -160,7 +160,7 @@ const PanelTitle = React.forwardRef<HTMLHeadingElement, PanelTitleProps>(
       <h2
         ref={ref}
         id={`panel-title-${id}`}
-        className={cn("text-lg font-semibold text-foreground", className)}
+        className={cn("text-[1rem] font-semibold text-foreground", className)}
       >
         {children}
       </h2>
@@ -204,7 +204,13 @@ interface PanelContentProps {
 const PanelContent = React.forwardRef<HTMLDivElement, PanelContentProps>(
   ({ children, className }, ref) => {
     return (
-      <div ref={ref} className={cn("flex-1 overflow-y-auto p-4", className)}>
+      <div
+        ref={ref}
+        className={cn(
+          "h-[calc(100vh-var(--header-height)-3*var(--header-padding))]",
+          className,
+        )}
+      >
         {children}
       </div>
     );
