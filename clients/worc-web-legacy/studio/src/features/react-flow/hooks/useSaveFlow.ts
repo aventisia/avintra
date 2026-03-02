@@ -48,6 +48,10 @@ export const useSaveFlow = () => {
         edges,
         flowVariablesObject,
       });
+
+      toast.success("Flow saved successfully", {
+        className: "sonner-toaster-sm",
+      });
     },
     onError: (error) => {
       toast.error(error.toString());

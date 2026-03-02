@@ -33,7 +33,7 @@ const getFlowToLoad = (id: string, versionId?: string) => {
  */
 const updateFlowSilently = (putObj: FlowSilentUpdateDto) => {
   return axiosInstance
-    .put<IHttpResponse<boolean>>(`${baseAPIURL}/silent-update`, putObj)
+    .put<IHttpResponse<boolean>>(`${baseAPIURL}/save`, putObj)
     .then((res) => res.data);
 };
 
