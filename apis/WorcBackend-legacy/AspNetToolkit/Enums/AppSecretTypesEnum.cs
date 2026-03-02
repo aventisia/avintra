@@ -1,4 +1,4 @@
-namespace AspNetToolkit.Entities;
+namespace AspNetToolkit.Enums;
 
 /// <summary>
 /// Specifies the types of application secrets used to integrate with third-party services, such as API keys for external platforms or tools.

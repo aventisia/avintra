@@ -7,20 +7,14 @@ namespace WorkspaceAPIs.Features.CloudConnectors.SendGrid;
 public class SendGridConnectorsService : ISendGridConnectorsService
 {
     private readonly ILogger<SendGridConnectorsService> _logger;
-    private readonly IM365ConnectorsService _m365ConnectorsService;
     private readonly ICloudConnectorsVaultService _cloudConnectorsVaultService;
-    private readonly IStringEncryptionService _stringEncryptionService;
 
     public SendGridConnectorsService(
         ILogger<SendGridConnectorsService> logger,
-        IM365ConnectorsService m365ConnectorsService, ICloudConnectorsVaultService cloudConnectorsVaultService,
-        IStringEncryptionService stringEncryptionService)
+        ICloudConnectorsVaultService cloudConnectorsVaultService)
     {
         _logger = logger;
-        _m365ConnectorsService = m365ConnectorsService;
         _cloudConnectorsVaultService = cloudConnectorsVaultService;
-        _stringEncryptionService = stringEncryptionService;
-
     }
 
     public async Task<ServiceResponse<CloudConnectorResDto>> InvokeCloudConnectorAsync(CloudConnectorReqDto cloudConnectorReqDto)
