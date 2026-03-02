@@ -181,7 +181,7 @@ export const useDagreAutoLayout = () => {
       setNodes(interpolatedNodes);
 
       if (newNodesEdgesObj?.newEdges) {
-        setEdges([...currentEdges]);
+        setEdges(newNodesEdgesObj?.newEdges);
       }
     },
     [getNodes, getEdges],

@@ -10,6 +10,7 @@ import { Input } from "@aventisia/ui";
 import { useDynamicConfigPanelStore } from "../stores/dcp-store";
 import { useShallow } from "zustand/react/shallow";
 import { useState } from "react";
+import { useIsVersionHistoryRoute } from "@/features/version-history/hooks/useIsVersionHistoryRoute";
 
 const DCPDialogHeader = () => {
   const [editing, setEditing] = useState(false);
@@ -26,6 +27,8 @@ const DCPDialogHeader = () => {
       setNodeLabel: state.setNodeLabel,
     })),
   );
+
+  const isAgentHistory = useIsVersionHistoryRoute();
 
   // Renders the appropriate info link based on node type
   const renderInfoLink = () => {
@@ -81,13 +84,17 @@ const DCPDialogHeader = () => {
             />
           ) : (
             <div
-              onClick={() => setEditing(true)}
+              onClick={() => {
+                if (!isAgentHistory) setEditing(true);
+              }}
               className="flex h-5 items-center gap-2"
             >
               <span className="max-w-[24rem] overflow-hidden truncate text-[0.91rem]">
                 {nodeLabel}
               </span>
-              <PencilIcon className="h-3 w-3 text-muted-foreground" />
+              {!isAgentHistory && (
+                <PencilIcon className="h-3 w-3 text-muted-foreground" />
+              )}
             </div>
           )}
         </DialogTitle>

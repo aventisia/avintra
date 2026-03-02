@@ -21,9 +21,11 @@ import { DCPTabsFooterWrapper } from "./dcp-tabs/DCPTabsFooterWrapper";
 import { DCPTabsListWrapper } from "./dcp-tabs/DCPTabsListWrapper";
 import ImproveWithAIButton from "@/features/dynamic-config-panel/components/dcp-tabs/ImproveWithAIButton";
 import TestTabContent from "./dcp-tabs/test-tab/TestTabContent";
+import { useIsVersionHistoryRoute } from "@/features/version-history/hooks/useIsVersionHistoryRoute";
 
 export const DCPForm = () => {
   const [showOuputFields, setShowOutputFields] = useState(false);
+  const isAgentHistory = useIsVersionHistoryRoute();
 
   // Define form
   const {
@@ -118,21 +120,36 @@ export const DCPForm = () => {
                   />
                 ))}
             </DCPTabsList>
-            {import.meta.env.MODE !== "production" ? (
-              <>
-                {nodeConfig.testScreenType == "standard" && (
-                  <DCPTabsList>
-                    <DCPTabsTrigger
-                      tabValue="Test"
-                      className="flex items-center gap-1 text-primary hover:text-primary"
-                      handleClick={() => onSubmit(form.getValues())}
-                    >
-                      <PlayIcon className="h-3 w-3" />
-                      <span> Test</span>
-                    </DCPTabsTrigger>
-                  </DCPTabsList>
-                )}
-                {nodeConfig.testScreenType == "llmGenerateRequest" && (
+            {!isAgentHistory ? (
+              import.meta.env.MODE !== "production" ? (
+                <>
+                  {nodeConfig.testScreenType == "standard" && (
+                    <DCPTabsList>
+                      <DCPTabsTrigger
+                        tabValue="Test"
+                        className="flex items-center gap-1 text-primary hover:text-primary"
+                        handleClick={() => onSubmit(form.getValues())}
+                      >
+                        <PlayIcon className="h-3 w-3" />
+                        <span> Test</span>
+                      </DCPTabsTrigger>
+                    </DCPTabsList>
+                  )}
+                  {nodeConfig.testScreenType == "llmGenerateRequest" && (
+                    <DCPTabsList>
+                      <DCPTabsTrigger
+                        tabValue="Test"
+                        className="flex items-center gap-1 text-primary hover:text-primary"
+                        handleClick={() => onSubmit(form.getValues())}
+                      >
+                        <FlaskConical className="h-3.5 w-3.5" />
+                        <span> Test</span>
+                      </DCPTabsTrigger>
+                    </DCPTabsList>
+                  )}
+                </>
+              ) : (
+                nodeConfig.testScreenType == "llmGenerateRequest" && (
                   <DCPTabsList>
                     <DCPTabsTrigger
                       tabValue="Test"
@@ -143,22 +160,9 @@ export const DCPForm = () => {
                       <span> Test</span>
                     </DCPTabsTrigger>
                   </DCPTabsList>
-                )}
-              </>
-            ) : (
-              nodeConfig.testScreenType == "llmGenerateRequest" && (
-                <DCPTabsList>
-                  <DCPTabsTrigger
-                    tabValue="Test"
-                    className="flex items-center gap-1 text-primary hover:text-primary"
-                    handleClick={() => onSubmit(form.getValues())}
-                  >
-                    <FlaskConical className="h-3.5 w-3.5" />
-                    <span> Test</span>
-                  </DCPTabsTrigger>
-                </DCPTabsList>
+                )
               )
-            )}
+            ) : null}
           </DCPTabsListWrapper>
 
           <Form
@@ -250,8 +254,9 @@ export const DCPForm = () => {
               <DCPTabsFooterWrapper
                 className={cn(selectedTab == "Prompt" && "justify-between")}
               >
-                {selectedTab == "Prompt" && (
+                {selectedTab == "Prompt" && !isAgentHistory && (
                   <ImproveWithAIButton
+                    disabled={isAgentHistory}
                     name={
                       nodeConfig.fields.find((v) => v.type == "prompt-input")
                         ?.name ?? ""
@@ -259,9 +264,23 @@ export const DCPForm = () => {
                     form={form}
                   />
                 )}
-                <Button size={"sm"} type="submit" className="min-w-[5rem]">
-                  Save
-                </Button>
+                {
+                  <div className="flex items-center gap-1">
+                    {isAgentHistory ? (
+                      <span className="text-2xs text-muted-foreground">
+                        Changes will not be saved
+                      </span>
+                    ) : null}
+                    <Button
+                      size={"sm"}
+                      disabled={isAgentHistory}
+                      type="submit"
+                      className="min-w-[5rem]"
+                    >
+                      Save
+                    </Button>
+                  </div>
+                }
               </DCPTabsFooterWrapper>
             )}
           </Form>
