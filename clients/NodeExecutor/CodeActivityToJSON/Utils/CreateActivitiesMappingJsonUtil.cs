@@ -23,7 +23,7 @@ namespace CodeActivityToJSON.Utils
             "ConditionalBranchActivity",
         };
 
-        public static void CreateActivitiesMappingJson(string outputDir, List<Type> categoryMetadataTypes, List<Type> activities)
+        public static void CreateActivitiesMappingJson(List<Type> categoryMetadataTypes, List<Type> activities)
         {
             // Get primary json file path
             var baseJsonFilePath = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "BaseJSONs", "PrimaryCategory.json");
@@ -122,18 +122,31 @@ namespace CodeActivityToJSON.Utils
                 }
             }
 
-            // Save the primary categories to JSON file
-            // var outputFilePath = Path.Combine(outputDir, "_ActionSelectorData.json");
+            // Save the primary categories JSON file to wsl2
             var outputFilePath = $@"\\wsl$\Ubuntu\home\{Environment.UserName.ToLower()}\gitea\aventisia\worc-platform\clients\worc-web-legacy\studio\src\features\action-selector\constants\_ActionSelectorData.json";
-            
             using (var writer = new StreamWriter(outputFilePath))
+            {
+               // Set NewLine to Unix line ending (LF)
+               writer.NewLine = "\n";
+               var json = JsonConvert.SerializeObject(primaryCategories, Formatting.Indented, settings);
+               var jsonWithUnixLineEndings = json.Replace("\r\n", "\n");
+               writer.Write(jsonWithUnixLineEndings);
+               Console.WriteLine($"Activities mapping JSON saved");
+            }
+
+            // Save the primary categories JSON file to %LOCALAPPDATA%\WorcDesktopApp\config-files\action-selector
+            var localAppDataPath = Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData);
+            var localAppDataOutputDir = Path.Combine(localAppDataPath, "WorcDesktopApp", "config-files", "action-selector");
+            Directory.CreateDirectory(localAppDataOutputDir);
+            var localAppDataOutputFilePath = Path.Combine(localAppDataOutputDir, "_ActionSelectorData.json");
+            using (var writer = new StreamWriter(localAppDataOutputFilePath))
             {
                 // Set NewLine to Unix line ending (LF)
                 writer.NewLine = "\n";
                 var json = JsonConvert.SerializeObject(primaryCategories, Formatting.Indented, settings);
                 var jsonWithUnixLineEndings = json.Replace("\r\n", "\n");
                 writer.Write(jsonWithUnixLineEndings);
-                Console.WriteLine($"Activities mapping JSON saved");
+                Console.WriteLine($"Activities mapping JSON saved to local app data");
             }
         }
     }

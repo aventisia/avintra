@@ -14,9 +14,6 @@ namespace CodeActivityToJSON
     {
         static void Main(string[] args)
         {
-            // Get the directory to save JSON files
-            var outputDir = GetOutputDirectoryToSaveJsonFiles();
-
             // Load the CodeActivitiesLibrary assembly
             var codeActivitiesAssembly = GetCodeActivitiesAssembly();
 
@@ -40,7 +37,7 @@ namespace CodeActivityToJSON
             }
 
             // Create the activities mapping JSON file
-            CreateActivitiesMappingJsonUtil.CreateActivitiesMappingJson(outputDir, categoryMetadataTypes, activities);
+            CreateActivitiesMappingJsonUtil.CreateActivitiesMappingJson(categoryMetadataTypes, activities);
 
             // Create the activities CSV file
             ExportActivitiesToCsvUtil.ExportActivitiesToCsv(activities);
@@ -94,19 +91,21 @@ namespace CodeActivityToJSON
                     namespaceParts[i] = Regex.Replace(namespaceParts[i], "(?<!^)([A-Z])", "-$1").ToLower();
                 }
 
-                // Create the directory structure based on the namespace
-                var directoryPath = Path.Combine(outputDir, Path.Combine(namespaceParts));
-
                 // Create the file path for the JSON file (for documentation)
                 //Directory.CreateDirectory(directoryPath);
                 //var fileName = Path.Combine(directoryPath, activityDisplayName.DisplayName + ".json");
 
-                // Create the file path for the JSON file (for form generation)
-                var fileName = Path.Combine(outputDir, activity.Name + ".json");
-
-                // Write the JSON content to the file with Unix line endings (LF)
+                // Create the file path for the JSON file in WSL2 (for form generation)
+                var fileName = Path.Combine($@"\\wsl$\Ubuntu\home\{Environment.UserName.ToLower()}\gitea\aventisia\worc-platform\clients\worc-web-legacy\studio\src\features\dynamic-config-panel\constants\config-json", activity.Name + ".json");
                 var jsonWithUnixLineEndings = json.Replace("\r\n", "\n");
                 File.WriteAllText(fileName, jsonWithUnixLineEndings);
+
+                // Create the file path for the JSON file in %LOCALAPPDATA%\WorcDesktopApp\config-files\desktop-nodes (for form generation)
+                var localAppDataPath = Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData);
+                var localAppDataOutputDir = Path.Combine(localAppDataPath, "WorcDesktopApp", "config-files", "desktop-nodes");
+                Directory.CreateDirectory(localAppDataOutputDir);
+                var localAppDataFileName = Path.Combine(localAppDataOutputDir, activity.Name + ".json");
+                File.WriteAllText(localAppDataFileName, json);
             }
             Console.WriteLine("Task complete");
             Console.ReadLine();
