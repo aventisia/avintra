@@ -5,6 +5,7 @@ using System;
 using System.Activities;
 using System.ComponentModel;
 using System.ComponentModel.DataAnnotations;
+using System.Security;
 using System.Security.Authentication;
 
 namespace CodeActivitiesLibrary.AppIntegrations.FtpActivities
@@ -15,10 +16,6 @@ namespace CodeActivitiesLibrary.AppIntegrations.FtpActivities
 
     public class OpenSecureFtpConnectionActivity : BaseCodeActivity
     {
-        // ----------------------
-        // Input Arguments
-        // ----------------------
-
         [RequiredArgument]
         [DisplayName("Host")]
         [Description("The FTP server URL (e.g., ftp.example.com).")]
@@ -49,9 +46,8 @@ namespace CodeActivitiesLibrary.AppIntegrations.FtpActivities
         [DisplayName("Password")]
         [Description(
             "The password for authentication (required if 'Authentication Method' is 'Username and password').")]
-        [FieldType(FieldType.Password)]
         [RenderIfCondition(nameof(AuthenticationMethod), AuthenticationMethodEnum.UsernameAndPassword)]
-        public InArgument<string> Password { get; set; }
+        public InArgument<SecureString> Password { get; set; }
 
         [DisplayName("Path to Private Key")]
         [Description("The path to the private key file (required if using SFTP with private key).")]
@@ -77,10 +73,6 @@ namespace CodeActivitiesLibrary.AppIntegrations.FtpActivities
         [DefaultValue(10)]
         public InArgument<int> Timeout { get; set; }
 
-        // ----------------------
-        // Output Arguments
-        // ----------------------
-
         [DisplayName("FTPS Connection")]
         [Description("Returns the FTPS connection (FluentFTP).")]
         public OutArgument<FtpClient> FtpsConnection { get; set; }
@@ -88,9 +80,7 @@ namespace CodeActivitiesLibrary.AppIntegrations.FtpActivities
         [DisplayName("SFTP Connection")]
         [Description("Returns the SFTP connection (Renci.SshNet).")]
         public OutArgument<SftpClient> SftpConnection { get; set; }
-        // ----------------------
-        // Execution Logic
-        // ----------------------
+        
         protected override void Execute(CodeActivityContext context)
         {
             try
@@ -100,7 +90,7 @@ namespace CodeActivitiesLibrary.AppIntegrations.FtpActivities
                 var protocol = SecureFtpProtocol.Get(context);
                 var authMethod = AuthenticationMethod.Get(context);
                 var username = Username.Get(context);
-                var password = Password.Get(context);
+                var password = ConvertSecureStringToString(Password.Get(context));
                 var privateKeyPath = PathToPrivateKey.Get(context);
                 var privateKeyPassphrase = PrivateKeyPassphrase.Get(context);
                 var activeMode = ActiveMode.Get(context);

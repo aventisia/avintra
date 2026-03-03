@@ -7,6 +7,7 @@ using System.ComponentModel;
 using System.ComponentModel.DataAnnotations;
 using System.Linq;
 using System.Reflection;
+using System.Security;
 using System.Text.Json;
 
 namespace CodeActivityToJSON.Utils
@@ -124,6 +125,21 @@ namespace CodeActivityToJSON.Utils
                     }
                 }
 
+
+                // If the property is of type InArgument<SecureString>, set type to password
+                if (direction == "Input" && prop.PropertyType.IsGenericType)
+                {
+                    var genericTypeDef = prop.PropertyType.GetGenericTypeDefinition();
+                    if (genericTypeDef == typeof(InArgument<>))
+                    {
+                        var genericType = prop.PropertyType.GenericTypeArguments.FirstOrDefault();
+                        if (genericType == typeof(SecureString))
+                        {
+                            item["type"] = "password";
+                        }
+                    }
+                }
+
                 // Get FieldType attribute
                 var fieldTypeAttr = prop.GetCustomAttribute<FieldTypeAttribute>();
                 if (fieldTypeAttr != null)
@@ -144,7 +160,6 @@ namespace CodeActivityToJSON.Utils
                         { FieldType.Date, "text" },
                         { FieldType.Time, "time" },
                         { FieldType.DateTime, "text" },
-                        { FieldType.Password, "password" },
                         { FieldType.Text, "text" },
                         { FieldType.Textarea, "textarea" },
                         { FieldType.Select, "select" },
@@ -158,7 +173,7 @@ namespace CodeActivityToJSON.Utils
                         { FieldType.ConfigPanelModelOutput, "config-panel-model-output" }
                     };
 
-                    if (fieldTypeMapping.TryGetValue(fieldTypeAttr.InputFieldType, out var fieldTypeStr))
+                    if (fieldTypeMapping.TryGetValue(fieldTypeAttr.FieldType, out var fieldTypeStr))
                     {
                         item["type"] = fieldTypeStr;
                     }

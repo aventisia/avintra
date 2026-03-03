@@ -6,6 +6,7 @@ using System.ComponentModel;
 using System.ComponentModel.DataAnnotations;
 using System.IO;
 using System.Linq;
+using System.Security;
 using UglyToad.PdfPig;
 using UglyToad.PdfPig.Content;
 using static System.Windows.Forms.VisualStyles.VisualStyleElement;
@@ -54,8 +55,7 @@ namespace CodeActivitiesLibrary.AppIntegrations.PdfActivities
 
         [DisplayName("Password")]
         [Description("Optional password for encrypted PDF files. Leave empty if not required.")]
-        [FieldType(FieldType.Password)]
-        public InArgument<string> Password { get; set; }
+        public InArgument<SecureString> Password { get; set; }
 
         [DisplayName("Output Folder Path")]
         [Description("The folder where extracted images will be saved.")]
@@ -83,7 +83,7 @@ namespace CodeActivitiesLibrary.AppIntegrations.PdfActivities
                 var sourcePdfPath = SourcePdfPath.Get(context);
                 var pageSelection = PageSelection.Get(context);
                 var extractionType = ExtractionType.Get(context);
-                var password = Password.Get(context);
+                var password = ConvertSecureStringToString(Password.Get(context));
                 var outputFolderPath = OutputFolderPath.Get(context);
 
                 // Validate input paths

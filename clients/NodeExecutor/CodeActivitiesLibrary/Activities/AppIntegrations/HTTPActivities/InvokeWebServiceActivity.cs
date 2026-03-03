@@ -7,6 +7,7 @@ using System.ComponentModel.DataAnnotations;
 using System.Net;
 using System.Net.Http;
 using System.Net.Http.Headers;
+using System.Security;
 using System.Text;
 using System.Threading.Tasks;
 namespace CodeActivitiesLibrary.AppIntegrations.HttpActivities
@@ -52,9 +53,8 @@ namespace CodeActivitiesLibrary.AppIntegrations.HttpActivities
 
         [DisplayName("Password")]
         [Description("Password for basic authentication.")]
-        [FieldType(FieldType.Password)]
         [RenderIfCondition(nameof(AuthenticationType), AuthenticationTypeEnum.Basic)]
-        public InArgument<string> Password { get; set; }
+        public InArgument<SecureString> Password { get; set; }
 
         [DisplayName("Bearer Token")]
         [Description("Bearer token for OAuth authentication.")]
@@ -104,7 +104,7 @@ namespace CodeActivitiesLibrary.AppIntegrations.HttpActivities
             var headers = Headers.Get(context);
             var authType = AuthenticationType.Get(context);
             var username = Username.Get(context);
-            var password = Password.Get(context);
+            var password = ConvertSecureStringToString(Password.Get(context));
             var bearerToken = BearerToken.Get(context);
 
             if (string.IsNullOrWhiteSpace(url))

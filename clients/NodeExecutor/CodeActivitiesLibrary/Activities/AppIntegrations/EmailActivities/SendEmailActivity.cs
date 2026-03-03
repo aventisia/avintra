@@ -6,6 +6,7 @@ using System.Activities;
 using System.ComponentModel;
 using System.ComponentModel.DataAnnotations;
 using System.IO;
+using System.Security;
 using SmtpClient = MailKit.Net.Smtp.SmtpClient;
 
 namespace CodeActivitiesLibrary.AppIntegrations.EmailActivities
@@ -15,10 +16,6 @@ namespace CodeActivitiesLibrary.AppIntegrations.EmailActivities
     [ActivityMetaData(nodeImg:"/assets/Email.svg")]
     public class SendEmailActivity : BaseCodeActivity
     {
-        // ----------------------
-        // Input Arguments
-        // ----------------------
-
         [RequiredArgument]
         [DisplayName("From")]
         [Description("The sender's email address.")]
@@ -89,8 +86,7 @@ namespace CodeActivitiesLibrary.AppIntegrations.EmailActivities
 
         [DisplayName("Password")]
         [Description("The password for authentication.")]
-        [FieldType(FieldType.Password)]
-        public InArgument<string> Password { get; set; }
+        public InArgument<SecureString> Password { get; set; }
 
 
         [DisplayName("Accept Untrusted Certificates")]
@@ -103,9 +99,6 @@ namespace CodeActivitiesLibrary.AppIntegrations.EmailActivities
         [DefaultValue(30)]
         public InArgument<int> Timeout { get; set; } = new InArgument<int>(30);
 
-        // ----------------------
-        // Execution Logic
-        // ----------------------
         protected override void Execute(CodeActivityContext context)
         {
 
@@ -125,7 +118,7 @@ namespace CodeActivitiesLibrary.AppIntegrations.EmailActivities
                 var securityProtocol = SecurityProtocol.Get(context);
                 var smtpServerNeedsAuthentication = SmtpServerNeedsAuthentication.Get(context);
                 var userName = UserName.Get(context);
-                var password = Password.Get(context);
+                var password = ConvertSecureStringToString(Password.Get(context));
                 var acceptUntrustedCertificates = EnableSsl.Get(context);
                 var timeout = Timeout.Get(context);
 

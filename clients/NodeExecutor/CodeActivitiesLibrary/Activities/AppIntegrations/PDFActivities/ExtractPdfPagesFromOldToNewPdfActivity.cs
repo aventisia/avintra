@@ -5,6 +5,7 @@ using System.Collections.Generic;
 using System.ComponentModel;
 using System.IO;
 using System.Linq;
+using System.Security;
 using UglyToad.PdfPig;
 using UglyToad.PdfPig.Writer;
 
@@ -12,7 +13,7 @@ namespace CodeActivitiesLibrary.AppIntegrations.PdfActivities
 {
     [DisplayName("Extract PDF Pages from existing PDF to New PDF file")]
     [Description("Extracts specific pages from a PDF file and saves them as a New PDF file.")]
-    [ActivityMetaData(nodeImg:"/assets/PDF.svg")]
+    [ActivityMetaData(nodeImg: "/assets/PDF.svg")]
     public class ExtractPdfPagesFromOldToNewPdfActivity : BaseCodeActivity
     {
         [RequiredArgument]
@@ -32,8 +33,7 @@ namespace CodeActivitiesLibrary.AppIntegrations.PdfActivities
 
         [DisplayName("Password")]
         [Description("The password for the source PDF file, if it is encrypted. Leave empty if not applicable.")]
-        [FieldType(FieldType.Password)]
-        public InArgument<string> Password { get; set; }
+        public InArgument<SecureString> Password { get; set; }
 
         [DisplayName("Page Number (for Single)")]
         [Description("The specific page number to extract when using Single page selection mode.")]
@@ -56,7 +56,7 @@ namespace CodeActivitiesLibrary.AppIntegrations.PdfActivities
                 var sourcePath = SourcePdfPath.Get(context);
                 var outputPath = NewPdfPath.Get(context);
                 var pageMode = PageSelection.Get(context);
-                var password = Password.Get(context);
+                var password = ConvertSecureStringToString(Password.Get(context));
 
                 if (!File.Exists(sourcePath))
                     throw new FileNotFoundException("Source PDF file not found.", sourcePath);
@@ -67,8 +67,8 @@ namespace CodeActivitiesLibrary.AppIntegrations.PdfActivities
                 var pagesToExtract = new List<int>();
 
                 using (var document = string.IsNullOrWhiteSpace(password)
-                    ? PdfDocument.Open(sourcePath)
-                    : PdfDocument.Open(sourcePath, new ParsingOptions { Password = password }))
+                        ? PdfDocument.Open(sourcePath)
+                        : PdfDocument.Open(sourcePath, new ParsingOptions { Password = password }))
                 {
                     int totalPages = document.NumberOfPages;
 

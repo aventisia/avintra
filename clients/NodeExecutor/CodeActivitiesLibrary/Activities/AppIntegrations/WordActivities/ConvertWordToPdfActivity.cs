@@ -12,7 +12,7 @@ namespace CodeActivitiesLibrary.AppIntegrations.WordActivities
 {
     [DisplayName("Convert Word To PDF")]
     [Description("Converts a Word document (.doc/.docx) into a PDF file.")]
-    [ActivityMetaData(nodeImg: "/assets/wordToPdf.svg")]
+    [ActivityMetaData(nodeImg: "/assets/Word.svg")]
     public class ConvertWordToPdfActivity : BaseCodeActivity
     {
         [RequiredArgument]

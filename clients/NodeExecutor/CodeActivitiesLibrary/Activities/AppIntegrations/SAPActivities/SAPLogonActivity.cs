@@ -3,6 +3,7 @@ using System;
 using System.Activities;
 using System.ComponentModel;
 using System.Runtime.InteropServices;
+using System.Security;
 using System.Threading;
 using System.Windows.Automation;
 using System.Windows.Input;
@@ -27,9 +28,8 @@ namespace CodeActivitiesLibrary.AppIntegrations.SAPActivities
         [RequiredArgument]
         [DisplayName("Password")]
         [Description("SAP Password. Will be hidden in UI.")]
-        [FieldType(FieldType.Password)]
         [EditorBrowsable(EditorBrowsableState.Never)]
-        public InArgument<string> Password { get; set; }
+        public InArgument<SecureString> Password { get; set; }
 
         [RequiredArgument]
         [DisplayName("System Number")]
@@ -56,7 +56,7 @@ namespace CodeActivitiesLibrary.AppIntegrations.SAPActivities
             {
                 var client = Client.Get(context);
                 var userId = UserId.Get(context);
-                var password = Password.Get(context);
+                var password = ConvertSecureStringToString(Password.Get(context));
                 var systemNumber = SystemNumber.Get(context);
                 var systemName = SystemName.Get(context);
                 var language = Language.Get(context);
