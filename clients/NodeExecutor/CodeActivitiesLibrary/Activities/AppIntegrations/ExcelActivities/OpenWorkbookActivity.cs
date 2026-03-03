@@ -5,6 +5,7 @@ using System.Activities;
 using System.ComponentModel;
 using System.IO;
 using System.Linq;
+using System.Security;
 
 namespace CodeActivitiesLibrary.AppIntegrations.ExcelActivities
 {
@@ -29,8 +30,7 @@ namespace CodeActivitiesLibrary.AppIntegrations.ExcelActivities
 
         [DisplayName("Read Protection Password")]
         [Description("Password required to open the workbook if it is protected with a read password.")]
-        [FieldType(FieldType.Password)]
-        public InArgument<string> ReadProtectionPassword { get; set; }
+        public InArgument<SecureString> ReadProtectionPassword { get; set; }
 
         [DisplayName("Workbook Instance")]
         [Description("The Excel workbook instance that is opened or reused. This output can be used in subsequent Excel activities.")]
@@ -41,7 +41,7 @@ namespace CodeActivitiesLibrary.AppIntegrations.ExcelActivities
             Application excelApp = ExcelInstance.Get(context);
             string workbookName = WorkbookName.Get(context);
             bool readOnly = OpenAsReadOnly.Get(context);
-            string password = ReadProtectionPassword.Get(context);
+            var password = ReadProtectionPassword.Get(context);
 
             bool isSuccess = false;
             string statusMessage;

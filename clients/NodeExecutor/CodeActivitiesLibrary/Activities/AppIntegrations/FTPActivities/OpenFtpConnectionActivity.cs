@@ -3,6 +3,7 @@ using FluentFTP;
 using System;
 using System.Activities;
 using System.ComponentModel;
+using System.Security;
 
 namespace CodeActivitiesLibrary.AppIntegrations.FtpActivities
 {
@@ -13,9 +14,6 @@ namespace CodeActivitiesLibrary.AppIntegrations.FtpActivities
 
     public class OpenFtpConnectionActivity : BaseCodeActivity
     {
-        // ----------------------
-        // Input Arguments
-        // ----------------------
         [RequiredArgument]
         [DisplayName("Host")]
         [Description("The FTP server URL (e.g., ftp.example.com).")]
@@ -38,19 +36,12 @@ namespace CodeActivitiesLibrary.AppIntegrations.FtpActivities
         [RequiredArgument]
         [DisplayName("Password")]
         [Description("The password for authentication.")]
-        [FieldType(FieldType.Password)]
-        public InArgument<string> Password { get; set; }
+        public InArgument<SecureString> Password { get; set; }
 
-        // ----------------------
-        // Output Arguments
-        // ----------------------
         [DisplayName("FTP Connection")]
         [Description("The connection object for the opened FTP connection.")]
         public OutArgument<FtpClient> FtpConnection { get; set; }
 
-        // ----------------------
-        // Execution Logic
-        // ----------------------
         protected override void Execute(CodeActivityContext context)
         {
             try
@@ -59,7 +50,7 @@ namespace CodeActivitiesLibrary.AppIntegrations.FtpActivities
                 var port = Port.Get(context);
                 var activeMode = ActiveMode.Get(context);
                 var username = Username.Get(context);
-                var password = Password.Get(context);
+                var password = ConvertSecureStringToString(Password.Get(context));
                 if (string.IsNullOrWhiteSpace(host))
                     throw new ArgumentException("Host cannot be empty.");
                 if (port <= 0)
@@ -78,13 +69,13 @@ namespace CodeActivitiesLibrary.AppIntegrations.FtpActivities
                 FtpConnection.Set(context, client);
 
                 IsSuccess.Set(context, true);
-                StatusMessage.Set(context, "FTP connection open succesfully");
+                StatusMessage.Set(context, "FTP connection open successfully");
             }
             catch (Exception ex)
             {
                 // Status message is handled by BaseCodeActivity
                 FtpConnection.Set(context, null);
-                StatusMessage.Set(context, $"Failed to connect to ftp server:{ex.Message}");
+                StatusMessage.Set(context, $"Failed to connect to FTP server: {ex.Message}");
                 IsSuccess.Set(context, false);
             }
         }

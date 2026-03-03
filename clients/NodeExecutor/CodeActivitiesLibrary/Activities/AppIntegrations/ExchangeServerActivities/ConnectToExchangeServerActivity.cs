@@ -5,6 +5,7 @@ using System.Activities;
 using System.ComponentModel;
 using System.ComponentModel.DataAnnotations;
 using System.Net;
+using System.Security;
 
 namespace CodeActivitiesLibrary.AppIntegrations.ExchangeServerActivities
 {
@@ -13,10 +14,6 @@ namespace CodeActivitiesLibrary.AppIntegrations.ExchangeServerActivities
     [ActivityMetaData(nodeImg:"/assets/ExchangeServer.svg")]
     public class ConnectToExchangeServerActivity : BaseCodeActivity
     {
-        // ----------------------
-        // Input Arguments
-        // ----------------------
-
         [RequiredArgument]
         [DisplayName("Exchange Server Version")]
         [Description("The version of the Exchange server (e.g., Exchange 2013 SP1).")]
@@ -55,24 +52,17 @@ namespace CodeActivitiesLibrary.AppIntegrations.ExchangeServerActivities
         [DisplayName("Password")]
         [Description("The password for user-defined credentials (required if 'Credentials' is 'User defined').")]
         [RenderIfCondition(nameof(Credentials), CredentialsEnum.UserDefined)]
-        [FieldType(FieldType.Password)]
-        public InArgument<string> Password { get; set; }
+        public InArgument<SecureString> Password { get; set; }
 
         [DisplayName("Timeout")]
         [Description("The timeout in seconds for the connection attempt.")]
         [DefaultValue(30)]
         public InArgument<int> Timeout { get; set; }
 
-        // ----------------------
-        // Output Arguments
-        // ----------------------
         [DisplayName("Exchange Connection")]
         [Description("The Exchange service object representing the connection to the Exchange server.")]
         public OutArgument<ExchangeService> ExchangeConnection { get; set; }
 
-        // ----------------------
-        // Execution Logic
-        // ----------------------
         protected override void Execute(CodeActivityContext context)
         {
             var status = "Operation completed successfully.";
@@ -81,6 +71,7 @@ namespace CodeActivitiesLibrary.AppIntegrations.ExchangeServerActivities
                 var exchangeVersion = ExchangeServerVersion.Get(context);
                 var connectionType = ConnectionType.Get(context);
                 var credentialsMode = Credentials.Get(context);
+                var password = ConvertSecureStringToString(Password.Get(context));
                 var timeout = Timeout.Get(context);
 
 
@@ -108,7 +99,7 @@ namespace CodeActivitiesLibrary.AppIntegrations.ExchangeServerActivities
                     case CredentialsEnum.UserDefined:
                         if (string.IsNullOrWhiteSpace(Domain.Get(context)) ||
                             string.IsNullOrWhiteSpace(Username.Get(context)) ||
-                            string.IsNullOrWhiteSpace(Password.Get(context)))
+                            string.IsNullOrWhiteSpace(password))
                         {
                             throw new ArgumentException(
                                 "Domain, username, and password are required for user-defined credentials.");

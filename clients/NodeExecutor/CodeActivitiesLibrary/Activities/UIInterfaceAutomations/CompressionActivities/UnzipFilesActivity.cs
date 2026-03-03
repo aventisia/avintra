@@ -2,12 +2,13 @@
 using SharpCompress.Archives;
 using SharpCompress.Archives.Zip;
 using SharpCompress.Common;
+using SharpCompress.Readers;
 using System;
 using System.Activities;
 using System.ComponentModel;
 using System.IO;
+using System.Security;
 using System.Text.RegularExpressions;
-using SharpCompress.Readers;
 
 namespace CodeActivitiesLibrary.UiInterfaceAutomations.CompressionActivities
 {
@@ -31,8 +32,7 @@ namespace CodeActivitiesLibrary.UiInterfaceAutomations.CompressionActivities
 
         [DisplayName("Password")]
         [Description("The password used for this archive, if any.")]
-        [FieldType(FieldType.Password)]
-        public InArgument<string> Password { get; set; }
+        public InArgument<SecureString> Password { get; set; }
 
         [DisplayName("Include Mask")]
         [Description(
@@ -53,7 +53,7 @@ namespace CodeActivitiesLibrary.UiInterfaceAutomations.CompressionActivities
             {
                 var archivePath = ArchivePath.Get(context);
                 var destinationFolder = DestinationFolder.Get(context);
-                var password = Password.Get(context);
+                var password = ConvertSecureStringToString(Password.Get(context));
                 var includeMask = IncludeMask.Get(context);
                 var excludeMask = ExcludeMask.Get(context);
 
