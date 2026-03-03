@@ -34,7 +34,8 @@ public enum M365OutlookActionsEnum
     DownloadAttachment,
 
     // Folders
-    GetEmailsByFolder,
+    GetEmailsByFolderName,
+    GetMailFolderByName,
     GetMailFolders,
     CreateMailFolder,
     RenameMailFolder,

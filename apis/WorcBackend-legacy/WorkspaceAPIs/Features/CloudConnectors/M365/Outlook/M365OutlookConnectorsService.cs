@@ -92,7 +92,7 @@ public class M365OutlookConnectorsService : IM365OutlookConnectorsService
         string baseUrl = $"{_m365ConnectorsService.GRAPH_BASE_URL}";
 
         // Retrieve important values from the payload
-        var mailboxAddress = CloudConnectionPayloadUtil.GetValue(payload, "MailboxAddress");
+        var mailboxAddress = CloudConnectionPayloadUtil.GetValue(payload, "mailboxAddress");
 
         // Function to determine the correct path based on mailbox address
         string GetMailboxPath(string mailbox)
@@ -111,7 +111,7 @@ public class M365OutlookConnectorsService : IM365OutlookConnectorsService
         string userPath = GetMailboxPath(mailboxAddress);
 
         // Construct the final URL paths for messages and folders API
-        string messagesApiUrl = $"{baseUrl}/{userPath}/messages";
+        string messagesApiUrl = $"{baseUrl}/{userPath}";
         string mailFoldersApiUrl = $"{baseUrl}/{userPath}/mailFolders";
 
         switch (action)
@@ -119,22 +119,22 @@ public class M365OutlookConnectorsService : IM365OutlookConnectorsService
             #region EMAIL MANAGEMENT
             // EMAIL SENDING
             case M365OutlookActionsEnum.SendEmail:
-                { return await SendEmailFromPayloadAsync(userPath, accessToken, payload); }
+                { return await SendEmailFromPayloadAsync(messagesApiUrl, accessToken, payload); }
 
             case M365OutlookActionsEnum.GetEmailById:
                 {
                     // Retrieve required message ID
-                    var messageId = CloudConnectionPayloadUtil.GetValue(payload, "MessageId");
-
-                    // Determine whether attachments should be included
-                    var includeAttachments = CloudConnectionPayloadUtil.GetBool(payload, "IncludeAttachments", false);
+                    var messageId = CloudConnectionPayloadUtil.GetValue(payload, "messageId");
 
                     // Build base request URL
-                    var requestUrl = $"{messagesApiUrl.TrimEnd('/')}/{messageId}";
+                    var requestUrl = $"{messagesApiUrl}/messages/{messageId}";
+
+                    // Determine whether attachments should be included
+                    var includeAttachments = CloudConnectionPayloadUtil.GetBool(payload, "includeAttachments", false);
 
                     // Add query parameters if needed
                     if (includeAttachments)
-                        requestUrl += requestUrl.Contains("?") ? "&$expand=attachments" : "?$expand=attachments";
+                        requestUrl += "?$expand=attachments";
 
                     return await HttpClientHelper.GetAsync(requestUrl, accessToken);
                 }
@@ -144,25 +144,28 @@ public class M365OutlookConnectorsService : IM365OutlookConnectorsService
 
             case M365OutlookActionsEnum.MoveEmailToFolder:
                 {
-                    // Extract the message ID and folder ID from the payload
-                    var messageId = CloudConnectionPayloadUtil.GetValue(payload, "MessageId");
-                    var folderId = CloudConnectionPayloadUtil.GetValue(payload, "FolderId");
+                    // Extract the message ID and folder namd from the payload
+                    var messageId = CloudConnectionPayloadUtil.GetValue(payload, "messageId");
+                    var folderName = CloudConnectionPayloadUtil.GetValue(payload, "folderName");
+
+                    // Get the folder ID by name using the helper method
+                    var folderId = await GetFolderIdByNameAsync(mailFoldersApiUrl, accessToken, folderName);
 
                     // Prepare the request body with the destination folder ID
                     var requestBody = new { destinationId = folderId };
 
                     // Make a POST request to move the email to the specified folder
-                    return await HttpClientHelper.PostAsync($"{messagesApiUrl}/{messageId}/move", requestBody, accessToken);
+                    return await HttpClientHelper.PostAsync($"{messagesApiUrl}/messages/{messageId}/move", requestBody, accessToken);
                 }
 
             case M365OutlookActionsEnum.UpdateAllEmailProperties:
                 {
                     // Retrieve the message ID and all the properties to update from the payload
-                    var messageId = CloudConnectionPayloadUtil.GetValue(payload, "MessageId");
-                    var isRead = CloudConnectionPayloadUtil.GetBool(payload, "IsRead", false);
-                    var flagStatus = CloudConnectionPayloadUtil.GetValue(payload, "FlagStatus");
-                    var categories = CloudConnectionPayloadUtil.GetList<string>(payload, "Categories");
-                    var importance = CloudConnectionPayloadUtil.GetValue(payload, "Importance");
+                    var messageId = CloudConnectionPayloadUtil.GetValue(payload, ",messageId");
+                    var isRead = CloudConnectionPayloadUtil.GetBool(payload, "isRead", false);
+                    var flagStatus = CloudConnectionPayloadUtil.GetValue(payload, "flagStatus");
+                    var categories = CloudConnectionPayloadUtil.GetList<string>(payload, "categories");
+                    var importance = CloudConnectionPayloadUtil.GetValue(payload, "importance");
 
                     // Build the request body dynamically based on the available properties
                     var requestBody = new
@@ -270,23 +273,32 @@ public class M365OutlookConnectorsService : IM365OutlookConnectorsService
             // MAIL FOLDER MANAGEMENT
             // ======================================================
 
-            case M365OutlookActionsEnum.GetEmailsByFolder:
+            case M365OutlookActionsEnum.GetEmailsByFolderName:
                 {
-                    // Retrieve the folder ID (optionally for checking hidden folders)
-                    var folderId = CloudConnectionPayloadUtil.GetValue(payload, "FolderId");
+                    // Retrieve the folder name from the payload
+                    var folderName = CloudConnectionPayloadUtil.GetValue(payload, "folderName");
 
-                    // Fetch emails from the specified folder
-                    return await HttpClientHelper.GetAsync($"{mailFoldersApiUrl}/{folderId}/messages", accessToken);
+                    // Get the folder ID by name using the helper method.
+                    var folderId = await GetFolderIdByNameAsync(mailFoldersApiUrl, accessToken, folderName);
+
+                    // Add pagination parameters if provided
+                    mailFoldersApiUrl = BuildPaginatedUrl($"{mailFoldersApiUrl}/{folderId}/messages", payload);
+
+                    // Call the API to retrieve all mail from folder, passing the access token for authorization
+                    return await HttpClientHelper.GetAsync(mailFoldersApiUrl, accessToken);
                 }
 
             case M365OutlookActionsEnum.GetMailFolders:
                 {
-                    // Determine whether to include hidden folders in the request
-                    var includeHiddenFolders = CloudConnectionPayloadUtil.GetBool(payload, "IncludeHiddenFolders", false);
+                    // Determine whether hidden folders should be included based on the payload
+                    var includeHiddenFolders = CloudConnectionPayloadUtil.GetBool(payload, "includeHiddenFolders", false);
 
-                    // Add query parameter when hidden folders need to be included
+                    // If hidden folders should be included, add the appropriate query parameter to the API URL
                     if (includeHiddenFolders)
                         mailFoldersApiUrl += "?includeHiddenFolders=true";
+
+                    // Add pagination parameters if provided
+                    mailFoldersApiUrl = BuildPaginatedUrl(mailFoldersApiUrl, payload);
 
                     // Call the API to retrieve all mail folders, passing the access token for authorization
                     return await HttpClientHelper.GetAsync(mailFoldersApiUrl, accessToken);
@@ -295,42 +307,60 @@ public class M365OutlookConnectorsService : IM365OutlookConnectorsService
             case M365OutlookActionsEnum.CreateMailFolder:
                 {
                     // Retrieve the folder display name and hidden status from the payload. "IsHidden" defaults to false if missing or invalid.
-                    var displayName = CloudConnectionPayloadUtil.GetValue(payload, "DisplayName");
-                    var isHidden = CloudConnectionPayloadUtil.GetBool(payload, "IsHidden", false);
+                    var displayName = CloudConnectionPayloadUtil.GetValue(payload, "displayName");
+                    var isHidden = CloudConnectionPayloadUtil.GetBool(payload, "isHidden", false);
 
-                    // Build the request payload with the folder name and visibility flag
+                    // Create the request body with the folder name and hidden status
                     var requestBody = new
                     {
                         displayName = displayName,
                         isHidden = isHidden // Indicates whether the folder should be hidden
                     };
 
-                    // Send a POST request to create the folder in the user's mailbox
+                    // Call the API to create a new mail folder in the user's mailbox, passing the access token for authorization
                     return await HttpClientHelper.PostAsync(mailFoldersApiUrl, requestBody, accessToken);
+                }
+
+            case M365OutlookActionsEnum.GetMailFolderByName:
+                {
+                    // Retrieve the folder name from the payload
+                    var folderName = CloudConnectionPayloadUtil.GetValue(payload, "folderName");
+
+                    // Get the folder ID by name using the helper method.
+                    var folderId = await GetFolderIdByNameAsync(mailFoldersApiUrl, accessToken, folderName);
+
+                    // Call the API to retrieve the mail folder details by ID, passing the access token for authorization
+                    return await HttpClientHelper.GetAsync($"{mailFoldersApiUrl}/{folderId}", accessToken);
                 }
 
             case M365OutlookActionsEnum.RenameMailFolder:
                 {
-                    // Retrieve the folder ID and updated display name from the payload
-                    var folderId = CloudConnectionPayloadUtil.GetValue(payload, "FolderId");
-                    var displayName = CloudConnectionPayloadUtil.GetValue(payload, "DisplayName");
+                    // Retrieve the current folder name and the new display name from the payload
+                    var folderName = CloudConnectionPayloadUtil.GetValue(payload, "folderName");
+                    var displayName = CloudConnectionPayloadUtil.GetValue(payload, "displayName");
 
-                    // Create the request body with the updated folder name
+                    // Get the folder ID by name using the helper method.
+                    var folderId = await GetFolderIdByNameAsync(mailFoldersApiUrl, accessToken, folderName);
+
+                    // Create the request body with the new display name for the folder
                     var requestBody = new
                     {
                         displayName = displayName
                     };
 
-                    // Send a PATCH request to update the folder name using its ID
+                    // Call the API to update the mail folder's display name by ID, passing the access token for authorization
                     return await HttpClientHelper.PatchAsync($"{mailFoldersApiUrl}/{folderId}", requestBody, accessToken);
                 }
 
             case M365OutlookActionsEnum.DeleteMailFolder:
                 {
-                    // Retrieve the folder ID from the payload
-                    var folderId = CloudConnectionPayloadUtil.GetValue(payload, "FolderId");
+                    // Retrieve the folder name from the payload
+                    var folderName = CloudConnectionPayloadUtil.GetValue(payload, "folderName");
 
-                    // Send a DELETE request to remove the folder from the mailbox
+                    // Get the folder ID by name using the helper method.
+                    var folderId = await GetFolderIdByNameAsync(mailFoldersApiUrl, accessToken, folderName);
+
+                    // Call the API to delete the mail folder by ID, passing the access token for authorization
                     return await HttpClientHelper.DeleteAsync($"{mailFoldersApiUrl}/{folderId}", accessToken);
                 }
             #endregion
@@ -422,26 +452,25 @@ public class M365OutlookConnectorsService : IM365OutlookConnectorsService
     }
 
     public async Task<JsonDocument?> SendEmailFromPayloadAsync(
-    string userPath,
+    string messageApiUrl,
     string accessToken,
     Dictionary<string, object> payload)
     {
         string GetPayloadValue(string key) =>
             payload.ContainsKey(key) ? payload[key]?.ToString()?.Trim() ?? string.Empty : string.Empty;
 
-        var from = GetPayloadValue("From");
-        var to = GetPayloadValue("To");
-        var cc = GetPayloadValue("CC");
-        var bcc = GetPayloadValue("BCC");
-        var subject = GetPayloadValue("Subject");
-        var contentType = string.IsNullOrWhiteSpace(GetPayloadValue("ContentType")) ? "Text" : GetPayloadValue("ContentType");
-        var content = GetPayloadValue("Content");
-        var sensitivity = string.IsNullOrWhiteSpace(GetPayloadValue("Sensitivity")) ? "Normal" : GetPayloadValue("Sensitivity");
-        var saveToSentItems = bool.TryParse(GetPayloadValue("SaveToSentItems"), out var save) ? save : true;
+        var to = GetPayloadValue("to");
+        var cc = GetPayloadValue("cc");
+        var bcc = GetPayloadValue("bcc");
+        var subject = GetPayloadValue("subject");
+        var contentType = string.IsNullOrWhiteSpace(GetPayloadValue("contentType")) ? "Text" : GetPayloadValue("contentType");
+        var content = GetPayloadValue("content");
+        var sensitivity = string.IsNullOrWhiteSpace(GetPayloadValue("sensitivity")) ? "Normal" : GetPayloadValue("sensitivity");
+        var saveToSentItems = bool.TryParse(GetPayloadValue("saveToSentItems"), out var save) ? save : true;
 
         // Convert attachments using reusable method
         object[] attachments = Array.Empty<object>();
-        if (payload.ContainsKey("Attachments") && payload["Attachments"] is IEnumerable<object> attList)
+        if (payload.ContainsKey("attachments") && payload["attachments"] is IEnumerable<object> attList)
         {
             attachments = ConvertPayloadAttachmentsToGraph(attList);
         }
@@ -469,7 +498,7 @@ public class M365OutlookConnectorsService : IM365OutlookConnectorsService
         };
 
         return await HttpClientHelper.PostAsync(
-            $"{userPath}/sendMail",
+            $"{messageApiUrl}/sendMail",
             messagePayload,
             accessToken);
     }
@@ -485,13 +514,13 @@ public class M365OutlookConnectorsService : IM365OutlookConnectorsService
         foreach (var attObj in payloadAttachments)
         {
             if (attObj is Dictionary<string, object> dict &&
-                dict.ContainsKey("Name") &&
-                dict.ContainsKey("ContentType") &&
-                dict.ContainsKey("ContentBytes"))
+                dict.ContainsKey("name") &&
+                dict.ContainsKey("contentType") &&
+                dict.ContainsKey("contentBytes"))
             {
                 string name = dict["Name"]?.ToString() ?? "file.dat";
-                string contentType = dict["ContentType"]?.ToString() ?? "application/octet-stream";
-                string base64Content = dict["ContentBytes"]?.ToString() ?? "";
+                string contentType = dict["contentType"]?.ToString() ?? "application/octet-stream";
+                string base64Content = dict["contentBytes"]?.ToString() ?? "";
 
                 attachments.Add(new
                 {
@@ -510,130 +539,72 @@ public class M365OutlookConnectorsService : IM365OutlookConnectorsService
         string accessToken,
         Dictionary<string, object> payload)
     {
-        // Helper methods for safely getting values from the payload
-        string GetValue(string key) =>
-            payload.ContainsKey(key) ? payload[key]?.ToString()?.Trim() ?? string.Empty : string.Empty;
-
-        bool GetBool(string key, bool defaultValue = false) =>
-            payload.ContainsKey(key) && bool.TryParse(payload[key]?.ToString(), out var b) ? b : defaultValue;
-
-        int GetInt(string key, int defaultValue) =>
-            payload.ContainsKey(key) && int.TryParse(payload[key]?.ToString(), out var i) ? i : defaultValue;
+        var requesturl = $"{messagesApiUrl}/messages";
 
         // Extract values from the payload
-        var mailbox = GetValue("MailboxAddress");
-        var folder = string.IsNullOrWhiteSpace(GetValue("Folder")) ? "Inbox" : GetValue("Folder");
-        var fromFilter = GetValue("FromFilter");
-        var toFilter = GetValue("ToFilter");
-        var ccFilter = GetValue("CcFilter");
-        var subjectContains = GetValue("SubjectContains");
-        var importance = GetValue("Importance");
-        var searchKeyword = GetValue("Search");
-        var unreadOnly = CloudConnectionPayloadUtil.GetBool(payload, "UnreadOnly", false);
-
-        var onlyWithAttachments = GetBool("OnlyWithAttachments");
-        var includeAttachments = GetBool("IncludeAttachments");
-        var top = GetInt("Top", 10);
-        var skip = GetInt("Skip", 0);
-        var count = GetBool("Count", false);
-        var orderby = GetValue("Orderby");
-        var filter = GetValue("Filter");
-        var select = GetValue("Select");
-        var expand = GetValue("Expand");
-        var format = GetValue("Format");
-
-        // Helper method to append query parameters correctly
-        string AppendQueryParameter(string url, string queryParam)
-        {
-            return url.Contains("?")
-                ? $"{url}&{queryParam}"
-                : $"{url}?{queryParam}";
-        }
+        var mailbox = CloudConnectionPayloadUtil.GetValue(payload, "mailboxAddress");
+        var folder = CloudConnectionPayloadUtil.GetBool(payload, "folderName");
+        var unreadOnly = CloudConnectionPayloadUtil.GetBool(payload, "unreadOnly", false);
+        var onlyWithAttachments = CloudConnectionPayloadUtil.GetBool(payload, "onlyWithAttachments", false);
+        var includeAttachments = CloudConnectionPayloadUtil.GetBool(payload, "includeAttachments", false);
+        var count = CloudConnectionPayloadUtil.GetBool(payload, "count", false);
 
         // Add '$count=true' to the query string if 'count' is true
         if (count)
-            messagesApiUrl = AppendQueryParameter(messagesApiUrl, "$count=true");
+            requesturl = CloudConnectionPayloadUtil.AppendQueryParameter(requesturl, "count","$count={true}");
+        if (onlyWithAttachments)
+            requesturl = CloudConnectionPayloadUtil.AppendQueryParameter(requesturl, "$filter", "hasAttachments eq true");
+        if (unreadOnly)
+            requesturl = CloudConnectionPayloadUtil.AppendQueryParameter(requesturl, "$filter", "isRead eq false");
 
-        // Add '$top' to the query string if 'top' is not 0
-        if (top != 0)
-            messagesApiUrl = AppendQueryParameter(messagesApiUrl, $"$top={top}");
-
-        // Add '$skip' to the query string if 'skip' is not 0
-        if (skip != 0)
-            messagesApiUrl = AppendQueryParameter(messagesApiUrl, $"$skip={skip}");
-
-        // Build the query string for other filters
-        var queryParams = new List<string>();
-
-        // -----------------------------
-        // SEARCH (takes priority)
-        // -----------------------------
-        if (!string.IsNullOrWhiteSpace(searchKeyword))
-        {
-            queryParams.Add($"$search=\"{searchKeyword}\"");
-        }
-        else
-        {
-            var filters = new List<string>();
-
-            if (unreadOnly)
-                filters.Add("isRead eq false");
-
-            if (!string.IsNullOrWhiteSpace(fromFilter))
-                filters.Add($"from/emailAddress/address eq '{fromFilter}'");
-
-            if (!string.IsNullOrWhiteSpace(toFilter))
-                filters.Add($"toRecipients/any(r:r/emailAddress/address eq '{toFilter}')");
-
-            if (!string.IsNullOrWhiteSpace(ccFilter))
-                filters.Add($"ccRecipients/any(r:r/emailAddress/address eq '{ccFilter}')");
-
-            if (!string.IsNullOrWhiteSpace(subjectContains))
-                filters.Add($"contains(subject,'{subjectContains}')");
-
-            if (!string.IsNullOrWhiteSpace(importance))
-                filters.Add($"importance eq '{importance}'");
-
-            if (onlyWithAttachments)
-                filters.Add("hasAttachments eq true");
-
-            if (!string.IsNullOrWhiteSpace(filter))
-                filters.Add(filter); // Custom filter if provided
-
-            if (filters.Any())
-                queryParams.Add($"$filter={string.Join(" and ", filters)}");
-        }
-
-        // -----------------------------
-        // EXPAND ATTACHMENTS
-        // -----------------------------
-        if (includeAttachments)
-            queryParams.Add("$expand=attachments");
-
-        // -----------------------------
-        // ORDER BY (optional but recommended)
-        // -----------------------------
-        if (!string.IsNullOrWhiteSpace(orderby))
-            queryParams.Add($"$orderby={orderby}");
-
-        // -----------------------------
-        // SELECT SPECIFIC FIELDS
-        // -----------------------------
-        if (!string.IsNullOrWhiteSpace(select))
-            queryParams.Add($"$select={select}");
-
-        // -----------------------------
-        // FORMAT
-        // -----------------------------
-        if (!string.IsNullOrWhiteSpace(format))
-            queryParams.Add($"$format={format}");
-
-        // Combine all query parameters into the final URL
-        var finalUrl = queryParams.Any()
-            ? $"{messagesApiUrl}&{string.Join("&", queryParams)}"
-            : messagesApiUrl;
+        // Add pagination parameters if provided
+        requesturl = BuildPaginatedUrl(requesturl, payload);
 
         // Return the result from the API call
-        return await HttpClientHelper.GetAsync(finalUrl, accessToken);
+        return await HttpClientHelper.GetAsync(requesturl, accessToken);
+    }
+
+    // Retrieves the folder ID for a given folder name by calling the Microsoft Graph API to list mail folders and matching by display name.
+    private async Task<string> GetFolderIdByNameAsync(string mailFoldersApiUrl, string accessToken, string folderName)
+    {
+        var requestUrl = $"{mailFoldersApiUrl}?includeHiddenFolders=true&$top=100";
+
+        // Call the API to retrieve all mail folders, passing the access token for authorization
+        var response = await HttpClientHelper.GetAsync(requestUrl, accessToken);
+
+        // Check if the response contains the "value" property which holds the array of folders
+        if (!response.RootElement.TryGetProperty("value", out JsonElement folders))
+            return string.Empty;
+
+        // Iterate through the folders to find a match by display name (case-insensitive)
+        foreach (var folder in folders.EnumerateArray())
+        {
+            // Get the display name of the folder and compare it to the provided folder name
+            var displayName = folder.GetProperty("displayName").GetString();
+
+            // If a match is found, return the folder ID
+            if (string.Equals(displayName, folderName, StringComparison.OrdinalIgnoreCase))
+            {
+                // If the display name matches, return the corresponding folder ID
+                return folder.GetProperty("id").GetString()?? string.Empty;
+            }
+        }
+
+        return string.Empty;
+    }
+    private string BuildPaginatedUrl(string baseUrl, Dictionary<string, object> payload)
+    {
+        // Start with the base URL and append pagination parameters if they are provided in the payload
+        var url = baseUrl;
+
+        // Extract 'top' and 'skip' values from the payload, using default values if they are not present or invalid
+        var top = CloudConnectionPayloadUtil.GetInt(payload, "top", 10);
+        var skip = CloudConnectionPayloadUtil.GetInt(payload, "skip", 0);
+
+        // Append '$top' and '$skip' query parameters to the URL for pagination
+        url = CloudConnectionPayloadUtil.AppendQueryParameter(url, "$top", top.ToString());
+        url = CloudConnectionPayloadUtil.AppendQueryParameter(url, "$skip", skip.ToString());
+
+        return url;
     }
 }

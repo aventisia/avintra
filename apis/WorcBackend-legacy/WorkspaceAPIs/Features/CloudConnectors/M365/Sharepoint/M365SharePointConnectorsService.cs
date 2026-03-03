@@ -1,4 +1,4 @@
-namespace WorkspaceAPIs.Features.CloudConnectors.M365.SharePoint;
+﻿namespace WorkspaceAPIs.Features.CloudConnectors.M365.SharePoint;
 
 public class M365SharePointConnectorsService : IM365SharePointConnectorsService
 {
@@ -109,7 +109,7 @@ public class M365SharePointConnectorsService : IM365SharePointConnectorsService
 
             case nameof(M365SharePointActionsEnum.SearchSites):
                 {
-                    var searchQuery = CloudConnectionPayloadUtil.GetValue(payload, "SearchQuery");
+                    var searchQuery = CloudConnectionPayloadUtil.GetValue(payload, "searchQuery");
 
                     // Fetch the list of SharePoint sites
                     return await HttpClientHelper.GetAsync($"{GRAPH_BASE_URL}/sites?search={Uri.EscapeDataString(searchQuery)}", accessToken);
@@ -117,17 +117,17 @@ public class M365SharePointConnectorsService : IM365SharePointConnectorsService
 
             case nameof(M365SharePointActionsEnum.GetSiteById):
                 {
-                    var siteId = CloudConnectionPayloadUtil.GetValue(payload, "SiteId");
+                    var siteId = CloudConnectionPayloadUtil.GetValue(payload, "siteId");
                     // Retrieve a specific SharePoint site by its unique ID
                     return await HttpClientHelper.GetAsync($"{GRAPH_BASE_URL}/sites/{siteId}", accessToken);
                 }
 
-            case nameof(M365SharePointActionsEnum.GetSiteByUrl):
+            case nameof(M365SharePointActionsEnum.GetSiteByPath):
                 {
                     // Get the full site URL from the payload
-                    var siteUrl = CloudConnectionPayloadUtil.GetValue(payload, "SiteUrl");
+                    var sitePath = CloudConnectionPayloadUtil.GetValue(payload, "sitePath");
 
-                    var uri = new Uri(siteUrl);
+                    var uri = new Uri(sitePath);
 
                     // Hostname (e.g., aventisia.sharepoint.com)
                     var hostname = uri.Host;
@@ -144,10 +144,10 @@ public class M365SharePointConnectorsService : IM365SharePointConnectorsService
                     // Create a new SharePoint site with the specified parameters (name, description, template, and visibility)
                     var siteCreationPayload = new
                     {
-                        displayName = CloudConnectionPayloadUtil.GetValue(payload, "SiteDisplayName"),
-                        description = CloudConnectionPayloadUtil.GetValue(payload, "SiteDescription"),
-                        webTemplate = CloudConnectionPayloadUtil.GetValue(payload, "SiteTemplate"),
-                        isPublic = CloudConnectionPayloadUtil.GetValue(payload, "IsPublic")
+                        displayName = CloudConnectionPayloadUtil.GetValue(payload, "siteDisplayName"),
+                        description = CloudConnectionPayloadUtil.GetValue(payload, "siteDescription"),
+                        webTemplate = CloudConnectionPayloadUtil.GetValue(payload, "siteTemplate"),
+                        isPublic = CloudConnectionPayloadUtil.GetValue(payload, "isPublic")
                     };
                     return await HttpClientHelper.PostAsync($"{GRAPH_BASE_URL}/sites", siteCreationPayload, accessToken);
                 }
@@ -158,14 +158,14 @@ public class M365SharePointConnectorsService : IM365SharePointConnectorsService
                     // Update an existing SharePoint site's properties such as its display name or description
                     var siteUpdatePayload = new
                     {
-                        displayName = CloudConnectionPayloadUtil.GetValue(payload, "UpdatedSiteDisplayName"),
-                        description = CloudConnectionPayloadUtil.GetValue(payload, "UpdatedSiteDescription")
+                        displayName = CloudConnectionPayloadUtil.GetValue(payload, "updatedSiteDisplayName"),
+                        description = CloudConnectionPayloadUtil.GetValue(payload, "updatedSiteDescription")
                     };
                     return await HttpClientHelper.PatchAsync($"{GRAPH_BASE_URL}/sites/{siteId}", siteUpdatePayload, accessToken);
                 }
             case nameof(M365SharePointActionsEnum.DeleteSite):
                 {
-                    var siteId = CloudConnectionPayloadUtil.GetValue(payload, "SiteId");
+                    var siteId = CloudConnectionPayloadUtil.GetValue(payload, "siteId");
                     // Delete a SharePoint site by its unique ID
                     return await HttpClientHelper.DeleteAsync($"{GRAPH_BASE_URL}/sites/{siteId}", accessToken);
                 }
@@ -176,7 +176,7 @@ public class M365SharePointConnectorsService : IM365SharePointConnectorsService
             case nameof(M365SharePointActionsEnum.GetFileByPath):
                 {
                     // Full SharePoint file path (example: https://tenant.sharepoint.com/sites/SiteName/Shared%20Documents/folder/file.docx)
-                    var filePath = CloudConnectionPayloadUtil.GetValue(payload, "FilePath");
+                    var filePath = CloudConnectionPayloadUtil.GetValue(payload, "filePath");
 
                     // Resolve the document library (drive) identifier from the path
                     var driveId = await GetDriveIdFromFilePathAsync(filePath, accessToken);
@@ -194,7 +194,7 @@ public class M365SharePointConnectorsService : IM365SharePointConnectorsService
             case nameof(M365SharePointActionsEnum.GetDriveFiles):
                 {
                     // Read full SharePoint drive path (document library or subfolder)
-                    var drivePath = CloudConnectionPayloadUtil.GetValue(payload, "DrivePath");
+                    var drivePath = CloudConnectionPayloadUtil.GetValue(payload, "drivePath");
 
                     var driveUri = new Uri(drivePath);
 
@@ -213,14 +213,21 @@ public class M365SharePointConnectorsService : IM365SharePointConnectorsService
                     return await HttpClientHelper.GetAsync(requestUrl, accessToken);
                 }
 
-            case nameof(M365SharePointActionsEnum.UploadFile):
+            case nameof(M365SharePointActionsEnum.FileUpload):
                 {
                     // Read inputs from payload
-                    var drivePath = CloudConnectionPayloadUtil.GetValue(payload, "DrivePath");
-                    var fileName = CloudConnectionPayloadUtil.GetValue(payload, "FileName");
-                    var fileContent = CloudConnectionPayloadUtil.GetValue(payload, "ContentBytes");
-                    var contentType = CloudConnectionPayloadUtil.GetValue(payload, "ContentType");
+                    var drivePath = CloudConnectionPayloadUtil.GetValue(payload, "drivePath");
+                    var fileName = CloudConnectionPayloadUtil.GetValue(payload, "fileName");
+                    var base64Content = CloudConnectionPayloadUtil.GetValue(payload, "fileContent");
+                    var contentType = CloudConnectionPayloadUtil.GetValue(payload, "contentType");
 
+                    // Remove data URL prefix if present
+                    if (base64Content.Contains(",")) base64Content = base64Content.Split(',')[1];
+
+                    // Convert base64 string to byte array for upload
+                    byte[] fileBytes = Convert.FromBase64String(base64Content);
+
+                    // Parse the drive path to extract necessary components
                     var driveUri = new Uri(drivePath);
 
                     // Extract folder path relative to document library root
@@ -230,19 +237,17 @@ public class M365SharePointConnectorsService : IM365SharePointConnectorsService
                     var driveId = await GetDriveIdFromFilePathAsync(drivePath, accessToken);
 
                     // Build Microsoft Graph upload endpoint
-                    var uploadUrl = string.IsNullOrWhiteSpace(relativePath)
-                        ? $"{GRAPH_BASE_URL}/drives/{driveId}/root:/{fileName}:/content"
-                        : $"{GRAPH_BASE_URL}/drives/{driveId}/root:/{relativePath}/{fileName}:/content";
+                    var uploadUrl = $"{GRAPH_BASE_URL}/drives/{driveId}/root:/{(string.IsNullOrWhiteSpace(relativePath) ? "" : relativePath + "/")}{fileName}:/content";
 
                     // Upload file content (creates or replaces existing file)
-                    return await HttpClientHelper.PutAsync(uploadUrl, fileContent, accessToken);
+                    return await HttpClientHelper.PutAsync(uploadUrl, fileBytes, accessToken, mediaType: "application/octet-stream");
                 }
 
             case nameof(M365SharePointActionsEnum.UpdateFile):
                 {
                     // Read inputs from payload
-                    var filePath = CloudConnectionPayloadUtil.GetValue(payload, "FilePath");
-                    var newFileName = CloudConnectionPayloadUtil.GetValue(payload, "FileName");
+                    var filePath = CloudConnectionPayloadUtil.GetValue(payload, "filePath");
+                    var newFileName = CloudConnectionPayloadUtil.GetValue(payload, "fileName");
 
                     // Resolve the document library (Drive) ID from path
                     var driveId = await GetDriveIdFromFilePathAsync(filePath, accessToken);
@@ -266,7 +271,7 @@ public class M365SharePointConnectorsService : IM365SharePointConnectorsService
             case nameof(M365SharePointActionsEnum.DeleteFile):
                 {
                     // Full SharePoint file path (document library path + file)
-                    var filePath = CloudConnectionPayloadUtil.GetValue(payload, "FilePath");
+                    var filePath = CloudConnectionPayloadUtil.GetValue(payload, "filePath");
 
                     // Resolve document library (Drive) ID from path
                     var driveId = await GetDriveIdFromFilePathAsync(filePath, accessToken);
@@ -275,7 +280,7 @@ public class M365SharePointConnectorsService : IM365SharePointConnectorsService
                     var itemId = await GetItemIdFromFilePathAsync(filePath, accessToken);
 
                     // Build Microsoft Graph endpoint URL for deletion
-                    var requestUrl = $"{GRAPH_BASE_URL}/drives/{driveId}/items/{itemId}";
+                    var requestUrl = $"{GRAPH_BASE_URL}/drives/{driveId}/items/{itemId}/content";
 
                     // Execute DELETE request
                     return await HttpClientHelper.DeleteAsync(requestUrl, accessToken);
@@ -283,28 +288,22 @@ public class M365SharePointConnectorsService : IM365SharePointConnectorsService
 
             case nameof(M365SharePointActionsEnum.DownloadFile):
                 {
-                    // Full SharePoint file path (document library path + file)
-                    var filePath = CloudConnectionPayloadUtil.GetValue(payload, "FilePath");
+                    var filePath = CloudConnectionPayloadUtil.GetValue(payload, "filePath");
 
-                    // Resolve document library (Drive) ID from the path
                     var driveId = await GetDriveIdFromFilePathAsync(filePath, accessToken);
-
-                    // Resolve the file's item ID within the drive
                     var itemId = await GetItemIdFromFilePathAsync(filePath, accessToken);
 
-                    // Build Microsoft Graph endpoint URL for downloading file content
-                    var requestUrl = $"{GRAPH_BASE_URL}/drives/{driveId}/items/{itemId}/content";
+                    var result = await DownloadFileWithMetadataAsync(driveId, itemId, accessToken);
 
-                    // Execute GET request and return the file content
-                    return await HttpClientHelper.GetAsync(requestUrl, accessToken);
+                    return result;
                 }
 
             case nameof(M365SharePointActionsEnum.CopyFile):
                 {
                     // Read inputs from payload
-                    var sourceDrivePath = CloudConnectionPayloadUtil.GetValue(payload, "FilePath");
-                    var destinationDrivePath = CloudConnectionPayloadUtil.GetValue(payload, "DrivePath");
-                    var newFileName = CloudConnectionPayloadUtil.GetValue(payload, "FileName");
+                    var sourceDrivePath = CloudConnectionPayloadUtil.GetValue(payload, "filePath");
+                    var destinationDrivePath = CloudConnectionPayloadUtil.GetValue(payload, "drivePath");
+                    var newFileName = CloudConnectionPayloadUtil.GetValue(payload, "fileName");
 
                     // Resolve source document library (Drive) and file item
                     var sourceDriveId = await GetDriveIdFromFilePathAsync(sourceDrivePath, accessToken);
@@ -335,8 +334,8 @@ public class M365SharePointConnectorsService : IM365SharePointConnectorsService
             case nameof(M365SharePointActionsEnum.MoveFile):
                 {
                     // Read inputs from payload
-                    var sourceDrivePath = CloudConnectionPayloadUtil.GetValue(payload, "FilePath");
-                    var destinationDrivePath = CloudConnectionPayloadUtil.GetValue(payload, "DrivePath");
+                    var sourceDrivePath = CloudConnectionPayloadUtil.GetValue(payload, "filePath");
+                    var destinationDrivePath = CloudConnectionPayloadUtil.GetValue(payload, "drivePath");
 
                     // Resolve source document library (Drive) and file item
                     var sourceDriveId = await GetDriveIdFromFilePathAsync(sourceDrivePath, accessToken);
@@ -366,7 +365,7 @@ public class M365SharePointConnectorsService : IM365SharePointConnectorsService
             case nameof(M365SharePointActionsEnum.CheckOutFile):
                 {
                     // Read full SharePoint file path
-                    var filePath = CloudConnectionPayloadUtil.GetValue(payload, "FilePath");
+                    var filePath = CloudConnectionPayloadUtil.GetValue(payload, "filePath");
 
                     // Resolve document library (Drive) and file item ID
                     var driveId = await GetDriveIdFromFilePathAsync(filePath, accessToken);
@@ -382,9 +381,9 @@ public class M365SharePointConnectorsService : IM365SharePointConnectorsService
             case nameof(M365SharePointActionsEnum.CheckInFile):
                 {
                     // Read inputs from payload
-                    var filePath = CloudConnectionPayloadUtil.GetValue(payload, "FilePath");
-                    var comment = CloudConnectionPayloadUtil.GetValue(payload, "Comment") ?? "Checked in";
-                    var checkInType = CloudConnectionPayloadUtil.GetValue(payload, "CheckInType") ?? "major"; // "major" or "minor"
+                    var filePath = CloudConnectionPayloadUtil.GetValue(payload, "filePath");
+                    var comment = CloudConnectionPayloadUtil.GetValue(payload, "comment") ?? "Checked in";
+                    var checkInType = CloudConnectionPayloadUtil.GetValue(payload, "checkInType") ?? "major"; // "major" or "minor"
 
                     // Resolve document library (Drive) and file item ID
                     var driveId = await GetDriveIdFromFilePathAsync(filePath, accessToken);
@@ -407,7 +406,7 @@ public class M365SharePointConnectorsService : IM365SharePointConnectorsService
             case nameof(M365SharePointActionsEnum.GetFileVersions):
                 {
                     // Read full SharePoint file path
-                    var filePath = CloudConnectionPayloadUtil.GetValue(payload, "FilePath");
+                    var filePath = CloudConnectionPayloadUtil.GetValue(payload, "filePath");
 
                     // Resolve document library (Drive) and file item ID
                     var driveId = await GetDriveIdFromFilePathAsync(filePath, accessToken);
@@ -640,5 +639,54 @@ public class M365SharePointConnectorsService : IM365SharePointConnectorsService
 
         // Return the item ID if it exists, otherwise return an empty string
         return itemJsonDocument.RootElement.GetProperty("id").GetString() ?? string.Empty;
+    }
+
+    private async Task<JsonDocument> DownloadFileWithMetadataAsync(string driveId, string itemId, string accessToken)
+    {
+        // First, get the file metadata to retrieve properties like name, size, and webUrl
+        var metadataUrl = $"{GRAPH_BASE_URL}/drives/{driveId}/items/{itemId}";
+
+        // Execute GET request to retrieve file metadata
+        var metadataResponse = await HttpClientHelper.GetAsync(metadataUrl);
+
+        // Extract relevant metadata properties, providing defaults if they are missing
+        var root = metadataResponse.RootElement;
+        var name = root.GetProperty("name").GetString();
+        var size = root.GetProperty("size").GetInt64();
+        var webUrl = root.GetProperty("webUrl").GetString();
+        string contentType = "application/octet-stream";
+
+        // Attempt to get the MIME type from the file metadata if available
+        if (root.TryGetProperty("file", out var fileProp) && fileProp.TryGetProperty("mimeType", out var mimeProp))
+        {
+            contentType = mimeProp.GetString()!;
+        }
+
+        // Build the Microsoft Graph endpoint URL to download the file content
+        var contentUrl = $"{GRAPH_BASE_URL}/drives/{driveId}/items/{itemId}/content";
+
+        // Use HttpClient to download the file content as a byte array. We need to set the Authorization header with the access token for authentication.
+        using var httpClient = new HttpClient();
+        httpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", accessToken);
+
+        // Execute GET request to download the file content
+        var fileResponse = await httpClient.GetAsync(contentUrl);
+
+        // Ensure the request was successful
+        var fileBytes = await fileResponse.Content.ReadAsByteArrayAsync();
+
+        // Convert to Base64
+        var base64Content = Convert.ToBase64String(fileBytes);
+
+        // Construct the response object with metadata and content
+        return JsonDocument.Parse(System.Text.Json.JsonSerializer.Serialize(new
+        {
+            Name = name,
+            Size = size,
+            ContentType = contentType,
+            WebUrl = webUrl,
+            Base64 = base64Content,
+            DownloadedAtUtc = DateTime.UtcNow
+        }));
     }
 }
