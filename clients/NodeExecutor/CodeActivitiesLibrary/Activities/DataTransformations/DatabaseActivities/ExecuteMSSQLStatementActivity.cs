@@ -7,42 +7,56 @@ using System.ComponentModel;
 using System.ComponentModel.DataAnnotations;
 using System.Data;
 using System.Data.SqlClient;
+using System.Security;
 
 namespace CodeActivitiesLibrary.DataTransformations.DatabaseActivities
 {
-    [DisplayName("Execute SQL Statement")]
-    [Description("Connect to a database and execute an SQL statement.")]
+    [DisplayName("Execute MS SQL Statement")]
+    [Description("Connect to a Microsoft SQL Server database and execute a SQL statement.")]
     [ActivityMetaData(nodeImg: "/assets/Database.svg")]
-    public class ExecuteSqlStatementActivity : BaseCodeActivity
+    public class ExecuteMSSQLStatementActivity : BaseCodeActivity
     {
         [RequiredArgument]
         [DisplayName("Connection Mode")]
+        [Description("Select whether to use a connection string or an existing SQL connection.")]
+        [DefaultValue(SqlConnectionMode.UseExistingConnection)]
         public InArgument<SqlConnectionMode> ConnectionMode { get; set; }
 
         [DisplayName("Connection String")]
-        [Description("The connection string to the database.")]
+        [Description("The connection string to the MS SQL Server database.")]
         [RenderIfCondition(nameof(ConnectionMode), SqlConnectionMode.UseConnectionString)]
-        [FieldType(FieldType.Password)]
-        public InArgument<string> ConnectionString { get; set; }
+        public InArgument<SecureString> ConnectionString { get; set; }
 
-        [DisplayName("Existing SQL Connection")]
-        [Description("The Existing connection string to the database.")]
+        [DisplayName("Existing MS SQL Connection")]
+        [Description("The existing MS SQL Server connection from Open MS SQL Connection node.")]
         [RenderIfCondition(nameof(ConnectionMode), SqlConnectionMode.UseExistingConnection)]
-        public InArgument<JToken> ExistingConnection { get; set; }
-
-        [RequiredArgument]
-        [DisplayName("SQL Statement")]
-        [Description("The SQL statement to execute.")]
-        public InArgument<string> SqlStatement { get; set; }
-
+        public InArgument<SqlConnection> ExistingConnection { get; set; }
+        
         [RequiredArgument]
         [DisplayName("Operation Type")]
         [Description("The type of SQL operation to perform.")]
+        [DefaultValue(SqlOperationType.NonQuery)]
         public InArgument<SqlOperationType> OperationType { get; set; }
 
+        [RequiredArgument]
+        [DisplayName("SQL Statement")]
+        [Description("The SQL statement to execute on MS SQL Server.")]
+        public InArgument<string> SqlStatement { get; set; }
+
         [DisplayName("Result Data Table")]
-        [Description("The result data table.")]
+        [Description("The result data table from DataSet operation.")]
+        [RenderIfCondition(nameof(OperationType), SqlOperationType.DataSet)]
         public OutArgument<DataTable> ResultDataTable { get; set; }
+
+        [DisplayName("Scalar Result")]
+        [Description("The scalar value returned from Scalar operation.")]
+        [RenderIfCondition(nameof(OperationType), SqlOperationType.Scalar)]
+        public OutArgument<object> ScalarResult { get; set; }
+
+        [DisplayName("Affected Rows")]
+        [Description("The number of rows affected by NonQuery operation.")]
+        [RenderIfCondition(nameof(OperationType), SqlOperationType.NonQuery)]
+        public OutArgument<int> AffectedRows { get; set; }
 
         protected override void Execute(CodeActivityContext context)
         {
@@ -61,7 +75,7 @@ namespace CodeActivitiesLibrary.DataTransformations.DatabaseActivities
                 switch (mode)
                 {
                     case SqlConnectionMode.UseConnectionString:
-                        var connectionString = ConnectionString.Get(context);
+                        var connectionString = ConvertSecureStringToString(ConnectionString.Get(context));
 
                         if (string.IsNullOrWhiteSpace(connectionString))
                             throw new ArgumentException("Connection string is required.");
@@ -73,21 +87,10 @@ namespace CodeActivitiesLibrary.DataTransformations.DatabaseActivities
 
                     case SqlConnectionMode.UseExistingConnection:
 
-                        var connectionToken = ExistingConnection.Get(context);
-
-                        if (connectionToken == null || connectionToken.Type == JTokenType.Null)
-                            throw new ArgumentException("Existing SQL Connection is required.");
-
-                        // Extract ConnectionId from JToken
-                        var connectionId = connectionToken["ConnectionId"]?.ToString();
-
-                        if (string.IsNullOrWhiteSpace(connectionId))
-                            throw new ArgumentException("ConnectionId not found in SQL Connection token.");
-
-                        connection = SqlConnectionManager.Get(connectionId);
+                        connection = ExistingConnection.Get(context);
 
                         if (connection == null)
-                            throw new ArgumentException("Invalid or expired SQL connection.");
+                            throw new ArgumentException("Existing SQL Connection is required.");
 
                         if (connection.State != ConnectionState.Open)
                             connection.Open();
@@ -105,11 +108,13 @@ namespace CodeActivitiesLibrary.DataTransformations.DatabaseActivities
                     {
                         case SqlOperationType.NonQuery:
                             int rows = command.ExecuteNonQuery();
+                            AffectedRows.Set(context, rows);
                             StatusMessage.Set(context, $"NonQuery executed successfully. Rows affected: {rows}");
                             break;
 
                         case SqlOperationType.Scalar:
                             var scalar = command.ExecuteScalar();
+                            ScalarResult.Set(context, scalar);
                             StatusMessage.Set(context, $"Scalar executed successfully. Result: {scalar}");
                             break;
                         case SqlOperationType.DataSet:
@@ -128,7 +133,6 @@ namespace CodeActivitiesLibrary.DataTransformations.DatabaseActivities
                 }
 
                 IsSuccess.Set(context, true);
-                StatusMessage.Set(context, "Execute SQL Statement Successfully ");
             }
             catch (Exception ex)
             {
@@ -159,10 +163,10 @@ namespace CodeActivitiesLibrary.DataTransformations.DatabaseActivities
 
         public enum SqlConnectionMode
         {
-            [Display(Name = "Use Connection String")]
+            [Display(Name = "Use Connection String", Description = "Provide a connection string to connect to the MS SQL Server database.")]
             UseConnectionString,
 
-            [Display(Name = "Use Existing Connection")]
+            [Display(Name = "Use Existing Connection", Description = "Use an existing SQL connection from Open MS SQL Connection node.")]
             UseExistingConnection
         }
     }

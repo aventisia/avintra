@@ -583,25 +583,25 @@
         "actions": [
           {
             "type": "activityNode",
-            "name": "CloseSqlConnectionActivity",
-            "label": "Close SQL Connection",
-            "description": "Closes an open SQL database connection",
+            "name": "CloseMSSQLConnectionActivity",
+            "label": "Close MS SQL Connection",
+            "description": "Closes an open Microsoft SQL Server database connection",
             "docsLink": "https://docs.aventisia.com",
             "img": "/assets/Database.svg"
           },
           {
             "type": "activityNode",
-            "name": "ExecuteSqlStatementActivity",
-            "label": "Execute SQL Statement",
-            "description": "Connect to a database and execute an SQL statement.",
+            "name": "ExecuteMSSQLStatementActivity",
+            "label": "Execute MS SQL Statement",
+            "description": "Connect to a Microsoft SQL Server database and execute a SQL statement.",
             "docsLink": "https://docs.aventisia.com",
             "img": "/assets/Database.svg"
           },
           {
             "type": "activityNode",
-            "name": "OpenSqlConnectionActivity",
-            "label": "Open SQL Connection",
-            "description": "Open a new connection to a database",
+            "name": "OpenMSSQLConnectionActivity",
+            "label": "Open MS SQL Connection",
+            "description": "Open a new connection to a Microsoft SQL Server database",
             "docsLink": "https://docs.aventisia.com",
             "img": "/assets/Database.svg"
           }
@@ -2080,7 +2080,7 @@
             "label": "Convert Word To PDF",
             "description": "Converts a Word document (.doc/.docx) into a PDF file.",
             "docsLink": "https://docs.aventisia.com",
-            "img": "/assets/wordToPdf.svg"
+            "img": "/assets/Word.svg"
           },
           {
             "type": "activityNode",

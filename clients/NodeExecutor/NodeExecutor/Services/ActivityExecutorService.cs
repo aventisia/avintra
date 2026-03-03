@@ -326,7 +326,7 @@ namespace NodeExecutor.Services
                 }
 
                 // Set inputValues to nodeExecutionLog object
-                nodeExecutionlog.Inputs = inputValues.Select(kv => new NodeLogKeyValue { Key = kv.Key, Value = ConvertLogValueForLogging(kv.Key, kv.Value) }).ToList();
+                nodeExecutionlog.Inputs = inputValues.Select(kv => new NodeLogKeyValue { Key = kv.Key, Value = ConvertLogValueForLogging(kv.Key, kv.Value, "Input") }).ToList();
 
                 // Execute the activity
                 var outputs = WorkflowInvoker.Invoke((Activity)activityInstance);
@@ -369,7 +369,7 @@ namespace NodeExecutor.Services
 
             // Update duration and outputValues
             nodeExecutionlog.Duration = (DateTime.UtcNow - startTime).TotalSeconds;
-            nodeExecutionlog.Outputs = outputValues.Select(kv => new NodeLogKeyValue { Key = kv.Key, Value = ConvertLogValueForLogging(kv.Key, kv.Value) }).ToList();
+            nodeExecutionlog.Outputs = outputValues.Select(kv => new NodeLogKeyValue { Key = kv.Key, Value = ConvertLogValueForLogging(kv.Key, kv.Value, "Output") }).ToList();
 
             // Return
             return (nodeExecutionlog.IsSuccess, nodeExecutionlog);
@@ -633,6 +633,16 @@ namespace NodeExecutor.Services
                     }
                 }
 
+                // Handle SecureString
+                if (targetType == typeof(System.Security.SecureString) && inputValue is string secureStr)
+                {
+                    var secureString = new System.Security.SecureString();
+                    foreach (char c in secureStr)
+                        secureString.AppendChar(c);
+                    secureString.MakeReadOnly();
+                    return secureString;
+                }
+
                 return Convert.ChangeType(inputValue, targetType);
             }
             catch
@@ -756,59 +766,92 @@ namespace NodeExecutor.Services
             }
         }
 
-        public static string ConvertLogValueForLogging(string key, object value)
+        public static string ConvertLogValueForLogging(string key, object value, string inOrOut = "Input")
         {
+            const int MAX_STRING_SIZE = 2000; // Maximum characters for plain text strings
+
             if (value == null)
                 return "null";
 
-            // Primitive types and string
-            var type = value.GetType();
-            if (type.IsPrimitive || value is string || value is decimal || value is DateTime || value is Guid || value is TimeSpan || value is Enum)
+            // Handle primitive type like int, bool, double, etc. return as is
+            if (value.GetType().IsPrimitive)
                 return value.ToString();
 
-            // DataTable as CSV
-            if (value is DataTable dt)
+            // Handle non-primitive types with specific formatting
+            switch (value)
             {
-                var sb = new StringBuilder();
-                var columns = dt.Columns.Cast<DataColumn>().Select(c => c.ColumnName);
-                sb.AppendLine(string.Join(",", columns));
-                foreach (DataRow row in dt.Rows)
-                    sb.AppendLine(string.Join(",", row.ItemArray.Select(x => x?.ToString() ?? "")));
-                return sb.ToString().Trim();
+                case string s:
+                    // Only truncate plain strings, not JSON
+                    return s.Length > MAX_STRING_SIZE ? s.Substring(0, MAX_STRING_SIZE) + "... [truncated]" : s;
+                case DateTime date:
+                    return date.ToString("o"); // ISO 8601 format
+                case TimeSpan _:
+                case Guid _:
+                case decimal _:
+                case Enum _:
+                    return value.ToString();
             }
 
-            // // AutomationElement (UIAutomation)
-            // if (value.GetType().FullName == "System.Windows.Automation.AutomationElement")
-            // {
-            //     return $"[AutomationElement] {key}";
-            // }
-
-            // IEnumerable (but not string)
-            if (value is System.Collections.IEnumerable enumerable && !(value is string))
+            // Handle DataTable as json with top 100 rows to avoid logging too much data
+            if (value is DataTable dt)
             {
                 try
                 {
-                    return JsonConvert.SerializeObject(value);
+                    // Limit to 100 rows but return complete valid JSON
+                    var limitedRows = dt.AsEnumerable().Take(100).CopyToDataTable();
+                    return JsonConvert.SerializeObject(limitedRows);
                 }
                 catch
                 {
-                    // fallback: join items as string
-                    var items = new List<string>();
-                    foreach (var item in enumerable)
-                        items.Add(item?.ToString() ?? "null");
-                    return "[" + string.Join(", ", items) + "]";
+                    return $"[DataTable with {dt.Rows.Count} rows]";
                 }
             }
 
-            // Complex object: try JSON
+            // If any known complex type, return a placeholder string (to avoid logging too much data or sensitive info)
+            switch (value)
+            {
+                case System.Windows.Automation.AutomationElement _:
+                    return $"[AutomationElement] {key}";
+                case System.Data.SqlClient.SqlConnection _:
+                    return $"[SqlConnection] {key}";
+                case System.Security.SecureString _:
+                    return $"[Secure{inOrOut}] {key}";
+                    // Add more complex types here if needed
+            }
+
+            // Handle IEnumerable - limit to 100 items but return complete valid JSON
+            if (value is IEnumerable enumerable && !(value is string))
+            {
+                try
+                {
+                    // Limit collection to 100 items
+                    var limitedItems = enumerable.Cast<object>().Take(100).ToList();
+                    return JsonConvert.SerializeObject(limitedItems);
+                }
+                catch
+                {
+                    // fallback: join items as string (limited to 100)
+                    var items = new List<string>();
+                    var count = 0;
+                    foreach (var item in enumerable)
+                    {
+                        if (count++ >= 100) break;
+                        items.Add(item?.ToString() ?? "null");
+                    }
+                    return "[" + string.Join(", ", items) + (count > 100 ? ", ...]" : "]");
+                }
+            }
+
+            // Complex object: try JSON - return complete valid JSON
             try
             {
                 return JsonConvert.SerializeObject(value);
             }
             catch
             {
-                // fallback: type name
-                return value.ToString();
+                // fallback: type name with truncation for long text
+                var fallback = value.ToString();
+                return fallback.Length > MAX_STRING_SIZE ? fallback.Substring(0, MAX_STRING_SIZE) + "... [truncated]" : fallback;
             }
 
         }
