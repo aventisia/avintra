@@ -1,35 +1,35 @@
 {
-  "name": "GetSiteById",
-  "description": "Retrieves a single SharePoint site using its Site ID via Microsoft Graph API.",
-  "version": "1.0.0",
-  "author": "@rahmat",
-  "fields": [
-    {
-      "direction": "Input",
-      "type": "credentials-select",
-      "name": "__CredentialId__M365",
-      "label": "M365 Outlook Credential",
-      "description": "Microsoft 365 credential used to authenticate and access SharePoint sites through Microsoft Graph API.",
-      "defaultValue": ""
-    },
-    {
-      "direction": "Input",
-      "type": "text",
-      "name": "SiteId",
-      "label": "Site ID",
-      "description": "The unique ID of the SharePoint site to retrieve.",
-      "defaultValue": ""
-    },
-    {
-      "direction": "Output",
-      "type": "config-panel-output",
-      "name": "Result",
-      "label": "Result",
-      "description": "Returns the details of the retrieved site including its ID, display name, URL, and other metadata.",
-      "defaultValue": {
-        "value": "Result",
-        "enabled": true
-      }
-    }
-  ]
+    "name": "GetSiteById",
+    "description": "Retrieves details of a SharePoint site by its unique Site ID using Microsoft Graph.",
+    "version": "1.0.1",
+    "author": "@rahmat",
+    "fields": [
+        {
+            "direction": "Input",
+            "type": "credentials-select",
+            "name": "__CredentialId__M365",
+            "label": "M365 Credential",
+            "description": "Select the Microsoft 365 credential used to authenticate the request.",
+            "defaultValue": ""
+        },
+        {
+            "direction": "Input",
+            "type": "text",
+            "name": "SiteId",
+            "label": "Site ID",
+            "description": "The unique identifier of the SharePoint site you want to retrieve details for. You can obtain the Site ID from the SharePoint admin center or by using Microsoft Graph API to list sites.",
+            "defaultValue": ""
+        },
+        {
+            "direction": "Output",
+            "type": "config-panel-output",
+            "name": "Result",
+            "label": "Result",
+            "description": "The result of the site retrieval operation, including site details and any error messages.",
+            "defaultValue": {
+                "value": "Result",
+                "enabled": true
+            }
+        }
+    ]
 }

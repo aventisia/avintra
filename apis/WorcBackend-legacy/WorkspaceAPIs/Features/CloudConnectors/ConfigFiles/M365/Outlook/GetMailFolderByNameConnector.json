@@ -1,0 +1,43 @@
+{
+    "name": "GetMailFolderByName",
+    "description": "Retrieves details of a mail folder by name from a specified mailbox using Microsoft Graph.",
+    "version": "1.0.1",
+    "author": "@rahmat",
+    "fields": [
+        {
+            "direction": "Input",
+            "type": "credentials-select",
+            "name": "__CredentialId__M365",
+            "label": "M365 Credential",
+            "description": "Select Microsoft 365 credentials for authentication.",
+            "defaultValue": ""
+        },
+        {
+            "direction": "Input",
+            "type": "text",
+            "name": "MailboxAddress",
+            "label": "Mailbox Address",
+            "description": "The email address of the mailbox to retrieve the folder from.",
+            "defaultValue": ""
+        },
+        {
+            "direction": "Input",
+            "type": "text",
+            "name": "FolderName",
+            "label": "Folder Name",
+            "description": "The display name of the folder to retrieve. The search is case-insensitive and will return the first match found.",
+            "defaultValue": ""
+        },
+        {
+            "direction": "Output",
+            "type": "config-panel-output",
+            "name": "Result",
+            "label": "Result",
+            "description": "The result of the retrieval operation, including details of the mail folder if found, or an error message if the folder does not exist or if there was an issue with the request.",
+            "defaultValue": {
+                "value": "Result",
+                "enabled": true
+            }
+        }
+    ]
+}

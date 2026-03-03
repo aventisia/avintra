@@ -1,35 +1,35 @@
 {
-  "name": "SearchSites",
-  "description": "Searches Microsoft 365 SharePoint sites by keyword using Microsoft Graph API.",
-  "version": "1.0.0",
-  "author": "@rahmat",
-  "fields": [
-    {
-      "direction": "Input",
-      "type": "credentials-select",
-      "name": "__CredentialId__M365",
-      "label": "M365 SharePoint Credential",
-      "description": "Microsoft 365 credential used to authenticate and search SharePoint sites via Microsoft Graph API.",
-      "defaultValue": ""
-    },
-    {
-      "direction": "Input",
-      "type": "text",
-      "name": "SearchQuery",
-      "label": "Search Keyword",
-      "description": "The keyword or phrase to search for in SharePoint sites.",
-      "defaultValue": ""
-    },
-    {
-      "direction": "Output",
-      "type": "config-panel-output",
-      "name": "Result",
-      "label": "Result",
-      "description": "Returns a list of SharePoint sites matching the search query, including their ID, display name, web URL, and other metadata.",
-      "defaultValue": {
-        "value": "Result",
-        "enabled": true
-      }
-    }
-  ]
+    "name": "SearchSites",
+    "description": "Searches for SharePoint sites using a keyword query via Microsoft Graph.",
+    "version": "1.0.1",
+    "author": "@rahmat",
+    "fields": [
+        {
+            "direction": "Input",
+            "type": "credentials-select",
+            "name": "__CredentialId__M365",
+            "label": "M365 Credential",
+            "description": "Select the Microsoft 365 credential used to authenticate the request.",
+            "defaultValue": ""
+        },
+        {
+            "direction": "Input",
+            "type": "text",
+            "name": "SearchQuery",
+            "label": "Search Query",
+            "description": "The keyword query to search for SharePoint sites. For example: 'Project' to find sites related to projects.",
+            "defaultValue": ""
+        },
+        {
+            "direction": "Output",
+            "type": "config-panel-output",
+            "name": "Result",
+            "label": "Result",
+            "description": "The result of the site search operation, including a list of matching sites and any error messages.",
+            "defaultValue": {
+                "value": "Result",
+                "enabled": true
+            }
+        }
+    ]
 }

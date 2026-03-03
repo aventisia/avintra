@@ -1,35 +1,35 @@
 {
-  "name": "CheckOutFile",
-  "description": "Checks out a file in Microsoft 365 SharePoint via Microsoft Graph API to enable editing.",
-  "version": "1.0.0",
-  "author": "@rahmat",
-  "fields": [
-    {
-      "direction": "Input",
-      "type": "credentials-select",
-      "name": "__CredentialId__M365",
-      "label": "M365 Credential",
-      "description": "Microsoft 365 credential used to authenticate and check out files in SharePoint via Microsoft Graph API.",
-      "defaultValue": ""
-    },
-    {
-      "direction": "Input",
-      "type": "text",
-      "name": "FilePath",
-      "label": "File Path",
-      "description": "The full SharePoint file URL to check out (e.g., https://company.sharepoint.com/sites/SiteName/Shared Documents/File.txt).",
-      "defaultValue": ""
-    },
-    {
-      "direction": "Output",
-      "type": "config-panel-output",
-      "name": "Result",
-      "label": "Result",
-      "description": "Returns metadata of the checked-out file, including ID, URL, and checkout status.",
-      "defaultValue": {
-        "value": "Result",
-        "enabled": true
-      }
-    }
-  ]
+    "name": "CheckOutFile",
+    "description": "Checks out a file from a SharePoint document library using Microsoft Graph, locking it for editing until it is checked in.",
+    "version": "1.0.1",
+    "author": "@rahmat",
+    "fields": [
+        {
+            "direction": "Input",
+            "type": "credentials-select",
+            "name": "__CredentialId__M365",
+            "label": "M365 Credential",
+            "description": "Select the Microsoft 365 credential used to authenticate the SharePoint request.",
+            "defaultValue": ""
+        },
+        {
+            "direction": "Input",
+            "type": "text",
+            "name": "FilePath",
+            "label": "File Path",
+            "description": "The full SharePoint URL of the file you want to check out. For example: /sites/YourSite/Shared Documents/YourFile.txt",
+            "defaultValue": ""
+        },
+        {
+            "direction": "Output",
+            "type": "config-panel-output",
+            "name": "Result",
+            "label": "Result",
+            "description": "The result of the file check-out operation, including success status and any error messages.",
+            "defaultValue": {
+                "value": "Result",
+                "enabled": true
+            }
+        }
+    ]
 }

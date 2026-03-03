@@ -1,35 +1,35 @@
 {
-  "name": "GetSiteByPath",
-  "description": "Retrieves a SharePoint site using its full URL or path via Microsoft Graph API.",
-  "version": "1.0.0",
-  "author": "@rahmat",
-  "fields": [
-    {
-      "direction": "Input",
-      "type": "credentials-select",
-      "name": "__CredentialId__M365",
-      "label": "M365 Outlook Credential",
-      "description": "Microsoft 365 credential used to authenticate and access SharePoint sites through Microsoft Graph API.",
-      "defaultValue": ""
-    },
-    {
-      "direction": "Input",
-      "type": "text",
-      "name": "SitePath",
-      "label": "Site URL/Path",
-      "description": "The full URL of the SharePoint site to retrieve (e.g., https://company.sharepoint.com/sites/SiteName).",
-      "defaultValue": ""
-    },
-    {
-      "direction": "Output",
-      "type": "config-panel-output",
-      "name": "Result",
-      "label": "Result",
-      "description": "Returns the details of the retrieved site including its ID, display name, URL, and other metadata.",
-      "defaultValue": {
-        "value": "Result",
-        "enabled": true
-      }
-    }
-  ]
+    "name": "GetSiteByPath",
+    "description": "Retrieves details of a SharePoint site by its URL or path using Microsoft Graph.",
+    "version": "1.0.1",
+    "author": "@rahmat",
+    "fields": [
+        {
+            "direction": "Input",
+            "type": "credentials-select",
+            "name": "__CredentialId__M365",
+            "label": "M365 Credential",
+            "description": "Select the Microsoft 365 credential used to authenticate the request.",
+            "defaultValue": ""
+        },
+        {
+            "direction": "Input",
+            "type": "text",
+            "name": "SitePath",
+            "label": "Site URL",
+            "description": "The URL or path of the SharePoint site you want to retrieve details for. For example: /sites/YourSite or https://contoso.sharepoint.com/sites/YourSite",
+            "defaultValue": ""
+        },
+        {
+            "direction": "Output",
+            "type": "config-panel-output",
+            "name": "Result",
+            "label": "Result",
+            "description": "The result of the site retrieval operation, including site details and any error messages.",
+            "defaultValue": {
+                "value": "Result",
+                "enabled": true
+            }
+        }
+    ]
 }
