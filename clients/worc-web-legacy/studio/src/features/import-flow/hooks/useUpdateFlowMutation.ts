@@ -2,7 +2,6 @@ import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { toast } from "@aventisia/ui/sonner";
 import { updateFlowSilently } from "@/features/react-flow/apis/react-flow-apis";
 import { useCurrentFlowStore } from "@/stores/current-flow-store";
-import { useReactFlowExtStore } from "@/stores/react-flow-ext-store";
 import { useState } from "react";
 import { useImportStore } from "../stores/import-flow-store";
 import { useShallow } from "zustand/react/shallow";
@@ -32,11 +31,6 @@ export const useFlowMutation = (
       setIsFlowSaving: state.setIsFlowSaving,
     })),
   );
-  const { setIsSavePending } = useReactFlowExtStore(
-    useShallow((state) => ({
-      setIsSavePending: state.setIsSavePending,
-    })),
-  );
 
   // Mutation for silently updating the flow without user intervention
   const { mutate: updateFlow } = useMutation({
@@ -51,8 +45,6 @@ export const useFlowMutation = (
           setImportPending(false);
           setShowDialog(false);
         });
-      // Reset the save pending state
-      setIsSavePending(false);
     },
     onError: (error) => {
       // Display an error toast if the mutation fails

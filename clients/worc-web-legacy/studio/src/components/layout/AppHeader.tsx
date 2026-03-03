@@ -21,10 +21,8 @@ import AgentName from "./AgentName";
 import { AvailableCredits } from "@/features/available-credits/AvailableCredits";
 import SaveFlow from "@/features/react-flow/components/save-flow/SaveFlow";
 import { useIsVersionHistoryRoute } from "@/features/version-history/hooks/useIsVersionHistoryRoute";
-import { VersionHistoryTrigger } from "@/features/version-history/components/version-history/VersionHistoryTrigger";
-import { X } from "lucide-react";
-import { useNavigate } from "react-router-dom";
-import { useCarryParams } from "@/features/version-history/hooks/useForwardQueryParams";
+import { VersionHistoryTrigger } from "@/features/version-history/components/version-history-panel/VersionHistoryTrigger";
+import { VersionHistoryCloseButton } from "@/features/version-history/components/version-history-panel/VersionHistoryCloseButton";
 
 const AppHeader: React.FC = () => {
   // Get user session state and actions
@@ -43,10 +41,6 @@ const AppHeader: React.FC = () => {
   const goBack = () => {
     window.location.href = `${import.meta.env.VITE_WORC_PATH}`;
   };
-
-  const navigate = useNavigate();
-
-  const withQueryParams = useCarryParams(["f", "v"]);
 
   return (
     <HeaderContainer className="bg-slate-200">
@@ -128,18 +122,7 @@ const AppHeader: React.FC = () => {
             >
               View Only
             </Button>
-            <Tooltip content="Close">
-              <Button
-                size="icon8"
-                variant="ghost"
-                className="hover:bg-white/10"
-                onClick={() =>
-                  navigate(withQueryParams("/agent"), { replace: true })
-                }
-              >
-                <X className="h-4 w-4 text-white/80" />
-              </Button>
-            </Tooltip>
+            <VersionHistoryCloseButton />
           </div>
         )}
       </Header>

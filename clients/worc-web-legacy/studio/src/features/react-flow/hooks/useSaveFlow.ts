@@ -1,7 +1,7 @@
 import { useCurrentFlowStore } from "@/stores/current-flow-store";
 import { useReactFlowExtStore } from "@/stores/react-flow-ext-store";
 import { toast } from "@aventisia/ui/sonner";
-import { useMutation, useQueryClient } from "@tanstack/react-query";
+import { useMutation } from "@tanstack/react-query";
 import { useShallow } from "zustand/react/shallow";
 import { updateFlowSilently } from "../apis/react-flow-apis";
 
@@ -13,8 +13,6 @@ export const useSaveFlow = () => {
       setIsFlowSaving: state.setIsFlowSaving,
     })),
   );
-
-  const queryClient = useQueryClient();
 
   // Get ReactFlowExt store state & actions
   const {
@@ -53,10 +51,6 @@ export const useSaveFlow = () => {
 
       toast.success("Flow saved successfully", {
         className: "sonner-toaster-sm",
-      });
-
-      queryClient.invalidateQueries({
-        queryKey: ["AGENT_HISTORY", currentFlow.versionId],
       });
     },
     onError: (error) => {

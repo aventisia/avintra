@@ -21,9 +21,13 @@ import { DCPTabsTrigger } from "@/features/dynamic-config-panel/components/dcp-t
 import { useState } from "react";
 import { DCPTabsContent } from "@/features/dynamic-config-panel/components/dcp-tabs/DCPTabsContent";
 import { DCPTabsFooterWrapper } from "@/features/dynamic-config-panel/components/dcp-tabs/DCPTabsFooterWrapper";
+import { useIsVersionHistoryRoute } from "@/features/version-history/hooks/useIsVersionHistoryRoute";
+import { cn } from "@aventisia/ui/lib";
+import { InfoIcon } from "lucide-react";
 
 export default function ModelConfigForm() {
   const [selectedTab, setSelectedTab] = useState("Inputs");
+  const isAgentHistory = useIsVersionHistoryRoute();
 
   // Get handlers to update node inputs and outputs
   const { updateNodeDataIO, updateFlowVariablesObject } = useUpdateNodeDataIO();
@@ -188,8 +192,21 @@ export default function ModelConfigForm() {
           </div>
         </DCPTabsContent>
 
-        <DCPTabsFooterWrapper>
-          <Button size={"sm"} type="submit" className="min-w-[5rem]">
+        <DCPTabsFooterWrapper
+          className={cn(isAgentHistory && "justify-between")}
+        >
+          {isAgentHistory ? (
+            <div className="flex items-center gap-1 text-muted-foreground">
+              <InfoIcon className="h-3.5 w-3.5" />
+              <span className="mt-0.5 text-xs">Changes will not be saved</span>
+            </div>
+          ) : null}
+          <Button
+            size={"sm"}
+            disabled={isAgentHistory}
+            type="submit"
+            className="min-w-[5rem]"
+          >
             Save
           </Button>
         </DCPTabsFooterWrapper>

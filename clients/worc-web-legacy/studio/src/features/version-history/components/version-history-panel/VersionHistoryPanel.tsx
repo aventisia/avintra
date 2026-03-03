@@ -11,9 +11,14 @@ import { ScrollArea } from "@aventisia/ui/scroll";
 
 export const VersionHistoryPanel = () => {
   return (
-    <Panel id={PANEL_ID} width="w-[21rem]" closeOnEscape={false}>
+    <Panel
+      id={PANEL_ID}
+      width="w-[21rem]"
+      className="rounded-none"
+      closeOnEscape={false}
+    >
       <PanelHeader>
-        <PanelTitle className="w- text-[1rem] font-medium">
+        <PanelTitle className="text-[1rem] font-medium">
           Change History
         </PanelTitle>
       </PanelHeader>
