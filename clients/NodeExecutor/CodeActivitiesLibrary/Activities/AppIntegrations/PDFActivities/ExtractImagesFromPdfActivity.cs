@@ -63,7 +63,7 @@ namespace CodeActivitiesLibrary.AppIntegrations.PdfActivities
                     }
                 }
                 IsSuccess.Set(context, true);
-                StatusMessage.Set(context, $"Detected {detectedImageCount} images. Saved {savedImageCount} images to '{targetFolder}'.");
+                StatusMessage.Set(context, $"Successfully Saved {savedImageCount} images to '{targetFolder}'.");
             }
             catch (Exception ex)
             {

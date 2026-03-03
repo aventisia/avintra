@@ -2,6 +2,7 @@
 
 namespace CodeActivitiesLibrary.Extensions
 {
+    // Note: Not keeping Password as a separate field type since it will be identified by the DataType "SecureString" on the InArgument property and handled accordingly in the UI rendering logic.
     public enum FieldType
     {
         Number,
@@ -10,7 +11,6 @@ namespace CodeActivitiesLibrary.Extensions
         Color,
         Date,
         Time,
-        Password,
         DateTime,
         Text,
         Textarea,
@@ -32,11 +32,11 @@ namespace CodeActivitiesLibrary.Extensions
     [AttributeUsage(AttributeTargets.Property, AllowMultiple = false)]
     public class FieldTypeAttribute : Attribute
     {
-        public FieldType InputFieldType { get; }
+        public FieldType FieldType { get; }
 
-        public FieldTypeAttribute(FieldType inputFieldType)
+        public FieldTypeAttribute(FieldType fieldType)
         {
-            InputFieldType = inputFieldType;
+            FieldType = fieldType;
         }
     }
 }

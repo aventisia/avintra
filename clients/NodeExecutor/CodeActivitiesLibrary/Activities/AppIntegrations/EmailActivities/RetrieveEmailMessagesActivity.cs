@@ -12,6 +12,7 @@ using System.ComponentModel.DataAnnotations;
 using System.IO;
 using System.Linq;
 using System.Net.Mail;
+using System.Security;
 
 namespace CodeActivitiesLibrary.AppIntegrations.EmailActivities
 {
@@ -20,10 +21,6 @@ namespace CodeActivitiesLibrary.AppIntegrations.EmailActivities
     [ActivityMetaData(nodeImg:"/assets/Email.svg")]
     public class RetrieveEmailMessagesActivity : BaseCodeActivity
     {
-        // ----------------------
-        // Input Arguments
-        // ----------------------
-
         [RequiredArgument]
         [DisplayName("IMAP Server")]
         [Description("The IMAP server URL.")]
@@ -37,8 +34,7 @@ namespace CodeActivitiesLibrary.AppIntegrations.EmailActivities
         [RequiredArgument]
         [DisplayName("Password")]
         [Description("The password for authentication.")]
-        [FieldType(FieldType.Password)]
-        public InArgument<string> Password { get; set; }
+        public InArgument<SecureString> Password { get; set; }
 
 
         [DisplayName("Port")]
@@ -103,11 +99,6 @@ namespace CodeActivitiesLibrary.AppIntegrations.EmailActivities
         [Description("The directory where attachments will be saved (required if 'Save Attachments' is enabled).")]
         public InArgument<string> SaveDirectory { get; set; }
 
-        // ----------------------
-        // Output Arguments
-        // ----------------------
-
-
         [DisplayName("Retrieved Emails")]
         [Description("Returns the retrieved email messages.")]
         public OutArgument<IEnumerable<MailMessage>> RetrievedEmails { get; set; }
@@ -122,7 +113,7 @@ namespace CodeActivitiesLibrary.AppIntegrations.EmailActivities
             {
                 var imapServer = ImapServer.Get(context);
                 var username = Username.Get(context);
-                var password = Password.Get(context);
+                var password = ConvertSecureStringToString(Password.Get(context));
                 var port = Port.Get(context);
                 var enableSsl = EnableSSL.Get(context);
                 var acceptUntrustedCertificates = AcceptUntrustedCertificates.Get(context);

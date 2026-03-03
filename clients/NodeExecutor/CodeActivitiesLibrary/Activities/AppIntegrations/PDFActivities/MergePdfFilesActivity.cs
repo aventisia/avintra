@@ -22,7 +22,7 @@ namespace CodeActivitiesLibrary.AppIntegrations.PdfActivities
 
         [RequiredArgument]
         [DisplayName("Output PDF Path")]
-        [Description("The path to save the merged PDF file.")]
+        [Description("The full file path where the merged PDF will be saved. Include the complete path with the new PDF filename and .pdf extension (e.g., C:\\Documents\\MergedFile.pdf)")]
         public InArgument<string> OutputPdfPath { get; set; }
 
         protected override void Execute(CodeActivityContext context)

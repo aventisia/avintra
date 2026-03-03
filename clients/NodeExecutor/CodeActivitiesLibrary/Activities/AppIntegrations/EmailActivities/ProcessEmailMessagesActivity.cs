@@ -8,6 +8,7 @@ using System.Collections.Generic;
 using System.ComponentModel;
 using System.ComponentModel.DataAnnotations;
 using System.Linq;
+using System.Security;
 
 namespace CodeActivitiesLibrary.AppIntegrations.EmailActivities
 {
@@ -17,10 +18,6 @@ namespace CodeActivitiesLibrary.AppIntegrations.EmailActivities
         [ActivityMetaData(nodeImg:"/assets/Email.svg")]
     public class ProcessEmailMessagesActivity : BaseCodeActivity
     {
-        // ----------------------
-        // Input Arguments
-        // ----------------------
-
         [RequiredArgument]
         [DisplayName("Operation")]
         [Description("The action to perform on the email messages.")]
@@ -55,8 +52,7 @@ namespace CodeActivitiesLibrary.AppIntegrations.EmailActivities
 
         [DisplayName("Password")]
         [Description("The password for the IMAP account.")]
-        [FieldType(FieldType.Password)]
-        public InArgument<string> Password { get; set; }
+        public InArgument<SecureString> Password { get; set; }
 
 
         [DisplayName("Accept Untrusted Certificates")]
@@ -69,9 +65,6 @@ namespace CodeActivitiesLibrary.AppIntegrations.EmailActivities
         [RenderIfCondition(nameof(Operation), EmailOperationEnum.MoveToFolder)]
         public InArgument<string> MailFolder { get; set; }
 
-        // ----------------------
-        // Execution Logic
-        // ----------------------
         protected override void Execute(CodeActivityContext context)
         {
 
@@ -83,7 +76,7 @@ namespace CodeActivitiesLibrary.AppIntegrations.EmailActivities
                 var port = Port.Get(context);
                 var enableSsl = EnableSSL.Get(context);
                 var username = Username.Get(context);
-                var password = Password.Get(context);
+                var password = ConvertSecureStringToString(Password.Get(context));
                 var acceptUntrustedCertificates = AcceptUntrustedCertificates.Get(context);
                 using (var client = CreateImapClient(imapServer, port, enableSsl, username, password,
                            acceptUntrustedCertificates))

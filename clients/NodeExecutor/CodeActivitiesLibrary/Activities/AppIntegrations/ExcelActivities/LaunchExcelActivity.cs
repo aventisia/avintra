@@ -3,6 +3,7 @@ using CodeActivitiesLibrary.Extensions;
 using System;
 using System.Activities;
 using System.ComponentModel;
+using System.Security;
 using Excel = Microsoft.Office.Interop.Excel;
 
 namespace CodeActivitiesLibrary.AppIntegrations.ExcelActivities
@@ -49,15 +50,13 @@ namespace CodeActivitiesLibrary.AppIntegrations.ExcelActivities
         [DisplayName("Read Protection Password")]
         [Description("Optional password to protect the document from being modified.")]
         [RenderIfCondition(nameof(LaunchMode), ExcelLaunchModeEnum.OpenExisting)]
-        [FieldType(FieldType.Password)]
-        public InArgument<string> ReadProtectionPassword { get; set; }
+        public InArgument<SecureString> ReadProtectionPassword { get; set; }
 
 
         [DisplayName("Write Protection Password")]
         [Description("Optional password to protect the document from being saved.")]
         [RenderIfCondition(nameof(LaunchMode), ExcelLaunchModeEnum.OpenExisting)]
-        [FieldType(FieldType.Password)]
-        public InArgument<string> WriteProtectionPassword { get; set; }
+        public InArgument<SecureString> WriteProtectionPassword { get; set; }
 
         [DisplayName("Excel Instance")]
         [Description("Returns the launched Excel Application object.")]
@@ -105,9 +104,9 @@ namespace CodeActivitiesLibrary.AppIntegrations.ExcelActivities
                                 throw new ArgumentException("Document Path cannot be empty when opening an existing file.");
 
                             var readOnly = OpenAsReadOnly.Get(context);
-                            var readPassword = ReadProtectionPassword.Get(context) ?? string.Empty;
-                            var writePassword = WriteProtectionPassword.Get(context) ?? string.Empty;
-
+                            var readPassword = ReadProtectionPassword.Get(context);
+                            var writePassword = WriteProtectionPassword.Get(context);
+                            
                             // Check if the workbook is already open
                             bool workbookAlreadyOpen = false;
                             foreach (Excel.Workbook wb in excelApp.Workbooks)

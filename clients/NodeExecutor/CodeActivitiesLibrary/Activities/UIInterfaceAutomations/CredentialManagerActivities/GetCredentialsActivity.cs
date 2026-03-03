@@ -13,15 +13,10 @@ namespace CodeActivitiesLibrary.UiInterfaceAutomations.CredentialManagerActiviti
     [ActivityMetaData(nodeImg: "/assets/CredentialManager.svg")]
     public class GetCredentialsActivity : BaseCodeActivity
     {
-        // Input Arguments
-
         [RequiredArgument]
         [DisplayName("Target Name")]
         [Description("The name of the credential target to retrieve from Credential Manager.")]
         public InArgument<string> TargetName { get; set; }
-
-
-        //Output Arguments
 
         [DisplayName("Account Name")]
         [Description("The username associated with the retrieved credential.")]

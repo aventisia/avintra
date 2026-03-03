@@ -30,10 +30,9 @@ namespace CodeActivitiesLibrary.AppIntegrations.ServiceNowActivities
 
         [DisplayName("Password")]
         [Description("Password for Basic Auth")]
-        [FieldType(FieldType.Password)]
         [RequiredArgument]
         [RenderIfCondition(nameof(ConnectUsing), "BasicAuth")]
-        public InArgument<string> Password { get; set; }
+        public InArgument<SecureString> Password { get; set; }
 
         [DisplayName("OAuth Redirect URL")]
         [Description("Redirect URL for OAuth2 flow (usually provided by the platform)")]
@@ -74,7 +73,7 @@ namespace CodeActivitiesLibrary.AppIntegrations.ServiceNowActivities
             {
                 var connectUsing = ConnectUsing.Get(context);
                 string user = User?.Get(context);
-                string password = Password?.Get(context);
+                string password = ConvertSecureStringToString(Password?.Get(context));
                 string oauthRedirectUrl = OAuthRedirectUrl?.Get(context);
                 string clientId = ClientId?.Get(context);
                 string clientSecret = ClientSecret?.Get(context);
