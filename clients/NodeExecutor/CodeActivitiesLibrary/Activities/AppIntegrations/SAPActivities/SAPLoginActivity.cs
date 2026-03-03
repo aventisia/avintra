@@ -3,6 +3,7 @@ using System;
 using System.Activities;
 using System.ComponentModel;
 using System.Runtime.InteropServices;
+using System.Security;
 
 namespace CodeActivitiesLibrary.AppIntegrations.SAPActivities
 {
@@ -24,8 +25,7 @@ namespace CodeActivitiesLibrary.AppIntegrations.SAPActivities
         [RequiredArgument]
         [DisplayName("Secure Password")]
         [Description("SAP Secure Password")]
-        [FieldType(FieldType.Password)]
-        public InArgument<string> Password { get; set; }
+        public InArgument<SecureString> Password { get; set; }
 
         [RequiredArgument]
         [DisplayName("Language")]
@@ -67,7 +67,7 @@ namespace CodeActivitiesLibrary.AppIntegrations.SAPActivities
                 // Get input values
                 string client = Client.Get(context);
                 string username = Username.Get(context);
-                string password = Password.Get(context);
+                var password = Password.Get(context);
                 string language = Language.Get(context);
                 string multipleLogon = MultipleLogonOption.Get(context);
                 double delayBefore = DelayBefore.Get(context);

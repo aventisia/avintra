@@ -1,12 +1,13 @@
 ﻿using CodeActivitiesLibrary.Extensions;
+using CredentialManagement;
 using System;
 using System.Activities;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Linq;
+using System.Security;
 using System.Text;
 using System.Threading.Tasks;
-using CredentialManagement;
 
 namespace CodeActivitiesLibrary.UiInterfaceAutomations.CredentialManagerActivities
 {
@@ -23,13 +24,12 @@ namespace CodeActivitiesLibrary.UiInterfaceAutomations.CredentialManagerActiviti
         [RequiredArgument]
         [DisplayName("New Password")]
         [Description("The new password value to be assigned to the credential.")]
-        [FieldType(FieldType.Password)]
-        public InArgument<string> NewPassword { get; set; }
+        public InArgument<SecureString> NewPassword { get; set; }
 
         protected override void Execute(CodeActivityContext context)
         {
             string target = TargetName.Get(context);
-            string newPassword = NewPassword.Get(context);
+            var newPassword = ConvertSecureStringToString(NewPassword.Get(context));
 
             try
             {

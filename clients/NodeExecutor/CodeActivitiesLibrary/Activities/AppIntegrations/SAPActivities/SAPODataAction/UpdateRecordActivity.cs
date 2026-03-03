@@ -3,6 +3,7 @@ using System;
 using System.Activities;
 using System.ComponentModel;
 using System.Net.Http;
+using System.Security;
 using System.Text;
 using System.Threading.Tasks;
 
@@ -44,9 +45,8 @@ namespace CodeActivitiesLibrary.AppIntegrations.SAPActivities
 
         [DisplayName("Password")]
         [Description("Password for Basic Authentication (if required).")]
-        [FieldType(FieldType.Password)]
         [DefaultValue("")]
-        public InArgument<string> Password { get; set; }
+        public InArgument<SecureString> Password { get; set; }
 
         [DisplayName("Bearer Token")]
         [Description("Bearer token for OAuth2 authentication (if required).")]
@@ -64,7 +64,7 @@ namespace CodeActivitiesLibrary.AppIntegrations.SAPActivities
             string keyValue = KeyValue.Get(context);
             string recordData = RecordData.Get(context);
             string username = Username.Get(context);
-            string password = Password.Get(context);
+            string password = ConvertSecureStringToString(Password.Get(context));
             string bearerToken = BearerToken.Get(context);
 
             using (var client = new HttpClient())

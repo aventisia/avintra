@@ -3,6 +3,7 @@ using CredentialManagement;
 using System;
 using System.Activities;
 using System.ComponentModel;
+using System.Security;
 
 namespace CodeActivitiesLibrary.UiInterfaceAutomations.CredentialManagerActivities
 {
@@ -26,15 +27,14 @@ namespace CodeActivitiesLibrary.UiInterfaceAutomations.CredentialManagerActiviti
         [RequiredArgument]
         [DisplayName("Password")]
         [Description("The password associated with the account to be stored securely.")]
-        [FieldType(FieldType.Password)]
-        public InArgument<string> Password { get; set; }
+        public InArgument<SecureString> Password { get; set; }
 
 
         protected override void Execute(CodeActivityContext context)
         {
             string target = TargetName.Get(context);
             string accountName = AccountName.Get(context);
-            string password = Password.Get(context);
+            var password = ConvertSecureStringToString(Password.Get(context));
 
             try
             {
