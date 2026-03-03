@@ -1,43 +1,43 @@
 {
-  "name": "UpdateFile",
-  "description": "Updates or renames a file in Microsoft 365 SharePoint via Microsoft Graph API.",
-  "version": "1.0.0",
-  "author": "@rahmat",
-  "fields": [
-    {
-      "direction": "Input",
-      "type": "credentials-select",
-      "name": "__CredentialId__M365",
-      "label": "M365 Credential",
-      "description": "Microsoft 365 credential used to authenticate and update files in SharePoint via Microsoft Graph API.",
-      "defaultValue": ""
-    },
-    {
-      "direction": "Input",
-      "type": "text",
-      "name": "FilePath",
-      "label": "File Path",
-      "description": "The full SharePoint file URL to update (e.g., https://company.sharepoint.com/sites/SiteName/Shared Documents/File.txt).",
-      "defaultValue": ""
-    },
-    {
-      "direction": "Input",
-      "type": "text",
-      "name": "FileName",
-      "label": "New File Name",
-      "description": "The new name for the file. The file will be renamed to this value while keeping the same folder location.",
-      "defaultValue": ""
-    },
-    {
-      "direction": "Output",
-      "type": "config-panel-output",
-      "name": "Result",
-      "label": "Result",
-      "description": "Returns metadata of the updated file, including ID, new name, URL, and properties.",
-      "defaultValue": {
-        "value": "Result",
-        "enabled": true
-      }
-    }
-  ]
+    "name": "UpdateFile",
+    "description": "Renames or updates a file in SharePoint using Microsoft Graph.",
+    "version": "1.0.1",
+    "author": "@rahmat",
+    "fields": [
+        {
+            "direction": "Input",
+            "type": "credentials-select",
+            "name": "__CredentialId__M365",
+            "label": "M365 Credential",
+            "description": "Select the Microsoft 365 credential used to authenticate the SharePoint request.",
+            "defaultValue": ""
+        },
+        {
+            "direction": "Input",
+            "type": "text",
+            "name": "FilePath",
+            "label": "File Path",
+            "description": "The path of the file in SharePoint that you want to update. For example: /sites/YourSite/Shared Documents/YourFile.txt",
+            "defaultValue": ""
+        },
+        {
+            "direction": "Input",
+            "type": "text",
+            "name": "FileName",
+            "label": "New File Name",
+            "description": "The new name for the file. If left blank, the file will not be renamed.",
+            "defaultValue": ""
+        },
+        {
+            "direction": "Output",
+            "type": "config-panel-output",
+            "name": "Result",
+            "label": "Result",
+            "description": "The result of the file update operation, including success status and any error messages.",
+            "defaultValue": {
+                "value": "Result",
+                "enabled": true
+            }
+        }
+    ]
 }

@@ -1,0 +1,59 @@
+{
+    "name": "FileUpload",
+    "description": "Uploads a file to a specified SharePoint document library location using Microsoft Graph.",
+    "version": "1.0.1",
+    "author": "@rahmat",
+    "fields": [
+        {
+            "direction": "Input",
+            "type": "credentials-select",
+            "name": "__CredentialId__M365",
+            "label": "M365 Credential",
+            "description": "Select the Microsoft 365 credential used to authenticate the SharePoint request.",
+            "defaultValue": ""
+        },
+        {
+            "direction": "Input",
+            "type": "text",
+            "name": "FilePath",
+            "label": "Destination Folder Path",
+            "description": "The full SharePoint URL of the destination folder where the file should be uploaded. For example: /sites/YourSite/Shared Documents/YourFolder",
+            "defaultValue": ""
+        },
+        {
+            "direction": "Input",
+            "type": "text",
+            "name": "FileName",
+            "label": "File Name",
+            "description": "The name of the file to be uploaded, including the file extension (e.g., Document.pdf).",
+            "defaultValue": ""
+        },
+        {
+            "direction": "Input",
+            "type": "text",
+            "name": "ContentType",
+            "label": "Content Type",
+            "description": "The MIME type of the file being uploaded (e.g., application/pdf for PDF files).",
+            "defaultValue": ""
+        },
+        {
+            "direction": "Input",
+            "type": "text",
+            "name": "FileContent",
+            "label": "File Content (Base64)",
+            "description": "The content of the file to be uploaded, encoded in Base64 format.",
+            "defaultValue": ""
+        },
+        {
+            "direction": "Output",
+            "type": "config-panel-output",
+            "name": "Result",
+            "label": "Result",
+            "description": "The result of the file upload operation, including success status and any error messages.",
+            "defaultValue": {
+                "value": "Result",
+                "enabled": true
+            }
+        }
+    ]
+}

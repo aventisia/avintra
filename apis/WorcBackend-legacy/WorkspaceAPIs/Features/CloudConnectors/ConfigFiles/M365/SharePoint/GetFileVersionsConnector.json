@@ -1,35 +1,35 @@
 {
-  "name": "GetFileVersions",
-  "description": "Retrieves the version history of a file in Microsoft 365 SharePoint via Microsoft Graph API.",
-  "version": "1.0.0",
-  "author": "@rahmat",
-  "fields": [
-    {
-      "direction": "Input",
-      "type": "credentials-select",
-      "name": "__CredentialId__M365",
-      "label": "M365 Credential",
-      "description": "Microsoft 365 credential used to authenticate and retrieve file versions in SharePoint via Microsoft Graph API.",
-      "defaultValue": ""
-    },
-    {
-      "direction": "Input",
-      "type": "text",
-      "name": "FilePath",
-      "label": "File Path",
-      "description": "The full SharePoint file URL to retrieve versions for (e.g., https://company.sharepoint.com/sites/SiteName/Shared Documents/File.txt).",
-      "defaultValue": ""
-    },
-    {
-      "direction": "Output",
-      "type": "config-panel-output",
-      "name": "Result",
-      "label": "Result",
-      "description": "Returns the version history of the file, including version IDs, modified dates, and metadata for each version.",
-      "defaultValue": {
-        "value": "Result",
-        "enabled": true
-      }
-    }
-  ]
+    "name": "GetFileVersions",
+    "description": "Retrieves the version history of a file in SharePoint using Microsoft Graph.",
+    "version": "1.0.1",
+    "author": "@rahmat",
+    "fields": [
+        {
+            "direction": "Input",
+            "type": "credentials-select",
+            "name": "__CredentialId__M365",
+            "label": "M365 Credential",
+            "description": "Select the Microsoft 365 credential used to authenticate the SharePoint request.",
+            "defaultValue": ""
+        },
+        {
+            "direction": "Input",
+            "type": "text",
+            "name": "FilePath",
+            "label": "File Path",
+            "description": "The path of the file in SharePoint for which you want to retrieve version history. For example: /sites/YourSite/Shared Documents/YourFile.txt",
+            "defaultValue": ""
+        },
+        {
+            "direction": "Output",
+            "type": "config-panel-output",
+            "name": "Result",
+            "label": "Result",
+            "description": "The result of the file version retrieval operation, including the version history and any error messages.",
+            "defaultValue": {
+                "value": "Result",
+                "enabled": true
+            }
+        }
+    ]
 }

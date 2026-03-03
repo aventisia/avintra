@@ -1,92 +1,92 @@
 {
-  "name": "UpdateAllEmailProperties",
-  "description": "Updates multiple properties of an email message in a Microsoft 365 Outlook mailbox, including read status, flag status, categories, and importance.",
-  "version": "1.0.0",
-  "author": "@rahmat",
-  "fields": [
-    {
-      "direction": "Input",
-      "type": "credentials-select",
-      "name": "__CredentialId__M365",
-      "label": "M365 Outlook Credential",
-      "description": "Microsoft 365 credential used to authenticate and access mailbox data through Microsoft Graph API.",
-      "defaultValue": ""
-    },
-    {
-      "direction": "Input",
-      "type": "text",
-      "name": "MailboxAddress",
-      "label": "Mailbox Address",
-      "description": "Mailbox address containing the email message. Leave empty to use the authenticated user's mailbox.",
-      "defaultValue": ""
-    },
-    {
-      "direction": "Input",
-      "type": "text",
-      "name": "MessageId",
-      "label": "Message ID",
-      "description": "The unique ID of the email message to update.",
-      "defaultValue": "MessageId"
-    },
-    {
-      "direction": "Input",
-      "type": "switch",
-      "name": "IsRead",
-      "label": "Is Read",
-      "description": "Marks the email as read (true) or unread (false).",
-      "defaultValue": false
-    },
-    {
-      "direction": "Input",
-      "type": "text",
-      "name": "FlagStatus",
-      "label": "Flag Status",
-      "description": "Specifies the flag status of the email. Options include 'flagged' or 'notFlagged'.",
-      "defaultValue": ""
-    },
-    {
-      "direction": "Input",
-      "type": "array",
-      "name": "Categories",
-      "label": "Categories",
-      "description": "List of categories to assign to the email.",
-      "defaultValue": []
-    },
-    {
-      "direction": "Input",
-      "type": "select",
-      "name": "Importance",
-      "label": "Importance",
-      "description": "Sets the priority level of the email.",
-      "defaultValue": "Normal",
-      "selectOptions": [
+    "name": "UpdateAllEmailProperties",
+    "description": "Updates properties of a specific Outlook email using Microsoft Graph, such as read status, flag, categories, and importance.",
+    "version": "1.0.1",
+    "author": "@rahmat",
+    "fields": [
         {
-          "label": "Low",
-          "value": "Low",
-          "description": "Low priority"
+            "direction": "Input",
+            "type": "credentials-select",
+            "name": "__CredentialId__M365",
+            "label": "M365 Credential",
+            "description": "Select Microsoft 365 credentials to authenticate the request.",
+            "defaultValue": ""
         },
         {
-          "label": "Normal",
-          "value": "Normal",
-          "description": "Normal priority"
+            "direction": "Input",
+            "type": "text",
+            "name": "MailboxAddress",
+            "label": "Mailbox Address",
+            "description": "The email address of the mailbox containing the email to update",
+            "defaultValue": ""
         },
         {
-          "label": "High",
-          "value": "High",
-          "description": "High priority"
+            "direction": "Input",
+            "type": "text",
+            "name": "MessageId",
+            "label": "Message ID",
+            "description": "The unique identifier of the email message to update.",
+            "defaultValue": ""
+        },
+        {
+            "direction": "Input",
+            "type": "switch",
+            "name": "IsRead",
+            "label": "Read Status",
+            "description": "Set the email's read status. 'true' marks it as read, while 'false' marks it as unread.",
+            "defaultValue": false
+        },
+        {
+            "direction": "Input",
+            "type": "text",
+            "name": "FlagStatus",
+            "label": "Flag",
+            "description": "Set the email's flag status. Use 'notFlagged', 'flagged', or 'complete' to indicate the desired flag state.",
+            "defaultValue": ""
+        },
+        {
+            "direction": "Input",
+            "type": "array",
+            "name": "Categories",
+            "label": "Categories",
+            "description": "A list of categories to assign to the email. Categories are user-defined labels that can help organize and classify emails. Provide an array of category names as strings.",
+            "defaultValue": []
+        },
+        {
+            "direction": "Input",
+            "type": "select",
+            "name": "Importance",
+            "label": "Importance",
+            "description": "Set the email's importance level. Choose from 'Low', 'Normal', or 'High' to indicate the priority of the email.",
+            "defaultValue": "Normal",
+            "selectOptions": [
+                {
+                    "label": "Low",
+                    "value": "Low",
+                    "description": "Low priority"
+                },
+                {
+                    "label": "Normal",
+                    "value": "Normal",
+                    "description": "Normal priority"
+                },
+                {
+                    "label": "High",
+                    "value": "High",
+                    "description": "High priority"
+                }
+            ]
+        },
+        {
+            "direction": "Output",
+            "type": "config-panel-output",
+            "name": "Result",
+            "label": "Result",
+            "description": "The result of the email update operation, including success status and any error messages.",
+            "defaultValue": {
+                "value": "Result",
+                "enabled": true
+            }
         }
-      ]
-    },
-    {
-      "direction": "Output",
-      "type": "config-panel-output",
-      "name": "Result",
-      "label": "Result",
-      "description": "Returns the status of the update operation and the updated email properties.",
-      "defaultValue": {
-        "value": "Result",
-        "enabled": true
-      }
-    }
-  ]
+    ]
 }

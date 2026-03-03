@@ -1,123 +1,85 @@
 {
-  "name": "GetEmails",
-  "description": "Retrieves email messages from a Microsoft 365 Outlook mailbox using Microsoft Graph API. Supports filtering by folder, sender, recipients, subject, unread status, importance, and attachment presence.",
-  "version": "1.0.0",
-  "author": "@rahmat",
-  "fields": [
-    {
-      "direction": "Input",
-      "type": "credentials-select",
-      "name": "__CredentialId__M365",
-      "label": "M365 Outlook Credential",
-      "description": "Microsoft 365 credential used to authenticate and access mailbox data through Microsoft Graph API.",
-      "defaultValue": ""
-    },
-    {
-      "direction": "Input",
-      "type": "text",
-      "name": "MailboxAddress",
-      "label": "Mailbox Address",
-      "description": "Mailbox address to retrieve emails from. Leave empty to use the authenticated user's mailbox.",
-      "defaultValue": ""
-    },
-    {
-      "direction": "Input",
-      "type": "text",
-      "name": "Folder",
-      "label": "Mailbox Folder",
-      "description": "The folder to retrieve emails from (e.g., Inbox, Archive, SentItems).",
-      "defaultValue": ""
-    },
-    {
-      "direction": "Input",
-      "type": "text",
-      "name": "FromFilter",
-      "label": "Filter by Sender",
-      "description": "Retrieve emails received from the specified sender email address.",
-      "defaultValue": ""
-    },
-    {
-      "direction": "Input",
-      "type": "text",
-      "name": "ToFilter",
-      "label": "Filter by Recipient (To)",
-      "description": "Retrieve emails sent to the specified recipient email address.",
-      "defaultValue": ""
-    },
-    {
-      "direction": "Input",
-      "type": "text",
-      "name": "CcFilter",
-      "label": "Filter by CC",
-      "description": "Retrieve emails where the specified address appears in the CC field.",
-      "defaultValue": ""
-    },
-    {
-      "direction": "Input",
-      "type": "switch",
-      "name": "UnreadOnly",
-      "label": "Unread Messages Only",
-      "description": "If true, retrieves only unread emails.",
-      "defaultValue": false
-    },
-    {
-      "direction": "Input",
-      "type": "switch",
-      "name": "OnlyWithAttachments",
-      "label": "Only Emails with Attachments",
-      "description": "If true, retrieves only emails that contain attachments.",
-      "defaultValue": false
-    },
-    {
-      "direction": "Input",
-      "type": "switch",
-      "name": "IncludeAttachments",
-      "label": "Include Attachments",
-      "description": "If true, includes attachment details in the retrieved emails.",
-      "defaultValue": false
-    },
-    {
-      "direction": "Input",
-      "type": "text",
-      "name": "SubjectContains",
-      "label": "Subject Contains",
-      "description": "Retrieve emails where the subject contains the specified text.",
-      "defaultValue": ""
-    },
-    {
-      "direction": "Input",
-      "type": "switch",
-      "name": "Count",
-      "label": "Count Only",
-      "description": "If true, returns only the count of emails matching the criteria.",
-      "defaultValue": false
-    },
-    {
-      "direction": "Input",
-      "type": "number",
-      "name": "Top",
-      "label": "Maximum Results",
-      "description": "Specifies the maximum number of emails to retrieve.",
-      "defaultValue": ""
-    },
-    {
-      "direction": "Input",
-      "type": "number",
-      "name": "Skip",
-      "label": "Skip",
-      "description": "Number of emails to skip from the top of the result set.",
-      "defaultValue": ""
-    },
-    {
-      "direction": "Output",
-      "type": "config-panel-output",
-      "name": "Result",
-      "label": "Result",
-      "description": "Returns the list of retrieved emails including metadata such as subject, sender, recipients, body preview, and attachments if included.",
-      "defaultValue": {
-        "value": "Result",
-        "enabled": true
-      }
-    }
-  ]
+    "name": "GetEmails",
+    "description": "Retrieves email messages from a specified mailbox folder using Microsoft Graph.",
+    "version": "1.0.1",
+    "author": "@rahmat",
+    "fields": [
+        {
+            "direction": "Input",
+            "type": "credentials-select",
+            "name": "__CredentialId__M365",
+            "label": "M365 Credential",
+            "description": "Select Microsoft 365 credentials for authentication.",
+            "defaultValue": ""
+        },
+        {
+            "direction": "Input",
+            "type": "text",
+            "name": "MailboxAddress",
+            "label": "Mailbox Address",
+            "description": "The email address of the mailbox to retrieve emails from.",
+            "defaultValue": ""
+        },
+        {
+            "direction": "Input",
+            "type": "text",
+            "name": "FolderName",
+            "label": "Folder Name",
+            "description": "The display name of the folder to retrieve emails from. For example, 'Inbox' or 'Sent Items'.",
+            "defaultValue": ""
+        },
+
+        {
+            "direction": "Input",
+            "type": "switch",
+            "name": "UnreadOnly",
+            "label": "Unread Only",
+            "description": "If true, returns only unread emails.",
+            "defaultValue": false
+        },
+        {
+            "direction": "Input",
+            "type": "switch",
+            "name": "OnlyWithAttachments",
+            "label": "With Attachments Only",
+            "description": "If true, returns only emails that have attachments.",
+            "defaultValue": false
+        },
+        {
+            "direction": "Input",
+            "type": "switch",
+            "name": "IncludeAttachments",
+            "label": "Include Attachments",
+            "description": "If true, includes attachment details in the results. Note that this does not return the actual attachment content, but rather metadata about the attachments.",
+            "defaultValue": false
+        },
+        {
+            "direction": "Input",
+            "type": "number",
+            "name": "Top",
+            "label": "Top",
+            "description": "Number of emails to retrieve for pagination.",
+            "defaultValue": 10
+        },
+        {
+            "direction": "Input",
+            "type": "number",
+            "name": "Skip",
+            "label": "Skip",
+            "description": "Number of emails to skip for pagination.",
+            "defaultValue": 0
+        },
+
+        {
+            "direction": "Output",
+            "type": "config-panel-output",
+            "name": "Result",
+            "label": "Result",
+            "description": "Returns the list of email messages from the specified folder, including metadata such as subject, sender, received date, and optionally attachment details.",
+            "defaultValue": {
+                "value": "Result",
+                "enabled": true
+            }
+        }
+    ]
 }

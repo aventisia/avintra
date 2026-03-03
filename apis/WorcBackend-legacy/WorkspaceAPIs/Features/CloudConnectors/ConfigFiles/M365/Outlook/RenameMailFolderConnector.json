@@ -1,59 +1,51 @@
 {
-  "name": "RenameMailFolder",
-  "description": "Renames a specified mail folder in a Microsoft 365 mailbox using the Microsoft Graph API. Optionally, you can update the visibility status of the folder.",
-  "version": "1.0.0",
-  "author": "@rahmat",
-  "fields": [
-    {
-      "direction": "Input",
-      "type": "credentials-select",
-      "name": "__CredentialId__M365",
-      "label": "Microsoft 365 Credentials",
-      "description": "Microsoft 365 credentials used to authenticate and access mailbox data through the Microsoft Graph API.",
-      "defaultValue": ""
-    },
-    {
-      "direction": "Input",
-      "type": "text",
-      "name": "MailboxAddress",
-      "label": "Mailbox Address",
-      "description": "The email address of the mailbox where the folder will be renamed. If left empty, the authenticated user's mailbox will be used.",
-      "defaultValue": ""
-    },
-    {
-      "direction": "Input",
-      "type": "text",
-      "name": "DisplayName",
-      "label": "New Folder Name",
-      "description": "The new name to assign to the folder.",
-      "defaultValue": ""
-    },
-    {
-      "direction": "Input",
-      "type": "text",
-      "name": "FolderId",
-      "label": "Folder ID",
-      "description": "The unique ID of the folder to be renamed.",
-      "defaultValue": ""
-    },
-    {
-      "direction": "Input",
-      "type": "switch",
-      "name": "IsHidden",
-      "label": "Visibility",
-      "description": "Indicates whether the folder should be hidden from the mailbox view after renaming. Set to 'true' to hide, or 'false' to make it visible.",
-      "defaultValue": false
-    },
-    {
-      "direction": "Output",
-      "type": "config-panel-output",
-      "name": "Result",
-      "label": "Renaming Result",
-      "description": "The result of the folder renaming, including the updated folder ID, name, and visibility status.",
-      "defaultValue": {
-        "value": "Result",
-        "enabled": true
-      }
-    }
-  ]
+    "name": "RenameMailFolder",
+    "description": "Renames an existing mail folder in a specified mailbox using Microsoft Graph.",
+    "version": "1.0.1",
+    "author": "@rahmat",
+    "fields": [
+        {
+            "direction": "Input",
+            "type": "credentials-select",
+            "name": "__CredentialId__M365",
+            "label": "M365 Credential",
+            "description": "Select Microsoft 365 credentials for authentication.",
+            "defaultValue": ""
+        },
+        {
+            "direction": "Input",
+            "type": "text",
+            "name": "MailboxAddress",
+            "label": "Mailbox Address",
+            "description": "The email address of the mailbox containing the folder to rename.",
+            "defaultValue": ""
+        },
+        {
+            "direction": "Input",
+            "type": "text",
+            "name": "FolderName",
+            "label": "Current Folder Name",
+            "description": "The existing display name of the folder.",
+            "defaultValue": ""
+        },
+        {
+            "direction": "Input",
+            "type": "text",
+            "name": "DisplayName",
+            "label": "New Folder Name",
+            "description": "The new display name for the folder.",
+            "defaultValue": ""
+        },
+        {
+            "direction": "Output",
+            "type": "config-panel-output",
+            "name": "Result",
+            "label": "Result",
+            "description": "The result of the folder rename operation, including success status and any error messages.",
+            "defaultValue": {
+                "value": "Result",
+                "enabled": true
+            }
+        }
+    ]
 }
