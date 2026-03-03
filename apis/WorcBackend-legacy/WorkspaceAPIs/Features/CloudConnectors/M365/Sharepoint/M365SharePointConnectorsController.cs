@@ -1,4 +1,4 @@
-namespace WorkspaceAPIs.Features.CloudConnectors.M365.Excel;
+namespace WorkspaceAPIs.Features.CloudConnectors.M365.SharePoint;
 
 [Route("cloud-connector/m365/sharepoint")]
 [ApiController]
