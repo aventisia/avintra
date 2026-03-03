@@ -1,7 +1,7 @@
 {
-  "name": "ExecuteSqlStatement",
-  "label": "Execute SQL Statement",
-  "description": "Connect to a database and execute an SQL statement.",
+  "name": "ExecuteMSSQLStatement",
+  "label": "Execute MS SQL Statement",
+  "description": "Connect to a Microsoft SQL Server database and execute a SQL statement.",
   "version": "1.0.0",
   "auther": "@aventisia",
   "supportedPlatforms": [
@@ -15,19 +15,19 @@
       "type": "select",
       "name": "ConnectionMode",
       "label": "Connection Mode",
-      "description": "",
-      "defaultValue": "",
+      "description": "Select whether to use a connection string or an existing SQL connection.",
+      "defaultValue": "UseExistingConnection",
       "required": true,
       "selectOptions": [
         {
           "label": "Use Connection String",
           "value": "UseConnectionString",
-          "description": ""
+          "description": "Provide a connection string to connect to the MS SQL Server database."
         },
         {
           "label": "Use Existing Connection",
           "value": "UseExistingConnection",
-          "description": ""
+          "description": "Use an existing SQL connection from Open MS SQL Connection node."
         }
       ]
     },
@@ -36,7 +36,7 @@
       "type": "password",
       "name": "ConnectionString",
       "label": "Connection String",
-      "description": "The connection string to the database.",
+      "description": "The connection string to the MS SQL Server database.",
       "defaultValue": "",
       "required": false,
       "renderIf": {
@@ -52,8 +52,8 @@
       "direction": "Input",
       "type": "text",
       "name": "ExistingConnection",
-      "label": "Existing SQL Connection",
-      "description": "The Existing connection string to the database.",
+      "label": "Existing MS SQL Connection",
+      "description": "The existing MS SQL Server connection from Open MS SQL Connection node.",
       "defaultValue": "",
       "required": false,
       "renderIf": {
@@ -67,20 +67,11 @@
     },
     {
       "direction": "Input",
-      "type": "text",
-      "name": "SqlStatement",
-      "label": "SQL Statement",
-      "description": "The SQL statement to execute.",
-      "defaultValue": "",
-      "required": true
-    },
-    {
-      "direction": "Input",
       "type": "select",
       "name": "OperationType",
       "label": "Operation Type",
       "description": "The type of SQL operation to perform.",
-      "defaultValue": "",
+      "defaultValue": "NonQuery",
       "required": true,
       "selectOptions": [
         {
@@ -101,16 +92,73 @@
       ]
     },
     {
+      "direction": "Input",
+      "type": "text",
+      "name": "SqlStatement",
+      "label": "SQL Statement",
+      "description": "The SQL statement to execute on MS SQL Server.",
+      "defaultValue": "",
+      "required": true
+    },
+    {
       "direction": "Output",
       "type": "config-panel-output",
       "name": "ResultDataTable",
       "label": "Result Data Table",
-      "description": "The result data table.",
+      "description": "The result data table from DataSet operation.",
       "defaultValue": {
         "value": "ResultDataTable",
         "enabled": true
       },
-      "required": false
+      "required": false,
+      "renderIf": {
+        "conditions": [
+          {
+            "field": "OperationType",
+            "equals": "DataSet"
+          }
+        ]
+      }
+    },
+    {
+      "direction": "Output",
+      "type": "config-panel-output",
+      "name": "ScalarResult",
+      "label": "Scalar Result",
+      "description": "The scalar value returned from Scalar operation.",
+      "defaultValue": {
+        "value": "ScalarResult",
+        "enabled": true
+      },
+      "required": false,
+      "renderIf": {
+        "conditions": [
+          {
+            "field": "OperationType",
+            "equals": "Scalar"
+          }
+        ]
+      }
+    },
+    {
+      "direction": "Output",
+      "type": "config-panel-output",
+      "name": "AffectedRows",
+      "label": "Affected Rows",
+      "description": "The number of rows affected by NonQuery operation.",
+      "defaultValue": {
+        "value": "AffectedRows",
+        "enabled": true
+      },
+      "required": false,
+      "renderIf": {
+        "conditions": [
+          {
+            "field": "OperationType",
+            "equals": "NonQuery"
+          }
+        ]
+      }
     }
   ]
 }

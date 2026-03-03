@@ -1,7 +1,7 @@
 {
-  "name": "CloseSqlConnection",
-  "label": "Close SQL Connection",
-  "description": "Closes an open SQL database connection",
+  "name": "CloseMSSQLConnection",
+  "label": "Close MS SQL Connection",
+  "description": "Closes an open Microsoft SQL Server database connection",
   "version": "1.0.0",
   "auther": "@aventisia",
   "supportedPlatforms": [
@@ -14,8 +14,8 @@
       "direction": "Input",
       "type": "text",
       "name": "SqlConnection",
-      "label": "SQL Connection",
-      "description": "The SQL connection metadata returned from OpenSqlConnectionActivity.",
+      "label": "MS SQL Connection",
+      "description": "The MS SQL Server connection returned from Open MS SQL Connection node.",
       "defaultValue": "",
       "required": true
     }

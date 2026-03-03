@@ -1,7 +1,7 @@
 {
-  "name": "OpenSqlConnection",
-  "label": "Open SQL Connection",
-  "description": "Open a new connection to a database",
+  "name": "OpenMSSQLConnection",
+  "label": "Open MS SQL Connection",
+  "description": "Open a new connection to a Microsoft SQL Server database",
   "version": "1.0.0",
   "auther": "@aventisia",
   "supportedPlatforms": [
@@ -12,10 +12,10 @@
   "fields": [
     {
       "direction": "Input",
-      "type": "text",
+      "type": "password",
       "name": "ConnectionString",
       "label": "Connection String",
-      "description": "The connection string to the database.",
+      "description": "The connection string to the MS SQL Server database. For example: \u0027Server=localhost\\SQLEXPRESS;Database=master;User Id=myUsername;Password=myPassword;\u0027",
       "defaultValue": "",
       "required": true
     },
@@ -23,8 +23,8 @@
       "direction": "Output",
       "type": "config-panel-output",
       "name": "SqlConnection",
-      "label": "SQL Connection",
-      "description": "The opened SQL connection metadata.",
+      "label": "MS SQL Connection",
+      "description": "The opened MS SQL Server connection.",
       "defaultValue": {
         "value": "SqlConnection",
         "enabled": true
