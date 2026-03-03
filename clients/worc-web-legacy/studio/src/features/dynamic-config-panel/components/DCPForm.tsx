@@ -1,7 +1,7 @@
 import { Button } from "@aventisia/ui/buttons";
 import { Form } from "@aventisia/ui/form";
 import { toast } from "@aventisia/ui/sonner";
-import { FlaskConical, PlayIcon, SearchCodeIcon } from "lucide-react";
+import { FlaskConical, InfoIcon, PlayIcon, SearchCodeIcon } from "lucide-react";
 import { useEffect, useState } from "react";
 import { z } from "zod";
 import {
@@ -252,7 +252,10 @@ export const DCPForm = () => {
             {/* Save button */}
             {selectedTab !== "Test" && (
               <DCPTabsFooterWrapper
-                className={cn(selectedTab == "Prompt" && "justify-between")}
+                className={cn(
+                  (selectedTab == "Prompt" || isAgentHistory) &&
+                    "justify-between",
+                )}
               >
                 {selectedTab == "Prompt" && !isAgentHistory && (
                   <ImproveWithAIButton
@@ -264,23 +267,23 @@ export const DCPForm = () => {
                     form={form}
                   />
                 )}
-                {
-                  <div className="flex items-center gap-1">
-                    {isAgentHistory ? (
-                      <span className="text-2xs text-muted-foreground">
-                        Changes will not be saved
-                      </span>
-                    ) : null}
-                    <Button
-                      size={"sm"}
-                      disabled={isAgentHistory}
-                      type="submit"
-                      className="min-w-[5rem]"
-                    >
-                      Save
-                    </Button>
+
+                {isAgentHistory ? (
+                  <div className="flex items-center gap-1 text-muted-foreground">
+                    <InfoIcon className="h-3.5 w-3.5" />
+                    <span className="mt-0.5 text-xs">
+                      Changes will not be saved
+                    </span>
                   </div>
-                }
+                ) : null}
+                <Button
+                  size={"sm"}
+                  disabled={isAgentHistory}
+                  type="submit"
+                  className="min-w-[5rem]"
+                >
+                  Save
+                </Button>
               </DCPTabsFooterWrapper>
             )}
           </Form>

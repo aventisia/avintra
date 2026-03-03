@@ -31,7 +31,7 @@ export const useReactFlowViewData = () => {
   );
 
   // Get react flow hook to set viewport
-  const { setViewport, fitView } = useReactFlow();
+  const { fitView } = useReactFlow();
 
   //Get flow
   const { data, isLoading } = useQuery({
@@ -46,14 +46,14 @@ export const useReactFlowViewData = () => {
 
     setName(data.flowName ?? "");
     // Parse react flow object
-    const flow = deepParse(data.reactFlowObject ?? "") as unknown as {
+    const flow = deepParse(data?.reactFlowObject ?? "[]") as unknown as {
       nodes: Node[];
       edges: Edge[];
       viewport: Viewport;
     };
 
     // Parse Flow Variables Object
-    const flowVarObjs = JSON.parse(data.flowVariablesObject ?? "");
+    const flowVarObjs = JSON.parse(data?.flowVariablesObject ?? "{}");
 
     if (flow) {
       // Set nodes and edges
@@ -62,13 +62,10 @@ export const useReactFlowViewData = () => {
       setFlowVariablesObject(flowVarObjs || []);
       //set viewport state for react flow oject ext(only for reference its not for ReactFLow)
       setViewportState(flow.viewport);
-      // If flow has more than 2 nodes then set the saved viewport
-      if (flow.nodes.length > 2) {
-        setViewport(flow.viewport, { duration: ZOOM_ANIMATION_DURATION });
-      } else {
-        // Fit view if less than 2 nodes
+      // Fit view
+      setTimeout(() => {
         fitView({ duration: ZOOM_ANIMATION_DURATION });
-      }
+      }, ZOOM_ANIMATION_DURATION);
     }
   }, [data]);
 

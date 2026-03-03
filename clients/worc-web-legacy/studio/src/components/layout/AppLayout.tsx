@@ -18,6 +18,8 @@ import { deploymentType } from "@/react-toolkit/types/user-session-types";
 import { useCurrentFlowStore } from "@/stores/current-flow-store";
 import { usePreventClose } from "@/hooks/usePreventClose";
 import useTauriUserMetadata from "@/hooks/useTauriUserMetadata";
+import { useAppLoaderStore } from "@/stores/app-loader-store";
+import { AppLoader } from "./AppLoader";
 
 export const AppLayout = () => {
   const [loading, setLoading] = useState(true);
@@ -27,6 +29,10 @@ export const AppLayout = () => {
     useShallow((state) => ({
       appBanner: state.appBanner,
     })),
+  );
+
+  const { isLoading: isAppLoading } = useAppLoaderStore(
+    useShallow((state) => ({ isLoading: state.isLoading })),
   );
 
   // Get setExecutionState action from current flow store
@@ -99,6 +105,8 @@ export const AppLayout = () => {
     // eslint-disable-next-line react-hooks/set-state-in-effect
     setLoading(false);
   }, [setActionSelectorData, userSession?.deploymentType]);
+
+  if (isAppLoading) return <AppLoader />;
 
   return (
     <>

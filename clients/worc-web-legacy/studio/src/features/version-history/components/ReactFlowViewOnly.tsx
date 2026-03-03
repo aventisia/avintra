@@ -13,7 +13,7 @@ import { ViewControls } from "./view-controls";
 import { usePanelStore } from "@/components/panel/stores/panel-store";
 import { useShallow } from "zustand/react/shallow";
 import { PANEL_ID } from "../constants";
-import { VersionHistoryPanel } from "./version-history/VersionHistoryPanel";
+import { VersionHistoryPanel } from "./version-history-panel/VersionHistoryPanel";
 import { DCPDialog } from "@/features/dynamic-config-panel";
 import { useReactFlowViewStore } from "../stores/react-flow-view-store";
 import { useReactFlowViewData } from "../hooks/useReactFlowViewData";
@@ -51,7 +51,7 @@ export const ReactFlowViewOnly = () => {
 
   return (
     <>
-      <div className="relative h-full w-full">
+      <div className="relative h-full w-[calc(100%-21.5rem)]">
         <ReactFlow
           fitView
           minZoom={0.1}

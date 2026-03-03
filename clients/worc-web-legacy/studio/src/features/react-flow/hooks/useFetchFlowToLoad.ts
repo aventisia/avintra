@@ -51,6 +51,8 @@ export const useFetchFlowToLoad = () => {
     queryKey: ["flow", flowId, versionId],
     queryFn: () => getFlowToLoad(flowId || "flowId", versionId),
     enabled: !!flowId,
+    staleTime: 0, // mark immediately stale
+    refetchOnMount: "always", // always refetch on mount
   });
 
   useEffect(() => {

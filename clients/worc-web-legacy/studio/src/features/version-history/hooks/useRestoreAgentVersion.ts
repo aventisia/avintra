@@ -15,7 +15,9 @@ export const useRestoreAgentVersion = () => {
       return updateFlowSilently({
         id: detail.flowId,
         versionId: detail.flowVersionId,
-        reactFlowObject: detail.reactFlowObject ?? "{}",
+        reactFlowObject: detail.reactFlowObject ?? "[]",
+        flowVariablesObject: detail.flowVariablesObject ?? "[]",
+        inputOutputObject: detail.inputOutputObject ?? "[]",
       });
     },
     onSuccess: () => {
