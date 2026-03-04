@@ -32,12 +32,13 @@ const ImportFlow = () => {
   const fileInputRef = useRef<HTMLInputElement>(null);
 
   // Hook to handle file upload logic and data parsing
-  const { uploadedData, handleFileUpload } = useFileUpload();
+  const { uploadedData, handleFileUpload, setUploadedData } = useFileUpload();
 
   // Hook for handling the flow update mutation logic
   const { updateFlow, isImportPending, setImportPending } = useFlowMutation(
     flowId,
     versionId,
+    setUploadedData,
   );
 
   // Trigger file input click when the `upload` state changes
@@ -60,7 +61,7 @@ const ImportFlow = () => {
         flowVariablesObject: JSON.stringify(flowVariablesObject),
         versionId,
       });
-    } catch  {
+    } catch {
       toast.error("Error processing the imported file");
     }
   };

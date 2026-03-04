@@ -46,7 +46,9 @@ export const useReactFlowViewData = () => {
 
     setName(data.flowName ?? "");
     // Parse react flow object
-    const flow = deepParse(data?.reactFlowObject ?? "[]") as unknown as {
+    const flow = deepParse(
+      data?.reactFlowObject ?? JSON.stringify([]),
+    ) as unknown as {
       nodes: Node[];
       edges: Edge[];
       viewport: Viewport;

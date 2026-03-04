@@ -13,6 +13,7 @@ import { useShallow } from "zustand/react/shallow";
 export const useFlowMutation = (
   flowId: string,
   versionId: string | undefined,
+  setUploadedData: React.Dispatch<React.SetStateAction<string>>,
 ) => {
   const [isImportPending, setImportPending] = useState(false);
   const queryClient = useQueryClient();
@@ -44,6 +45,8 @@ export const useFlowMutation = (
         .finally(() => {
           setImportPending(false);
           setShowDialog(false);
+          setUploadedData("");
+          toast.success("Imported Successfully");
         });
     },
     onError: (error) => {
@@ -51,6 +54,7 @@ export const useFlowMutation = (
       toast.error(error.toString());
       setImportPending(false);
       setShowDialog(false);
+      setUploadedData("");
     },
     onSettled: () => {
       // Reset the flow saving state once the mutation is settled
