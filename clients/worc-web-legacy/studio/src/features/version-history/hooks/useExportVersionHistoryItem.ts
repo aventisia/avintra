@@ -6,8 +6,12 @@ export const useExportVersionHistoryItem = () => {
   const { downloadJson } = useJsonDownload();
 
   const exportVersionHistoryFlow = (detail: FlowVersionHistoryDetailDto) => {
-    const reactFlowObject = deepParse(detail.reactFlowObject || "[]");
-    const flowVariablesObject = deepParse(detail.flowVariablesObject || "[]");
+    const reactFlowObject = deepParse(
+      detail.reactFlowObject || JSON.stringify([]),
+    );
+    const flowVariablesObject = deepParse(
+      detail.flowVariablesObject || JSON.stringify([]),
+    );
 
     downloadJson(
       { reactFlowObject, flowVariablesObject },
