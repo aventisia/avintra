@@ -104,7 +104,7 @@ export const useUpdateFlowSilently = () => {
       saveData({
         id: currentFlow.id,
         reactFlowObject: JSON.stringify(reactFlowObject),
-        flowVariablesObject: JSON.stringify(flowVariablesObject),
+        flowVariablesObject: JSON.stringify(flowVariablesObject ?? []),
         inputOutputObject: JSON.stringify(inputOutputObject),
         versionId: currentFlow.versionId,
       });

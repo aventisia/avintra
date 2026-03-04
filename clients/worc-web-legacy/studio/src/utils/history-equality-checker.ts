@@ -18,9 +18,11 @@ export const isHistoryEqual = (
   past: HistoryState,
   current: HistoryState,
 ): boolean => {
-  if (past.nodes.length !== current.nodes.length) return false;
-  if (past.edges.length !== current.edges.length) return false;
-  if (past.flowVariablesObject.length !== current.flowVariablesObject.length)
+  if (past?.nodes?.length !== current?.nodes?.length) return false;
+  if (past?.edges?.length !== current?.edges?.length) return false;
+  if (
+    past?.flowVariablesObject?.length !== current?.flowVariablesObject?.length
+  )
     return false;
 
   if (past.flowVariablesObject !== current.flowVariablesObject) {

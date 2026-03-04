@@ -27,7 +27,7 @@ export const useHistoryTracker = () => {
         const currentState: HistoryState = {
           nodes: state.nodes,
           edges: state.edges,
-          flowVariablesObject: state.flowVariablesObject,
+          flowVariablesObject: state.flowVariablesObject ?? [],
         };
 
         // 2. DYNAMIC SAVE TRACKING

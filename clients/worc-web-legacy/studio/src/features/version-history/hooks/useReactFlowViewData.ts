@@ -55,7 +55,9 @@ export const useReactFlowViewData = () => {
     };
 
     // Parse Flow Variables Object
-    const flowVarObjs = JSON.parse(data?.flowVariablesObject ?? "{}");
+    const flowVarObjs = JSON.parse(
+      data?.flowVariablesObject ?? JSON.stringify([]),
+    );
 
     if (flow) {
       // Set nodes and edges
