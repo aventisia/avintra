@@ -1,4 +1,5 @@
-﻿using Newtonsoft.Json;
+﻿using DynamicExpresso;
+using Newtonsoft.Json;
 using Newtonsoft.Json.Serialization;
 using NodeExecutor.Models;
 using NodeExecutor.Services;
@@ -6,7 +7,6 @@ using System;
 using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Input;
-using DynamicExpresso;
 
 namespace NodeExecutor
 {
@@ -178,31 +178,63 @@ namespace NodeExecutor
 
         private async void ExecuteConditionAsync(string data)
         {
-            // Deserialize the node data
-            var conditionalBrnachNodeData = JsonConvert.DeserializeObject<ConditionalBranchNodeData>(data);
+            // Set the start time for the node execution
+            var startTime = DateTime.UtcNow;
 
-            if (conditionalBrnachNodeData == null)
+            // Deserialize the node data
+            var conditionalBranchNodeData = JsonConvert.DeserializeObject<ConditionalBranchNodeData>(data);
+
+            if (conditionalBranchNodeData == null)
             {
                 MessageBox.Show("Invalid node data received.");
                 return;
             }
 
             // Set the node name
-            lbl_NodeName.Text = conditionalBrnachNodeData.NodeName.Length > 0
-                ? conditionalBrnachNodeData.NodeName
-                : "Node name not found";
+            Dispatcher.Invoke(() =>
+            {
+                lbl_NodeName.Text = conditionalBranchNodeData.NodeName.Length > 0
+                                        ? conditionalBranchNodeData.NodeName
+                                        : "Node name not found";
+            });
 
-            var result =
-                ActivityExecutorService.ExecuteCondition(_agentId, _agentName, _accessToken, conditionalBrnachNodeData.Conditions, _executionContext, _interpreter);
+            // Run node execution in a background task
+            await Task.Run(async () =>
+            {
+                // Execute condition
+                var (conditionResult, nodeExecutionLog) =
+                    ActivityExecutorService.ExecuteCondition(conditionalBranchNodeData.Id, conditionalBranchNodeData.NodeName, conditionalBranchNodeData.Conditions, _executionContext, _interpreter, startTime);
 
-            await _webSocket.SendCommandAsync("next-node",
-                result.Item1
-                    ? conditionalBrnachNodeData.NextNodeId
-                    : conditionalBrnachNodeData.ConditionalNodeId);
+                // Send the execution log back to the server (must be awaited on UI thread)
+                await Dispatcher.InvokeAsync(async () =>
+                {
+                    await _webSocket.SendCommandAsync("save-execution-log", JsonConvert.SerializeObject(nodeExecutionLog, new JsonSerializerSettings
+                    {
+                        ContractResolver = new CamelCasePropertyNamesContractResolver()
+                    }));
+
+                    // Check if the node execution was successful
+                    if (!nodeExecutionLog.IsSuccess)
+                    {
+                        await _webSocket.SendCommandAsync("error");
+                        DoAbort();
+                        return;
+                    }
+
+                    // Send next node command to the server
+                    await _webSocket.SendCommandAsync("next-node",
+                                nodeExecutionLog.IsSuccess && conditionResult
+                                    ? conditionalBranchNodeData.NextNodeId
+                                    : conditionalBranchNodeData.ConditionalNodeId);
+                });
+            });
         }
 
         private async void ExecuteLoopAsync(string data)
         {
+            // Set the start time for the node execution
+            var startTime = DateTime.UtcNow;
+
             // Deserialize the node data
             var loopNodeData = JsonConvert.DeserializeObject<WpfLoopNodeData>(data);
 
@@ -213,31 +245,58 @@ namespace NodeExecutor
             }
 
             // Set the node name
-            lbl_NodeName.Text = loopNodeData.NodeName.Length > 0 ? loopNodeData.NodeName : "Node name not found";
-
-            (bool success, string result) result = (false, string.Empty);
-            if (loopNodeData.LoopType == "ConditionalLoop")
+            Dispatcher.Invoke(() =>
             {
-                result = ActivityExecutorService.ExecuteCondition(_agentId, _agentName, _accessToken, loopNodeData.Conditions, _executionContext, _interpreter);
-            }
-            else if (loopNodeData.LoopType == "ForEachLoop")
-            {
-                result = ActivityExecutorService.MoveNextListItem(
-                    _agentId,
-                    _agentName,
-                    _accessToken,
-                    loopNodeData.ListVariableName,
-                    loopNodeData.ItemVariableName,
-                    loopNodeData.ItemIndexVariableName,
-                    _executionContext,
-                    _interpreter);
-            }
+                lbl_NodeName.Text = loopNodeData.NodeName.Length > 0 ? loopNodeData.NodeName : "Node name not found";
+            });
 
-            // Process next node
-            await _webSocket.SendCommandAsync("next-node",
-                result.success
-                    ? loopNodeData.NextNodeId
-                    : loopNodeData.MergeBranchesNodeId);
+            // Initialize the result variables
+            (bool conditionResult, NodeExecutionLog nodeExecutionLog) result = (false, null);
+
+            // Run node execution in a background task
+            await Task.Run(async () =>
+            {
+                // Execute condition
+                if (loopNodeData.LoopType == "ConditionalLoop")
+                {
+                    result = ActivityExecutorService.ExecuteCondition(loopNodeData.Id, loopNodeData.NodeName, loopNodeData.Conditions, _executionContext, _interpreter, startTime);
+                }
+                //else if (loopNodeData.LoopType == "ForEachLoop")
+                //{
+                //    result = ActivityExecutorService.MoveNextListItem(
+                //        _agentId,
+                //        _agentName,
+                //        _accessToken,
+                //        loopNodeData.ListVariableName,
+                //        loopNodeData.ItemVariableName,
+                //        loopNodeData.ItemIndexVariableName,
+                //        _executionContext,
+                //        _interpreter);
+                //}
+
+                // Send the execution log back to the server (must be awaited on UI thread)
+                await Dispatcher.InvokeAsync(async () =>
+                {
+                    await _webSocket.SendCommandAsync("save-execution-log", JsonConvert.SerializeObject(result.nodeExecutionLog, new JsonSerializerSettings
+                    {
+                        ContractResolver = new CamelCasePropertyNamesContractResolver()
+                    }));
+
+                    // Check if the node execution was successful
+                    if (!result.nodeExecutionLog.IsSuccess)
+                    {
+                        await _webSocket.SendCommandAsync("error");
+                        DoAbort();
+                        return;
+                    }
+
+                    // Process next node
+                    await _webSocket.SendCommandAsync("next-node",
+                        result.nodeExecutionLog.IsSuccess && result.conditionResult
+                            ? loopNodeData.NextNodeId
+                            : loopNodeData.MergeBranchesNodeId);
+                });
+            });
         }
 
         private async void ExecuteNodeAsync(string data)
