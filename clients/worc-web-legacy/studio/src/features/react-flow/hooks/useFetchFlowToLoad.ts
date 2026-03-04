@@ -92,26 +92,34 @@ export const useFetchFlowToLoad = () => {
     };
 
     // Parse Flow Variables Object
-    const flowVarObjs = JSON.parse(data.data.flowVariablesObject);
+    const flowVarObjs = JSON.parse(
+      Array.isArray(data.data.flowVariablesObject)
+        ? data.data.flowVariablesObject
+        : JSON.stringify([]),
+    );
 
-    const inputOutputObj = JSON.parse(data.data?.inputOutputObject || "[]");
+    const inputOutputObj = JSON.parse(
+      data.data?.inputOutputObject || JSON.stringify([]),
+    );
 
     if (flow) {
       // Set nodes and edges
       setNodes(flow.nodes);
       setEdges(flow.edges);
-      setFlowVariablesObject(flowVarObjs || []);
+      setFlowVariablesObject(flowVarObjs ?? []);
       setInputOutputObject(inputOutputObj || []);
       hydrateFlow(flow.nodes, flow.edges, flowVarObjs);
       //set viewport state for react flow oject ext(only for reference its not for ReactFLow)
       setViewportState(flow.viewport);
-      // If flow has more than 2 nodes then set the saved viewport
-      if (flow.nodes.length > 2) {
-        setViewport(flow.viewport, { duration: ZOOM_ANIMATION_DURATION });
-      } else {
-        // Fit view if less than 2 nodes
+      // // If flow has more than 2 nodes then set the saved viewport
+      // if (flow.nodes.length > 2) {
+      //   setViewport(flow.viewport, { duration: ZOOM_ANIMATION_DURATION });
+      // } else {
+      // Fit view if less than 2 nodes
+      setTimeout(() => {
         fitView({ duration: ZOOM_ANIMATION_DURATION });
-      }
+      }, ZOOM_ANIMATION_DURATION);
+      // }
     }
 
     // Set document title

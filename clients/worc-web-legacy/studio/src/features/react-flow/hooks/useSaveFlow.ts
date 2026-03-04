@@ -96,7 +96,7 @@ export const useSaveFlow = () => {
     updateFlow({
       id: currentFlow.id,
       reactFlowObject: JSON.stringify(reactFlowObject),
-      flowVariablesObject: JSON.stringify(flowVariablesObject),
+      flowVariablesObject: JSON.stringify(flowVariablesObject ?? []),
       inputOutputObject: JSON.stringify(inputOutputObject),
       versionId: currentFlow.versionId,
     });

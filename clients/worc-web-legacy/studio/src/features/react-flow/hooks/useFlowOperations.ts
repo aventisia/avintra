@@ -607,7 +607,7 @@ export const useFlowOperations = () => {
           if (newMappedId)
             nextFlowVariables.push({ ...v, nodeId: newMappedId });
         });
-        setFlowVariablesObject(nextFlowVariables);
+        setFlowVariablesObject(nextFlowVariables ?? []);
       }
 
       if (clipboard.operation === "cut") {
@@ -898,7 +898,7 @@ export const useFlowOperations = () => {
       setNodes(nextNodes);
       setEdges(nextEdges);
       if (clipboard.operation === "cut") {
-        setFlowVariablesObject(nextFlowVariables);
+        setFlowVariablesObject(nextFlowVariables ?? []);
       }
       autoLayout({ newNodes: nextNodes, newEdges: nextEdges });
       resetContextMenu();
@@ -1009,7 +1009,7 @@ export const useFlowOperations = () => {
         updatedEdges = rebuildBypassEdges(updatedNodes, updatedEdges);
         updatedEdges = deduplicateEdges(updatedEdges);
 
-        setFlowVariablesObject(updatedFlowVariables);
+        setFlowVariablesObject(updatedFlowVariables ?? []);
         autoLayout({ newNodes: updatedNodes, newEdges: updatedEdges });
       };
 

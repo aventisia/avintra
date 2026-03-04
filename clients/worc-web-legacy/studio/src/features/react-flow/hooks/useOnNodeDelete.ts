@@ -1,10 +1,14 @@
 import { useDagreAutoLayout } from "@/hooks/useDagreAutoLayout";
 import { useReactFlowExtStore } from "@/stores/react-flow-ext-store";
-import {  OnNodesDelete } from "@xyflow/react";
+import { OnNodesDelete } from "@xyflow/react";
 import { useCallback } from "react";
 import { useShallow } from "zustand/react/shallow";
 import { getNodesAndEdgesAfterDeletion } from "../utils/getNodesAndEdgesAfterDeletion";
-import { deduplicateEdges, getComprehensiveSelection, rebuildBypassEdges } from "../utils/node-deletion-utils";
+import {
+  deduplicateEdges,
+  getComprehensiveSelection,
+  rebuildBypassEdges,
+} from "../utils/node-deletion-utils";
 
 export const useOnNodeDelete = () => {
   const {
@@ -115,7 +119,7 @@ export const useOnNodeDelete = () => {
 
         setNodes(updatedNodes);
         setEdges(updatedEdges);
-        setFlowVariablesObject(updatedFlowVariables);
+        setFlowVariablesObject(updatedFlowVariables ?? []);
         autoLayout({ newNodes: updatedNodes, newEdges: updatedEdges });
       } catch (err) {
         console.warn((err as Error).message);
