@@ -449,10 +449,9 @@
     <Compile Include="Activities\DataTransformations\DataTableActivities\SortDataTableActivity.cs" />
     <Compile Include="Activities\DataTransformations\DataTableActivities\UpdateDataTableItemActivity.cs" />
     <Compile Include="Activities\DataTransformations\DataTableActivities\_DataTableCategoryMetaData.cs" />
-    <Compile Include="Activities\DataTransformations\DatabaseActivities\Helpers\SqlConnectionManager.cs" />
-    <Compile Include="Activities\DataTransformations\DatabaseActivities\CloseSqlConnectionActivity.cs" />
-    <Compile Include="Activities\DataTransformations\DatabaseActivities\ExecuteSqlStatementActivity.cs" />
-    <Compile Include="Activities\DataTransformations\DatabaseActivities\OpenSqlConnectionActivity.cs" />
+    <Compile Include="Activities\DataTransformations\DatabaseActivities\CloseMSSQLConnectionActivity.cs" />
+    <Compile Include="Activities\DataTransformations\DatabaseActivities\ExecuteMSSQLStatementActivity.cs" />
+    <Compile Include="Activities\DataTransformations\DatabaseActivities\OpenMSSQLConnectionActivity.cs" />
     <Compile Include="Activities\DataTransformations\DatabaseActivities\_DatabaseCategoryMetaData.cs" />
     <Compile Include="Activities\DataTransformations\DateTimeActivities\AddToDateTimeActivity.cs" />
     <Compile Include="Activities\DataTransformations\DateTimeActivities\FormatDateTimeActivity.cs" />

@@ -1,6 +1,4 @@
-﻿using CodeActivitiesLibrary.DataTransformations.DatabaseActivities.Helpers;
-using CodeActivitiesLibrary.Extensions;
-using Newtonsoft.Json.Linq;
+﻿using CodeActivitiesLibrary.Extensions;
 using System;
 using System.Activities;
 using System.ComponentModel;
