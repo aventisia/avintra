@@ -375,29 +375,32 @@ namespace NodeExecutor.Services
             return (nodeExecutionlog.IsSuccess, nodeExecutionlog);
         }
 
-        public static (bool, string) ExecuteCondition(string agentId, string agentName, string accessToken, List<List<ConditionGroup>> conditions, ExecutionContext executionContext, Interpreter interpreter)
+        public static (bool, NodeExecutionLog) ExecuteCondition(string nodeId, string nodeName, List<List<ConditionGroup>> conditions, ExecutionContext executionContext, Interpreter interpreter, DateTime startTime)
         {
+            // Initialize the return object
+            var nodeExecutionlog = new NodeExecutionLog
+            {
+                NodeId = nodeId,
+                NodeName = nodeName,
+                NodeUniqueName = "ConditionalBranchActivity",
+                IsSuccess = false,
+                Duration = 0,
+                Inputs = new List<NodeLogKeyValue>(),
+                Outputs = new List<NodeLogKeyValue>()
+            };
+
+            // Initialize input and output dictionaries
+            var inputValues = new Dictionary<string, object>();
+            var outputValues = new Dictionary<string, object>();
+
             // If conditions null or empty return false
             if (conditions == null || conditions.Count == 0)
-                return (false, "");
-
-            //// Initiaze the return object
-            //var nodeExecutionlog = new NodeExecutionLog
-            //{
-            //    NodeId = node.Id,
-            //    NodeName = node.NodeName,
-            //    NodeUniqueName = node.CodeActivityName,
-            //    IsSuccess = false,
-            //    Duration = 0,
-            //    Inputs = new List<NodeLogKeyValue>(),
-            //    Outputs = new List<NodeLogKeyValue>()
-            //};
-
-            //// Initialize input and output dictionaries
-            //var inputValues = new Dictionary<string, object>();
-            //var outputValues = new Dictionary<string, object>(){
-            //    { "Status", "Node executed successfully" }
-            //};
+            {
+                outputValues["Status"] = "No conditions provided";
+                nodeExecutionlog.Duration = (DateTime.UtcNow - startTime).TotalSeconds;
+                nodeExecutionlog.Outputs = outputValues.Select(kv => new NodeLogKeyValue { Key = kv.Key, Value = ConvertLogValueForLogging(kv.Key, kv.Value, "Output") }).ToList();
+                return (false, nodeExecutionlog);
+            }
 
             // Check conditions
             try
@@ -433,6 +436,12 @@ namespace NodeExecutor.Services
                     resolvedGroups.Add(resolvedGroup);
                 }
 
+                // Log conditions as inputs
+                inputValues["Conditions"] = resolvedGroups;
+
+                // Set inputValues to nodeExecutionLog object
+                nodeExecutionlog.Inputs = inputValues.Select(kv => new NodeLogKeyValue { Key = kv.Key, Value = ConvertLogValueForLogging(kv.Key, kv.Value, "Input") }).ToList();
+
                 // Set the Conditions property
                 var prop = activityType.GetProperty("Conditions", BindingFlags.Public | BindingFlags.Instance | BindingFlags.IgnoreCase);
                 if (prop != null)
@@ -451,23 +460,38 @@ namespace NodeExecutor.Services
                 // Execute the branch condition
                 var outputs = WorkflowInvoker.Invoke((Activity)activityInstance);
 
-                // Branch activity execution has failed
-                // if (outputs != null && outputs.ContainsKey("IsSuccess") && !Convert.ToBoolean(outputs["IsSuccess"]))
-                //     return (false, "");
+                // Set isSuccess activity status
+                nodeExecutionlog.IsSuccess = outputs != null && Convert.ToBoolean(outputs["IsSuccess"]);
 
                 // Directly return the ConditionResult output (do not set in execution context)
                 if (outputs != null && outputs.ContainsKey("ConditionResult"))
                 {
                     var result = outputs["ConditionResult"];
-                    return result is bool b ? (b, "") : (false, "");
+                    bool conditionResult = result is bool b ? b : false;
+
+                    // Log the result
+                    outputValues["ConditionResult"] = conditionResult;
+                    outputValues["Status"] = "Condition evaluated successfully";
+
+                    // Update duration and outputValues
+                    nodeExecutionlog.Duration = (DateTime.UtcNow - startTime).TotalSeconds;
+                    nodeExecutionlog.Outputs = outputValues.Select(kv => new NodeLogKeyValue { Key = kv.Key, Value = ConvertLogValueForLogging(kv.Key, kv.Value, "Output") }).ToList();
+
+                    return (conditionResult, nodeExecutionlog);
                 }
 
                 // If no ConditionResult output, return false
-                return (false, "Unknown error ocurred while checing the conditon");
+                outputValues["Status"] = "Unknown error occurred while checking the condition";
+                nodeExecutionlog.Duration = (DateTime.UtcNow - startTime).TotalSeconds;
+                nodeExecutionlog.Outputs = outputValues.Select(kv => new NodeLogKeyValue { Key = kv.Key, Value = ConvertLogValueForLogging(kv.Key, kv.Value, "Output") }).ToList();
+                return (false, nodeExecutionlog);
             }
             catch (Exception ex)
             {
-                return (false, $"Error in ExecuteCondition: {ex.Message}");
+                outputValues["Status"] = $"Error in ExecuteCondition: {ex.Message}";
+                nodeExecutionlog.Duration = (DateTime.UtcNow - startTime).TotalSeconds;
+                nodeExecutionlog.Outputs = outputValues.Select(kv => new NodeLogKeyValue { Key = kv.Key, Value = ConvertLogValueForLogging(kv.Key, kv.Value, "Output") }).ToList();
+                return (false, nodeExecutionlog);
             }
         }
 
