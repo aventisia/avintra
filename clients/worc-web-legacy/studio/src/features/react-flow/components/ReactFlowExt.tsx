@@ -29,7 +29,6 @@ import { useFetchConfigVariables } from "../hooks/useFetchConfigVariables";
 import { useCopyPasteShortcuts } from "../hooks/useCopyPasteShortcuts";
 import { ReactFlowContextMenu } from "./context-menu";
 import { ReactFlowDialogWrapper } from "./ReactFlowDialogWrapper";
-import { useHistoryTracker } from "@/hooks/useHistoryTracker";
 import { useUndoRedoShortcuts } from "@/hooks/useUndoRedoShortcuts";
 import { LoadingSpinner } from "@aventisia/ui";
 
@@ -66,7 +65,6 @@ export const ReactFlowExt = () => {
   useTrackSelection();
   useCopyPasteShortcuts();
 
-  useHistoryTracker(); // Initialize background  tracking
   useUndoRedoShortcuts(); // Initialize keyboard shortcuts
 
   // Fetch flow details and set document title
@@ -206,7 +204,7 @@ export const ReactFlowExt = () => {
         </ReactFlow>
         <ReactFlowContextMenu />
         {isLoading && (
-          <div className="absolute inset-0 -top-16 flex items-center justify-center  backdrop-blur-sm">
+          <div className="absolute inset-0 -top-16 flex items-center justify-center backdrop-blur-sm">
             <LoadingSpinner className="h-6 w-6 text-primary" />
           </div>
         )}
