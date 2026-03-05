@@ -1,35 +1,38 @@
 {
-    "name": "GetFileVersions",
-    "description": "Retrieves the version history of a file in SharePoint using Microsoft Graph.",
-    "version": "1.0.1",
-    "author": "@rahmat",
-    "fields": [
-        {
-            "direction": "Input",
-            "type": "credentials-select",
-            "name": "__CredentialId__M365",
-            "label": "M365 Credential",
-            "description": "Select the Microsoft 365 credential used to authenticate the SharePoint request.",
-            "defaultValue": ""
-        },
-        {
-            "direction": "Input",
-            "type": "text",
-            "name": "FilePath",
-            "label": "File Path",
-            "description": "The path of the file in SharePoint for which you want to retrieve version history. For example: /sites/YourSite/Shared Documents/YourFile.txt",
-            "defaultValue": ""
-        },
-        {
-            "direction": "Output",
-            "type": "config-panel-output",
-            "name": "Result",
-            "label": "Result",
-            "description": "The result of the file version retrieval operation, including the version history and any error messages.",
-            "defaultValue": {
-                "value": "Result",
-                "enabled": true
-            }
-        }
-    ]
+  "name": "GetFileVersions",
+  "description": "Retrieves the version history of a file in SharePoint using Microsoft Graph.",
+  "version": "1.0.1",
+  "author": "@rahmat",
+  "supportedPlatforms": ["cloud", "windows"],
+  "errorHandling": "standard",
+  "testScreenType": "standard",
+  "fields": [
+    {
+      "direction": "Input",
+      "type": "credentials-select",
+      "name": "__CredentialId__M365",
+      "label": "M365 Credential",
+      "description": "Select the Microsoft 365 credential used to authenticate the SharePoint request.",
+      "defaultValue": ""
+    },
+    {
+      "direction": "Input",
+      "type": "text",
+      "name": "FilePath",
+      "label": "File Path",
+      "description": "The path of the file in SharePoint for which you want to retrieve version history. For example: /sites/YourSite/Shared Documents/YourFile.txt",
+      "defaultValue": ""
+    },
+    {
+      "direction": "Output",
+      "type": "config-panel-output",
+      "name": "Result",
+      "label": "Result",
+      "description": "The result of the file version retrieval operation, including the version history and any error messages.",
+      "defaultValue": {
+        "value": "Result",
+        "enabled": true
+      }
+    }
+  ]
 }

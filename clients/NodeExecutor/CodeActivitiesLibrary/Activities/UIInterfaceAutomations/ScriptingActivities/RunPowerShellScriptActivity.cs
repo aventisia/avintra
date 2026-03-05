@@ -8,7 +8,9 @@ namespace CodeActivitiesLibrary.UiInterfaceAutomations.ScriptingActivities
 {
     [DisplayName("Run PowerShell Script")]
     [Description("Executes some custom PowerShell script and retrieves its output into a variable.")]
-    [ActivityMetaData(nodeImg: "/assets/Scripting.svg")]
+    [ActivityMetaData(
+        nodeImg: "/assets/Scripting.svg", 
+        supportedPlatforms: "windows")]
     public class RunPowerShellScriptActivity : BaseCodeActivity
     {
         [RequiredArgument]

@@ -4,9 +4,7 @@
   "description": "Converts binary data (byte[] or Base64 string) to a file at the specified path.",
   "version": "1.0.0",
   "auther": "@aventisia",
-  "supportedPlatforms": [
-    "desktop"
-  ],
+  "supportedPlatforms": ["cloud", "windows"],
   "errorHandling": "standard",
   "testScreenType": "standard",
   "fields": [

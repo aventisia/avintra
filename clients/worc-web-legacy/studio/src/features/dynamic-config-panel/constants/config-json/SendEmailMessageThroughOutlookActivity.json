@@ -4,9 +4,7 @@
   "description": "Sends an email message through Microsoft Outlook using real COM interop.",
   "version": "1.0.0",
   "auther": "@aventisia",
-  "supportedPlatforms": [
-    "desktop"
-  ],
+  "supportedPlatforms": [],
   "errorHandling": "standard",
   "testScreenType": "standard",
   "fields": [

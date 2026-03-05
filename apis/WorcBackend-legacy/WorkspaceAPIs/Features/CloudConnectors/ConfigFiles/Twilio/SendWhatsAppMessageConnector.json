@@ -1,18 +1,21 @@
 {
-    "name": "SendWhatsAppMessage",
-    "description": "Sends an whatsapp message using Twilio service",
-    "version": "1.0.0",
-    "author": "@gaurav",
-    "fields": [
-      {
-        "direction": "Input",
-        "type": "credentials-select",
-        "name": "__CredentialId__Twilio",
-        "label": "Twilio Credential",
-        "description": "The Twilio credential containing valid auth token and accountsId which is used to authenticate API requests.",
-        "defaultValue": ""
-      },
-      {
+  "name": "SendWhatsAppMessage",
+  "description": "Sends an whatsapp message using Twilio service",
+  "version": "1.0.0",
+  "author": "@gaurav",
+  "supportedPlatforms": ["cloud", "windows"],
+  "errorHandling": "standard",
+  "testScreenType": "standard",
+  "fields": [
+    {
+      "direction": "Input",
+      "type": "credentials-select",
+      "name": "__CredentialId__Twilio",
+      "label": "Twilio Credential",
+      "description": "The Twilio credential containing valid auth token and accountsId which is used to authenticate API requests.",
+      "defaultValue": ""
+    },
+    {
       "direction": "Input",
       "type": "select",
       "name": "recipientType",

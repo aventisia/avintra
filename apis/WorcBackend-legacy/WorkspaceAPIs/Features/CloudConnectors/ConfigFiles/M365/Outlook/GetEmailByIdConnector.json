@@ -1,51 +1,54 @@
 {
-    "name": "GetEmailById",
-    "description": "Retrieves a specific email message from a mailbox using Microsoft Graph.",
-    "version": "1.0.1",
-    "author": "@rahmat",
-    "fields": [
-        {
-            "direction": "Input",
-            "type": "credentials-select",
-            "name": "__CredentialId__M365",
-            "label": "M365 Credential",
-            "description": "Select Microsoft 365 credentials for authentication.",
-            "defaultValue": ""
-        },
-        {
-            "direction": "Input",
-            "type": "text",
-            "name": "MailboxAddress",
-            "label": "Mailbox Address",
-            "description": "The email address of the mailbox containing the email to retrieve.",
-            "defaultValue": ""
-        },
-        {
-            "direction": "Input",
-            "type": "text",
-            "name": "MessageId",
-            "label": "Message ID",
-            "description": "The unique identifier of the email message to retrieve.",
-            "defaultValue": ""
-        },
-        {
-            "direction": "Input",
-            "type": "switch",
-            "name": "IncludeAttachments",
-            "label": "Include Attachments",
-            "description": "Whether to include email attachments in the results. If set to 'true', the response will contain attachment details and content (if applicable). If 'false', attachments will be excluded from the response.",
-            "defaultValue": false
-        },
-        {
-            "direction": "Output",
-            "type": "config-panel-output",
-            "name": "Result",
-            "label": "Result",
-            "description": "The retrieved email message, including its properties and optionally its attachments based on the 'Include Attachments' setting.",
-            "defaultValue": {
-                "value": "Result",
-                "enabled": true
-            }
-        }
-    ]
+  "name": "GetEmailById",
+  "description": "Retrieves a specific email message from a mailbox using Microsoft Graph.",
+  "version": "1.0.1",
+  "author": "@rahmat",
+  "supportedPlatforms": ["cloud", "windows"],
+  "errorHandling": "standard",
+  "testScreenType": "standard",
+  "fields": [
+    {
+      "direction": "Input",
+      "type": "credentials-select",
+      "name": "__CredentialId__M365",
+      "label": "M365 Credential",
+      "description": "Select Microsoft 365 credentials for authentication.",
+      "defaultValue": ""
+    },
+    {
+      "direction": "Input",
+      "type": "text",
+      "name": "MailboxAddress",
+      "label": "Mailbox Address",
+      "description": "The email address of the mailbox containing the email to retrieve.",
+      "defaultValue": ""
+    },
+    {
+      "direction": "Input",
+      "type": "text",
+      "name": "MessageId",
+      "label": "Message ID",
+      "description": "The unique identifier of the email message to retrieve.",
+      "defaultValue": ""
+    },
+    {
+      "direction": "Input",
+      "type": "switch",
+      "name": "IncludeAttachments",
+      "label": "Include Attachments",
+      "description": "Whether to include email attachments in the results. If set to 'true', the response will contain attachment details and content (if applicable). If 'false', attachments will be excluded from the response.",
+      "defaultValue": false
+    },
+    {
+      "direction": "Output",
+      "type": "config-panel-output",
+      "name": "Result",
+      "label": "Result",
+      "description": "The retrieved email message, including its properties and optionally its attachments based on the 'Include Attachments' setting.",
+      "defaultValue": {
+        "value": "Result",
+        "enabled": true
+      }
+    }
+  ]
 }

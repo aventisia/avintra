@@ -4,9 +4,7 @@
   "description": "Creates a list containing the substrings of a text that is separated by a specified delimiter or regular expression.",
   "version": "1.0.0",
   "auther": "@aventisia",
-  "supportedPlatforms": [
-    "desktop"
-  ],
+  "supportedPlatforms": ["cloud", "windows"],
   "errorHandling": "standard",
   "testScreenType": "standard",
   "fields": [

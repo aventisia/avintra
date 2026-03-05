@@ -4,9 +4,7 @@
   "description": "Retrieves metadata for an AWS Certificate Manager (ACM) certificate using the DescribeCertificate API.",
   "version": "1.0.0",
   "auther": "@aventisia",
-  "supportedPlatforms": [
-    "desktop"
-  ],
+  "supportedPlatforms": ["cloud", "windows"],
   "errorHandling": "standard",
   "testScreenType": "standard",
   "fields": [

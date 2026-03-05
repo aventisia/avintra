@@ -3,6 +3,9 @@
   "description": "Retrieves the list of worksheet names from a specified Excel file stored in OneDrive or SharePoint using the Microsoft 365 Excel API. Provide valid M365 credentials and the target Excel file's Drive and Item ID. The connector will return the worksheet names, along with the status code and message from the API.",
   "version": "1.0.0",
   "author": "@gaurav",
+  "supportedPlatforms": ["cloud", "windows"],
+  "errorHandling": "standard",
+  "testScreenType": "standard",
   "fields": [
     {
       "direction": "Input",

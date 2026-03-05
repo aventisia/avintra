@@ -4,9 +4,7 @@
   "description": "Appends a single row of data to a Google Sheet at the next available row in the specified range.",
   "version": "1.0.0",
   "auther": "@aventisia",
-  "supportedPlatforms": [
-    "desktop"
-  ],
+  "supportedPlatforms": ["cloud", "windows"],
   "errorHandling": "standard",
   "testScreenType": "standard",
   "fields": [

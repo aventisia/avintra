@@ -1,51 +1,54 @@
 {
-    "name": "CreateMailFolder",
-    "description": "This connector creates a new mail folder in a specified mailbox using the Microsoft Graph API. It allows users to organize their emails by creating custom folders within their mailbox.",
-    "version": "1.0.0",
-    "author": "@rahmat",
-    "fields": [
-        {
-            "direction": "Input",
-            "type": "credentials-select",
-            "name": "__CredentialId__M365",
-            "label": "Microsoft 365 Credentials",
-            "description": "Select the Microsoft 365 credentials to authenticate the API request for creating a new mail folder.",
-            "defaultValue": ""
-        },
-        {
-            "direction": "Input",
-            "type": "text",
-            "name": "MailboxAddress",
-            "label": "Mailbox Address",
-            "description": "The email address of the mailbox where the new folder will be created. This should be a valid email address associated with the Microsoft 365 account.",
-            "defaultValue": ""
-        },
-        {
-            "direction": "Input",
-            "type": "text",
-            "name": "DisplayName",
-            "label": "Folder Name",
-            "description": "The display name for the new mail folder. This is the name that will be shown in the mailbox view. It should be a user-friendly name that helps identify the purpose of the folder.",
-            "defaultValue": ""
-        },
-        {
-            "direction": "Input",
-            "type": "switch",
-            "name": "IsHidden",
-            "label": "Hidden Folder",
-            "description": "Indicates whether the new mail folder should be hidden from the user's mailbox view. If set to true, the folder will not be visible in the mailbox.",
-            "defaultValue": false
-        },
-        {
-            "direction": "Output",
-            "type": "config-panel-output",
-            "name": "Result",
-            "label": "Creation Result",
-            "description": "The result of the mail folder creation operation, including success status and any relevant information or error messages.",
-            "defaultValue": {
-                "value": "Result",
-                "enabled": true
-            }
-        }
-    ]
+  "name": "CreateMailFolder",
+  "description": "This connector creates a new mail folder in a specified mailbox using the Microsoft Graph API. It allows users to organize their emails by creating custom folders within their mailbox.",
+  "version": "1.0.0",
+  "author": "@rahmat",
+  "supportedPlatforms": ["cloud", "windows"],
+  "errorHandling": "standard",
+  "testScreenType": "standard",
+  "fields": [
+    {
+      "direction": "Input",
+      "type": "credentials-select",
+      "name": "__CredentialId__M365",
+      "label": "Microsoft 365 Credentials",
+      "description": "Select the Microsoft 365 credentials to authenticate the API request for creating a new mail folder.",
+      "defaultValue": ""
+    },
+    {
+      "direction": "Input",
+      "type": "text",
+      "name": "MailboxAddress",
+      "label": "Mailbox Address",
+      "description": "The email address of the mailbox where the new folder will be created. This should be a valid email address associated with the Microsoft 365 account.",
+      "defaultValue": ""
+    },
+    {
+      "direction": "Input",
+      "type": "text",
+      "name": "DisplayName",
+      "label": "Folder Name",
+      "description": "The display name for the new mail folder. This is the name that will be shown in the mailbox view. It should be a user-friendly name that helps identify the purpose of the folder.",
+      "defaultValue": ""
+    },
+    {
+      "direction": "Input",
+      "type": "switch",
+      "name": "IsHidden",
+      "label": "Hidden Folder",
+      "description": "Indicates whether the new mail folder should be hidden from the user's mailbox view. If set to true, the folder will not be visible in the mailbox.",
+      "defaultValue": false
+    },
+    {
+      "direction": "Output",
+      "type": "config-panel-output",
+      "name": "Result",
+      "label": "Creation Result",
+      "description": "The result of the mail folder creation operation, including success status and any relevant information or error messages.",
+      "defaultValue": {
+        "value": "Result",
+        "enabled": true
+      }
+    }
+  ]
 }

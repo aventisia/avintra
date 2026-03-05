@@ -14,16 +14,12 @@ namespace CodeActivityToJSON.Utils
 {
     public static class ConvertActivityToJsonUtil
     {
-        public static string ConvertActivityToJson(Type activityType)
+        public static string ConvertActivityToJson(Type activityType, List<string> actionSupportedPlatforms)
         {
             // Get the DisplayName and Description attributes from the activity
             var activityMetaDataAttr = activityType.GetCustomAttributes(typeof(ActivityMetaDataAttribute), false).FirstOrDefault() as ActivityMetaDataAttribute;
             var activityDisplayNameAttr = activityType.GetCustomAttributes(typeof(DisplayNameAttribute), false).FirstOrDefault() as DisplayNameAttribute;
             var activityDescriptionAttr = activityType.GetCustomAttributes(typeof(DescriptionAttribute), false).FirstOrDefault() as DescriptionAttribute;
-
-            var supportedPlatformsList = activityMetaDataAttr?.SupportedPlatforms != null
-                ? activityMetaDataAttr.SupportedPlatforms.Split(',').Select(s => s.Trim()).Where(s => !string.IsNullOrEmpty(s)).ToList()
-                : new List<string>();
 
             var activityJson = new Dictionary<string, object>
             {
@@ -32,7 +28,7 @@ namespace CodeActivityToJSON.Utils
                 ["description"] = activityDescriptionAttr?.Description,
                 ["version"] = activityMetaDataAttr?.Version,
                 ["auther"] = activityMetaDataAttr?.Author,
-                ["supportedPlatforms"] = supportedPlatformsList,
+                ["supportedPlatforms"] = actionSupportedPlatforms,
                 ["errorHandling"] = activityMetaDataAttr?.ErrorHandling,
                 ["testScreenType"] = activityMetaDataAttr?.TestScreenType
             };

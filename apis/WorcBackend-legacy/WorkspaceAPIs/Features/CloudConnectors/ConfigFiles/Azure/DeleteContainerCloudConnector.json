@@ -2,6 +2,9 @@
   "name": "DeleteContainer",
   "description": "Delete container with the specified name to store and manage related data.",
   "author": "@gaurav",
+  "supportedPlatforms": ["cloud", "windows"],
+  "errorHandling": "standard",
+  "testScreenType": "standard",
   "fields": [
     {
       "direction": "Input",
@@ -12,11 +15,11 @@
       "defaultValue": ""
     },
     {
-        "direction":"Input",
-        "type":"text",
-        "name": "ContainerName",
-        "label": "Container Name",
-        "description":"Delete container with the specified name to store and manage related data"
+      "direction": "Input",
+      "type": "text",
+      "name": "ContainerName",
+      "label": "Container Name",
+      "description": "Delete container with the specified name to store and manage related data"
     },
     {
       "direction": "Output",

@@ -7,6 +7,7 @@ using System.Collections.Generic;
 using System.ComponentModel;
 using System.IO;
 using System.Linq;
+using System.Text.RegularExpressions;
 
 namespace CodeActivityToJSON.Utils
 {
@@ -25,8 +26,9 @@ namespace CodeActivityToJSON.Utils
 
         public static void CreateActivitiesMappingJson(List<Type> categoryMetadataTypes, List<Type> activities)
         {
-            // Get primary json file path
+            // Get initial base files/folders path
             var baseJsonFilePath = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "BaseJSONs", "PrimaryCategory.json");
+            var localAppDataPath = Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData);
 
             if (!File.Exists(baseJsonFilePath))
             {
@@ -58,8 +60,8 @@ namespace CodeActivityToJSON.Utils
                 foreach (var categoryMetadataType in categoryMetadataTypes)
                 {
                     // Get ActivityCategoryMetadata attribute from the type
-                    var attribute = categoryMetadataType.GetCustomAttributes(typeof(ActivityCategoryMetadataAttribute), false).FirstOrDefault() as ActivityCategoryMetadataAttribute;
-                    if (attribute == null) continue;
+                    var activityCategoryMetadataAttribute = categoryMetadataType.GetCustomAttributes(typeof(ActivityCategoryMetadataAttribute), false).FirstOrDefault() as ActivityCategoryMetadataAttribute;
+                    if (activityCategoryMetadataAttribute == null) continue;
 
                     // Skip excluded categories
                     if (_excludedCategories.Contains(categoryMetadataType.Namespace))
@@ -69,17 +71,17 @@ namespace CodeActivityToJSON.Utils
                     }
 
                     // Check if the attribute is not null and matches the primary category
-                    if (attribute != null && attribute.PrimaryCategory == category.Label)
+                    if (activityCategoryMetadataAttribute != null && activityCategoryMetadataAttribute.PrimaryCategory == category.Label)
                     {
                         // Create ActionCategory object
                         var actionCategory = new ActionCategory
                         {
-                            Label = attribute?.Label,
-                            Description = attribute?.Description,
-                            Icon = attribute?.Icon,
-                            Img = attribute?.Img,
-                            ListType = attribute?.ListType,
-                            DoNotRenderIf = attribute?.DoNotRenderIf != null ? attribute?.DoNotRenderIf.Split(',').ToList() : null,
+                            Label = activityCategoryMetadataAttribute?.Label,
+                            Description = activityCategoryMetadataAttribute?.Description,
+                            Icon = activityCategoryMetadataAttribute?.Icon,
+                            Img = activityCategoryMetadataAttribute?.Img,
+                            ListType = activityCategoryMetadataAttribute?.ListType,
+                            DoNotRenderIf = activityCategoryMetadataAttribute?.DoNotRenderIf != null ? activityCategoryMetadataAttribute?.DoNotRenderIf.Split(',').ToList() : null,
                             Actions = new List<NodeAction>()
                         };
 
@@ -102,6 +104,9 @@ namespace CodeActivityToJSON.Utils
                             var description = activity.GetCustomAttributes(typeof(DescriptionAttribute), false).FirstOrDefault() as DescriptionAttribute;
                             if (displayName == null || description == null) continue;
 
+
+                            var actionSupportedPlatforms = activityMetaData?.SupportedPlatforms != null ? activityMetaData?.SupportedPlatforms.Split(',').ToList() : activityCategoryMetadataAttribute.SupportedPlatforms.Split(',').ToList();
+
                             // Add the activity to the action category
                             actionCategory.Actions.Add(new NodeAction
                             {
@@ -112,8 +117,69 @@ namespace CodeActivityToJSON.Utils
                                 DocsLink = activityMetaData?.DocsLink ?? "https://docs.aventisia.com",
                                 Img = activityMetaData?.NodeImg ?? "/function.png",
                                 Icon = activityMetaData?.NodeIcon ?? null,
+                                SupportedPlatforms = actionSupportedPlatforms,
                                 DoNotRenderIf = activityMetaData?.DoNotRenderIf != null ? activityMetaData?.DoNotRenderIf.Split(',').ToList() : null,
                             });
+
+                            // Convert activity to JSON and save to file
+                            // Skip if activity is ConditionalActivity. TODO: Find a better way to skip ConditionalActivity or generate json from it 
+                            if (activity.Name == "ConditionalActivity" ||
+                                activity.Name == "ConditionalBranchActivity" ||
+                                activity.Name == "LoopActivity" ||
+                                activity.Name == "GetWorkItemActivity")
+                            {
+                                continue;
+                            }
+
+                            // If any CodeActivity has no display name which means we don't want to generate JSON for it
+                            var activityDisplayName = activity.GetCustomAttributes(typeof(DisplayNameAttribute), false).FirstOrDefault() as DisplayNameAttribute;
+                            if (activityDisplayName == null || string.IsNullOrEmpty(activityDisplayName.DisplayName))
+                            {
+                                continue;
+                            }
+
+                            var json = ConvertActivityToJsonUtil.ConvertActivityToJson(activity, actionSupportedPlatforms);
+                            if (string.IsNullOrEmpty(json) || json == "[]")
+                            {
+                                Console.WriteLine($"Failed to convert {activity.Name} to JSON.");
+                                continue;
+                            }
+
+                            // --- STARTS (For documentation generation)
+
+                            // Split the namespace to get the folder structure 
+                            var namespaceParts = activity.Namespace.Replace("CodeActivitiesLibrary", "").Trim().Split('.');
+
+                            // Loop through the namespace parts to create a directory structure
+                            for (int i = 0; i < namespaceParts.Length; i++)
+                            {
+                                // If the part is empty, skip it
+                                if (string.IsNullOrEmpty(namespaceParts[i]))
+                                    continue;
+
+                                // Replace "Activities" with an empty string
+                                namespaceParts[i] = namespaceParts[i].Replace("Activities", "").Trim();
+
+                                // Convert PascalCase to kebab-case (lowercase with hyphens)
+                                namespaceParts[i] = Regex.Replace(namespaceParts[i], "(?<!^)([A-Z])", "-$1").ToLower();
+                            }
+
+                            //Directory.CreateDirectory(directoryPath);
+                            //var fileName = Path.Combine(directoryPath, activityDisplayName.DisplayName + ".json");
+
+                            // --- ENDS (For documentation generation)
+
+                            
+                            // Create the file path for the JSON file in WSL2 (for form generation)
+                            var fileName = Path.Combine($@"\\wsl$\Ubuntu\home\{Environment.UserName.ToLower()}\gitea\aventisia\worc-platform\clients\worc-web-legacy\studio\src\features\dynamic-config-panel\constants\config-json", activity.Name + ".json");
+                            var jsonWithUnixLineEndings = json.Replace("\r\n", "\n");
+                            File.WriteAllText(fileName, jsonWithUnixLineEndings);
+
+                            // Create the file path for the JSON file in %LOCALAPPDATA%\WorcDesktopApp\config-files\desktop-nodes (for form generation)
+                            var localAppDatadesktopNodesOutputDir = Path.Combine(localAppDataPath, "WorcDesktopApp", "config-files", "desktop-nodes");
+                            Directory.CreateDirectory(localAppDatadesktopNodesOutputDir);
+                            var localAppDataFileName = Path.Combine(localAppDatadesktopNodesOutputDir, activity.Name + ".json");
+                            File.WriteAllText(localAppDataFileName, json);
                         }
 
                         // Add the action category to the primary category
@@ -126,20 +192,19 @@ namespace CodeActivityToJSON.Utils
             var outputFilePath = $@"\\wsl$\Ubuntu\home\{Environment.UserName.ToLower()}\gitea\aventisia\worc-platform\clients\worc-web-legacy\studio\src\features\action-selector\constants\_ActionSelectorData.json";
             using (var writer = new StreamWriter(outputFilePath))
             {
-               // Set NewLine to Unix line ending (LF)
-               writer.NewLine = "\n";
-               var json = JsonConvert.SerializeObject(primaryCategories, Formatting.Indented, settings);
-               var jsonWithUnixLineEndings = json.Replace("\r\n", "\n");
-               writer.Write(jsonWithUnixLineEndings);
-               Console.WriteLine($"Activities mapping JSON saved");
+                // Set NewLine to Unix line ending (LF)
+                writer.NewLine = "\n";
+                var json = JsonConvert.SerializeObject(primaryCategories, Formatting.Indented, settings);
+                var jsonWithUnixLineEndings = json.Replace("\r\n", "\n");
+                writer.Write(jsonWithUnixLineEndings);
+                Console.WriteLine($"Activities mapping JSON saved");
             }
 
             // Save the primary categories JSON file to %LOCALAPPDATA%\WorcDesktopApp\config-files\action-selector
-            var localAppDataPath = Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData);
-            var localAppDataOutputDir = Path.Combine(localAppDataPath, "WorcDesktopApp", "config-files", "action-selector");
-            Directory.CreateDirectory(localAppDataOutputDir);
-            var localAppDataOutputFilePath = Path.Combine(localAppDataOutputDir, "_ActionSelectorData.json");
-            using (var writer = new StreamWriter(localAppDataOutputFilePath))
+            var localAppDataActionSelectorOutputDir = Path.Combine(localAppDataPath, "WorcDesktopApp", "config-files", "action-selector");
+            Directory.CreateDirectory(localAppDataActionSelectorOutputDir);
+            var localAppDataActionSelectorOutputFilePath = Path.Combine(localAppDataActionSelectorOutputDir, "_ActionSelectorData.json");
+            using (var writer = new StreamWriter(localAppDataActionSelectorOutputFilePath))
             {
                 // Set NewLine to Unix line ending (LF)
                 writer.NewLine = "\n";

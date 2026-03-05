@@ -3,6 +3,9 @@
   "description": "Retrieves the Drive ID and Item ID for a specified file in OneDrive or SharePoint using the Microsoft 365 API. Provide valid M365 credentials and the file URL. The connector will return the Drive ID and Item ID, along with the status code and message from the API.",
   "version": "1.0.0",
   "author": "@gaurav",
+  "supportedPlatforms": ["cloud", "windows"],
+  "errorHandling": "standard",
+  "testScreenType": "standard",
   "fields": [
     {
       "direction": "Input",

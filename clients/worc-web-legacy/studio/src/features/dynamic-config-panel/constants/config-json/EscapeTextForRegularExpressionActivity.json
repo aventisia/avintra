@@ -4,9 +4,7 @@
   "description": "Escapes a minimal set of characters for use in regular expressions by replacing them with their escape codes.",
   "version": "1.0.0",
   "auther": "@aventisia",
-  "supportedPlatforms": [
-    "desktop"
-  ],
+  "supportedPlatforms": ["cloud", "windows"],
   "errorHandling": "standard",
   "testScreenType": "standard",
   "fields": [

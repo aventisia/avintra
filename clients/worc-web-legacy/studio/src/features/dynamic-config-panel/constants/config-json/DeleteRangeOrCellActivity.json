@@ -4,9 +4,7 @@
   "description": "Deletes (clears) the values from a specified cell or range in a Google Sheet. Formatting, formulas, and comments are preserved.",
   "version": "1.0.0",
   "auther": "@aventisia",
-  "supportedPlatforms": [
-    "desktop"
-  ],
+  "supportedPlatforms": ["cloud", "windows"],
   "errorHandling": "standard",
   "testScreenType": "standard",
   "fields": [

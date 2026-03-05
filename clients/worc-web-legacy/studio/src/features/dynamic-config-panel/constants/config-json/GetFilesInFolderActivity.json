@@ -4,9 +4,7 @@
   "description": "This activity retrieves the list of files in a specified folder, with options to include subfolders and sort the results.",
   "version": "1.0.0",
   "auther": "@aventisia",
-  "supportedPlatforms": [
-    "desktop"
-  ],
+  "supportedPlatforms": ["cloud", "windows"],
   "errorHandling": "standard",
   "testScreenType": "standard",
   "fields": [

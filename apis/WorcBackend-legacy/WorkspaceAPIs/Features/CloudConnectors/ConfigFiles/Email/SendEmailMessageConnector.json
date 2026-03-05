@@ -3,6 +3,9 @@
   "description": "Sends an email using the mailkit.Provide valid email and app password credentials, sender and recipient details, subject, body, and optional attachments. The connector will return the response data.",
   "version": "1.0.0",
   "author": "@gaurav",
+  "supportedPlatforms": ["cloud", "windows"],
+  "errorHandling": "standard",
+  "testScreenType": "standard",
   "fields": [
     {
       "direction": "Input",
@@ -80,7 +83,7 @@
         }
       ]
     },
-     {
+    {
       "direction": "Input",
       "type": "text",
       "name": "Attachments",
@@ -89,12 +92,12 @@
       "defaultValue": ""
     },
     {
-        "direction": "Input",
-        "type": "text",
-        "name": "SecurityProtocol",
-        "label": "Security Protocol",
-        "description": "is a set of rules or procedures that govern the transmission and exchange of data between two or more devices over a network.",
-        "defaultValue" : "StartSsl"
+      "direction": "Input",
+      "type": "text",
+      "name": "SecurityProtocol",
+      "label": "Security Protocol",
+      "description": "is a set of rules or procedures that govern the transmission and exchange of data between two or more devices over a network.",
+      "defaultValue": "StartSsl"
     },
     {
       "direction": "Input",
@@ -105,36 +108,36 @@
       "defaultValue": "smtp.gmail.com"
     },
     {
-        "direction": "Input",
-        "type": "number",
-        "name": "ServerPort",
-        "label": "ServerPort",
-        "description": "The port number used to connect to the IMAP server. Default is 587",
-        "defaultValue": 587
+      "direction": "Input",
+      "type": "number",
+      "name": "ServerPort",
+      "label": "ServerPort",
+      "description": "The port number used to connect to the IMAP server. Default is 587",
+      "defaultValue": 587
     },
     {
-        "direction": "Input",
-        "type": "switch",
-        "name": "SmtpServerNeedsAuthentication",
-        "label": "Smtp Server Needs Authentication",
-        "description": "Smtp Server Needs Authentication to authenticate the credentials.",
-        "defaultValue": true
+      "direction": "Input",
+      "type": "switch",
+      "name": "SmtpServerNeedsAuthentication",
+      "label": "Smtp Server Needs Authentication",
+      "description": "Smtp Server Needs Authentication to authenticate the credentials.",
+      "defaultValue": true
     },
     {
-        "direction":"Input",
-        "type":"switch",
-        "name": "acceptUntrustedCertificates",
-        "label": "accept Untrusted Certificates",
-        "description":"accept the Untrusted Certificates",
-        "defaultValue": true
+      "direction": "Input",
+      "type": "switch",
+      "name": "acceptUntrustedCertificates",
+      "label": "accept Untrusted Certificates",
+      "description": "accept the Untrusted Certificates",
+      "defaultValue": true
     },
     {
-        "direction":"Input",
-        "type":"switch",
-        "name": "IsHtml",
-        "label": "Is Html",
-        "description": "The message is in html format.",
-        "defaultValue": false
+      "direction": "Input",
+      "type": "switch",
+      "name": "IsHtml",
+      "label": "Is Html",
+      "description": "The message is in html format.",
+      "defaultValue": false
     },
     {
       "direction": "Output",

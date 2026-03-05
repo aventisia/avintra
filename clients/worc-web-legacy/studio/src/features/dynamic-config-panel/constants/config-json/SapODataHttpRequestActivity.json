@@ -4,9 +4,7 @@
   "description": "Perform HTTP requests to interact with SAP OData using existing connector and connection.",
   "version": "1.0.0",
   "auther": "@aventisia",
-  "supportedPlatforms": [
-    "desktop"
-  ],
+  "supportedPlatforms": ["cloud", "windows"],
   "errorHandling": "standard",
   "testScreenType": "standard",
   "fields": [

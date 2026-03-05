@@ -4,9 +4,7 @@
   "description": "Moves the mouse cursor to the center of a specified image on the screen using template matching.",
   "version": "1.0.0",
   "auther": "@aventisia",
-  "supportedPlatforms": [
-    "desktop"
-  ],
+  "supportedPlatforms": ["windows"],
   "errorHandling": "standard",
   "testScreenType": "standard",
   "fields": [

@@ -3,6 +3,9 @@
   "description": "Downloads a file from an Azure Blob container to a specified local path.",
   "version": "1.0.0",
   "author": "@gaurav",
+  "supportedPlatforms": ["cloud", "windows"],
+  "errorHandling": "standard",
+  "testScreenType": "standard",
   "fields": [
     {
       "direction": "Input",
@@ -13,11 +16,11 @@
       "defaultValue": ""
     },
     {
-        "direction":"Input",
-        "type":"text",
-        "name": "ContainerName",
-        "label": "Container Name",
-        "description":"Download a file from an Azure Blob container."
+      "direction": "Input",
+      "type": "text",
+      "name": "ContainerName",
+      "label": "Container Name",
+      "description": "Download a file from an Azure Blob container."
     },
     {
       "direction": "Output",

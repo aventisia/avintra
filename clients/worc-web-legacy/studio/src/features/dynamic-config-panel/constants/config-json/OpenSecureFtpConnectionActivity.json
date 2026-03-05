@@ -4,9 +4,7 @@
   "description": "Establishes a secure connection to an FTP server using SSL/TLS or SSH.",
   "version": "1.0.0",
   "auther": "@aventisia",
-  "supportedPlatforms": [
-    "desktop"
-  ],
+  "supportedPlatforms": ["cloud", "windows"],
   "errorHandling": "standard",
   "testScreenType": "standard",
   "fields": [

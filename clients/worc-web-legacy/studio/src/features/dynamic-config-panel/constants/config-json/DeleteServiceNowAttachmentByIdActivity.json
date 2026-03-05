@@ -4,9 +4,7 @@
   "description": "Deletes an attachment from ServiceNow using only Credential ID (BasicAuth token or OAuth2 token).",
   "version": "1.0.0",
   "auther": "@aventisia",
-  "supportedPlatforms": [
-    "desktop"
-  ],
+  "supportedPlatforms": ["cloud", "windows"],
   "errorHandling": "standard",
   "testScreenType": "standard",
   "fields": [

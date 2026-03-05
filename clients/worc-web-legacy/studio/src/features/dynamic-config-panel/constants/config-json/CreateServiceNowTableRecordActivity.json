@@ -4,9 +4,7 @@
   "description": "Creates a new record in a specified ServiceNow table using InstanceUrl \u002B Credential ID/Token.",
   "version": "1.0.0",
   "auther": "@aventisia",
-  "supportedPlatforms": [
-    "desktop"
-  ],
+  "supportedPlatforms": ["cloud", "windows"],
   "errorHandling": "standard",
   "testScreenType": "standard",
   "fields": [

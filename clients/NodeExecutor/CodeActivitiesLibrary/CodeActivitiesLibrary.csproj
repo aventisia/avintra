@@ -750,13 +750,13 @@
     <Compile Include="Activities\WorkflowLogics\QueueManagement\CreateWorkItemActivity.cs" />
     <Compile Include="Activities\WorkflowLogics\QueueManagement\_QueueManagementCategoryMetaData.cs" />
     <Compile Include="Enums\ComparisonOperatorEnum.cs" />
-    <Compile Include="Extensions\ActivityCategoryMetadataAttribute.cs" />
-    <Compile Include="Extensions\ActivityMetaDataAttribute.cs" />
+    <Compile Include="Attributes\ActivityCategoryMetadataAttribute.cs" />
+    <Compile Include="Attributes\ActivityMetaDataAttribute.cs" />
     <Compile Include="Extensions\BaseAsyncCodeActivity.cs" />
     <Compile Include="Extensions\BaseNativeActivity.cs" />
     <Compile Include="Extensions\BaseCodeActivity.cs" />
-    <Compile Include="Extensions\FieldTypeAttribute.cs" />
-    <Compile Include="Extensions\RenderIfAttribute.cs" />
+    <Compile Include="Attributes\FieldTypeAttribute.cs" />
+    <Compile Include="Attributes\RenderIfAttribute.cs" />
     <Compile Include="Models\ResolvedConditionObj.cs" />
     <Compile Include="Models\UnresolvedConditionObj.cs" />
     <Compile Include="Models\DecodedAccessTokenObj.cs" />

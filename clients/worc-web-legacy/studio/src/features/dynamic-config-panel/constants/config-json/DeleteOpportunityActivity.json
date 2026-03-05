@@ -4,9 +4,7 @@
   "description": "Deletes a Salesforce opportunity by its ID.",
   "version": "1.0.0",
   "auther": "@aventisia",
-  "supportedPlatforms": [
-    "desktop"
-  ],
+  "supportedPlatforms": [],
   "errorHandling": "standard",
   "testScreenType": "standard",
   "fields": [

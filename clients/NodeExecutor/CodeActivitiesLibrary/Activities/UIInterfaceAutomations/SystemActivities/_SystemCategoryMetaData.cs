@@ -6,6 +6,7 @@ namespace CodeActivitiesLibrary.UiInterfaceAutomations.SystemActivities
         primaryCategory: "UI Interface Automations",
         label: "System",
         description: "Perform system-level operations and checks.",
+        supportedPlatforms: "windows",
         img: "/assets/System.svg")]
     internal sealed class _SystemCategoryMetaData { }
 }

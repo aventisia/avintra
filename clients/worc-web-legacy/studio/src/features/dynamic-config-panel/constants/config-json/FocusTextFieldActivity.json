@@ -4,9 +4,7 @@
   "description": "Focuses a specific text field in a web browser. Optionally waits for page load and handles dialogs.",
   "version": "1.0.0",
   "auther": "@aventisia",
-  "supportedPlatforms": [
-    "desktop"
-  ],
+  "supportedPlatforms": ["windows"],
   "errorHandling": "standard",
   "testScreenType": "standard",
   "fields": [

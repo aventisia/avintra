@@ -1,68 +1,71 @@
 {
-    "name": "CheckInFile",
-    "description": "Checks in a file to a SharePoint document library using Microsoft Graph, optionally creating a minor or major version.",
-    "version": "1.0.2",
-    "author": "@rahmat",
-    "fields": [
+  "name": "CheckInFile",
+  "description": "Checks in a file to a SharePoint document library using Microsoft Graph, optionally creating a minor or major version.",
+  "version": "1.0.2",
+  "author": "@rahmat",
+  "supportedPlatforms": ["cloud", "windows"],
+  "errorHandling": "standard",
+  "testScreenType": "standard",
+  "fields": [
+    {
+      "direction": "Input",
+      "type": "credentials-select",
+      "name": "__CredentialId__M365",
+      "label": "M365 Credential",
+      "description": "Select the Microsoft 365 credential used to authenticate the SharePoint request.",
+      "defaultValue": ""
+    },
+    {
+      "direction": "Input",
+      "type": "text",
+      "name": "FilePath",
+      "label": "File Path",
+      "description": "The full SharePoint URL of the file you want to check in. For example: /sites/YourSite/Shared Documents/YourFile.txt",
+      "defaultValue": ""
+    },
+    {
+      "direction": "Input",
+      "type": "select",
+      "name": "CheckInType",
+      "label": "Check-In Type",
+      "description": "Select the type of check-in operation to perform. 'Minor' creates a minor version, 'Major' creates a major version, and 'Simple' checks in without creating a new version.",
+      "defaultValue": "Simple",
+      "selectOptions": [
         {
-            "direction": "Input",
-            "type": "credentials-select",
-            "name": "__CredentialId__M365",
-            "label": "M365 Credential",
-            "description": "Select the Microsoft 365 credential used to authenticate the SharePoint request.",
-            "defaultValue": ""
+          "label": "Minor",
+          "value": "Minor",
+          "description": "Creates a minor version."
         },
         {
-            "direction": "Input",
-            "type": "text",
-            "name": "FilePath",
-            "label": "File Path",
-            "description": "The full SharePoint URL of the file you want to check in. For example: /sites/YourSite/Shared Documents/YourFile.txt",
-            "defaultValue": ""
+          "label": "Major",
+          "value": "Major",
+          "description": "Creates a major version."
         },
         {
-            "direction": "Input",
-            "type": "select",
-            "name": "CheckInType",
-            "label": "Check-In Type",
-            "description": "Select the type of check-in operation to perform. 'Minor' creates a minor version, 'Major' creates a major version, and 'Simple' checks in without creating a new version.",
-            "defaultValue": "Simple",
-            "selectOptions": [
-                {
-                    "label": "Minor",
-                    "value": "Minor",
-                    "description": "Creates a minor version."
-                },
-                {
-                    "label": "Major",
-                    "value": "Major",
-                    "description": "Creates a major version."
-                },
-                {
-                    "label": "Simple",
-                    "value": "Simple",
-                    "description": "Checks in without creating a new version."
-                }
-            ]
-        },
-        {
-            "direction": "Input",
-            "type": "text",
-            "name": "Comment",
-            "label": "Check-In Comment",
-            "description": "An optional comment to include with the check-in operation, providing context or notes about the changes made.",
-            "defaultValue": ""
-        },
-        {
-            "direction": "Output",
-            "type": "config-panel-output",
-            "name": "Result",
-            "label": "Result",
-            "description": "The result of the file check-in operation, including success status and any error messages.",
-            "defaultValue": {
-                "value": "Result",
-                "enabled": true
-            }
+          "label": "Simple",
+          "value": "Simple",
+          "description": "Checks in without creating a new version."
         }
-    ]
+      ]
+    },
+    {
+      "direction": "Input",
+      "type": "text",
+      "name": "Comment",
+      "label": "Check-In Comment",
+      "description": "An optional comment to include with the check-in operation, providing context or notes about the changes made.",
+      "defaultValue": ""
+    },
+    {
+      "direction": "Output",
+      "type": "config-panel-output",
+      "name": "Result",
+      "label": "Result",
+      "description": "The result of the file check-in operation, including success status and any error messages.",
+      "defaultValue": {
+        "value": "Result",
+        "enabled": true
+      }
+    }
+  ]
 }

@@ -4,9 +4,7 @@
   "description": "Creates an Application or Network Load Balancer in AWS Elastic Load Balancing (ALB/NLB).",
   "version": "1.0.0",
   "auther": "@aventisia",
-  "supportedPlatforms": [
-    "desktop"
-  ],
+  "supportedPlatforms": ["cloud", "windows"],
   "errorHandling": "standard",
   "testScreenType": "standard",
   "fields": [

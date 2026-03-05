@@ -4,7 +4,7 @@
   "description": "Converts a list of JSON string fragments (e.g., from Add Item to List) into a list of proper objects.",
   "version": null,
   "auther": null,
-  "supportedPlatforms": [],
+  "supportedPlatforms": ["cloud", "windows"],
   "errorHandling": null,
   "testScreenType": null,
   "fields": [

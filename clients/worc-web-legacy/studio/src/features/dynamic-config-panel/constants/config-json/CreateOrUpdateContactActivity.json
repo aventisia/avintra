@@ -4,9 +4,7 @@
   "description": "Creates a new Contact in Salesforce if it doesn\u0027t exist, or updates it if it does. Uses Email as the identifier.",
   "version": "1.0.0",
   "auther": "@aventisia",
-  "supportedPlatforms": [
-    "desktop"
-  ],
+  "supportedPlatforms": ["cloud", "windows"],
   "errorHandling": "standard",
   "testScreenType": "standard",
   "fields": [

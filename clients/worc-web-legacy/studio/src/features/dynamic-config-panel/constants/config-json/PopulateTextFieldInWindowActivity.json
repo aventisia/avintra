@@ -4,9 +4,7 @@
   "description": "Fills a text box or editable field in a window with the specified text using the method you choose.",
   "version": "1.0.0",
   "auther": "@aventisia",
-  "supportedPlatforms": [
-    "desktop"
-  ],
+  "supportedPlatforms": ["windows"],
   "errorHandling": "standard",
   "testScreenType": "standard",
   "fields": [

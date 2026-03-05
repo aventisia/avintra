@@ -1,43 +1,46 @@
 {
-    "name": "DeleteMailFolder",
-    "description": "Deletes a specified mail folder and its contents from a mailbox using Microsoft Graph.",
-    "version": "1.0.6",
-    "author": "@rahmat",
-    "fields": [
-        {
-            "direction": "Input",
-            "type": "credentials-select",
-            "name": "__CredentialId__M365",
-            "label": "M365 Credential",
-            "description": "Select the Microsoft 365 credential used to authenticate the request. The credential must have permission to delete mailbox folders.",
-            "defaultValue": ""
-        },
-        {
-            "direction": "Input",
-            "type": "text",
-            "name": "MailboxAddress",
-            "label": "Mailbox Address",
-            "description": "The email address of the mailbox containing the folder to delete.",
-            "defaultValue": ""
-        },
-        {
-            "direction": "Input",
-            "type": "text",
-            "name": "FolderName",
-            "label": "Folder Name",
-            "description": "The display name of the folder to delete. This folder and all its contents will be permanently removed from the mailbox.",
-            "defaultValue": ""
-        },
-        {
-            "direction": "Output",
-            "type": "config-panel-output",
-            "name": "Result",
-            "label": "Result",
-            "description": "The result of the folder deletion operation, including success status and any error messages.",
-            "defaultValue": {
-                "value": "Result",
-                "enabled": true
-            }
-        }
-    ]
+  "name": "DeleteMailFolder",
+  "description": "Deletes a specified mail folder and its contents from a mailbox using Microsoft Graph.",
+  "version": "1.0.6",
+  "author": "@rahmat",
+  "supportedPlatforms": ["cloud", "windows"],
+  "errorHandling": "standard",
+  "testScreenType": "standard",
+  "fields": [
+    {
+      "direction": "Input",
+      "type": "credentials-select",
+      "name": "__CredentialId__M365",
+      "label": "M365 Credential",
+      "description": "Select the Microsoft 365 credential used to authenticate the request. The credential must have permission to delete mailbox folders.",
+      "defaultValue": ""
+    },
+    {
+      "direction": "Input",
+      "type": "text",
+      "name": "MailboxAddress",
+      "label": "Mailbox Address",
+      "description": "The email address of the mailbox containing the folder to delete.",
+      "defaultValue": ""
+    },
+    {
+      "direction": "Input",
+      "type": "text",
+      "name": "FolderName",
+      "label": "Folder Name",
+      "description": "The display name of the folder to delete. This folder and all its contents will be permanently removed from the mailbox.",
+      "defaultValue": ""
+    },
+    {
+      "direction": "Output",
+      "type": "config-panel-output",
+      "name": "Result",
+      "label": "Result",
+      "description": "The result of the folder deletion operation, including success status and any error messages.",
+      "defaultValue": {
+        "value": "Result",
+        "enabled": true
+      }
+    }
+  ]
 }

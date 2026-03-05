@@ -2,6 +2,9 @@
   "name": "GetContainerSize",
   "description": "Retrieve container size.",
   "author": "@gaurav",
+  "supportedPlatforms": ["cloud", "windows"],
+  "errorHandling": "standard",
+  "testScreenType": "standard",
   "fields": [
     {
       "direction": "Input",
@@ -12,11 +15,11 @@
       "defaultValue": ""
     },
     {
-        "direction":"Input",
-        "type":"text",
-        "name": "ContainerName",
-        "label": "Container Name",
-        "description":"Retrieve the container size from the storage account."
+      "direction": "Input",
+      "type": "text",
+      "name": "ContainerName",
+      "label": "Container Name",
+      "description": "Retrieve the container size from the storage account."
     },
     {
       "direction": "Output",

@@ -4,9 +4,7 @@
   "description": "Moves, deletes, or marks as unread an email (or a list of emails) retrieved by a Retrieve email messages action.",
   "version": "1.0.0",
   "auther": "@aventisia",
-  "supportedPlatforms": [
-    "desktop"
-  ],
+  "supportedPlatforms": ["cloud", "windows"],
   "errorHandling": "standard",
   "testScreenType": "standard",
   "fields": [

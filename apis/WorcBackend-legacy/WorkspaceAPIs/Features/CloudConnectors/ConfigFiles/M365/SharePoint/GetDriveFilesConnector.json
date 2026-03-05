@@ -1,35 +1,38 @@
 {
-    "name": "GetDriveFiles",
-    "description": "Retrieves files and folders from a specified SharePoint document library location using Microsoft Graph.",
-    "version": "1.0.1",
-    "author": "@rahmat",
-    "fields": [
-        {
-            "direction": "Input",
-            "type": "credentials-select",
-            "name": "__CredentialId__M365",
-            "label": "M365 Credential",
-            "description": "Select the Microsoft 365 credential used to authenticate the SharePoint request.",
-            "defaultValue": ""
-        },
-        {
-            "direction": "Input",
-            "type": "text",
-            "name": "DrivePath",
-            "label": "Folder Path",
-            "description": "The full SharePoint URL of the folder you want to retrieve files and folders from. For example: /sites/YourSite/Shared Documents/YourFolder",
-            "defaultValue": ""
-        },
-        {
-            "direction": "Output",
-            "type": "config-panel-output",
-            "name": "Result",
-            "label": "Result",
-            "description": "The result of the retrieval operation, including the list of files and folders in the specified location and any error messages.",
-            "defaultValue": {
-                "value": "Result",
-                "enabled": true
-            }
-        }
-    ]
+  "name": "GetDriveFiles",
+  "description": "Retrieves files and folders from a specified SharePoint document library location using Microsoft Graph.",
+  "version": "1.0.1",
+  "author": "@rahmat",
+  "supportedPlatforms": ["cloud", "windows"],
+  "errorHandling": "standard",
+  "testScreenType": "standard",
+  "fields": [
+    {
+      "direction": "Input",
+      "type": "credentials-select",
+      "name": "__CredentialId__M365",
+      "label": "M365 Credential",
+      "description": "Select the Microsoft 365 credential used to authenticate the SharePoint request.",
+      "defaultValue": ""
+    },
+    {
+      "direction": "Input",
+      "type": "text",
+      "name": "DrivePath",
+      "label": "Folder Path",
+      "description": "The full SharePoint URL of the folder you want to retrieve files and folders from. For example: /sites/YourSite/Shared Documents/YourFolder",
+      "defaultValue": ""
+    },
+    {
+      "direction": "Output",
+      "type": "config-panel-output",
+      "name": "Result",
+      "label": "Result",
+      "description": "The result of the retrieval operation, including the list of files and folders in the specified location and any error messages.",
+      "defaultValue": {
+        "value": "Result",
+        "enabled": true
+      }
+    }
+  ]
 }
