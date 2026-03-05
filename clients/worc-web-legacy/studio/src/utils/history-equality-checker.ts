@@ -18,64 +18,43 @@ export const isHistoryEqual = (
   past: HistoryState,
   current: HistoryState,
 ): boolean => {
-  if (past?.nodes?.length !== current?.nodes?.length) return false;
-  if (past?.edges?.length !== current?.edges?.length) return false;
-  if (
-    past?.flowVariablesObject?.length !== current?.flowVariablesObject?.length
-  )
+  // 1. FAST STRUCTURAL CHECKS
+  if (past === current) return true;
+  if (past.nodes.length !== current.nodes.length) return false;
+  if (past.edges.length !== current.edges.length) return false;
+  if (past.flowVariablesObject.length !== current.flowVariablesObject.length)
     return false;
 
-  if (past.flowVariablesObject !== current.flowVariablesObject) {
-    if (
-      JSON.stringify(past.flowVariablesObject) !==
-      JSON.stringify(current.flowVariablesObject)
-    )
-      return false;
-  }
+  // 3. NODES CHECK
+  if (past.nodes !== current.nodes) {
+    const pastNodeMap = new Map(past.nodes.map((n) => [n.id, n]));
 
-  const pastNodeMap = new Map(past.nodes.map((n) => [n.id, n]));
+    for (const cNode of current.nodes) {
+      const pNode = pastNodeMap.get(cNode.id);
+      if (!pNode) return false;
 
-  for (const cNode of current.nodes) {
-    const pNode = pastNodeMap.get(cNode.id);
-    if (!pNode) return false;
+      if (pNode === cNode) continue;
 
-    // Bypass deep comparison if the memory reference is identical
-    if (pNode === cNode) continue;
-
-    if (pNode.type !== cNode.type || pNode.hidden !== cNode.hidden)
-      return false;
-    if (
-      pNode.position.x !== cNode.position.x ||
-      pNode.position.y !== cNode.position.y
-    )
-      return false;
-
-    if (pNode.data !== cNode.data) {
-      if (JSON.stringify(pNode.data) !== JSON.stringify(cNode.data))
+      // Ignore 'selected' or 'dragging' state changes natively by not checking them
+      if (
+        pNode.type !== cNode.type ||
+        pNode.hidden !== cNode.hidden ||
+        pNode.position.x !== cNode.position.x ||
+        pNode.position.y !== cNode.position.y
+      ) {
         return false;
+      }
+
+      // Deep compare data only if the memory reference changed
+      if (pNode.data !== cNode.data) {
+        if (JSON.stringify(pNode.data) !== JSON.stringify(cNode.data))
+          return false;
+      }
     }
   }
 
-  const pastEdgeMap = new Map(past.edges.map((e) => [e.id, e]));
-
-  for (const cEdge of current.edges) {
-    const pEdge = pastEdgeMap.get(cEdge.id);
-    if (!pEdge) return false;
-
-    if (pEdge === cEdge) continue;
-
-    if (
-      pEdge.source !== cEdge.source ||
-      pEdge.target !== cEdge.target ||
-      pEdge.sourceHandle !== cEdge.sourceHandle ||
-      pEdge.targetHandle !== cEdge.targetHandle
-    )
-      return false;
-
-    if (pEdge.data !== cEdge.data) {
-      if (JSON.stringify(pEdge.data) !== JSON.stringify(cEdge.data))
-        return false;
-    }
+  if (past.edges !== current.edges) {
+    return false;
   }
 
   return true;
