@@ -1,11 +1,7 @@
 import { MARKER_ARROW_PREFIX } from "@/constants";
 import { DCPFieldSchemaType } from "@/features/dynamic-config-panel";
 import { FlowVariablesObjectType } from "@/types/flow-variables-object-type";
-import { HistoryState, isHistoryEqual } from "@/utils/history-equality-checker";
-import {
-  isSignificantNodeChange,
-  isSignificantEdgeChange,
-} from "@/utils/history-filters";
+import { HistoryState } from "@/utils/history-equality-checker";
 import {
   Connection,
   Edge,
@@ -132,84 +128,35 @@ export const useReactFlowExtStore = create<State & Actions>((set, get) => ({
   savedSnapshot: null,
 
   onNodesChange: (changes: NodeChange[]) => {
-    const state = get();
-    const nextNodes = applyNodeChanges(changes, state.nodes);
-
-    // Intercept changes: Only push to history if it is a significant change (e.g., node dropped)
-    // and we are not currently running an undo/redo operation.
-    if (!state.isRestoringHistory && isSignificantNodeChange(changes)) {
-      state.commitSnapshot({
-        nodes: nextNodes,
-        edges: state.edges,
-        flowVariablesObject: state.flowVariablesObject,
-      });
-    }
-
-    // Apply nodes and ensure the restoring lock is released for subsequent actions
-    set({ nodes: nextNodes, isRestoringHistory: false });
+    set({ nodes: applyNodeChanges(changes, get().nodes) });
   },
 
   onEdgesChange: (changes: EdgeChange[]) => {
-    const state = get();
-    const nextEdges = applyEdgeChanges(changes, state.edges);
-
-    // Intercept changes: Only push to history if it is a significant change (e.g., edge deleted)
-    if (!state.isRestoringHistory && isSignificantEdgeChange(changes)) {
-      state.commitSnapshot({
-        nodes: state.nodes,
-        edges: nextEdges,
-        flowVariablesObject: state.flowVariablesObject,
-      });
-    }
-
-    // Apply edges and release the restoring lock
-    set({ edges: nextEdges, isRestoringHistory: false });
+    set({ edges: applyEdgeChanges(changes, get().edges) });
   },
 
   //onConnect triggers only when two nodes are connected manually
   onConnect: (connection: Connection) => {
+    // Create a unique id for the edge
     const id = window.crypto.randomUUID();
-    const state = get();
-
-    // Explicitly define the type as Edge so TypeScript does not narrow the generic inference
-    const newEdge: Edge = {
-      ...connection,
-      label: "plus",
-      id,
-      markerEnd: `${MARKER_ARROW_PREFIX}${id}`,
-    };
-
-    // addEdge will now correctly infer T as Edge, matching state.edges
-    const nextEdges = addEdge(newEdge, state.edges);
-
-    if (!state.isRestoringHistory) {
-      state.commitSnapshot({
-        nodes: state.nodes,
-        edges: nextEdges,
-        flowVariablesObject: state.flowVariablesObject,
-      });
-    }
-
-    set({ edges: nextEdges });
+    set({
+      edges: addEdge(
+        {
+          ...connection,
+          label: "plus",
+          id,
+          markerEnd: `${MARKER_ARROW_PREFIX}${id}`,
+        },
+        get().edges,
+      ),
+    });
   },
+
   setNodes: (nodes: Node[]) => set({ nodes }),
   setEdges: (edges: Edge[]) => set({ edges }),
   setIsPublished: (isPublished: boolean) => set({ isPublished }),
-
-  setFlowVariablesObject: (variables: FlowVariablesObjectType[]) => {
-    const state = get();
-
-    // Intercepting direct sets ensures flow variables can be undone/redone perfectly
-    if (!state.isRestoringHistory) {
-      state.commitSnapshot({
-        nodes: state.nodes,
-        edges: state.edges,
-        flowVariablesObject: variables,
-      });
-    }
-    set({ flowVariablesObject: variables });
-  },
-
+  setFlowVariablesObject: (variables: FlowVariablesObjectType[]) =>
+    set({ flowVariablesObject: variables }),
   setConfigVariables: (variables: string[]) =>
     set({ configVariables: variables }),
   setInputOutputObject: (inputOutputObject: DCPFieldSchemaType[]) =>
@@ -245,23 +192,9 @@ export const useReactFlowExtStore = create<State & Actions>((set, get) => ({
 
   commitSnapshot: (snapshot) => {
     set((state) => {
-      // Guard: Do not push a duplicate state if it exactly matches the latest history step
-      const lastHistoryState =
-        state.past.length > 0 ? state.past[state.past.length - 1] : null;
-      if (lastHistoryState && isHistoryEqual(lastHistoryState, snapshot)) {
-        return state;
-      }
-
       const newPast = [...state.past, snapshot];
       if (newPast.length > MAX_HISTORY_STEPS) newPast.shift();
-
-      // Dynamically calculate if the canvas has drifted from the last DB save
-      let isPending = true;
-      if (state.savedSnapshot) {
-        isPending = !isHistoryEqual(state.savedSnapshot, snapshot);
-      }
-
-      return { past: newPast, future: [], isSavePending: isPending };
+      return { past: newPast, future: [] };
     });
   },
 
@@ -276,20 +209,13 @@ export const useReactFlowExtStore = create<State & Actions>((set, get) => ({
         flowVariablesObject: state.flowVariablesObject,
       };
 
-      // Check if undoing brought the user perfectly back to the last saved DB state
-      let isPending = true;
-      if (state.savedSnapshot) {
-        isPending = !isHistoryEqual(state.savedSnapshot, previousState);
-      }
-
       return {
         past: state.past.slice(0, -1),
         future: [currentStateObj, ...state.future],
         nodes: previousState.nodes,
         edges: previousState.edges,
         flowVariablesObject: previousState.flowVariablesObject,
-        isRestoringHistory: true, // Activate history lock to prevent onNodesChange from saving this action
-        isSavePending: isPending,
+        isRestoringHistory: true,
       };
     });
   },
@@ -300,20 +226,13 @@ export const useReactFlowExtStore = create<State & Actions>((set, get) => ({
 
       const nextState = state.future[0];
 
-      // Check if redoing brought the user perfectly back to the last saved DB state
-      let isPending = true;
-      if (state.savedSnapshot) {
-        isPending = !isHistoryEqual(state.savedSnapshot, nextState);
-      }
-
       return {
         past: [...state.past, nextState],
         future: state.future.slice(1),
         nodes: nextState.nodes,
         edges: nextState.edges,
         flowVariablesObject: nextState.flowVariablesObject,
-        isRestoringHistory: true, // Activate history lock to prevent onNodesChange from saving this action
-        isSavePending: isPending,
+        isRestoringHistory: true,
       };
     });
   },
