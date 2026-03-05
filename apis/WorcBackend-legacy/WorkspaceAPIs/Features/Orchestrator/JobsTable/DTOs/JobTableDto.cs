@@ -24,7 +24,7 @@ public class JobTableDto
     /// <summary>
     /// Gets or sets the trigger type for the job (e.g., manual, API, event-based).
     /// </summary>
-    public TriggerTypesEnum TriggerType { get; set; } = TriggerTypesEnum.None;
+    public TriggerTypesEnum TriggerType { get; set; } = TriggerTypesEnum.ManualTrigger;
 
     /// <summary>
     /// Gets or sets the identifier of the trigger that initiated the job. This is optional and may be null.
