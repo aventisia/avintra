@@ -1,7 +1,6 @@
 using System;
 using System.Text;
 using System.Text.Json;
-using System.Text.Json.Serialization;
 using CodeActivitiesLibrary.Models;
 
 namespace CodeActivitiesLibrary.Utils
@@ -26,7 +25,7 @@ namespace CodeActivitiesLibrary.Utils
     /// 
     /// </code>
     /// </example>
-    public static class DecodeAccessToken
+    public static class DecodeAccessTokenUtil
     {
         /// <summary>
         /// Decodes a JWT access token and returns a strongly-typed object containing its claims.

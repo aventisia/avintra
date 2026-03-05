@@ -1,10 +1,13 @@
-﻿using CodeActivitiesLibrary.Extensions;
+﻿using CodeActivitiesLibrary.Enums;
+using CodeActivitiesLibrary.Extensions;
+using CodeActivitiesLibrary.Models;
+using CodeActivitiesLibrary.Utils;
+using Newtonsoft.Json;
 using System;
 using System.Activities;
 using System.Collections;
 using System.Collections.Generic;
 using System.ComponentModel;
-using System.ComponentModel.DataAnnotations;
 
 namespace CodeActivitiesLibrary.WorkflowLogics.FlowControlActivities
 {
@@ -16,7 +19,7 @@ namespace CodeActivitiesLibrary.WorkflowLogics.FlowControlActivities
 
         [DisplayName("Conditions")]
         [Description("Add one or more groups of conditions. Each group is evaluated as AND, and the activity returns true if any group is true.")]
-        public InArgument<List<List<ConditionObjectGroup>>> Conditions { get; set; }
+        public InArgument<List<List<ResolvedConditionObj>>> Conditions { get; set; }
 
 
         [DisplayName("Condition Result")]
@@ -25,47 +28,70 @@ namespace CodeActivitiesLibrary.WorkflowLogics.FlowControlActivities
 
         protected override void Execute(CodeActivityContext context)
         {
-            var allGroups = Conditions.Get(context);
-            bool result = false;
-
-            if (allGroups != null)
+            try
             {
-                foreach (var group in allGroups)
+                var allGroups = Conditions.Get(context);
+                bool result = false;
+                var groupsObject = new Dictionary<string, object>();
+                int groupIndex = 1;
+
+                string statusMessage = "No conditions provided.";
+
+                if (allGroups != null)
                 {
-                    bool groupResult = true;
-                    if (group != null)
+                    foreach (var group in allGroups)
                     {
-                        foreach (var condition in group)
+                        bool groupResult = true;
+                        if (group != null)
                         {
-                            if (!EvaluateCondition(condition))
+                            var conditionResultList = new List<string>();
+                            foreach (var condition in group)
                             {
-                                groupResult = false;
-                                break;
+                                var (isConditionTrue, conditionStatusMessage) = EvaluateCondition(condition);
+
+                                var firstValueFormatted = ConvertValueForLoggingUtil.ConvertValueForLogging("FirstValue", condition.FirstValue, "Input", true);
+                                var secondValueFormatted = ConvertValueForLoggingUtil.ConvertValueForLogging("SecondValue", condition.SecondValue, "Input", true);
+                                conditionResultList.Add($"{firstValueFormatted} {condition.ComparisonOperator} {secondValueFormatted} ? {conditionStatusMessage}");
+
+                                if (!isConditionTrue)
+                                {
+                                    groupResult = false;
+                                    break;
+                                }
                             }
+                            groupsObject[$"Group {groupIndex++}"] = conditionResultList;
+                        }
+                        else
+                        {
+                            groupResult = false;
+                        }
+
+                        if (groupResult)
+                        {
+                            result = true;
+                            break; // OR logic: if any group is true, return true
                         }
                     }
-                    else
-                    {
-                        groupResult = false;
-                    }
 
-                    if (groupResult)
-                    {
-                        result = true;
-                        break; // OR logic: if any group is true, return true
-                    }
+                    statusMessage = JsonConvert.SerializeObject(new[] { groupsObject }, Formatting.Indented);
                 }
-            }
 
-            ConditionResult.Set(context, result);
-            IsSuccess.Set(context, result);
-            StatusMessage.Set(context, result ? "Condition evaluated to true." : "Condition evaluated to false.");
+                ConditionResult.Set(context, result);
+                IsSuccess.Set(context, true);
+                StatusMessage.Set(context, statusMessage);
+            }
+            catch (Exception ex)
+            {
+                ConditionResult.Set(context, false);
+                IsSuccess.Set(context, false);
+                StatusMessage.Set(context, $"Error evaluating conditions: {ex.Message}");
+            }
         }
 
-        private bool EvaluateCondition(ConditionObjectGroup condition)
+        private (bool, string) EvaluateCondition(ResolvedConditionObj condition)
         {
             if (condition == null)
-                return false;
+                return (false, "Condition is null.");
 
             object first = condition.FirstValue;
             object second = condition.SecondValue;
@@ -75,179 +101,243 @@ namespace CodeActivitiesLibrary.WorkflowLogics.FlowControlActivities
             {
                 switch (op)
                 {
-                    case ComparisonOperatorEnum.Exists:
-                        return first != null && System.IO.File.Exists(first.ToString());
-                    case ComparisonOperatorEnum.DoesNotExist:
-                        return first == null || !System.IO.File.Exists(first.ToString());
-                    case ComparisonOperatorEnum.ContainsText:
-                        return first != null && second != null && first.ToString().Contains(second.ToString());
-                    case ComparisonOperatorEnum.DoesNotContainText:
-                        return first != null && second != null && !first.ToString().Contains(second.ToString());
-                    case ComparisonOperatorEnum.ExactlyMatches:
-                        return first != null && second != null && first.ToString().Equals(second.ToString());
-                    case ComparisonOperatorEnum.DoesNotExactlyMatch:
-                        return first != null && second != null && !first.ToString().Equals(second.ToString());
-                    case ComparisonOperatorEnum.StartsWith:
-                        return first != null && second != null && first.ToString().StartsWith(second.ToString());
-                    case ComparisonOperatorEnum.DoesNotStartWith:
-                        return first != null && second != null && !first.ToString().StartsWith(second.ToString());
-                    case ComparisonOperatorEnum.EndsWith:
-                        return first != null && second != null && first.ToString().EndsWith(second.ToString());
-                    case ComparisonOperatorEnum.DoesNotEndWith:
-                        return first != null && second != null && !first.ToString().EndsWith(second.ToString());
-                    case ComparisonOperatorEnum.ContainsList:
-                        return first is IEnumerable list1 && second != null && ListContains(list1, second);
-                    case ComparisonOperatorEnum.DoesNotContainList:
-                        return first is IEnumerable list2 && second != null && !ListContains(list2, second);
-                    case ComparisonOperatorEnum.IsEmpty:
-                        return first is IEnumerable list3 && !ListHasAny(list3);
-                    case ComparisonOperatorEnum.IsNotEmpty:
-                        return first is IEnumerable list4 && ListHasAny(list4);
-                    case ComparisonOperatorEnum.GreaterThan:
-                        return CompareNumbers(first, second) > 0;
-                    case ComparisonOperatorEnum.LessThan:
-                        return CompareNumbers(first, second) < 0;
+                    // General equality check that handles nulls, objects, numbers, booleans, DateTimes, and falls back to string comparison
                     case ComparisonOperatorEnum.EqualTo:
-                        return CompareNumbers(first, second) == 0;
-                    case ComparisonOperatorEnum.After:
-                        return CompareDateTimes(first, second) > 0;
-                    case ComparisonOperatorEnum.Before:
-                        return CompareDateTimes(first, second) < 0;
-                    case ComparisonOperatorEnum.EqualsDateTime:
-                        return CompareDateTimes(first, second) == 0;
-                    case ComparisonOperatorEnum.IsTrue:
-                        return first is bool b1 && b1;
-                    case ComparisonOperatorEnum.IsFalse:
-                        return first is bool b2 && !b2;
+                        return CompareEqual(first, second);
+                    case ComparisonOperatorEnum.NotEqualTo:
+                        var (isEqual, message) = CompareEqual(first, second);
+                        return (!isEqual, message);
+                    // Text-specific operators (only work if both values are non-null and can be treated as strings)
+                    case ComparisonOperatorEnum.TextStartsWith:
+                    case ComparisonOperatorEnum.TextDoesNotStartWith:
+                    case ComparisonOperatorEnum.TextEndsWith:
+                    case ComparisonOperatorEnum.TextDoesNotEndWith:
+                    case ComparisonOperatorEnum.TextContains:
+                    case ComparisonOperatorEnum.TextDoesNotContain:
+                        return CompareText(first, second, op);
+                    // List-specific operators (first value must be IEnumerable)
+                    case ComparisonOperatorEnum.ListContains:
+                        return ListContains(first, second);
+                    case ComparisonOperatorEnum.ListDoesNotContain:
+                        var (contains, message1) = ListContains(first, second);
+                        return (!contains, message1);
+                    case ComparisonOperatorEnum.IsListEmpty:
+                        return IsListEmpty(first);
+                    case ComparisonOperatorEnum.IsListNotEmpty:
+                        var (isEmpty, message2) = IsListEmpty(first);
+                        return (!isEmpty, message2);
+                    // Number and DateTime operators (both values must be parseable as numbers or DateTimes)
+                    case ComparisonOperatorEnum.GreaterThan:
+                    case ComparisonOperatorEnum.LessThan:
+                    case ComparisonOperatorEnum.GreaterThanOrEqualTo:
+                    case ComparisonOperatorEnum.LessThanOrEqualTo:
+                        return CompareNumbersOrDateTimes(first, second, op);
+                    // File-specific operators (first value must be a file path)
+                    case ComparisonOperatorEnum.FileExists:
+                        return FileExists(first);
+                    case ComparisonOperatorEnum.FileDoesNotExist:
+                        var (exists, message3) = FileExists(first);
+                        return (!exists, message3);
                     default:
-                        return false;
+                        return (false, "Unsupported comparison operator.");
                 }
             }
             catch
             {
-                return false;
+                return (false, "Error evaluating condition.");
             }
         }
 
-        private bool ListContains(IEnumerable list, object value)
+        private (bool, string) CompareEqual(object first, object second)
         {
-            foreach (var item in list)
+            try
+            {
+                // First is null
+                if (first == null)
+                    return (false, "First value is null.");
+
+                // Second is null
+                if (second == null)
+                    return (false, "Second value is null.");
+
+                bool isEqual = false;
+
+                // If both are the same type, try direct object equality first
+                // This handles objects that implement Equals properly (including custom types)
+                if (first.GetType() == second.GetType() && first.Equals(second)) isEqual = true;
+
+                // Try number comparison (handles cases where "23" should equal 23)
+                double d1, d2;
+                if (double.TryParse(first.ToString(), out d1) && double.TryParse(second.ToString(), out d2))
+                {
+                    isEqual = d1 == d2;
+                }
+
+                // Try boolean comparison (handles cases where "true" should equal true)
+                bool b1, b2;
+                if (bool.TryParse(first.ToString(), out b1) && bool.TryParse(second.ToString(), out b2))
+                {
+                    isEqual = b1 == b2;
+                }
+
+                // Try DateTime comparison (handles cases where date strings should equal DateTime objects)
+                DateTime dt1, dt2;
+                if (DateTime.TryParse(first.ToString(), out dt1) && DateTime.TryParse(second.ToString(), out dt2))
+                {
+                    isEqual = dt1 == dt2;
+                }
+
+                // Fall back to string comparison
+                isEqual = first.ToString().Equals(second.ToString());
+
+                return isEqual ? (true, "Both values are equal.") : (false, "Values are not equal.");
+            }
+            catch
+            {
+                return (false, "Error comparing values.");
+            }
+        }
+
+        private (bool, string) CompareText(object first, object second, ComparisonOperatorEnum op)
+        {
+            // First is null
+            if (first == null)
+                return (false, "First value is null.");
+
+            // Second is null
+            if (second == null)
+                return (false, "Second value is null.");
+
+            // If first is not text, return false            
+            if (!(first is string))
+                return (false, "First value is not text.");
+
+            // If second is not text, return false
+            if (!(second is string))
+                return (false, "Second value is not text.");
+
+            switch (op)
+            {
+                case ComparisonOperatorEnum.TextStartsWith:
+                    return first.ToString().StartsWith(second.ToString()) ? (true, "First value starts with the second value.") : (false, "First value does not start with the second value.");
+                case ComparisonOperatorEnum.TextDoesNotStartWith:
+                    return !first.ToString().StartsWith(second.ToString()) ? (true, "First value does not start with the second value.") : (false, "First value starts with the second value.");
+                case ComparisonOperatorEnum.TextEndsWith:
+                    return first.ToString().EndsWith(second.ToString()) ? (true, "First value ends with the second value.") : (false, "First value does not end with the second value.");
+                case ComparisonOperatorEnum.TextDoesNotEndWith:
+                    return !first.ToString().EndsWith(second.ToString()) ? (true, "First value does not end with the second value.") : (false, "First value ends with the second value.");
+                case ComparisonOperatorEnum.TextContains:
+                    return first.ToString().Contains(second.ToString()) ? (true, "First value contains the second value.") : (false, "First value does not contain the second value.");
+                case ComparisonOperatorEnum.TextDoesNotContain:
+                    return !first.ToString().Contains(second.ToString()) ? (true, "First value does not contain the second value.") : (false, "First value contains the second value.");
+                default:
+                    return (false, "Invalid text comparison operator.");
+            }
+        }
+
+        private (bool, string) ListContains(object list, object value)
+        {
+            // If list not IEnumerable, return false
+            if (!(list is IEnumerable enumerable))
+                return (false, "List is not enumerable.");
+
+            // if value is null, check if any item in list is null
+            if (value == null)
+                return (false, "Item to check in the list is null.");
+
+            // Check if any item in the list equals the value (using Equals for proper object comparison)   
+            foreach (var item in enumerable)
             {
                 if (item != null && item.Equals(value))
-                    return true;
+                    return (true, "Item found in the list.");
             }
-            return false;
+
+            // If we get here, item was not found in the list
+            return (false, "Item not found in the list.");
         }
 
-        private bool ListHasAny(IEnumerable list)
+        private (bool, string) IsListEmpty(object list)
         {
-            foreach (var item in list)
+            // If list not IEnumerable, return false
+            if (!(list is IEnumerable enumerable))
+                return (false, "List is not enumerable.");
+
+            foreach (var _ in enumerable)
             {
-                return true;
+                return (false, "List is not empty.");
             }
-            return false;
+
+            return (true, "List is empty.");
         }
 
-        private int CompareNumbers(object first, object second)
+        private (bool, string) CompareNumbersOrDateTimes(object first, object second, ComparisonOperatorEnum op)
         {
-            if (first == null || second == null)
-                return -1;
+            // First is null
+            if (first == null)
+                return (false, "First value is null.");
 
+            // Second is null
+            if (second == null)
+                return (false, "Second value is null.");
+
+            // If first is not text, return false            
+            if (!(first is string))
+                return (false, "First value is not valid.");
+
+            // If second is not text, return false
+            if (!(second is string))
+                return (false, "Second value is not valid.");
+
+
+            // Try number comparison
             double d1, d2;
             if (double.TryParse(first.ToString(), out d1) && double.TryParse(second.ToString(), out d2))
             {
-                return d1.CompareTo(d2);
+                switch (op)
+                {
+                    case ComparisonOperatorEnum.GreaterThan:
+                        return (d1 > d2, $"First value {(d1 > d2 ? "is" : "is not")} greater than the second value.");
+                    case ComparisonOperatorEnum.LessThan:
+                        return (d1 < d2, $"First value {(d1 < d2 ? "is" : "is not")} less than the second value.");
+                    case ComparisonOperatorEnum.GreaterThanOrEqualTo:
+                        return (d1 >= d2, $"First value {(d1 >= d2 ? "is" : "is not")} greater than or equal to the second value.");
+                    case ComparisonOperatorEnum.LessThanOrEqualTo:
+                        return (d1 <= d2, $"First value {(d1 <= d2 ? "is" : "is not")} less than or equal to the second value.");
+                }
+                return (false, "Invalid comparison operator.");
             }
-            return -1;
-        }
 
-        private int CompareDateTimes(object first, object second)
-        {
-            if (first == null || second == null)
-                return -1;
-
+            // Try DateTime comparison
             DateTime dt1, dt2;
             if (DateTime.TryParse(first.ToString(), out dt1) && DateTime.TryParse(second.ToString(), out dt2))
             {
-                return dt1.CompareTo(dt2);
+                switch (op)
+                {
+                    case ComparisonOperatorEnum.GreaterThan:
+                        return (dt1 > dt2, $"First value {(dt1 > dt2 ? "is" : "is not")} greater than the second value.");
+                    case ComparisonOperatorEnum.LessThan:
+                        return (dt1 < dt2, $"First value {(dt1 < dt2 ? "is" : "is not")} less than the second value.");
+                    case ComparisonOperatorEnum.GreaterThanOrEqualTo:
+                        return (dt1 >= dt2, $"First value {(dt1 >= dt2 ? "is" : "is not")} greater than or equal to the second value.");
+                    case ComparisonOperatorEnum.LessThanOrEqualTo:
+                        return (dt1 <= dt2, $"First value {(dt1 <= dt2 ? "is" : "is not")} less than or equal to the second value.");
+                }
+                return (false, "Invalid comparison operator.");
             }
-            return -1;
+
+            return (false, "Values are not comparable as numbers or DateTimes.");
         }
-    }
 
-    public class ConditionObjectGroup
-    {
-        public object FirstValue { get; set; }
-        public ComparisonOperatorEnum ComparisonOperator { get; set; }
-        public object SecondValue { get; set; }
-    }
+        private (bool, string) FileExists(object filePath)
+        {
+            if (filePath == null)
+                return (false, "File path is null.");
 
-    public enum ComparisonOperatorEnum
-    {
-        [Display(Name = "Exists", Description = "Checks if the file exists.")]
-        Exists = 0,
+            if (!(filePath is string))
+                return (false, "File path is not valid.");
 
-        [Display(Name = "Does Not Exist", Description = "Checks if the file does not exist.")]
-        DoesNotExist = 1,
-
-        [Display(Name = "Contains (Text)", Description = "Checks if the text contains the given value.")]
-        ContainsText = 2,
-
-        [Display(Name = "Does Not Contain (Text)", Description = "Checks if the text does not contain the given value.")]
-        DoesNotContainText = 3,
-
-        [Display(Name = "Exactly Matches", Description = "Checks if the text exactly matches the given value.")]
-        ExactlyMatches = 4,
-
-        [Display(Name = "Does Not Exactly Match", Description = "Checks if the text does not exactly match the given value.")]
-        DoesNotExactlyMatch = 5,
-
-        [Display(Name = "Starts With", Description = "Checks if the text starts with the given value.")]
-        StartsWith = 6,
-
-        [Display(Name = "Does Not Start With", Description = "Checks if the text does not start with the given value.")]
-        DoesNotStartWith = 7,
-
-        [Display(Name = "Ends With", Description = "Checks if the text ends with the given value.")]
-        EndsWith = 8,
-
-        [Display(Name = "Does Not End With", Description = "Checks if the text does not end with the given value.")]
-        DoesNotEndWith = 9,
-
-        [Display(Name = "Contains (List)", Description = "Checks if the list contains the given item.")]
-        ContainsList = 10,
-
-        [Display(Name = "Does Not Contain (List)", Description = "Checks if the list does not contain the given item.")]
-        DoesNotContainList = 11,
-
-        [Display(Name = "Is Empty", Description = "Checks if the list is empty.")]
-        IsEmpty = 12,
-
-        [Display(Name = "Is Not Empty", Description = "Checks if the list is not empty.")]
-        IsNotEmpty = 13,
-
-        [Display(Name = "Is Greater Than", Description = "Checks if the number is greater than the given value.")]
-        GreaterThan = 14,
-
-        [Display(Name = "Is Less Than", Description = "Checks if the number is less than the given value.")]
-        LessThan = 15,
-
-        [Display(Name = "Is Equal To", Description = "Checks if the number is equal to the given value.")]
-        EqualTo = 16,
-
-        [Display(Name = "After", Description = "Checks if the date/time is after the given value.")]
-        After = 17,
-
-        [Display(Name = "Before", Description = "Checks if the date/time is before the given value.")]
-        Before = 18,
-
-        [Display(Name = "Equals (DateTime)", Description = "Checks if the date/time equals the given value.")]
-        EqualsDateTime = 19,
-
-        [Display(Name = "Is True", Description = "Checks if the value is true.")]
-        IsTrue = 20,
-
-        [Display(Name = "Is False", Description = "Checks if the value is false.")]
-        IsFalse = 21
+            bool exists = System.IO.File.Exists(filePath.ToString());
+            return exists ? (true, "File exists.") : (false, "File does not exist.");
+        }
     }
 }
