@@ -267,9 +267,9 @@ public class JobTableService : IJobTableService
             {
                 TenantId = _currentTenantService.CurrentTenantId,
                 FlowVersionId = jobTableDto.FlowVersionId,
-                TriggerType = TriggerTypesEnum.ManualTrigger,
+                TriggerType = jobTableDto.TriggerType,
                 MachineId = jobTableDto.MachineId,
-                Priority = JobPriorityTypesEnum.Normal,
+                Priority = jobTableDto.Priority,
                 Status = JobStatusTypesEnum.Created,
                 CreatedOn = DateTimeOffset.UtcNow,
                 IsPublished = flowVersion.IsPublished,
