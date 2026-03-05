@@ -215,17 +215,30 @@ public class M365SharePointConnectorsService : IM365SharePointConnectorsService
 
             case nameof(M365SharePointActionsEnum.FileUpload):
                 {
-                    // Read inputs from payload
+                    // Read input values from the payload
                     var drivePath = CloudConnectionPayloadUtil.GetValue(payload, "drivePath");
                     var fileName = CloudConnectionPayloadUtil.GetValue(payload, "fileName");
-                    var base64Content = CloudConnectionPayloadUtil.GetValue(payload, "fileContent");
-                    var contentType = CloudConnectionPayloadUtil.GetValue(payload, "contentType");
+                    var contentSource = CloudConnectionPayloadUtil.GetValue(payload, "ContentSource");
+                    var content = CloudConnectionPayloadUtil.GetValue(payload, "Content");
 
-                    // Remove data URL prefix if present
-                    if (base64Content.Contains(",")) base64Content = base64Content.Split(',')[1];
+                    // Variable to store the final file bytes that will be uploaded
+                    byte[] fileBytes;
 
-                    // Convert base64 string to byte array for upload
-                    byte[] fileBytes = Convert.FromBase64String(base64Content);
+                    if (contentSource?.ToLower() == "url")
+                    {
+                        // If the content source is a URL, download the file from the provided URL and retrieve the file content as a byte array
+                        fileBytes = await GetFileBytesFromUrlAsync(content);
+                    }
+                    else
+                    {
+                        // If the content source is Base64, process the encoded string
+                        // Remove the data URL prefix if present (e.g., "data:application/pdf;base64,")
+                        if (content.Contains(","))
+                            content = content.Split(',')[1];
+
+                        // Convert the Base64-encoded string into a byte array for file upload
+                        fileBytes = Convert.FromBase64String(content);
+                    }
 
                     // Parse the drive path to extract necessary components
                     var driveUri = new Uri(drivePath);
@@ -240,7 +253,7 @@ public class M365SharePointConnectorsService : IM365SharePointConnectorsService
                     var uploadUrl = $"{GRAPH_BASE_URL}/drives/{driveId}/root:/{(string.IsNullOrWhiteSpace(relativePath) ? "" : relativePath + "/")}{fileName}:/content";
 
                     // Upload file content (creates or replaces existing file)
-                    return await HttpClientHelper.PutAsync(uploadUrl, fileBytes, accessToken, mediaType: "application/octet-stream");
+                    return await UploadFileToSharePointAsync(uploadUrl, fileBytes, accessToken);
                 }
 
             case nameof(M365SharePointActionsEnum.UpdateFile):
@@ -688,5 +701,66 @@ public class M365SharePointConnectorsService : IM365SharePointConnectorsService
             Base64 = base64Content,
             DownloadedAtUtc = DateTime.UtcNow
         }));
+    }
+
+    // Uploads a file to SharePoint/OneDrive using Microsoft Graph API.
+    // This method sends a PUT request with the file byte content to the provided upload URL.
+    private async Task<JsonDocument> UploadFileToSharePointAsync(string uploadUrl, byte[] fileBytes, string accessToken, string contentType = "application/octet-stream")
+    {
+        // Initialize HttpClient to make the HTTP request to Microsoft Graph
+        using (var httpClient = new HttpClient())
+        {
+            // Attach the Bearer access token required for Graph API authentication
+            httpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", accessToken);
+
+            // Create request content from the file byte array
+            using (var content = new ByteArrayContent(fileBytes))
+            {
+                // Define the MIME type for the file being uploaded
+                content.Headers.ContentType = new MediaTypeHeaderValue(contentType);
+
+                // Send a PUT request to upload or overwrite the file in SharePoint via Graph API
+                var response = await httpClient.PutAsync(uploadUrl, content);
+
+                // Retrieve the response body as a string
+                var responseContent = await response.Content.ReadAsStringAsync();
+
+                // Check if the request completed successfully (HTTP 2xx)
+                if (response.IsSuccessStatusCode)
+                {
+                    try
+                    {
+                        // Parse the API response into a JsonDocument
+                        return JsonDocument.Parse(responseContent);
+                    }
+                    catch (Exception ex)
+                    {
+                        // Handle JSON parsing errors and return a formatted error response
+                        return JsonDocument.Parse(
+                            $@"{{""statusCode"": {(int)response.StatusCode}, ""error"": ""Exception: {ex.Message.Replace("\"", "'")}""}}");
+                    }
+                }
+                else
+                {
+                    // Return status code and error message if the API request fails
+                    return JsonDocument.Parse(
+                        $@"{{""statusCode"": {(int)response.StatusCode}, ""error"": ""Exception: {responseContent.Replace("\"", "'")}""}}");
+                }
+            }
+        }
+    }
+
+    private async Task<byte[]> GetFileBytesFromUrlAsync(string fileUrl)
+    {
+        using (var httpClient = new HttpClient())
+        {
+            // Send GET request to download file
+            var response = await httpClient.GetAsync(fileUrl);
+
+            response.EnsureSuccessStatusCode();
+
+            // Return file content as byte array
+            return await response.Content.ReadAsByteArrayAsync();
+        }
     }
 }

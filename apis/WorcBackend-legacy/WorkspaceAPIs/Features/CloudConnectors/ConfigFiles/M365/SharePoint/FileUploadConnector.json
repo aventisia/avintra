@@ -30,18 +30,30 @@
         },
         {
             "direction": "Input",
-            "type": "text",
-            "name": "ContentType",
-            "label": "Content Type",
-            "description": "The MIME type of the file being uploaded (e.g., application/pdf for PDF files).",
-            "defaultValue": ""
+            "type": "select",
+            "name": "ContentSource",
+            "label": "File Content Source",
+            "description": "Choose how the file content will be provided for the upload.",
+            "defaultValue": "Base64",
+            "selectOptions": [
+                {
+                    "label": "Base64 Content",
+                    "value": "Base64",
+                    "description": "Provide the file content as a Base64-encoded string."
+                },
+                {
+                    "label": "File URL",
+                    "value": "Url",
+                    "description": "Provide a publicly accessible URL from which the file will be downloaded."
+                }
+            ]
         },
         {
             "direction": "Input",
             "type": "text",
-            "name": "FileContent",
-            "label": "File Content (Base64)",
-            "description": "The content of the file to be uploaded, encoded in Base64 format.",
+            "name": "Content",
+            "label": "File Content",
+            "description": "Provide the file content based on the selected 'File Content Source'. Enter a Base64-encoded string if 'Base64 Content' is selected, or provide the file URL if 'File URL' is selected.",
             "defaultValue": ""
         },
         {
