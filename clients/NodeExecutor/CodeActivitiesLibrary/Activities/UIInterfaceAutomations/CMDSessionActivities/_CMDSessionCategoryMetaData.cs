@@ -6,6 +6,7 @@ namespace CodeActivitiesLibrary.UiInterfaceAutomations.CmdSessionActivities
         primaryCategory: "UI Interface Automations",
         label: "CMD Session",
         description: "Automate command prompt session operations.",
+        supportedPlatforms: "windows",
         img: "/assets/CMDSession.svg")]
     internal sealed class _CMDSessionCategoryMetaData { }
 }

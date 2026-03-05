@@ -1,37 +1,40 @@
 {
-    "name": "SendTextSms",
-    "description": "Sends an SMS using Twilio service",
-    "version": "1.0.0",
-    "author": "@gaurav",
-    "fields": [
-      {
-        "direction": "Input",
-        "type": "credentials-select",
-        "name": "__CredentialId__Twilio",
-        "label": "Twilio Credential",
-        "description": "The Twilio credential containing valid auth token and accountsId which is used to authenticate API requests.",
-        "defaultValue": ""
-      },
-      {
-        "direction": "Input",
-        "type": "select",
-        "name": "recipientType",
-        "label": "Recipient Identification Method",
-        "description": "Specify how to identify the recipient of the WhatsApp message: by phone number or by Messaging Service SID.",
-        "defaultValue": "PhoneNumber",
-        "selectOptions": [
-          {
-            "label": "Phone Number",
-            "value": "PhoneNumber",
-            "description": "Choose this option to identify the recipient using their phone number."
-          },
-          {
-            "label": "Messaging Service SID",
-            "value": "MessagingServiceSID",
-            "description": "Choose this option to identify the recipient using their unique Twilio Messaging Service SID."
-          }
-        ]
-      },
+  "name": "SendTextSms",
+  "description": "Sends an SMS using Twilio service",
+  "version": "1.0.0",
+  "author": "@gaurav",
+  "supportedPlatforms": ["cloud", "windows"],
+  "errorHandling": "standard",
+  "testScreenType": "standard",
+  "fields": [
+    {
+      "direction": "Input",
+      "type": "credentials-select",
+      "name": "__CredentialId__Twilio",
+      "label": "Twilio Credential",
+      "description": "The Twilio credential containing valid auth token and accountsId which is used to authenticate API requests.",
+      "defaultValue": ""
+    },
+    {
+      "direction": "Input",
+      "type": "select",
+      "name": "recipientType",
+      "label": "Recipient Identification Method",
+      "description": "Specify how to identify the recipient of the WhatsApp message: by phone number or by Messaging Service SID.",
+      "defaultValue": "PhoneNumber",
+      "selectOptions": [
+        {
+          "label": "Phone Number",
+          "value": "PhoneNumber",
+          "description": "Choose this option to identify the recipient using their phone number."
+        },
+        {
+          "label": "Messaging Service SID",
+          "value": "MessagingServiceSID",
+          "description": "Choose this option to identify the recipient using their unique Twilio Messaging Service SID."
+        }
+      ]
+    },
     {
       "direction": "Input",
       "type": "text",

@@ -10,7 +10,8 @@ namespace CodeActivitiesLibrary.Extensions
         public string Author { get; }
 
         /// <summary>
-        /// Possible values (one or more separated by comma): "desktop", "cloud", "cloud,desktop"
+        /// Possible values (one or more separated by comma): "windows", "cloud", "cloud,windows"
+        /// Same property also exists in ActivityCategoryMetadataAttribute and if needed then we can override it on activity level. If not set on activity level then we can take the value from category level.
         /// </summary>
         public string SupportedPlatforms { get; }
 
@@ -35,7 +36,7 @@ namespace CodeActivitiesLibrary.Extensions
         public ActivityMetaDataAttribute(string nodeType = "activityNode",
             string version = "1.0.0",
             string author = "@aventisia",
-            string supportedPlatforms = "desktop",
+            string supportedPlatforms = null,
             string errorHandling = "standard",
             string testScreenType = "standard",
             string nodeIcon = null,

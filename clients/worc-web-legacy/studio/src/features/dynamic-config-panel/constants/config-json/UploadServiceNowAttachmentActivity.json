@@ -4,9 +4,7 @@
   "description": "Uploads a file as an attachment to a record in ServiceNow using a Bearer token.",
   "version": "1.0.0",
   "auther": "@aventisia",
-  "supportedPlatforms": [
-    "desktop"
-  ],
+  "supportedPlatforms": ["cloud", "windows"],
   "errorHandling": "standard",
   "testScreenType": "standard",
   "fields": [

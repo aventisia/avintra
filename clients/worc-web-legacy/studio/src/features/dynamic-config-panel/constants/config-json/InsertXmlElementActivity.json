@@ -4,9 +4,7 @@
   "description": "Inserts a new XML element into an existing XML document.",
   "version": "1.0.0",
   "auther": "@aventisia",
-  "supportedPlatforms": [
-    "desktop"
-  ],
+  "supportedPlatforms": ["cloud", "windows"],
   "errorHandling": "standard",
   "testScreenType": "standard",
   "fields": [

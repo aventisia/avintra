@@ -1,51 +1,54 @@
 {
-    "name": "MoveEmailToFolder",
-    "description": "Moves an email message to a specified folder within a mailbox using Microsoft Graph.",
-    "version": "1.0.1",
-    "author": "@rahmat",
-    "fields": [
-        {
-            "direction": "Input",
-            "type": "credentials-select",
-            "name": "__CredentialId__M365",
-            "label": "M365 Credential",
-            "description": "Select Microsoft 365 credentials for authentication.",
-            "defaultValue": ""
-        },
-        {
-            "direction": "Input",
-            "type": "text",
-            "name": "MailboxAddress",
-            "label": "Mailbox Address",
-            "description": "The email address of the mailbox containing the email to move.",
-            "defaultValue": ""
-        },
-        {
-            "direction": "Input",
-            "type": "text",
-            "name": "MessageId",
-            "label": "Message ID",
-            "description": "The unique identifier of the email message to move.",
-            "defaultValue": ""
-        },
-        {
-            "direction": "Input",
-            "type": "text",
-            "name": "FolderName",
-            "label": "Target Folder Name",
-            "description": "The display name of the destination folder where the email should be moved. The folder must already exist in the mailbox.",
-            "defaultValue": ""
-        },
-        {
-            "direction": "Output",
-            "type": "config-panel-output",
-            "name": "Result",
-            "label": "Result",
-            "description": "The result of the email move operation, including success status and any error messages.",
-            "defaultValue": {
-                "value": "Result",
-                "enabled": true
-            }
-        }
-    ]
+  "name": "MoveEmailToFolder",
+  "description": "Moves an email message to a specified folder within a mailbox using Microsoft Graph.",
+  "version": "1.0.1",
+  "author": "@rahmat",
+  "supportedPlatforms": ["cloud", "windows"],
+  "errorHandling": "standard",
+  "testScreenType": "standard",
+  "fields": [
+    {
+      "direction": "Input",
+      "type": "credentials-select",
+      "name": "__CredentialId__M365",
+      "label": "M365 Credential",
+      "description": "Select Microsoft 365 credentials for authentication.",
+      "defaultValue": ""
+    },
+    {
+      "direction": "Input",
+      "type": "text",
+      "name": "MailboxAddress",
+      "label": "Mailbox Address",
+      "description": "The email address of the mailbox containing the email to move.",
+      "defaultValue": ""
+    },
+    {
+      "direction": "Input",
+      "type": "text",
+      "name": "MessageId",
+      "label": "Message ID",
+      "description": "The unique identifier of the email message to move.",
+      "defaultValue": ""
+    },
+    {
+      "direction": "Input",
+      "type": "text",
+      "name": "FolderName",
+      "label": "Target Folder Name",
+      "description": "The display name of the destination folder where the email should be moved. The folder must already exist in the mailbox.",
+      "defaultValue": ""
+    },
+    {
+      "direction": "Output",
+      "type": "config-panel-output",
+      "name": "Result",
+      "label": "Result",
+      "description": "The result of the email move operation, including success status and any error messages.",
+      "defaultValue": {
+        "value": "Result",
+        "enabled": true
+      }
+    }
+  ]
 }

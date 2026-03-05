@@ -4,9 +4,7 @@
   "description": "Deletes an AWS Certificate Manager (ACM) certificate using AWS credentials resolved from environment or IAM role.",
   "version": "1.0.0",
   "auther": "@aventisia",
-  "supportedPlatforms": [
-    "desktop"
-  ],
+  "supportedPlatforms": ["cloud", "windows"],
   "errorHandling": "standard",
   "testScreenType": "standard",
   "fields": [

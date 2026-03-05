@@ -4,9 +4,7 @@
   "description": "Displays a file selection dialog to let users choose one or more files.",
   "version": "1.0.0",
   "auther": "@aventisia",
-  "supportedPlatforms": [
-    "desktop"
-  ],
+  "supportedPlatforms": ["windows"],
   "errorHandling": "standard",
   "testScreenType": "standard",
   "fields": [

@@ -3,6 +3,9 @@
   "description": "Sends an whatsapp message using Twilio service",
   "version": "1.0.0",
   "author": "@gaurav",
+  "supportedPlatforms": ["cloud", "windows"],
+  "errorHandling": "standard",
+  "testScreenType": "standard",
   "fields": [
     {
       "direction": "Input",

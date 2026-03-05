@@ -4,9 +4,7 @@
   "description": "Selects the provided UI element, such as a list item, tab item or combo box option, using UI Automation.",
   "version": "1.0.0",
   "auther": "@aventisia",
-  "supportedPlatforms": [
-    "desktop"
-  ],
+  "supportedPlatforms": ["windows"],
   "errorHandling": "standard",
   "testScreenType": "standard",
   "fields": [

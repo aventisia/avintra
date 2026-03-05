@@ -4,9 +4,7 @@
   "description": "Deletes a record from a ServiceNow table using the record sys_id and credential ID (BasicAuth \u2192 Base64(username:password) or OAuth2 \u2192 Bearer token).",
   "version": "1.0.0",
   "auther": "@aventisia",
-  "supportedPlatforms": [
-    "desktop"
-  ],
+  "supportedPlatforms": ["cloud", "windows"],
   "errorHandling": "standard",
   "testScreenType": "standard",
   "fields": [

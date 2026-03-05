@@ -1,71 +1,74 @@
 {
-    "name": "FileUpload",
-    "description": "Uploads a file to a specified SharePoint document library location using Microsoft Graph.",
-    "version": "1.0.1",
-    "author": "@rahmat",
-    "fields": [
+  "name": "FileUpload",
+  "description": "Uploads a file to a specified SharePoint document library location using Microsoft Graph.",
+  "version": "1.0.1",
+  "author": "@rahmat",
+  "supportedPlatforms": ["cloud", "windows"],
+  "errorHandling": "standard",
+  "testScreenType": "standard",
+  "fields": [
+    {
+      "direction": "Input",
+      "type": "credentials-select",
+      "name": "__CredentialId__M365",
+      "label": "M365 Credential",
+      "description": "Select the Microsoft 365 credential used to authenticate the SharePoint request.",
+      "defaultValue": ""
+    },
+    {
+      "direction": "Input",
+      "type": "text",
+      "name": "FilePath",
+      "label": "Destination Folder Path",
+      "description": "The full SharePoint URL of the destination folder where the file should be uploaded. For example: /sites/YourSite/Shared Documents/YourFolder",
+      "defaultValue": ""
+    },
+    {
+      "direction": "Input",
+      "type": "text",
+      "name": "FileName",
+      "label": "File Name",
+      "description": "The name of the file to be uploaded, including the file extension (e.g., Document.pdf).",
+      "defaultValue": ""
+    },
+    {
+      "direction": "Input",
+      "type": "select",
+      "name": "ContentSource",
+      "label": "File Content Source",
+      "description": "Choose how the file content will be provided for the upload.",
+      "defaultValue": "Base64",
+      "selectOptions": [
         {
-            "direction": "Input",
-            "type": "credentials-select",
-            "name": "__CredentialId__M365",
-            "label": "M365 Credential",
-            "description": "Select the Microsoft 365 credential used to authenticate the SharePoint request.",
-            "defaultValue": ""
+          "label": "Base64 Content",
+          "value": "Base64",
+          "description": "Provide the file content as a Base64-encoded string."
         },
         {
-            "direction": "Input",
-            "type": "text",
-            "name": "FilePath",
-            "label": "Destination Folder Path",
-            "description": "The full SharePoint URL of the destination folder where the file should be uploaded. For example: /sites/YourSite/Shared Documents/YourFolder",
-            "defaultValue": ""
-        },
-        {
-            "direction": "Input",
-            "type": "text",
-            "name": "FileName",
-            "label": "File Name",
-            "description": "The name of the file to be uploaded, including the file extension (e.g., Document.pdf).",
-            "defaultValue": ""
-        },
-        {
-            "direction": "Input",
-            "type": "select",
-            "name": "ContentSource",
-            "label": "File Content Source",
-            "description": "Choose how the file content will be provided for the upload.",
-            "defaultValue": "Base64",
-            "selectOptions": [
-                {
-                    "label": "Base64 Content",
-                    "value": "Base64",
-                    "description": "Provide the file content as a Base64-encoded string."
-                },
-                {
-                    "label": "File URL",
-                    "value": "Url",
-                    "description": "Provide a publicly accessible URL from which the file will be downloaded."
-                }
-            ]
-        },
-        {
-            "direction": "Input",
-            "type": "text",
-            "name": "Content",
-            "label": "File Content",
-            "description": "Provide the file content based on the selected 'File Content Source'. Enter a Base64-encoded string if 'Base64 Content' is selected, or provide the file URL if 'File URL' is selected.",
-            "defaultValue": ""
-        },
-        {
-            "direction": "Output",
-            "type": "config-panel-output",
-            "name": "Result",
-            "label": "Result",
-            "description": "The result of the file upload operation, including success status and any error messages.",
-            "defaultValue": {
-                "value": "Result",
-                "enabled": true
-            }
+          "label": "File URL",
+          "value": "Url",
+          "description": "Provide a publicly accessible URL from which the file will be downloaded."
         }
-    ]
+      ]
+    },
+    {
+      "direction": "Input",
+      "type": "text",
+      "name": "Content",
+      "label": "File Content",
+      "description": "Provide the file content based on the selected 'File Content Source'. Enter a Base64-encoded string if 'Base64 Content' is selected, or provide the file URL if 'File URL' is selected.",
+      "defaultValue": ""
+    },
+    {
+      "direction": "Output",
+      "type": "config-panel-output",
+      "name": "Result",
+      "label": "Result",
+      "description": "The result of the file upload operation, including success status and any error messages.",
+      "defaultValue": {
+        "value": "Result",
+        "enabled": true
+      }
+    }
+  ]
 }

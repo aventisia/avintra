@@ -6,6 +6,7 @@ namespace CodeActivitiesLibrary.UiInterfaceAutomations.MessageBoxActivities
         primaryCategory: "UI Interface Automations",
         label: "Message Box",
         description: "Display message boxes and dialogs.",
+        supportedPlatforms: "windows",
         img: "/assets/MessageBox.svg")]
     internal sealed class _MessageBoxCategoryMetaData { }
 }

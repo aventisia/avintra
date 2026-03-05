@@ -4,9 +4,7 @@
   "description": "Renews an AWS Certificate Manager (ACM) certificate using AWS credentials from AWE Credential Vault.",
   "version": "1.0.0",
   "auther": "@aventisia",
-  "supportedPlatforms": [
-    "desktop"
-  ],
+  "supportedPlatforms": ["cloud", "windows"],
   "errorHandling": "standard",
   "testScreenType": "standard",
   "fields": [

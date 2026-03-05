@@ -4,9 +4,7 @@
   "description": "Replaces all occurrences of a specified subtext with another text. It can also be used with regular expressions.",
   "version": "1.0.0",
   "auther": "@aventisia",
-  "supportedPlatforms": [
-    "desktop"
-  ],
+  "supportedPlatforms": ["cloud", "windows"],
   "errorHandling": "standard",
   "testScreenType": "standard",
   "fields": [

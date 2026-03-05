@@ -4,9 +4,7 @@
   "description": "Simulates clicking a UI element (e.g., link, button) on a web page.",
   "version": "1.0.0",
   "auther": "@aventisia",
-  "supportedPlatforms": [
-    "desktop"
-  ],
+  "supportedPlatforms": ["windows"],
   "errorHandling": "standard",
   "testScreenType": "standard",
   "fields": [

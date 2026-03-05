@@ -3,6 +3,9 @@
   "description": "Adds a new worksheet to a specified Excel file stored in OneDrive or SharePoint using the Microsoft 365 Excel API. Provide valid M365 credentials, the target Excel file's Drive and Item ID, and the name for the new worksheet. The connector will return the details of the newly added worksheet, along with the status code and message from the API.",
   "version": "1.0.0",
   "author": "@gaurav",
+  "supportedPlatforms": ["cloud", "windows"],
+  "errorHandling": "standard",
+  "testScreenType": "standard",
   "fields": [
     {
       "direction": "Input",

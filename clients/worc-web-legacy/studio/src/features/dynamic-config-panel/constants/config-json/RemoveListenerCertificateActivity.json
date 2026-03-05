@@ -4,9 +4,7 @@
   "description": "Removes a certificate from an AWS Elastic Load Balancer (ALB/NLB) listener.",
   "version": "1.0.0",
   "auther": "@aventisia",
-  "supportedPlatforms": [
-    "desktop"
-  ],
+  "supportedPlatforms": ["cloud", "windows"],
   "errorHandling": "standard",
   "testScreenType": "standard",
   "fields": [

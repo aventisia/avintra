@@ -4,9 +4,7 @@
   "description": "Encrypts a string using AES encryption. Short keys are hashed securely to 32 bytes.",
   "version": "1.0.0",
   "auther": "@aventisia",
-  "supportedPlatforms": [
-    "desktop"
-  ],
+  "supportedPlatforms": ["cloud", "windows"],
   "errorHandling": "standard",
   "testScreenType": "standard",
   "fields": [

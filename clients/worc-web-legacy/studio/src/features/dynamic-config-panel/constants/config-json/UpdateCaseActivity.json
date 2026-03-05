@@ -4,9 +4,7 @@
   "description": "Updates an existing Case record in Salesforce using the provided credentials and updated field values.",
   "version": "1.0.0",
   "auther": "@aventisia",
-  "supportedPlatforms": [
-    "desktop"
-  ],
+  "supportedPlatforms": ["cloud", "windows"],
   "errorHandling": "standard",
   "testScreenType": "standard",
   "fields": [

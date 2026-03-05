@@ -4,9 +4,7 @@
   "description": "Lists multiple AWS Certificate Manager (ACM) certificates using the ListCertificates API.",
   "version": "1.0.0",
   "auther": "@aventisia",
-  "supportedPlatforms": [
-    "desktop"
-  ],
+  "supportedPlatforms": ["cloud", "windows"],
   "errorHandling": "standard",
   "testScreenType": "standard",
   "fields": [

@@ -4,9 +4,7 @@
   "description": "Expands or collapses a UI element (such as a tree item or combo box) by searching for it using a property and value.",
   "version": "1.0.0",
   "auther": "@aventisia",
-  "supportedPlatforms": [
-    "desktop"
-  ],
+  "supportedPlatforms": ["windows"],
   "errorHandling": "standard",
   "testScreenType": "standard",
   "fields": [

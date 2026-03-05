@@ -4,9 +4,7 @@
   "description": "Recursively searches through a JSON structure and returns the first value associated with the specified key.",
   "version": "1.0.0",
   "auther": "@aventisia",
-  "supportedPlatforms": [
-    "desktop"
-  ],
+  "supportedPlatforms": ["cloud", "windows"],
   "errorHandling": "standard",
   "testScreenType": "standard",
   "fields": [

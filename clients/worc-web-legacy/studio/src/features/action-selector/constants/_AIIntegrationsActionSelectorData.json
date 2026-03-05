@@ -19,7 +19,8 @@
             "description": "Attach an existing AI model from AI Studio to your automation workflow.",
             "docsLink": null,
             "icon": "",
-            "img": "/assets/InferencingModel.svg"
+            "img": "/assets/InferencingModel.svg",
+            "supportedPlatforms": ["cloud", "windows"]
           },
           {
             "type": "activityNode",
@@ -28,7 +29,8 @@
             "description": "Perform OCR on a PDF document using AI",
             "docsLink": null,
             "icon": "",
-            "img": "/assets/olmocr.png"
+            "img": "/assets/olmocr.png",
+            "supportedPlatforms": ["cloud", "windows"]
           },
           {
             "type": "aiNode",
@@ -37,7 +39,8 @@
             "description": "Analyzes visual data to extract structured information, such as identifying objects, reading text, or detecting anomalies.",
             "docsLink": null,
             "icon": "",
-            "img": "/assets/VisionModel.svg"
+            "img": "/assets/VisionModel.svg",
+            "supportedPlatforms": ["cloud", "windows"]
           },
           {
             "type": "aiNode",
@@ -46,7 +49,8 @@
             "description": "Performs high-speed reasoning and logic checks on incoming data to provide instant predictions or route tasks.",
             "docsLink": null,
             "icon": "",
-            "img": "/assets/InferencingModel.svg"
+            "img": "/assets/InferencingModel.svg",
+            "supportedPlatforms": ["cloud", "windows"]
           },
           {
             "type": "aiNode",
@@ -56,7 +60,8 @@
             "docsLink": null,
             "doNotRenderIf": ["production"],
             "icon": "",
-            "img": "/assets/ConversationModel.svg"
+            "img": "/assets/ConversationModel.svg",
+            "supportedPlatforms": ["cloud", "windows"]
           },
           {
             "type": "aiNode",
@@ -65,7 +70,8 @@
             "description": "Convert spoken language into written text using AI.",
             "docsLink": null,
             "icon": "",
-            "img": "/assets/SpeechToTextModel.svg"
+            "img": "/assets/SpeechToTextModel.svg",
+            "supportedPlatforms": ["cloud", "windows"]
           },
           {
             "type": "aiNode",
@@ -74,7 +80,8 @@
             "description": "Convert text into natural-sounding speech using AI.",
             "docsLink": null,
             "icon": "",
-            "img": "/assets/TextToSpeechModel.svg"
+            "img": "/assets/TextToSpeechModel.svg",
+            "supportedPlatforms": ["cloud", "windows"]
           },
           {
             "type": "aiNode",
@@ -84,7 +91,8 @@
             "docsLink": null,
             "doNotRenderIf": ["production"],
             "icon": "",
-            "img": "/assets/ImageModel.svg"
+            "img": "/assets/ImageModel.svg",
+            "supportedPlatforms": ["cloud", "windows"]
           },
           {
             "type": "aiNode",
@@ -94,7 +102,8 @@
             "docsLink": null,
             "doNotRenderIf": ["production"],
             "icon": "",
-            "img": "/assets/VideoModel.svg"
+            "img": "/assets/VideoModel.svg",
+            "supportedPlatforms": ["cloud", "windows"]
           },
           {
             "type": "aiNode",
@@ -104,7 +113,8 @@
             "docsLink": null,
             "doNotRenderIf": ["production"],
             "icon": "",
-            "img": "/assets/DeepSearchModel.svg"
+            "img": "/assets/DeepSearchModel.svg",
+            "supportedPlatforms": ["cloud", "windows"]
           }
         ]
       }

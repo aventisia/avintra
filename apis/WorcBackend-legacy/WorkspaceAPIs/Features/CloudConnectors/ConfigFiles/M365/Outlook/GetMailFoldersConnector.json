@@ -1,59 +1,62 @@
 {
-    "name": "GetMailFolders",
-    "description": "Retrieves mail folders from a specified mailbox using Microsoft Graph.",
-    "version": "1.0.1",
-    "author": "@rahmat",
-    "fields": [
-        {
-            "direction": "Input",
-            "type": "credentials-select",
-            "name": "__CredentialId__M365",
-            "label": "M365 Credential",
-            "description": "Select Microsoft 365 credentials for authentication.",
-            "defaultValue": ""
-        },
-        {
-            "direction": "Input",
-            "type": "text",
-            "name": "MailboxAddress",
-            "label": "Mailbox Address",
-            "description": "The email address of the mailbox to retrieve folders from.",
-            "defaultValue": ""
-        },
-        {
-            "direction": "Input",
-            "type": "switch",
-            "name": "IncludeHiddenFolders",
-            "label": "Include Hidden Folders",
-            "description": "Whether to include hidden folders in the results. Hidden folders are typically system folders that are not visible in the standard folder list.",
-            "defaultValue": false
-        },
-        {
-            "direction": "Input",
-            "type": "number",
-            "name": "Top",
-            "label": "Top",
-            "description": "Number of folders to retrieve for pagination.",
-            "defaultValue": 10
-        },
-        {
-            "direction": "Input",
-            "type": "number",
-            "name": "Skip",
-            "label": "Skip",
-            "description": "Number of folders to skip for pagination.",
-            "defaultValue": 0
-        },
-        {
-            "direction": "Output",
-            "type": "config-panel-output",
-            "name": "Result",
-            "label": "Result",
-            "description": "Returns the list of mail folders.",
-            "defaultValue": {
-                "value": "Result",
-                "enabled": true
-            }
-        }
-    ]
+  "name": "GetMailFolders",
+  "description": "Retrieves mail folders from a specified mailbox using Microsoft Graph.",
+  "version": "1.0.1",
+  "author": "@rahmat",
+  "supportedPlatforms": ["cloud", "windows"],
+  "errorHandling": "standard",
+  "testScreenType": "standard",
+  "fields": [
+    {
+      "direction": "Input",
+      "type": "credentials-select",
+      "name": "__CredentialId__M365",
+      "label": "M365 Credential",
+      "description": "Select Microsoft 365 credentials for authentication.",
+      "defaultValue": ""
+    },
+    {
+      "direction": "Input",
+      "type": "text",
+      "name": "MailboxAddress",
+      "label": "Mailbox Address",
+      "description": "The email address of the mailbox to retrieve folders from.",
+      "defaultValue": ""
+    },
+    {
+      "direction": "Input",
+      "type": "switch",
+      "name": "IncludeHiddenFolders",
+      "label": "Include Hidden Folders",
+      "description": "Whether to include hidden folders in the results. Hidden folders are typically system folders that are not visible in the standard folder list.",
+      "defaultValue": false
+    },
+    {
+      "direction": "Input",
+      "type": "number",
+      "name": "Top",
+      "label": "Top",
+      "description": "Number of folders to retrieve for pagination.",
+      "defaultValue": 10
+    },
+    {
+      "direction": "Input",
+      "type": "number",
+      "name": "Skip",
+      "label": "Skip",
+      "description": "Number of folders to skip for pagination.",
+      "defaultValue": 0
+    },
+    {
+      "direction": "Output",
+      "type": "config-panel-output",
+      "name": "Result",
+      "label": "Result",
+      "description": "Returns the list of mail folders.",
+      "defaultValue": {
+        "value": "Result",
+        "enabled": true
+      }
+    }
+  ]
 }

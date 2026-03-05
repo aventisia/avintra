@@ -4,9 +4,7 @@
   "description": "Sorts the data table rows in ascending or descending order by the specified column, provided that all its values have the same data type.",
   "version": "1.0.0",
   "auther": "@aventisia",
-  "supportedPlatforms": [
-    "desktop"
-  ],
+  "supportedPlatforms": ["cloud", "windows"],
   "errorHandling": "standard",
   "testScreenType": "standard",
   "fields": [

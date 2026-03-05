@@ -4,9 +4,7 @@
   "description": "Recursively searches for an object with a matching primary key-value pair and deletes it from the structure.",
   "version": "1.0.0",
   "auther": "@aventisia",
-  "supportedPlatforms": [
-    "desktop"
-  ],
+  "supportedPlatforms": ["cloud", "windows"],
   "errorHandling": "standard",
   "testScreenType": "standard",
   "fields": [

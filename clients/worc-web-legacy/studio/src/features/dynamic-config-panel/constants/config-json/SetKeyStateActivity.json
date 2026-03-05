@@ -4,9 +4,7 @@
   "description": "Sets the state (on or off) for the keys Caps Lock, Num Lock, or Scroll Lock.",
   "version": "1.0.0",
   "auther": "@aventisia",
-  "supportedPlatforms": [
-    "desktop"
-  ],
+  "supportedPlatforms": ["windows"],
   "errorHandling": "standard",
   "testScreenType": "standard",
   "fields": [

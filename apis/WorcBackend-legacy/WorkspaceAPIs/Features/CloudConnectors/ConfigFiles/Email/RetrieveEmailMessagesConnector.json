@@ -3,6 +3,9 @@
   "description": "Retrieves email messages from an IMAP server.",
   "version": "1.0.0",
   "author": "@gaurav",
+  "supportedPlatforms": ["cloud", "windows"],
+  "errorHandling": "standard",
+  "testScreenType": "standard",
   "fields": [
     {
       "direction": "Input",
@@ -94,12 +97,12 @@
       "defaultValue": "Ssl"
     },
     {
-        "direction": "Input",
-        "type":"number",
-        "name": "TopN",
-        "label": "TopN",
-        "description": "Retrieve the top 10 email messages",
-        "defaultValue": 10
+      "direction": "Input",
+      "type": "number",
+      "name": "TopN",
+      "label": "TopN",
+      "description": "Retrieve the top 10 email messages",
+      "defaultValue": 10
     },
     {
       "direction": "Output",

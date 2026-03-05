@@ -4,9 +4,7 @@
   "description": "Expands a tree node using a specified path (e.g., \u0027Menu \u2192 Submenu \u2192 Item\u0027).",
   "version": "1.0.0",
   "auther": "@aventisia",
-  "supportedPlatforms": [
-    "desktop"
-  ],
+  "supportedPlatforms": ["cloud", "windows"],
   "errorHandling": "standard",
   "testScreenType": "standard",
   "fields": [

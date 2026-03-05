@@ -4,9 +4,7 @@
   "description": "Copies a specified range of cells from an Excel worksheet for later use or pasting into another worksheet.",
   "version": "1.0.0",
   "auther": "@aventisia",
-  "supportedPlatforms": [
-    "desktop"
-  ],
+  "supportedPlatforms": ["cloud", "windows"],
   "errorHandling": "standard",
   "testScreenType": "standard",
   "fields": [

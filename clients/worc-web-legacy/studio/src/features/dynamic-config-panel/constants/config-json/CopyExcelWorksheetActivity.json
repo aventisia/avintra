@@ -4,9 +4,7 @@
   "description": "Copies a worksheet to another workbook or within the same workbook, preserving data, formatting, and structure.",
   "version": "1.0.0",
   "auther": "@aventisia",
-  "supportedPlatforms": [
-    "desktop"
-  ],
+  "supportedPlatforms": ["cloud", "windows"],
   "errorHandling": "standard",
   "testScreenType": "standard",
   "fields": [

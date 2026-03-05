@@ -1,59 +1,62 @@
 {
-    "name": "GetEmailsByFolderName",
-    "description": "Retrieves email messages from a specified folder in a mailbox using Microsoft Graph.",
-    "version": "1.0.1",
-    "author": "@rahmat",
-    "fields": [
-        {
-            "direction": "Input",
-            "type": "credentials-select",
-            "name": "__CredentialId__M365",
-            "label": "M365 Credential",
-            "description": "Select Microsoft 365 credentials for authentication.",
-            "defaultValue": ""
-        },
-        {
-            "direction": "Input",
-            "type": "text",
-            "name": "MailboxAddress",
-            "label": "Mailbox Address",
-            "description": "The email address of the mailbox to retrieve emails from.",
-            "defaultValue": ""
-        },
-        {
-            "direction": "Input",
-            "type": "text",
-            "name": "FolderName",
-            "label": "Folder Name",
-            "description": "The display name of the folder to retrieve emails from. The folder must already exist in the mailbox.",
-            "defaultValue": ""
-        },
-        {
-            "direction": "Input",
-            "type": "number",
-            "name": "Top",
-            "label": "Top",
-            "description": "Number of emails to retrieve for pagination.",
-            "defaultValue": 10
-        },
-        {
-            "direction": "Input",
-            "type": "number",
-            "name": "Skip",
-            "label": "Skip",
-            "description": "Number of emails to skip for pagination.",
-            "defaultValue": 0
-        },
-        {
-            "direction": "Output",
-            "type": "config-panel-output",
-            "name": "Result",
-            "label": "Result",
-            "description": "The result of the email retrieval operation, including the list of emails in the specified folder and any error messages.",
-            "defaultValue": {
-                "value": "Result",
-                "enabled": true
-            }
-        }
-    ]
+  "name": "GetEmailsByFolderName",
+  "description": "Retrieves email messages from a specified folder in a mailbox using Microsoft Graph.",
+  "version": "1.0.1",
+  "author": "@rahmat",
+  "supportedPlatforms": ["cloud", "windows"],
+  "errorHandling": "standard",
+  "testScreenType": "standard",
+  "fields": [
+    {
+      "direction": "Input",
+      "type": "credentials-select",
+      "name": "__CredentialId__M365",
+      "label": "M365 Credential",
+      "description": "Select Microsoft 365 credentials for authentication.",
+      "defaultValue": ""
+    },
+    {
+      "direction": "Input",
+      "type": "text",
+      "name": "MailboxAddress",
+      "label": "Mailbox Address",
+      "description": "The email address of the mailbox to retrieve emails from.",
+      "defaultValue": ""
+    },
+    {
+      "direction": "Input",
+      "type": "text",
+      "name": "FolderName",
+      "label": "Folder Name",
+      "description": "The display name of the folder to retrieve emails from. The folder must already exist in the mailbox.",
+      "defaultValue": ""
+    },
+    {
+      "direction": "Input",
+      "type": "number",
+      "name": "Top",
+      "label": "Top",
+      "description": "Number of emails to retrieve for pagination.",
+      "defaultValue": 10
+    },
+    {
+      "direction": "Input",
+      "type": "number",
+      "name": "Skip",
+      "label": "Skip",
+      "description": "Number of emails to skip for pagination.",
+      "defaultValue": 0
+    },
+    {
+      "direction": "Output",
+      "type": "config-panel-output",
+      "name": "Result",
+      "label": "Result",
+      "description": "The result of the email retrieval operation, including the list of emails in the specified folder and any error messages.",
+      "defaultValue": {
+        "value": "Result",
+        "enabled": true
+      }
+    }
+  ]
 }

@@ -31,6 +31,7 @@ type NodeDataType = {
   docsLink?: string;
   icon?: string;
   img?: string;
+  supportedPlatforms?: string[];
   fieldValues?: { [key: string]: any };
   inputs?: NodeInputType[];
   outputs?: NodeOutputType[];

@@ -9,7 +9,9 @@ namespace CodeActivitiesLibrary.UiInterfaceAutomations.ScriptingActivities
     [DisplayName("Run DOS Command")]
     [Description(
         "Runs a DOS command or console application in invisible mode and retrieves its output upon completion.")]
-    [ActivityMetaData(nodeImg: "/assets/Scripting.svg")]
+    [ActivityMetaData(
+        nodeImg: "/assets/Scripting.svg", 
+        supportedPlatforms: "windows")]
     public class RunDosCommandActivity : BaseCodeActivity
     {
         [RequiredArgument]

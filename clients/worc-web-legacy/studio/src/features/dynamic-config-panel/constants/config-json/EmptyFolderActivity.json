@@ -4,9 +4,7 @@
   "description": "Removes all files and subdirectories within the specified folder, preserving the folder itself.",
   "version": "1.0.0",
   "auther": "@aventisia",
-  "supportedPlatforms": [
-    "desktop"
-  ],
+  "supportedPlatforms": ["cloud", "windows"],
   "errorHandling": "standard",
   "testScreenType": "standard",
   "fields": [

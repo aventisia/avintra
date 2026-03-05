@@ -6,6 +6,7 @@ namespace CodeActivitiesLibrary.UiInterfaceAutomations.ClipboardActivities
         primaryCategory: "UI Interface Automations",
         label: "Clipboard",
         description: "Clipboard operations and automation.",
+        supportedPlatforms: "windows",
         img: "/assets/Clipboard.svg")]
     internal sealed class _ClipboardCategoryMetaData
     {

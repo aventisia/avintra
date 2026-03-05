@@ -4,9 +4,7 @@
   "description": "Retrieves multiple items from AWS DynamoDB using Query or Scan API.",
   "version": "1.0.0",
   "auther": "@aventisia",
-  "supportedPlatforms": [
-    "desktop"
-  ],
+  "supportedPlatforms": ["cloud", "windows"],
   "errorHandling": "standard",
   "testScreenType": "standard",
   "fields": [

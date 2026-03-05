@@ -3,6 +3,9 @@
   "description": "Sends an email using the SendGrid API. Provide valid SendGrid credentials, sender and recipient details, subject, body, and optional attachments. The connector will return the response data, status code, and message from SendGrid after sending the email.",
   "version": "1.0.0",
   "author": "@gaurav",
+  "supportedPlatforms": ["cloud", "windows"],
+  "errorHandling": "standard",
+  "testScreenType": "standard",
   "fields": [
     {
       "direction": "Input",

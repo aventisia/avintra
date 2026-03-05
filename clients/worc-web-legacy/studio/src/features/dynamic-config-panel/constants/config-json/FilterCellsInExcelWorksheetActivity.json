@@ -4,9 +4,7 @@
   "description": "Filters cells in the specified Excel worksheet based on criteria applied to a specific column.",
   "version": "1.0.0",
   "auther": "@aventisia",
-  "supportedPlatforms": [
-    "desktop"
-  ],
+  "supportedPlatforms": ["cloud", "windows"],
   "errorHandling": "standard",
   "testScreenType": "standard",
   "fields": [

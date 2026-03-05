@@ -4,9 +4,7 @@
   "description": "Retrieves multiple records from a ServiceNow table using only the provided Credential ID or token. Supports pagination.",
   "version": "1.0.0",
   "auther": "@aventisia",
-  "supportedPlatforms": [
-    "desktop"
-  ],
+  "supportedPlatforms": ["cloud", "windows"],
   "errorHandling": "standard",
   "testScreenType": "standard",
   "fields": [

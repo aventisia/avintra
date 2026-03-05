@@ -4,9 +4,7 @@
   "description": "Checks if a file exists or does not exist and marks the beginning of a conditional block.",
   "version": "1.0.0",
   "auther": "@aventisia",
-  "supportedPlatforms": [
-    "desktop"
-  ],
+  "supportedPlatforms": ["cloud", "windows"],
   "errorHandling": "standard",
   "testScreenType": "standard",
   "fields": [

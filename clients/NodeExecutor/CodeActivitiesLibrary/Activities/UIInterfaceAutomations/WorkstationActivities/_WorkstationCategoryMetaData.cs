@@ -6,6 +6,7 @@ namespace CodeActivitiesLibrary.UiInterfaceAutomations.WorkstationActivities
         primaryCategory: "UI Interface Automations",
         label: "Workstation",
         description: "Automate workstation and desktop environment tasks.",
+        supportedPlatforms: "windows",
         img: "/assets/Workstation.svg")]
     internal sealed class _WorkstationCategoryMetaData { }
 }

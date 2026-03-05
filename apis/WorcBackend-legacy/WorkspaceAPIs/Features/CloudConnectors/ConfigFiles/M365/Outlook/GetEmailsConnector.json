@@ -1,85 +1,88 @@
 {
-    "name": "GetEmails",
-    "description": "Retrieves email messages from a specified mailbox folder using Microsoft Graph.",
-    "version": "1.0.1",
-    "author": "@rahmat",
-    "fields": [
-        {
-            "direction": "Input",
-            "type": "credentials-select",
-            "name": "__CredentialId__M365",
-            "label": "M365 Credential",
-            "description": "Select Microsoft 365 credentials for authentication.",
-            "defaultValue": ""
-        },
-        {
-            "direction": "Input",
-            "type": "text",
-            "name": "MailboxAddress",
-            "label": "Mailbox Address",
-            "description": "The email address of the mailbox to retrieve emails from.",
-            "defaultValue": ""
-        },
-        {
-            "direction": "Input",
-            "type": "text",
-            "name": "FolderName",
-            "label": "Folder Name",
-            "description": "The display name of the folder to retrieve emails from. For example, 'Inbox' or 'Sent Items'.",
-            "defaultValue": ""
-        },
+  "name": "GetEmails",
+  "description": "Retrieves email messages from a specified mailbox folder using Microsoft Graph.",
+  "version": "1.0.1",
+  "author": "@rahmat",
+  "supportedPlatforms": ["cloud", "windows"],
+  "errorHandling": "standard",
+  "testScreenType": "standard",
+  "fields": [
+    {
+      "direction": "Input",
+      "type": "credentials-select",
+      "name": "__CredentialId__M365",
+      "label": "M365 Credential",
+      "description": "Select Microsoft 365 credentials for authentication.",
+      "defaultValue": ""
+    },
+    {
+      "direction": "Input",
+      "type": "text",
+      "name": "MailboxAddress",
+      "label": "Mailbox Address",
+      "description": "The email address of the mailbox to retrieve emails from.",
+      "defaultValue": ""
+    },
+    {
+      "direction": "Input",
+      "type": "text",
+      "name": "FolderName",
+      "label": "Folder Name",
+      "description": "The display name of the folder to retrieve emails from. For example, 'Inbox' or 'Sent Items'.",
+      "defaultValue": ""
+    },
 
-        {
-            "direction": "Input",
-            "type": "switch",
-            "name": "UnreadOnly",
-            "label": "Unread Only",
-            "description": "If true, returns only unread emails.",
-            "defaultValue": false
-        },
-        {
-            "direction": "Input",
-            "type": "switch",
-            "name": "OnlyWithAttachments",
-            "label": "With Attachments Only",
-            "description": "If true, returns only emails that have attachments.",
-            "defaultValue": false
-        },
-        {
-            "direction": "Input",
-            "type": "switch",
-            "name": "IncludeAttachments",
-            "label": "Include Attachments",
-            "description": "If true, includes attachment details in the results. Note that this does not return the actual attachment content, but rather metadata about the attachments.",
-            "defaultValue": false
-        },
-        {
-            "direction": "Input",
-            "type": "number",
-            "name": "Top",
-            "label": "Top",
-            "description": "Number of emails to retrieve for pagination.",
-            "defaultValue": 10
-        },
-        {
-            "direction": "Input",
-            "type": "number",
-            "name": "Skip",
-            "label": "Skip",
-            "description": "Number of emails to skip for pagination.",
-            "defaultValue": 0
-        },
+    {
+      "direction": "Input",
+      "type": "switch",
+      "name": "UnreadOnly",
+      "label": "Unread Only",
+      "description": "If true, returns only unread emails.",
+      "defaultValue": false
+    },
+    {
+      "direction": "Input",
+      "type": "switch",
+      "name": "OnlyWithAttachments",
+      "label": "With Attachments Only",
+      "description": "If true, returns only emails that have attachments.",
+      "defaultValue": false
+    },
+    {
+      "direction": "Input",
+      "type": "switch",
+      "name": "IncludeAttachments",
+      "label": "Include Attachments",
+      "description": "If true, includes attachment details in the results. Note that this does not return the actual attachment content, but rather metadata about the attachments.",
+      "defaultValue": false
+    },
+    {
+      "direction": "Input",
+      "type": "number",
+      "name": "Top",
+      "label": "Top",
+      "description": "Number of emails to retrieve for pagination.",
+      "defaultValue": 10
+    },
+    {
+      "direction": "Input",
+      "type": "number",
+      "name": "Skip",
+      "label": "Skip",
+      "description": "Number of emails to skip for pagination.",
+      "defaultValue": 0
+    },
 
-        {
-            "direction": "Output",
-            "type": "config-panel-output",
-            "name": "Result",
-            "label": "Result",
-            "description": "Returns the list of email messages from the specified folder, including metadata such as subject, sender, received date, and optionally attachment details.",
-            "defaultValue": {
-                "value": "Result",
-                "enabled": true
-            }
-        }
-    ]
+    {
+      "direction": "Output",
+      "type": "config-panel-output",
+      "name": "Result",
+      "label": "Result",
+      "description": "Returns the list of email messages from the specified folder, including metadata such as subject, sender, received date, and optionally attachment details.",
+      "defaultValue": {
+        "value": "Result",
+        "enabled": true
+      }
+    }
+  ]
 }

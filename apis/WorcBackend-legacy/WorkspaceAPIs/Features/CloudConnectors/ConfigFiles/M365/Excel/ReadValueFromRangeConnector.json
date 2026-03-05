@@ -3,6 +3,9 @@
   "description": "Reads one or more values from a specified range in a worksheet of an Excel file stored in OneDrive or SharePoint using the Microsoft 365 Excel API. Provide valid M365 credentials, the target Excel file's Drive and Item ID, worksheet name, and range address. The connector will return the values read from the specified range, along with the status code and message from the API.",
   "version": "1.0.0",
   "author": "@gaurav",
+  "supportedPlatforms": ["cloud", "windows"],
+  "errorHandling": "standard",
+  "testScreenType": "standard",
   "fields": [
     {
       "direction": "Input",

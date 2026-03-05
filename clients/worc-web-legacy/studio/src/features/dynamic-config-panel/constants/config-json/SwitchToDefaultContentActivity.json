@@ -4,7 +4,7 @@
   "description": "Switches the Selenium WebDriver context back to the main document or top window (exiting all frames/iframe contexts).",
   "version": null,
   "auther": null,
-  "supportedPlatforms": [],
+  "supportedPlatforms": ["windows"],
   "errorHandling": null,
   "testScreenType": null,
   "fields": [

@@ -4,9 +4,7 @@
   "description": "Locks the workstation\u0027s display to protect it from unauthorized use. Optionally forces lock even if workstation doesn\u0027t support it.",
   "version": "1.0.0",
   "auther": "@aventisia",
-  "supportedPlatforms": [
-    "desktop"
-  ],
+  "supportedPlatforms": ["windows"],
   "errorHandling": "standard",
   "testScreenType": "standard",
   "fields": [

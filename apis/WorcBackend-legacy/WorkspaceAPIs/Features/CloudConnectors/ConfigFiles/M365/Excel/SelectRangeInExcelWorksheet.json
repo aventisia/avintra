@@ -3,6 +3,9 @@
   "description": "Select the specified range address from the Excel file ",
   "version": "1.0.0",
   "author": "@gaurav",
+  "supportedPlatforms": ["cloud", "windows"],
+  "errorHandling": "standard",
+  "testScreenType": "standard",
   "fields": [
     {
       "direction": "Input",
@@ -10,7 +13,7 @@
       "name": "__CredentialId__M365",
       "label": "M365 Excel Credential",
       "description": "The M365 Excel credential containing valid tenant ID, client ID, and client secret which is used to authenticate API requests.",
-      "defaultValue": ""   
+      "defaultValue": ""
     },
     {
       "direction": "Input",
@@ -21,20 +24,20 @@
       "defaultValue": ""
     },
     {
-        "direction": "Input",
-        "type": "text",
-        "name": "WorksheetName",
-        "label": "Worksheet Name",
-        "description": "The name of the worksheet to be select range in the Excel file.",
-        "defaultValue": "Sheet1"
+      "direction": "Input",
+      "type": "text",
+      "name": "WorksheetName",
+      "label": "Worksheet Name",
+      "description": "The name of the worksheet to be select range in the Excel file.",
+      "defaultValue": "Sheet1"
     },
     {
-        "direction": "Input",
-        "type": "text",
-        "name": "RangeAddress",
-        "label": "Range Address",
-        "description": "Select the specified range address from the selected range address in the Excel file ",
-        "defaultValue": "A1"
+      "direction": "Input",
+      "type": "text",
+      "name": "RangeAddress",
+      "label": "Range Address",
+      "description": "Select the specified range address from the selected range address in the Excel file ",
+      "defaultValue": "A1"
     },
     {
       "direction": "Output",

@@ -4,9 +4,7 @@
   "description": "Retrieves multiple Salesforce flows. Use \u0027Return All\u0027 to get all records without limit.",
   "version": "1.0.0",
   "auther": "@aventisia",
-  "supportedPlatforms": [
-    "desktop"
-  ],
+  "supportedPlatforms": ["cloud", "windows"],
   "errorHandling": "standard",
   "testScreenType": "standard",
   "fields": [

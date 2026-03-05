@@ -4,9 +4,7 @@
   "description": "Gets the name of a column by reading the first non-empty cell in the specified column of an Excel worksheet.",
   "version": "1.0.0",
   "auther": "@aventisia",
-  "supportedPlatforms": [
-    "desktop"
-  ],
+  "supportedPlatforms": ["cloud", "windows"],
   "errorHandling": "standard",
   "testScreenType": "standard",
   "fields": [

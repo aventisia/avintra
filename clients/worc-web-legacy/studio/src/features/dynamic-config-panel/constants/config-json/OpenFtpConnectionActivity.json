@@ -4,9 +4,7 @@
   "description": "Establishes a specific connection to a remote FTP server and stores that connection as a variable for later use.",
   "version": "1.0.0",
   "auther": "@aventisia",
-  "supportedPlatforms": [
-    "desktop"
-  ],
+  "supportedPlatforms": ["cloud", "windows"],
   "errorHandling": "standard",
   "testScreenType": "standard",
   "fields": [
