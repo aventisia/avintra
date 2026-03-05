@@ -64,112 +64,92 @@
             {
               "label": "Is Equal To",
               "value": "EqualTo",
-              "description": "Checks if the number is equal to the given value."
+              "description": "Checks if the first value is equal to the second value."
             },
             {
-              "label": "Exactly Matches",
-              "value": "ExactlyMatches",
-              "description": "Checks if the text exactly matches the given value."
+              "label": "Is Not Equal To",
+              "value": "NotEqualTo",
+              "description": "Checks if the first value is not equal to the second value."
             },
             {
-              "label": "Is True",
-              "value": "IsTrue",
-              "description": "Checks if the value is true."
-            },
-            {
-              "label": "Is False",
-              "value": "IsFalse",
-              "description": "Checks if the value is false."
-            },
-            {
-              "label": "Exists",
-              "value": "Exists",
-              "description": "Checks if the file exists."
-            },
-            {
-              "label": "Does Not Exist",
-              "value": "DoesNotExist",
-              "description": "Checks if the file does not exist."
-            },
-            {
-              "label": "Contains (Text)",
-              "value": "ContainsText",
-              "description": "Checks if the text contains the given value."
-            },
-            {
-              "label": "Does Not Contain (Text)",
-              "value": "DoesNotContainText",
-              "description": "Checks if the text does not contain the given value."
-            },
-            {
-              "label": "Starts With",
-              "value": "StartsWith",
+              "label": "Text Starts With",
+              "value": "TextStartsWith",
               "description": "Checks if the text starts with the given value."
             },
             {
-              "label": "Ends With",
-              "value": "EndsWith",
-              "description": "Checks if the text ends with the given value."
-            },
-            {
-              "label": "Does Not Start With",
-              "value": "DoesNotStartWith",
+              "label": "Text Does Not Start With",
+              "value": "TextDoesNotStartWith",
               "description": "Checks if the text does not start with the given value."
             },
             {
-              "label": "Does Not End With",
-              "value": "DoesNotEndWith",
+              "label": "Text Ends With",
+              "value": "TextEndsWith",
+              "description": "Checks if the text ends with the given value."
+            },
+            {
+              "label": "Text Does Not End With",
+              "value": "TextDoesNotEndWith",
               "description": "Checks if the text does not end with the given value."
             },
             {
-              "label": "Does Not Exactly Match",
-              "value": "DoesNotExactlyMatch",
-              "description": "Checks if the text does not exactly match the given value."
+              "label": "Text Contains",
+              "value": "TextContains",
+              "description": "Checks if the text contains the given value."
+            },
+            {
+              "label": "Text Does Not Contain",
+              "value": "TextDoesNotContain",
+              "description": "Checks if the text does not contain the given value."
+            },
+            {
+              "label": "List Contains",
+              "value": "ListContains",
+              "description": "Checks if the list contains the given item."
+            },
+            {
+              "label": "List Does Not Contain",
+              "value": "ListDoesNotContain",
+              "description": "Checks if the list does not contain the given item."
+            },
+            {
+              "label": "Is List Empty",
+              "value": "IsListEmpty",
+              "description": "Checks if the list is empty."
+            },
+            {
+              "label": "Is List Not Empty",
+              "value": "IsListNotEmpty",
+              "description": "Checks if the list is not empty."
             },
             {
               "label": "Is Greater Than",
               "value": "GreaterThan",
-              "description": "Checks if the number is greater than the given value."
+              "description": "Checks if the first value is greater than the second value."
             },
             {
               "label": "Is Less Than",
               "value": "LessThan",
-              "description": "Checks if the number is less than the given value."
+              "description": "Checks if the first value is less than the second value."
             },
             {
-              "label": "Contains (List)",
-              "value": "ContainsList",
-              "description": "Checks if the list contains the given item."
+              "label": "Is Greater Than Or Equal To",
+              "value": "GreaterThanOrEqualTo",
+              "description": "Checks if the first value is greater than or equal to the second value."
             },
             {
-              "label": "Does Not Contain (List)",
-              "value": "DoesNotContainList",
-              "description": "Checks if the list does not contain the given item."
+              "label": "Is Less Than Or Equal To",
+              "value": "LessThanOrEqualTo",
+              "description": "Checks if the first value is less than or equal to the second value."
             },
             {
-              "label": "Is Empty",
-              "value": "IsEmpty",
-              "description": "Checks if the list is empty."
+              "label": "File Exists",
+              "value": "FileExists",
+              "description": "Checks if the file exists."
             },
             {
-              "label": "Is Not Empty",
-              "value": "IsNotEmpty",
-              "description": "Checks if the list is not empty."
-            },
-            {
-              "label": "After",
-              "value": "After",
-              "description": "Checks if the date/time is after the given value."
-            },
-            {
-              "label": "Before",
-              "value": "Before",
-              "description": "Checks if the date/time is before the given value."
-            },
-            {
-              "label": "Equals (DateTime)",
-              "value": "EqualsDateTime",
-              "description": "Checks if the date/time equals the given value."
+              "label": "File Does Not Exist",
+              "value": "FileDoesNotExist",
+              "description": "Checks if the file does not exist."
             }
           ]
         },
@@ -181,25 +161,26 @@
           "required": true,
           "renderIf": {
             "conditions": [
-              { "field": "ComparisonOperator", "equals": "ContainsText" },
-              { "field": "ComparisonOperator", "equals": "DoesNotContainText" },
-              { "field": "ComparisonOperator", "equals": "ExactlyMatches" },
+              { "field": "ComparisonOperator", "equals": "EqualTo" },
+              { "field": "ComparisonOperator", "equals": "NotEqualTo" },
+              { "field": "ComparisonOperator", "equals": "TextStartsWith" },
               {
                 "field": "ComparisonOperator",
-                "equals": "DoesNotExactlyMatch"
+                "equals": "TextDoesNotStartWith"
               },
-              { "field": "ComparisonOperator", "equals": "StartsWith" },
-              { "field": "ComparisonOperator", "equals": "DoesNotStartWith" },
-              { "field": "ComparisonOperator", "equals": "EndsWith" },
-              { "field": "ComparisonOperator", "equals": "DoesNotEndWith" },
-              { "field": "ComparisonOperator", "equals": "ContainsList" },
-              { "field": "ComparisonOperator", "equals": "DoesNotContainList" },
+              { "field": "ComparisonOperator", "equals": "TextEndsWith" },
+              { "field": "ComparisonOperator", "equals": "TextDoesNotEndWith" },
+              { "field": "ComparisonOperator", "equals": "TextContains" },
+              { "field": "ComparisonOperator", "equals": "TextDoesNotContain" },
+              { "field": "ComparisonOperator", "equals": "ListContains" },
+              { "field": "ComparisonOperator", "equals": "ListDoesNotContain" },
               { "field": "ComparisonOperator", "equals": "GreaterThan" },
               { "field": "ComparisonOperator", "equals": "LessThan" },
-              { "field": "ComparisonOperator", "equals": "EqualTo" },
-              { "field": "ComparisonOperator", "equals": "After" },
-              { "field": "ComparisonOperator", "equals": "Before" },
-              { "field": "ComparisonOperator", "equals": "EqualsDateTime" }
+              {
+                "field": "ComparisonOperator",
+                "equals": "GreaterThanOrEqualTo"
+              },
+              { "field": "ComparisonOperator", "equals": "LessThanOrEqualTo" }
             ]
           }
         }
