@@ -8,7 +8,7 @@
       {
         "label": "AI Actions",
         "description": "Actions to build, deploy, and integrate AI models for tasks like text processing, image recognition, and speech conversion.",
-        "icon": null,
+        "icon": "IntelligentAutomationIcon",
         "img": "/function.png",
         "listType": "list",
         "actions": [

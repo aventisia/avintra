@@ -3,16 +3,6 @@ import { useAddFirstNodeToFlow } from "@/hooks/useAddFirstNodeToFlow";
 import { useAddNodeFromEdge } from "@/hooks/useAddNodeFromEdge";
 import { useReplaceNode } from "@/hooks/useReplaceNode";
 import { NodeDataType } from "@/types/node-data-type";
-import { Separator } from "@aventisia/ui";
-import {
-  Accordion,
-  AccordionContent,
-  AccordionItem,
-  AccordionTrigger,
-} from "@aventisia/ui/accordion";
-import { Button } from "@aventisia/ui/buttons";
-import { CommandItem, CommandList } from "@aventisia/ui/command";
-import { ArrowLeftIcon } from "@heroicons/react/24/outline";
 import { useShallow } from "zustand/react/shallow";
 import { triggersList } from "../constants/trigger-data";
 import { useNodeSelectorStore } from "../stores/action-selector-store";
@@ -20,6 +10,11 @@ import { ActionCategoryType } from "../types/action-category-type";
 import ActionsList from "./ActionsList";
 import { iconMapper } from "@/components/icon-mapper";
 import { FallbackImageIcon } from "./FallbackImageIcon";
+import { useEffect, useMemo, useState } from "react";
+import { Button } from "@aventisia/ui/buttons";
+import { ArrowLeftIcon } from "lucide-react";
+import { ScrollArea } from "@aventisia/ui/scroll";
+import { cn } from "@aventisia/ui/lib";
 
 export const ActionCategoryList = () => {
   // Get the origin and originId from the store
@@ -44,39 +39,48 @@ export const ActionCategoryList = () => {
   // Is used to render the list of triggers
   const isOriginReplaceTrigger = origin === "ReplaceTrigger";
 
-  const getActionCategories = () => {
+  const [activeCategoryLabel, setActiveCategoryLabel] = useState<string | null>(
+    null,
+  );
+
+  // SEARCH LOGIC FIXED
+  const actionCategories = useMemo(() => {
     if (query) {
-      const result: ActionCategoryType[] = [];
-      actionSelectorData.forEach(({ actionCategories }) => {
-        actionCategories.forEach((category) => {
-          const matchingActions = category.actions
-            ? category.actions?.filter((action) =>
-                action.label.toLowerCase().includes(query.toLowerCase()),
-              )
-            : [];
+      const map = new Map<string, ActionCategoryType>();
+
+      actionSelectorData.forEach((primary) => {
+        primary.actionCategories.forEach((category) => {
+          const matchingActions =
+            category.actions?.filter((action) =>
+              action.label.toLowerCase().includes(query.toLowerCase()),
+            ) ?? [];
 
           if (matchingActions.length > 0) {
-            result.push({
-              description: category.description,
-              img: category.img,
-              label: category.label,
+            map.set(category.label, {
+              ...category,
               actions: matchingActions,
             });
           }
         });
       });
 
-      return result;
-    } else {
-      return actionSelectorData.find(
-        (item) => item.label === primaryCategoryLabel,
-      )?.actionCategories;
+      return Array.from(map.values());
     }
-  };
 
-  const actionCategories = getActionCategories();
+    return actionSelectorData.find(
+      (item) => item.label === primaryCategoryLabel,
+    )?.actionCategories;
+  }, [query, actionSelectorData, primaryCategoryLabel]);
 
-  // Get add/replace Node handlers
+  // Auto select first
+  useEffect(() => {
+    if (actionCategories?.length) {
+      setActiveCategoryLabel(actionCategories[0].label);
+    } else {
+      setActiveCategoryLabel(null);
+    }
+  }, [actionCategories]);
+
   const addFirstNodeToFlow = useAddFirstNodeToFlow();
   const addNodeFromEdge = useAddNodeFromEdge();
   const addFirstNodeToBranch = useAddFirstNodeToBranch();
@@ -104,91 +108,77 @@ export const ActionCategoryList = () => {
     }
   };
 
-  // Return the primary category list
-  return (
-    <CommandList>
-      {isOriginReplaceTrigger ? (
-        <>
-          {/* TODO: better name for triggerList component */}
-          <ActionsList
-            item={triggersList}
-            nodeSelectionHandler={nodeSelectionHandler}
-          />
-        </>
-      ) : (
-        <>
+  if (isOriginReplaceTrigger) {
+    return (
+      <div className="h-full overflow-auto p-2">
+        <ActionsList
+          item={triggersList}
+          nodeSelectionHandler={nodeSelectionHandler}
+        />
+      </div>
+    );
+  }
+
+  if (actionCategories && actionCategories?.length > 0) {
+    return (
+      <div className="grid h-full grid-cols-[35%_65%] overflow-hidden">
+        {/* LEFT COLUMN */}
+        <div className="flex min-h-0 flex-col border-r">
+          {/* Fixed Header */}
           {!query && (
-            <div className="flex items-center">
+            <div className="flex shrink-0 items-center border-b p-2">
               <Button
                 variant="ghost"
                 size="icon8"
-                className="min-w-[2rem]"
-                onClick={() => {
-                  setPrimaryCategoryLabel(null);
-                }}
+                onClick={() => setPrimaryCategoryLabel(null)}
               >
                 <ArrowLeftIcon className="h-4 w-4" />
               </Button>
-              <h2 className="ml-2 w-full truncate text-sm">
-                {primaryCategoryLabel}
-              </h2>
+              <h2 className="ml-2 truncate text-sm">{primaryCategoryLabel}</h2>
             </div>
           )}
-          {actionCategories?.map((item, index) => (
-            <>
-              <CommandItem className="rounded-lg p-1 aria-selected:bg-transparent">
-                {item.listType === "list" ? (
-                  <div className="w-full">
-                    <ActionsList
-                      item={item?.actions}
-                      nodeSelectionHandler={nodeSelectionHandler}
-                    />
-                  </div>
-                ) : (
-                  <Accordion
-                    value={query ? item.label : undefined}
-                    type="single"
-                    collapsible
-                    className="w-full"
-                  >
-                    <AccordionItem value={item.label} className="border-none">
-                      <AccordionTrigger className="px-1.5 py-2">
-                        <div className="flex w-full items-center gap-3 text-sm">
-                          {item.icon ? (
-                            <div>{iconMapper[item.icon]}</div>
-                          ) : item.img ? (
-                            <FallbackImageIcon
-                              className="h-5 w-5"
-                              src={item.img}
-                            />
-                          ) : null}
 
-                          {item.label}
-                        </div>
-                      </AccordionTrigger>
-                      <AccordionContent>
-                        <ActionsList
-                          item={item?.actions}
-                          nodeSelectionHandler={nodeSelectionHandler}
-                        />
-                      </AccordionContent>
-                    </AccordionItem>
-                  </Accordion>
-                )}
-              </CommandItem>
-              {/* Separator */}
-              {index < actionCategories.length - 1 && (
-                <div className="flex justify-center">
-                  <Separator
-                    orientation="horizontal"
-                    className="h-[0.5px] w-[90%]"
-                  />
-                </div>
-              )}
-            </>
-          ))}
-        </>
-      )}
-    </CommandList>
-  );
+          {/* Scrollable List */}
+          <ScrollArea className="min-h-0 flex-1">
+            <div className="space-y-1 p-2">
+              {actionCategories?.map((item) => (
+                <button
+                  key={item.label}
+                  onClick={() => setActiveCategoryLabel(item.label)}
+                  className={cn(
+                    "flex w-full items-center gap-3 rounded-md px-2 py-2 text-left text-sm",
+                    activeCategoryLabel === item.label
+                      ? "bg-muted font-medium"
+                      : "hover:bg-muted/50",
+                  )}
+                >
+                  {item.icon
+                    ? iconMapper[item.icon]
+                    : item.img && (
+                        <FallbackImageIcon className="h-5 w-5" src={item.img} />
+                      )}
+                  {item.label}
+                </button>
+              ))}
+            </div>
+          </ScrollArea>
+        </div>
+
+        {/* RIGHT COLUMN */}
+        <ScrollArea className="min-h-0">
+          <div className="p-2">
+            {activeCategoryLabel ? (
+              <ActionsList
+                item={
+                  actionCategories?.find((c) => c.label === activeCategoryLabel)
+                    ?.actions
+                }
+                nodeSelectionHandler={nodeSelectionHandler}
+              />
+            ) : null}
+          </div>
+        </ScrollArea>
+      </div>
+    );
+  } else return <></>;
 };
