@@ -17,6 +17,7 @@ import {
   applyNodeChanges,
 } from "@xyflow/react";
 import { create } from "zustand";
+import { subscribeWithSelector } from "zustand/middleware";
 
 const MAX_HISTORY_STEPS = 100;
 
@@ -110,130 +111,132 @@ type Actions = {
   redo: () => void;
 };
 
-export const useReactFlowExtStore = create<State & Actions>((set, get) => ({
-  nodes: [],
-  edges: [],
-  flowVariablesObject: [],
-  configVariables: [],
-  inputOutputObject: [],
-  panOnDrag: false,
-  isSavePending: false,
-  contextMenuOrigin: null,
-  isPublished: false,
-  viewport: { x: 0, y: 0, zoom: 1 },
+export const useReactFlowExtStore = create<State & Actions>()(
+  subscribeWithSelector((set, get) => ({
+    nodes: [],
+    edges: [],
+    flowVariablesObject: [],
+    configVariables: [],
+    inputOutputObject: [],
+    panOnDrag: false,
+    isSavePending: false,
+    contextMenuOrigin: null,
+    isPublished: false,
+    viewport: { x: 0, y: 0, zoom: 1 },
 
-  past: [],
-  future: [],
-  isRestoringHistory: false,
-  savedSnapshot: null,
+    past: [],
+    future: [],
+    isRestoringHistory: false,
+    savedSnapshot: null,
 
-  onNodesChange: (changes: NodeChange[]) => {
-    set({ nodes: applyNodeChanges(changes, get().nodes) });
-  },
+    onNodesChange: (changes: NodeChange[]) => {
+      set({ nodes: applyNodeChanges(changes, get().nodes) });
+    },
 
-  onEdgesChange: (changes: EdgeChange[]) => {
-    set({ edges: applyEdgeChanges(changes, get().edges) });
-  },
+    onEdgesChange: (changes: EdgeChange[]) => {
+      set({ edges: applyEdgeChanges(changes, get().edges) });
+    },
 
-  //onConnect triggers only when two nodes are connected manually
-  onConnect: (connection: Connection) => {
-    // Create a unique id for the edge
-    const id = window.crypto.randomUUID();
-    set({
-      edges: addEdge(
-        {
-          ...connection,
-          label: "plus",
-          id,
-          markerEnd: `${MARKER_ARROW_PREFIX}${id}`,
-        },
-        get().edges,
-      ),
-    });
-  },
+    //onConnect triggers only when two nodes are connected manually
+    onConnect: (connection: Connection) => {
+      // Create a unique id for the edge
+      const id = window.crypto.randomUUID();
+      set({
+        edges: addEdge(
+          {
+            ...connection,
+            label: "plus",
+            id,
+            markerEnd: `${MARKER_ARROW_PREFIX}${id}`,
+          },
+          get().edges,
+        ),
+      });
+    },
 
-  setNodes: (nodes: Node[]) => set({ nodes }),
-  setEdges: (edges: Edge[]) => set({ edges }),
-  setIsPublished: (isPublished: boolean) => set({ isPublished }),
-  setFlowVariablesObject: (variables: FlowVariablesObjectType[]) =>
-    set({ flowVariablesObject: variables }),
-  setConfigVariables: (variables: string[]) =>
-    set({ configVariables: variables }),
-  setInputOutputObject: (inputOutputObject: DCPFieldSchemaType[]) =>
-    set({ inputOutputObject }),
-  togglePanOnDrag: (value) =>
-    set((state) => ({
-      panOnDrag: typeof value === "boolean" ? value : !state.panOnDrag,
-    })),
-  setIsSavePending: (isSavePending: boolean) => set({ isSavePending }),
-  setContextMenuOrigin: (contextMenuOrigin) => set({ contextMenuOrigin }),
-  setViewport: (viewport) => set({ viewport }),
+    setNodes: (nodes: Node[]) => set({ nodes }),
+    setEdges: (edges: Edge[]) => set({ edges }),
+    setIsPublished: (isPublished: boolean) => set({ isPublished }),
+    setFlowVariablesObject: (variables: FlowVariablesObjectType[]) =>
+      set({ flowVariablesObject: variables }),
+    setConfigVariables: (variables: string[]) =>
+      set({ configVariables: variables }),
+    setInputOutputObject: (inputOutputObject: DCPFieldSchemaType[]) =>
+      set({ inputOutputObject }),
+    togglePanOnDrag: (value) =>
+      set((state) => ({
+        panOnDrag: typeof value === "boolean" ? value : !state.panOnDrag,
+      })),
+    setIsSavePending: (isSavePending: boolean) => set({ isSavePending }),
+    setContextMenuOrigin: (contextMenuOrigin) => set({ contextMenuOrigin }),
+    setViewport: (viewport) => set({ viewport }),
 
-  hydrateFlow: (nodes, edges, variables) => {
-    const baseline: HistoryState = {
-      nodes,
-      edges,
-      flowVariablesObject: variables,
-    };
-    set({
-      nodes,
-      edges,
-      flowVariablesObject: variables,
-      past: [baseline],
-      future: [],
-      savedSnapshot: baseline,
-      isSavePending: false,
-    });
-  },
-
-  setSavedSnapshot: (snapshot) => {
-    set({ savedSnapshot: snapshot, isSavePending: false });
-  },
-
-  commitSnapshot: (snapshot) => {
-    set((state) => {
-      const newPast = [...state.past, snapshot];
-      if (newPast.length > MAX_HISTORY_STEPS) newPast.shift();
-      return { past: newPast, future: [] };
-    });
-  },
-
-  undo: () => {
-    set((state) => {
-      if (state.past.length < 2) return state;
-
-      const previousState = state.past[state.past.length - 2];
-      const currentStateObj: HistoryState = {
-        nodes: state.nodes,
-        edges: state.edges,
-        flowVariablesObject: state.flowVariablesObject,
+    hydrateFlow: (nodes, edges, variables) => {
+      const baseline: HistoryState = {
+        nodes,
+        edges,
+        flowVariablesObject: variables,
       };
+      set({
+        nodes,
+        edges,
+        flowVariablesObject: variables,
+        past: [baseline],
+        future: [],
+        savedSnapshot: baseline,
+        isSavePending: false,
+      });
+    },
 
-      return {
-        past: state.past.slice(0, -1),
-        future: [currentStateObj, ...state.future],
-        nodes: previousState.nodes,
-        edges: previousState.edges,
-        flowVariablesObject: previousState.flowVariablesObject,
-        isRestoringHistory: true,
-      };
-    });
-  },
+    setSavedSnapshot: (snapshot) => {
+      set({ savedSnapshot: snapshot, isSavePending: false });
+    },
 
-  redo: () => {
-    set((state) => {
-      if (state.future.length === 0) return state;
+    commitSnapshot: (snapshot) => {
+      set((state) => {
+        const newPast = [...state.past, snapshot];
+        if (newPast.length > MAX_HISTORY_STEPS) newPast.shift();
+        return { past: newPast, future: [] };
+      });
+    },
 
-      const nextState = state.future[0];
+    undo: () => {
+      set((state) => {
+        if (state.past.length < 2) return state;
 
-      return {
-        past: [...state.past, nextState],
-        future: state.future.slice(1),
-        nodes: nextState.nodes,
-        edges: nextState.edges,
-        flowVariablesObject: nextState.flowVariablesObject,
-        isRestoringHistory: true,
-      };
-    });
-  },
-}));
+        const previousState = state.past[state.past.length - 2];
+        const currentStateObj: HistoryState = {
+          nodes: state.nodes,
+          edges: state.edges,
+          flowVariablesObject: state.flowVariablesObject,
+        };
+
+        return {
+          past: state.past.slice(0, -1),
+          future: [currentStateObj, ...state.future],
+          nodes: previousState.nodes,
+          edges: previousState.edges,
+          flowVariablesObject: previousState.flowVariablesObject,
+          isRestoringHistory: true,
+        };
+      });
+    },
+
+    redo: () => {
+      set((state) => {
+        if (state.future.length === 0) return state;
+
+        const nextState = state.future[0];
+
+        return {
+          past: [...state.past, nextState],
+          future: state.future.slice(1),
+          nodes: nextState.nodes,
+          edges: nextState.edges,
+          flowVariablesObject: nextState.flowVariablesObject,
+          isRestoringHistory: true,
+        };
+      });
+    },
+  })),
+);
