@@ -1,8 +1,8 @@
-﻿using CodeActivitiesLibrary.WorkflowLogics.FlowControlActivities;
+﻿using CodeActivitiesLibrary.Enums;
 
-namespace NodeExecutor.Models
+namespace CodeActivitiesLibrary.Models
 {
-    public class ConditionGroup
+    public class UnresolvedConditionObj
     {
         public string Id { get; set; }
         public string FirstValue { get; set; }

@@ -1,6 +1,7 @@
 ﻿using CodeActivitiesLibrary.AiIntegrations.AiStudioActivities;
 using CodeActivitiesLibrary.AppIntegrations.CloudConnectorsActivities;
-using CodeActivitiesLibrary.WorkflowLogics.FlowControlActivities;
+using CodeActivitiesLibrary.Utils;
+using CodeActivitiesLibrary.Models;
 using DynamicExpresso;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
@@ -326,7 +327,7 @@ namespace NodeExecutor.Services
                 }
 
                 // Set inputValues to nodeExecutionLog object
-                nodeExecutionlog.Inputs = inputValues.Select(kv => new NodeLogKeyValue { Key = kv.Key, Value = ConvertLogValueForLogging(kv.Key, kv.Value, "Input") }).ToList();
+                nodeExecutionlog.Inputs = inputValues.Select(kv => new NodeLogKeyValue { Key = kv.Key, Value = ConvertValueForLoggingUtil.ConvertValueForLogging(kv.Key, kv.Value, "Input", false) }).ToList();
 
                 // Execute the activity
                 var outputs = WorkflowInvoker.Invoke((Activity)activityInstance);
@@ -369,13 +370,13 @@ namespace NodeExecutor.Services
 
             // Update duration and outputValues
             nodeExecutionlog.Duration = (DateTime.UtcNow - startTime).TotalSeconds;
-            nodeExecutionlog.Outputs = outputValues.Select(kv => new NodeLogKeyValue { Key = kv.Key, Value = ConvertLogValueForLogging(kv.Key, kv.Value, "Output") }).ToList();
+            nodeExecutionlog.Outputs = outputValues.Select(kv => new NodeLogKeyValue { Key = kv.Key, Value = ConvertValueForLoggingUtil.ConvertValueForLogging(kv.Key, kv.Value, "Output", false) }).ToList();
 
             // Return
             return (nodeExecutionlog.IsSuccess, nodeExecutionlog);
         }
 
-        public static (bool, NodeExecutionLog) ExecuteCondition(string nodeId, string nodeName, List<List<ConditionGroup>> conditions, ExecutionContext executionContext, Interpreter interpreter, DateTime startTime)
+        public static (bool, NodeExecutionLog) ExecuteCondition(string nodeId, string nodeName, List<List<UnresolvedConditionObj>> conditions, ExecutionContext executionContext, Interpreter interpreter, DateTime startTime)
         {
             // Initialize the return object
             var nodeExecutionlog = new NodeExecutionLog
@@ -398,7 +399,7 @@ namespace NodeExecutor.Services
             {
                 outputValues["Status"] = "No conditions provided";
                 nodeExecutionlog.Duration = (DateTime.UtcNow - startTime).TotalSeconds;
-                nodeExecutionlog.Outputs = outputValues.Select(kv => new NodeLogKeyValue { Key = kv.Key, Value = ConvertLogValueForLogging(kv.Key, kv.Value, "Output") }).ToList();
+                nodeExecutionlog.Outputs = outputValues.Select(kv => new NodeLogKeyValue { Key = kv.Key, Value = ConvertValueForLoggingUtil.ConvertValueForLogging(kv.Key, kv.Value, "Output", false) }).ToList();
                 return (false, nodeExecutionlog);
             }
 
@@ -409,11 +410,11 @@ namespace NodeExecutor.Services
                 var activityInstance = GetCodeActivityInstance("ConditionalBranchActivity");
                 var activityType = activityInstance.GetType();
 
-                // Prepare the nested list of ConditionObjectGroup with resolved values
-                var resolvedGroups = new List<List<ConditionObjectGroup>>();
+                // Prepare the nested list of ResolvedConditionObj with resolved values
+                var resolvedGroups = new List<List<ResolvedConditionObj>>();
                 foreach (var group in conditions) // node.Conditions: IList<IList<ConditionGroup>>
                 {
-                    var resolvedGroup = new List<ConditionObjectGroup>();
+                    var resolvedGroup = new List<ResolvedConditionObj>();
                     foreach (var cond in group)
                     {
                         // Resolve the first value
@@ -426,7 +427,7 @@ namespace NodeExecutor.Services
                         if (resolvedSecond is string s2 && !cond.SecondValue.Trim().StartsWith("{{"))
                             resolvedSecond = InferType(s2);
 
-                        resolvedGroup.Add(new ConditionObjectGroup
+                        resolvedGroup.Add(new ResolvedConditionObj
                         {
                             FirstValue = resolvedFirst,
                             ComparisonOperator = cond.ComparisonOperator,
@@ -440,17 +441,17 @@ namespace NodeExecutor.Services
                 inputValues["Conditions"] = resolvedGroups;
 
                 // Set inputValues to nodeExecutionLog object
-                nodeExecutionlog.Inputs = inputValues.Select(kv => new NodeLogKeyValue { Key = kv.Key, Value = ConvertLogValueForLogging(kv.Key, kv.Value, "Input") }).ToList();
+                nodeExecutionlog.Inputs = inputValues.Select(kv => new NodeLogKeyValue { Key = kv.Key, Value = ConvertValueForLoggingUtil.ConvertValueForLogging(kv.Key, kv.Value, "Input", false) }).ToList();
 
                 // Set the Conditions property
                 var prop = activityType.GetProperty("Conditions", BindingFlags.Public | BindingFlags.Instance | BindingFlags.IgnoreCase);
                 if (prop != null)
                 {
-                    var argType = typeof(InArgument<List<List<ConditionObjectGroup>>>);
+                    var argType = typeof(InArgument<List<List<ResolvedConditionObj>>>);
 
                     // Build: ctx => resolvedGroups
                     var ctxParam = Expression.Parameter(typeof(ActivityContext), "ctx");
-                    var valueExpr = Expression.Constant(resolvedGroups, typeof(List<List<ConditionObjectGroup>>));
+                    var valueExpr = Expression.Constant(resolvedGroups, typeof(List<List<ResolvedConditionObj>>));
                     var lambda = Expression.Lambda(valueExpr, ctxParam);
 
                     var inArgument = Activator.CreateInstance(argType, lambda);
@@ -470,12 +471,12 @@ namespace NodeExecutor.Services
                     bool conditionResult = result is bool b ? b : false;
 
                     // Log the result
-                    outputValues["ConditionResult"] = conditionResult;
-                    outputValues["Status"] = "Condition evaluated successfully";
+                    outputValues["ConditionsResult"] = conditionResult;
+                    outputValues["Status"] = outputs["StatusMessage"];
 
                     // Update duration and outputValues
                     nodeExecutionlog.Duration = (DateTime.UtcNow - startTime).TotalSeconds;
-                    nodeExecutionlog.Outputs = outputValues.Select(kv => new NodeLogKeyValue { Key = kv.Key, Value = ConvertLogValueForLogging(kv.Key, kv.Value, "Output") }).ToList();
+                    nodeExecutionlog.Outputs = outputValues.Select(kv => new NodeLogKeyValue { Key = kv.Key, Value = ConvertValueForLoggingUtil.ConvertValueForLogging(kv.Key, kv.Value, "Output", false) }).ToList();
 
                     return (conditionResult, nodeExecutionlog);
                 }
@@ -483,14 +484,14 @@ namespace NodeExecutor.Services
                 // If no ConditionResult output, return false
                 outputValues["Status"] = "Unknown error occurred while checking the condition";
                 nodeExecutionlog.Duration = (DateTime.UtcNow - startTime).TotalSeconds;
-                nodeExecutionlog.Outputs = outputValues.Select(kv => new NodeLogKeyValue { Key = kv.Key, Value = ConvertLogValueForLogging(kv.Key, kv.Value, "Output") }).ToList();
+                nodeExecutionlog.Outputs = outputValues.Select(kv => new NodeLogKeyValue { Key = kv.Key, Value = ConvertValueForLoggingUtil.ConvertValueForLogging(kv.Key, kv.Value, "Output", false) }).ToList();
                 return (false, nodeExecutionlog);
             }
             catch (Exception ex)
             {
                 outputValues["Status"] = $"Error in ExecuteCondition: {ex.Message}";
                 nodeExecutionlog.Duration = (DateTime.UtcNow - startTime).TotalSeconds;
-                nodeExecutionlog.Outputs = outputValues.Select(kv => new NodeLogKeyValue { Key = kv.Key, Value = ConvertLogValueForLogging(kv.Key, kv.Value, "Output") }).ToList();
+                nodeExecutionlog.Outputs = outputValues.Select(kv => new NodeLogKeyValue { Key = kv.Key, Value = ConvertValueForLoggingUtil.ConvertValueForLogging(kv.Key, kv.Value, "Output", false) }).ToList();
                 return (false, nodeExecutionlog);
             }
         }
@@ -788,96 +789,6 @@ namespace NodeExecutor.Services
                 // We can log the error if needed, but for now just return null
                 return null;
             }
-        }
-
-        public static string ConvertLogValueForLogging(string key, object value, string inOrOut = "Input")
-        {
-            const int MAX_STRING_SIZE = 2000; // Maximum characters for plain text strings
-
-            if (value == null)
-                return "null";
-
-            // Handle primitive type like int, bool, double, etc. return as is
-            if (value.GetType().IsPrimitive)
-                return value.ToString();
-
-            // Handle non-primitive types with specific formatting
-            switch (value)
-            {
-                case string s:
-                    // Only truncate plain strings, not JSON
-                    return s.Length > MAX_STRING_SIZE ? s.Substring(0, MAX_STRING_SIZE) + "... [truncated]" : s;
-                case DateTime date:
-                    return date.ToString("o"); // ISO 8601 format
-                case TimeSpan _:
-                case Guid _:
-                case decimal _:
-                case Enum _:
-                    return value.ToString();
-            }
-
-            // Handle DataTable as json with top 100 rows to avoid logging too much data
-            if (value is DataTable dt)
-            {
-                try
-                {
-                    // Limit to 100 rows but return complete valid JSON
-                    var limitedRows = dt.AsEnumerable().Take(100).CopyToDataTable();
-                    return JsonConvert.SerializeObject(limitedRows);
-                }
-                catch
-                {
-                    return $"[DataTable with {dt.Rows.Count} rows]";
-                }
-            }
-
-            // If any known complex type, return a placeholder string (to avoid logging too much data or sensitive info)
-            switch (value)
-            {
-                case System.Windows.Automation.AutomationElement _:
-                    return $"[AutomationElement] {key}";
-                case System.Data.SqlClient.SqlConnection _:
-                    return $"[SqlConnection] {key}";
-                case System.Security.SecureString _:
-                    return $"[Secure{inOrOut}] {key}";
-                    // Add more complex types here if needed
-            }
-
-            // Handle IEnumerable - limit to 100 items but return complete valid JSON
-            if (value is IEnumerable enumerable && !(value is string))
-            {
-                try
-                {
-                    // Limit collection to 100 items
-                    var limitedItems = enumerable.Cast<object>().Take(100).ToList();
-                    return JsonConvert.SerializeObject(limitedItems);
-                }
-                catch
-                {
-                    // fallback: join items as string (limited to 100)
-                    var items = new List<string>();
-                    var count = 0;
-                    foreach (var item in enumerable)
-                    {
-                        if (count++ >= 100) break;
-                        items.Add(item?.ToString() ?? "null");
-                    }
-                    return "[" + string.Join(", ", items) + (count > 100 ? ", ...]" : "]");
-                }
-            }
-
-            // Complex object: try JSON - return complete valid JSON
-            try
-            {
-                return JsonConvert.SerializeObject(value);
-            }
-            catch
-            {
-                // fallback: type name with truncation for long text
-                var fallback = value.ToString();
-                return fallback.Length > MAX_STRING_SIZE ? fallback.Substring(0, MAX_STRING_SIZE) + "... [truncated]" : fallback;
-            }
-
         }
     }
 }
