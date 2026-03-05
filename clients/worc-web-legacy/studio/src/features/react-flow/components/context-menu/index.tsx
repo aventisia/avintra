@@ -66,7 +66,13 @@ export const ReactFlowContextMenu = memo(() => {
   if (!menu) return null;
 
   const isPaneMode = !selectedNode && !selectedEdge;
-  const restrictedTypes = ["triggerNode", "flowEndNode"];
+  const restrictedTypes = [
+    "triggerNode",
+    "flowEndNode",
+    "branchStartNode",
+    "branchEndNode",
+    "mergeBranchesNode",
+  ];
 
   const isPaneOrStartOrEnd =
     isPaneMode || restrictedTypes.includes(selectedNode?.type ?? "");
@@ -232,7 +238,10 @@ export const ReactFlowContextMenu = memo(() => {
                 icon={<GroupIcon size={14} />}
                 label="Group up"
                 disabled={
-                  isPaneOrStartOrEnd ||isBranchNode || isDefaultBranchNode || !selectedNode
+                  isPaneOrStartOrEnd ||
+                  isBranchNode ||
+                  isDefaultBranchNode ||
+                  !selectedNode
                 }
                 onClick={() => {
                   groupNodes();
