@@ -29,11 +29,24 @@ import { TriggerNodeIcon } from "./TriggerNodeIcon";
 
 export const iconMapper: { [key: string]: JSX.Element } = {
   // Nodes Categories L1
-  AppIntegrationsIcon: <NodesCategoryL1Icon Icon={Cable} />,
-  DataTransformationsIcon: <NodesCategoryL1Icon Icon={DatabaseZap} />,
-  AutomationEssentialsIcon: <NodesCategoryL1Icon Icon={SquareFunction} />,
-  UIAutomationAndUserActionsIcon: <NodesCategoryL1Icon Icon={Keyboard} />,
-  IntelligentAutomationIcon: <NodesCategoryL1Icon Icon={BrainCircuit} />,
+  AppIntegrationsIcon: (
+    <NodesCategoryL1Icon Icon={Cable} className="h-5 w-5 text-primary" />
+  ),
+  DataTransformationsIcon: (
+    <NodesCategoryL1Icon Icon={DatabaseZap} className="h-5 w-5 text-primary" />
+  ),
+  AutomationEssentialsIcon: (
+    <NodesCategoryL1Icon
+      Icon={SquareFunction}
+      className="h-5 w-5 text-primary"
+    />
+  ),
+  UIAutomationAndUserActionsIcon: (
+    <NodesCategoryL1Icon Icon={Keyboard} className="h-5 w-5 text-primary" />
+  ),
+  IntelligentAutomationIcon: (
+    <NodesCategoryL1Icon Icon={BrainCircuit} className="h-5 w-5 text-primary" />
+  ),
   BLockIcon: <NodesCategoryL1Icon Icon={Combine} />,
 
   // Logical Nodes

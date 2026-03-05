@@ -11,26 +11,34 @@ interface PrimaryCategoryProps {
 
 export const PrimaryCategory = ({ data }: PrimaryCategoryProps) => {
   return (
-    <div className="flex w-full items-center gap-3 px-2 py-2">
-      {/* Category icon or image */}
-      {data.icon ? (
-        <div>{iconMapper[data.icon]}</div>
-      ) : (
-        <FallbackImageIcon src={data.img} />
-      )}
-
-      <div className="grow space-y-0.5">
-        {/* Category heading */}
-        <div className="flex gap-2">
-          <h2 className="flex items-center text-xs font-medium text-foreground">
-            {data.label}
-          </h2>
+    <div className="flex h-48 w-full cursor-pointer flex-col gap-2 rounded-2xl border border-indigo-100 p-4 hover:border-indigo-200">
+      {/* Top section: Icon and Arrow */}
+      <div className="flex h-2/5 w-full items-center justify-between">
+        {/* Category icon or image */}
+        <div className="flex h-12 w-12 items-center justify-center rounded-xl bg-accent">
+          {data.icon ? (
+            iconMapper[data.icon]
+          ) : (
+            <FallbackImageIcon className="h-12 w-12" src={data.img} />
+          )}
         </div>
 
-        {/* Category description */}
-        <p className="text-2xs text-muted-foreground">{data.description}</p>
+        {/* Arrow */}
+        <ArrowRightIcon className="stroke-1.5 h-5 w-5 text-foreground" />
       </div>
-      <ArrowRightIcon className="h-3.5 max-h-3.5 min-h-3.5 w-3.5 min-w-3.5 max-w-4 stroke-2 text-slate-400" />
+
+      {/* Bottom section: Text content */}
+      <div className="flex h-3/5 flex-col gap-1">
+        {/* Category heading */}
+        <h2 className="text-[1rem] font-medium tracking-tight text-foreground">
+          {data.label}
+        </h2>
+
+        {/* Category description */}
+        <p className="text-sm leading-relaxed text-muted-foreground">
+          {data.description}
+        </p>
+      </div>
     </div>
   );
 };
