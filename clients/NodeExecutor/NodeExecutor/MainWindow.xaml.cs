@@ -261,25 +261,25 @@ namespace NodeExecutor
                 {
                     result = ActivityExecutorService.ExecuteCondition(loopNodeData.Id, loopNodeData.NodeName, loopNodeData.Conditions, _executionContext, _interpreter, startTime);
                 }
-                //else if (loopNodeData.LoopType == "ForEachLoop")
-                //{
-                //    result = ActivityExecutorService.MoveNextListItem(
-                //        _agentId,
-                //        _agentName,
-                //        _accessToken,
-                //        loopNodeData.ListVariableName,
-                //        loopNodeData.ItemVariableName,
-                //        loopNodeData.ItemIndexVariableName,
-                //        _executionContext,
-                //        _interpreter);
-                //}
+                else if (loopNodeData.LoopType == "ForEachLoop")
+                {
+                    result = ActivityExecutorService.MoveNextListItem(
+                        loopNodeData.Id,
+                        loopNodeData.NodeName,
+                        loopNodeData.ListVariableName,
+                        loopNodeData.ItemVariableName,
+                        loopNodeData.ItemIndexVariableName,
+                        _executionContext,
+                        _interpreter,
+                        startTime);
+                }
 
                 // Send the execution log back to the server (must be awaited on UI thread)
                 await Dispatcher.InvokeAsync(async () =>
                 {
                     await _webSocket.SendCommandAsync("save-execution-log", JsonConvert.SerializeObject(result.nodeExecutionLog, new JsonSerializerSettings
                     {
-                        ContractResolver = new CamelCasePropertyNamesContractResolver()
+                       ContractResolver = new CamelCasePropertyNamesContractResolver()
                     }));
 
                     // Check if the node execution was successful

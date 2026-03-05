@@ -496,41 +496,53 @@ namespace NodeExecutor.Services
             }
         }
 
-        public static (bool, string) MoveNextListItem(string agentId, string agentName, string accessToken, string listVarName, string currentItemVarName, string currentItemIndexVarName, ExecutionContext executionContext, Interpreter interpreter)
+        public static (bool, NodeExecutionLog) MoveNextListItem(string nodeId, string nodeName, string listVarName, string currentItemVarName, string currentItemIndexVarName, ExecutionContext executionContext, Interpreter interpreter, DateTime startTime)
         {
+            // Initialize the return object
+            var nodeExecutionlog = new NodeExecutionLog
+            {
+                NodeId = nodeId,
+                NodeName = nodeName,
+                NodeUniqueName = "LoopActivity",
+                IsSuccess = false,
+                Duration = 0,
+                Inputs = new List<NodeLogKeyValue>(),
+                Outputs = new List<NodeLogKeyValue>()
+            };
+
+            // Initialize input and output dictionaries
+            var inputValues = new Dictionary<string, object>();
+            var outputValues = new Dictionary<string, object>();
+
             // If listVarName or currentItemVarName is null or empty, return false
             if (string.IsNullOrEmpty(listVarName) || string.IsNullOrEmpty(currentItemVarName) || string.IsNullOrEmpty(currentItemIndexVarName) || executionContext == null || interpreter == null)
-                return (false, "");
-
-            //// Initiaze the return object
-            //var nodeExecutionlog = new NodeExecutionLog
-            //{
-            //    NodeId = node.Id,
-            //    NodeName = node.NodeName,
-            //    NodeUniqueName = node.CodeActivityName,
-            //    IsSuccess = false,
-            //    Duration = 0,
-            //    Inputs = new List<NodeLogKeyValue>(),
-            //    Outputs = new List<NodeLogKeyValue>()
-            //};
-
-            //// Initialize input and output dictionaries
-            //var inputValues = new Dictionary<string, object>();
-            //var outputValues = new Dictionary<string, object>(){
-            //    { "Status", "Node executed successfully" }
-            //};
+            {
+                outputValues["Status"] = "Missing required parameters";
+                nodeExecutionlog.Duration = (DateTime.UtcNow - startTime).TotalSeconds;
+                nodeExecutionlog.Outputs = outputValues.Select(kv => new NodeLogKeyValue { Key = kv.Key, Value = ConvertValueForLoggingUtil.ConvertValueForLogging(kv.Key, kv.Value, "Output", false) }).ToList();
+                return (false, nodeExecutionlog);
+            }
 
             try
             {
                 // Resolve the list variable name in case it contains a template
                 var resolvedListVar = ResolveTemplate(listVarName, executionContext, interpreter);
 
+                // Set inputValues to nodeExecutionLog object
+                inputValues["List"] = resolvedListVar;
+                nodeExecutionlog.Inputs = inputValues.Select(kv => new NodeLogKeyValue { Key = kv.Key, Value = ConvertValueForLoggingUtil.ConvertValueForLogging(kv.Key, kv.Value, "Input", false) }).ToList();
+
                 // If resolvedListVar is a string, treat it as the key to look up in executionContext
                 object listObj = resolvedListVar;
                 if (resolvedListVar is string key)
                 {
                     if (!executionContext.TryGet(key, out listObj) || listObj == null)
-                        return (false, "");
+                    {
+                        outputValues["Status"] = "List not found in execution context";
+                        nodeExecutionlog.Duration = (DateTime.UtcNow - startTime).TotalSeconds;
+                        nodeExecutionlog.Outputs = outputValues.Select(kv => new NodeLogKeyValue { Key = kv.Key, Value = ConvertValueForLoggingUtil.ConvertValueForLogging(kv.Key, kv.Value, "Output", false) }).ToList();
+                        return (false, nodeExecutionlog);
+                    }
                 }
 
                 // Try to cast to IEnumerable (but not string)
@@ -542,12 +554,22 @@ namespace NodeExecutor.Services
                 else if (listObj is IEnumerable en && !(listObj is string))
                     enumerable = en;
                 else
-                    return (false, "");
+                {
+                    outputValues["Status"] = "List is not enumerable";
+                    nodeExecutionlog.Duration = (DateTime.UtcNow - startTime).TotalSeconds;
+                    nodeExecutionlog.Outputs = outputValues.Select(kv => new NodeLogKeyValue { Key = kv.Key, Value = ConvertValueForLoggingUtil.ConvertValueForLogging(kv.Key, kv.Value, "Output", false) }).ToList();
+                    return (false, nodeExecutionlog);
+                }
 
                 // Convert to a list for indexing
                 var items = enumerable.Cast<object>().ToList();
                 if (items.Count == 0)
-                    return (false, "");
+                {
+                    outputValues["Status"] = "List is empty";
+                    nodeExecutionlog.Duration = (DateTime.UtcNow - startTime).TotalSeconds;
+                    nodeExecutionlog.Outputs = outputValues.Select(kv => new NodeLogKeyValue { Key = kv.Key, Value = ConvertValueForLoggingUtil.ConvertValueForLogging(kv.Key, kv.Value, "Output", false) }).ToList();
+                    return (false, nodeExecutionlog);
+                }
 
                 // Track current index in executionContext (use a hidden variable)
                 string indexKey = $"__{listVarName}_CurrentIndex";
@@ -555,11 +577,19 @@ namespace NodeExecutor.Services
                 if (executionContext.TryGet(indexKey, out var idxObj) && idxObj is int idx)
                     currentIndex = idx + 1; // Move to next item
 
+                // Update the node name
+                nodeExecutionlog.NodeName = $"{nodeName} ({currentIndex})";
+
                 if (currentIndex >= items.Count)
                 {
                     // Remove the hidden index variable
                     executionContext.Remove(indexKey);
-                    return (false, ""); // No more items
+                    outputValues["Status"] = "No more items in list";
+                    nodeExecutionlog.NodeName = $"{nodeName} (Completed)";
+                    nodeExecutionlog.Duration = (DateTime.UtcNow - startTime).TotalSeconds;
+                    nodeExecutionlog.Outputs = outputValues.Select(kv => new NodeLogKeyValue { Key = kv.Key, Value = ConvertValueForLoggingUtil.ConvertValueForLogging(kv.Key, kv.Value, "Output", false) }).ToList();
+                    nodeExecutionlog.IsSuccess = true; // Successfully reached the end of the list
+                    return (false, nodeExecutionlog); // No more items
                 }
 
                 // Set current item and index in executionContext
@@ -570,14 +600,27 @@ namespace NodeExecutor.Services
                 interpreter.SetVariable(currentItemIndexVarName, currentIndex); // Expose the current index to the user as well
                 interpreter.SetVariable(indexKey, currentIndex); // hidden/internal index
 
+                // Log outputs
+                outputValues[currentItemVarName] = items[currentIndex];
+                outputValues[currentItemIndexVarName] = currentIndex;
+                outputValues["Status"] = "Successfully moved to next item";
 
-                return (true, "");
+                // Set success status
+                nodeExecutionlog.IsSuccess = true;
+                nodeExecutionlog.Duration = (DateTime.UtcNow - startTime).TotalSeconds;
+                nodeExecutionlog.Outputs = outputValues.Select(kv => new NodeLogKeyValue { Key = kv.Key, Value = ConvertValueForLoggingUtil.ConvertValueForLogging(kv.Key, kv.Value, "Output", false) }).ToList();
+
+                return (true, nodeExecutionlog);
             }
             catch (Exception ex)
             {
-                return (false, $"Error in MoveNextListItem: {ex.Message}");
+                outputValues["Status"] = $"Error in MoveNextListItem: {ex.Message}";
+                nodeExecutionlog.Duration = (DateTime.UtcNow - startTime).TotalSeconds;
+                nodeExecutionlog.Outputs = outputValues.Select(kv => new NodeLogKeyValue { Key = kv.Key, Value = ConvertValueForLoggingUtil.ConvertValueForLogging(kv.Key, kv.Value, "Output", false) }).ToList();
+                return (false, nodeExecutionlog);
             }
         }
+
         private static object ConvertArgument(object inputValue, Type targetType)
         {
             if (inputValue == null || targetType == null)
