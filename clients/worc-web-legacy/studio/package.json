@@ -5,7 +5,9 @@
   "type": "module",
   "scripts": {
     "dev": "vite --port 3006",
+    "pregit": "prettier --write . && eslint --fix . && tsc -b",
     "build": "tsc && vite build",
+    "format": "prettier --write . && eslint --fix .",
     "lint": "eslint . --ext ts,tsx --report-unused-disable-directives --max-warnings 0",
     "preview": "vite preview"
   },
@@ -69,6 +71,7 @@
   },
   "devDependencies": {
     "@tailwindcss/typography": "^0.5.16",
+    "@trivago/prettier-plugin-sort-imports": "^5.2.2",
     "@types/d3-timer": "^3.0.2",
     "@types/node": "^20.14.10",
     "@types/react": "^18.3.3",
