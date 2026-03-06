@@ -1,0 +1,32 @@
+meta {
+  name: Trigger job
+  type: http
+  seq: 17
+}
+
+post {
+  url: {{WORC_APIS_BASE_URL}}/job/trigger
+  body: json
+  auth: none
+}
+
+headers {
+  tntid: {{TENANT_ID}}
+  X-API-KEY: {{CUSTOM_API_KEY}}
+}
+
+body:json {
+  {
+    "flowVersionId": "{{FLOW_VERSION_ID}}",
+    "triggerType": "WebhookTrigger"
+  }
+}
+
+script:post-response {
+  if(res.getStatus() == 200){
+      bru.setGlobalEnvVar(
+          "JOB_ID",
+          res.getBody().data.id
+      );
+  }
+}
