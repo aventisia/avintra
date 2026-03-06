@@ -94,4 +94,12 @@ public class JobController : BaseApiController
         }
         return ResultHelper(exportedData);
     }
+
+    //Trigger the creation of a new job (custom authorization)
+    [AllowAnonymous, CustomAuthorize] // Allows automated triggers or special tokens
+    [HttpPost("trigger")]
+    public async Task<ActionResult<ServiceResponse<JobTableDto>>> TriggerJobCreation([FromBody] JobTableDto jobTableDto)
+    {
+        return ResultHelper(await _jobTableService.InsertJobAsync(jobTableDto));
+    }
 }
