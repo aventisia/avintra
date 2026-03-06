@@ -4,7 +4,7 @@
   "description": "Extracts images from a PDF file by specifying the source PDF file and the target folder.",
   "version": "1.0.0",
   "auther": "@aventisia",
-  "supportedPlatforms": ["cloud", "windows"],
+  "supportedPlatforms": ["windows"],
   "errorHandling": "standard",
   "testScreenType": "standard",
   "fields": [

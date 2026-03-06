@@ -4,7 +4,7 @@
   "description": "Finds text and replaces it with another in a .docx document using Open XML SDK.",
   "version": "1.0.0",
   "auther": "@aventisia",
-  "supportedPlatforms": ["cloud", "windows"],
+  "supportedPlatforms": ["windows"],
   "errorHandling": "standard",
   "testScreenType": "standard",
   "fields": [

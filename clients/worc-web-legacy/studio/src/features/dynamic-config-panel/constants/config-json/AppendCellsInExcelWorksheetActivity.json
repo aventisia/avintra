@@ -4,7 +4,7 @@
   "description": "Appends a range of data (e.g., from a DataTable) to the active worksheet of an Excel.",
   "version": "1.0.0",
   "auther": "@aventisia",
-  "supportedPlatforms": ["cloud", "windows"],
+  "supportedPlatforms": ["windows"],
   "errorHandling": "standard",
   "testScreenType": "standard",
   "fields": [

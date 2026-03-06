@@ -4,7 +4,7 @@
   "description": "Attaches to a running Excel instance and opens the specified workbook if not already open.",
   "version": "1.0.0",
   "auther": "@aventisia",
-  "supportedPlatforms": ["cloud", "windows"],
+  "supportedPlatforms": ["windows"],
   "errorHandling": "standard",
   "testScreenType": "standard",
   "fields": [
