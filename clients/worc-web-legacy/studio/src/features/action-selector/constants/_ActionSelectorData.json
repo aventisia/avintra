@@ -2289,7 +2289,7 @@
             "description": "Attaches to a Word document that's already open, or opens it if needed.",
             "docsLink": "https://docs.aventisia.com",
             "img": "/assets/Word.svg",
-            "supportedPlatforms": ["cloud", "windows"]
+            "supportedPlatforms": ["windows"]
           },
           {
             "type": "activityNode",
@@ -2298,7 +2298,7 @@
             "description": "Closes a Word instance.",
             "docsLink": "https://docs.aventisia.com",
             "img": "/assets/Word.svg",
-            "supportedPlatforms": ["cloud", "windows"]
+            "supportedPlatforms": ["windows"]
           },
           {
             "type": "activityNode",
@@ -2307,7 +2307,7 @@
             "description": "Converts a Word document (.doc/.docx) into a PDF file.",
             "docsLink": "https://docs.aventisia.com",
             "img": "/assets/Word.svg",
-            "supportedPlatforms": ["cloud", "windows"]
+            "supportedPlatforms": ["windows"]
           },
           {
             "type": "activityNode",
@@ -2316,7 +2316,7 @@
             "description": "Reads text content from a .docx document using Open XML SDK.",
             "docsLink": "https://docs.aventisia.com",
             "img": "/assets/Word.svg",
-            "supportedPlatforms": ["cloud", "windows"]
+            "supportedPlatforms": ["windows"]
           },
           {
             "type": "activityNode",
@@ -2325,7 +2325,7 @@
             "description": "Finds text and replaces it with another in a .docx document using Open XML SDK.",
             "docsLink": "https://docs.aventisia.com",
             "img": "/assets/Word.svg",
-            "supportedPlatforms": ["cloud", "windows"]
+            "supportedPlatforms": ["windows"]
           },
           {
             "type": "activityNode",
@@ -2334,7 +2334,7 @@
             "description": "Finds text and replaces it with another in the active document of a Word instance.",
             "docsLink": "https://docs.aventisia.com",
             "img": "/assets/Word.svg",
-            "supportedPlatforms": ["cloud", "windows"]
+            "supportedPlatforms": ["windows"]
           },
           {
             "type": "activityNode",
@@ -2343,7 +2343,7 @@
             "description": "Inserts an image into a Word file at a specified location.",
             "docsLink": "https://docs.aventisia.com",
             "img": "/assets/Word.svg",
-            "supportedPlatforms": ["cloud", "windows"]
+            "supportedPlatforms": ["windows"]
           },
           {
             "type": "activityNode",
@@ -2352,7 +2352,7 @@
             "description": "Launches a new Word instance or opens a Word document.",
             "docsLink": "https://docs.aventisia.com",
             "img": "/assets/Word.svg",
-            "supportedPlatforms": ["cloud", "windows"]
+            "supportedPlatforms": ["windows"]
           },
           {
             "type": "activityNode",
@@ -2361,7 +2361,7 @@
             "description": "Reads the text content from a document of a Word instance.",
             "docsLink": "https://docs.aventisia.com",
             "img": "/assets/Word.svg",
-            "supportedPlatforms": ["cloud", "windows"]
+            "supportedPlatforms": ["windows"]
           },
           {
             "type": "activityNode",
@@ -2370,7 +2370,7 @@
             "description": "Saves a previously launched Word instance.",
             "docsLink": "https://docs.aventisia.com",
             "img": "/assets/Word.svg",
-            "supportedPlatforms": ["cloud", "windows"]
+            "supportedPlatforms": ["windows"]
           },
           {
             "type": "activityNode",
@@ -2379,7 +2379,7 @@
             "description": "Writes or appends text to a Word file.",
             "docsLink": "https://docs.aventisia.com",
             "img": "/assets/Word.svg",
-            "supportedPlatforms": ["cloud", "windows"]
+            "supportedPlatforms": ["windows"]
           }
         ]
       },
@@ -2395,7 +2395,7 @@
             "description": "Marks the beginning of a If Service block of actions depending on whether a service is running, paused, stopped, or installed.",
             "docsLink": "https://docs.aventisia.com",
             "img": "/assets/WindowsService.svg",
-            "supportedPlatforms": ["cloud", "windows"]
+            "supportedPlatforms": ["windows"]
           },
           {
             "type": "activityNode",
@@ -2404,7 +2404,7 @@
             "description": "Pauses a running Windows service.",
             "docsLink": "https://docs.aventisia.com",
             "img": "/assets/WindowsService.svg",
-            "supportedPlatforms": ["cloud", "windows"]
+            "supportedPlatforms": ["windows"]
           },
           {
             "type": "activityNode",
@@ -2413,7 +2413,7 @@
             "description": "Resumes a paused Windows service.",
             "docsLink": "https://docs.aventisia.com",
             "img": "/assets/WindowsService.svg",
-            "supportedPlatforms": ["cloud", "windows"]
+            "supportedPlatforms": ["windows"]
           },
           {
             "type": "activityNode",
@@ -2422,7 +2422,7 @@
             "description": "Starts a stopped Windows service.",
             "docsLink": "https://docs.aventisia.com",
             "img": "/assets/WindowsService.svg",
-            "supportedPlatforms": ["cloud", "windows"]
+            "supportedPlatforms": ["windows"]
           },
           {
             "type": "activityNode",
@@ -2431,7 +2431,7 @@
             "description": "Stops a running Windows service.",
             "docsLink": "https://docs.aventisia.com",
             "img": "/assets/WindowsService.svg",
-            "supportedPlatforms": ["cloud", "windows"]
+            "supportedPlatforms": ["windows"]
           },
           {
             "type": "activityNode",
@@ -2440,7 +2440,7 @@
             "description": "Suspends the execution of the automation until a service is running, paused, or stopped on the computer.",
             "docsLink": "https://docs.aventisia.com",
             "img": "/assets/WindowsService.svg",
-            "supportedPlatforms": ["cloud", "windows"]
+            "supportedPlatforms": ["windows"]
           }
         ]
       },
@@ -2457,7 +2457,7 @@
             "description": "Fill an UltraTax CS form by inspecting UI elements and mapping them to a JSON content",
             "docsLink": "https://docs.aventisia.com",
             "img": "/assets/ThomsonReuters.svg",
-            "supportedPlatforms": ["cloud", "windows"]
+            "supportedPlatforms": ["windows"]
           },
           {
             "type": "activityNode",
@@ -2466,7 +2466,7 @@
             "description": "Get inspection details of a UI element in an UltraTax CS form, such as name, position etc.",
             "docsLink": "https://docs.aventisia.com",
             "img": "/assets/ThomsonReuters.svg",
-            "supportedPlatforms": ["cloud", "windows"]
+            "supportedPlatforms": ["windows"]
           }
         ]
       },
@@ -2482,7 +2482,7 @@
             "description": "Close an open terminal session.",
             "docsLink": "https://docs.aventisia.com",
             "img": "/assets/TerminalEmulation.svg",
-            "supportedPlatforms": ["cloud", "windows"]
+            "supportedPlatforms": ["windows"]
           },
           {
             "type": "activityNode",
@@ -2491,7 +2491,7 @@
             "description": "Get text from a terminal session.",
             "docsLink": "https://docs.aventisia.com",
             "img": "/assets/TerminalEmulation.svg",
-            "supportedPlatforms": ["cloud", "windows"]
+            "supportedPlatforms": ["windows"]
           },
           {
             "type": "activityNode",
@@ -2500,7 +2500,7 @@
             "description": "Move the terminal's cursor to the specified position.",
             "docsLink": "https://docs.aventisia.com",
             "img": "/assets/TerminalEmulation.svg",
-            "supportedPlatforms": ["cloud", "windows"]
+            "supportedPlatforms": ["windows"]
           },
           {
             "type": "activityNode",
@@ -2509,7 +2509,7 @@
             "description": "Open a new terminal session.",
             "docsLink": "https://docs.aventisia.com",
             "img": "/assets/TerminalEmulation.svg",
-            "supportedPlatforms": ["cloud", "windows"]
+            "supportedPlatforms": ["windows"]
           },
           {
             "type": "activityNode",
@@ -2518,7 +2518,7 @@
             "description": "Search for all occurrences of a specific text on a terminal session.",
             "docsLink": "https://docs.aventisia.com",
             "img": "/assets/TerminalEmulation.svg",
-            "supportedPlatforms": ["cloud", "windows"]
+            "supportedPlatforms": ["windows"]
           },
           {
             "type": "activityNode",
@@ -2527,7 +2527,7 @@
             "description": "Send a control key to a terminal session.",
             "docsLink": "https://docs.aventisia.com",
             "img": "/assets/TerminalEmulation.svg",
-            "supportedPlatforms": ["cloud", "windows"]
+            "supportedPlatforms": ["windows"]
           },
           {
             "type": "activityNode",
@@ -2536,7 +2536,7 @@
             "description": "Set text on a terminal session.",
             "docsLink": "https://docs.aventisia.com",
             "img": "/assets/TerminalEmulation.svg",
-            "supportedPlatforms": ["cloud", "windows"]
+            "supportedPlatforms": ["windows"]
           },
           {
             "type": "activityNode",
@@ -2545,7 +2545,7 @@
             "description": "Wait for a specific text to appear on a terminal session.",
             "docsLink": "https://docs.aventisia.com",
             "img": "/assets/TerminalEmulation.svg",
-            "supportedPlatforms": ["cloud", "windows"]
+            "supportedPlatforms": ["windows"]
           }
         ]
       },
@@ -3728,7 +3728,7 @@
             "description": "Extracts images from a PDF file by specifying the source PDF file and the target folder.",
             "docsLink": "https://docs.aventisia.com",
             "img": "/assets/PDF.svg",
-            "supportedPlatforms": ["cloud", "windows"]
+            "supportedPlatforms": ["windows"]
           },
           {
             "type": "activityNode",
@@ -3737,7 +3737,7 @@
             "description": "Extracts specific pages from a PDF file and saves them as a New PDF file.",
             "docsLink": "https://docs.aventisia.com",
             "img": "/assets/PDF.svg",
-            "supportedPlatforms": ["cloud", "windows"]
+            "supportedPlatforms": ["windows"]
           },
           {
             "type": "activityNode",
@@ -3746,7 +3746,7 @@
             "description": "Extracts tabular text from all pages of a PDF file.",
             "docsLink": "https://docs.aventisia.com",
             "img": "/assets/PDF.svg",
-            "supportedPlatforms": ["cloud", "windows"]
+            "supportedPlatforms": ["windows"]
           },
           {
             "type": "activityNode",
@@ -3755,7 +3755,7 @@
             "description": "Extracts text or images from a PDF file based on selection.",
             "docsLink": "https://docs.aventisia.com",
             "img": "/assets/PDF.svg",
-            "supportedPlatforms": ["cloud", "windows"]
+            "supportedPlatforms": ["windows"]
           },
           {
             "type": "activityNode",
@@ -3764,7 +3764,7 @@
             "description": "Checks if the PDF contains text matching a regular expression pattern (case-sensitive).",
             "docsLink": "https://docs.aventisia.com",
             "img": "/assets/PDF.svg",
-            "supportedPlatforms": ["cloud", "windows"]
+            "supportedPlatforms": ["windows"]
           },
           {
             "type": "activityNode",
@@ -3773,7 +3773,7 @@
             "description": "Extracts text from each page of a PDF file and returns a list of page texts.",
             "docsLink": "https://docs.aventisia.com",
             "img": "/assets/PDF.svg",
-            "supportedPlatforms": ["cloud", "windows"]
+            "supportedPlatforms": ["windows"]
           },
           {
             "type": "activityNode",
@@ -3782,7 +3782,7 @@
             "description": "Merges multiple PDF files into a new one.",
             "docsLink": "https://docs.aventisia.com",
             "img": "/assets/PDF.svg",
-            "supportedPlatforms": ["cloud", "windows"]
+            "supportedPlatforms": ["windows"]
           },
           {
             "type": "activityNode",
@@ -3791,7 +3791,7 @@
             "description": "Splits a PDF into pages based on selection mode: All, Odd, Even, Range, Specific Pages, or By Chunk Size.",
             "docsLink": "https://docs.aventisia.com",
             "img": "/assets/PDF.svg",
-            "supportedPlatforms": ["cloud", "windows"]
+            "supportedPlatforms": ["windows"]
           },
           {
             "type": "activityNode",
@@ -3800,7 +3800,7 @@
             "description": "Validates whether a PDF file contains text or images based on the selected content type",
             "docsLink": "https://docs.aventisia.com",
             "img": "/assets/PDF.svg",
-            "supportedPlatforms": ["cloud", "windows"]
+            "supportedPlatforms": ["windows"]
           }
         ]
       },
@@ -3816,7 +3816,7 @@
             "description": "Closes an Outlook application instance and releases COM resources.",
             "docsLink": "https://docs.aventisia.com",
             "img": "/assets/Outlook.svg",
-            "supportedPlatforms": ["cloud", "windows"]
+            "supportedPlatforms": ["windows"]
           },
           {
             "type": "activityNode",
@@ -3825,7 +3825,7 @@
             "description": "Launches an Outlook application instance. Optionally connects to a specific profile.",
             "docsLink": "https://docs.aventisia.com",
             "img": "/assets/Outlook.svg",
-            "supportedPlatforms": ["cloud", "windows"]
+            "supportedPlatforms": ["windows"]
           },
           {
             "type": "activityNode",
@@ -3834,7 +3834,7 @@
             "description": "Moves or deletes a collection of email messages in Outlook.",
             "docsLink": "https://docs.aventisia.com",
             "img": "/assets/Outlook.svg",
-            "supportedPlatforms": ["cloud", "windows"]
+            "supportedPlatforms": ["windows"]
           },
           {
             "type": "activityNode",
@@ -3843,7 +3843,7 @@
             "description": "Retrieves email messages from a specified Outlook folder. Optionally filters by unread status or subject.",
             "docsLink": "https://docs.aventisia.com",
             "img": "/assets/Outlook.svg",
-            "supportedPlatforms": ["cloud", "windows"]
+            "supportedPlatforms": ["windows"]
           },
           {
             "type": "activityNode",
@@ -3852,7 +3852,7 @@
             "description": "Saves selected Outlook email messages (.msg files) to a specified location.",
             "docsLink": "https://docs.aventisia.com",
             "img": "/assets/Outlook.svg",
-            "supportedPlatforms": ["cloud", "windows"]
+            "supportedPlatforms": ["windows"]
           }
         ]
       },
@@ -4130,7 +4130,7 @@
             "description": "Activates a specific cell in the given worksheet based on absolute position, relative offset, or named range.",
             "docsLink": "https://docs.aventisia.com",
             "img": "/assets/Excel.svg",
-            "supportedPlatforms": ["cloud", "windows"]
+            "supportedPlatforms": ["windows"]
           },
           {
             "type": "activityNode",
@@ -4139,7 +4139,7 @@
             "description": "Adds a new worksheet to the specified Excel workbook.",
             "docsLink": "https://docs.aventisia.com",
             "img": "/assets/Excel.svg",
-            "supportedPlatforms": ["cloud", "windows"]
+            "supportedPlatforms": ["windows"]
           },
           {
             "type": "activityNode",
@@ -4148,7 +4148,7 @@
             "description": "Appends a range of data (e.g., from a DataTable) to the active worksheet of an Excel.",
             "docsLink": "https://docs.aventisia.com",
             "img": "/assets/Excel.svg",
-            "supportedPlatforms": ["cloud", "windows"]
+            "supportedPlatforms": ["windows"]
           },
           {
             "type": "activityNode",
@@ -4157,7 +4157,7 @@
             "description": "Attaches to a running Excel instance and opens the specified workbook if not already open.",
             "docsLink": "https://docs.aventisia.com",
             "img": "/assets/Excel.svg",
-            "supportedPlatforms": ["cloud", "windows"]
+            "supportedPlatforms": ["windows"]
           },
           {
             "type": "activityNode",
@@ -4166,7 +4166,7 @@
             "description": "Copies data from a source range to a target range in the specified or active worksheet of an Excel workbook.",
             "docsLink": "https://docs.aventisia.com",
             "img": "/assets/Excel.svg",
-            "supportedPlatforms": ["cloud", "windows"]
+            "supportedPlatforms": ["windows"]
           },
           {
             "type": "activityNode",
@@ -4175,7 +4175,7 @@
             "description": "Clears a specified range or named cell in the provided worksheet or workbook.",
             "docsLink": "https://docs.aventisia.com",
             "img": "/assets/Excel.svg",
-            "supportedPlatforms": ["cloud", "windows"]
+            "supportedPlatforms": ["windows"]
           },
           {
             "type": "activityNode",
@@ -4184,7 +4184,7 @@
             "description": "Closes the active Excel application instance and optionally saves changes.",
             "docsLink": "https://docs.aventisia.com",
             "img": "/assets/Excel.svg",
-            "supportedPlatforms": ["cloud", "windows"]
+            "supportedPlatforms": ["windows"]
           },
           {
             "type": "activityNode",
@@ -4193,7 +4193,7 @@
             "description": "Closes the specified Excel workbook and optionally quits the Excel application.",
             "docsLink": "https://docs.aventisia.com",
             "img": "/assets/Excel.svg",
-            "supportedPlatforms": ["cloud", "windows"]
+            "supportedPlatforms": ["windows"]
           },
           {
             "type": "activityNode",
@@ -4202,7 +4202,7 @@
             "description": "Copies a specified range of cells from an Excel worksheet for later use or pasting into another worksheet.",
             "docsLink": "https://docs.aventisia.com",
             "img": "/assets/Excel.svg",
-            "supportedPlatforms": ["cloud", "windows"]
+            "supportedPlatforms": ["windows"]
           },
           {
             "type": "activityNode",
@@ -4211,7 +4211,7 @@
             "description": "Copies a worksheet to another workbook or within the same workbook, preserving data, formatting, and structure.",
             "docsLink": "https://docs.aventisia.com",
             "img": "/assets/Excel.svg",
-            "supportedPlatforms": ["cloud", "windows"]
+            "supportedPlatforms": ["windows"]
           },
           {
             "type": "activityNode",
@@ -4220,7 +4220,7 @@
             "description": "Copies a specified range of cells from the provided Excel worksheet into a DataTable.",
             "docsLink": "https://docs.aventisia.com",
             "img": "/assets/Excel.svg",
-            "supportedPlatforms": ["cloud", "windows"]
+            "supportedPlatforms": ["windows"]
           },
           {
             "type": "activityNode",
@@ -4229,7 +4229,7 @@
             "description": "Deletes a specific column from the specified Excel worksheet instance.",
             "docsLink": "https://docs.aventisia.com",
             "img": "/assets/Excel.svg",
-            "supportedPlatforms": ["cloud", "windows"]
+            "supportedPlatforms": ["windows"]
           },
           {
             "type": "activityNode",
@@ -4238,7 +4238,7 @@
             "description": "Deletes a specific worksheet from its parent Excel workbook.",
             "docsLink": "https://docs.aventisia.com",
             "img": "/assets/Excel.svg",
-            "supportedPlatforms": ["cloud", "windows"]
+            "supportedPlatforms": ["windows"]
           },
           {
             "type": "activityNode",
@@ -4247,7 +4247,7 @@
             "description": "Deletes a range of cells or a single cell from the specified Excel worksheet.",
             "docsLink": "https://docs.aventisia.com",
             "img": "/assets/Excel.svg",
-            "supportedPlatforms": ["cloud", "windows"]
+            "supportedPlatforms": ["windows"]
           },
           {
             "type": "activityNode",
@@ -4256,7 +4256,7 @@
             "description": "Deletes a specific row from the specified worksheet of an Excel workbook.",
             "docsLink": "https://docs.aventisia.com",
             "img": "/assets/Excel.svg",
-            "supportedPlatforms": ["cloud", "windows"]
+            "supportedPlatforms": ["windows"]
           },
           {
             "type": "activityNode",
@@ -4265,7 +4265,7 @@
             "description": "Filters cells in the specified Excel worksheet based on criteria applied to a specific column.",
             "docsLink": "https://docs.aventisia.com",
             "img": "/assets/Excel.svg",
-            "supportedPlatforms": ["cloud", "windows"]
+            "supportedPlatforms": ["windows"]
           },
           {
             "type": "activityNode",
@@ -4274,7 +4274,7 @@
             "description": "Finds text and replaces it with another in the specified Excel worksheet.",
             "docsLink": "https://docs.aventisia.com",
             "img": "/assets/Excel.svg",
-            "supportedPlatforms": ["cloud", "windows"]
+            "supportedPlatforms": ["windows"]
           },
           {
             "type": "activityNode",
@@ -4283,7 +4283,7 @@
             "description": "Gets the address of the currently active cell in the specified Excel worksheet.",
             "docsLink": "https://docs.aventisia.com",
             "img": "/assets/Excel.svg",
-            "supportedPlatforms": ["cloud", "windows"]
+            "supportedPlatforms": ["windows"]
           },
           {
             "type": "activityNode",
@@ -4292,7 +4292,7 @@
             "description": "Retrieves the name and index of the currently active worksheet in a given Excel workbook.",
             "docsLink": "https://docs.aventisia.com",
             "img": "/assets/Excel.svg",
-            "supportedPlatforms": ["cloud", "windows"]
+            "supportedPlatforms": ["windows"]
           },
           {
             "type": "activityNode",
@@ -4301,7 +4301,7 @@
             "description": "Retrieves all worksheet names from the provided Excel workbook instance, optionally filtered by a specific worksheet instance.",
             "docsLink": "https://docs.aventisia.com",
             "img": "/assets/Excel.svg",
-            "supportedPlatforms": ["cloud", "windows"]
+            "supportedPlatforms": ["windows"]
           },
           {
             "type": "activityNode",
@@ -4310,7 +4310,7 @@
             "description": "Gets the name of a column by reading the first non-empty cell in the specified column of an Excel worksheet.",
             "docsLink": "https://docs.aventisia.com",
             "img": "/assets/Excel.svg",
-            "supportedPlatforms": ["cloud", "windows"]
+            "supportedPlatforms": ["windows"]
           },
           {
             "type": "activityNode",
@@ -4319,7 +4319,7 @@
             "description": "Retrieves the first free column and/or row from the specified worksheet. Useful for appending new data.",
             "docsLink": "https://docs.aventisia.com",
             "img": "/assets/Excel.svg",
-            "supportedPlatforms": ["cloud", "windows"]
+            "supportedPlatforms": ["windows"]
           },
           {
             "type": "activityNode",
@@ -4328,7 +4328,7 @@
             "description": "Retrieves the first free row number for a specific column from the given worksheet.",
             "docsLink": "https://docs.aventisia.com",
             "img": "/assets/Excel.svg",
-            "supportedPlatforms": ["cloud", "windows"]
+            "supportedPlatforms": ["windows"]
           },
           {
             "type": "activityNode",
@@ -4337,7 +4337,7 @@
             "description": "Retrieves the currently selected cell range in the provided Excel worksheet as first column, first row, last column, and last row indices.",
             "docsLink": "https://docs.aventisia.com",
             "img": "/assets/Excel.svg",
-            "supportedPlatforms": ["cloud", "windows"]
+            "supportedPlatforms": ["windows"]
           },
           {
             "type": "activityNode",
@@ -4346,7 +4346,7 @@
             "description": "Retrieves the range address (e.g., 'A1:B10') of a specified table or pivot table in the provided Excel worksheet.",
             "docsLink": "https://docs.aventisia.com",
             "img": "/assets/Excel.svg",
-            "supportedPlatforms": ["cloud", "windows"]
+            "supportedPlatforms": ["windows"]
           },
           {
             "type": "activityNode",
@@ -4355,7 +4355,7 @@
             "description": "Inserts a new column to the left of the specified column in the provided Excel worksheet.",
             "docsLink": "https://docs.aventisia.com",
             "img": "/assets/Excel.svg",
-            "supportedPlatforms": ["cloud", "windows"]
+            "supportedPlatforms": ["windows"]
           },
           {
             "type": "activityNode",
@@ -4364,7 +4364,7 @@
             "description": "Inserts a new row above the specified row in the provided Excel worksheet.",
             "docsLink": "https://docs.aventisia.com",
             "img": "/assets/Excel.svg",
-            "supportedPlatforms": ["cloud", "windows"]
+            "supportedPlatforms": ["windows"]
           },
           {
             "type": "activityNode",
@@ -4373,7 +4373,7 @@
             "description": "Launches a new Excel application instance or opens an existing Excel document.",
             "docsLink": "https://docs.aventisia.com",
             "img": "/assets/Excel.svg",
-            "supportedPlatforms": ["cloud", "windows"]
+            "supportedPlatforms": ["windows"]
           },
           {
             "type": "activityNode",
@@ -4382,7 +4382,7 @@
             "description": "Performs a LOOKUP operation in an Excel worksheet. Searches for a lookup value in a single row or column and returns a value from the same position in another row or column.",
             "docsLink": "https://docs.aventisia.com",
             "img": "/assets/Excel.svg",
-            "supportedPlatforms": ["cloud", "windows"]
+            "supportedPlatforms": ["windows"]
           },
           {
             "type": "activityNode",
@@ -4391,7 +4391,7 @@
             "description": "Opens or reuses an Excel workbook in an existing Excel instance by workbook name.",
             "docsLink": "https://docs.aventisia.com",
             "img": "/assets/Excel.svg",
-            "supportedPlatforms": ["cloud", "windows"]
+            "supportedPlatforms": ["windows"]
           },
           {
             "type": "activityNode",
@@ -4400,7 +4400,7 @@
             "description": "Pastes a range of cells from a source worksheet to a specified range or named area in a target worksheet.",
             "docsLink": "https://docs.aventisia.com",
             "img": "/assets/Excel.svg",
-            "supportedPlatforms": ["cloud", "windows"]
+            "supportedPlatforms": ["windows"]
           },
           {
             "type": "activityNode",
@@ -4409,7 +4409,7 @@
             "description": "Pastes a DataTable of data to the specified Excel worksheet starting at the given row and column.",
             "docsLink": "https://docs.aventisia.com",
             "img": "/assets/Excel.svg",
-            "supportedPlatforms": ["cloud", "windows"]
+            "supportedPlatforms": ["windows"]
           },
           {
             "type": "activityNode",
@@ -4418,7 +4418,7 @@
             "description": "Executes a SQL query on an Excel worksheet and returns the result as a DataTable.",
             "docsLink": "https://docs.aventisia.com",
             "img": "/assets/Excel.svg",
-            "supportedPlatforms": ["cloud", "windows"]
+            "supportedPlatforms": ["windows"]
           },
           {
             "type": "activityNode",
@@ -4427,7 +4427,7 @@
             "description": "Reads the formula from a specific cell or named range in Excel.",
             "docsLink": "https://docs.aventisia.com",
             "img": "/assets/Excel.svg",
-            "supportedPlatforms": ["cloud", "windows"]
+            "supportedPlatforms": ["windows"]
           },
           {
             "type": "activityNode",
@@ -4436,7 +4436,7 @@
             "description": "Reads values from a specified cell range in the given Excel worksheet.",
             "docsLink": "https://docs.aventisia.com",
             "img": "/assets/Excel.svg",
-            "supportedPlatforms": ["cloud", "windows"]
+            "supportedPlatforms": ["windows"]
           },
           {
             "type": "activityNode",
@@ -4445,7 +4445,7 @@
             "description": "Renames a specific worksheet in the given Excel instance based on name or index.",
             "docsLink": "https://docs.aventisia.com",
             "img": "/assets/Excel.svg",
-            "supportedPlatforms": ["cloud", "windows"]
+            "supportedPlatforms": ["windows"]
           },
           {
             "type": "activityNode",
@@ -4454,7 +4454,7 @@
             "description": "Resizes the width of columns or the height of rows in the provided Excel worksheet.",
             "docsLink": "https://docs.aventisia.com",
             "img": "/assets/Excel.svg",
-            "supportedPlatforms": ["cloud", "windows"]
+            "supportedPlatforms": ["windows"]
           },
           {
             "type": "activityNode",
@@ -4463,7 +4463,7 @@
             "description": "Runs a specified VBA macro in the provided Excel workbook.",
             "docsLink": "https://docs.aventisia.com",
             "img": "/assets/Excel.svg",
-            "supportedPlatforms": ["cloud", "windows"]
+            "supportedPlatforms": ["windows"]
           },
           {
             "type": "activityNode",
@@ -4472,7 +4472,7 @@
             "description": "Saves the active Excel workbook.",
             "docsLink": "https://docs.aventisia.com",
             "img": "/assets/Excel.svg",
-            "supportedPlatforms": ["cloud", "windows"]
+            "supportedPlatforms": ["windows"]
           },
           {
             "type": "activityNode",
@@ -4481,7 +4481,7 @@
             "description": "Selects a specific range of cells in the given Excel worksheet or workbook.",
             "docsLink": "https://docs.aventisia.com",
             "img": "/assets/Excel.svg",
-            "supportedPlatforms": ["cloud", "windows"]
+            "supportedPlatforms": ["windows"]
           },
           {
             "type": "activityNode",
@@ -4490,7 +4490,7 @@
             "description": "Activates a specific worksheet in the provided Excel workbook by name or index and outputs the active worksheet instance.",
             "docsLink": "https://docs.aventisia.com",
             "img": "/assets/Excel.svg",
-            "supportedPlatforms": ["cloud", "windows"]
+            "supportedPlatforms": ["windows"]
           },
           {
             "type": "activityNode",
@@ -4499,7 +4499,7 @@
             "description": "Fills the background of a selected range of cells with the specified color.",
             "docsLink": "https://docs.aventisia.com",
             "img": "/assets/Excel.svg",
-            "supportedPlatforms": ["cloud", "windows"]
+            "supportedPlatforms": ["windows"]
           },
           {
             "type": "activityNode",
@@ -4508,7 +4508,7 @@
             "description": "Writes a value or array of values to a row or range in an Excel worksheet.",
             "docsLink": "https://docs.aventisia.com",
             "img": "/assets/Excel.svg",
-            "supportedPlatforms": ["cloud", "windows"]
+            "supportedPlatforms": ["windows"]
           },
           {
             "type": "activityNode",
@@ -4517,7 +4517,7 @@
             "description": "Writes a value to a specific cell or range of cells in an Excel worksheet.",
             "docsLink": "https://docs.aventisia.com",
             "img": "/assets/Excel.svg",
-            "supportedPlatforms": ["cloud", "windows"]
+            "supportedPlatforms": ["windows"]
           },
           {
             "type": "activityNode",
@@ -4526,7 +4526,7 @@
             "description": "Writes a list of values to user-specified Excel columns in a single row (e.g., value1→A, value2→D, value3→G).",
             "docsLink": "https://docs.aventisia.com",
             "img": "/assets/Excel.svg",
-            "supportedPlatforms": ["cloud", "windows"]
+            "supportedPlatforms": ["windows"]
           }
         ]
       },

@@ -4,7 +4,7 @@
   "description": "Marks the beginning of a If Service block of actions depending on whether a service is running, paused, stopped, or installed.",
   "version": "1.0.0",
   "auther": "@aventisia",
-  "supportedPlatforms": ["cloud", "windows"],
+  "supportedPlatforms": ["windows"],
   "errorHandling": "standard",
   "testScreenType": "standard",
   "fields": [

@@ -4,7 +4,7 @@
   "description": "Renames a specific worksheet in the given Excel instance based on name or index.",
   "version": "1.0.0",
   "auther": "@aventisia",
-  "supportedPlatforms": ["cloud", "windows"],
+  "supportedPlatforms": ["windows"],
   "errorHandling": "standard",
   "testScreenType": "standard",
   "fields": [

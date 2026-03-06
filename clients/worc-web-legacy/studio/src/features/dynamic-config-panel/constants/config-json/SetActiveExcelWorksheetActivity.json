@@ -4,7 +4,7 @@
   "description": "Activates a specific worksheet in the provided Excel workbook by name or index and outputs the active worksheet instance.",
   "version": "1.0.0",
   "auther": "@aventisia",
-  "supportedPlatforms": ["cloud", "windows"],
+  "supportedPlatforms": ["windows"],
   "errorHandling": "standard",
   "testScreenType": "standard",
   "fields": [

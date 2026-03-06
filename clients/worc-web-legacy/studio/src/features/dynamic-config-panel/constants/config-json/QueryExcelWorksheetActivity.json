@@ -4,7 +4,7 @@
   "description": "Executes a SQL query on an Excel worksheet and returns the result as a DataTable.",
   "version": "1.0.0",
   "auther": "@aventisia",
-  "supportedPlatforms": ["cloud", "windows"],
+  "supportedPlatforms": ["windows"],
   "errorHandling": "standard",
   "testScreenType": "standard",
   "fields": [
