@@ -4,7 +4,7 @@
   "description": "Checks if the PDF contains text matching a regular expression pattern (case-sensitive).",
   "version": "1.0.0",
   "auther": "@aventisia",
-  "supportedPlatforms": ["cloud", "windows"],
+  "supportedPlatforms": ["windows"],
   "errorHandling": "standard",
   "testScreenType": "standard",
   "fields": [

@@ -4,7 +4,7 @@
   "description": "Finds text and replaces it with another in the active document of a Word instance.",
   "version": "1.0.0",
   "auther": "@aventisia",
-  "supportedPlatforms": ["cloud", "windows"],
+  "supportedPlatforms": ["windows"],
   "errorHandling": "standard",
   "testScreenType": "standard",
   "fields": [

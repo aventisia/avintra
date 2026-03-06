@@ -4,7 +4,7 @@
   "description": "Deletes a specific column from the specified Excel worksheet instance.",
   "version": "1.0.0",
   "auther": "@aventisia",
-  "supportedPlatforms": ["cloud", "windows"],
+  "supportedPlatforms": ["windows"],
   "errorHandling": "standard",
   "testScreenType": "standard",
   "fields": [

@@ -6,6 +6,7 @@ namespace CodeActivitiesLibrary.AppIntegrations.OutlookActivities
         primaryCategory: "App Integrations",
         label: "Outlook",
         description: "Automate Microsoft Outlook operations.",
+        supportedPlatforms: "windows",
         img: "/assets/Outlook.svg")]
     internal sealed class _OutlookCategoryMetaData { }
 }

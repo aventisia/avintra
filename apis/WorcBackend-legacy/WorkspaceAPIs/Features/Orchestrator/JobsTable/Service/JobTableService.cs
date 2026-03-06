@@ -301,6 +301,12 @@ public class JobTableService : IJobTableService
                 await _jobsExecutorService.ExecuteJobCommandAsync(newJob);
             }
 
+            newJob = await _unitOfWork.JobRepo
+                .GetByConditionAsync(w => w.Id == newJob.Id)
+                .Include(i => i.FlowVersion)
+                    .ThenInclude(i2 => i2.Flow)
+                .SingleOrDefaultAsync();
+
             // Success - return the created job
             serviceResponse.Data = newJob.Adapt<JobTableDto>();
             serviceResponse.StatusCode = 200;

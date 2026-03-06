@@ -82,4 +82,7 @@ public class EnvironmentConfig
 
     // Cors Origins
     public string CorsOrigins { get; set; } = string.Empty;
+
+    // Custom API Key Config
+    public string CustomApiKey { get; set; } = string.Empty;
 }

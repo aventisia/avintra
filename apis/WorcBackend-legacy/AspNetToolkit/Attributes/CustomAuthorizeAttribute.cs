@@ -13,10 +13,10 @@ public class CustomAuthorizeAttribute : Attribute, IAuthorizationFilter
     public void OnAuthorization(AuthorizationFilterContext context)
     {
         // Get the APIKeyConfig service from the request's service provider
-        var apiKeyConfig = context.HttpContext.RequestServices.GetRequiredService<APIKeyConfig>();
+        var apiKeyConfig = context.HttpContext.RequestServices.GetRequiredService<EnvironmentConfig>();
 
         // Set the expected API key from the configuration
-        var expectedApiKey = apiKeyConfig.APIKey;
+        var expectedApiKey = apiKeyConfig.CustomApiKey;
 
         // Try to get the actual API key from the request header
         if (!context.HttpContext.Request.Headers.TryGetValue(API_KEY_HEADER_NAME, out var actualApiKey))

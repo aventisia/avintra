@@ -6,6 +6,7 @@ namespace CodeActivitiesLibrary.AppIntegrations.PdfActivities
         primaryCategory: "App Integrations",
         label: "PDF",
         description: "Work with PDF documents.",
+        supportedPlatforms: "windows",
         img: "/assets/PDF.svg")]
     internal sealed class _PDFCategoryMetaData { }
 }

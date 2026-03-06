@@ -4,7 +4,7 @@
   "description": "Wait for a specific text to appear on a terminal session.",
   "version": "1.0.0",
   "auther": "@aventisia",
-  "supportedPlatforms": ["cloud", "windows"],
+  "supportedPlatforms": ["windows"],
   "errorHandling": "standard",
   "testScreenType": "standard",
   "fields": [
