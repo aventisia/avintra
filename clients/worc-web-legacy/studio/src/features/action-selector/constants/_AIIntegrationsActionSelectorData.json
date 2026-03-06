@@ -13,7 +13,7 @@
         "listType": "list",
         "actions": [
           {
-            "type": "aiNode",
+            "type": "callAgentNode",
             "name": "InvokeInferenceModelWebServiceActivity",
             "label": "Attach AI Model",
             "description": "Attach an existing AI model from AI Studio to your automation workflow.",
