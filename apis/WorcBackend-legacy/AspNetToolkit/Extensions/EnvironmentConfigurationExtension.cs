@@ -68,6 +68,8 @@ public static class EnvironmentConfigurationExtension
         var GEMINI_API_KEY = Environment.GetEnvironmentVariable("GEMINI_API_KEY") ?? string.Empty;
         var OPENROUTER_API_KEY = Environment.GetEnvironmentVariable("OPENROUTER_API_KEY") ?? string.Empty;
 
+        var CUSTOM_API_KEY = Environment.GetEnvironmentVariable("CUSTOM_API_KEY") ?? string.Empty;
+
         // Internal service URLs environment variables
         var ACCOUNTS_API_BASE_URL = Environment.GetEnvironmentVariable("ACCOUNTS_API_BASE_URL") ?? config["EnvironmentConfig:AccountsApiBaseUrl"] ?? "http://accounts-apis:4000";
         var WORC_API_BASE_URL = Environment.GetEnvironmentVariable("WORC_API_BASE_URL") ?? config["EnvironmentConfig:WorcApiBaseUrl"] ?? "http://worc-apis:4001";
@@ -178,6 +180,8 @@ public static class EnvironmentConfigurationExtension
                     { "EnvironmentConfig:DeepInfraApiKey", DEEPINFRA_API_KEY },
                     { "EnvironmentConfig:GeminiApiKey", GEMINI_API_KEY },
                     { "EnvironmentConfig:OpenRouterApiKey", OPENROUTER_API_KEY },
+
+                    { "EnvironmentConfig:CUSTOM_API_KEY", CUSTOM_API_KEY },
 
                     { "EnvironmentConfig:AccountsApiBaseUrl", ACCOUNTS_API_BASE_URL.TrimEnd('/') },
                     { "EnvironmentConfig:WorcApiBaseUrl", WORC_API_BASE_URL.TrimEnd('/') },
