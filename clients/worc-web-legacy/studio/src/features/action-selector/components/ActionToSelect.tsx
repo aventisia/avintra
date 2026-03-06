@@ -10,20 +10,26 @@ interface ActionToSelectProps {
 
 export const ActionToSelect = ({ data }: ActionToSelectProps) => {
   return (
-    <div className="grid w-full grid-cols-[auto_1fr] items-center gap-3 px-2 py-2">
-      {data.supportedPlatforms?.length == 1 &&
+    <div className="relative grid w-full grid-cols-[auto_1fr] items-center gap-3 px-2 py-2">
+      {data.supportedPlatforms?.length === 1 &&
       data.supportedPlatforms?.includes("windows") ? (
-        <MonitorIcon className="absolute right-4 top-4 h-2.5 w-2.5 text-muted-foreground" />
+        <MonitorIcon
+          className="absolute right-4 top-4 h-2.5 w-2.5 text-muted-foreground"
+          aria-hidden="true"
+        />
       ) : null}
-      {/* Category icon or image */}
+
       {data.icon ? (
-        <div>{iconMapper[data.icon]}</div>
+        <div aria-hidden="true">{iconMapper[data.icon]}</div>
       ) : (
-        <FallbackImageIcon className="h-4 w-4" src={data.img} />
+        <FallbackImageIcon
+          className="h-4 w-4"
+          src={data.img}
+          aria-hidden="true"
+        />
       )}
 
       <div className="grow space-y-0.5">
-        {/* Category heading */}
         <h2 className="flex items-center text-xs font-medium text-foreground">
           {data.label}{" "}
           {data.disabled && (
@@ -32,8 +38,6 @@ export const ActionToSelect = ({ data }: ActionToSelectProps) => {
             </Badge>
           )}
         </h2>
-
-        {/* Category description */}
         <p className="text-2xs text-muted-foreground">{data.description}</p>
       </div>
     </div>

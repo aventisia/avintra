@@ -1,32 +1,69 @@
-import { CommandItem } from "@aventisia/ui/command";
 import { ActionToSelect } from "./ActionToSelect";
 import { NodeDataType } from "@/types/node-data-type";
-import { DialogClose } from "@aventisia/ui/dialog";
+import { cn } from "@aventisia/ui/lib";
+import { KeyboardEvent } from "react";
 
 interface ActionsListProps {
-  item: NodeDataType[] | undefined;
+  items: NodeDataType[] | undefined;
   nodeSelectionHandler: (item: NodeDataType) => void;
+  rightRefs: React.MutableRefObject<(HTMLButtonElement | null)[]>;
+  firstItemRef?: React.MutableRefObject<HTMLButtonElement | null>;
+  rightIndex: number;
+  handleRightPaneKeyDown: (
+    e: KeyboardEvent,
+    index: number,
+    action: NodeDataType,
+  ) => void;
+  isFocusedPane: boolean;
 }
 
-const ActionsList = ({ item, nodeSelectionHandler }: ActionsListProps) => {
+const ActionsList = ({
+  items,
+  nodeSelectionHandler,
+  rightRefs,
+  firstItemRef,
+  rightIndex,
+  handleRightPaneKeyDown,
+  isFocusedPane,
+}: ActionsListProps) => {
+  if (!items || items.length === 0) {
+    return (
+      <div className="p-4 text-center text-sm text-muted-foreground">
+        No actions available.
+      </div>
+    );
+  }
+
   return (
     <>
-      {item?.map((action) => {
+      {items.map((action, idx) => {
+        if (action.hidden) return null;
+
+        const isFocused = isFocusedPane && rightIndex === idx;
+
         return (
-          !action.hidden && (
-            <CommandItem
-              disabled={action.disabled}
-              key={action.name}
-              value={action.label}
-              className="w-full rounded-lg p-1 hover:bg-accent"
-              onSelect={() => nodeSelectionHandler(action)}
-            >
-              {/* Action item */}
-              <DialogClose className="text-left">
-                <ActionToSelect data={action} />
-              </DialogClose>
-            </CommandItem>
-          )
+          <button
+            key={action.name}
+            ref={(el) => {
+              rightRefs.current[idx] = el;
+              if (idx === 0 && firstItemRef) firstItemRef.current = el;
+            }}
+            role="option"
+            aria-selected={isFocused}
+            disabled={action.disabled}
+            tabIndex={isFocused ? 0 : -1}
+            onClick={() => nodeSelectionHandler(action)}
+            onKeyDown={(e) => handleRightPaneKeyDown(e, idx, action)}
+            className={cn(
+              "mb-1 w-full rounded-lg p-1 text-left outline-none transition-colors",
+              isFocused
+                ? "bg-accent text-accent-foreground"
+                : "hover:bg-accent hover:text-accent-foreground",
+              action.disabled && "cursor-not-allowed opacity-50",
+            )}
+          >
+            <ActionToSelect data={action} />
+          </button>
         );
       })}
     </>
