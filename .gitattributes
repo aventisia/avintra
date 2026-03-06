@@ -4,6 +4,8 @@
 # or for a specific repository:
 # git config core.autocrlf false
 # git config core.eol lf
+# After setting these configurations, you can normalize the line endings in your repository by running:
+# git add --renormalize .
 
 # Normalize line endings to LF (Unix-style) for all text files
 * text=auto eol=lf
