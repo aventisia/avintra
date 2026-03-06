@@ -169,17 +169,22 @@ namespace CodeActivityToJSON.Utils
 
                             // --- ENDS (For documentation generation)
 
-                            
-                            // Create the file path for the JSON file in WSL2 (for form generation)
-                            var fileName = Path.Combine($@"\\wsl$\Ubuntu\home\{Environment.UserName.ToLower()}\gitea\aventisia\worc-platform\clients\worc-web-legacy\studio\src\features\dynamic-config-panel\constants\config-json", activity.Name + ".json");
+                            // Replace \r\n with \n to ensure Unix line endings in the generated JSON files
                             var jsonWithUnixLineEndings = json.Replace("\r\n", "\n");
+
+                            // Create the file WSL2 repo (for form generation)
+                            var fileName = Path.Combine($@"\\wsl$\Ubuntu\home\{Environment.UserName.ToLower()}\gitea\aventisia\worc-platform\clients\worc-web-legacy\studio\src\features\dynamic-config-panel\constants\config-json", activity.Name + ".json");
                             File.WriteAllText(fileName, jsonWithUnixLineEndings);
 
-                            // Create the file path for the JSON file in %LOCALAPPDATA%\WorcDesktopApp\config-files\desktop-nodes (for form generation)
+                            // Create the file in Windows repo (for form generation)
+                            var repofileName = Path.GetFullPath(Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "..", "..", "..", "..", "worc-web-legacy", "studio", "src", "features", "dynamic-config-panel", "constants", "config-json", activity.Name + ".json"));
+                            File.WriteAllText(repofileName, jsonWithUnixLineEndings);
+
+                            // Create the file in %LOCALAPPDATA%\WorcDesktopApp\config-files\desktop-nodes (for form generation)
                             var localAppDatadesktopNodesOutputDir = Path.Combine(localAppDataPath, "WorcDesktopApp", "config-files", "desktop-nodes");
                             Directory.CreateDirectory(localAppDatadesktopNodesOutputDir);
                             var localAppDataFileName = Path.Combine(localAppDatadesktopNodesOutputDir, activity.Name + ".json");
-                            File.WriteAllText(localAppDataFileName, json);
+                            File.WriteAllText(localAppDataFileName, jsonWithUnixLineEndings);
                         }
 
                         // Add the action category to the primary category
@@ -198,6 +203,18 @@ namespace CodeActivityToJSON.Utils
                 var jsonWithUnixLineEndings = json.Replace("\r\n", "\n");
                 writer.Write(jsonWithUnixLineEndings);
                 Console.WriteLine($"Activities mapping JSON saved");
+            }
+
+            // Save the primary categories JSON file to Windows repo
+            var repoOutputFilePath = Path.GetFullPath(Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "..", "..", "..", "..", "worc-web-legacy", "studio", "src", "features", "action-selector", "constants", "_ActionSelectorData.json"));
+            using (var writer = new StreamWriter(repoOutputFilePath))
+            {
+                // Set NewLine to Unix line ending (LF)
+                writer.NewLine = "\n";
+                var json = JsonConvert.SerializeObject(primaryCategories, Formatting.Indented, settings);
+                var jsonWithUnixLineEndings = json.Replace("\r\n", "\n");
+                writer.Write(jsonWithUnixLineEndings);
+                Console.WriteLine($"Activities mapping JSON saved to Windows repo");
             }
 
             // Save the primary categories JSON file to %LOCALAPPDATA%\WorcDesktopApp\config-files\action-selector

@@ -4,7 +4,7 @@
   "description": "Copies data from a source range to a target range in the specified or active worksheet of an Excel workbook.",
   "version": "1.0.0",
   "auther": "@aventisia",
-  "supportedPlatforms": ["cloud", "windows"],
+  "supportedPlatforms": ["windows"],
   "errorHandling": "standard",
   "testScreenType": "standard",
   "fields": [

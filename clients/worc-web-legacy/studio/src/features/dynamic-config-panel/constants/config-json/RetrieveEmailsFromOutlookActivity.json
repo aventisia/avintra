@@ -4,7 +4,7 @@
   "description": "Retrieves email messages from a specified Outlook folder. Optionally filters by unread status or subject.",
   "version": "1.0.0",
   "auther": "@aventisia",
-  "supportedPlatforms": ["cloud", "windows"],
+  "supportedPlatforms": ["windows"],
   "errorHandling": "standard",
   "testScreenType": "standard",
   "fields": [

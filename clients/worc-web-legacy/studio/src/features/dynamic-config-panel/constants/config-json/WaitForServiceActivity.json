@@ -4,7 +4,7 @@
   "description": "Suspends the execution of the automation until a service is running, paused, or stopped on the computer.",
   "version": "1.0.0",
   "auther": "@aventisia",
-  "supportedPlatforms": ["cloud", "windows"],
+  "supportedPlatforms": ["windows"],
   "errorHandling": "standard",
   "testScreenType": "standard",
   "fields": [

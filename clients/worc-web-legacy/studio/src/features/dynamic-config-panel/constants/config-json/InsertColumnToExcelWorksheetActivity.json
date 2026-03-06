@@ -4,7 +4,7 @@
   "description": "Inserts a new column to the left of the specified column in the provided Excel worksheet.",
   "version": "1.0.0",
   "auther": "@aventisia",
-  "supportedPlatforms": ["cloud", "windows"],
+  "supportedPlatforms": ["windows"],
   "errorHandling": "standard",
   "testScreenType": "standard",
   "fields": [

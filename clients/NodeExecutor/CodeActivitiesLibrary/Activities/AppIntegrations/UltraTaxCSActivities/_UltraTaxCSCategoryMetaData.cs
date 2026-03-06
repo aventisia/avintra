@@ -1,9 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using CodeActivitiesLibrary.Extensions;
+﻿using CodeActivitiesLibrary.Extensions;
 
 namespace CodeActivitiesLibrary.AppIntegrations.UltraTaxCSActivities
 {
@@ -11,6 +6,7 @@ namespace CodeActivitiesLibrary.AppIntegrations.UltraTaxCSActivities
         primaryCategory: "App Integrations",
         label: "UltraTax CS (Thomson Reuters)",
         description: "Activities for integrating with UltraTax CS by Thomson Reuters.",
+        supportedPlatforms: "windows",
         img: "/assets/ThomsonReuters.svg",
         doNotRenderIf: "enterprise")]
     internal sealed class _UltraTaxCSCategoryMetaData

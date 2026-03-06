@@ -2,11 +2,8 @@
 using CodeActivityToJSON.Utils;
 using System;
 using System.Activities;
-using System.ComponentModel;
-using System.IO;
 using System.Linq;
 using System.Reflection;
-using System.Text.RegularExpressions;
 
 namespace CodeActivityToJSON
 {

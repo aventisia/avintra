@@ -4,7 +4,7 @@
   "description": "Writes a list of values to user-specified Excel columns in a single row (e.g., value1\u2192A, value2\u2192D, value3\u2192G).",
   "version": "1.0.0",
   "auther": "@aventisia",
-  "supportedPlatforms": ["cloud", "windows"],
+  "supportedPlatforms": ["windows"],
   "errorHandling": "standard",
   "testScreenType": "standard",
   "fields": [

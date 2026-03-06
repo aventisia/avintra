@@ -4,7 +4,7 @@
   "description": "Retrieves the range address (e.g., \u0027A1:B10\u0027) of a specified table or pivot table in the provided Excel worksheet.",
   "version": "1.0.0",
   "auther": "@aventisia",
-  "supportedPlatforms": ["cloud", "windows"],
+  "supportedPlatforms": ["windows"],
   "errorHandling": "standard",
   "testScreenType": "standard",
   "fields": [

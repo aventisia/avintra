@@ -4,7 +4,7 @@
   "description": "Pastes a DataTable of data to the specified Excel worksheet starting at the given row and column.",
   "version": "1.0.0",
   "auther": "@aventisia",
-  "supportedPlatforms": ["cloud", "windows"],
+  "supportedPlatforms": ["windows"],
   "errorHandling": "standard",
   "testScreenType": "standard",
   "fields": [

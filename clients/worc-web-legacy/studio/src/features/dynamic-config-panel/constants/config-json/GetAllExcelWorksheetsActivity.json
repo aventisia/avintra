@@ -4,7 +4,7 @@
   "description": "Retrieves all worksheet names from the provided Excel workbook instance, optionally filtered by a specific worksheet instance.",
   "version": "1.0.0",
   "auther": "@aventisia",
-  "supportedPlatforms": ["cloud", "windows"],
+  "supportedPlatforms": ["windows"],
   "errorHandling": "standard",
   "testScreenType": "standard",
   "fields": [
