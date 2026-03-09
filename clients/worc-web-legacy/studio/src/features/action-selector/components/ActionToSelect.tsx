@@ -1,8 +1,10 @@
 import { iconMapper } from "@/components/icon-mapper";
-import { FallbackImageIcon } from "./FallbackImageIcon";
 import { NodeDataType } from "@/types/node-data-type";
+
 import { Badge } from "@aventisia/ui/badge";
 import { MonitorIcon } from "lucide-react";
+
+import { FallbackImageIcon } from "./FallbackImageIcon";
 
 interface ActionToSelectProps {
   data: NodeDataType;

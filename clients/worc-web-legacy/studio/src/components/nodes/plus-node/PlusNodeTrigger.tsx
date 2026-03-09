@@ -1,16 +1,14 @@
 import { cn } from "@aventisia/ui/lib";
-import { PopoverTrigger } from "@aventisia/ui/popover";
 import { PlusIcon } from "@heroicons/react/24/outline";
-import { DialogTrigger } from "@aventisia/ui/dialog";
 
 export const PlusNodeTrigger = (
-  props: React.ComponentPropsWithoutRef<typeof PopoverTrigger>,
+  props: React.ComponentPropsWithoutRef<"div">,
 ) => {
   return (
-    <DialogTrigger className="group" {...props}>
+    <div className="group" {...props}>
       <div
         className={cn(
-          "flex h-[5.3rem] w-[19.5rem] border-2 items-center justify-center rounded-lg bg-slate-100 px-4 py-3.5",
+          "flex h-16 w-16 items-center justify-center rounded-lg border-2 bg-slate-100 px-4 py-3.5",
           "border-2 border-dashed border-slate-400/60",
           "group-hover:border-slate-400",
           "group-aria-[expanded=true]:border-slate-400",
@@ -24,6 +22,6 @@ export const PlusNodeTrigger = (
           )}
         />
       </div>
-    </DialogTrigger>
+    </div>
   );
 };

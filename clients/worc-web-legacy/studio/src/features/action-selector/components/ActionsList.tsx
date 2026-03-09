@@ -1,7 +1,11 @@
-import { ActionToSelect } from "./ActionToSelect";
 import { NodeDataType } from "@/types/node-data-type";
+
 import { cn } from "@aventisia/ui/lib";
 import { KeyboardEvent } from "react";
+import { useShallow } from "zustand/react/shallow";
+
+import { useNodeSelectorStore } from "../stores/action-selector-store";
+import { ActionToSelect } from "./ActionToSelect";
 
 interface ActionsListProps {
   items: NodeDataType[] | undefined;
@@ -26,6 +30,11 @@ const ActionsList = ({
   handleRightPaneKeyDown,
   isFocusedPane,
 }: ActionsListProps) => {
+  const { setShowDialog } = useNodeSelectorStore(
+    useShallow((state) => ({
+      setShowDialog: state.setShowDialog,
+    })),
+  );
   if (!items || items.length === 0) {
     return (
       <div className="p-4 text-center text-sm text-muted-foreground">
@@ -52,7 +61,10 @@ const ActionsList = ({
             aria-selected={isFocused}
             disabled={action.disabled}
             tabIndex={isFocused ? 0 : -1}
-            onClick={() => nodeSelectionHandler(action)}
+            onClick={() => {
+              nodeSelectionHandler(action);
+              setShowDialog(false);
+            }}
             onKeyDown={(e) => handleRightPaneKeyDown(e, idx, action)}
             className={cn(
               "mb-1 w-full rounded-lg p-1 text-left outline-none transition-colors",
