@@ -7,15 +7,18 @@ public class WebhookService : IWebhookService
     private readonly IUnitOfWork _unitOfWork;
     private readonly ILogger<WebhookService> _logger;
     private readonly EnvironmentConfig _environmentConfig;
+    private readonly IEmailService _emailService;
 
     public WebhookService(
-        IUnitOfWork unitOfWork, 
-        ILogger<WebhookService> logger, 
-        EnvironmentConfig environmentConfig)
+        IUnitOfWork unitOfWork,
+        ILogger<WebhookService> logger,
+        EnvironmentConfig environmentConfig,
+        IEmailService emailService)
     {
         _unitOfWork = unitOfWork;
         _logger = logger;
         _environmentConfig = environmentConfig;
+        _emailService = emailService;
     }
 
     public async Task<bool> HandleWebhookAsync(HttpRequest request)
@@ -92,10 +95,20 @@ public class WebhookService : IWebhookService
                 await ProcessPaymentHistoryAsync(json, PaymentStatusTypesEnum.Authorized); break;
 
             case "payment.failed":
-                await ProcessPaymentHistoryAsync(json, PaymentStatusTypesEnum.Failed); break;
+                // Update payment history in the database as failed
+                await ProcessPaymentHistoryAsync(json, PaymentStatusTypesEnum.Failed);
+
+                // Send payment failure notification email to the user
+                await SendPaymentEmailNotificationAsync(false, json);
+                break;
 
             case "payment.captured":
-                await ProcessPaymentHistoryAsync(json, PaymentStatusTypesEnum.Captured); break;
+                // Update payment history in the database as successful
+                await ProcessPaymentHistoryAsync(json, PaymentStatusTypesEnum.Captured);
+
+                // Send payment success notification email to the user
+                await SendPaymentEmailNotificationAsync(true, json);
+                break;
 
             // ========================== Order Events ==========================
 
@@ -1096,5 +1109,126 @@ public class WebhookService : IWebhookService
         _logger.LogInformation("Total negative credits for TenantId {TenantId}: {TotalNegativeCredits}.", tenantId, totalNegativeCredits);
 
         return totalCredits;
+    }
+
+    private async Task SendPaymentEmailNotificationAsync(bool isPaymentSuccess, JObject webhookPayload)
+    {
+        try
+        {
+            // Extract the main payment entity from Razorpay webhook
+            var paymentEntity = webhookPayload?["payload"]?["payment"]?["entity"];
+            if (paymentEntity == null)
+            {
+                _logger.LogWarning("Payment entity is missing in the webhook payload.");
+                return;
+            }
+
+            // Extract core identifiers
+            var razorpayPaymentId = paymentEntity["id"]?.ToString();
+            var razorpayOrderId = paymentEntity["order_id"]?.ToString();
+
+            if (string.IsNullOrWhiteSpace(razorpayOrderId))
+            {
+                _logger.LogWarning("Razorpay Order ID is missing in webhook payload.");
+                return;
+            }
+
+            // Retrieve billing history including the user
+            var billingHistory = await _unitOfWork.BillingHistoryRepo
+                .GetByConditionAsync(w => w.RazorpayOrderId == razorpayOrderId)
+                .Include(i => i.CreatedByUser)
+                .FirstOrDefaultAsync();
+
+            if (billingHistory?.CreatedByUser == null || string.IsNullOrWhiteSpace(billingHistory.CreatedByUser.Email))
+            {
+                _logger.LogWarning("Billing history or user email not found for RazorpayOrderId: {OrderId}", razorpayOrderId);
+                return;
+            }
+
+            // Determine payment method details for email
+            var method = paymentEntity["method"]?.ToString();
+            string paymentDetails = method switch
+            {
+                "card" => $"{paymentEntity["card"]?["network"] ?? "Card"} **** {paymentEntity["card"]?["last4"]}",
+                "upi" => $"UPI ({paymentEntity["vpa"]?.ToString()})",
+                _ => method?.ToUpper() ?? "Unknown"
+            };
+
+            // Initialize placeholders for the email template
+            var placeholderValues = new Dictionary<string, string>
+            {
+                { "{{UserName}}", $"{billingHistory.CreatedByUser.FirstName} {billingHistory.CreatedByUser.LastName}" },
+                { "{{Amount}}", $"{billingHistory.Currency} {billingHistory.Amount / 100m:0.00}" },
+                { "{{PaymentId}}", razorpayPaymentId },
+                { "{{DateTime}}", DateTimeOffset.UtcNow.ToString("MMM dd, yyyy · hh:mm tt") },
+                { "{{PaymentMethod}}", paymentDetails }
+            };
+
+            var toEmail = billingHistory.CreatedByUser.Email;
+            var bccEmail = _environmentConfig.SalesEmails;
+
+            // Determine email template and add extra placeholders based on billing type
+            EmailTypesEnum emailType;
+
+            switch (billingHistory.Type)
+            {
+                case CreditTypesEnum.Subscription:
+                    // Retrieve subscription plan details
+                    var subscription = await _unitOfWork.TenantSubscriptionRepo
+                        .GetByConditionAsync(w => w.Id == billingHistory.SubscriptionId)
+                        .Include(i => i.Plan)
+                        .SingleOrDefaultAsync();
+
+                    placeholderValues.Add("{{PlanName}}", subscription?.Plan?.Name ?? "N/A");
+
+                    if (isPaymentSuccess)
+                    {
+                        emailType = EmailTypesEnum.SubscriptionPaymentSuccess;
+                        placeholderValues.Add("{{BillingFrequency}}", subscription?.Plan?.Frequency.ToString() ?? "N/A");
+                        placeholderValues.Add("{{NextBillingDate}}", subscription?.NextBillingDate.ToString("MMM dd, yyyy · hh:mm tt") ?? "N/A");
+                    }
+                    else
+                    {
+                        emailType = EmailTypesEnum.SubscriptionPaymentFailed;
+                        var failureReason = paymentEntity["error_description"]?.ToString()
+                                            ?? paymentEntity["error_reason"]?.ToString()
+                                            ?? "Payment failed due to an unknown reason.";
+                        placeholderValues.Add("{{FailureReason}}", failureReason);
+                    }
+                    break;
+
+                case CreditTypesEnum.TopUp:
+                    if (isPaymentSuccess)
+                    {
+                        emailType = EmailTypesEnum.CreditTopUpPaymentSuccess;
+                        placeholderValues.Add("{{CreditsAdded}}", billingHistory.Quantity.ToString());
+                    }
+                    else
+                    {
+                        emailType = EmailTypesEnum.CreditTopUpPaymentFailed;
+                        var failureReason = paymentEntity["error_description"]?.ToString()
+                                            ?? paymentEntity["error_reason"]?.ToString()
+                                            ?? "Payment failed due to an unknown reason.";
+                        placeholderValues.Add("{{FailureReason}}", failureReason);
+                    }
+                    break;
+
+                default:
+                    _logger.LogWarning("Unsupported billing type: {BillingType}", billingHistory.Type);
+                    return;
+            }
+
+            // Send the email using the selected template
+            var isEmailSent = await _emailService.SendEmailUsingTemplate(emailType, toEmail, placeholderValues, bccEmail);
+
+            if (!isEmailSent)
+            {
+                _logger.LogError("Failed to send email to {Email} with template {EmailType}", toEmail, emailType);
+            }
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex, "Error occurred while processing payment email notification.");
+        }
     }
 }
