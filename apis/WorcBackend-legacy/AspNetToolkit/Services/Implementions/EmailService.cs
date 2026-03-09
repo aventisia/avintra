@@ -14,8 +14,8 @@ public class EmailService : IEmailService
     private readonly IWebHostEnvironment _webHostEnvironment;
 
     public EmailService(
-        ILogger<EmailService> logger, 
-        EnvironmentConfig environmentConfig, 
+        ILogger<EmailService> logger,
+        EnvironmentConfig environmentConfig,
         IWebHostEnvironment webHostEnvironment)
     {
         _environmentConfig = environmentConfig;
@@ -114,7 +114,7 @@ public class EmailService : IEmailService
 
                 // Authenticate with the SMTP server using the provided credentials.
                 await client.AuthenticateAsync(_environmentConfig.SmtpUser, _environmentConfig.SmtpPassword);
-                
+
                 // Sends the email.
                 await client.SendAsync(message);
                 await client.DisconnectAsync(true);
@@ -218,6 +218,42 @@ public class EmailService : IEmailService
                                 "UpgradePlanEmailTemplate.html",
                                 placeholderValues)
                             );
+
+            case EmailTypesEnum.CreditTopUpPaymentSuccess:
+                return await SendEmail(
+                    toEmailAddress,
+                    "Credit Top-Up Completed Successfully",
+                    LoadAndRenderEmailTemplate(
+                        "CreditTopUpSuccessEmailTemplate.html",
+                        placeholderValues)
+                );
+
+            case EmailTypesEnum.CreditTopUpPaymentFailed:
+                return await SendEmail(
+                    toEmailAddress,
+                    "Credit Top-Up Payment Failed",
+                    LoadAndRenderEmailTemplate(
+                        "CreditTopUpFailedEmailTemplate.html",
+                        placeholderValues)
+                );
+
+            case EmailTypesEnum.SubscriptionPaymentSuccess:
+                return await SendEmail(
+                    toEmailAddress,
+                    "Subscription Payment Successful",
+                    LoadAndRenderEmailTemplate(
+                        "SubscriptionPaymentSuccessEmailTemplate.html",
+                        placeholderValues)
+                );
+
+            case EmailTypesEnum.SubscriptionPaymentFailed:
+                return await SendEmail(
+                    toEmailAddress,
+                    "Subscription Payment Failed",
+                    LoadAndRenderEmailTemplate(
+                        "SubscriptionPaymentFailedEmailTemplate.html",
+                        placeholderValues)
+                );
         }
 
         _logger.LogError($"Email type {emailType} did not match with any email template");
