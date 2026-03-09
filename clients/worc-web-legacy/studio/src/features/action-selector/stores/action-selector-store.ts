@@ -1,8 +1,12 @@
 import { ActionSelectorOriginType } from "@/types/action-selector-origin-type";
+
 import { create } from "zustand";
+
 import { PrimaryCategoryType } from "../types/primary-category-type";
 
 type State = {
+  showDialog: boolean;
+
   actionSelectorData: PrimaryCategoryType[];
 
   /** Origin from where node selector popover is triggered */
@@ -29,15 +33,19 @@ type Actions = {
   setPrimaryCategoryLabel: (primaryCategoryLabel: string | null) => void;
   setActionCategory: (actionCategory: string) => void;
   setQuery: (query: string) => void;
+  setShowDialog: (showDialog: boolean) => void;
 };
 
 export const useNodeSelectorStore = create<State & Actions>((set) => ({
+  showDialog: false,
   actionSelectorData: [],
   origin: "plusFirstNode",
   originId: "",
   primaryCategoryLabel: null,
   actionCategory: "",
   query: "",
+
+  setShowDialog: (showDialog) => set({ showDialog }),
 
   setActionSelectorData: (data) =>
     set(() => ({

@@ -1,10 +1,9 @@
 import { useNodeSelectorStore } from "@/features/action-selector/stores/action-selector-store";
+
+import { Button } from "@aventisia/ui/buttons";
 import { cn } from "@aventisia/ui/lib";
-import { buttonVariants } from "@aventisia/ui/buttons";
-// import { PopoverTrigger } from "@aventisia/ui/popover";
 import { PlusIcon } from "@heroicons/react/24/outline";
 import { useShallow } from "zustand/react/shallow";
-import { DialogTrigger } from "@aventisia/ui/dialog";
 
 interface PlusEdgeLabelProps {
   edgeId?: string;
@@ -12,22 +11,29 @@ interface PlusEdgeLabelProps {
 
 export const PlusEdgeLabel = ({ edgeId }: PlusEdgeLabelProps) => {
   // Get setOrigin from store
-  const { setOrigin } = useNodeSelectorStore(
+
+  const { setShowDialog, setOrigin } = useNodeSelectorStore(
     useShallow((state) => ({
+      showDialog: state.showDialog,
+      setShowDialog: state.setShowDialog,
       setOrigin: state.setOrigin,
     })),
   );
 
   return (
-    <DialogTrigger
+    <Button
+      variant={"outline"}
+      size={"icon5"}
       className={cn(
-        buttonVariants({ variant: "outline", size: "icon5" }),
         "group z-10 rounded-full opacity-50",
         "hover:bg-primary hover:opacity-100",
         "aria-[expanded=true]:bg-primary aria-[expanded=true]:opacity-100",
         "nodrag nopan",
       )}
-      onClick={() => setOrigin("PlusEdgeLabel", edgeId || "")}
+      onClick={() => {
+        setOrigin("PlusEdgeLabel", edgeId || "");
+        setShowDialog(true);
+      }}
     >
       <PlusIcon
         className={cn(
@@ -36,6 +42,6 @@ export const PlusEdgeLabel = ({ edgeId }: PlusEdgeLabelProps) => {
           "group-aria-[expanded=true]:text-white group-aria-[expanded=true]:opacity-100",
         )}
       />
-    </DialogTrigger>
+    </Button>
   );
 };
