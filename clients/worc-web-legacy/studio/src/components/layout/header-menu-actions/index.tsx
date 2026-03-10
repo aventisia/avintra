@@ -1,8 +1,16 @@
 import { IS_TAURI } from "@/constants";
+import { useInputOutputsStore } from "@/features/add-input-output/stores/inputs-outputs-store";
 import { useFlowExecutionLogStore } from "@/features/flow-execution-log/stores/flow-execution-lof-store";
+import { useImportStore } from "@/features/import-flow/stores/import-flow-store";
+import { useKeyboardShortcutsStore } from "@/features/keyboard-shortcuts/stores/keyboard-shortcuts-store";
+import { PublishFlow } from "@/features/publish-flow/PublishFlow";
+import { useSaveAsTemplateStore } from "@/features/save-as-template/stores/save-as-template-store";
+import { useExportFlow } from "@/hooks/useExportFlow";
+
 import {
   DropdownMenu,
   DropdownMenuContent,
+  DropdownMenuSeparator,
   SimpleDDMenuItem,
 } from "@aventisia/ui/dropdown-menu";
 import { toast } from "@aventisia/ui/sonner";
@@ -19,13 +27,8 @@ import {
   UploadIcon,
 } from "lucide-react";
 import { useShallow } from "zustand/react/shallow";
+
 import { HeaderActionMenuTrigger } from "./HeaderActionMenuTrigger";
-import { useInputOutputsStore } from "@/features/add-input-output/stores/inputs-outputs-store";
-import { useSaveAsTemplateStore } from "@/features/save-as-template/stores/save-as-template-store";
-import { useExportFlow } from "@/hooks/useExportFlow";
-import { useImportStore } from "@/features/import-flow/stores/import-flow-store";
-import { useKeyboardShortcutsStore } from "@/features/keyboard-shortcuts/stores/keyboard-shortcuts-store";
-import { PublishFlow } from "@/features/publish-flow/PublishFlow";
 
 export const HeaderActionMenu: React.FC = () => {
   // Get flow execution store state & actions
@@ -92,7 +95,6 @@ export const HeaderActionMenu: React.FC = () => {
         align="end"
         className="mt-0 w-[13rem] min-w-[13rem] mlg:mt-4"
       >
-        <PublishFlow />
         {/* <FlowLogHeader /> */}
         <SimpleDDMenuItem
           size="md"
@@ -179,6 +181,8 @@ export const HeaderActionMenu: React.FC = () => {
             <SimpleDDMenuItem size="md" Icon={DockIcon} content="Archive" />
           </>
         ) : null}
+        <DropdownMenuSeparator className="my-1" />
+        <PublishFlow />
       </DropdownMenuContent>
     </DropdownMenu>
   );

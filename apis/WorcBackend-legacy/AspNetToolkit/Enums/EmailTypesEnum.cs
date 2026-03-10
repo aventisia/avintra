@@ -53,5 +53,25 @@ public enum EmailTypesEnum
     /// <summary>
     /// Email type to send notification when a subscription plan has been upgraded.
     /// </summary>
-    SubscriptionPlanUpgrade
+    SubscriptionPlanUpgrade,
+
+    /// <summary>
+    /// Email sent when a credit top-up payment is completed successfully.
+    /// </summary>
+    CreditTopUpPaymentSuccess,
+
+    /// <summary>
+    /// Email sent when a credit top-up payment fails.
+    /// </summary>
+    CreditTopUpPaymentFailed,
+
+    /// <summary>
+    /// Email sent when a subscription payment is completed successfully.
+    /// </summary>
+    SubscriptionPaymentSuccess,
+
+    /// <summary>
+    /// Email sent when a subscription payment fails.
+    /// </summary>
+    SubscriptionPaymentFailed
 }
