@@ -182,7 +182,6 @@ public class OrchestratorHub : Hub
         try
         {
             var connectionId = Context.ConnectionId;
-            _logger.LogInformation("Client {ConnectionId} disconnected.", connectionId);
 
             // Retrieve client status from the store based on the connectionId
             var clientDataStore = await _clientStatusStore.GetStatusByConnectionIdAsync(connectionId);
@@ -190,22 +189,21 @@ public class OrchestratorHub : Hub
             // If client is found in the status store
             if (clientDataStore != null)
             {
-                _logger.LogInformation("Client {ConnectionId} found in status store. TenantId: {TenantId}, ClientId: {ClientId}.", connectionId, clientDataStore.TenantId, clientDataStore.ClientId);
-
                 // Remove the client's status from the store
                 await _clientStatusStore.RemoveClientByConnectionAsync(connectionId);
 
+                // Remove non-machine clients from their tenant group
+                await Groups.RemoveFromGroupAsync(clientDataStore.ConnectionId, $"TENANT_{clientDataStore.TenantId}");
+
+                // Check if another connection exists
+                var hasOtherConnections = await _clientStatusStore.GetUserStatusesAsync(clientDataStore.ClientId);
+
                 // Handle machine disconnection
-                if (clientDataStore.Type == ClientTypesEnum.WorcMachine)
+                if (hasOtherConnections.Any() && clientDataStore.Type == ClientTypesEnum.WorcMachine)
                 {
                     // Notify the tenant group about the machine going offline
                     await Clients.Group($"TENANT_{clientDataStore.TenantId}").SendAsync("machine_status_update", "A machine is offline now.");
-                    _logger.LogInformation("Machine {ClientId} offline. Notified tenant group {TenantId}.", clientDataStore.ClientId, clientDataStore.TenantId);
                 }
-
-                // Remove non-machine clients from their tenant group
-                await Groups.RemoveFromGroupAsync(clientDataStore.ConnectionId, $"TENANT_{clientDataStore.TenantId}");
-                _logger.LogInformation("Client {ConnectionId} removed from group TENANT_{TenantId}.", clientDataStore.ConnectionId, clientDataStore.TenantId);
             }
 
             // Complete the disconnection process
