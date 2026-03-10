@@ -1,10 +1,11 @@
 import { DropdownMenuContent } from "@aventisia/ui/dropdown-menu";
 import { DropdownMenu } from "@aventisia/ui/dropdown-menu";
-import { FVIViewAction } from "./FVIViewAction";
-import { FVIActionsTrigger } from "./FVIActionsTrigger";
-import { FVIDraftAction } from "./FVIDraftAction";
-import { FVIDeleteAction } from "./FVIDeleteAction";
 import { useSearchParams } from "react-router-dom";
+
+import { FVIActionsTrigger } from "./FVIActionsTrigger";
+import { FVIDeleteAction } from "./FVIDeleteAction";
+import { FVIDraftAction } from "./FVIDraftAction";
+import { FVIViewAction } from "./FVIViewAction";
 
 interface FlowVersionItemActionsProps {
   flowId: string;
@@ -35,9 +36,7 @@ export const FlowVersionItemActions = ({
           versionId={versionId}
           versionNumber={versionNumber}
         />
-        {isPublished && (
-          <FVIDraftAction flowId={flowId} versionId={versionId} />
-        )}
+        <FVIDraftAction flowId={flowId} versionId={versionId} />
         {currVersionId == versionId
           ? null
           : !isPublished && <FVIDeleteAction versionId={versionId} />}
