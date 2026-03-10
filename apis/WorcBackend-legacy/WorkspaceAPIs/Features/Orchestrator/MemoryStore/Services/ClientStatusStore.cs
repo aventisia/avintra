@@ -37,7 +37,7 @@ public class ClientStatusStore : IClientStatusStore
     {
         // Find all clients with the matching connection ID
         var clientsToRemove = ClientStore.Values
-            .Where(c => c.ConnectionId == connectionId)
+            .Where(w => w.ConnectionId == connectionId)
             .ToList();
 
         // If any clients are found, remove them from the store
@@ -54,7 +54,8 @@ public class ClientStatusStore : IClientStatusStore
     {
         // Find the client by its connection ID.
         var clientData = ClientStore.Values
-            .FirstOrDefault(c => c.ConnectionId == connectionId);
+            .FirstOrDefault(w => w.ConnectionId == connectionId
+                && (w.Type == ClientTypesEnum.WorcMachine || w.Type != ClientTypesEnum.WorcMachine));
 
         // Return the client status by clientId if found.
         if (clientData != null && ClientStore.TryGetValue(clientData.ClientId, out var clientDataStore))
@@ -103,8 +104,8 @@ public class ClientStatusStore : IClientStatusStore
     public Task<IEnumerable<ClientDataStore>> GetUserStatusesAsync(Guid tenantId)
     {
         var users = ClientStore.Values
-            .Where(c => c.TenantId == tenantId &&
-                (c.Type == ClientTypesEnum.WebBrowser || c.Type == ClientTypesEnum.WorcDesktopApp))
+            .Where(w => w.TenantId == tenantId &&
+                (w.Type == ClientTypesEnum.WebBrowser || w.Type == ClientTypesEnum.WorcDesktopApp))
             .ToList();
 
         return Task.FromResult<IEnumerable<ClientDataStore>>(users);
