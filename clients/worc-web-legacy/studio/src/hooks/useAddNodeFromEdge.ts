@@ -1,13 +1,15 @@
+import { MARKER_ARROW_PREFIX } from "@/constants";
+import { useDynamicConfigPanelStore } from "@/features/dynamic-config-panel";
 import { useReactFlowExtStore } from "@/stores/react-flow-ext-store";
 import { NodeDataType } from "@/types/node-data-type";
+import { createPlusEdgeObj } from "@/utils/create-edges/create-plus-edge-obj";
 import { createNodesAndEdgesUtil } from "@/utils/create-node-and-edges-util";
+
 import { Edge } from "@xyflow/react";
 import { useCallback } from "react";
 import { useShallow } from "zustand/react/shallow";
+
 import { useDagreAutoLayout } from "./useDagreAutoLayout";
-import { useDynamicConfigPanelStore } from "@/features/dynamic-config-panel";
-import { createPlusEdgeObj } from "@/utils/create-edges/create-plus-edge-obj";
-import { MARKER_ARROW_PREFIX } from "@/constants";
 
 export const useAddNodeFromEdge = () => {
   // Get state and actions from the DynamicConfigPanel store
@@ -105,7 +107,7 @@ export const useAddNodeFromEdge = () => {
         // Show config panel
         setNodeData(nodeData);
         setShowDialog(true);
-        setNodeId(lastNode.id);
+        setNodeId(newNodes[0]?.id);
 
         autoLayout({ newNodes: updatedNodes, newEdges: finalEdges });
         return;
@@ -158,7 +160,7 @@ export const useAddNodeFromEdge = () => {
       // Open Config dialog when new node added
       setNodeData(nodeData);
       setShowDialog(true);
-      setNodeId(lastNode.id);
+      setNodeId(newNodes[0]?.id);
 
       // Auto organize node & edge
       autoLayout({ newNodes: updatedNodes, newEdges: updatedEdges2 });
