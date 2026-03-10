@@ -1,11 +1,14 @@
 import { ZOOM_ANIMATION_DURATION } from "@/constants";
 import { useCurrentFlowStore } from "@/stores/current-flow-store";
 import { useReactFlowExtStore } from "@/stores/react-flow-ext-store";
+import { FlowVariablesObjectType } from "@/types/flow-variables-object-type";
+
 import { useQuery } from "@tanstack/react-query";
-import { Edge, Node, useReactFlow, Viewport } from "@xyflow/react";
+import { Edge, Node, Viewport, useReactFlow } from "@xyflow/react";
 import { useEffect } from "react";
 import { useSearchParams } from "react-router-dom";
 import { useShallow } from "zustand/react/shallow";
+
 import { getFlowToLoad } from "../apis/react-flow-apis";
 import { deepParse } from "../utils/deepParse";
 
@@ -91,12 +94,14 @@ export const useFetchFlowToLoad = () => {
       viewport: Viewport;
     };
 
-    // Parse Flow Variables Object
-    const flowVarObjs = JSON.parse(
-      Array.isArray(data.data.flowVariablesObject)
-        ? data.data.flowVariablesObject
-        : JSON.stringify([]),
-    );
+    let flowVarObjs: FlowVariablesObjectType[] = [];
+
+    try {
+      const parsed = JSON.parse(data.data.flowVariablesObject);
+      flowVarObjs = Array.isArray(parsed) ? parsed : [];
+    } catch {
+      flowVarObjs = [];
+    }
 
     const inputOutputObj = JSON.parse(
       data.data?.inputOutputObject || JSON.stringify([]),
