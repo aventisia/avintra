@@ -1,7 +1,8 @@
-import { useNodeSelectorStore } from "../stores/action-selector-store";
-import { useShallow } from "zustand/react/shallow";
 import { ScrollArea } from "@aventisia/ui/scroll";
 import { KeyboardEvent, useEffect, useRef, useState } from "react";
+import { useShallow } from "zustand/react/shallow";
+
+import { useNodeSelectorStore } from "../stores/action-selector-store";
 import { PrimaryCategory } from "./PrimaryCategory";
 
 interface PrimaryCategoryListProps {
@@ -70,9 +71,9 @@ export const PrimaryCategoryList = ({
   };
 
   return (
-    <ScrollArea className="h-full bg-background p-2">
+    <ScrollArea className="h-full bg-background p-3">
       <div
-        className="grid grid-cols-2 gap-2 pb-4"
+        className="grid grid-cols-2 gap-3 pb-4"
         role="grid"
         aria-label="Primary Categories"
       >
@@ -88,7 +89,7 @@ export const PrimaryCategoryList = ({
             onClick={() => setPrimaryCategoryLabel(item.label)}
             onKeyDown={(e) => handleKeyDown(e, index)}
             onFocus={() => setActiveIndex(index)}
-            className="group flex h-48 w-full flex-col gap-2 rounded-2xl border border-indigo-100 p-4 text-left text-foreground outline-none transition-all hover:border-primary focus-visible:border-primary"
+            className="group flex h-48 w-full flex-col justify-between rounded-2xl border border-indigo-100 p-4 text-left text-foreground outline-none transition-all hover:border-primary focus-visible:border-primary"
             aria-label={`Select ${item.label}`}
           >
             <PrimaryCategory data={item} />
