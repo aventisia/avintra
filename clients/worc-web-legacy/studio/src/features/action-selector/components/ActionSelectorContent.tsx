@@ -1,11 +1,13 @@
 import { useNodeSelectorStore } from "@/features/action-selector/stores/action-selector-store";
-import { useRef, KeyboardEvent, useEffect } from "react";
+
+import { Input } from "@aventisia/ui";
+import { Search } from "lucide-react";
+import { KeyboardEvent, useEffect, useRef } from "react";
 import { useHotkeys } from "react-hotkeys-hook";
 import { useShallow } from "zustand/react/shallow";
-import { PrimaryCategoryList } from "./PrimaryCategoryList";
+
 import { ActionCategoryList } from "./ActionCategoryList";
-import { Search } from "lucide-react";
-import { Input } from "@aventisia/ui";
+import { PrimaryCategoryList } from "./PrimaryCategoryList";
 
 export const ActionSelectorContent = () => {
   const {
@@ -57,7 +59,7 @@ export const ActionSelectorContent = () => {
           ref={inputRef}
           name="query"
           className="border-none px-0 pr-1.5 shadow-none placeholder:text-xs focus-visible:ring-0"
-          placeholder="Search actions..."
+          placeholder="Search nodes..."
           value={query}
           onChange={(e) => setQuery(e.target.value)}
           onKeyDown={handleInputKeyDown}
