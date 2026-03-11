@@ -1,11 +1,14 @@
-using System.Collections.Concurrent;
-
 namespace WorkspaceAPIs.Services;
 
 public class ClientStatusStore : IClientStatusStore
 {
     // Thread-safe dictionary to store client statuses, with the clientId as the key.
-    private readonly ConcurrentDictionary<Guid, ClientDataStore> ClientStore = new ConcurrentDictionary<Guid, ClientDataStore>();
+    private readonly ConcurrentDictionary<Guid, ClientDataStore> ClientStore;
+
+    public ClientStatusStore(ConcurrentDictionary<Guid, ClientDataStore> clientStore)
+    {
+        ClientStore = clientStore;
+    }
 
     // Adds or updates the client's status in the store.
     public Task AddOrUpdateStatusAsync(ClientDataStore clientDataStore)
