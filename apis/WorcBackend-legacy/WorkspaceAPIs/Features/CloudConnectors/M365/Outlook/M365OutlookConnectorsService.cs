@@ -142,7 +142,66 @@ public class M365OutlookConnectorsService : IM365OutlookConnectorsService
                         { "Prefer", "outlook.body-content-type=\"text\"" }
                     };
 
-                    return await HttpClientHelper.GetAsync(requestUrl, accessToken, headers);
+                    var email = await HttpClientHelper.GetAsync(requestUrl, accessToken, headers);
+
+                    // If attachments are present, check for #microsoft.graph.itemAttachment with missing contentBytes
+                    if (includeAttachments && email != null && email.RootElement.TryGetProperty("attachments", out var attachmentsElem) && attachmentsElem.ValueKind == JsonValueKind.Array)
+                    {
+                        var attachmentsList = new List<JsonElement>();
+                        foreach (var att in attachmentsElem.EnumerateArray())
+                        {
+                            attachmentsList.Add(att);
+                        }
+                        bool updated = false;
+                        var updatedAttachments = new List<object>();
+                        foreach (var att in attachmentsList)
+                        {
+                            // Check if it's an itemAttachment (likely .msg) and missing contentBytes
+                            var odataType = att.TryGetProperty("@odata.type", out var typeElem) ? typeElem.GetString() : null;
+                            var name = att.TryGetProperty("name", out var nameElem) ? nameElem.GetString() : null;
+                            var id = att.TryGetProperty("id", out var idElem) ? idElem.GetString() : null;
+                            var hasContentBytes = att.TryGetProperty("contentBytes", out var _);
+                            if (odataType == "#microsoft.graph.itemAttachment" && name != null && !hasContentBytes && id != null)
+                            {
+                                // Download the .msg attachment's contentBytes
+                                var attUrl = $"{messagesApiUrl}/messages/{messageId}/attachments/{id}/$value";
+
+                                // Download as byte[] and convert to base64
+                                var attContent = await HttpClientHelper.GetByteArrayAsync(attUrl, accessToken);
+                                if (attContent != null)
+                                {
+                                    var base64 = Convert.ToBase64String(attContent);
+                                    // Build a new attachment object with contentBytes
+                                    var attDict = new Dictionary<string, object>();
+                                    foreach (var prop in att.EnumerateObject())
+                                    {
+                                        attDict[prop.Name] = prop.Value.ValueKind == JsonValueKind.String ? prop.Value.GetString() : prop.Value.ToString();
+                                    }
+                                    attDict["contentBytes"] = base64;
+                                    updatedAttachments.Add(attDict);
+                                    updated = true;
+                                    continue;
+                                }
+                            }
+                            // Otherwise, keep as is
+                            updatedAttachments.Add(att);
+                        }
+                        if (updated)
+                        {
+                            // Build a new JsonDocument with updated attachments
+                            var emailDict = new Dictionary<string, object>();
+                            foreach (var prop in email.RootElement.EnumerateObject())
+                            {
+                                if (prop.Name == "attachments")
+                                    emailDict["attachments"] = updatedAttachments;
+                                else
+                                    emailDict[prop.Name] = prop.Value.ValueKind == JsonValueKind.String ? prop.Value.GetString() : prop.Value.ToString();
+                            }
+                            var json = System.Text.Json.JsonSerializer.Serialize(emailDict);
+                            return JsonDocument.Parse(json);
+                        }
+                    }
+                    return email;
                 }
 
             case M365OutlookActionsEnum.GetEmails:
@@ -557,7 +616,7 @@ public class M365OutlookConnectorsService : IM365OutlookConnectorsService
 
         // Add '$count=true' to the query string if 'count' is true
         if (count)
-            requesturl = CloudConnectionPayloadUtil.AppendQueryParameter(requesturl, "count","$count={true}");
+            requesturl = CloudConnectionPayloadUtil.AppendQueryParameter(requesturl, "count", "$count={true}");
         if (onlyWithAttachments)
             requesturl = CloudConnectionPayloadUtil.AppendQueryParameter(requesturl, "$filter", "hasAttachments eq true");
         if (unreadOnly)
@@ -566,8 +625,14 @@ public class M365OutlookConnectorsService : IM365OutlookConnectorsService
         // Add pagination parameters if provided
         requesturl = BuildPaginatedUrl(requesturl, payload);
 
+        // Add header to prefer email body in text format
+        var headers = new Dictionary<string, string>
+        {
+            { "Prefer", "outlook.body-content-type=\"text\"" }
+        };
+
         // Return the result from the API call
-        return await HttpClientHelper.GetAsync(requesturl, accessToken);
+        return await HttpClientHelper.GetAsync(requesturl, accessToken, headers);
     }
 
     // Retrieves the folder ID for a given folder name by calling the Microsoft Graph API to list mail folders and matching by display name.
@@ -592,7 +657,7 @@ public class M365OutlookConnectorsService : IM365OutlookConnectorsService
             if (string.Equals(displayName, folderName, StringComparison.OrdinalIgnoreCase))
             {
                 // If the display name matches, return the corresponding folder ID
-                return folder.GetProperty("id").GetString()?? string.Empty;
+                return folder.GetProperty("id").GetString() ?? string.Empty;
             }
         }
 
