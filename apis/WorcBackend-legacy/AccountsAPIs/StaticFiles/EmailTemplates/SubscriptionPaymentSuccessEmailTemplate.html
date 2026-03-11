@@ -3,222 +3,171 @@
 <head>
   <meta charset="UTF-8"/>
   <meta name="viewport" content="width=device-width,initial-scale=1.0"/>
-  <title>Subscription Payment Successful – Aventisia</title>
+  <title>Subscription Active – Aventisia</title>
   <style>
-    *{box-sizing:border-box;margin:0;padding:0}
-    body{font-family:'Segoe UI',Arial,sans-serif;background:#eef2ff;padding:2.5rem 1rem;color:#1e1b4b}
-    .shell{max-width:720px;margin:0 auto}
-
-    /* ── Topbar ── */
-    .topbar{display:flex;align-items:center;justify-content:space-between;padding:0 0.25rem 1.2rem}
-    .topbar img{height:26px;display:block}
-    .topbar-link{font-size:0.78rem;color:#6366f1;text-decoration:none;font-weight:500;display:inline-flex;align-items:center;gap:0.25rem}
-    .topbar-link:hover{text-decoration:underline}
-    .link-icon{height:18px;width:18px;display:block}
-    .link-icon-dark{display:none}
+    body{margin:0;padding:0;background-color:#eef2ff;font-family:Arial,sans-serif;color:#1f2937}
+    .main{padding:32px 12px}
+    .container{display:block;margin:0 auto;max-width:720px;border-radius:12px;background-color:#ffffff;overflow:hidden}
+    .header{padding:16px 28px 0}
+    .header table{width:100%;border-collapse:collapse;margin-bottom:14px}
+    .header-link{font-size:13px;font-weight:500;color:#1f2937;text-decoration:none;background-color:#f1f5f9;padding:5px 12px;border-radius:20px;display:inline-flex;align-items:center}
+    .h-separator{height:1px;background-color:#e2e8f0;margin:0}
     @media(prefers-color-scheme:dark){
-      .link-icon-light{display:none}
-      .link-icon-dark{display:block}
-    }    
+      .header-link{background-color:#4f46e5!important;color:#ffffff!important}
+      .h-separator{background-color:#2e2b5f!important}
+    }
+    .on-dark{display:none}
+    .on-light{display:block}
 
-    /* ── Card ── */
-    .card{background:#fff;border-radius:20px;overflow:hidden;box-shadow:0 8px 48px rgba(79,70,229,0.13)}
+    .hero{background-color:#16a34a;padding:40px 28px;text-align:center}
+    .status-badge{display:inline-block;background-color:rgba(255,255,255,0.2);border:1px solid rgba(255,255,255,0.35);color:#fff;font-size:10px;font-weight:700;letter-spacing:2px;text-transform:uppercase;padding:4px 12px;border-radius:20px;margin-bottom:12px}
+    .hero h1{margin:0 0 8px;font-size:26px;font-weight:800;color:#ffffff}
+    .hero p{margin:0;font-size:14px;color:rgba(255,255,255,0.85);line-height:1.6}
 
-    /* ── Hero ── */
-    .hero{position:relative;background:linear-gradient(140deg,#16a34a 0%,#14532d 100%);padding:2.6rem 2rem 4rem;text-align:center;overflow:hidden}
-    .b1{position:absolute;top:-50px;right:-50px;width:180px;height:180px;background:rgba(255,255,255,0.07);border-radius:50%}
-    .b2{position:absolute;bottom:-70px;left:-40px;width:220px;height:220px;background:rgba(255,255,255,0.05);border-radius:50%}
-    .b3{position:absolute;top:20px;left:30px;width:80px;height:80px;background:rgba(255,255,255,0.04);border-radius:50%}
+    .body{padding:28px}
+    .greeting{font-size:14px;color:#374151;line-height:1.8;margin:0 0 24px}
+    .section-label{font-size:10px;font-weight:700;letter-spacing:2px;text-transform:uppercase;color:#818cf8;margin:0 0 10px}
 
-    .hero-icon{position:relative;z-index:1;width:68px;height:68px;margin:0 auto 1rem;background:rgba(255,255,255,0.13);border-radius:50%;display:flex;align-items:center;justify-content:center;border:2px solid rgba(255,255,255,0.22);box-shadow:0 0 0 8px rgba(255,255,255,0.05)}
-    .hero-icon svg{width:30px;height:30px}
+    .txn-table{width:100%;border-collapse:collapse;border:1px solid #e0e7ff;border-radius:10px;overflow:hidden;margin-bottom:24px;font-size:13px}
+    .txn-table tr{border-bottom:1px solid #eef2ff}
+    .txn-table tr:last-child{border-bottom:none}
+    .txn-table td{padding:11px 16px}
+    .txn-label{color:#6b7280;font-weight:500;width:45%}
+    .txn-value{color:#1f2937;font-weight:700;text-align:right}
+    .txn-value.amount{font-size:15px}
 
-    .status-pill{position:relative;z-index:1;display:inline-flex;align-items:center;gap:0.4rem;background:rgba(255,255,255,0.14);border:1px solid rgba(255,255,255,0.28);color:#fff;font-size:0.68rem;font-weight:700;letter-spacing:0.1rem;text-transform:uppercase;padding:0.28rem 0.85rem;border-radius:20px;margin-bottom:0.85rem}
-    .pulse{width:6px;height:6px;background:#bbf7d0;border-radius:50%;animation:pulse 1.5s ease-in-out infinite}
-    @keyframes pulse{0%,100%{opacity:1;transform:scale(1)}50%{opacity:0.3;transform:scale(0.8)}}
+    .pill-success{display:inline-block;background-color:#f0fdf4;border:1px solid #bbf7d0;color:#16a34a;font-size:11px;font-weight:700;padding:3px 10px;border-radius:20px}
 
-    .hero h1{position:relative;z-index:1;font-size:2rem;font-weight:800;color:#fff;letter-spacing:0.01rem;margin-bottom:0.5rem}
-    .hero p{position:relative;z-index:1;color:rgba(255,255,255,0.78);font-size:0.88rem;line-height:1.65}
-
-    /* ── Wave ── */
-    .wave-wrap{background:#fff;margin-top:-2px;line-height:0}
-
-    /* ── Body ── */
-    .body{padding:2rem 2rem 0.5rem}
-    .greeting{font-size:0.92rem;color:#374151;line-height:1.8;margin-bottom:1.8rem}
-    .greeting strong{color:#111827}
-
-    /* ── Section label ── */
-    .slabel{font-size:0.68rem;font-weight:700;letter-spacing:0.1rem;text-transform:uppercase;color:#a5b4fc;margin-bottom:0.65rem}
-
-    /* ── Txn card ── */
-    .txn{background:#fafafe;border:1.5px solid #e0e7ff;border-radius:14px;overflow:hidden;margin-bottom:1.6rem}
-    .txn-row{display:flex;align-items:center;justify-content:space-between;padding:0.85rem 1.25rem;gap:1rem;transition:background 0.15s}
-    .txn-row+.txn-row{border-top:1px solid #eef2ff}
-    .txn-row:hover{background:#f5f3ff}
-    .tk{font-size:0.81rem;color:#6b7280;font-weight:500;white-space:nowrap}
-    .tv{font-size:0.87rem;color:#1f2937;font-weight:700;text-align:right;word-break:break-all}
-    .tv.big{font-size:1.05rem;color:#111827}
-
-    .pill-success{display:inline-flex;align-items:center;gap:0.35rem;background:#f0fdf4;border:1.5px solid #bbf7d0;color:#16a34a;font-size:0.76rem;font-weight:700;padding:0.22rem 0.65rem;border-radius:20px}
-    .pill-success::before{content:'';width:7px;height:7px;background:#22c55e;border-radius:50%}
-
-    /* ── Active plan highlight ── */
-    .plan-box{display:flex;gap:0.9rem;align-items:center;background:linear-gradient(135deg,#f0fdf4,#dcfce7);border:1.5px solid #bbf7d0;border-left:4px solid #16a34a;border-radius:12px;padding:1.1rem 1.2rem;margin-bottom:1.75rem}
-    .plan-ico{font-size:1.4rem;flex-shrink:0}
-    .plan-body{font-size:0.85rem;color:#14532d;line-height:1.6}
-    .plan-body strong{display:block;font-size:0.7rem;font-weight:700;letter-spacing:0.08rem;text-transform:uppercase;color:#166534;margin-bottom:0.3rem}
-    .plan-body span{font-size:1.05rem;font-weight:800;color:#15803d}
-
-    /* ── Divider ── */
-    .div{height:1px;background:#f1f5f9;margin:0 -2rem 1.6rem}
-
-    /* ── Help ── */
-    .help{font-size:0.84rem;color:#6b7280;line-height:1.75;text-align:center;padding-bottom:2rem}
+    .divider{border:none;border-top:1px solid #f1f5f9;margin:0 0 24px}
+    .help{font-size:13px;color:#6b7280;line-height:1.75;text-align:center;margin:0 0 28px}
     .help a{color:#4f46e5;font-weight:600;text-decoration:none}
-    .help a:hover{text-decoration:underline}
-    .sig{margin-top:1rem;font-size:0.85rem;color:#374151}
+    .sig{font-size:13px;color:#374151;text-align:center;margin:0}
     .sig strong{color:#4f46e5}
 
-    /* ── Footer ── */
-    .footer{background:#fafafe;border-top:1px solid #e0e7ff;padding:1.2rem 2rem;text-align:center;font-size:0.72rem;color:#9ca3af;line-height:1.8}
+    .footer{background-color:#f8fafc;border-top:1px solid #e2e8f0;padding:16px 28px;text-align:center;font-size:11px;color:#9ca3af;line-height:1.8}
     .footer a{color:#a5b4fc;text-decoration:none}
-    .footer a:hover{text-decoration:underline}
-    .footer-links a+a::before{content:'·';margin:0 0.4rem;color:#d1d5db}
 
-    /* ── Dark mode ── */
     @media(prefers-color-scheme:dark){
-      body{background:#13112b}
-      .card{background:#1a1737;box-shadow:0 8px 48px rgba(0,0,0,0.5)}
-      .topbar-link{color:#818cf8}
-      .logo-light{display:none!important}
-      .logo-dark{display:block!important}
-      .link-icon-light{display:none!important}
-      .link-icon-dark{display:block!important}
-      .wave-wrap{background:#1a1737}
-      .greeting{color:#cbd5e1}
-      .greeting strong{color:#f1f5f9}
-      .txn{background:#13112b;border-color:#2e2b5f}
-      .txn-row+.txn-row{border-top-color:#2e2b5f}
-      .txn-row:hover{background:#1e1b4b}
-      .tk{color:#94a3b8}
-      .tv{color:#f1f5f9}
-      .tv.big{color:#fff}
-      .pill-success{background:#052e16;border-color:#166534;color:#4ade80}
-      .plan-box{background:linear-gradient(135deg,#052e16,#14532d);border-color:#166534}
-      .plan-body{color:#bbf7d0}
-      .plan-body strong{color:#86efac}
-      .plan-body span{color:#4ade80}
-      .div{background:#2e2b5f}
-      .help{color:#94a3b8}
-      .help a{color:#818cf8}
-      .sig{color:#cbd5e1}
-      .sig strong{color:#818cf8}
-      .footer{background:#13112b;border-top-color:#2e2b5f;color:#64748b}
-      .footer a{color:#6366f1}
+      body{background-color:#13112b!important}
+      .container{background-color:#1a1737!important}
+      .header{border-bottom-color:#2e2b5f!important}
+      .header-link{color:#ffffff!important}
+      .on-dark{display:block!important}
+      .on-light{display:none!important}
+      .greeting{color:#cbd5e1!important}
+      .txn-table{border-color:#2e2b5f!important}
+      .txn-table tr{border-bottom-color:#2e2b5f!important}
+      .txn-label{color:#94a3b8!important}
+      .txn-value{color:#f1f5f9!important}
+      .pill-success{background-color:#052e16!important;border-color:#166534!important;color:#4ade80!important}
+      .divider{border-top-color:#2e2b5f!important}
+      .help{color:#94a3b8!important}
+      .help a{color:#818cf8!important}
+      .sig{color:#cbd5e1!important}
+      .sig strong{color:#818cf8!important}
+      .footer{background-color:#13112b!important;border-top-color:#2e2b5f!important;color:#64748b!important}
+      .footer a{color:#6366f1!important}
     }
-
-    @media(max-width:480px){
-      body{padding:1.5rem 0.6rem}
-      .hero h1{font-size:1.6rem}
-      .body{padding:1.4rem 1.2rem 0.5rem}
+    @media only screen and (max-width:480px){
+      .body{padding:20px 16px!important}
+      .hero h1{font-size:22px!important}
     }
   </style>
 </head>
 <body>
-<div class="shell">
+<div class="main">
+<div class="container">
 
-  <!-- Topbar -->
-  <div class="topbar">
-    <a href="http://www.aventisia.com" target="_blank">
-      <img class="logo-light"  style="display:block"  src="data:image/svg+xml;base64,PHN2ZyBoZWlnaHQ9IjI4IiB2aWV3Qm94PSIwIDAgNjI3IDExOCINCiAgICB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIGZpbGwtcnVsZT0iZXZlbm9kZCIgY2xpcC1ydWxlPSJldmVub2RkIiBzdHJva2UtbGluZWpvaW49InJvdW5kIiBzdHJva2UtbWl0ZXJsaW1pdD0iMiI+DQogICAgPHBhdGggZmlsbD0iIzFlMWI0YiIgZD0iTTE5Ni4yMyA2NC44NDNsMTEuMTkyLTMxLjczOCAxMS4xOTQgMzEuNzM4SDE5Ni4yM3ptNS42NTgtNDkuNDEzbC0zNS40MTcgODQuOTc1aDE1LjA5NWw5LjcxNi0yMi42MzJoMzIuODg1bDkuMzYxIDIyLjYzMmgxNS4wNzdMMjEyLjk2IDE1LjQzaC0xMS4wN3ptNjIuNjQ5IDY4LjA3OEwyNDguNDQgMzcuMzUyaC0xNC42OTdsMjUuMzgxIDYzLjA1NGgxMC44MWwyNS4zOC02My4wNTRoLTE0LjkyOWwtMTUuODQ3IDQ2LjE1NnptNDIuODA0LTIwLjIwNmMyLjI3NS05LjcxNCA5LjM4My0xNS43MzQgMTkuOTg1LTE1LjYyOCAxMS4wMy0uMDg2IDE4LjAyIDUuODQ4IDE5Ljc3MyAxNS42MjhoLTM5Ljc1OHptMTkuNzQ2LTI3LjQ5Yy0yOS41NTUtLjE5My00NC41OCAzNi4wNDItMjMuNDM2IDU2LjYzMSAxNS4wNzggMTUuMTE5IDQ1LjQ1NiAxMS45NzQgNTMuODIxLTguODc4aC0xNC43NDRjLTQuMTM5IDQuNjgxLTguNDEgNi41MTctMTUuMDQ4IDYuNTE3LTEwLjYwOC4wNDItMTguMTYtNi4xMjktMTkuNzczLTE1LjUwOGg1MS40MTJjMi45NzctMjAuMjQyLTExLjM4Ny0zOS4wNzEtMzIuMjMyLTM4Ljc2Mm03Mi40NiAwYy04LjEzNC0uMTk3LTEzLjg2IDMuNDItMTkuNzgyIDkuNTY0di04LjAyNGgtMTEuOTgzdjYzLjA1M2gxMy4xNjh2LTI5LjYzYzAtOS4xOTEuNjU1LTEzLjAzNSAyLjgwOC0xNi40NTcgMi43MjgtNC4yODUgNy4yNC02LjY0NCAxMi43MDYtNi42NDQgOC41NTYgMCAxMy44NiAzLjY2NyAxMy44NiAyMS45MTZ2MzAuODE1aDEzLjE2NVY2Ni41MDljMC0xMS40NS0xLjEzNi0xNi45NDItNC41MDgtMjEuNzc3LTQuMDQyLTUuODM2LTEwLjc2Mi04LjkyLTE5LjQzNC04LjkybTUwLjg1NS0yMC4zODFoLTEzLjE2NnYyMS45MjFoLTcuNzAzdjExLjc0NWg3LjcwM3Y1MS4zMDloMTMuMTY2VjQ5LjA5N2g5LjQ4VjM3LjM1MmgtOS40OFYxNS40MzF6IiBmaWxsLXJ1bGU9Im5vbnplcm8iIC8+DQogICAgPHBhdGggZmlsbD0iIzFlMWI0YiIgZD0iTTQ2Ny4xNDUgMzcuMzUyaDEzLjE2OHY2My4wNTRoLTEzLjE2OHptLjExOS0yMS45MjFoMTMuMTY4djEzLjE2OGgtMTMuMTY4eiIgLz4NCiAgICA8cGF0aCBmaWxsPSIjMWUxYjRiIiBkPSJNNTE0LjcgNjIuODg2Yy0xMC42Ny0zLjQtMTIuMDQzLTMuODM4LTEyLjA0My04LjM0NS0uMDMtOC4wNzMgMTIuNDI1LTkuNTE1IDE0LjUwNy0xLjY1MWgxMi45OThjLS45NjktMTAuMjg5LTkuOTU4LTE3LjE4NC0yMC4xNjUtMTcuMDc3LTExLjQ5OCAwLTIwLjUwNiA4LjIyNi0yMC41MDYgMTguNzI4IDAgNC41NDYgMS4yMzUgNy45NzIgMy44ODMgMTAuNzgyIDIuNzIgMi44ODUgNy4wMDUgNS4yNDMgMTMuNDgzIDcuNDIzIDEwLjMzNiAzLjQ4NSAxMi4wMjIgNC44MzYgMTIuMDIyIDkuNjQyIDAgNC4zODctMy42MTQgNy42OTUtOC40MDcgNy42OTUtNC45NSAwLTcuOTgzLTIuNDU3LTkuNzM1LTcuOTRoLTEzLjQ0YzEuODA2IDEyLjY4NCA5Ljc3NSAxOS44MzYgMjIuNTgyIDE5LjgwMyAxMi40MyAwIDIyLjE2Ni05LjI2NyAyMi4xNjYtMjEuMSAwLTQuNzUyLTEuMTE3LTguMDcxLTMuNjItMTAuNzU4LTIuNjM0LTIuODI1LTYuOTkyLTUuMTEzLTEzLjcyNi03LjIwMiIgZmlsbC1ydWxlPSJub256ZXJvIiAvPg0KICAgIDxwYXRoIGZpbGw9IiMxZTFiNGIiIGQ9Ik01MzguNjIgMTUuNDMxaDEzLjE2NXYxMy4xNjhINTM4LjYyem0tLjExOSAyMS45MjFoMTMuMTY2djYzLjA1NGgtMTMuMTY2eiIgLz4NCiAgICA8cGF0aCBmaWxsPSIjMWUxYjRiIiBkPSJNNTkzLjQ3NyA5MC4wODJjLTEyLjIwNyAwLTIwLjczMi04LjQ3NS0yMC43MzItMjAuNjEuMDY0LTI4Ljk5IDQwLjk3My0yOC45NCA0MS4xMDYtLjEyIDAgMTIuMjA3LTguMzc5IDIwLjczLTIwLjM3NCAyMC43M20yMC44NDgtNTIuNzN2MTEuMzQ1bC0yLjMzMi0zLjA5M2MtOS40ODYtMTQuMTU3LTMyLjg1My0xMS44ODktNDMuNDc0LS4zOTgtMTEuODk3IDExLjY3MS0xMi4wNjggMzUuNzk3LS4wOSA0Ny40OTIgNy44ODEgOC42MDMgMjMuNDYzIDExLjkwNyAzNC4yNjMgNi45OTggNC4wNTEtMS42NzIgOC4zNC02IDExLjYzMy05Ljk1MXYxMC42NjFoMTEuODY0VjM3LjM1MmgtMTEuODY0eiIgZmlsbC1ydWxlPSJub256ZXJvIiAvPg0KICAgIDxwYXRoIGZpbGw9IiM0ZjQ2ZTUiIGQ9Ik0zNS4yMzUgOTguMDc0Yy04LjY4MyAwLTE1LjczLTcuMDQ3LTE1LjczLTE1LjczLjg3OS0yMC44NSAzMC41NzUtMjAuODQ0IDMxLjQ2IDAgMCA4LjY4My03LjA2MyAxNS43My0xNS43MyAxNS43M20wLTUwLjk2NUMxNS44MDkgNDcuMTA5IDAgNjIuOTE3IDAgODIuMzQ0YzEuOTMzIDQ2Ljc3MyA2OC41NTQgNDYuNzQzIDcwLjQ4NiAwIDAtMTkuNDI3LTE1LjgyNC0zNS4yMzUtMzUuMjUxLTM1LjIzNSIgZmlsbC1ydWxlPSJub256ZXJvIiAvPg0KICAgIDxwYXRoIGZpbGw9IiM0ZjQ2ZTUiIGQ9Ik0xMzQuMDY0IDExMy43MTlsLTI3LjU4My0uMjE4LTUxLjc4NC04OS43MjZMNDUuOTQgMzguOTUgMzIuMjIgMTUuMTc1IDQwLjk4LjAxMlYwaDI3LjQ1bDY1LjYzNCAxMTMuNzE5eiIgZmlsbC1ydWxlPSJub256ZXJvIiAvPg0KPC9zdmc+" alt="Aventisia"/>
-      <img class="logo-dark"  style="display:none"  src="data:image/svg+xml;base64,PHN2ZyBoZWlnaHQ9IjI4IiB2aWV3Qm94PSIwIDAgNjI3IDExOCINCiAgICB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIGZpbGwtcnVsZT0iZXZlbm9kZCIgY2xpcC1ydWxlPSJldmVub2RkIiBzdHJva2UtbGluZWpvaW49InJvdW5kIiBzdHJva2UtbWl0ZXJsaW1pdD0iMiI+DQogICAgPHBhdGggZmlsbD0iI2ZmZmZmZiIgZD0iTTE5Ni4yMyA2NC44NDNsMTEuMTkyLTMxLjczOCAxMS4xOTQgMzEuNzM4SDE5Ni4yM3ptNS42NTgtNDkuNDEzbC0zNS40MTcgODQuOTc1aDE1LjA5NWw5LjcxNi0yMi42MzJoMzIuODg1bDkuMzYxIDIyLjYzMmgxNS4wNzdMMjEyLjk2IDE1LjQzaC0xMS4wN3ptNjIuNjQ5IDY4LjA3OEwyNDguNDQgMzcuMzUyaC0xNC42OTdsMjUuMzgxIDYzLjA1NGgxMC44MWwyNS4zOC02My4wNTRoLTE0LjkyOWwtMTUuODQ3IDQ2LjE1NnptNDIuODA0LTIwLjIwNmMyLjI3NS05LjcxNCA5LjM4My0xNS43MzQgMTkuOTg1LTE1LjYyOCAxMS4wMy0uMDg2IDE4LjAyIDUuODQ4IDE5Ljc3MyAxNS42MjhoLTM5Ljc1OHptMTkuNzQ2LTI3LjQ5Yy0yOS41NTUtLjE5My00NC41OCAzNi4wNDItMjMuNDM2IDU2LjYzMSAxNS4wNzggMTUuMTE5IDQ1LjQ1NiAxMS45NzQgNTMuODIxLTguODc4aC0xNC43NDRjLTQuMTM5IDQuNjgxLTguNDEgNi41MTctMTUuMDQ4IDYuNTE3LTEwLjYwOC4wNDItMTguMTYtNi4xMjktMTkuNzczLTE1LjUwOGg1MS40MTJjMi45NzctMjAuMjQyLTExLjM4Ny0zOS4wNzEtMzIuMjMyLTM4Ljc2Mm03Mi40NiAwYy04LjEzNC0uMTk3LTEzLjg2IDMuNDItMTkuNzgyIDkuNTY0di04LjAyNGgtMTEuOTgzdjYzLjA1M2gxMy4xNjh2LTI5LjYzYzAtOS4xOTEuNjU1LTEzLjAzNSAyLjgwOC0xNi40NTcgMi43MjgtNC4yODUgNy4yNC02LjY0NCAxMi43MDYtNi42NDQgOC41NTYgMCAxMy44NiAzLjY2NyAxMy44NiAyMS45MTZ2MzAuODE1aDEzLjE2NVY2Ni41MDljMC0xMS40NS0xLjEzNi0xNi45NDItNC41MDgtMjEuNzc3LTQuMDQyLTUuODM2LTEwLjc2Mi04LjkyLTE5LjQzNC04LjkybTUwLjg1NS0yMC4zODFoLTEzLjE2NnYyMS45MjFoLTcuNzAzdjExLjc0NWg3LjcwM3Y1MS4zMDloMTMuMTY2VjQ5LjA5N2g5LjQ4VjM3LjM1MmgtOS40OFYxNS40MzF6IiBmaWxsLXJ1bGU9Im5vbnplcm8iIC8+DQogICAgPHBhdGggZmlsbD0iI2ZmZmZmZiIgZD0iTTQ2Ny4xNDUgMzcuMzUyaDEzLjE2OHY2My4wNTRoLTEzLjE2OHptLjExOS0yMS45MjFoMTMuMTY4djEzLjE2OGgtMTMuMTY4eiIgLz4NCiAgICA8cGF0aCBmaWxsPSIjZmZmZmZmIiBkPSJNNTE0LjcgNjIuODg2Yy0xMC42Ny0zLjQtMTIuMDQzLTMuODM4LTEyLjA0My04LjM0NS0uMDMtOC4wNzMgMTIuNDI1LTkuNTE1IDE0LjUwNy0xLjY1MWgxMi45OThjLS45NjktMTAuMjg5LTkuOTU4LTE3LjE4NC0yMC4xNjUtMTcuMDc3LTExLjQ5OCAwLTIwLjUwNiA4LjIyNi0yMC41MDYgMTguNzI4IDAgNC41NDYgMS4yMzUgNy45NzIgMy44ODMgMTAuNzgyIDIuNzIgMi44ODUgNy4wMDUgNS4yNDMgMTMuNDgzIDcuNDIzIDEwLjMzNiAzLjQ4NSAxMi4wMjIgNC44MzYgMTIuMDIyIDkuNjQyIDAgNC4zODctMy42MTQgNy42OTUtOC40MDcgNy42OTUtNC45NSAwLTcuOTgzLTIuNDU3LTkuNzM1LTcuOTRoLTEzLjQ0YzEuODA2IDEyLjY4NCA5Ljc3NSAxOS44MzYgMjIuNTgyIDE5LjgwMyAxMi40MyAwIDIyLjE2Ni05LjI2NyAyMi4xNjYtMjEuMSAwLTQuNzUyLTEuMTE3LTguMDcxLTMuNjItMTAuNzU4LTIuNjM0LTIuODI1LTYuOTkyLTUuMTEzLTEzLjcyNi03LjIwMiIgZmlsbC1ydWxlPSJub256ZXJvIiAvPg0KICAgIDxwYXRoIGZpbGw9IiNmZmZmZmYiIGQ9Ik01MzguNjIgMTUuNDMxaDEzLjE2NXYxMy4xNjhINTM4LjYyem0tLjExOSAyMS45MjFoMTMuMTY2djYzLjA1NGgtMTMuMTY2eiIgLz4NCiAgICA8cGF0aCBmaWxsPSIjZmZmZmZmIiBkPSJNNTkzLjQ3NyA5MC4wODJjLTEyLjIwNyAwLTIwLjczMi04LjQ3NS0yMC43MzItMjAuNjEuMDY0LTI4Ljk5IDQwLjk3My0yOC45NCA0MS4xMDYtLjEyIDAgMTIuMjA3LTguMzc5IDIwLjczLTIwLjM3NCAyMC43M20yMC44NDgtNTIuNzN2MTEuMzQ1bC0yLjMzMi0zLjA5M2MtOS40ODYtMTQuMTU3LTMyLjg1My0xMS44ODktNDMuNDc0LS4zOTgtMTEuODk3IDExLjY3MS0xMi4wNjggMzUuNzk3LS4wOSA0Ny40OTIgNy44ODEgOC42MDMgMjMuNDYzIDExLjkwNyAzNC4yNjMgNi45OTggNC4wNTEtMS42NzIgOC4zNC02IDExLjYzMy05Ljk1MXYxMC42NjFoMTEuODY0VjM3LjM1MmgtMTEuODY0eiIgZmlsbC1ydWxlPSJub256ZXJvIiAvPg0KICAgIDxwYXRoIGZpbGw9IiM0ZjQ2ZTUiIGQ9Ik0zNS4yMzUgOTguMDc0Yy04LjY4MyAwLTE1LjczLTcuMDQ3LTE1LjczLTE1LjczLjg3OS0yMC44NSAzMC41NzUtMjAuODQ0IDMxLjQ2IDAgMCA4LjY4My03LjA2MyAxNS43My0xNS43MyAxNS43M20wLTUwLjk2NUMxNS44MDkgNDcuMTA5IDAgNjIuOTE3IDAgODIuMzQ0YzEuOTMzIDQ2Ljc3MyA2OC41NTQgNDYuNzQzIDcwLjQ4NiAwIDAtMTkuNDI3LTE1LjgyNC0zNS4yMzUtMzUuMjUxLTM1LjIzNSIgZmlsbC1ydWxlPSJub256ZXJvIiAvPg0KICAgIDxwYXRoIGZpbGw9IiM0ZjQ2ZTUiIGQ9Ik0xMzQuMDY0IDExMy43MTlsLTI3LjU4My0uMjE4LTUxLjc4NC04OS43MjZMNDUuOTQgMzguOTUgMzIuMjIgMTUuMTc1IDQwLjk4LjAxMlYwaDI3LjQ1bDY1LjYzNCAxMTMuNzE5eiIgZmlsbC1ydWxlPSJub256ZXJvIiAvPg0KPC9zdmc+" alt="Aventisia Logo"/>
-    </a>
-    <a href="http://www.aventisia.com" target="_blank" class="topbar-link">
-      aventisia.com
-      <img class="link-icon link-icon-light"  src="data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHN0cm9rZT0iIzRmNDZlNSIgd2lkdGg9IjIwIiBoZWlnaHQ9IjIwIiB2aWV3Qm94PSIwIDAgMjQgMjQiIGZpbGw9Im5vbmUiIHN0cm9rZS13aWR0aD0iMi40IiBzdHJva2UtbGluZWNhcD0icm91bmQiIHN0cm9rZS1saW5lam9pbj0icm91bmQiPg0KICAgIDxwYXRoIGQ9Ik0yMSAxM3Y2YTIgMiAwIDAgMS0yIDJINWEyIDIgMCAwIDEtMi0yVjVhMiAyIDAgMCAxIDItMmg2IiAvPg0KICAgIDxwYXRoIGQ9Im0yMSAzLTkgOSIgLz4NCiAgICA8cGF0aCBkPSJNMTUgM2g2djYiIC8+DQo8L3N2Zz4="  alt="Open Website"/>
-      <img class="link-icon link-icon-dark"  src="data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHN0cm9rZT0iI2ZmZmZmZiIgd2lkdGg9IjIwIiBoZWlnaHQ9IjIwIiB2aWV3Qm94PSIwIDAgMjQgMjQiIGZpbGw9Im5vbmUiIHN0cm9rZS13aWR0aD0iMi40IiBzdHJva2UtbGluZWNhcD0icm91bmQiIHN0cm9rZS1saW5lam9pbj0icm91bmQiPg0KICAgIDxwYXRoIGQ9Ik0yMSAxM3Y2YTIgMiAwIDAgMS0yIDJINWEyIDIgMCAwIDEtMi0yVjVhMiAyIDAgMCAxIDItMmg2IiAvPg0KICAgIDxwYXRoIGQ9Im0yMSAzLTkgOSIgLz4NCiAgICA8cGF0aCBkPSJNMTUgM2g2djYiIC8+DQo8L3N2Zz4="  alt="Open Website"/>
-    </a>
+  <!-- Header -->
+  <div class="header">
+    <table><tr>
+      <td>
+        <a href="http://www.aventisia.com" target="_blank">
+          <img class="on-light" src="data:image/svg+xml;base64,PHN2ZyBoZWlnaHQ9IjI4IiB2aWV3Qm94PSIwIDAgNjI3IDExOCINCiAgICB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIGZpbGwtcnVsZT0iZXZlbm9kZCIgY2xpcC1ydWxlPSJldmVub2RkIiBzdHJva2UtbGluZWpvaW49InJvdW5kIiBzdHJva2UtbWl0ZXJsaW1pdD0iMiI+DQogICAgPHBhdGggZmlsbD0iI2ZmZmZmZiIgZD0iTTE5Ni4yMyA2NC44NDNsMTEuMTkyLTMxLjczOCAxMS4xOTQgMzEuNzM4SDE5Ni4yM3ptNS42NTgtNDkuNDEzbC0zNS40MTcgODQuOTc1aDE1LjA5NWw5LjcxNi0yMi42MzJoMzIuODg1bDkuMzYxIDIyLjYzMmgxNS4wNzdMMjEyLjk2IDE1LjQzaC0xMS4wN3ptNjIuNjQ5IDY4LjA3OEwyNDguNDQgMzcuMzUyaC0xNC42OTdsMjUuMzgxIDYzLjA1NGgxMC44MWwyNS4zOC02My4wNTRoLTE0LjkyOWwtMTUuODQ3IDQ2LjE1NnptNDIuODA0LTIwLjIwNmMyLjI3NS05LjcxNCA5LjM4My0xNS43MzQgMTkuOTg1LTE1LjYyOCAxMS4wMy0uMDg2IDE4LjAyIDUuODQ4IDE5Ljc3MyAxNS42MjhoLTM5Ljc1OHptMTkuNzQ2LTI3LjQ5Yy0yOS41NTUtLjE5My00NC41OCAzNi4wNDItMjMuNDM2IDU2LjYzMSAxNS4wNzggMTUuMTE5IDQ1LjQ1NiAxMS45NzQgNTMuODIxLTguODc4aC0xNC43NDRjLTQuMTM5IDQuNjgxLTguNDEgNi41MTctMTUuMDQ4IDYuNTE3LTEwLjYwOC4wNDItMTguMTYtNi4xMjktMTkuNzczLTE1LjUwOGg1MS40MTJjMi45NzctMjAuMjQyLTExLjM4Ny0zOS4wNzEtMzIuMjMyLTM4Ljc2Mm03Mi40NiAwYy04LjEzNC0uMTk3LTEzLjg2IDMuNDItMTkuNzgyIDkuNTY0di04LjAyNGgtMTEuOTgzdjYzLjA1M2gxMy4xNjh2LTI5LjYzYzAtOS4xOTEuNjU1LTEzLjAzNSAyLjgwOC0xNi40NTcgMi43MjgtNC4yODUgNy4yNC02LjY0NCAxMi43MDYtNi42NDQgOC41NTYgMCAxMy44NiAzLjY2NyAxMy44NiAyMS45MTZ2MzAuODE1aDEzLjE2NVY2Ni41MDljMC0xMS40NS0xLjEzNi0xNi45NDItNC41MDgtMjEuNzc3LTQuMDQyLTUuODM2LTEwLjc2Mi04LjkyLTE5LjQzNC04LjkybTUwLjg1NS0yMC4zODFoLTEzLjE2NnYyMS45MjFoLTcuNzAzdjExLjc0NWg3LjcwM3Y1MS4zMDloMTMuMTY2VjQ5LjA5N2g5LjQ4VjM3LjM1MmgtOS40OFYxNS40MzF6IiBmaWxsLXJ1bGU9Im5vbnplcm8iIC8+DQogICAgPHBhdGggZmlsbD0iI2ZmZmZmZiIgZD0iTTQ2Ny4xNDUgMzcuMzUyaDEzLjE2OHY2My4wNTRoLTEzLjE2OHptLjExOS0yMS45MjFoMTMuMTY4djEzLjE2OGgtMTMuMTY4eiIgLz4NCiAgICA8cGF0aCBmaWxsPSIjZmZmZmZmIiBkPSJNNTE0LjcgNjIuODg2Yy0xMC42Ny0zLjQtMTIuMDQzLTMuODM4LTEyLjA0My04LjM0NS0uMDMtOC4wNzMgMTIuNDI1LTkuNTE1IDE0LjUwNy0xLjY1MWgxMi45OThjLS45NjktMTAuMjg5LTkuOTU4LTE3LjE4NC0yMC4xNjUtMTcuMDc3LTExLjQ5OCAwLTIwLjUwNiA4LjIyNi0yMC41MDYgMTguNzI4IDAgNC41NDYgMS4yMzUgNy45NzIgMy44ODMgMTAuNzgyIDIuNzIgMi44ODUgNy4wMDUgNS4yNDMgMTMuNDgzIDcuNDIzIDEwLjMzNiAzLjQ4NSAxMi4wMjIgNC44MzYgMTIuMDIyIDkuNjQyIDAgNC4zODctMy42MTQgNy42OTUtOC40MDcgNy42OTUtNC45NSAwLTcuOTgzLTIuNDU3LTkuNzM1LTcuOTRoLTEzLjQ0YzEuODA2IDEyLjY4NCA5Ljc3NSAxOS44MzYgMjIuNTgyIDE5LjgwMyAxMi40MyAwIDIyLjE2Ni05LjI2NyAyMi4xNjYtMjEuMSAwLTQuNzUyLTEuMTE3LTguMDcxLTMuNjItMTAuNzU4LTIuNjM0LTIuODI1LTYuOTkyLTUuMTEzLTEzLjcyNi03LjIwMiIgZmlsbC1ydWxlPSJub256ZXJvIiAvPg0KICAgIDxwYXRoIGZpbGw9IiNmZmZmZmYiIGQ9Ik01MzguNjIgMTUuNDMxaDEzLjE2NXYxMy4xNjhINTM4LjYyem0tLjExOSAyMS45MjFoMTMuMTY2djYzLjA1NGgtMTMuMTY2eiIgLz4NCiAgICA8cGF0aCBmaWxsPSIjZmZmZmZmIiBkPSJNNTkzLjQ3NyA5MC4wODJjLTEyLjIwNyAwLTIwLjczMi04LjQ3NS0yMC43MzItMjAuNjEuMDY0LTI4Ljk5IDQwLjk3My0yOC45NCA0MS4xMDYtLjEyIDAgMTIuMjA3LTguMzc5IDIwLjczLTIwLjM3NCAyMC43M20yMC44NDgtNTIuNzN2MTEuMzQ1bC0yLjMzMi0zLjA5M2MtOS40ODYtMTQuMTU3LTMyLjg1My0xMS44ODktNDMuNDc0LS4zOTgtMTEuODk3IDExLjY3MS0xMi4wNjggMzUuNzk3LS4wOSA0Ny40OTIgNy44ODEgOC42MDMgMjMuNDYzIDExLjkwNyAzNC4yNjMgNi45OTggNC4wNTEtMS42NzIgOC4zNC02IDExLjYzMy05Ljk1MXYxMC42NjFoMTEuODY0VjM3LjM1MmgtMTEuODY0eiIgZmlsbC1ydWxlPSJub256ZXJvIiAvPg0KICAgIDxwYXRoIGZpbGw9IiM0ZjQ2ZTUiIGQ9Ik0zNS4yMzUgOTguMDc0Yy04LjY4MyAwLTE1LjczLTcuMDQ3LTE1LjczLTE1LjczLjg3OS0yMC44NSAzMC41NzUtMjAuODQ0IDMxLjQ2IDAgMCA4LjY4My03LjA2MyAxNS43My0xNS43MyAxNS43M20wLTUwLjk2NUMxNS44MDkgNDcuMTA5IDAgNjIuOTE3IDAgODIuMzQ0YzEuOTMzIDQ2Ljc3MyA2OC41NTQgNDYuNzQzIDcwLjQ4NiAwIDAtMTkuNDI3LTE1LjgyNC0zNS4yMzUtMzUuMjUxLTM1LjIzNSIgZmlsbC1ydWxlPSJub256ZXJvIiAvPg0KICAgIDxwYXRoIGZpbGw9IiM0ZjQ2ZTUiIGQ9Ik0xMzQuMDY0IDExMy43MTlsLTI3LjU4My0uMjE4LTUxLjc4NC04OS43MjZMNDUuOTQgMzguOTUgMzIuMjIgMTUuMTc1IDQwLjk4LjAxMlYwaDI3LjQ1bDY1LjYzNCAxMTMuNzE5eiIgZmlsbC1ydWxlPSJub256ZXJvIiAvPg0KPC9zdmc+" height="26" alt="Aventisia" style="display:block"/>
+          <img class="on-dark"  src="data:image/svg+xml;base64,PHN2ZyBoZWlnaHQ9IjI4IiB2aWV3Qm94PSIwIDAgNjI3IDExOCINCiAgICB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIGZpbGwtcnVsZT0iZXZlbm9kZCIgY2xpcC1ydWxlPSJldmVub2RkIiBzdHJva2UtbGluZWpvaW49InJvdW5kIiBzdHJva2UtbWl0ZXJsaW1pdD0iMiI+DQogICAgPHBhdGggZmlsbD0iI2ZmZmZmZiIgZD0iTTE5Ni4yMyA2NC44NDNsMTEuMTkyLTMxLjczOCAxMS4xOTQgMzEuNzM4SDE5Ni4yM3ptNS42NTgtNDkuNDEzbC0zNS40MTcgODQuOTc1aDE1LjA5NWw5LjcxNi0yMi42MzJoMzIuODg1bDkuMzYxIDIyLjYzMmgxNS4wNzdMMjEyLjk2IDE1LjQzaC0xMS4wN3ptNjIuNjQ5IDY4LjA3OEwyNDguNDQgMzcuMzUyaC0xNC42OTdsMjUuMzgxIDYzLjA1NGgxMC44MWwyNS4zOC02My4wNTRoLTE0LjkyOWwtMTUuODQ3IDQ2LjE1NnptNDIuODA0LTIwLjIwNmMyLjI3NS05LjcxNCA5LjM4My0xNS43MzQgMTkuOTg1LTE1LjYyOCAxMS4wMy0uMDg2IDE4LjAyIDUuODQ4IDE5Ljc3MyAxNS42MjhoLTM5Ljc1OHptMTkuNzQ2LTI3LjQ5Yy0yOS41NTUtLjE5My00NC41OCAzNi4wNDItMjMuNDM2IDU2LjYzMSAxNS4wNzggMTUuMTE5IDQ1LjQ1NiAxMS45NzQgNTMuODIxLTguODc4aC0xNC43NDRjLTQuMTM5IDQuNjgxLTguNDEgNi41MTctMTUuMDQ4IDYuNTE3LTEwLjYwOC4wNDItMTguMTYtNi4xMjktMTkuNzczLTE1LjUwOGg1MS40MTJjMi45NzctMjAuMjQyLTExLjM4Ny0zOS4wNzEtMzIuMjMyLTM4Ljc2Mm03Mi40NiAwYy04LjEzNC0uMTk3LTEzLjg2IDMuNDItMTkuNzgyIDkuNTY0di04LjAyNGgtMTEuOTgzdjYzLjA1M2gxMy4xNjh2LTI5LjYzYzAtOS4xOTEuNjU1LTEzLjAzNSAyLjgwOC0xNi40NTcgMi43MjgtNC4yODUgNy4yNC02LjY0NCAxMi43MDYtNi42NDQgOC41NTYgMCAxMy44NiAzLjY2NyAxMy44NiAyMS45MTZ2MzAuODE1aDEzLjE2NVY2Ni41MDljMC0xMS40NS0xLjEzNi0xNi45NDItNC41MDgtMjEuNzc3LTQuMDQyLTUuODM2LTEwLjc2Mi04LjkyLTE5LjQzNC04LjkybTUwLjg1NS0yMC4zODFoLTEzLjE2NnYyMS45MjFoLTcuNzAzdjExLjc0NWg3LjcwM3Y1MS4zMDloMTMuMTY2VjQ5LjA5N2g5LjQ4VjM3LjM1MmgtOS40OFYxNS40MzF6IiBmaWxsLXJ1bGU9Im5vbnplcm8iIC8+DQogICAgPHBhdGggZmlsbD0iI2ZmZmZmZiIgZD0iTTQ2Ny4xNDUgMzcuMzUyaDEzLjE2OHY2My4wNTRoLTEzLjE2OHptLjExOS0yMS45MjFoMTMuMTY4djEzLjE2OGgtMTMuMTY4eiIgLz4NCiAgICA8cGF0aCBmaWxsPSIjZmZmZmZmIiBkPSJNNTE0LjcgNjIuODg2Yy0xMC42Ny0zLjQtMTIuMDQzLTMuODM4LTEyLjA0My04LjM0NS0uMDMtOC4wNzMgMTIuNDI1LTkuNTE1IDE0LjUwNy0xLjY1MWgxMi45OThjLS45NjktMTAuMjg5LTkuOTU4LTE3LjE4NC0yMC4xNjUtMTcuMDc3LTExLjQ5OCAwLTIwLjUwNiA4LjIyNi0yMC41MDYgMTguNzI4IDAgNC41NDYgMS4yMzUgNy45NzIgMy44ODMgMTAuNzgyIDIuNzIgMi44ODUgNy4wMDUgNS4yNDMgMTMuNDgzIDcuNDIzIDEwLjMzNiAzLjQ4NSAxMi4wMjIgNC44MzYgMTIuMDIyIDkuNjQyIDAgNC4zODctMy42MTQgNy42OTUtOC40MDcgNy42OTUtNC45NSAwLTcuOTgzLTIuNDU3LTkuNzM1LTcuOTRoLTEzLjQ0YzEuODA2IDEyLjY4NCA5Ljc3NSAxOS44MzYgMjIuNTgyIDE5LjgwMyAxMi40MyAwIDIyLjE2Ni05LjI2NyAyMi4xNjYtMjEuMSAwLTQuNzUyLTEuMTE3LTguMDcxLTMuNjItMTAuNzU4LTIuNjM0LTIuODI1LTYuOTkyLTUuMTEzLTEzLjcyNi03LjIwMiIgZmlsbC1ydWxlPSJub256ZXJvIiAvPg0KICAgIDxwYXRoIGZpbGw9IiNmZmZmZmYiIGQ9Ik01MzguNjIgMTUuNDMxaDEzLjE2NXYxMy4xNjhINTM4LjYyem0tLjExOSAyMS45MjFoMTMuMTY2djYzLjA1NGgtMTMuMTY2eiIgLz4NCiAgICA8cGF0aCBmaWxsPSIjZmZmZmZmIiBkPSJNNTkzLjQ3NyA5MC4wODJjLTEyLjIwNyAwLTIwLjczMi04LjQ3NS0yMC43MzItMjAuNjEuMDY0LTI4Ljk5IDQwLjk3My0yOC45NCA0MS4xMDYtLjEyIDAgMTIuMjA3LTguMzc5IDIwLjczLTIwLjM3NCAyMC43M20yMC44NDgtNTIuNzN2MTEuMzQ1bC0yLjMzMi0zLjA5M2MtOS40ODYtMTQuMTU3LTMyLjg1My0xMS44ODktNDMuNDc0LS4zOTgtMTEuODk3IDExLjY3MS0xMi4wNjggMzUuNzk3LS4wOSA0Ny40OTIgNy44ODEgOC42MDMgMjMuNDYzIDExLjkwNyAzNC4yNjMgNi45OTggNC4wNTEtMS42NzIgOC4zNC02IDExLjYzMy05Ljk1MXYxMC42NjFoMTEuODY0VjM3LjM1MmgtMTEuODY0eiIgZmlsbC1ydWxlPSJub256ZXJvIiAvPg0KICAgIDxwYXRoIGZpbGw9IiM0ZjQ2ZTUiIGQ9Ik0zNS4yMzUgOTguMDc0Yy04LjY4MyAwLTE1LjczLTcuMDQ3LTE1LjczLTE1LjczLjg3OS0yMC44NSAzMC41NzUtMjAuODQ0IDMxLjQ2IDAgMCA4LjY4My03LjA2MyAxNS43My0xNS43MyAxNS43M20wLTUwLjk2NUMxNS44MDkgNDcuMTA5IDAgNjIuOTE3IDAgODIuMzQ0YzEuOTMzIDQ2Ljc3MyA2OC41NTQgNDYuNzQzIDcwLjQ4NiAwIDAtMTkuNDI3LTE1LjgyNC0zNS4yMzUtMzUuMjUxLTM1LjIzNSIgZmlsbC1ydWxlPSJub256ZXJvIiAvPg0KICAgIDxwYXRoIGZpbGw9IiM0ZjQ2ZTUiIGQ9Ik0xMzQuMDY0IDExMy43MTlsLTI3LjU4My0uMjE4LTUxLjc4NC04OS43MjZMNDUuOTQgMzguOTUgMzIuMjIgMTUuMTc1IDQwLjk4LjAxMlYwaDI3LjQ1bDY1LjYzNCAxMTMuNzE5eiIgZmlsbC1ydWxlPSJub256ZXJvIiAvPg0KPC9zdmc+"  height="26" alt="Aventisia" style="display:none"/>
+        </a>
+      </td>
+      <td style="text-align:right">
+        <a href="http://www.aventisia.com" target="_blank" class="header-link">
+          aventisia.com
+          <img class="on-light" src="data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHN0cm9rZT0iI2ZmZmZmZiIgd2lkdGg9IjIwIiBoZWlnaHQ9IjIwIiB2aWV3Qm94PSIwIDAgMjQgMjQiIGZpbGw9Im5vbmUiIHN0cm9rZS13aWR0aD0iMi40IiBzdHJva2UtbGluZWNhcD0icm91bmQiIHN0cm9rZS1saW5lam9pbj0icm91bmQiPg0KICAgIDxwYXRoIGQ9Ik0yMSAxM3Y2YTIgMiAwIDAgMS0yIDJINWEyIDIgMCAwIDEtMi0yVjVhMiAyIDAgMCAxIDItMmg2IiAvPg0KICAgIDxwYXRoIGQ9Im0yMSAzLTkgOSIgLz4NCiAgICA8cGF0aCBkPSJNMTUgM2g2djYiIC8+DQo8L3N2Zz4=" height="14" style="vertical-align:middle;margin-left:4px" alt=""/>
+          <img class="on-dark"  src="data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHN0cm9rZT0iI2ZmZmZmZiIgd2lkdGg9IjIwIiBoZWlnaHQ9IjIwIiB2aWV3Qm94PSIwIDAgMjQgMjQiIGZpbGw9Im5vbmUiIHN0cm9rZS13aWR0aD0iMi40IiBzdHJva2UtbGluZWNhcD0icm91bmQiIHN0cm9rZS1saW5lam9pbj0icm91bmQiPg0KICAgIDxwYXRoIGQ9Ik0yMSAxM3Y2YTIgMiAwIDAgMS0yIDJINWEyIDIgMCAwIDEtMi0yVjVhMiAyIDAgMCAxIDItMmg2IiAvPg0KICAgIDxwYXRoIGQ9Im0yMSAzLTkgOSIgLz4NCiAgICA8cGF0aCBkPSJNMTUgM2g2djYiIC8+DQo8L3N2Zz4="  height="14" style="vertical-align:middle;margin-left:4px;display:none" alt=""/>
+        </a>
+      </td>
+    </tr></table>
+    <div class="h-separator"></div>
   </div>
-  <div class="card">
 
-    <!-- Hero -->
-    <div class="hero">
-      <div class="b1"></div><div class="b2"></div><div class="b3"></div>
-      <div class="hero-icon">
-        <svg viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
-          <circle cx="12" cy="12" r="10"/>
-          <polyline points="9 12 11 14 15 10"/>
-        </svg>
-      </div>
-      <div class="status-pill"><span class="pulse"></span> Subscription Status</div>
-      <h1>Subscription Active</h1>
-      <p>Your <strong style="color:#fff">{{PlanName}}</strong> plan is now active.<br/>You're all set to get started.</p>
-    </div>
+  <div class="hero">
+    <table width="60" height="60" style="margin:0 auto 16px;border-radius:50%;background-color:rgba(255,255,255,0.2)"><tr>
+      <td align="center" valign="middle">
+        <img src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAADIAAAAyCAYAAAAeP4ixAAAACXBIWXMAAAsTAAALEwEAmpwYAAACCklEQVR4nO3ZS6hPURTH8cX1FhEJRaEk5ZFHJjcKAwMTKVImd4YJRpIJM8zu0E0pQ3ckmSjKABlIihig5JFH3s+8PjpZ6ZLcy/3/u/+d852d8997rfU7+5y11t7/iJqampqamv8ALMSiKBnMwBu8iFLBIJzynaNRKuhIEU8wKUoEk/E0hWyKUkF3ijgZpYK1KeIlpkWJYCzuppCtUSroShHnMThKBCvwFR8wN0oEw3E9V2N3lAoOpIgrGBolggX4iM9YEiWCIbiUq3EwSqX6HlLEbYyOEsFsvMtMtToK7mxP52p0RalgS4p4gPFRIpiK5ylkXTMdTW/mU8LxFNEdTXQyBu9xD/OaYH9jinhW7Tkabf8HVaOGE+msWv7l0SAwAQ/Tdkej7PZWpA6nw6qB2xANoNp3p80zVdZqhM2+pse96fhzf/cGWJn14i1m9cfWP4Ht+JKC9v+jjVG4lTZ2xkCBzdnUVRypXr2/nN+Zcy+irXmR9gGswqsMqEqfI/s4b1m+mp+qE8NoBbAUj1PMBUzsZfwwXM3x+6KVwCzczOCu/emUo0eyuIER0WpgCi5nkPcx/zdj5mTqrhJFe7QqGIezPap0+y9F9Vz+1hmFHBgc61E41+f9HXnvTtXyRAmgDYcy8Coz7cHrvF4TpYFdfqbovwG25cf9qLfU3PJgMWYOdBw1NTU10bJ8A1tN06oWAq/eAAAAAElFTkSuQmCC" width="28" height="28" alt="✓"/>
+      </td>
+    </tr></table>
+    <div class="status-badge">● SUBSCRIPTION STATUS</div>
+    <h1>Subscription Active</h1>
+    <p>Your <strong style="color:#fff">{{PlanName}}</strong> plan is now active.<br/>You're all set to get started.</p>
+  </div>
 
-    <!-- Wave -->
-    <div class="wave-wrap">
-      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 580 36" preserveAspectRatio="none" height="36" width="100%">
-        <path d="M0,36 C120,4 260,36 420,12 L580,22 L580,0 L0,0 Z" fill="#14532d"/>
-      </svg>
-    </div>
+  <div class="body">
 
-    <!-- Body -->
-    <div class="body">
+    <p class="greeting">Hi <strong>{{UserName}}</strong>,<br/><br/>
+      Your payment was successful and your <strong>{{PlanName}}</strong> subscription is now active. You can start using all the features included in your plan right away.
+    </p>
 
-      <p class="greeting">
-        Hi <strong>{{UserName}}</strong>,<br/><br/>
-        Your payment was successful and your <strong>{{PlanName}}</strong> subscription is now active. You can start using all the features included in your plan right away.
-      </p>
+    <p class="section-label">Payment Details</p>
+    <table class="txn-table">
+      <tr>
+        <td class="txn-label">Status</td>
+        <td class="txn-value"><span class="pill-success">● Successful</span></td>
+      </tr>
+      <tr>
+        <td class="txn-label">Plan</td>
+        <td class="txn-value">{{PlanName}}</td>
+      </tr>
+      <tr>
+        <td class="txn-label">Billing Cycle</td>
+        <td class="txn-value">{{BillingFrequency}}</td>
+      </tr>
+      <tr>
+        <td class="txn-label">Next Billing Date</td>
+        <td class="txn-value">{{NextBillingDate}}</td>
+      </tr>
+      <tr>
+        <td class="txn-label">Payment ID</td>
+        <td class="txn-value">{{PaymentId}}</td>
+      </tr>
+      <tr>
+        <td class="txn-label">Date &amp; Time</td>
+        <td class="txn-value">{{DateTime}}</td>
+      </tr>
+      <tr>
+        <td class="txn-label">Payment Method</td>
+        <td class="txn-value">{{PaymentMethod}}</td>
+      </tr>
+      <tr>
+        <td class="txn-label">Amount Paid</td>
+        <td class="txn-value amount">{{Amount}}</td>
+      </tr>
+      
+    </table>
 
-      <!-- Payment Details -->
-      <div class="slabel">Payment Details</div>
-      <div class="txn">
-        <div class="txn-row">
-          <span class="tk">Status</span>
-          <span class="tv"><span class="pill-success">Successful</span></span>
-        </div>
-        <div class="txn-row">
-          <span class="tk">Payment ID</span>
-          <span class="tv">{{PaymentId}}</span>
-        </div>
-        <div class="txn-row">
-          <span class="tk">Date &amp; Time</span>
-          <span class="tv">{{DateTime}}</span>
-        </div>
-        <div class="txn-row">
-          <span class="tk">Payment Method</span>
-          <span class="tv">{{PaymentMethod}}</span>
-        </div>
-        <div class="txn-row">
-          <span class="tk">Amount Paid</span>
-          <span class="tv big">{{Amount}}</span>
-        </div>
-      </div>
+    <hr class="divider"/>
 
-      <div class="div"></div>
-
-      <!-- Help & Sign-off -->
-      <div class="help">
-        Have questions about your subscription or plan features?<br/>
-        Reach out to us at <a href="mailto:support@aventisia.com">support@aventisia.com</a> and our team will be happy to help.
-        <div class="sig">Warm regards,<br/><strong>The Aventisia Team</strong></div>
-      </div>
-
-    </div>
-
-    <!-- Footer -->
-    <div class="footer">
-      © 2026 Aventisia Technologies Pvt. Ltd. · All rights reserved<br/>
-      You received this email because a subscription payment was made on your account.<br/>
-      <div class="footer-links">
-        <a href="#">Privacy Policy</a>
-        <a href="#">Terms of Service</a>
-        <a href="#">Unsubscribe</a>
-      </div>
-    </div>
+    <p class="help">Have questions about your subscription or plan features?<br/>
+      Reach out at <a href="mailto:support@aventisia.com">support@aventisia.com</a> and our team will be happy to help.
+    </p>
+    <p class="sig">Warm regards,<br/><strong>The Aventisia Team</strong></p>
 
   </div>
+
+  <div class="footer">
+    © 2026 Aventisia Technologies Pvt. Ltd. · All rights reserved<br/>
+    You received this email because a subscription payment was made on your account.<br/>
+    <a href="#">Privacy Policy</a> &nbsp;·&nbsp; <a href="#">Terms of Service</a> &nbsp;·&nbsp; <a href="#">Unsubscribe</a>
+  </div>
+
+</div>
 </div>
 </body>
 </html>
