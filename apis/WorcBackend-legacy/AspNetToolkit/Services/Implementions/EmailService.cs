@@ -133,7 +133,7 @@ public class EmailService : IEmailService
 
     // Sends an email using an email template.
     public async Task<bool> SendEmailUsingTemplate(EmailTypesEnum emailType, string toEmailAddress, Dictionary<string, string> placeholderValues,
-                    string? bccEmailAddresses = null)
+                    string? ccEmailAddresses = null, string? bccEmailAddresses = null)
     {
         switch (emailType)
         {
@@ -225,7 +225,8 @@ public class EmailService : IEmailService
                     "Credit Top-Up Completed Successfully",
                     LoadAndRenderEmailTemplate(
                         "CreditTopUpSuccessEmailTemplate.html",
-                        placeholderValues)
+                        placeholderValues),
+                        ccEmailAddresses: ccEmailAddresses
                 );
 
             case EmailTypesEnum.CreditTopUpPaymentFailed:
@@ -234,7 +235,8 @@ public class EmailService : IEmailService
                     "Credit Top-Up Payment Failed",
                     LoadAndRenderEmailTemplate(
                         "CreditTopUpFailedEmailTemplate.html",
-                        placeholderValues)
+                        placeholderValues),
+                        ccEmailAddresses: ccEmailAddresses
                 );
 
             case EmailTypesEnum.SubscriptionPaymentSuccess:
@@ -243,7 +245,8 @@ public class EmailService : IEmailService
                     "Subscription Payment Successful",
                     LoadAndRenderEmailTemplate(
                         "SubscriptionPaymentSuccessEmailTemplate.html",
-                        placeholderValues)
+                        placeholderValues),
+                        ccEmailAddresses: ccEmailAddresses
                 );
 
             case EmailTypesEnum.SubscriptionPaymentFailed:
@@ -252,7 +255,8 @@ public class EmailService : IEmailService
                     "Subscription Payment Failed",
                     LoadAndRenderEmailTemplate(
                         "SubscriptionPaymentFailedEmailTemplate.html",
-                        placeholderValues)
+                        placeholderValues),
+                        ccEmailAddresses: ccEmailAddresses
                 );
         }
 
