@@ -11,26 +11,21 @@ public class ClientStatusStore : IClientStatusStore
     }
 
     // Adds or updates the client's status in the store.
-    public Task AddOrUpdateStatusAsync(ClientDataStore clientDataStore)
+    public Task AddOrUpdateStatusAsync(ClientDataStore req)
     {
-        // Set the last seen timestamp to the current time (UTC).
-        clientDataStore.LastSeen = DateTimeOffset.UtcNow;
+        var client = new ClientDataStore
+        {
+            TenantId = req.TenantId,
+            ClientId = req.ClientId,
+            ConnectionId = req.ConnectionId,
+            Type = req.Type,
+            Status = req.Status,
+            LastSeen = DateTimeOffset.UtcNow,
+            AgentId = req.AgentId,
+            JobId = req.JobId
+        };
 
-        // Add or update the client status in the dictionary using clientId as the key.
-        ClientStore.AddOrUpdate(
-            clientDataStore.ClientId,
-            clientDataStore,
-            (_, existing) =>
-            {
-                // Update the existing client status.
-                existing.ConnectionId = clientDataStore.ConnectionId;
-                existing.TenantId = clientDataStore.TenantId;
-                existing.ClientId = clientDataStore.ClientId;
-                existing.Type = clientDataStore.Type;
-                existing.Status = clientDataStore.Status;
-                existing.LastSeen = clientDataStore.LastSeen;
-                return existing;
-            });
+        ClientStore.AddOrUpdate(req.ClientId, client, (_, __) => client);
 
         return Task.CompletedTask;
     }

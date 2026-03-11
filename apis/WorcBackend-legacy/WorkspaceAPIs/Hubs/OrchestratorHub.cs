@@ -90,15 +90,22 @@ public class OrchestratorHub : Hub
             // Update or add the status for this new client type
             await _clientStatusStore.AddOrUpdateStatusAsync(clientDataStore);
 
-            // Additional logic for handling the case where the client is a machine
+            // If machine, also register the desktop/user client separately
             if (clientType == ClientTypesEnum.WorcMachine)
             {
-                // Adjust the clientDataStore if the client type is "WorcMachine"
-                clientDataStore.ClientId = userId;  // Assign clientId back to userId
-                clientDataStore.Type = ClientTypesEnum.WorcDesktopApp;  // Change to DesktopApp type
+                // Prepare the client status object with initial values
+                var userClient = new ClientDataStore
+                {
+                    TenantId = tenantId,
+                    ClientId = userId,
+                    ConnectionId = connectionId,
+                    Type = ClientTypesEnum.WorcDesktopApp,
+                    Status = MachineStatusTypeEnum.Online,
+                    LastSeen = DateTimeOffset.UtcNow
+                };
 
                 // Update or add the status for this new client type
-                await _clientStatusStore.AddOrUpdateStatusAsync(clientDataStore);
+                await _clientStatusStore.AddOrUpdateStatusAsync(userClient);
             }
 
             // Add client to group based on their type (WebBrowser or DesktopApp)
