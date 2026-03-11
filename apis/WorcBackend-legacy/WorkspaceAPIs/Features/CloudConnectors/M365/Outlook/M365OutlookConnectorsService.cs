@@ -127,14 +127,14 @@ public class M365OutlookConnectorsService : IM365OutlookConnectorsService
                     var messageId = CloudConnectionPayloadUtil.GetValue(payload, "messageId");
 
                     // Build base request URL
-                    var requestUrl = $"{messagesApiUrl}/messages/{messageId}";
+                    var rootEmailUrl = $"{messagesApiUrl}/messages/{messageId}";
 
                     // Determine whether attachments should be included
                     var includeAttachments = CloudConnectionPayloadUtil.GetBool(payload, "includeAttachments", false);
 
                     // Add query parameters if needed
                     if (includeAttachments)
-                        requestUrl += "?$expand=attachments";
+                        rootEmailUrl += "?$expand=attachments";
 
                     // Add header to prefer email body in text format
                     var headers = new Dictionary<string, string>
@@ -142,68 +142,39 @@ public class M365OutlookConnectorsService : IM365OutlookConnectorsService
                         { "Prefer", "outlook.body-content-type=\"text\"" }
                     };
 
-                    var email = await HttpClientHelper.GetAsync(requestUrl, accessToken, headers);
-
-                    // If attachments are present, check for #microsoft.graph.itemAttachment with missing contentBytes
-                    if (includeAttachments && email != null && email.RootElement.TryGetProperty("attachments", out var attachmentsElem) && attachmentsElem.ValueKind == JsonValueKind.Array)
+                    // 1. Fetch root email
+                    var rootEmail = await HttpClientHelper.GetAsync(rootEmailUrl, accessToken, headers);
+                    if (rootEmail == null) return null;
+                    var emailResponse = new M365OutlookEmailDto()
                     {
-                        var attachmentsList = new List<JsonElement>();
-                        foreach (var att in attachmentsElem.EnumerateArray())
-                        {
-                            attachmentsList.Add(att);
-                        }
-                        bool updated = false;
-                        var updatedAttachments = new List<object>();
-                        foreach (var att in attachmentsList)
-                        {
-                            // Check if it's an itemAttachment (likely .msg) and missing contentBytes
-                            var odataType = att.TryGetProperty("@odata.type", out var typeElem) ? typeElem.GetString() : null;
-                            var name = att.TryGetProperty("name", out var nameElem) ? nameElem.GetString() : null;
-                            var id = att.TryGetProperty("id", out var idElem) ? idElem.GetString() : null;
-                            var hasContentBytes = att.TryGetProperty("contentBytes", out var _);
-                            if (odataType == "#microsoft.graph.itemAttachment" && name != null && !hasContentBytes && id != null)
-                            {
-                                // Download the .msg attachment's contentBytes
-                                var attUrl = $"{messagesApiUrl}/messages/{messageId}/attachments/{id}/$value";
+                        RootEmail = rootEmail,
+                        NestedEmails = new List<JsonDocument>()
+                    };
 
-                                // Download as byte[] and convert to base64
-                                var attContent = await HttpClientHelper.GetByteArrayAsync(attUrl, accessToken);
-                                if (attContent != null)
-                                {
-                                    var base64 = Convert.ToBase64String(attContent);
-                                    // Build a new attachment object with contentBytes
-                                    var attDict = new Dictionary<string, object>();
-                                    foreach (var prop in att.EnumerateObject())
-                                    {
-                                        attDict[prop.Name] = prop.Value.ValueKind == JsonValueKind.String ? prop.Value.GetString() : prop.Value.ToString();
-                                    }
-                                    attDict["contentBytes"] = base64;
-                                    updatedAttachments.Add(attDict);
-                                    updated = true;
-                                    continue;
-                                }
-                            }
-                            // Otherwise, keep as is
-                            updatedAttachments.Add(att);
-                        }
-                        if (updated)
+                    // 2. Handle itemAttachment
+                    if (rootEmail.RootElement.TryGetProperty("attachments", out var attachments) && attachments.GetArrayLength() > 0)
+                    {
+                        foreach (var attachment in attachments.EnumerateArray())
                         {
-                            // Build a new JsonDocument with updated attachments
-                            var emailDict = new Dictionary<string, object>();
-                            foreach (var prop in email.RootElement.EnumerateObject())
+                            string type = attachment.GetProperty("@odata.type").GetString() ?? string.Empty;
+                            string attachmentId = attachment.GetProperty("id").GetString() ?? string.Empty;
+
+                            if (type == "#microsoft.graph.itemAttachment")
                             {
-                                if (prop.Name == "attachments")
-                                    emailDict["attachments"] = updatedAttachments;
-                                else
-                                    emailDict[prop.Name] = prop.Value.ValueKind == JsonValueKind.String ? prop.Value.GetString() : prop.Value.ToString();
+                                string nestedUrl = $"{rootEmailUrl.Split('?')[0]}/attachments/{attachmentId}/?$expand=microsoft.graph.itemattachment/item";
+                                emailResponse.NestedEmails.Add(await HttpClientHelper.GetAsync(nestedUrl, accessToken, headers));
                             }
-                            var json = System.Text.Json.JsonSerializer.Serialize(emailDict);
-                            return JsonDocument.Parse(json);
                         }
                     }
-                    return email;
-                }
 
+                    emailResponse.NestedEmails.Reverse(); // Change the order
+
+                    // Response back
+                    var responseJson = System.Text.Json.JsonSerializer.Serialize(emailResponse);
+                    var camelCaseOptions = new JsonSerializerOptions { PropertyNamingPolicy = JsonNamingPolicy.CamelCase };
+                    var responseJsonCamel = System.Text.Json.JsonSerializer.Serialize(emailResponse, camelCaseOptions);
+                    return JsonDocument.Parse(responseJsonCamel);
+                }
             case M365OutlookActionsEnum.GetEmails:
                 return await GetEmailsAsync(messagesApiUrl, accessToken, payload);
 
