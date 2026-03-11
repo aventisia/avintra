@@ -136,7 +136,13 @@ public class M365OutlookConnectorsService : IM365OutlookConnectorsService
                     if (includeAttachments)
                         requestUrl += "?$expand=attachments";
 
-                    return await HttpClientHelper.GetAsync(requestUrl, accessToken);
+                    // Add header to prefer email body in text format
+                    var headers = new Dictionary<string, string>
+                    {
+                        { "Prefer", "outlook.body-content-type=\"text\"" }
+                    };
+
+                    return await HttpClientHelper.GetAsync(requestUrl, accessToken, headers);
                 }
 
             case M365OutlookActionsEnum.GetEmails:
