@@ -177,17 +177,18 @@ namespace CodeActivitiesLibrary.AppIntegrations.CloudConnectorsActivities
                 }
 
                 // Otherwise, treat as file path - validate file existence
-                if (!File.Exists(filePathOrBase64))
+                var sanitizedPath = filePathOrBase64.Trim('[').Trim(']').Trim('"').Trim();
+                if (!File.Exists(sanitizedPath))
                     continue;
 
                 // Read file and convert to base64
-                var fileBytes = File.ReadAllBytes(filePathOrBase64);
+                var fileBytes = File.ReadAllBytes(sanitizedPath);
                 var fileBase64 = Convert.ToBase64String(fileBytes);
 
                 // Add to list
                 base64Files.Add(new
                 {
-                    mime_type = GetMimeType(Path.GetExtension(filePathOrBase64)),
+                    mime_type = GetMimeType(Path.GetExtension(sanitizedPath)),
                     encoded_content = fileBase64
                 });
             }
