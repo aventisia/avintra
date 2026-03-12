@@ -1181,13 +1181,22 @@ public class WebhookService : IWebhookService
                         .Include(i => i.Plan)
                         .SingleOrDefaultAsync();
 
+
+                    // Determine the next billing date based on the subscription frequency
+                    var nextBillingDate = subscription.Frequency switch
+                    {
+                        SubscriptionFrequenciesEnum.Monthly => subscription.NextBillingDate.AddMonths(1),
+                        SubscriptionFrequenciesEnum.Yearly => subscription.NextBillingDate.AddYears(1),
+                        _ => subscription.NextBillingDate
+                    };
+
                     placeholderValues.Add("{{PlanName}}", subscription?.Plan?.Name ?? "N/A");
 
                     if (isPaymentSuccess)
                     {
                         emailType = EmailTypesEnum.SubscriptionPaymentSuccess;
-                        placeholderValues.Add("{{BillingFrequency}}", subscription?.Plan?.Frequency.ToString() ?? "N/A");
-                        placeholderValues.Add("{{NextBillingDate}}", $"{subscription?.NextBillingDate.ToString("MMM dd, yyyy · hh:mm tt")} - UTC");
+                        placeholderValues.Add("{{BillingFrequency}}", subscription?.Plan?.Frequency.ToString());
+                        placeholderValues.Add("{{NextBillingDate}}", $"{nextBillingDate.ToString("MMM dd, yyyy")}");
                     }
                     else
                     {
