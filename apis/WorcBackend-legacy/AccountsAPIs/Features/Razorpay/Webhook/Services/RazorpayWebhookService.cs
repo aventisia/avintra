@@ -10,7 +10,7 @@ public class WebhookService : IWebhookService
     private readonly IEmailService _emailService;
 
     // Declare the constant at the class level
-    private const string ACCOUNT_EMAIL = "accounts@aventsia.com";
+    private const string ACCOUNT_EMAIL = "accounts@aventisia.com";
 
     public WebhookService(
         IUnitOfWork unitOfWork,
