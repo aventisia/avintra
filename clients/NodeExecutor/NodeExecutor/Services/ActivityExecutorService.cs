@@ -566,8 +566,10 @@ namespace NodeExecutor.Services
                 if (items.Count == 0)
                 {
                     outputValues["Status"] = "List is empty";
+                    nodeExecutionlog.NodeName = $"{nodeName} (List is empty)";
                     nodeExecutionlog.Duration = (DateTime.UtcNow - startTime).TotalSeconds;
                     nodeExecutionlog.Outputs = outputValues.Select(kv => new NodeLogKeyValue { Key = kv.Key, Value = ConvertValueForLoggingUtil.ConvertValueForLogging(kv.Key, kv.Value, "Output", false) }).ToList();
+                    nodeExecutionlog.IsSuccess = true; // List is empty so no error, just nothing to iterate over
                     return (false, nodeExecutionlog);
                 }
 
@@ -764,6 +766,9 @@ namespace NodeExecutor.Services
         {
             if (string.IsNullOrEmpty(template))
                 return template;
+
+            //if (template.Contains("{{RetrievedFiles}}"))
+            //    System.Diagnostics.Debugger.Break();
 
             // Helper to recursively resolve all {{...}} placeholders
             string ResolvePlaceholders(string input)

@@ -34,6 +34,7 @@ namespace CodeActivitiesLibrary.UiInterfaceAutomations.SystemActivities.Enums
         [Display(Name = "Temporary Directory", Description = "Temporary Directory")]
         TEMP,
 
+        // TODO: we can remove this since it's basically the same as TEMP, but keeping it for now since some users might be using it
         [Display(Name = "TMP Directory", Description = "TMP Directory")]
         TMP,
 
