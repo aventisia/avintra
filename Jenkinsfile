@@ -42,7 +42,7 @@ def hasChangesInPath(path) {
 pipeline {
     agent any
     parameters {
-        string(name: 'REPOS_TO_BUILD', defaultValue: '', description: 'Comma-separated list of repo names to build on manual build (e.g., accounts_api,worc)')
+        string(name: 'REPOS_TO_BUILD', defaultValue: '', description: 'Comma-separated list of repo names to build on manual build (e.g., accounts_api,worc_api,aistudio_api,llmpipeline_api,docs,accounts,worc,agentbuilder,aistudio,aspnet_toolkit)')
     }
     stages {
         stage('Detect Changes') {
