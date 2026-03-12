@@ -1,32 +1,26 @@
 import { IS_TAURI } from "@/constants";
-import { useFetchFlowToExecute } from "@/features/agents-assist/hooks/useFetchFlowToExecute";
+import { getAvailableCredits } from "@/features/available-credits/available-credits-apis";
 import { getMySession } from "@/react-toolkit/apis/accounts-me-apis";
+import { useUserSessionStore } from "@/react-toolkit/stores/user-session-store";
 import { useCurrentFlowStore } from "@/stores/current-flow-store";
 import { useReactFlowExtStore } from "@/stores/react-flow-ext-store";
+import { NodeDataType } from "@/types/node-data-type";
+
 import { Button } from "@aventisia/ui/buttons";
 import { toast } from "@aventisia/ui/sonner";
 import { Tooltip } from "@aventisia/ui/tooltip";
 import { PauseIcon, PlayIcon, StopIcon } from "@heroicons/react/24/solid";
 import { invoke } from "@tauri-apps/api/core";
-import { Loader2 } from "lucide-react";
-import { useEffect } from "react";
-import { useShallow } from "zustand/react/shallow";
-import { clearNodeExecutionLog, CURRENT_VERSION_ID_KEY } from "..";
-import useWebSocket from "../hooks/useWebSocket";
-import { getAvailableCredits } from "@/features/available-credits/available-credits-apis";
-import { extractUniqueConfigKeys } from "../utils/config-key-utils";
 import { Node } from "@xyflow/react";
-import { NodeDataType } from "@/types/node-data-type";
-import { useJobDataStore } from "../stores/job-data-store";
-import { useUserSessionStore } from "@/react-toolkit/stores/user-session-store";
+import { Loader2 } from "lucide-react";
+import { useShallow } from "zustand/react/shallow";
 
-const ExecuteFlow = ({
-  isAssist = false,
-  flowId,
-}: {
-  flowId?: string;
-  isAssist?: boolean;
-}) => {
+import { CURRENT_VERSION_ID_KEY, clearNodeExecutionLog } from "..";
+import useWebSocket from "../hooks/useWebSocket";
+import { useJobDataStore } from "../stores/job-data-store";
+import { extractUniqueConfigKeys } from "../utils/config-key-utils";
+
+const ExecuteFlow = () => {
   // Get user session state and actions
   const { userSession } = useUserSessionStore(
     useShallow((state) => ({
@@ -57,8 +51,6 @@ const ExecuteFlow = ({
       edges: state.edges,
     })),
   );
-
-  const { isFlowReady, getFlow } = useFetchFlowToExecute();
 
   // Connect to websocket server and get sendCommand function
   const { sendCommand } = useWebSocket();
@@ -160,11 +152,6 @@ const ExecuteFlow = ({
     }
   };
 
-  //To handle execution form Assist window
-  useEffect(() => {
-    if (isFlowReady) startExecution();
-  }, [isFlowReady]);
-
   return (
     <div className="flex items-center gap-2">
       {executionState === "executing" || executionState === "paused" ? (
@@ -218,9 +205,7 @@ const ExecuteFlow = ({
             size="icon8"
             className="hover:bg-white/10"
             onClick={() => {
-              if (isAssist) {
-                getFlow(flowId || "");
-              } else startExecution();
+              startExecution();
             }}
           >
             {executionState === "launching-executor" ? (

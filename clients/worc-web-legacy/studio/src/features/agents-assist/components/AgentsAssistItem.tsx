@@ -1,7 +1,10 @@
+import { ExecuteFlow } from "@/features/execute-flow";
+
 import { cn } from "@aventisia/ui/lib";
+
 import { PublishedAgentDto } from "../dtos/published-agent-dto";
 import { AAListItemActions } from "./agents-assist-item-actions";
-import { ExecuteFlow } from "@/features/execute-flow";
+
 interface AgentsAssistItemProps {
   agentData: PublishedAgentDto;
 }
@@ -27,7 +30,7 @@ export const AgentsAssistItem = ({ agentData }: AgentsAssistItemProps) => {
       </div>
 
       <div className="flex w-12 items-center justify-end gap-3">
-        <ExecuteFlow isAssist flowId={agentData.refId || ""} />
+        <ExecuteFlow />
         {/* Actions container */}
         {import.meta.env.MODE !== "production" && (
           <AAListItemActions
