@@ -4,86 +4,167 @@ public class TenantCreditAllocationJob : IJob
 {
     private readonly IUnitOfWork _unitOfWork;
     private readonly ILogger<TenantCreditAllocationJob> _logger;
+    private readonly IEmailService _emailService;
+    // Declare the constant at the class level
+    private const string ACCOUNT_EMAIL = "accounts@aventisia.com";
 
-    public TenantCreditAllocationJob(IUnitOfWork unitOfWork, ILogger<TenantCreditAllocationJob> logger)
+    public TenantCreditAllocationJob(IUnitOfWork unitOfWork, ILogger<TenantCreditAllocationJob> logger, IEmailService emailService)
     {
         _unitOfWork = unitOfWork;
         _logger = logger;
+        _emailService = emailService;
     }
 
-    // Main method for Quartz job execution
+    // Main Quartz job execution method
     public async Task Execute(IJobExecutionContext context)
     {
-        // Get the current UTC time to record the start and end times of the job
-        var currentDateTime = DateTimeOffset.UtcNow;
+        // Capture the current UTC time for consistent processing
+        var currentDateTime = DateTimeOffset.UtcNow.Date;
 
-        // Log that the job has started
         _logger.LogInformation($"Tenant credit update job started at {currentDateTime:O}");
 
         try
         {
-            // Retrieve tenant subscriptions that are due for credit allocation today
+            // Fetch all active tenant subscriptions along with their plan
             var tenantSubscriptions = await _unitOfWork.TenantSubscriptionRepo
-                .GetByConditionAsync(w =>
-                    w.Plan.Type == SubscriptionPlanTypeEnum.Starter &&
-                    w.IsActive &&
-                    w.NextBillingDate.Date <= currentDateTime.Date)
+                .GetByConditionAsync(w => w.IsActive)
+                .Include(x => x.Plan)
                 .AsNoTracking()
                 .ToListAsync();
 
-            // Log how many subscriptions are due for processing
-            _logger.LogInformation($"Found {tenantSubscriptions.Count} subscriptions for credit allocation today.");
+            _logger.LogInformation($"Found {tenantSubscriptions.Count} active subscriptions.");
 
+            // List to store credits that need to be inserted
             var tenantCredits = new List<TenantCredit>();
 
-            // Loop through each subscription to create tenant credits and update NextBillingDate
+            // Loop through each subscription
             foreach (var subscription in tenantSubscriptions)
             {
-                // Check if the NextBillingDate is more than 1 month old
-                if (subscription.NextBillingDate < DateTimeOffset.UtcNow.AddMonths(-1))
+                // STARTER PLAN LOGIC: Allocate monthly credits when billing date is due
+                if (subscription.Plan.Type == SubscriptionPlanTypeEnum.Starter &&
+                    subscription.NextBillingDate.Date <= currentDateTime)
                 {
-                    // If so, set the NextBillingDate to the current UTC time
-                    subscription.NextBillingDate = DateTimeOffset.UtcNow;
+                    // If billing date is older than 1 month (job might have missed runs) reset it to current time to avoid multiple backdated credits
+                    if (subscription.NextBillingDate < currentDateTime.AddMonths(-1))
+                    {
+                        subscription.NextBillingDate = currentDateTime;
+                    }
+
+                    // Move the billing cycle forward by 1 month
+                    subscription.NextBillingDate = subscription.NextBillingDate.AddMonths(1);
+
+                    // Update the subscription record
+                    _unitOfWork.TenantSubscriptionRepo.Update(subscription);
+
+                    // Create a new credit record for the tenant
+                    var tenantCredit = new TenantCredit()
+                    {
+                        TenantId = subscription.TenantId,
+                        AvailableCredits = subscription.MaxCredits,
+                        CreditedOn = currentDateTime,
+                        ExpiredOn = subscription.NextBillingDate.Date,
+                        Type = CreditTypesEnum.Subscription,
+                        SubscriptionId = subscription.Id,
+                        CreatedByUserId = subscription.CreatedByUserId,
+                        LastModifiedByUserId = subscription.LastModifiedByUserId
+                    };
+
+                    // Add to batch insert list
+                    tenantCredits.Add(tenantCredit);
                 }
 
-                // Add 1 month to the NextBillingDate
-                subscription.NextBillingDate = subscription.NextBillingDate.AddMonths(1);
-
-                // Ensure LastModifiedByUserId is set (it seems like it's being set to itself here)
-                subscription.LastModifiedByUserId = subscription.LastModifiedByUserId;
-
-                // Update the subscription in the database
-                _unitOfWork.TenantSubscriptionRepo.Update(subscription);
-
-                // Create a new TenantCredit for the subscription
-                var tenantCredit = new TenantCredit()
+                // PRO PLAN LOGIC: Send reminder emails before subscription expiry
+                else if (subscription.Plan.Type == SubscriptionPlanTypeEnum.Pro)
                 {
-                    TenantId = subscription.TenantId,
-                    AvailableCredits = subscription.MaxCredits,
-                    CreditedOn = currentDateTime,
-                    ExpiredOn = subscription.NextBillingDate.Date,
-                    Type = CreditTypesEnum.Subscription,
-                    SubscriptionId = subscription.Id,
-                    CreatedByUserId = subscription.CreatedByUserId,
-                    LastModifiedByUserId = subscription.LastModifiedByUserId
-                };
+                    // Get the most recent billing details for the subscription
+                    var billingDetail = subscription.BillingDetails
+                        .OrderByDescending(o => o.CreatedOn)
+                        .FirstOrDefault();
 
-                // Add the created tenant credit to the list
-                tenantCredits.Add(tenantCredit);
+                    // If no billing details exist, skip processing this subscription
+                    if (billingDetail == null)
+                        continue;
+
+                    // Reference to the subscription plan
+                    var plan = subscription.Plan;
+
+                    // Variable to determine which email template will be used
+                    EmailTypesEnum emailType;
+
+                    // Get the subscription expiry date
+                    var expiryDate = subscription.NextBillingDate.Date;
+
+                    // Calculate how many days remain until the subscription expires
+                    var daysRemaining = (expiryDate - currentDateTime).Days;
+
+                    // Calculate billing amount If the billing country is India, include 18% GST
+                    decimal amount = subscription.Plan.Price;
+
+                    if (billingDetail.Country == CountriesEnum.India)
+                    {
+                        // Add 18% GST and round to 2 decimal places
+                        amount = Math.Round(amount * 1.18m, 2);
+                    }
+
+                    // Initialize placeholders for the email template. These will be replaced in the email body dynamically
+                    var placeholderValues = new Dictionary<string, string>
+                    {
+                        { "{{UserName}}", billingDetail.ContactPerson },
+                        { "{{Amount}}", $"{subscription.Plan.Currency} {amount}" },
+                        { "{{PlanName}}", plan.Name },
+                        { "{{BillingFrequency}}", subscription.Frequency.ToString() },
+                        { "{{ExpiryDate}}", $"{subscription.NextBillingDate:MMM dd, yyyy · hh:mm tt} - UTC" }
+                    };
+
+                    // Send reminder email if the subscription will expire within the next 1–5 days
+                    if (daysRemaining >= 1 && daysRemaining <= 5)
+                    {
+                        // Select the email template used for subscription expiry reminders
+                        emailType = EmailTypesEnum.SubscriptionExpiryReminder;
+
+                        // Add the number of days remaining until expiry. This value will be used in the email template placeholder {{DaysLeft}}
+                        placeholderValues.Add("{{DaysLeft}}", daysRemaining.ToString());
+
+                        // Send reminder email to the billing contact CC the accounts team for tracking or support purposes
+                        await _emailService.SendEmailUsingTemplate(
+                            emailType: emailType,
+                            toEmailAddress: billingDetail.BillingEmail,
+                            placeholderValues: placeholderValues,
+                            ccEmailAddresses: ACCOUNT_EMAIL
+                        );
+                    }
+
+                    // Send notification email if the subscription has already expired
+                    else if (daysRemaining < 0)
+                    {
+                        // Select the email template used for expired subscriptions
+                        emailType = EmailTypesEnum.SubscriptionExpired;
+
+                        // Send expiration notification email This informs the customer that their subscription has expired and they may need to renew or reactivate it
+                        await _emailService.SendEmailUsingTemplate(
+                            emailType: emailType,
+                            toEmailAddress: billingDetail.BillingEmail,
+                            placeholderValues: placeholderValues,
+                            ccEmailAddresses: ACCOUNT_EMAIL
+                        );
+                    }
+                }
             }
 
-            // Check if there are any credits to insert
+            // ====================================================
+            // SAVE CREDIT RECORDS
+            // ====================================================
             if (tenantCredits.Any())
             {
-                _logger.LogInformation($"Inserting {tenantCredits.Count} credits into the system.");
+                _logger.LogInformation($"Inserting {tenantCredits.Count} tenant credits.");
 
-                // Insert the tenant credits into the database
+                // Bulk insert generated credits
                 await _unitOfWork.TenantCreditRepo.InsertAsync(tenantCredits);
 
-                // Attempt to save changes to the database
+                // Save database changes
                 if (!await _unitOfWork.SaveAsync())
                 {
-                    _logger.LogWarning("Failed to save tenant credit updates to the database.");
+                    _logger.LogWarning("Failed to save tenant credit updates.");
                 }
             }
 
@@ -91,7 +172,7 @@ public class TenantCreditAllocationJob : IJob
         }
         catch (Exception ex)
         {
-            // Log any errors that occur during the job execution
+            // Log any unexpected errors
             _logger.LogError(ex, "An error occurred while processing the tenant credit update job.");
         }
     }

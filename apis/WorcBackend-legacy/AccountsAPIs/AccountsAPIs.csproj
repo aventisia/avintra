@@ -81,6 +81,12 @@
     <None Update="StaticFiles\EmailTemplates\CreditTopUpFailedEmailTemplate.html">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
+    <None Update="StaticFiles\EmailTemplates\SubscriptionExpiryReminderEmailTemplate.html">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Update="StaticFiles\EmailTemplates\SubscriptionExpiresEmailTemplate.html">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
   </ItemGroup>
 
 </Project>
