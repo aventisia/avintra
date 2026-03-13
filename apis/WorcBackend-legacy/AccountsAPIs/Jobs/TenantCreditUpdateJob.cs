@@ -134,8 +134,10 @@ public class TenantCreditAllocationJob : IJob
                         );
                     }
 
-                    // Send notification email if the subscription has already expired
-                    else if (daysRemaining < 0)
+                    // Send notification email if the subscription expired **yesterday**
+                    // This ensures that only tenants whose subscriptions expired exactly one day ago
+                    // receive the expiration email, avoiding repeated notifications for older expired subscriptions
+                    else if (expiryDate == currentDateTime.AddDays(-1).Date)
                     {
                         // Select the email template used for expired subscriptions
                         emailType = EmailTypesEnum.SubscriptionExpired;
@@ -151,9 +153,7 @@ public class TenantCreditAllocationJob : IJob
                 }
             }
 
-            // ====================================================
             // SAVE CREDIT RECORDS
-            // ====================================================
             if (tenantCredits.Any())
             {
                 _logger.LogInformation($"Inserting {tenantCredits.Count} tenant credits.");
