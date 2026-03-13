@@ -84,7 +84,7 @@
     <None Update="StaticFiles\EmailTemplates\SubscriptionExpiryReminderEmailTemplate.html">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
-    <None Update="StaticFiles\EmailTemplates\SubscriptionExpiresEmailTemplate.html">
+    <None Update="StaticFiles\EmailTemplates\SubscriptionExpiredEmailTemplate.html">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
   </ItemGroup>
