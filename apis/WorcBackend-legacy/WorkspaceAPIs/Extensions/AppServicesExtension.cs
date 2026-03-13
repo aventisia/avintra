@@ -101,7 +101,8 @@ public static class AppServicesExtension
         services.AddScoped<IFileUploadService, FileUploadService>();
         services.AddScoped<IFlowUserService, FlowUserService>();
         services.AddScoped<IAppSecretService, AppSecretService>();
-        services.AddSingleton<IClientStatusStore, ClientStatusStore>();
+        services.AddSingleton<ConcurrentDictionary<Guid, ClientDataStore>>();
+        services.AddScoped<IClientStatusStore, ClientStatusStore>();
         services.AddScoped<IJobsExecutorService, JobsExecutorService>();
         services.AddScoped<IAITaskService, AITaskService>();
         services.AddScoped<IProjectUsageService, ProjectUsageService>();

@@ -41,7 +41,9 @@ def hasChangesInPath(path) {
 
 pipeline {
     agent any
-    
+    parameters {
+        string(name: 'REPOS_TO_BUILD', defaultValue: '', description: 'Comma-separated list of repo names to build on manual build (e.g., accounts_api,worc_api,aistudio_api,llmpipeline_api,docs,accounts,worc,agentbuilder,aistudio,aspnet_toolkit)')
+    }
     stages {
         stage('Detect Changes') {
             steps {
@@ -52,17 +54,18 @@ pipeline {
                     def isManualBuild = currentBuild.getBuildCauses('hudson.model.Cause$UserIdCause').size() > 0
                     
                     if (isManualBuild) {
-                        echo 'Manual build detected - rebuilding all components'
-                        env.BUILD_ACCOUNTS_API = 'true'
-                        env.BUILD_WORC_API = 'true'
-                        env.BUILD_AISTUDIO_API = 'true'
-                        env.BUILD_LLMPIPELINE_API = 'true'
-                        env.BUILD_DOCS_CLIENT = 'true'
-                        env.BUILD_ACCOUNTS_CLIENT = 'true'
-                        env.BUILD_WORC_CLIENT = 'true'
-                        env.BUILD_AGENTBUILDER_CLIENT = 'true'
-                        env.BUILD_AISTUDIO_CLIENT = 'true'
-                        env.BUILD_ASPNET_TOOLKIT = 'true'
+                        echo 'Manual build detected - using REPOS_TO_BUILD parameter'
+                        def reposToBuild = params.REPOS_TO_BUILD.tokenize(',').collect { it.trim().toLowerCase() }
+                        env.BUILD_ACCOUNTS_API = reposToBuild.contains('accounts_api') ? 'true' : 'false'
+                        env.BUILD_WORC_API = reposToBuild.contains('worc_api') ? 'true' : 'false'
+                        env.BUILD_AISTUDIO_API = reposToBuild.contains('aistudio_api') ? 'true' : 'false'
+                        env.BUILD_LLMPIPELINE_API = reposToBuild.contains('llmpipeline_api') ? 'true' : 'false'
+                        env.BUILD_DOCS_CLIENT = reposToBuild.contains('docs') ? 'true' : 'false'
+                        env.BUILD_ACCOUNTS_CLIENT = reposToBuild.contains('accounts') ? 'true' : 'false'
+                        env.BUILD_WORC_CLIENT = reposToBuild.contains('worc') ? 'true' : 'false'
+                        env.BUILD_AGENTBUILDER_CLIENT = reposToBuild.contains('agentbuilder') ? 'true' : 'false'
+                        env.BUILD_AISTUDIO_CLIENT = reposToBuild.contains('aistudio') ? 'true' : 'false'
+                        env.BUILD_ASPNET_TOOLKIT = reposToBuild.contains('aspnet_toolkit') ? 'true' : 'false'
                     } else {
                         echo 'Automatic build - detecting changes...'
                         

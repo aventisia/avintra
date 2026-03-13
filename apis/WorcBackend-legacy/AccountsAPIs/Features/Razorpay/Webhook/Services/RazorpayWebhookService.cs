@@ -9,6 +9,9 @@ public class WebhookService : IWebhookService
     private readonly EnvironmentConfig _environmentConfig;
     private readonly IEmailService _emailService;
 
+    // Declare the constant at the class level
+    private const string ACCOUNT_EMAIL = "accounts@aventisia.com";
+
     public WebhookService(
         IUnitOfWork unitOfWork,
         ILogger<WebhookService> logger,
@@ -1145,6 +1148,8 @@ public class WebhookService : IWebhookService
                 return;
             }
 
+            var toEmail = billingHistory.CreatedByUser.Email;
+
             // Determine payment method details for email
             var method = paymentEntity["method"]?.ToString();
             string paymentDetails = method switch
@@ -1158,14 +1163,11 @@ public class WebhookService : IWebhookService
             var placeholderValues = new Dictionary<string, string>
             {
                 { "{{UserName}}", $"{billingHistory.CreatedByUser.FirstName} {billingHistory.CreatedByUser.LastName}" },
-                { "{{Amount}}", $"{billingHistory.Currency} {billingHistory.Amount / 100m:0.00}" },
+                { "{{Amount}}", $"{billingHistory.Currency} {billingHistory.Amount}" },
                 { "{{PaymentId}}", razorpayPaymentId },
-                { "{{DateTime}}", DateTimeOffset.UtcNow.ToString("MMM dd, yyyy · hh:mm tt") },
+                { "{{DateTime}}", $"{DateTimeOffset.UtcNow:MMM dd, yyyy · hh:mm tt} - UTC" },
                 { "{{PaymentMethod}}", paymentDetails }
             };
-
-            var toEmail = billingHistory.CreatedByUser.Email;
-            var bccEmail = _environmentConfig.SalesEmails;
 
             // Determine email template and add extra placeholders based on billing type
             EmailTypesEnum emailType;
@@ -1179,13 +1181,22 @@ public class WebhookService : IWebhookService
                         .Include(i => i.Plan)
                         .SingleOrDefaultAsync();
 
+
+                    // Determine the next billing date based on the subscription frequency
+                    var nextBillingDate = subscription.Frequency switch
+                    {
+                        SubscriptionFrequenciesEnum.Monthly => subscription.NextBillingDate.AddMonths(1),
+                        SubscriptionFrequenciesEnum.Yearly => subscription.NextBillingDate.AddYears(1),
+                        _ => subscription.NextBillingDate
+                    };
+
                     placeholderValues.Add("{{PlanName}}", subscription?.Plan?.Name ?? "N/A");
 
                     if (isPaymentSuccess)
                     {
                         emailType = EmailTypesEnum.SubscriptionPaymentSuccess;
-                        placeholderValues.Add("{{BillingFrequency}}", subscription?.Plan?.Frequency.ToString() ?? "N/A");
-                        placeholderValues.Add("{{NextBillingDate}}", subscription?.NextBillingDate.ToString("MMM dd, yyyy · hh:mm tt") ?? "N/A");
+                        placeholderValues.Add("{{BillingFrequency}}", subscription?.Plan?.Frequency.ToString());
+                        placeholderValues.Add("{{NextBillingDate}}", $"{nextBillingDate.ToString("MMM dd, yyyy")}");
                     }
                     else
                     {
@@ -1219,7 +1230,11 @@ public class WebhookService : IWebhookService
             }
 
             // Send the email using the selected template
-            var isEmailSent = await _emailService.SendEmailUsingTemplate(emailType, toEmail, placeholderValues, bccEmail);
+            var isEmailSent = await _emailService.SendEmailUsingTemplate(
+                emailType: emailType,
+                toEmailAddress: toEmail,
+                placeholderValues: placeholderValues,
+                bccEmailAddresses: ACCOUNT_EMAIL);
 
             if (!isEmailSent)
             {

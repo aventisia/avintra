@@ -90,15 +90,22 @@ public class OrchestratorHub : Hub
             // Update or add the status for this new client type
             await _clientStatusStore.AddOrUpdateStatusAsync(clientDataStore);
 
-            // Additional logic for handling the case where the client is a machine
+            // If machine, also register the desktop/user client separately
             if (clientType == ClientTypesEnum.WorcMachine)
             {
-                // Adjust the clientDataStore if the client type is "WorcMachine"
-                clientDataStore.ClientId = userId;  // Assign clientId back to userId
-                clientDataStore.Type = ClientTypesEnum.WorcDesktopApp;  // Change to DesktopApp type
+                // Prepare the client status object with initial values
+                var userClient = new ClientDataStore
+                {
+                    TenantId = tenantId,
+                    ClientId = userId,
+                    ConnectionId = connectionId,
+                    Type = ClientTypesEnum.WorcDesktopApp,
+                    Status = MachineStatusTypeEnum.Online,
+                    LastSeen = DateTimeOffset.UtcNow
+                };
 
                 // Update or add the status for this new client type
-                await _clientStatusStore.AddOrUpdateStatusAsync(clientDataStore);
+                await _clientStatusStore.AddOrUpdateStatusAsync(userClient);
             }
 
             // Add client to group based on their type (WebBrowser or DesktopApp)
@@ -182,7 +189,6 @@ public class OrchestratorHub : Hub
         try
         {
             var connectionId = Context.ConnectionId;
-            _logger.LogInformation("Client {ConnectionId} disconnected.", connectionId);
 
             // Retrieve client status from the store based on the connectionId
             var clientDataStore = await _clientStatusStore.GetStatusByConnectionIdAsync(connectionId);
@@ -190,22 +196,21 @@ public class OrchestratorHub : Hub
             // If client is found in the status store
             if (clientDataStore != null)
             {
-                _logger.LogInformation("Client {ConnectionId} found in status store. TenantId: {TenantId}, ClientId: {ClientId}.", connectionId, clientDataStore.TenantId, clientDataStore.ClientId);
-
                 // Remove the client's status from the store
                 await _clientStatusStore.RemoveClientByConnectionAsync(connectionId);
 
+                // Remove non-machine clients from their tenant group
+                await Groups.RemoveFromGroupAsync(clientDataStore.ConnectionId, $"TENANT_{clientDataStore.TenantId}");
+
+                // Check if another connection exists
+                var hasOtherConnections = await _clientStatusStore.GetUserStatusesAsync(clientDataStore.ClientId);
+
                 // Handle machine disconnection
-                if (clientDataStore.Type == ClientTypesEnum.WorcMachine)
+                if (hasOtherConnections.Any() && clientDataStore.Type == ClientTypesEnum.WorcMachine)
                 {
                     // Notify the tenant group about the machine going offline
                     await Clients.Group($"TENANT_{clientDataStore.TenantId}").SendAsync("machine_status_update", "A machine is offline now.");
-                    _logger.LogInformation("Machine {ClientId} offline. Notified tenant group {TenantId}.", clientDataStore.ClientId, clientDataStore.TenantId);
                 }
-
-                // Remove non-machine clients from their tenant group
-                await Groups.RemoveFromGroupAsync(clientDataStore.ConnectionId, $"TENANT_{clientDataStore.TenantId}");
-                _logger.LogInformation("Client {ConnectionId} removed from group TENANT_{TenantId}.", clientDataStore.ConnectionId, clientDataStore.TenantId);
             }
 
             // Complete the disconnection process

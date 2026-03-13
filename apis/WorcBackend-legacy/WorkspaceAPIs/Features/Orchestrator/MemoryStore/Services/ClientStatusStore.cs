@@ -1,33 +1,31 @@
-using System.Collections.Concurrent;
-
 namespace WorkspaceAPIs.Services;
 
 public class ClientStatusStore : IClientStatusStore
 {
     // Thread-safe dictionary to store client statuses, with the clientId as the key.
-    private readonly ConcurrentDictionary<Guid, ClientDataStore> ClientStore = new ConcurrentDictionary<Guid, ClientDataStore>();
+    private readonly ConcurrentDictionary<Guid, ClientDataStore> ClientStore;
+
+    public ClientStatusStore(ConcurrentDictionary<Guid, ClientDataStore> clientStore)
+    {
+        ClientStore = clientStore;
+    }
 
     // Adds or updates the client's status in the store.
-    public Task AddOrUpdateStatusAsync(ClientDataStore clientDataStore)
+    public Task AddOrUpdateStatusAsync(ClientDataStore req)
     {
-        // Set the last seen timestamp to the current time (UTC).
-        clientDataStore.LastSeen = DateTimeOffset.UtcNow;
+        var client = new ClientDataStore
+        {
+            TenantId = req.TenantId,
+            ClientId = req.ClientId,
+            ConnectionId = req.ConnectionId,
+            Type = req.Type,
+            Status = req.Status,
+            LastSeen = DateTimeOffset.UtcNow,
+            AgentId = req.AgentId,
+            JobId = req.JobId
+        };
 
-        // Add or update the client status in the dictionary using clientId as the key.
-        ClientStore.AddOrUpdate(
-            clientDataStore.ClientId,
-            clientDataStore,
-            (_, existing) =>
-            {
-                // Update the existing client status.
-                existing.ConnectionId = clientDataStore.ConnectionId;
-                existing.TenantId = clientDataStore.TenantId;
-                existing.ClientId = clientDataStore.ClientId;
-                existing.Type = clientDataStore.Type;
-                existing.Status = clientDataStore.Status;
-                existing.LastSeen = clientDataStore.LastSeen;
-                return existing;
-            });
+        ClientStore.AddOrUpdate(req.ClientId, client, (_, __) => client);
 
         return Task.CompletedTask;
     }
@@ -37,7 +35,7 @@ public class ClientStatusStore : IClientStatusStore
     {
         // Find all clients with the matching connection ID
         var clientsToRemove = ClientStore.Values
-            .Where(c => c.ConnectionId == connectionId)
+            .Where(w => w.ConnectionId == connectionId)
             .ToList();
 
         // If any clients are found, remove them from the store
@@ -54,7 +52,8 @@ public class ClientStatusStore : IClientStatusStore
     {
         // Find the client by its connection ID.
         var clientData = ClientStore.Values
-            .FirstOrDefault(c => c.ConnectionId == connectionId);
+            .FirstOrDefault(w => w.ConnectionId == connectionId
+                && (w.Type == ClientTypesEnum.WorcMachine || w.Type != ClientTypesEnum.WorcMachine));
 
         // Return the client status by clientId if found.
         if (clientData != null && ClientStore.TryGetValue(clientData.ClientId, out var clientDataStore))
@@ -103,8 +102,8 @@ public class ClientStatusStore : IClientStatusStore
     public Task<IEnumerable<ClientDataStore>> GetUserStatusesAsync(Guid tenantId)
     {
         var users = ClientStore.Values
-            .Where(c => c.TenantId == tenantId &&
-                (c.Type == ClientTypesEnum.WebBrowser || c.Type == ClientTypesEnum.WorcDesktopApp))
+            .Where(w => w.TenantId == tenantId &&
+                (w.Type == ClientTypesEnum.WebBrowser || w.Type == ClientTypesEnum.WorcDesktopApp))
             .ToList();
 
         return Task.FromResult<IEnumerable<ClientDataStore>>(users);

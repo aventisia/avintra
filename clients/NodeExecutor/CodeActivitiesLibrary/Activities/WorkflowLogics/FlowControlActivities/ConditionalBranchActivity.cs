@@ -105,8 +105,7 @@ namespace CodeActivitiesLibrary.WorkflowLogics.FlowControlActivities
                     case ComparisonOperatorEnum.EqualTo:
                         return CompareEqual(first, second);
                     case ComparisonOperatorEnum.NotEqualTo:
-                        var (isEqual, message) = CompareEqual(first, second);
-                        return (!isEqual, message);
+                        return CompareEqual(first, second, true);
                     // Text-specific operators (only work if both values are non-null and can be treated as strings)
                     case ComparisonOperatorEnum.TextStartsWith:
                     case ComparisonOperatorEnum.TextDoesNotStartWith:
@@ -119,13 +118,11 @@ namespace CodeActivitiesLibrary.WorkflowLogics.FlowControlActivities
                     case ComparisonOperatorEnum.ListContains:
                         return ListContains(first, second);
                     case ComparisonOperatorEnum.ListDoesNotContain:
-                        var (contains, message1) = ListContains(first, second);
-                        return (!contains, message1);
+                        return ListContains(first, second, true);
                     case ComparisonOperatorEnum.IsListEmpty:
                         return IsListEmpty(first);
                     case ComparisonOperatorEnum.IsListNotEmpty:
-                        var (isEmpty, message2) = IsListEmpty(first);
-                        return (!isEmpty, message2);
+                        return IsListEmpty(first, true);
                     // Number and DateTime operators (both values must be parseable as numbers or DateTimes)
                     case ComparisonOperatorEnum.GreaterThan:
                     case ComparisonOperatorEnum.LessThan:
@@ -136,8 +133,7 @@ namespace CodeActivitiesLibrary.WorkflowLogics.FlowControlActivities
                     case ComparisonOperatorEnum.FileExists:
                         return FileExists(first);
                     case ComparisonOperatorEnum.FileDoesNotExist:
-                        var (exists, message3) = FileExists(first);
-                        return (!exists, message3);
+                        return FileExists(first, true);
                     default:
                         return (false, "Unsupported comparison operator.");
                 }
@@ -148,7 +144,7 @@ namespace CodeActivitiesLibrary.WorkflowLogics.FlowControlActivities
             }
         }
 
-        private (bool, string) CompareEqual(object first, object second)
+        private (bool, string) CompareEqual(object first, object second, bool initialValue = false)
         {
             try
             {
@@ -160,7 +156,7 @@ namespace CodeActivitiesLibrary.WorkflowLogics.FlowControlActivities
                 if (second == null)
                     return (false, "Second value is null.");
 
-                bool isEqual = false;
+                bool isEqual = initialValue;
 
                 // If both are the same type, try direct object equality first
                 // This handles objects that implement Equals properly (including custom types)
@@ -235,7 +231,7 @@ namespace CodeActivitiesLibrary.WorkflowLogics.FlowControlActivities
             }
         }
 
-        private (bool, string) ListContains(object list, object value)
+        private (bool, string) ListContains(object list, object value, bool initialValue = false)
         {
             // If list not IEnumerable, return false
             if (!(list is IEnumerable enumerable))
@@ -245,29 +241,36 @@ namespace CodeActivitiesLibrary.WorkflowLogics.FlowControlActivities
             if (value == null)
                 return (false, "Item to check in the list is null.");
 
+            bool isFound = initialValue;
+
             // Check if any item in the list equals the value (using Equals for proper object comparison)   
             foreach (var item in enumerable)
             {
                 if (item != null && item.Equals(value))
-                    return (true, "Item found in the list.");
+                {
+                    isFound = true;
+                    break;
+                }
             }
 
-            // If we get here, item was not found in the list
-            return (false, "Item not found in the list.");
+            return isFound ? (true, "Item found in the list.") : (false, "Item not found in the list.");
         }
 
-        private (bool, string) IsListEmpty(object list)
+        private (bool, string) IsListEmpty(object list, bool initialValue = false)
         {
             // If list not IEnumerable, return false
             if (!(list is IEnumerable enumerable))
                 return (false, "List is not enumerable.");
 
+            bool isListEmpty = initialValue;
+
             foreach (var _ in enumerable)
             {
-                return (false, "List is not empty.");
+                isListEmpty = false; ;
+                break;
             }
 
-            return (true, "List is empty.");
+            return isListEmpty ? (true, "List is empty.") : (false, "List is not empty.");
         }
 
         private (bool, string) CompareNumbersOrDateTimes(object first, object second, ComparisonOperatorEnum op)
@@ -328,7 +331,7 @@ namespace CodeActivitiesLibrary.WorkflowLogics.FlowControlActivities
             return (false, "Values are not comparable as numbers or DateTimes.");
         }
 
-        private (bool, string) FileExists(object filePath)
+        private (bool, string) FileExists(object filePath, bool initialValue = false)
         {
             if (filePath == null)
                 return (false, "File path is null.");
@@ -336,7 +339,9 @@ namespace CodeActivitiesLibrary.WorkflowLogics.FlowControlActivities
             if (!(filePath is string))
                 return (false, "File path is not valid.");
 
-            bool exists = System.IO.File.Exists(filePath.ToString());
+            bool exists = initialValue;
+            
+            exists = System.IO.File.Exists(filePath.ToString());
             return exists ? (true, "File exists.") : (false, "File does not exist.");
         }
     }
