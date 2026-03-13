@@ -47,7 +47,7 @@ export const useFetchFlowToLoad = () => {
   );
 
   // Get react flow hook to set viewport
-  const { setViewport, fitView } = useReactFlow();
+  const { fitView } = useReactFlow();
 
   //Get flow
   const { data, isLoading } = useQuery({
@@ -129,17 +129,7 @@ export const useFetchFlowToLoad = () => {
 
     // Set document title
     document.title = `${data.data.name} - ${import.meta.env.VITE_APP_NAME} | ${import.meta.env.VITE_COMPANY_NAME}`;
-  }, [
-    data,
-    setCurrentFlow,
-    setNodes,
-    setEdges,
-    setFlowVariablesObject,
-    setViewport,
-    fitView,
-    setIsPublished,
-    setInputOutputObject,
-  ]);
+  }, [data?.data]);
 
   return { isLoading };
 };

@@ -62,7 +62,7 @@ public static class HttpClientHelper
             // Handle application/json
             if (content != null && mediaType == "application/json")
                 request.Content = new StringContent(JsonConvert.SerializeObject(content), Encoding.UTF8, "application/json");
-            
+
             // Handle application/x-www-form-urlencoded
             if (content != null && mediaType == "application/x-www-form-urlencoded" && content is Dictionary<string, string> dictContent)
                 request.Content = new FormUrlEncodedContent(dictContent);
@@ -91,6 +91,43 @@ public static class HttpClientHelper
             catch (Exception ex)
             {
                 return JsonDocument.Parse($@"{{""statusCode"": 500, ""error"": ""Exception: {ex.Message.Replace("\"", "'")}""}}");
+            }
+        }
+    }
+
+    public static async Task<byte[]?> GetByteArrayAsync(string url, string? jwt = null, Dictionary<string, string>? headers = null)
+    {
+        using (var request = new HttpRequestMessage(HttpMethod.Get, url))
+        {
+            if (jwt != null)
+                request.Headers.Authorization = new AuthenticationHeaderValue("Bearer", jwt);
+
+            if (headers != null)
+            {
+                foreach (var kv in headers)
+                {
+                    request.Headers.Remove(kv.Key);
+                    request.Headers.Add(kv.Key, kv.Value);
+                }
+            }
+
+            try
+            {
+                var response = await httpClient.SendAsync(request);
+                if (response.IsSuccessStatusCode)
+                {
+                    return await response.Content.ReadAsByteArrayAsync();
+                }
+                else
+                {
+                    // Optionally handle error responses
+                    return null;
+                }
+            }
+            catch
+            {
+                // Optionally handle exceptions
+                return null;
             }
         }
     }

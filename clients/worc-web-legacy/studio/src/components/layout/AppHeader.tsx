@@ -1,8 +1,17 @@
+import { AvailableCredits } from "@/features/available-credits/AvailableCredits";
 import { ExecuteFlow } from "@/features/execute-flow";
 import { FlowComments } from "@/features/flow-comments/components/FlowComments";
+import { SettingsTrigger } from "@/features/flow-settings/components/SettingsTrigger";
 import { FlowVersions } from "@/features/flow-versions/components";
+import SaveFlow from "@/features/react-flow/components/save-flow/SaveFlow";
+import { FlowParticipantsFacePile } from "@/features/share-access/components/share-avatars/FlowParticipantsFacePile";
 import { StudioPreferences } from "@/features/studio-preferences/components";
+import { VersionHistoryCloseButton } from "@/features/version-history/components/version-history-panel/VersionHistoryCloseButton";
+import { VersionHistoryTrigger } from "@/features/version-history/components/version-history-panel/VersionHistoryTrigger";
+import { useIsVersionHistoryRoute } from "@/features/version-history/hooks/useIsVersionHistoryRoute";
+import { DefaultTenantsEnum } from "@/react-toolkit/enums/default-tenants-enum";
 import { useUserSessionStore } from "@/react-toolkit/stores/user-session-store";
+
 import { Avatar, AvatarFallback } from "@aventisia/ui/avatar";
 import { Button } from "@aventisia/ui/buttons";
 import { Header, HeaderContainer } from "@aventisia/ui/layout";
@@ -10,19 +19,11 @@ import { cn } from "@aventisia/ui/lib";
 import { Tooltip } from "@aventisia/ui/tooltip";
 import { ArrowLeftIcon } from "@heroicons/react/24/outline";
 import { useShallow } from "zustand/react/shallow";
-import { AppLogo } from "./AppLogo";
-import { HeaderActionMenu } from "./header-menu-actions";
-import SearchCommandTrigger from "./Search";
-import { SettingsTrigger } from "@/features/flow-settings/components/SettingsTrigger";
-import { useIsAgentsAssist } from "@/features/agents-assist/hooks/useIsAgentsAssist";
-import { FlowParticipantsFacePile } from "@/features/share-access/components/share-avatars/FlowParticipantsFacePile";
-import { DefaultTenantsEnum } from "@/react-toolkit/enums/default-tenants-enum";
+
 import AgentName from "./AgentName";
-import { AvailableCredits } from "@/features/available-credits/AvailableCredits";
-import SaveFlow from "@/features/react-flow/components/save-flow/SaveFlow";
-import { useIsVersionHistoryRoute } from "@/features/version-history/hooks/useIsVersionHistoryRoute";
-import { VersionHistoryTrigger } from "@/features/version-history/components/version-history-panel/VersionHistoryTrigger";
-import { VersionHistoryCloseButton } from "@/features/version-history/components/version-history-panel/VersionHistoryCloseButton";
+import { AppLogo } from "./AppLogo";
+import SearchCommandTrigger from "./Search";
+import { HeaderActionMenu } from "./header-menu-actions";
 
 const AppHeader: React.FC = () => {
   // Get user session state and actions
@@ -35,7 +36,6 @@ const AppHeader: React.FC = () => {
   const isIndividualUser =
     userSession?.tenantName === DefaultTenantsEnum.IndividualUsers;
 
-  const isAssist = useIsAgentsAssist();
   const isAgentHistory = useIsVersionHistoryRoute();
 
   const goBack = () => {
@@ -47,26 +47,28 @@ const AppHeader: React.FC = () => {
       <Header>
         <div className="flex w-2/5 items-center gap-3 text-white">
           {/* Back Button */}
-          {!isAssist && (
-            <Tooltip content="Back to Worc">
-              <Button
-                size="icon8"
-                variant="ghost"
-                className="hover:bg-white/10"
-                onClick={() => goBack()}
-              >
-                <ArrowLeftIcon className="h-4 w-4 text-white/80" />
-              </Button>
-            </Tooltip>
-          )}
+          <Tooltip content="Back to Worc">
+            <Button
+              size="icon8"
+              variant="ghost"
+              className="hover:bg-white/10"
+              onClick={() => goBack()}
+            >
+              <ArrowLeftIcon className="h-4 w-4 text-white/80" />
+            </Button>
+          </Tooltip>
+
           {/* App Logo */}
           <AppLogo />
+
           {/* separator */}
-          {!isAssist && <span className="rotate-12 text-white/50">/</span>}
+          <span className="rotate-12 text-white/50">/</span>
+
           {/* Agent name */}
-          {!isAssist && <AgentName />}
+          <AgentName />
+
           {/* Version selector */}
-          {!isAssist && <FlowVersions />}{" "}
+          <FlowVersions />
         </div>
         <div className="flex w-1/5 justify-center">
           {userSession?.deploymentType == "Commercial" ? (
@@ -84,32 +86,28 @@ const AppHeader: React.FC = () => {
                 </Avatar>
               ) : null}
             </div>
-            {!isAssist && (
-              <div className="mx-4 flex items-center gap-1 text-white">
-                {!isIndividualUser ? <FlowParticipantsFacePile /> : null}
+            <div className="mx-4 flex items-center gap-1 text-white">
+              {!isIndividualUser ? <FlowParticipantsFacePile /> : null}
 
-                <ExecuteFlow />
+              <ExecuteFlow />
 
-                <SearchCommandTrigger />
+              <SearchCommandTrigger />
 
-                <VersionHistoryTrigger />
+              <VersionHistoryTrigger />
 
-                {import.meta.env.MODE !== "production" ? (
-                  <SettingsTrigger />
-                ) : null}
+              {import.meta.env.MODE !== "production" ? (
+                <SettingsTrigger />
+              ) : null}
 
-                <StudioPreferences className="mt-0 mlg:mt-4" />
-                <FlowComments className="mt-0 mlg:mt-4" />
-              </div>
-            )}
+              <StudioPreferences className="mt-0 mlg:mt-4" />
+              <FlowComments className="mt-0 mlg:mt-4" />
+            </div>
             <SaveFlow />
-            {!isAssist && (
-              <div className="flex items-center">
-                <Tooltip content="More">
-                  <HeaderActionMenu />
-                </Tooltip>
-              </div>
-            )}
+            <div className="flex items-center">
+              <Tooltip content="More">
+                <HeaderActionMenu />
+              </Tooltip>
+            </div>
           </div>
         ) : (
           <div className="flex w-2/5 items-center justify-end gap-1">

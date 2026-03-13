@@ -18,7 +18,7 @@ namespace NodeExecutor
         private WebSocketHelper _webSocket;
         private AppTimerService _appTimer;
         private readonly ExecutionContext _executionContext = new ExecutionContext();
-        private readonly Interpreter _interpreter = new Interpreter(); // Dynamic expression interpreter to save variables and evaluate expressions
+        private readonly Interpreter _interpreter; // Dynamic expression interpreter to save variables and evaluate expressions
         private readonly string _wsPort;
         private readonly string _agentId;
         private readonly string _agentName;
@@ -37,6 +37,9 @@ namespace NodeExecutor
             this._agentId = agentId;
             this._agentName = agentName;
             this._accessToken = accessToken;
+
+            // Initialize interpreter with lambda expressions enabled and case-insensitive variable names
+            this._interpreter = new Interpreter(InterpreterOptions.Default | InterpreterOptions.LambdaExpressions | InterpreterOptions.CaseInsensitive);
 
             // Start the WebSocket and timer
             InitServices();

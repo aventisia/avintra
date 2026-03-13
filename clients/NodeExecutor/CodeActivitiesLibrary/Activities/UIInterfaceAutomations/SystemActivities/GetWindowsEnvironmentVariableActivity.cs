@@ -17,7 +17,7 @@ namespace CodeActivitiesLibrary.UiInterfaceAutomations.SystemActivities
         [DefaultValue(EnvVarNameEnum.USERNAME)]
         public InArgument<EnvVarNameEnum> EnvironmentVariableName { get; set; }
 
-
+        // TODO: Remove this - This is an extra property which is not required since scope already has default value of User 
         [DisplayName("Search for variable only in scope")]
         [Description("Indicates whether to search for the variable only within the specified scope.")]
         public InArgument<bool> SearchForVariableOnlyInScope { get; set; }

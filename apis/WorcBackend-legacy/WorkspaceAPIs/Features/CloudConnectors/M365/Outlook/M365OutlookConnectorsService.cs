@@ -127,18 +127,54 @@ public class M365OutlookConnectorsService : IM365OutlookConnectorsService
                     var messageId = CloudConnectionPayloadUtil.GetValue(payload, "messageId");
 
                     // Build base request URL
-                    var requestUrl = $"{messagesApiUrl}/messages/{messageId}";
+                    var rootEmailUrl = $"{messagesApiUrl}/messages/{messageId}";
 
                     // Determine whether attachments should be included
                     var includeAttachments = CloudConnectionPayloadUtil.GetBool(payload, "includeAttachments", false);
 
                     // Add query parameters if needed
                     if (includeAttachments)
-                        requestUrl += "?$expand=attachments";
+                        rootEmailUrl += "?$expand=attachments";
 
-                    return await HttpClientHelper.GetAsync(requestUrl, accessToken);
+                    // Add header to prefer email body in text format
+                    var headers = new Dictionary<string, string>
+                    {
+                        { "Prefer", "outlook.body-content-type=\"text\"" }
+                    };
+
+                    // 1. Fetch root email
+                    var rootEmail = await HttpClientHelper.GetAsync(rootEmailUrl, accessToken, headers);
+                    if (rootEmail == null) return null;
+                    var emailResponse = new M365OutlookEmailDto()
+                    {
+                        RootEmail = rootEmail,
+                        NestedEmails = new List<JsonDocument>()
+                    };
+
+                    // 2. Handle itemAttachment
+                    if (rootEmail.RootElement.TryGetProperty("attachments", out var attachments) && attachments.GetArrayLength() > 0)
+                    {
+                        foreach (var attachment in attachments.EnumerateArray())
+                        {
+                            string type = attachment.GetProperty("@odata.type").GetString() ?? string.Empty;
+                            string attachmentId = attachment.GetProperty("id").GetString() ?? string.Empty;
+
+                            if (type == "#microsoft.graph.itemAttachment")
+                            {
+                                string nestedUrl = $"{rootEmailUrl.Split('?')[0]}/attachments/{attachmentId}/?$expand=microsoft.graph.itemattachment/item";
+                                emailResponse.NestedEmails.Add(await HttpClientHelper.GetAsync(nestedUrl, accessToken, headers));
+                            }
+                        }
+                    }
+
+                    emailResponse.NestedEmails.Reverse(); // Change the order
+
+                    // Response back
+                    var responseJson = System.Text.Json.JsonSerializer.Serialize(emailResponse);
+                    var camelCaseOptions = new JsonSerializerOptions { PropertyNamingPolicy = JsonNamingPolicy.CamelCase };
+                    var responseJsonCamel = System.Text.Json.JsonSerializer.Serialize(emailResponse, camelCaseOptions);
+                    return JsonDocument.Parse(responseJsonCamel);
                 }
-
             case M365OutlookActionsEnum.GetEmails:
                 return await GetEmailsAsync(messagesApiUrl, accessToken, payload);
 
@@ -551,7 +587,7 @@ public class M365OutlookConnectorsService : IM365OutlookConnectorsService
 
         // Add '$count=true' to the query string if 'count' is true
         if (count)
-            requesturl = CloudConnectionPayloadUtil.AppendQueryParameter(requesturl, "count","$count={true}");
+            requesturl = CloudConnectionPayloadUtil.AppendQueryParameter(requesturl, "count", "$count={true}");
         if (onlyWithAttachments)
             requesturl = CloudConnectionPayloadUtil.AppendQueryParameter(requesturl, "$filter", "hasAttachments eq true");
         if (unreadOnly)
@@ -560,8 +596,14 @@ public class M365OutlookConnectorsService : IM365OutlookConnectorsService
         // Add pagination parameters if provided
         requesturl = BuildPaginatedUrl(requesturl, payload);
 
+        // Add header to prefer email body in text format
+        var headers = new Dictionary<string, string>
+        {
+            { "Prefer", "outlook.body-content-type=\"text\"" }
+        };
+
         // Return the result from the API call
-        return await HttpClientHelper.GetAsync(requesturl, accessToken);
+        return await HttpClientHelper.GetAsync(requesturl, accessToken, headers);
     }
 
     // Retrieves the folder ID for a given folder name by calling the Microsoft Graph API to list mail folders and matching by display name.
@@ -586,7 +628,7 @@ public class M365OutlookConnectorsService : IM365OutlookConnectorsService
             if (string.Equals(displayName, folderName, StringComparison.OrdinalIgnoreCase))
             {
                 // If the display name matches, return the corresponding folder ID
-                return folder.GetProperty("id").GetString()?? string.Empty;
+                return folder.GetProperty("id").GetString() ?? string.Empty;
             }
         }
 

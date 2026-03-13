@@ -115,10 +115,12 @@ export const useAddNodeFromEdge = () => {
 
       // Get source node
       const sourceNode = nodes.find((node) => node.id === stepEdge.source);
+      const targetNode = nodes.find((node) => node.id === stepEdge.target);
       if (!sourceNode) return;
 
       // Create new node & edge
-      const { newNodes, newEdges, lastNode } = createNodesAndEdgesUtil(
+      // eslint-disable-next-line prefer-const
+      let { newNodes, newEdges, lastNode } = createNodesAndEdgesUtil(
         sourceNode,
         nodeData,
       );
@@ -128,6 +130,17 @@ export const useAddNodeFromEdge = () => {
         (node) => node.id === stepEdge.source,
       );
 
+      if (sourceNode?.data?.groupId == targetNode?.data?.groupId) {
+        newNodes = newNodes.map((newNode) => {
+          return {
+            ...newNode,
+            data: {
+              ...newNode.data,
+              groupId: sourceNode?.data?.groupId,
+            },
+          };
+        });
+      }
       // Add new nodes after source node
       const updatedNodes = [
         ...nodes.slice(0, sourceNodeIndex + 1),

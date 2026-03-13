@@ -27,11 +27,15 @@ public interface IEmailService
     /// <param name="emailType">The type of email template to use.</param>
     /// <param name="toEmailAddress">The email address of the recipient.</param>
     /// <param name="placeholderValues">The placeholder values to be replaced in the email template.</param>
+    /// <param name="ccEmailAddresses">The email addresses to be CC'd.</param>
+    /// <param name="bccEmailAddresses">The email addresses to be BCC'd.</param>
+
     /// <returns>A boolean result indicating whether the email was sent successfully.</returns>
     Task<bool> SendEmailUsingTemplate(
         EmailTypesEnum emailType,
         string toEmailAddress,
         Dictionary<string, string> placeholderValues,
+        string? ccEmailAddresses = null,
         string? bccEmailAddresses = null);
 
     /// <summary>
