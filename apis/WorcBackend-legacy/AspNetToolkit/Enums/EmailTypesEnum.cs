@@ -73,5 +73,15 @@ public enum EmailTypesEnum
     /// <summary>
     /// Email sent when a subscription payment fails.
     /// </summary>
-    SubscriptionPaymentFailed
+    SubscriptionPaymentFailed,
+
+    /// <summary>
+    /// Email sent to remind the user that their subscription will expire soon.
+    /// </summary>
+    SubscriptionExpiryReminder,
+
+    /// <summary>
+    /// Email sent when a subscription plan has expired.
+    /// </summary>
+    SubscriptionExpired
 }
