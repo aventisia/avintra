@@ -1,0 +1,20 @@
+meta {
+  name: Delete time trigger by id
+  type: http
+  seq: 6
+}
+
+delete {
+  url: {{WORC_APIS_BASE_URL}}/email-trigger/{{EMAIL_TRIGGER_ID}}
+  body: none
+  auth: none
+}
+
+script:post-response {
+  if(res.getStatus() == 200){
+      bru.setGlobalEnvVar(
+        "TIME_TRIGGER_ID", 
+        "00000000-0000-0000-0000-000000000000"
+      );
+  }
+}

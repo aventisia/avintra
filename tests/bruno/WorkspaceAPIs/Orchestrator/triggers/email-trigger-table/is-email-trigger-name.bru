@@ -1,0 +1,17 @@
+meta {
+  name: Is email trigger name
+  type: http
+  seq: 1
+}
+
+post {
+  url: {{WORC_APIS_BASE_URL}}/email-trigger/is-available
+  body: json
+  auth: none
+}
+
+body:json {
+  {
+    "userInput":"email_trigger"
+  }
+}
