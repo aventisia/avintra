@@ -1,0 +1,24 @@
+meta {
+  name: Delete multiple time triggers
+  type: http
+  seq: 9
+}
+
+post {
+  url: {{WORC_APIS_BASE_URL}}/email-trigger/delete-multiple
+  body: json
+  auth: bearer
+}
+
+body:json {
+  ["{{EMAIL_TRIGGER_ID}}"]
+}
+
+script:post-response {
+  if(res.getStatus() == 200){
+      bru.setGlobalEnvVar(
+        "EMAIL_TRIGGER_ID", 
+        "00000000-0000-0000-0000-000000000000"
+      );
+  }
+}

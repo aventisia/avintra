@@ -58,6 +58,7 @@ public static class AppServicesExtension
         config.Apply(new FlowUserMappingProfile());
         config.Apply(new AppSecretMappingProfile());
         config.Apply(new TimeTriggerMappingProfile());
+        config.Apply(new EmailTriggerMappingProfile());
         config.Apply(new AITaskMappingProfile());
         config.Apply(new OnPremModelMappingProfile());
         config.Apply(new QueueWorkItemMappingProfile());
@@ -98,6 +99,7 @@ public static class AppServicesExtension
         services.AddScoped<IKeyStoreService, KeyStoreService>();
         services.AddScoped<IVaultService, VaultService>();
         services.AddScoped<ITimeTriggerService, TimeTriggerService>();
+        services.AddScoped<IEmailTriggerService, EmailTriggerService>();
         services.AddScoped<IFileUploadService, FileUploadService>();
         services.AddScoped<IFlowUserService, FlowUserService>();
         services.AddScoped<IAppSecretService, AppSecretService>();
