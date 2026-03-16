@@ -57,5 +57,5 @@ public enum TriggerTypesEnum
     /// Triggered by a chat message or chat event.
     /// </summary>
     [Description("Triggered by a chat message.")]
-    ChatTrigger
+    MessageTrigger
 }

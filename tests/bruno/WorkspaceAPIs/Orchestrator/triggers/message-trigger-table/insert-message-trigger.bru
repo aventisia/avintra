@@ -1,0 +1,38 @@
+meta {
+  name: Insert message trigger
+  type: http
+  seq: 2
+}
+
+post {
+  url: {{WORC_APIS_BASE_URL}}/email-trigger
+  body: json
+  auth: none
+}
+
+body:json {
+  {
+    "name": "Test",
+    "timezone": "Asia/Kolkata",
+    "mailbox": "contact@aventisia.com",
+    "source": "/chats/getAllMessages",
+    "expiryDateTime": "2026-03-16T10:30:00Z",
+    "resubscribeEnabled": true,
+    "resubscribeFrequency": "90",
+    "credentialId": "DUMMY",
+    "provider": "M365",
+    "agentIds": [
+      "4ab51170-f1aa-423f-a9cd-0a0f51ce528c"
+    ]
+  }
+  
+}
+
+script:post-response {
+  if(res.getStatus() == 200){
+      bru.setGlobalEnvVar(
+          "MESSAGE_TRIGGER_ID",
+          res.getBody().data.id
+      );
+  }
+}

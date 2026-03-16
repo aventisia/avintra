@@ -1,0 +1,11 @@
+meta {
+  name: Get message trigger agent by id
+  type: http
+  seq: 7
+}
+
+get {
+  url: {{WORC_APIS_BASE_URL}}/message-trigger/{{MESSAGE_TRIGGER_ID}}/agents
+  body: none
+  auth: none
+}
