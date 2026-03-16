@@ -30,8 +30,10 @@ public class UnitOfWork : IUnitOfWork
     public IJobRepo JobRepo => new JobRepo(_workspaceDbContext);
     public IKeyStoreRepo KeyStoreRepo => new KeyStoreRepo(_workspaceDbContext);
     public IVaultRepo VaultRepo => new VaultRepo(_workspaceDbContext);
+    public ITimeTriggerRepo TimeTriggerRepo => new TimeTriggerRepo(_workspaceDbContext);
+    public ITimeTriggerFlowRepo TimeTriggerFlowRepo => new TimeTriggerFlowRepo(_workspaceDbContext);
     public ITriggerRepo TriggerRepo => new TriggerRepo(_workspaceDbContext);
-    public ITriggerFlowRepo TriggerFlowRepo => new TriggerFlowRepo(_workspaceDbContext);
+    public ITriggerFlowVersionRepo TriggerFlowVersionRepo => new TriggerFlowVersionRepo(_workspaceDbContext);
     public IFlowUserRepo FlowUserRepo => new FlowUserRepo(_workspaceDbContext);
     public IAppSecretRepo AppSecretRepo => new AppSecretRepo(_workspaceDbContext);
     public IEncryptedKeyValueRepo EncryptedKeyValueRepo => new EncryptedKeyValueRepo(_workspaceDbContext);

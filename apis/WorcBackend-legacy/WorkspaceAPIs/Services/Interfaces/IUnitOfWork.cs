@@ -23,8 +23,10 @@ public interface IUnitOfWork
     IJobRepo JobRepo { get; }
     IKeyStoreRepo KeyStoreRepo { get; }
     IVaultRepo VaultRepo { get; }
+    ITimeTriggerRepo TimeTriggerRepo { get; }
+    ITimeTriggerFlowRepo TimeTriggerFlowRepo { get; }
     ITriggerRepo TriggerRepo { get; }
-    ITriggerFlowRepo TriggerFlowRepo { get; }
+    ITriggerFlowVersionRepo TriggerFlowVersionRepo { get; }
     IFlowUserRepo FlowUserRepo { get; }
     IAppSecretRepo AppSecretRepo { get; }
     IEncryptedKeyValueRepo EncryptedKeyValueRepo { get; }
