@@ -29,7 +29,7 @@ public class UploadFileService : IUploadFileService
         _userId = Guid.Parse(httpContextAccessor.HttpContext?.User?.FindFirstValue("uid") ?? Guid.Empty.ToString());
         _tenantId = Guid.Parse(httpContextAccessor.HttpContext?.User?.FindFirstValue("tntid") ?? Guid.Empty.ToString());
 
-        bool isTenantless = httpContextAccessor.HttpContext?.Request.Headers["X-Tenant-Scope"].FirstOrDefault()?.Equals("tenantless", StringComparison.OrdinalIgnoreCase) == true;
+        bool isTenantless = httpContextAccessor.HttpContext?.Request.Headers["X-Tenant-Scope"].FirstOrDefault()?.Equals("Scope1", StringComparison.OrdinalIgnoreCase) == true;
 
         _containerName = isTenantless ? "tenantless-files" : currentTenantService.CurrentTenantContainerName;
         _tenantDbContext = tenantDbContext;
