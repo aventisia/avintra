@@ -1,0 +1,24 @@
+meta {
+  name: Delete multiple message triggers
+  type: http
+  seq: 9
+}
+
+post {
+  url: {{WORC_APIS_BASE_URL}}/message-trigger/delete-multiple
+  body: json
+  auth: none
+}
+
+body:json {
+  ["{{MESSAGE_TRIGGER_ID}}"]
+}
+
+script:post-response {
+  if(res.getStatus() == 200){
+      bru.setGlobalEnvVar(
+        "MESSAGE_TRIGGER_ID", 
+        "00000000-0000-0000-0000-000000000000"
+      );
+  }
+}
