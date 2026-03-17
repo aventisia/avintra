@@ -4,7 +4,7 @@
 export const POPOVER_HEADING = "Preferences";
 
 export const INITIAL_PREFERENCES = {
-  layoutDirection: "TB",
+  layoutDirection: "LR",
   miniMap: true,
   undoRedo: true,
   cursorToggle: true,

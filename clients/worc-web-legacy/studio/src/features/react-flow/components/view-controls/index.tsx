@@ -1,14 +1,17 @@
 import { useStudioPreferencesStore } from "@/stores/studio-preferences-store";
+
 import { Separator } from "@aventisia/ui";
 import { MinusIcon, PlusIcon } from "@heroicons/react/24/outline";
 import { Panel } from "@xyflow/react";
 import { Scan } from "lucide-react";
+import { memo } from "react";
 import { useShallow } from "zustand/react/shallow";
+
 import { VCActionButton } from "./VCActionButton";
 import { VCBContainer } from "./VCBContainer";
 import { VCBToggleCursor } from "./VCBToggleCursor";
 import { VCBUndoRedo } from "./VCBUndoRedo";
-import { memo } from "react";
+import { VCBZoomTo } from "./VCBZoomTo";
 
 export const ViewControls = memo(() => {
   // Get Studio Preferences store state
@@ -38,6 +41,16 @@ export const ViewControls = memo(() => {
 
             {/* Zoom in */}
             <VCActionButton action="zoomIn" Icon={PlusIcon} />
+
+            {import.meta.env.MODE !== "production" && (
+              <>
+                <Separator
+                  orientation="horizontal"
+                  className="my-1 h-[0.5px]"
+                />
+                <VCBZoomTo />
+              </>
+            )}
           </VCBContainer>
         )}
 

@@ -1,8 +1,9 @@
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useEffect, useState } from "react";
 import { useForm } from "react-hook-form";
-import { z, ZodTypeAny } from "zod";
+import { ZodTypeAny, z } from "zod";
 import { useShallow } from "zustand/react/shallow";
+
 import {
   DCPFieldSchemaType,
   generateZodSchema,
@@ -15,15 +16,24 @@ import { NodeConfigSchemaType } from "../types/node-config-schema-type";
 
 export const useDefineDCPForm = () => {
   // Get node unique name state (required to get config panel data)
-  const { nodeId, nodeData, nodeLabel, setShowDialog } =
-    useDynamicConfigPanelStore(
-      useShallow((state) => ({
-        nodeId: state.nodeId,
-        nodeData: state.nodeData,
-        nodeLabel: state.nodeLabel,
-        setShowDialog: state.setShowDialog,
-      })),
-    );
+  const {
+    nodeId,
+    nodeData,
+    nodeLabel,
+    setShowDialog,
+    selectedTab,
+    setSelectedTab,
+  } = useDynamicConfigPanelStore(
+    useShallow((state) => ({
+      nodeId: state.nodeId,
+      nodeData: state.nodeData,
+      nodeLabel: state.nodeLabel,
+      setShowDialog: state.setShowDialog,
+
+      selectedTab: state.selectedTab,
+      setSelectedTab: state.setSelectedTab,
+    })),
+  );
 
   // Get name (activityName), inputs and outputs from nodeData
   const nodeUniqueName = nodeData?.name ?? "activityName";
@@ -38,8 +48,6 @@ export const useDefineDCPForm = () => {
   const [isLoading, setIsLoading] = useState(false);
 
   const [tabKeys, setTabKeys] = useState<string[]>(["Inputs"]);
-
-  const [selectedTab, setSelectedTab] = useState("");
 
   const [isFormReady, setIsFormReady] = useState(false); // Flag to check if form is ready with default values. It is important to set default value to all fields to avoid error - "A component is changing an uncontrolled input to be controlled".
   const [nodeConfigZodSchema, setNodeConfigZodSchema] = useState<

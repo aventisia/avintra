@@ -8,7 +8,7 @@ export const PlusNodeTrigger = (
     <div className="group" {...props}>
       <div
         className={cn(
-          "flex h-16 w-16 items-center justify-center rounded-lg border-2 bg-slate-100 px-4 py-3.5",
+          "flex h-16 w-16 items-center justify-center rounded-lg border-2 bg-slate-100 px-4 py-3.5 cursor-pointer",
           "border-2 border-dashed border-slate-400/60",
           "group-hover:border-slate-400",
           "group-aria-[expanded=true]:border-slate-400",

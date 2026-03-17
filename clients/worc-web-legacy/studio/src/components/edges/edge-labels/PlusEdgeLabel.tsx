@@ -1,5 +1,6 @@
 import { useNodeSelectorStore } from "@/features/action-selector/stores/action-selector-store";
 
+import { StopPropagationWrapper } from "@aventisia/ui";
 import { Button } from "@aventisia/ui/buttons";
 import { cn } from "@aventisia/ui/lib";
 import { PlusIcon } from "@heroicons/react/24/outline";
@@ -21,27 +22,30 @@ export const PlusEdgeLabel = ({ edgeId }: PlusEdgeLabelProps) => {
   );
 
   return (
-    <Button
-      variant={"outline"}
-      size={"icon5"}
-      className={cn(
-        "group z-10 rounded-full opacity-50",
-        "hover:bg-primary hover:opacity-100",
-        "aria-[expanded=true]:bg-primary aria-[expanded=true]:opacity-100",
-        "nodrag nopan",
-      )}
-      onClick={() => {
-        setOrigin("PlusEdgeLabel", edgeId || "");
-        setShowDialog(true);
-      }}
-    >
-      <PlusIcon
+    <StopPropagationWrapper>
+      <Button
+        variant={"outline"}
+        size={"icon5"}
         className={cn(
-          "h-3.5 w-3.5 stroke-[2.5] text-[--icon-color] opacity-50",
-          "group-hover:text-white group-hover:opacity-100",
-          "group-aria-[expanded=true]:text-white group-aria-[expanded=true]:opacity-100",
+          "group z-10 rounded-full opacity-50",
+          "hover:bg-primary hover:opacity-100",
+          "aria-[expanded=true]:bg-primary aria-[expanded=true]:opacity-100",
+          "nodrag nopan",
         )}
-      />
-    </Button>
+        onClick={(e) => {
+          e.preventDefault();
+          setOrigin("PlusEdgeLabel", edgeId || "");
+          setShowDialog(true);
+        }}
+      >
+        <PlusIcon
+          className={cn(
+            "h-3.5 w-3.5 stroke-[2.5] text-[--icon-color] opacity-50",
+            "group-hover:text-white group-hover:opacity-100",
+            "group-aria-[expanded=true]:text-white group-aria-[expanded=true]:opacity-100",
+          )}
+        />
+      </Button>
+    </StopPropagationWrapper>
   );
 };

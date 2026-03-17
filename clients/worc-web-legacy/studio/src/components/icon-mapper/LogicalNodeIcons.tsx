@@ -1,4 +1,6 @@
-import { BotIcon, BoxesIcon, Repeat2Icon, SplitIcon } from "lucide-react";
+import {  BoxesIcon, Repeat2Icon, SplitIcon } from "lucide-react";
+import NewAgentIcon from "./NewAgentIcon";
+
 
 const IconContainer = ({ children }: React.PropsWithChildren) => {
   return (
@@ -27,7 +29,7 @@ const LoopNodeIcon = () => {
 const CallAgentIcon = () => {
   return (
     <IconContainer>
-      <BotIcon className="h-5 w-5" />
+      <NewAgentIcon className="h-5 w-5" />
     </IconContainer>
   );
 };

@@ -10,14 +10,15 @@ export const ChevronMarkerEnd = ({ edgeId }: ChevronMarkerEndProps) => {
       <defs>
         <marker
           id={`${MARKER_ARROW_PREFIX}${edgeId}`}
-          markerWidth="20"
-          markerHeight="20"
-          refX="13"
-          refY="14"
+          markerWidth="12"
+          markerHeight="12"
+          refX="8"
+          refY="6"
           orient="auto"
+          markerUnits="strokeWidth"
         >
           <path
-            d="m9 18 4-4-4-4"
+            d="M4 3 L7 6 L4 9"
             fill="none"
             strokeLinecap="round"
             strokeLinejoin="round"

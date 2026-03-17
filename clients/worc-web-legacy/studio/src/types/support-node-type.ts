@@ -4,4 +4,6 @@ export type SupportNodeType =
   | "plusNode"
   | "mergeBranchesNode"
   | "branchStartNode"
-  | "branchEndNode";
+  | "branchEndNode"
+  | "callAgentNode"
+  | "modelNode";

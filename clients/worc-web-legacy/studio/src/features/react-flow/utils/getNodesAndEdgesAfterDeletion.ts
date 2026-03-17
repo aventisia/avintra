@@ -1,9 +1,11 @@
+import { MARKER_ARROW_PREFIX } from "@/constants";
 import { FlowVariablesObjectType } from "@/types/flow-variables-object-type";
+import { createPlusEdgeObj } from "@/utils/create-edges/create-plus-edge-obj";
+
 import { Edge, Node } from "@xyflow/react";
+
 import { getBranchSubgraphNodeIds } from "./getBranchSubNodeIds";
 import { getIntermediateNodeIds } from "./getIntermediateNodes";
-import { createPlusEdgeObj } from "@/utils/create-edges/create-plus-edge-obj";
-import { MARKER_ARROW_PREFIX } from "@/constants";
 
 interface DeleteContext {
   node: Node;
@@ -80,6 +82,8 @@ export function getNodesAndEdgesAfterDeletion({
 
   const isSpecialNode =
     node.type === "conditionalNode" || node.type === "forLoopNode";
+
+  const isAINode = node.type === "aiNode";
 
   const isBranchNode = node.type === "branchNode1";
   const mergeNodeId = node.data?.mergeBranchesNodeId as string;
@@ -162,6 +166,23 @@ export function getNodesAndEdgesAfterDeletion({
     }
 
     updatedNodes = updatedNodes.filter((n) => !nodeIdsToDelete.includes(n.id));
+    updatedFlowVariables = updatedFlowVariables.filter(
+      (f) => !nodeIdsToDelete.includes(f.nodeId),
+    );
+  } else if (isAINode) {
+    const modelNodeIds = nodes
+      .filter((n) => n.type === "modelNode" && n.parentId === nodeId)
+      .map((n) => n.id);
+
+    const nodeIdsToDelete = [nodeId, ...modelNodeIds];
+
+    updatedEdges = updatedEdges.filter(
+      (edge) => !modelNodeIds.includes(edge.source),
+    );
+    updatedEdges = reconnectEdges(nodeId, updatedEdges);
+
+    updatedNodes = updatedNodes.filter((n) => !nodeIdsToDelete.includes(n.id));
+
     updatedFlowVariables = updatedFlowVariables.filter(
       (f) => !nodeIdsToDelete.includes(f.nodeId),
     );

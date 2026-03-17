@@ -1,8 +1,12 @@
 import { CreateNodesAndEdgesType } from "@/types/create-nodes-and-edges-type";
 import { NodeDataType } from "@/types/node-data-type";
+
+import { Node } from "@xyflow/react";
+
+import { createDottedEdgeObj } from "../create-edges/create-dotted-edge-obj";
 import { createPlusEdgeObj } from "../create-edges/create-plus-edge-obj";
 import { createNodeObj } from "./create-node-obj";
-import { Node } from "@xyflow/react";
+import { createSupportNodeObj } from "./create-support-node-obj";
 
 /**
  * Creates an ai node and returns an object containing the new node, new edge, and last node ID.
@@ -16,10 +20,45 @@ export const createAINode = (
   sourceNode: Node,
 ): CreateNodesAndEdgesType => {
   const newNode = createNodeObj(nodeData, sourceNode.parentId);
-  const newEdge = createPlusEdgeObj(sourceNode.id, newNode.id);
+
+  // 1. Create the Support/Satellite Node
+  // Position it below the AI node (e.g., y + 150)
+  const modelNode = createSupportNodeObj("modelNode", newNode.id, true);
+  // const memoryNode = createSupportNodeObj("plusNode", sourceNode.parentId);
+  // const toolsNode = createSupportNodeObj("plusNode", sourceNode.parentId);
+
+  // 2. Main Flow Edge (Trigger -> AI)
+  const mainEdge = createPlusEdgeObj(sourceNode.id, newNode.id);
+
+  // 3. Satellite Edge (Model Node -> AI Node)
+  // Note: source is modelNode, target is newNode, targeting the specific handle
+  const modelEdge = createDottedEdgeObj(
+    modelNode.id,
+    newNode.id,
+    sourceNode.parentId,
+    "model-node", // This matches the ID in the AIModelNode
+  );
+
+  // const memoryEdge = createSimpleEdgeObj(
+  //   memoryNode.id,
+  //   newNode.id,
+  //   sourceNode.parentId,
+  //   "memory-input", // This matches the ID in the AIModelNode
+  //   "Memory"
+  // );
+  // const toolsEdge = createSimpleEdgeObj(
+  //   toolsNode.id,
+  //   newNode.id,
+  //   sourceNode.parentId,
+  //   "tools-input", // This matches the ID in the AIModelNode
+  //   "Tools"
+  // );
+
   return {
-    newNodes: [newNode],
-    newEdges: [newEdge],
+    newNodes: [newNode, modelNode],
+    newEdges: [mainEdge, modelEdge],
+    // newNodes: [newNode, modelNode, memoryNode, toolsNode],
+    // newEdges: [mainEdge, modelEdge, memoryEdge, toolsEdge],
     lastNode: newNode,
   };
 };
