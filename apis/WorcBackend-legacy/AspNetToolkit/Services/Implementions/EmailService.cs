@@ -258,6 +258,24 @@ public class EmailService : IEmailService
                         placeholderValues),
                         ccEmailAddresses: ccEmailAddresses
                 );
+
+            // Send reminder email before subscription expiry
+            case EmailTypesEnum.SubscriptionExpiryReminder:
+                return await SendEmail(
+                    toEmailAddress,
+                    "Your subscription is about to expire",
+                    LoadAndRenderEmailTemplate("SubscriptionExpiryReminderEmailTemplate.html", placeholderValues),
+                    ccEmailAddresses: ccEmailAddresses
+                );
+
+            // Send notification email after subscription expired
+            case EmailTypesEnum.SubscriptionExpired:
+                return await SendEmail(
+                    toEmailAddress,
+                    "Your subscription has expired",
+                    LoadAndRenderEmailTemplate("SubscriptionExpiredEmailTemplate.html", placeholderValues),
+                    ccEmailAddresses: ccEmailAddresses
+                );
         }
 
         _logger.LogError($"Email type {emailType} did not match with any email template");

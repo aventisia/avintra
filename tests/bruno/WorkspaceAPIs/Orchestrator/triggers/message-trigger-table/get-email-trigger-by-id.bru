@@ -1,0 +1,10 @@
+meta {
+  name: Get message trigger by id
+  type: http
+  seq: 4
+}
+
+get {
+  url: {{WORC_APIS_BASE_URL}}/message-trigger/{{MESSAGE_TRIGGER_ID}}
+  body: none
+}

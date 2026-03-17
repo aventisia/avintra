@@ -45,5 +45,17 @@ public enum TriggerTypesEnum
     /// Triggered by a specific time, such as a scheduled time.
     /// </summary>
     [Description("Triggered by a specific time.")]
-    TimeTrigger
+    TimeTrigger,
+
+    /// <summary>
+    /// Triggered by an incoming email.
+    /// </summary>
+    [Description("Triggered by an incoming email.")]
+    EmailTrigger,
+
+    /// <summary>
+    /// Triggered by a chat message or chat event.
+    /// </summary>
+    [Description("Triggered by a chat message.")]
+    MessageTrigger
 }
