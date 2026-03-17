@@ -384,7 +384,8 @@ export const useFlowOperations = () => {
           if (
             !extractedEdges.some(
               (e) => e.source === currentExit && e.target === nextEntry,
-            )
+            ) &&
+            !extractedEdges.some((e) => e.target === nextEntry)
           )
             extractedEdges.push(createPlusEdgeObj(currentExit, nextEntry));
         }
