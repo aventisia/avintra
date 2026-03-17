@@ -33,7 +33,7 @@ const getLayoutedElements = (
   dagreGraph.setGraph({
     rankdir: direction, // Direction for rank nodes. Can be TB, BT, LR, or RL, where T = top, B = bottom, L = left, and R = right.
     nodesep: 132, // Number of pixels that separate nodes horizontally in the layout.
-    ranksep: 40, // Number of pixels between each rank in the layout.
+    ranksep: 64, // Number of pixels between each rank in the layout.
   });
   const nodeMap = new Map<string, Node>();
   nodes.forEach((node) => {
@@ -78,7 +78,7 @@ const getLayoutedElements = (
         // Get the parent node's position (we'll use this for the siblings' position)
         const parentNodePosition = dagreGraph.node(parentId);
         // Add space (height of two nodes) to the parent's y-position to prevent overlap
-        const siblingXPosition = parentNodePosition.x + 100;
+        const siblingXPosition = parentNodePosition.x + 120;
         // Assign the adjusted y-position to the current node
         nodeWithPosition.x = siblingXPosition;
       }
