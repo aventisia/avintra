@@ -1,0 +1,17 @@
+meta {
+  name: Is message trigger name
+  type: http
+  seq: 1
+}
+
+post {
+  url: {{WORC_APIS_BASE_URL}}/message-trigger/is-available
+  body: json
+  auth: none
+}
+
+body:json {
+  {
+    "userInput":"message_trigger"
+  }
+}

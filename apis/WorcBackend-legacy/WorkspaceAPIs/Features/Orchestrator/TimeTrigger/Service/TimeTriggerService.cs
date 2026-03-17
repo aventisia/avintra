@@ -113,7 +113,7 @@ public class TimeTriggerService(
             );
 
             // Insert time trigger
-            await _unitOfWork.TriggerRepo.InsertAsync(newTimeTrigger);
+            await _unitOfWork.TimeTriggerRepo.InsertAsync(newTimeTrigger);
 
             // Attempt to save changes to the database
             if (!await _unitOfWork.SaveAsync())
@@ -144,7 +144,7 @@ public class TimeTriggerService(
                 }).ToList();
 
                 // Insert the newly created time trigger into the repository.
-                await _unitOfWork.TriggerFlowRepo.InsertAsync(timeTriggerFlowVersions);
+                await _unitOfWork.TimeTriggerFlowRepo.InsertAsync(timeTriggerFlowVersions);
 
                 // Attempt to save changes to the database.
                 if (!await _unitOfWork.SaveAsync())
@@ -202,7 +202,7 @@ public class TimeTriggerService(
             }
 
             // Validate trigger existence
-            var trigger = await _unitOfWork.TriggerRepo
+            var trigger = await _unitOfWork.TimeTriggerRepo
                 .GetByConditionAsync(m =>
                     m.Id == triggerDto.Id
                 )
@@ -241,7 +241,7 @@ public class TimeTriggerService(
             );
 
             // Update trigger
-            _unitOfWork.TriggerRepo.Update(trigger);
+            _unitOfWork.TimeTriggerRepo.Update(trigger);
 
             // Attempt to save changes to the database
             if (!await _unitOfWork.SaveAsync())
@@ -272,7 +272,7 @@ public class TimeTriggerService(
                     .Where(w => agentsToRemove.Contains(w.FlowVersionId))
                     .ToList();
 
-                _unitOfWork.TriggerFlowRepo.Delete(agentsToRemoveFlowVersions);
+                _unitOfWork.TimeTriggerFlowRepo.Delete(agentsToRemoveFlowVersions);
 
                 // Attempt to save changes to the database
                 if (!await _unitOfWork.SaveAsync())
@@ -309,7 +309,7 @@ public class TimeTriggerService(
                     }).ToList();
 
                     // Insert the new time trigger flow versions
-                    await _unitOfWork.TriggerFlowRepo.InsertAsync(newTimeTriggerFlowVersions);
+                    await _unitOfWork.TimeTriggerFlowRepo.InsertAsync(newTimeTriggerFlowVersions);
 
                     // Attempt to save changes to the database
                     if (!await _unitOfWork.SaveAsync())
@@ -358,7 +358,7 @@ public class TimeTriggerService(
         try
         {
             // Try to get time trigger
-            var trigger = await _unitOfWork.TriggerRepo
+            var trigger = await _unitOfWork.TimeTriggerRepo
                                             .GetByConditionAsync(w => w.Id == timeTriggerId)
                                             .Include(i => i.TimeTriggerFlowVersions)
                                             .FirstOrDefaultAsync();
@@ -372,7 +372,7 @@ public class TimeTriggerService(
             }
 
             // Delete time trigger
-            _unitOfWork.TriggerRepo.Delete(trigger);
+            _unitOfWork.TimeTriggerRepo.Delete(trigger);
 
             // Delete-Job failed
             if (!await _unitOfWork.SaveAsync())
@@ -412,7 +412,7 @@ public class TimeTriggerService(
         try
         {
             // Try to get time triggers
-            var timeTriggers = await _unitOfWork.TriggerRepo
+            var timeTriggers = await _unitOfWork.TimeTriggerRepo
                 .GetAllAsync()
                 .OrderByDescending(o => o.CreatedOn)
                 .Include(i => i.CreatedByUser)
@@ -449,7 +449,7 @@ public class TimeTriggerService(
         try
         {
             // Try to get time trigger
-            var timeTrigger = await _unitOfWork.TriggerRepo
+            var timeTrigger = await _unitOfWork.TimeTriggerRepo
                                             .GetByConditionAsync(w =>
                                                 w.Id == timeTriggerId
                                             )
@@ -494,7 +494,7 @@ public class TimeTriggerService(
         try
         {
             // Validate time triggers existence
-            var timeTriggers = await _unitOfWork.TriggerRepo
+            var timeTriggers = await _unitOfWork.TimeTriggerRepo
                                             .GetByConditionAsync(w =>
                                                 w.CreatedByUserId == _userId &&
                                                 timeTriggerIds.Contains(w.Id))
@@ -512,7 +512,7 @@ public class TimeTriggerService(
             // TODO: Check trigger relationship with other entities
 
             // Delete triggers
-            _unitOfWork.TriggerRepo.Delete(timeTriggers);
+            _unitOfWork.TimeTriggerRepo.Delete(timeTriggers);
 
             // Delete-Job failed
             if (!await _unitOfWork.SaveAsync())
@@ -549,7 +549,7 @@ public class TimeTriggerService(
         try
         {
             // Check if the trigger exists and belongs to the current user
-            var trigger = await _unitOfWork.TriggerRepo
+            var trigger = await _unitOfWork.TimeTriggerRepo
                                             .GetByConditionAsync(w =>
                                                 w.Id == timeTriggerId
                                             )
