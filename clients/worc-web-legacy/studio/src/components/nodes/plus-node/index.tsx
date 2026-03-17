@@ -1,29 +1,33 @@
 import { InputHandle } from "@/components/handles/InputHandle";
 import { OutputHandle } from "@/components/handles/OutputHandle";
-import { NodeProps } from "@xyflow/react";
-import { useShallow } from "zustand/react/shallow";
-import { PlusNodeTrigger } from "./PlusNodeTrigger";
 import { useNodeSelectorStore } from "@/features/action-selector/stores/action-selector-store";
-import { NodeSelector } from "@/features/action-selector/components";
 import { ActionSelectorOriginType } from "@/types/action-selector-origin-type";
+
+import { NodeProps } from "@xyflow/react";
 import { memo } from "react";
+import { useShallow } from "zustand/react/shallow";
+
+import { PlusNodeTrigger } from "./PlusNodeTrigger";
 
 export const PlusNode = memo(
   ({ id, type, targetPosition, sourcePosition }: NodeProps) => {
     // Get setOrigin from store
-    const { setOrigin } = useNodeSelectorStore(
+    const { setShowDialog, setOrigin } = useNodeSelectorStore(
       useShallow((state) => ({
+        showDialog: state.showDialog,
+        setShowDialog: state.setShowDialog,
         setOrigin: state.setOrigin,
       })),
     );
 
     return (
       <>
-        <NodeSelector>
-          <PlusNodeTrigger
-            onClick={() => setOrigin(type as ActionSelectorOriginType, id)}
-          />
-        </NodeSelector>
+        <PlusNodeTrigger
+          onClick={() => {
+            setOrigin(type as ActionSelectorOriginType, id);
+            setShowDialog(true);
+          }}
+        />
 
         <InputHandle position={targetPosition} className="opacity-0" />
 

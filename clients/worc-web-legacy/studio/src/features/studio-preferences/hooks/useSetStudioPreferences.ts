@@ -24,7 +24,7 @@ export const useSetStudioPreferences = () => {
 
     // Set studio preferences in store
     setStudioPreferences({
-      layoutDirection: studio.layoutDirection,
+      layoutDirection: "LR",
       miniMap: studio.miniMap,
       undoRedo: studio.undoRedo,
       cursorToggle: studio.cursorToggle,

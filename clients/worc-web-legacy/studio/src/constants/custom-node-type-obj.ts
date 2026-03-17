@@ -1,5 +1,5 @@
-import { ActivityNode } from "@/components/nodes/ActivityNode";
 import { AIModelNode } from "@/components/nodes/AIModelNode";
+import { ActivityNode } from "@/components/nodes/ActivityNode";
 import { BlockNode } from "@/components/nodes/BlockNode";
 import { BranchEndNode } from "@/components/nodes/BranchEndNode";
 import { BranchNode } from "@/components/nodes/BranchNode";
@@ -11,6 +11,7 @@ import { FlowEndNode } from "@/components/nodes/FlowEndNode";
 import { ForLoopNode } from "@/components/nodes/ForLoopNode";
 import { IfElseNode } from "@/components/nodes/IfElseNode";
 import { MergeBranchesNode } from "@/components/nodes/MergeBranchesNode";
+import { ModelNode } from "@/components/nodes/ai-support-node/ModelNode";
 import { PlusNode } from "@/components/nodes/plus-node";
 import { TriggerNode } from "@/components/nodes/trigger-node";
 
@@ -43,4 +44,5 @@ export const CustomNodeTypeObj = {
   aiNode: AIModelNode,
   blockNode: BlockNode,
   callAgentNode: CallAgentNode,
+  modelNode: ModelNode,
 };

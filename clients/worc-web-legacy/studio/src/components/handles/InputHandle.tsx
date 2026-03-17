@@ -3,15 +3,21 @@ import { Handle, Position, useHandleConnections } from "@xyflow/react";
 
 interface InputHandleProps {
   id?: string;
+
   position?: Position;
+
   connectionCount?: number;
+
   className?: string;
 }
 
 export const InputHandle = ({
   id,
-  position = Position.Top,
+
+  position = Position.Left, //  Changed to Left for LR flow
+
   connectionCount = 1,
+
   className,
 }: InputHandleProps) => {
   const connections = useHandleConnections({
@@ -24,7 +30,11 @@ export const InputHandle = ({
       type={"target"}
       position={position}
       isConnectable={connections.length < connectionCount}
-      className={cn("top-1/2 h-full w-full rounded-lg opacity-0", className)}
+      // Added !transform-none and !left-0 to lock it perfectly over the node
+      className={cn(
+        "!left-0 top-0 h-full w-full !transform-none rounded-lg opacity-0",
+        className,
+      )}
     />
   );
 };

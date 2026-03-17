@@ -1,27 +1,28 @@
-import React, { memo, useCallback, useEffect, useRef } from "react";
-import { useContextMenuActionsStore } from "@/stores/context-menu-actions-store";
 import { useFlowOperations } from "@/features/react-flow/hooks/useFlowOperations";
-import { useClipboardStore } from "../../stores/useClipboardStore";
 import { useDagreAutoLayout } from "@/hooks/useDagreAutoLayout";
-import { useNodeGrouping } from "../../hooks/useNodeGrouping";
-// import { FBCreateButton } from "@/features/flow-block/components/flow-block-crud-dialog/FBCreateButton";
+import { useContextMenuActionsStore } from "@/stores/context-menu-actions-store";
+
+import { Separator } from "@aventisia/ui";
 import {
-  Library,
-  GroupIcon,
-  UngroupIcon,
-  CircleCheckIcon,
-  BanIcon,
-  Scissors,
-  Copy,
-  ArrowUp,
   ArrowDown,
   ArrowLeft,
   ArrowRight,
-  XCircle,
+  ArrowUp,
+  BanIcon,
+  CircleCheckIcon,
+  Copy,
+  GroupIcon,
+  Library,
+  Scissors,
   Trash2,
+  UngroupIcon,
+  XCircle,
 } from "lucide-react";
+import { memo, useCallback, useEffect, useRef } from "react";
+
+import { useNodeGrouping } from "../../hooks/useNodeGrouping";
+import { useClipboardStore } from "../../stores/useClipboardStore";
 import MenuItem from "./MenuItem";
-import { Separator } from "@aventisia/ui";
 
 export const ReactFlowContextMenu = memo(() => {
   const {
@@ -72,6 +73,7 @@ export const ReactFlowContextMenu = memo(() => {
     "branchStartNode",
     "branchEndNode",
     "mergeBranchesNode",
+    "modelNode",
   ];
 
   const isPaneOrStartOrEnd =
@@ -147,49 +149,17 @@ export const ReactFlowContextMenu = memo(() => {
           {isBranchNode ? (
             <>
               <MenuItem
-                icon={<ArrowLeft size={14} />}
-                label="Paste Before"
-                shortcut="Ctrl+shift+v"
-                disabled={
-                  isPaneOrStartOrEnd ||
-                  !hasClipboardData ||
-                  isDefaultBranchNode ||
-                  !isClipboardBranch
-                }
-                onClick={() => {
-                  if (selectedNode)
-                    pasteNodes(selectedNode.id, "branch-before");
-                }}
-              />
-              <MenuItem
-                icon={<ArrowRight size={14} />}
-                label="Paste After"
-                shortcut="Ctrl+v"
-                disabled={
-                  isPaneOrStartOrEnd ||
-                  !hasClipboardData ||
-                  isDefaultBranchNode ||
-                  !isClipboardBranch
-                }
-                onClick={() => {
-                  if (selectedNode) pasteNodes(selectedNode.id, "branch-after");
-                }}
-              />
-            </>
-          ) : (
-            <>
-              <MenuItem
                 icon={<ArrowUp size={14} />}
                 label="Paste Above"
                 shortcut="Ctrl+shift+v"
                 disabled={
                   isPaneOrStartOrEnd ||
-                  !selectedNode ||
                   !hasClipboardData ||
-                  isClipboardBranch
+                  isDefaultBranchNode ||
+                  !isClipboardBranch
                 }
                 onClick={() => {
-                  if (selectedNode) pasteNodes(selectedNode.id, "above");
+                  if (selectedNode) pasteNodes(selectedNode.id, "branch-above");
                 }}
               />
               <MenuItem
@@ -198,12 +168,43 @@ export const ReactFlowContextMenu = memo(() => {
                 shortcut="Ctrl+v"
                 disabled={
                   isPaneOrStartOrEnd ||
+                  !hasClipboardData ||
+                  isDefaultBranchNode ||
+                  !isClipboardBranch
+                }
+                onClick={() => {
+                  if (selectedNode) pasteNodes(selectedNode.id, "branch-below");
+                }}
+              />
+            </>
+          ) : (
+            <>
+              <MenuItem
+                icon={<ArrowLeft size={14} />}
+                label="Paste Before"
+                shortcut="Ctrl+shift+v"
+                disabled={
+                  isPaneOrStartOrEnd ||
                   !selectedNode ||
                   !hasClipboardData ||
                   isClipboardBranch
                 }
                 onClick={() => {
-                  if (selectedNode) pasteNodes(selectedNode.id, "below");
+                  if (selectedNode) pasteNodes(selectedNode.id, "before");
+                }}
+              />
+              <MenuItem
+                icon={<ArrowRight size={14} />}
+                label="Paste After"
+                shortcut="Ctrl+v"
+                disabled={
+                  isPaneOrStartOrEnd ||
+                  !selectedNode ||
+                  !hasClipboardData ||
+                  isClipboardBranch
+                }
+                onClick={() => {
+                  if (selectedNode) pasteNodes(selectedNode.id, "after");
                 }}
               />
             </>

@@ -1,13 +1,27 @@
 import { InputHandle } from "@/components/handles/InputHandle";
 import { OutputHandle } from "@/components/handles/OutputHandle";
-import { NodeDataType, NodeInputType } from "@/types/node-data-type";
-import { Node, NodeProps, useReactFlow } from "@xyflow/react";
-import { cn } from "@aventisia/ui/lib";
-import { OpenNodeConfig } from "../node-container/node-header/OpenNodeConfig";
-import { BrainCircuitIcon, GripVertical } from "lucide-react";
-import { Badge } from "@aventisia/ui/badge";
-import { memo, useEffect } from "react";
+import { useGroupToggle } from "@/features/react-flow/hooks/useGroupToggle";
+import { useNodeHover } from "@/hooks/useNodeHover";
 import { ModelConfigType } from "@/types/model-config-type";
+import { NodeDataType, NodeInputType } from "@/types/node-data-type";
+
+import { Badge } from "@aventisia/ui/badge";
+import { Button } from "@aventisia/ui/buttons";
+import { cn } from "@aventisia/ui/lib";
+import { Tooltip } from "@aventisia/ui/tooltip";
+import {
+  Node,
+  NodeProps,
+  NodeToolbar,
+  Position,
+  useReactFlow,
+} from "@xyflow/react";
+import { BrainCircuitIcon, ExpandIcon, ShrinkIcon } from "lucide-react";
+import { memo, useEffect } from "react";
+
+import { ModelInputHandle } from "../handles/ModelInputHandle";
+import { NodeImage } from "../node-container/node-header/NodeImage";
+import { OpenNodeConfig } from "../node-container/node-header/OpenNodeConfig";
 
 type AIModelNode = Node<NodeDataType, "aiNode">;
 
@@ -19,12 +33,24 @@ export const AIModelNode = memo(
     targetPosition,
     id,
   }: NodeProps<AIModelNode>) => {
-    const { updateNodeData } = useReactFlow();
+    const { toggleGroupExpand } = useGroupToggle();
+    const { isHovered, onMouseEnter, onMouseLeave } = useNodeHover();
+
+    const { updateNodeData, updateNode, getNodes } = useReactFlow();
+    const isAttachAIModel =
+      data.name == "InvokeInferenceModelWebServiceActivity";
     useEffect(() => {
       if (data.type !== "aiNode") return;
       const isNewMod = ["Attach AI Model", "Create AI Model"].includes(
         data.label,
       );
+      if (data.inputs && !isAttachAIModel) {
+        const modelNode = getNodes().find(
+          (n) => n.type == "modelNode" && n?.parentId == id,
+        );
+        if (modelNode) updateNode(modelNode.id, { hidden: false });
+      }
+
       if (data?.selectedModel || isNewMod) {
         const newLabel = data?.selectedModel
           ? data?.selectedModel?.name
@@ -36,7 +62,7 @@ export const AIModelNode = memo(
           });
         }
       }
-    }, [data.label, data?.selectedModel]);
+    }, [data.label, data?.inputs, data?.selectedModel]);
 
     function getModel(config: NodeInputType[] | undefined): string[] {
       const modelConfigItem = config?.find((item) =>
@@ -59,54 +85,105 @@ export const AIModelNode = memo(
       <>
         <div
           className={cn(
-            "flex h-[7.25rem] w-[19.5rem] overflow-clip rounded-lg border-2 border-[#7D76EC] bg-[#7D76EC] hover:ring hover:ring-ring",
+            "custom-drag-handle flex h-16 w-48  rounded-lg border border-[#1E1B4B] bg-[#1E1B4B] hover:ring hover:ring-ring",
             data.color,
             selected && "border-primary ring ring-ring",
             data?.isDisabled && "opacity-50",
             data?.isCut && "border-red-400 opacity-60",
           )}
+          onMouseEnter={onMouseEnter}
+          onMouseLeave={onMouseLeave}
         >
-          <div
-            className={cn(
-              "custom-drag-handle flex h-full w-5 cursor-grab items-center justify-center bg-[#13112F]",
-            )}
-          >
-            <GripVertical className={cn("h-5 w-5 text-white")} />
-          </div>
           <OpenNodeConfig {...{ nodeData: data, nodeId: id }}>
-            <div className="flex h-full w-full flex-col items-start gap-2.5 bg-[#1E1B4B] p-3 text-white">
-              <div className="flex items-center gap-3">
+            <div className="h-full w-full flex items-center gap-2 px-2.5">
+              {data.img ? (
+                <NodeImage
+                  className="!opacity-100 !brightness-[5] h-7 w-7"
+                  src={data.img}
+                />
+              ) : (
                 <BrainCircuitIcon className="text-white" />
-                <h3 className="w-56 flex-1 truncate text-start text-lg font-semibold capitalize">
+              )}
+
+              <div className="flex h-full w-full  flex-col justify-center gap-1">
+                <h3 className="w-[8.5rem]  truncate text-start text-sm font-medium text-white capitalize">
                   {data.label}
                 </h3>
+
+                {/* LLM Badge */}
+
+                {llm?.length > 0 && (
+                  <div className="flex items-center gap-2">
+                    {llm.map((value: string) => (
+                      <Badge
+                        key={value}
+                        variant="outline"
+                        className="bg-white/10  text-white text-3xs leading-tight"
+                      >
+                        <span className="max-w-28  truncate">{value}</span>
+                      </Badge>
+                    ))}
+                  </div>
+                )}
               </div>
-              {/* <Separator className="bg-[#35325D]" /> */}
-              {/* Description */}
-              <p className="line-clamp-1 text-start text-sm text-secondary-foreground">
-                {data.description}
-              </p>
-
-              {/* LLM Badge */}
-
-              {llm?.length > 0 && (
-                <div className="flex items-center gap-2">
-                  {llm.map((value: string) => (
-                    <Badge
-                      key={value}
-                      variant="outline"
-                      className="bg-white/10 text-white"
-                    >
-                      {value}
-                    </Badge>
-                  ))}
-                </div>
-              )}
             </div>
           </OpenNodeConfig>
         </div>
-        <InputHandle position={targetPosition} />
-        <OutputHandle position={sourcePosition} />
+        <NodeToolbar offset={5} isVisible={isHovered} position={Position.Top}>
+          {data?.isGroupHead && (
+            <Tooltip content={data?.isExpanded ? "Collapse" : "Expand"}>
+              <Button
+                variant={"outline"}
+                size={"icon6"}
+                className={cn(
+                  "group z-10 rounded-full ",
+                  "hover:bg-primary  mt-1",
+                  "aria-[expanded=true]:bg-primary aria-[expanded=true]:opacity-100",
+                  "nodrag nopan",
+                )}
+                onClick={() => toggleGroupExpand(data?.groupId || "")}
+              >
+                {data?.isExpanded ? (
+                  <ShrinkIcon
+                    className={cn(
+                      "h-3.5 w-3.5 stroke-[1.5] text-[--icon-color] opacity-50",
+                      "group-hover:text-white group-hover:opacity-100",
+                      "group-aria-[expanded=true]:text-white group-aria-[expanded=true]:opacity-100",
+                    )}
+                  />
+                ) : (
+                  <ExpandIcon
+                    className={cn(
+                      "h-3.5 w-3.5 stroke-[2.5] text-[--icon-color] opacity-50",
+                      "group-hover:text-white group-hover:opacity-100",
+                      "group-aria-[expanded=true]:text-white group-aria-[expanded=true]:opacity-100",
+                    )}
+                  />
+                )}
+              </Button>
+            </Tooltip>
+          )}
+        </NodeToolbar>
+
+        {/* Main Flow Handles */}
+        <InputHandle position={targetPosition} id="main-in" />
+        <OutputHandle position={sourcePosition} id="main-out" />
+
+        {isAttachAIModel ? null : (
+          <ModelInputHandle isConnectable={!!llm?.length} />
+        )}
+        {/* <Handle
+          position={Position.Bottom}
+          id="memory-input"
+          type="target"
+          className="z-[5] h-1.5 w-1.5 rounded-full border-indigo-500 bg-indigo-400 bottom-0 left-24"
+        />
+        <Handle
+          type="target"
+          position={Position.Bottom}
+          id="tools-input"
+          className="z-[5] h-1.5 w-1.5 rounded-full border-indigo-500 bg-indigo-400 bottom-0  left-36"
+        /> */}
       </>
     );
   },

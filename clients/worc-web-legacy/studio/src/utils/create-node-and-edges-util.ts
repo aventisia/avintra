@@ -1,17 +1,20 @@
+import { NODE_HEIGHT, NODE_WIDTH } from "@/constants";
 import { nodeDimensionLookup } from "@/constants/node-dimension-lookup";
 import { CreateNodesAndEdgesType } from "@/types/create-nodes-and-edges-type";
 import { CustomNodeType } from "@/types/custom-node-type";
 import { NodeDataType } from "@/types/node-data-type";
+
 import { Node, XYPosition } from "@xyflow/react";
+
 import { createActivityNode } from "./create-nodes/create-activity-node";
+import { createAgentNode } from "./create-nodes/create-agent-node";
+import { createAINode } from "./create-nodes/create-ai-node";
+import { createBlockNode } from "./create-nodes/create-block-node";
+import { createCloudConnectorNode } from "./create-nodes/create-cloud-connector-node";
+import { createConditionalNode } from "./create-nodes/create-conditional-node";
 import { createFlowEndNode } from "./create-nodes/create-flow-end-node";
 import { createForLoopNode } from "./create-nodes/create-for-loop-node";
 import { createIfElseNode } from "./create-nodes/create-if-else-node";
-import { createConditionalNode } from "./create-nodes/create-conditional-node";
-import { createAINode } from "./create-nodes/create-ai-node";
-import { createBlockNode } from "./create-nodes/create-block-node";
-import { createAgentNode } from "./create-nodes/create-agent-node";
-import { createCloudConnectorNode } from "./create-nodes/create-cloud-connector-node";
 
 /**
  * Creates nodes and edges based on the provided node data and source node ID.
@@ -70,7 +73,13 @@ const createNodesAndEdgesUtil = (
   if (nodesAndEdgesObj.newNodes.length > 0) {
     nodesAndEdgesObj.newNodes = nodesAndEdgesObj.newNodes.map((node) => ({
       ...node,
-      position: getNewNodeXY(sourceNode, node.type as CustomNodeType),
+      position:
+        node.type == "modelNode"
+          ? {
+              x: NODE_WIDTH,
+              y: 1.75 * NODE_HEIGHT,
+            }
+          : getNewNodeXY(sourceNode, node.type as CustomNodeType),
     }));
   }
 

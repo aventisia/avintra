@@ -1,11 +1,11 @@
 import { NodeProps } from "@xyflow/react";
-import { InputHandle } from "../handles/InputHandle";
 import { memo } from "react";
+
+import { InputHandle } from "../handles/InputHandle";
 
 export const FlowEndNode = memo(({ targetPosition }: NodeProps) => {
   return (
-    <div className="flex h-6 w-14 items-center justify-center gap-2 rounded-full border-2 border-[--flow-border-end] bg-[--flow-end] text-3xs">
-      <span>End</span>
+    <div className="flex h-9 w-[1px]">
       <InputHandle position={targetPosition} />
     </div>
   );

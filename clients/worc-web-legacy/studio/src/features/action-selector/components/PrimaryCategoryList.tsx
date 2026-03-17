@@ -1,11 +1,19 @@
-import { CommandGroup, CommandItem, CommandList } from "@aventisia/ui/command";
-import { Separator } from "@aventisia/ui";
-import { PrimaryCategory } from "./PrimaryCategory";
-import { useNodeSelectorStore } from "../stores/action-selector-store";
+import { ScrollArea } from "@aventisia/ui/scroll";
+import { KeyboardEvent, useEffect, useRef, useState } from "react";
 import { useShallow } from "zustand/react/shallow";
 
-export const PrimaryCategoryList = () => {
-  // Get the setPrimaryCategory function from the store
+import { useNodeSelectorStore } from "../stores/action-selector-store";
+import { PrimaryCategory } from "./PrimaryCategory";
+
+interface PrimaryCategoryListProps {
+  inputRef: React.RefObject<HTMLInputElement>;
+  firstItemRef: React.MutableRefObject<HTMLButtonElement | null>;
+}
+
+export const PrimaryCategoryList = ({
+  inputRef,
+  firstItemRef,
+}: PrimaryCategoryListProps) => {
   const { actionSelectorData, setPrimaryCategoryLabel } = useNodeSelectorStore(
     useShallow((state) => ({
       actionSelectorData: state.actionSelectorData,
@@ -13,33 +21,81 @@ export const PrimaryCategoryList = () => {
     })),
   );
 
-  // Return the primary category list
-  return (
-    <CommandList>
-      <CommandGroup>
-        {actionSelectorData.map((item, index) => (
-          <div key={item.label}>
-            <CommandItem
-              value={item.label}
-              className="rounded-lg p-1"
-              onSelect={() => setPrimaryCategoryLabel(item.label)}
-            >
-              {/* Primary category item */}
-              <PrimaryCategory data={item} />
-            </CommandItem>
+  const [activeIndex, setActiveIndex] = useState(0);
+  const gridRefs = useRef<(HTMLButtonElement | null)[]>([]);
 
-            {/* Separator */}
-            {index < actionSelectorData.length - 1 && (
-              <div className="flex justify-center">
-                <Separator
-                  orientation="horizontal"
-                  className="h-[0.5px] w-[90%]"
-                />
-              </div>
-            )}
-          </div>
+  useEffect(() => {
+    if (document.activeElement === inputRef.current) return;
+    gridRefs.current[activeIndex]?.focus();
+  }, [activeIndex, inputRef]);
+
+  const handleKeyDown = (e: KeyboardEvent, index: number) => {
+    const totalItems = actionSelectorData.length;
+    const columns = 2;
+    const col = index % columns;
+    const row = Math.floor(index / columns);
+
+    let nextIndex = index;
+
+    if (e.key === "ArrowRight") {
+      e.preventDefault();
+      if (col < columns - 1 && index + 1 < totalItems) nextIndex = index + 1;
+    } else if (e.key === "ArrowLeft") {
+      e.preventDefault();
+      if (col > 0) nextIndex = index - 1;
+    } else if (e.key === "ArrowDown") {
+      e.preventDefault();
+      if (index + columns < totalItems) {
+        nextIndex = index + columns;
+      } else if (row === Math.floor((totalItems - 1) / columns) - 1) {
+        nextIndex = totalItems - 1;
+      }
+    } else if (e.key === "ArrowUp") {
+      e.preventDefault();
+      if (row === 0) {
+        inputRef.current?.focus();
+        return;
+      } else {
+        nextIndex = index - columns;
+      }
+    } else if (e.key === "Enter") {
+      e.preventDefault();
+      setPrimaryCategoryLabel(actionSelectorData[index].label);
+      return;
+    }
+
+    if (nextIndex !== index) {
+      setActiveIndex(nextIndex);
+      gridRefs.current[nextIndex]?.focus();
+    }
+  };
+
+  return (
+    <ScrollArea className="h-full bg-background p-3">
+      <div
+        className="grid grid-cols-2 gap-3 pb-4"
+        role="grid"
+        aria-label="Primary Categories"
+      >
+        {actionSelectorData.map((item, index) => (
+          <button
+            key={item.label}
+            ref={(el) => {
+              gridRefs.current[index] = el;
+              if (index === 0) firstItemRef.current = el;
+            }}
+            role="gridcell"
+            tabIndex={activeIndex === index ? 0 : -1}
+            onClick={() => setPrimaryCategoryLabel(item.label)}
+            onKeyDown={(e) => handleKeyDown(e, index)}
+            onFocus={() => setActiveIndex(index)}
+            className="group flex h-48 w-full flex-col justify-between rounded-2xl border border-indigo-100 p-4 text-left text-foreground outline-none transition-all hover:border-primary focus-visible:border-primary"
+            aria-label={`Select ${item.label}`}
+          >
+            <PrimaryCategory data={item} />
+          </button>
         ))}
-      </CommandGroup>
-    </CommandList>
+      </div>
+    </ScrollArea>
   );
 };

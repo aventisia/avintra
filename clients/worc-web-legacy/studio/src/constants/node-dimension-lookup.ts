@@ -14,11 +14,11 @@ import { NodeDimensionType } from "@/types/node-dimension-type";
  * This table maps each custom node type to its corresponding width and height dimensions.
  */
 export const nodeDimensionLookup: Record<CustomNodeType, NodeDimensionType> = {
-  branchStartNode: { width: 12, height: 12 },
-  branchNode1: { width: NODE_WIDTH, height: 28 },
-  branchEndNode: { width: 12, height: 12 },
-  mergeBranchesNode: { width: 16, height: 16 },
-  flowEndNode: { width: START_END_NODE_WIDTH, height: START_END_NODE_HEIGHT },
+  branchStartNode: { width: 0, height: 12 },
+  branchNode1: { width: 48, height: 24 },
+  branchEndNode: { width: 0, height: 12 },
+  mergeBranchesNode: { width: 0, height: 16 },
+  flowEndNode: { width: 0, height: START_END_NODE_HEIGHT },
   plusFirstNode: { width: NODE_WIDTH, height: NODE_HEIGHT },
   plusNode: { width: NODE_WIDTH, height: NODE_HEIGHT },
   ifElseNode: { width: NODE_WIDTH, height: NODE_HEIGHT },
@@ -29,7 +29,8 @@ export const nodeDimensionLookup: Record<CustomNodeType, NodeDimensionType> = {
   whileLoopNode: { width: NODE_WIDTH, height: NODE_HEIGHT },
   forLoopNode: { width: NODE_WIDTH, height: NODE_HEIGHT },
   forEachLoopNode: { width: NODE_WIDTH, height: NODE_HEIGHT },
-  aiNode: { width: NODE_WIDTH, height: 116 },
+  aiNode: { width: 3 * NODE_WIDTH, height: NODE_HEIGHT },
+  modelNode: { width: NODE_WIDTH, height: NODE_HEIGHT },
   blockNode: { width: NODE_WIDTH, height: NODE_HEIGHT },
   callAgentNode: { width: NODE_WIDTH, height: NODE_HEIGHT },
 };
