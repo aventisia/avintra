@@ -9,7 +9,7 @@ export const DCPTabsWrapper = ({
   defaultValue,
 }: {
   tabValue: string;
-  setTabValue: React.Dispatch<React.SetStateAction<string>>;
+  setTabValue: (selectedTab: string) => void;
   children: React.ReactNode;
   className?: string;
   defaultValue?: string;

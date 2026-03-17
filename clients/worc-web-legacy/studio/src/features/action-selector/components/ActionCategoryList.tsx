@@ -1,20 +1,22 @@
+import { iconMapper } from "@/components/icon-mapper";
 import { useAddFirstNodeToBranch } from "@/hooks/useAddFirstNodeToBranch";
 import { useAddFirstNodeToFlow } from "@/hooks/useAddFirstNodeToFlow";
 import { useAddNodeFromEdge } from "@/hooks/useAddNodeFromEdge";
 import { useReplaceNode } from "@/hooks/useReplaceNode";
 import { NodeDataType } from "@/types/node-data-type";
+
+import { Button } from "@aventisia/ui/buttons";
+import { cn } from "@aventisia/ui/lib";
+import { ScrollArea } from "@aventisia/ui/scroll";
+import { ArrowLeftIcon } from "lucide-react";
+import { KeyboardEvent, useEffect, useMemo, useRef, useState } from "react";
 import { useShallow } from "zustand/react/shallow";
+
 import { triggersList } from "../constants/trigger-data";
 import { useNodeSelectorStore } from "../stores/action-selector-store";
 import { ActionCategoryType } from "../types/action-category-type";
 import ActionsList from "./ActionsList";
-import { iconMapper } from "@/components/icon-mapper";
 import { FallbackImageIcon } from "./FallbackImageIcon";
-import { useEffect, useMemo, useState, useRef, KeyboardEvent } from "react";
-import { Button } from "@aventisia/ui/buttons";
-import { ArrowLeftIcon } from "lucide-react";
-import { ScrollArea } from "@aventisia/ui/scroll";
-import { cn } from "@aventisia/ui/lib";
 
 interface ActionCategoryListProps {
   inputRef: React.RefObject<HTMLInputElement>;
@@ -33,6 +35,7 @@ export const ActionCategoryList = ({
     primaryCategoryLabel,
     setPrimaryCategoryLabel,
     setQuery,
+    setShowDialog,
   } = useNodeSelectorStore(
     useShallow((state) => ({
       origin: state.origin,
@@ -42,6 +45,7 @@ export const ActionCategoryList = ({
       primaryCategoryLabel: state.primaryCategoryLabel,
       setPrimaryCategoryLabel: state.setPrimaryCategoryLabel,
       setQuery: state.setQuery,
+      setShowDialog: state.setShowDialog,
     })),
   );
 
@@ -182,7 +186,10 @@ export const ActionCategoryList = ({
       setActivePane("left");
     } else if (e.key === "Enter") {
       e.preventDefault();
-      if (!action.disabled) handleSelectNode(action);
+      if (!action.disabled) {
+        handleSelectNode(action);
+        setShowDialog(false);
+      }
     }
   };
 

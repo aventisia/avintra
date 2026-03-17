@@ -1,4 +1,5 @@
 import { STROKE_DASHARRAY, STROKE_WIDTH } from "@/constants";
+
 import { Edge } from "@xyflow/react";
 
 /**
@@ -12,6 +13,7 @@ export const createDottedEdgeObj = (
   sourceNodeId: string,
   targetNodeId: string,
   parentId?: string,
+  targetHandle?: string,
 ): Edge => {
   // Return the edge object
   return {
@@ -22,5 +24,6 @@ export const createDottedEdgeObj = (
     selectable: false,
     style: { strokeDasharray: STROKE_DASHARRAY, strokeWidth: STROKE_WIDTH },
     parentId,
+    targetHandle,
   } as Edge;
 };

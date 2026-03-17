@@ -1,34 +1,95 @@
-import { useShowAlertHandler } from "@aventisia/ui/hooks";
+import { useDagreAutoLayout } from "@/hooks/useDagreAutoLayout";
+import { useContextMenuActionsStore } from "@/stores/context-menu-actions-store";
 import { useReactFlowExtStore } from "@/stores/react-flow-ext-store";
+import { useStudioPreferencesStore } from "@/stores/studio-preferences-store";
+import { FlowVariablesObjectType } from "@/types/flow-variables-object-type";
+import { NodeDataType } from "@/types/node-data-type";
+import { createCustomEdgeObj } from "@/utils/create-edges/create-custom-edge-obj";
+import { createPlusEdgeObj } from "@/utils/create-edges/create-plus-edge-obj";
+
+import { useShowAlertHandler } from "@aventisia/ui/hooks";
+import { toast } from "@aventisia/ui/sonner";
 import { Edge, Node, useReactFlow } from "@xyflow/react";
 import { useCallback, useEffect } from "react";
-import { createPlusEdgeObj } from "@/utils/create-edges/create-plus-edge-obj";
-import { useDagreAutoLayout } from "@/hooks/useDagreAutoLayout";
-import { getNodesAndEdgesAfterDeletion } from "../utils/getNodesAndEdgesAfterDeletion";
-import { toast } from "@aventisia/ui/sonner";
-import { useStudioPreferencesStore } from "@/stores/studio-preferences-store";
 import { useShallow } from "zustand/react/shallow";
-import { useContextMenuActionsStore } from "@/stores/context-menu-actions-store";
-import { getIntermediateNodeIds } from "../utils/getIntermediateNodes";
-import { getBranchSubgraphNodeIds } from "../utils/getBranchSubNodeIds";
-import { generatePastedSubgraph } from "../utils/clipboardUtils";
+
 import { useClipboardStore } from "../stores/useClipboardStore";
-import { createCustomEdgeObj } from "@/utils/create-edges/create-custom-edge-obj";
-import { useOrderedSelection } from "./useOrderedSelection";
-import { NodeDataType } from "@/types/node-data-type";
+import { generatePastedSubgraph } from "../utils/clipboardUtils";
+import { getBranchSubgraphNodeIds } from "../utils/getBranchSubNodeIds";
+import { getIntermediateNodeIds } from "../utils/getIntermediateNodes";
+import { getNodesAndEdgesAfterDeletion } from "../utils/getNodesAndEdgesAfterDeletion";
 import {
   deduplicateEdges,
   getComprehensiveSelection,
   rebuildBypassEdges,
 } from "../utils/node-deletion-utils";
+import { useOrderedSelection } from "./useOrderedSelection";
 
 const flowEventChannel = new BroadcastChannel("react-flow-cross-tab-events");
+
+// ─── Module-level helpers ─────────────────────────────────────────────────
+
+// conditionalNode and forLoopNode own subgraphs (branches/loop body).
+// When deleting a set of nodes, these must be processed first so their
+// subgraph teardown runs before any of their child nodes are visited.
+const sortDeleteFirst = (nodes: Node[]): Node[] =>
+  [...nodes].sort((a, b) => {
+    const aFirst = a.type === "conditionalNode" || a.type === "forLoopNode";
+    const bFirst = b.type === "conditionalNode" || b.type === "forLoopNode";
+    if (aFirst && !bFirst) return -1;
+    if (!aFirst && bFirst) return 1;
+    return 0;
+  });
+
+// Run getNodesAndEdgesAfterDeletion sequentially over a list of nodes.
+// Each iteration feeds its output into the next, so subgraph teardowns
+// from earlier nodes are reflected when later nodes are processed.
+const runSequentialDeletion = (
+  initialNodes: Node[],
+  initialEdges: Edge[],
+  initialVars: FlowVariablesObjectType[],
+  nodesToRemove: Node[],
+) => {
+  let nodes = initialNodes;
+  let edges = initialEdges;
+  let flowVariables = initialVars;
+
+  sortDeleteFirst(nodesToRemove).forEach((nodeToRemove) => {
+    if (!nodes.some((n) => n.id === nodeToRemove.id)) return;
+    const result = getNodesAndEdgesAfterDeletion({
+      node: nodeToRemove,
+      nodes,
+      edges,
+      flowVariables,
+      allowBranchDeletion: true,
+    });
+    nodes = result.updatedNodes;
+    edges = result.updatedEdges;
+    flowVariables = result.updatedFlowVariables;
+  });
+
+  return { nodes, edges, flowVariables };
+};
+
+// Pure edge cloner — used when inserting pasted subgraphs into the flow.
+const cloneEdgeObj = (
+  original: Edge,
+  source: string,
+  target: string,
+): Edge => ({
+  ...original,
+  id: window.crypto.randomUUID(),
+  source,
+  target,
+});
+
+// ─── Hook ─────────────────────────────────────────────────────────────────
 
 export const useFlowOperations = () => {
   const { nodes, setFlowVariablesObject, setNodes, setEdges } =
     useReactFlowExtStore();
 
-  const { getNodes, updateNodeData } = useReactFlow();
+  const { updateNodeData } = useReactFlow();
 
   const { selectedNode, setMenu, setSelectedNode, setSelectedEdge } =
     useContextMenuActionsStore(
@@ -58,14 +119,10 @@ export const useFlowOperations = () => {
   }, [setMenu, setSelectedEdge, setSelectedNode]);
 
   const clearCutNodes = useCallback(() => {
-    const currentNodes = getNodes();
-    const cutNodes = currentNodes.filter((node) => node.data?.isCut === true);
+    const cutNodes = nodes.filter((n) => n.data?.isCut === true);
     if (cutNodes.length === 0) return;
-
-    cutNodes.forEach((node) => {
-      updateNodeData(node.id, { isCut: false });
-    });
-  }, [getNodes, updateNodeData]);
+    cutNodes.forEach((n) => updateNodeData(n.id, { isCut: false }));
+  }, [nodes]);
 
   useEffect(() => {
     const handleChannelMessage = (event: MessageEvent) => {
@@ -87,84 +144,56 @@ export const useFlowOperations = () => {
           } = useReactFlowExtStore.getState();
           const oldNodeIds = new Set(clipboardNodes.map((n) => n.id));
 
-          if (currentNodes.some((n) => oldNodeIds.has(n.id))) {
-            let nextNodes = [...currentNodes];
-            let nextEdges = [...currentEdges];
+          if (!currentNodes.some((n) => oldNodeIds.has(n.id))) return;
 
-            const groupsAffected = new Map<string, number>();
-            clipboardNodes.forEach((n) => {
-              if (n.data?.clipboardGroupId && !n.data.clipboardGroupHead) {
-                const isHeadMoved = clipboardNodes.some(
-                  (cn) =>
-                    cn.data?.clipboardGroupId === n.data?.clipboardGroupId &&
-                    cn.data?.clipboardGroupHead,
-                );
-                if (!isHeadMoved) {
-                  groupsAffected.set(
-                    n.data.clipboardGroupId as string,
-                    (groupsAffected.get(n.data.clipboardGroupId as string) ||
-                      0) + 1,
-                  );
-                }
-              }
-            });
+          let nextNodes = [...currentNodes];
+          let nextEdges = currentEdges.filter((e) => !e.data?.isTemporary);
 
-            groupsAffected.forEach((removedCount, gId) => {
-              const headIndex = nextNodes.findIndex(
-                (n) => n.data?.groupId === gId && n.data?.isGroupHead,
+          // Adjust group head counts for any group members being cut
+          const groupsAffected = new Map<string, number>();
+          clipboardNodes.forEach((n) => {
+            if (!n.data?.clipboardGroupId || n.data.clipboardGroupHead) return;
+            const isHeadMoved = clipboardNodes.some(
+              (cn) =>
+                cn.data?.clipboardGroupId === n.data?.clipboardGroupId &&
+                cn.data?.clipboardGroupHead,
+            );
+            if (!isHeadMoved)
+              groupsAffected.set(
+                n.data.clipboardGroupId as string,
+                (groupsAffected.get(n.data.clipboardGroupId as string) || 0) +
+                  1,
               );
-              if (headIndex !== -1) {
-                const currentCount =
-                  (nextNodes[headIndex].data.count as number) || 1;
-                nextNodes[headIndex] = {
-                  ...nextNodes[headIndex],
-                  data: {
-                    ...nextNodes[headIndex].data,
-                    count: Math.max(1, currentCount - removedCount),
-                  },
-                };
-              }
-            });
+          });
+          groupsAffected.forEach((removedCount, gId) => {
+            const idx = nextNodes.findIndex(
+              (n) => n.data?.groupId === gId && n.data?.isGroupHead,
+            );
+            if (idx === -1) return;
+            const currentCount = (nextNodes[idx].data.count as number) || 1;
+            nextNodes[idx] = {
+              ...nextNodes[idx],
+              data: {
+                ...nextNodes[idx].data,
+                count: Math.max(1, currentCount - removedCount),
+              },
+            };
+          });
 
-            nextEdges = nextEdges.filter((e) => !e.data?.isTemporary);
-            let nextFlowVariables = [...currentVariables];
+          const nodesToRemove = nextNodes.filter((n) => oldNodeIds.has(n.id));
+          const result = runSequentialDeletion(
+            nextNodes,
+            nextEdges,
+            [...currentVariables],
+            nodesToRemove,
+          );
+          nextNodes = result.nodes;
+          nextEdges = rebuildBypassEdges(result.nodes, result.edges);
+          nextEdges = deduplicateEdges(nextEdges);
 
-            //  Sort nodes so loop/conditional heads are deleted BEFORE their children/merge nodes.
-            // This prevents "ghost" nodes from causing graph traversal deletion explosions.
-            const nodesToCutOut = nextNodes
-              .filter((n) => oldNodeIds.has(n.id))
-              .sort((a, b) => {
-                const aIsSpecial =
-                  a.type === "conditionalNode" || a.type === "forLoopNode";
-                const bIsSpecial =
-                  b.type === "conditionalNode" || b.type === "forLoopNode";
-                if (aIsSpecial && !bIsSpecial) return -1;
-                if (!aIsSpecial && bIsSpecial) return 1;
-                return 0;
-              });
-
-            nodesToCutOut.forEach((nodeToRemove) => {
-              if (nextNodes.some((n) => n.id === nodeToRemove.id)) {
-                const result = getNodesAndEdgesAfterDeletion({
-                  node: nodeToRemove,
-                  nodes: nextNodes,
-                  edges: nextEdges,
-                  flowVariables: nextFlowVariables,
-                  allowBranchDeletion: true,
-                });
-                nextNodes = result.updatedNodes;
-                nextEdges = result.updatedEdges;
-                nextFlowVariables = result.updatedFlowVariables;
-              }
-            });
-
-            nextEdges = rebuildBypassEdges(nextNodes, nextEdges);
-            nextEdges = deduplicateEdges(nextEdges);
-
-            setNodes(nextNodes);
-            setEdges(nextEdges);
-            autoLayout({ newNodes: nextNodes, newEdges: nextEdges });
-          }
+          setNodes(nextNodes);
+          setEdges(nextEdges);
+          autoLayout({ newNodes: nextNodes, newEdges: nextEdges });
         } catch (err) {
           console.error("Cross-tab cut sync failed", err);
         }
@@ -197,6 +226,7 @@ export const useFlowOperations = () => {
         const { nodes: currentNodes, edges: currentEdges } =
           useReactFlowExtStore.getState();
 
+        const nodeMap = new Map(currentNodes.map((n) => [n.id, n]));
         const comprehensiveIdsArray = getComprehensiveSelection(
           targetNodeIds,
           currentNodes,
@@ -204,53 +234,65 @@ export const useFlowOperations = () => {
         );
         const nodeIdsToExtract = new Set(comprehensiveIdsArray);
 
-        const sortedRoots = [...comprehensiveIdsArray]
+        // Include modelNodes that belong to any aiNode being extracted.
+        // parentId is the primary link between modelNode and aiNode.
+        comprehensiveIdsArray.forEach((id) => {
+          if (nodeMap.get(id)?.type === "aiNode") {
+            currentNodes.forEach((n) => {
+              if (n.type === "modelNode" && n.parentId === id)
+                nodeIdsToExtract.add(n.id);
+            });
+          }
+        });
+
+        const sortedRoots = [...nodeIdsToExtract]
           .filter((id) => {
-            return !comprehensiveIdsArray.some((parentId) => {
+            const node = nodeMap.get(id);
+            // modelNode is never a subgraph root — it travels with its aiNode
+            if (node?.type === "modelNode") return false;
+
+            return ![...nodeIdsToExtract].some((parentId) => {
               if (parentId === id) return false;
-              const parentNode = currentNodes.find((n) => n.id === parentId);
+              const parentNode = nodeMap.get(parentId);
+              const currentNode = nodeMap.get(id);
 
               if (
                 parentNode?.data?.groupId &&
-                parentNode.data.groupId ===
-                  currentNodes.find((n) => n.id === id)?.data?.groupId
-              ) {
+                parentNode.data.groupId === currentNode?.data?.groupId
+              )
                 return parentNode.data.isGroupHead;
-              }
 
               if (parentNode?.data?.mergeBranchesNodeId) {
                 if (
                   parentNode.type === "conditionalNode" ||
                   parentNode.type === "forLoopNode"
-                ) {
+                )
                   return getIntermediateNodeIds(
                     currentNodes,
                     currentEdges,
                     parentId,
                   ).includes(id);
-                }
-                if (parentNode.type === "branchNode1") {
+
+                if (parentNode.type === "branchNode1")
                   return getBranchSubgraphNodeIds(
                     currentNodes,
                     currentEdges,
                     parentId,
                     parentNode.data.mergeBranchesNodeId as string,
                   ).includes(id);
-                }
               }
+
               return false;
             });
           })
-          // Sort topologically by Y-Position instead of Click Order.
-          // This guarantees clipboard bridges correctly Top-to-Bottom, eliminating tangled loops.
           .sort((a, b) => {
-            const na = currentNodes.find((n) => n.id === a);
-            const nb = currentNodes.find((n) => n.id === b);
-            return Math.round((na?.position.y || 0) - (nb?.position.y || 0));
+            const na = nodeMap.get(a);
+            const nb = nodeMap.get(b);
+            return (na?.position.x || 0) - (nb?.position.x || 0);
           });
 
         const orderedSubgraphs = sortedRoots.map((id) => {
-          const node = currentNodes.find((n) => n.id === id);
+          const node = nodeMap.get(id);
           let exitId = id;
 
           if (node?.data?.groupId && node?.data?.isGroupHead) {
@@ -291,6 +333,7 @@ export const useFlowOperations = () => {
                 : branchIds[branchIds.length - 1] || id;
             }
           }
+
           return { entryId: id, exitId, rootId: id };
         });
 
@@ -316,27 +359,34 @@ export const useFlowOperations = () => {
               delete data.count;
               delete data.isBlock;
             }
-            return { ...node, hidden: false, data };
+
+            return {
+              ...node,
+              hidden: false,
+              // modelNode must keep parentId — it's the link to its aiNode
+              parentId: node.type === "modelNode" ? node.parentId : undefined,
+              data,
+            };
           });
 
-        let extractedEdges = currentEdges.filter((e) => {
-          if (e.data?.isTemporary) return false;
-          return (
-            nodeIdsToExtract.has(e.source) && nodeIdsToExtract.has(e.target)
-          );
-        });
+        // extractedEdges naturally includes the aiNode↔modelNode edge since
+        // both endpoints are in nodeIdsToExtract
+        let extractedEdges = currentEdges.filter(
+          (e) =>
+            !e.data?.isTemporary &&
+            nodeIdsToExtract.has(e.source) &&
+            nodeIdsToExtract.has(e.target),
+        );
 
         for (let i = 0; i < orderedSubgraphs.length - 1; i++) {
           const currentExit = orderedSubgraphs[i].exitId;
           const nextEntry = orderedSubgraphs[i + 1].entryId;
-
-          const alreadyConnected = extractedEdges.some(
-            (e) => e.source === currentExit && e.target === nextEntry,
-          );
-
-          if (!alreadyConnected) {
+          if (
+            !extractedEdges.some(
+              (e) => e.source === currentExit && e.target === nextEntry,
+            )
+          )
             extractedEdges.push(createPlusEdgeObj(currentExit, nextEntry));
-          }
         }
 
         extractedEdges = deduplicateEdges(extractedEdges);
@@ -403,7 +453,6 @@ export const useFlowOperations = () => {
             targetBranchHead.data?.mergeBranchesNodeId,
       );
       const isRouterSelected = parentNode && targetIds.includes(parentNode.id);
-
       if (!isRouterSelected && parentNode) {
         const branches = (parentNode.data?.branches ?? []) as string[];
         if (branches.length <= 2) {
@@ -422,12 +471,9 @@ export const useFlowOperations = () => {
         originalEntryId: result.originalEntryId,
         originalExitId: result.originalExitId,
       });
-
       const extractedIds = new Set(result.extractedNodes.map((n) => n.id));
       currentNodes.forEach((node) => {
-        if (extractedIds.has(node.id)) {
-          updateNodeData(node.id, { isCut: true });
-        }
+        if (extractedIds.has(node.id)) updateNodeData(node.id, { isCut: true });
       });
     }
     resetContextMenu();
@@ -442,13 +488,13 @@ export const useFlowOperations = () => {
   const pasteNodes = useCallback(
     (
       targetNodeId: string,
-      position: "above" | "below" | "branch" | "branch-before" | "branch-after",
+      position: "before" | "after" | "branch" | "branch-above" | "branch-below",
     ) => {
       const clipboard = useClipboardStore.getState().clipboard;
       if (!clipboard || !clipboard.nodes.length) return;
       if (
-        clipboard.operation == "cut" &&
-        clipboard.nodes.map((node) => node.id).includes(targetNodeId)
+        clipboard.operation === "cut" &&
+        clipboard.nodes.some((n) => n.id === targetNodeId)
       ) {
         toast.warning("Please choose a different node to paste.");
         return;
@@ -486,7 +532,22 @@ export const useFlowOperations = () => {
         exitNodeId = generated.exitNodeId;
         idMap = generated.idMap;
         newNodes = generated.newNodes;
+
+        // Remap modelNode parentId and data.description to the new aiNode id.
+        // generatePastedSubgraph assigns new IDs to all nodes via idMap but
+        // doesn't know about the aiNode→modelNode parentId relationship.
+        newNodes = newNodes.map((n) => {
+          if (n.type !== "modelNode" || !n.parentId) return n;
+          const newParentId = idMap.get(n.parentId);
+          if (!newParentId) return n;
+          return {
+            ...n,
+            parentId: newParentId,
+            data: { ...n.data, description: newParentId },
+          };
+        });
       } else {
+        // cut: IDs are unchanged, parentId relationships are already intact
         newNodes = clipboard.nodes;
         newEdges = clipboard.edges;
         entryNodeId = clipboard.originalEntryId;
@@ -498,45 +559,38 @@ export const useFlowOperations = () => {
           const newData = { ...n.data };
           delete newData.clipboardGroupId;
           delete newData.clipboardGroupHead;
-
           newData.groupId = targetGroupId;
           newData.isGroupHead = false;
           delete newData.isExpanded;
           delete newData.count;
           delete newData.hasBlock;
-
           return { ...n, hidden: false, data: newData };
         });
       } else {
         const groupsToRecreate = new Map<string, Node[]>();
         newNodes.forEach((n) => {
-          if (n.data?.clipboardGroupId) {
-            const cGid = n.data.clipboardGroupId as string;
-            if (!groupsToRecreate.has(cGid)) groupsToRecreate.set(cGid, []);
-            groupsToRecreate.get(cGid)!.push(n);
-          }
+          if (!n.data?.clipboardGroupId) return;
+          const cGid = n.data.clipboardGroupId as string;
+          if (!groupsToRecreate.has(cGid)) groupsToRecreate.set(cGid, []);
+          groupsToRecreate.get(cGid)!.push(n);
         });
 
         groupsToRecreate.forEach((members, oldGroupId) => {
           const hasOriginalHead = members.some(
             (m) => m.data.clipboardGroupHead,
           );
-
           if (hasOriginalHead) {
             const newGroupId =
               clipboard.operation === "copy"
                 ? `group-${Date.now()}-${Math.random().toString(36).substring(2, 7)}`
                 : oldGroupId;
-
             const groupHead =
               members.find((m) => m.data.clipboardGroupHead) || members[0];
             const hasBlock = members.some((m) => m.type === "blockNode");
-
             members.forEach((m) => {
               m.data.groupId = newGroupId;
               delete m.data.clipboardGroupId;
               delete m.data.clipboardGroupHead;
-
               if (m.id === groupHead.id) {
                 m.data.isGroupHead = true;
                 m.data.isExpanded = false;
@@ -574,29 +628,13 @@ export const useFlowOperations = () => {
               count: currentCount + newNodes.length,
             },
           };
-
-          nextNodes = nextNodes.map((n) => {
-            if (n.data?.groupId === targetGroupId && !n.data?.isGroupHead) {
-              return { ...n, hidden: false };
-            }
-            return n;
-          });
+          nextNodes = nextNodes.map((n) =>
+            n.data?.groupId === targetGroupId && !n.data?.isGroupHead
+              ? { ...n, hidden: false }
+              : n,
+          );
         }
       }
-
-      const cloneEdgeObj = (
-        originalEdge: Edge,
-        newSource: string,
-        newTarget: string,
-      ): Edge => {
-        const newId = window.crypto.randomUUID();
-        return {
-          ...originalEdge,
-          id: newId,
-          source: newSource,
-          target: newTarget,
-        };
-      };
 
       if (clipboard.operation === "copy" && currentVariables.length > 0) {
         const variablesToClone = currentVariables.filter((v) =>
@@ -613,70 +651,48 @@ export const useFlowOperations = () => {
       if (clipboard.operation === "cut") {
         const oldNodeIds = new Set(clipboard.nodes.map((n) => n.id));
 
+        // Adjust group head counts for members being moved out
         const groupsAffected = new Map<string, number>();
         clipboard.nodes.forEach((n) => {
-          if (n.data?.clipboardGroupId && !n.data.clipboardGroupHead) {
-            const isHeadMoved = clipboard.nodes.some(
-              (cn) =>
-                cn.data?.clipboardGroupId === n.data?.clipboardGroupId &&
-                cn.data?.clipboardGroupHead,
+          if (!n.data?.clipboardGroupId || n.data.clipboardGroupHead) return;
+          const isHeadMoved = clipboard.nodes.some(
+            (cn) =>
+              cn.data?.clipboardGroupId === n.data?.clipboardGroupId &&
+              cn.data?.clipboardGroupHead,
+          );
+          if (!isHeadMoved)
+            groupsAffected.set(
+              n.data.clipboardGroupId as string,
+              (groupsAffected.get(n.data.clipboardGroupId as string) || 0) + 1,
             );
-            if (!isHeadMoved) {
-              groupsAffected.set(
-                n.data.clipboardGroupId as string,
-                (groupsAffected.get(n.data.clipboardGroupId as string) || 0) +
-                  1,
-              );
-            }
-          }
         });
-
         groupsAffected.forEach((removedCount, gId) => {
-          const headIndex = nextNodes.findIndex(
+          const idx = nextNodes.findIndex(
             (n) => n.data?.groupId === gId && n.data?.isGroupHead,
           );
-          if (headIndex !== -1) {
-            const currentCount =
-              (nextNodes[headIndex].data.count as number) || 1;
-            nextNodes[headIndex] = {
-              ...nextNodes[headIndex],
-              data: {
-                ...nextNodes[headIndex].data,
-                count: Math.max(1, currentCount - removedCount),
-              },
-            };
-          }
+          if (idx === -1) return;
+          const currentCount = (nextNodes[idx].data.count as number) || 1;
+          nextNodes[idx] = {
+            ...nextNodes[idx],
+            data: {
+              ...nextNodes[idx].data,
+              count: Math.max(1, currentCount - removedCount),
+            },
+          };
         });
 
         nextEdges = nextEdges.filter((e) => !e.data?.isTemporary);
 
-        //  Delete Loop and Conditional Heads FIRST so they wipe their subgraphs cleanly
-        const nodesToCutOut = nextNodes
-          .filter((n) => oldNodeIds.has(n.id))
-          .sort((a, b) => {
-            const aIsSpecial =
-              a.type === "conditionalNode" || a.type === "forLoopNode";
-            const bIsSpecial =
-              b.type === "conditionalNode" || b.type === "forLoopNode";
-            if (aIsSpecial && !bIsSpecial) return -1;
-            if (!aIsSpecial && bIsSpecial) return 1;
-            return 0;
-          });
-
-        nodesToCutOut.forEach((nodeToRemove) => {
-          if (nextNodes.some((n) => n.id === nodeToRemove.id)) {
-            const result = getNodesAndEdgesAfterDeletion({
-              node: nodeToRemove,
-              nodes: nextNodes,
-              edges: nextEdges,
-              flowVariables: nextFlowVariables,
-              allowBranchDeletion: true,
-            });
-            nextNodes = result.updatedNodes;
-            nextEdges = result.updatedEdges;
-            nextFlowVariables = result.updatedFlowVariables;
-          }
-        });
+        const nodesToRemove = nextNodes.filter((n) => oldNodeIds.has(n.id));
+        const result = runSequentialDeletion(
+          nextNodes,
+          nextEdges,
+          nextFlowVariables,
+          nodesToRemove,
+        );
+        nextNodes = result.nodes;
+        nextEdges = result.edges;
+        nextFlowVariables = result.flowVariables as typeof nextFlowVariables;
 
         flowEventChannel.postMessage({
           type: "CUT_NODES_PASTED",
@@ -687,7 +703,7 @@ export const useFlowOperations = () => {
 
       nextEdges = nextEdges.filter((e) => !e.data?.isTemporary);
 
-      if (position === "above") {
+      if (position === "before") {
         const incomingEdgeIndex = nextEdges.findIndex(
           (e) =>
             e.target === targetNodeId &&
@@ -700,16 +716,11 @@ export const useFlowOperations = () => {
             ...originalEdge,
             target: entryNodeId,
           };
-          const connectingEdge = cloneEdgeObj(
-            originalEdge,
-            exitNodeId,
-            targetNodeId,
-          );
           nextEdges.splice(
             incomingEdgeIndex + 1,
             0,
             ...newEdges,
-            connectingEdge,
+            cloneEdgeObj(originalEdge, exitNodeId, targetNodeId),
           );
         } else {
           nextEdges.push(
@@ -718,9 +729,12 @@ export const useFlowOperations = () => {
           );
         }
         const targetIndex = nextNodes.findIndex((n) => n.id === targetNodeId);
-        if (targetIndex !== -1) nextNodes.splice(targetIndex, 0, ...newNodes);
-        else nextNodes.push(...newNodes);
-      } else if (position === "below") {
+        if (targetIndex !== -1) {
+          nextNodes.splice(targetIndex, 0, ...newNodes);
+        } else {
+          nextNodes.push(...newNodes);
+        }
+      } else if (position === "after") {
         let effectiveTargetId = targetNodeId;
 
         if (
@@ -756,12 +770,12 @@ export const useFlowOperations = () => {
             ...originalEdge,
             source: exitNodeId,
           };
-          const connectingEdge = cloneEdgeObj(
-            originalEdge,
-            effectiveTargetId,
-            entryNodeId,
+          nextEdges.splice(
+            outgoingEdgeIndex,
+            0,
+            cloneEdgeObj(originalEdge, effectiveTargetId, entryNodeId),
+            ...newEdges,
           );
-          nextEdges.splice(outgoingEdgeIndex, 0, connectingEdge, ...newEdges);
         } else {
           nextEdges.push(
             createPlusEdgeObj(effectiveTargetId, entryNodeId),
@@ -771,13 +785,15 @@ export const useFlowOperations = () => {
         const targetIndex = nextNodes.findIndex(
           (n) => n.id === effectiveTargetId,
         );
-        if (targetIndex !== -1)
+        if (targetIndex !== -1) {
           nextNodes.splice(targetIndex + 1, 0, ...newNodes);
-        else nextNodes.push(...newNodes);
+        } else {
+          nextNodes.push(...newNodes);
+        }
       } else if (
         position === "branch" ||
-        position === "branch-before" ||
-        position === "branch-after"
+        position === "branch-above" ||
+        position === "branch-below"
       ) {
         const parentNodeIndex = nextNodes.findIndex(
           (n) =>
@@ -793,20 +809,21 @@ export const useFlowOperations = () => {
 
           let resolvedBranchHeadId = targetNodeId;
           if (mergeNodeId) {
-            const foundBranch = branches.find((bId) => {
-              if (bId === targetNodeId) return true;
-              return getBranchSubgraphNodeIds(
-                currentNodes,
-                currentEdges,
-                bId,
-                mergeNodeId,
-              ).includes(targetNodeId);
-            });
+            const foundBranch = branches.find(
+              (bId) =>
+                bId === targetNodeId ||
+                getBranchSubgraphNodeIds(
+                  currentNodes,
+                  currentEdges,
+                  bId,
+                  mergeNodeId,
+                ).includes(targetNodeId),
+            );
             if (foundBranch) resolvedBranchHeadId = foundBranch;
           }
 
           const pastedBranchHead = newNodes.find((n) => n.id === entryNodeId);
-          if (pastedBranchHead && pastedBranchHead.data) {
+          if (pastedBranchHead?.data) {
             pastedBranchHead.data = {
               ...pastedBranchHead.data,
               label:
@@ -821,13 +838,12 @@ export const useFlowOperations = () => {
           }
 
           const targetIndex = branches.indexOf(resolvedBranchHeadId);
-          let insertIndex = branches.length;
-
-          if (position === "branch-before" && targetIndex !== -1)
-            insertIndex = targetIndex;
-          else
-            insertIndex =
-              targetIndex !== -1 ? targetIndex + 1 : branches.length;
+          const insertIndex =
+            position === "branch-above" && targetIndex !== -1
+              ? targetIndex
+              : targetIndex !== -1
+                ? targetIndex + 1
+                : branches.length;
 
           branches.splice(insertIndex, 0, entryNodeId);
           nextNodes[parentNodeIndex] = {
@@ -852,43 +868,42 @@ export const useFlowOperations = () => {
             ? cloneEdgeObj(referenceExitEdge, exitNodeId, mergeNodeId)
             : createCustomEdgeObj(exitNodeId, mergeNodeId);
 
-          const newEdgesBlock = [branchEntryEdge, ...newEdges, branchExitEdge];
+          // Node insertion point: before nextBranch, or before mergeNode, or at end
+          const masterNodeInsertIndex =
+            (nextBranchId
+              ? nextNodes.findIndex((n) => n.id === nextBranchId)
+              : -1) !== -1
+              ? nextNodes.findIndex((n) => n.id === nextBranchId)
+              : mergeNodeId
+                ? nextNodes.findIndex((n) => n.id === mergeNodeId)
+                : nextNodes.length;
 
-          // Calculate precise array index for Master Nodes Array Injection
-          let masterNodeInsertIndex = -1;
-          if (nextBranchId) {
-            masterNodeInsertIndex = nextNodes.findIndex(
-              (n) => n.id === nextBranchId,
-            );
-          }
-          if (masterNodeInsertIndex === -1 && mergeNodeId) {
-            masterNodeInsertIndex = nextNodes.findIndex(
-              (n) => n.id === mergeNodeId,
-            );
-          }
-          if (masterNodeInsertIndex === -1) {
-            masterNodeInsertIndex = nextNodes.length;
-          }
+          nextNodes.splice(
+            masterNodeInsertIndex === -1
+              ? nextNodes.length
+              : masterNodeInsertIndex,
+            0,
+            ...newNodes,
+          );
 
-          nextNodes.splice(masterNodeInsertIndex, 0, ...newNodes);
+          // Edge insertion point: before nextBranch's entry edge, or before mergeNode edges, or at end
+          const masterEdgeInsertIndex = nextBranchId
+            ? nextEdges.findIndex(
+                (e) => e.source === parentNode.id && e.target === nextBranchId,
+              )
+            : mergeNodeId
+              ? nextEdges.findIndex((e) => e.target === mergeNodeId)
+              : -1;
 
-          // Calculate precise array index for Master Edges Array Injection
-          let masterEdgeInsertIndex = -1;
-          if (nextBranchId) {
-            masterEdgeInsertIndex = nextEdges.findIndex(
-              (e) => e.source === parentNode.id && e.target === nextBranchId,
-            );
-          }
-          if (masterEdgeInsertIndex === -1 && mergeNodeId) {
-            masterEdgeInsertIndex = nextEdges.findIndex(
-              (e) => e.target === mergeNodeId,
-            );
-          }
-          if (masterEdgeInsertIndex === -1) {
-            masterEdgeInsertIndex = nextEdges.length;
-          }
-
-          nextEdges.splice(masterEdgeInsertIndex, 0, ...newEdgesBlock);
+          nextEdges.splice(
+            masterEdgeInsertIndex === -1
+              ? nextEdges.length
+              : masterEdgeInsertIndex,
+            0,
+            branchEntryEdge,
+            ...newEdges,
+            branchExitEdge,
+          );
         }
       }
 
@@ -897,9 +912,8 @@ export const useFlowOperations = () => {
 
       setNodes(nextNodes);
       setEdges(nextEdges);
-      if (clipboard.operation === "cut") {
+      if (clipboard.operation === "cut")
         setFlowVariablesObject(nextFlowVariables ?? []);
-      }
       autoLayout({ newNodes: nextNodes, newEdges: nextEdges });
       resetContextMenu();
     },
@@ -933,7 +947,6 @@ export const useFlowOperations = () => {
         );
         const isRouterSelected =
           parentNode && nodesToDelete.some((n) => n.id === parentNode.id);
-
         if (parentNode && !isRouterSelected) {
           const branches = (parentNode.data?.branches ?? []) as string[];
           if (branches.length <= 2) {
@@ -944,72 +957,47 @@ export const useFlowOperations = () => {
       }
 
       const performDelete = () => {
-        let updatedNodes = [...currentNodes];
-        let updatedEdges = currentEdges.filter((e) => !e.data?.isTemporary);
-        let updatedFlowVariables = [...currentVariables];
+        const result = runSequentialDeletion(
+          [...currentNodes],
+          currentEdges.filter((e) => !e.data?.isTemporary),
+          [...currentVariables],
+          nodesToDelete,
+        );
 
-        const nodesToCutOut = nodesToDelete.sort((a, b) => {
-          const aIsSpecial =
-            a.type === "conditionalNode" || a.type === "forLoopNode";
-          const bIsSpecial =
-            b.type === "conditionalNode" || b.type === "forLoopNode";
-          if (aIsSpecial && !bIsSpecial) return -1;
-          if (!aIsSpecial && bIsSpecial) return 1;
-          return 0;
-        });
-
-        nodesToCutOut.forEach((nodeToRemove) => {
-          if (updatedNodes.some((n) => n.id === nodeToRemove.id)) {
-            const result = getNodesAndEdgesAfterDeletion({
-              node: nodeToRemove,
-              nodes: updatedNodes,
-              edges: updatedEdges,
-              flowVariables: updatedFlowVariables,
-              allowBranchDeletion: true,
-            });
-            updatedNodes = result.updatedNodes;
-            updatedEdges = result.updatedEdges;
-            updatedFlowVariables = result.updatedFlowVariables;
-          }
-        });
-
+        // Adjust group head counts for any non-head group members being deleted
+        const updatedNodes = result.nodes;
         const groupsAffected = new Map<string, number>();
         nodesToDelete.forEach((n) => {
-          if (n.data?.groupId && !n.data.isGroupHead) {
-            const isHeadDeleted = nodesToDelete.some(
-              (cn) =>
-                cn.data?.groupId === n.data?.groupId && cn.data?.isGroupHead,
+          if (!n.data?.groupId || n.data.isGroupHead) return;
+          const isHeadDeleted = nodesToDelete.some(
+            (cn) =>
+              cn.data?.groupId === n.data?.groupId && cn.data?.isGroupHead,
+          );
+          if (!isHeadDeleted)
+            groupsAffected.set(
+              n.data.groupId as string,
+              (groupsAffected.get(n.data.groupId as string) || 0) + 1,
             );
-            if (!isHeadDeleted) {
-              groupsAffected.set(
-                n.data.groupId as string,
-                (groupsAffected.get(n.data.groupId as string) || 0) + 1,
-              );
-            }
-          }
         });
-
         groupsAffected.forEach((removedCount, gId) => {
-          const headIndex = updatedNodes.findIndex(
+          const idx = updatedNodes.findIndex(
             (n) => n.data?.groupId === gId && n.data?.isGroupHead,
           );
-          if (headIndex !== -1) {
-            const currentCount =
-              (updatedNodes[headIndex].data.count as number) || 1;
-            updatedNodes[headIndex] = {
-              ...updatedNodes[headIndex],
-              data: {
-                ...updatedNodes[headIndex].data,
-                count: Math.max(1, currentCount - removedCount),
-              },
-            };
-          }
+          if (idx === -1) return;
+          const currentCount = (updatedNodes[idx].data.count as number) || 1;
+          updatedNodes[idx] = {
+            ...updatedNodes[idx],
+            data: {
+              ...updatedNodes[idx].data,
+              count: Math.max(1, currentCount - removedCount),
+            },
+          };
         });
 
-        updatedEdges = rebuildBypassEdges(updatedNodes, updatedEdges);
+        let updatedEdges = rebuildBypassEdges(updatedNodes, result.edges);
         updatedEdges = deduplicateEdges(updatedEdges);
 
-        setFlowVariablesObject(updatedFlowVariables ?? []);
+        setFlowVariablesObject(result?.flowVariables ?? []);
         autoLayout({ newNodes: updatedNodes, newEdges: updatedEdges });
       };
 
@@ -1045,14 +1033,9 @@ export const useFlowOperations = () => {
         currentNodes,
         currentEdges,
       );
-      const idsToUpdate = currentNodes
+      currentNodes
         .filter((n) => comprehensiveIds.includes(n.id))
-        .map((n) => n.id);
-
-      idsToUpdate.forEach((id) => {
-        updateNodeData(id, { isDisabled });
-      });
-
+        .forEach((n) => updateNodeData(n.id, { isDisabled }));
       resetContextMenu();
     },
     [selectedNode, updateNodeData, resetContextMenu, getComprehensiveSelection],

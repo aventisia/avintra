@@ -10,7 +10,7 @@ export function findRightmostNodePosition(
     return null;
   }
 
-  const mergeNodeId = sourceNode.data.mergeBranchesNodeId;
+  const mergeNodeId = sourceNode.data.mergeBranchesNodeId as string;
 
   const edgeMap: Record<string, string[]> = {};
   for (const edge of edges) {
@@ -43,8 +43,11 @@ export function findRightmostNodePosition(
   const nodesInPath = nodes.filter((node) => nodeIdsInPath.has(node.id));
   if (nodesInPath.length === 0) return null;
 
+  // Safely grab the rightmost node by absolute X position
   const rightmostNode = nodesInPath.reduce((rightmost, current) =>
-    current.position.x > rightmost.position.x ? current : rightmost,
+    (current.position?.x || 0) > (rightmost.position?.x || 0)
+      ? current
+      : rightmost,
   );
 
   return {

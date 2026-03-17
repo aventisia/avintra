@@ -11,7 +11,7 @@ export const TriggerNode = memo(
     return (
       <div
         className={cn(
-          "flex h-6 w-14 items-center justify-center gap-2 rounded-full border-2 border-[--flow-border-start] bg-[--flow-start] text-3xs",
+          "flex h-9 w-16 items-center justify-center gap-2 rounded-full bg-[--flow-start] text-2xs",
           selected && "border-primary ring ring-ring",
         )}
       >

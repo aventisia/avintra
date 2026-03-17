@@ -1,27 +1,29 @@
+import ImproveWithAIButton from "@/features/dynamic-config-panel/components/dcp-tabs/ImproveWithAIButton";
+import { useIsVersionHistoryRoute } from "@/features/version-history/hooks/useIsVersionHistoryRoute";
+
+import { LoadingSpinner } from "@aventisia/ui";
 import { Button } from "@aventisia/ui/buttons";
 import { Form } from "@aventisia/ui/form";
+import { cn } from "@aventisia/ui/lib";
 import { toast } from "@aventisia/ui/sonner";
 import { FlaskConical, InfoIcon, PlayIcon, SearchCodeIcon } from "lucide-react";
 import { useEffect, useState } from "react";
 import { z } from "zod";
+
 import {
   RenderField,
   shouldRenderField,
   useDefineDCPForm,
   useUpdateNodeDataIO,
 } from "..";
-import { LoadingSpinner } from "@aventisia/ui";
 import { refineSubmittedIO } from "../utils/refine-submitted-io";
 import { DCPTabsContent } from "./dcp-tabs/DCPTabsContent";
-import { DCPTabsTrigger } from "./dcp-tabs/DCPTabsTrigger";
-import { DCPTabsList } from "./dcp-tabs/DCPTabsList";
-import { cn } from "@aventisia/ui/lib";
-import { DCPTabsWrapper } from "./dcp-tabs/DCPTabsWrapper";
 import { DCPTabsFooterWrapper } from "./dcp-tabs/DCPTabsFooterWrapper";
+import { DCPTabsList } from "./dcp-tabs/DCPTabsList";
 import { DCPTabsListWrapper } from "./dcp-tabs/DCPTabsListWrapper";
-import ImproveWithAIButton from "@/features/dynamic-config-panel/components/dcp-tabs/ImproveWithAIButton";
+import { DCPTabsTrigger } from "./dcp-tabs/DCPTabsTrigger";
+import { DCPTabsWrapper } from "./dcp-tabs/DCPTabsWrapper";
 import TestTabContent from "./dcp-tabs/test-tab/TestTabContent";
-import { useIsVersionHistoryRoute } from "@/features/version-history/hooks/useIsVersionHistoryRoute";
 
 export const DCPForm = () => {
   const [showOuputFields, setShowOutputFields] = useState(false);

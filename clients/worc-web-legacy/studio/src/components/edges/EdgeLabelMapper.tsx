@@ -1,8 +1,7 @@
-import { TrueEdgeLabel } from "./edge-labels/TrueEdgeLabel";
-import { FalseEdgeLabel } from "./edge-labels/FalseEdgeLabel";
 import { BaseEdgeLabel } from "./edge-labels/BaseEdgeLabel";
+import { FalseEdgeLabel } from "./edge-labels/FalseEdgeLabel";
 import { PlusEdgeLabel } from "./edge-labels/PlusEdgeLabel";
-import { NodeSelector } from "@/features/action-selector/components";
+import { TrueEdgeLabel } from "./edge-labels/TrueEdgeLabel";
 
 export const edgeLabelMapper = (
   label: string,
@@ -14,11 +13,7 @@ export const edgeLabelMapper = (
     case "false":
       return <FalseEdgeLabel />;
     case "plus":
-      return (
-        <NodeSelector>
-          <PlusEdgeLabel edgeId={edgeId} />
-        </NodeSelector>
-      );
+      return <PlusEdgeLabel edgeId={edgeId} />;
     default:
       return <BaseEdgeLabel>{label}</BaseEdgeLabel>;
   }
