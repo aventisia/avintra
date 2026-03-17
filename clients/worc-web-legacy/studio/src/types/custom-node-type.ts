@@ -17,4 +17,5 @@ export type CustomNodeType =
   | "flowEndNode"
   | "aiNode"
   | "blockNode"
+  | "modelNode"
   | "callAgentNode";

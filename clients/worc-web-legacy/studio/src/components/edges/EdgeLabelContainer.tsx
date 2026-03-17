@@ -19,7 +19,7 @@ export const EdgeLabelContainer = ({
       <div
         style={{
           position: "absolute",
-          transform: `translate(-50%, -65%) translate(${labelX}px, ${labelY}px)`, //translate y more considering marker-end
+          transform: `translate(-60%, -42%) translate(${labelX}px, ${labelY}px)`, //translate x more considering marker-end in LR
           pointerEvents: "all",
         }}
       >

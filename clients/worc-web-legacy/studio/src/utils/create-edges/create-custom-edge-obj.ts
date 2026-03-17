@@ -30,6 +30,7 @@ export const createCustomEdgeObj = (
   // Return the edge object
   return {
     id: id,
+    type:"customStepEdge",
     source: sourceNodeId,
     target: targetNodeId,
     deletable: isDeleteable,

@@ -19,6 +19,7 @@ import { CURRENT_VERSION_ID_KEY, clearNodeExecutionLog } from "..";
 import useWebSocket from "../hooks/useWebSocket";
 import { useJobDataStore } from "../stores/job-data-store";
 import { extractUniqueConfigKeys } from "../utils/config-key-utils";
+// import { hasWindowsOnlySupportedNode } from "../utils/has-desktop-node";
 
 const ExecuteFlow = () => {
   // Get user session state and actions
@@ -113,6 +114,13 @@ const ExecuteFlow = () => {
         );
         // Reset the execution state to stopped if not in Tauri
         setExecutionState("stopped");
+        //  if (hasWindowsOnlySupportedNode(nodes as Node<NodeDataType>[])) {
+        //   toast.info(
+        //     "Desktop-only node(s) present. Use the desktop app or remove them to execute in the browser.",
+        //   );
+        //   // Reset the execution state to stopped if not in Tauri
+        //   setExecutionState("stopped");
+        // }
       }
     }
   };

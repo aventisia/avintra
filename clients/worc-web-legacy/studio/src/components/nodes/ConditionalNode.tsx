@@ -1,14 +1,16 @@
 import { InputHandle } from "@/components/handles/InputHandle";
 import { OutputHandle } from "@/components/handles/OutputHandle";
+import { useAddConditionalBranch } from "@/hooks/useAddConditionalBranch";
 import { ConditionalNodeDataType } from "@/types/conditional-node-data-type";
-import { Node, NodeProps, NodeToolbar, Position } from "@xyflow/react";
-import BaseNode from "./BaseNode";
-import { PlusIcon } from "@heroicons/react/24/outline";
-import { cn } from "@aventisia/ui/lib";
+
 import { Button } from "@aventisia/ui/buttons";
 import { buttonVariants } from "@aventisia/ui/buttons";
-import { useAddConditionalBranch } from "@/hooks/useAddConditionalBranch";
+import { cn } from "@aventisia/ui/lib";
+import { PlusIcon } from "@heroicons/react/24/outline";
+import { Node, NodeProps, NodeToolbar, Position } from "@xyflow/react";
 import { memo } from "react";
+
+import BaseNode from "./BaseNode";
 
 type ConditionalNode = Node<ConditionalNodeDataType, "conditionalNode">;
 
@@ -32,12 +34,12 @@ export const ConditionalNode = memo(
           <OutputHandle position={sourcePosition} connectionCount={2} />
         </BaseNode>
         {showPlusIcon ? null : (
-          <NodeToolbar offset={5} position={Position.Bottom}>
+          <NodeToolbar offset={5} position={Position.Right}>
             <Button
               className={cn(
                 buttonVariants({ variant: "outline", size: "icon5" }),
                 "group z-10 rounded-full opacity-50",
-                "hover:bg-primary hover:opacity-100",
+                "hover:bg-primary hover:opacity-100 mt-1",
                 "aria-[expanded=true]:bg-primary aria-[expanded=true]:opacity-100",
                 "nodrag nopan",
               )}

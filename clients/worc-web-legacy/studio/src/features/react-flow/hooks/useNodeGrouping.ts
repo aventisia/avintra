@@ -1,13 +1,19 @@
-import { useReactFlowExtStore } from "@/stores/react-flow-ext-store";
-import { useTrackSelectionStore } from "@/stores/track-selection-store";
-import { useShallow } from "zustand/react/shallow";
-import { getIntermediateNodeIds } from "../utils/getIntermediateNodes";
-import { areNodesConnected } from "../utils/getNodesConnectivity";
-import { toast } from "@aventisia/ui/sonner";
-import { Edge } from "@xyflow/react";
-import { useContextMenuActionsStore } from "@/stores/context-menu-actions-store";
+// ─── useGroupToggle ──────────────────────────────────────────────────────────
 import { MARKER_ARROW_PREFIX } from "@/constants";
 import { useDagreAutoLayout } from "@/hooks/useDagreAutoLayout";
+import { useContextMenuActionsStore } from "@/stores/context-menu-actions-store";
+import { useReactFlowExtStore } from "@/stores/react-flow-ext-store";
+import { useTrackSelectionStore } from "@/stores/track-selection-store";
+
+import { toast } from "@aventisia/ui/sonner";
+import { Edge } from "@xyflow/react";
+import { useShallow } from "zustand/react/shallow";
+
+import { getIntermediateNodeIds } from "../utils/getIntermediateNodes";
+import { areNodesConnected } from "../utils/getNodesConnectivity";
+import { syncModelNodeVisibility } from "./useGroupToggle";
+
+// ─── useNodeGrouping ──────────────────────────────────────────────────────────
 
 export function useNodeGrouping() {
   const { selectedNode, setMenu, setSelectedNode, setSelectedEdge } =
@@ -19,6 +25,7 @@ export function useNodeGrouping() {
         setSelectedEdge: state.setSelectedEdge,
       })),
     );
+
   const autoLayout = useDagreAutoLayout();
 
   const resetContextMenu = () => {
@@ -27,7 +34,6 @@ export function useNodeGrouping() {
     setSelectedEdge(null);
   };
 
-  // Get ReactFlowExt store state & actions
   const { nodes, edges } = useReactFlowExtStore(
     useShallow((state) => ({
       nodes: state.nodes,
@@ -37,7 +43,6 @@ export function useNodeGrouping() {
     })),
   );
 
-  // Get TrackSelection store state & actions
   const { selectedNodes } = useTrackSelectionStore(
     useShallow((state) => ({
       selectedNodes: state.selectedNodes,
@@ -49,7 +54,6 @@ export function useNodeGrouping() {
 
     const expandedNodeIds = new Set<string>();
 
-    // --- If selected only a conditional/loop node, auto-expand to its full flow ---
     if (
       selectedNodes.length === 1 &&
       selectedNodes[0]?.data?.mergeBranchesNodeId
@@ -61,7 +65,6 @@ export function useNodeGrouping() {
       );
       branchSubgraph.forEach((id) => expandedNodeIds.add(id));
     } else {
-      // Expand any branching node in selection to include its full flow
       selectedNodes.forEach((node) => {
         if (node?.data?.mergeBranchesNodeId) {
           const branchSubgraph = getIntermediateNodeIds(nodes, edges, node.id);
@@ -72,16 +75,11 @@ export function useNodeGrouping() {
       });
     }
 
-    // Get full list of nodes involved in this group
     const fullSelectedNodes = nodes.filter((n) => expandedNodeIds.has(n.id));
 
-    // ✅ PRE-CHECK: Ensure none of the nodes are already grouped
     const alreadyGrouped = fullSelectedNodes.some(
       (node) => !!node.data?.groupId,
     );
-
-    const hasBlock = fullSelectedNodes.some((node) => node.type == "blockNode");
-
     if (alreadyGrouped) {
       toast.warning(
         "One or more selected nodes are already part of another group.",
@@ -89,7 +87,10 @@ export function useNodeGrouping() {
       return;
     }
 
-    // ✅ PRE-CHECK: Ensure selected nodes are connected
+    const hasBlock = fullSelectedNodes.some(
+      (node) => node.type === "blockNode",
+    );
+
     const isValidGroup = areNodesConnected(fullSelectedNodes, edges);
     if (!isValidGroup) {
       toast.warning("Selected nodes are not continuos in order.");
@@ -97,12 +98,9 @@ export function useNodeGrouping() {
     }
 
     const groupMembers = fullSelectedNodes.slice(1);
-
     const groupId = `group-${Date.now()}`;
-
     const groupedNodeIds = fullSelectedNodes.map((n) => n.id);
 
-    // Find first node (entry point): no incoming edge from other group members
     const groupFirstNode = fullSelectedNodes.find(
       (node) =>
         !edges.some(
@@ -110,8 +108,6 @@ export function useNodeGrouping() {
             groupedNodeIds.includes(edge.source) && edge.target === node.id,
         ),
     );
-
-    // Find last node (exit point): no outgoing edge to other group members
     const groupLastNode = fullSelectedNodes.find(
       (node) =>
         !edges.some(
@@ -124,7 +120,6 @@ export function useNodeGrouping() {
     const lastNode =
       groupLastNode ?? fullSelectedNodes[fullSelectedNodes.length - 1];
 
-    // Find the next connected node *outside* the group
     const outgoingEdge = edges.find(
       (e) => e.source === lastNode.id && !groupedNodeIds.includes(e.target),
     );
@@ -144,7 +139,7 @@ export function useNodeGrouping() {
       },
     };
 
-    const updatedNodes = nodes.map((node) => {
+    let updatedNodes = nodes.map((node) => {
       if (node.id === groupHead.id) {
         return {
           ...node,
@@ -162,19 +157,17 @@ export function useNodeGrouping() {
         return {
           ...node,
           hidden: true,
-          data: {
-            ...node.data,
-            groupId,
-          },
+          data: { ...node.data, groupId },
         };
       }
       return node;
     });
 
-    const finalEdges = tempEdge ? [...edges, tempEdge] : [...edges];
+    // Sync modelNode visibility — any aiNode that became hidden as a group member
+    // should also hide its modelNode
+    updatedNodes = syncModelNodeVisibility(updatedNodes);
 
-    // setNodes(updatedNodes);
-    // setEdges(finalEdges);
+    const finalEdges = tempEdge ? [...edges, tempEdge] : [...edges];
     autoLayout({ newNodes: updatedNodes, newEdges: finalEdges });
     resetContextMenu();
   };
@@ -183,10 +176,9 @@ export function useNodeGrouping() {
     if (!selectedNode?.data?.groupId) return;
 
     const groupId = selectedNode.data.groupId as string;
-
     const keysToRemove = ["groupId", "isGroupHead", "isExpanded", "count"];
 
-    const updatedNodes = nodes.map((node) => {
+    let updatedNodes = nodes.map((node) => {
       if (node?.data?.groupId === groupId) {
         return {
           ...node,
@@ -201,14 +193,16 @@ export function useNodeGrouping() {
       return node;
     });
 
+    // After all group nodes are made visible again, sync modelNodes
+    updatedNodes = syncModelNodeVisibility(updatedNodes);
+
     const updatedEdges = edges.filter(
       (edge) => !(edge.data?.isTemporary && edge.id.includes(groupId)),
     );
 
-    // setNodes(updatedNodes);
-    // setEdges(updatedEdges);
     autoLayout({ newNodes: updatedNodes, newEdges: updatedEdges });
     resetContextMenu();
   };
+
   return { groupNodes, ungroupNodes };
 }
