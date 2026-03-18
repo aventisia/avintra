@@ -1,6 +1,6 @@
 import { create } from "zustand";
 
-import { sortAsAssignedFirst } from "../../machines-table/constants";
+import { sortAsAssignedFirst } from "../../../machines-table/constants";
 import type { SelectAgentTableDto } from "../dtos/select-agent-table-dto";
 
 type State = {

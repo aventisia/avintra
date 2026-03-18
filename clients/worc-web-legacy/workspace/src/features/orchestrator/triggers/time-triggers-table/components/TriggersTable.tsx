@@ -1,11 +1,11 @@
 import {
-  DataTable,
-  DataTableSkeleton,
   DTCreateButton,
   DTHeading,
   DTPagination,
   DTSearchBox,
   DTViewOptions,
+  DataTable,
+  DataTableSkeleton,
   getDataTablePreferences,
 } from "@aventisia/ui/data-table";
 import { useDataTable, useDocumentTitle } from "@aventisia/ui/hooks";
@@ -14,10 +14,10 @@ import { SEARCH_COLUMN, TABLE_HEADING, TABLE_KEY } from "../constants";
 import { columnDisplayNames } from "../constants/column-display-names";
 import { columnVisibilityState } from "../constants/column-visibility-state";
 import { useFetchTriggers } from "../hooks/useFetchTriggers";
-
+import { TriggerTabs } from "./TriggerTabs";
+import { triggersTableColumns } from "./TriggersTableColumns";
 // import { TriggerBulkActions } from "./table-actions/TriggerBulkActions";
 import { TriggerCrudDialog } from "./trigger-crud-dialog/TriggerCrudDialog";
-import { triggersTableColumns } from "./TriggersTableColumns";
 
 /**
  * Renders a table of triggers.
@@ -55,8 +55,10 @@ export const TriggersTable = () => {
           <TriggerCrudDialog>
             {/* Table toolbar */}
             <div className="flex items-center justify-between">
-              <DTHeading heading={TABLE_HEADING} />
-
+              <div className="flex items-center gap-2">
+                <DTHeading heading={TABLE_HEADING} />
+                <TriggerTabs />
+              </div>
               <div className="flex items-center gap-2">
                 <DTSearchBox
                   table={table}

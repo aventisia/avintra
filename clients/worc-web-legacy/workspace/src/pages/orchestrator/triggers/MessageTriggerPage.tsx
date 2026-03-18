@@ -4,7 +4,7 @@ import { Suspense, lazy } from "react";
 // Lazy load the TriggersTable component.
 const TriggersTable = lazy(() =>
   import(
-    "@/features/orchestrator/triggers-table/components/TriggersTable"
+    "@/features/orchestrator/triggers/time-triggers-table/components/TriggersTable"
   ).then((module) => ({
     default: module.TriggersTable,
   })),
