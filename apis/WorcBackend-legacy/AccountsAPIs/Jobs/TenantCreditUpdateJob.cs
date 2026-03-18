@@ -5,14 +5,16 @@ public class TenantCreditAllocationJob : IJob
     private readonly IUnitOfWork _unitOfWork;
     private readonly ILogger<TenantCreditAllocationJob> _logger;
     private readonly IEmailService _emailService;
+    private readonly EnvironmentConfig _environmentConfig;
     // Declare the constant at the class level
     private const string ACCOUNT_EMAIL = "accounts@aventisia.com";
 
-    public TenantCreditAllocationJob(IUnitOfWork unitOfWork, ILogger<TenantCreditAllocationJob> logger, IEmailService emailService)
+    public TenantCreditAllocationJob(IUnitOfWork unitOfWork, ILogger<TenantCreditAllocationJob> logger, IEmailService emailService, EnvironmentConfig environmentConfig)
     {
         _unitOfWork = unitOfWork;
         _logger = logger;
         _emailService = emailService;
+        _environmentConfig = environmentConfig;
     }
 
     // Main Quartz job execution method
@@ -25,10 +27,18 @@ public class TenantCreditAllocationJob : IJob
 
         try
         {
-            // Fetch all active tenant subscriptions along with their plan
+            // Define date range
+            var startDate = currentDateTime.Date.AddDays(-1); // past 1 day
+            var endDate = currentDateTime.Date.AddDays(8);    // next 8 days
+
+            // Fetch subscriptions within the range
             var tenantSubscriptions = await _unitOfWork.TenantSubscriptionRepo
-                .GetByConditionAsync(w => w.IsActive)
+                .GetByConditionAsync(w =>
+                    w.IsActive &&
+                    w.NextBillingDate.Date >= startDate &&
+                    w.NextBillingDate.Date <= endDate)
                 .Include(x => x.Plan)
+                .Include(x => x.BillingDetails)
                 .AsNoTracking()
                 .ToListAsync();
 
@@ -76,26 +86,32 @@ public class TenantCreditAllocationJob : IJob
                 // PRO PLAN LOGIC: Send reminder emails before subscription expiry
                 else if (subscription.Plan.Type == SubscriptionPlanTypeEnum.Pro)
                 {
+                    // Get the subscription expiry date
+                    var expiryDate = subscription.NextBillingDate.Date;
+
+                    // Calculate how many days remain until the subscription expires
+                    var daysRemaining = (expiryDate - currentDateTime).Days;
+
                     // Get the most recent billing details for the subscription
                     var billingDetail = subscription.BillingDetails
                         .OrderByDescending(o => o.CreatedOn)
                         .FirstOrDefault();
 
-                    // If no billing details exist, skip processing this subscription
+                    // If no billing details exist, log and skip processing this subscription
                     if (billingDetail == null)
+                    {
+                        _logger.LogWarning(
+                            "Tenant {TenantId}: No billing details found for SubscriptionId {SubscriptionId}. Skipping processing.",
+                            subscription.TenantId,
+                            subscription.Id);
                         continue;
+                    }
 
                     // Reference to the subscription plan
                     var plan = subscription.Plan;
 
                     // Variable to determine which email template will be used
                     EmailTypesEnum emailType;
-
-                    // Get the subscription expiry date
-                    var expiryDate = subscription.NextBillingDate.Date;
-
-                    // Calculate how many days remain until the subscription expires
-                    var daysRemaining = (expiryDate - currentDateTime).Days;
 
                     // Calculate billing amount If the billing country is India, include 18% GST
                     decimal amount = subscription.Plan.Price;
@@ -106,6 +122,24 @@ public class TenantCreditAllocationJob : IJob
                         amount = Math.Round(amount * 1.18m, 2);
                     }
 
+                    var defaultUrl = "https://worc.aventisia.com/worc/tenant";
+
+                    var allowedHosts = new[]
+                    {
+                        "dev-worc.aventisia.com",
+                        "uat-worc.aventisia.com",
+                        "worc.aventisia.com"
+                    };
+
+                    string billingUrl = defaultUrl;
+
+                    if (Uri.TryCreate(_environmentConfig.AccountsApiBaseUrl, UriKind.Absolute, out var baseUri)
+                        && allowedHosts.Contains(baseUri.Host))
+                    {
+                        // Build URL using only scheme + host (ignore any existing path)
+                        billingUrl = $"{baseUri.Scheme}://{baseUri.Host}/worc/tenant";
+                    }
+
                     // Initialize placeholders for the email template. These will be replaced in the email body dynamically
                     var placeholderValues = new Dictionary<string, string>
                     {
@@ -113,11 +147,12 @@ public class TenantCreditAllocationJob : IJob
                         { "{{Amount}}", $"{subscription.Plan.Currency} {amount}" },
                         { "{{PlanName}}", plan.Name },
                         { "{{BillingFrequency}}", subscription.Frequency.ToString() },
-                        { "{{ExpiryDate}}", $"{subscription.NextBillingDate:MMM dd, yyyy · hh:mm tt} - UTC" }
+                        { "{{ExpiryDate}}", $"{subscription.NextBillingDate:MMM dd, yyyy · hh:mm tt} - UTC" },
+                        { "{{BillingUrl}}", $"{billingUrl}"}
                     };
 
                     // Send reminder email if the subscription will expire within the next 1–5 days
-                    if (daysRemaining >= 1 && daysRemaining <= 5)
+                    if (new[] { 0, 1, 3, 5 }.Contains(daysRemaining))
                     {
                         // Select the email template used for subscription expiry reminders
                         emailType = EmailTypesEnum.SubscriptionExpiryReminder;
