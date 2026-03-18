@@ -1,5 +1,5 @@
 import { DataTableSkeleton } from "@aventisia/ui/data-table";
-import { lazy, Suspense } from "react";
+import { Suspense, lazy } from "react";
 
 // Lazy load the TriggersTable component.
 const TriggersTable = lazy(() =>
@@ -11,10 +11,10 @@ const TriggersTable = lazy(() =>
 );
 
 /**
- * Renders the AgentsPage component.
- * @returns JSX element representing the AgentsPage component.
+ * Renders the MessageTriggerPage component.
+ * @returns JSX element representing the MessageTriggerPage component.
  */
-export const TriggersPage = () => {
+export const MessageTriggerPage = () => {
   return (
     <Suspense fallback={<DataTableSkeleton />}>
       <TriggersTable />
