@@ -1,3 +1,5 @@
+import NewAgentIcon from "@/components/NewAgentIcon";
+
 import { Separator } from "@aventisia/ui";
 import { Avatar, AvatarFallback } from "@aventisia/ui/avatar";
 import { Badge } from "@aventisia/ui/badge";
@@ -8,7 +10,7 @@ import {
   CardHeader,
   CardTitle,
 } from "@aventisia/ui/cards";
-import { BotIcon, Copy, FileBoxIcon, Tag } from "lucide-react";
+import { Copy, FileBoxIcon, Tag } from "lucide-react";
 
 import { ProjectTemplateTypesEnum } from "../constants/template-types-enum";
 import { WorcTemplatesDto } from "../dtos/worc-templates-dtos";
@@ -75,7 +77,7 @@ export const TemplateCard = ({ template }: TemplateCardProps) => {
               {template?.type == ProjectTemplateTypesEnum.AIProject ? (
                 <FileBoxIcon className="h-6 w-6" />
               ) : (
-                <BotIcon className="h-6 w-6" />
+                <NewAgentIcon className="h-6 w-6" />
               )}
             </div>
           )}

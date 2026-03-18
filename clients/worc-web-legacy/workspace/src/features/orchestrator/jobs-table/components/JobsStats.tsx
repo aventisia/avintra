@@ -1,7 +1,8 @@
-import { BotIcon, Clock10Icon, MonitorPlayIcon } from "lucide-react";
-import { useMemo } from "react";
-
+import NewAgentIcon from "@/components/NewAgentIcon";
 import { StatsCard } from "@/react-toolkit/ui/card/StatsCard";
+
+import { Clock10Icon, MonitorPlayIcon } from "lucide-react";
+import { useMemo } from "react";
 
 import { JobsTableDto } from "../dtos/jobs-table-dto";
 import { JobStatusTypesEnum } from "../enums/job-status-type-enum";
@@ -71,7 +72,9 @@ export const JobsStats = ({ data }: StatsProps) => {
         title="Total Agents"
         mainText={stats.agents}
         description="Unique agents executed jobs"
-        icon={<BotIcon stroke="var(--primary)" className="h-10 w-10" />}
+        icon={
+          <NewAgentIcon className="h-10 w-10 text-primary stroke-primary " />
+        }
       />
 
       {/* Execution Time */}

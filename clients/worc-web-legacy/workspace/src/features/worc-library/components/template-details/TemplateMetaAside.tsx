@@ -1,14 +1,15 @@
+import NewAgentIcon from "@/components/NewAgentIcon";
+
 import { DotSeparator, Separator } from "@aventisia/ui";
 import { Button } from "@aventisia/ui/buttons";
 import { Card, CardContent, CardHeader, CardTitle } from "@aventisia/ui/cards";
 import { dateFormatter } from "@aventisia/ui/utils";
-import { BotIcon, Calendar, FileBoxIcon } from "lucide-react";
+import { Calendar, FileBoxIcon } from "lucide-react";
 
 import { ProjectTemplateTypesEnum } from "../../constants/template-types-enum";
 import { UseTemplateDTO } from "../../dtos/use-template-dto";
 import { useDownloadFile } from "../../hooks/useFileDownload";
 import { formatFileSize } from "../../utils";
-
 import { FileTypeIcon } from "./FileTypeIcon";
 
 export function TemplateMetaAside({ template }: { template: UseTemplateDTO }) {
@@ -68,7 +69,7 @@ export function TemplateMetaAside({ template }: { template: UseTemplateDTO }) {
                 {template?.type == ProjectTemplateTypesEnum.AIProject ? (
                   <FileBoxIcon className="h-6 w-6" />
                 ) : (
-                  <BotIcon className="h-6 w-6" />
+                  <NewAgentIcon className="h-6 w-6" />
                 )}
               </div>
             )}
