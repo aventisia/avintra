@@ -50,10 +50,14 @@ export const useValidateUserSession = () => {
       } else if (data.message.includes(NO_ACTIVE_SUBSCRIPTION)) {
         setOnBoardingStep("choose-plan");
       } else {
-        //User already onboarded
-        navigate(
-          "/redirect?msg=Logging in...&url=" + import.meta.env.VITE_WORC_PATH,
-        );
+        //User already onboarded. Redirect url in redirect query or default to wroc
+        const params = new URLSearchParams(window.location.search);
+        const redirect = params.get("redirect");
+        const destination = redirect
+          ? decodeURIComponent(redirect)
+          : import.meta.env.VITE_WORC_PATH;
+
+        navigate("/redirect?msg=Logging In...&url=" + destination);
       }
     },
     onError: () => {

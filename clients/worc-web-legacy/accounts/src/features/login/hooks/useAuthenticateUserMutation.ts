@@ -76,9 +76,13 @@ export const useAuthenticateUserMutation = () => {
           setUserSessionLocally(data);
 
           // Redirect to worc app
-          navigate(
-            "/redirect?msg=Logging in...&url=" + import.meta.env.VITE_WORC_PATH,
-          );
+          const params = new URLSearchParams(window.location.search);
+          const redirect = params.get("redirect");
+          const destination = redirect
+            ? decodeURIComponent(redirect)
+            : import.meta.env.VITE_WORC_PATH;
+
+          navigate("/redirect?msg=Logging in...&url=" + destination);
         }
       },
       onError: (error) => {

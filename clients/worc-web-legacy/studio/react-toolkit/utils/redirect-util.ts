@@ -14,7 +14,11 @@ export function redirectToLoginOn401Util() {
 
   // Redirect to login page after 1 second if not in development mode
   setTimeout(() => {
-    if (!import.meta.env.DEV)
-      window.location.assign(import.meta.env.VITE_ACCOUNTS_PATH);
+    //Add current url and redirect query param
+    const redirectUrl = encodeURIComponent(window.location.href);
+
+    window.location.assign(
+      `${import.meta.env.VITE_ACCOUNTS_PATH}login?redirect=${redirectUrl}`,
+    );
   }, 1000);
 }
