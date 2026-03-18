@@ -1,4 +1,10 @@
+import { IS_TAURI } from "@/constants/constants";
+import {
+  SidebarMenuItemExtended,
+  SidebarMenuSectionExtended,
+} from "@/react-toolkit/types/sidebar-menu-types";
 import { deploymentType } from "@/react-toolkit/types/user-session-types";
+
 import {
   BanknotesIcon,
   ChartPieIcon,
@@ -11,7 +17,6 @@ import { DesktopIcon } from "@radix-ui/react-icons";
 import {
   ArchiveIcon,
   BadgeDollarSignIcon,
-  BotIcon,
   CheckCheckIcon,
   FileBoxIcon,
   FolderCogIcon,
@@ -24,19 +29,14 @@ import {
 } from "lucide-react";
 import { AiOutlineThunderbolt } from "react-icons/ai";
 
-// import { IS_TAURI } from "@/constants/constants";
-import { IS_TAURI } from "@/constants/constants";
-import {
-  SidebarMenuItemExtended,
-  SidebarMenuSectionExtended,
-} from "@/react-toolkit/types/sidebar-menu-types";
+import NewAgentIcon from "../NewAgentIcon";
 
 const sidebarMenuSections: SidebarMenuSectionExtended[] = [
   {
     sectionName: "my projects",
     menuItems: [
       {
-        Icon: BotIcon,
+        Icon: NewAgentIcon,
         name: "agents",
         route: "/agents",
         permissions: ["TD"],
@@ -63,7 +63,7 @@ const sidebarMenuSections: SidebarMenuSectionExtended[] = [
     menuItems: [
       {
         permissions: ["OM"],
-        Icon: BotIcon,
+        Icon: NewAgentIcon,
         name: "Published",
         route: "/orchestrator/published-agents",
         type: ["Commercial", "Enterprise"],
@@ -118,7 +118,7 @@ const sidebarMenuSections: SidebarMenuSectionExtended[] = [
       ? [
           {
             permissions: ["TU"],
-            Icon: BotIcon,
+            Icon: NewAgentIcon,
             name: "my agents",
             route: "/assist/my-agents",
             type: ["Commercial", "Enterprise"],

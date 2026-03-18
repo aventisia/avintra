@@ -1,7 +1,8 @@
-import { BadgeCheckIcon, BotIcon, ClockIcon, UsersIcon } from "lucide-react";
-
+import NewAgentIcon from "@/components/NewAgentIcon";
 import { formatSecondsToCompactDuration } from "@/features/orchestrator/jobs-table/utils";
 import { StatsCard } from "@/react-toolkit/ui/card/StatsCard";
+
+import { BadgeCheckIcon, ClockIcon, UsersIcon } from "lucide-react";
 
 import { useFetchTenantStatistics } from "../hooks/useFetchTenantStatistics";
 import { useTenantRoute } from "../hooks/useTenantRoute";
@@ -21,7 +22,9 @@ export const TenantStats = () => {
       <StatsCard
         key="Total Execution Time Consumed"
         title={"Total Execution Time Consumed"}
-        mainText={formatSecondsToCompactDuration(data?.data.totalExecutionTimeConsumed ?? 0)}
+        mainText={formatSecondsToCompactDuration(
+          data?.data.totalExecutionTimeConsumed ?? 0,
+        )}
         icon={<ClockIcon stroke="var(--primary)" className="h-6 w-6" />}
       />
       <StatsCard
@@ -34,7 +37,7 @@ export const TenantStats = () => {
         title={"Total Published Agents"}
         key={"Total Published Agents"}
         mainText={formatNumber(data?.data.totalPublishedAgents ?? 0)}
-        icon={<BotIcon stroke="var(--primary)" className="h-6 w-6" />}
+        icon={<NewAgentIcon className="h-6 w-6 text-primary" />}
       />
       <StatsCard
         title={"Total Executed Jobs"}
