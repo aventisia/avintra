@@ -5,108 +5,124 @@ namespace AccountsAPIs.Enums;
 /// </summary>
 public enum CreditServiceTypesEnum
 {
-    /// <summary>
-    /// Service for executing autonomous agent workflows.
-    /// </summary>
     [Description("Agent Execution Time")]
     AgentExecutionTime,
 
-    /// <summary>
-    /// Input token processing for the GPT-4o Mini model.
-    /// </summary>
+    // New LLM Providers (with Input, Output, Cached)
     [Description("GPT 4o mini-input")]
     Gpt4oMiniInput,
 
-    /// <summary>
-    /// Output token generation for the GPT-4o Mini model.
-    /// </summary>
     [Description("GPT 4o mini-output")]
     Gpt4oMiniOutput,
 
-    /// <summary>
-    /// Input token processing for the qwen3-vl-32b-instruct model.
-    /// </summary>
+    [Description("GPT 4o mini-cached")]
+    Gpt4oMiniCached,
+
     [Description("qwen3-vl-32b-instruct - input")]
     Qwen3Vl32bInstructInput,
 
-    /// <summary>
-    /// Output token generation for the qwen3-vl-32b-instruct model.
-    /// </summary>
     [Description("qwen3-vl-32b-instruct - output")]
     Qwen3Vl32bInstructOutput,
+
+    [Description("GPT 5.1-input")]
+    Gpt51Input,
+
+    [Description("GPT 5.1-output")]
+    Gpt51Output,
+
+    [Description("GPT 5.1-cached")]
+    Gpt51Cached,
+
+    [Description("GPT 5 mini-input")]
+    Gpt5MiniInput,
+
+    [Description("GPT 5 mini-output")]
+    Gpt5MiniOutput,
+
+    [Description("GPT 5 mini-cached")]
+    Gpt5MiniCached,
+
+    [Description("GPT 5 nano-input")]
+    Gpt5NanoInput,
+
+    [Description("GPT 5 nano-output")]
+    Gpt5NanoOutput,
+
+    [Description("GPT 5 nano-cached")]
+    Gpt5NanoCached,
+
+    [Description("Gemini 2.5 Flash Lite-input")]
+    Gemini25FlashLiteInput,
+
+    [Description("Gemini 2.5 Flash Lite-output")]
+    Gemini25FlashLiteOutput,
+
+    [Description("Gemini 2.5 Flash Lite-cached")]
+    Gemini25FlashLiteCached,
+
+    [Description("Claude 4.5 Sonnet-input")]
+    Claude45SonnetInput,
+
+    [Description("Claude 4.5 Sonnet-output")]
+    Claude45SonnetOutput,
+
+    [Description("Claude 4.5 Sonnet-cached")]
+    Claude45SonnetCached,
+
+    [Description("Claude 4.5 Haiku-input")]
+    Claude45HaikuInput,
+
+    [Description("Claude 4.5 Haiku-output")]
+    Claude45HaikuOutput,
+
+    [Description("Claude 4.5 Haiku-cached")]
+    Claude45HaikuCached,
+
+    [Description("Grok 3 mini-input")]
+    Grok3MiniInput,
+
+    [Description("Grok 3 mini-output")]
+    Grok3MiniOutput,
+
+    [Description("Grok 3 mini-cached")]
+    Grok3MiniCached,
 
     // ---------------------------------------------------------
     // TODO: Remove this later when no longer needed
 
-    /// <summary>
-    /// Speech-to-text service hosted on-premises.
-    /// </summary>
     [Description("On-prem STT")]
     OnPremSTT,
 
-    /// <summary>
-    /// Text-to-speech service hosted on-premises.
-    /// </summary>
     [Description("On-prem TTS")]
     OnPremTTS,
 
-    /// <summary>
-    /// Speech-to-text service provided by ElevenLabs.
-    /// </summary>
     [Description("ElevenLabs STT")]
     ElevenLabsSTT,
 
-    /// <summary>
-    /// Text-to-speech service provided by ElevenLabs.
-    /// </summary>
     [Description("ElevenLabs TTS")]
     ElevenLabsTTS,
 
-    /// <summary>
-    /// Input token processing for the GPT-4o model.
-    /// </summary>
     [Description("GPT 4o-input")]
     Gpt4oInput,
 
-    /// <summary>
-    /// Output token generation for the GPT-4o model.
-    /// </summary>
     [Description("GPT 4o-output")]
     Gpt4oOutput,
 
-    /// <summary>
-    /// Input OCR processing for the olmOCR model.
-    /// </summary>
     [Description("olmOCR-input")]
     OlmOcrInput,
 
-    /// <summary>
-    /// Output OCR generation for the olmOCR model.
-    /// </summary>
     [Description("olmOCR-output")]
     OlmOcrOutput,
 
-    /// <summary>
-    /// GPU-accelerated text processing service hosted on-premises.
-    /// </summary>
     [Description("On-prem GPU-text")]
     OnPremGpuText,
 
-    /// <summary>
-    /// Input token processing for the Gemini 2.5 Flash model.
-    /// </summary>
     [Description("Gemini 2.5 Flash-input")]
     Gemini25FlashInput,
 
-    /// <summary>
-    /// Output token generation for the Gemini 2.5 Flash model.
-    /// </summary>
     [Description("Gemini 2.5 Flash-output")]
     Gemini25FlashOutput,
 
-    /// <summary>
-    /// Service for executing AI model inference tasks.
-    /// </summary>
     [Description("AI Model Execution Time")]
     AIModelExecutionTime,
 }
