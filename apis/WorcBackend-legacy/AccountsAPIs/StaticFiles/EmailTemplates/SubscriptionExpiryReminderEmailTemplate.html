@@ -7,15 +7,19 @@
   <style>
     body{margin:0;padding:0;background-color:#eef2ff;font-family:Arial,sans-serif;color:#1f2937}
     .main{padding:32px 12px}
-    .container{display:block;margin:0 auto;max-width:560px;border-radius:12px;background-color:#ffffff;overflow:hidden}
+    .container{display:block;margin:0 auto;max-width:720px;border-radius:12px;background-color:#ffffff;overflow:hidden}
 
     /* Header */
-    .header{padding:16px 28px 0}
+    .header{padding:16px 28px 0;background-color:#0f0e2a}
     .header table{width:100%;border-collapse:collapse;margin-bottom:14px}
     .header-link{font-size:13px;font-weight:500;color:#1f2937;text-decoration:none;background-color:#f1f5f9;padding:5px 12px;border-radius:20px;display:inline-flex;align-items:center}
     .h-separator{height:1px;background-color:#e2e8f0;margin:0}
     .on-dark{display:none}
     .on-light{display:block}
+
+    /* Logo */
+    .logo-wrap{display:inline-flex;align-items:center;gap:8px;text-decoration:none}
+    .logo-text{font-size:18px;font-weight:700;color:#1f2937;font-family:Arial,sans-serif}
 
     /* Hero */
     .hero{background-color:#7c3aed;padding:40px 28px;text-align:center}
@@ -68,6 +72,7 @@
       .container{background-color:#1a1737!important}
       .h-separator{background-color:#2e2b5f!important}
       .header-link{background-color:#4f46e5!important;color:#ffffff!important}
+      .logo-text{color:#ffffff!important}
       .on-dark{display:block!important}
       .on-light{display:none!important}
       .greeting{color:#cbd5e1!important}
@@ -104,13 +109,11 @@
   <div class="header">
     <table><tr>
       <td>
-        <a href="http://www.aventisia.com" target="_blank" style="text-decoration:none;display:inline-flex;align-items:center;gap:6px">
-          <svg width="28" height="28" viewBox="0 0 134 118" xmlns="http://www.w3.org/2000/svg" fill-rule="evenodd">
-            <path fill="#4f46e5" d="M35.235 98.074c-8.683 0-15.73-7.047-15.73-15.73.879-20.85 30.575-20.844 31.46 0 0 8.683-7.063 15.73-15.73 15.73m0-50.965C15.809 47.109 0 62.917 0 82.344c1.933 46.773 68.554 46.743 70.486 0 0-19.427-15.824-35.235-35.251-35.235"/>
-            <path fill="#4f46e5" d="M134.064 113.719l-27.583-.218-51.784-89.726L45.94 38.95 32.22 15.175 40.98.012V0h27.45l65.634 113.719z"/>
-          </svg>
-          <span class="logo-text" style="font-family:Arial,sans-serif;font-size:18px;font-weight:800;color:#ffffff;letter-spacing:0.3px">Aventisia</span>
-        </a>
+      <a href="http://www.aventisia.com" target="_blank" class="logo-wrap">
+        <img class="on-light" src="https://worc.aventisia.com/worc/favicon.svg"  height="30" alt="Aventisia" style="display:inline-block;vertical-align:middle"/>
+        <img class="on-dark"  src="https://worc.aventisia.com/worc/favicon.svg" height="30" alt="Aventisia" style="display:none;vertical-align:middle"/>
+        <span class="logo-text">Aventisia</span>
+      </a>
       </td>
       <td style="text-align:right">
         <a href="http://www.aventisia.com" target="_blank" class="header-link">
@@ -180,7 +183,7 @@
 
     <!-- CTA -->
     <div class="cta-wrap">
-      <a href="https://uat-worc.aventisia.com/worc/tenant" class="cta-btn">Renew Subscription →</a>
+      <a href="{{BillingUrl}}" class="cta-btn">Renew Subscription →</a>
     </div>
 
     <hr class="divider"/>
