@@ -1,8 +1,8 @@
+import { CrudActionTypeLong } from "@/react-toolkit/constants";
+
 import { NotFoundPage } from "@aventisia/ui/layout";
 import { useDTCrudDialogStore } from "@aventisia/ui/stores";
-import { createBrowserRouter, RouteObject } from "react-router-dom";
-
-import { CrudActionTypeLong } from "@/react-toolkit/constants";
+import { Navigate, RouteObject, createBrowserRouter } from "react-router-dom";
 
 import { AppErrorPage } from "./components/layout/AppErrorPage";
 import { AppLayout } from "./components/layout/AppLayout";
@@ -23,13 +23,20 @@ import ComingSoon from "./pages/CommingSoon";
 import { CreditsUsagePage } from "./pages/CreditsUsagePage";
 import { FlowsPage } from "./pages/FlowsPage";
 import { GetDesktopPage } from "./pages/GetDesktopPage";
-import { OnPremTenantsPage } from "./pages/global-admin/OnPremTenantsPage";
-import { TenantInstanceDataPage } from "./pages/global-admin/TenantInstanceDataPage";
-import { TenantInstancePage } from "./pages/global-admin/TenantInstancePage";
 import { AppIntegrationsPage } from "./pages/IntegrationsPage";
 import { LibraryPage } from "./pages/LibraryPage";
 import { ModelsPage } from "./pages/ModelsPage";
 import MyAccountPage from "./pages/MyAccountPage";
+import { PreferencesPage } from "./pages/PreferencesPage";
+import { PublicTemplatesApprovalPage } from "./pages/PublicTemplatesApprovalPage";
+import { SupportTicketsPage } from "./pages/SupportTicketsPage";
+import { SupportTicketsReviewerPage } from "./pages/SupportTicketsReviewerPage";
+import { TenantPage } from "./pages/TenantPage";
+import { TenantTemplatesApprovalPage } from "./pages/TenantTemplatesApprovalPage";
+import { UsersPage } from "./pages/UsersPage";
+import { OnPremTenantsPage } from "./pages/global-admin/OnPremTenantsPage";
+import { TenantInstanceDataPage } from "./pages/global-admin/TenantInstanceDataPage";
+import { TenantInstancePage } from "./pages/global-admin/TenantInstancePage";
 import { ExecutionLogsPage } from "./pages/orchestrator/ExecutionLogsPage";
 import { JobsPage } from "./pages/orchestrator/JobsPage";
 import { KeystorePage } from "./pages/orchestrator/KeystorePage";
@@ -39,19 +46,15 @@ import { Orchestrator } from "./pages/orchestrator/Orchestrator";
 import { PublishedAgentsPage } from "./pages/orchestrator/PublishedAgentsPage";
 import { QueuesPage } from "./pages/orchestrator/QueuesPage";
 import { QueuesWorkItemsPage } from "./pages/orchestrator/QueuesWorkItemsPage";
-import { TriggersPage } from "./pages/orchestrator/TriggersPage";
 import { VaultPage } from "./pages/orchestrator/VaultPage";
-import { PreferencesPage } from "./pages/PreferencesPage";
-import { PublicTemplatesApprovalPage } from "./pages/PublicTemplatesApprovalPage";
+import { EmailTriggerPage } from "./pages/orchestrator/triggers/EmailTriggerPage";
+import { MessageTriggerPage } from "./pages/orchestrator/triggers/MessageTriggerPage";
+import { TimeTriggerPage } from "./pages/orchestrator/triggers/TimeTriggerPage";
+import { WebhookTriggerPage } from "./pages/orchestrator/triggers/WebhookTriggerPage";
 import { CreditPlansPage } from "./pages/sa/CreditPlansPage";
 import { OnPremLLMPage } from "./pages/sa/OnPremLLMPage";
 import { SubscriptionPlansPage } from "./pages/sa/SubscriptionPlansPage";
 import { TenantsPage } from "./pages/sa/TenantsPage";
-import { SupportTicketsPage } from "./pages/SupportTicketsPage";
-import { SupportTicketsReviewerPage } from "./pages/SupportTicketsReviewerPage";
-import { TenantPage } from "./pages/TenantPage";
-import { TenantTemplatesApprovalPage } from "./pages/TenantTemplatesApprovalPage";
-import { UsersPage } from "./pages/UsersPage";
 
 const routerConfig: RouteObject[] = [
   {
@@ -179,8 +182,29 @@ const routerConfig: RouteObject[] = [
             element: <ExecutionLogsPage />,
           },
           {
-            path: "/orchestrator/triggers/:id?/:a?",
-            element: <TriggersPage />,
+            path: "/orchestrator/triggers",
+            children: [
+              {
+                index: true,
+                element: <Navigate to="time" replace />,
+              },
+              {
+                path: "time",
+                element: <TimeTriggerPage />,
+              },
+              {
+                path: "email",
+                element: <EmailTriggerPage />,
+              },
+              {
+                path: "message",
+                element: <MessageTriggerPage />,
+              },
+              {
+                path: "webhook",
+                element: <WebhookTriggerPage />,
+              },
+            ],
           },
           {
             path: "/orchestrator/keystore/:id?/:a?",
