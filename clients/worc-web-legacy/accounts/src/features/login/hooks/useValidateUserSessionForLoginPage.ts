@@ -38,11 +38,14 @@ export const useValidateUserSessionForLoginPage = () => {
         window.location.href =
           import.meta.env.VITE_ACCOUNTS_PATH + "onboarding";
       } else {
-        //User already onboarded. Redirect to worc app
-        navigate(
-          "/redirect?msg=Loading...&url=" +
-            import.meta.env.VITE_WORC_PATH,
-        );
+        //User already onboarded. Redirect url in redirect query or default to wroc
+        const params = new URLSearchParams(window.location.search);
+        const redirect = params.get("redirect");
+        const destination = redirect
+          ? decodeURIComponent(redirect)
+          : import.meta.env.VITE_WORC_PATH;
+
+        navigate("/redirect?msg=Loading...&url=" + destination);
       }
     },
     // onError is not required since axios instance handles 401 error and redirects to login page
