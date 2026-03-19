@@ -1,4 +1,5 @@
 import { ZOOM_ANIMATION_DURATION } from "@/constants";
+import { useDagreAutoLayout } from "@/hooks/useDagreAutoLayout";
 import { useCurrentFlowStore } from "@/stores/current-flow-store";
 import { useReactFlowExtStore } from "@/stores/react-flow-ext-store";
 import { FlowVariablesObjectType } from "@/types/flow-variables-object-type";
@@ -18,6 +19,7 @@ export const useFetchFlowToLoad = () => {
   const flowId = searchParams.get("f");
   const versionId = searchParams.get("v") || undefined;
 
+  const autoLayout = useDagreAutoLayout();
   const { setCurrentFlow, setIsFlowLoading } = useCurrentFlowStore(
     useShallow((state) => ({
       setCurrentFlow: state.setCurrentFlow,
@@ -27,8 +29,8 @@ export const useFetchFlowToLoad = () => {
 
   // Get ReactFlowExt store state & actions
   const {
-    setNodes,
-    setEdges,
+    // setNodes,
+    // setEdges,
     setFlowVariablesObject,
     setInputOutputObject,
     setIsPublished,
@@ -59,8 +61,10 @@ export const useFetchFlowToLoad = () => {
   });
 
   useEffect(() => {
-    // Set flow loading flag
-    setIsFlowLoading(isLoading);
+    if (isLoading) {
+      // Set flow loading flag
+      setIsFlowLoading(isLoading);
+    }
   }, [isLoading, setIsFlowLoading]);
 
   useEffect(() => {
@@ -109,8 +113,8 @@ export const useFetchFlowToLoad = () => {
 
     if (flow) {
       // Set nodes and edges
-      setNodes(flow.nodes);
-      setEdges(flow.edges);
+      // setNodes(flow.nodes);
+      // setEdges(flow.edges);
       setFlowVariablesObject(flowVarObjs ?? []);
       setInputOutputObject(inputOutputObj || []);
       hydrateFlow(flow.nodes, flow.edges, flowVarObjs);
@@ -121,8 +125,10 @@ export const useFetchFlowToLoad = () => {
       //   setViewport(flow.viewport, { duration: ZOOM_ANIMATION_DURATION });
       // } else {
       // Fit view if less than 2 nodes
+      autoLayout({ newEdges: flow.edges, newNodes: flow.nodes });
       setTimeout(() => {
         fitView({ duration: ZOOM_ANIMATION_DURATION });
+        setIsFlowLoading(false);
       }, ZOOM_ANIMATION_DURATION);
       // }
     }
