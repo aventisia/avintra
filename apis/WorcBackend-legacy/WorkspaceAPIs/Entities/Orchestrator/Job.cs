@@ -65,7 +65,12 @@ public class Job
     /// <summary>
     /// Gets or sets the input arguments for the job in JSON format.
     /// </summary>
-    public string? InputArguments { get; set; }
+    public string? InputArgumentJson { get; set; }
+
+    /// <summary>
+    /// Gets or sets the output data produced by the job, stored as a JSON string. Populated when the job completes.
+    /// </summary>
+    public string? OutputDataJson { get; set; }
 
     /// <summary>
     /// Gets or sets the logs of node executions within the job's flow/agent, stored as a JSON string.
