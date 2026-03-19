@@ -51,6 +51,15 @@ public enum CreditServiceTypesEnum
     [Description("GPT 5 nano-cached")]
     Gpt5NanoCached,
 
+    [Description("Gemini 2.5 Flash input")]
+    Gemini25FlashInput,
+
+    [Description("Gemini 2.5 Flash output")]
+    Gemini25FlashOutput,
+
+    [Description("Gemini 2.5 Flash cached")]
+    Gemini25FlashCached,
+
     [Description("Gemini 2.5 Flash Lite-input")]
     Gemini25FlashLiteInput,
 
@@ -116,12 +125,6 @@ public enum CreditServiceTypesEnum
 
     [Description("On-prem GPU-text")]
     OnPremGpuText,
-
-    [Description("Gemini 2.5 Flash-input")]
-    Gemini25FlashInput,
-
-    [Description("Gemini 2.5 Flash-output")]
-    Gemini25FlashOutput,
 
     [Description("AI Model Execution Time")]
     AIModelExecutionTime,
