@@ -347,28 +347,16 @@ class OpenAIProvider(BaseLLMProvider):
         
         # If BYOK is not enabled and credential_id is not provided, post credit usage to CreditManagerService
         if not llm_request.is_byok_enabled and not llm_request.credential_id:
-            # Prepare the credit usage data
-            credit_usage_data = [
-                {
-                    "ServiceType": "Gpt4oMiniInput",
-                    "ConsumedUnit": llm_response.input_tokens or 0,
-                    "RefType": llm_request.ref_type,
-                    "RefId": llm_request.ref_id,
-                    "RefName": llm_request.ref_name,
-                    "Action": llm_request.action,
-                    "TriggeredByAgent": llm_request.agent_name
-                },
-                {
-                    "ServiceType": "Gpt4oMiniOutput",
-                    "ConsumedUnit": llm_response.output_tokens or 0,
-                    "RefType": llm_request.ref_type,
-                    "RefId": llm_request.ref_id,
-                    "RefName": llm_request.ref_name,
-                    "Action": llm_request.action,
-                    "TriggeredByAgent": llm_request.agent_name
-                }
-            ]
+            credit_usage_data = self.build_gpt_credit_usage(llm_request, llm_response)
 
+            if credit_usage_data:
+                credit_manager = CreditManagerService()
+                credit_manager.post_credit_usage(
+                    task="openai",
+                    request=credit_usage_data,
+                    jwt=jwt
+                )
+                
             # Initialize the CreditManagerService
             credit_manager = CreditManagerService()
 
@@ -382,3 +370,95 @@ class OpenAIProvider(BaseLLMProvider):
         
         # Return the final llm_response
         return llm_response
+    
+    def build_gpt_credit_usage(self, llm_request: LLMRequest, llm_response: LLMResponse):
+        """
+        Build credit usage specifically for GPT models.
+
+        - Maps model_name → CreditServiceTypesEnum
+        - Handles missing/invalid token values safely
+        - Supports future models via fallback
+        """
+
+        # Normalize model name
+        model_name = (llm_request.model or "").strip().lower()
+
+        # Safe token extraction
+        input_tokens = max(getattr(llm_response, "input_tokens", 0) or 0, 0)
+        output_tokens = max(getattr(llm_response, "output_tokens", 0) or 0, 0)
+        cached_tokens = max(getattr(llm_response, "input_cached_tokens", 0) or 0, 0)
+
+        # 3GPT Model → Enum Mapping
+        # IMPORTANT: Must match backend enum exactly
+        GPT_MODEL_MAP = {
+            "gpt-4o-mini": {
+                "input": "Gpt4oMiniInput",
+                "output": "Gpt4oMiniOutput",
+                "cache": "Gpt4oMiniCached",
+            },
+            "gpt-4o": {
+                "input": "Gpt4oInput",
+                "output": "Gpt4oOutput",
+                "cache": "Gpt4oCached",
+            },
+            "gpt-5.1": {
+                "input": "Gpt51Input",
+                "output": "Gpt51Output",
+                "cache": "Gpt51Cached",
+            },
+            "gpt-5-mini": {
+                "input": "Gpt5MiniInput",
+                "output": "Gpt5MiniOutput",
+                "cache": "Gpt5MiniCached",
+            },
+            "gpt-5-nano": {
+                "input": "Gpt5NanoInput",
+                "output": "Gpt5NanoOutput",
+                "cache": "Gpt5NanoCached",
+            },
+        }
+
+        # Resolve service mapping 
+        # Priority: exact match → safe prefix match
+        service_map = GPT_MODEL_MAP.get(model_name)
+
+        if not service_map:
+            for key, value in GPT_MODEL_MAP.items():
+                if model_name.startswith(key):
+                    service_map = value
+                    break
+
+        # Fallback (future-proof)
+        if not service_map:
+            normalized = "".join(part.capitalize() for part in model_name.split("-"))
+            service_map = {
+                "input": f"{normalized}Input",
+                "output": f"{normalized}Output",
+                "cache": f"{normalized}Cached",
+            }
+
+        # Helper to build entry (DRY)
+        def build_entry(service_type, tokens):
+            return {
+                "ServiceType": service_type,
+                "ConsumedUnit": tokens,
+                "RefType": llm_request.ref_type,
+                "RefId": llm_request.ref_id,
+                "RefName": llm_request.ref_name,
+                "Action": llm_request.action,
+                "TriggeredByAgent": llm_request.agent_name,
+            }
+
+        credit_usage = []
+
+        # Add token usage entries
+        if input_tokens > 0:
+            credit_usage.append(build_entry(service_map["input"], input_tokens))
+
+        if cached_tokens > 0:
+            credit_usage.append(build_entry(service_map["cache"], cached_tokens))
+
+        if output_tokens > 0:
+            credit_usage.append(build_entry(service_map["output"], output_tokens))
+        
+        return credit_usage

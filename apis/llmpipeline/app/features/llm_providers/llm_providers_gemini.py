@@ -387,40 +387,29 @@ class GeminiProvider(BaseLLMProvider):
         # These are internal "thought" tokens generated before the final answer
         llm_response.output_reasoning_tokens = usage_metadata.get("thoughtTokenCount", 0)
         
-        # # If not BYOK and credential_id is present, post the credit usage
-        # if not llm_request.is_byok_enabled and llm_request.credential_id:
-        #     # Prepare the credit usage data
-        #     credit_usage_data = [
-        #         {
-        #             "ServiceType": "CustomInputService",
-        #             "ConsumedUnit": llm_response.input_tokens or 0,
-        #             "RefType": llm_request.ref_type,
-        #             "RefId": llm_request.ref_id,
-        #             "RefName": llm_request.ref_name,
-        #             "Action": llm_request.action,
-        #             "TriggeredByAgent": llm_request.agent_name
-        #         },
-        #         {
-        #             "ServiceType": "CustomInputService",
-        #             "ConsumedUnit": llm_response.output_tokens or 0,
-        #             "RefType": llm_request.ref_type,
-        #             "RefId": llm_request.ref_id,
-        #             "RefName": llm_request.ref_name,
-        #             "Action": llm_request.action,
-        #             "TriggeredByAgent": llm_request.agent_name
-        #         }
-        #     ]
+        # Post credit usage only when BYOK is disabled and no credential is provided
+        if not llm_request.is_byok_enabled and not llm_request.credential_id:
+            # Prepare the credit usage data
+            credit_usage_data = self.build_gemini_credit_usage(llm_request, llm_response)
 
-        #     # Initialize the CreditManagerService
-        #     credit_manager = CreditManagerService()
+            if credit_usage_data:
+                credit_manager = CreditManagerService()
+                credit_manager.post_credit_usage(
+                    task="gemini",
+                    request=credit_usage_data,
+                    jwt=jwt
+                )
+                
+            # Initialize the CreditManagerService
+            credit_manager = CreditManagerService()
 
-        #     # Post the credit usage data
-        #     try:
-        #         credit_manager.post_credit_usage(task="gemini", request=credit_usage_data, jwt=jwt)
-        #         logger.info(f"Successfully posted credit usage data for request ID {llm_request.ref_id}.")
-        #     except Exception as e:
-        #         logger.error(f"Failed to post credit usage data for request ID {llm_request.ref_id}. Error: {str(e)}")
-        #         raise HTTPException(status_code=500, detail=f"Failed to post credit usage: {str(e)}")
+            # Post the credit usage data
+            try:
+                credit_manager.post_credit_usage(task="gemini", request=credit_usage_data, jwt=jwt)
+                logger.info(f"Successfully posted credit usage data for request ID {llm_request.ref_id}.")
+            except Exception as e:
+                logger.error(f"Failed to post credit usage data for request ID {llm_request.ref_id}. Error: {str(e)}")
+                raise HTTPException(status_code=500, detail=f"Failed to post credit usage: {str(e)}")
 
         # Return the final llm_response
         return llm_response
@@ -488,3 +477,78 @@ class GeminiProvider(BaseLLMProvider):
         
         # Return the mapped finish_reason, or None if not found
         return mapping.get(finish_reason, None)
+    
+    def build_gemini_credit_usage(self, llm_request: LLMRequest, llm_response: LLMResponse):
+        """
+        Build credit usage specifically for Gemini models.
+
+        - Maps model → CreditServiceTypesEnum
+        - Handles missing/invalid token values safely
+        - Supports future models via fallback
+        """
+
+        # Normalize model name
+        model_name = (llm_request.model or "").strip().lower()
+
+        # Safe token extraction
+        input_tokens = max(getattr(llm_response, "input_tokens", 0) or 0, 0)
+        output_tokens = max(getattr(llm_response, "output_tokens", 0) or 0, 0)
+        cached_tokens = max(getattr(llm_response, "input_cached_tokens", 0) or 0, 0)
+
+        # Gemini Model → Enum Mapping
+        GEMINI_MODEL_MAP = {
+            "gemini-2.5-flash": {
+                "input": "Gemini25FlashInput",
+                "output": "Gemini25FlashOutput",
+                "cache": "Gemini25FlashCached",
+            },
+            "gemini-2.5-light": {
+                "input": "Gemini25LightInput",
+                "output": "Gemini25LightOutput",
+                "cache": "Gemini25LightCached",
+            },
+        }
+
+        # Resolve service mapping
+        service_map = GEMINI_MODEL_MAP.get(model_name)
+
+        if not service_map:
+            for key, value in GEMINI_MODEL_MAP.items():
+                if model_name.startswith(key):
+                    service_map = value
+                    break
+
+        # Fallback (future-proof)
+        if not service_map:
+            normalized = "".join(part.capitalize() for part in model_name.split("-"))
+            service_map = {
+                "input": f"{normalized}Input",
+                "output": f"{normalized}Output",
+                "cache": f"{normalized}Cached",
+            }
+
+        # Helper to build entry
+        def build_entry(service_type, tokens):
+            return {
+                "ServiceType": service_type,
+                "ConsumedUnit": tokens,
+                "RefType": llm_request.ref_type,
+                "RefId": llm_request.ref_id,
+                "RefName": llm_request.ref_name,
+                "Action": llm_request.action,
+                "TriggeredByAgent": llm_request.agent_name,
+            }
+
+        credit_usage = []
+
+        # Add token usage entries
+        if input_tokens > 0:
+            credit_usage.append(build_entry(service_map["input"], input_tokens))
+
+        if cached_tokens > 0:
+            credit_usage.append(build_entry(service_map["cache"], cached_tokens))
+
+        if output_tokens > 0:
+            credit_usage.append(build_entry(service_map["output"], output_tokens))
+
+        return credit_usage

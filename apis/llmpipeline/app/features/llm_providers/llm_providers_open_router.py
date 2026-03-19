@@ -390,26 +390,15 @@ class OpenRouterProvider(BaseLLMProvider):
         # If BYOK is not enabled and credential_id is not provided, post credit usage to CreditManagerService
         if not llm_request.is_byok_enabled and not llm_request.credential_id:
             # Prepare the credit usage data
-            credit_usage_data = [
-                {
-                    "ServiceType": "Qwen3Vl32bInstructInput",
-                    "ConsumedUnit": llm_response.input_tokens or 0,
-                    "RefType": llm_request.ref_type,
-                    "RefId": llm_request.ref_id,
-                    "RefName": llm_request.ref_name,
-                    "Action": llm_request.action,
-                    "TriggeredByAgent": llm_request.agent_name
-                },
-                {
-                    "ServiceType": "Qwen3Vl32bInstructOutput",
-                    "ConsumedUnit": llm_response.output_tokens or 0,
-                    "RefType": llm_request.ref_type,
-                    "RefId": llm_request.ref_id,
-                    "RefName": llm_request.ref_name,
-                    "Action": llm_request.action,
-                    "TriggeredByAgent": llm_request.agent_name
-                }
-            ]
+            credit_usage_data = self.build_openrouter_credit_usage(llm_request, llm_response)
+
+            if credit_usage_data:
+                credit_manager = CreditManagerService()
+                credit_manager.post_credit_usage(
+                    task="openrouter",
+                    request=credit_usage_data,
+                    jwt=jwt
+                )
 
             # Initialize the CreditManagerService
             credit_manager = CreditManagerService()
@@ -460,3 +449,92 @@ class OpenRouterProvider(BaseLLMProvider):
         # Log the raw finish_reason if not mapped
         logger.info(f"Raw OpenRouter finish_reason: {finish_reason}")
         return "unknown"
+
+    def build_openrouter_credit_usage(self, llm_request: LLMRequest, llm_response: LLMResponse):
+        """
+        Build credit usage for OpenRouter models (Claude, Grok, Qwen, etc.)
+        """
+
+        # Normalize model name
+        model_name = (llm_request.model or "").strip().lower()
+        model_name = model_name.split("/")[-1]  # handle provider prefixes
+
+        # Safe token extraction
+        input_tokens = max(getattr(llm_response, "input_tokens", 0) or 0, 0)
+        output_tokens = max(getattr(llm_response, "output_tokens", 0) or 0, 0)
+        cached_tokens = max(getattr(llm_response, "input_cached_tokens", 0) or 0, 0)
+
+        # OpenRouter Model → Enum Mapping
+        OPENROUTER_MODEL_MAP = {
+            # Claude
+            "claude-4.5-sonnet": {
+                "input": "Claude45SonnetInput",
+                "output": "Claude45SonnetOutput",
+                "cache": "Claude45SonnetCached",
+            },
+            "claude-4.5-haiku": {
+                "input": "Claude45HaikuInput",
+                "output": "Claude45HaikuOutput",
+                "cache": "Claude45HaikuCached",
+            },
+
+            # Grok
+            "grok-3-mini": {
+                "input": "Grok3MiniInput",
+                "output": "Grok3MiniOutput",
+                "cache": "Grok3MiniCached",
+            },
+
+            # Qwen VL 32B Instruct
+            "qwen3-vl-32b-instruct": {
+                "input": "Qwen3Vl32bInstructInput",
+                "output": "Qwen3Vl32bInstructOutput",
+                "cache": "Qwen3Vl32bInstructCached",  # include if backend supports
+            },
+        }
+
+        # Resolve service mapping
+        service_map = OPENROUTER_MODEL_MAP.get(model_name)
+
+        if not service_map:
+            for key, value in OPENROUTER_MODEL_MAP.items():
+                if model_name.startswith(key):
+                    service_map = value
+                    break
+
+        # Fallback (future-proof)
+        if not service_map:
+            normalized = "".join(part.capitalize() for part in model_name.split("-"))
+            service_map = {
+                "input": f"{normalized}Input",
+                "output": f"{normalized}Output",
+                "cache": f"{normalized}Cached",
+            }
+
+        # Helper to build entry
+        def build_entry(service_type, tokens):
+            return {
+                "ServiceType": service_type,
+                "ConsumedUnit": tokens,
+                "RefType": llm_request.ref_type,
+                "RefId": llm_request.ref_id,
+                "RefName": llm_request.ref_name,
+                "Action": llm_request.action,
+                "TriggeredByAgent": llm_request.agent_name,
+            }
+
+        credit_usage = []
+
+        # Add token usage entries
+        if input_tokens > 0:
+            credit_usage.append(build_entry(service_map["input"], input_tokens))
+
+        if cached_tokens > 0:
+            credit_usage.append(build_entry(service_map["cache"], cached_tokens))
+
+        if output_tokens > 0:
+            credit_usage.append(build_entry(service_map["output"], output_tokens))
+        
+        logger.info("Credit usage: %s", json.dumps(credit_usage, default=str))
+
+        return credit_usage
