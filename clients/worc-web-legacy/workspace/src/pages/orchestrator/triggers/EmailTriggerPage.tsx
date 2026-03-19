@@ -1,12 +1,12 @@
 import { DataTableSkeleton } from "@aventisia/ui/data-table";
 import { Suspense, lazy } from "react";
 
-// Lazy load the TriggersTable component.
-const TriggersTable = lazy(() =>
+// Lazy load the EmailTriggersTable component.
+const EmailTriggersTable = lazy(() =>
   import(
-    "@/features/orchestrator/triggers/time-triggers-table/components/TriggersTable"
+    "@/features/orchestrator/triggers/email-triggers-table/components/EmailTriggersTable"
   ).then((module) => ({
-    default: module.TriggersTable,
+    default: module.EmailTriggersTable,
   })),
 );
 
@@ -17,7 +17,7 @@ const TriggersTable = lazy(() =>
 export const EmailTriggerPage = () => {
   return (
     <Suspense fallback={<DataTableSkeleton />}>
-      <TriggersTable />
+      <EmailTriggersTable />
     </Suspense>
   );
 };

@@ -26,7 +26,7 @@ import { TriggerCrudDialog } from "./trigger-crud-dialog/TriggerCrudDialog";
  */
 export const TriggersTable = () => {
   // Set the document title
-  useDocumentTitle(TABLE_HEADING);
+  useDocumentTitle(`Time - ${TABLE_HEADING}`);
 
   // Get data-table preferences from local storage
   const { columnVisibility, sortState } = getDataTablePreferences(
