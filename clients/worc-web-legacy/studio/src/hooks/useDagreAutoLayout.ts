@@ -102,13 +102,17 @@ export const useDagreAutoLayout = () => {
   const { getNodes, getEdges } = useReactFlow();
   /** Organize the nodes and edges using the Dagre auto layout algorithm */
   const autoLayout = useCallback(
-    (newNodesEdgesObj?: { newNodes: Node[]; newEdges: Edge[] }) => {
+    (newNodesEdgesObj?: {
+      newNodes: Node[];
+      newEdges: Edge[];
+    }): { nodes: Node[]; edges: Edge[] } => {
       const currentNodes = newNodesEdgesObj?.newNodes || getNodes();
       const currentEdges = newNodesEdgesObj?.newEdges || getEdges();
       const { layoutDirection } =
         useStudioPreferencesStore.getState().studioPreferences;
       const { setNodes, setEdges } = useReactFlowExtStore.getState();
-      if (currentNodes.length === 0) return;
+      if (currentNodes.length === 0)
+        return { nodes: currentNodes, edges: currentEdges };
       const visibleNodes = currentNodes
         .filter((node) => !node.hidden)
         .filter((n) => n.type !== "modelNode");
@@ -155,6 +159,11 @@ export const useDagreAutoLayout = () => {
       if (newNodesEdgesObj?.newEdges) {
         setEdges(newNodesEdgesObj?.newEdges);
       }
+
+      return {
+        nodes: interpolatedNodes,
+        edges: newNodesEdgesObj?.newEdges as Edge[],
+      };
     },
     [getNodes, getEdges],
   );

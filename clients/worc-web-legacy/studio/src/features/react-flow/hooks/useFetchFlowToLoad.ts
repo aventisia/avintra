@@ -112,25 +112,23 @@ export const useFetchFlowToLoad = () => {
     );
 
     if (flow) {
-      // Set nodes and edges
-      // setNodes(flow.nodes);
-      // setEdges(flow.edges);
       setFlowVariablesObject(flowVarObjs ?? []);
       setInputOutputObject(inputOutputObj || []);
-      hydrateFlow(flow.nodes, flow.edges, flowVarObjs);
+
+      // Set nodes and edges
+      const { nodes, edges } = autoLayout({
+        newEdges: flow.edges,
+        newNodes: flow.nodes,
+      });
+
+      hydrateFlow(nodes, edges, flowVarObjs);
       //set viewport state for react flow oject ext(only for reference its not for ReactFLow)
       setViewportState(flow.viewport);
-      // // If flow has more than 2 nodes then set the saved viewport
-      // if (flow.nodes.length > 2) {
-      //   setViewport(flow.viewport, { duration: ZOOM_ANIMATION_DURATION });
-      // } else {
-      // Fit view if less than 2 nodes
-      autoLayout({ newEdges: flow.edges, newNodes: flow.nodes });
+      // Fit view
       setTimeout(() => {
         fitView({ duration: ZOOM_ANIMATION_DURATION });
         setIsFlowLoading(false);
-      }, ZOOM_ANIMATION_DURATION);
-      // }
+      }, 500);
     }
 
     // Set document title
