@@ -30,6 +30,7 @@ namespace WorkspaceAPIs.Data
             modelBuilder.Entity<Job>().Property(e => e.Status).HasConversion(new EnumToStringConverter<JobStatusTypesEnum>());
             modelBuilder.Entity<Job>().Property(e => e.Priority).HasConversion(new EnumToStringConverter<JobPriorityTypesEnum>());
             modelBuilder.Entity<Job>().Property(e => e.TriggerType).HasConversion(new EnumToStringConverter<TriggerTypesEnum>());
+            modelBuilder.Entity<Trigger>().Property(e => e.TriggerType).HasConversion(new EnumToStringConverter<TriggerTypesEnum>());
         }
 
         // The following DbSets represent entities used for internal processing in the application
@@ -42,6 +43,8 @@ namespace WorkspaceAPIs.Data
         public DbSet<Job> Jobs { get; set; }
         public DbSet<TimeTrigger> TimeTriggers { get; set; }
         public DbSet<TimeTriggersFlowVersion> TimeTriggersFlowVersions { get; set; }
+        public DbSet<Trigger> Triggers { get; set; }
+        public DbSet<TriggerFlowVersion> TriggerFlowVersions { get; set; }
 
         public DbSet<Trigger> Triggers { get; set; }
         public DbSet<TriggerFlowVersion> TriggerFlowVersions { get; set; }

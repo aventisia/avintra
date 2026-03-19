@@ -6,6 +6,7 @@ public class JobTableService : IJobTableService
     private readonly IUnitOfWork _unitOfWork;
     private readonly ICurrentTenantService _currentTenantService;
     private readonly IJobsExecutorService _jobsExecutorService;
+    private readonly IWebhookCallbackService _webhookCallbackService;
     private readonly EnvironmentConfig _environmentConfig;
     private readonly Guid _userId;
 
@@ -15,6 +16,7 @@ public class JobTableService : IJobTableService
         IHttpContextAccessor httpContextAccessor,
         ICurrentTenantService currentTenantService,
         IJobsExecutorService jobsExecutorService,
+        IWebhookCallbackService webhookCallbackService,
         EnvironmentConfig environmentConfig)
     {
         // Set the user ID from the HTTP context
@@ -24,6 +26,7 @@ public class JobTableService : IJobTableService
         _unitOfWork = unitOfWork;
         _currentTenantService = currentTenantService;
         _jobsExecutorService = jobsExecutorService;
+        _webhookCallbackService = webhookCallbackService;
         _environmentConfig = environmentConfig;
     }
 
@@ -439,6 +442,19 @@ public class JobTableService : IJobTableService
 
                 // Trigger the appropriate execution command for the job.
                 await _jobsExecutorService.TriggerExecutionAsync(executionCommand);
+            }
+
+            // Fire webhook callback if this is a webhook-triggered job that has reached a terminal state
+            if (job.TriggerType == TriggerTypesEnum.WebhookTrigger &&
+                (job.Status == JobStatusTypesEnum.Completed ||
+                 job.Status == JobStatusTypesEnum.Failed ||
+                 job.Status == JobStatusTypesEnum.Canceled))
+            {
+                _ = Task.Run(async () =>
+                {
+                    try { await _webhookCallbackService.SendCallbackAsync(job); }
+                    catch (Exception cbEx) { _logger.LogError(cbEx, "Webhook callback error for job {JobId}.", job.Id); }
+                });
             }
 
             // Success - return the updated job
