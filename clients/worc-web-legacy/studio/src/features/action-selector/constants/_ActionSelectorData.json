@@ -1,7 +1,7 @@
 [
   {
     "label": "Workflow Logics",
-    "description": "Core automation logic for workflow branching, conditions, loops, and execution control.",
+    "description": "Core actions to build the foundation of any automation flow",
     "icon": "AutomationEssentialsIcon",
     "actionCategories": [
       {
@@ -135,7 +135,7 @@
   },
   {
     "label": "Data Transformations",
-    "description": "Tools for structuring, converting, and manipulating data across workflow steps.",
+    "description": "Clean, transform, and structure your data with ease",
     "icon": "DataTransformationsIcon",
     "actionCategories": [
       {
@@ -900,7 +900,7 @@
   },
   {
     "label": "UI Interface Automations",
-    "description": "Automation capabilities for interacting with applications, desktops, and system interfaces.",
+    "description": "Automate your desktop with actions that mimic user interactions, from mouse clicks to keyboard entries",
     "icon": "UIAutomationAndUserActionsIcon",
     "actionCategories": [
       {
@@ -2274,7 +2274,7 @@
   },
   {
     "label": "App Integrations",
-    "description": "Connections to external services, enterprise tools, and cloud platforms within workflows.",
+    "description": "Seamlessly integrate with apps and services such as Twilio, Slack, and more",
     "icon": "AppIntegrationsIcon",
     "actionCategories": [
       {
