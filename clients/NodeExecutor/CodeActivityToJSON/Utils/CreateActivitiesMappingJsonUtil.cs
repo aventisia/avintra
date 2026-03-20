@@ -185,6 +185,12 @@ namespace CodeActivityToJSON.Utils
                             Directory.CreateDirectory(localAppDatadesktopNodesOutputDir);
                             var localAppDataFileName = Path.Combine(localAppDatadesktopNodesOutputDir, activity.Name + ".json");
                             File.WriteAllText(localAppDataFileName, jsonWithUnixLineEndings);
+
+                            // Create the file in worc-desktop-app\config-files\desktop-nodes (for form generation)
+                            var winRepofileDir = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "..", "..", "..", "..", "worc-desktop-app", "src-tauri", "config-files", "desktop-nodes");
+                            Directory.CreateDirectory(winRepofileDir);
+                            var winRepofileName = Path.Combine(winRepofileDir, activity.Name + ".json");
+                            File.WriteAllText(winRepofileName, jsonWithUnixLineEndings);
                         }
 
                         // Add the action category to the primary category
@@ -229,6 +235,20 @@ namespace CodeActivityToJSON.Utils
                 var jsonWithUnixLineEndings = json.Replace("\r\n", "\n");
                 writer.Write(jsonWithUnixLineEndings);
                 Console.WriteLine($"Activities mapping JSON saved to local app data");
+            }
+
+            // Save the primary categories JSON file to worc-desktop-app\config-files\action-selector
+            var winRepoActionSelectorOutputDir = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "..", "..", "..", "..", "worc-desktop-app", "src-tauri", "config-files", "action-selector");
+            Directory.CreateDirectory(winRepoActionSelectorOutputDir);
+            var winRepoActionSelectorOutputFilePath = Path.Combine(winRepoActionSelectorOutputDir, "_ActionSelectorData.json");
+            using (var writer = new StreamWriter(winRepoActionSelectorOutputFilePath))
+            {
+                // Set NewLine to Unix line ending (LF)
+                writer.NewLine = "\n";
+                var json = JsonConvert.SerializeObject(primaryCategories, Formatting.Indented, settings);
+                var jsonWithUnixLineEndings = json.Replace("\r\n", "\n");
+                writer.Write(jsonWithUnixLineEndings);
+                Console.WriteLine($"Activities mapping JSON saved to worc-desktop-app");
             }
         }
     }

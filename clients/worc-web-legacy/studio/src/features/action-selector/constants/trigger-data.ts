@@ -47,7 +47,7 @@ export const triggersList: NodeDataType[] = [
       "Trigger when a new email arrives, particularly with specific criteria (e.g., subject line, sender)",
     icon: "EmailTriggerIcon",
     ...commonProps,
-    disabled: true
+    disabled: true,
   },
   {
     name: "databaseEventTrigger",
