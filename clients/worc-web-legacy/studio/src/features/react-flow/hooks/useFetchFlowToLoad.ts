@@ -6,7 +6,7 @@ import { FlowVariablesObjectType } from "@/types/flow-variables-object-type";
 
 import { useQuery } from "@tanstack/react-query";
 import { Edge, Node, Viewport, useReactFlow } from "@xyflow/react";
-import { useEffect } from "react";
+import { useEffect, useRef } from "react";
 import { useSearchParams } from "react-router-dom";
 import { useShallow } from "zustand/react/shallow";
 
@@ -20,6 +20,7 @@ export const useFetchFlowToLoad = () => {
   const versionId = searchParams.get("v") || undefined;
 
   const autoLayout = useDagreAutoLayout();
+
   const { setCurrentFlow, setIsFlowLoading } = useCurrentFlowStore(
     useShallow((state) => ({
       setCurrentFlow: state.setCurrentFlow,
@@ -29,8 +30,6 @@ export const useFetchFlowToLoad = () => {
 
   // Get ReactFlowExt store state & actions
   const {
-    // setNodes,
-    // setEdges,
     setFlowVariablesObject,
     setInputOutputObject,
     setIsPublished,
@@ -38,8 +37,6 @@ export const useFetchFlowToLoad = () => {
     setViewport: setViewportState,
   } = useReactFlowExtStore(
     useShallow((state) => ({
-      setNodes: state.setNodes,
-      setEdges: state.setEdges,
       setFlowVariablesObject: state.setFlowVariablesObject,
       setInputOutputObject: state.setInputOutputObject,
       setIsPublished: state.setIsPublished,
@@ -48,91 +45,104 @@ export const useFetchFlowToLoad = () => {
     })),
   );
 
-  // Get react flow hook to set viewport
+  // Get react flow hook for fitView
   const { fitView } = useReactFlow();
 
-  //Get flow
+  // Ensures hydration runs only once
+  const hasHydratedRef = useRef(false);
+
   const { data, isLoading } = useQuery({
     queryKey: ["flow", flowId, versionId],
-    queryFn: () => getFlowToLoad(flowId || "flowId", versionId),
+    queryFn: () => getFlowToLoad(flowId!, versionId),
     enabled: !!flowId,
-    staleTime: 0, // mark immediately stale
-    refetchOnMount: "always", // always refetch on mount
+
+    // Prevent any automatic refetch
+    staleTime: Infinity,
+    refetchOnMount: false,
+    refetchOnWindowFocus: false,
+    refetchOnReconnect: false,
   });
 
+  // Track loading state in store
   useEffect(() => {
-    if (isLoading) {
-      // Set flow loading flag
-      setIsFlowLoading(isLoading);
-    }
+    setIsFlowLoading(isLoading);
   }, [isLoading, setIsFlowLoading]);
 
+  // One-time hydration from server data
   useEffect(() => {
-    if (!data?.data) return;
-    // Set currently opened flow
-    setCurrentFlow({
-      id: data.data.id,
-      name: data.data.name,
-      versionId: data.data.versionId,
-      versionNumber: data.data.versionNumber,
-      isPublished: data.data.isPublished || false,
-      isLocked: data.data.isLocked || false,
-      isDraft: data.data.isDraft || false,
-      isArchived: data.data.isArchived || false,
-      type: data.data.type,
-      description: data.data.description || "",
-      accessType: data.data.accessType,
-    });
-    setIsPublished(data?.data?.isPublished || false);
+    if (!data?.data || hasHydratedRef.current) return;
 
-    // Check if 'v' query parameter exists
+    hasHydratedRef.current = true;
+
+    const flowData = data.data;
+
+    setCurrentFlow({
+      id: flowData.id,
+      name: flowData.name,
+      versionId: flowData.versionId,
+      versionNumber: flowData.versionNumber,
+      isPublished: flowData.isPublished || false,
+      isLocked: flowData.isLocked || false,
+      isDraft: flowData.isDraft || false,
+      isArchived: flowData.isArchived || false,
+      type: flowData.type,
+      description: flowData.description || "",
+      accessType: flowData.accessType,
+    });
+
+    setIsPublished(flowData.isPublished || false);
+
+    // Ensure versionId is present in URL
     if (!searchParams.has("v")) {
-      searchParams.set("v", data.data.versionId);
+      searchParams.set("v", flowData.versionId);
       setSearchParams(searchParams, { replace: true });
     }
 
-    // Parse react flow object
-    const flow = deepParse(data.data.reactFlowObject) as unknown as {
+    // Parse flow JSON safely
+    const flow = deepParse(flowData.reactFlowObject) as unknown as {
       nodes: Node[];
       edges: Edge[];
       viewport: Viewport;
     };
 
+    // Parse flow variables
     let flowVarObjs: FlowVariablesObjectType[] = [];
-
     try {
-      const parsed = JSON.parse(data.data.flowVariablesObject);
+      const parsed = JSON.parse(flowData.flowVariablesObject);
       flowVarObjs = Array.isArray(parsed) ? parsed : [];
     } catch {
       flowVarObjs = [];
     }
 
+    // Parse input/output
     const inputOutputObj = JSON.parse(
-      data.data?.inputOutputObject || JSON.stringify([]),
+      flowData.inputOutputObject || JSON.stringify([]),
     );
 
     if (flow) {
-      setFlowVariablesObject(flowVarObjs ?? []);
-      setInputOutputObject(inputOutputObj || []);
+      setFlowVariablesObject(flowVarObjs);
+      setInputOutputObject(inputOutputObj);
 
-      // Set nodes and edges
+      // Apply layout before hydration
       const { nodes, edges } = autoLayout({
         newEdges: flow.edges,
         newNodes: flow.nodes,
       });
 
       hydrateFlow(nodes, edges, flowVarObjs);
-      //set viewport state for react flow oject ext(only for reference its not for ReactFLow)
+
+      // Store viewport reference
       setViewportState(flow.viewport);
-      // Fit view
+
+      // Fit view after render
       setTimeout(() => {
         fitView({ duration: ZOOM_ANIMATION_DURATION });
         setIsFlowLoading(false);
       }, 500);
     }
 
-    // Set document title
-    document.title = `${data.data.name} - ${import.meta.env.VITE_APP_NAME} | ${import.meta.env.VITE_COMPANY_NAME}`;
+    // Update document title
+    document.title = `${flowData.name} - ${import.meta.env.VITE_APP_NAME} | ${import.meta.env.VITE_COMPANY_NAME}`;
   }, [data?.data]);
 
   return { isLoading };
