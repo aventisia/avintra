@@ -283,15 +283,6 @@ namespace CodeActivitiesLibrary.WorkflowLogics.FlowControlActivities
             if (second == null)
                 return (false, "Second value is null.");
 
-            // If first is not text, return false            
-            if (!(first is string))
-                return (false, "First value is not valid.");
-
-            // If second is not text, return false
-            if (!(second is string))
-                return (false, "Second value is not valid.");
-
-
             // Try number comparison
             double d1, d2;
             if (double.TryParse(first.ToString(), out d1) && double.TryParse(second.ToString(), out d2))
