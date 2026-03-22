@@ -235,15 +235,15 @@
         ]
       },
       {
-        "label": "AzureBlobStorage",
-        "description": "Work with Azure Blob Storage services",
+        "label": "Azure",
+        "description": "Work with Azure services",
         "icon": null,
         "img": "/assets/Azure.svg",
         "listType": null,
         "actions": [
           {
             "type": "cloudConnectorNode",
-            "name": "Azure/CreateBlobContainer",
+            "name": "Azure/CreateBlobContainerConnector",
             "label": "Create Blob Container",
             "description": "Creates a new blob container in the specified storage account.",
             "docsLink": "https://docs.aventisia.com",
@@ -253,7 +253,7 @@
           },
           {
             "type": "cloudConnectorNode",
-            "name": "Azure/DeleteContainer",
+            "name": "Azure/DeleteContainerConnector",
             "label": "Delete Container",
             "description": "Delete container with the specified name to store and manage related data.",
             "docsLink": "https://docs.aventisia.com",
@@ -263,7 +263,7 @@
           },
           {
             "type": "cloudConnectorNode",
-            "name": "Azure/GetContainerSize",
+            "name": "Azure/GetContainerSizeConnector",
             "label": "Retrieve Container Size",
             "description": "Retrieve the container size from the storage account.",
             "docsLink": "https://docs.aventisia.com",
@@ -273,7 +273,7 @@
           },
           {
             "type": "cloudConnectorNode",
-            "name": "Azure/UploadFile",
+            "name": "Azure/UploadFileConnector",
             "label": "Upload File",
             "description": "Upload file to Azure Blob storage account.",
             "docsLink": "https://docs.aventisia.com",
@@ -283,7 +283,7 @@
           },
           {
             "type": "cloudConnectorNode",
-            "name": "Azure/DownloadFile",
+            "name": "Azure/DownloadFileConnector",
             "label": "Download File",
             "description": "Downloads a file from an Azure Blob container.",
             "docsLink": "https://docs.aventisia.com",
