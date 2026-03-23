@@ -535,6 +535,7 @@
     <Compile Include="Activities\UIInterfaceAutomations\BrowserAutomationActivities\Enums\TargetDesktopEnum.cs" />
     <Compile Include="Activities\UIInterfaceAutomations\BrowserAutomationActivities\Enums\WaitConditionEnum.cs" />
     <Compile Include="Activities\UIInterfaceAutomations\BrowserAutomationActivities\Enums\WindowStateEnum.cs" />
+    <Compile Include="Activities\UIInterfaceAutomations\BrowserAutomationActivities\ExtractLinkedInApplicantsActivity.cs" />
     <Compile Include="Activities\UIInterfaceAutomations\BrowserAutomationActivities\ExtractDataFromWebPageActivity.cs" />
     <Compile Include="Activities\UIInterfaceAutomations\BrowserAutomationActivities\FocusTextFieldActivity.cs" />
     <Compile Include="Activities\UIInterfaceAutomations\BrowserAutomationActivities\GetCheckboxValueActivity.cs" />

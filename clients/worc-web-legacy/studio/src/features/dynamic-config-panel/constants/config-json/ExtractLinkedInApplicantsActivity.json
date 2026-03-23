@@ -1,0 +1,114 @@
+{
+  "name": "ExtractLinkedInApplicants",
+  "label": "Extract LinkedIn Applicants",
+  "description": "Extracts LinkedIn applicants from a job posting, writes applicant data to Excel, downloads resumes, and moves files to a target folder.",
+  "version": "1.0.0",
+  "auther": "@aventisia",
+  "supportedPlatforms": ["windows"],
+  "errorHandling": "standard",
+  "testScreenType": "standard",
+  "fields": [
+    {
+      "direction": "Input",
+      "type": "text",
+      "name": "WebBrowserInstance",
+      "label": "Web Browser Instance",
+      "description": "Web browser instance used to navigate LinkedIn.",
+      "defaultValue": "",
+      "required": true
+    },
+    {
+      "direction": "Input",
+      "type": "text",
+      "name": "JobPostingUrl",
+      "label": "Job Posting Url",
+      "description": "LinkedIn job posting applicants URL to process.",
+      "defaultValue": "",
+      "required": true
+    },
+    {
+      "direction": "Input",
+      "type": "text",
+      "name": "WorksheetInstance",
+      "label": "Worksheet Instance",
+      "description": "Excel worksheet where applicant details will be saved. Expected to have headers in same order: Applicant Name, Profile URL, Current Title, Current Company, Location, Application Date, Stage/Status, Email, Phone, Resume File Name, Resume Saved Path, Custom Notes, Resume Status, Processing Status, Processed At, Error Message.",
+      "defaultValue": "",
+      "required": true
+    },
+    {
+      "direction": "Input",
+      "type": "text",
+      "name": "DestinationFolder",
+      "label": "Destination Folder",
+      "description": "Folder where downloaded resume files will be moved.",
+      "defaultValue": "",
+      "required": true
+    },
+    {
+      "direction": "Input",
+      "type": "text",
+      "name": "RetryCount",
+      "label": "Retry Count",
+      "description": "Number of retries for transient applicant processing failures.",
+      "defaultValue": 2,
+      "required": false
+    },
+    {
+      "direction": "Input",
+      "type": "text",
+      "name": "TimeoutSeconds",
+      "label": "Timeout Seconds",
+      "description": "Maximum wait time for browser operations and downloads.",
+      "defaultValue": 60,
+      "required": false
+    },
+    {
+      "direction": "Output",
+      "type": "config-panel-output",
+      "name": "ProcessedCount",
+      "label": "Processed Count",
+      "description": "Number of applicants processed in this run.",
+      "defaultValue": {
+        "value": "ProcessedCount",
+        "enabled": true
+      },
+      "required": false
+    },
+    {
+      "direction": "Output",
+      "type": "config-panel-output",
+      "name": "SkippedCount",
+      "label": "Skipped Count",
+      "description": "Number of applicants skipped because they were already processed.",
+      "defaultValue": {
+        "value": "SkippedCount",
+        "enabled": true
+      },
+      "required": false
+    },
+    {
+      "direction": "Output",
+      "type": "config-panel-output",
+      "name": "FailedCount",
+      "label": "Failed Count",
+      "description": "Number of applicants that failed to process.",
+      "defaultValue": {
+        "value": "FailedCount",
+        "enabled": true
+      },
+      "required": false
+    },
+    {
+      "direction": "Output",
+      "type": "config-panel-output",
+      "name": "LastProcessedKey",
+      "label": "Last Processed Key",
+      "description": "Last processed applicant key (normalized profile URL).",
+      "defaultValue": {
+        "value": "LastProcessedKey",
+        "enabled": true
+      },
+      "required": false
+    }
+  ]
+}
