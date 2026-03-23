@@ -144,7 +144,7 @@ namespace CodeActivitiesLibrary.WorkflowLogics.FlowControlActivities
             }
         }
 
-        private (bool, string) CompareEqual(object first, object second, bool initialValue = false)
+        private (bool, string) CompareEqual(object first, object second, bool reverseTheResult = false)
         {
             try
             {
@@ -156,7 +156,7 @@ namespace CodeActivitiesLibrary.WorkflowLogics.FlowControlActivities
                 if (second == null)
                     return (false, "Second value is null.");
 
-                bool isEqual = initialValue;
+                bool isEqual = false;
 
                 // If both are the same type, try direct object equality first
                 // This handles objects that implement Equals properly (including custom types)
@@ -185,6 +185,8 @@ namespace CodeActivitiesLibrary.WorkflowLogics.FlowControlActivities
 
                 // Fall back to string comparison
                 isEqual = first.ToString().Equals(second.ToString());
+
+                if (reverseTheResult) isEqual = !isEqual;
 
                 return isEqual ? (true, "Both values are equal.") : (false, "Values are not equal.");
             }
@@ -231,7 +233,7 @@ namespace CodeActivitiesLibrary.WorkflowLogics.FlowControlActivities
             }
         }
 
-        private (bool, string) ListContains(object list, object value, bool initialValue = false)
+        private (bool, string) ListContains(object list, object value, bool reverseTheResult = false)
         {
             // If list not IEnumerable, return false
             if (!(list is IEnumerable enumerable))
@@ -241,7 +243,7 @@ namespace CodeActivitiesLibrary.WorkflowLogics.FlowControlActivities
             if (value == null)
                 return (false, "Item to check in the list is null.");
 
-            bool isFound = initialValue;
+            bool isFound = false;
 
             // Check if any item in the list equals the value (using Equals for proper object comparison)   
             foreach (var item in enumerable)
@@ -253,22 +255,26 @@ namespace CodeActivitiesLibrary.WorkflowLogics.FlowControlActivities
                 }
             }
 
+            if (reverseTheResult) isFound = !isFound;
+
             return isFound ? (true, "Item found in the list.") : (false, "Item not found in the list.");
         }
 
-        private (bool, string) IsListEmpty(object list, bool initialValue = false)
+        private (bool, string) IsListEmpty(object list, bool reverseTheResult = false)
         {
             // If list not IEnumerable, return false
             if (!(list is IEnumerable enumerable))
                 return (false, "List is not enumerable.");
 
-            bool isListEmpty = initialValue;
+            bool isListEmpty = true;
 
             foreach (var _ in enumerable)
             {
-                isListEmpty = false; ;
+                isListEmpty = false;
                 break;
             }
+
+            if (reverseTheResult) isListEmpty = !isListEmpty;
 
             return isListEmpty ? (true, "List is empty.") : (false, "List is not empty.");
         }
@@ -322,7 +328,7 @@ namespace CodeActivitiesLibrary.WorkflowLogics.FlowControlActivities
             return (false, "Values are not comparable as numbers or DateTimes.");
         }
 
-        private (bool, string) FileExists(object filePath, bool initialValue = false)
+        private (bool, string) FileExists(object filePath, bool reverseTheResult = false)
         {
             if (filePath == null)
                 return (false, "File path is null.");
@@ -330,9 +336,10 @@ namespace CodeActivitiesLibrary.WorkflowLogics.FlowControlActivities
             if (!(filePath is string))
                 return (false, "File path is not valid.");
 
-            bool exists = initialValue;
-            
-            exists = System.IO.File.Exists(filePath.ToString());
+            bool exists = System.IO.File.Exists(filePath.ToString());
+
+            if (reverseTheResult) exists = !exists;
+
             return exists ? (true, "File exists.") : (false, "File does not exist.");
         }
     }
