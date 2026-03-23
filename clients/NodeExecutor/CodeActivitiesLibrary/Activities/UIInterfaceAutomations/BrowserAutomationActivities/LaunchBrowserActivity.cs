@@ -137,11 +137,8 @@ namespace CodeActivitiesLibrary.UiInterfaceAutomations.BrowserAutomationActiviti
                         break;
                 }
 
-                // Grab the first available window handle
-                if (webDriver != null && webDriver.WindowHandles.Count > 0)
-                {
-                    webDriver.SwitchTo().Window(webDriver.WindowHandles[0]);
-                }
+                // Switch to the best available content tab before navigation.
+                SelectBestWindow(webDriver, launchUrl);
 
                 // Go to the specified URL if provided
                 if (webDriver != null && !string.IsNullOrWhiteSpace(launchUrl))
@@ -194,6 +191,74 @@ namespace CodeActivitiesLibrary.UiInterfaceAutomations.BrowserAutomationActiviti
             int port = ((IPEndPoint)listener.LocalEndpoint).Port;
             listener.Stop();
             return port;
+        }
+
+        private static bool IsTargetLaunchUrl(string launchUrl)
+        {
+            if (string.IsNullOrWhiteSpace(launchUrl))
+                return false;
+
+            if (!Uri.TryCreate(launchUrl, UriKind.Absolute, out Uri uri))
+                return false;
+
+            return uri.Scheme == Uri.UriSchemeHttp || uri.Scheme == Uri.UriSchemeHttps;
+        }
+
+        private static void SelectBestWindow(IWebDriver webDriver, string launchUrl)
+        {
+            if (webDriver == null || webDriver.WindowHandles.Count == 0)
+                return;
+
+            var windowHandles = webDriver.WindowHandles;
+            var selectedWindowHandle = windowHandles[0];
+            var fallbackContentWindowHandle = (string)null;
+            var hasTargetLaunchUrl = IsTargetLaunchUrl(launchUrl);
+
+            for (int i = 0; i < windowHandles.Count; i++)
+            {
+                var handle = windowHandles[i];
+
+                try
+                {
+                    webDriver.SwitchTo().Window(handle);
+                    var currentUrl = webDriver.Url;
+
+                    if (hasTargetLaunchUrl && currentUrl.StartsWith(launchUrl, StringComparison.OrdinalIgnoreCase))
+                    {
+                        selectedWindowHandle = handle;
+                        break;
+                    }
+
+                    if (!IsChromiumInternalUrl(currentUrl) && fallbackContentWindowHandle == null)
+                    {
+                        fallbackContentWindowHandle = handle;
+                    }
+                }
+                catch
+                {
+                    // Ignore stale/unavailable handles and continue evaluating others.
+                }
+            }
+
+            if (fallbackContentWindowHandle != null)
+            {
+                selectedWindowHandle = fallbackContentWindowHandle;
+            }
+
+            webDriver.SwitchTo().Window(selectedWindowHandle);
+        }
+
+        private static bool IsChromiumInternalUrl(string url)
+        {
+            if (string.IsNullOrWhiteSpace(url))
+                return true;
+
+            return url.StartsWith("chrome://", StringComparison.OrdinalIgnoreCase)
+                || url.StartsWith("edge://", StringComparison.OrdinalIgnoreCase)
+                || url.StartsWith("devtools://", StringComparison.OrdinalIgnoreCase)
+                || url.StartsWith("chrome-extension://", StringComparison.OrdinalIgnoreCase)
+                || url.StartsWith("about:", StringComparison.OrdinalIgnoreCase)
+                || url.StartsWith("data:", StringComparison.OrdinalIgnoreCase);
         }
 
         private static string GetBrowserProcessName(BrowserTypeEnum browserType)

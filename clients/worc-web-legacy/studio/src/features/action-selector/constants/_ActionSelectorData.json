@@ -2063,6 +2063,15 @@
           },
           {
             "type": "activityNode",
+            "name": "ExtractLinkedInApplicantsActivity",
+            "label": "Extract LinkedIn Applicants",
+            "description": "Extracts LinkedIn applicants from a job posting, writes applicant data to Excel, downloads resumes, and moves files to a target folder.",
+            "docsLink": "https://docs.aventisia.com",
+            "img": "/assets/BrowserAutomation.svg",
+            "supportedPlatforms": ["windows"]
+          },
+          {
+            "type": "activityNode",
             "name": "ExtractDataFromWebPageActivity",
             "label": "Extract Data From Web Page",
             "description": "Extracts data from a specified UI element on a web page using configurable parameters.",
@@ -4560,58 +4569,6 @@
             "description": "Creates and sends a new email message using MailKit.",
             "docsLink": "https://docs.aventisia.com",
             "img": "/assets/Email.svg",
-            "supportedPlatforms": ["cloud", "windows"]
-          }
-        ]
-      },
-      {
-        "label": "Azure",
-        "description": "Perform Azure requests and integrations.",
-        "img": "/assets/Azure.svg",
-        "actions": [
-          {
-            "type": "activityNode",
-            "name": "DeleteAllBlobsFromContainerActivity",
-            "label": "Delete All Blobs from Container",
-            "description": "Deletes all blobs in the specified Azure Blob container. Returns the number of successfully deleted blobs.",
-            "docsLink": "https://docs.aventisia.com",
-            "img": "/assets/Azure.svg",
-            "supportedPlatforms": ["cloud", "windows"]
-          },
-          {
-            "type": "activityNode",
-            "name": "DeleteBlobFromContainerActivity",
-            "label": "Delete Blob from Container",
-            "description": "Deletes a specified blob from the Azure Blob container.",
-            "docsLink": "https://docs.aventisia.com",
-            "img": "/assets/Azure.svg",
-            "supportedPlatforms": ["cloud", "windows"]
-          },
-          {
-            "type": "activityNode",
-            "name": "DownloadFileFromBlobStorageActivity",
-            "label": "Download File from Blob Storage",
-            "description": "Downloads a file from an Azure Blob container to a specified local path.",
-            "docsLink": "https://docs.aventisia.com",
-            "img": "/assets/Azure.svg",
-            "supportedPlatforms": ["cloud", "windows"]
-          },
-          {
-            "type": "activityNode",
-            "name": "GetBlobContainerClientInstanceActivity",
-            "label": "Get Blob Container Client Instance",
-            "description": "Creates and returns a BlobContainerClient instance for the specified container and connection string.",
-            "docsLink": "https://docs.aventisia.com",
-            "img": "/assets/Azure.svg",
-            "supportedPlatforms": ["cloud", "windows"]
-          },
-          {
-            "type": "activityNode",
-            "name": "UploadFileToBlobStorageActivity",
-            "label": "Upload File to Blob Storage",
-            "description": "Uploads a file from the local system to an Azure Blob container.",
-            "docsLink": "https://docs.aventisia.com",
-            "img": "/assets/Azure.svg",
             "supportedPlatforms": ["cloud", "windows"]
           }
         ]
