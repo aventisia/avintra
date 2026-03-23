@@ -31,7 +31,7 @@
       "type": "text",
       "name": "WorksheetInstance",
       "label": "Worksheet Instance",
-      "description": "Excel worksheet where applicant details will be saved. Expected to have headers in same order: Applicant Name, Profile URL, Current Title, Current Company, Location, Application Date, Stage/Status, Email, Phone, Resume File Name, Resume Saved Path, Custom Notes, Resume Status, Processing Status, Processed At, Error Message.",
+      "description": "Excel worksheet where applicant details will be saved. Expected to have headers in same order: Applicant Name, Applicant Key, Applicant Url, Profile URL, Location, Email, Phone, Resume Saved Path, Resume Status, Processing Status, Processed At, Error Message, Page No, Applicant No.",
       "defaultValue": "",
       "required": true
     },
