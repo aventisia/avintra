@@ -502,10 +502,10 @@ class GeminiProvider(BaseLLMProvider):
                 "output": "Gemini25FlashOutput",
                 "cache": "Gemini25FlashCached",
             },
-            "gemini-2.5-light": {
-                "input": "Gemini25LightInput",
-                "output": "Gemini25LightOutput",
-                "cache": "Gemini25LightCached",
+            "gemini-2.5-flash-lite": {
+                "input": "Gemini25FlashLiteInput",
+                "output": "Gemini25FlashLiteOutput",
+                "cache": "Gemini25FlashLiteCached",
             },
         }
 
