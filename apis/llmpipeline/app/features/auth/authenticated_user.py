@@ -1,4 +1,4 @@
-from pydantic import BaseModel
+from pydantic import BaseModel, Field
 from typing import List, Optional
 from uuid import UUID
 
@@ -9,3 +9,4 @@ class User(BaseModel):
     username: str
     roles: Optional[List[str]]
     tenant_id: UUID
+    access_token: Optional[str] = Field(default=None, exclude=True, repr=False)

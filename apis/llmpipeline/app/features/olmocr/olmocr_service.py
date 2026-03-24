@@ -7,8 +7,8 @@ import uuid
 import httpx
 from .renderpdf import render_pdf_to_base64png
 from .prompts import build_no_anchoring_v4_yaml_prompt
-from fastapi import HTTPException, Request
-from app.core.security import get_jwt
+from fastapi import HTTPException
+from app.features.auth.authenticated_user import User
 from .olmocr_schemas import OlmocrRequest, OlmocrResponse
 from app.core.config import settings
 from app.core.logger import log_exception, logger
@@ -19,16 +19,10 @@ ALLOWED_FILE_TYPES = [".pdf"]
 MAX_FILE_SIZE_MB = 20
 
 # TODO: We can remove this CLI based implementation after testing and verification of the async HTTPX based implementation
-def run_olmocr_pipeline_cli(olmocr_req: OlmocrRequest, request: Request) -> str:
-    # Get user JWT
-    jwt = get_jwt(request)
-    if not jwt or jwt.strip() == "" or jwt.startswith("Error:"):
-        logger.error("JWT token is missing, invalid, or error returned.")
-        raise HTTPException(status_code=401, detail="Unauthorized: JWT token is missing, invalid, or error returned.")
-    
+def run_olmocr_pipeline_cli(olmocr_req: OlmocrRequest, user: User) -> str:
     # Check if user has sufficient credits
     credit_manager = CreditManagerService()
-    if not credit_manager.has_sufficient_credits(task="olmocr", jwt=jwt):
+    if not credit_manager.has_sufficient_credits(task="olmocr", jwt=user.access_token):
         logger.warning("Insufficient credits to continue for olmocr task.")
         raise HTTPException(status_code=400, detail="Insufficient credits to continue. Please top up your credits.")
     
@@ -124,22 +118,16 @@ def run_olmocr_pipeline_cli(olmocr_req: OlmocrRequest, request: Request) -> str:
                     "RefName": olmocr_req.ref_name
                 }
             ],
-            jwt=jwt
+            jwt=user.access_token
         )
         
         # Finally, return the response
         return OlmocrResponse(markdown=markdown)
 
-async def run_olmocr_pipeline(olmocr_req: OlmocrRequest, request: Request) -> str:
-    # Get user JWT
-    jwt = get_jwt(request)
-    if not jwt or jwt.strip() == "" or jwt.startswith("Error:"):
-        logger.error("JWT token is missing, invalid, or error returned.")
-        raise HTTPException(status_code=401, detail="Unauthorized: JWT token is missing, invalid, or error returned.")
-    
+async def run_olmocr_pipeline(olmocr_req: OlmocrRequest, user: User) -> str:
     # Check if user has sufficient credits
     credit_manager = CreditManagerService()
-    if not credit_manager.has_sufficient_credits(task="olmocr", jwt=jwt):
+    if not credit_manager.has_sufficient_credits(task="olmocr", jwt=user.access_token):
         logger.warning("Insufficient credits to continue for olmocr task.")
         raise HTTPException(status_code=400, detail="Insufficient credits to continue. Please top up your credits.")
     
@@ -242,7 +230,7 @@ async def run_olmocr_pipeline(olmocr_req: OlmocrRequest, request: Request) -> st
                     "TriggeredByAgent": olmocr_req.agent_name
                 }
             ],
-            jwt=jwt
+            jwt=user.access_token
         )
         
         # Step 9: Finally, return the response
