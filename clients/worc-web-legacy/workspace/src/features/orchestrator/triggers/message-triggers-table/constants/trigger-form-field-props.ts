@@ -27,15 +27,20 @@ const nameProps: InputFieldProps = {
 // Name
 const mailboxProps: InputFieldProps = {
   name: "mailbox",
-  label: "Account",
+  label: "Account Id",
   isRequired: true,
-  description: "Account",
+  description: "Account Id",
 };
 
-const resourceProps: InputFieldProps = {
+const resourceProps: SelectFieldProps = {
   name: "resource",
   label: "Resource",
   description: "Resource",
+  selectOptions: [
+    { label: "Account", value: "Account" },
+    { label: "Group Chat", value: "GroupChat" },
+    { label: "Channel", value: "Channel" },
+  ],
 };
 
 const expiryDateTimeProps: DatePickerFieldProps = {
@@ -49,13 +54,13 @@ const resubscribeEnabledProps: SwitchFieldProps = {
   name: "resubscribeEnabled",
   label: "Resubscribe",
   description:
-    "Enables to resubscribe automatically after their subscription has been canceled.",
+    "Enable to maintain continuous connectivity and prevent subscription expiry.",
   defaultChecked: false,
 };
 
 const resubscribeFrequencyProps: SelectFieldProps = {
   name: "resubscribeFrequency",
-  label: "Resubscribe Frequency (in days)",
+  label: "Subscription Period (in days)",
   isRequired: true,
   selectOptions: [
     { label: "30", value: "30" },

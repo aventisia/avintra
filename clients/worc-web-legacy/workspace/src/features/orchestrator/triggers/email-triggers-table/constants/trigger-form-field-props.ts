@@ -28,7 +28,7 @@ const nameProps: InputFieldProps = {
 const mailboxProps: InputFieldProps = {
   name: "mailbox",
   type: "email",
-  label: "Account",
+  label: "Account Id",
   isRequired: true,
   description: "Enter the mail id",
 };
@@ -50,13 +50,13 @@ const resubscribeEnabledProps: SwitchFieldProps = {
   name: "resubscribeEnabled",
   label: "Resubscribe",
   description:
-    "Enables to resubscribe automatically after their subscription has been canceled.",
+    "Enable to maintain continuous connectivity and prevent subscription expiry.",
   defaultChecked: false,
 };
 
 const resubscribeFrequencyProps: SelectFieldProps = {
   name: "resubscribeFrequency",
-  label: "Resubscribe Frequency (in days)",
+  label: "Subscription Period (in days)",
   isRequired: true,
   selectOptions: [
     { label: "30", value: "30" },
@@ -66,12 +66,6 @@ const resubscribeFrequencyProps: SelectFieldProps = {
     { label: "Custom", value: "custom" },
   ],
   description: "Enter frequency.",
-};
-
-const subscriptionIdProps: InputFieldProps = {
-  name: "subscriptionId",
-  label: "Subscription Id",
-  description: "SubscriptionId",
 };
 
 const credentialIdProps: InputFieldProps = {
@@ -104,7 +98,6 @@ export {
   expiryDateTimeProps,
   resubscribeEnabledProps,
   resubscribeFrequencyProps,
-  subscriptionIdProps,
   credentialIdProps,
   providerProps,
   isDisabledProps,

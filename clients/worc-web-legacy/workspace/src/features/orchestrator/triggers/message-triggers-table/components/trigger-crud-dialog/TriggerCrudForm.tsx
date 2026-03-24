@@ -63,9 +63,11 @@ export const TriggerCrudForm = () => {
     MessageTriggerDto
   >([rowId], triggerOptimisticMutationFn, DATA_QUERY_KEY);
 
-  const resubscribeEnabled = form.watch("resubscribeEnabled");
+  // const resubscribeEnabled = form.watch("resubscribeEnabled");
   const resubscribeFrequency = form.watch("resubscribeFrequency");
+  const resubscribeFrequencyCustom = form.watch("resubscribeFrequencyCustom");
   const provider = form.watch("provider");
+
   const [selectOptions, setSelectOptions] = useState<ISelectOption[]>([]);
 
   const [, setLoading] = useState<boolean>(true);
@@ -94,14 +96,37 @@ export const TriggerCrudForm = () => {
       crudAction: crudAction,
     });
 
-    // Close the dialog if not creating the record
-    if (crudAction !== "create") setShowDialog(false);
+    // Close the dialog if not creating/updating the record
+    if (crudAction == "read") setShowDialog(false);
   };
 
   // Close dialog and reset form when mutation is successful
   useEffect(() => {
-    if (crudAction === "create" && isSuccess) setShowDialog(false);
+    if ((crudAction === "create" || crudAction === "update") && isSuccess)
+      setShowDialog(false);
   }, [isSuccess, crudAction, setShowDialog]);
+
+  useEffect(() => {
+    const baseDate = new Date();
+
+    const freq =
+      resubscribeFrequency === "custom"
+        ? Number(resubscribeFrequencyCustom)
+        : Number(resubscribeFrequency);
+
+    if (!freq || isNaN(freq)) return;
+
+    baseDate.setDate(baseDate.getDate() + freq);
+
+    form.setValue(
+      "expiryDateTime",
+      baseDate,
+      //   {
+      //   shouldValidate: true,
+      //   shouldDirty: true,
+      // }
+    );
+  }, [resubscribeFrequency, resubscribeFrequencyCustom]);
 
   // Is form in read mode?
   const isReadMode = crudAction === "read";
@@ -174,15 +199,26 @@ export const TriggerCrudForm = () => {
       )}
 
       <InputField {...mailboxProps} />
-      <InputField {...resourceProps} />
-      <div className="grid grid-cols-2 gap-2">
+      <SelectField {...resourceProps} />
+
+      <SelectField {...resubscribeFrequencyProps} />
+
+      {resubscribeFrequency == "custom" && (
+        <InputField
+          name="resubscribeFrequencyCustom"
+          label="Custom Period (in days)"
+        />
+      )}
+      <DatePickerField {...expiryDateTimeProps} disabled />
+
+      {/* <div className="grid grid-cols-2 gap-2">
         <DatePickerField {...expiryDateTimeProps} />
         <InputField type="time" name="expiryTime" step={60} label="Time" />
-      </div>
+      </div> */}
 
       <SwitchField size="sm" {...resubscribeEnabledProps} />
 
-      {resubscribeEnabled && (
+      {/* {resubscribeEnabled && (
         <>
           <SelectField {...resubscribeFrequencyProps} />
 
@@ -193,7 +229,7 @@ export const TriggerCrudForm = () => {
             />
           )}
         </>
-      )}
+      )} */}
 
       {/* Agents Selector */}
       <FormField
