@@ -392,14 +392,6 @@ class GeminiProvider(BaseLLMProvider):
             # Prepare the credit usage data
             credit_usage_data = self.build_gemini_credit_usage(llm_request, llm_response)
 
-            if credit_usage_data:
-                credit_manager = CreditManagerService()
-                credit_manager.post_credit_usage(
-                    task="gemini",
-                    request=credit_usage_data,
-                    jwt=jwt
-                )
-                
             # Initialize the CreditManagerService
             credit_manager = CreditManagerService()
 
