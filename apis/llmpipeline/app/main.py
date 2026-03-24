@@ -2,9 +2,9 @@
 from fastapi import Depends, FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from app.features.extract_file_text.extract_file_text_routes import router as extract_file_text_router
-from app.dependencies.auth import authenticate_current_user
-from app.models.user import User
+from app.dependencies.authorize import authorize
 from app.features.llm_providers.llm_providers_routes import router as llm_router
+from app.features.auth.authenticated_user import User
 from app.features.convert_to_pdf.convert_to_pdf_routes import router as convert_to_pdf_router
 from app.features.olmocr.olmocr_routes import router as olmocr_router
 
@@ -26,10 +26,10 @@ app.add_middleware(
 )
 
 # Define the root endpoint of the API
-@app.get("/", tags=["General"])
+@app.get("/health-check", tags=["General"])
 def read_root():
-    return {"message": "Welcome to the FastAPI service!"}
+    return {"message": "LLM Pipeline is running!"}
 
-@app.get("/validate", tags=["General"])
-def validate(user: User = Depends(authenticate_current_user)):
-    return {"message": f"Welcome to the FastAPI service, {user.username}!"}
+@app.get("/auth-health-check", tags=["General"])
+def validate(_user: User = Depends(authorize())):
+    return {"message": f"Welcome to the LLM Pipeline, {_user.username}!"}
