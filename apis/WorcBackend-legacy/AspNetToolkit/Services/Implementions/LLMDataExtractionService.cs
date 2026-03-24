@@ -212,6 +212,7 @@ public class LLMDataExtractionService : ILLMDataExtractionService
                 };
 
                 var jsonRequest = System.Text.Json.JsonSerializer.Serialize(requestDto);
+                client.DefaultRequestHeaders.Add("Authorization", $"Bearer {_jwt}");
                 var content = new StringContent(jsonRequest, Encoding.UTF8, "application/json");
 
                 _logger.LogInformation("Requesting file text extraction from pipeline for file URL: {fileUrl}", fileUrl);
