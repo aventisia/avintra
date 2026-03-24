@@ -1,14 +1,13 @@
 import json
 import time
+from app.features.auth.authenticated_user import User
 import httpx
 from datetime import datetime, timezone
-from fastapi import HTTPException, Request
-
+from fastapi import HTTPException
 from app.core.config import settings
 from app.core.logger import log_exception, logger
 from app.core.vault_manager import VaultManager
 from app.core.credit_manager import CreditManagerService
-from app.core.security import get_jwt
 from app.features.llm_providers.llm_providers_utils import extract_json_from_llm_response
 from app.features.llm_providers.llm_providers_schemas import (
     LLMChunkResponse,
@@ -35,30 +34,23 @@ class OpenRouterProvider(BaseLLMProvider):
         self.api_key = api_key
 
     # Handle non-streaming OpenRouter requests
-    async def generate_llm_response(self, llm_request: LLMRequest, request: Request):
+    async def generate_llm_response(self, llm_request: LLMRequest, user: User):
         logger.info(f"[NO STREAMING] Prompt sent to OpenRouter with model: {llm_request.model}")
 
-        # Extract JWT from request
-        jwt = get_jwt(request)
-
-        # Validate JWT
-        if not jwt or jwt.startswith("Error"):
-            raise HTTPException(status_code=401, detail="Unauthorized")
-
         # Validate BYOK or credits
-        self._handle_byok_and_credits(llm_request, jwt)
+        self._handle_byok_and_credits(llm_request, user.access_token)
 
         # Initialize response data
         response_data = {}
 
         # Initialize default response
-        default_response = self.create_initial_llm_response_with_defaults(llm_request)
+        default_response = self._create_initial_llm_response_with_defaults(llm_request)
 
         # Start timing
         start_time = time.perf_counter()
 
         # Build payload and headers
-        payload, headers = self.create_request_payload_and_headers(llm_request)
+        payload, headers = self._create_request_payload_and_headers(llm_request)
 
         timeout = httpx.Timeout(600.0)
 
@@ -88,12 +80,12 @@ class OpenRouterProvider(BaseLLMProvider):
                 else:
                     output = content
 
-                return self.create_final_llm_response(
+                return self._create_final_llm_response(
                     llm_request,
                     default_response,
                     start_time,
                     output,
-                    jwt,
+                    user.access_token,
                     response_data,
                 )
 
@@ -104,19 +96,12 @@ class OpenRouterProvider(BaseLLMProvider):
 
     # Handle streaming OpenRouter requests
     async def stream_llm_response(
-        self, llm_request: LLMRequest, job_id: str, request: Request
+        self, llm_request: LLMRequest, job_id: str, user: User
     ):
         logger.info(f"[STREAMING] Prompt sent to OpenRouter with model: {llm_request.model}")
 
-        # Extract JWT
-        jwt = get_jwt(request)
-
-        # Validate JWT
-        if not jwt or jwt.startswith("Error"):
-            raise HTTPException(status_code=401, detail="Unauthorized")
-
         # Validate BYOK or credits
-        self._handle_byok_and_credits(llm_request, jwt)
+        self._handle_byok_and_credits(llm_request, user.access_token)
 
         # Initialize chunk response
         chunk_response = LLMChunkResponse(
@@ -126,10 +111,10 @@ class OpenRouterProvider(BaseLLMProvider):
         )
 
         buffer_output = ""
-        default_response = self.create_initial_llm_response_with_defaults(llm_request)
+        default_response = self._create_initial_llm_response_with_defaults(llm_request)
         start_time = time.perf_counter()
 
-        payload, headers = self.create_request_payload_and_headers(llm_request)
+        payload, headers = self._create_request_payload_and_headers(llm_request)
         payload["stream"] = True
 
         timeout = httpx.Timeout(600.0)
@@ -168,7 +153,7 @@ class OpenRouterProvider(BaseLLMProvider):
 
                     if not llm_request.is_json_output:
                         # If the output is not JSON, use the method to refine the output
-                        refined_output = self.extract_json_from_llm_response(buffer_output)
+                        refined_output = extract_json_from_llm_response(buffer_output)
                         chunk_response.output = refined_output
                         yield chunk_response.model_dump_json() + "\n"
                     else:
@@ -181,12 +166,12 @@ class OpenRouterProvider(BaseLLMProvider):
                         else buffer_output
                     )
 
-                    final_response = self.create_final_llm_response(
+                    final_response = self._create_final_llm_response(
                         llm_request,
                         default_response,
                         start_time,
                         final_output,
-                        jwt,
+                        user.access_token,
                         {},
                     )
 
@@ -196,8 +181,8 @@ class OpenRouterProvider(BaseLLMProvider):
             log_exception(logger, e, "OpenRouter streaming failed")
             yield f"Failed to stream response: {e}"
 
-    # Function to build OpenRouter request payload and headers
-    def create_request_payload_and_headers(self, llm_request: LLMRequest):
+    # Helper: Build OpenRouter request payload and headers
+    def _create_request_payload_and_headers(self, llm_request: LLMRequest):
          # Initialize the messages list as an empty list
         messages = []
 
@@ -328,7 +313,7 @@ class OpenRouterProvider(BaseLLMProvider):
 
         return payload, headers
 
-    # Handle BYOK credentials or credit usage
+    # Helper: Handle BYOK credentials or credit usage
     def _handle_byok_and_credits(self, llm_request: LLMRequest, jwt: str):
         if llm_request.is_byok_enabled and llm_request.credential_id:
             vault = VaultManager()
@@ -346,8 +331,8 @@ class OpenRouterProvider(BaseLLMProvider):
             if not credit_mgr.has_sufficient_credits("openrouter", jwt):
                 raise HTTPException(400, "Insufficient credits")
 
-    # Create default LLMResponse
-    def create_initial_llm_response_with_defaults(
+    # Helper: Create default LLMResponse
+    def _create_initial_llm_response_with_defaults(
         self, llm_request: LLMRequest
     ) -> LLMResponse:
         return LLMResponse(
@@ -366,7 +351,8 @@ class OpenRouterProvider(BaseLLMProvider):
             error=None,
         )
 
-    def create_final_llm_response(self, llm_request: LLMRequest, default_llm_response_obj: LLMResponse, start_time: float, output: str, jwt: str, response_data) -> LLMResponse: 
+    # Helper: Create final LLMResponse with actual values and handle credit usage posting
+    def _create_final_llm_response(self, llm_request: LLMRequest, default_llm_response_obj: LLMResponse, start_time: float, output: str, jwt: str, response_data) -> LLMResponse: 
         # Create a copy of the default llm_response_obj
         llm_response = default_llm_response_obj   
 
@@ -390,7 +376,7 @@ class OpenRouterProvider(BaseLLMProvider):
         # If BYOK is not enabled and credential_id is not provided, post credit usage to CreditManagerService
         if not llm_request.is_byok_enabled and not llm_request.credential_id:
             # Prepare the credit usage data
-            credit_usage_data = self.build_openrouter_credit_usage(llm_request, llm_response)
+            credit_usage_data = self._build_openrouter_credit_usage(llm_request, llm_response)
 
             # Initialize the CreditManagerService
             credit_manager = CreditManagerService()
@@ -407,7 +393,7 @@ class OpenRouterProvider(BaseLLMProvider):
         return llm_response
 
     # Helper: Map OpenRouter finish_reason to OpenAI-compatible finish_reason
-    def map_openrouter_finish_reason_to_finish_reason(self, finish_reason: str) -> str:
+    def _map_openrouter_finish_reason_to_finish_reason(self, finish_reason: str) -> str:
         # Define mapping for OpenRouter finish reasons to OpenAI-compatible finish reasons
         mapping = {
             "length": "max_output_tokens",
@@ -421,7 +407,7 @@ class OpenRouterProvider(BaseLLMProvider):
         return mapping.get(finish_reason, None)
 
     # Helper: Map OpenRouter finish_reason to LLMResponse status
-    def map_openrouter_finish_reason_to_status(self, finish_reason: str) -> str:
+    def _map_openrouter_finish_reason_to_status(self, finish_reason: str) -> str:
         # Define mapping for OpenRouter finish reasons
         mapping = {
             "stop": "completed",
@@ -442,7 +428,8 @@ class OpenRouterProvider(BaseLLMProvider):
         logger.info(f"Raw OpenRouter finish_reason: {finish_reason}")
         return "unknown"
 
-    def build_openrouter_credit_usage(self, llm_request: LLMRequest, llm_response: LLMResponse):
+    # Helper: Build credit usage data for OpenRouter models based on token usage and model mapping
+    def _build_openrouter_credit_usage(self, llm_request: LLMRequest, llm_response: LLMResponse):
         """
         Build credit usage for OpenRouter models (Claude, Grok, Qwen, etc.)
         """
