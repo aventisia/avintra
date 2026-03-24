@@ -1,6 +1,7 @@
 # DeepInfra LLM Provider implementation (Using OpenAI-compatible HTTP API).
 import json
 import time
+from app.features.auth.authenticated_user import User
 import httpx
 from datetime import datetime, timezone
 from app.core.config import settings
@@ -11,8 +12,7 @@ from .llm_providers_base import BaseLLMProvider
 from app.features.llm_providers.llm_job_manager import active_llm_jobs
 from app.core.vault_manager import VaultManager
 from app.core.credit_manager import CreditManagerService
-from app.core.security import get_jwt
-from fastapi import HTTPException, Request
+from fastapi import HTTPException
 from app.utils.file_util import FileUtils
 
 class DeepInfraProvider(BaseLLMProvider):
@@ -22,22 +22,16 @@ class DeepInfraProvider(BaseLLMProvider):
         self.api_key = api_key
 
     # Method: Generate a response from the LLM
-    async def generate_llm_response(self, llm_request: LLMRequest, request: Request):
+    async def generate_llm_response(self, llm_request: LLMRequest, user: User):
         logger.info(f"[NO STREAMING] Prompt sent to DeepInfra provider with model: {llm_request.model}")
 
-        # Retrieve and validate the JWT token from the request
-        jwt = get_jwt(request)
-        if not jwt or jwt.strip() == "" or jwt.startswith("Error:"):
-            logger.error("JWT token is missing, invalid, or error returned.")
-            raise HTTPException(status_code=401, detail="Unauthorized: JWT token is missing, invalid, or error returned.")
-        
         # Handle BYOK (Bring Your Own Key) if enabled
         if llm_request.is_byok_enabled and llm_request.credential_id:
             vault_manager = VaultManager()
 
             # Fetch the credentials from the vault using the credential ID and JWT
             logger.info(f"Fetching credentials from vault for credential_id: {llm_request.credential_id}")
-            credential = vault_manager.get_vault_secret_by_id(vault_secret_id=llm_request.credential_id, jwt=jwt)
+            credential = vault_manager.get_vault_secret_by_id(vault_secret_id=llm_request.credential_id, jwt=user.access_token)
 
             if credential:
                 # Update the API URL and key from the vault credentials
@@ -51,17 +45,17 @@ class DeepInfraProvider(BaseLLMProvider):
             # If BYOK is not enabled, check the user's credits
             credential_manager = CreditManagerService()
 
-            if not credential_manager.has_sufficient_credits(task="deepinfra", jwt=jwt):
-                logger.warning(f"Insufficient credits for DeepInfra task, JWT: {jwt}")
+            if not credential_manager.has_sufficient_credits(task="deepinfra", jwt=user.access_token):
+                logger.warning(f"Insufficient credits for DeepInfra task, user: {user.username}")
                 raise HTTPException(status_code=400, detail="Insufficient credits to continue. Please top up your credits.")
 
         # Initialize
         response_data = {}
-        default_llm_response_obj = self.create_initial_llm_response_with_defaults(llm_request)
+        default_llm_response_obj = self._create_initial_llm_response_with_defaults(llm_request)
         start_time = time.perf_counter()
 
         # Get request payload and headers
-        request_payload, request_headers = self.create_request_payload_and_headers(llm_request)
+        request_payload, request_headers = self._create_request_payload_and_headers(llm_request)
         
         # Set a long timeout for potentially lengthy responses
         timeout = httpx.Timeout(600.0) # 10 minutes
@@ -92,7 +86,7 @@ class DeepInfraProvider(BaseLLMProvider):
                     output = content
                     
                 # Return final llm response
-                return self.create_final_llm_response(llm_request, default_llm_response_obj, start_time, output, jwt, response_data)
+                return self._create_final_llm_response(llm_request, default_llm_response_obj, start_time, output, user.access_token, response_data)
                 
         except Exception as e:
             log_exception(logger, e, "DeepInfra llm transactional request error: ", response_data.get('error', '')) # TODO: response_data may not have 'error' key. Not clearly documented in DeepInfra API docs.
@@ -100,14 +94,8 @@ class DeepInfraProvider(BaseLLMProvider):
             return default_llm_response_obj
 
     # TODO: Method: Streaming response generator for DeepInfra
-    async def stream_llm_response(self, llm_request: LLMRequest, job_id: str, request: Request):
+    async def stream_llm_response(self, llm_request: LLMRequest, job_id: str, user: User):
         logger.info(f"[STREAMING] Prompt sent to DeepInfra provider with model: {llm_request.model}")
-        
-        # Retrieve and validate the JWT token from the request
-        jwt = get_jwt(request)
-        if not jwt or jwt.strip() == "" or jwt.startswith("Error:"):
-            logger.error("JWT token is missing, invalid, or error returned.")
-            raise HTTPException(status_code=401, detail="Unauthorized: JWT token is missing, invalid, or error returned.")
         
         # Handle BYOK (Bring Your Own Key) if enabled
         if llm_request.is_byok_enabled and llm_request.credential_id:
@@ -115,7 +103,7 @@ class DeepInfraProvider(BaseLLMProvider):
 
             # Fetch the credentials from the vault using the credential ID and JWT
             logger.info(f"Fetching credentials from vault for credential_id: {llm_request.credential_id}")
-            credential = vault_manager.get_vault_secret_by_id(vault_secret_id=llm_request.credential_id, jwt=jwt)
+            credential = vault_manager.get_vault_secret_by_id(vault_secret_id=llm_request.credential_id, jwt=user.access_token)
 
             if credential:
                 # Update the API URL and key from the vault credentials
@@ -129,8 +117,8 @@ class DeepInfraProvider(BaseLLMProvider):
             # If BYOK is not enabled, check the user's credits
             credential_manager = CreditManagerService()
 
-            if not credential_manager.has_sufficient_credits(task="deepinfra", jwt=jwt):
-                logger.warning(f"Insufficient credits for DeepInfra task, JWT: {jwt}")
+            if not credential_manager.has_sufficient_credits(task="deepinfra", jwt=user.access_token):
+                logger.warning(f"Insufficient credits for DeepInfra task, user: {user.username}")
                 raise HTTPException(status_code=400, detail="Insufficient credits to continue. Please top up your credits.")
 
         # Initialize
@@ -140,11 +128,11 @@ class DeepInfraProvider(BaseLLMProvider):
             output=""
         )
         buffer_output = ""  # Buffer to accumulate output if is_json_output is True
-        default_llm_response_obj = self.create_initial_llm_response_with_defaults(llm_request)
+        default_llm_response_obj = self._create_initial_llm_response_with_defaults(llm_request)
         start_time = time.perf_counter()
         
         # Get request payload and headers
-        request_payload, request_headers = self.create_request_payload_and_headers(llm_request)
+        request_payload, request_headers = self._create_request_payload_and_headers(llm_request)
         
         # Set a long timeout for potentially lengthy responses
         timeout = httpx.Timeout(600.0) # 10 minutes
@@ -184,7 +172,7 @@ class DeepInfraProvider(BaseLLMProvider):
                             if finish_reason and finish_reason in ("stop", "length", "tool_calls", "content_filter", "failed"):
                                 output = extract_json_from_llm_response(buffer_output) if llm_request.is_json_output else ""
                                 full_response = chunk.get("response", {})
-                                final_llm_response = self.create_final_llm_response(llm_request, default_llm_response_obj, start_time, output, jwt, full_response)
+                                final_llm_response = self._create_final_llm_response(llm_request, default_llm_response_obj, start_time, output, user.access_token, full_response)
                                 yield final_llm_response.model_dump_json() + "\n"
                                 break
                             
@@ -201,7 +189,7 @@ class DeepInfraProvider(BaseLLMProvider):
             yield f"Failed to generate response: {e}"
             
     # Helper: Create request payload and headers
-    def create_request_payload_and_headers(self, llm_request: LLMRequest) -> tuple:
+    def _create_request_payload_and_headers(self, llm_request: LLMRequest) -> tuple:
 
         # Convert LLMMessage objects to dicts if input is a list
         if isinstance(llm_request.input, str):
@@ -273,7 +261,7 @@ class DeepInfraProvider(BaseLLMProvider):
         return request_payload, request_headers
     
     # Helper: Create llm_response object with default values
-    def create_initial_llm_response_with_defaults(self, llm_request: LLMRequest) -> LLMResponse:
+    def _create_initial_llm_response_with_defaults(self, llm_request: LLMRequest) -> LLMResponse:
         return LLMResponse(
             provider=llm_request.provider,
             model=llm_request.model,
@@ -291,7 +279,7 @@ class DeepInfraProvider(BaseLLMProvider):
         )
      
     # Helper: Create final llm_response object with actual values
-    def create_final_llm_response(self, llm_request:LLMRequest, default_llm_response_obj: LLMResponse, start_time: float, output: str, jwt: str, response_data) -> LLMResponse: 
+    def _create_final_llm_response(self, llm_request:LLMRequest, default_llm_response_obj: LLMResponse, start_time: float, output: str, jwt: str, response_data) -> LLMResponse: 
         # Create a copy of the default llm_response_obj
         llm_response = default_llm_response_obj   
         
@@ -304,8 +292,8 @@ class DeepInfraProvider(BaseLLMProvider):
         
         # Update llm_response with actual values
         llm_response.output = output
-        llm_response.status = self.map_deepinfra_finish_reason_to_status(finish_reason)
-        llm_response.finish_reason = self.map_deepinfra_finish_reason_to_finish_reason(finish_reason)
+        llm_response.status = self._map_deepinfra_finish_reason_to_status(finish_reason)
+        llm_response.finish_reason = self._map_deepinfra_finish_reason_to_finish_reason(finish_reason)
         llm_response.created_on = datetime.fromtimestamp(response_data.get("created", 0), tz=timezone.utc)
         llm_response.time_taken = round(end_time - start_time, 2)
         llm_response.input_tokens = usage.get("prompt_tokens", 0)
@@ -353,7 +341,7 @@ class DeepInfraProvider(BaseLLMProvider):
         return llm_response
 
     # Helper: Map DeepInfra finish_reason to LLMResponse status
-    def map_deepinfra_finish_reason_to_status(self, finish_reason: str) -> str:
+    def _map_deepinfra_finish_reason_to_status(self, finish_reason: str) -> str:
         mapping = {
             "stop": "completed",
             "length": "incomplete",
@@ -375,7 +363,7 @@ class DeepInfraProvider(BaseLLMProvider):
         return "unknown"
 
     # Helper: Map DeepInfra finish_reason to LLMResponse finish_reason compatible with OpenAI finish_reason
-    def map_deepinfra_finish_reason_to_finish_reason(self, finish_reason: str) -> str:
+    def _map_deepinfra_finish_reason_to_finish_reason(self, finish_reason: str) -> str:
         mapping = {
             "length": "max_output_tokens",
         }

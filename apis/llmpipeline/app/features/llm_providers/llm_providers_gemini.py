@@ -1,15 +1,13 @@
 import json
 import time
+from app.features.auth.authenticated_user import User
 import httpx
 from datetime import datetime, timezone
-from fastapi import HTTPException, Request
-
+from fastapi import HTTPException
 from app.core.config import settings
 from app.core.logger import log_exception, logger
 from app.core.vault_manager import VaultManager
 from app.core.credit_manager import CreditManagerService
-from app.core.security import get_jwt
-
 from app.features.llm_providers.llm_providers_schemas import (
     LLMChunkResponse,
     LLMRequest,
@@ -39,30 +37,23 @@ class GeminiProvider(BaseLLMProvider):
         self.api_key = api_key
 
     # Handle non-streaming Gemini LLM requests
-    async def generate_llm_response(self, llm_request: LLMRequest, request: Request):
+    async def generate_llm_response(self, llm_request: LLMRequest, user: User):
         logger.info(f"[NO STREAMING] Prompt sent to Gemini with model: {llm_request.model}")
 
-        # Extract JWT from incoming request
-        jwt = get_jwt(request)
-
-        # Validate JWT before processing request
-        if not jwt or jwt.startswith("Error"):
-            raise HTTPException(status_code=401, detail="Unauthorized")
-
         # Validate BYOK credentials or check platform credits
-        self._handle_byok_and_credits(llm_request, jwt)
+        self._handle_byok_and_credits(llm_request, user.access_token)
 
         # Initialize container for raw Gemini response
         response_data = {}
 
         # Initialize default response object
-        default_response = self.create_initial_llm_response_with_defaults(llm_request)
+        default_response = self._create_initial_llm_response_with_defaults(llm_request)
 
         # Capture request start time
         start_time = time.perf_counter()
 
         # Build Gemini request payload and headers
-        payload, headers = self.create_request_payload_and_headers(llm_request)
+        payload, headers = self._create_request_payload_and_headers(llm_request)
 
         # Define timeout for long-running requests
         timeout = httpx.Timeout(600.0)
@@ -102,7 +93,7 @@ class GeminiProvider(BaseLLMProvider):
                     output = text_output
 
                 # Return standardized LLM response
-                return self.create_final_llm_response(llm_request, default_response, start_time, output, jwt, response_data)
+                return self._create_final_llm_response(llm_request, default_response, start_time, output, user.access_token, response_data)
 
         except Exception as e:
             # Log Gemini request failure
@@ -115,19 +106,12 @@ class GeminiProvider(BaseLLMProvider):
 
     # Handle streaming Gemini LLM requests
     async def stream_llm_response(
-        self, llm_request: LLMRequest, job_id: str, request: Request
+        self, llm_request: LLMRequest, job_id: str, user: User
     ):
         logger.info(f"[STREAMING] Prompt sent to Gemini with model: {llm_request.model}")
 
-        # Extract JWT for authentication
-        jwt = get_jwt(request)
-
-        # Validate JWT before opening stream
-        if not jwt or jwt.startswith("Error"):
-            raise HTTPException(status_code=401, detail="Unauthorized")
-
         # Validate BYOK credentials or available credits
-        self._handle_byok_and_credits(llm_request, jwt)
+        self._handle_byok_and_credits(llm_request, user.access_token)
 
         # Initialize streaming chunk response object
         chunk_response = LLMChunkResponse(
@@ -140,13 +124,13 @@ class GeminiProvider(BaseLLMProvider):
         buffer_output = ""
 
         # Initialize default response metadata
-        default_response = self.create_initial_llm_response_with_defaults(llm_request)
+        default_response = self._create_initial_llm_response_with_defaults(llm_request)
 
         # Capture streaming start time
         start_time = time.perf_counter()
 
         # Build Gemini streaming payload and headers
-        payload, headers = self.create_request_payload_and_headers(llm_request)
+        payload, headers = self._create_request_payload_and_headers(llm_request)
 
         # Define timeout for streaming request
         timeout = httpx.Timeout(600.0)
@@ -205,12 +189,12 @@ class GeminiProvider(BaseLLMProvider):
                         final_output = buffer_output
 
                     # Build final response object
-                    final_response = self.create_final_llm_response(
+                    final_response = self._create_final_llm_response(
                         llm_request,
                         default_response,
                         start_time,
                         final_output,
-                        jwt,
+                        user.access_token,
                         {},
                     )
 
@@ -222,8 +206,8 @@ class GeminiProvider(BaseLLMProvider):
 
             yield f"Failed to stream response: {e}"
 
-    # Build Gemini request payload and authentication headers
-    def create_request_payload_and_headers(self, llm_request: LLMRequest):
+    # Helper: Build Gemini request payload and authentication headers
+    def _create_request_payload_and_headers(self, llm_request: LLMRequest):
         # Initialize contents list
         contents = []
         
@@ -300,7 +284,7 @@ class GeminiProvider(BaseLLMProvider):
 
         return payload, headers
     
-    # Handle BYOK credentials or enforce platform credit usage
+    # Helper: Handle BYOK credentials or enforce platform credit usage
     def _handle_byok_and_credits(self, llm_request: LLMRequest, jwt: str):
         # Use customer-provided credentials when BYOK is enabled
         if llm_request.is_byok_enabled and llm_request.credential_id:
@@ -328,7 +312,7 @@ class GeminiProvider(BaseLLMProvider):
                 raise HTTPException(400, "Insufficient credits")
 
     # Helper: Create llm_response object with default values
-    def create_initial_llm_response_with_defaults(self, llm_request: LLMRequest) -> LLMResponse:
+    def _create_initial_llm_response_with_defaults(self, llm_request: LLMRequest) -> LLMResponse:
         return LLMResponse(
             provider=llm_request.provider,
             model=llm_request.model,
@@ -345,7 +329,8 @@ class GeminiProvider(BaseLLMProvider):
             error=None
         )
 
-    def create_final_llm_response(self, llm_request: LLMRequest, default_llm_response_obj: LLMResponse, start_time: float, output: str, jwt: str, response_data) -> LLMResponse:
+    # Helper: Create final LLM response with metadata, token usage, and credit posting
+    def _create_final_llm_response(self, llm_request: LLMRequest, default_llm_response_obj: LLMResponse, start_time: float, output: str, jwt: str, response_data) -> LLMResponse:
         # Create a copy of the default llm_response_obj
         llm_response = default_llm_response_obj
         
@@ -362,10 +347,10 @@ class GeminiProvider(BaseLLMProvider):
         llm_response.output = output
         
         # Overall status of the LLM request (e.g., success, error, completed)
-        llm_response.status = self.map_gemini_finish_reason_to_status(candidates.get("finishReason", ""))
+        llm_response.status = self._map_gemini_finish_reason_to_status(candidates.get("finishReason", ""))
 
         # Reason the model stopped generating output (e.g., STOP, MAX_TOKENS, SAFETY)
-        llm_response.finish_reason = self.map_gemini_finish_reason_to_finish_reason(candidates.get("finishReason", ""))
+        llm_response.finish_reason = self._map_gemini_finish_reason_to_finish_reason(candidates.get("finishReason", ""))
 
         # Timestamp when the response object is created
         llm_response.created_on = datetime.now(timezone.utc)
@@ -390,7 +375,7 @@ class GeminiProvider(BaseLLMProvider):
         # Post credit usage only when BYOK is disabled and no credential is provided
         if not llm_request.is_byok_enabled and not llm_request.credential_id:
             # Prepare the credit usage data
-            credit_usage_data = self.build_gemini_credit_usage(llm_request, llm_response)
+            credit_usage_data = self._build_gemini_credit_usage(llm_request, llm_response)
 
             # Initialize the CreditManagerService
             credit_manager = CreditManagerService()
@@ -407,7 +392,7 @@ class GeminiProvider(BaseLLMProvider):
         return llm_response
     
     # Helper: Map Gemini finish_reason to LLMResponse status
-    def map_gemini_finish_reason_to_status(self, finish_reason: str) -> str:
+    def _map_gemini_finish_reason_to_status(self, finish_reason: str) -> str:
         # Define mapping for Gemini finish reasons
         mapping = {
             "STOP": "completed",
@@ -444,7 +429,7 @@ class GeminiProvider(BaseLLMProvider):
         return "unknown"
 
     # Helper: Map Gemini finish_reason to OpenAI-compatible finish_reason
-    def map_gemini_finish_reason_to_finish_reason(self, finish_reason: str) -> str:
+    def _map_gemini_finish_reason_to_finish_reason(self, finish_reason: str) -> str:
         # Define mapping for Gemini finish reasons to OpenAI-compatible finish reasons
         mapping = {
             "MAX_TOKENS": "max_output_tokens",  
@@ -470,7 +455,8 @@ class GeminiProvider(BaseLLMProvider):
         # Return the mapped finish_reason, or None if not found
         return mapping.get(finish_reason, None)
     
-    def build_gemini_credit_usage(self, llm_request: LLMRequest, llm_response: LLMResponse):
+    # Helper: Build Gemini credit usage
+    def _build_gemini_credit_usage(self, llm_request: LLMRequest, llm_response: LLMResponse):
         """
         Build credit usage specifically for Gemini models.
 

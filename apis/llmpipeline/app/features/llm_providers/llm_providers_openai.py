@@ -1,6 +1,7 @@
 # OpenAI LLM Provider implementation. Watch YT video for details on OpenAI new Responses APIs: https://www.youtube.com/watch?v=0pGxoubWI6s
 import json
 import time
+from app.features.auth.authenticated_user import User
 import httpx
 from datetime import datetime, timezone
 from app.core.config import settings
@@ -9,10 +10,9 @@ from app.features.llm_providers.llm_providers_schemas import LLMChunkResponse, L
 from app.features.llm_providers.llm_providers_utils import extract_json_from_llm_response
 from .llm_providers_base import BaseLLMProvider
 from app.features.llm_providers.llm_job_manager import active_llm_jobs
-from fastapi import HTTPException, Request
+from fastapi import HTTPException
 from app.core.vault_manager import VaultManager
 from app.core.credit_manager import CreditManagerService
-from app.core.security import get_jwt
 from app.utils.file_util import FileUtils
 
 class OpenAIProvider(BaseLLMProvider):
@@ -22,14 +22,8 @@ class OpenAIProvider(BaseLLMProvider):
         self.api_key = api_key
 
     # Method: Generate a response from the LLM
-    async def generate_llm_response(self, llm_request: LLMRequest, request: Request):
+    async def generate_llm_response(self, llm_request: LLMRequest, user: User):
         logger.info(f"[NO STREAMING] Prompt sent to OpenAI provider with model: {llm_request.model}")
-        
-        # Retrieve and validate the JWT token from the request
-        jwt = get_jwt(request)
-        if not jwt or jwt.strip() == "" or jwt.startswith("Error:"):
-            logger.error("JWT token is missing, invalid, or error returned.")
-            raise HTTPException(status_code=401, detail="Unauthorized: JWT token is missing, invalid, or error returned.")
         
         # Handle BYOK (Bring Your Own Key) if enabled
         if llm_request.is_byok_enabled and llm_request.credential_id:
@@ -37,7 +31,7 @@ class OpenAIProvider(BaseLLMProvider):
 
             # Fetch the credentials from the vault using the credential ID and JWT
             logger.info(f"Fetching credentials from vault for credential_id: {llm_request.credential_id}")
-            credential = vault_manager.get_vault_secret_by_id(vault_secret_id=llm_request.credential_id, jwt=jwt)
+            credential = vault_manager.get_vault_secret_by_id(vault_secret_id=llm_request.credential_id, jwt=user.access_token)
 
             if credential:
                 # Update the API URL and key from the vault credentials
@@ -51,17 +45,17 @@ class OpenAIProvider(BaseLLMProvider):
             # If BYOK is not enabled, check the user's credits
             credential_manager = CreditManagerService()
 
-            if not credential_manager.has_sufficient_credits(task="openai", jwt=jwt):
-                logger.warning(f"Insufficient credits for OpenAI task, JWT: {jwt}")
+            if not credential_manager.has_sufficient_credits(task="openai", jwt=user.access_token):
+                logger.warning(f"Insufficient credits for OpenAI task, user: {user.username}")
                 raise HTTPException(status_code=400, detail="Insufficient credits to continue. Please top up your credits.")
 
         # Initialize
         response_data = {}
-        default_llm_response_obj = self.create_initial_llm_response_with_defaults(llm_request)
+        default_llm_response_obj = self._create_initial_llm_response_with_defaults(llm_request)
         start_time = time.perf_counter()
         
         # Get request payload and headers
-        request_payload, request_headers = self.create_request_payload_and_headers(llm_request)
+        request_payload, request_headers = self._create_request_payload_and_headers(llm_request)
         
         # Set a long timeout for potentially lengthy responses
         timeout = httpx.Timeout(600.0) # 10 minutes
@@ -83,13 +77,13 @@ class OpenAIProvider(BaseLLMProvider):
                 logger.info(f"OpenAI response data:\n{json.dumps(response_data, indent=2)}")
                 
                 # Extract output text using robust helper method
-                raw_output = self.extract_output_text_from_response(response_data)
+                raw_output = self._extract_output_text_from_response(response_data)
                 
                 # Handle is_json_output if requested
                 output = extract_json_from_llm_response(raw_output) if llm_request.is_json_output else raw_output
                 
                 # Return final llm response
-                return self.create_final_llm_response(llm_request, default_llm_response_obj, start_time, output, jwt, response_data)
+                return self._create_final_llm_response(llm_request, default_llm_response_obj, start_time, output, user.access_token, response_data)
         except Exception as e:
             log_exception(logger, e, "OpenAI llm transactional request error: ", response_data.get('error', ''))
             default_llm_response_obj.error = f"Failed to generate response: {e}"
@@ -97,22 +91,16 @@ class OpenAIProvider(BaseLLMProvider):
             return default_llm_response_obj
 
     # Method: Streaming response generator for OpenAI
-    async def stream_llm_response(self, llm_request: LLMRequest, job_id: str, request: Request):
+    async def stream_llm_response(self, llm_request: LLMRequest, job_id: str, user: User):
         logger.info(f"[STREAMING] Prompt sent to OpenAI provider with model: {llm_request.model}")
 
-        # Retrieve and validate the JWT token from the request
-        jwt = get_jwt(request)
-        if not jwt or jwt.strip() == "" or jwt.startswith("Error:"):
-            logger.error("JWT token is missing, invalid, or error returned.")
-            raise HTTPException(status_code=401, detail="Unauthorized: JWT token is missing, invalid, or error returned.")
-        
         # Handle BYOK (Bring Your Own Key) if enabled
         if llm_request.is_byok_enabled and llm_request.credential_id:
             vault_manager = VaultManager()
 
             # Fetch the credentials from the vault using the credential ID and JWT
             logger.info(f"Fetching credentials from vault for credential_id: {llm_request.credential_id}")
-            credential = vault_manager.get_vault_secret_by_id(vault_secret_id=llm_request.credential_id, jwt=jwt)
+            credential = vault_manager.get_vault_secret_by_id(vault_secret_id=llm_request.credential_id, jwt=user.access_token)
 
             if credential:
                 # Update the API URL and key from the vault credentials
@@ -126,8 +114,8 @@ class OpenAIProvider(BaseLLMProvider):
             # If BYOK is not enabled, check the user's credits
             credential_manager = CreditManagerService()
 
-            if not credential_manager.has_sufficient_credits(task="openai", jwt=jwt):
-                logger.warning(f"Insufficient credits for OpenAI task, JWT: {jwt}")
+            if not credential_manager.has_sufficient_credits(task="openai", jwt=user.access_token):
+                logger.warning(f"Insufficient credits for OpenAI task, user: {user.username}")
                 raise HTTPException(status_code=400, detail="Insufficient credits to continue. Please top up your credits.")
 
         # Initialize
@@ -137,11 +125,11 @@ class OpenAIProvider(BaseLLMProvider):
             output=""
         )
         buffer_output = ""  # Buffer to accumulate output if is_json_output is True
-        default_llm_response_obj = self.create_initial_llm_response_with_defaults(llm_request)
+        default_llm_response_obj = self._create_initial_llm_response_with_defaults(llm_request)
         start_time = time.perf_counter()
         
         # Get request payload and headers
-        request_payload, request_headers = self.create_request_payload_and_headers(llm_request)
+        request_payload, request_headers = self._create_request_payload_and_headers(llm_request)
         
         # Set a long timeout for potentially lengthy responses
         timeout = httpx.Timeout(600.0) # 10 minutes
@@ -186,12 +174,12 @@ class OpenAIProvider(BaseLLMProvider):
                                 full_response = chunk.get("response", {})
                                 
                                 # Extract output text using robust helper method
-                                raw_output = self.extract_output_text_from_response(full_response)
+                                raw_output = self._extract_output_text_from_response(full_response)
                                 
                                 # Handle is_json_output if requested
                                 output = extract_json_from_llm_response(raw_output) if llm_request.is_json_output else raw_output
                                 
-                                final_llm_response = self.create_final_llm_response(llm_request, default_llm_response_obj, start_time, output, jwt, full_response)
+                                final_llm_response = self._create_final_llm_response(llm_request, default_llm_response_obj, start_time, output, user.access_token, full_response)
                                 yield final_llm_response.model_dump_json() + "\n"
                                 break
                             
@@ -208,7 +196,7 @@ class OpenAIProvider(BaseLLMProvider):
             yield f"Failed to generate response: {e}"
             
     # Helper: Create request payload and headers
-    def create_request_payload_and_headers(self, llm_request: LLMRequest) -> tuple:
+    def _create_request_payload_and_headers(self, llm_request: LLMRequest) -> tuple:
         
         # Convert LLMMessage objects to dicts if input is a list
         if isinstance(llm_request.input, str):
@@ -283,7 +271,7 @@ class OpenAIProvider(BaseLLMProvider):
         return request_payload, request_headers
     
     # Helper: Extract output text from OpenAI response structure
-    def extract_output_text_from_response(self, response_data: dict) -> str:
+    def _extract_output_text_from_response(self, response_data: dict) -> str:
         """
         Robustly extract text from OpenAI response by finding the output with type 'message'
         and content with type 'output_text', regardless of their position in the arrays.
@@ -305,7 +293,7 @@ class OpenAIProvider(BaseLLMProvider):
         return ""
     
     # Helper: Create llm_response object with default values
-    def create_initial_llm_response_with_defaults(self, llm_request: LLMRequest) -> LLMResponse:
+    def _create_initial_llm_response_with_defaults(self, llm_request: LLMRequest) -> LLMResponse:
         return LLMResponse(
             provider=llm_request.provider,
             model=llm_request.model,
@@ -323,7 +311,7 @@ class OpenAIProvider(BaseLLMProvider):
         )
      
     # Helper: Create final llm_response object with actual values
-    def create_final_llm_response(self, llm_request: LLMRequest, default_llm_response_obj: LLMResponse, start_time: float, output: str,jwt: str, response_data) -> LLMResponse: 
+    def _create_final_llm_response(self, llm_request: LLMRequest, default_llm_response_obj: LLMResponse, start_time: float, output: str,jwt: str, response_data) -> LLMResponse: 
         # Create a copy of the default llm_response_obj
         llm_response = default_llm_response_obj   
         
@@ -347,7 +335,7 @@ class OpenAIProvider(BaseLLMProvider):
         
         # If BYOK is not enabled and credential_id is not provided, post credit usage to CreditManagerService
         if not llm_request.is_byok_enabled and not llm_request.credential_id:
-            credit_usage_data = self.build_gpt_credit_usage(llm_request, llm_response)
+            credit_usage_data = self._build_gpt_credit_usage(llm_request, llm_response)
 
             # Initialize the CreditManagerService
             credit_manager = CreditManagerService()
@@ -363,7 +351,7 @@ class OpenAIProvider(BaseLLMProvider):
         # Return the final llm_response
         return llm_response
     
-    def build_gpt_credit_usage(self, llm_request: LLMRequest, llm_response: LLMResponse):
+    def _build_gpt_credit_usage(self, llm_request: LLMRequest, llm_response: LLMResponse):
         """
         Build credit usage specifically for GPT models.
 
