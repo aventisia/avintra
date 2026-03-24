@@ -1,11 +1,3 @@
-import { Sidebar } from "@aventisia/ui/layout";
-import { cn } from "@aventisia/ui/lib";
-import { ScrollArea } from "@aventisia/ui/scroll";
-import { useBaseLayoutStore } from "@aventisia/ui/stores";
-import { useEffect, useState } from "react";
-import { Outlet, useLocation, useNavigate } from "react-router-dom";
-import { useShallow } from "zustand/react/shallow";
-
 import { DotPattern } from "@/components/layout/DotPattern";
 import { IS_TAURI } from "@/constants/constants";
 import useCheckJobTrigger from "@/features/execute-flow/hooks/useCheckJobTrigger";
@@ -24,6 +16,14 @@ import { useValidateUserSession } from "@/react-toolkit/hooks/useValidateUserSes
 import { useAllowedRoutesStore } from "@/stores/allowed-routes-auth-store";
 import { useTuariUserMetadataStore } from "@/stores/tuari-user-metadata-store";
 import { getWebSocketUrl } from "@/utils/get-websocket-url";
+
+import { Sidebar } from "@aventisia/ui/layout";
+import { cn } from "@aventisia/ui/lib";
+import { ScrollArea } from "@aventisia/ui/scroll";
+import { useBaseLayoutStore } from "@aventisia/ui/stores";
+import { useEffect, useState } from "react";
+import { Outlet, useLocation, useNavigate } from "react-router-dom";
+import { useShallow } from "zustand/react/shallow";
 
 import AppBanner from "./AppBanner";
 import AppHeader from "./AppHeader";
@@ -71,9 +71,9 @@ export const AppLayout = () => {
   );
 
   // Prevent closing the Tauri app while an execution is in progress
-  usePreventClose(
-    executionState === "executing" || executionState === "paused",
-  );
+  usePreventClose({
+    isProcessing: executionState === "executing" || executionState === "paused",
+  });
 
   // Redirect to relaunch URL if available (if app is inside Tauri)
   // useRedirectOnRelaunch();
