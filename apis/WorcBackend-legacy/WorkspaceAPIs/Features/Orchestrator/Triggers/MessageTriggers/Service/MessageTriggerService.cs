@@ -6,12 +6,14 @@ public class MessageTriggerService : IMessageTriggerService
     private readonly IUnitOfWork _unitOfWork;
     private readonly Guid _userId;
     private readonly IStringEncryptionService _stringEncryptionService;
+    private readonly EnvironmentConfig _environmentConfig;
 
     public MessageTriggerService(
         ILogger<MessageTriggerService> logger,
         IUnitOfWork unitOfWork,
         IHttpContextAccessor httpContextAccessor,
-        IStringEncryptionService stringEncryptionService)
+        IStringEncryptionService stringEncryptionService,
+        EnvironmentConfig environmentConfig)
     {
         _logger = logger;
         _unitOfWork = unitOfWork;
@@ -19,6 +21,7 @@ public class MessageTriggerService : IMessageTriggerService
         // Extract user ID from JWT claim or set to Guid.Empty if not found
         _userId = Guid.Parse(httpContextAccessor.HttpContext?.User?.FindFirstValue("uid") ?? Guid.Empty.ToString());
         _stringEncryptionService = stringEncryptionService;
+        _environmentConfig = environmentConfig;
     }
 
     // Retrieves all message triggers.
@@ -134,12 +137,20 @@ public class MessageTriggerService : IMessageTriggerService
 
             // Convert DTO to Trigger entity
             var newmessageTrigger = messageTriggerDto.Adapt<Trigger>();
+            newmessageTrigger.Id = Guid.NewGuid();
 
             // Serialize MessageTriggerModel properties into Metadata JSON
             var model = (MessageTriggerModel)messageTriggerDto;
 
-            // Create or update the message subscription and update the DTO with the subscription ID
-            model = await ManagemessageTriggerSubscriptionAsync(model, "create");
+            // Create new message trigger subscription
+            var subscription = await ManagemessageTriggerSubscriptionAsync(model, "create", newmessageTrigger.Id);
+
+            // creation failed
+            if (subscription.StatusCode != 200)
+            {
+                serviceResponse.Message = subscription.Message;
+                return serviceResponse;
+            }
 
             var jsonOptions = new JsonSerializerOptions
             {
@@ -150,7 +161,7 @@ public class MessageTriggerService : IMessageTriggerService
             // Ensure enums serialize as strings
             jsonOptions.Converters.Add(new JsonStringEnumConverter());
 
-            newmessageTrigger.Metadata = JsonDocument.Parse(System.Text.Json.JsonSerializer.Serialize(model, jsonOptions));
+            newmessageTrigger.Metadata = JsonDocument.Parse(System.Text.Json.JsonSerializer.Serialize(subscription.Data, jsonOptions));
 
             // Set the TriggerType explicitly
             newmessageTrigger.TriggerType = TriggerTypesEnum.MessageTrigger;
@@ -265,9 +276,14 @@ public class MessageTriggerService : IMessageTriggerService
             // Cast DTO to MessageTriggerModel to access subscription-specific fields
             var model = (MessageTriggerModel)messageTriggerDto;
 
-            // Create or update the message subscription and update the DTO with the subscription ID
-            model = await ManagemessageTriggerSubscriptionAsync(model, "update");
+            // Update existing message trigger subscription
+            var subscription = await ManagemessageTriggerSubscriptionAsync(model, "update", messageTriggerDto.Id);
 
+            if (subscription.StatusCode != 200)
+            {
+                serviceResponse.Message = subscription.Message;
+                return serviceResponse;
+            }
             // Serialize messageTriggerModel properties into the Metadata JSON column
             var jsonOptions = new JsonSerializerOptions
             {
@@ -279,7 +295,7 @@ public class MessageTriggerService : IMessageTriggerService
             jsonOptions.Converters.Add(new JsonStringEnumConverter());
 
             // Assign the serialized Metadata to the entity
-            messageTrigger.Metadata = JsonDocument.Parse(System.Text.Json.JsonSerializer.Serialize(model, jsonOptions));
+            messageTrigger.Metadata = JsonDocument.Parse(System.Text.Json.JsonSerializer.Serialize(subscription.Data, jsonOptions));
 
             // Set audit fields to track who last modified the trigger
             messageTrigger.LastModifiedByUserId = _userId;
@@ -347,8 +363,15 @@ public class MessageTriggerService : IMessageTriggerService
                 jsonOptions
             );
 
-            // Subscribe message trigger before deleting
-            model = await ManagemessageTriggerSubscriptionAsync(model!, "delete");
+            // Remove message trigger subscription before deletion
+            var subscription = await ManagemessageTriggerSubscriptionAsync(model!, "delete", messageTriggerId);
+
+            // deletion failed at provider level
+            if (subscription.StatusCode != 200)
+            {
+                serviceResponse.Message = subscription.Message;
+                return serviceResponse;
+            }
 
             // Delete entity
             _unitOfWork.TriggerRepo.Delete(messageTrigger);
@@ -415,7 +438,15 @@ public class MessageTriggerService : IMessageTriggerService
 
                 if (model != null)
                 {
-                    await ManagemessageTriggerSubscriptionAsync(model, "delete");
+                    // Remove message trigger subscription before deletion
+                    var subscription = await ManagemessageTriggerSubscriptionAsync(model!, "delete", messageTrigger.Id);
+
+                    // deletion failed at provider level
+                    if (subscription.StatusCode != 200)
+                    {
+                        serviceResponse.Message = subscription.Message;
+                        return serviceResponse;
+                    }
                 }
             }
 
@@ -531,18 +562,26 @@ public class MessageTriggerService : IMessageTriggerService
         return serviceResponse;
     }
 
-    private async Task<MessageTriggerModel> ManagemessageTriggerSubscriptionAsync(MessageTriggerModel? messageTriggerModel, string action)
+    private async Task<ServiceResponse<MessageTriggerModel>> ManagemessageTriggerSubscriptionAsync(MessageTriggerModel? messageTriggerModel, string action, Guid triggerId)
     {
+        // initialize response with action-based failure message
+        var serviceResponse = new ServiceResponse<MessageTriggerModel>
+        {
+            Data = messageTriggerModel,
+            Message = $"Failed to {action} subscription. Please try again."
+        };
+
         // Initialize HttpClient for API requests
         using var httpClient = new HttpClient();
 
-        // Ensure mailbox value is provided
+        // Check if mailbox is provided
         if (string.IsNullOrEmpty(messageTriggerModel.Mailbox))
         {
-            _logger.LogWarning("Cannot manage subscription: Mailbox is null or empty.");
-            return messageTriggerModel;
-        }
+            _logger.LogWarning("Invalid mailbox value.");
 
+            serviceResponse.Message = "Mailbox cannot be empty.";
+            return serviceResponse;
+        }
         // Determine provider (Outlook / Gmail)
         switch (messageTriggerModel.Provider)
         {
@@ -555,15 +594,21 @@ public class MessageTriggerService : IMessageTriggerService
                     // Add Bearer token to HttpClient
                     httpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", accessToken);
 
+                    var baseUrl = _environmentConfig.AppBaseUrl?.Trim().TrimEnd('/');
+
+                    if (!baseUrl.StartsWith("http", StringComparison.OrdinalIgnoreCase))
+                        baseUrl = "https://" + baseUrl;
+                    var notificationUrl = $"{baseUrl}/worc/api/webhook/trigger/{triggerId}";
+
                     // Build subscription request body
                     var subscriptionRequest = new
                     {
                         changeType = "created",
-                        notificationUrl = "https://yourapp.com/api/message-trigger/notifications?validationToken=abc123",
-                        lifecycleNotificationUrl = "https://yourapp.com/api/message-trigger/notifications?validationToken=abc123",
+                        notificationUrl = notificationUrl,
+                        lifecycleNotificationUrl = notificationUrl,
                         resource = messageTriggerModel.Resource,
                         expirationDateTime = messageTriggerModel.ExpiryDateTime.UtcDateTime.ToString("o"),
-                        clientState = "key"
+                        clientState = messageTriggerModel.ApiKey
                     };
 
                     // Serialize request body to JSON using System.Text.Json
@@ -620,17 +665,23 @@ public class MessageTriggerService : IMessageTriggerService
 
                         default:
                             _logger.LogWarning("Unknown action for M365 subscription: {Action}", action);
-                            return messageTriggerModel;
+                            return serviceResponse;
                     }
 
                     // Check API response
                     if (!response.IsSuccessStatusCode)
                     {
                         _logger.LogError("M365 subscription {Action} failed. StatusCode: {StatusCode}", action, response.StatusCode);
-                        return messageTriggerModel;
+                        var responseContent = await response.Content.ReadAsStringAsync();
+                        serviceResponse.Message = responseContent;
+                        return serviceResponse;
                     }
 
-                    return messageTriggerModel;
+                    serviceResponse.StatusCode = 200;
+                    serviceResponse.Message = $"M365 subscription {action} successful.";
+                    serviceResponse.Data = messageTriggerModel;
+
+                    return serviceResponse;
                 }
 
             case TriggerProviderTypesEnum.Google:
@@ -673,22 +724,22 @@ public class MessageTriggerService : IMessageTriggerService
 
                         default:
                             _logger.LogWarning("Unknown action for Gmail subscription: {Action}", action);
-                            return messageTriggerModel;
+                            return serviceResponse;
                     }
 
                     // Check API response
                     if (!response.IsSuccessStatusCode)
                     {
                         _logger.LogError("Gmail subscription {Action} failed. StatusCode: {StatusCode}", action, response.StatusCode);
-                        return messageTriggerModel;
+                        return serviceResponse;
                     }
 
-                    return messageTriggerModel;
+                    return serviceResponse;
                 }
 
             default:
                 _logger.LogWarning("Unknown provider for subscription: {Provider}", messageTriggerModel.Provider);
-                return messageTriggerModel;
+                return serviceResponse;
         }
     }
 
