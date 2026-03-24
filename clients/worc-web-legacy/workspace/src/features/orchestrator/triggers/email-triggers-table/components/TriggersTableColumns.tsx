@@ -103,7 +103,21 @@ export const triggersTableColumns: ColumnDef<EmailTriggerDto>[] = [
       </div>
     ),
   },
-
+  {
+    accessorKey: "agents",
+    header: ({ column }) => (
+      <DTColumnHeader
+        tableKey={TABLE_KEY}
+        column={column}
+        title={getColumnName("agents")}
+      />
+    ),
+    cell: ({ row }) => (
+      <div className="w-auto truncate font-medium">
+        {row.getValue("agents")}
+      </div>
+    ),
+  },
   {
     accessorKey: "timezone",
     header: ({ column }) => (

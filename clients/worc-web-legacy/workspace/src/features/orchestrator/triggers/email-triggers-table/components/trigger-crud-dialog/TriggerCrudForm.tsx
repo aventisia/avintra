@@ -19,7 +19,6 @@ import { z } from "zod";
 import { getCredSelectOptions } from "../../apis/app-secret-apis.ts";
 import { triggerOptimisticMutationFn } from "../../apis/triggers-table-apis";
 import { DATA_QUERY_KEY } from "../../constants";
-import { timezoneOptions } from "../../constants/form-utils";
 import {
   expiryDateTimeProps,
   folderProps,
@@ -36,6 +35,7 @@ import { EmailTriggerDto } from "../../dtos/email-trigger-dto";
 import { useDefineTriggerForm } from "../../hooks/useDefineTriggerForm";
 import { AgentsSelector } from "./AgentsSelector";
 import { TimezoneSelector } from "./TimezoneSelector";
+import { getTimezoneOptions } from "@/react-toolkit/utils/timezone-utils.ts";
 
 export const TriggerCrudForm = () => {
   // Define trigger form
@@ -63,8 +63,8 @@ export const TriggerCrudForm = () => {
     EmailTriggerDto
   >([rowId], triggerOptimisticMutationFn, DATA_QUERY_KEY);
 
-  const resubscribeEnabled = form.watch("resubscribeEnabled");
   const resubscribeFrequency = form.watch("resubscribeFrequency");
+  const resubscribeFrequencyCustom = form.watch("resubscribeFrequencyCustom");
   const provider = form.watch("provider");
   const [selectOptions, setSelectOptions] = useState<ISelectOption[]>([]);
 
@@ -86,6 +86,21 @@ export const TriggerCrudForm = () => {
       });
   }, [provider]);
 
+  useEffect(() => {
+    const baseDate = new Date();
+
+    const freq =
+      resubscribeFrequency === "custom"
+        ? Number(resubscribeFrequencyCustom)
+        : Number(resubscribeFrequency);
+
+    if (!freq || isNaN(freq)) return;
+
+    baseDate.setDate(baseDate.getDate() + freq);
+
+    form.setValue("expiryDateTime", baseDate);
+  }, [resubscribeFrequency, resubscribeFrequencyCustom]);
+
   // Define submit handler
   const onSubmit = (formData: z.infer<typeof triggerZodSchema>) => {
     // Create or update the trigger
@@ -94,17 +109,20 @@ export const TriggerCrudForm = () => {
       crudAction: crudAction,
     });
 
-    // Close the dialog if not creating the record
-    if (crudAction !== "create") setShowDialog(false);
+    // Close the dialog if not creating/updating the record
+    if (crudAction == "read") setShowDialog(false);
   };
 
   // Close dialog and reset form when mutation is successful
   useEffect(() => {
-    if (crudAction === "create" && isSuccess) setShowDialog(false);
+    if ((crudAction === "create" || crudAction === "update") && isSuccess)
+      setShowDialog(false);
   }, [isSuccess, crudAction, setShowDialog]);
 
   // Is form in read mode?
   const isReadMode = crudAction === "read";
+
+  const timezoneOptions=getTimezoneOptions()
 
   // Return the form
   return (
@@ -175,25 +193,23 @@ export const TriggerCrudForm = () => {
 
       <InputField {...mailboxProps} />
       <InputField {...folderProps} />
-      <div className="grid grid-cols-2 gap-2">
-        <DatePickerField {...expiryDateTimeProps} />
-        <InputField type="time" name="expiryTime" step={60} label="Time" />
-      </div>
+
+      <SelectField {...resubscribeFrequencyProps} />
+
+      {resubscribeFrequency == "custom" && (
+        <InputField
+          name="resubscribeFrequencyCustom"
+          label="Custom Period (in days)"
+        />
+      )}
+      <DatePickerField {...expiryDateTimeProps} disabled />
+
+      {/* <div className="grid grid-cols-2 gap-2"> */}
+      {/* <DatePickerField {...expiryDateTimeProps} /> */}
+      {/* <InputField type="time" name="expiryTime" step={60} label="Time" /> */}
+      {/* </div> */}
 
       <SwitchField size="sm" {...resubscribeEnabledProps} />
-
-      {resubscribeEnabled && (
-        <>
-          <SelectField {...resubscribeFrequencyProps} />
-
-          {resubscribeFrequency == "custom" && (
-            <InputField
-              name="resubscribeFrequencyCustom"
-              label="Custom Frequency (in days)"
-            />
-          )}
-        </>
-      )}
 
       {/* Agents Selector */}
       <FormField

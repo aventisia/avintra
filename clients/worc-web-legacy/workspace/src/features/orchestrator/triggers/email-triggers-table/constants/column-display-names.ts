@@ -7,6 +7,7 @@ export const columnDisplayNames: KeyValueLookupType[] = [
   { key: "mailbox", value: "Account" },
   { key: "folder", value: "Folder" },
   { key: "expiryDateTime", value: "Expiry Date" },
+  { key: "agents", value: "Agent(s)" },
   { key: "timezone", value: "Timezone" },
   { key: "resubscribeEnabled", value: "Resubscribe Enabled (in days)" },
   { key: "resubscribeFrequency", value: "Frequency" },
