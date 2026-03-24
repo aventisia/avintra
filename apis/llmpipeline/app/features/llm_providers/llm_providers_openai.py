@@ -349,14 +349,6 @@ class OpenAIProvider(BaseLLMProvider):
         if not llm_request.is_byok_enabled and not llm_request.credential_id:
             credit_usage_data = self.build_gpt_credit_usage(llm_request, llm_response)
 
-            if credit_usage_data:
-                credit_manager = CreditManagerService()
-                credit_manager.post_credit_usage(
-                    task="openai",
-                    request=credit_usage_data,
-                    jwt=jwt
-                )
-                
             # Initialize the CreditManagerService
             credit_manager = CreditManagerService()
 
