@@ -32,9 +32,14 @@ public class MessageTriggerMappingProfile : IRegister
                     dest.Provider = model.Provider;
                 }
             })
-            .Map(dest => dest.AgentIds,
+            .Map(dest => dest.Agents,
                 src => src.TriggerFlowVersions != null
-                    ? src.TriggerFlowVersions.Select(s => s.FlowVersionId).ToList()
+                    ? src.TriggerFlowVersions.Select(s => new AgentInfoDto()
+                    {
+                        Id = s.FlowVersion.Id,
+                        Name = s.FlowVersion.Flow.Name,
+                        VersionNumber = s.FlowVersion.VersionNumber
+                    }).ToList()
                     : null)
             .Map(dest => dest.CreatedBy,
                 src => src.CreatedByUser != null

@@ -40,6 +40,8 @@ public class EmailTriggerService : IEmailTriggerService
                 .Include(i => i.CreatedByUser)
                 .Include(i => i.LastModifiedByUser)
                 .Include(i => i.TriggerFlowVersions)
+                    .ThenInclude(i2 => i2.FlowVersion)
+                        .ThenInclude(i3 => i3.Flow)
                 .AsNoTracking()
                 .ToListAsync();
 
@@ -75,6 +77,8 @@ public class EmailTriggerService : IEmailTriggerService
                 .Include(i => i.CreatedByUser)
                 .Include(i => i.LastModifiedByUser)
                 .Include(i => i.TriggerFlowVersions)
+                    .ThenInclude(i2 => i2.FlowVersion)
+                        .ThenInclude(i3 => i3.Flow)
                 .AsNoTracking()
                 .SingleOrDefaultAsync();
 
@@ -169,13 +173,16 @@ public class EmailTriggerService : IEmailTriggerService
             }
 
             // Retrieve all agents from the database that are linked to the provided email trigger DTO.
-            // Only include agents whose IDs are in emailTriggerDto.AgentIds and are marked as published.
-            var agents = await _unitOfWork.FlowVersionRepo
-                .GetByConditionAsync(w =>
-                    emailTriggerDto.AgentIds.Contains(w.Id) &&
-                    w.IsPublished
-                )
-                .ToListAsync();
+            // Only include agents whose IDs are in emailTriggerDto.Agents and are marked as published.
+            var agentIds = emailTriggerDto.Agents?
+                .Select(a => a.Id)
+                .ToList();
+
+            var agents = agentIds != null && agentIds.Any()
+                ? await _unitOfWork.FlowVersionRepo
+                    .GetByConditionAsync(w => agentIds.Contains(w.Id) && w.IsPublished)
+                    .ToListAsync()
+                : new List<FlowVersion>();
 
             // Proceed only if matching agents are found.
             if (agents.Count > 0)

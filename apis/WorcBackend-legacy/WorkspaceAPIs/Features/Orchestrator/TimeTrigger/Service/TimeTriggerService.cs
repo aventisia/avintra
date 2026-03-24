@@ -122,14 +122,17 @@ public class TimeTriggerService(
                 return serviceResponse;
             }
 
-            // Fetch the agents from the database who are associated with the provided trigger DTO.
-            // It checks if the agent's ID is in the list of AgentIds and if the agent is published.
-            var agents = await _unitOfWork.FlowVersionRepo
-                .GetByConditionAsync(w =>
-                    triggerDto.AgentIds.Contains(w.Id) &&
-                    w.IsPublished
-                )
-                .ToListAsync();
+            // Retrieve all agents from the database that are linked to the provided email trigger DTO.
+            // Only include agents whose IDs are in emailTriggerDto.Agents and are marked as published.
+            var agentIds = triggerDto.Agents?
+                .Select(a => a.Id)
+                .ToList();
+
+            var agents = agentIds != null && agentIds.Any()
+                ? await _unitOfWork.FlowVersionRepo
+                    .GetByConditionAsync(w => agentIds.Contains(w.Id) && w.IsPublished)
+                    .ToListAsync()
+                : new List<FlowVersion>();
 
             // If we found any agents that match the criteria, proceed with creating time trigger flow versions.
             if (agents.Count > 0)
@@ -251,7 +254,9 @@ public class TimeTriggerService(
             }
 
             // Handle updating the associated agents for the time trigger
-            var currentAgentIds = triggerDto.AgentIds ?? new List<Guid>();
+            var currentAgentIds = triggerDto.Agents?
+                .Select(a => a.Id)
+                .ToList() ?? new List<Guid>();
 
             // Get the list of agent IDs currently linked to the time trigger
             var existingAgentIds = trigger.TimeTriggerFlowVersions
@@ -418,6 +423,8 @@ public class TimeTriggerService(
                 .Include(i => i.CreatedByUser)
                 .Include(i => i.LastModifiedByUser)
                 .Include(i => i.TimeTriggerFlowVersions)
+                    .ThenInclude(i2 => i2.FlowVersion)
+                        .ThenInclude(i3 => i3.Flow)
                 .AsNoTracking()
                 .ToListAsync();
 

@@ -89,9 +89,9 @@ public class TimeTriggerDto
     public List<DateOnly>? ExceptionDates { get; set; }
 
     /// <summary>
-    /// Gets or sets the list of agent IDs associated with the time trigger.
+    /// Gets or sets the collection of agents associated with the email trigger, including their identifiers, names, and versions.
     /// </summary>
-    public List<Guid>? AgentIds { get; set; }
+    public List<AgentInfoDto>? Agents { get; set; }
 
     /// <summary>
     /// Gets or sets a flag indicating whether the time trigger is disabled.
