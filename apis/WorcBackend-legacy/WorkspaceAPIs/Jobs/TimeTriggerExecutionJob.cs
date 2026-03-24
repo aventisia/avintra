@@ -21,7 +21,7 @@ public class TimeTriggerExecutionJob : IJob
         try
         {
             // Get current UTC time
-            var currentUtcTime = DateTimeOffset.UtcNow;
+            var currentUtcTime = DateTimeOffset.UtcNow.ToUniversalTime();
 
             _logger.LogInformation($"Job started at {currentUtcTime:O}");
             // Check if execution is disabled in the current environment.
@@ -32,15 +32,24 @@ public class TimeTriggerExecutionJob : IJob
             }
 
             // Define the current minute time window
-            var startOfCurrentMinute = currentUtcTime.Date.AddHours(currentUtcTime.Hour).AddMinutes(currentUtcTime.Minute);
+            var startOfCurrentMinute = new DateTimeOffset(
+                currentUtcTime.Year,
+                currentUtcTime.Month,
+                currentUtcTime.Day,
+                currentUtcTime.Hour,
+                currentUtcTime.Minute,
+                0,
+                TimeSpan.Zero
+            );
+
             var endOfCurrentMinute = startOfCurrentMinute.AddMinutes(1);
 
             // Retrieve triggers that should fire during this minute
             var triggersToExecute = await _workspaceInternalDbContext.TimeTriggers
                 .Where(trigger =>
                     trigger.NextTriggerTime >= startOfCurrentMinute && trigger.NextTriggerTime < endOfCurrentMinute &&
-                    trigger.EffectiveDate.Date <= currentUtcTime.Date &&
-                    (trigger.EndDate == null || trigger.EndDate >= currentUtcTime.Date)
+                    trigger.EffectiveDate <= currentUtcTime &&
+                    (trigger.EndDate == null || trigger.EndDate >= currentUtcTime)
                 )
                 .Include(i => i.TimeTriggerFlowVersions)
                 .ToListAsync();
