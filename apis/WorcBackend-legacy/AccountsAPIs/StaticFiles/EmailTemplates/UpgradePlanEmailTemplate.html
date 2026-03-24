@@ -31,25 +31,25 @@
       .on-light {
         display: block;
       }
+      .logo-wrap { display:inline-flex; align-items:center; gap:8px; text-decoration:none; }
+      .logo-text  { font-size:18px; font-weight:700; color:#1e1b4b; font-family:Arial,sans-serif; }
       .link {
         text-decoration: none;
         color: #4f46e5;
       }
-      .header-link {
-        letter-spacing: 0.01rem;
-        font-size: 0.95rem;
-        font-weight: 400;
-        color: #1f2937;
-        text-decoration: none;
-        padding: 0.2rem 0.8rem 0.2rem 0.9rem;
-        background-color: #f1f5f9;
-        border-radius: 1rem;
-        display: block;
+      .header-link { 
+        letter-spacing:0.01rem; 
+        font-size:0.95rem; 
+        font-weight:400; 
+        color:#1f2937; 
+        text-decoration:none; 
+        padding:0.2rem 0.8rem 0.2rem 0.9rem; 
+        background-color:#f1f5f9; 
+        border-radius:1rem; 
+        display:inline-block;
+        white-space:nowrap; 
       }
-      .open-link {
-        height: 0.9rem;
-        margin-left: 0.1rem;
-      }
+      .logo-text { color:#ffffff !important; }
       .h-separator {
         width: 90%;
         height: 0.5px;
@@ -149,36 +149,15 @@
       <div class="container">
         <table class="header">
           <td style="width: 100%">
-            <a href="http://www.aventisia.com" target="_blank" class="link">
-              <img
-                class="on-dark"
-                src="data:image/svg+xml;base64,PHN2ZyBoZWlnaHQ9IjI4IiB2aWV3Qm94PSIwIDAgNjI3IDExOCINCiAgICB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIGZpbGwtcnVsZT0iZXZlbm9kZCIgY2xpcC1ydWxlPSJldmVub2RkIiBzdHJva2UtbGluZWpvaW49InJvdW5kIiBzdHJva2UtbWl0ZXJsaW1pdD0iMiI+DQogICAgPHBhdGggZmlsbD0iI2ZmZmZmZiIgZD0iTTE5Ni4yMyA2NC44NDNsMTEuMTkyLTMxLjczOCAxMS4xOTQgMzEuNzM4SDE5Ni4yM3ptNS42NTgtNDkuNDEzbC0zNS40MTcgODQuOTc1aDE1LjA5NWw5LjcxNi0yMi42MzJoMzIuODg1bDkuMzYxIDIyLjYzMmgxNS4wNzdMMjEyLjk2IDE1LjQzaC0xMS4wN3ptNjIuNjQ5IDY4LjA3OEwyNDguNDQgMzcuMzUyaC0xNC42OTdsMjUuMzgxIDYzLjA1NGgxMC44MWwyNS4zOC02My4wNTRoLTE0LjkyOWwtMTUuODQ3IDQ2LjE1NnptNDIuODA0LTIwLjIwNmMyLjI3NS05LjcxNCA5LjM4My0xNS43MzQgMTkuOTg1LTE1LjYyOCAxMS4wMy0uMDg2IDE4LjAyIDUuODQ4IDE5Ljc3MyAxNS42MjhoLTM5Ljc1OHptMTkuNzQ2LTI3LjQ5Yy0yOS41NTUtLjE5My00NC41OCAzNi4wNDItMjMuNDM2IDU2LjYzMSAxNS4wNzggMTUuMTE5IDQ1LjQ1NiAxMS45NzQgNTMuODIxLTguODc4aC0xNC43NDRjLTQuMTM5IDQuNjgxLTguNDEgNi41MTctMTUuMDQ4IDYuNTE3LTEwLjYwOC4wNDItMTguMTYtNi4xMjktMTkuNzczLTE1LjUwOGg1MS40MTJjMi45NzctMjAuMjQyLTExLjM4Ny0zOS4wNzEtMzIuMjMyLTM4Ljc2Mm03Mi40NiAwYy04LjEzNC0uMTk3LTEzLjg2IDMuNDItMTkuNzgyIDkuNTY0di04LjAyNGgtMTEuOTgzdjYzLjA1M2gxMy4xNjh2LTI5LjYzYzAtOS4xOTEuNjU1LTEzLjAzNSAyLjgwOC0xNi40NTcgMi43MjgtNC4yODUgNy4yNC02LjY0NCAxMi43MDYtNi42NDQgOC41NTYgMCAxMy44NiAzLjY2NyAxMy44NiAyMS45MTZ2MzAuODE1aDEzLjE2NVY2Ni41MDljMC0xMS40NS0xLjEzNi0xNi45NDItNC41MDgtMjEuNzc3LTQuMDQyLTUuODM2LTEwLjc2Mi04LjkyLTE5LjQzNC04LjkybTUwLjg1NS0yMC4zODFoLTEzLjE2NnYyMS45MjFoLTcuNzAzdjExLjc0NWg3LjcwM3Y1MS4zMDloMTMuMTY2VjQ5LjA5N2g5LjQ4VjM3LjM1MmgtOS40OFYxNS40MzF6IiBmaWxsLXJ1bGU9Im5vbnplcm8iIC8+DQogICAgPHBhdGggZmlsbD0iI2ZmZmZmZiIgZD0iTTQ2Ny4xNDUgMzcuMzUyaDEzLjE2OHY2My4wNTRoLTEzLjE2OHptLjExOS0yMS45MjFoMTMuMTY4djEzLjE2OGgtMTMuMTY4eiIgLz4NCiAgICA8cGF0aCBmaWxsPSIjZmZmZmZmIiBkPSJNNTE0LjcgNjIuODg2Yy0xMC42Ny0zLjQtMTIuMDQzLTMuODM4LTEyLjA0My04LjM0NS0uMDMtOC4wNzMgMTIuNDI1LTkuNTE1IDE0LjUwNy0xLjY1MWgxMi45OThjLS45NjktMTAuMjg5LTkuOTU4LTE3LjE4NC0yMC4xNjUtMTcuMDc3LTExLjQ5OCAwLTIwLjUwNiA4LjIyNi0yMC41MDYgMTguNzI4IDAgNC41NDYgMS4yMzUgNy45NzIgMy44ODMgMTAuNzgyIDIuNzIgMi44ODUgNy4wMDUgNS4yNDMgMTMuNDgzIDcuNDIzIDEwLjMzNiAzLjQ4NSAxMi4wMjIgNC44MzYgMTIuMDIyIDkuNjQyIDAgNC4zODctMy42MTQgNy42OTUtOC40MDcgNy42OTUtNC45NSAwLTcuOTgzLTIuNDU3LTkuNzM1LTcuOTRoLTEzLjQ0YzEuODA2IDEyLjY4NCA5Ljc3NSAxOS44MzYgMjIuNTgyIDE5LjgwMyAxMi40MyAwIDIyLjE2Ni05LjI2NyAyMi4xNjYtMjEuMSAwLTQuNzUyLTEuMTE3LTguMDcxLTMuNjItMTAuNzU4LTIuNjM0LTIuODI1LTYuOTkyLTUuMTEzLTEzLjcyNi03LjIwMiIgZmlsbC1ydWxlPSJub256ZXJvIiAvPg0KICAgIDxwYXRoIGZpbGw9IiNmZmZmZmYiIGQ9Ik01MzguNjIgMTUuNDMxaDEzLjE2NXYxMy4xNjhINTM4LjYyem0tLjExOSAyMS45MjFoMTMuMTY2djYzLjA1NGgtMTMuMTY2eiIgLz4NCiAgICA8cGF0aCBmaWxsPSIjZmZmZmZmIiBkPSJNNTkzLjQ3NyA5MC4wODJjLTEyLjIwNyAwLTIwLjczMi04LjQ3NS0yMC43MzItMjAuNjEuMDY0LTI4Ljk5IDQwLjk3My0yOC45NCA0MS4xMDYtLjEyIDAgMTIuMjA3LTguMzc5IDIwLjczLTIwLjM3NCAyMC43M20yMC44NDgtNTIuNzN2MTEuMzQ1bC0yLjMzMi0zLjA5M2MtOS40ODYtMTQuMTU3LTMyLjg1My0xMS44ODktNDMuNDc0LS4zOTgtMTEuODk3IDExLjY3MS0xMi4wNjggMzUuNzk3LS4wOSA0Ny40OTIgNy44ODEgOC42MDMgMjMuNDYzIDExLjkwNyAzNC4yNjMgNi45OTggNC4wNTEtMS42NzIgOC4zNC02IDExLjYzMy05Ljk1MXYxMC42NjFoMTEuODY0VjM3LjM1MmgtMTEuODY0eiIgZmlsbC1ydWxlPSJub256ZXJvIiAvPg0KICAgIDxwYXRoIGZpbGw9IiM0ZjQ2ZTUiIGQ9Ik0zNS4yMzUgOTguMDc0Yy04LjY4MyAwLTE1LjczLTcuMDQ3LTE1LjczLTE1LjczLjg3OS0yMC44NSAzMC41NzUtMjAuODQ0IDMxLjQ2IDAgMCA4LjY4My03LjA2MyAxNS43My0xNS43MyAxNS43M20wLTUwLjk2NUMxNS44MDkgNDcuMTA5IDAgNjIuOTE3IDAgODIuMzQ0YzEuOTMzIDQ2Ljc3MyA2OC41NTQgNDYuNzQzIDcwLjQ4NiAwIDAtMTkuNDI3LTE1LjgyNC0zNS4yMzUtMzUuMjUxLTM1LjIzNSIgZmlsbC1ydWxlPSJub256ZXJvIiAvPg0KICAgIDxwYXRoIGZpbGw9IiM0ZjQ2ZTUiIGQ9Ik0xMzQuMDY0IDExMy43MTlsLTI3LjU4My0uMjE4LTUxLjc4NC04OS43MjZMNDUuOTQgMzguOTUgMzIuMjIgMTUuMTc1IDQwLjk4LjAxMlYwaDI3LjQ1bDY1LjYzNCAxMTMuNzE5eiIgZmlsbC1ydWxlPSJub256ZXJvIiAvPg0KPC9zdmc+"
-                alt="Aventisia Logo"
-              />
-              <img
-                class="on-light"
-                src="data:image/svg+xml;base64,PHN2ZyBoZWlnaHQ9IjI4IiB2aWV3Qm94PSIwIDAgNjI3IDExOCINCiAgICB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIGZpbGwtcnVsZT0iZXZlbm9kZCIgY2xpcC1ydWxlPSJldmVub2RkIiBzdHJva2UtbGluZWpvaW49InJvdW5kIiBzdHJva2UtbWl0ZXJsaW1pdD0iMiI+DQogICAgPHBhdGggZmlsbD0iIzFlMWI0YiIgZD0iTTE5Ni4yMyA2NC44NDNsMTEuMTkyLTMxLjczOCAxMS4xOTQgMzEuNzM4SDE5Ni4yM3ptNS42NTgtNDkuNDEzbC0zNS40MTcgODQuOTc1aDE1LjA5NWw5LjcxNi0yMi42MzJoMzIuODg1bDkuMzYxIDIyLjYzMmgxNS4wNzdMMjEyLjk2IDE1LjQzaC0xMS4wN3ptNjIuNjQ5IDY4LjA3OEwyNDguNDQgMzcuMzUyaC0xNC42OTdsMjUuMzgxIDYzLjA1NGgxMC44MWwyNS4zOC02My4wNTRoLTE0LjkyOWwtMTUuODQ3IDQ2LjE1NnptNDIuODA0LTIwLjIwNmMyLjI3NS05LjcxNCA5LjM4My0xNS43MzQgMTkuOTg1LTE1LjYyOCAxMS4wMy0uMDg2IDE4LjAyIDUuODQ4IDE5Ljc3MyAxNS42MjhoLTM5Ljc1OHptMTkuNzQ2LTI3LjQ5Yy0yOS41NTUtLjE5My00NC41OCAzNi4wNDItMjMuNDM2IDU2LjYzMSAxNS4wNzggMTUuMTE5IDQ1LjQ1NiAxMS45NzQgNTMuODIxLTguODc4aC0xNC43NDRjLTQuMTM5IDQuNjgxLTguNDEgNi41MTctMTUuMDQ4IDYuNTE3LTEwLjYwOC4wNDItMTguMTYtNi4xMjktMTkuNzczLTE1LjUwOGg1MS40MTJjMi45NzctMjAuMjQyLTExLjM4Ny0zOS4wNzEtMzIuMjMyLTM4Ljc2Mm03Mi40NiAwYy04LjEzNC0uMTk3LTEzLjg2IDMuNDItMTkuNzgyIDkuNTY0di04LjAyNGgtMTEuOTgzdjYzLjA1M2gxMy4xNjh2LTI5LjYzYzAtOS4xOTEuNjU1LTEzLjAzNSAyLjgwOC0xNi40NTcgMi43MjgtNC4yODUgNy4yNC02LjY0NCAxMi43MDYtNi42NDQgOC41NTYgMCAxMy44NiAzLjY2NyAxMy44NiAyMS45MTZ2MzAuODE1aDEzLjE2NVY2Ni41MDljMC0xMS40NS0xLjEzNi0xNi45NDItNC41MDgtMjEuNzc3LTQuMDQyLTUuODM2LTEwLjc2Mi04LjkyLTE5LjQzNC04LjkybTUwLjg1NS0yMC4zODFoLTEzLjE2NnYyMS45MjFoLTcuNzAzdjExLjc0NWg3LjcwM3Y1MS4zMDloMTMuMTY2VjQ5LjA5N2g5LjQ4VjM3LjM1MmgtOS40OFYxNS40MzF6IiBmaWxsLXJ1bGU9Im5vbnplcm8iIC8+DQogICAgPHBhdGggZmlsbD0iIzFlMWI0YiIgZD0iTTQ2Ny4xNDUgMzcuMzUyaDEzLjE2OHY2My4wNTRoLTEzLjE2OHptLjExOS0yMS45MjFoMTMuMTY4djEzLjE2OGgtMTMuMTY4eiIgLz4NCiAgICA8cGF0aCBmaWxsPSIjMWUxYjRiIiBkPSJNNTE0LjcgNjIuODg2Yy0xMC42Ny0zLjQtMTIuMDQzLTMuODM4LTEyLjA0My04LjM0NS0uMDMtOC4wNzMgMTIuNDI1LTkuNTE1IDE0LjUwNy0xLjY1MWgxMi45OThjLS45NjktMTAuMjg5LTkuOTU4LTE3LjE4NC0yMC4xNjUtMTcuMDc3LTExLjQ5OCAwLTIwLjUwNiA4LjIyNi0yMC41MDYgMTguNzI4IDAgNC41NDYgMS4yMzUgNy45NzIgMy44ODMgMTAuNzgyIDIuNzIgMi44ODUgNy4wMDUgNS4yNDMgMTMuNDgzIDcuNDIzIDEwLjMzNiAzLjQ4NSAxMi4wMjIgNC44MzYgMTIuMDIyIDkuNjQyIDAgNC4zODctMy42MTQgNy42OTUtOC40MDcgNy42OTUtNC45NSAwLTcuOTgzLTIuNDU3LTkuNzM1LTcuOTRoLTEzLjQ0YzEuODA2IDEyLjY4NCA5Ljc3NSAxOS44MzYgMjIuNTgyIDE5LjgwMyAxMi40MyAwIDIyLjE2Ni05LjI2NyAyMi4xNjYtMjEuMSAwLTQuNzUyLTEuMTE3LTguMDcxLTMuNjItMTAuNzU4LTIuNjM0LTIuODI1LTYuOTkyLTUuMTEzLTEzLjcyNi03LjIwMiIgZmlsbC1ydWxlPSJub256ZXJvIiAvPg0KICAgIDxwYXRoIGZpbGw9IiMxZTFiNGIiIGQ9Ik01MzguNjIgMTUuNDMxaDEzLjE2NXYxMy4xNjhINTM4LjYyem0tLjExOSAyMS45MjFoMTMuMTY2djYzLjA1NGgtMTMuMTY2eiIgLz4NCiAgICA8cGF0aCBmaWxsPSIjMWUxYjRiIiBkPSJNNTkzLjQ3NyA5MC4wODJjLTEyLjIwNyAwLTIwLjczMi04LjQ3NS0yMC43MzItMjAuNjEuMDY0LTI4Ljk5IDQwLjk3My0yOC45NCA0MS4xMDYtLjEyIDAgMTIuMjA3LTguMzc5IDIwLjczLTIwLjM3NCAyMC43M20yMC44NDgtNTIuNzN2MTEuMzQ1bC0yLjMzMi0zLjA5M2MtOS40ODYtMTQuMTU3LTMyLjg1My0xMS44ODktNDMuNDc0LS4zOTgtMTEuODk3IDExLjY3MS0xMi4wNjggMzUuNzk3LS4wOSA0Ny40OTIgNy44ODEgOC42MDMgMjMuNDYzIDExLjkwNyAzNC4yNjMgNi45OTggNC4wNTEtMS42NzIgOC4zNC02IDExLjYzMy05Ljk1MXYxMC42NjFoMTEuODY0VjM3LjM1MmgtMTEuODY0eiIgZmlsbC1ydWxlPSJub256ZXJvIiAvPg0KICAgIDxwYXRoIGZpbGw9IiM0ZjQ2ZTUiIGQ9Ik0zNS4yMzUgOTguMDc0Yy04LjY4MyAwLTE1LjczLTcuMDQ3LTE1LjczLTE1LjczLjg3OS0yMC44NSAzMC41NzUtMjAuODQ0IDMxLjQ2IDAgMCA4LjY4My03LjA2MyAxNS43My0xNS43MyAxNS43M20wLTUwLjk2NUMxNS44MDkgNDcuMTA5IDAgNjIuOTE3IDAgODIuMzQ0YzEuOTMzIDQ2Ljc3MyA2OC41NTQgNDYuNzQzIDcwLjQ4NiAwIDAtMTkuNDI3LTE1LjgyNC0zNS4yMzUtMzUuMjUxLTM1LjIzNSIgZmlsbC1ydWxlPSJub256ZXJvIiAvPg0KICAgIDxwYXRoIGZpbGw9IiM0ZjQ2ZTUiIGQ9Ik0xMzQuMDY0IDExMy43MTlsLTI3LjU4My0uMjE4LTUxLjc4NC04OS43MjZMNDUuOTQgMzguOTUgMzIuMjIgMTUuMTc1IDQwLjk4LjAxMlYwaDI3LjQ1bDY1LjYzNCAxMTMuNzE5eiIgZmlsbC1ydWxlPSJub256ZXJvIiAvPg0KPC9zdmc+"
-                alt="Aventisia Logo"
-              />
+            <a href="http://www.aventisia.com" target="_blank" class="logo-wrap">
+              <img class="on-light" src="https://worc.aventisia.com/worc/favicon.svg" height="28" alt="Aventisia" style="display:inline-block;vertical-align:middle;border:0;"/>
+              <img class="on-dark"  src="https://worc.aventisia.com/worc/favicon.svg" height="28" alt="Aventisia" style="display:none;vertical-align:middle;border:0;"/>
+              <span class="logo-text">Aventisia</span>
             </a>
           </td>
           <td>
             <a href="http://www.aventisia.com" target="_blank" class="header-link">
-              <table>
-                <td>aventisia.com</td>
-                <td>
-                  <img
-                    class="open-link on-dark"
-                    src="data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHN0cm9rZT0iI2ZmZmZmZiIgd2lkdGg9IjIwIiBoZWlnaHQ9IjIwIiB2aWV3Qm94PSIwIDAgMjQgMjQiIGZpbGw9Im5vbmUiIHN0cm9rZS13aWR0aD0iMi40IiBzdHJva2UtbGluZWNhcD0icm91bmQiIHN0cm9rZS1saW5lam9pbj0icm91bmQiPg0KICAgIDxwYXRoIGQ9Ik0yMSAxM3Y2YTIgMiAwIDAgMS0yIDJINWEyIDIgMCAwIDEtMi0yVjVhMiAyIDAgMCAxIDItMmg2IiAvPg0KICAgIDxwYXRoIGQ9Im0yMSAzLTkgOSIgLz4NCiAgICA8cGF0aCBkPSJNMTUgM2g2djYiIC8+DQo8L3N2Zz4="
-                    alt="Open Website"
-                  />
-                  <img
-                    class="open-link on-light"
-                    src="data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHN0cm9rZT0iIzRmNDZlNSIgd2lkdGg9IjIwIiBoZWlnaHQ9IjIwIiB2aWV3Qm94PSIwIDAgMjQgMjQiIGZpbGw9Im5vbmUiIHN0cm9rZS13aWR0aD0iMi40IiBzdHJva2UtbGluZWNhcD0icm91bmQiIHN0cm9rZS1saW5lam9pbj0icm91bmQiPg0KICAgIDxwYXRoIGQ9Ik0yMSAxM3Y2YTIgMiAwIDAgMS0yIDJINWEyIDIgMCAwIDEtMi0yVjVhMiAyIDAgMCAxIDItMmg2IiAvPg0KICAgIDxwYXRoIGQ9Im0yMSAzLTkgOSIgLz4NCiAgICA8cGF0aCBkPSJNMTUgM2g2djYiIC8+DQo8L3N2Zz4="
-                    alt="Open Website"
-                  />
-                </td>
-              </table>
+              aventisia.com
             </a>
           </td>
         </table>
