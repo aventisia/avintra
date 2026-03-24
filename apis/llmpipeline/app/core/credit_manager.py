@@ -65,7 +65,7 @@ class CreditManagerService:
             
         # Try to post credit usage
         try:
-            logger.info(f"OpenAI response data:\n{json.dumps(request, indent=2)}")
+            logger.info(f"Credit usage post list:\n{json.dumps(request, indent=2)}")
             response = requests.post(f"{self.api_url}/bulk", json=request, headers=headers, timeout=60)
             response.raise_for_status()
             logger.info(f"CreditManagerService: Successfully posted credit usage for task {task}")
