@@ -1,6 +1,7 @@
 from fastapi import HTTPException
 from pathlib import Path
 from app.core.logger import logger
+from typing import Optional, Tuple
 import docx2txt
 import openpyxl
 import pdfplumber
@@ -12,34 +13,76 @@ from PIL import Image
 import requests
 import tempfile
 import os
+import base64
+import uuid
 import camelot
 
-def extract_text_from_file(file_path: str) -> str:
-    """Extract text from various file types. Supports local files and remote URLs."""
+MAX_FILE_SIZE_MB = 50  # Maximum file size limit for uploads (in megabytes)
+MIME_TO_EXTENSION = {
+    "application/pdf": ".pdf",
+    "image/png": ".png",
+    "image/jpeg": ".jpg",
+    "image/jpg": ".jpg",
+    "image/bmp": ".bmp",
+    "image/tiff": ".tiff",
+    "image/tif": ".tif",
+    "application/vnd.openxmlformats-officedocument.wordprocessingml.document": ".docx",
+    "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet": ".xlsx",
+    "text/plain": ".txt",
+    "text/csv": ".csv",
+    "text/rtf": ".rtf",
+    "application/rtf": ".rtf",
+    "application/vnd.oasis.opendocument.text": ".odt",
+    "text/markdown": ".md",
+    "text/x-markdown": ".md",
+}
+
+def extract_text_from_file(file: str) -> str:
+    """Extract text from various file types. Supports local files, remote URLs, and base64 encoded content."""
     # Initialize
-    logger.info("Extracting text from file: %s", file_path)
-    temp_file_path = None
+    logger.info("Extracting text from file input: %s", _safe_input_log(file))
+    temp_file_paths = []  # Track temp files for cleanup
 
     try:
-        # Check if file_path is a URL
-        if file_path.startswith("http://") or file_path.startswith("https://"):
-            temp_file_path = download_remote_file(file_path)
+        # Check if file is a URL
+        if _is_url(file):
+            temp_file_path = _download_remote_file(file)
+            temp_file_paths.append(temp_file_path)
             local_path = temp_file_path
-        else:
-            local_path = file_path
+        # Check if file is base64 encoded content
+        elif _is_data_uri(file):
+            # Get MIME type and base64 payload from data URI
+            mime, encoded_payload = _parse_data_uri(file)
+            decoded_bytes = _decode_base64_payload(encoded_payload)
 
+            # Validate file size before processing
+            if len(decoded_bytes) > MAX_FILE_SIZE_MB * 1024 * 1024:
+                raise HTTPException(status_code=400, detail=f"File size exceeds the maximum limit of {MAX_FILE_SIZE_MB}MB.")
+
+            # Get file extension from MIME type
+            extension = _get_extension_from_mime(mime)
+            if not extension:
+                raise HTTPException(status_code=400, detail="Unsupported file type for encoded payload.")
+
+            # Write decoded bytes to a temp file and use that for extraction
+            temp_file_path = _write_temp_file(decoded_bytes, extension)
+            temp_file_paths.append(temp_file_path)
+            local_path = temp_file_path
+        elif os.path.exists(file):
+            local_path = file
+        else:
+            raise HTTPException(status_code=400, detail="Invalid file or URL provided.")
         # Get the file extension
         ext = Path(local_path.split("?")[0]).suffix.lower()
 
-        # ---Extract text based on file type
         # Extract text from PDF
         if ext == '.pdf':
-            return extract_text_from_pdf(local_path)
+            return _extract_text_from_pdf(local_path)
 
         # Extract text from images
         elif ext in ['.png', '.jpg', '.jpeg', '.bmp', '.tiff', '.tif']:
-            image = Image.open(local_path)
-            return pytesseract.image_to_string(image)
+            with Image.open(local_path) as image:
+                return pytesseract.image_to_string(image)
 
         # Extract text from Word document
         elif ext == '.docx':
@@ -79,22 +122,95 @@ def extract_text_from_file(file_path: str) -> str:
         # Return an error for unsupported file types
         else:
             raise HTTPException(status_code=400, detail=f"Unsupported file type: {ext}")
-        
-    # Return exception    
+
+    except HTTPException:
+        raise
     except Exception as e:
         logger.error(f"Error extracting text from file: {e}")
         raise HTTPException(status_code=500, detail="Error extracting text from file.")
 
     # Clean up temp file if used
     finally:
-        if temp_file_path is not None:
+        logger.info("Successfully extracted text from file: %s", _safe_input_log(file))
+        for temp_file_path in temp_file_paths:
             try:
-                os.unlink(temp_file_path)
-                logger.info(f"Temporary file deleted: {temp_file_path}")
+                if os.path.exists(temp_file_path):
+                    os.unlink(temp_file_path)
+                    logger.info(f"Temporary file deleted: {temp_file_path}")
             except Exception as cleanup_err:
                 logger.warning(f"Failed to delete temp file: {temp_file_path} ({cleanup_err})")
 
-def merge_camelot_tables(tables):
+
+# Helper: Gets if a string is a URL
+def _is_url(value: str) -> bool:
+    return value.startswith("http://") or value.startswith("https://")
+
+# Helper: Gets if a string is a data URI
+def _is_data_uri(value: str) -> bool:
+    return value.startswith("data:")
+
+# Helper: Truncate file_data for logging if too long
+def _safe_input_log(file_data: str) -> str:
+    logValue = file_data
+    if isinstance(file_data, str) and len(file_data) > 200:
+        logValue = file_data[:100] + "..." + file_data[-50:]
+    return logValue
+
+# Helper: Extract MIME type and base64 payload from a data URI, with validation
+def _parse_data_uri(data_uri: str) -> Tuple[Optional[str], str]:
+    try:
+        metadata, encoded_payload = data_uri.split(",", 1)
+    except ValueError:
+        raise HTTPException(status_code=400, detail="Invalid data URI format.")
+
+    if not encoded_payload.strip():
+        raise HTTPException(status_code=400, detail="Data URI payload is empty.")
+
+    if ";base64" not in metadata.lower():
+        raise HTTPException(status_code=400, detail="Only base64 data URI payloads are supported.")
+
+    mime = None
+    meta_no_prefix = metadata[5:]  # removes "data:"
+    if meta_no_prefix:
+        mime = meta_no_prefix.split(";", 1)[0].strip().lower() or None
+
+    return mime, encoded_payload.strip()
+
+# Helper: Decode a base64 payload with validation and error handling
+def _decode_base64_payload(payload: str) -> bytes:
+    compact_payload = "".join(payload.split())
+    if not compact_payload:
+        raise HTTPException(status_code=400, detail="Encoded payload is empty.")
+
+    try:
+        return base64.b64decode(compact_payload, validate=True)
+    except Exception:
+        # Fallback for payloads that omit padding.
+        pad = len(compact_payload) % 4
+        if pad:
+            compact_payload = compact_payload + ("=" * (4 - pad))
+        try:
+            return base64.b64decode(compact_payload, validate=True)
+        except Exception:
+            raise HTTPException(status_code=400, detail="Invalid base64 encoded payload.")
+
+# Helper: Get file extension from MIME type, if possible
+def _get_extension_from_mime(mime: Optional[str]) -> Optional[str]:
+    if not mime:
+        return None
+    return MIME_TO_EXTENSION.get(mime.lower())
+
+# Helper: Write decoded bytes to a temp file with the given extension, and return the temp file path
+def _write_temp_file(decoded_bytes: bytes, extension: str) -> str:
+    unique_suffix = uuid.uuid4().hex[:8]
+    temp_file_name = f"extract_text_{unique_suffix}{extension}"
+    temp_file_path = os.path.join(tempfile.gettempdir(), temp_file_name)
+    with open(temp_file_path, "wb") as temp_file:
+        temp_file.write(decoded_bytes)
+    return temp_file_path
+
+# Helper: Merge tables with identical columns (headers) into a single DataFrame list.
+def _merge_camelot_tables(tables):
     """Merge tables with identical columns (headers) into a single DataFrame list."""
     merged_tables = []
     prev_df = None
@@ -116,7 +232,8 @@ def merge_camelot_tables(tables):
         merged_tables.append(prev_df)
     return merged_tables
 
-def extract_text_from_pdf(pdf_path: str) -> str:
+# Helper: Extract text from a PDF, combining selectable text and OCR from images on each page.
+def _extract_text_from_pdf(pdf_path: str) -> str:
     """Extract text from a PDF, combining selectable text and OCR from images on each page."""
 
     # Initialize
@@ -127,7 +244,7 @@ def extract_text_from_pdf(pdf_path: str) -> str:
     try:
         tables = camelot.read_pdf(pdf_path, pages="all")
         logger.info(f"Total tables found: {tables.n} in pdf {pdf_path}")
-        merged_tables = merge_camelot_tables(tables)
+        merged_tables = _merge_camelot_tables(tables)
         for idx, table in enumerate(merged_tables):
             table_text = table.to_json(orient="records", force_ascii=False)
             text_parts.append(f"--- Table {idx+1} (JSON) ---\n{table_text}")
@@ -168,7 +285,8 @@ def extract_text_from_pdf(pdf_path: str) -> str:
 
     return "\n\n".join(text_parts).strip()
 
-def download_remote_file(url: str) -> str:
+# Helper: Download a remote file and return the local temp file path. Caller is responsible for cleanup.
+def _download_remote_file(url: str) -> str:
     """Download a remote file and return the local temp file path. Caller is responsible for cleanup."""
 
     # Initialize
