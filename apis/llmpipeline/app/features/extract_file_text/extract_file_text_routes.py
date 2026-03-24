@@ -8,9 +8,7 @@ router = APIRouter()
 @router.post("/extract-file-text", response_model=str)
 async def extract_text_from_file_route(payload: ExtractFileTextRequest):
     try:
-        extracted_text = extract_text_from_file(payload.file_url)
-        logger.info("Successfully extracted text from file: %s", payload.file_url)
-        return extracted_text
+        return extract_text_from_file(payload.file)
     except HTTPException as e:
         raise e
     except Exception as e:

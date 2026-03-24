@@ -208,7 +208,7 @@ public class LLMDataExtractionService : ILLMDataExtractionService
 
                 var requestDto = new
                 {
-                    file_url = fileUrl
+                    file = fileUrl
                 };
 
                 var jsonRequest = System.Text.Json.JsonSerializer.Serialize(requestDto);
