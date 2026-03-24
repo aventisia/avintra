@@ -10,7 +10,17 @@ router = APIRouter()
 # Generate LLM response (streaming or non-streaming)
 @router.post('/llm/generate')
 async def generate_llm_response_route(llm_request: LLMRequest, request:Request):
+    # Get llm provider instance based on request
     llm_provider = get_llm_provider(llm_request.provider)
+    
+    # If credential_id is empty string or whitespace or empty guid, set it to None
+    credential_id = str(llm_request.credential_id).strip() if llm_request.credential_id is not None else ""
+    if credential_id in ["", "00000000-0000-0000-0000-000000000000"]:
+        llm_request.credential_id = None
+    else:
+        llm_request.credential_id = credential_id
+        
+    # Send request to provider and return response (streaming or non-streaming)
     if llm_request.stream:
         job_id, event_stream = await start_llm_streaming_job(llm_provider, llm_request, request)
         # Use StreamingResponse for streaming
