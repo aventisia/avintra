@@ -122,23 +122,14 @@ public class TenantCreditAllocationJob : IJob
                         amount = Math.Round(amount * 1.18m, 2);
                     }
 
-                    var defaultUrl = "https://worc.aventisia.com/worc/tenant";
+                    var baseUrl = _environmentConfig.AppBaseUrl?.Trim().TrimEnd('/');
 
-                    var allowedHosts = new[]
+                    if (!baseUrl.StartsWith("http", StringComparison.OrdinalIgnoreCase))
                     {
-                        "dev-worc.aventisia.com",
-                        "uat-worc.aventisia.com",
-                        "worc.aventisia.com"
-                    };
-
-                    string billingUrl = defaultUrl;
-
-                    if (Uri.TryCreate(_environmentConfig.AccountsApiBaseUrl, UriKind.Absolute, out var baseUri)
-                        && allowedHosts.Contains(baseUri.Host))
-                    {
-                        // Build URL using only scheme + host (ignore any existing path)
-                        billingUrl = $"{baseUri.Scheme}://{baseUri.Host}/worc/tenant";
+                        baseUrl = "https://" + baseUrl;
                     }
+
+                    var billingUrl = $"{baseUrl}/worc/tenant";
 
                     // Initialize placeholders for the email template. These will be replaced in the email body dynamically
                     var placeholderValues = new Dictionary<string, string>
