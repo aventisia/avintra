@@ -25,6 +25,7 @@ def authorize(required_roles: list[str] | None = None):
         try:
             jwt = get_jwt(request)
             user = get_user_from_jwt(jwt)
+            user.access_token = jwt
         except Exception as error:
             logger.warning(f"Authentication failed: {error}")
             raise auth_error
