@@ -23,9 +23,9 @@ public class MessageTriggerDto : MessageTriggerModel
     public required string Timezone { get; set; }
 
     /// <summary>
-    /// Gets or sets the collection of agent identifiers associated with the message trigger.
+    /// Gets or sets the collection of agents associated with the email trigger, including their identifiers, names, and versions.
     /// </summary>
-    public List<Guid>? AgentIds { get; set; }
+    public List<AgentInfoDto>? Agents { get; set; }
 
     /// <summary>
     /// Gets or sets a value indicating whether the message trigger is disabled.

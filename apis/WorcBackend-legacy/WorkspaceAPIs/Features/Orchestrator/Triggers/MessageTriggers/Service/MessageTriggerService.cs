@@ -40,6 +40,8 @@ public class MessageTriggerService : IMessageTriggerService
                 .Include(i => i.CreatedByUser)
                 .Include(i => i.LastModifiedByUser)
                 .Include(i => i.TriggerFlowVersions)
+                    .ThenInclude(i2 => i2.FlowVersion)
+                        .ThenInclude(i3 => i3.Flow)
                 .AsNoTracking()
                 .ToListAsync();
 
@@ -75,6 +77,8 @@ public class MessageTriggerService : IMessageTriggerService
                 .Include(i => i.CreatedByUser)
                 .Include(i => i.LastModifiedByUser)
                 .Include(i => i.TriggerFlowVersions)
+                    .ThenInclude(i2 => i2.FlowVersion)
+                        .ThenInclude(i3 => i3.Flow)
                 .AsNoTracking()
                 .SingleOrDefaultAsync();
 
@@ -165,14 +169,17 @@ public class MessageTriggerService : IMessageTriggerService
                 return serviceResponse;
             }
 
-            // Retrieve all agents from the database that are linked to the provided message trigger DTO.
-            // Only include agents whose IDs are in messageTriggerDto.AgentIds and are marked as published.
-            var agents = await _unitOfWork.FlowVersionRepo
-                .GetByConditionAsync(w =>
-                    messageTriggerDto.AgentIds.Contains(w.Id) &&
-                    w.IsPublished
-                )
-                .ToListAsync();
+            // Retrieve all agents from the database that are linked to the provided email trigger DTO.
+            // Only include agents whose IDs are in emailTriggerDto.Agents and are marked as published.
+            var agentIds = messageTriggerDto.Agents?
+                .Select(a => a.Id)
+                .ToList();
+
+            var agents = agentIds != null && agentIds.Any()
+                ? await _unitOfWork.FlowVersionRepo
+                    .GetByConditionAsync(w => agentIds.Contains(w.Id) && w.IsPublished)
+                    .ToListAsync()
+                : new List<FlowVersion>();
 
             // Proceed only if matching agents are found.
             if (agents.Count > 0)

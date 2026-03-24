@@ -6,6 +6,15 @@ public class TimeTriggerMappingProfile : IRegister
     {
         // Mapping to get trigger list of trigger records
         config.NewConfig<TimeTrigger, TimeTriggerDto>()
+            .Map(dest => dest.Agents,
+                src => src.TimeTriggerFlowVersions != null
+                    ? src.TimeTriggerFlowVersions.Select(s => new AgentInfoDto()
+                    {
+                        Id = s.FlowVersion.Id,
+                        Name = s.FlowVersion.Flow.Name,
+                        VersionNumber = s.FlowVersion.VersionNumber
+                    }).ToList()
+                    : null)
             .Map(dest => dest.CreatedBy,
                 src => src.CreatedByUser != null
                     ? src.CreatedByUser.FirstName + " " + src.CreatedByUser.LastName
@@ -43,7 +52,7 @@ public class TimeTriggerMappingProfile : IRegister
         // New Mapping for Trigger to SelectOptionDto(For dropdowns or select lists)
         config.NewConfig<TimeTrigger, SelectOptionDto>()
                 .Map(dest => dest.Value, src => src.Id)
-                .Map(dest => dest.Label, src => src.Name)             
+                .Map(dest => dest.Label, src => src.Name)
                 .Map(dest => dest.Disabled, src => src.IsDisabled);
     }
 }
