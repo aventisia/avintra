@@ -47,4 +47,10 @@ public class MessageTriggerModel
     /// Gets or sets the provider associated with the message trigger. Defaults to Microsoft 365.
     /// </summary>
     public TriggerProviderTypesEnum Provider { get; set; } = TriggerProviderTypesEnum.M365;
+
+    /// <summary>
+    /// Gets or sets the API key used for authenticating incoming trigger requests.
+    /// </summary>
+    public string ApiKey { get; set; } = string.Empty;
+
 }

@@ -33,6 +33,7 @@ global using System.ComponentModel.DataAnnotations.Schema;
 global using System.Linq.Expressions;
 global using System.Net.Http.Headers;
 global using System.Security.Claims;
+global using System.Security.Cryptography;
 global using System.Text;
 global using System.Text.Json;
 global using System.ComponentModel;
@@ -53,4 +54,3 @@ global using Newtonsoft.Json.Schema;
 global using Newtonsoft.Json.Linq;
 global using Quartz;
 global using RestSharp;
-
