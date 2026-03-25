@@ -10,10 +10,6 @@ get {
   auth: bearer
 }
 
-auth:bearer {
-  token: {{ACCESS_TOKEN}}
-}
-
 script:post-response {
   if(res.getStatus() == 200){
       bru.setGlobalEnvVar("FLOW_VERSION_ID", res.getBody().data.versionId);
