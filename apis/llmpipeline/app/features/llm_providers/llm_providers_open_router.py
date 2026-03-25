@@ -279,8 +279,11 @@ class OpenRouterProvider(BaseLLMProvider):
             "stream": llm_request.stream,
             "temperature": llm_request.temperature,
             "top_p": llm_request.top_p,
-            "max_tokens": llm_request.max_output_tokens,
         }
+        
+        # If max_output_tokens is provided and greater than 0 (in python 0 is falsy), include it in the payload
+        if llm_request.max_output_tokens:
+            payload["max_tokens"] = llm_request.max_output_tokens
 
         # Initialize default response format
         payload["response_format"] = {}
@@ -332,9 +335,7 @@ class OpenRouterProvider(BaseLLMProvider):
                 raise HTTPException(400, "Insufficient credits")
 
     # Helper: Create default LLMResponse
-    def _create_initial_llm_response_with_defaults(
-        self, llm_request: LLMRequest
-    ) -> LLMResponse:
+    def _create_initial_llm_response_with_defaults(self, llm_request: LLMRequest) -> LLMResponse:
         return LLMResponse(
             provider=llm_request.provider,
             model=llm_request.model,

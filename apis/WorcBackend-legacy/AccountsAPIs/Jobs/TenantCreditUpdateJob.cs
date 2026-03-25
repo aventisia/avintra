@@ -28,8 +28,8 @@ public class TenantCreditAllocationJob : IJob
         try
         {
             // Define date range
-            var startDate = currentDateTime.Date.AddDays(-1); // past 1 day
-            var endDate = currentDateTime.Date.AddDays(8);    // next 8 days
+            var startDate = currentDateTime.Date.AddDays(-7); // past 7 day
+            var endDate = currentDateTime.Date.AddDays(7);    // next 7 days
 
             // Fetch subscriptions within the range
             var tenantSubscriptions = await _unitOfWork.TenantSubscriptionRepo
@@ -39,7 +39,7 @@ public class TenantCreditAllocationJob : IJob
                     w.NextBillingDate.Date <= endDate)
                 .Include(x => x.Plan)
                 .Include(x => x.BillingDetails)
-                .AsNoTracking()
+                .AsNoTrackingWithIdentityResolution()
                 .ToListAsync();
 
             _logger.LogInformation($"Found {tenantSubscriptions.Count} active subscriptions.");
@@ -71,8 +71,8 @@ public class TenantCreditAllocationJob : IJob
                     {
                         TenantId = subscription.TenantId,
                         AvailableCredits = subscription.MaxCredits,
-                        CreditedOn = currentDateTime,
-                        ExpiredOn = subscription.NextBillingDate.Date,
+                        CreditedOn = currentDateTime.ToUniversalTime(),
+                        ExpiredOn = subscription.NextBillingDate,
                         Type = CreditTypesEnum.Subscription,
                         SubscriptionId = subscription.Id,
                         CreatedByUserId = subscription.CreatedByUserId,
