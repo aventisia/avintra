@@ -100,7 +100,6 @@ public static class AppServicesExtension
         services.AddScoped<IKeyStoreService, KeyStoreService>();
         services.AddScoped<IVaultService, VaultService>();
         services.AddScoped<ITriggerApiKeyService, TriggerApiKeyService>();
-        services.AddScoped<ITriggerWebhookService, TriggerWebhookService>();
         services.AddScoped<ITimeTriggerService, TimeTriggerService>();
         services.AddScoped<IEmailTriggerService, EmailTriggerService>();
         services.AddScoped<IMessageTriggerService, MessageTriggerService>();

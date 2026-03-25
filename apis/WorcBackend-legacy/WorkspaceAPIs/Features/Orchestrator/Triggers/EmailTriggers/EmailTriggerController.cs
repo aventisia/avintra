@@ -67,4 +67,13 @@ public class EmailTriggerController : BaseApiController
     {
         return ResultHelper(await _emailTriggerService.GetAgentsByEmailTriggerAsync(emailTriggerId));
     }
+
+
+    // Receives an external notification and initiates job creation based on the provided trigger ID.
+    [AllowAnonymous]
+    [HttpPost("notify/{triggerId}")]
+    public async Task<ActionResult<ServiceResponse<bool>>> CreateJobByEmailTriggerId(string triggerId)
+    {
+        return ResultHelper(await _emailTriggerService.CreateJobByEmailTriggerIdAsync(triggerId));
+    }
 }
