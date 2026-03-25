@@ -198,8 +198,8 @@ export const TriggerCrudForm = () => {
         )
       )}
 
-      <InputField {...mailboxProps} />
       <SelectField {...resourceProps} />
+      <InputField {...mailboxProps} />
 
       <SelectField {...resubscribeFrequencyProps} />
 
