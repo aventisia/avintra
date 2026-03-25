@@ -4,97 +4,56 @@
  */
 export enum CreditServiceTypesEnum {
   AgentExecutionTime,
-
-  // New LLM Providers (with Input, Output, Cached)
-  Gpt4oMiniInput,
-  Gpt4oMiniOutput,
-  Gpt4oMiniCached,
-
-  Qwen3Vl32bInstructInput,
-  Qwen3Vl32bInstructOutput,
-
+  // gpt-5.1
   Gpt51Input,
   Gpt51Output,
   Gpt51Cached,
-
+  // gpt-5-mini
   Gpt5MiniInput,
   Gpt5MiniOutput,
   Gpt5MiniCached,
-
+  // gpt-5-nano
   Gpt5NanoInput,
   Gpt5NanoOutput,
   Gpt5NanoCached,
-
+  // gpt-4o
+  Gpt4oInput,
+  Gpt4oOutput,
+  // gpt-4o-mini
+  Gpt4oMiniInput,
+  Gpt4oMiniOutput,
+  Gpt4oMiniCached,
+  // gemini-2.5-flash
   Gemini25FlashInput,
   Gemini25FlashOutput,
   Gemini25FlashCached,
-
+  // gemini-2.5-flash-lite
   Gemini25FlashLiteInput,
   Gemini25FlashLiteOutput,
   Gemini25FlashLiteCached,
-
+  // anthropic/claude-4.5-sonnet-20250929
   Claude45SonnetInput,
   Claude45SonnetOutput,
   Claude45SonnetCached,
-
-  Claude45HaikuInput,
-  Claude45HaikuOutput,
-  Claude45HaikuCached,
-
+  // x-ai/grok-3-mini
   Grok3MiniInput,
   Grok3MiniOutput,
   Grok3MiniCached,
-
-  // ---------------------------------------------------------
-  // TODO: Remove this later when no longer needed
-
-  /**
-   * Speech-to-text service hosted on-premises.
-   */
-  OnPremSTT,
-
-  /**
-   * Text-to-speech service hosted on-premises.
-   */
-  OnPremTTS,
-
-  /**
-   * Speech-to-text service provided by ElevenLabs.
-   */
+  // qwen/qwen3-vl-32b-instruct
+  Qwen3Vl32bInstructInput,
+  Qwen3Vl32bInstructOutput,
+  // anthropic/claude-4.5-haiku-20251001
+  Claude45HaikuInput,
+  Claude45HaikuOutput,
+  Claude45HaikuCached,
+  // Other services
   ElevenLabsSTT,
-
-  /**
-   * Text-to-speech service provided by ElevenLabs.
-   */
   ElevenLabsTTS,
-
-  /**
-   * Input token processing for the GPT-4o model.
-   */
-  Gpt4oInput,
-
-  /**
-   * Output token generation for the GPT-4o model.
-   */
-  Gpt4oOutput,
-
-  /**
-   * Input OCR processing for the olmOCR model.
-   */
   OlmOcrInput,
-
-  /**
-   * Output OCR generation for the olmOCR model.
-   */
   OlmOcrOutput,
-
-  /**
-   * GPU-accelerated text processing service hosted on-premises.
-   */
+  // TODO: Deprecated, Remove this later when no longer needed
+  OnPremSTT,
+  OnPremTTS,
   OnPremGpuText,
-
-  /**
-   * Service for executing AI model inference tasks.
-   */
   AIModelExecutionTime,
 }
