@@ -28,9 +28,9 @@ const nameProps: InputFieldProps = {
 // Name
 const mailboxProps: InputFieldProps = {
   name: "mailbox",
-  label: "Account Id",
+  label: "Id",
   isRequired: true,
-  description: "Account Id",
+  description: "Resource related Id",
 };
 
 const resourceProps: SelectFieldProps = {
