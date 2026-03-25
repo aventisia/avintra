@@ -19,8 +19,11 @@ export interface TimeTriggerDto {
    */
   name: string;
 
-  agentIds?: string[];
-
+  agents?: {
+    is: string;
+    name: string;
+    versionNumber: number;
+  }[];
   /**
    * Gets or sets the time zone for the time trigger.
    */

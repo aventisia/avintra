@@ -1,12 +1,12 @@
 import { DataTableSkeleton } from "@aventisia/ui/data-table";
 import { Suspense, lazy } from "react";
 
-// Lazy load the TriggersTable component.
-const TriggersTable = lazy(() =>
+// Lazy load the WebhookTriggersTable component.
+const WebhookTriggersTable = lazy(() =>
   import(
-    "@/features/orchestrator/triggers/time-triggers-table/components/TriggersTable"
+    "@/features/orchestrator/triggers/webhook-triggers-table/components/WebhookTriggersTable"
   ).then((module) => ({
-    default: module.TriggersTable,
+    default: module.WebhookTriggersTable,
   })),
 );
 
@@ -17,7 +17,7 @@ const TriggersTable = lazy(() =>
 export const WebhookTriggerPage = () => {
   return (
     <Suspense fallback={<DataTableSkeleton />}>
-      <TriggersTable />
+      <WebhookTriggersTable />
     </Suspense>
   );
 };

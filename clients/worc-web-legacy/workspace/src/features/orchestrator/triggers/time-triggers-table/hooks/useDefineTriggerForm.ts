@@ -1,3 +1,5 @@
+import { useUserSessionStore } from "@/react-toolkit/stores/user-session-store";
+
 import { useCheckAvailability } from "@aventisia/ui/hooks";
 import { useDTCrudDialogStore } from "@aventisia/ui/stores";
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -6,8 +8,6 @@ import { useEffect, useState } from "react";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
 import { useShallow } from "zustand/react/shallow";
-
-import { useUserSessionStore } from "@/react-toolkit/stores/user-session-store";
 
 import { isNameAvailable } from "../apis/triggers-table-apis";
 import { DATA_QUERY_KEY } from "../constants";
@@ -18,8 +18,8 @@ import {
   weekdaysToNumbers,
 } from "../constants/form-utils";
 import {
-  triggerZodSchema,
   triggerNameSchema,
+  triggerZodSchema,
 } from "../constants/trigger-zod-schema";
 import { TimeTriggerDto } from "../dtos/time-trigger-dto";
 
@@ -59,7 +59,7 @@ export const useDefineTriggerForm = () => {
     defaultValues: {
       id: "",
       name: "",
-      agentIds: [],
+      agents: [],
       timezone: "",
       effectiveDate: new Date(), // Default to current date
       effectiveTime: null,
@@ -99,7 +99,7 @@ export const useDefineTriggerForm = () => {
     form.reset({
       id: rowId,
       name: triggerData?.name ?? "",
-      agentIds: triggerData?.agentIds ?? [],
+      agents: triggerData?.agents ?? [],
       timezone: triggerData?.timezone ?? "",
       effectiveDate: triggerData?.effectiveDate
         ? new Date(triggerData.effectiveDate)
