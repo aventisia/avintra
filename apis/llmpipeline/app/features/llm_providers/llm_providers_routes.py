@@ -1,5 +1,7 @@
 # API routes for LLM Providers
-from fastapi import APIRouter, Request
+from app.dependencies.authorize import authorize
+from app.features.auth.authenticated_user import User
+from fastapi import APIRouter, Depends, Request
 from fastapi.responses import StreamingResponse
 from .llm_providers_schemas import LLMRequest
 from .llm_providers_factory import get_llm_provider
@@ -9,15 +11,25 @@ router = APIRouter()
 
 # Generate LLM response (streaming or non-streaming)
 @router.post('/llm/generate')
-async def generate_llm_response_route(llm_request: LLMRequest, request:Request):
+async def generate_llm_response_route(llm_request: LLMRequest, _user: User = Depends(authorize())):
+    # Get llm provider instance based on request
     llm_provider = get_llm_provider(llm_request.provider)
+    
+    # If credential_id is empty string or whitespace or empty guid, set it to None
+    credential_id = str(llm_request.credential_id).strip() if llm_request.credential_id is not None else ""
+    if credential_id in ["", "00000000-0000-0000-0000-000000000000"]:
+        llm_request.credential_id = None
+    else:
+        llm_request.credential_id = credential_id
+        
+    # Send request to provider and return response (streaming or non-streaming)
     if llm_request.stream:
-        job_id, event_stream = await start_llm_streaming_job(llm_provider, llm_request, request)
+        job_id, event_stream = await start_llm_streaming_job(llm_provider, llm_request, _user)
         # Use StreamingResponse for streaming
         return StreamingResponse(event_stream(), media_type="text/event-stream", headers={"X-Job-Id": job_id})
     else:
         # Use await for non-streaming
-        return await llm_provider.generate_llm_response(llm_request, request)
+        return await llm_provider.generate_llm_response(llm_request, _user)
     
 # Cancel a running llm job
 @router.post('/llm/cancel/{job_id}')

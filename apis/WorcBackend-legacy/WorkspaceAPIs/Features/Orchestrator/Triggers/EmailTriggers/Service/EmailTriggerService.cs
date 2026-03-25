@@ -6,12 +6,16 @@ public class EmailTriggerService : IEmailTriggerService
     private readonly IUnitOfWork _unitOfWork;
     private readonly Guid _userId;
     private readonly IStringEncryptionService _stringEncryptionService;
+    private readonly EnvironmentConfig _environmentConfig;
+    private readonly IJobsExecutorService _jobsExecutorService;
 
     public EmailTriggerService(
         ILogger<EmailTriggerService> logger,
         IUnitOfWork unitOfWork,
         IHttpContextAccessor httpContextAccessor,
-        IStringEncryptionService stringEncryptionService)
+        IStringEncryptionService stringEncryptionService,
+        EnvironmentConfig environmentConfig,
+        IJobsExecutorService jobsExecutorService)
     {
         _logger = logger;
         _unitOfWork = unitOfWork;
@@ -19,6 +23,8 @@ public class EmailTriggerService : IEmailTriggerService
         // Extract user ID from JWT claim or set to Guid.Empty if not found
         _userId = Guid.Parse(httpContextAccessor.HttpContext?.User?.FindFirstValue("uid") ?? Guid.Empty.ToString());
         _stringEncryptionService = stringEncryptionService;
+        _environmentConfig = environmentConfig;
+        _jobsExecutorService = jobsExecutorService;
     }
 
     // Retrieves all email triggers.
@@ -137,12 +143,18 @@ public class EmailTriggerService : IEmailTriggerService
 
             // Convert DTO to Trigger entity
             var newEmailTrigger = emailTriggerDto.Adapt<Trigger>();
+            newEmailTrigger.Id = Guid.NewGuid();
 
             // Serialize EmailTriggerModel properties into Metadata JSON
             var model = (EmailTriggerModel)emailTriggerDto;
 
             // Create or update the email subscription and update the DTO with the subscription ID
-            model = await ManageEmailTriggerSubscriptionAsync(model, "create");
+            var subscription = await ManageEmailTriggerSubscriptionAsync(model, "create", emailTriggerDto.Id);
+            if (subscription.StatusCode != 200)
+            {
+                serviceResponse.Message = subscription.Message;
+                return serviceResponse;
+            }
 
             var jsonOptions = new JsonSerializerOptions
             {
@@ -153,7 +165,7 @@ public class EmailTriggerService : IEmailTriggerService
             // Ensure enums serialize as strings
             jsonOptions.Converters.Add(new JsonStringEnumConverter());
 
-            newEmailTrigger.Metadata = JsonDocument.Parse(System.Text.Json.JsonSerializer.Serialize(model, jsonOptions));
+            newEmailTrigger.Metadata = JsonDocument.Parse(System.Text.Json.JsonSerializer.Serialize(subscription.Data, jsonOptions));
 
             // Set the TriggerType explicitly
             newEmailTrigger.TriggerType = TriggerTypesEnum.EmailTrigger;
@@ -269,7 +281,14 @@ public class EmailTriggerService : IEmailTriggerService
             var model = (EmailTriggerModel)emailTriggerDto;
 
             // Create or update the email subscription and update the DTO with the subscription ID
-            model = await ManageEmailTriggerSubscriptionAsync(model, "update");
+            var subscription = await ManageEmailTriggerSubscriptionAsync(model, "update", emailTriggerDto.Id);
+
+            // update failed
+            if (subscription.StatusCode != 200)
+            {
+                serviceResponse.Message = subscription.Message;
+                return serviceResponse;
+            }
 
             // Serialize EmailTriggerModel properties into the Metadata JSON column
             var jsonOptions = new JsonSerializerOptions
@@ -282,7 +301,7 @@ public class EmailTriggerService : IEmailTriggerService
             jsonOptions.Converters.Add(new JsonStringEnumConverter());
 
             // Assign the serialized Metadata to the entity
-            emailTrigger.Metadata = JsonDocument.Parse(System.Text.Json.JsonSerializer.Serialize(model, jsonOptions));
+            emailTrigger.Metadata = JsonDocument.Parse(System.Text.Json.JsonSerializer.Serialize(subscription.Data, jsonOptions));
 
             // Set audit fields to track who last modified the trigger
             emailTrigger.LastModifiedByUserId = _userId;
@@ -351,7 +370,14 @@ public class EmailTriggerService : IEmailTriggerService
             );
 
             // Subscribe email trigger before deleting
-            model = await ManageEmailTriggerSubscriptionAsync(model!, "delete");
+            var subscription = await ManageEmailTriggerSubscriptionAsync(model!, "delete", emailTriggerId);
+
+            // deletion failed at provider level
+            if (subscription.StatusCode != 200)
+            {
+                serviceResponse.Message = subscription.Message;
+                return serviceResponse;
+            }
 
             // Delete entity
             _unitOfWork.TriggerRepo.Delete(emailTrigger);
@@ -406,6 +432,7 @@ public class EmailTriggerService : IEmailTriggerService
                 PropertyNameCaseInsensitive = true,
                 DefaultIgnoreCondition = JsonIgnoreCondition.WhenWritingNull
             };
+
             jsonOptions.Converters.Add(new JsonStringEnumConverter());
 
             // Unsubscribe each trigger before deleting
@@ -418,7 +445,15 @@ public class EmailTriggerService : IEmailTriggerService
 
                 if (model != null)
                 {
-                    await ManageEmailTriggerSubscriptionAsync(model, "delete");
+                    // Subscribe email trigger before deleting
+                    var subscription = await ManageEmailTriggerSubscriptionAsync(model!, "delete", emailTrigger.Id);
+
+                    // deletion failed at provider level
+                    if (subscription.StatusCode != 200)
+                    {
+                        serviceResponse.Message = subscription.Message;
+                        return serviceResponse;
+                    }
                 }
             }
 
@@ -534,16 +569,125 @@ public class EmailTriggerService : IEmailTriggerService
         return serviceResponse;
     }
 
-    private async Task<EmailTriggerModel> ManageEmailTriggerSubscriptionAsync(EmailTriggerModel? emailTriggerModel, string action)
+    // Creates jobs for all flow versions associated with the given trigger ID.
+    public async Task<ServiceResponse<bool>> CreateJobByEmailTriggerIdAsync(string triggerId)
     {
+        // Default failure response
+        var serviceResponse = new ServiceResponse<bool>
+        {
+            Data = false,
+            Message = "Failed to create job(s) from trigger. Please try again."
+        };
+
+        try
+        {
+            // Validate triggerId as GUID
+            if (!Guid.TryParse(triggerId, out var triggerGuid) || triggerGuid == Guid.Empty)
+            {
+                _logger.LogWarning("Invalid triggerId received: {TriggerId}", triggerId);
+                serviceResponse.Message = "Invalid triggerId provided.";
+                return serviceResponse;
+            }
+
+            // Retrieve trigger along with its flow versions
+            var trigger = await _unitOfWork.TriggerRepo
+                .GetByConditionAsync(x => x.Id == triggerGuid)
+                .Include(i => i.TriggerFlowVersions)
+                .AsNoTracking()
+                .FirstOrDefaultAsync();
+
+            // Trigger not found
+            if (trigger == null)
+            {
+                _logger.LogWarning("Trigger not found for id: {TriggerId}", triggerId);
+                serviceResponse.Message = $"No trigger found for id: {triggerId}";
+                return serviceResponse;
+            }
+
+            var triggerFlowVersions = trigger.TriggerFlowVersions?.ToList();
+
+            // No flow versions mapped to trigger
+            if (triggerFlowVersions == null || !triggerFlowVersions.Any())
+            {
+                _logger.LogWarning("No flow versions found for triggerId: {TriggerId}", triggerId);
+                serviceResponse.Message = "No flow versions configured for this trigger.";
+                return serviceResponse;
+            }
+
+            // Create jobs for each associated flow version
+            foreach (var triggerFlowVersion in triggerFlowVersions)
+            {
+                // Skip invalid entries
+                if (triggerFlowVersion.FlowVersion == null)
+                {
+                    _logger.LogWarning("Skipping invalid FlowVersionId for triggerId: {TriggerId}", triggerId);
+                    continue;
+                }
+
+                // Convert the incoming request into a new Job entity
+                var newJob = new Job()
+                {
+                    TenantId = triggerFlowVersion.TenantId,
+                    FlowVersionId = triggerFlowVersion.FlowVersionId,
+                    TriggerType = trigger.TriggerType,
+                    MachineId = null,
+                    Priority = JobPriorityTypesEnum.Normal,
+                    Status = JobStatusTypesEnum.Created,
+                    CreatedOn = DateTimeOffset.UtcNow,
+                    IsPublished = triggerFlowVersion.FlowVersion.IsPublished,
+                };
+
+                // Insert the new job into the repository
+                await _unitOfWork.JobRepo.InsertAsync(newJob);
+
+                // Check if changes were successfully saved
+                if (!await _unitOfWork.SaveAsync())
+                {
+                    _logger.LogInformation("Failed to save changes while inserting new job.");
+                    return serviceResponse;
+                }
+
+                // If the flow version is published, trigger the job execution.
+                if (newJob.IsPublished)
+                {
+                    // Execute the job asynchronously.
+                    await _jobsExecutorService.ExecuteJobCommandAsync(newJob);
+                }
+            }
+
+            // Success (even if partial)
+            serviceResponse.Data = true;
+            serviceResponse.StatusCode = 200;
+            serviceResponse.Message = "Job(s) created successfully from trigger.";
+        }
+        catch (Exception ex)
+        {
+            // ❌ Unexpected error
+            _logger.LogError(ex, "Error creating job(s) from triggerId: {TriggerId}", triggerId);
+        }
+
+        return serviceResponse;
+    }
+
+    private async Task<ServiceResponse<EmailTriggerModel>> ManageEmailTriggerSubscriptionAsync(EmailTriggerModel? emailTriggerModel, string action, Guid triggerId)
+    {
+        // initialize response with action-based failure message
+        var serviceResponse = new ServiceResponse<EmailTriggerModel>
+        {
+            Data = emailTriggerModel,
+            Message = $"Failed to {action} subscription. Please try again."
+        };
+
         // Initialize HttpClient for API requests
         using var httpClient = new HttpClient();
 
-        // Ensure mailbox value is provided
+        // Check if mailbox is provided
         if (string.IsNullOrEmpty(emailTriggerModel.Mailbox))
         {
-            _logger.LogWarning("Cannot manage subscription: Mailbox is null or empty.");
-            return emailTriggerModel;
+            _logger.LogWarning("Invalid mailbox value.");
+
+            serviceResponse.Message = "Mailbox cannot be empty.";
+            return serviceResponse;
         }
 
         // Determine provider (Outlook / Gmail)
@@ -558,6 +702,13 @@ public class EmailTriggerService : IEmailTriggerService
                     // Add Bearer token to HttpClient
                     httpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", accessToken);
 
+                    var baseUrl = _environmentConfig.AppBaseUrl?.Trim().TrimEnd('/');
+
+                    if (!baseUrl.StartsWith("http", StringComparison.OrdinalIgnoreCase))
+                        baseUrl = "https://" + baseUrl;
+                    var notificationUrl = $"{baseUrl}/worc/api/webhook/trigger/{triggerId}";
+
+
                     // Build resource path for mailbox and folder
                     var resourcePath = !string.IsNullOrEmpty(emailTriggerModel.Folder)
                         ? $"/users/{emailTriggerModel.Mailbox}/mailFolders/{emailTriggerModel.Folder}/messages"
@@ -567,10 +718,10 @@ public class EmailTriggerService : IEmailTriggerService
                     var subscriptionRequest = new
                     {
                         changeType = "created",
-                        notificationUrl = "https://yourapp.com/api/email-trigger/notifications?validationToken=abc123",
+                        notificationUrl = notificationUrl,
                         resource = resourcePath,
                         expirationDateTime = emailTriggerModel.ExpiryDateTime.UtcDateTime.ToString("o"),
-                        clientState = "key"
+                        clientState = emailTriggerModel.ApiKey
                     };
 
                     // Serialize request body to JSON using System.Text.Json
@@ -627,17 +778,23 @@ public class EmailTriggerService : IEmailTriggerService
 
                         default:
                             _logger.LogWarning("Unknown action for M365 subscription: {Action}", action);
-                            return emailTriggerModel;
+                            return serviceResponse;
                     }
 
                     // Check API response
                     if (!response.IsSuccessStatusCode)
                     {
                         _logger.LogError("M365 subscription {Action} failed. StatusCode: {StatusCode}", action, response.StatusCode);
-                        return emailTriggerModel;
+                        var responseContent = await response.Content.ReadAsStringAsync();
+                        serviceResponse.Message = responseContent;
+                        return serviceResponse;
                     }
 
-                    return emailTriggerModel;
+                    serviceResponse.StatusCode = 200;
+                    serviceResponse.Message = $"M365 subscription {action} successful.";
+                    serviceResponse.Data = emailTriggerModel;
+
+                    return serviceResponse;
                 }
 
             case TriggerProviderTypesEnum.Google:
@@ -685,22 +842,22 @@ public class EmailTriggerService : IEmailTriggerService
 
                         default:
                             _logger.LogWarning("Unknown action for Gmail subscription: {Action}", action);
-                            return emailTriggerModel;
+                            return serviceResponse;
                     }
 
                     // Check API response
                     if (!response.IsSuccessStatusCode)
                     {
                         _logger.LogError("Gmail subscription {Action} failed. StatusCode: {StatusCode}", action, response.StatusCode);
-                        return emailTriggerModel;
+                        return serviceResponse;
                     }
 
-                    return emailTriggerModel;
+                    return serviceResponse;
                 }
 
             default:
                 _logger.LogWarning("Unknown provider for subscription: {Provider}", emailTriggerModel.Provider);
-                return emailTriggerModel;
+                return serviceResponse;
         }
     }
 

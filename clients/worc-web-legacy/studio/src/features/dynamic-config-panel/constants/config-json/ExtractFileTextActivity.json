@@ -1,0 +1,33 @@
+{
+  "name": "ExtractFileText",
+  "label": "Extract File Text",
+  "description": "Extracts text from a file using the Aventisia cloud API. Supported formats: .pdf, .png, .jpg, .jpeg, .bmp, .tiff, .tif, .docx, .xlsx, .txt, .csv, .rtf, .odt, .md",
+  "version": null,
+  "auther": null,
+  "supportedPlatforms": ["cloud", "windows"],
+  "errorHandling": null,
+  "testScreenType": null,
+  "fields": [
+    {
+      "direction": "Input",
+      "type": "text",
+      "name": "FilePath",
+      "label": "File path",
+      "description": "Path to the file to be uploaded and processed. Supported formats: .pdf, .png, .jpg, .jpeg, .bmp, .tiff, .tif, .docx, .xlsx, .txt, .csv, .rtf, .odt, .md",
+      "defaultValue": "",
+      "required": true
+    },
+    {
+      "direction": "Output",
+      "type": "config-panel-output",
+      "name": "ExtractedText",
+      "label": "Extracted Text",
+      "description": "Extracted text returned by the Aventisia cloud API.",
+      "defaultValue": {
+        "value": "ExtractedText",
+        "enabled": true
+      },
+      "required": false
+    }
+  ]
+}

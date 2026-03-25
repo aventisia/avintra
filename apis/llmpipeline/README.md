@@ -38,6 +38,11 @@ sudo apt -y install python3 python3-pip python3-venv tesseract-ocr ocrmypdf ffmp
    git clone <your-repo-url>
    cd llmpipelineapis
    ```
+2. **Create a virtual environment:**
+   ```sh
+   python3 -m venv venv
+   source venv/bin/activate  # On Windows: venv\Scripts\activate
+   ```
 2. **Install Python dependencies:**
    ```sh
    pip install -r requirements.txt
@@ -50,6 +55,10 @@ sudo apt -y install python3 python3-pip python3-venv tesseract-ocr ocrmypdf ffmp
 4. **(Optional) Install Pandoc for RTF support:**
    ```sh
    sudo apt-get install pandoc
+   ```
+5. **To freeze dependencies:**
+   ```sh
+   pip freeze > requirements.txt
    ```
 
 ## Running the API Server
