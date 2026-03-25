@@ -5,6 +5,7 @@ import { Separator } from "@aventisia/ui";
 import { buttonVariants } from "@aventisia/ui/buttons";
 import { cn } from "@aventisia/ui/lib";
 import { ExclamationTriangleIcon } from "@heroicons/react/24/outline";
+import { useEffect } from "react";
 import { useRouteError } from "react-router-dom";
 
 const ErrorPage = () => {
@@ -14,6 +15,14 @@ const ErrorPage = () => {
     status?: number;
     statusText?: string;
   };
+
+  useEffect(() => {
+    if (
+      error?.message?.includes("Failed to fetch dynamically imported module")
+    ) {
+      window.location.reload();
+    }
+  }, [error?.message]);
 
   return (
     <div className="flex h-screen w-full flex-col items-center p-3 lg:w-[100%]">
