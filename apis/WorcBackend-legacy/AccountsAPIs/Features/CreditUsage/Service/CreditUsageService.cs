@@ -714,7 +714,6 @@ public class CreditUsageService : ICreditUsageService
                 var availableCreditsQuery = _unitOfWork.TenantCreditRepo
                     .GetByConditionAsync(w =>
                         w.TenantId == _tenantId &&
-                        w.AvailableCredits > 0 &&
                         w.ExpiredOn.Date > DateTimeOffset.UtcNow.Date
                     );
 
@@ -766,7 +765,6 @@ public class CreditUsageService : ICreditUsageService
             var availableCreditsQuery = _unitOfWork.TenantCreditRepo
                 .GetByConditionAsync(w =>
                     w.TenantId == _tenantId &&
-                    w.AvailableCredits > 0 &&
                     w.ExpiredOn.Date > DateTimeOffset.UtcNow.Date
                 );
 
@@ -780,7 +778,7 @@ public class CreditUsageService : ICreditUsageService
                     ExpiredOn = s.ExpiredOn.Date,
                     Status = s.ExpiredOn.Date < DateTimeOffset.UtcNow.Date
                         ? CreditStatusesEnum.Expired
-                        : (s.AvailableCredits == 0
+                        : (s.AvailableCredits <= 0
                             ? CreditStatusesEnum.Used
                             : CreditStatusesEnum.Available)
                 }).ToListAsync()

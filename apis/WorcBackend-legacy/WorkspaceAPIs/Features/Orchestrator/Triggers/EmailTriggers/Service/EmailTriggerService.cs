@@ -8,6 +8,7 @@ public class EmailTriggerService : IEmailTriggerService
     private readonly IStringEncryptionService _stringEncryptionService;
     private readonly EnvironmentConfig _environmentConfig;
     private readonly IJobsExecutorService _jobsExecutorService;
+    private readonly WorkspaceInternalDbContext _workspaceInternalDbContext;
 
     public EmailTriggerService(
         ILogger<EmailTriggerService> logger,
@@ -15,7 +16,8 @@ public class EmailTriggerService : IEmailTriggerService
         IHttpContextAccessor httpContextAccessor,
         IStringEncryptionService stringEncryptionService,
         EnvironmentConfig environmentConfig,
-        IJobsExecutorService jobsExecutorService)
+        IJobsExecutorService jobsExecutorService,
+        WorkspaceInternalDbContext workspaceInternalDbContext)
     {
         _logger = logger;
         _unitOfWork = unitOfWork;
@@ -25,6 +27,7 @@ public class EmailTriggerService : IEmailTriggerService
         _stringEncryptionService = stringEncryptionService;
         _environmentConfig = environmentConfig;
         _jobsExecutorService = jobsExecutorService;
+        _workspaceInternalDbContext = workspaceInternalDbContext;
     }
 
     // Retrieves all email triggers.
@@ -149,7 +152,7 @@ public class EmailTriggerService : IEmailTriggerService
             var model = (EmailTriggerModel)emailTriggerDto;
 
             // Create or update the email subscription and update the DTO with the subscription ID
-            var subscription = await ManageEmailTriggerSubscriptionAsync(model, "create", emailTriggerDto.Id);
+            var subscription = await ManageEmailTriggerSubscriptionAsync(model, "create", newEmailTrigger.Id);
             if (subscription.StatusCode != 200)
             {
                 serviceResponse.Message = subscription.Message;
@@ -218,6 +221,16 @@ public class EmailTriggerService : IEmailTriggerService
                     return serviceResponse;
                 }
             }
+
+            newEmailTrigger = await _unitOfWork.TriggerRepo
+                .GetByConditionAsync(w => w.Id == newEmailTrigger.Id)
+                .Include(i => i.CreatedByUser)
+                .Include(i => i.LastModifiedByUser)
+                .Include(i => i.TriggerFlowVersions)
+                    .ThenInclude(i2 => i2.FlowVersion)
+                        .ThenInclude(i3 => i3.Flow)
+                .AsNoTracking()
+                .SingleOrDefaultAsync();
 
             // Map back to DTO for response
             serviceResponse.Data = newEmailTrigger.Adapt<EmailTriggerDto>();
@@ -576,6 +589,7 @@ public class EmailTriggerService : IEmailTriggerService
         var serviceResponse = new ServiceResponse<bool>
         {
             Data = false,
+            StatusCode = 200,
             Message = "Failed to create job(s) from trigger. Please try again."
         };
 
@@ -590,9 +604,10 @@ public class EmailTriggerService : IEmailTriggerService
             }
 
             // Retrieve trigger along with its flow versions
-            var trigger = await _unitOfWork.TriggerRepo
-                .GetByConditionAsync(x => x.Id == triggerGuid)
+            var trigger = await _workspaceInternalDbContext.Triggers
+                .Where(x => x.Id == triggerGuid)
                 .Include(i => i.TriggerFlowVersions)
+                    .ThenInclude(i2 => i2.FlowVersion)
                 .AsNoTracking()
                 .FirstOrDefaultAsync();
 
@@ -657,7 +672,6 @@ public class EmailTriggerService : IEmailTriggerService
 
             // Success (even if partial)
             serviceResponse.Data = true;
-            serviceResponse.StatusCode = 200;
             serviceResponse.Message = "Job(s) created successfully from trigger.";
         }
         catch (Exception ex)
@@ -706,7 +720,7 @@ public class EmailTriggerService : IEmailTriggerService
 
                     if (!baseUrl.StartsWith("http", StringComparison.OrdinalIgnoreCase))
                         baseUrl = "https://" + baseUrl;
-                    var notificationUrl = $"{baseUrl}/worc/api/webhook/trigger/{triggerId}";
+                    var notificationUrl = $"{baseUrl}/worc/api/email-trigger/notify/{triggerId}";
 
 
                     // Build resource path for mailbox and folder
@@ -786,7 +800,20 @@ public class EmailTriggerService : IEmailTriggerService
                     {
                         _logger.LogError("M365 subscription {Action} failed. StatusCode: {StatusCode}", action, response.StatusCode);
                         var responseContent = await response.Content.ReadAsStringAsync();
-                        serviceResponse.Message = responseContent;
+                        try
+                        {
+                            using var doc = JsonDocument.Parse(responseContent);
+                            var message = doc.RootElement
+                                             .GetProperty("error")
+                                             .GetProperty("message")
+                                             .GetString();
+
+                            serviceResponse.Message = message;
+                        }
+                        catch
+                        {
+                            serviceResponse.Message = responseContent;
+                        }
                         return serviceResponse;
                     }
 
