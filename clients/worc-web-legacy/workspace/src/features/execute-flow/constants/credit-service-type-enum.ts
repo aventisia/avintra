@@ -5,31 +5,45 @@ export enum CreditServiceTypesEnum {
   AgentExecutionTime,
   Gpt4oMiniInput,
   Gpt4oMiniOutput,
+  Gpt4oMiniCached,
+
   Qwen3Vl32bInstructInput,
   Qwen3Vl32bInstructOutput,
 
-  // -----------------------------------------------------
-  // TODO: TO remvoe later
+  Gpt51Input,
+  Gpt51Output,
+  Gpt51Cached,
 
-  /**
-   * GPU-accelerated text processing service hosted on-premises.
-   */
-  OnPremGpuText,
+  Gpt5MiniInput,
+  Gpt5MiniOutput,
+  Gpt5MiniCached,
 
-  /**
-   * Input token processing for the Gemini 2.5 Flash model.
-   */
+  Gpt5NanoInput,
+  Gpt5NanoOutput,
+  Gpt5NanoCached,
+
   Gemini25FlashInput,
-
-  /**
-   * Output token generation for the Gemini 2.5 Flash model.
-   */
   Gemini25FlashOutput,
+  Gemini25FlashCached,
 
-  /**
-   * Service for executing AI model inference tasks.
-   */
-  AIModelExecutionTime,
+  Gemini25FlashLiteInput,
+  Gemini25FlashLiteOutput,
+  Gemini25FlashLiteCached,
+
+  Claude45SonnetInput,
+  Claude45SonnetOutput,
+  Claude45SonnetCached,
+
+  Claude45HaikuInput,
+  Claude45HaikuOutput,
+  Claude45HaikuCached,
+
+  Grok3MiniInput,
+  Grok3MiniOutput,
+  Grok3MiniCached,
+
+  // ---------------------------------------------------------
+  // TODO: Remove this later when no longer needed
 
   /**
    * Speech-to-text service hosted on-premises.
@@ -70,4 +84,14 @@ export enum CreditServiceTypesEnum {
    * Output OCR generation for the olmOCR model.
    */
   OlmOcrOutput,
+
+  /**
+   * GPU-accelerated text processing service hosted on-premises.
+   */
+  OnPremGpuText,
+
+  /**
+   * Service for executing AI model inference tasks.
+   */
+  AIModelExecutionTime,
 }
