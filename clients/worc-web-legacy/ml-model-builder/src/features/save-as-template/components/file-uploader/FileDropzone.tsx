@@ -11,6 +11,7 @@ interface Props {
   addFileToUpload: (file: FileUploadDto) => void;
   updateProgress: (name: string, progress: number) => void;
   clearFiles: () => void;
+  isPublic?: boolean;
 }
 
 const FileDropzone = ({
@@ -18,11 +19,13 @@ const FileDropzone = ({
   addFileToUpload,
   updateProgress,
   clearFiles,
+  isPublic,
 }: Props) => {
   const { mutate: uploadFile, currentController } = useFileUpload({
     addFileToUpload,
     updateProgress,
     clearFiles,
+    isPublic,
   });
 
   const onDrop = useCallback(

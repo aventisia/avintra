@@ -1,19 +1,22 @@
 import { useMutation } from "@tanstack/react-query";
 import { useState } from "react";
+
 import { uploadFile } from "../apis/file-upload-apis";
-import { FileUploadDto } from "../dtos/file-upload-dto";
 import { ALLOWED_FILE_TYPES, MAX_FILE_SIZE } from "../constants";
+import { FileUploadDto } from "../dtos/file-upload-dto";
 
 interface FileUploadParams {
   addFileToUpload: (file: FileUploadDto) => void;
   updateProgress: (name: string, progress: number) => void;
   clearFiles: () => void;
+  isPublic?: boolean;
 }
 
 export const useFileUpload = ({
   addFileToUpload,
   updateProgress,
   clearFiles,
+  isPublic,
 }: FileUploadParams) => {
   const [currentController, setCurrentController] =
     useState<AbortController | null>(null);
@@ -30,7 +33,11 @@ export const useFileUpload = ({
         throw new Error("Unsupported file type.");
       }
 
-      const { data, controller } = await uploadFile(file, updateProgress);
+      const { data, controller } = await uploadFile(
+        file,
+        updateProgress,
+        isPublic,
+      );
       setCurrentController(controller);
       return data;
     },

@@ -1,27 +1,26 @@
+import { useFileDelete } from "@/features/file-uploader-setup/hooks/useFileDelete";
+import { useFileStore } from "@/features/file-uploader-setup/stores/file-uploader-store";
+import { useUserSessionStore } from "@/react-toolkit/stores/user-session-store";
+import { useCurrentFlowStore } from "@/stores/current-flow-store";
+import { useReactFlowExtStore } from "@/stores/react-flow-ext-store";
+import { NodeDataType } from "@/types/node-data-type";
+
 import { zodResolver } from "@hookform/resolvers/zod";
+import { Node } from "@xyflow/react";
+import { useEffect, useState } from "react";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
-
-import { saveAsTemplateSchema } from "../constants/save-as-template-zod-schema";
-
 import { useShallow } from "zustand/react/shallow";
 
-import { useCurrentFlowStore } from "@/stores/current-flow-store";
-
-import { useSaveAsTemplateMutation } from "./useSaveAsTemplateMutation";
-import { useFileStore } from "@/features/file-uploader-setup/stores/file-uploader-store";
-import { useEffect, useState } from "react";
-import { useFetchTemplateDetails } from "./useFetchTemplateDetails";
-import { useUpdateTemplateMutation } from "./useUpdateTemplateMutation";
-import { useUserSessionStore } from "@/react-toolkit/stores/user-session-store";
-import { useValidateTemplateMutation } from "./useValidateTemplateMutation";
-import { useReactFlowExtStore } from "@/stores/react-flow-ext-store";
-import { getSelectedEntitiesFromNodes } from "../utils/getSelectedEntitiesFromNodes";
-import { NodeDataType } from "@/types/node-data-type";
-import { Node } from "@xyflow/react";
-import { useSaveAsTemplateStore } from "../stores/save-as-template-store";
-import { getUniqueFlowImages } from "../utils/getUniqueNodeImages";
+import { saveAsTemplateSchema } from "../constants/save-as-template-zod-schema";
 import { ValidateTemplateDto } from "../dto/validate-template-dto";
+import { useSaveAsTemplateStore } from "../stores/save-as-template-store";
+import { getSelectedEntitiesFromNodes } from "../utils/getSelectedEntitiesFromNodes";
+import { getUniqueFlowImages } from "../utils/getUniqueNodeImages";
+import { useFetchTemplateDetails } from "./useFetchTemplateDetails";
+import { useSaveAsTemplateMutation } from "./useSaveAsTemplateMutation";
+import { useUpdateTemplateMutation } from "./useUpdateTemplateMutation";
+import { useValidateTemplateMutation } from "./useValidateTemplateMutation";
 
 /**
  * useDefineSATForm
@@ -61,12 +60,15 @@ export const useDefineSATForm = () => {
   );
 
   // File upload state
-  const { filesToUpload, initializeFilesToUpload } = useFileStore(
-    useShallow((state) => ({
-      filesToUpload: state.filesToUpload,
-      initializeFilesToUpload: state.initializeFilesToUpload,
-    })),
-  );
+  const { filesToUpload, filesToDelete, removeFile, initializeFilesToUpload } =
+    useFileStore(
+      useShallow((state) => ({
+        filesToUpload: state.filesToUpload,
+        filesToDelete: state.filesToDelete,
+        removeFile: state.removeFile,
+        initializeFilesToUpload: state.initializeFilesToUpload,
+      })),
+    );
 
   // Fetch template details
   const { data } = useFetchTemplateDetails();
@@ -74,7 +76,9 @@ export const useDefineSATForm = () => {
   const { mutate: validateTemplate } = useValidateTemplateMutation();
 
   useEffect(() => {
-    const childIds = getSelectedEntitiesFromNodes(nodes as Node<NodeDataType>[]);
+    const childIds = getSelectedEntitiesFromNodes(
+      nodes as Node<NodeDataType>[],
+    );
     const obj = childIds?.map((i) => {
       return { refId: i?.id, name: i?.name };
     });
@@ -101,6 +105,11 @@ export const useDefineSATForm = () => {
       tags: [],
       resources: [],
     },
+  });
+
+  const { mutate: deleteFile } = useFileDelete({
+    removeFile,
+    isPublic: form.watch("accessType") == "Public",
   });
 
   useEffect(() => {
@@ -157,6 +166,9 @@ export const useDefineSATForm = () => {
         createdOn: new Date(),
       });
     }
+    filesToDelete.forEach((file) => {
+      deleteFile(file);
+    });
   };
 
   // Show the "Spaces" input only when access type is set to "Spaces"

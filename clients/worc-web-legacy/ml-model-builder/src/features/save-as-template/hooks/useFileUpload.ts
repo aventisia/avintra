@@ -9,12 +9,14 @@ interface FileUploadParams {
   addFileToUpload: (file: FileUploadDto) => void;
   updateProgress: (name: string, progress: number) => void;
   clearFiles: () => void;
+  isPublic?: boolean;
 }
 
 export const useFileUpload = ({
   addFileToUpload,
   updateProgress,
   clearFiles,
+  isPublic,
 }: FileUploadParams) => {
   const [currentController, setCurrentController] =
     useState<AbortController | null>(null);
@@ -31,7 +33,11 @@ export const useFileUpload = ({
         throw new Error("Unsupported file type.");
       }
 
-      const { data, controller } = await uploadFile(file, updateProgress);
+      const { data, controller } = await uploadFile(
+        file,
+        updateProgress,
+        isPublic,
+      );
       setCurrentController(controller);
       return data;
     },

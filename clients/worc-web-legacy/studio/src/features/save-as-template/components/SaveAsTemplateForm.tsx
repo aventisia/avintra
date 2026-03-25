@@ -1,3 +1,8 @@
+import MarkdownContainer from "@/components/markdown/MarkdownContainer";
+import FileUploadList from "@/features/file-uploader-setup/components/FileUploadList";
+import { Alert } from "@/react-toolkit/ui/alert";
+
+import { LoadingSpinner, TagInput } from "@aventisia/ui";
 import { Button } from "@aventisia/ui/buttons";
 import {
   Form,
@@ -12,25 +17,20 @@ import {
   SelectField,
 } from "@aventisia/ui/form";
 import { ScrollArea } from "@aventisia/ui/scroll";
-import { LoadingSpinner, TagInput } from "@aventisia/ui";
+import { ExclamationCircleIcon } from "@heroicons/react/24/outline";
+import { XCircleIcon } from "lucide-react";
 import { Controller } from "react-hook-form";
-
-import { useDefineSATForm } from "../hooks/useDefineSATForm";
 
 import {
   accessLevelProps,
   spacesProps,
   templateNameProps,
 } from "../constants/save-as-template-feild-props";
-import FileUploadList from "@/features/file-uploader-setup/components/FileUploadList";
-import MarkdownContainer from "@/components/markdown/MarkdownContainer";
-import { StatusAlert } from "./StatusAlert";
-import DeleteTemplate from "./DeleteTemplate";
-import { Alert } from "@/react-toolkit/ui/alert";
-import { ExclamationCircleIcon } from "@heroicons/react/24/outline";
-import GenerateButton from "./GenerateButton";
 import { ValidateTemplateDto } from "../dto/validate-template-dto";
-import { XCircleIcon } from "lucide-react";
+import { useDefineSATForm } from "../hooks/useDefineSATForm";
+import DeleteTemplate from "./DeleteTemplate";
+import GenerateButton from "./GenerateButton";
+import { StatusAlert } from "./StatusAlert";
 
 /**
  * SaveAsTemplateForm Component
@@ -65,6 +65,8 @@ export const SaveAsTemplateForm = () => {
       ?.map((item) => {
         return { name: item.name, type: item.type };
       }) ?? [];
+
+  const isPublic = form.watch("accessType") == "Public";
 
   return (
     // Scrollable container to support long forms within the viewport
@@ -159,7 +161,7 @@ export const SaveAsTemplateForm = () => {
         />
 
         {/* File upload section */}
-        <FileUploadList />
+        <FileUploadList isPublic={isPublic} />
 
         {/* Submit button and delete action, only in edit mode */}
         {!viewMode && (

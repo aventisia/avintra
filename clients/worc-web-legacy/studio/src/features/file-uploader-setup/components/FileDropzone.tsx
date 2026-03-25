@@ -1,15 +1,17 @@
+import { Button } from "@aventisia/ui/buttons";
 import { useCallback } from "react";
 import { useDropzone } from "react-dropzone";
-import { Button } from "@aventisia/ui/buttons";
-import { FileState } from "../stores/file-uploader-store";
+
 import { FileUploadDto } from "../dtos/file-upload-dto";
 import { useFileUpload } from "../hooks/useFileUpload";
+import { FileState } from "../stores/file-uploader-store";
 
 interface Props {
   addFile: (file: FileState) => void;
   addFileToUpload: (file: FileUploadDto) => void;
   updateProgress: (name: string, progress: number) => void;
   clearFiles: () => void;
+  isPublic?: boolean;
 }
 
 const FileDropzone = ({
@@ -17,11 +19,13 @@ const FileDropzone = ({
   addFileToUpload,
   updateProgress,
   clearFiles,
+  isPublic,
 }: Props) => {
   const { mutate: uploadFile, currentController } = useFileUpload({
     addFileToUpload,
     updateProgress,
     clearFiles,
+    isPublic,
   });
 
   const onDrop = useCallback(

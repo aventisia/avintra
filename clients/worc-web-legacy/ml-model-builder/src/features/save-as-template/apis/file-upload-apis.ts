@@ -11,6 +11,7 @@ const baseAPIURL = `${import.meta.env.VITE_WORC_API_PATH}/file`;
 export const uploadFile = async (
   file: File,
   onProgress?: (name: string, progress: number) => void,
+  isPublic?: boolean,
 ): Promise<UploadResponse> => {
   const formData = new FormData();
   formData.append("file", file);
@@ -21,7 +22,10 @@ export const uploadFile = async (
     formData,
     {
       signal: controller.signal,
-      headers: { "Content-Type": "multipart/form-data" },
+      headers: {
+        "Content-Type": "multipart/form-data",
+        ...(isPublic && { "X-Tenant-Scope": "Scope1" }),
+      },
       onUploadProgress: (e) => {
         if (e.total && onProgress) {
           const progress = Math.round((e.loaded * 100) / e.total);
@@ -37,9 +41,17 @@ export const uploadFile = async (
   return { data: fileData, controller };
 };
 
-export const deleteFile = async (file: FileUploadDto): Promise<boolean> => {
+export const deleteFile = async (
+  file: FileUploadDto,
+  isPublic?: boolean,
+): Promise<boolean> => {
   const { data } = await axiosInstance.delete<{ data: boolean }>(
     `${baseAPIURL}/delete?fileUrl=${file.path}`,
+    {
+      headers: {
+        ...(isPublic && { "X-Tenant-Scope": "Scope1" }),
+      },
+    },
   );
   return data.data;
 };

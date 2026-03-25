@@ -1,13 +1,14 @@
-import { FileState, useFileStore } from "../stores/file-uploader-store";
+import { Progress } from "@/react-toolkit/ui/progress";
+
 import { Button } from "@aventisia/ui/buttons";
 import { TrashIcon, XCircleIcon } from "@heroicons/react/24/outline";
-import FileDropzone from "./FileDropzone";
-import { Progress } from "@/react-toolkit/ui/progress";
-import { useFileDelete } from "../hooks/useFileDelete";
-import { formatFileSize } from "../utils";
 import { useShallow } from "zustand/react/shallow";
 
-const FileUploadList = () => {
+import { FileState, useFileStore } from "../stores/file-uploader-store";
+import { formatFileSize } from "../utils";
+import FileDropzone from "./FileDropzone";
+
+const FileUploadList = ({ isPublic }: { isPublic?: boolean }) => {
   const {
     files,
     filesToUpload,
@@ -16,19 +17,19 @@ const FileUploadList = () => {
     updateProgress,
     removeFile,
     clearFiles,
+    addFileToDelete,
   } = useFileStore(
     useShallow((state) => ({
       files: state.files,
       filesToUpload: state.filesToUpload,
       addFile: state.addFile,
       addFileToUpload: state.addFileToUpload,
+      addFileToDelete: state.addFileToDelete,
       updateProgress: state.updateProgress,
       removeFile: state.removeFile,
       clearFiles: state.clearFiles,
     })),
   );
-
-  const { mutate: deleteFile } = useFileDelete({ removeFile });
 
   const cancelUpload = (controller?: AbortController | null) => {
     controller?.abort();
@@ -36,7 +37,7 @@ const FileUploadList = () => {
 
   const removeAll = () => {
     filesToUpload.forEach((file) => {
-      deleteFile(file); // server delete
+      addFileToDelete(file); // server delete
     });
   };
 
@@ -44,7 +45,7 @@ const FileUploadList = () => {
     console.log(name);
     const uploadedFile = filesToUpload.find((f) => f.name === name);
     console.log(uploadedFile);
-    if (uploadedFile) deleteFile(uploadedFile);
+    if (uploadedFile) addFileToDelete(uploadedFile);
   };
 
   const handleDeleteBefore = (file: FileState) => {
@@ -67,6 +68,7 @@ const FileUploadList = () => {
             addFileToUpload={addFileToUpload}
             updateProgress={updateProgress}
             clearFiles={clearFiles}
+            isPublic={isPublic}
           />
           {filesToUpload.length > 0 && (
             <Button variant="ghost" size="xs" type="button" onClick={removeAll}>

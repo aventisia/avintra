@@ -13,7 +13,9 @@ import { formatFileSize } from "../../utils";
 import { FileTypeIcon } from "./FileTypeIcon";
 
 export function TemplateMetaAside({ template }: { template: UseTemplateDTO }) {
-  const { mutate: downloadFile } = useDownloadFile();
+  const { mutate: downloadFile } = useDownloadFile(
+    template.accessType == "Public",
+  );
 
   const basePath = import.meta.env.VITE_WORC_PATH;
 

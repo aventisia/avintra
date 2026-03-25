@@ -13,6 +13,7 @@ import { saveAsTemplateSchema } from "../constants/save-as-template-zod-schema";
 import { useFileStore } from "../stores/file-uploader-store";
 import { getLLMIconPaths } from "../utils/getLLMIconPaths";
 import { useFetchTemplateDetails } from "./useFetchTemplateDetails";
+import { useFileDelete } from "./useFileDelete";
 import { useSaveAsTemplateMutation } from "./useSaveAsTemplateMutation";
 import { useUpdateTemplateMutation } from "./useUpdateTemplateMutation";
 
@@ -44,12 +45,15 @@ export const useDefineSATForm = () => {
   );
 
   // File upload state
-  const { filesToUpload, initializeFilesToUpload } = useFileStore(
-    useShallow((state) => ({
-      filesToUpload: state.filesToUpload,
-      initializeFilesToUpload: state.initializeFilesToUpload,
-    })),
-  );
+  const { filesToUpload, filesToDelete, removeFile, initializeFilesToUpload } =
+    useFileStore(
+      useShallow((state) => ({
+        filesToUpload: state.filesToUpload,
+        filesToDelete: state.filesToDelete,
+        initializeFilesToUpload: state.initializeFilesToUpload,
+        removeFile: state.removeFile,
+      })),
+    );
 
   // Fetch template details
   const { data } = useFetchTemplateDetails();
@@ -76,6 +80,10 @@ export const useDefineSATForm = () => {
       tags: [],
       resources: [],
     },
+  });
+  const { mutate: deleteFile } = useFileDelete({
+    removeFile,
+    isPublic: form.watch("accessType") == "Public",
   });
 
   useEffect(() => {
@@ -138,6 +146,9 @@ export const useDefineSATForm = () => {
         createdOn: new Date(),
       });
     }
+    filesToDelete.forEach((file) => {
+      deleteFile(file);
+    });
   };
 
   // Show the "Spaces" input only when access type is set to "Spaces"
