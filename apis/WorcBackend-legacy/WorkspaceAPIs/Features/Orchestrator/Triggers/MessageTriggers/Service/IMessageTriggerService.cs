@@ -63,4 +63,15 @@ public interface IMessageTriggerService
     /// <param name="triggerId">The ID of the message trigger.</param>
     /// <returns>A service response containing the agents assigned to the message trigger.</returns>
     Task<ServiceResponse<IEnumerable<AssignAgentTriggerDto>>> GetAgentsByMessageTriggerAsync(Guid triggerId);
+
+    /// <summary>
+    /// Receives an external notification and initiates job creation based on the provided trigger ID.
+    /// </summary>
+    /// <param name="triggerId">
+    /// The unique identifier of the message trigger.
+    /// </param>
+    /// <returns>
+    /// A <see cref="ServiceResponse{T}"/> indicating whether the job was created successfully.
+    /// </returns>
+    Task<ServiceResponse<bool>> CreateJobByMessageTriggerIdAsync(string triggerId);
 }
