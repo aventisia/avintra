@@ -599,6 +599,9 @@ public class MessageTriggerService : IMessageTriggerService
                 return serviceResponse;
             }
 
+            // IMPORTANT: Using WorkspaceInternalDbContext to retrieve trigger along with its flow versions.
+            // Any changes to this query (Includes / filtering) may affect downstream logic.
+            // Modify with caution.
             // Retrieve trigger along with its flow versions
             var trigger = await _workspaceInternalDbContext.Triggers
                 .Where(x => x.Id == triggerGuid)
