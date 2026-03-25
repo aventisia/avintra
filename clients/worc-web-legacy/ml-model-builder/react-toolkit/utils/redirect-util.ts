@@ -14,11 +14,14 @@ export function redirectToLoginOn401Util() {
 
   // Redirect to login page after 1 second if not in development mode
   setTimeout(() => {
-    //Add current url and redirect query param
-    const redirectUrl = encodeURIComponent(window.location.href);
+    //Add current url as redirect query param
+    const { href, pathname } = window.location;
+    const isLogin = pathname.includes("/login");
 
-    window.location.assign(
-      `${import.meta.env.VITE_ACCOUNTS_PATH}login?redirect=${redirectUrl}`,
-    );
+    const base = `${import.meta.env.VITE_ACCOUNTS_PATH}login`;
+
+    const url = isLogin ? base : `${base}?redirect=${encodeURIComponent(href)}`;
+
+    window.location.assign(url);
   }, 1000);
 }
