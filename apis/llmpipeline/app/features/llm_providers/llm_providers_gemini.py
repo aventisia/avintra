@@ -83,8 +83,6 @@ class GeminiProvider(BaseLLMProvider):
                     .get("parts", [{}])[0]
                     .get("text", "")
                 )
-
-                text_output = response_data['candidates'][0]['content']['parts'][0]['text']
                 
                 # Convert output to JSON if requested
                 if llm_request.is_json_output:
@@ -94,6 +92,17 @@ class GeminiProvider(BaseLLMProvider):
 
                 # Return standardized LLM response
                 return self._create_final_llm_response(llm_request, default_response, start_time, output, user.access_token, response_data)
+
+        except httpx.HTTPStatusError as e:
+            # Log detailed Gemini validation errors (response body usually includes invalid field info)
+            response_text = ""
+            if e.response is not None:
+                response_text = e.response.text
+            logger.error(
+                f"Gemini request failed with HTTP {e.response.status_code if e.response else 'unknown'}: {response_text}"
+            )
+            default_response.error = str(e)
+            return default_response
 
         except Exception as e:
             # Log Gemini request failure
@@ -215,14 +224,15 @@ class GeminiProvider(BaseLLMProvider):
         if isinstance(llm_request.input, str):
             # If input is a string, treat it as a "text" message
             contents.append({
+                "role": "user",
                 "parts": [{"text": llm_request.input}]
             })
         elif isinstance(llm_request.input, list):
             # If input is a list of messages, group by role
             for msg in llm_request.input:
                 if hasattr(msg, "role") and hasattr(msg, "content"):
-                    # Assign role based on condition: if it's 'user', use 'user', else 'model'
-                    role = "user" if msg.role == "user" else "model"                    
+                    # Gemini accepts 'user' and 'model' roles in contents.
+                    role = "model" if msg.role in {"assistant", "model"} else "user"
                     contents.append({
                         "role": role,
                         "parts": [{"text": msg.content}]
@@ -253,28 +263,37 @@ class GeminiProvider(BaseLLMProvider):
                         ]
                     })
 
-        # Create the payload base
-        payload = {
-            "contents": contents,
-            "generationConfig": {
-                "temperature": llm_request.temperature,
-                "topP": llm_request.top_p,
-                "maxOutputTokens": llm_request.max_output_tokens,
-            }
+        generation_config = {
+            "responseMimeType": "text/plain"  # Default MIME type; may be overridden below
         }
-        
-        # Initialize responseMimeType to a default value (text)
-        payload["generationConfig"]["responseMimeType"] = "text/plain"
+        if llm_request.temperature is not None:
+            generation_config["temperature"] = llm_request.temperature
+        if llm_request.top_p is not None:
+            generation_config["topP"] = llm_request.top_p
+        if llm_request.max_output_tokens is not None:
+            generation_config["maxOutputTokens"] = llm_request.max_output_tokens
 
         # If JSON schema is defined, include it and set MIME type to application/json
         if llm_request.json_schema:
-            payload["generationConfig"]["responseJsonSchema"] = llm_request.json_schema
-            payload["generationConfig"]["responseMimeType"] = "application/json"
+            schema = llm_request.json_schema
+            if isinstance(schema, str):
+                try:
+                    schema = json.loads(schema)
+                except json.JSONDecodeError:
+                    # Keep original value; Gemini will validate and return explicit error details.
+                    pass
+            generation_config["responseSchema"] = schema
+            generation_config["responseMimeType"] = "application/json"
 
         # If JSON output is requested (and no schema), set MIME type to application/json
         elif llm_request.is_json_output:
-            payload["generationConfig"]["responseMimeType"] = "application/json"
-
+            generation_config["responseMimeType"] = "application/json"
+            
+        # Create the final payload
+        payload = {
+            "contents": contents,
+            "generationConfig": generation_config,
+        }
 
         # Construct request headers for Gemini API
         headers = {
