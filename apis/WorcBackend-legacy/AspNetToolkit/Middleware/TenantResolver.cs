@@ -60,9 +60,6 @@ public class TenantResolver
             // remove GUID
             path = Regex.Replace(path, @"/[0-9a-fA-F-]{36}", "");
 
-            // remove numeric or any last segment
-            path = Regex.Replace(path, @"/[^/]+$", "");
-
             // get current endpoint
             var currentEndpoint = (context.Request.Method + ":" + path).ToLower();
 
