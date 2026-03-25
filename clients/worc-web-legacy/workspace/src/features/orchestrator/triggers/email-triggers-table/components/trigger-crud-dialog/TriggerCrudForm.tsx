@@ -213,7 +213,7 @@ export const TriggerCrudForm = () => {
 
       {/* Agents Selector */}
       <FormField
-        name="agentIds"
+        name="agents"
         control={form.control}
         render={({ field }) => (
           <FormItem size={"base"}>

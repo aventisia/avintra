@@ -28,7 +28,11 @@ export interface EmailTriggerDto {
   /**
    * Gets or sets the collection of agent identifiers associated with the email trigger.
    */
-  agentIds?: string[];
+  agents?: {
+    is: string;
+    name: string;
+    versionNumber: number;
+  }[];
 
   /**
    * Gets or sets a value indicating whether the email trigger is disabled.

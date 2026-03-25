@@ -55,7 +55,7 @@ export const useDefineTriggerForm = () => {
     defaultValues: {
       id: "",
       name: "",
-      agentIds: [],
+      agents: [],
       timezone: "",
       expiryDateTime: new Date(), // Default to current date
       expiryTime: null,
@@ -94,7 +94,7 @@ export const useDefineTriggerForm = () => {
     form.reset({
       id: rowId,
       name: triggerData?.name ?? "",
-      agentIds: triggerData?.agentIds ?? [],
+      agents: triggerData?.agents ?? [],
       timezone: triggerData?.timezone ?? "",
       mailbox: triggerData?.mailbox ?? "",
       expiryDateTime: triggerData?.expiryDateTime

@@ -7,6 +7,7 @@ import {
 import { enumToArray } from "@aventisia/ui/utils";
 
 import { EmailTriggerProviderEnum } from "../enums/trigger-frequency-provider-enum";
+import { teamsMessageResourceOptions } from "./form-utils";
 
 // trigger Id
 const idProps: InputFieldProps = {
@@ -36,11 +37,7 @@ const resourceProps: SelectFieldProps = {
   name: "resource",
   label: "Resource",
   description: "Resource",
-  selectOptions: [
-    { label: "Account", value: "Account" },
-    { label: "Group Chat", value: "GroupChat" },
-    { label: "Channel", value: "Channel" },
-  ],
+  selectOptions: teamsMessageResourceOptions,
 };
 
 const expiryDateTimeProps: DatePickerFieldProps = {

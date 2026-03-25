@@ -55,7 +55,7 @@ export const useDefineTriggerForm = () => {
     defaultValues: {
       id: "",
       name: "",
-      agentIds: [],
+      agents: [],
       timezone: "",
       expiryDateTime: new Date(), // Default to current date
       expiryTime: null,
@@ -89,14 +89,13 @@ export const useDefineTriggerForm = () => {
     setTriggerName(triggerData?.name ?? "");
     const datePlus30 = new Date();
     datePlus30.setDate(datePlus30.getDate() + 30);
-const userTimeZone = Intl.DateTimeFormat().resolvedOptions().timeZone;
-console.log(userTimeZone)
+    const userTimeZone = Intl.DateTimeFormat().resolvedOptions().timeZone;
     // Reset form with fetched trigger data
     form.reset({
       id: rowId,
       name: triggerData?.name ?? "",
-      agentIds: triggerData?.agentIds ?? [],
-      timezone: triggerData?.timezone ?? userTimeZone??"",
+      agents: triggerData?.agents ?? [],
+      timezone: triggerData?.timezone ?? userTimeZone ?? "",
       mailbox: triggerData?.mailbox ?? "",
       expiryDateTime: triggerData?.expiryDateTime
         ? new Date(triggerData.expiryDateTime)
@@ -114,7 +113,7 @@ console.log(userTimeZone)
       resubscribeFrequencyCustom: defaultFrequency(
         triggerData?.resubscribeFrequency?.toString() ?? "",
       )
-        ? '0'
+        ? "0"
         : triggerData?.resubscribeFrequency?.toString(),
       credentialId: triggerData?.credentialId ?? "",
       folder: triggerData?.folder ?? "Inbox",

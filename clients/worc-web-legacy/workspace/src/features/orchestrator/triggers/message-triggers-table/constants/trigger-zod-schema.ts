@@ -30,7 +30,7 @@ export const triggerZodSchema = z.object({
   // Trigger name validation using the custom schema
   name: triggerNameSchema,
 
-  agentIds: z.array(z.string()).min(1, { message: reqError("Agent(s)") }),
+  agents: z.array(z.any()).min(1, { message: reqError("Agent(s)") }),
 
   // Timezone in which the trigger is set
   timezone: z.string().min(1, { message: reqError("Timezone") }),

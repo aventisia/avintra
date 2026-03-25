@@ -1,17 +1,17 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
+import { useDebounce } from "@/react-toolkit/hooks/useDebounce";
+
 import { CrudActionType } from "@aventisia/ui/types";
 import { useEffect, useState } from "react";
-
-import { useDebounce } from "@/react-toolkit/hooks/useDebounce";
 
 import { SearchAgentsDto } from "../../dtos/search-agent-dto";
 import { useFetchAgentList } from "../../hooks/useFetchAgentList";
 import { useFetchTriggerAgents } from "../../hooks/useFetchTriggerAgents";
-
 import { MultiSelector } from "./MultiSelector";
 
 interface AgentsSelectorProps {
-  value?: (string | undefined)[]; // Array of strings for the selected agent IDs
-  onChange: (value: (string | undefined)[]) => void; // Function to updates the value (array of strings)
+  value?: (any[] | undefined)[]; // Array of strings for the selected agent IDs
+  onChange: (value: (any | undefined)[]) => void; // Function to updates the value (array of strings)
   id?: string;
   crudAction: CrudActionType;
 }
@@ -29,7 +29,15 @@ export const AgentsSelector = ({
   useEffect(() => {
     //check crudAction to avoid form dirty in view mode
     if (selectedItems.length && crudAction !== "read")
-      onChange(selectedItems.map((item) => item.id));
+      onChange(
+        selectedItems.map((item) => {
+          return {
+            id: item.id,
+            name: item.name,
+            versionNumber: item.versionNumber,
+          };
+        }),
+      );
   }, [crudAction, onChange, selectedItems]);
 
   const {
@@ -50,7 +58,7 @@ export const AgentsSelector = ({
 
   const handleItemSelect = (item: SearchAgentsDto) => {
     if (!selectedItems.some((i) => i.id === item.id)) {
-      setSelectedItems( [ item]);
+      setSelectedItems([item]);
     }
   };
 

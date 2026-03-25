@@ -7,12 +7,12 @@ import {
 
 import { FormLabelExt } from "@aventisia/ui/form";
 import { cn } from "@aventisia/ui/lib";
-import { Tooltip } from "@aventisia/ui/tooltip";
-import { RotateCwIcon } from "lucide-react";
 
 export default function APIKeyField({
+  value="aer12",
   readOnly = true,
 }: {
+  value: string;
   readOnly?: boolean;
 }) {
   return (
@@ -24,13 +24,17 @@ export default function APIKeyField({
           readOnly && "focus-within:border-input focus-within:ring-0",
         )}
       >
-        <InputGroupInput readOnly />
+        <InputGroupInput readOnly value={value} />
         <InputGroupAddon>
-          <InputGroupButton aria-label="Copy" type="button" size="icon5">
-            <Tooltip side="top" content="Regenerate">
-              <RotateCwIcon className="h-3.5 w-3.5 text-muted-foreground" />
-            </Tooltip>
-          </InputGroupButton>
+          {value ? (
+            <InputGroupButton aria-label="Regenerate" type="button" size="sm">
+              Regenerate
+            </InputGroupButton>
+          ) : (
+            <InputGroupButton aria-label="Generate" type="button" size="sm">
+              Generate
+            </InputGroupButton>
+          )}{" "}
         </InputGroupAddon>
       </InputGroup>
     </div>

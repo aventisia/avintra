@@ -128,6 +128,33 @@ function setTimeToDate(date: Date, time: string): Date {
 
   return newDate;
 }
+
+const teamsMessageResourceOptions = [
+  {
+    label: "/teams/{team-id}/channels/{channel-id}/messages",
+    value: "/teams/{team-id}/channels/{channel-id}/messages",
+  },
+  {
+    label: "/teams/getAllMessages",
+    value: "/teams/getAllMessages",
+  },
+  {
+    label: "/chats/{chat-id}/messages",
+    value: "/chats/{chat-id}/messages",
+  },
+  {
+    label: "/chats/getAllMessages",
+    value: "/chats/getAllMessages",
+  },
+  {
+    label: "/users/{user-id}/chats/getAllMessages",
+    value: "/users/{user-id}/chats/getAllMessages",
+  },
+  {
+    label: "/appCatalogs/teamsApps/{app-id}/installedToChats/getAllMessages",
+    value: "/appCatalogs/teamsApps/{app-id}/installedToChats/getAllMessages",
+  },
+];
 export {
   weekdaysToNumbers,
   numbersToWeekdays,
@@ -141,4 +168,5 @@ export {
   timezoneOptions,
   getTimeFromDate,
   setTimeToDate,
+  teamsMessageResourceOptions,
 };

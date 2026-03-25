@@ -40,7 +40,7 @@ export default function InputWithCopy({
           <InputGroupButton
             aria-label="Copy"
             type="button"
-            size="icon5"
+            size="sm"
             onClick={() => {
               handleCopy();
             }}
