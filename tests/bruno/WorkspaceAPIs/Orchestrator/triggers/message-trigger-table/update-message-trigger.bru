@@ -6,7 +6,7 @@ meta {
 
 put {
   url: {{WORC_APIS_BASE_URL}}/message-trigger
-  body: json,
+  body: json
   auth: none
 }
 
@@ -22,8 +22,12 @@ body:json {
     "resubscribeFrequency": "90",
     "credentialId": "DUMMY",
     "provider": "M365",
-    "agentIds": [
-      "4ab51170-f1aa-423f-a9cd-0a0f51ce528c"
+    "agents": [
+      {
+        "id": "4ab51170-f1aa-423f-a9cd-0a0f51ce528c",
+        "name": "Display Message",
+        "versionNumber": 1
+      }
     ]
   }
 }
