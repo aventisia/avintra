@@ -10,10 +10,6 @@ get {
   auth: bearer
 }
 
-auth:bearer {
-  token: {{ACCESS_TOKEN}}
-}
-
 script:pre-request {
   const { faker } = require('@faker-js/faker');
   
