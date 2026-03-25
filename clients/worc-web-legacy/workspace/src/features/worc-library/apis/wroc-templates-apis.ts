@@ -1,6 +1,6 @@
-import { IHttpResponse } from "@aventisia/ui/dtos";
-
 import { axiosInstance } from "@/react-toolkit/lib/axios-instance";
+
+import { IHttpResponse } from "@aventisia/ui/dtos";
 
 import { UseTemplateDTO } from "../dtos/use-template-dto";
 import { WorcTemplatesDto } from "../dtos/worc-templates-dtos";
@@ -28,12 +28,15 @@ const getTemplateById = (id: string) => {
     .then((res) => res.data);
 };
 
-const downloadTemplateResource = (path: string) => {
+const downloadTemplateResource = (path: string, isPublic?: boolean) => {
   return axiosInstance
     .get(
       `${import.meta.env.VITE_WORC_API_PATH}/file/download?fileUrl=${path}`,
       {
         responseType: "blob",
+        headers: {
+          ...(isPublic && { "X-Tenant-Scope": "Scope1" }),
+        },
       },
     )
     .then((res) => res.data);

@@ -4,12 +4,12 @@ import { Button } from "@aventisia/ui/buttons";
 import { TrashIcon, XCircleIcon } from "@heroicons/react/24/outline";
 import { useShallow } from "zustand/react/shallow";
 
-import { useFileDelete } from "../../hooks/useFileDelete";
+// import { useFileDelete } from "../../hooks/useFileDelete";
 import { FileState, useFileStore } from "../../stores/file-uploader-store";
 import { formatFileSize } from "../../utils";
 import FileDropzone from "./FileDropzone";
 
-const FileUploadList = () => {
+const FileUploadList = ({ isPublic }: { isPublic?: boolean }) => {
   const {
     files,
     filesToUpload,
@@ -18,19 +18,19 @@ const FileUploadList = () => {
     updateProgress,
     removeFile,
     clearFiles,
+    addFileToDelete,
   } = useFileStore(
     useShallow((state) => ({
       files: state.files,
       filesToUpload: state.filesToUpload,
       addFile: state.addFile,
       addFileToUpload: state.addFileToUpload,
+      addFileToDelete: state.addFileToDelete,
       updateProgress: state.updateProgress,
       removeFile: state.removeFile,
       clearFiles: state.clearFiles,
     })),
   );
-
-  const { mutate: deleteFile } = useFileDelete({ removeFile });
 
   const cancelUpload = (controller?: AbortController | null) => {
     controller?.abort();
@@ -38,14 +38,14 @@ const FileUploadList = () => {
 
   const removeAll = () => {
     filesToUpload.forEach((file) => {
-      deleteFile(file); // server delete
+      addFileToDelete(file);
     });
   };
 
   const handleDelete = (name: string) => {
     const uploadedFile = filesToUpload.find((f) => f.name === name);
 
-    if (uploadedFile) deleteFile(uploadedFile);
+    if (uploadedFile) addFileToDelete(uploadedFile);
   };
 
   const handleDeleteBefore = (file: FileState) => {
@@ -68,6 +68,7 @@ const FileUploadList = () => {
             addFileToUpload={addFileToUpload}
             updateProgress={updateProgress}
             clearFiles={clearFiles}
+            isPublic={isPublic}
           />
           {filesToUpload.length > 0 && (
             <Button variant="ghost" size="xs" type="button" onClick={removeAll}>

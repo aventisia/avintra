@@ -49,6 +49,8 @@ export const SaveAsTemplateForm = () => {
     lastModifiedBy,
   } = useDefineSATForm();
 
+  const isPublic = form.watch("accessType") == "Public";
+
   return (
     // Scrollable container to support long forms within the viewport
     <ScrollArea className="h-[calc(100vh-3rem)]">
@@ -119,7 +121,7 @@ export const SaveAsTemplateForm = () => {
         />
 
         {/* File upload section */}
-        <FileUploadList />
+        <FileUploadList isPublic={isPublic} />
 
         {/* Submit button and delete action, only in edit mode */}
         {!viewMode && (

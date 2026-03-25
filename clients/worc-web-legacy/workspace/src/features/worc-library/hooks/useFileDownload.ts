@@ -3,9 +3,10 @@ import { useMutation } from "@tanstack/react-query";
 import { downloadTemplateResource } from "../apis/wroc-templates-apis";
 import { FileResource } from "../dtos/use-template-dto";
 
-export const useDownloadFile = () => {
+export const useDownloadFile = (isPublic?: boolean) => {
   return useMutation({
-    mutationFn: (file: FileResource) => downloadTemplateResource(file.path),
+    mutationFn: (file: FileResource) =>
+      downloadTemplateResource(file.path, isPublic),
     onSuccess: (data, file) => {
       // Create a download link dynamically
       const url = window.URL.createObjectURL(data);

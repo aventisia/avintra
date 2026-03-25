@@ -1,4 +1,5 @@
 import { create } from "zustand";
+
 import { FileUploadDto } from "../dtos/file-upload-dto";
 
 export interface FileState {
@@ -12,10 +13,12 @@ export interface FileState {
 interface FileUploaderState {
   files: FileState[];
   filesToUpload: FileUploadDto[];
+  filesToDelete: FileUploadDto[];
 
   addFile: (file: FileState) => void;
   updateProgress: (name: string, progress: number) => void;
   addFileToUpload: (file: FileUploadDto) => void;
+  addFileToDelete: (file: FileUploadDto) => void;
   initializeFilesToUpload: (files: FileUploadDto[]) => void;
   removeFile: (name: string) => void;
   clearFiles: () => void;
@@ -25,6 +28,7 @@ interface FileUploaderState {
 export const useFileStore = create<FileUploaderState>((set) => ({
   files: [],
   filesToUpload: [],
+  filesToDelete: [],
 
   addFile: (file) => set((state) => ({ files: [...state.files, file] })),
 
@@ -36,6 +40,13 @@ export const useFileStore = create<FileUploaderState>((set) => ({
   addFileToUpload: (file) =>
     set((state) => ({
       filesToUpload: [...state.filesToUpload, file],
+    })),
+
+  addFileToDelete: (file) =>
+    set((state) => ({
+      filesToDelete: [...state.filesToDelete, file],
+      files: state.files.filter((f) => f.name !== file.name),
+      filesToUpload: state.filesToUpload.filter((f) => f.name !== file.name),
     })),
 
   initializeFilesToUpload: (newFiles) =>
