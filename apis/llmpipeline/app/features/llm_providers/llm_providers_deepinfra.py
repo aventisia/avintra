@@ -253,7 +253,7 @@ class DeepInfraProvider(BaseLLMProvider):
         if llm_request.json_schema:
             request_payload["response_format"] = json.loads(llm_request.json_schema) if isinstance(llm_request.json_schema, str) else llm_request.json_schema
         
-        # If max_output_tokens is provided, include it in the payload
+        # If max_output_tokens is provided and greater than 0 (in python 0 is falsy), include it in the payload
         if llm_request.max_output_tokens:
             request_payload["max_tokens"] = llm_request.max_output_tokens       
 

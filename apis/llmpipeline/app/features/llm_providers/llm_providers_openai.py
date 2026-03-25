@@ -232,7 +232,7 @@ class OpenAIProvider(BaseLLMProvider):
                 }
             }
             
-        # If max_output_tokens is provided, include it in the payload
+        # If max_output_tokens is provided and greater than 0 (in python 0 is falsy), include it in the payload
         if llm_request.max_output_tokens:
             request_payload["max_output_tokens"] = llm_request.max_output_tokens
         

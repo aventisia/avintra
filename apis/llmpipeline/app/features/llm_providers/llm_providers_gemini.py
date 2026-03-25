@@ -270,9 +270,10 @@ class GeminiProvider(BaseLLMProvider):
             generation_config["temperature"] = llm_request.temperature
         if llm_request.top_p is not None:
             generation_config["topP"] = llm_request.top_p
-        if llm_request.max_output_tokens is not None:
-            generation_config["maxOutputTokens"] = llm_request.max_output_tokens
-
+        # If max_output_tokens is provided and greater than 0 (in python 0 is falsy), include it in the payload
+        if llm_request.max_output_tokens:
+             generation_config["maxOutputTokens"] = llm_request.max_output_tokens
+        
         # If JSON schema is defined, include it and set MIME type to application/json
         if llm_request.json_schema:
             schema = llm_request.json_schema
