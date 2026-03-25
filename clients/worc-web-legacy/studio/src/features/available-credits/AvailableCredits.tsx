@@ -21,13 +21,19 @@ const AvailableCredits = () => {
         {isLoading ? (
           <LoadingSpinner className="text-primary-300 size-3" />
         ) : (
-          <>
+          <span
+            className={
+              data?.data?.availableCredits && data?.data?.availableCredits < 0
+                ? "text-destructive"
+                : ""
+            }
+          >
             {data
               ? data?.data?.availableCredits.toLocaleString("en-US", {
                   maximumFractionDigits: 2,
                 })
               : "0"}
-          </>
+          </span>
         )}
       </p>
     </Badge>
