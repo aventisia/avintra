@@ -1,24 +1,24 @@
-import { Separator } from "@aventisia/ui";
-import { Badge } from "@aventisia/ui/badge";
-import { Button } from "@aventisia/ui/buttons";
-import { Tooltip } from "@aventisia/ui/tooltip";
-import { InfoIcon, PlusIcon } from "lucide-react";
-import { useShallow } from "zustand/react/shallow";
-
 import { formatCurrency } from "@/features/tenant/constants/currency-symbol-map";
 import { useFetchCurrentPlan } from "@/features/tenant/hooks/useFetchCurrentPlan";
 import { useCancelPlanDialogStore } from "@/features/tenant/store/overview/cancel-plan-dialog-store";
 import { useUpgradePlanDialogStore } from "@/features/tenant/store/overview/upgrade-plan-dialog.store";
 import { useUserSessionStore } from "@/react-toolkit/stores/user-session-store";
 
-import TabLoader from "../TabLoader";
+import { Separator } from "@aventisia/ui";
+import { Badge } from "@aventisia/ui/badge";
+import { Button } from "@aventisia/ui/buttons";
+import { cn } from "@aventisia/ui/lib";
+import { Tooltip } from "@aventisia/ui/tooltip";
+import { InfoIcon, PlusIcon } from "lucide-react";
+import { useShallow } from "zustand/react/shallow";
 
+import TabLoader from "../TabLoader";
 import BillingFrequency from "./BillingFrequency";
 import CancelPlanDialog from "./CancelPlanDialog";
 import NextPaymentDetails from "./NextPaymentDetails";
 import { PlanFeatures } from "./PlanFeatures";
-import UpgradePlanDialog from "./upgrade-plan-dialog/UpgradePlanDialog";
 import { UsageDetails } from "./UsageDetails";
+import UpgradePlanDialog from "./upgrade-plan-dialog/UpgradePlanDialog";
 
 const Overview = () => {
   const { setOpen } = useCancelPlanDialogStore();
@@ -92,7 +92,12 @@ const Overview = () => {
               >
                 <p>
                   Available Credits:
-                  <span className="ml-1 font-semibold">
+                  <span
+                    className={cn(
+                      "ml-1 font-semibold",
+                      currentPlan.availableCredits < 0 && "text-destructive",
+                    )}
+                  >
                     {currentPlan.availableCredits.toLocaleString("en-US", {
                       maximumFractionDigits: 2,
                     })}
