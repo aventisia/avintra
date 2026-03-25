@@ -8,6 +8,7 @@ export const columnDisplayNames: KeyValueLookupType[] = [
   { key: "lastTriggeredTime", value: "Last Triggered" },
   { key: "nextTriggerTime", value: "Next Trigger Time" },
   { key: "timezone", value: "Timezone" },
+  { key: "agents", value: "Agent(s)" },
   { key: "effectiveDate", value: "Effective Date" },
   { key: "createdBy", value: "Created By" },
   { key: "createdOn", value: "Created On" },

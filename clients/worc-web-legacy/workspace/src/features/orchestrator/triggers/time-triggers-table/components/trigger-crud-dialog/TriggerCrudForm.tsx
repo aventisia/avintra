@@ -1,3 +1,5 @@
+import { MultiSelectField } from "@/components/multi-select/MultiSelectField";
+
 import { TagInput } from "@aventisia/ui";
 import { SubmitButton } from "@aventisia/ui/buttons";
 import {
@@ -17,8 +19,6 @@ import { cn } from "@aventisia/ui/lib";
 import { useEffect } from "react";
 import { z } from "zod";
 
-import { MultiSelectField } from "@/components/multi-select/MultiSelectField";
-
 import { triggerOptimisticMutationFn } from "../../apis/triggers-table-apis";
 import { DATA_QUERY_KEY } from "../../constants";
 import { timezoneOptions } from "../../constants/form-utils";
@@ -35,7 +35,6 @@ import {
 import { triggerZodSchema } from "../../constants/trigger-zod-schema";
 import { TimeTriggerDto } from "../../dtos/time-trigger-dto";
 import { useDefineTriggerForm } from "../../hooks/useDefineTriggerForm";
-
 import { AgentsSelector } from "./AgentsSelector";
 import { TimezoneSelector } from "./TimezoneSelector";
 import { TriggerTimeScheduleInputs } from "./TriggerTimeScheduleInputs";
@@ -142,7 +141,7 @@ export const TriggerCrudForm = () => {
 
       {/* Agents Selector */}
       <FormField
-        name="agentIds"
+        name="agents"
         control={form.control}
         render={({ field }) => (
           <FormItem size={"base"}>

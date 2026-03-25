@@ -118,7 +118,7 @@ export const TriggerCrudForm = () => {
       />
       <InputWithCopy value={`/webhook/${form.getValues("id")}`} />
       {/* <InputWithCopy value={`${window.location.origin}${import.meta.env.VITE_WORC_API_PATH}/webhook/${form.getValues("id")}`} /> */}
-      <APIKeyField />
+      <APIKeyField  value="123ww"/>
       <SelectField {...resubscribeFrequencyProps} />
 
       {resubscribeFrequency == "custom" && (
@@ -130,7 +130,7 @@ export const TriggerCrudForm = () => {
       <DatePickerField {...expiryDateTimeProps} disabled />
       {/* Agents Selector */}
       <FormField
-        name="agentIds"
+        name="agents"
         control={form.control}
         render={({ field }) => (
           <FormItem size={"base"}>

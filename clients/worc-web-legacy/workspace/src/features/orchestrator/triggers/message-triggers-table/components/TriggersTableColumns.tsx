@@ -112,11 +112,21 @@ export const triggersTableColumns: ColumnDef<MessageTriggerDto>[] = [
         title={getColumnName("agents")}
       />
     ),
-    cell: ({ row }) => (
-      <div className="w-auto truncate font-medium">
-        {row.getValue("agents")}
-      </div>
-    ),
+    cell: ({ row }) => {
+      const agents = row.original.agents ?? [];
+
+      if (!agents.length) return null;
+
+      const firstAgent = agents[0];
+      const remainingCount = agents.length - 1;
+
+      return (
+        <div className="w-auto truncate font-medium">
+          {firstAgent.name} -v{firstAgent.versionNumber}
+          {remainingCount > 0 && `, +${remainingCount}`}
+        </div>
+      );
+    },
   },
   {
     accessorKey: "timezone",

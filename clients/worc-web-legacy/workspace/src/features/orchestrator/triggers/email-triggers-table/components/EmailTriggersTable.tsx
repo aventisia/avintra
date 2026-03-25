@@ -35,7 +35,7 @@ export const EmailTriggersTable = () => {
   );
 
   // Fetch triggers data
-  const { data } = useFetchTriggers();
+  const { isLoading, data } = useFetchTriggers();
 
   // Create a React table for triggers data
   const table = useDataTable(
@@ -49,7 +49,7 @@ export const EmailTriggersTable = () => {
   // Return the rendered DataTable component.
   return (
     <>
-      {data ? (
+      {!isLoading ? (
         <div className="space-y-4 pb-4 pt-[17px]">
           {/* Crud ops dialog */}
           <TriggerCrudDialog>

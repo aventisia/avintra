@@ -1,15 +1,14 @@
+import { TriggerFrequencyTypesEnum } from "@/enums/trigger-frequency-types-enum";
+
 import { Checkbox } from "@aventisia/ui";
 import { DTColumnHeader } from "@aventisia/ui/data-table";
 import { dateFormatter, getEnumValueByKey } from "@aventisia/ui/utils";
 import { ColumnDef } from "@tanstack/react-table";
 import { format } from "date-fns";
 
-import { TriggerFrequencyTypesEnum } from "@/enums/trigger-frequency-types-enum";
-
 import { TABLE_KEY } from "../constants";
 import { getColumnName } from "../constants/column-display-names";
 import { TimeTriggerDto } from "../dtos/time-trigger-dto";
-
 import { TriggerRowActions } from "./table-actions/TriggerRowActions";
 
 /**
@@ -50,7 +49,12 @@ export const triggersTableColumns: ColumnDef<TimeTriggerDto>[] = [
       />
     ),
     cell: ({ row }) => (
-      <div title={row.getValue("name")} className="w-auto truncate max-w-80 font-medium">{row.getValue("name")}</div>
+      <div
+        title={row.getValue("name")}
+        className="w-auto truncate max-w-80 font-medium"
+      >
+        {row.getValue("name")}
+      </div>
     ),
   },
 
@@ -105,6 +109,31 @@ export const triggersTableColumns: ColumnDef<TimeTriggerDto>[] = [
           : "NA"}
       </div>
     ),
+  },
+  {
+    accessorKey: "agents",
+    header: ({ column }) => (
+      <DTColumnHeader
+        tableKey={TABLE_KEY}
+        column={column}
+        title={getColumnName("agents")}
+      />
+    ),
+    cell: ({ row }) => {
+      const agents = row.original.agents ?? [];
+
+      if (!agents.length) return null;
+
+      const firstAgent = agents[0];
+      const remainingCount = agents.length - 1;
+
+      return (
+        <div className="w-auto truncate font-medium">
+          {firstAgent.name} -v{firstAgent.versionNumber}
+          {remainingCount > 0 && `, +${remainingCount}`}
+        </div>
+      );
+    },
   },
   {
     accessorKey: "timezone",

@@ -115,10 +115,10 @@ function InputGroupTextarea({
  * Button inside group
  * ---------------------------------------------------------------------------*/
 
-function InputGroupButton({ className, size = "xs", ...props }: ButtonProps) {
+function InputGroupButton({ className, size = "sm", ...props }: ButtonProps) {
   return (
     <Button
-      size={size === "xs" ? "icon7" : size === "sm" ? "icon8" : "icon10"}
+      size={size}
       variant="ghost"
       className={cn("shadow-none", className)}
       {...props}
