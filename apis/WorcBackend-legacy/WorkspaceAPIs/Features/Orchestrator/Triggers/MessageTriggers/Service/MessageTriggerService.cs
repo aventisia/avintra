@@ -8,6 +8,7 @@ public class MessageTriggerService : IMessageTriggerService
     private readonly IStringEncryptionService _stringEncryptionService;
     private readonly EnvironmentConfig _environmentConfig;
     private readonly IJobsExecutorService _jobsExecutorService;
+    private readonly WorkspaceInternalDbContext _workspaceInternalDbContext;
 
     public MessageTriggerService(
         ILogger<MessageTriggerService> logger,
@@ -15,7 +16,8 @@ public class MessageTriggerService : IMessageTriggerService
         IHttpContextAccessor httpContextAccessor,
         IStringEncryptionService stringEncryptionService,
         EnvironmentConfig environmentConfig,
-        IJobsExecutorService jobsExecutorService)
+        IJobsExecutorService jobsExecutorService,
+        WorkspaceInternalDbContext workspaceInternalDbContext)
     {
         _logger = logger;
         _unitOfWork = unitOfWork;
@@ -25,6 +27,7 @@ public class MessageTriggerService : IMessageTriggerService
         _stringEncryptionService = stringEncryptionService;
         _environmentConfig = environmentConfig;
         _jobsExecutorService = jobsExecutorService;
+        _workspaceInternalDbContext = workspaceInternalDbContext;
     }
 
     // Retrieves all message triggers.
@@ -139,14 +142,14 @@ public class MessageTriggerService : IMessageTriggerService
             messageTriggerDto = TrimDtoStringPropsUtil.TrimDtoStringProps(messageTriggerDto);
 
             // Convert DTO to Trigger entity
-            var newmessageTrigger = messageTriggerDto.Adapt<Trigger>();
-            newmessageTrigger.Id = Guid.NewGuid();
+            var newMessageTrigger = messageTriggerDto.Adapt<Trigger>();
+            newMessageTrigger.Id = Guid.NewGuid();
 
             // Serialize MessageTriggerModel properties into Metadata JSON
             var model = (MessageTriggerModel)messageTriggerDto;
 
             // Create new message trigger subscription
-            var subscription = await ManagemessageTriggerSubscriptionAsync(model, "create", newmessageTrigger.Id);
+            var subscription = await ManagemessageTriggerSubscriptionAsync(model, "create", newMessageTrigger.Id);
 
             // creation failed
             if (subscription.StatusCode != 200)
@@ -164,17 +167,17 @@ public class MessageTriggerService : IMessageTriggerService
             // Ensure enums serialize as strings
             jsonOptions.Converters.Add(new JsonStringEnumConverter());
 
-            newmessageTrigger.Metadata = JsonDocument.Parse(System.Text.Json.JsonSerializer.Serialize(subscription.Data, jsonOptions));
+            newMessageTrigger.Metadata = JsonDocument.Parse(System.Text.Json.JsonSerializer.Serialize(subscription.Data, jsonOptions));
 
             // Set the TriggerType explicitly
-            newmessageTrigger.TriggerType = TriggerTypesEnum.MessageTrigger;
+            newMessageTrigger.TriggerType = TriggerTypesEnum.MessageTrigger;
 
             // Set audit fields: created and last modified by current user
-            newmessageTrigger.CreatedByUserId = _userId;
-            newmessageTrigger.LastModifiedByUserId = _userId;
+            newMessageTrigger.CreatedByUserId = _userId;
+            newMessageTrigger.LastModifiedByUserId = _userId;
 
             // Insert entity into repository
-            await _unitOfWork.TriggerRepo.InsertAsync(newmessageTrigger);
+            await _unitOfWork.TriggerRepo.InsertAsync(newMessageTrigger);
 
             // Save changes to database and validate success
             if (!await _unitOfWork.SaveAsync())
@@ -201,7 +204,7 @@ public class MessageTriggerService : IMessageTriggerService
                 // Create a list of TriggerFlowVersion entities linking the new message trigger to each agent.
                 var triggerFlowVersions = agents.Select(agent => new TriggerFlowVersion
                 {
-                    TriggerId = newmessageTrigger.Id,
+                    TriggerId = newMessageTrigger.Id,
                     FlowVersionId = agent.Id,
                     CreatedByUserId = _userId,
                     LastModifiedByUserId = _userId
@@ -218,8 +221,18 @@ public class MessageTriggerService : IMessageTriggerService
                 }
             }
 
+            newMessageTrigger = await _unitOfWork.TriggerRepo
+                .GetByConditionAsync(w => w.Id == newMessageTrigger.Id)
+                .Include(i => i.CreatedByUser)
+                .Include(i => i.LastModifiedByUser)
+                .Include(i => i.TriggerFlowVersions)
+                    .ThenInclude(i2 => i2.FlowVersion)
+                        .ThenInclude(i3 => i3.Flow)
+                .AsNoTracking()
+                .SingleOrDefaultAsync();
+
             // Map back to DTO for response
-            serviceResponse.Data = newmessageTrigger.Adapt<MessageTriggerDto>();
+            serviceResponse.Data = newMessageTrigger.Adapt<MessageTriggerDto>();
             serviceResponse.StatusCode = 200;
             serviceResponse.Message = "Message trigger created successfully";
         }
@@ -572,6 +585,7 @@ public class MessageTriggerService : IMessageTriggerService
         var serviceResponse = new ServiceResponse<bool>
         {
             Data = false,
+            StatusCode = 200,
             Message = "Failed to create job(s) from trigger. Please try again."
         };
 
@@ -586,9 +600,10 @@ public class MessageTriggerService : IMessageTriggerService
             }
 
             // Retrieve trigger along with its flow versions
-            var trigger = await _unitOfWork.TriggerRepo
-                .GetByConditionAsync(x => x.Id == triggerGuid)
+            var trigger = await _workspaceInternalDbContext.Triggers
+                .Where(x => x.Id == triggerGuid)
                 .Include(i => i.TriggerFlowVersions)
+                    .ThenInclude(i2 => i2.FlowVersion)
                 .AsNoTracking()
                 .FirstOrDefaultAsync();
 
@@ -653,7 +668,6 @@ public class MessageTriggerService : IMessageTriggerService
 
             // Success (even if partial)
             serviceResponse.Data = true;
-            serviceResponse.StatusCode = 200;
             serviceResponse.Message = "Job(s) created successfully from trigger.";
         }
         catch (Exception ex)
@@ -697,11 +711,19 @@ public class MessageTriggerService : IMessageTriggerService
                     // Add Bearer token to HttpClient
                     httpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", accessToken);
 
+                    // Normalize base URL
                     var baseUrl = _environmentConfig.AppBaseUrl?.Trim().TrimEnd('/');
 
                     if (!baseUrl.StartsWith("http", StringComparison.OrdinalIgnoreCase))
                         baseUrl = "https://" + baseUrl;
-                    var notificationUrl = $"{baseUrl}/worc/api/webhook/trigger/{triggerId}";
+
+                    // Notification URL
+                    var notificationUrl = $"{baseUrl}/worc/api/message-trigger/notify/{triggerId}";
+
+                    // Fix resource logic
+                    var resource = !string.IsNullOrEmpty(messageTriggerModel.Mailbox)
+                        ? $"/users/{messageTriggerModel.Mailbox}/chats/getAllMessages"
+                        : "/chats/getAllMessages"; // fallback (or throw if required)
 
                     // Build subscription request body
                     var subscriptionRequest = new
@@ -709,7 +731,7 @@ public class MessageTriggerService : IMessageTriggerService
                         changeType = "created",
                         notificationUrl = notificationUrl,
                         lifecycleNotificationUrl = notificationUrl,
-                        resource = messageTriggerModel.Resource,
+                        resource = resource,
                         expirationDateTime = messageTriggerModel.ExpiryDateTime.UtcDateTime.ToString("o"),
                         clientState = messageTriggerModel.ApiKey
                     };
@@ -776,7 +798,20 @@ public class MessageTriggerService : IMessageTriggerService
                     {
                         _logger.LogError("M365 subscription {Action} failed. StatusCode: {StatusCode}", action, response.StatusCode);
                         var responseContent = await response.Content.ReadAsStringAsync();
-                        serviceResponse.Message = responseContent;
+                        try
+                        {
+                            using var doc = JsonDocument.Parse(responseContent);
+                            var message = doc.RootElement
+                                             .GetProperty("error")
+                                             .GetProperty("message")
+                                             .GetString();
+
+                            serviceResponse.Message = message;
+                        }
+                        catch
+                        {
+                            serviceResponse.Message = responseContent;
+                        }
                         return serviceResponse;
                     }
 

@@ -1,11 +1,11 @@
 meta {
   name: Receive message trigger to create a job
   type: http
-  seq: 12
+  seq: 10
 }
 
 post {
-  url: {{WORC_APIS_BASE_URL}}/message-trigger/notify/{{EMAIL_TRIGGER_ID}}
+  url: {{WORC_APIS_BASE_URL}}/message-trigger/notify/{{MESSAGE_TRIGGER_ID}}
   body: none
   auth: none
 }
