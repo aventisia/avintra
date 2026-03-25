@@ -1,3 +1,5 @@
+import { TriggerFrequencyTypesEnum } from "@/enums/trigger-frequency-types-enum";
+
 import {
   flexibleNameError,
   flexibleNameRegex,
@@ -5,8 +7,6 @@ import {
   reqError,
 } from "@aventisia/ui/utils";
 import { z } from "zod";
-
-import { TriggerFrequencyTypesEnum } from "@/enums/trigger-frequency-types-enum";
 
 const today = new Date();
 // Set today's time to midnight to ignore the time part in comparison
@@ -31,7 +31,7 @@ export const triggerZodSchema = z
     // Trigger name validation using the custom schema
     name: triggerNameSchema,
 
-    agentIds: z.array(z.string()).min(1, { message: reqError("Agent(s)") }),
+    agents: z.array(z.any()).min(1, { message: reqError("Agent(s)") }),
 
     // Timezone in which the trigger is set
     timezone: z.string().min(1, { message: reqError("Timezone") }),
