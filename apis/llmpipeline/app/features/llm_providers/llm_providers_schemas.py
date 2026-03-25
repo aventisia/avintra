@@ -1,5 +1,5 @@
 # Schemas for LLM Providers feature
-from pydantic import BaseModel
+from pydantic import BaseModel, Field
 from typing import Optional, Literal, TypeAlias, Any
 from datetime import datetime, timezone
 from typing import Union, List
@@ -49,7 +49,7 @@ class LLMRequest(BaseModel):
     files: Optional[Union[List[str], List[LLMEncodedFile]]] = None  
     is_json_output: Optional[bool] = False # Try to extract JSON from response and sends no streaming response in one go even if streaming is true
     json_schema: Optional[Union[str, dict]] = None  # Can be JSON string or dict object
-    max_output_tokens: Optional[int] = None
+    max_output_tokens: Optional[int] = Field(default=None, ge=0) # None or 0 means no limit
     is_byok_enabled: Optional[bool] = False # TODO: Implement BYOK support
     credential_id: Optional[str] = None # TODO: Implement BYOK support
     temperature: Optional[float] = 1.0
