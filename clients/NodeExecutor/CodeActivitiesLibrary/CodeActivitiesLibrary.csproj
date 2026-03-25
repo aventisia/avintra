@@ -590,6 +590,7 @@
     <Compile Include="Activities\UIInterfaceAutomations\FileActivities\DeleteFilesActivity.cs" />
     <Compile Include="Activities\UIInterfaceAutomations\FileActivities\Enums\CsvEncodingEnum.cs" />
     <Compile Include="Activities\UIInterfaceAutomations\FileActivities\Enums\IfExistsActionEnum.cs" />
+    <Compile Include="Activities\UIInterfaceAutomations\FileActivities\ExtractFileTextActivity.cs" />
     <Compile Include="Activities\UIInterfaceAutomations\FileActivities\GetFilePathPartActivity.cs" />
     <Compile Include="Activities\UIInterfaceAutomations\FileActivities\GetTemporaryFileActivity.cs" />
     <Compile Include="Activities\UIInterfaceAutomations\FileActivities\IfFileExistsActivity.cs" />

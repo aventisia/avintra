@@ -55,8 +55,13 @@ public class TenantResolver
 
         try
         {
+            var path = context.Request.Path.ToString().ToLower();
+
+            // remove GUID
+            path = Regex.Replace(path, @"/[0-9a-fA-F-]{36}", "");
+
             // get current endpoint
-            var currentEndpoint = (context.Request.Method + ":" + context.Request.Path).ToLower();
+            var currentEndpoint = (context.Request.Method + ":" + path).ToLower();
 
             // Check for tenantless endpoint
             if (appDefaultConfig.TenantlessEndpoints != null && appDefaultConfig.TenantlessEndpoints.Any(pattern =>

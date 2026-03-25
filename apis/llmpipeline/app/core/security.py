@@ -2,101 +2,10 @@ import jwt
 from app.core.logger import logger
 from fastapi import Request
 from app.core.config import settings
-from app.models.user import User
+from app.features.auth.authenticated_user import User
 from uuid import UUID
 
-def verify_token(token: str):
-    """
-    Decodes and verifies the JWT token using the configured algorithm and secret.
-    Validates 'aud' and 'iss' claims for security.
-    """
-    try:
-        payload = jwt.decode(
-            token,
-            settings.JWT_SECRET_KEY,
-            algorithms=["HS512"],
-            audience=f"https://{settings.APP_BASE_URL}",
-            issuer=f"https://{settings.APP_BASE_URL}"
-        )
-        logger.info("✅ JWT token successfully verified.")
-        return payload
-
-    except jwt.ExpiredSignatureError:
-        logger.warning("❌ Token has expired.")
-        raise
-
-    except jwt.InvalidTokenError as e:
-        logger.error(f"❌ Invalid token: {e}")
-        raise
-
-def get_user_from_token(token: str) -> User:
-    payload = verify_token(token)
-    username = payload.get("uname")
-
-    if username is None:
-        logger.error("❌ Invalid token: 'uname' claim missing.")
-        raise Exception("Invalid token: 'uname' claim missing.")
-
-    try:
-        user_id = UUID(payload.get("uid"))
-    except (ValueError, TypeError):
-        logger.error("❌ Invalid token: 'uid' is not a valid UUID.")
-        raise Exception("Invalid token: 'uid' is invalid or missing.")
-
-    try:
-        tenant_id = UUID(payload.get("tntid"))
-    except (ValueError, TypeError):
-        logger.error("❌ Invalid token: 'tntid' is not a valid UUID.")
-        raise Exception("Invalid token: 'tntid' is invalid or missing.")
-
-    role = payload.get("http://schemas.microsoft.com/ws/2008/06/identity/claims/role", [])
-
-    logger.info(f"✅ Extracted user from token: {username}")
-
-    return User(
-        id=user_id,
-        username=username,
-        email=username,
-        role=role,
-        tenant_id=tenant_id
-    )
-
-def get_jwt_from_cookie(request: Request) -> str:
-    """
-    Retrieves JWT token from cookies (usually set via HttpOnly cookie).
-    """
-    token = request.cookies.get(settings.cookie_name)
-
-    if token is None:
-        logger.warning("❌ No JWT token found in cookies.")
-        raise Exception("No JWT token found in cookies")
-
-    logger.info("✅ JWT token extracted from cookie.")
-    return token
-
-def get_jwt_from_header(request: Request) -> str:
-    """
-    Extracts the JWT token from the Authorization header using the Bearer scheme.
-    """
-    authorization: str = request.headers.get("Authorization")
-
-    if not authorization:
-        logger.warning("❌ Authorization header missing.")
-        raise Exception("Authorization header missing")
-
-    if not authorization.startswith("Bearer "):
-        logger.warning("❌ Invalid Authorization header format.")
-        raise Exception("Invalid Authorization header format")
-
-    token = authorization.split(" ")[1].strip()
-
-    if not token:
-        logger.error("❌ No token found in Authorization header.")
-        raise Exception("No token found in Authorization header")
-
-    logger.info("✅ JWT token extracted from Authorization header.")
-    return token
-
+# Get JWT token from request (cookie or header)
 def get_jwt(request: Request) -> str:
     """
     Tries to extract JWT token from cookie named 'AccessToken'.
@@ -106,25 +15,45 @@ def get_jwt(request: Request) -> str:
     # Try to get JWT from cookies
     access_token = request.cookies.get("AccessToken")
     if access_token:
-        logger.info("JWT token extracted from 'AccessToken' cookie.")
         return access_token
     
-    # Get authorization header 
+    # Try to get JWT from Authorization header
     authorization_header: str = request.headers.get("Authorization")
 
-    if not authorization_header:
+    if authorization_header and authorization_header.startswith("Bearer "):
+        access_token = authorization_header.split(" ")[1].strip()
+        if access_token:
+            return access_token
+        else:
+            logger.error("No JWT found in Authorization header.")
+            return "Error: No JWT found in Authorization header."
+    else:
         logger.warning("Authorization header missing.")
         return "Error: Authorization header missing"
 
-    if not authorization_header.startswith("Bearer "):
-        logger.warning("Invalid Authorization header format.")
-        return "Error: Invalid Authorization header format"
+# Get user info from JWT token
+def get_user_from_jwt(token: str) -> User:
+    try:
+        # Get the decoded JWT payload
+        payload = jwt.decode(
+                token,
+                settings.JWT_SECRET_KEY,
+                algorithms=["HS512"],
+                audience=f"https://{settings.APP_BASE_URL}",
+                issuer=f"https://{settings.APP_BASE_URL}"
+            )
+        
+        # Return a User object constructed from the JWT claims
+        return User(
+            user_id=UUID(payload.get("uid")),
+            username=payload.get("uname"),
+            roles=payload.get("http://schemas.microsoft.com/ws/2008/06/identity/claims/role", []),
+            tenant_id=UUID(payload.get("tntid"))
+        )
+    except jwt.ExpiredSignatureError:
+        logger.error("Token has expired.")
+        raise
 
-    access_token = authorization_header.split(" ")[1].strip()
-
-    if not access_token:
-        logger.error("No JWT found in Authorization header.")
-        return "Error: No JWT found in Authorization header."
-
-    logger.info("JWT token extracted from Authorization header.")
-    return access_token
+    except jwt.InvalidTokenError as e:
+        logger.error(f"Invalid token: {e}")
+        raise

@@ -42,7 +42,7 @@ public class InstanceService : IInstanceService
             var last7DayUsageMetrics = Enumerable.Range(1, 7)
                 .Select(i => new ProjectUsageMetricDto
                 {
-                    Date = DateTimeOffset.UtcNow.AddDays(-i).Date,
+                    Date = DateTimeOffset.UtcNow.AddDays(-i),
                 })
                 .OrderBy(x => x.Date)
                 .ToList();
@@ -92,7 +92,7 @@ public class InstanceService : IInstanceService
             foreach (var data in last7DayUsageMetrics)
             {
                 // Fetch the user count for each date (up to today for each date in the Last7DayUsages)
-                data.Users = await userData.Where(w => w.CreatedOn.Date <= data.Date).CountAsync();
+                data.Users = await userData.Where(w => w.CreatedOn.Date <= data.Date.Date).CountAsync();
             }
 
             // Add the fetched usage data to the `Last7DayUsages` list in the response
@@ -128,6 +128,7 @@ public class InstanceService : IInstanceService
                 Encoding.UTF8,
                 "application/json"
             );
+            Console.WriteLine("Request:", jsonContent);
 
             // Call the external API to post the metrics
             var httpResponse = await httpClient.PostAsync($"{_appDefaultConfig.GlobalAdminApiBaseUrl}/api/onprem/instance/validate", jsonContent);

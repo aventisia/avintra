@@ -1749,6 +1749,15 @@
           },
           {
             "type": "activityNode",
+            "name": "ExtractFileTextActivity",
+            "label": "Extract File Text",
+            "description": "Extracts text from a file using the Aventisia cloud API. Supported formats: .pdf, .png, .jpg, .jpeg, .bmp, .tiff, .tif, .docx, .xlsx, .txt, .csv, .rtf, .odt, .md",
+            "docsLink": "https://docs.aventisia.com",
+            "img": "/assets/File.svg",
+            "supportedPlatforms": ["cloud", "windows"]
+          },
+          {
+            "type": "activityNode",
             "name": "GetFilePathPartsActivity",
             "label": "Get File Path Components",
             "description": "Extracts various parts (directory, name, extension) from the given file path.",

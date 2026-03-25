@@ -8,7 +8,7 @@
 #
 # Usage:
 #   - Each section demonstrates a POST request for a different file type.
-#   - The API expects a JSON body with a `file_url` parameter.
+#   - The API expects a JSON body with a `file` parameter.
 #
 # Example file types covered:
 #   - PDF (simple, with images)
@@ -24,7 +24,7 @@ POST {{extractFileTextEndpoint}}
 Content-Type: application/json
 
 {
-  "file_url": "{{testFilesPath}}/test-files/pdf-file.pdf"
+  "file": "{{testFilesPath}}/test-files/pdf-file.pdf"
 }
 
 ### PDF: electronic pdf with images
@@ -32,7 +32,7 @@ POST {{extractFileTextEndpoint}}
 Content-Type: application/json
 
 {
-  "file_url": "{{testFilesPath}}/test-files/pdf-with-images.pdf"
+  "file": "{{testFilesPath}}/test-files/pdf-with-images.pdf"
 }
 
 ### PDF: electronic pdf with images. OCR failed case
@@ -40,7 +40,7 @@ POST {{extractFileTextEndpoint}}
 Content-Type: application/json
 
 {
-  "file_url": "{{testFilesPath}}/test-files/pdf-ocr-fail-case.pdf"
+  "file": "{{testFilesPath}}/test-files/pdf-ocr-fail-case.pdf"
 }
 
 ### PNG: simple portable network graphics (png) file
@@ -48,7 +48,7 @@ POST {{extractFileTextEndpoint}}
 Content-Type: application/json
 
 {
-  "file_url": "{{testFilesPath}}/test-files/png-image-file.png"
+  "file": "{{testFilesPath}}/test-files/png-image-file.png"
 }
 
 ### JPG: simple joint photographic experts group (jpg) file
@@ -56,7 +56,7 @@ POST {{extractFileTextEndpoint}}
 Content-Type: application/json
 
 {
-  "file_url": "{{testFilesPath}}/test-files/jpg-image-file.jpg"
+  "file": "{{testFilesPath}}/test-files/jpg-image-file.jpg"
 }
 
 ### JPEG: simple joint photographic experts group (jpeg) file
@@ -64,7 +64,7 @@ POST {{extractFileTextEndpoint}}
 Content-Type: application/json
 
 {
-  "file_url": "{{testFilesPath}}/test-files/jpeg-image-file.jpeg"
+  "file": "{{testFilesPath}}/test-files/jpeg-image-file.jpeg"
 }
 
 ### BMP: simple bitmap (bmp) file
@@ -72,7 +72,7 @@ POST {{extractFileTextEndpoint}}
 Content-Type: application/json
 
 {
-  "file_url": "{{testFilesPath}}/test-files/bmp-image-file.bmp"
+  "file": "{{testFilesPath}}/test-files/bmp-image-file.bmp"
 }
 
 ### TIFF: simple tagged image file format (tiff) file
@@ -80,7 +80,7 @@ POST {{extractFileTextEndpoint}}
 Content-Type: application/json
 
 {
-  "file_url": "{{testFilesPath}}/test-files/tiff-image-file.tiff"
+  "file": "{{testFilesPath}}/test-files/tiff-image-file.tiff"
 }
 
 ### TIF: simple tagged image file (tif) file
@@ -88,7 +88,7 @@ POST {{extractFileTextEndpoint}}
 Content-Type: application/json
 
 {
-  "file_url": "{{testFilesPath}}/test-files/tif-image-file.tif"
+  "file": "{{testFilesPath}}/test-files/tif-image-file.tif"
 }
 
 ### DOCX: simple document with docx extension
@@ -96,7 +96,7 @@ POST {{extractFileTextEndpoint}}
 Content-Type: application/json
 
 {
-  "file_url": "{{testFilesPath}}/test-files/docx-file.docx"
+  "file": "{{testFilesPath}}/test-files/docx-file.docx"
 }
 
 ### XLSX: simple document with xlsx extension
@@ -104,7 +104,7 @@ POST {{extractFileTextEndpoint}}
 Content-Type: application/json
 
 {
-  "file_url": "{{testFilesPath}}/test-files/xlsx-file.xlsx"
+  "file": "{{testFilesPath}}/test-files/xlsx-file.xlsx"
 }
 
 ### TXT: simple text file
@@ -112,7 +112,7 @@ POST {{extractFileTextEndpoint}}
 Content-Type: application/json
 
 {
-  "file_url": "{{testFilesPath}}/test-files/text-file.txt"
+  "file": "{{testFilesPath}}/test-files/text-file.txt"
 }
 
 ### CSV: simple comma-separated csv file
@@ -120,7 +120,7 @@ POST {{extractFileTextEndpoint}}
 Content-Type: application/json
 
 {
-  "file_url": "{{testFilesPath}}/test-files/csv-file.csv"
+  "file": "{{testFilesPath}}/test-files/csv-file.csv"
 }
 
 ### RTF: simple rich text format file
@@ -128,7 +128,7 @@ POST {{extractFileTextEndpoint}}
 Content-Type: application/json
 
 {
-  "file_url": "{{testFilesPath}}/test-files/rich-text-format-file.rtf"
+  "file": "{{testFilesPath}}/test-files/rich-text-format-file.rtf"
 }
 
 ### ODT: simple OpenDocument text file
@@ -136,7 +136,7 @@ POST {{extractFileTextEndpoint}}
 Content-Type: application/json
 
 {
-  "file_url": "{{testFilesPath}}/test-files/opendocument-text-file.odt"
+  "file": "{{testFilesPath}}/test-files/opendocument-text-file.odt"
 }
 
 ### MD: simple markdown file
@@ -144,5 +144,5 @@ POST {{extractFileTextEndpoint}}
 Content-Type: application/json
 
 {
-  "file_url": "{{testFilesPath}}/test-files/markdown-file.md"
+  "file": "{{testFilesPath}}/test-files/markdown-file.md"
 }
