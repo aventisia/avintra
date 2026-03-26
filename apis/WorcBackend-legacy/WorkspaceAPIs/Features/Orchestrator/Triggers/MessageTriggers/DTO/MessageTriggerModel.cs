@@ -7,14 +7,14 @@ namespace WorkspaceAPIs.DTOs;
 public class MessageTriggerModel
 {
     /// <summary>
-    /// Gets or sets the mailbox associated with the message trigger.
-    /// </summary>
-    public required string Mailbox { get; set; }
-
-    /// <summary>
     /// Gets or sets the resource path for the message trigger subscription. Defaults to "/chats/getAllMessages".
     /// </summary>
     public string Resource { get; set; } = "/chats/getAllMessages";
+
+    /// <summary>
+    /// Gets or sets the mailbox associated with the message trigger.
+    /// </summary>
+    public string? Reference { get; set; }
 
     /// <summary>
     /// Gets or sets the subscription expiration date and time for the message trigger.
