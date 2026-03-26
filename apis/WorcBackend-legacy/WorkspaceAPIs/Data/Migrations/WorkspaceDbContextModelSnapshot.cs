@@ -511,7 +511,7 @@ namespace WorkspaceAPIs.Data.Migrations
                     b.Property<Guid>("FlowVersionId")
                         .HasColumnType("uuid");
 
-                    b.Property<string>("InputArguments")
+                    b.Property<string>("InputArgumentJson")
                         .HasColumnType("text");
 
                     b.Property<bool>("IsPublished")
@@ -521,6 +521,9 @@ namespace WorkspaceAPIs.Data.Migrations
                         .HasColumnType("uuid");
 
                     b.Property<string>("NodeExecutionLogs")
+                        .HasColumnType("text");
+
+                    b.Property<string>("OutputDataJson")
                         .HasColumnType("text");
 
                     b.Property<string>("Priority")

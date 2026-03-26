@@ -1,23 +1,23 @@
 meta {
-  name: Delete multiple time triggers
+  name: Delete multiple webhook triggers
   type: http
-  seq: 10
+  seq: 9
 }
 
 post {
-  url: {{WORC_APIS_BASE_URL}}/email-trigger/delete-multiple
+  url: {{WORC_APIS_BASE_URL}}/webhook-trigger/delete-multiple
   body: json
   auth: none
 }
 
 body:json {
-  ["{{EMAIL_TRIGGER_ID}}"]
+  ["{{WEBHOOK_TRIGGER_ID}}"]
 }
 
 script:post-response {
   if(res.getStatus() == 200){
       bru.setGlobalEnvVar(
-        "EMAIL_TRIGGER_ID", 
+        "WEBHOOK_TRIGGER_ID", 
         "00000000-0000-0000-0000-000000000000"
       );
   }

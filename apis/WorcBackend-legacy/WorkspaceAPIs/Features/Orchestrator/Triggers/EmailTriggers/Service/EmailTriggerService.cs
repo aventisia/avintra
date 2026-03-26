@@ -260,6 +260,7 @@ public class EmailTriggerService : IEmailTriggerService
             // Retrieve existing email trigger
             var emailTrigger = await _unitOfWork.TriggerRepo
                 .GetByConditionAsync(w => w.Id == emailTriggerDto.Id)
+                .Include(i => i.TriggerFlowVersions)
                 .SingleOrDefaultAsync();
 
             // Validate existence
@@ -327,6 +328,90 @@ public class EmailTriggerService : IEmailTriggerService
                 _logger.LogError("Database SaveChanges failed while updating email trigger with ID {EmailTriggerId}.", emailTriggerDto.Id);
                 return serviceResponse;
             }
+
+            // =========================
+            // SYNC TRIGGER FLOW VERSIONS (WITH CHANGE DETECTION)
+            // =========================
+
+            // Track whether any changes were made
+            var hasChanges = false;
+
+            // Extract agent IDs from request
+            var requestedAgentIds = emailTriggerDto.Agents?
+                .Select(a => a.Id)
+                .ToHashSet() ?? new HashSet<Guid>();
+
+            // Existing mappings from DB
+            var existingMappings = emailTrigger.TriggerFlowVersions ?? new List<TriggerFlowVersion>();
+
+            var existingAgentIds = existingMappings
+                .Select(tfv => tfv.FlowVersionId)
+                .ToHashSet();
+
+
+            // ----------- ADD NEW MAPPINGS -----------
+            // Agents present in request but not in DB
+            var agentIdsToAdd = requestedAgentIds.Except(existingAgentIds).ToList();
+
+            if (agentIdsToAdd.Any())
+            {
+                var agentsToAdd = await _unitOfWork.FlowVersionRepo
+                    .GetByConditionAsync(w => agentIdsToAdd.Contains(w.Id) && w.IsPublished)
+                    .ToListAsync();
+
+                if (agentsToAdd.Any())
+                {
+                    var newMappings = agentsToAdd.Select(agent => new TriggerFlowVersion
+                    {
+                        TriggerId = emailTrigger.Id,
+                        FlowVersionId = agent.Id,
+                        CreatedByUserId = _userId,
+                        LastModifiedByUserId = _userId
+                    }).ToList();
+
+                    await _unitOfWork.TriggerFlowVersionRepo.InsertAsync(newMappings);
+                    hasChanges = true;
+                }
+            }
+
+
+            // ----------- REMOVE OLD MAPPINGS -----------
+            // Agents present in DB but not in request
+            var agentIdsToDelete = existingAgentIds.Except(requestedAgentIds).ToList();
+
+            if (agentIdsToDelete.Any())
+            {
+                var mappingsToDelete = existingMappings
+                    .Where(w => agentIdsToDelete.Contains(w.FlowVersionId))
+                    .ToList();
+
+                if (mappingsToDelete.Any())
+                {
+                    _unitOfWork.TriggerFlowVersionRepo.Delete(mappingsToDelete);
+                    hasChanges = true;
+                }
+            }
+
+
+            // ----------- SAVE ONLY IF CHANGED -----------
+            if (hasChanges)
+            {
+                if (!await _unitOfWork.SaveAsync())
+                {
+                    _logger.LogError("Failed to sync TriggerFlowVersions for email trigger ID {emailTriggerId}.", emailTrigger.Id);
+                    return serviceResponse;
+                }
+            }
+
+            emailTrigger = await _unitOfWork.TriggerRepo
+                .GetByConditionAsync(w => w.Id == emailTrigger.Id)
+                .Include(i => i.CreatedByUser)
+                .Include(i => i.LastModifiedByUser)
+                .Include(i => i.TriggerFlowVersions)
+                    .ThenInclude(i2 => i2.FlowVersion)
+                        .ThenInclude(i3 => i3.Flow)
+                .AsNoTracking()
+                .SingleOrDefaultAsync();
 
             // Map back to DTO for response
             serviceResponse.Data = emailTrigger.Adapt<EmailTriggerDto>();
@@ -548,29 +633,14 @@ public class EmailTriggerService : IEmailTriggerService
             // Retrieve all flows associated with this email trigger
             var triggerFlows = await _unitOfWork.TriggerFlowVersionRepo
                 .GetByConditionAsync(w => w.TriggerId == emailTriggerId)
-                .Include(i => i.FlowVersion)
-                    .ThenInclude(i2 => i2.CreatedByUser)
-                .Include(i => i.FlowVersion)
-                    .ThenInclude(i2 => i2.LastModifiedByUser)
+                                .Include(i => i.CreatedByUser)
+                .Include(i => i.LastModifiedByUser)
                 .Include(i => i.FlowVersion)
                     .ThenInclude(i2 => i2.Flow)
                 .ToListAsync();
 
-            // Map FlowVersions to agent DTOs
-            var agents = triggerFlows
-                .Select(s => s.FlowVersion)
-                .ToList();
 
-            var assignedAgents = agents.Adapt<List<AssignAgentTriggerDto>>();
-
-            // Set metadata for DTO
-            assignedAgents.ForEach(a =>
-            {
-                a.IsAssigned = true;
-                a.TriggerId = emailTriggerId;
-            });
-
-            serviceResponse.Data = assignedAgents;
+            serviceResponse.Data = triggerFlows.Adapt<List<AssignAgentTriggerDto>>(); ;
             serviceResponse.StatusCode = 200;
             serviceResponse.Message = "Agents retrieved successfully";
         }
