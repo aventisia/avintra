@@ -1,0 +1,11 @@
+meta {
+  name: Get webhook triggers list
+  type: http
+  seq: 5
+}
+
+get {
+  url: {{WORC_APIS_BASE_URL}}/webhook-trigger/list
+  body: none
+  auth: bearer
+}

@@ -24,17 +24,19 @@ public class WebhookTriggerMappingProfile : IRegister
                     dest.ApiKeyExpiry = model.ApiKeyExpiry;
                     dest.ExpectedPayloadSchema = model.ExpectedPayloadSchema;
                     dest.CallbackUrl = model.CallbackUrl;
+                    dest.ApiKey = string.Empty;
+                    dest.ApiKeyHash = string.Empty;
                 }
-
-                // Never expose the hash in any response
-                dest.ApiKeyHash = null;
-                dest.ApiKey = null;
-
-                // Map single agent from TriggerFlowVersions
-                dest.AgentId = src.TriggerFlowVersions != null && src.TriggerFlowVersions.Any()
-                    ? src.TriggerFlowVersions.First().FlowVersionId
-                    : (Guid?)null;
             })
+            .Map(dest => dest.Agents,
+                src => src.TriggerFlowVersions != null
+                    ? src.TriggerFlowVersions.Select(s => new AgentInfoDto()
+                    {
+                        Id = s.FlowVersion.Id,
+                        Name = s.FlowVersion.Flow.Name,
+                        VersionNumber = s.FlowVersion.VersionNumber
+                    }).ToList()
+                    : null)
             .Map(dest => dest.CreatedBy,
                 src => src.CreatedByUser != null
                     ? src.CreatedByUser.FirstName + " " + src.CreatedByUser.LastName
@@ -52,5 +54,22 @@ public class WebhookTriggerMappingProfile : IRegister
             .Ignore(dest => dest.TenantId)
             .Ignore(dest => dest.Metadata)
             .IgnoreNullValues(true);
+
+        // Mapping to get agent list
+        config.NewConfig<TriggerFlowVersion, AssignAgentTriggerDto>()
+            .Map(dest => dest.Name, src => src.FlowVersion != null ? src.FlowVersion.Flow.Name : null)
+            .Map(dest => dest.VersionNumber, src => src.FlowVersion != null ? src.FlowVersion.VersionNumber : 0)
+            .Map(dest => dest.CreatedBy,
+                src => src.CreatedByUser != null
+                    ? src.CreatedByUser.FirstName + " " + src.CreatedByUser.LastName
+                    : null)
+            .Map(dest => dest.LastModifiedBy,
+                src => src.LastModifiedByUser != null
+                    ? src.LastModifiedByUser.FirstName + " " + src.LastModifiedByUser.LastName
+                    : null)
+            .Map(dest => dest.CreatedByUserInitials,
+                src => src.CreatedByUser != null
+                    ? src.CreatedByUser.FirstName.First() + "" + src.CreatedByUser.LastName.First()
+                    : null);
     }
 }

@@ -633,29 +633,14 @@ public class EmailTriggerService : IEmailTriggerService
             // Retrieve all flows associated with this email trigger
             var triggerFlows = await _unitOfWork.TriggerFlowVersionRepo
                 .GetByConditionAsync(w => w.TriggerId == emailTriggerId)
-                .Include(i => i.FlowVersion)
-                    .ThenInclude(i2 => i2.CreatedByUser)
-                .Include(i => i.FlowVersion)
-                    .ThenInclude(i2 => i2.LastModifiedByUser)
+                                .Include(i => i.CreatedByUser)
+                .Include(i => i.LastModifiedByUser)
                 .Include(i => i.FlowVersion)
                     .ThenInclude(i2 => i2.Flow)
                 .ToListAsync();
 
-            // Map FlowVersions to agent DTOs
-            var agents = triggerFlows
-                .Select(s => s.FlowVersion)
-                .ToList();
 
-            var assignedAgents = agents.Adapt<List<AssignAgentTriggerDto>>();
-
-            // Set metadata for DTO
-            assignedAgents.ForEach(a =>
-            {
-                a.IsAssigned = true;
-                a.TriggerId = emailTriggerId;
-            });
-
-            serviceResponse.Data = assignedAgents;
+            serviceResponse.Data = triggerFlows.Adapt<List<AssignAgentTriggerDto>>(); ;
             serviceResponse.StatusCode = 200;
             serviceResponse.Message = "Agents retrieved successfully";
         }

@@ -22,19 +22,14 @@ public class WebhookTriggerDto : WebhookTriggerModel
     public required string Timezone { get; set; }
 
     /// <summary>
-    /// Gets or sets the FlowVersion ID of the single agent linked to this webhook trigger.
+    /// Gets or sets the collection of agents associated with the email trigger, including their identifiers, names, and versions.
     /// </summary>
-    public Guid? AgentId { get; set; }
+    public List<AgentInfoDto>? Agents { get; set; }
 
     /// <summary>
     /// Gets or sets a value indicating whether the webhook trigger is disabled.
     /// </summary>
     public bool? IsDisabled { get; set; }
-
-    /// <summary>
-    /// Gets or sets the plain-text API key. Populated ONLY on Create and RegenerateApiKey responses; null on all other reads.
-    /// </summary>
-    public string? ApiKey { get; set; }
 
     /// <summary>
     /// Gets or sets the webhook URL for this trigger. Computed at read time; never stored.
