@@ -47,4 +47,20 @@ public interface IEmailService
     string? LoadAndRenderEmailTemplate(
         string templateFile,
         Dictionary<string, string> placeholderValues);
+
+
+    /// <summary>
+    /// Sends a test email using a specified template without replacing placeholders. This is intended for Super Admin (SA) use to verify email template rendering.
+    /// </summary>
+    /// <param name="emailAddresses"> Recipient email addresses separated by ';' (e.g., "user1@test.com;user2@test.com"). </param>
+    /// <param name="templateName"> Name of the email template file (e.g., "AccountCreatedEmailTemplate.html"). </param>
+    /// <param name="ccEmailAddresses"> Optional CC email addresses separated by ';'. 
+    /// <param name="bccEmailAddresses"> Optional BCC email addresses separated by ';'. </param>
+    /// <returns> Returns a <see cref="ServiceResponse{T}"/> indicating success or failure. </returns>
+    Task<ServiceResponse<bool>> TestEmailTemplateAsync(
+        string emailAddresses,
+        string templateName,
+        string? ccEmailAddresses = null,
+        string? bccEmailAddresses = null
+    );
 }
