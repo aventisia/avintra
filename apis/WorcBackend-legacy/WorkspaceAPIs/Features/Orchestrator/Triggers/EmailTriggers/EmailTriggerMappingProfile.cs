@@ -53,9 +53,10 @@ public class EmailTriggerMappingProfile : IRegister
                     ? src.LastModifiedByUser.FirstName + " " + src.LastModifiedByUser.LastName
                     : null);
 
-        // Mapping: FlowVersion entity → AssignAgentTriggerDto Used to retrieve the list of agents assigned to an email trigger Includes audit information and initials for UI display
-        config.NewConfig<FlowVersion, AssignAgentTriggerDto>()
-            .Map(dest => dest.Name, src => src.Flow != null ? src.Flow.Name : null)
+        // Mapping to get agent list
+        config.NewConfig<TriggerFlowVersion, AssignAgentTriggerDto>()
+            .Map(dest => dest.Name, src => src.FlowVersion != null ? src.FlowVersion.Flow.Name : null)
+            .Map(dest => dest.VersionNumber, src => src.FlowVersion != null ? src.FlowVersion.VersionNumber : 0)
             .Map(dest => dest.CreatedBy,
                 src => src.CreatedByUser != null
                     ? src.CreatedByUser.FirstName + " " + src.CreatedByUser.LastName

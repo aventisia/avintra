@@ -1,0 +1,32 @@
+meta {
+  name: Update webhook trigger
+  type: http
+  seq: 3
+}
+
+put {
+  url: {{WORC_APIS_BASE_URL}}/webhook-trigger
+  body: json
+  auth: none
+}
+
+body:json {
+  {
+    "id": "{{WEBHOOK_TRIGGER_ID}}",
+    "name": "Order Webhook",
+    "timezone": "UTC",
+    "apiKeyHash": "DUMMY",
+    "apiKeyExpiryDays": 30,
+    "apiKeyExpiry": "2026-04-25T10:30:00Z",
+    "expectedPayloadSchema": "{ \"type\": \"object\", \"properties\": { \"orderId\": { \"type\": \"string\" } } }",
+    "callbackUrl": "https://example.com/webhook/callback",
+    "apiKey": "plain-text-api-key-only-on-create",
+    "agents": [
+      {
+        "id": "4ab51170-f1aa-423f-a9cd-0a0f51ce528c",
+        "name": "Display Message",
+        "versionNumber": 1
+      }
+    ]
+  }
+}
