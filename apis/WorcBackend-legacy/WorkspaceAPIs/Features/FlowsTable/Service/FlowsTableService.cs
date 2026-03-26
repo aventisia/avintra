@@ -172,7 +172,7 @@ public class FlowsTableService : IFlowsTableService
                 _logger.LogInformation("Context SaveChanges failed while inserting new flow");
                 return serviceResponse;
             }
-            
+
             // Create a new FlowUserDto to associate the user with the flow
             var flowUserDto = new FlowUserDto()
             {
@@ -328,7 +328,9 @@ public class FlowsTableService : IFlowsTableService
                                                     w.FlowUsers != null && w.FlowUsers.Any(a => a.UserId == _userId)
                                                 )
                                             )
-                                        ).Include(i => i.FlowUsers)
+                                        )
+                                        .Include(i => i.FlowUsers)
+                                        .Include(i => i.FlowVersions)
                                         .SingleOrDefaultAsync();
 
             // Flow does not exist
@@ -336,6 +338,21 @@ public class FlowsTableService : IFlowsTableService
             {
                 _logger.LogInformation($"Flow does not exist");
                 serviceResponse.Message = "Flow does not exist";
+                return serviceResponse;
+            }
+
+            /*
+            * TODO:
+            * Create a dedicated PublishedFlows table.
+            * Store a snapshot of published flows instead of relying on IsPublished flag.
+            * This will make published versions immutable and safer.
+            */
+            //  Prevent deletion if any version of this flow is published
+            // Prevent deletion if any version of this flow is published
+            if (flow.FlowVersions?.Any(v => v.IsPublished) == true)
+            {
+                _logger.LogWarning("Cannot delete flow because a published version exists.");
+                serviceResponse.Message = "Cannot delete flow while a published version exists.";
                 return serviceResponse;
             }
 
@@ -404,6 +421,7 @@ public class FlowsTableService : IFlowsTableService
                                                 )
                                             )
                                             .Include(i => i.FlowUsers)
+                                            .Include(i => i.FlowVersions)
                                             .ToListAsync();
 
             // Flows do not exist
@@ -422,6 +440,21 @@ public class FlowsTableService : IFlowsTableService
                     w.UserId == _userId &&
                     (w.Type == ProjectUserAccessEnum.Owner || w.Type == ProjectUserAccessEnum.Edit)
                 );
+
+                /*
+                * TODO:
+                * Create a dedicated PublishedFlows table.
+                * Store a snapshot of published flows instead of relying on IsPublished flag.
+                * This will make published versions immutable and safer.
+                */
+                //  Prevent deletion if any version of this flow is published
+                // Prevent deletion if any version of this flow is published
+                if (flow.FlowVersions?.Any(v => v.IsPublished) == true)
+                {
+                    _logger.LogWarning("Cannot delete flow because a published version exists.");
+                    serviceResponse.Message = "Cannot delete flow while a published version exists.";
+                    return serviceResponse;
+                }
 
                 // Allow access if the user is the creator, else check if they have access
                 if (flow.CreatedByUserId != _userId && flowUserAccess == null)
