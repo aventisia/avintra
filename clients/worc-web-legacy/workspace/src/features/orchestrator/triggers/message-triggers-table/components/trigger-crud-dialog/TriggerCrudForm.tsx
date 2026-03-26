@@ -1,3 +1,5 @@
+import { getTimezoneOptions } from "@/react-toolkit/utils/timezone-utils.ts";
+
 import { SubmitButton } from "@aventisia/ui/buttons";
 import {
   DatePickerField,
@@ -19,14 +21,14 @@ import { z } from "zod";
 import { getCredSelectOptions } from "../../apis/app-secret-apis.ts";
 import { triggerOptimisticMutationFn } from "../../apis/triggers-table-apis";
 import { DATA_QUERY_KEY } from "../../constants";
-import { timezoneOptions } from "../../constants/form-utils";
+import { resourceRequiresReference } from "../../constants/form-utils";
 import {
   expiryDateTimeProps,
   idProps,
   isDisabledProps,
-  mailboxProps,
   nameProps,
   providerProps,
+  referenceProps,
   resourceProps,
   resubscribeEnabledProps,
   resubscribeFrequencyProps,
@@ -128,6 +130,8 @@ export const TriggerCrudForm = () => {
     );
   }, [resubscribeFrequency, resubscribeFrequencyCustom]);
 
+  const referenceRequired = resourceRequiresReference(form.watch("resource"));
+
   // Is form in read mode?
   const isReadMode = crudAction === "read";
 
@@ -162,10 +166,11 @@ export const TriggerCrudForm = () => {
             />
             <FormControl>
               <TimezoneSelector
-                options={timezoneOptions}
+                options={getTimezoneOptions()}
                 selectedItem={
-                  timezoneOptions.find((val) => val.value == field.value) ||
-                  null
+                  getTimezoneOptions().find(
+                    (val) => val.value == field.value,
+                  ) || null
                 }
                 onItemSelect={(item) => field.onChange(item.value)}
                 onItemClear={() => field.onChange(null)}
@@ -199,7 +204,7 @@ export const TriggerCrudForm = () => {
       )}
 
       <SelectField {...resourceProps} />
-      <InputField {...mailboxProps} />
+      {referenceRequired && <InputField {...referenceProps} />}
 
       <SelectField {...resubscribeFrequencyProps} />
 

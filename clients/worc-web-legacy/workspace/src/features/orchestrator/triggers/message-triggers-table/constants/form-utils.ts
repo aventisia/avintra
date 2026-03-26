@@ -155,6 +155,11 @@ const teamsMessageResourceOptions = [
     value: "/appCatalogs/teamsApps/{app-id}/installedToChats/getAllMessages",
   },
 ];
+
+const resourceRequiresReference = (resource?: string) => {
+  if (!resource) return false;
+  return resource.includes("{") && resource.includes("}");
+};
 export {
   weekdaysToNumbers,
   numbersToWeekdays,
@@ -169,4 +174,5 @@ export {
   getTimeFromDate,
   setTimeToDate,
   teamsMessageResourceOptions,
+  resourceRequiresReference
 };
