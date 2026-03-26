@@ -273,6 +273,20 @@ public class FlowVersionService : IFlowVersionService
                 return serviceResponse;
             }
 
+            /*
+            * TODO:
+            * Create a dedicated PublishedFlows table.
+            * Store a snapshot of published flows instead of relying on IsPublished flag.
+            * This will make published versions immutable and safer.
+            */
+            // Prevent deletion if this version is published
+            if (flowVersion.IsPublished)
+            {
+                _logger.LogWarning("Cannot delete a published flow version.");
+                serviceResponse.Message = "Published versions cannot be deleted.";
+                return serviceResponse;
+            }
+
             // Check if the user is the creator or has the required access (Owner/Edit)
             var flowUserAccess = flowVersion.Flow.FlowUsers?.FirstOrDefault(w =>
                 w.FlowId == flowVersion.Flow.Id &&
