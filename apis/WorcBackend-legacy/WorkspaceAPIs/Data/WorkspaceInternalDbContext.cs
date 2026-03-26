@@ -46,9 +46,6 @@ namespace WorkspaceAPIs.Data
         public DbSet<Trigger> Triggers { get; set; }
         public DbSet<TriggerFlowVersion> TriggerFlowVersions { get; set; }
 
-        public DbSet<Trigger> Triggers { get; set; }
-        public DbSet<TriggerFlowVersion> TriggerFlowVersions { get; set; }
-
         // They may be kept for future use or internal logic that does not require API access.
         // public DbSet<WorkspaceUser> Users { get; set; }  
         // public DbSet<ProjectTemplate> ProjectTemplates { get; set; }
