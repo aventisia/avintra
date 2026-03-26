@@ -259,6 +259,7 @@ public class MessageTriggerService : IMessageTriggerService
             // Retrieve existing message trigger
             var messageTrigger = await _unitOfWork.TriggerRepo
                 .GetByConditionAsync(w => w.Id == messageTriggerDto.Id)
+                .Include(i => i.TriggerFlowVersions)
                 .SingleOrDefaultAsync();
 
             // Validate existence
@@ -324,6 +325,90 @@ public class MessageTriggerService : IMessageTriggerService
                 _logger.LogError("Database SaveChanges failed while updating message trigger with ID {messageTriggerId}.", messageTriggerDto.Id);
                 return serviceResponse;
             }
+
+            // =========================
+            // SYNC TRIGGER FLOW VERSIONS (WITH CHANGE DETECTION)
+            // =========================
+
+            // Track whether any changes were made
+            var hasChanges = false;
+
+            // Extract agent IDs from request
+            var requestedAgentIds = messageTriggerDto.Agents?
+                .Select(a => a.Id)
+                .ToHashSet() ?? new HashSet<Guid>();
+
+            // Existing mappings from DB
+            var existingMappings = messageTrigger.TriggerFlowVersions ?? new List<TriggerFlowVersion>();
+
+            var existingAgentIds = existingMappings
+                .Select(tfv => tfv.FlowVersionId)
+                .ToHashSet();
+
+
+            // ----------- ADD NEW MAPPINGS -----------
+            // Agents present in request but not in DB
+            var agentIdsToAdd = requestedAgentIds.Except(existingAgentIds).ToList();
+
+            if (agentIdsToAdd.Any())
+            {
+                var agentsToAdd = await _unitOfWork.FlowVersionRepo
+                    .GetByConditionAsync(w => agentIdsToAdd.Contains(w.Id) && w.IsPublished)
+                    .ToListAsync();
+
+                if (agentsToAdd.Any())
+                {
+                    var newMappings = agentsToAdd.Select(agent => new TriggerFlowVersion
+                    {
+                        TriggerId = messageTrigger.Id,
+                        FlowVersionId = agent.Id,
+                        CreatedByUserId = _userId,
+                        LastModifiedByUserId = _userId
+                    }).ToList();
+
+                    await _unitOfWork.TriggerFlowVersionRepo.InsertAsync(newMappings);
+                    hasChanges = true;
+                }
+            }
+
+
+            // ----------- REMOVE OLD MAPPINGS -----------
+            // Agents present in DB but not in request
+            var agentIdsToDelete = existingAgentIds.Except(requestedAgentIds).ToList();
+
+            if (agentIdsToDelete.Any())
+            {
+                var mappingsToDelete = existingMappings
+                    .Where(w => agentIdsToDelete.Contains(w.FlowVersionId))
+                    .ToList();
+
+                if (mappingsToDelete.Any())
+                {
+                    _unitOfWork.TriggerFlowVersionRepo.Delete(mappingsToDelete);
+                    hasChanges = true;
+                }
+            }
+
+
+            // ----------- SAVE ONLY IF CHANGED -----------
+            if (hasChanges)
+            {
+                if (!await _unitOfWork.SaveAsync())
+                {
+                    _logger.LogError("Failed to sync TriggerFlowVersions for message trigger ID {messageTriggerId}.", messageTriggerDto.Id);
+                    return serviceResponse;
+                }
+            }
+
+            messageTrigger = await _unitOfWork.TriggerRepo
+                .GetByConditionAsync(w => w.Id == messageTrigger.Id)
+                .Include(i => i.CreatedByUser)
+                .Include(i => i.LastModifiedByUser)
+                .Include(i => i.TriggerFlowVersions)
+                    .ThenInclude(i2 => i2.FlowVersion)
+                        .ThenInclude(i3 => i3.Flow)
+                .AsNoTracking()
+                .SingleOrDefaultAsync();
 
             // Map back to DTO for response
             serviceResponse.Data = messageTrigger.Adapt<MessageTriggerDto>();
