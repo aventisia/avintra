@@ -315,4 +315,151 @@ public class EmailService : IEmailService
             return null;
         }
     }
+
+    public async Task<ServiceResponse<bool>> TestEmailTemplateAsync(
+        string emailAddresses,
+        string templateName,
+        string? ccEmailAddresses = null,
+        string? bccEmailAddresses = null)
+    {
+        var serviceResponse = new ServiceResponse<bool>
+        {
+            Data = false,
+            Message = "Failed to send test email. Please try again."
+        };
+
+        try
+        {
+            // Validate primary email addresses
+            if (string.IsNullOrWhiteSpace(emailAddresses))
+            {
+                serviceResponse.Message = "At least one recipient email address is required.";
+                return serviceResponse;
+            }
+
+            var toEmailList = emailAddresses
+                .Split(';', StringSplitOptions.RemoveEmptyEntries)
+                .Select(e => e.Trim())
+                .ToList();
+
+            if (!toEmailList.Any())
+            {
+                serviceResponse.Message = "No valid recipient email addresses provided.";
+                return serviceResponse;
+            }
+
+            foreach (var email in toEmailList)
+            {
+                if (!MailboxAddress.TryParse(email, out _))
+                {
+                    serviceResponse.Message = $"Invalid recipient email address: {email}";
+                    return serviceResponse;
+                }
+            }
+
+            // Validate CC email addresses (optional)
+            if (!string.IsNullOrWhiteSpace(ccEmailAddresses))
+            {
+                var ccList = ccEmailAddresses.Split(';', StringSplitOptions.RemoveEmptyEntries);
+
+                foreach (var email in ccList)
+                {
+                    if (!MailboxAddress.TryParse(email.Trim(), out _))
+                    {
+                        serviceResponse.Message = $"Invalid CC email address: {email}";
+                        return serviceResponse;
+                    }
+                }
+            }
+
+            // Validate BCC email addresses (optional)
+            if (!string.IsNullOrWhiteSpace(bccEmailAddresses))
+            {
+                var bccList = bccEmailAddresses.Split(';', StringSplitOptions.RemoveEmptyEntries);
+
+                foreach (var email in bccList)
+                {
+                    if (!MailboxAddress.TryParse(email.Trim(), out _))
+                    {
+                        serviceResponse.Message = $"Invalid BCC email address: {email}";
+                        return serviceResponse;
+                    }
+                }
+            }
+
+            // Validate template name
+            if (string.IsNullOrWhiteSpace(templateName))
+            {
+                serviceResponse.Message = "Template name is required.";
+                return serviceResponse;
+            }
+
+            // Prevent path traversal attacks
+            if (templateName.Contains("..") || templateName.Contains("/") || templateName.Contains("\\"))
+            {
+                serviceResponse.Message = "Invalid template name provided.";
+                return serviceResponse;
+            }
+
+            // Build template file path
+            var filePath = Path.Combine(
+                Directory.GetCurrentDirectory(),
+                "StaticFiles",
+                "EmailTemplates",
+                templateName
+            );
+
+            // Ensure template exists
+            if (!File.Exists(filePath))
+            {
+                serviceResponse.Message = $"Email template '{templateName}' was not found.";
+                return serviceResponse;
+            }
+
+            // Load template content (no placeholder replacement for testing)
+            var content = await File.ReadAllTextAsync(filePath);
+
+            if (string.IsNullOrWhiteSpace(content))
+            {
+                serviceResponse.Message = "Email template content is empty.";
+                return serviceResponse;
+            }
+
+            // ✅ Convert ";" → "," for SendEmail compatibility
+            var formattedToEmails = string.Join(",", toEmailList);
+            var formattedCcEmails = string.IsNullOrWhiteSpace(ccEmailAddresses)
+                ? null
+                : string.Join(",", ccEmailAddresses.Split(';', StringSplitOptions.RemoveEmptyEntries).Select(e => e.Trim()));
+
+            var formattedBccEmails = string.IsNullOrWhiteSpace(bccEmailAddresses)
+                ? null
+                : string.Join(",", bccEmailAddresses.Split(';', StringSplitOptions.RemoveEmptyEntries).Select(e => e.Trim()));
+
+            // Send email using existing service
+            var isSent = await SendEmail(
+                toEmailAddresses: formattedToEmails,
+                subject: $"[TEST TEMPLATE] {templateName}",
+                content: content,
+                ccEmailAddresses: formattedCcEmails,
+                bccEmailAddresses: formattedBccEmails
+            );
+
+            if (!isSent)
+            {
+                serviceResponse.Message = "Email sending failed. Please check SMTP configuration or try again.";
+                return serviceResponse;
+            }
+
+            // Success response
+            serviceResponse.Data = true;
+            serviceResponse.StatusCode = 200;
+            serviceResponse.Message = "Test email sent successfully.";
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError($"Error while sending test email template '{templateName}': {ex}");
+        }
+
+        return serviceResponse;
+    }
 }

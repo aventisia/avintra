@@ -1,0 +1,25 @@
+meta {
+  name: Send test email
+  type: http
+  seq: 1
+}
+
+post {
+  url: {{ACCOUNTS_APIS_BASE_URL}}/test-email/template
+  body: json
+  auth: bearer
+}
+
+body:json {
+  {
+    "emailAddresses": "kaushal@test.com;gaurav@test.com",
+    "templateName": "AccountCreatedEmailTemplate.html",
+    "ccEmailAddresses": "manager@test.com",
+    "bccEmailAddresses": "audit@test.com"
+  }
+}
+
+settings {
+  encodeUrl: true
+  timeout: 0
+}
