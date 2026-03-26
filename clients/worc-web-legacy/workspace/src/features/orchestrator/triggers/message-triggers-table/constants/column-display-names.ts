@@ -4,7 +4,7 @@ import { KeyValueLookupType } from "@aventisia/ui/types";
 export const columnDisplayNames: KeyValueLookupType[] = [
   { key: "id", value: "Select Row" },
   { key: "name", value: "Name" },
-  { key: "mailbox", value: "Account" },
+  { key: "reference", value: "Resource ID(s)" },
   { key: "resource", value: "Resource" },
   { key: "expiryDateTime", value: "Expiry Date" },
   { key: "agents", value: "Agent(s)" },

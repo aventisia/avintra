@@ -56,36 +56,6 @@ export const triggersTableColumns: ColumnDef<MessageTriggerDto>[] = [
     ),
   },
   {
-    accessorKey: "mailbox",
-    header: ({ column }) => (
-      <DTColumnHeader
-        tableKey={TABLE_KEY}
-        column={column}
-        title={getColumnName("mailbox")}
-      />
-    ),
-    cell: ({ row }) => (
-      <div className="w-auto truncate font-medium">
-        {row.getValue("mailbox")}
-      </div>
-    ),
-  },
-  {
-    accessorKey: "resource",
-    header: ({ column }) => (
-      <DTColumnHeader
-        tableKey={TABLE_KEY}
-        column={column}
-        title={getColumnName("resource")}
-      />
-    ),
-    cell: ({ row }) => (
-      <div className="w-auto truncate font-medium">
-        {row.getValue("resource")}
-      </div>
-    ),
-  },
-  {
     accessorKey: "provider",
     header: ({ column }) => (
       <DTColumnHeader
@@ -103,6 +73,38 @@ export const triggersTableColumns: ColumnDef<MessageTriggerDto>[] = [
       </div>
     ),
   },
+
+  {
+    accessorKey: "resource",
+    header: ({ column }) => (
+      <DTColumnHeader
+        tableKey={TABLE_KEY}
+        column={column}
+        title={getColumnName("resource")}
+      />
+    ),
+    cell: ({ row }) => (
+      <div className="w-auto truncate font-medium">
+        {row.getValue("resource")}
+      </div>
+    ),
+  },
+  {
+    accessorKey: "reference",
+    header: ({ column }) => (
+      <DTColumnHeader
+        tableKey={TABLE_KEY}
+        column={column}
+        title={getColumnName("reference")}
+      />
+    ),
+    cell: ({ row }) => (
+      <div className="w-auto truncate font-medium">
+        {row.getValue("reference") ?? "NA"}
+      </div>
+    ),
+  },
+
   {
     accessorKey: "agents",
     header: ({ column }) => (

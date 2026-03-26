@@ -26,13 +26,13 @@ const nameProps: InputFieldProps = {
 };
 
 // Name
-const mailboxProps: InputFieldProps = {
-  name: "mailbox",
-  label: "Id",
+const referenceProps: InputFieldProps = {
+  name: "reference",
+  label: "Resource ID(s)",
   isRequired: true,
-  description: "Resource related Id",
+  description:
+    "Enter required ID(s) based on the selected resource. For multiple IDs, use '/' in the same order as in the resource path.\nExample: team-id/channel-id",
 };
-
 const resourceProps: SelectFieldProps = {
   name: "resource",
   label: "Resource",
@@ -100,7 +100,7 @@ const isDisabledProps: SwitchFieldProps = {
 export {
   idProps,
   nameProps,
-  mailboxProps,
+  referenceProps,
   resourceProps,
   expiryDateTimeProps,
   resubscribeEnabledProps,

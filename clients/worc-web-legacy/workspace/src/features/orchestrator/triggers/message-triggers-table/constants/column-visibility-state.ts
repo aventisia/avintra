@@ -2,8 +2,8 @@
 export const columnVisibilityState = {
   id: false,
   name: true,
-  mailbox: true,
-  resource: false,
+  reference: false,
+  resource: true,
   timezone: false,
   agents: true,
   provider: true,
