@@ -36,6 +36,8 @@ public class WebhookTriggerService : IWebhookTriggerService
                 .Include(i => i.CreatedByUser)
                 .Include(i => i.LastModifiedByUser)
                 .Include(i => i.TriggerFlowVersions)
+                    .ThenInclude(i2 => i2.FlowVersion)
+                        .ThenInclude(i3 => i3.Flow)
                 .AsNoTracking()
                 .ToListAsync();
 
@@ -73,6 +75,8 @@ public class WebhookTriggerService : IWebhookTriggerService
                 .Include(i => i.CreatedByUser)
                 .Include(i => i.LastModifiedByUser)
                 .Include(i => i.TriggerFlowVersions)
+                    .ThenInclude(i2 => i2.FlowVersion)
+                        .ThenInclude(i3 => i3.Flow)
                 .AsNoTracking()
                 .SingleOrDefaultAsync();
 
@@ -135,7 +139,8 @@ public class WebhookTriggerService : IWebhookTriggerService
                 ApiKeyExpiryDays = dto.ApiKeyExpiryDays,
                 ApiKeyExpiry = dto.ApiKeyExpiry,
                 ExpectedPayloadSchema = dto.ExpectedPayloadSchema,
-                CallbackUrl = dto.CallbackUrl
+                CallbackUrl = dto.CallbackUrl,
+                ApiKey = dto.ApiKey
             };
 
             var newTrigger = dto.Adapt<Trigger>();
@@ -151,30 +156,49 @@ public class WebhookTriggerService : IWebhookTriggerService
                 return serviceResponse;
             }
 
-            // Link the single agent (FlowVersion)
-            if (dto.AgentId.HasValue && dto.AgentId != Guid.Empty)
+            // Retrieve all agents from the database that are linked to the provided email trigger DTO.
+            // Only include agents whose IDs are in emailTriggerDto.Agents and are marked as published.
+            var agentIds = dto.Agents?
+                .Select(a => a.Id)
+                .ToList();
+
+            var agents = agentIds != null && agentIds.Any()
+                ? await _unitOfWork.FlowVersionRepo
+                    .GetByConditionAsync(w => agentIds.Contains(w.Id) && w.IsPublished)
+                    .ToListAsync()
+                : new List<FlowVersion>();
+
+            // Proceed only if matching agents are found.
+            if (agents.Count > 0)
             {
-                var agent = await _unitOfWork.FlowVersionRepo
-                    .GetByConditionAsync(w => w.Id == dto.AgentId.Value && w.IsPublished)
-                    .FirstOrDefaultAsync();
-
-                if (agent != null)
+                // Create a list of TriggerFlowVersion entities linking the new message trigger to each agent.
+                var triggerFlowVersions = agents.Select(agent => new TriggerFlowVersion
                 {
-                    var tfv = new TriggerFlowVersion
-                    {
-                        TriggerId = newTrigger.Id,
-                        FlowVersionId = agent.Id,
-                        CreatedByUserId = _userId,
-                        LastModifiedByUserId = _userId
-                    };
+                    TriggerId = newTrigger.Id,
+                    FlowVersionId = agent.Id,
+                    CreatedByUserId = _userId,
+                    LastModifiedByUserId = _userId
+                }).ToList();
 
-                    await _unitOfWork.TriggerFlowVersionRepo.InsertAsync(tfv);
-                    if (!await _unitOfWork.SaveAsync())
-                    {
-                        _logger.LogWarning("Failed to persist TriggerFlowVersion for webhook trigger {TriggerId}.", newTrigger.Id);
-                    }
+                // Insert the new TriggerFlowVersion entries into the repository.
+                await _unitOfWork.TriggerFlowVersionRepo.InsertAsync(triggerFlowVersions);
+
+                // Save changes to the database and check if the operation succeeded.
+                if (!await _unitOfWork.SaveAsync())
+                {
+                    _logger.LogWarning("Failed to persist TriggerFlowVersion for webhook trigger {TriggerId}.", newTrigger.Id);
                 }
             }
+
+            newTrigger = await _unitOfWork.TriggerRepo
+                            .GetByConditionAsync(w => w.Id == newTrigger.Id)
+                            .Include(i => i.CreatedByUser)
+                            .Include(i => i.LastModifiedByUser)
+                            .Include(i => i.TriggerFlowVersions)
+                                .ThenInclude(i2 => i2.FlowVersion)
+                                    .ThenInclude(i3 => i3.Flow)
+                            .AsNoTracking()
+                            .SingleOrDefaultAsync();
 
             var resultDto = newTrigger.Adapt<WebhookTriggerDto>();
             resultDto.WebhookUrl = BuildWebhookUrl(newTrigger.Id);
@@ -253,40 +277,96 @@ public class WebhookTriggerService : IWebhookTriggerService
             trigger.Metadata = SerializeMetadata(updatedModel);
             trigger.LastModifiedByUserId = _userId;
 
-            // Update agent link if changed
-            if (dto.AgentId.HasValue)
-            {
-                // Remove existing links for this trigger
-                var existingLinks = trigger.TriggerFlowVersions?.ToList() ?? new List<TriggerFlowVersion>();
-                if (existingLinks.Count > 0)
-                    _unitOfWork.TriggerFlowVersionRepo.Delete(existingLinks);
-
-                if (dto.AgentId != Guid.Empty)
-                {
-                    var agent = await _unitOfWork.FlowVersionRepo
-                        .GetByConditionAsync(w => w.Id == dto.AgentId.Value && w.IsPublished)
-                        .FirstOrDefaultAsync();
-
-                    if (agent != null)
-                    {
-                        var tfv = new TriggerFlowVersion
-                        {
-                            TriggerId = trigger.Id,
-                            FlowVersionId = agent.Id,
-                            CreatedByUserId = _userId,
-                            LastModifiedByUserId = _userId
-                        };
-                        await _unitOfWork.TriggerFlowVersionRepo.InsertAsync(tfv);
-                    }
-                }
-            }
-
             _unitOfWork.TriggerRepo.Update(trigger);
             if (!await _unitOfWork.SaveAsync())
             {
-                _logger.LogError("Database save failed while updating webhook trigger {TriggerId}.", dto.Id);
+                _logger.LogError("Database save failed while updating webhook trigger '{Name}'.", dto.Name);
                 return serviceResponse;
             }
+
+            // =========================
+            // SYNC TRIGGER FLOW VERSIONS (WITH CHANGE DETECTION)
+            // =========================
+
+            // Track whether any changes were made
+            var hasChanges = false;
+
+            // Extract agent IDs from request
+            var requestedAgentIds = dto.Agents?
+                .Select(a => a.Id)
+                .ToHashSet() ?? new HashSet<Guid>();
+
+            // Existing mappings from DB
+            var existingMappings = trigger.TriggerFlowVersions ?? new List<TriggerFlowVersion>();
+
+            var existingAgentIds = existingMappings
+                .Select(tfv => tfv.FlowVersionId)
+                .ToHashSet();
+
+
+            // ----------- ADD NEW MAPPINGS -----------
+            // Agents present in request but not in DB
+            var agentIdsToAdd = requestedAgentIds.Except(existingAgentIds).ToList();
+
+            if (agentIdsToAdd.Any())
+            {
+                var agentsToAdd = await _unitOfWork.FlowVersionRepo
+                    .GetByConditionAsync(w => agentIdsToAdd.Contains(w.Id) && w.IsPublished)
+                    .ToListAsync();
+
+                if (agentsToAdd.Any())
+                {
+                    var newMappings = agentsToAdd.Select(agent => new TriggerFlowVersion
+                    {
+                        TriggerId = trigger.Id,
+                        FlowVersionId = agent.Id,
+                        CreatedByUserId = _userId,
+                        LastModifiedByUserId = _userId
+                    }).ToList();
+
+                    await _unitOfWork.TriggerFlowVersionRepo.InsertAsync(newMappings);
+                    hasChanges = true;
+                }
+            }
+
+
+            // ----------- REMOVE OLD MAPPINGS -----------
+            // Agents present in DB but not in request
+            var agentIdsToDelete = existingAgentIds.Except(requestedAgentIds).ToList();
+
+            if (agentIdsToDelete.Any())
+            {
+                var mappingsToDelete = existingMappings
+                    .Where(w => agentIdsToDelete.Contains(w.FlowVersionId))
+                    .ToList();
+
+                if (mappingsToDelete.Any())
+                {
+                    _unitOfWork.TriggerFlowVersionRepo.Delete(mappingsToDelete);
+                    hasChanges = true;
+                }
+            }
+
+
+            // ----------- SAVE ONLY IF CHANGED -----------
+            if (hasChanges)
+            {
+                if (!await _unitOfWork.SaveAsync())
+                {
+                    _logger.LogError("Failed to sync TriggerFlowVersions for webhook trigger ID {webhookTriggerId}.", trigger.Id);
+                    return serviceResponse;
+                }
+            }
+
+            trigger = await _unitOfWork.TriggerRepo
+                            .GetByConditionAsync(w => w.Id == trigger.Id)
+                            .Include(i => i.CreatedByUser)
+                            .Include(i => i.LastModifiedByUser)
+                            .Include(i => i.TriggerFlowVersions)
+                                .ThenInclude(i2 => i2.FlowVersion)
+                                    .ThenInclude(i3 => i3.Flow)
+                            .AsNoTracking()
+                            .SingleOrDefaultAsync();
 
             var resultDto = trigger.Adapt<WebhookTriggerDto>();
             resultDto.WebhookUrl = BuildWebhookUrl(trigger.Id);
@@ -488,10 +568,8 @@ public class WebhookTriggerService : IWebhookTriggerService
         {
             var triggerFlow = await _unitOfWork.TriggerFlowVersionRepo
                 .GetByConditionAsync(w => w.TriggerId == triggerId)
-                .Include(i => i.FlowVersion)
-                    .ThenInclude(i2 => i2.CreatedByUser)
-                .Include(i => i.FlowVersion)
-                    .ThenInclude(i2 => i2.LastModifiedByUser)
+                .Include(i => i.CreatedByUser)
+                .Include(i => i.LastModifiedByUser)
                 .Include(i => i.FlowVersion)
                     .ThenInclude(i2 => i2.Flow)
                 .AsNoTracking()
@@ -505,7 +583,7 @@ public class WebhookTriggerService : IWebhookTriggerService
                 return serviceResponse;
             }
 
-            serviceResponse.Data = triggerFlow.FlowVersion.Adapt<AssignAgentTriggerDto>();
+            serviceResponse.Data = triggerFlow.Adapt<AssignAgentTriggerDto>();
             serviceResponse.StatusCode = 200;
             serviceResponse.Message = "Agent retrieved successfully";
         }
@@ -529,7 +607,7 @@ public class WebhookTriggerService : IWebhookTriggerService
     }
 
     private string BuildWebhookUrl(Guid triggerId)
-        => $"{_environmentConfig.AppBaseUrl.TrimEnd('/')}/api/webhook/{triggerId}";
+        => $"{_environmentConfig.AppBaseUrl.TrimEnd('/')}/api/webhook-trigger/notify/{triggerId}";
 
     private static JsonDocument SerializeMetadata(WebhookTriggerModel model)
     {

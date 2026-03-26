@@ -1,0 +1,11 @@
+meta {
+  name: Get webhook trigger by id
+  type: http
+  seq: 4
+}
+
+get {
+  url: {{WORC_APIS_BASE_URL}}/webhook-trigger/{{WEBHOOK_TRIGGER_ID}}
+  body: none
+  auth: none
+}

@@ -69,7 +69,7 @@ public class WebhookTriggerController : BaseApiController
     }
 
     // Retrieves the agent linked to a webhook trigger
-    [HttpGet("{triggerId}/agent")]
+    [HttpGet("{triggerId}/agents")]
     public async Task<ActionResult<ServiceResponse<AssignAgentTriggerDto>>> GetAgentByWebhookTrigger(Guid triggerId)
     {
         return ResultHelper(await _webhookTriggerService.GetAgentByWebhookTriggerAsync(triggerId));

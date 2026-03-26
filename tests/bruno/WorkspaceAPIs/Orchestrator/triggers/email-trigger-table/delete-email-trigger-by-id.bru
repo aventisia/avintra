@@ -1,5 +1,5 @@
 meta {
-  name: Delete time trigger by id
+  name: Delete email trigger by id
   type: http
   seq: 6
 }
@@ -13,7 +13,7 @@ delete {
 script:post-response {
   if(res.getStatus() == 200){
       bru.setGlobalEnvVar(
-        "TIME_TRIGGER_ID", 
+        "EMAIL_TRIGGER_ID", 
         "00000000-0000-0000-0000-000000000000"
       );
   }

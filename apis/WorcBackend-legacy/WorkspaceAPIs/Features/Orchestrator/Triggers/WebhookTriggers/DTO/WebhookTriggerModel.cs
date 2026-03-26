@@ -29,4 +29,9 @@ public class WebhookTriggerModel
     /// Gets or sets an optional URL to POST the agent execution result to when the job completes.
     /// </summary>
     public string? CallbackUrl { get; set; }
+
+    /// <summary>
+    /// Gets or sets the plain-text API key. Populated ONLY on Create and RegenerateApiKey responses; null on all other reads.
+    /// </summary>
+    public string? ApiKey { get; set; }
 }
