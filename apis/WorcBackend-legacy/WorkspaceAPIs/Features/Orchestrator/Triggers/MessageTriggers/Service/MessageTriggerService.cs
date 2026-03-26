@@ -694,14 +694,24 @@ public class MessageTriggerService : IMessageTriggerService
         // Initialize HttpClient for API requests
         using var httpClient = new HttpClient();
 
-        // Check if mailbox is provided
-        if (string.IsNullOrEmpty(messageTriggerModel.Mailbox))
+        if (!string.IsNullOrEmpty(messageTriggerModel.Reference))
         {
-            _logger.LogWarning("Invalid mailbox value.");
+            var resource = messageTriggerModel.Resource;
 
-            serviceResponse.Message = "Mailbox cannot be empty.";
-            return serviceResponse;
+            // Split reference by '/'
+            var referenceParts = messageTriggerModel.Reference.Split('/');
+
+            // Find all placeholders like {team-id}, {channel-id}
+            var matches = System.Text.RegularExpressions.Regex.Matches(resource, "{.*?}");
+
+            for (int i = 0; i < matches.Count && i < referenceParts.Length; i++)
+            {
+                resource = resource.Replace(matches[i].Value, referenceParts[i]);
+            }
+
+            messageTriggerModel.Resource = resource;
         }
+
         // Determine provider (Outlook / Gmail)
         switch (messageTriggerModel.Provider)
         {
@@ -723,18 +733,13 @@ public class MessageTriggerService : IMessageTriggerService
                     // Notification URL
                     var notificationUrl = $"{baseUrl}/worc/api/message-trigger/notify/{triggerId}";
 
-                    // Fix resource logic
-                    var resource = !string.IsNullOrEmpty(messageTriggerModel.Mailbox)
-                        ? $"/users/{messageTriggerModel.Mailbox}/chats/getAllMessages"
-                        : "/chats/getAllMessages"; // fallback (or throw if required)
-
                     // Build subscription request body
                     var subscriptionRequest = new
                     {
                         changeType = "created",
                         notificationUrl = notificationUrl,
                         lifecycleNotificationUrl = notificationUrl,
-                        resource = resource,
+                        resource = messageTriggerModel.Resource,
                         expirationDateTime = messageTriggerModel.ExpiryDateTime.UtcDateTime.ToString("o"),
                         clientState = messageTriggerModel.ApiKey
                     };
@@ -851,14 +856,14 @@ public class MessageTriggerService : IMessageTriggerService
                         case "create":
                         case "update": // Gmail watch API does not support update; recreate subscription
                             response = await httpClient.PostAsync(
-                                $"https://gmail.googleapis.com/gmail/v1/users/{messageTriggerModel.Mailbox}/watch",
+                                $"https://gmail.googleapis.com/gmail/v1/users/{messageTriggerModel}/watch",
                                 content
                             );
                             break;
 
                         case "delete":
                             response = await httpClient.PostAsync(
-                                $"https://gmail.googleapis.com/gmail/v1/users/{messageTriggerModel.Mailbox}/stop",
+                                $"https://gmail.googleapis.com/gmail/v1/users/{messageTriggerModel}/stop",
                                 null
                             );
                             break;

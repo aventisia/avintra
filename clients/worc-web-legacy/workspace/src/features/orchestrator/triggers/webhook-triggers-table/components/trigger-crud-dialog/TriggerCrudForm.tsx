@@ -15,6 +15,7 @@ import {
 } from "@aventisia/ui/form";
 import { useListOptimisticMutation } from "@aventisia/ui/hooks";
 import { useEffect } from "react";
+import { Controller } from "react-hook-form";
 import { z } from "zod";
 
 import { triggerOptimisticMutationFn } from "../../apis/triggers-table-apis.ts";
@@ -33,6 +34,8 @@ import { useDefineTriggerForm } from "../../hooks/useDefineTriggerForm.ts";
 import APIKeyField from "./APIKeyField.tsx";
 import { AgentsSelector } from "./AgentsSelector.tsx";
 import InputWithCopy from "./InputWithCopy.tsx";
+
+// import { generateApiKey } from "../../apis/api-key-apis.ts";
 
 export const TriggerCrudForm = () => {
   // Define trigger form
@@ -117,8 +120,14 @@ export const TriggerCrudForm = () => {
         nonErrorMessage={availabilityMessage}
       />
       <InputWithCopy value={`/webhook/${form.getValues("id")}`} />
-      {/* <InputWithCopy value={`${window.location.origin}${import.meta.env.VITE_WORC_API_PATH}/webhook/${form.getValues("id")}`} /> */}
-      <APIKeyField  value="123ww"/>
+
+      <Controller
+        control={form.control}
+        name="credentialId"
+        render={({ field }) => (
+          <APIKeyField value={field.value} onChange={field.onChange} />
+        )}
+      />
       <SelectField {...resubscribeFrequencyProps} />
 
       {resubscribeFrequency == "custom" && (

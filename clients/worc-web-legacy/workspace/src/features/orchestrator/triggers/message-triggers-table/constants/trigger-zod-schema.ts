@@ -8,6 +8,8 @@ import {
 } from "@aventisia/ui/utils";
 import { z } from "zod";
 
+import { resourceRequiresReference } from "./form-utils";
+
 const today = new Date();
 // Set today's time to midnight to ignore the time part in comparison
 today.setHours(0, 0, 0, 0);
@@ -23,51 +25,77 @@ export const triggerNameSchema = z
 /**
  * Represents the Zod schema for a trigger.
  */
-export const triggerZodSchema = z.object({
-  // Unique identifier for the trigger
-  id: z.string(),
+export const triggerZodSchema = z
+  .object({
+    // Unique identifier for the trigger
+    id: z.string(),
 
-  // Trigger name validation using the custom schema
-  name: triggerNameSchema,
+    // Trigger name validation using the custom schema
+    name: triggerNameSchema,
 
-  agents: z.array(z.any()).min(1, { message: reqError("Agent(s)") }),
+    agents: z.array(z.any()).min(1, { message: reqError("Agent(s)") }),
 
-  // Timezone in which the trigger is set
-  timezone: z.string().min(1, { message: reqError("Timezone") }),
+    // Timezone in which the trigger is set
+    timezone: z.string().min(1, { message: reqError("Timezone") }),
 
-  mailbox: z
-    .string()
-    .email()
-    .min(1, { message: reqError("Account") }),
+    resource: z.string(),
+    reference: z.string().optional(),
+    // Expiry date
+    expiryDateTime: z
+      .date()
+      .min(today, { message: "Expiry date cannot be in the past" }),
 
-  resource: z.string().optional(),
+    // Expiry time
+    expiryTime: z.string().nullable().optional(),
 
-  // Expiry date
-  expiryDateTime: z
-    .date()
-    .min(today, { message: "Expiry date cannot be in the past" }),
+    resubscribeEnabled: z.boolean().optional(),
 
-  // Expiry time
-  expiryTime: z.string().nullable().optional(),
+    resubscribeFrequency: z
+      .string()
+      .min(1, { message: reqError("Resubscribe Frequency") }),
 
-  resubscribeEnabled: z.boolean().optional(),
+    resubscribeFrequencyCustom: z
+      .string()
+      .regex(numericRegex, {
+        message: numericError("Resubscribe Frequency"),
+      })
+      .nullable()
+      .optional(),
 
-  resubscribeFrequency: z
-    .string()
-    .min(1, { message: reqError("Resubscribe Frequency") }),
+    credentialId: z.string().min(1, { message: reqError("Credential Id") }),
 
-  resubscribeFrequencyCustom: z
-    .string()
-    .regex(numericRegex, {
-      message: numericError("Resubscribe Frequency"),
-    })
-    .nullable()
-    .optional(),
+    provider: z.string(),
 
-  credentialId: z.string().min(1, { message: reqError("Credential Id") }),
+    // Flag to disable the trigger (optional)
+    isDisabled: z.boolean().nullable().optional(),
+  })
+.superRefine((data, ctx) => {
+  const requiresRef = resourceRequiresReference(data.resource);
+  const reference = data.reference?.trim();
 
-  provider: z.string(),
+  if (requiresRef && !reference) {
+    ctx.addIssue({
+      code: z.ZodIssueCode.custom,
+      path: ["reference"],
+      message: "Resource ID(s) are required for the selected resource",
+    });
+    return;
+  }
 
-  // Flag to disable the trigger (optional)
-  isDisabled: z.boolean().nullable().optional(),
+  if (requiresRef && reference) {
+    const expectedParts =
+      (data.resource?.match(/{.*?}/g) || []).length;
+
+    const providedParts = reference
+      .split("/")
+      .filter((part) => part.trim().length > 0).length;
+
+    if (expectedParts !== providedParts) {
+      ctx.addIssue({
+        code: z.ZodIssueCode.custom,
+        path: ["reference"],
+        message: `Expected ${expectedParts} ID(s) separated by '/'`,
+      });
+    }
+  }
 });

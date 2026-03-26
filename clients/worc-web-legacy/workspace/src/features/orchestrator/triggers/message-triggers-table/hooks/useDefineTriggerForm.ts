@@ -61,7 +61,7 @@ export const useDefineTriggerForm = () => {
       expiryTime: null,
       credentialId: "",
       resource: "/chats/getAllMessages",
-      mailbox: "",
+      reference: "",
       provider: "M365",
       resubscribeEnabled: false,
       resubscribeFrequency: "30",
@@ -90,13 +90,15 @@ export const useDefineTriggerForm = () => {
     const datePlus30 = new Date();
     datePlus30.setDate(datePlus30.getDate() + 30);
 
+    const userTimeZone = Intl.DateTimeFormat().resolvedOptions().timeZone;
+
     // Reset form with fetched trigger data
     form.reset({
       id: rowId,
       name: triggerData?.name ?? "",
       agents: triggerData?.agents ?? [],
-      timezone: triggerData?.timezone ?? "",
-      mailbox: triggerData?.mailbox ?? "",
+      timezone: triggerData?.timezone ?? userTimeZone ?? "",
+      reference: triggerData?.reference ?? "",
       expiryDateTime: triggerData?.expiryDateTime
         ? new Date(triggerData.expiryDateTime)
         : datePlus30,
