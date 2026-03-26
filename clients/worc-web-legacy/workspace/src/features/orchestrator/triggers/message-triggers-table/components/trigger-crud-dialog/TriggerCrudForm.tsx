@@ -46,10 +46,10 @@ export const TriggerCrudForm = () => {
     rowId,
     isDirty,
     crudAction,
-    isAvailable,
-    availabilityMessage,
-    isCheckPending,
-    handleInputChange,
+    // isAvailable,
+    // availabilityMessage,
+    // isCheckPending,
+    // handleInputChange,
     setShowDialog,
     refineFormData,
   } = useDefineTriggerForm();
@@ -149,8 +149,8 @@ export const TriggerCrudForm = () => {
       {/* Name */}
       <InputField
         {...nameProps}
-        onChangeCapture={(e) => handleInputChange(e.currentTarget.value)}
-        nonErrorMessage={availabilityMessage}
+        // onChangeCapture={(e) => handleInputChange(e.currentTarget.value)}
+        // nonErrorMessage={availabilityMessage}
       />
 
       <FormField
@@ -278,7 +278,7 @@ export const TriggerCrudForm = () => {
               crudAction === "create" ? "Creating..." : "Saving..."
             }
             isPending={isPending}
-            disabled={!isDirty || !isAvailable || isCheckPending}
+            disabled={!isDirty}
           />
         </div>
       )}
