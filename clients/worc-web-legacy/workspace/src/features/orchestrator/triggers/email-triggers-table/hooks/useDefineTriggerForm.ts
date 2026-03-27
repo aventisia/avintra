@@ -4,7 +4,7 @@ import { useUserSessionStore } from "@/react-toolkit/stores/user-session-store";
 import { useDTCrudDialogStore } from "@aventisia/ui/stores";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useQueryClient } from "@tanstack/react-query";
-import { useEffect,  } from "react";
+import { useEffect } from "react";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
 import { useShallow } from "zustand/react/shallow";
@@ -57,6 +57,7 @@ export const useDefineTriggerForm = () => {
       name: "",
       agents: [],
       timezone: "",
+      apiKey: "",
       expiryDateTime: new Date(), // Default to current date
       expiryTime: null,
       credentialId: "",
@@ -96,6 +97,7 @@ export const useDefineTriggerForm = () => {
       name: triggerData?.name ?? "",
       agents: triggerData?.agents ?? [],
       timezone: triggerData?.timezone ?? userTimeZone ?? "",
+      apiKey: triggerData?.apiKey ?? "",
       mailbox: triggerData?.mailbox ?? "",
       expiryDateTime: triggerData?.expiryDateTime
         ? new Date(triggerData.expiryDateTime)

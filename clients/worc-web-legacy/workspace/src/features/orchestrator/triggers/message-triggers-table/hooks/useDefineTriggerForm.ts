@@ -57,6 +57,7 @@ export const useDefineTriggerForm = () => {
       name: "",
       agents: [],
       timezone: "",
+      apiKey: "",
       expiryDateTime: new Date(), // Default to current date
       expiryTime: null,
       credentialId: "",
@@ -98,6 +99,7 @@ export const useDefineTriggerForm = () => {
       name: triggerData?.name ?? "",
       agents: triggerData?.agents ?? [],
       timezone: triggerData?.timezone ?? userTimeZone ?? "",
+      apiKey: triggerData?.apiKey ?? "",
       reference: triggerData?.reference ?? "",
       expiryDateTime: triggerData?.expiryDateTime
         ? new Date(triggerData.expiryDateTime)

@@ -8,8 +8,10 @@ import {
 import { IHttpResponse } from "@aventisia/ui/dtos";
 import { FormLabelExt } from "@aventisia/ui/form";
 import { cn } from "@aventisia/ui/lib";
+import { CrudActionType } from "@aventisia/ui/types";
 import { useMutation } from "@tanstack/react-query";
-import { Loader2 } from "lucide-react";
+import { CheckIcon, CopyIcon } from "lucide-react";
+import { useState } from "react";
 
 import { generateApiKey } from "../../apis/api-key-apis";
 
@@ -20,8 +22,7 @@ type APIKeyFieldProps = {
   label?: string;
   readOnly?: boolean;
   disabled?: boolean;
-
-  // inject mutation logic
+  crudAction: CrudActionType;
   generateApiKey?: () => Promise<IHttpResponse<string>>;
   className?: string;
 };
@@ -34,49 +35,83 @@ export default function APIKeyField({
   disabled = false,
   generateApiKey: generateApiKeyExternal,
   className,
+  crudAction,
 }: APIKeyFieldProps) {
+  const [generated, setGenerated] = useState(false);
+
   const { mutate, isPending } = useMutation({
     mutationFn: generateApiKeyExternal ?? generateApiKey,
     onSuccess: (data) => {
       onChange(data?.data);
+      setGenerated(true);
     },
   });
 
-  const isEmpty = !value;
+  const isCreate = crudAction === "create";
+  // const isUpdate = crudAction === "update";
+
+  const [isCopied, setIsCopied] = useState(false);
+
+  const handleCopy = () => {
+    navigator.clipboard.writeText(value ?? "");
+    setIsCopied(true);
+    setTimeout(() => {
+      setIsCopied(false);
+    }, 2000);
+  };
 
   return (
     <div className={cn("space-y-1", className)}>
-      <FormLabelExt label={label} />
+      <FormLabelExt label={label} isRequired />
 
       <InputGroup
         className={cn(
           readOnly && "focus-within:border-input focus-within:ring-0",
         )}
       >
-        <InputGroupInput readOnly={readOnly} value={value ?? ""} />
+        <InputGroupInput readOnly value={value ?? ""} />
 
-        <InputGroupAddon className="border-l pl-0">
-          <InputGroupButton
-            type="button"
-            size="sm"
-            className=""
-            disabled={disabled || isPending}
-            onClick={() => {
-              console.log("first");
-              mutate();
-            }}
-            aria-label={isEmpty ? "Generate API Key" : "Regenerate API Key"}
-          >
-            {isPending ? (
-              <Loader2 className="h-4 w-4 animate-spin" />
-            ) : isEmpty ? (
-              <>Generate</>
-            ) : (
-              <>Regenerate</>
-            )}
-          </InputGroupButton>
+        <InputGroupAddon className="">
+          {/* BEFORE GENERATION (BASED ON CRUD) */}
+          {!generated && (
+            <InputGroupButton
+              type="button"
+              size="sm"
+              disabled={disabled || isPending}
+              onClick={() => mutate()}
+              aria-label={isCreate ? "Generate API Key" : "Regenerate API Key"}
+            >
+              {isCreate ? "Generate" : "Regenerate"}
+            </InputGroupButton>
+          )}
+
+          {/* AFTER GENERATION */}
+          {generated && (
+            <InputGroupButton
+              type="button"
+              size="sm"
+              disabled={!value}
+              onClick={() => {
+                handleCopy();
+              }}
+            >
+              {isCopied ? (
+                <CheckIcon className="h-3.5 w-3.5 text-muted-foreground" />
+              ) : (
+                <CopyIcon className="h-3.5 w-3.5 text-muted-foreground" />
+              )}{" "}
+            </InputGroupButton>
+          )}
         </InputGroupAddon>
       </InputGroup>
+
+      {/* MESSAGE */}
+      {generated && (
+        <p className="text-xs text-muted-foreground">
+          This API key is displayed only once. Copy and store it securely — it
+          cannot be retrieved later.
+        </p>
+      )}
     </div>
   );
 }
