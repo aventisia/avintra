@@ -19,6 +19,7 @@ export enum CreditServiceTypesEnum {
   // gpt-4o
   Gpt4oInput,
   Gpt4oOutput,
+  Gpt4oCached,
   // gpt-4o-mini
   Gpt4oMiniInput,
   Gpt4oMiniOutput,
