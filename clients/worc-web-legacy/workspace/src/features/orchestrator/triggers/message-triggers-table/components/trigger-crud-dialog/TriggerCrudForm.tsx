@@ -16,8 +16,10 @@ import {
 import { useListOptimisticMutation } from "@aventisia/ui/hooks";
 import { ISelectOption } from "@aventisia/ui/types";
 import { useEffect, useState } from "react";
+import { Controller } from "react-hook-form";
 import { z } from "zod";
 
+import APIKeyField from "../../../webhook-triggers-table/components/trigger-crud-dialog/APIKeyField.tsx";
 import { getCredSelectOptions } from "../../apis/app-secret-apis.ts";
 import { triggerOptimisticMutationFn } from "../../apis/triggers-table-apis";
 import { DATA_QUERY_KEY } from "../../constants";
@@ -180,6 +182,17 @@ export const TriggerCrudForm = () => {
 
             <FormMessage size={"base"} />
           </FormItem>
+        )}
+      />
+      <Controller
+        control={form.control}
+        name="apiKey"
+        render={({ field }) => (
+          <APIKeyField
+            value={field.value}
+            onChange={field.onChange}
+            crudAction={crudAction}
+          />
         )}
       />
       <SelectField {...providerProps} />
