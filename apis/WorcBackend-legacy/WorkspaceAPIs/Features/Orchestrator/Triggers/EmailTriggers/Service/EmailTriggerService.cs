@@ -780,98 +780,98 @@ public class EmailTriggerService : IEmailTriggerService
         // Determine provider (Outlook / Gmail)
         switch (emailTriggerModel.Provider)
         {
+            // Handle Microsoft 365 (Outlook) subscription lifecycle via Microsoft Graph
             case TriggerProviderTypesEnum.M365:
-                // Microsoft 365 / Outlook subscription
                 {
-                    // Get access token for M365 API
+                    // Acquire access token for Microsoft Graph API
                     var accessToken = await GetM365AccessTokenAsync(emailTriggerModel.CredentialId);
 
-                    // Add Bearer token to HttpClient
+                    // Attach authorization header for all outgoing requests
                     httpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", accessToken);
 
+                    // Normalize application base URL (ensure HTTPS and no trailing slash)
                     var baseUrl = _environmentConfig.AppBaseUrl?.Trim().TrimEnd('/');
-
                     if (!baseUrl.StartsWith("http", StringComparison.OrdinalIgnoreCase))
                         baseUrl = "https://" + baseUrl;
+
+                    // Endpoint that will receive Graph change notifications
                     var notificationUrl = $"{baseUrl}/worc/api/email-trigger/notify/{triggerId}";
 
-
-                    // Build resource path for mailbox and folder
+                    // Build resource path targeting mailbox or specific folder
                     var resourcePath = !string.IsNullOrEmpty(emailTriggerModel.Folder)
                         ? $"/users/{emailTriggerModel.Mailbox}/mailFolders/{emailTriggerModel.Folder}/messages"
                         : $"/users/{emailTriggerModel.Mailbox}/messages";
 
-                    // Build subscription request body
-                    var subscriptionRequest = new
-                    {
-                        changeType = "created",
-                        notificationUrl = notificationUrl,
-                        resource = resourcePath,
-                        expirationDateTime = emailTriggerModel.ExpiryDateTime.UtcDateTime.ToString("o"),
-                        clientState = emailTriggerModel.ApiKey
-                    };
-
-                    // Serialize request body to JSON using System.Text.Json
-                    var content = new StringContent(
-                        System.Text.Json.JsonSerializer.Serialize(subscriptionRequest),
-                        Encoding.UTF8,
-                        "application/json"
-                    );
-
                     HttpResponseMessage response;
 
-                    // Determine action: create / update / delete
+                    // Execute action-specific API call (create, renew/update, delete)
                     switch (action.ToLower())
                     {
                         case "create":
-                            // Create HTTP POST request to Microsoft Graph subscriptions endpoint
-                            var postRequest = new HttpRequestMessage(HttpMethod.Post, "https://graph.microsoft.com/v1.0/subscriptions")
+                            // Create a new subscription for message notifications
+                            var subscriptionRequest = new
                             {
-                                // Attach the request body content (JSON payload for subscription creation)
-                                Content = content
+                                changeType = "created",
+                                notificationUrl = notificationUrl,
+                                resource = resourcePath,
+                                expirationDateTime = emailTriggerModel.ExpiryDateTime.UtcDateTime.ToString("o"),
+                                clientState = emailTriggerModel.ApiKey
                             };
 
-                            // Send the request to Microsoft Graph
+                            var postRequest = new HttpRequestMessage(HttpMethod.Post, "https://graph.microsoft.com/v1.0/subscriptions")
+                            {
+                                Content = CreateJsonContent(subscriptionRequest)
+                            };
+
                             response = await httpClient.SendAsync(postRequest);
 
-                            // Check if the request was successful (status code 200–299)
+                            // Extract and persist subscription ID for future operations
                             if (response.IsSuccessStatusCode)
                             {
-                                // Read response content as JSON
                                 var responseContent = await response.Content.ReadAsStringAsync();
                                 using var doc = JsonDocument.Parse(responseContent);
 
-                                // Extract the subscription ID from the response
                                 if (doc.RootElement.TryGetProperty("id", out var subscriptionIdProperty))
                                 {
-                                    // Assign the subscription ID to your model or entity
                                     emailTriggerModel.SubscriptionId = subscriptionIdProperty.GetString();
                                 }
                             }
                             break;
 
                         case "update":
+                            // Renew subscription by extending expiration and/or updating callback URL
+                            var updateRequest = new
+                            {
+                                expirationDateTime = emailTriggerModel.ExpiryDateTime.UtcDateTime.ToString("o"),
+                                notificationUrl = notificationUrl
+                            };
+
                             var patchRequest = new HttpRequestMessage(new HttpMethod("PATCH"),
                                 $"https://graph.microsoft.com/v1.0/subscriptions/{emailTriggerModel.SubscriptionId}")
                             {
-                                Content = content
+                                Content = CreateJsonContent(updateRequest)
                             };
+
                             response = await httpClient.SendAsync(patchRequest);
                             break;
 
                         case "delete":
-                            response = await httpClient.DeleteAsync($"https://graph.microsoft.com/v1.0/subscriptions/{emailTriggerModel.SubscriptionId}");
+                            // Remove existing subscription from Microsoft Graph
+                            response = await httpClient.DeleteAsync(
+                                $"https://graph.microsoft.com/v1.0/subscriptions/{emailTriggerModel.SubscriptionId}");
                             break;
 
                         default:
+                            // Guard against unsupported actions
                             _logger.LogWarning("Unknown action for M365 subscription: {Action}", action);
                             return serviceResponse;
                     }
 
-                    // Check API response
+                    // Handle unsuccessful responses and extract Graph error message if available
                     if (!response.IsSuccessStatusCode)
                     {
                         _logger.LogError("M365 subscription {Action} failed. StatusCode: {StatusCode}", action, response.StatusCode);
+
                         var responseContent = await response.Content.ReadAsStringAsync();
                         try
                         {
@@ -885,11 +885,14 @@ public class EmailTriggerService : IEmailTriggerService
                         }
                         catch
                         {
+                            // Fallback to raw response if structured error parsing fails
                             serviceResponse.Message = responseContent;
                         }
+
                         return serviceResponse;
                     }
 
+                    // Return success response with updated model
                     serviceResponse.StatusCode = 200;
                     serviceResponse.Message = $"M365 subscription {action} successful.";
                     serviceResponse.Data = emailTriggerModel;
@@ -1060,5 +1063,14 @@ public class EmailTriggerService : IEmailTriggerService
         }
 
         return null;
+    }
+
+    private static StringContent CreateJsonContent(object payload)
+    {
+        return new StringContent(
+            System.Text.Json.JsonSerializer.Serialize(payload),
+            Encoding.UTF8,
+            "application/json"
+        );
     }
 }
