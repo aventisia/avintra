@@ -294,6 +294,11 @@ public class EmailTriggerService : IEmailTriggerService
             // Cast DTO to EmailTriggerModel to access subscription-specific fields
             var model = (EmailTriggerModel)emailTriggerDto;
 
+            if (emailTrigger.Metadata.RootElement.TryGetProperty("subscriptionId", out var subId))
+            {
+                model.SubscriptionId = subId.GetString();
+            }
+
             // Create or update the email subscription and update the DTO with the subscription ID
             var subscription = await ManageEmailTriggerSubscriptionAsync(model, "update", emailTriggerDto.Id);
 
@@ -788,6 +793,7 @@ public class EmailTriggerService : IEmailTriggerService
 
                     // Attach authorization header for all outgoing requests
                     httpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", accessToken);
+                    httpClient.BaseAddress = new Uri("https://graph.microsoft.com/v1.0/");
 
                     // Normalize application base URL (ensure HTTPS and no trailing slash)
                     var baseUrl = _environmentConfig.AppBaseUrl?.Trim().TrimEnd('/');
@@ -818,7 +824,7 @@ public class EmailTriggerService : IEmailTriggerService
                                 clientState = emailTriggerModel.ApiKey
                             };
 
-                            var postRequest = new HttpRequestMessage(HttpMethod.Post, "https://graph.microsoft.com/v1.0/subscriptions")
+                            var postRequest = new HttpRequestMessage(HttpMethod.Post, "subscriptions")
                             {
                                 Content = CreateJsonContent(subscriptionRequest)
                             };
@@ -846,8 +852,7 @@ public class EmailTriggerService : IEmailTriggerService
                                 notificationUrl = notificationUrl
                             };
 
-                            var patchRequest = new HttpRequestMessage(new HttpMethod("PATCH"),
-                                $"https://graph.microsoft.com/v1.0/subscriptions/{emailTriggerModel.SubscriptionId}")
+                            var patchRequest = new HttpRequestMessage(HttpMethod.Patch, $"subscriptions/{emailTriggerModel.SubscriptionId}")
                             {
                                 Content = CreateJsonContent(updateRequest)
                             };
@@ -858,7 +863,7 @@ public class EmailTriggerService : IEmailTriggerService
                         case "delete":
                             // Remove existing subscription from Microsoft Graph
                             response = await httpClient.DeleteAsync(
-                                $"https://graph.microsoft.com/v1.0/subscriptions/{emailTriggerModel.SubscriptionId}");
+                                $"subscriptions/{emailTriggerModel.SubscriptionId}");
                             break;
 
                         default:
