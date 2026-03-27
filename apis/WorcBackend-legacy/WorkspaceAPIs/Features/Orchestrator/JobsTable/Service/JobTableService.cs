@@ -444,7 +444,7 @@ public class JobTableService : IJobTableService
                 await _jobsExecutorService.TriggerExecutionAsync(executionCommand);
             }
 
-            // Fire webhook callback if this is a webhook-triggered job that has reached a terminal state
+            // TODO: Populate and send custom response data (e.g., job result, status details, timestamps) to the callback URL            // Fire webhook callback if this is a webhook-triggered job that has reached a terminal state
             if (job.TriggerType == TriggerTypesEnum.WebhookTrigger &&
                 (job.Status == JobStatusTypesEnum.Completed ||
                  job.Status == JobStatusTypesEnum.Failed ||
