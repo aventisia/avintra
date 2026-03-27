@@ -15,6 +15,7 @@ export enum ServiceTypeEnum {
   // gpt-4o
   "Gpt4oInput" = "GPT 4o-input",
   "Gpt4oOutput" = "GPT 4o-output",
+  "Gpt4oCached" = "GPT 4o-cached",
   // gpt-4o-mini
   "Gpt4oMiniInput" = "GPT 4o mini-input",
   "Gpt4oMiniOutput" = "GPT 4o mini-output",
