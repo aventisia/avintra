@@ -24,18 +24,20 @@ public class WebhookTriggerMappingProfile : IRegister
                     dest.ApiKeyExpiry = model.ApiKeyExpiry;
                     dest.ExpectedPayloadSchema = model.ExpectedPayloadSchema;
                     dest.CallbackUrl = model.CallbackUrl;
-                    dest.ApiKey = string.Empty;
+                    dest.ApiKey = !string.IsNullOrEmpty(model.ApiKey) && model.ApiKey.Length > 4 ? model.ApiKey[..4] + "*******" : model.ApiKey; ;
                     dest.ApiKeyHash = string.Empty;
                 }
             })
-            .Map(dest => dest.Agents,
+            .Map(dest => dest.Agent,
                 src => src.TriggerFlowVersions != null
-                    ? src.TriggerFlowVersions.Select(s => new AgentInfoDto()
-                    {
-                        Id = s.FlowVersion.Id,
-                        Name = s.FlowVersion.Flow.Name,
-                        VersionNumber = s.FlowVersion.VersionNumber
-                    }).ToList()
+                    ? src.TriggerFlowVersions
+                        .Select(s => new AgentInfoDto()
+                        {
+                            Id = s.FlowVersion.Id,
+                            Name = s.FlowVersion.Flow.Name,
+                            VersionNumber = s.FlowVersion.VersionNumber
+                        })
+                        .FirstOrDefault()
                     : null)
             .Map(dest => dest.CreatedBy,
                 src => src.CreatedByUser != null

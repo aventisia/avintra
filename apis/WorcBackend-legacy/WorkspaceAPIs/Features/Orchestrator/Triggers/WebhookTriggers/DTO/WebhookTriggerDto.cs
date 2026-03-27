@@ -22,9 +22,9 @@ public class WebhookTriggerDto : WebhookTriggerModel
     public required string Timezone { get; set; }
 
     /// <summary>
-    /// Gets or sets the collection of agents associated with the email trigger, including their identifiers, names, and versions.
+    /// Gets or sets the agent associated with the email trigger, including its identifier, name, and version.
     /// </summary>
-    public List<AgentInfoDto>? Agents { get; set; }
+    public AgentInfoDto? Agent { get; set; }
 
     /// <summary>
     /// Gets or sets a value indicating whether the webhook trigger is disabled.
