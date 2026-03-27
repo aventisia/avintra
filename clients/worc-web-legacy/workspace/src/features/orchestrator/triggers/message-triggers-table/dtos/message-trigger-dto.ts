@@ -16,6 +16,7 @@ export interface MessageTriggerDto {
    * Gets or sets the timezone in which the email trigger operates.
    */
   timezone: string;
+  apiKey: string;
   reference?: string;
   resource: string;
   expiryDateTime: Date | string;

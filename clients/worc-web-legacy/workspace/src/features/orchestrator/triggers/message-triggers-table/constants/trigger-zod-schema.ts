@@ -37,7 +37,7 @@ export const triggerZodSchema = z
 
     // Timezone in which the trigger is set
     timezone: z.string().min(1, { message: reqError("Timezone") }),
-
+    apiKey: z.string().min(1, { message: reqError("Api Key") }),
     resource: z.string(),
     reference: z.string().optional(),
     // Expiry date
@@ -69,33 +69,32 @@ export const triggerZodSchema = z
     // Flag to disable the trigger (optional)
     isDisabled: z.boolean().nullable().optional(),
   })
-.superRefine((data, ctx) => {
-  const requiresRef = resourceRequiresReference(data.resource);
-  const reference = data.reference?.trim();
+  .superRefine((data, ctx) => {
+    const requiresRef = resourceRequiresReference(data.resource);
+    const reference = data.reference?.trim();
 
-  if (requiresRef && !reference) {
-    ctx.addIssue({
-      code: z.ZodIssueCode.custom,
-      path: ["reference"],
-      message: "Resource ID(s) are required for the selected resource",
-    });
-    return;
-  }
-
-  if (requiresRef && reference) {
-    const expectedParts =
-      (data.resource?.match(/{.*?}/g) || []).length;
-
-    const providedParts = reference
-      .split("/")
-      .filter((part) => part.trim().length > 0).length;
-
-    if (expectedParts !== providedParts) {
+    if (requiresRef && !reference) {
       ctx.addIssue({
         code: z.ZodIssueCode.custom,
         path: ["reference"],
-        message: `Expected ${expectedParts} ID(s) separated by '/'`,
+        message: "Resource ID(s) are required for the selected resource",
       });
+      return;
     }
-  }
-});
+
+    if (requiresRef && reference) {
+      const expectedParts = (data.resource?.match(/{.*?}/g) || []).length;
+
+      const providedParts = reference
+        .split("/")
+        .filter((part) => part.trim().length > 0).length;
+
+      if (expectedParts !== providedParts) {
+        ctx.addIssue({
+          code: z.ZodIssueCode.custom,
+          path: ["reference"],
+          message: `Expected ${expectedParts} ID(s) separated by '/'`,
+        });
+      }
+    }
+  });
