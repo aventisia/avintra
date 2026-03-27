@@ -293,6 +293,11 @@ public class MessageTriggerService : IMessageTriggerService
             // Cast DTO to MessageTriggerModel to access subscription-specific fields
             var model = (MessageTriggerModel)messageTriggerDto;
 
+            if (messageTrigger.Metadata.RootElement.TryGetProperty("subscriptionId", out var subId))
+            {
+                model.SubscriptionId = subId.GetString();
+            }
+
             // Update existing message trigger subscription
             var subscription = await ManagemessageTriggerSubscriptionAsync(model, "update", messageTriggerDto.Id);
 
@@ -792,6 +797,7 @@ public class MessageTriggerService : IMessageTriggerService
 
                     // Set authorization header for API requests
                     httpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", accessToken);
+                    httpClient.BaseAddress = new Uri("https://graph.microsoft.com/v1.0/");
 
                     // Normalize base URL (ensure HTTPS and remove trailing slash)
                     var baseUrl = _environmentConfig.AppBaseUrl?.Trim().TrimEnd('/');
@@ -819,7 +825,7 @@ public class MessageTriggerService : IMessageTriggerService
                             };
 
                             // Send subscription creation request
-                            var postRequest = new HttpRequestMessage(HttpMethod.Post, "https://graph.microsoft.com/v1.0/subscriptions")
+                            var postRequest = new HttpRequestMessage(HttpMethod.Post, "subscriptions")
                             {
                                 Content = CreateJsonContent(subscriptionRequest)
                             };
@@ -847,8 +853,7 @@ public class MessageTriggerService : IMessageTriggerService
                                 notificationUrl = notificationUrl
                             };
 
-                            var patchRequest = new HttpRequestMessage(new HttpMethod("PATCH"),
-                                $"https://graph.microsoft.com/v1.0/subscriptions/{messageTriggerModel.SubscriptionId}")
+                            var patchRequest = new HttpRequestMessage(HttpMethod.Patch, $"subscriptions/{messageTriggerModel.SubscriptionId}")
                             {
                                 Content = CreateJsonContent(updateRequest)
                             };
@@ -859,7 +864,7 @@ public class MessageTriggerService : IMessageTriggerService
                         case "delete":
                             // Remove existing subscription from Graph
                             response = await httpClient.DeleteAsync(
-                                $"https://graph.microsoft.com/v1.0/subscriptions/{messageTriggerModel.SubscriptionId}");
+                                $"subscriptions/{messageTriggerModel.SubscriptionId}");
                             break;
 
                         default:
