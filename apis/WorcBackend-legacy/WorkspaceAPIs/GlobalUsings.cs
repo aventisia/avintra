@@ -22,6 +22,7 @@ global using WorkspaceAPIs.MappingProfiles;
 global using WorkspaceAPIs.Enums;
 global using WorkspaceAPIs.Jobs;
 global using WorkspaceAPIs.Hubs;
+global using WorkspaceAPIs.Attributes;
 
 global using WorkspaceAPIs.Features.CloudConnectors;
 global using WorkspaceAPIs.Features.CloudConnectors.M365;
@@ -45,6 +46,7 @@ global using Microsoft.AspNetCore.Authorization;
 global using Microsoft.AspNetCore.Mvc;
 global using Microsoft.EntityFrameworkCore;
 global using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
+global using Microsoft.AspNetCore.Mvc.Filters;
 
 global using Mapster;
 global using Ardalis.GuardClauses;
