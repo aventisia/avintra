@@ -156,34 +156,32 @@ public class WebhookTriggerService : IWebhookTriggerService
                 return serviceResponse;
             }
 
-            // Retrieve all agents from the database that are linked to the provided email trigger DTO.
-            // Only include agents whose IDs are in emailTriggerDto.Agents and are marked as published.
-            var agentIds = dto.Agents?
-                .Select(a => a.Id)
-                .ToList();
+            // Extract agent ID from the incoming DTO
+            var agentId = dto.Agent?.Id;
 
-            var agents = agentIds != null && agentIds.Any()
+            // Fetch the published FlowVersion matching the provided agent ID
+            var agent = agentId != null
                 ? await _unitOfWork.FlowVersionRepo
-                    .GetByConditionAsync(w => agentIds.Contains(w.Id) && w.IsPublished)
-                    .ToListAsync()
-                : new List<FlowVersion>();
+                    .GetByConditionAsync(w => w.Id == agentId && w.IsPublished)
+                    .FirstOrDefaultAsync()
+                : null;
 
-            // Proceed only if matching agents are found.
-            if (agents.Count > 0)
+            // Continue only if a matching agent was found
+            if (agent != null)
             {
-                // Create a list of TriggerFlowVersion entities linking the new message trigger to each agent.
-                var triggerFlowVersions = agents.Select(agent => new TriggerFlowVersion
+                // Create TriggerFlowVersion mapping between the trigger and the agent
+                var triggerFlowVersion = new TriggerFlowVersion
                 {
                     TriggerId = newTrigger.Id,
                     FlowVersionId = agent.Id,
                     CreatedByUserId = _userId,
                     LastModifiedByUserId = _userId
-                }).ToList();
+                };
 
-                // Insert the new TriggerFlowVersion entries into the repository.
-                await _unitOfWork.TriggerFlowVersionRepo.InsertAsync(triggerFlowVersions);
+                // Persist the mapping
+                await _unitOfWork.TriggerFlowVersionRepo.InsertAsync(triggerFlowVersion);
 
-                // Save changes to the database and check if the operation succeeded.
+                // Commit changes and log if persistence fails
                 if (!await _unitOfWork.SaveAsync())
                 {
                     _logger.LogWarning("Failed to persist TriggerFlowVersion for webhook trigger {TriggerId}.", newTrigger.Id);
@@ -291,10 +289,8 @@ public class WebhookTriggerService : IWebhookTriggerService
             // Track whether any changes were made
             var hasChanges = false;
 
-            // Extract agent IDs from request
-            var requestedAgentIds = dto.Agents?
-                .Select(a => a.Id)
-                .ToHashSet() ?? new HashSet<Guid>();
+            // Extract requested agent ID
+            var requestedAgentId = dto.Agent?.Id;
 
             // Existing mappings from DB
             var existingMappings = trigger.TriggerFlowVersions ?? new List<TriggerFlowVersion>();
@@ -303,41 +299,33 @@ public class WebhookTriggerService : IWebhookTriggerService
                 .Select(tfv => tfv.FlowVersionId)
                 .ToHashSet();
 
-
-            // ----------- ADD NEW MAPPINGS -----------
-            // Agents present in request but not in DB
-            var agentIdsToAdd = requestedAgentIds.Except(existingAgentIds).ToList();
-
-            if (agentIdsToAdd.Any())
+            // ----------- ADD NEW MAPPING -----------
+            if (requestedAgentId != null && !existingAgentIds.Contains(requestedAgentId.Value))
             {
-                var agentsToAdd = await _unitOfWork.FlowVersionRepo
-                    .GetByConditionAsync(w => agentIdsToAdd.Contains(w.Id) && w.IsPublished)
-                    .ToListAsync();
+                var agent = await _unitOfWork.FlowVersionRepo
+                    .GetByConditionAsync(w => w.Id == requestedAgentId && w.IsPublished)
+                    .FirstOrDefaultAsync();
 
-                if (agentsToAdd.Any())
+                if (agent != null)
                 {
-                    var newMappings = agentsToAdd.Select(agent => new TriggerFlowVersion
+                    var newMapping = new TriggerFlowVersion
                     {
                         TriggerId = trigger.Id,
                         FlowVersionId = agent.Id,
                         CreatedByUserId = _userId,
                         LastModifiedByUserId = _userId
-                    }).ToList();
+                    };
 
-                    await _unitOfWork.TriggerFlowVersionRepo.InsertAsync(newMappings);
+                    await _unitOfWork.TriggerFlowVersionRepo.InsertAsync(newMapping);
                     hasChanges = true;
                 }
             }
 
-
             // ----------- REMOVE OLD MAPPINGS -----------
-            // Agents present in DB but not in request
-            var agentIdsToDelete = existingAgentIds.Except(requestedAgentIds).ToList();
-
-            if (agentIdsToDelete.Any())
+            if (requestedAgentId == null || existingAgentIds.Any(id => id != requestedAgentId))
             {
                 var mappingsToDelete = existingMappings
-                    .Where(w => agentIdsToDelete.Contains(w.FlowVersionId))
+                    .Where(w => requestedAgentId == null || w.FlowVersionId != requestedAgentId)
                     .ToList();
 
                 if (mappingsToDelete.Any())

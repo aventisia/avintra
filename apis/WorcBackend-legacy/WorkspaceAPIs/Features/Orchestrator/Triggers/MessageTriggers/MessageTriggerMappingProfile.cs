@@ -23,6 +23,7 @@ public class MessageTriggerMappingProfile : IRegister
 
                 if (model != null)
                 {
+                    dest.Resource = model.Resource;
                     dest.Reference = model.Reference;
                     dest.ExpiryDateTime = model.ExpiryDateTime;
                     dest.ResubscribeEnabled = model.ResubscribeEnabled;
