@@ -21,13 +21,19 @@ const typeProps: SelectFieldProps = {
   isRequired: true,
   selectOptions: [
     {
-      label: FlowTypesEnum.Agent,
+      label: "Agent",
       value: FlowTypesEnum.Agent,
       description:
         "A complete flow that can be published and run independently",
     },
     {
-      label: FlowTypesEnum.Block,
+      label: "Chat Agent",
+      value: FlowTypesEnum.ChatAgent,
+      description:
+        "A specialized agent flow designed for handling chat interactions, enabling dynamic and context-aware conversations",
+    },
+    {
+      label: "Block",
       value: FlowTypesEnum.Block,
       description: "A reusable flow component that can be called within agents",
     },

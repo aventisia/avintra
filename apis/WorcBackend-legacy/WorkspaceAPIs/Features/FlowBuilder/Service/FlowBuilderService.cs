@@ -148,6 +148,7 @@ public class FlowBuilderService : IFlowBuilderService
             switch (publishFlowVersionDto.Type)
             {
                 case PublishTypesEnum.Agent:
+                case PublishTypesEnum.ChatAgent:
                 case PublishTypesEnum.Block:
                     // Determine the publish type for logging and message purposes
                     var publishType = publishFlowVersionDto.Type.ToString();

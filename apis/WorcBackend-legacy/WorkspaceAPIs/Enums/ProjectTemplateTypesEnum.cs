@@ -10,6 +10,8 @@ public enum ProjectTemplateTypesEnum
     /// </summary>
     Agent,
 
+    ChatAgent,
+
     /// <summary>
     /// A modular or block-based project template.
     /// </summary>

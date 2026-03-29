@@ -26,19 +26,17 @@ const WorcLibraryTemplates = ({
   const items = useMemo(() => {
     const templates = data?.data ?? [];
 
+    const checkCategory = (templateType: string) => {
+      if (selectedCategory === "All templates") return true;
+      if (selectedCategory === "AI Model")
+        return ["AIProject", "Inferencing", "Conversation", "Generative"].includes(templateType);
+      if (selectedCategory === "Chat Agent")
+        return ["ChatAgent"].includes(templateType);
+      return templateType.includes(selectedCategory);
+    }
+
     return templates
-      .filter((template) =>
-        selectedCategory === "All templates"
-          ? true
-          : selectedCategory === "AI Model"
-            ? [
-                "AIProject",
-                "Inferencing",
-                "Conversation",
-                "Generative",
-              ].includes(template.type)
-            : template.type.includes(selectedCategory),
-      )
+      .filter((template) => checkCategory(template.type))
       ?.filter((template) => {
         const searchText =
           template.name +

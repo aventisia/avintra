@@ -9,7 +9,7 @@ export const useViewTemplate = () => {
   // Function to open the template
   const handleViewTemplate = (id: string) => {
     const url = `library?t=${id}`;
-    window.open(url, "_blank");
+    window.location.href = url;
   };
 
   return handleViewTemplate;

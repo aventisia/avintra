@@ -15,6 +15,7 @@ import { Copy, FileBoxIcon, Tag } from "lucide-react";
 import { ProjectTemplateTypesEnum } from "../constants/template-types-enum";
 import { WorcTemplatesDto } from "../dtos/worc-templates-dtos";
 import { useViewTemplate } from "../hooks/useViewTemplate";
+import { transformTemplateType } from "../utils/transform-template-type";
 
 type TemplateCardProps = {
   template: WorcTemplatesDto;
@@ -99,10 +100,7 @@ export const TemplateCard = ({ template }: TemplateCardProps) => {
           >
             <Tag className="h-3 w-3" />
             <span className="leading-3">
-              {template?.type?.replace(
-                ProjectTemplateTypesEnum.AIProject,
-                "AI Model",
-              )}
+              {transformTemplateType(template?.type)}
             </span>
           </Badge>
         </CardContent>
