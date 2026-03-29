@@ -1,5 +1,6 @@
 import { ZOOM_ANIMATION_DURATION } from "@/constants";
 import { useDagreAutoLayout } from "@/hooks/useDagreAutoLayout";
+import { FlowTypesEnum } from "@/react-toolkit/enums/flow-types-enum";
 import { useCurrentFlowStore } from "@/stores/current-flow-store";
 import { useReactFlowExtStore } from "@/stores/react-flow-ext-store";
 import { FlowVariablesObjectType } from "@/types/flow-variables-object-type";
@@ -33,6 +34,7 @@ export const useFetchFlowToLoad = () => {
     setFlowVariablesObject,
     setInputOutputObject,
     setIsPublished,
+    setFlowType,
     hydrateFlow,
     setViewport: setViewportState,
   } = useReactFlowExtStore(
@@ -42,6 +44,7 @@ export const useFetchFlowToLoad = () => {
       setIsPublished: state.setIsPublished,
       setViewport: state.setViewport,
       hydrateFlow: state.hydrateFlow,
+      setFlowType: state.setFlowType,
     })),
   );
 
@@ -91,6 +94,7 @@ export const useFetchFlowToLoad = () => {
     });
 
     setIsPublished(flowData.isPublished || false);
+    setFlowType(flowData.type || FlowTypesEnum.Agent);
 
     // Ensure versionId is present in URL
     if (!searchParams.has("v")) {
