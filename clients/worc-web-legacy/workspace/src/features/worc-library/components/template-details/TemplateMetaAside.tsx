@@ -10,6 +10,7 @@ import { ProjectTemplateTypesEnum } from "../../constants/template-types-enum";
 import { UseTemplateDTO } from "../../dtos/use-template-dto";
 import { useDownloadFile } from "../../hooks/useFileDownload";
 import { formatFileSize } from "../../utils";
+import { transformTemplateType } from "../../utils/transform-template-type";
 import { FileTypeIcon } from "./FileTypeIcon";
 
 export function TemplateMetaAside({ template }: { template: UseTemplateDTO }) {
@@ -29,10 +30,7 @@ export function TemplateMetaAside({ template }: { template: UseTemplateDTO }) {
           <div className="grid grid-cols-3 gap-2">
             <span className="text-muted-foreground">Type</span>
             <span className="col-span-2">
-              {template?.type?.replace(
-                ProjectTemplateTypesEnum.AIProject,
-                "AI Model",
-              )}
+              {transformTemplateType(template?.type)}
             </span>
           </div>
           <div className="grid grid-cols-3 gap-2">

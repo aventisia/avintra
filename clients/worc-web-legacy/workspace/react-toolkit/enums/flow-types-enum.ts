@@ -6,5 +6,6 @@
  */
 export enum FlowTypesEnum {
   Agent = "Agent",
+  ChatAgent = "ChatAgent",
   Block = "Block",
 }

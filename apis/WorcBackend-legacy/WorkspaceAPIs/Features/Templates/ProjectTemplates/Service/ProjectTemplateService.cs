@@ -730,7 +730,7 @@ namespace WorkspaceAPIs.Services
             return serviceResponse;
         }
 
-        // Publishes a project template based on the specified type (Agent, Block, Inferencing, Conversation, and Generative).
+        // Publishes a project template based on the specified type (Agent, ChatAgent, Block, Inferencing, Conversation, and Generative).
         public async Task<ServiceResponse<ProjectTemplateDto>> PublishProjectTemplateAsync(PublishProjectTemplateDto publishProjectTemplateDto)
         {
             // Initialize default response with failure message
@@ -780,7 +780,7 @@ namespace WorkspaceAPIs.Services
                 newProjectTemplate.CreatedByUserId = _userId;
                 newProjectTemplate.LastModifiedByUserId = _userId;
 
-                if (publishProjectTemplateDto.Type == ProjectTemplateTypesEnum.Block || publishProjectTemplateDto.Type == ProjectTemplateTypesEnum.Agent)
+                if (publishProjectTemplateDto.Type == ProjectTemplateTypesEnum.Block || publishProjectTemplateDto.Type == ProjectTemplateTypesEnum.Agent || publishProjectTemplateDto.Type == ProjectTemplateTypesEnum.ChatAgent)
                 {
                     // Fetch the flow version using RefId
                     var flowVersion = await _unitOfWork.FlowVersionRepo
@@ -1067,8 +1067,8 @@ namespace WorkspaceAPIs.Services
                 // Trim string properties in DTO to clean up any extra whitespace
                 trendingTemplateDto = TrimDtoStringPropsUtil.TrimDtoStringProps(trendingTemplateDto);
 
-                // Handle only Agent or Block template types (for flow creation)
-                if (projectTemplate.Type == ProjectTemplateTypesEnum.Agent || projectTemplate.Type == ProjectTemplateTypesEnum.Block)
+                // Handle only Agent, Block, or ChatAgent template types (for flow creation)
+                if (projectTemplate.Type == ProjectTemplateTypesEnum.Agent || projectTemplate.Type == ProjectTemplateTypesEnum.Block || projectTemplate.Type == ProjectTemplateTypesEnum.ChatAgent)
                 {
                     // Map project template to new Flow entity
                     var flowEntity = new Flow
@@ -1266,7 +1266,6 @@ namespace WorkspaceAPIs.Services
                     Model = model,
                     Input = prompt,
                     Provider = provider,
-                    IsJsonOutput = true,
                     Temperature = temperature,
                     Stream = false,
                     RefType = genereateProjectInstructionRequestDto.RefType.ToString(),

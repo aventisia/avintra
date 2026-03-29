@@ -8,6 +8,7 @@ import { TABLE_KEY } from "../constants";
 import { getColumnName } from "../constants/column-display-names";
 import { AgentsTableDto } from "../dtos/agents-table-dto";
 
+import { FlowTypesEnum } from "@/react-toolkit/enums/flow-types-enum";
 import { TableActions } from "./table-actions/TableActions";
 import { TableCellLink } from "./TableCellLink";
 
@@ -81,7 +82,7 @@ export const agentsTableColumns: ColumnDef<AgentsTableDto>[] = [
     ),
     cell: ({ row }) => (
       <div className="w-auto truncate font-medium">
-        {row.original.type == "Agent" ? row.getValue("machineCount") : "NA"}
+        {(row.original.type == FlowTypesEnum.Agent || row.original.type == FlowTypesEnum.ChatAgent) ? row.getValue("machineCount") : "NA"}
       </div>
     ),
   },

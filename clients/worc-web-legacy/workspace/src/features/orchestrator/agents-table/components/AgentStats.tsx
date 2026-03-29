@@ -7,6 +7,7 @@ import { useEffect, useState } from "react";
 import { BsRobot } from "react-icons/bs";
 
 import type { AgentsTableDto } from "../dtos/agents-table-dto";
+import { FlowTypesEnum } from "@/react-toolkit/enums/flow-types-enum";
 
 type StatsProps = {
   data: AgentsTableDto[];
@@ -27,7 +28,7 @@ export const AgentStats = ({ data }: StatsProps) => {
     const totalData = Enumerable.from(data);
     setStats({
       totalMachineCount: totalData.sum((x) => x.machineCount ?? 0),
-      agents: totalData.count((x) => x.type === "Agent"),
+      agents: totalData.count((x) => x.type === FlowTypesEnum.Agent || x.type === FlowTypesEnum.ChatAgent),
       models: totalData.count((x) => x.type === "AI Model"),
       active: totalData.count((x) => x.isActive),
       inactive: totalData.count((x) => !x.isActive),
