@@ -1,7 +1,9 @@
 import { MARKER_ARROW_PREFIX } from "@/constants";
 import { DCPFieldSchemaType } from "@/features/dynamic-config-panel";
+import { FlowTypesEnum } from "@/react-toolkit/enums/flow-types-enum";
 import { FlowVariablesObjectType } from "@/types/flow-variables-object-type";
 import { HistoryState } from "@/utils/history-equality-checker";
+
 import {
   Connection,
   Edge,
@@ -31,8 +33,13 @@ type State = {
   /** Flag to indicate if ReactFlow pan can be dragged or not */
   panOnDrag: boolean;
 
-  /** Flag to track if Reactflow is published */
+  /** Flag to track if flow is published */
   isPublished: boolean;
+
+  /** Type of the flow - Agent, ChatAgent or Block. TODO: we can combine flow meta data like isPublished and flowType into a single object */
+  flowType: FlowTypesEnum;
+
+  isTestChatOpen: boolean;
 
   /** Output flow variables */
   flowVariablesObject: FlowVariablesObjectType[] | [];
@@ -89,6 +96,12 @@ type Actions = {
   /** To toggle ReactFlow publish state */
   setIsPublished: (isPublished: boolean) => void;
 
+  /** To set flow type */
+  setFlowType: (flowType: FlowTypesEnum) => void;
+
+  /** To toggle test chat state */
+  setIsTestChatOpen: (isTestChatOpen: boolean) => void;
+
   /** Set flag to track pending flow save */
   setIsSavePending: (isSavePending: boolean) => void;
 
@@ -122,6 +135,8 @@ export const useReactFlowExtStore = create<State & Actions>()(
     isSavePending: false,
     contextMenuOrigin: null,
     isPublished: false,
+    flowType: FlowTypesEnum.Agent,
+    isTestChatOpen: false,
     viewport: { x: 0, y: 0, zoom: 1 },
 
     past: [],
@@ -157,6 +172,9 @@ export const useReactFlowExtStore = create<State & Actions>()(
     setNodes: (nodes: Node[]) => set({ nodes }),
     setEdges: (edges: Edge[]) => set({ edges }),
     setIsPublished: (isPublished: boolean) => set({ isPublished }),
+    setFlowType: (flowType: FlowTypesEnum) =>
+      set({ flowType, isTestChatOpen: false }),
+    setIsTestChatOpen: (isTestChatOpen: boolean) => set({ isTestChatOpen }),
     setFlowVariablesObject: (variables: FlowVariablesObjectType[]) =>
       set({ flowVariablesObject: variables }),
     setConfigVariables: (variables: string[]) =>

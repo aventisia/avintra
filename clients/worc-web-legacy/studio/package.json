@@ -60,6 +60,7 @@
     "react-markdown": "^10.1.0",
     "react-perfect-scrollbar": "^1.5.8",
     "react-phone-number-input": "^3.4.3",
+    "react-resizable-panels": "^4.8.0",
     "react-router-dom": "^6.24.1",
     "remark-gfm": "^4.0.1",
     "tailwind-merge": "^2.4.0",
