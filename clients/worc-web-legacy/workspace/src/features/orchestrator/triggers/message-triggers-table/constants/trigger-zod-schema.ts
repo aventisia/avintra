@@ -10,6 +10,12 @@ import { z } from "zod";
 
 import { resourceRequiresReference } from "./form-utils";
 
+const MAX_BY_PROVIDER: Record<string, number> = {
+  M365: 4320, // 3 days (in minutes)
+  GOOGLE: 10080, // example: 7 days
+  CUSTOM: 1440, // example: 1 day
+};
+
 const today = new Date();
 // Set today's time to midnight to ignore the time part in comparison
 today.setHours(0, 0, 0, 0);
@@ -52,15 +58,10 @@ export const triggerZodSchema = z
 
     resubscribeFrequency: z
       .string()
-      .min(1, { message: reqError("Resubscribe Frequency") }),
-
-    resubscribeFrequencyCustom: z
-      .string()
       .regex(numericRegex, {
         message: numericError("Resubscribe Frequency"),
       })
-      .nullable()
-      .optional(),
+      .min(1, { message: reqError("Resubscribe Frequency") }),
 
     credentialId: z.string().min(1, { message: reqError("Credential Id") }),
 
@@ -96,5 +97,21 @@ export const triggerZodSchema = z
           message: `Expected ${expectedParts} ID(s) separated by '/'`,
         });
       }
+    }
+  })
+  .superRefine((data, ctx) => {
+    const freq = Number(data.resubscribeFrequency);
+
+    if (isNaN(freq)) return;
+
+    const max = MAX_BY_PROVIDER[data.provider] ?? 4320; // fallback
+    const min = 0;
+
+    if (freq < min || freq > max) {
+      ctx.addIssue({
+        code: z.ZodIssueCode.custom,
+        path: ["resubscribeFrequency"],
+        message: `Resubscribe Frequency must be between ${min} and ${max} minutes for ${data.provider}`,
+      });
     }
   });

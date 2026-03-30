@@ -31,8 +31,8 @@ export const useDefineTriggerForm = () => {
       userSession: state.userSession,
     })),
   );
-  const defaultFrequency = (val: string) =>
-    ["30", "90", "180", "365"].includes(val);
+  // const defaultFrequency = (val: string) =>
+  //   ["30", "90", "180", "365"].includes(val);
   // Get data-table crud dialog store state and actions
   const {
     crudDialogOptions: { showDialog, rowId, crudAction },
@@ -65,8 +65,7 @@ export const useDefineTriggerForm = () => {
       reference: "",
       provider: "M365",
       resubscribeEnabled: false,
-      resubscribeFrequency: "30",
-      resubscribeFrequencyCustom: null,
+      resubscribeFrequency: "0",
       isDisabled: false,
     },
   });
@@ -108,17 +107,9 @@ export const useDefineTriggerForm = () => {
         ? getTimeFromDate(new Date(triggerData.expiryDateTime))
         : getTimeFromDate(new Date(datePlus30)),
 
-      resubscribeFrequency: triggerData?.resubscribeFrequency
-        ? defaultFrequency(triggerData?.resubscribeFrequency?.toString())
-          ? triggerData?.resubscribeFrequency?.toString()
-          : "custom"
-        : "30",
+      resubscribeFrequency:
+        triggerData?.resubscribeFrequency?.toString() ?? "0",
 
-      resubscribeFrequencyCustom: defaultFrequency(
-        triggerData?.resubscribeFrequency?.toString() ?? "",
-      )
-        ? null
-        : triggerData?.resubscribeFrequency?.toString(),
       credentialId: triggerData?.credentialId ?? "",
       resource: triggerData?.resource ?? "/chats/getAllMessages",
       provider: triggerData?.provider ?? "M365",
@@ -152,11 +143,7 @@ export const useDefineTriggerForm = () => {
       expiryDateTime: formData.expiryTime
         ? setTimeToDate(formData.expiryDateTime, formData.expiryTime)
         : formData.expiryDateTime,
-      resubscribeFrequency: Number(
-        defaultFrequency(formData.resubscribeFrequency)
-          ? formData.resubscribeFrequency
-          : formData.resubscribeFrequencyCustom,
-      ),
+      resubscribeFrequency: Number(formData.resubscribeFrequency),
     };
   };
 

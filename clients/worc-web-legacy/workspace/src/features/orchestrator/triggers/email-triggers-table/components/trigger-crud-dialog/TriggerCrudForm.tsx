@@ -67,7 +67,6 @@ export const TriggerCrudForm = () => {
   >([rowId], triggerOptimisticMutationFn, DATA_QUERY_KEY);
 
   const resubscribeFrequency = form.watch("resubscribeFrequency");
-  const resubscribeFrequencyCustom = form.watch("resubscribeFrequencyCustom");
   const provider = form.watch("provider");
   const [selectOptions, setSelectOptions] = useState<ISelectOption[]>([]);
 
@@ -92,17 +91,15 @@ export const TriggerCrudForm = () => {
   useEffect(() => {
     const baseDate = new Date();
 
-    const freq =
-      resubscribeFrequency === "custom"
-        ? Number(resubscribeFrequencyCustom)
-        : Number(resubscribeFrequency);
+    const freq = Number(resubscribeFrequency);
 
     if (!freq || isNaN(freq)) return;
 
-    baseDate.setDate(baseDate.getDate() + freq);
+    // Add minutes
+    baseDate.setMinutes(baseDate.getMinutes() + freq);
 
     form.setValue("expiryDateTime", baseDate);
-  }, [resubscribeFrequency, resubscribeFrequencyCustom]);
+  }, [resubscribeFrequency]);
 
   // Define submit handler
   const onSubmit = (formData: z.infer<typeof triggerZodSchema>) => {
@@ -209,14 +206,8 @@ export const TriggerCrudForm = () => {
       <InputField {...mailboxProps} />
       <InputField {...folderProps} />
 
-      <SelectField {...resubscribeFrequencyProps} />
+      <InputField {...resubscribeFrequencyProps} />
 
-      {resubscribeFrequency == "custom" && (
-        <InputField
-          name="resubscribeFrequencyCustom"
-          label="Custom Period (in days)"
-        />
-      )}
       <DatePickerField {...expiryDateTimeProps} disabled />
 
       {/* <div className="grid grid-cols-2 gap-2"> */}

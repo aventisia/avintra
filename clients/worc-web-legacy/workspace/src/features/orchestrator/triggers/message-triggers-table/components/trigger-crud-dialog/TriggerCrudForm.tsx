@@ -69,7 +69,6 @@ export const TriggerCrudForm = () => {
 
   // const resubscribeEnabled = form.watch("resubscribeEnabled");
   const resubscribeFrequency = form.watch("resubscribeFrequency");
-  const resubscribeFrequencyCustom = form.watch("resubscribeFrequencyCustom");
   const provider = form.watch("provider");
 
   const [selectOptions, setSelectOptions] = useState<ISelectOption[]>([]);
@@ -113,24 +112,15 @@ export const TriggerCrudForm = () => {
   useEffect(() => {
     const baseDate = new Date();
 
-    const freq =
-      resubscribeFrequency === "custom"
-        ? Number(resubscribeFrequencyCustom)
-        : Number(resubscribeFrequency);
+    const freq = Number(resubscribeFrequency);
 
     if (!freq || isNaN(freq)) return;
 
-    baseDate.setDate(baseDate.getDate() + freq);
+    // Add minutes
+    baseDate.setMinutes(baseDate.getMinutes() + freq);
 
-    form.setValue(
-      "expiryDateTime",
-      baseDate,
-      //   {
-      //   shouldValidate: true,
-      //   shouldDirty: true,
-      // }
-    );
-  }, [resubscribeFrequency, resubscribeFrequencyCustom]);
+    form.setValue("expiryDateTime", baseDate);
+  }, [resubscribeFrequency]);
 
   const referenceRequired = resourceRequiresReference(form.watch("resource"));
 
@@ -219,14 +209,7 @@ export const TriggerCrudForm = () => {
       <SelectField {...resourceProps} />
       {referenceRequired && <InputField {...referenceProps} />}
 
-      <SelectField {...resubscribeFrequencyProps} />
-
-      {resubscribeFrequency == "custom" && (
-        <InputField
-          name="resubscribeFrequencyCustom"
-          label="Custom Period (in days)"
-        />
-      )}
+      <InputField {...resubscribeFrequencyProps} />
       <DatePickerField {...expiryDateTimeProps} disabled />
 
       {/* <div className="grid grid-cols-2 gap-2">
