@@ -55,18 +55,12 @@ const resubscribeEnabledProps: SwitchFieldProps = {
   defaultChecked: false,
 };
 
-const resubscribeFrequencyProps: SelectFieldProps = {
+const resubscribeFrequencyProps: InputFieldProps = {
   name: "resubscribeFrequency",
-  label: "Subscription Period (in days)",
+  label: "Subscription Period (in minutes)",
   isRequired: true,
-  selectOptions: [
-    { label: "30", value: "30" },
-    { label: "90", value: "90" },
-    { label: "180", value: "180" },
-    { label: "365", value: "365" },
-    { label: "Custom", value: "custom" },
-  ],
-  description: "Enter frequency.",
+  description:
+    "Enter the subscription duration in minutes (0-4320). Microsoft 365 subscriptions expire after a maximum of 3 days.",
 };
 
 const subscriptionIdProps: InputFieldProps = {
