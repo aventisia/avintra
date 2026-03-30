@@ -98,6 +98,7 @@ app.UseMiddleware<TenantResolver>();
 app.MapControllers();
 
 app.MapHub<OrchestratorHub>("/orchestrator-hub");
+app.MapHub<AgentBuilderHub>("/agentbuilder/hub");
 
 await app.SeedInitialData();
 

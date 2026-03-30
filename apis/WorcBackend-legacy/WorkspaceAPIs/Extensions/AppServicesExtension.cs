@@ -118,6 +118,8 @@ public static class AppServicesExtension
         services.AddScoped<ILLMProviderService, LLMProviderService>();
         services.AddScoped<IManageTenantService, ManageTenantService>();
         services.AddScoped<IQueueWorkItemService, QueueWorkItemService>();
+        services.AddScoped<IAgentBuilderStore, AgentBuilderStore>();
+        services.AddSingleton<ConcurrentDictionary<Guid, AgentBuilderModel>>();
 
         // Cloud Connectors feature
         services.AddScoped<ICloudConnectorsVaultService, CloudConnectorsVaultService>();
