@@ -287,37 +287,51 @@ public class MessageTriggerService : IMessageTriggerService
                 return serviceResponse;
             }
 
-            // Trim leading/trailing spaces from all string properties in the DTO
+            // Normalize input (trim all string properties)
             messageTriggerDto = TrimDtoStringPropsUtil.TrimDtoStringProps(messageTriggerDto);
 
-            // Cast DTO to MessageTriggerModel to access subscription-specific fields
-            var model = (MessageTriggerModel)messageTriggerDto;
+            // Update basic fields
+            messageTrigger.Name = messageTriggerDto.Name;
+            messageTrigger.Timezone = messageTriggerDto.Timezone;
 
+            // JSON serializer configuration
+            var jsonOptions = new JsonSerializerOptions
+            {
+                PropertyNameCaseInsensitive = true,
+                DefaultIgnoreCondition = JsonIgnoreCondition.WhenWritingNull
+            };
+
+            // Deserialize existing metadata into model
+            var model = System.Text.Json.JsonSerializer.Deserialize<MessageTriggerModel>(
+                messageTrigger.Metadata.RootElement.GetRawText(),
+                jsonOptions);
+
+            // Preserve existing subscriptionId and update related fields
             if (messageTrigger.Metadata.RootElement.TryGetProperty("subscriptionId", out var subId))
             {
                 model.SubscriptionId = subId.GetString();
+                model.ResubscribeEnabled = messageTriggerDto.ResubscribeEnabled;
+                model.ExpiryDateTime = messageTriggerDto.ExpiryDateTime;
+                model.ResubscribeFrequency = messageTriggerDto.ResubscribeFrequency;
             }
 
-            // Update existing message trigger subscription
+            // Call external/internal service to manage subscription update
             var subscription = await ManagemessageTriggerSubscriptionAsync(model, "update", messageTriggerDto.Id);
 
+            // Handle subscription failure
             if (subscription.StatusCode != 200)
             {
                 serviceResponse.Message = subscription.Message;
                 return serviceResponse;
             }
-            // Serialize messageTriggerModel properties into the Metadata JSON column
-            var jsonOptions = new JsonSerializerOptions
-            {
-                PropertyNamingPolicy = JsonNamingPolicy.CamelCase,
-                WriteIndented = false
-            };
 
-            // Ensure enums are stored as strings (not numeric values)
+            // Ensure enums are serialized as strings
             jsonOptions.Converters.Add(new JsonStringEnumConverter());
 
-            // Assign the serialized Metadata to the entity
-            messageTrigger.Metadata = JsonDocument.Parse(System.Text.Json.JsonSerializer.Serialize(subscription.Data, jsonOptions));
+            // Update metadata with latest subscription data
+            messageTrigger.Metadata = JsonDocument.Parse(
+                System.Text.Json.JsonSerializer.Serialize(subscription.Data, jsonOptions)
+            );
 
             // Set audit fields to track who last modified the trigger
             messageTrigger.LastModifiedByUserId = _userId;
@@ -331,79 +345,79 @@ public class MessageTriggerService : IMessageTriggerService
                 return serviceResponse;
             }
 
-            // =========================
-            // SYNC TRIGGER FLOW VERSIONS (WITH CHANGE DETECTION)
-            // =========================
+            // TODO: ENABLE TRIGGER FLOW VERSION SYNC IF AGENT MAPPING IS USED
+            // // =========================
+            // // SYNC TRIGGER FLOW VERSIONS (WITH CHANGE DETECTION)
+            // // =========================
 
-            // Track whether any changes were made
-            var hasChanges = false;
+            // // Track whether any changes were made
+            // var hasChanges = false;
 
-            // Extract agent IDs from request
-            var requestedAgentIds = messageTriggerDto.Agents?
-                .Select(a => a.Id)
-                .ToHashSet() ?? new HashSet<Guid>();
+            // // Extract agent IDs from request
+            // var requestedAgentIds = messageTriggerDto.Agents?
+            //     .Select(a => a.Id)
+            //     .ToHashSet() ?? new HashSet<Guid>();
 
-            // Existing mappings from DB
-            var existingMappings = messageTrigger.TriggerFlowVersions ?? new List<TriggerFlowVersion>();
+            // // Existing mappings from DB
+            // var existingMappings = messageTrigger.TriggerFlowVersions ?? new List<TriggerFlowVersion>();
 
-            var existingAgentIds = existingMappings
-                .Select(tfv => tfv.FlowVersionId)
-                .ToHashSet();
-
-
-            // ----------- ADD NEW MAPPINGS -----------
-            // Agents present in request but not in DB
-            var agentIdsToAdd = requestedAgentIds.Except(existingAgentIds).ToList();
-
-            if (agentIdsToAdd.Any())
-            {
-                var agentsToAdd = await _unitOfWork.FlowVersionRepo
-                    .GetByConditionAsync(w => agentIdsToAdd.Contains(w.Id) && w.IsPublished)
-                    .ToListAsync();
-
-                if (agentsToAdd.Any())
-                {
-                    var newMappings = agentsToAdd.Select(agent => new TriggerFlowVersion
-                    {
-                        TriggerId = messageTrigger.Id,
-                        FlowVersionId = agent.Id,
-                        CreatedByUserId = _userId,
-                        LastModifiedByUserId = _userId
-                    }).ToList();
-
-                    await _unitOfWork.TriggerFlowVersionRepo.InsertAsync(newMappings);
-                    hasChanges = true;
-                }
-            }
+            // var existingAgentIds = existingMappings
+            //     .Select(tfv => tfv.FlowVersionId)
+            //     .ToHashSet();
 
 
-            // ----------- REMOVE OLD MAPPINGS -----------
-            // Agents present in DB but not in request
-            var agentIdsToDelete = existingAgentIds.Except(requestedAgentIds).ToList();
+            // // ----------- ADD NEW MAPPINGS -----------
+            // // Agents present in request but not in DB
+            // var agentIdsToAdd = requestedAgentIds.Except(existingAgentIds).ToList();
 
-            if (agentIdsToDelete.Any())
-            {
-                var mappingsToDelete = existingMappings
-                    .Where(w => agentIdsToDelete.Contains(w.FlowVersionId))
-                    .ToList();
+            // if (agentIdsToAdd.Any())
+            // {
+            //     var agentsToAdd = await _unitOfWork.FlowVersionRepo
+            //         .GetByConditionAsync(w => agentIdsToAdd.Contains(w.Id) && w.IsPublished)
+            //         .ToListAsync();
 
-                if (mappingsToDelete.Any())
-                {
-                    _unitOfWork.TriggerFlowVersionRepo.Delete(mappingsToDelete);
-                    hasChanges = true;
-                }
-            }
+            //     if (agentsToAdd.Any())
+            //     {
+            //         var newMappings = agentsToAdd.Select(agent => new TriggerFlowVersion
+            //         {
+            //             TriggerId = messageTrigger.Id,
+            //             FlowVersionId = agent.Id,
+            //             CreatedByUserId = _userId,
+            //             LastModifiedByUserId = _userId
+            //         }).ToList();
+
+            //         await _unitOfWork.TriggerFlowVersionRepo.InsertAsync(newMappings);
+            //         hasChanges = true;
+            //     }
+            // }
 
 
-            // ----------- SAVE ONLY IF CHANGED -----------
-            if (hasChanges)
-            {
-                if (!await _unitOfWork.SaveAsync())
-                {
-                    _logger.LogError("Failed to sync TriggerFlowVersions for message trigger ID {messageTriggerId}.", messageTriggerDto.Id);
-                    return serviceResponse;
-                }
-            }
+            // // ----------- REMOVE OLD MAPPINGS -----------
+            // // Agents present in DB but not in request
+            // var agentIdsToDelete = existingAgentIds.Except(requestedAgentIds).ToList();
+
+            // if (agentIdsToDelete.Any())
+            // {
+            //     var mappingsToDelete = existingMappings
+            //         .Where(w => agentIdsToDelete.Contains(w.FlowVersionId))
+            //         .ToList();
+
+            //     if (mappingsToDelete.Any())
+            //     {
+            //         _unitOfWork.TriggerFlowVersionRepo.Delete(mappingsToDelete);
+            //         hasChanges = true;
+            //     }
+            // }
+
+            // // ----------- SAVE ONLY IF CHANGED -----------
+            // if (hasChanges)
+            // {
+            //     if (!await _unitOfWork.SaveAsync())
+            //     {
+            //         _logger.LogError("Failed to sync TriggerFlowVersions for message trigger ID {messageTriggerId}.", messageTriggerDto.Id);
+            //         return serviceResponse;
+            //     }
+            // }
 
             messageTrigger = await _unitOfWork.TriggerRepo
                 .GetByConditionAsync(w => w.Id == messageTrigger.Id)
