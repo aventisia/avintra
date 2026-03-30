@@ -11,11 +11,6 @@ public class WebhookTriggerModel
     public string? ApiKeyHash { get; set; }
 
     /// <summary>
-    /// Gets or sets the preset expiry window in days (30, 60, 90, etc.). Set to 0 when a custom date is used.
-    /// </summary>
-    public int ApiKeyExpiryDays { get; set; }
-
-    /// <summary>
     /// Gets or sets the exact date and time the API key expires.
     /// </summary>
     public DateTimeOffset ApiKeyExpiry { get; set; }

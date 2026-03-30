@@ -16,12 +16,6 @@ public class WebhookTriggerDto : WebhookTriggerModel
     public required string Name { get; set; }
 
     /// <summary>
-    /// Gets or sets the timezone for the trigger (defaults to UTC).
-    /// </summary>
-    [Required]
-    public required string Timezone { get; set; }
-
-    /// <summary>
     /// Gets or sets the agent associated with the email trigger, including its identifier, name, and version.
     /// </summary>
     public AgentInfoDto? Agent { get; set; }

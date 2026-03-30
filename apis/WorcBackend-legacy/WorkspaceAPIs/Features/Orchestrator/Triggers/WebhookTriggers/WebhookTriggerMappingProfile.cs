@@ -20,7 +20,6 @@ public class WebhookTriggerMappingProfile : IRegister
 
                 if (model != null)
                 {
-                    dest.ApiKeyExpiryDays = model.ApiKeyExpiryDays;
                     dest.ApiKeyExpiry = model.ApiKeyExpiry;
                     dest.ExpectedPayloadSchema = model.ExpectedPayloadSchema;
                     dest.CallbackUrl = model.CallbackUrl;
