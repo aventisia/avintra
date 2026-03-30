@@ -5,6 +5,7 @@ import { stripLeadingSlash } from "@/utils/strip-leading-slash";
 
 import { applyAgentTemplate } from "../apis/wroc-templates-apis";
 import { UseTemplateDTO } from "../dtos/use-template-dto";
+import { FlowTypesEnum } from "@/react-toolkit/enums/flow-types-enum";
 
 /**
  * useCloneTemplateMutation
@@ -36,7 +37,7 @@ export const useCloneTemplateMutation = () => {
       if (data?.data?.type == "AIProject") {
         window.location.href = `${import.meta.env.VITE_AISTUDIO_PATH}${stripLeadingSlash(data.data.accessPath)}`;
       }
-      if (data?.data?.type == "Agent" || data?.data?.type == "Block") {
+      if (data?.data?.type == FlowTypesEnum.Agent || data?.data?.type == FlowTypesEnum.ChatAgent || data?.data?.type == FlowTypesEnum.Block) {
         window.location.href = `${import.meta.env.VITE_AGENTBUILDER_PATH}${stripLeadingSlash(data.data.accessPath)}`;
       }
     },

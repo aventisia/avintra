@@ -54,7 +54,7 @@ const GenerateButton = ({
       onClick={() => {
         // Trigger mutation with serialized prompt data extracted from nodes
         mutate({
-          refType: FlowTypesEnum.Agent, // Block is not supported by credits usages api
+          refType: FlowTypesEnum.Agent, // Agent, ChatAgent, Block all comes under Agent umbrella
           refId: currentFlow.versionId,
           refName: currentFlow.name,
           payload: JSON.stringify(

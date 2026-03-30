@@ -6,6 +6,7 @@
  */
 export enum ProjectTemplateTypesEnum {
   Agent = "Agent",
+  ChatAgent = "ChatAgent",
   Block = "Block",
   AIProject = "AIProject",
 }

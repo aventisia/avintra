@@ -1,3 +1,4 @@
+import { useUserSessionStore } from "@/react-toolkit/stores/user-session-store";
 import { DotSeparator, LoadingSpinner, Separator } from "@aventisia/ui";
 import { Badge } from "@aventisia/ui/badge";
 import { Button } from "@aventisia/ui/buttons";
@@ -5,13 +6,9 @@ import { useDocumentTitle } from "@aventisia/ui/hooks";
 import { dateFormatter } from "@aventisia/ui/utils";
 import { Clock, Download, Tag, User2 } from "lucide-react";
 import { useShallow } from "zustand/react/shallow";
-
-import { useUserSessionStore } from "@/react-toolkit/stores/user-session-store";
-
-import { ProjectTemplateTypesEnum } from "../../constants/template-types-enum";
 import { UseTemplateDTO } from "../../dtos/use-template-dto";
 import { useCloneTemplateMutation } from "../../hooks/useCloneTemplateMutation";
-
+import { transformTemplateType } from "../../utils/transform-template-type";
 import { DeleteTemplateButton } from "./DeleteTemplateButton";
 
 export function TemplateHeader({ template }: { template: UseTemplateDTO }) {
@@ -94,10 +91,7 @@ export function TemplateHeader({ template }: { template: UseTemplateDTO }) {
             <div className="flex flex-row flex-wrap items-center gap-2">
               {/* Type Badge */}
               <Badge className="flex items-center gap-1 capitalize">
-                {template?.type?.replace(
-                  ProjectTemplateTypesEnum.AIProject,
-                  "AI Model",
-                )}
+                {transformTemplateType(template?.type)}
               </Badge>
               <Badge
                 variant="outline"

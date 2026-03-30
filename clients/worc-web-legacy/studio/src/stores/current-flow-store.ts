@@ -80,7 +80,7 @@ export const useCurrentFlowStore = create<State & Actions>((set) => ({
     isLocked: false,
     isDraft: false,
     isArchived: false,
-    type: FlowTypesEnum.Agent,
+    type: FlowTypesEnum.Agent, // Default to Agent, but it will be set correctly when a flow is loaded
     description: "",
   },
   isFlowLoading: false,

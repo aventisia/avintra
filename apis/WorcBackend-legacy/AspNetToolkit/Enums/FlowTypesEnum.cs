@@ -14,6 +14,8 @@ public enum FlowTypesEnum
     /// </summary>
     Agent,
 
+    ChatAgent,
+
     /// <summary>
     /// Represents a block flow type.
     /// </summary>
