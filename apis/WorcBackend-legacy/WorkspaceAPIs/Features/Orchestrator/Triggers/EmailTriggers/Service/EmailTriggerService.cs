@@ -291,6 +291,26 @@ public class EmailTriggerService : IEmailTriggerService
             // Normalize input (trim all string properties)
             emailTriggerDto = TrimDtoStringPropsUtil.TrimDtoStringProps(emailTriggerDto);
 
+            // Validate ExpiryDateTime cannot be reduced
+            if (emailTrigger.Metadata.RootElement.TryGetProperty("expiryDateTime", out var existingExpiryElement))
+            {
+                var existingExpiry = existingExpiryElement.GetDateTime();
+
+                if (emailTriggerDto.ExpiryDateTime < existingExpiry)
+                {
+                    _logger.LogInformation(
+                        "Update failed. New expiry {NewExpiry} is less than existing expiry {ExistingExpiry} for trigger ID {TriggerId}.",
+                        emailTriggerDto.ExpiryDateTime,
+                        existingExpiry,
+                        emailTriggerDto.Id
+                    );
+
+                    serviceResponse.StatusCode = 400;
+                    serviceResponse.Message = "Expiry date cannot be earlier than the existing expiry date.";
+                    return serviceResponse;
+                }
+            }
+
             // Update basic fields
             emailTrigger.Name = emailTriggerDto.Name;
             emailTrigger.Timezone = emailTriggerDto.Timezone;
