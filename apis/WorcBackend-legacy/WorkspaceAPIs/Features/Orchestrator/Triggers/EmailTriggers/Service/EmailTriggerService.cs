@@ -288,39 +288,71 @@ public class EmailTriggerService : IEmailTriggerService
                 return serviceResponse;
             }
 
-            // Trim leading/trailing spaces from all string properties in the DTO
+            // Normalize input (trim all string properties)
             emailTriggerDto = TrimDtoStringPropsUtil.TrimDtoStringProps(emailTriggerDto);
 
-            // Cast DTO to EmailTriggerModel to access subscription-specific fields
-            var model = (EmailTriggerModel)emailTriggerDto;
+            // Validate ExpiryDateTime cannot be reduced
+            if (emailTrigger.Metadata.RootElement.TryGetProperty("expiryDateTime", out var existingExpiryElement))
+            {
+                var existingExpiry = existingExpiryElement.GetDateTime();
 
+                if (emailTriggerDto.ExpiryDateTime < existingExpiry)
+                {
+                    _logger.LogInformation(
+                        "Update failed. New expiry {NewExpiry} is less than existing expiry {ExistingExpiry} for trigger ID {TriggerId}.",
+                        emailTriggerDto.ExpiryDateTime,
+                        existingExpiry,
+                        emailTriggerDto.Id
+                    );
+
+                    serviceResponse.StatusCode = 400;
+                    serviceResponse.Message = "Expiry date cannot be earlier than the existing expiry date.";
+                    return serviceResponse;
+                }
+            }
+
+            // Update basic fields
+            emailTrigger.Name = emailTriggerDto.Name;
+            emailTrigger.Timezone = emailTriggerDto.Timezone;
+
+            // JSON serializer configuration
+            var jsonOptions = new JsonSerializerOptions
+            {
+                PropertyNameCaseInsensitive = true,
+                DefaultIgnoreCondition = JsonIgnoreCondition.WhenWritingNull
+            };
+
+            // Deserialize existing metadata into model
+            var model = System.Text.Json.JsonSerializer.Deserialize<EmailTriggerModel>(
+                emailTrigger.Metadata.RootElement.GetRawText(),
+                jsonOptions);
+
+            // Preserve existing subscriptionId and update related fields
             if (emailTrigger.Metadata.RootElement.TryGetProperty("subscriptionId", out var subId))
             {
                 model.SubscriptionId = subId.GetString();
+                model.ResubscribeEnabled = emailTriggerDto.ResubscribeEnabled;
+                model.ExpiryDateTime = emailTriggerDto.ExpiryDateTime;
+                model.ResubscribeFrequency = emailTriggerDto.ResubscribeFrequency;
             }
 
-            // Create or update the email subscription and update the DTO with the subscription ID
+            // Call external/internal service to manage subscription update
             var subscription = await ManageEmailTriggerSubscriptionAsync(model, "update", emailTriggerDto.Id);
 
-            // update failed
+            // Handle subscription failure
             if (subscription.StatusCode != 200)
             {
                 serviceResponse.Message = subscription.Message;
                 return serviceResponse;
             }
 
-            // Serialize EmailTriggerModel properties into the Metadata JSON column
-            var jsonOptions = new JsonSerializerOptions
-            {
-                PropertyNamingPolicy = JsonNamingPolicy.CamelCase,
-                WriteIndented = false
-            };
-
-            // Ensure enums are stored as strings (not numeric values)
+            // Ensure enums are serialized as strings
             jsonOptions.Converters.Add(new JsonStringEnumConverter());
 
-            // Assign the serialized Metadata to the entity
-            emailTrigger.Metadata = JsonDocument.Parse(System.Text.Json.JsonSerializer.Serialize(subscription.Data, jsonOptions));
+            // Update metadata with latest subscription data
+            emailTrigger.Metadata = JsonDocument.Parse(
+                System.Text.Json.JsonSerializer.Serialize(subscription.Data, jsonOptions)
+            );
 
             // Set audit fields to track who last modified the trigger
             emailTrigger.LastModifiedByUserId = _userId;
@@ -334,79 +366,80 @@ public class EmailTriggerService : IEmailTriggerService
                 return serviceResponse;
             }
 
-            // =========================
-            // SYNC TRIGGER FLOW VERSIONS (WITH CHANGE DETECTION)
-            // =========================
+            // TODO: ENABLE TRIGGER FLOW VERSION SYNC IF AGENT MAPPING IS USED
+            // // =========================
+            // // SYNC TRIGGER FLOW VERSIONS (WITH CHANGE DETECTION)
+            // // =========================
 
-            // Track whether any changes were made
-            var hasChanges = false;
+            // // Track whether any changes were made
+            // var hasChanges = false;
 
-            // Extract agent IDs from request
-            var requestedAgentIds = emailTriggerDto.Agents?
-                .Select(a => a.Id)
-                .ToHashSet() ?? new HashSet<Guid>();
+            // // Extract agent IDs from request
+            // var requestedAgentIds = emailTriggerDto.Agents?
+            //     .Select(a => a.Id)
+            //     .ToHashSet() ?? new HashSet<Guid>();
 
-            // Existing mappings from DB
-            var existingMappings = emailTrigger.TriggerFlowVersions ?? new List<TriggerFlowVersion>();
+            // // Existing mappings from DB
+            // var existingMappings = emailTrigger.TriggerFlowVersions ?? new List<TriggerFlowVersion>();
 
-            var existingAgentIds = existingMappings
-                .Select(tfv => tfv.FlowVersionId)
-                .ToHashSet();
-
-
-            // ----------- ADD NEW MAPPINGS -----------
-            // Agents present in request but not in DB
-            var agentIdsToAdd = requestedAgentIds.Except(existingAgentIds).ToList();
-
-            if (agentIdsToAdd.Any())
-            {
-                var agentsToAdd = await _unitOfWork.FlowVersionRepo
-                    .GetByConditionAsync(w => agentIdsToAdd.Contains(w.Id) && w.IsPublished)
-                    .ToListAsync();
-
-                if (agentsToAdd.Any())
-                {
-                    var newMappings = agentsToAdd.Select(agent => new TriggerFlowVersion
-                    {
-                        TriggerId = emailTrigger.Id,
-                        FlowVersionId = agent.Id,
-                        CreatedByUserId = _userId,
-                        LastModifiedByUserId = _userId
-                    }).ToList();
-
-                    await _unitOfWork.TriggerFlowVersionRepo.InsertAsync(newMappings);
-                    hasChanges = true;
-                }
-            }
+            // var existingAgentIds = existingMappings
+            //     .Select(tfv => tfv.FlowVersionId)
+            //     .ToHashSet();
 
 
-            // ----------- REMOVE OLD MAPPINGS -----------
-            // Agents present in DB but not in request
-            var agentIdsToDelete = existingAgentIds.Except(requestedAgentIds).ToList();
+            // // ----------- ADD NEW MAPPINGS -----------
+            // // Agents present in request but not in DB
+            // var agentIdsToAdd = requestedAgentIds.Except(existingAgentIds).ToList();
 
-            if (agentIdsToDelete.Any())
-            {
-                var mappingsToDelete = existingMappings
-                    .Where(w => agentIdsToDelete.Contains(w.FlowVersionId))
-                    .ToList();
+            // if (agentIdsToAdd.Any())
+            // {
+            //     var agentsToAdd = await _unitOfWork.FlowVersionRepo
+            //         .GetByConditionAsync(w => agentIdsToAdd.Contains(w.Id) && w.IsPublished)
+            //         .ToListAsync();
 
-                if (mappingsToDelete.Any())
-                {
-                    _unitOfWork.TriggerFlowVersionRepo.Delete(mappingsToDelete);
-                    hasChanges = true;
-                }
-            }
+            //     if (agentsToAdd.Any())
+            //     {
+            //         var newMappings = agentsToAdd.Select(agent => new TriggerFlowVersion
+            //         {
+            //             TriggerId = emailTrigger.Id,
+            //             FlowVersionId = agent.Id,
+            //             CreatedByUserId = _userId,
+            //             LastModifiedByUserId = _userId
+            //         }).ToList();
+
+            //         await _unitOfWork.TriggerFlowVersionRepo.InsertAsync(newMappings);
+            //         hasChanges = true;
+            //     }
+            // }
 
 
-            // ----------- SAVE ONLY IF CHANGED -----------
-            if (hasChanges)
-            {
-                if (!await _unitOfWork.SaveAsync())
-                {
-                    _logger.LogError("Failed to sync TriggerFlowVersions for email trigger ID {emailTriggerId}.", emailTrigger.Id);
-                    return serviceResponse;
-                }
-            }
+            // // ----------- REMOVE OLD MAPPINGS -----------
+            // // Agents present in DB but not in request
+            // var agentIdsToDelete = existingAgentIds.Except(requestedAgentIds).ToList();
+
+            // if (agentIdsToDelete.Any())
+            // {
+            //     var mappingsToDelete = existingMappings
+            //         .Where(w => agentIdsToDelete.Contains(w.FlowVersionId))
+            //         .ToList();
+
+            //     if (mappingsToDelete.Any())
+            //     {
+            //         _unitOfWork.TriggerFlowVersionRepo.Delete(mappingsToDelete);
+            //         hasChanges = true;
+            //     }
+            // }
+
+
+            // // ----------- SAVE ONLY IF CHANGED -----------
+            // if (hasChanges)
+            // {
+            //     if (!await _unitOfWork.SaveAsync())
+            //     {
+            //         _logger.LogError("Failed to sync TriggerFlowVersions for email trigger ID {emailTriggerId}.", emailTrigger.Id);
+            //         return serviceResponse;
+            //     }
+            // }
 
             emailTrigger = await _unitOfWork.TriggerRepo
                 .GetByConditionAsync(w => w.Id == emailTrigger.Id)

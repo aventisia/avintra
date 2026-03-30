@@ -41,6 +41,7 @@ import { ReactFlowDialogWrapper } from "./ReactFlowDialogWrapper";
 import { TestChatAgent } from "./TestChatAgent";
 import { ReactFlowContextMenu } from "./context-menu";
 import { ViewControls } from "./view-controls";
+import { WorcAssistantUI } from "@/features/assistant-ui";
 
 /**
  * A custom extension of the ReactFlow component.
@@ -242,7 +243,7 @@ export const ReactFlowExt = () => {
         <>
           <ResizableHandle withHandle className="bg-slate-300" />
           <ResizablePanel defaultSize="35%">
-            Placeholder for Chat UI
+            <WorcAssistantUI />
           </ResizablePanel>
         </>
       )}
