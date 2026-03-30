@@ -10,6 +10,8 @@ public enum PublishTypesEnum
     /// </summary>
     Agent,
 
+    ChatAgent,
+
     /// <summary>
     /// A single functional block within a flow.
     /// </summary>

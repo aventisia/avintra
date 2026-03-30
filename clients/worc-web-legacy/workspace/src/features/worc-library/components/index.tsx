@@ -25,6 +25,7 @@ const WorcLibrary = () => {
     "All templates",
     "AI Model",
     "Agent",
+    "Chat Agent",
     // "Inferencing",
     // "Conversation",
     // "Generative",

@@ -15,7 +15,7 @@ public class JobTableMappingProfile : IRegister
             .Map(dest => dest.ReactFlowObject, src => src.FlowVersion != null ? src.FlowVersion.ReactFlowObject : null)
             .Map(dest => dest.FlowVariablesObject, src => src.FlowVersion != null ? src.FlowVersion.FlowVariablesObject : null)
             .Map(dest => dest.VersionNumber, src => src.FlowVersion != null ? src.FlowVersion.VersionNumber : 0)
-            .Map(dest => dest.Type, src => src.FlowVersion != null ? src.FlowVersion.Flow.Type : FlowTypesEnum.Agent);
+            .Map(dest => dest.Type, src => src.FlowVersion != null && src.FlowVersion.Flow != null ? src.FlowVersion.Flow.Type : FlowTypesEnum.Agent); // Keep actual flow type when available; fallback for safety.
 
         // Mapping for inserting or updating a job record.
         config.NewConfig<JobTableDto, Job>()

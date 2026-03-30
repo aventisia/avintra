@@ -1,7 +1,9 @@
 import { getFlowToLoad } from "@/features/react-flow/apis/react-flow-apis";
 import { deepParse } from "@/features/react-flow/utils/deepParse";
+import { FlowTypesEnum } from "@/react-toolkit/enums/flow-types-enum";
 import { useCurrentFlowStore } from "@/stores/current-flow-store";
 import { useReactFlowExtStore } from "@/stores/react-flow-ext-store";
+
 import { toast } from "@aventisia/ui/sonner";
 import { useMutation } from "@tanstack/react-query";
 import { Edge, Node, Viewport } from "@xyflow/react";
@@ -17,15 +19,21 @@ export const useFetchFlowToExecute = () => {
   );
 
   // Get ReactFlowExt store state & actions
-  const { setNodes, setEdges, setFlowVariablesObject, setIsPublished } =
-    useReactFlowExtStore(
-      useShallow((state) => ({
-        setNodes: state.setNodes,
-        setEdges: state.setEdges,
-        setFlowVariablesObject: state.setFlowVariablesObject,
-        setIsPublished: state.setIsPublished,
-      })),
-    );
+  const {
+    setNodes,
+    setEdges,
+    setFlowVariablesObject,
+    setIsPublished,
+    setFlowType,
+  } = useReactFlowExtStore(
+    useShallow((state) => ({
+      setNodes: state.setNodes,
+      setEdges: state.setEdges,
+      setFlowVariablesObject: state.setFlowVariablesObject,
+      setIsPublished: state.setIsPublished,
+      setFlowType: state.setFlowType,
+    })),
+  );
   const { mutate: getFlow } = useMutation({
     mutationFn: getFlowToLoad,
     onMutate: () => {
@@ -48,6 +56,7 @@ export const useFetchFlowToExecute = () => {
         accessType: data.data.accessType,
       });
       setIsPublished(data?.data?.isPublished || false);
+      setFlowType(data?.data?.type || FlowTypesEnum.Agent);
 
       // Parse react flow object
       const flow = deepParse(data.data.reactFlowObject) as unknown as {

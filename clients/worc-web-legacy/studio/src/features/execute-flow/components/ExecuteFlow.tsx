@@ -1,6 +1,7 @@
 import { IS_TAURI } from "@/constants";
 import { getAvailableCredits } from "@/features/available-credits/available-credits-apis";
 import { getMySession } from "@/react-toolkit/apis/accounts-me-apis";
+import { FlowTypesEnum } from "@/react-toolkit/enums/flow-types-enum";
 import { useUserSessionStore } from "@/react-toolkit/stores/user-session-store";
 import { useCurrentFlowStore } from "@/stores/current-flow-store";
 import { useReactFlowExtStore } from "@/stores/react-flow-ext-store";
@@ -19,6 +20,7 @@ import { CURRENT_VERSION_ID_KEY, clearNodeExecutionLog } from "..";
 import useWebSocket from "../hooks/useWebSocket";
 import { useJobDataStore } from "../stores/job-data-store";
 import { extractUniqueConfigKeys } from "../utils/config-key-utils";
+
 // import { hasWindowsOnlySupportedNode } from "../utils/has-desktop-node";
 
 const ExecuteFlow = () => {
@@ -30,10 +32,11 @@ const ExecuteFlow = () => {
   );
 
   // Get current flow and execution state from current flow store
-  const { currentFlow, executionState, setExecutionState } =
+  const { currentFlow, isFlowLoading, executionState, setExecutionState } =
     useCurrentFlowStore(
       useShallow((state) => ({
         currentFlow: state.currentFlow,
+        isFlowLoading: state.isFlowLoading,
         executionState: state.executionState,
         setExecutionState: state.setExecutionState,
       })),
@@ -46,10 +49,11 @@ const ExecuteFlow = () => {
   );
 
   // Get nodes and edges from ReactFlowExt store
-  const { nodes, edges } = useReactFlowExtStore(
+  const { nodes, edges, flowType } = useReactFlowExtStore(
     useShallow((state) => ({
       nodes: state.nodes,
       edges: state.edges,
+      flowType: state.flowType,
     })),
   );
 
@@ -159,6 +163,10 @@ const ExecuteFlow = () => {
       setExecutionState("stopped");
     }
   };
+
+  if (isFlowLoading || flowType === FlowTypesEnum.ChatAgent) {
+    return null;
+  }
 
   return (
     <div className="flex items-center gap-2">

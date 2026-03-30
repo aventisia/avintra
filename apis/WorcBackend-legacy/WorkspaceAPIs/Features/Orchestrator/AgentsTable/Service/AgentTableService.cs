@@ -40,7 +40,7 @@ public class AgentTableService : IAgentTableService
             var publishedFlowVersions = await _unitOfWork.FlowVersionRepo
                 .GetByConditionAsync(w =>
                     (flowId == null || w.FlowId == flowId) &&
-                    w.Flow.Type == FlowTypesEnum.Agent &&
+                    w.Flow.Type != FlowTypesEnum.Block &&
                     w.IsPublished &&
                     !w.IsArchived
                 )
@@ -133,7 +133,7 @@ public class AgentTableService : IAgentTableService
             var archivedFlowVersions = await _unitOfWork.FlowVersionRepo
                 .GetByConditionAsync(w =>
                     (flowId == null || w.FlowId == flowId) &&
-                    w.Flow.Type == FlowTypesEnum.Agent &&
+                    w.Flow.Type != FlowTypesEnum.Block &&
                     w.IsArchived
                 )
                 .Include(i => i.Flow)
@@ -174,7 +174,7 @@ public class AgentTableService : IAgentTableService
             var draftFlowVersions = await _unitOfWork.FlowVersionRepo
                 .GetByConditionAsync(w =>
                     (flowId == null || w.FlowId == flowId) &&
-                    w.Flow.Type == FlowTypesEnum.Agent &&
+                    w.Flow.Type != FlowTypesEnum.Block &&
                     !w.IsPublished &&
                     !w.IsArchived
                 )
@@ -484,7 +484,7 @@ public class AgentTableService : IAgentTableService
                     w.IsPublished &&
                     !w.IsArchived &&
                     !w.IsDisabled &&
-                    w.Flow.Type == FlowTypesEnum.Agent &&
+                    w.Flow.Type != FlowTypesEnum.Block &&
                     w.Flow.Name.ToLower().Contains(searchKey.ToLower())
                 )
                 .Include(i => i.Flow)
@@ -521,7 +521,7 @@ public class AgentTableService : IAgentTableService
         {
             // Retrieve the flow versions to be disabled
             var flowVersionsToDisable = await _unitOfWork.FlowVersionRepo
-                .GetByConditionAsync(w => w.Flow.Type == FlowTypesEnum.Agent && flowVersionIds.Contains(w.Id))
+                .GetByConditionAsync(w => w.Flow.Type != FlowTypesEnum.Block && flowVersionIds.Contains(w.Id))
                 .ToListAsync();
 
             if (!flowVersionsToDisable.Any())
@@ -572,7 +572,7 @@ public class AgentTableService : IAgentTableService
             // Try to retrieve the count of published flow versions from the repository.
             var totalPublishedFlowVersions = await _unitOfWork.FlowVersionRepo
                 .GetByConditionAsync(w =>
-                    w.Flow.Type == FlowTypesEnum.Agent &&
+                    w.Flow.Type != FlowTypesEnum.Block &&
                     w.IsPublished &&
                     !w.IsArchived
                 )
