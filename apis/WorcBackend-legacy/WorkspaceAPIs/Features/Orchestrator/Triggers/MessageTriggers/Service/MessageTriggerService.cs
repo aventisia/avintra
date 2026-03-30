@@ -290,6 +290,26 @@ public class MessageTriggerService : IMessageTriggerService
             // Normalize input (trim all string properties)
             messageTriggerDto = TrimDtoStringPropsUtil.TrimDtoStringProps(messageTriggerDto);
 
+            // Validate ExpiryDateTime cannot be reduced
+            if (messageTrigger.Metadata.RootElement.TryGetProperty("expiryDateTime", out var existingExpiryElement))
+            {
+                var existingExpiry = existingExpiryElement.GetDateTime();
+
+                if (messageTriggerDto.ExpiryDateTime < existingExpiry)
+                {
+                    _logger.LogInformation(
+                        "Update failed. New expiry {NewExpiry} is less than existing expiry {ExistingExpiry} for trigger ID {TriggerId}.",
+                        messageTriggerDto.ExpiryDateTime,
+                        existingExpiry,
+                        messageTriggerDto.Id
+                    );
+
+                    serviceResponse.StatusCode = 400;
+                    serviceResponse.Message = "Expiry date cannot be earlier than the existing expiry date.";
+                    return serviceResponse;
+                }
+            }
+
             // Update basic fields
             messageTrigger.Name = messageTriggerDto.Name;
             messageTrigger.Timezone = messageTriggerDto.Timezone;
