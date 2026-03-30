@@ -7,8 +7,8 @@ public class GraphWebhookAuthorizeAttribute : Attribute, IAsyncAuthorizationFilt
     {
         var httpContext = context.HttpContext;
 
-        // Handle Microsoft Graph validation request (GET with validationToken)
-        if (httpContext.Request.Method == HttpMethods.Get && httpContext.Request.Query.ContainsKey("validationToken"))
+        // Handle Microsoft Graph validation request (validationToken in query string)
+        if (httpContext.Request.Query.ContainsKey("validationToken"))
         {
             var token = httpContext.Request.Query["validationToken"].ToString();
 
