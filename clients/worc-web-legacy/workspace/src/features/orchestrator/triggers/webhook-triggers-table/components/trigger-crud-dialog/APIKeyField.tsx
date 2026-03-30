@@ -108,7 +108,7 @@ export default function APIKeyField({
       {/* MESSAGE */}
       {generated && (
         <p className="text-xs text-muted-foreground">
-          This API key is displayed only once. Copy and store it securely — it
+          This API key is displayed only once. Copy and store it securely, it
           cannot be retrieved later.
         </p>
       )}
