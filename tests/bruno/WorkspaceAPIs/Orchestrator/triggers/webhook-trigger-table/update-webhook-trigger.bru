@@ -14,10 +14,7 @@ body:json {
   {
     "id": "{{WEBHOOK_TRIGGER_ID}}",
     "name": "Order Webhook",
-    "timezone": "UTC",
     "apiKeyHash": "DUMMY",
-    "apiKeyExpiryDays": 30,
-    "apiKeyExpiry": "2026-04-25T10:30:00Z",
     "expectedPayloadSchema": "{ \"type\": \"object\", \"properties\": { \"orderId\": { \"type\": \"string\" } } }",
     "callbackUrl": "https://example.com/webhook/callback",
     "apiKey": "plain-text-api-key-only-on-create",
