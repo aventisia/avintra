@@ -20,7 +20,6 @@ public class WebhookTriggerMappingProfile : IRegister
 
                 if (model != null)
                 {
-                    dest.ApiKeyExpiry = model.ApiKeyExpiry;
                     dest.ExpectedPayloadSchema = model.ExpectedPayloadSchema;
                     dest.CallbackUrl = model.CallbackUrl;
                     dest.ApiKey = !string.IsNullOrEmpty(model.ApiKey) && model.ApiKey.Length > 4 ? model.ApiKey[..4] + "*******" : model.ApiKey; ;
@@ -49,6 +48,7 @@ public class WebhookTriggerMappingProfile : IRegister
 
         // Mapping: WebhookTriggerDto → Trigger entity (create/update)
         config.NewConfig<WebhookTriggerDto, Trigger>()
+            .Map(dest => dest.Timezone, string.Empty)
             .Ignore(dest => dest.Id)
             .Ignore(dest => dest.CreatedOn)
             .Ignore(dest => dest.LastModifiedOn)

@@ -11,11 +11,6 @@ public class WebhookTriggerModel
     public string? ApiKeyHash { get; set; }
 
     /// <summary>
-    /// Gets or sets the exact date and time the API key expires.
-    /// </summary>
-    public DateTimeOffset ApiKeyExpiry { get; set; }
-
-    /// <summary>
     /// Gets or sets an optional JSON Schema string that incoming payloads are validated against.
     /// </summary>
     public string? ExpectedPayloadSchema { get; set; }
