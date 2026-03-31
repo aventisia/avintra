@@ -136,7 +136,6 @@ public class WebhookTriggerService : IWebhookTriggerService
             var model = new WebhookTriggerModel
             {
                 ApiKeyHash = apiKeyHash,
-                ApiKeyExpiry = dto.ApiKeyExpiry,
                 ExpectedPayloadSchema = dto.ExpectedPayloadSchema,
                 CallbackUrl = dto.CallbackUrl,
                 ApiKey = dto.ApiKey
@@ -144,6 +143,7 @@ public class WebhookTriggerService : IWebhookTriggerService
 
             var newTrigger = dto.Adapt<Trigger>();
             newTrigger.TriggerType = TriggerTypesEnum.WebhookTrigger;
+            newTrigger.Timezone = string.Empty;
             newTrigger.Metadata = SerializeMetadata(model);
             newTrigger.CreatedByUserId = _userId;
             newTrigger.LastModifiedByUserId = _userId;
@@ -262,7 +262,6 @@ public class WebhookTriggerService : IWebhookTriggerService
             var updatedModel = new WebhookTriggerModel
             {
                 ApiKeyHash = existingModel?.ApiKeyHash,           // preserve existing hash
-                ApiKeyExpiry = dto.ApiKeyExpiry,
                 ExpectedPayloadSchema = dto.ExpectedPayloadSchema,
                 CallbackUrl = dto.CallbackUrl
             };

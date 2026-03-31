@@ -102,14 +102,7 @@ public class WebhookController : ControllerBase
             return Unauthorized(new { message = "Invalid API key." });
         }
 
-        // ── 7. Validate API key expiry ───────────────────────────────────────
-        if (model.ApiKeyExpiry < DateTimeOffset.UtcNow)
-        {
-            _logger.LogWarning("Webhook fire rejected: API key expired for trigger {TriggerId}.", triggerId);
-            return Unauthorized(new { message = "API key has expired." });
-        }
-
-        // ── 8. Optional JSON Schema validation ──────────────────────────────
+        // ── 7. Optional JSON Schema validation ──────────────────────────────
         if (!string.IsNullOrWhiteSpace(model.ExpectedPayloadSchema) && request?.Payload != null)
         {
             try
@@ -129,7 +122,7 @@ public class WebhookController : ControllerBase
             }
         }
 
-        // ── 9. Resolve agent (FlowVersion) ──────────────────────────────────
+        // ── 8. Resolve agent (FlowVersion) ──────────────────────────────────
         var flowVersionId = trigger.TriggerFlowVersions?.FirstOrDefault()?.FlowVersionId;
         if (flowVersionId == null || flowVersionId == Guid.Empty)
         {
@@ -137,7 +130,7 @@ public class WebhookController : ControllerBase
             return BadRequest(new { message = "No agent is linked to this webhook trigger." });
         }
 
-        // ── 10. Create job ───────────────────────────────────────────────────
+        // ── 9. Create job ───────────────────────────────────────────────────
         var job = new Job
         {
             Id = Guid.NewGuid(),
@@ -154,7 +147,7 @@ public class WebhookController : ControllerBase
         _dbContext.Jobs.Add(job);
         await _dbContext.SaveChangesAsync();
 
-        // ── 11. Dispatch job execution ───────────────────────────────────────
+        // ── 10. Dispatch job execution ───────────────────────────────────────
         _ = Task.Run(async () =>
         {
             try
