@@ -149,12 +149,15 @@ class GeminiProvider(BaseLLMProvider):
                 # Open streaming connection to Gemini
                 async with client.stream(
                     "POST",
-                    f"{self.api_url}/models/{llm_request.model}:streamGenerateContent",
+                    f"{self.api_url}/models/{llm_request.model}:streamGenerateContent?alt=sse",
                     headers=headers,
                     json=payload,
                 ) as response:
                     # Validate streaming response
                     response.raise_for_status()
+
+                    usage_metadata = {}
+                    finish_reason = None
 
                     async for line in response.aiter_lines():
                         # Stop streaming if job has been cancelled
@@ -166,45 +169,65 @@ class GeminiProvider(BaseLLMProvider):
                         if not line:
                             continue
 
-                        # Parse streamed JSON chunk
-                        chunk = json.loads(line)
+                        clean_line = line.strip()
 
-                        parts = (
-                            chunk.get("candidates", [{}])[0]
-                            .get("content", {})
-                            .get("parts", [])
-                        )
+                        if clean_line.startswith("data:"):
+                            clean_line = clean_line.replace("data:", "").strip()
+
+                        if not clean_line or clean_line in ["[DONE]", ","]:
+                            continue
+
+                        try:
+                            chunk = json.loads(clean_line)
+                        except json.JSONDecodeError:
+                            continue
+
+                        # capture metadata
+                        if "usageMetadata" in chunk:
+                            usage_metadata = chunk["usageMetadata"]
+
+                        candidates = chunk.get("candidates", [])
+                        if not candidates:
+                            continue
+
+                        finish_reason = candidates[0].get("finishReason")
+
+                        parts = candidates[0].get("content", {}).get("parts", [])
 
                         for part in parts:
-                            # Extract incremental token text
                             delta = part.get("text")
 
-                            # Skip empty tokens
                             if not delta:
                                 continue
 
-                            # Accumulate output
                             buffer_output += delta
 
-                            # Yield chunks immediately for non-JSON output
-                            if not llm_request.is_json_output:
-                                chunk_response.output = delta
-                                yield chunk_response.model_dump_json() + "\n"
+                            # stream like OpenAI
+                            chunk_response.output = delta
+                            yield chunk_response.model_dump_json() + "\n"
 
-                    # Finalize output after streaming completes
+
+                    # FINAL RESPONSE
                     if llm_request.is_json_output:
-                        final_output = extract_json_from_llm_response(buffer_output)
+                        try:
+                            final_output = extract_json_from_llm_response(buffer_output)
+                        except Exception:
+                            final_output = buffer_output
                     else:
                         final_output = buffer_output
 
-                    # Build final response object
+                    final_response_data = {
+                        "usageMetadata": usage_metadata,
+                        "candidates": [{"finishReason": finish_reason}]
+                    }
+
                     final_response = self._create_final_llm_response(
                         llm_request,
                         default_response,
                         start_time,
                         final_output,
                         user.access_token,
-                        {},
+                        final_response_data,
                     )
 
                     yield final_response.model_dump_json() + "\n"

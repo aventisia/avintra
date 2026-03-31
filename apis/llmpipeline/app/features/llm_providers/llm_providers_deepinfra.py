@@ -93,7 +93,7 @@ class DeepInfraProvider(BaseLLMProvider):
             default_llm_response_obj.error = f"Failed to generate response: {e}"
             return default_llm_response_obj
 
-    # TODO: Method: Streaming response generator for DeepInfra
+    # Method: Streaming response generator for DeepInfra
     async def stream_llm_response(self, llm_request: LLMRequest, job_id: str, user: User):
         logger.info(f"[STREAMING] Prompt sent to DeepInfra provider with model: {llm_request.model}")
         
@@ -151,37 +151,72 @@ class DeepInfraProvider(BaseLLMProvider):
 
                     # Stream response lines from DeepInfra API
                     async for line in response.aiter_lines():
+
                         # Check for job cancellation
                         if job_id not in active_llm_jobs:
-                            logger.info(f"Job {job_id} cancelled. Stopping DeepInfra stream.")
+                            logger.info(f"Job {job_id} cancelled.")
                             break
-                        
                         # Process each line
                         line = line.strip()
                         if not line.startswith("data:"):
-                            continue  # Skip event lines and others
-                        
+                            continue # Skip event lines and others
+
                         # Get content from chunk and yield as LLMChunkResponse
                         try:
-                            json_str = line[len("data:"):].strip() # Remove the 'data:' prefix
-                            chunk = json.loads(json_str)
-                            chunk_delta = chunk.get("choices", [])[0].get("delta", {}).get("content", "")
-                            finish_reason = chunk.get("choices", [])[0].get("finish_reason", "")
-                            
-                            # Break if finished and yield the final llm response
-                            if finish_reason and finish_reason in ("stop", "length", "tool_calls", "content_filter", "failed"):
-                                output = extract_json_from_llm_response(buffer_output) if llm_request.is_json_output else ""
-                                full_response = chunk.get("response", {})
-                                final_llm_response = self._create_final_llm_response(llm_request, default_llm_response_obj, start_time, output, user.access_token, full_response)
-                                yield final_llm_response.model_dump_json() + "\n"
+                            json_str = line[len("data:"):].strip()
+
+                            # skip empty
+                            if not json_str or json_str == ",":
+                                continue
+
+                            # stop correctly
+                            if json_str == "[DONE]":
+                                logger.info("Stream completed")
                                 break
-                            
-                            # Stream chunk delta if available
-                            if finish_reason is not None and chunk_delta:
-                                buffer_output += chunk_delta # Accumulate output in buffer for json/structured output
+
+                            chunk = json.loads(json_str)
+
+                            choices = chunk.get("choices")
+                            if not isinstance(choices, list) or len(choices) == 0:
+                                continue
+
+                            choice = choices[0]
+                            delta_obj = choice.get("delta", {})
+
+                            if not isinstance(delta_obj, dict):
+                                continue
+
+                            chunk_delta = delta_obj.get("content")
+                            finish_reason = choice.get("finish_reason")
+
+                            # accumulate output
+                            if chunk_delta:
+                                buffer_output += chunk_delta
+
                                 if not llm_request.is_json_output:
                                     chunk_response.output = chunk_delta
                                     yield chunk_response.model_dump_json() + "\n"
+
+                            # final response
+                            if finish_reason in ("stop", "length", "tool_calls", "content_filter", "failed"):
+                                output = (
+                                    extract_json_from_llm_response(buffer_output)
+                                    if llm_request.is_json_output
+                                    else buffer_output
+                                )
+
+                                final_llm_response = self._create_final_llm_response(
+                                    llm_request,
+                                    default_llm_response_obj,
+                                    start_time,
+                                    output,
+                                    user.access_token,
+                                    chunk
+                                )
+
+                                yield final_llm_response.model_dump_json() + "\n"
+                                break
+
                         except Exception as chunk_exc:
                             log_exception(logger, chunk_exc, f"[STREAMING] Failed to parse DeepInfra stream chunk: {chunk_exc}")
         except Exception as e:
