@@ -26,6 +26,14 @@ script:post-response {
         res.getBody().data.verificationCodeId
       );
   }
+  
+  if(res.getStatus() == 200)
+  {
+      bru.setGlobalEnvVar(
+        "ACCESS_TOKEN", 
+        res.getBody().data.accessToken
+      );
+  }
 }
 
 docs {
