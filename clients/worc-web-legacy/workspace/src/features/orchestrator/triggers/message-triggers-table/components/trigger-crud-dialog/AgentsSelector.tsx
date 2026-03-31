@@ -14,12 +14,14 @@ interface AgentsSelectorProps {
   onChange: (value: (any | undefined)[]) => void; // Function to updates the value (array of strings)
   id?: string;
   crudAction: CrudActionType;
+  disabled?: boolean;
 }
 
 export const AgentsSelector = ({
   onChange,
   id = "",
   crudAction,
+  disabled,
 }: AgentsSelectorProps) => {
   const [searchTerm, setSearchTerm] = useState("");
   const [selectedItems, setSelectedItems] = useState<SearchAgentsDto[]>([]);
@@ -78,6 +80,7 @@ export const AgentsSelector = ({
       isError={isError}
       placeholder="Search for agent..."
       maxHeight="300px"
+      disabled={disabled}
     />
   );
 };

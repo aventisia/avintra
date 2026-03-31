@@ -106,7 +106,7 @@ export const useDefineTriggerForm = () => {
         : getTimeFromDate(new Date(datePlus30)),
 
       resubscribeFrequency:
-        triggerData?.resubscribeFrequency?.toString() ?? "0",
+        triggerData?.resubscribeFrequency?.toString() ?? "1",
 
       credentialId: triggerData?.credentialId ?? "",
       folder: triggerData?.folder ?? "Inbox",
