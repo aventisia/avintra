@@ -6,7 +6,7 @@ import {
 } from "@/react-toolkit/ui/input-group";
 
 import { IHttpResponse } from "@aventisia/ui/dtos";
-import { FormLabelExt } from "@aventisia/ui/form";
+// import { FormLabelExt, FormMessage } from "@aventisia/ui/form";
 import { cn } from "@aventisia/ui/lib";
 import { CrudActionType } from "@aventisia/ui/types";
 import { useMutation } from "@tanstack/react-query";
@@ -30,7 +30,7 @@ type APIKeyFieldProps = {
 export default function APIKeyField({
   value,
   onChange,
-  label = "API Key",
+  // label = "API Key",
   readOnly = true,
   disabled = false,
   generateApiKey: generateApiKeyExternal,
@@ -61,8 +61,8 @@ export default function APIKeyField({
   };
 
   return (
-    <div className={cn("space-y-1", className)}>
-      <FormLabelExt label={label} isRequired />
+    <div className={cn("space-y-2", className)}>
+      {/* <FormLabelExt label={label} isRequired /> */}
 
       <InputGroup
         className={cn(
@@ -104,10 +104,10 @@ export default function APIKeyField({
           )}
         </InputGroupAddon>
       </InputGroup>
-
-      {/* MESSAGE */}
+        {/* <FormMessage size={"base"} /> */}
+          {/* MESSAGE */}
       {generated && (
-        <p className="text-xs text-muted-foreground">
+        <p className="text-2xs px-1 text-muted-foreground">
           This API key is displayed only once. Copy and store it securely, it
           cannot be retrieved later.
         </p>

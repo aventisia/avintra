@@ -4,9 +4,6 @@ import {
   SelectFieldProps,
   SwitchFieldProps,
 } from "@aventisia/ui/form";
-import { enumToArray } from "@aventisia/ui/utils";
-
-import { EmailTriggerProviderEnum } from "../enums/trigger-frequency-provider-enum";
 
 // trigger Id
 const idProps: InputFieldProps = {
@@ -24,38 +21,28 @@ const nameProps: InputFieldProps = {
   description: "Specify a name for this trigger.",
 };
 
-// Name
-const mailboxProps: InputFieldProps = {
-  name: "mailbox",
-  type: "email",
-  label: "Account",
-  isRequired: true,
-  description: "Enter the mail id",
+const webhookUrlProps: InputFieldProps = {
+  name: "webhookUrl",
+  label: "Webhook Url",
+
+  description: "Webhook URL will be active after trigger creation",
+  // description: "Webhook URL is auto-generated after trigger creation",
 };
 
-const folderProps: InputFieldProps = {
-  name: "folder",
-  label: "Callback URL",
-  description: "Callback URL",
+const apiKeyProps: InputFieldProps = {
+  name: "apiKey",
+  label: "Api Key",
 };
 
-const expiryDateTimeProps: DatePickerFieldProps = {
-  name: "expiryDateTime",
+const apiKeyExpiryProps: DatePickerFieldProps = {
+  name: "apiKeyExpiry",
   label: "Expiry Date",
   description: "The date when the trigger will expire.",
   isRequired: true,
 };
 
-const resubscribeEnabledProps: SwitchFieldProps = {
-  name: "resubscribeEnabled",
-  label: "Resubscribe",
-  description:
-    "Enable to maintain continuous connectivity and prevent subscription expiry.",
-  defaultChecked: false,
-};
-
-const resubscribeFrequencyProps: SelectFieldProps = {
-  name: "resubscribeFrequency",
+const apiKeyExpiryDaysProps: SelectFieldProps = {
+  name: "apiKeyExpiryDays",
   label: "API Key Expiry (in days)",
   isRequired: true,
   selectOptions: [
@@ -67,19 +54,14 @@ const resubscribeFrequencyProps: SelectFieldProps = {
   ],
 };
 
-const credentialIdProps: InputFieldProps = {
-  name: "credentialId",
-  label: "Credential Id",
-  description: "CredentialId",
-  isRequired: true,
+const callbackUrlProps: InputFieldProps = {
+  name: "callbackUrl",
+  label: "Callback Url",
 };
 
-const providerProps: SelectFieldProps = {
-  name: "provider",
-  label: "Provider",
-  isRequired: true,
-  selectOptions: enumToArray(EmailTriggerProviderEnum),
-  description: "Email provider.",
+const expectedPayloadSchemaProps: InputFieldProps = {
+  name: "expectedPayloadSchema",
+  label: "Input Arguments Schema",
 };
 
 const isDisabledProps: SwitchFieldProps = {
@@ -92,12 +74,11 @@ const isDisabledProps: SwitchFieldProps = {
 export {
   idProps,
   nameProps,
-  mailboxProps,
-  folderProps,
-  expiryDateTimeProps,
-  resubscribeEnabledProps,
-  resubscribeFrequencyProps,
-  credentialIdProps,
-  providerProps,
+  webhookUrlProps,
+  apiKeyProps,
+  apiKeyExpiryDaysProps,
+  apiKeyExpiryProps,
+  callbackUrlProps,
+  expectedPayloadSchemaProps,
   isDisabledProps,
 };

@@ -3,8 +3,8 @@ import { Badge } from "@aventisia/ui/badge";
 import { Button } from "@aventisia/ui/buttons";
 import { cn } from "@aventisia/ui/lib";
 import { ScrollArea } from "@aventisia/ui/scroll";
-import { X, ChevronDown, ChevronUp } from "lucide-react";
-import { useState, useRef, useEffect } from "react";
+import { ChevronDown, ChevronUp, X } from "lucide-react";
+import { useEffect, useRef, useState } from "react";
 
 import { SearchAgentsDto } from "../../dtos/search-agent-dto";
 
@@ -19,6 +19,7 @@ interface MultiSelectorProps {
   isError: boolean;
   placeholder?: string;
   maxHeight?: string;
+  disabled?: boolean;
 }
 
 export const MultiSelector: React.FC<MultiSelectorProps> = ({
@@ -31,6 +32,7 @@ export const MultiSelector: React.FC<MultiSelectorProps> = ({
   isLoading,
   isError,
   placeholder = "Search and select items...",
+  disabled,
   //   maxHeight = "200px",
 }) => {
   const [isOpen, setIsOpen] = useState(false);
@@ -104,7 +106,10 @@ export const MultiSelector: React.FC<MultiSelectorProps> = ({
               >
                 {/* Agent name */}
                 <div className="flex flex-col">
-                  <p className="max-w-36 truncate text-2xs font-medium" title={`${item.name} -v${item.versionNumber}`}>
+                  <p
+                    className="max-w-36 truncate text-2xs font-medium"
+                    title={`${item.name} -v${item.versionNumber}`}
+                  >
                     {`${item.name} -v${item.versionNumber}`}
                   </p>
                   {/* <span className="max-w-24 truncate text-3xs text-muted-foreground">
@@ -118,6 +123,7 @@ export const MultiSelector: React.FC<MultiSelectorProps> = ({
                   size="icon7"
                   className="rounded-full"
                   onClick={() => onItemRemove(item.id)}
+                  disabled={disabled}
                 >
                   <X className="h-4 w-4" />
                 </Button>
@@ -133,6 +139,7 @@ export const MultiSelector: React.FC<MultiSelectorProps> = ({
                 onChange={(e) => handleInputChange(e.target.value)}
                 onFocus={handleInputFocus}
                 onKeyDown={handleKeyDown}
+                disabled={disabled}
                 placeholder={selectedItems.length === 0 ? placeholder : ""}
                 className="h-5 w-full rounded-none border-none p-0 shadow-none focus-visible:ring-0 focus-visible:ring-offset-0"
               />
@@ -147,6 +154,7 @@ export const MultiSelector: React.FC<MultiSelectorProps> = ({
           size="sm"
           className="ml-1 h-6 w-6 p-0"
           onClick={() => setIsOpen(!isOpen)}
+          disabled={disabled}
         >
           {isOpen ? (
             <ChevronUp className="h-4 w-4 text-muted-foreground" />

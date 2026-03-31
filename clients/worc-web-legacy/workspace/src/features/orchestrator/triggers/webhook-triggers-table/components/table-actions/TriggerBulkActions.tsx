@@ -12,10 +12,10 @@ import { Table } from "@tanstack/react-table";
 
 import { triggerOptimisticMutationFn } from "../../apis/triggers-table-apis";
 import { DATA_QUERY_KEY } from "../../constants";
-import { EmailTriggerDto } from "../../dtos/email-trigger-dto";
+import { WebhookTriggerDto } from "../../dtos/webhook-trigger-dto";
 
 interface TriggerBulkActionsProps {
-  table: Table<EmailTriggerDto>;
+  table: Table<WebhookTriggerDto>;
 }
 
 export function TriggerBulkActions({
@@ -34,8 +34,8 @@ export function TriggerBulkActions({
   // Get mutation function to delete the trigger
   const { mutate: deletetriggers } = useListOptimisticMutation<
     string[],
-    EmailTriggerDto | boolean,
-    EmailTriggerDto
+    WebhookTriggerDto | boolean,
+    WebhookTriggerDto
   >(selectedRowIds, triggerOptimisticMutationFn, DATA_QUERY_KEY);
 
   return (

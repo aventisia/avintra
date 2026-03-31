@@ -7,18 +7,18 @@ import {
   TrueFalseResultDto,
 } from "@aventisia/ui/dtos";
 
-import { EmailTriggerDto } from "../dtos/email-trigger-dto";
 import { SearchAgentsDto } from "../dtos/search-agent-dto";
 import { SelectAgentTableDto } from "../dtos/select-agent-table-dto";
+import { WebhookTriggerDto } from "../dtos/webhook-trigger-dto";
 
-const baseAPIURL: string = `${import.meta.env.VITE_WORC_API_PATH}/email-trigger`;
+const baseAPIURL: string = `${import.meta.env.VITE_WORC_API_PATH}/webhook-trigger`;
 
 /**
  * Retrieves list of triggers.
  */
 export const getTriggers = () => {
   return axiosInstance
-    .get<IHttpResponse<EmailTriggerDto[]>>(`${baseAPIURL}/list`)
+    .get<IHttpResponse<WebhookTriggerDto[]>>(`${baseAPIURL}/list`)
     .then((res) => res.data);
 };
 
@@ -36,18 +36,18 @@ export const isNameAvailable = (postObj: CheckAvailabilityDto) => {
 /**
  * Inserts a new trigger.
  */
-export const insertTrigger = (newtrigger: EmailTriggerDto) => {
+export const insertTrigger = (newtrigger: WebhookTriggerDto) => {
   return axiosInstance
-    .post<IHttpResponse<EmailTriggerDto>>(`${baseAPIURL}`, newtrigger)
+    .post<IHttpResponse<WebhookTriggerDto>>(`${baseAPIURL}`, newtrigger)
     .then((res) => res.data);
 };
 
 /**
  * Updates an existing trigger.
  */
-export const updateTrigger = (updatedtrigger: EmailTriggerDto) => {
+export const updateTrigger = (updatedtrigger: WebhookTriggerDto) => {
   return axiosInstance
-    .put<IHttpResponse<EmailTriggerDto>>(`${baseAPIURL}`, updatedtrigger)
+    .put<IHttpResponse<WebhookTriggerDto>>(`${baseAPIURL}`, updatedtrigger)
     .then((res) => res.data);
 };
 
@@ -76,7 +76,7 @@ export const getNewTriggerAgents = () => {
  */
 export const geTriggerAgents = (id: string) => {
   return axiosInstance
-    .get<IHttpResponse<SearchAgentsDto[]>>(`${baseAPIURL}/${id}/agents`)
+    .get<IHttpResponse<SearchAgentsDto>>(`${baseAPIURL}/${id}/agents`)
     .then((res) => res.data);
 };
 
@@ -92,19 +92,19 @@ export const deleteTriggers = (ids: string[]) => {
 /**
  * Performs an optimistic mutation on a trigger based on the provided CRUD action.
  *
- * @param {IOptimisticMutation<EmailTriggerDto | string | string[]>} options - The options for the optimistic mutation.
+ * @param {IOptimisticMutation<WebhookTriggerDto | string | string[]>} options - The options for the optimistic mutation.
  * @returns {Promise<any>} - A promise that resolves to the result of the mutation.
  * @throws {Error} - If an invalid action type is provided.
  */
 export const triggerOptimisticMutationFn = ({
   payload,
   crudAction,
-}: IOptimisticMutation<EmailTriggerDto | string | string[]>) => {
+}: IOptimisticMutation<WebhookTriggerDto | string | string[]>) => {
   switch (crudAction) {
     case "create":
-      return insertTrigger(payload as EmailTriggerDto);
+      return insertTrigger(payload as WebhookTriggerDto);
     case "update":
-      return updateTrigger(payload as EmailTriggerDto);
+      return updateTrigger(payload as WebhookTriggerDto);
     case "delete":
       return deleteTrigger(payload as string);
     case "delete-multiple":
