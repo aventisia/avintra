@@ -76,3 +76,41 @@ export const getUserTimeZone = (): string => {
   const tz = Intl.DateTimeFormat().resolvedOptions().timeZone;
   return normalizeTimeZone(tz);
 };
+
+export const applyTimeZoneOffset = (date: Date, tz: string): Date => {
+  try {
+    const parts = new Intl.DateTimeFormat("en-US", {
+      timeZone: tz,
+      hour12: false,
+      year: "numeric",
+      month: "2-digit",
+      day: "2-digit",
+      hour: "2-digit",
+      minute: "2-digit",
+      second: "2-digit",
+    }).formatToParts(date);
+
+    const get = (type: string) =>
+      parts.find((p) => p.type === type)?.value || "00";
+
+    return new Date(
+      `${get("year")}-${get("month")}-${get("day")}T${get("hour")}:${get("minute")}:${get("second")}`
+    );
+  } catch {
+    return date;
+  }
+};
+
+export const removeTimeZoneOffset = (date: Date, tz: string): Date => {
+  try {
+    const offset = getTimeZoneOffset(tz); // "+05:30"
+
+    const [h, m] = offset.split(":").map(Number);
+
+    const totalMinutes = h * 60 + (m || 0);
+
+    return new Date(date.getTime() - totalMinutes * 60 * 1000);
+  } catch {
+    return date;
+  }
+};

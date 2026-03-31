@@ -1,4 +1,8 @@
-import { getTimezoneOptions } from "@/react-toolkit/utils/timezone-utils.ts";
+import {
+  applyTimeZoneOffset,
+  getTimezoneOptions,
+  removeTimeZoneOffset,
+} from "@/react-toolkit/utils/timezone-utils.ts";
 
 import { SubmitButton } from "@aventisia/ui/buttons";
 import {
@@ -16,7 +20,6 @@ import {
 import { useListOptimisticMutation } from "@aventisia/ui/hooks";
 import { ISelectOption } from "@aventisia/ui/types";
 import { useEffect, useState } from "react";
-import { Controller } from "react-hook-form";
 import { z } from "zod";
 
 import APIKeyField from "../../../webhook-triggers-table/components/trigger-crud-dialog/APIKeyField.tsx";
@@ -24,6 +27,7 @@ import { getCredSelectOptions } from "../../apis/app-secret-apis.ts";
 import { triggerOptimisticMutationFn } from "../../apis/triggers-table-apis";
 import { DATA_QUERY_KEY } from "../../constants";
 import { resourceRequiresReference } from "../../constants/form-utils";
+import { getTimeFromDate } from "../../constants/form-utils.ts";
 import {
   expiryDateTimeProps,
   idProps,
@@ -108,24 +112,33 @@ export const TriggerCrudForm = () => {
     if ((crudAction === "create" || crudAction === "update") && isSuccess)
       setShowDialog(false);
   }, [isSuccess, crudAction, setShowDialog]);
+  const timezone = form.watch("timezone");
 
   useEffect(() => {
-    const baseDate = new Date();
-
     const freq = Number(resubscribeFrequency);
+    if (!freq || isNaN(freq) || !timezone) return;
 
-    if (!freq || isNaN(freq)) return;
+    // 1. Base date (now)
+    const now = new Date();
 
-    // Add minutes
-    baseDate.setMinutes(baseDate.getMinutes() + freq);
+    // 2. Convert to selected timezone
+    const tzDate = applyTimeZoneOffset(now, timezone);
 
-    form.setValue("expiryDateTime", baseDate);
-  }, [resubscribeFrequency]);
+    // 3. Add minutes in THAT timezone
+    tzDate.setMinutes(tzDate.getMinutes() + freq);
+
+    // 4. (optional) convert back to UTC/system if needed
+    const finalDate = removeTimeZoneOffset(tzDate, timezone);
+
+    form.setValue("expiryDateTime", finalDate);
+    form.setValue("expiryTime", getTimeFromDate(tzDate)); // show local TZ time
+  }, [resubscribeFrequency, timezone]);
 
   const referenceRequired = resourceRequiresReference(form.watch("resource"));
 
   // Is form in read mode?
   const isReadMode = crudAction === "read";
+  const isUpdateMode = crudAction === "update";
 
   // Return the form
   return (
@@ -174,18 +187,27 @@ export const TriggerCrudForm = () => {
           </FormItem>
         )}
       />
-      <Controller
-        control={form.control}
+      <FormField
         name="apiKey"
+        control={form.control}
         render={({ field }) => (
-          <APIKeyField
-            value={field.value}
-            onChange={field.onChange}
-            crudAction={crudAction}
-          />
+          <FormItem size={"base"}>
+            <FormLabelExt size={"base"} label="Api Key" isRequired />
+
+            <FormControl>
+              <APIKeyField
+                value={field.value}
+                onChange={field.onChange}
+                crudAction={crudAction}
+                disabled={isReadMode}
+              />
+            </FormControl>
+
+            <FormMessage size={"base"} />
+          </FormItem>
         )}
       />
-      <SelectField {...providerProps} />
+      <SelectField {...providerProps} disabled={isReadMode || isUpdateMode} />
       {crudAction === "create" ? (
         <SelectField
           selectOptions={selectOptions ?? []}
@@ -201,21 +223,32 @@ export const TriggerCrudForm = () => {
             name="credentialId"
             label="Credential Id"
             isRequired
-            disabled={isReadMode}
+            disabled={isReadMode || isUpdateMode}
           />
         )
       )}
 
-      <SelectField {...resourceProps} />
-      {referenceRequired && <InputField {...referenceProps} />}
+      <SelectField {...resourceProps} disabled={isReadMode || isUpdateMode} />
+      {referenceRequired && (
+        <InputField {...referenceProps} disabled={isReadMode || isUpdateMode} />
+      )}
 
-      <InputField {...resubscribeFrequencyProps} />
-      <DatePickerField {...expiryDateTimeProps} disabled />
-
-      {/* <div className="grid grid-cols-2 gap-2">
-        <DatePickerField {...expiryDateTimeProps} />
-        <InputField type="time" name="expiryTime" step={60} label="Time" />
-      </div> */}
+      <InputField
+        type="number"
+        {...resubscribeFrequencyProps}
+        min={1}
+        max={4320}
+      />
+      <div className="grid grid-cols-2 gap-2">
+        <DatePickerField disabled {...expiryDateTimeProps} />
+        <InputField
+          type="time"
+          name="expiryTime"
+          step={60}
+          label="Time"
+          disabled
+        />
+      </div>
 
       <SwitchField size="sm" {...resubscribeEnabledProps} />
 
@@ -251,6 +284,7 @@ export const TriggerCrudForm = () => {
                 onChange={field.onChange}
                 id={rowId}
                 crudAction={crudAction}
+                disabled={isReadMode || isUpdateMode}
               />
             </FormControl>
 

@@ -20,11 +20,11 @@ const SEARCH_COLUMN = "name";
 const getDialogHeadingDescription = (crudAction: CrudActionType) => {
   switch (crudAction) {
     case "create":
-      return { heading: "Create Trigger", description: "" };
+      return { heading: "Create Time Trigger", description: "" };
     case "read":
-      return { heading: "Trigger", description: "" };
+      return { heading: "Time Trigger", description: "" };
     case "update":
-      return { heading: "Edit Trigger", description: "" };
+      return { heading: "Edit Time Trigger", description: "" };
     default:
       return { heading: "", description: "" };
   }

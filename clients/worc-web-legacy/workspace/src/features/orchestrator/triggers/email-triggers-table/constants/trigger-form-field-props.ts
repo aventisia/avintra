@@ -59,7 +59,7 @@ const resubscribeFrequencyProps: InputFieldProps = {
   label: "Subscription Period (in minutes)",
   isRequired: true,
   description:
-    "Enter the subscription duration in minutes (0-4320). Microsoft 365 subscriptions expire after a maximum of 3 days.",
+    "Enter the subscription duration in minutes (1-4320). Microsoft 365 subscriptions expire after a maximum of 3 days.",
 };
 
 const credentialIdProps: InputFieldProps = {

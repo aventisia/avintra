@@ -73,8 +73,7 @@ export const TriggerCrudForm = () => {
 
   // Close dialog and reset form when mutation is successful
   useEffect(() => {
-    if ((crudAction === "create" || crudAction === "update") && isSuccess)
-      setShowDialog(false);
+    if (crudAction === "update" && isSuccess) setShowDialog(false);
   }, [isSuccess, crudAction, setShowDialog]);
 
   // Is form in read mode?
@@ -184,7 +183,7 @@ export const TriggerCrudForm = () => {
       )}
 
       {/* Submit button */}
-      {!isReadMode && (
+      {!isReadMode && !isSuccess && (
         <div className="!mt-10 flex w-full justify-end">
           <SubmitButton
             className="min-w-[5rem]"
