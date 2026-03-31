@@ -9,6 +9,7 @@ public class EmailTriggerService : IEmailTriggerService
     private readonly EnvironmentConfig _environmentConfig;
     private readonly IJobsExecutorService _jobsExecutorService;
     private readonly WorkspaceInternalDbContext _workspaceInternalDbContext;
+    private const int OUTLOOK_EXPIRY_MINUTES = 10080;
 
     public EmailTriggerService(
         ILogger<EmailTriggerService> logger,
@@ -139,6 +140,19 @@ public class EmailTriggerService : IEmailTriggerService
                 serviceResponse.StatusCode = 409;
                 serviceResponse.Message = "Email trigger with the same name already exists.";
                 return serviceResponse; // Return early if duplicate found
+            }
+
+            if (DateTimeOffset.UtcNow.AddMinutes(OUTLOOK_EXPIRY_MINUTES) < emailTriggerDto.ExpiryDateTime)
+            {
+                _logger.LogInformation(
+                    "Update failed. New expiry {NewExpiry} exceeds maximum allowed expiry for trigger ID {TriggerId}.",
+                    emailTriggerDto.ExpiryDateTime,
+                    emailTriggerDto.Id
+                );
+
+                serviceResponse.StatusCode = 400;
+                serviceResponse.Message = $"Expiry date cannot exceed {OUTLOOK_EXPIRY_MINUTES} minutes from now.";
+                return serviceResponse;
             }
 
             // Trim all string properties on the DTO
@@ -309,6 +323,19 @@ public class EmailTriggerService : IEmailTriggerService
                     serviceResponse.Message = "Expiry date cannot be earlier than the existing expiry date.";
                     return serviceResponse;
                 }
+            }
+
+            if (DateTimeOffset.UtcNow.AddMinutes(OUTLOOK_EXPIRY_MINUTES) < emailTriggerDto.ExpiryDateTime)
+            {
+                _logger.LogInformation(
+                    "Update failed. New expiry {NewExpiry} exceeds maximum allowed expiry for trigger ID {TriggerId}.",
+                    emailTriggerDto.ExpiryDateTime,
+                    emailTriggerDto.Id
+                );
+
+                serviceResponse.StatusCode = 400;
+                serviceResponse.Message = $"Expiry date cannot exceed {OUTLOOK_EXPIRY_MINUTES} minutes from now.";
+                return serviceResponse;
             }
 
             // Update basic fields

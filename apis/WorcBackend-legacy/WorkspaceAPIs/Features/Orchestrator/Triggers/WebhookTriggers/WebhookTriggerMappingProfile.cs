@@ -48,7 +48,7 @@ public class WebhookTriggerMappingProfile : IRegister
 
         // Mapping: WebhookTriggerDto → Trigger entity (create/update)
         config.NewConfig<WebhookTriggerDto, Trigger>()
-            .Map(dest => dest.Timezone, string.Empty)
+            .Map(dest => dest.Timezone, src => string.Empty)
             .Ignore(dest => dest.Id)
             .Ignore(dest => dest.CreatedOn)
             .Ignore(dest => dest.LastModifiedOn)
