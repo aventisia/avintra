@@ -9,6 +9,7 @@ public class MessageTriggerService : IMessageTriggerService
     private readonly EnvironmentConfig _environmentConfig;
     private readonly IJobsExecutorService _jobsExecutorService;
     private readonly WorkspaceInternalDbContext _workspaceInternalDbContext;
+    private const int MESSAGE_EXPIRY_MINUTES = 4320;
 
     public MessageTriggerService(
         ILogger<MessageTriggerService> logger,
@@ -137,6 +138,20 @@ public class MessageTriggerService : IMessageTriggerService
                 serviceResponse.Message = "Message trigger with the same name already exists.";
                 return serviceResponse; // Return early if duplicate found
             }
+
+            if (DateTimeOffset.UtcNow.AddMinutes(MESSAGE_EXPIRY_MINUTES) < messageTriggerDto.ExpiryDateTime)
+            {
+                _logger.LogInformation(
+                    "Update failed. New expiry {NewExpiry} exceeds maximum allowed expiry for trigger ID {TriggerId}.",
+                    messageTriggerDto.ExpiryDateTime,
+                    messageTriggerDto.Id
+                );
+
+                serviceResponse.StatusCode = 400;
+                serviceResponse.Message = $"Expiry date cannot exceed {MESSAGE_EXPIRY_MINUTES} minutes from now.";
+                return serviceResponse;
+            }
+
 
             // Trim all string properties on the DTO
             messageTriggerDto = TrimDtoStringPropsUtil.TrimDtoStringProps(messageTriggerDto);
@@ -308,6 +323,19 @@ public class MessageTriggerService : IMessageTriggerService
                     serviceResponse.Message = "Expiry date cannot be earlier than the existing expiry date.";
                     return serviceResponse;
                 }
+            }
+
+            if (DateTimeOffset.UtcNow.AddMinutes(MESSAGE_EXPIRY_MINUTES) <= messageTriggerDto.ExpiryDateTime)
+            {
+                _logger.LogInformation(
+                    "Update failed. New expiry {NewExpiry} exceeds maximum allowed expiry for trigger ID {TriggerId}.",
+                    messageTriggerDto.ExpiryDateTime,
+                    messageTriggerDto.Id
+                );
+
+                serviceResponse.StatusCode = 400;
+                serviceResponse.Message = $"Expiry date cannot exceed {MESSAGE_EXPIRY_MINUTES} minutes from now.";
+                return serviceResponse;
             }
 
             // Update basic fields
