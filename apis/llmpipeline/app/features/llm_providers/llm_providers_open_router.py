@@ -129,52 +129,81 @@ class OpenRouterProvider(BaseLLMProvider):
                 ) as response:
                     response.raise_for_status()
 
+                    # Iterate over streaming response line-by-line (Server-Sent Events format)
                     async for line in response.aiter_lines():
+
+                        # Stop streaming if job was cancelled externally
                         if job_id not in active_llm_jobs:
                             break
 
+                        # Skip empty lines or non-data lines (SSE sends other metadata sometimes)
                         if not line or not line.startswith("data:"):
                             continue
 
+                        # Remove "data:" prefix and clean whitespace
                         data = line.replace("data:", "").strip()
 
+                        # OpenAI/OpenRouter sends "[DONE]" when stream ends
                         if data == "[DONE]":
                             break
 
+                        # Parse JSON chunk from stream
                         chunk = json.loads(data)
 
+                        # 🔥 ADD THIS
+                        if "usage" in chunk:
+                            usage_data = chunk["usage"]
+
+                        finish_reason = chunk.get("choices", [{}])[0].get("finish_reason")
+
+                        # Extract token delta (same structure as OpenAI streaming)
                         delta = (
                             chunk.get("choices", [{}])[0]
                             .get("delta", {})
                             .get("content")
                         )
 
-                    buffer_output += delta
+                        #  Skip if no actual content (e.g., role-only chunks)
+                        if not delta:
+                            continue
 
-                    if not llm_request.is_json_output:
-                        # If the output is not JSON, use the method to refine the output
-                        refined_output = extract_json_from_llm_response(buffer_output)
-                        chunk_response.output = refined_output
-                        yield chunk_response.model_dump_json() + "\n"
-                    else:
+                        # Append token to full response buffer
+                        buffer_output += delta
+
+                        # Stream token immediately (OpenAI-style streaming)
                         chunk_response.output = delta
+
+                        # Send chunk to client as JSON line (newline-delimited stream)
                         yield chunk_response.model_dump_json() + "\n"
 
+                    #  AFTER STREAM COMPLETES
+
+                    # Final output handling:
+                    # - If JSON mode → parse full response
+                    # - Else → keep as plain text
                     final_output = (
                         json.loads(buffer_output)
                         if llm_request.is_json_output
                         else buffer_output
                     )
 
+                    usage_response = {
+                        "usage": usage_data,
+                        "choices": [{"finish_reason": finish_reason}],
+                        "created": int(time.time())
+                    }
+
+                    # Build final structured response (includes metadata, timing, etc.)
                     final_response = self._create_final_llm_response(
                         llm_request,
                         default_response,
                         start_time,
                         final_output,
                         user.access_token,
-                        {},
+                        usage_response
                     )
 
+                    # Send final response (important for frontend completion state)
                     yield final_response.model_dump_json() + "\n"
 
         except Exception as e:
