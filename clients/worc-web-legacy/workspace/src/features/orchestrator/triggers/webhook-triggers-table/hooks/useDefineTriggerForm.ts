@@ -11,12 +11,11 @@ import { useShallow } from "zustand/react/shallow";
 
 // import { isNameAvailable } from "../apis/triggers-table-apis";
 import { DATA_QUERY_KEY } from "../constants";
-import { getTimeFromDate, setTimeToDate } from "../constants/form-utils";
 import {
   // triggerNameSchema,
   triggerZodSchema,
 } from "../constants/trigger-zod-schema";
-import { EmailTriggerDto } from "../dtos/email-trigger-dto";
+import { WebhookTriggerDto } from "../dtos/webhook-trigger-dto";
 
 /**
  * Custom hook for defining a trigger form.
@@ -24,15 +23,19 @@ import { EmailTriggerDto } from "../dtos/email-trigger-dto";
 export const useDefineTriggerForm = () => {
   // Trigger name state for availability check
   // const [triggerName, setTriggerName] = useState("");
+  function arrayToObject<T>(arr: T[]): T | undefined {
+    return arr?.[0];
+  }
 
+  function objectToArray<T>(obj: T | undefined | null): T[] {
+    return obj ? [obj] : [];
+  }
   // Get user session
   const { userSession } = useUserSessionStore(
     useShallow((state) => ({
       userSession: state.userSession,
     })),
   );
-  const defaultFrequency = (val: string) =>
-    ["30", "90", "180", "365"].includes(val);
   // Get data-table crud dialog store state and actions
   const {
     crudDialogOptions: { showDialog, rowId, crudAction },
@@ -55,17 +58,11 @@ export const useDefineTriggerForm = () => {
     defaultValues: {
       id: "",
       name: "",
-      agents: [],
-      timezone: "",
-      expiryDateTime: new Date(), // Default to current date
-      expiryTime: null,
-      credentialId: "",
-      folder: "Inbox",
-      mailbox: "",
-      provider: "M365",
-      resubscribeEnabled: false,
-      resubscribeFrequency: "30",
-      resubscribeFrequencyCustom: null,
+      agent: [],
+      apiKey: "",
+      webhookUrl: "",
+      expectedPayloadSchema: "",
+      callbackUrl: "",
       isDisabled: false,
     },
   });
@@ -79,7 +76,7 @@ export const useDefineTriggerForm = () => {
   useEffect(() => {
     // Get triggers data from query client
     const triggersData = queryClient.getQueryData<{
-      data: EmailTriggerDto[];
+      data: WebhookTriggerDto[];
     }>(DATA_QUERY_KEY);
 
     // Find the trigger by rowId
@@ -87,38 +84,19 @@ export const useDefineTriggerForm = () => {
 
     // Set trigger name for availability check
     // setTriggerName(triggerData?.name ?? "");
-    const datePlus30 = new Date();
-    datePlus30.setDate(datePlus30.getDate() + 30);
 
     // Reset form with fetched trigger data
     form.reset({
       id: rowId,
       name: triggerData?.name ?? "",
-      agents: triggerData?.agents ?? [],
-      timezone: triggerData?.timezone ?? "",
-      mailbox: triggerData?.mailbox ?? "",
-      expiryDateTime: triggerData?.expiryDateTime
-        ? new Date(triggerData.expiryDateTime)
-        : datePlus30,
-      expiryTime: triggerData?.expiryDateTime
-        ? getTimeFromDate(new Date(triggerData.expiryDateTime))
-        : getTimeFromDate(new Date(datePlus30)),
+      agent: triggerData?.agent ? objectToArray(triggerData?.agent) : [],
+      webhookUrl:
+        triggerData?.webhookUrl ??
+        `${window.location.origin}${import.meta.env.VITE_WORC_API_PATH}webhook/${rowId}`,
+      apiKey: triggerData?.apiKey ?? "",
 
-      resubscribeFrequency: triggerData?.resubscribeFrequency
-        ? defaultFrequency(triggerData?.resubscribeFrequency?.toString())
-          ? triggerData?.resubscribeFrequency?.toString()
-          : "custom"
-        : "30",
-
-      resubscribeFrequencyCustom: defaultFrequency(
-        triggerData?.resubscribeFrequency?.toString() ?? "",
-      )
-        ? "0"
-        : triggerData?.resubscribeFrequency?.toString(),
-      credentialId: triggerData?.credentialId ?? "",
-      folder: triggerData?.folder ?? "",
-      provider: triggerData?.provider ?? "M365",
-      resubscribeEnabled: triggerData?.resubscribeEnabled ?? false,
+      callbackUrl: triggerData?.callbackUrl ?? "",
+      expectedPayloadSchema: triggerData?.expectedPayloadSchema ?? "",
       isDisabled: triggerData?.isDisabled ?? false,
     });
   }, [rowId, form, queryClient, userSession]);
@@ -145,14 +123,7 @@ export const useDefineTriggerForm = () => {
       lastModifiedBy: userSession?.email ?? "",
 
       lastModifiedOn: new Date().toISOString(),
-      expiryDateTime: formData.expiryTime
-        ? setTimeToDate(formData.expiryDateTime, formData.expiryTime)
-        : formData.expiryDateTime,
-      resubscribeFrequency: Number(
-        defaultFrequency(formData.resubscribeFrequency)
-          ? formData.resubscribeFrequency
-          : formData.resubscribeFrequencyCustom,
-      ),
+      agent: arrayToObject(formData.agent),
     };
   };
 

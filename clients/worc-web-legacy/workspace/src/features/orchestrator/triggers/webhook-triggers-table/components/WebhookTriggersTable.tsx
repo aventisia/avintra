@@ -26,7 +26,7 @@ import { TriggerCrudDialog } from "./trigger-crud-dialog/TriggerCrudDialog";
  */
 export const WebhookTriggersTable = () => {
   // Set the document title
-  useDocumentTitle(`Email - ${TABLE_HEADING}`);
+  useDocumentTitle(`Webhook - ${TABLE_HEADING}`);
 
   // Get data-table preferences from local storage
   const { columnVisibility, sortState } = getDataTablePreferences(

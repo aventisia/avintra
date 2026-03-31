@@ -1,19 +1,18 @@
 import { Checkbox } from "@aventisia/ui";
 import { DTColumnHeader } from "@aventisia/ui/data-table";
-import { dateFormatter, getEnumValueByKey } from "@aventisia/ui/utils";
+import { dateFormatter } from "@aventisia/ui/utils";
 import { ColumnDef } from "@tanstack/react-table";
 
 import { TABLE_KEY } from "../constants";
 import { getColumnName } from "../constants/column-display-names";
-import { EmailTriggerDto } from "../dtos/email-trigger-dto";
-import { EmailTriggerProviderEnum } from "../enums/trigger-frequency-provider-enum";
+import { WebhookTriggerDto } from "../dtos/webhook-trigger-dto";
 import { TriggerRowActions } from "./table-actions/TriggerRowActions";
 
 /**
  * Array of table columns for the triggers table.
  * Each column object contains an accessorKey, header component, and cell component.
  */
-export const triggersTableColumns: ColumnDef<EmailTriggerDto>[] = [
+export const triggersTableColumns: ColumnDef<WebhookTriggerDto>[] = [
   {
     accessorKey: "id",
     header: ({ table }) => (
@@ -56,108 +55,37 @@ export const triggersTableColumns: ColumnDef<EmailTriggerDto>[] = [
     ),
   },
   {
-    accessorKey: "mailbox",
+    accessorKey: "agent",
     header: ({ column }) => (
       <DTColumnHeader
         tableKey={TABLE_KEY}
         column={column}
-        title={getColumnName("mailbox")}
-      />
-    ),
-    cell: ({ row }) => (
-      <div className="w-auto truncate font-medium">
-        {row.getValue("mailbox")}
-      </div>
-    ),
-  },
-  {
-    accessorKey: "folder",
-    header: ({ column }) => (
-      <DTColumnHeader
-        tableKey={TABLE_KEY}
-        column={column}
-        title={getColumnName("folder")}
-      />
-    ),
-    cell: ({ row }) => (
-      <div className="w-auto truncate font-medium">
-        {row.getValue("folder")}
-      </div>
-    ),
-  },
-  {
-    accessorKey: "provider",
-    header: ({ column }) => (
-      <DTColumnHeader
-        tableKey={TABLE_KEY}
-        column={column}
-        title={getColumnName("provider")}
-      />
-    ),
-    cell: ({ row }) => (
-      <div className="w-auto truncate font-medium">
-        {getEnumValueByKey(
-          EmailTriggerProviderEnum,
-          row.getValue("provider"),
-        ) ?? "-"}
-      </div>
-    ),
-  },
-  {
-    accessorKey: "agents",
-    header: ({ column }) => (
-      <DTColumnHeader
-        tableKey={TABLE_KEY}
-        column={column}
-        title={getColumnName("agents")}
+        title={getColumnName("agent")}
       />
     ),
     cell: ({ row }) => {
-      const agents = row.original.agents ?? [];
-
-      if (!agents.length) return null;
-
-      const firstAgent = agents[0];
-      const remainingCount = agents.length - 1;
-
+      if (!row.original?.agent) return null;
       return (
         <div className="w-auto truncate font-medium">
-          {firstAgent.name} -v{firstAgent.versionNumber}
-          {remainingCount > 0 && `, +${remainingCount}`}
+          {row.original?.agent?.name} -v{row.original.agent.versionNumber}
         </div>
       );
     },
   },
-  {
-    accessorKey: "timezone",
-    header: ({ column }) => (
-      <DTColumnHeader
-        tableKey={TABLE_KEY}
-        column={column}
-        title={getColumnName("timezone")}
-      />
-    ),
-    cell: ({ row }) => (
-      <div className="w-auto truncate font-medium">
-        {row.getValue("timezone")}
-      </div>
-    ),
-  },
+
 
   {
-    accessorKey: "expiryDateTime",
+    accessorKey: "apiKey",
     header: ({ column }) => (
       <DTColumnHeader
         tableKey={TABLE_KEY}
         column={column}
-        title={getColumnName("expiryDateTime")}
+        title={getColumnName("apiKey")}
       />
     ),
     cell: ({ row }) => (
       <div className="w-auto truncate font-medium">
-        {row.getValue("expiryDateTime")
-          ? dateFormatter(row.getValue("expiryDateTime"))
-          : "NA"}
+        {row.getValue("apiKey")}
       </div>
     ),
   },

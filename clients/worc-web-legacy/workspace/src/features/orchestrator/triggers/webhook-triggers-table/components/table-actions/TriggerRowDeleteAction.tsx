@@ -6,7 +6,7 @@ import {
 
 import { triggerOptimisticMutationFn } from "../../apis/triggers-table-apis";
 import { DATA_QUERY_KEY } from "../../constants";
-import { EmailTriggerDto } from "../../dtos/email-trigger-dto";
+import { WebhookTriggerDto } from "../../dtos/webhook-trigger-dto";
 
 interface TriggerRowDeleteActionProps {
   rowId: string;
@@ -21,8 +21,8 @@ export const TriggerRowDeleteAction = ({
   // Get mutation function to delete the trigger
   const { mutate: deleteTrigger } = useListOptimisticMutation<
     string,
-    EmailTriggerDto | boolean,
-    EmailTriggerDto
+    WebhookTriggerDto | boolean,
+    WebhookTriggerDto
   >([rowId], triggerOptimisticMutationFn, DATA_QUERY_KEY);
 
   // Return Delete alert dialog trigger

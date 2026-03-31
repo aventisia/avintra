@@ -13,9 +13,18 @@ import { useState } from "react";
 export default function InputWithCopy({
   readOnly = true,
   value,
+  onChange,
+  disabled,
+  label,
+  description,
 }: {
   value?: string;
+  onChange: (value: string) => void;
+
+  label?: string;
+  description?: string;
   readOnly?: boolean;
+  disabled?: boolean;
 }) {
   const [isCopied, setIsCopied] = useState(false);
   const handleCopy = () => {
@@ -28,15 +37,20 @@ export default function InputWithCopy({
 
   return (
     <div>
-      <FormLabelExt label="Webhook URL" />
+      <FormLabelExt label={label} description={description} />
       <InputGroup
         className={cn(
           "mt-1",
           readOnly && "focus-within:border-input focus-within:ring-0",
         )}
       >
-        <InputGroupInput value={value} readOnly />
-        <InputGroupAddon>
+        <InputGroupInput
+          value={value}
+          onChange={(e) => onChange(e.target.value)}
+          readOnly
+          disabled={disabled}
+        />
+        <InputGroupAddon >
           <InputGroupButton
             aria-label="Copy"
             type="button"
@@ -44,6 +58,7 @@ export default function InputWithCopy({
             onClick={() => {
               handleCopy();
             }}
+            disabled={false}
           >
             {isCopied ? (
               <CheckIcon className="h-3.5 w-3.5 text-muted-foreground" />
