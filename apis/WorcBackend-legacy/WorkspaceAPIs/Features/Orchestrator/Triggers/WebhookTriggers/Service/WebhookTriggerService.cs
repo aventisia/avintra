@@ -259,9 +259,17 @@ public class WebhookTriggerService : IWebhookTriggerService
             var existingModel = System.Text.Json.JsonSerializer.Deserialize<WebhookTriggerModel>(
                 trigger.Metadata.RootElement.GetRawText(), jsonOptions);
 
+            // Check if API key changed
+            bool isApiKeyChanged = !string.IsNullOrWhiteSpace(dto.ApiKey) &&
+                                   dto.ApiKey != existingModel?.ApiKey;
+
             var updatedModel = new WebhookTriggerModel
             {
-                ApiKeyHash = existingModel?.ApiKeyHash,           // preserve existing hash
+                ApiKey = isApiKeyChanged ? dto.ApiKey : existingModel?.ApiKey,
+                ApiKeyHash = isApiKeyChanged
+                    ? HashApiKey(dto.ApiKey ?? string.Empty)   // generate new hash if changed
+                    : existingModel.ApiKeyHash,
+
                 ExpectedPayloadSchema = dto.ExpectedPayloadSchema,
                 CallbackUrl = dto.CallbackUrl
             };
