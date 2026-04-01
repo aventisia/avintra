@@ -151,7 +151,10 @@ public class FlowVersionUserService : IFlowVersionUserService
 
             // Fetch FlowVersion
             var flowVersion = await _unitOfWork.FlowVersionRepo
-                .GetByConditionAsync(w => w.Id == flowVersionUserDto.FlowVersionId)
+                .GetByConditionAsync(w =>
+                    w.Id == flowVersionUserDto.FlowVersionId &&
+                    w.IsPublished
+                )
                 .FirstOrDefaultAsync();
 
             if (flowVersion == null)
@@ -202,9 +205,7 @@ public class FlowVersionUserService : IFlowVersionUserService
         return serviceResponse;
     }
 
-    /// <summary>
-    /// Creates multiple flow version user mappings while avoiding duplicates.
-    /// </summary>
+    // Creates multiple flow version user mappings while avoiding duplicates.
     public async Task<ServiceResponse<IEnumerable<FlowVersionUserDto>>> BulkInsertFlowVersionUsersAsync(IEnumerable<FlowVersionUserDto> flowVersionUserDtos)
     {
         // Initialize response with default failure state
