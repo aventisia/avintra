@@ -1,0 +1,19 @@
+meta {
+  name: Update chat aganr
+  type: http
+  seq: 3
+}
+
+put {
+  url: {{WORC_APIS_BASE_URL}}/assist-chat
+  body: none
+  auth: none
+}
+
+body:json {
+  {
+    "id": "{{FLOW_VERSION_ID}}",
+    "isArchived": false,
+    "isDisabled": false
+  }
+}
