@@ -92,7 +92,7 @@ export const useDefineTriggerForm = () => {
       agent: triggerData?.agent ? objectToArray(triggerData?.agent) : [],
       webhookUrl:
         triggerData?.webhookUrl ??
-        `${window.location.origin}${import.meta.env.VITE_WORC_API_PATH}webhook/${rowId}`,
+        `${window.location.origin}${import.meta.env.VITE_WORC_API_PATH}/webhook/{Id}`,
       apiKey: triggerData?.apiKey ?? "",
 
       callbackUrl: triggerData?.callbackUrl ?? "",
@@ -150,6 +150,7 @@ export const useDefineTriggerForm = () => {
     crudAction,
     setShowDialog,
     refineFormData,
+    queryClient,objectToArray
     // isAvailable,
     // availabilityMessage,
     // isCheckPending,

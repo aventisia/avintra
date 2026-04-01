@@ -47,6 +47,8 @@ export const TriggerCrudForm = () => {
     // handleInputChange,
     setShowDialog,
     refineFormData,
+    queryClient,
+    objectToArray,
   } = useDefineTriggerForm();
   // Define optimistic mutation to crete or update the trigger
   const {
@@ -78,6 +80,35 @@ export const TriggerCrudForm = () => {
 
   // Is form in read mode?
   const isReadMode = crudAction === "read";
+
+  // Fetch trigger data when rowId changes
+  useEffect(() => {
+    if (crudAction !== "create" || !isSuccess) return;
+    // Get triggers data from query client
+    const triggersData = queryClient.getQueryData<{
+      data: WebhookTriggerDto[];
+    }>(DATA_QUERY_KEY);
+
+    // Find the trigger by rowId
+    const triggerData = triggersData?.data[0];
+
+    if (triggerData) {
+      // Reset form with fetched trigger data
+      form.reset({
+        id: triggerData?.id,
+        name: triggerData?.name ?? "",
+        agent: triggerData?.agent ? objectToArray(triggerData?.agent) : [],
+        webhookUrl:
+          triggerData?.webhookUrl ??
+          `${window.location.origin}${import.meta.env.VITE_WORC_API_PATH}/webhook/{Id}`,
+        apiKey: triggerData?.apiKey ?? "",
+
+        callbackUrl: triggerData?.callbackUrl ?? "",
+        expectedPayloadSchema: triggerData?.expectedPayloadSchema ?? "",
+        isDisabled: triggerData?.isDisabled ?? false,
+      });
+    }
+  }, [isSuccess]);
 
   // Return the form
   return (

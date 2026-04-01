@@ -25,8 +25,8 @@ const webhookUrlProps: InputFieldProps = {
   name: "webhookUrl",
   label: "Webhook Url",
 
-  description: "Webhook URL will be active after trigger creation",
-  // description: "Webhook URL is auto-generated after trigger creation",
+  // description: "Webhook URL will be active after trigger creation",
+  description: "Webhook URL is auto-generated after trigger creation",
 };
 
 const apiKeyProps: InputFieldProps = {
