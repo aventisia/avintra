@@ -1,16 +1,18 @@
-import { AppErrorPage } from "./components/layout/AppErrorPage";
 import { NotFoundPage } from "@aventisia/ui/layout";
-import { AppRedirectPage } from "./components/layout/AppRedirectPage";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import {
-  createBrowserRouter,
   Navigate,
   RouterProvider,
+  createBrowserRouter,
 } from "react-router-dom";
+
+import { AppErrorPage } from "./components/layout/AppErrorPage";
 import { AppLayout } from "./components/layout/AppLayout";
-import { FlowPage } from "./pages/FlowPage";
-import { AgentsAssistPage } from "./pages/AgentsAssistPage";
+import { AppRedirectPage } from "./components/layout/AppRedirectPage";
 import { AgentHistoryPage } from "./pages/AgentHistoryPage";
+import { AgentsAssistPage } from "./pages/AgentsAssistPage";
+import { ExecutionLogsPage } from "./pages/ExecutionLogsPage";
+import { FlowPage } from "./pages/FlowPage";
 
 const queryClient = new QueryClient({
   defaultOptions: {
@@ -38,6 +40,10 @@ const router = createBrowserRouter(
         {
           path: "/agent-history",
           element: <AgentHistoryPage />,
+        },
+        {
+          path: "/execution",
+          element: <ExecutionLogsPage />,
         },
         {
           path: "/agents-assist",
