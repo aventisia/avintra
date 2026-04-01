@@ -15,7 +15,8 @@ export const AppErrorPage = () => {
 
   useEffect(() => {
     if (
-      error?.message?.includes("Failed to fetch dynamically imported module")
+      error?.message?.includes("Failed to fetch dynamically imported module") ||
+      error?.message?.includes("Failed to load module script")
     ) {
       window.location.reload();
     }

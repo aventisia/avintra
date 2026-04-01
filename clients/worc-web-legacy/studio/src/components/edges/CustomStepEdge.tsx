@@ -1,4 +1,5 @@
 // import { EDGE_BORDER_RADIUS } from "@/constants";
+import { useIsExecutionLogsRoute } from "@/features/execution-logs/hooks/useIsExecutionLogsRoute";
 import { useIsVersionHistoryRoute } from "@/features/version-history/hooks/useIsVersionHistoryRoute";
 
 import {
@@ -22,7 +23,7 @@ export const CustomStepEdge = memo(
     targetY,
     sourcePosition,
     targetPosition,
-    style,
+    // style,
     markerEnd,
     label,
   }: EdgeProps) => {
@@ -41,6 +42,7 @@ export const CustomStepEdge = memo(
     });
 
     const isAgentHistory = useIsVersionHistoryRoute();
+    const isExecutionLog = useIsExecutionLogsRoute();
 
     return (
       <>
@@ -51,10 +53,10 @@ export const CustomStepEdge = memo(
           id={id}
           path={edgePath}
           markerEnd={markerEnd}
-          style={style}
-          className="stroke-1"
+          // style={style}
+          className="stroke-1 !text-green-500"
         />
-        {label && !isAgentHistory ? (
+        {label && !isAgentHistory && !isExecutionLog ? (
           <EdgeLabelContainer
             edgeId={id}
             label={label}
