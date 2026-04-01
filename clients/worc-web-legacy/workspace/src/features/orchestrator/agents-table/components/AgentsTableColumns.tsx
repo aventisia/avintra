@@ -1,3 +1,5 @@
+import { FlowTypesEnum } from "@/react-toolkit/enums/flow-types-enum";
+
 import { Checkbox } from "@aventisia/ui";
 import { Badge } from "@aventisia/ui/badge";
 import { DTColumnHeader } from "@aventisia/ui/data-table";
@@ -7,10 +9,8 @@ import { ColumnDef } from "@tanstack/react-table";
 import { TABLE_KEY } from "../constants";
 import { getColumnName } from "../constants/column-display-names";
 import { AgentsTableDto } from "../dtos/agents-table-dto";
-
-import { FlowTypesEnum } from "@/react-toolkit/enums/flow-types-enum";
-import { TableActions } from "./table-actions/TableActions";
 import { TableCellLink } from "./TableCellLink";
+import { TableActions } from "./table-actions/TableActions";
 
 /**
  * Array of table columns for the agents table.
@@ -58,19 +58,19 @@ export const agentsTableColumns: ColumnDef<AgentsTableDto>[] = [
       />
     ),
   },
-  // {
-  //   accessorKey: "type",
-  //   header: ({ column }) => (
-  //     <DTColumnHeader
-  //       tableKey={TABLE_KEY}
-  //       column={column}
-  //       title={getColumnName("type")}
-  //     />
-  //   ),
-  //   cell: ({ row }) => (
-  //     <div className="w-auto truncate font-medium">{row.getValue("type")}</div>
-  //   ),
-  // },
+  {
+    accessorKey: "type",
+    header: ({ column }) => (
+      <DTColumnHeader
+        tableKey={TABLE_KEY}
+        column={column}
+        title={getColumnName("type")}
+      />
+    ),
+    cell: ({ row }) => (
+      <div className="w-auto truncate font-medium">{row.getValue("type")}</div>
+    ),
+  },
   {
     accessorKey: "machineCount",
     header: ({ column }) => (
@@ -82,7 +82,10 @@ export const agentsTableColumns: ColumnDef<AgentsTableDto>[] = [
     ),
     cell: ({ row }) => (
       <div className="w-auto truncate font-medium">
-        {(row.original.type == FlowTypesEnum.Agent || row.original.type == FlowTypesEnum.ChatAgent) ? row.getValue("machineCount") : "NA"}
+        {row.original.type == FlowTypesEnum.Agent ||
+        row.original.type == FlowTypesEnum.ChatAgent
+          ? row.getValue("machineCount")
+          : "NA"}
       </div>
     ),
   },
@@ -175,6 +178,7 @@ export const agentsTableColumns: ColumnDef<AgentsTableDto>[] = [
         count={row.original.machineCount || 0}
         rowId={row.original.id}
         isDisabled={row.original.isDisabled}
+        type={row.original.type}
       />
     ),
   },
