@@ -22,21 +22,11 @@ namespace WorkspaceAPIs.MappingProfiles
                    .Map(dest => dest.Name,
                         src => src.FlowVersion != null ? src.FlowVersion.Flow.Name : string.Empty)
                   .Map(dest => dest.VersionNumber,
-                        src => src.FlowVersion != null ? src.FlowVersion.VersionNumber : 0)
-                   .Map(dest => dest.CreatedBy,
-                        src => src.CreatedByUser != null
-                            ? $"{src.CreatedByUser.FirstName} {src.CreatedByUser.LastName}"
-                            : null)
-                   .Map(dest => dest.LastModifiedBy,
-                        src => src.LastModifiedByUser != null
-                            ? $"{src.LastModifiedByUser.FirstName} {src.LastModifiedByUser.LastName}"
-                            : null);
+                        src => src.FlowVersion != null ? src.FlowVersion.VersionNumber : 0);
 
                // Map from FlowVersionUserDto to FlowVersionUser
                config.NewConfig<FlowVersionUserDto, FlowVersionUser>()
                    .Ignore(dest => dest.Id)
-                   .Ignore(dest => dest.CreatedOn)
-                   .Ignore(dest => dest.LastModifiedOn)
                    .Ignore(dest => dest.TenantId)
                    .IgnoreNullValues(true);
           }
