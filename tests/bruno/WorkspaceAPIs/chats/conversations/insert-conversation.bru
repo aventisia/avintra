@@ -1,0 +1,30 @@
+meta {
+  name: Insert conversation
+  type: http
+  seq: 1
+}
+
+post {
+  url: {{WORC_APIS_BASE_URL}}/assist/conversations
+  body: json
+  auth: bearer
+}
+
+auth:bearer {
+  token: {{ACCESS_TOKEN}}
+}
+
+body:json {
+  {
+    "flowVersionId": "{{FLOW_VERSION_ID}}",
+    "userId": "{{USER_ID}}"
+  }
+}
+
+script:post-response {
+  if(res.getStatus() == 200){
+      bru.setGlobalEnvVar(
+          "CONVERSATION_ID", res.getBody().data.id
+      );
+  }
+}
