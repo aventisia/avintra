@@ -1,0 +1,22 @@
+meta {
+  name: Insert conversation message
+  type: http
+  seq: 1
+}
+
+post {
+  url: {{WORC_APIS_BASE_URL}}/assist/conversations/messages
+  body: json
+  auth: bearer
+}
+
+auth:bearer {
+  token: {{ACCESS_TOKEN}}
+}
+
+body:json {
+  {
+    "conversationId": "{{CONVERSATION_ID}}",
+    "content": "This is first message"
+  }
+}
