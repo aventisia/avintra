@@ -79,12 +79,16 @@ const routerConfig: RouteObject[] = [
         element: <ComingSoon />,
       },
       {
-        path: "/assist/my-agents",
+        path: "/assist/agents",
         element: <AgentsAssistPage />,
       },
       {
-        path: "/assist/my-queue",
+        path: "/assist/queues",
         element: <MyQueuePage />,
+      },
+       {
+        path: "/assist/chats",
+        element: <AgentsAssistPage />,
       },
       {
         path: "/account",
