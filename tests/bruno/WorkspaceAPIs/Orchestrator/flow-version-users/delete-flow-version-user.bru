@@ -1,0 +1,19 @@
+meta {
+  name: Delete flow version user
+  type: http
+  seq: 8
+}
+
+delete {
+  url: {{WORC_APIS_BASE_URL}}/flowversion-user/{{FLOW_VERSION_USER_ID}}
+  body: none
+}
+
+script:post-response {
+  if(res.getStatus() == 200){
+      bru.setGlobalEnvVar(
+        "Flow_VERSION_USER_ID", 
+        "00000000-0000-0000-0000-000000000000"
+      );
+  }
+}

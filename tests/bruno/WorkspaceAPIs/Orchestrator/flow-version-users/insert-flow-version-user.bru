@@ -1,0 +1,26 @@
+meta {
+  name: Insert flow version user
+  type: http
+  seq: 3
+}
+
+post {
+  url: {{WORC_APIS_BASE_URL}}/flowversion-user
+  body: json
+  auth: none
+}
+
+body:json {
+  {
+    "flowVersionId": "{{FLOW_VERSION_ID}}",
+    "userId": "{{USER_ID}}"
+  }
+}
+
+script:post-response {
+  if(res.getStatus() == 200){
+      bru.setGlobalEnvVar(
+          "FLOW_VERSION_USER_ID", res.getBody().data.id
+      );
+  }
+}
