@@ -1,0 +1,28 @@
+meta {
+  name: Repeat - Bulk insert flow version users
+  type: http
+  seq: 9
+}
+
+post {
+  url: {{WORC_APIS_BASE_URL}}/flowversion-user/bulk
+  body: json
+  auth: none
+}
+
+body:json {
+  [
+    {
+      "flowVersionId": "{{FLOW_VERSION_ID}}",
+      "userId": "{{USER_ID}}"
+    }
+  ]
+}
+
+script:post-response {
+  if(res.getStatus() == 200){
+      bru.setGlobalEnvVar(
+          "FLOW_VERSION_USER_ID", res.getBody().data[0].id
+      );
+  }
+}
