@@ -21,6 +21,7 @@ import {
   FileBoxIcon,
   FolderCogIcon,
   LibraryIcon,
+  MessageCircleMoreIcon,
   MonitorPlayIcon,
   ServerIcon,
   Shield,
@@ -119,25 +120,64 @@ const sidebarMenuSections: SidebarMenuSectionExtended[] = [
           {
             permissions: ["TU"],
             Icon: NewAgentIcon,
-            name: "my agents",
-            route: "/assist/my-agents",
+            name: "agents",
+            route: "/assist/agents",
             type: ["Commercial", "Enterprise"],
           },
 
-          // Add Assist my queue only if not production
+          // Add Assist queues only if not production
           ...(import.meta.env.MODE !== "production"
             ? ([
                 {
                   permissions: ["TU"],
                   Icon: QueueListIcon,
-                  name: "my queue",
-                  route: "/assist/my-queue",
+                  name: "queues",
+                  route: "/assist/queues",
+                  type: ["Commercial", "Enterprise"],
+                },
+              ] as SidebarMenuItemExtended[])
+            : []),
+          // Add Assist chats only if not production
+          ...(import.meta.env.MODE !== "production"
+            ? ([
+                {
+                  permissions: ["TU"],
+                  Icon: QueueListIcon,
+                  name: "chats",
+                  route: "/assist/chats",
                   type: ["Commercial", "Enterprise"],
                 },
               ] as SidebarMenuItemExtended[])
             : []),
         ]
-      : [],
+      : [
+          // In dev show assist section in both web and taruri
+          ...(import.meta.env.MODE == "development"
+            ? ([
+                {
+                  permissions: ["TU"],
+                  Icon: NewAgentIcon,
+                  name: "agents",
+                  route: "/assist/agents",
+                  type: ["Commercial", "Enterprise"],
+                },
+                {
+                  permissions: ["TU"],
+                  Icon: QueueListIcon,
+                  name: "queues",
+                  route: "/assist/queues",
+                  type: ["Commercial", "Enterprise"],
+                },
+                {
+                  permissions: ["TU"],
+                  Icon: MessageCircleMoreIcon,
+                  name: "chats",
+                  route: "/assist/chats",
+                  type: ["Commercial", "Enterprise"],
+                },
+              ] as SidebarMenuItemExtended[])
+            : []),
+        ],
   },
   {
     sectionName: "Tenant Admin",
