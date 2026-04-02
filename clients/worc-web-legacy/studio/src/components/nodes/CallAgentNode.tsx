@@ -7,7 +7,7 @@ import { NodeDataType } from "@/types/node-data-type";
 import { Button } from "@aventisia/ui/buttons";
 import { cn } from "@aventisia/ui/lib";
 import { Tooltip } from "@aventisia/ui/tooltip";
-import { CheckCircleIcon } from "@heroicons/react/24/solid";
+// import { CheckCircleIcon } from "@heroicons/react/24/solid";
 import {
   Node,
   NodeProps,
@@ -68,7 +68,7 @@ export const CallAgentNode = memo(
           <OpenNodeConfig {...{ nodeData: data, nodeId: id }}>
             <div className="flex h-full w-full items-center justify-center">
               {/* <NodeHeader> */}
-              <CheckCircleIcon className="absolute left-[1.625rem] top-1 h-2 w-2 text-green-500" />
+              {/* <CheckCircleIcon className="absolute left-[1.625rem] top-1 h-2 w-2 text-green-500" /> */}
               <NodeImage src="/assets/NewAgentIcon.svg" />
               <NodeHeading className="text-2xs">{data.label}</NodeHeading>
               <InputHandle position={targetPosition} />
