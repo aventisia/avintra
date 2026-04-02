@@ -66,6 +66,8 @@ public static class AppServicesExtension
         config.Apply(new QueueWorkItemMappingProfile());
         config.Apply(new FlowVersionUserMappingProfile());
         config.Apply(new AssistChatTableMappingProfile());
+        config.Apply(new ConversationMappingProfile());
+        config.Apply(new ConversationMessageMappingProfile());
 
         services.AddSingleton(config);
     }
@@ -124,6 +126,8 @@ public static class AppServicesExtension
         services.AddSingleton<ConcurrentDictionary<Guid, AgentBuilderModel>>();
         services.AddScoped<IFlowVersionUserService, FlowVersionUserService>();
         services.AddScoped<IAssistChatTableService, AssistChatTableService>();
+        services.AddScoped<IConversationService, ConversationService>();
+        services.AddScoped<IConversationMessageService, ConversationMessageService>();
 
         // Cloud Connectors feature
         services.AddScoped<ICloudConnectorsVaultService, CloudConnectorsVaultService>();
