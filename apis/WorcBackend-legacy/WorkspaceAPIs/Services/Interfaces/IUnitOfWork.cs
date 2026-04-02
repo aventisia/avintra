@@ -33,6 +33,8 @@ public interface IUnitOfWork
     IEncryptedKeyValueRepo EncryptedKeyValueRepo { get; }
     IAITaskRepo AITaskRepo { get; }
     IOnPremModelRepo OnPremModelRepo { get; }
+    IConversationRepo ConversationRepo { get; }
+    IConversationMessageRepo ConversationMessageRepo { get; }
 
     /// <summary>
     /// Saves the changes made in the unit of work asynchronously.
