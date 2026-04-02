@@ -4,8 +4,14 @@ namespace WorkspaceAPIs.Entities;
 /// Represents a Flow Version User, linking a user to a specific Flow Version in the context of a tenant.
 /// </summary>
 [Table("worc_FlowVersionUsers")]
-public class FlowVersionUser : BaseEntity, IMustHaveTenant
+public class FlowVersionUser : IMustHaveTenant
 {
+    /// <summary>
+    /// Gets or sets the unique identifier (primary key) for the flow version user record.
+    /// </summary>
+    [Key]
+    public Guid Id { get; set; }
+
     /// <summary>
     /// Gets or sets the tenant ID associated with this flow version user.
     /// </summary>

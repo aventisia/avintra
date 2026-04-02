@@ -502,23 +502,8 @@ namespace WorkspaceAPIs.Data.Migrations
                         .ValueGeneratedOnAdd()
                         .HasColumnType("uuid");
 
-                    b.Property<Guid>("CreatedByUserId")
-                        .HasColumnType("uuid");
-
-                    b.Property<DateTimeOffset>("CreatedOn")
-                        .HasColumnType("timestamp with time zone");
-
                     b.Property<Guid>("FlowVersionId")
                         .HasColumnType("uuid");
-
-                    b.Property<bool>("IsDisabled")
-                        .HasColumnType("boolean");
-
-                    b.Property<Guid>("LastModifiedByUserId")
-                        .HasColumnType("uuid");
-
-                    b.Property<DateTimeOffset>("LastModifiedOn")
-                        .HasColumnType("timestamp with time zone");
 
                     b.Property<Guid>("TenantId")
                         .HasColumnType("uuid");
@@ -526,19 +511,9 @@ namespace WorkspaceAPIs.Data.Migrations
                     b.Property<Guid>("UserId")
                         .HasColumnType("uuid");
 
-                    b.Property<uint>("Version")
-                        .IsConcurrencyToken()
-                        .ValueGeneratedOnAddOrUpdate()
-                        .HasColumnType("xid")
-                        .HasColumnName("xmin");
-
                     b.HasKey("Id");
 
-                    b.HasIndex("CreatedByUserId");
-
                     b.HasIndex("FlowVersionId");
-
-                    b.HasIndex("LastModifiedByUserId");
 
                     b.HasIndex("UserId");
 
@@ -2039,21 +2014,9 @@ namespace WorkspaceAPIs.Data.Migrations
 
             modelBuilder.Entity("WorkspaceAPIs.Entities.FlowVersionUser", b =>
                 {
-                    b.HasOne("WorkspaceAPIs.Entities.WorkspaceUser", "CreatedByUser")
-                        .WithMany()
-                        .HasForeignKey("CreatedByUserId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
                     b.HasOne("WorkspaceAPIs.Entities.FlowVersion", "FlowVersion")
                         .WithMany("FlowVersionUsers")
                         .HasForeignKey("FlowVersionId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.HasOne("WorkspaceAPIs.Entities.WorkspaceUser", "LastModifiedByUser")
-                        .WithMany()
-                        .HasForeignKey("LastModifiedByUserId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
@@ -2063,11 +2026,7 @@ namespace WorkspaceAPIs.Data.Migrations
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.Navigation("CreatedByUser");
-
                     b.Navigation("FlowVersion");
-
-                    b.Navigation("LastModifiedByUser");
 
                     b.Navigation("User");
                 });

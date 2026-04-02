@@ -33,9 +33,7 @@ public class FlowVersionUserService : IFlowVersionUserService
             // Fetch all flow versions linked to current user
             var flowVersionUsers = await _unitOfWork.FlowVersionUserRepo
                 .GetByConditionAsync(w => w.UserId == _userId)
-                .OrderByDescending(o => o.CreatedOn)
                 .Include(i => i.FlowVersion)
-                .Include(i => i.LastModifiedByUser)
                 .ProjectToType<FlowVersionUserDto>()
                 .ToListAsync();
 
@@ -68,7 +66,6 @@ public class FlowVersionUserService : IFlowVersionUserService
             // Fetch users associated with given flow version
             var flowVersionUsers = await _unitOfWork.FlowVersionUserRepo
                 .GetByConditionAsync(w => w.FlowVersionId == flowVersionId)
-                .OrderByDescending(o => o.CreatedOn)
                 .Include(i => i.User)
                 .Include(i => i.FlowVersion)
                 .ProjectToType<FlowVersionUserDto>()
@@ -178,8 +175,6 @@ public class FlowVersionUserService : IFlowVersionUserService
 
             // Map dto to entity and assign audit fields
             var flowVersionUser = flowVersionUserDto.Adapt<FlowVersionUser>();
-            flowVersionUser.CreatedByUserId = _userId;
-            flowVersionUser.LastModifiedByUserId = _userId;
 
             // Insert new record
             await _unitOfWork.FlowVersionUserRepo.InsertAsync(flowVersionUser);
@@ -256,8 +251,6 @@ public class FlowVersionUserService : IFlowVersionUserService
             var newFlowVersionUsers = newFlowVersionUserDtos.Select(d =>
             {
                 var flowVersionUser = d.Adapt<FlowVersionUser>();
-                flowVersionUser.CreatedByUserId = _userId;
-                flowVersionUser.LastModifiedByUserId = _userId;
                 return flowVersionUser;
             }).ToList();
 
@@ -311,7 +304,6 @@ public class FlowVersionUserService : IFlowVersionUserService
 
             // Map updated values to entity
             flowVersionUserDto.Adapt(flowVersionUser);
-            flowVersionUser.LastModifiedByUserId = _userId;
 
             // Mark entity as updated
             _unitOfWork.FlowVersionUserRepo.Update(flowVersionUser);

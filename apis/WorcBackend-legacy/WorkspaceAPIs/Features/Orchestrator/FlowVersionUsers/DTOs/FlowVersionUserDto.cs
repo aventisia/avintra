@@ -50,30 +50,4 @@ public class FlowVersionUserDto
     /// Gets or sets the version number of a flow version record
     /// </summary>
     public int VersionNumber { get; set; }
-
-    /// <summary>
-    /// Gets or sets a flag indicating whether the user is disabled.
-    /// Nullable to distinguish between true, false, and null.
-    /// </summary>
-    public bool? IsDisabled { get; set; }
-
-    /// <summary>
-    /// Gets or sets the username of the creator of the record.
-    /// </summary>
-    public string? CreatedBy { get; set; }
-
-    /// <summary>
-    /// Gets or sets when the record was created.
-    /// </summary>
-    public DateTimeOffset? CreatedOn { get; set; }
-
-    /// <summary>
-    /// Gets or sets the username of the last modifier.
-    /// </summary>
-    public string? LastModifiedBy { get; set; }
-
-    /// <summary>
-    /// Gets or sets when the record was last modified.
-    /// </summary>
-    public DateTimeOffset? LastModifiedOn { get; set; }
 }
