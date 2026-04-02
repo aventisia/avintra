@@ -6,6 +6,7 @@ import { useKeyboardShortcutsStore } from "@/features/keyboard-shortcuts/stores/
 import { PublishFlow } from "@/features/publish-flow/PublishFlow";
 import { useSaveAsTemplateStore } from "@/features/save-as-template/stores/save-as-template-store";
 import { useExportFlow } from "@/hooks/useExportFlow";
+import { useCurrentFlowStore } from "@/stores/current-flow-store";
 
 import {
   DropdownMenu,
@@ -65,6 +66,12 @@ export const HeaderActionMenu: React.FC = () => {
 
   const { exportFlow, exportFlowTrimmed } = useExportFlow();
 
+  const { isChatAgent } = useCurrentFlowStore(
+    useShallow((state) => ({
+      isChatAgent: state.isChatAgent,
+    })),
+  );
+
   // Tauri API to open the UI inspector
   const openUIInspector = async () => {
     try {
@@ -103,7 +110,7 @@ export const HeaderActionMenu: React.FC = () => {
           onClick={() => setShowDialog(true)}
         />
 
-        {IS_TAURI ? (
+        {IS_TAURI && !isChatAgent ? (
           <SimpleDDMenuItem
             size="md"
             Icon={ArrowTopRightOnSquareIcon}
@@ -150,12 +157,14 @@ export const HeaderActionMenu: React.FC = () => {
           onClick={() => setSATDialog(true)}
         />
 
-        <SimpleDDMenuItem
-          onClick={() => setExportDialog(true)}
-          size="md"
-          Icon={ArrowLeftRightIcon}
-          content="Add Input/Output"
-        />
+        {!isChatAgent ? (
+          <SimpleDDMenuItem
+            onClick={() => setExportDialog(true)}
+            size="md"
+            Icon={ArrowLeftRightIcon}
+            content="Add Input/Output"
+          />
+        ) : null}
 
         <SimpleDDMenuItem
           size="md"
