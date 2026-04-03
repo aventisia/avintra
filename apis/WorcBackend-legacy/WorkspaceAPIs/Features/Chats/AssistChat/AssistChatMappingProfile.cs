@@ -1,11 +1,11 @@
 namespace WorkspaceAPIs.MappingProfiles
 {
-    public class AssistChatTableMappingProfile : IRegister
+    public class AssistChatMappingProfile : IRegister
     {
         public void Register(TypeAdapterConfig config)
         {
             // Mapping of DTO to get list of versions to show on the UI.
-            config.NewConfig<FlowVersion, AssistChatTableDto>()
+            config.NewConfig<FlowVersion, AssistChatDto>()
                 .Map(dest => dest.Id, src => src.Id)
                 .Map(dest => dest.Conversations,
                     src => src.Conversations != null
@@ -31,6 +31,7 @@ namespace WorkspaceAPIs.MappingProfiles
                         })
                         : null)
                 .Map(dest => dest.Name, src => src.Flow != null ? src.Flow.Name : null)
+                .Map(dest => dest.Description, src => src.Flow != null ? src.Flow.Description : null)
                 .Map(dest => dest.LastModifiedByUsername, src => src.LastModifiedByUser != null
                     ? src.LastModifiedByUser.UserName
                     : null)

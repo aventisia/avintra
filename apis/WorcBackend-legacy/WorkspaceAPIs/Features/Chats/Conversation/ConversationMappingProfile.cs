@@ -18,6 +18,12 @@ namespace WorkspaceAPIs.MappingProfiles
                               .Select(s => s.Content)
                               .FirstOrDefault() ?? "Untitled Conversation"
                          : "Untitled Conversation")
+                    // Title = (s.Messages ?? Enumerable.Empty<ConversationMessage>())
+                    //             .OrderByDescending(m => m.CreatedOn)
+                    //             .Select(s1 => string.Join(" ",
+                    //                 (s1.Content ?? "Untitled Conversation")
+                    //                     .Split(' ', StringSplitOptions.RemoveEmptyEntries)
+                    //                     .Take(5)))
                     .Map(dest => dest.Status, src => src.Status);
 
                // Map from ConversationDto to Conversation

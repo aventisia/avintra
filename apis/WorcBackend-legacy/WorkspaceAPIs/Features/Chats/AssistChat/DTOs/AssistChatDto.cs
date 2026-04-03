@@ -1,6 +1,6 @@
 namespace WorkspaceAPIs.DTOs;
 
-public class AssistChatTableDto
+public class AssistChatDto
 {
     /// <summary>
     /// Gets or sets the unique identifier of the associated flow version.
@@ -11,6 +11,11 @@ public class AssistChatTableDto
     /// Gets or sets the name of the flow.
     /// </summary>
     public required string Name { get; set; }
+
+    /// <summary>
+    /// Gets or sets the description of the block pr template.
+    /// </summary>
+    public string? Description { get; set; }
 
     /// <summary>
     /// Gets or sets a value indicating whether the flow version is archived.

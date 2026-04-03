@@ -65,7 +65,7 @@ public static class AppServicesExtension
         config.Apply(new OnPremModelMappingProfile());
         config.Apply(new QueueWorkItemMappingProfile());
         config.Apply(new FlowVersionUserMappingProfile());
-        config.Apply(new AssistChatTableMappingProfile());
+        config.Apply(new AssistChatMappingProfile());
         config.Apply(new ConversationMappingProfile());
         config.Apply(new ConversationMessageMappingProfile());
 
@@ -125,7 +125,7 @@ public static class AppServicesExtension
         services.AddScoped<IAgentBuilderStore, AgentBuilderStore>();
         services.AddSingleton<ConcurrentDictionary<Guid, AgentBuilderModel>>();
         services.AddScoped<IFlowVersionUserService, FlowVersionUserService>();
-        services.AddScoped<IAssistChatTableService, AssistChatTableService>();
+        services.AddScoped<IAssistChatService, AssistChatService>();
         services.AddScoped<IConversationService, ConversationService>();
         services.AddScoped<IConversationMessageService, ConversationMessageService>();
 
