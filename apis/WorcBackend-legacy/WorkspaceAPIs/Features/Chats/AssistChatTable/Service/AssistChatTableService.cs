@@ -32,19 +32,26 @@ public class AssistChatTableService : IAssistChatTableService
         {
             // Fetch flow versions based on the following criteria:
             // - Flow must be of type ChatAgent
-            // - Only published flow versions are included
-            // - Excludes archived flow versions
-            // - Ensures the flow version is assigned to the current user
+            // - Only published and non-archived flow versions are included
+            // - Flow version must be assigned to the current user
+            // - Must contain at least one non-archived conversation
+            // - That conversation must have at least one message
+            // - Includes only non-archived conversations with their messages
             var flowVersions = await _unitOfWork.FlowVersionRepo
                 .GetByConditionAsync(w =>
                     w.Flow.Type == FlowTypesEnum.ChatAgent &&
                     w.IsPublished &&
                     !w.IsArchived &&
-                    w.FlowVersionUsers != null &&
-                    w.FlowVersionUsers.Any(a => a.UserId == _userId)
+                    w.FlowVersionUsers!.Any(a => a.UserId == _userId) &&
+                    w.Conversations!.Any(c =>
+                        c.Status != ConversationStatusEnum.Archived
+                    )
                 )
                 .Include(i => i.Flow)
                 .Include(i => i.FlowVersionUsers)
+                .Include(i => i.Conversations!
+                    .Where(w => w.Status != ConversationStatusEnum.Archived))
+                    .ThenInclude(c => c.Messages)
                 .Include(i => i.CreatedByUser)
                 .Include(i => i.LastModifiedByUser)
                 .OrderBy(o => o.CreatedOn)
@@ -81,17 +88,24 @@ public class AssistChatTableService : IAssistChatTableService
         {
             // Fetch flow versions based on the following criteria:
             // - Flow must be of type ChatAgent
-            // - Only IsArchived flow versions are included
-            // - Ensures the flow version is assigned to the current user
+            // - Flow version must be assigned to the current user
+            // - Must contain at least one archived conversation
+            // - That archived conversation must have at least one message
+            // - Includes only archived conversations that have messages, along with their messages
             var flowVersions = await _unitOfWork.FlowVersionRepo
                 .GetByConditionAsync(w =>
                     w.Flow.Type == FlowTypesEnum.ChatAgent &&
-                    w.IsArchived &&
                     w.FlowVersionUsers != null &&
-                    w.FlowVersionUsers.Any(a => a.UserId == _userId)
-                )
+                    w.FlowVersionUsers.Any(a => a.UserId == _userId) &&
+                    w.Conversations.Any(c =>
+                        c.Status == ConversationStatusEnum.Archived &&
+                        c.Messages.Any()
+                ))
                 .Include(i => i.Flow)
                 .Include(i => i.FlowVersionUsers)
+                .Include(i => i.Conversations!
+                    .Where(w => w.Status == ConversationStatusEnum.Archived && w.Messages.Any()))
+                    .ThenInclude(c => c.Messages)
                 .Include(i => i.CreatedByUser)
                 .Include(i => i.LastModifiedByUser)
                 .OrderBy(o => o.LastModifiedOn)
@@ -146,7 +160,6 @@ public class AssistChatTableService : IAssistChatTableService
 
             // Update fields (assignment / state update)
             existingFlowVersion.IsArchived = assistChatTableDto.IsArchived;
-            existingFlowVersion.IsDisabled = assistChatTableDto.IsDisabled;
 
             // Set audit field
             existingFlowVersion.LastModifiedByUserId = _userId;

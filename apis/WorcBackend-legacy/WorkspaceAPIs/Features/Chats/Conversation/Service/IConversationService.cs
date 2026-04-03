@@ -12,7 +12,7 @@ public interface IConversationService
     /// <returns>
     /// A service response containing a collection of active conversations.
     /// </returns>
-    Task<ServiceResponse<IEnumerable<ConversationTableDto>>> GetActiveConversationsAsync(Guid flowVersionId);
+    Task<ServiceResponse<IEnumerable<ConversationDto>>> GetActiveConversationsAsync(Guid flowVersionId);
 
     /// <summary>
     /// Retrieves all archived conversations for a given flow version.
@@ -21,7 +21,7 @@ public interface IConversationService
     /// <returns>
     /// A service response containing a collection of archived conversations.
     /// </returns>
-    Task<ServiceResponse<IEnumerable<ConversationTableDto>>> GetArchivedConversationsAsync(Guid flowVersionId);
+    Task<ServiceResponse<IEnumerable<ConversationDto>>> GetArchivedConversationsAsync(Guid flowVersionId);
 
     /// <summary>
     /// Retrieves a specific conversation by its unique identifier.
@@ -30,7 +30,7 @@ public interface IConversationService
     /// <returns>
     /// A service response containing the conversation details if found.
     /// </returns>
-    Task<ServiceResponse<ConversationTableDto>> GetByIdAsync(Guid conversationId);
+    Task<ServiceResponse<ConversationDto>> GetByIdAsync(Guid conversationId);
 
     /// <summary>
     /// Creates a new conversation.
@@ -39,7 +39,7 @@ public interface IConversationService
     /// <returns>
     /// A service response containing the newly created conversation.
     /// </returns>
-    Task<ServiceResponse<ConversationTableDto>> CreateAsync(ConversationTableDto conversationDto);
+    Task<ServiceResponse<ConversationDto>> CreateAsync(ConversationDto conversationDto);
 
     /// <summary>
     /// Updates an existing conversation.
@@ -48,7 +48,7 @@ public interface IConversationService
     /// <returns>
     /// A service response containing the updated conversation.
     /// </returns>
-    Task<ServiceResponse<ConversationTableDto>> UpdateAsync(ConversationTableDto conversationDto);
+    Task<ServiceResponse<ConversationDto>> UpdateAsync(ConversationDto conversationDto);
 
     /// <summary>
     /// Archives a conversation, making it read-only and moving it to the archived list.

@@ -3,7 +3,7 @@ namespace WorkspaceAPIs.Enums;
 /// <summary>
 /// Represents the lifecycle state of a conversation.
 /// </summary>
-public enum ConversationStatusTypes
+public enum ConversationStatusEnum
 {
     /// <summary>
     /// Conversation is active and can receive/send messages.

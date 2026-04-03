@@ -23,9 +23,9 @@ public class ConversationMessage : IMustHaveTenant
     public required string Content { get; set; }
 
     /// <summary>
-    /// Gets or sets the role of message (e.g., User, System, Bot).
+    /// Gets or sets the role of message (e.g., User, System, Assistant).
     /// </summary>
-    public ConversationMessageTypes Role { get; set; }
+    public ConversationMessageSenderEnum Role { get; set; }
 
     /// <summary>
     /// Gets or sets additional structured metadata as JSON.

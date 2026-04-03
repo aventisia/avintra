@@ -23,7 +23,7 @@ public class ConversationMessageService : IConversationMessageService
     }
 
     // Sends a message in an existing conversation.
-    public async Task<ServiceResponse<ConversationMessageDto>> SendMessageAsync(ConversationMessageRequestDto conversationMessageRequestDto)
+    public async Task<ServiceResponse<ConversationMessageDto>> SendMessageAsync(ConversationMessageDto conversationMessageDto)
     {
         // Initialize response with default failure state
         var serviceResponse = new ServiceResponse<ConversationMessageDto>
@@ -35,8 +35,7 @@ public class ConversationMessageService : IConversationMessageService
         try
         {
             // Validate input
-            if (conversationMessageRequestDto == null ||
-                string.IsNullOrWhiteSpace(conversationMessageRequestDto.Content))
+            if (conversationMessageDto == null || string.IsNullOrWhiteSpace(conversationMessageDto.Content))
             {
                 _logger.LogWarning(
                     "[SendMessage] Invalid request payload. UserId: {UserId}", _userId);
@@ -48,7 +47,7 @@ public class ConversationMessageService : IConversationMessageService
             // Fetch conversation ensuring it belongs to current user
             var conversation = await _unitOfWork.ConversationRepo
                 .GetByConditionAsync(w =>
-                    w.Id == conversationMessageRequestDto.ConversationId &&
+                    w.Id == conversationMessageDto.ConversationId &&
                     w.UserId == _userId)
                 .SingleOrDefaultAsync();
 
@@ -57,7 +56,7 @@ public class ConversationMessageService : IConversationMessageService
             {
                 _logger.LogWarning(
                     "[SendMessage] Conversation not found or access denied. ConversationId: {ConversationId}, UserId: {UserId}",
-                    conversationMessageRequestDto.ConversationId,
+                    conversationMessageDto.ConversationId,
                     _userId);
 
                 // NOTE: Could auto-create conversation here if required
@@ -65,17 +64,12 @@ public class ConversationMessageService : IConversationMessageService
                 return serviceResponse;
             }
 
-            // Trim dto' string props
-            conversationMessageRequestDto = TrimDtoStringPropsUtil.TrimDtoStringProps(conversationMessageRequestDto);
+            // Trim all string properties in the DTO (e.g., remove leading/trailing spaces)
+            conversationMessageDto = TrimDtoStringPropsUtil.TrimDtoStringProps(conversationMessageDto);
 
             // Create new message entity
-            var message = new ConversationMessage
-            {
-                ConversationId = conversation.Id,
-                Content = conversationMessageRequestDto.Content,
-                Role = ConversationMessageTypes.User,
-                CreatedOn = DateTimeOffset.UtcNow
-            };
+            var message = conversationMessageDto.Adapt<ConversationMessage>();
+            message.Role = ConversationMessageSenderEnum.User;
 
             // Insert message into repository
             await _unitOfWork.ConversationMessageRepo.InsertAsync(message);
@@ -91,12 +85,13 @@ public class ConversationMessageService : IConversationMessageService
                 return serviceResponse;
             }
 
-            // TODO: Integrate LLM response generation here
+            // TODO: Integrate external web API response generation here
             // Steps:
             // 1. Fetch recent conversation messages
-            // 2. Send to LLM provider (OpenAI/Azure/etc.)
-            // 3. Receive/stream response
-            // 4. Save assistant message with metadata (tokens, model, etc.)
+            // 2. Prepare request payload (conversation + messages)
+            // 3. Send HTTP request to external service endpoint
+            // 4. Receive/stream response from API
+            // 5. Save assistant message with metadata (response info, status, etc.)
 
             // Map entity to DTO and return success
             serviceResponse.Data = message.Adapt<ConversationMessageDto>();
@@ -109,7 +104,7 @@ public class ConversationMessageService : IConversationMessageService
                 ex,
                 "[SendMessage] Unexpected error occurred. UserId: {UserId}, ConversationId: {ConversationId}",
                 _userId,
-                conversationMessageRequestDto?.ConversationId);
+                conversationMessageDto?.ConversationId);
         }
 
         return serviceResponse;
@@ -235,4 +230,12 @@ public class ConversationMessageService : IConversationMessageService
 
         return serviceResponse;
     }
+
+    private readonly JsonSerializerOptions DefaultOptions = new()
+    {
+        PropertyNamingPolicy = JsonNamingPolicy.CamelCase,
+        PropertyNameCaseInsensitive = true,
+        DefaultIgnoreCondition = JsonIgnoreCondition.WhenWritingNull,
+        WriteIndented = false
+    };
 }

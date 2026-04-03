@@ -14,35 +14,35 @@ public class ConversationController : BaseApiController
 
     // Gets active conversations for a specific flow version.
     [HttpGet("{flowVersionId}/active")]
-    public async Task<ActionResult<ServiceResponse<IEnumerable<ConversationTableDto>>>> GetActiveConversations(Guid flowVersionId)
+    public async Task<ActionResult<ServiceResponse<IEnumerable<ConversationDto>>>> GetActiveConversations(Guid flowVersionId)
     {
         return ResultHelper(await _conversationService.GetActiveConversationsAsync(flowVersionId));
     }
 
     // Gets archived conversations for a specific flow version.
     [HttpGet("{flowVersionId}/archived")]
-    public async Task<ActionResult<ServiceResponse<IEnumerable<ConversationTableDto>>>> GetArchivedConversations(Guid flowVersionId)
+    public async Task<ActionResult<ServiceResponse<IEnumerable<ConversationDto>>>> GetArchivedConversations(Guid flowVersionId)
     {
         return ResultHelper(await _conversationService.GetArchivedConversationsAsync(flowVersionId));
     }
 
     // Gets a conversation by its ID.
     [HttpGet("{conversationId}")]
-    public async Task<ActionResult<ServiceResponse<ConversationTableDto>>> GetById(Guid conversationId)
+    public async Task<ActionResult<ServiceResponse<ConversationDto>>> GetById(Guid conversationId)
     {
         return ResultHelper(await _conversationService.GetByIdAsync(conversationId));
     }
 
     // Creates a new conversation.
     [HttpPost]
-    public async Task<ActionResult<ServiceResponse<ConversationTableDto>>> Create([FromBody] ConversationTableDto conversationDto)
+    public async Task<ActionResult<ServiceResponse<ConversationDto>>> Create([FromBody] ConversationDto conversationDto)
     {
         return ResultHelper(await _conversationService.CreateAsync(conversationDto));
     }
 
     // Updates an existing conversation (e.g., title or metadata).
     [HttpPut]
-    public async Task<ActionResult<ServiceResponse<ConversationTableDto>>> Update([FromBody] ConversationTableDto conversationDto)
+    public async Task<ActionResult<ServiceResponse<ConversationDto>>> Update([FromBody] ConversationDto conversationDto)
     {
         return ResultHelper(await _conversationService.UpdateAsync(conversationDto));
     }
