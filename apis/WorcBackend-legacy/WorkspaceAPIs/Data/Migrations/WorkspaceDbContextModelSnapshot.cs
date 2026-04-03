@@ -631,7 +631,7 @@ namespace WorkspaceAPIs.Data.Migrations
                     b.Property<Guid>("FlowVersionId")
                         .HasColumnType("uuid");
 
-                    b.Property<string>("InputArgumentJson")
+                    b.Property<string>("InputArgumentsJson")
                         .HasColumnType("text");
 
                     b.Property<bool>("IsPublished")

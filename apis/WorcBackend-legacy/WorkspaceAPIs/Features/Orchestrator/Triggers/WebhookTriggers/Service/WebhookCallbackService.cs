@@ -56,7 +56,7 @@ public class WebhookCallbackService : IWebhookCallbackService
                 startTime = job.StartTime,
                 endTime = job.EndTime,
                 outputDataJson = job.OutputDataJson,
-                inputArgumentJson = job.InputArgumentJson
+                inputArgumentsJson = job.InputArgumentsJson
             };
 
             var jsonBody = System.Text.Json.JsonSerializer.Serialize(payload, new JsonSerializerOptions

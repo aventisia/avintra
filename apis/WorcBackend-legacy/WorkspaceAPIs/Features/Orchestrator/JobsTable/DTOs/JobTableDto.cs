@@ -79,7 +79,7 @@ public class JobTableDto
     /// <summary>
     /// Gets or sets the input arguments for the job in JSON format.
     /// </summary>
-    public string? InputArgumentJson { get; set; }
+    public string? InputArgumentsJson { get; set; }
 
     /// <summary>
     /// Gets or sets the output data produced by the job, stored as a JSON string. Populated when the job completes.
