@@ -15,6 +15,12 @@ public class Job
     /// <summary>
     /// Gets or sets the primary key of the tenant associated with the job, used for multi-tenant filtering.
     /// </summary>
+    /// <remarks>
+    /// We cannot have IMustHaveTenant interface implemented for Job entity, since background service needs to 
+    /// manage job in case of time trigger and we will not have the tenant context in that case, so we will just
+    /// have TenantId property here and make sure to set the TenantId whenever we create a new job record. 
+    /// This will allow us to filter the job records by tenant when we query the database for job management and monitoring. 
+    /// </remarks>
     public Guid TenantId { get; set; }
 
     /// <summary>
@@ -65,7 +71,7 @@ public class Job
     /// <summary>
     /// Gets or sets the input arguments for the job in JSON format.
     /// </summary>
-    public string? InputArgumentJson { get; set; }
+    public string? InputArgumentsJson { get; set; }
 
     /// <summary>
     /// Gets or sets the output data produced by the job, stored as a JSON string. Populated when the job completes.
@@ -90,11 +96,12 @@ public class Job
     /// <summary>
     /// Gets or sets the navigation property to the flow version associated with this job.
     /// </summary>
+    [ForeignKey("FlowVersionId")]
     public virtual FlowVersion? FlowVersion { get; set; }
 
     /// <summary>
-    /// Gets or sets the navigation property to the flow version associated with this job.
+    /// Gets or sets the navigation property to the machine associated with this job.
     /// </summary>
+    [ForeignKey("MachineId")]
     public virtual Machine? Machine { get; set; }
-
 }

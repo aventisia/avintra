@@ -61,7 +61,7 @@ public class WebhookJobStatusDto
     /// <summary>
     /// Gets or sets the input arguments that were passed when the job was created.
     /// </summary>
-    public string? InputArgumentJson { get; set; }
+    public string? InputArgumentsJson { get; set; }
 
     /// <summary>
     /// Gets or sets the output data produced by the agent. Populated only when the job is completed.
