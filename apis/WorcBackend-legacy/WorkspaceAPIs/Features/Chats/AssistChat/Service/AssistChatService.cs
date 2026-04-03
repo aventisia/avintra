@@ -1,13 +1,13 @@
 namespace WorkspaceAPIs.Services;
 
-public class AssistChatTableService : IAssistChatTableService
+public class AssistChatService : IAssistChatService
 {
-    private readonly ILogger<AssistChatTableService> _logger;
+    private readonly ILogger<AssistChatService> _logger;
     private readonly IUnitOfWork _unitOfWork;
     private readonly Guid _userId;
 
-    public AssistChatTableService(
-        ILogger<AssistChatTableService> logger,
+    public AssistChatService(
+        ILogger<AssistChatService> logger,
         IUnitOfWork unitOfWork,
         IHttpContextAccessor httpContextAccessor)
     {
@@ -19,10 +19,10 @@ public class AssistChatTableService : IAssistChatTableService
     }
 
     // Retrieves all assigned (published) flow versions.
-    public async Task<ServiceResponse<IEnumerable<AssistChatTableDto>>> GetPublishFlowVersionsAsync()
+    public async Task<ServiceResponse<IEnumerable<AssistChatDto>>> GetPublishFlowVersionsAsync()
     {
         // Initialize response object with default failure state
-        var serviceResponse = new ServiceResponse<IEnumerable<AssistChatTableDto>>
+        var serviceResponse = new ServiceResponse<IEnumerable<AssistChatDto>>
         {
             Data = null,
             Message = "Failed to retrieve assigned flow versions. Please try again."
@@ -59,7 +59,7 @@ public class AssistChatTableService : IAssistChatTableService
                 .ToListAsync();
 
             // Map entity list to DTO
-            serviceResponse.Data = flowVersions.Adapt<IEnumerable<AssistChatTableDto>>();
+            serviceResponse.Data = flowVersions.Adapt<IEnumerable<AssistChatDto>>();
 
             // Update response to success
             serviceResponse.StatusCode = 200;
@@ -75,10 +75,10 @@ public class AssistChatTableService : IAssistChatTableService
     }
 
     // Retrieves all archived flow versions.
-    public async Task<ServiceResponse<IEnumerable<AssistChatTableDto>>> GetArchiveFlowVersionsAsync()
+    public async Task<ServiceResponse<IEnumerable<AssistChatDto>>> GetArchiveFlowVersionsAsync()
     {
         // Initialize response object
-        var serviceResponse = new ServiceResponse<IEnumerable<AssistChatTableDto>>
+        var serviceResponse = new ServiceResponse<IEnumerable<AssistChatDto>>
         {
             Data = null,
             Message = "Failed to retrieve archived flow versions. Please try again."
@@ -113,7 +113,7 @@ public class AssistChatTableService : IAssistChatTableService
                 .ToListAsync();
 
             // Map to DTO
-            serviceResponse.Data = flowVersions.Adapt<IEnumerable<AssistChatTableDto>>();
+            serviceResponse.Data = flowVersions.Adapt<IEnumerable<AssistChatDto>>();
 
             // Success response
             serviceResponse.StatusCode = 200;
@@ -129,10 +129,10 @@ public class AssistChatTableService : IAssistChatTableService
     }
 
     // Updates a flow version.
-    public async Task<ServiceResponse<AssistChatTableDto>> UpdateFlowVersionAsync(AssistChatTableDto assistChatTableDto)
+    public async Task<ServiceResponse<AssistChatDto>> UpdateFlowVersionAsync(AssistChatDto assistChatDto)
     {
         // Initialize response object
-        var serviceResponse = new ServiceResponse<AssistChatTableDto>
+        var serviceResponse = new ServiceResponse<AssistChatDto>
         {
             Data = null,
             Message = "Failed to update flow version. Please try again."
@@ -142,7 +142,7 @@ public class AssistChatTableService : IAssistChatTableService
         {
             // Fetch existing flow version by Id (condition check)
             var existingFlowVersion = await _unitOfWork.FlowVersionRepo
-                .GetByConditionAsync(w => w.Id == assistChatTableDto.Id)
+                .GetByConditionAsync(w => w.Id == assistChatDto.Id)
                 .FirstOrDefaultAsync();
 
             // Check if flow version exists
@@ -151,7 +151,7 @@ public class AssistChatTableService : IAssistChatTableService
                 // Log failure case
                 _logger.LogWarning(
                     "Flow version not found. FlowVersionId: {Id}",
-                    assistChatTableDto.Id
+                    assistChatDto.Id
                 );
 
                 serviceResponse.Message = "Flow version not found.";
@@ -159,7 +159,7 @@ public class AssistChatTableService : IAssistChatTableService
             }
 
             // Update fields (assignment / state update)
-            existingFlowVersion.IsArchived = assistChatTableDto.IsArchived;
+            existingFlowVersion.IsArchived = assistChatDto.IsArchived;
 
             // Set audit field
             existingFlowVersion.LastModifiedByUserId = _userId;
@@ -173,14 +173,14 @@ public class AssistChatTableService : IAssistChatTableService
                 // Log failure if DB save fails
                 _logger.LogWarning(
                     "Save failed while updating flow version. FlowVersionId: {Id}",
-                    assistChatTableDto.Id
+                    assistChatDto.Id
                 );
 
                 return serviceResponse;
             }
 
             // Map updated entity to DTO
-            serviceResponse.Data = existingFlowVersion.Adapt<AssistChatTableDto>();
+            serviceResponse.Data = existingFlowVersion.Adapt<AssistChatDto>();
 
             // Success response
             serviceResponse.StatusCode = 200;
@@ -192,7 +192,7 @@ public class AssistChatTableService : IAssistChatTableService
             _logger.LogError(
                 ex,
                 "Error updating flow version. FlowVersionId: {Id}",
-                assistChatTableDto.Id
+                assistChatDto.Id
             );
         }
 
