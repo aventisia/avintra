@@ -15,10 +15,10 @@ public class ConversationSummaryDto
     /// <summary>
     /// Gets or sets the timestamp of the conversation (e.g., last activity time).
     /// </summary>
-    public DateTimeOffset Time { get; set; }
+    public DateTimeOffset Timestamp { get; set; }
 
     /// <summary>
-    /// Gets or sets the status of the conversation (temporary as string, can be enum later).
+    /// Gets or sets the status of the conversation.
     /// </summary>
-    public string Status { get; set; } = string.Empty;
+    public ConversationStatusEnum Status { get; set; }
 }

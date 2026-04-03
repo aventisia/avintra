@@ -9,9 +9,9 @@ public interface IConversationMessageService
     /// <summary>
     /// Sends a message within a conversation. If a conversation does not exist, a new one will be created automatically.
     /// </summary>
-    /// <param name="conversationMessageRequestDto"> The request containing message content, and optional conversation identifier.  </param>
+    /// <param name="conversationMessageDto"> The request containing message content, and optional conversation identifier.  </param>
     /// <returns> A service response containing the processed message and associated conversation identifier. </returns>
-    Task<ServiceResponse<ConversationMessageDto>> SendMessageAsync(ConversationMessageRequestDto conversationMessageRequestDto);
+    Task<ServiceResponse<ConversationMessageDto>> SendMessageAsync(ConversationMessageDto conversationMessageDto);
 
     /// <summary>
     /// Retrieves all messages for a specific conversation. Typically used to load the complete chat history on initial page load or refresh.

@@ -19,10 +19,10 @@ public class ConversationService : IConversationService
     }
 
     // Retrieves active conversations for a specific flow version.
-    public async Task<ServiceResponse<IEnumerable<ConversationTableDto>>> GetActiveConversationsAsync(Guid flowVersionId)
+    public async Task<ServiceResponse<IEnumerable<ConversationDto>>> GetActiveConversationsAsync(Guid flowVersionId)
     {
         // Initialize response with default failure state
-        var serviceResponse = new ServiceResponse<IEnumerable<ConversationTableDto>>
+        var serviceResponse = new ServiceResponse<IEnumerable<ConversationDto>>
         {
             Data = null,
             Message = "Failed to retrieve active conversations. Please try again."
@@ -35,11 +35,11 @@ public class ConversationService : IConversationService
                 .GetByConditionAsync(w =>
                     w.FlowVersionId == flowVersionId &&
                     w.UserId == _userId &&
-                    !w.IsArchived
+                    w.Status != ConversationStatusEnum.Archived
                 )
                 .OrderByDescending(o => o.CreatedOn)
                 .Include(i => i.Messages)
-                .ProjectToType<ConversationTableDto>()
+                .ProjectToType<ConversationDto>()
                 .ToListAsync();
 
             // Assign success response
@@ -57,10 +57,10 @@ public class ConversationService : IConversationService
     }
 
     // Retrieves archived conversations for a specific flow version.
-    public async Task<ServiceResponse<IEnumerable<ConversationTableDto>>> GetArchivedConversationsAsync(Guid flowVersionId)
+    public async Task<ServiceResponse<IEnumerable<ConversationDto>>> GetArchivedConversationsAsync(Guid flowVersionId)
     {
         // Initialize response with default failure state
-        var serviceResponse = new ServiceResponse<IEnumerable<ConversationTableDto>>
+        var serviceResponse = new ServiceResponse<IEnumerable<ConversationDto>>
         {
             Data = null,
             Message = "Failed to retrieve archived conversations. Please try again."
@@ -73,11 +73,11 @@ public class ConversationService : IConversationService
                 .GetByConditionAsync(w =>
                     w.FlowVersionId == flowVersionId &&
                     w.UserId == _userId &&
-                    w.IsArchived
+                    w.Status == ConversationStatusEnum.Archived
                 )
-                .OrderByDescending(o => o.ArchivedOn)
+                .OrderByDescending(o => o.LastModifiedOn)
                 .Include(i => i.Messages)
-                .ProjectToType<ConversationTableDto>()
+                .ProjectToType<ConversationDto>()
                 .ToListAsync();
 
             // Assign success response
@@ -95,10 +95,10 @@ public class ConversationService : IConversationService
     }
 
     // Retrieves a specific conversation by its unique identifier.
-    public async Task<ServiceResponse<ConversationTableDto>> GetByIdAsync(Guid conversationId)
+    public async Task<ServiceResponse<ConversationDto>> GetByIdAsync(Guid conversationId)
     {
         // Initialize response with default failure state
-        var serviceResponse = new ServiceResponse<ConversationTableDto>
+        var serviceResponse = new ServiceResponse<ConversationDto>
         {
             Data = null,
             Message = "Failed to retrieve conversation. Please try again."
@@ -111,7 +111,7 @@ public class ConversationService : IConversationService
                 .GetByConditionAsync(w =>
                     w.Id == conversationId &&
                     w.UserId == _userId)
-                .ProjectToType<ConversationTableDto>()
+                .ProjectToType<ConversationDto>()
                 .SingleOrDefaultAsync();
 
             // Validate existence
@@ -141,10 +141,10 @@ public class ConversationService : IConversationService
     }
 
     // Creates a new conversation.
-    public async Task<ServiceResponse<ConversationTableDto>> CreateAsync(ConversationTableDto conversationDto)
+    public async Task<ServiceResponse<ConversationDto>> CreateAsync(ConversationDto conversationDto)
     {
         // Initialize response with default failure state
-        var serviceResponse = new ServiceResponse<ConversationTableDto>
+        var serviceResponse = new ServiceResponse<ConversationDto>
         {
             Data = null,
             Message = "Failed to create conversation. Please try again."
@@ -199,7 +199,7 @@ public class ConversationService : IConversationService
             conversation.UserId = _userId;
             conversation.CreatedByUserId = _userId;
             conversation.LastModifiedByUserId = _userId;
-            conversation.Status = ConversationStatusTypes.Active;
+            conversation.Status = ConversationStatusEnum.Active;
 
             // Insert new conversation
             await _unitOfWork.ConversationRepo.InsertAsync(conversation);
@@ -216,7 +216,7 @@ public class ConversationService : IConversationService
             }
 
             // Assign success response
-            serviceResponse.Data = conversation.Adapt<ConversationTableDto>();
+            serviceResponse.Data = conversation.Adapt<ConversationDto>();
             serviceResponse.StatusCode = 200;
             serviceResponse.Message = "Conversation created successfully.";
         }
@@ -234,10 +234,10 @@ public class ConversationService : IConversationService
     }
 
     // Updates an existing conversation.
-    public async Task<ServiceResponse<ConversationTableDto>> UpdateAsync(ConversationTableDto conversationDto)
+    public async Task<ServiceResponse<ConversationDto>> UpdateAsync(ConversationDto conversationDto)
     {
         // Initialize response with default failure state
-        var serviceResponse = new ServiceResponse<ConversationTableDto>
+        var serviceResponse = new ServiceResponse<ConversationDto>
         {
             Data = null,
             Message = "Failed to update conversation. Please try again."
@@ -276,7 +276,7 @@ public class ConversationService : IConversationService
             }
 
             // Assign success response
-            serviceResponse.Data = conversation.Adapt<ConversationTableDto>();
+            serviceResponse.Data = conversation.Adapt<ConversationDto>();
             serviceResponse.StatusCode = 200;
             serviceResponse.Message = "Conversation updated successfully.";
         }
@@ -318,7 +318,7 @@ public class ConversationService : IConversationService
             }
 
             // Prevent redundant archive operation
-            if (conversation.IsArchived || conversation.Status == ConversationStatusTypes.Archived)
+            if (conversation.Status == ConversationStatusEnum.Archived)
             {
                 _logger.LogInformation(
                     "[ArchiveConversation] Conversation already archived. ConversationId: {ConversationId}, UserId: {UserId}",
@@ -332,9 +332,9 @@ public class ConversationService : IConversationService
             }
 
             // Update status and archive metadata
-            conversation.Status = ConversationStatusTypes.Archived;
-            conversation.IsArchived = true;
-            conversation.ArchivedOn = DateTimeOffset.UtcNow;
+            conversation.Status = ConversationStatusEnum.Archived;
+            conversation.LastModifiedOn = DateTimeOffset.UtcNow;
+            conversation.LastModifiedByUserId = _userId;
 
             _unitOfWork.ConversationRepo.Update(conversation);
 
@@ -396,7 +396,7 @@ public class ConversationService : IConversationService
             }
 
             // Prevent redundant unarchive operation
-            if (!conversation.IsArchived && conversation.Status == ConversationStatusTypes.Active)
+            if (conversation.Status == ConversationStatusEnum.Active)
             {
                 _logger.LogInformation(
                     "[UnarchiveConversation] Conversation already active. ConversationId: {ConversationId}, UserId: {UserId}",
@@ -410,9 +410,9 @@ public class ConversationService : IConversationService
             }
 
             // Update status and reset archive metadata
-            conversation.Status = ConversationStatusTypes.Active;
-            conversation.IsArchived = false;
-            conversation.ArchivedOn = null;
+            conversation.Status = ConversationStatusEnum.Active;
+            conversation.LastModifiedByUserId = _userId;
+            conversation.LastModifiedOn = DateTimeOffset.UtcNow; ;
 
             _unitOfWork.ConversationRepo.Update(conversation);
 
@@ -483,7 +483,7 @@ public class ConversationService : IConversationService
 
             // Filter only non-archived conversations (idempotency)
             var conversationsToArchive = conversations
-                .Where(w => !w.IsArchived)
+                .Where(w => w.Status == ConversationStatusEnum.Archived)
                 .ToList();
 
             if (!conversationsToArchive.Any())
@@ -501,9 +501,9 @@ public class ConversationService : IConversationService
             // Update status and archive metadata
             conversationsToArchive.ForEach(c =>
             {
-                c.Status = ConversationStatusTypes.Archived;
-                c.IsArchived = true;
-                c.ArchivedOn = DateTimeOffset.UtcNow;
+                c.Status = ConversationStatusEnum.Archived;
+                c.LastModifiedByUserId = _userId;
+                c.LastModifiedOn = DateTimeOffset.UtcNow;
             });
 
             _unitOfWork.ConversationRepo.Update(conversationsToArchive);

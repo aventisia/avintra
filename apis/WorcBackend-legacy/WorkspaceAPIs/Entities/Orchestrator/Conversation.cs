@@ -12,24 +12,9 @@ public class Conversation : BaseEntity, IMustHaveTenant
     public Guid TenantId { get; set; }
 
     /// <summary>
-    /// Gets or sets the title of the conversion.
-    /// </summary>
-    public required string Title { get; set; }
-
-    /// <summary>
     /// Gets or sets the current lifecycle status of the conversation.
     /// </summary>
-    public ConversationStatusTypes Status { get; set; }
-
-    /// <summary>
-    /// Indicates whether the conversation is archived by the user. Archived conversations are read-only and hidden from the active list.
-    /// </summary>
-    public bool IsArchived { get; set; }
-
-    /// <summary>
-    /// Gets or sets the timestamp when the conversation was archived.
-    /// </summary>
-    public DateTimeOffset? ArchivedOn { get; set; }
+    public ConversationStatusEnum Status { get; set; }
 
     /// <summary>
     /// Gets or sets the Flow Version this conversation is associated with.
@@ -56,5 +41,5 @@ public class Conversation : BaseEntity, IMustHaveTenant
     /// <summary>
     /// Represents the one-to-many relationship between conversations and messages.
     /// </summary>
-    public virtual ICollection<ConversationMessage>? Messages { get; set; }
+    public virtual ICollection<ConversationMessage> Messages { get; set; } = new List<ConversationMessage>();
 }

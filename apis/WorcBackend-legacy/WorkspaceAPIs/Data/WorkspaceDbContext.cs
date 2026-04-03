@@ -83,8 +83,8 @@ public class WorkspaceDbContext : DbContext
         modelBuilder.Entity<OnPremModel>().Property(e => e.ProviderType).HasConversion(new EnumToStringConverter<OnPremModelProviderEnum>());
         modelBuilder.Entity<OnPremModel>().Property(e => e.Status).HasConversion(new EnumToStringConverter<OnPremModelStatusEnum>());
         modelBuilder.Entity<WorkItemEvent>().Property(e => e.EventType).HasConversion(new EnumToStringConverter<WorkItemEventTypesEnum>());
-        modelBuilder.Entity<Conversation>().Property(e => e.Status).HasConversion(new EnumToStringConverter<ConversationStatusTypes>());
-        modelBuilder.Entity<ConversationMessage>().Property(e => e.Role).HasConversion(new EnumToStringConverter<ConversationMessageTypes>());
+        modelBuilder.Entity<Conversation>().Property(e => e.Status).HasConversion(new EnumToStringConverter<ConversationStatusEnum>());
+        modelBuilder.Entity<ConversationMessage>().Property(e => e.Role).HasConversion(new EnumToStringConverter<ConversationMessageSenderEnum>());
 
         // Configure Many-to-Many relationship between User and Notification
         modelBuilder.Entity<WorkspaceUser>().HasMany(many => many.NotificationUsers).WithOne(one => one.User).HasForeignKey(fKey => fKey.UserId).IsRequired();

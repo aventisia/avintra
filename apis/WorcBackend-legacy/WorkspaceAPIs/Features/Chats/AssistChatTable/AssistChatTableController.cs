@@ -12,28 +12,24 @@ public class AssistChatTableController : BaseApiController
         _assistChatTableService = assistChatTableService;
     }
 
-    // Retrieves all assigned (published) flow versions.
-    [HttpGet("assigned")]
+    // Retrieves all actuve conversation of flow versions.
+    [HttpGet("active")]
     public async Task<ActionResult<ServiceResponse<IEnumerable<AssistChatTableDto>>>> GetAssignedFlowVersionsAsync()
     {
-        var response = await _assistChatTableService.GetPublishFlowVersionsAsync();
-        return ResultHelper(response);
+        return ResultHelper(await _assistChatTableService.GetPublishFlowVersionsAsync());
     }
 
     // Retrieves all archived flow versions.
     [HttpGet("archived")]
     public async Task<ActionResult<ServiceResponse<IEnumerable<AssistChatTableDto>>>> GetArchivedFlowVersionsAsync()
     {
-        var response = await _assistChatTableService.GetArchiveFlowVersionsAsync();
-        return ResultHelper(response);
+        return ResultHelper(await _assistChatTableService.GetArchiveFlowVersionsAsync());
     }
 
     // Updates an existing flow version.
     [HttpPut]
-    public async Task<ActionResult<ServiceResponse<AssistChatTableDto>>> UpdateFlowVersionAsync(
-        [FromBody] AssistChatTableDto assistChatTableDto)
+    public async Task<ActionResult<ServiceResponse<AssistChatTableDto>>> UpdateFlowVersionAsync([FromBody] AssistChatTableDto assistChatTableDto)
     {
-        var response = await _assistChatTableService.UpdateFlowVersionAsync(assistChatTableDto);
-        return ResultHelper(response);
+        return ResultHelper(await _assistChatTableService.UpdateFlowVersionAsync(assistChatTableDto));
     }
 }

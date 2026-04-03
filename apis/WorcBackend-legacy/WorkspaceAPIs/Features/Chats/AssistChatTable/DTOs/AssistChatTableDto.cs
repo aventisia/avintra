@@ -10,17 +10,7 @@ public class AssistChatTableDto
     /// <summary>
     /// Gets or sets the name of the flow.
     /// </summary>
-    public string? Name { get; set; }
-
-    /// <summary>
-    /// Gets or sets the type of the flow.
-    /// </summary>
-    public FlowTypesEnum Type { get; set; }
-
-    /// <summary>
-    /// Gets or sets the total number of conversations associated with this flow version.
-    /// </summary>
-    public int? ConversationCount { get; set; }
+    public required string Name { get; set; }
 
     /// <summary>
     /// Gets or sets a value indicating whether the flow version is archived.
@@ -28,7 +18,7 @@ public class AssistChatTableDto
     public bool IsArchived { get; set; }
 
     /// <summary>
-    /// Gets or sets the version number of the flow.
+    /// Gets or sets the version number of the flow version.
     /// </summary>
     public int VersionNumber { get; set; }
 
@@ -38,24 +28,9 @@ public class AssistChatTableDto
     public List<ConversationSummaryDto> Conversations { get; set; } = new();
 
     /// <summary>
-    /// Gets or sets a value indicating whether the record is disabled (used when deletion is not preferred).
+    /// Gets or sets the username of the modified.
     /// </summary>
-    public bool IsDisabled { get; set; }
-
-    /// <summary>
-    /// Gets or sets the identifier of the user who created the record.
-    /// </summary>
-    public string? CreatedBy { get; set; }
-
-    /// <summary>
-    /// Gets or sets the username of the creator.
-    /// </summary>
-    public string? CreatedByUsername { get; set; }
-
-    /// <summary>
-    /// Gets or sets the date and time when the record was created.
-    /// </summary>
-    public DateTimeOffset CreatedOn { get; set; }
+    public string? LastModifiedByUsername { get; set; }
 
     /// <summary>
     /// Gets or sets the username of the user who last modified the record.

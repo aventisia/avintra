@@ -161,9 +161,6 @@ namespace WorkspaceAPIs.Data.Migrations
                         .ValueGeneratedOnAdd()
                         .HasColumnType("uuid");
 
-                    b.Property<DateTimeOffset?>("ArchivedOn")
-                        .HasColumnType("timestamp with time zone");
-
                     b.Property<Guid>("CreatedByUserId")
                         .HasColumnType("uuid");
 
@@ -172,9 +169,6 @@ namespace WorkspaceAPIs.Data.Migrations
 
                     b.Property<Guid>("FlowVersionId")
                         .HasColumnType("uuid");
-
-                    b.Property<bool>("IsArchived")
-                        .HasColumnType("boolean");
 
                     b.Property<bool>("IsDisabled")
                         .HasColumnType("boolean");
@@ -191,10 +185,6 @@ namespace WorkspaceAPIs.Data.Migrations
 
                     b.Property<Guid>("TenantId")
                         .HasColumnType("uuid");
-
-                    b.Property<string>("Title")
-                        .IsRequired()
-                        .HasColumnType("text");
 
                     b.Property<Guid>("UserId")
                         .HasColumnType("uuid");

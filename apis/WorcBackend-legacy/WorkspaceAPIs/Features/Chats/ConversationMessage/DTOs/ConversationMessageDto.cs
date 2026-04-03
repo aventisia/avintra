@@ -1,8 +1,7 @@
 namespace WorkspaceAPIs.DTOs;
 
 /// <summary>
-/// Data Transfer Object (DTO) representing a message within a conversation,
-/// including content, sender role, metadata, and lifecycle details.
+/// Data Transfer Object (DTO) representing a message within a conversation, including content, sender role, metadata, and lifecycle details.
 /// </summary>
 public class ConversationMessageDto
 {
@@ -24,12 +23,17 @@ public class ConversationMessageDto
     /// <summary>
     /// Gets or sets the role of the message sender (e.g., User, Assistant, System).
     /// </summary>
-    public ConversationMessageTypes Role { get; set; }
+    public ConversationMessageSenderEnum Role { get; set; }
 
     /// <summary>
     /// Gets or sets additional structured metadata as JSON (e.g., tool calls, references).
     /// </summary>
     public JsonDocument? Metadata { get; set; }
+
+    /// <summary>
+    /// Gets or sets list of file URLs associated with this message.
+    /// </summary>
+    public List<string>? Files { get; set; }
 
     /// <summary>
     /// Gets or sets the date and time when the message was created.

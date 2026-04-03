@@ -3,7 +3,7 @@ namespace WorkspaceAPIs.DTOs;
 /// <summary>
 /// Data Transfer Object (DTO) representing a conversation entry, including identifiers, metadata, and current status.
 /// </summary>
-public class ConversationTableDto
+public class ConversationDto
 {
     /// <summary>
     /// Gets or sets the unique identifier of the conversation.
@@ -20,6 +20,7 @@ public class ConversationTableDto
     /// </summary>
     public required Guid FlowVersionId { get; set; }
 
+    // TODO: Update summmary as last of message of conversations ( first 4/5 word)
     /// <summary>
     /// Gets or sets the title of the conversation.
     /// </summary>
@@ -28,5 +29,5 @@ public class ConversationTableDto
     /// <summary>
     /// Gets or sets the current status of the conversation lifecycle.
     /// </summary>
-    public ConversationStatusTypes Status { get; set; }
+    public ConversationStatusEnum Status { get; set; }
 }

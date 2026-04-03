@@ -14,9 +14,9 @@ public class ConversationMessageController : BaseApiController
 
     // Sends a message (creates conversation if not exists).
     [HttpPost]
-    public async Task<ActionResult<ServiceResponse<ConversationMessageDto>>> SendMessage([FromBody] ConversationMessageRequestDto conversationMessageRequestDto)
+    public async Task<ActionResult<ServiceResponse<ConversationMessageDto>>> SendMessage([FromBody] ConversationMessageDto conversationMessageDto)
     {
-        return ResultHelper(await _conversationMessageService.SendMessageAsync(conversationMessageRequestDto));
+        return ResultHelper(await _conversationMessageService.SendMessageAsync(conversationMessageDto));
     }
 
     // Gets all messages for a conversation (full history).
