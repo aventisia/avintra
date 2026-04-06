@@ -184,10 +184,10 @@ public class ConversationMessageService : IConversationMessageService
     }
 
     // Searches messages across all user conversations.
-    public async Task<ServiceResponse<IEnumerable<ConversationMessageDto>>> SearchMessagesAsync(string query)
+    public async Task<ServiceResponse<IEnumerable<SearchConversationMessageDto>>> SearchMessagesAsync(string query)
     {
         // Initialize response with default failure state
-        var serviceResponse = new ServiceResponse<IEnumerable<ConversationMessageDto>>
+        var serviceResponse = new ServiceResponse<IEnumerable<SearchConversationMessageDto>>
         {
             Data = null,
             Message = "Failed to search messages. Please try again."
@@ -212,7 +212,10 @@ public class ConversationMessageService : IConversationMessageService
                     w.Conversation.UserId == _userId &&
                     w.Content.Contains(query))
                 .OrderByDescending(o => o.CreatedOn)
-                .ProjectToType<ConversationMessageDto>()
+                .Include(i => i.Conversation)
+                    .ThenInclude(i2 => i2.FlowVersion)
+                        .ThenInclude(i3 => i3.Flow)
+                .ProjectToType<SearchConversationMessageDto>()
                 .ToListAsync();
 
             serviceResponse.Data = messages;
@@ -230,12 +233,4 @@ public class ConversationMessageService : IConversationMessageService
 
         return serviceResponse;
     }
-
-    private readonly JsonSerializerOptions DefaultOptions = new()
-    {
-        PropertyNamingPolicy = JsonNamingPolicy.CamelCase,
-        PropertyNameCaseInsensitive = true,
-        DefaultIgnoreCondition = JsonIgnoreCondition.WhenWritingNull,
-        WriteIndented = false
-    };
 }

@@ -33,5 +33,5 @@ public interface IConversationMessageService
     /// </summary>
     /// <param name="query">The search keyword or phrase.</param>
     /// <returns> A service response containing messages that match the search criteria. </returns>
-    Task<ServiceResponse<IEnumerable<ConversationMessageDto>>> SearchMessagesAsync(string query);
+    Task<ServiceResponse<IEnumerable<SearchConversationMessageDto>>> SearchMessagesAsync(string query);
 }
