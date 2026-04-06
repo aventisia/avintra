@@ -35,7 +35,7 @@ public class ConversationMessageController : BaseApiController
 
     // Searches messages across all conversations.
     [HttpGet("search")]
-    public async Task<ActionResult<ServiceResponse<IEnumerable<ConversationMessageDto>>>> SearchMessages([FromQuery] string query)
+    public async Task<ActionResult<ServiceResponse<IEnumerable<SearchConversationMessageDto>>>> SearchMessages([FromQuery] string query)
     {
         return ResultHelper(await _conversationMessageService.SearchMessagesAsync(query));
     }

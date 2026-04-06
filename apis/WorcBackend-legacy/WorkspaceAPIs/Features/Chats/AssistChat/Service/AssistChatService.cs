@@ -31,30 +31,72 @@ public class AssistChatService : IAssistChatService
         try
         {
             // Fetch flow versions based on the following criteria:
-            // - Flow must be of type ChatAgent
+            // - Flow type must be ChatAgent
             // - Only published and non-archived flow versions are included
             // - Flow version must be assigned to the current user
             // - Must contain at least one non-archived conversation
-            // - That conversation must have at least one message
-            // - Includes only non-archived conversations with their messages
+            // - Conversations are included only if they are not archived
+            // - Conversation title and timestamp are derived from the latest message (if available)
             var flowVersions = await _unitOfWork.FlowVersionRepo
                 .GetByConditionAsync(w =>
                     w.Flow.Type == FlowTypesEnum.ChatAgent &&
                     w.IsPublished &&
                     !w.IsArchived &&
-                    w.FlowVersionUsers!.Any(a => a.UserId == _userId) &&
-                    w.Conversations!.Any(c =>
-                        c.Status != ConversationStatusEnum.Archived
-                    )
+                    w.FlowVersionUsers!.Any(a => a.UserId == _userId)
                 )
-                .Include(i => i.Flow)
-                .Include(i => i.FlowVersionUsers)
-                .Include(i => i.Conversations!
-                    .Where(w => w.Status != ConversationStatusEnum.Archived))
-                    .ThenInclude(c => c.Messages)
-                .Include(i => i.CreatedByUser)
-                .Include(i => i.LastModifiedByUser)
-                .OrderBy(o => o.CreatedOn)
+                .Select(s => new AssistChatDto
+                {
+                    Id = s.Id,
+
+                    // Flow metadata
+                    Name = s.Flow != null ? s.Flow.Name : string.Empty,
+                    Description = s.Flow != null ? s.Flow.Description : null,
+                    VersionNumber = s.VersionNumber,
+                    IsArchived = s.IsArchived,
+
+                    // Last modification details
+                    LastModifiedByUsername = s.LastModifiedByUser != null
+                        ? s.LastModifiedByUser.UserName
+                        : null,
+
+                    LastModifiedBy = s.LastModifiedByUser != null
+                        ? s.LastModifiedByUser.FirstName + " " + s.LastModifiedByUser.LastName
+                        : null,
+
+                    LastModifiedOn = s.LastModifiedOn,
+
+                    // Project conversations with latest activity details
+                    Conversations = s.Conversations
+                        // Include only active (non-archived) conversations
+                        .Where(w1 => w1.Status != ConversationStatusEnum.Archived)
+                        .Select(s1 => new ConversationSummaryDto
+                        {
+                            Id = s1.Id,
+
+                            // Use latest message content as conversation title
+                            // Falls back to default if no messages exist
+                            Title = s1.Messages
+                                .OrderByDescending(o => o.CreatedOn)
+                                .Select(s2 => s2.Content)
+                                .FirstOrDefault() ?? "Untitled Conversation",
+
+                            // Use latest message timestamp as activity indicator
+                            // Falls back to conversation creation time if no messages exist
+                            Timestamp = s1.Messages
+                                .OrderByDescending(o => o.CreatedOn)
+                                .Select(s2 => (DateTimeOffset?)s2.CreatedOn)
+                                .FirstOrDefault() ?? s1.CreatedOn,
+
+                            Status = s1.Status
+                        })
+                        // Order conversations by most recent activity (latest message timestamp)
+                        .OrderByDescending(o => o.Timestamp)
+                        .ToList()
+                })
+
+                // Order flow versions by latest conversation activity (descending)
+                .OrderByDescending(o => o.Conversations
+                    .Max(m => (DateTimeOffset?)m.Timestamp))
                 .AsNoTracking()
                 .ToListAsync();
 
@@ -88,32 +130,73 @@ public class AssistChatService : IAssistChatService
         {
             // Fetch flow versions based on the following criteria:
             // - Flow must be of type ChatAgent
+            // - Flow version must be published and not archived
             // - Flow version must be assigned to the current user
-            // - Must contain at least one archived conversation
-            // - That archived conversation must have at least one message
-            // - Includes only archived conversations that have messages, along with their messages
+            // - Must contain at least one non-archived conversation
+            // - Each conversation can have messages (used to determine title and timestamp)
+            // - Includes only non-archived conversations with their latest message details
             var flowVersions = await _unitOfWork.FlowVersionRepo
                 .GetByConditionAsync(w =>
                     w.Flow.Type == FlowTypesEnum.ChatAgent &&
-                    w.FlowVersionUsers != null &&
-                    w.FlowVersionUsers.Any(a => a.UserId == _userId) &&
-                    w.Conversations.Any(c =>
-                        c.Status == ConversationStatusEnum.Archived &&
-                        c.Messages.Any()
-                ))
-                .Include(i => i.Flow)
-                .Include(i => i.FlowVersionUsers)
-                .Include(i => i.Conversations!
-                    .Where(w => w.Status == ConversationStatusEnum.Archived && w.Messages.Any()))
-                    .ThenInclude(c => c.Messages)
-                .Include(i => i.CreatedByUser)
-                .Include(i => i.LastModifiedByUser)
-                .OrderBy(o => o.LastModifiedOn)
+                    w.IsPublished &&
+                    // Uncomment the condition below if archived flow versions should be excluded
+                    // !w.IsArchived &&
+                    w.FlowVersionUsers!.Any(a => a.UserId == _userId) &&
+                    w.Conversations!.Any(a => a.Status == ConversationStatusEnum.Archived &&
+                        a.Messages.Any())
+                )
+                .Select(s => new AssistChatDto
+                {
+                    Id = s.Id,
+                    Name = s.Flow != null ? s.Flow.Name : string.Empty,
+                    Description = s.Flow != null ? s.Flow.Description : null,
+                    VersionNumber = s.VersionNumber,
+                    IsArchived = s.IsArchived,
+
+                    LastModifiedByUsername = s.LastModifiedByUser != null
+                        ? s.LastModifiedByUser.UserName
+                        : null,
+
+                    LastModifiedBy = s.LastModifiedByUser != null
+                        ? s.LastModifiedByUser.FirstName + " " + s.LastModifiedByUser.LastName
+                        : null,
+
+                    LastModifiedOn = s.LastModifiedOn,
+
+                    Conversations = s.Conversations
+                        // Include only non-archived conversations
+                        .Where(w1 => w1.Status == ConversationStatusEnum.Archived && w1.Messages.Any())
+                        .Select(s1 => new ConversationSummaryDto
+                        {
+                            Id = s1.Id,
+
+                            // Latest message content used as conversation title
+                            Title = s1.Messages
+                                .OrderByDescending(o => o.CreatedOn)
+                                .Select(s2 => s2.Content)
+                                .FirstOrDefault() ?? "Untitled Conversation",
+
+                            // Latest message timestamp; fallback to conversation creation time if no messages exist
+                            Timestamp = s1.Messages
+                                .OrderByDescending(o => o.CreatedOn)
+                                .Select(s2 => (DateTimeOffset?)s2.CreatedOn)
+                                .FirstOrDefault() ?? s1.CreatedOn,
+
+                            Status = s1.Status
+                        })
+                        // Sort conversations by most recent activity (latest message)
+                        .OrderByDescending(o => o.Timestamp)
+                        .ToList()
+                })
+
+                // Sort flow versions by most recent conversation activity
+                .OrderByDescending(o => o.Conversations
+                    .Max(m => (DateTimeOffset?)m.Timestamp))
                 .AsNoTracking()
                 .ToListAsync();
 
             // Map to DTO
-            serviceResponse.Data = flowVersions.Adapt<IEnumerable<AssistChatDto>>();
+            serviceResponse.Data = flowVersions;
 
             // Success response
             serviceResponse.StatusCode = 200;
