@@ -41,7 +41,8 @@ public class AssistChatService : IAssistChatService
                 .GetByConditionAsync(w =>
                     w.Flow.Type == FlowTypesEnum.ChatAgent &&
                     w.IsPublished &&
-                    !w.IsArchived &&
+                    // Uncomment the condition below if archived flow versions should be excluded
+                    // !w.IsArchived &&
                     w.FlowVersionUsers!.Any(a => a.UserId == _userId)
                 )
                 .Select(s => new AssistChatDto
@@ -64,6 +65,16 @@ public class AssistChatService : IAssistChatService
                         : null,
 
                     LastModifiedOn = s.LastModifiedOn,
+
+                    Timestamp = s.Conversations.Any() ? s.Conversations
+                        .Where(w1 => w1.Status != ConversationStatusEnum.Archived)
+                        .Select(s1 => s1.Messages
+                            .OrderByDescending(o => o.CreatedOn)
+                            .Select(s2 => (DateTimeOffset?)s2.CreatedOn)
+                            .FirstOrDefault() ?? s1.CreatedOn)
+                        .OrderByDescending(o => o)
+                        .FirstOrDefault()
+                        : s.CreatedOn,
 
                     // Project conversations with latest activity details
                     Conversations = s.Conversations
@@ -101,7 +112,7 @@ public class AssistChatService : IAssistChatService
                 .ToListAsync();
 
             // Map entity list to DTO
-            serviceResponse.Data = flowVersions.Adapt<IEnumerable<AssistChatDto>>();
+            serviceResponse.Data = flowVersions;
 
             // Update response to success
             serviceResponse.StatusCode = 200;
@@ -162,6 +173,16 @@ public class AssistChatService : IAssistChatService
                         : null,
 
                     LastModifiedOn = s.LastModifiedOn,
+
+                    Timestamp = s.Conversations.Any() ? s.Conversations
+                    .Where(w1 => w1.Status != ConversationStatusEnum.Archived)
+                    .Select(s1 => s1.Messages
+                        .OrderByDescending(o => o.CreatedOn)
+                        .Select(s2 => (DateTimeOffset?)s2.CreatedOn)
+                        .FirstOrDefault() ?? s1.CreatedOn)
+                    .OrderByDescending(o => o)
+                    .FirstOrDefault()
+                     : s.CreatedOn,
 
                     Conversations = s.Conversations
                         // Include only non-archived conversations

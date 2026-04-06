@@ -28,6 +28,11 @@ public class AssistChatDto
     public int VersionNumber { get; set; }
 
     /// <summary>
+    /// Gets or sets the timestamp of the conversation (e.g., last activity time).
+    /// </summary>
+    public DateTimeOffset Timestamp { get; set; }
+
+    /// <summary>
     /// Gets or sets the list of conversations (ordered by most recent first).
     /// </summary>
     public List<ConversationSummaryDto> Conversations { get; set; } = new();
