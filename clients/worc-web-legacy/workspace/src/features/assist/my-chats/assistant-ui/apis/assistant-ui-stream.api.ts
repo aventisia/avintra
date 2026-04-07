@@ -1,4 +1,4 @@
-import { LLMRequestDto } from "@/features/dynamic-config-panel/dtos/llm-providers-dto";
+import { LLMRequestDto } from "../dtos/llm-request.dto";
 
 /**
  * Parameters for initiating a streamed LLM (Large Language Model) generation request.
@@ -129,7 +129,7 @@ export async function* streamLLMGenerate({
 
     // Decode incremental bytes and append to pending buffer.
     buffer += decoder.decode(value, { stream: true });
-    
+
     // Split complete lines; keep last fragment in `buffer`.
     const lines = buffer.split(/\r?\n/);
     buffer = lines.pop() ?? "";

@@ -1,6 +1,7 @@
-import { UsageSourceTypesEnum } from "@/features/credits-management/constants/usage-source-types-enum";
+import { ActionTypesEnum } from "@/features/execute-flow/constants/action-types-enum";
+import { UsageSourceTypesEnum } from "@/features/execute-flow/constants/usage-source-types-enum";
+
 import { LLMMessageType, LLMProviderType } from "..";
-import { ActionTypesEnum } from "@/features/credits-management/constants/action-types-enum";
 
 /**
  * Represents a request for generating an LLM response.
