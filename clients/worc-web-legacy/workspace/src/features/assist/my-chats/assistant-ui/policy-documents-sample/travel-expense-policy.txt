@@ -1,0 +1,264 @@
+ 	
+	   Travel and Expense Policy
+
+
+Travel & Expense Policy
+
+Document Name:	Travel & Expense Policy
+Version #:	HR10
+Effective Date:	1 June, 2023
+Last Reviewed Date:	12 February, 2024
+
+1.	Objective and Scope
+The purpose of this policy is to define the guidelines and procedures for business-related travel and expense reimbursements. The policy ensures cost-effectiveness, transparency, and compliance with company financial guidelines.
+Scope
+•	Applies to all full-time, part-time, and contractual employees undertaking business travel.
+•	Covers domestic travel within India and international travel to all countries.
+•	Applies to expenses incurred for client meetings, conferences, training, and other business-approved travel.
+
+Key Principles
+•	All travel must have a clear, documented business purpose.
+•	Employees should seek cost-effective travel arrangements while ensuring safety and productivity.
+•	Expenses must be reasonable, necessary, and directly related to company business.
+•	Employees must submit all expense claims with appropriate documentation.
+
+2.	Employee Bands & Entitlements
+Employees are categorized into five bands. All travel entitlements - flight class, hotel limits, per diem, and ground transport are governed by the employee's band and the destination city category.
+
+Band	Approval Authority
+Band A	Band C
+Band B	Band C
+Band C	Band D
+Band D	Band E
+Band E	Self-authorized
+
+
+ 
+3. City / Location Categories
+All cities are classified into 5 categories. Hotel nightly limits vary based on both the city category and the employee's band. The Finance team maintains the Master City List; employees may request city classification via email if the city is not listed in the table below. 
+
+Cat.	Tier	Indian Cities	International Cities
+A1	Global Mega-City	Mumbai, Delhi NCR	New York, London, San Francisco, Tokyo, Singapore, Hong Kong, Dubai, Zurich, Paris, Sydney
+A	Metro / Major Hub	Bengaluru, Hyderabad, Chennai, Kolkata, Pune	Los Angeles, Chicago, Toronto, Amsterdam, Frankfurt, Seoul, Beijing, Shanghai, Melbourne
+B1	Emerging Metro / Major Hub	Ahmedabad, Surat, Jaipur, Lucknow, Kochi, Chandigarh, Nagpur, Coimbatore, Indore, Bhopal, Vadodara, Visakhapatnam, Thiruvananthapuram	Boston, Seattle, Munich, Madrid, Milan, Dublin, Stockholm, Kuala Lumpur, Bangkok, Brussels, Vienna, Warsaw, Lisbon, Prague, Cairo, Johannesburg, Jakarta
+B	Mid-size City	Patna, Ranchi, Guwahati, Bhubaneswar, Rajkot, Amritsar, Varanasi, Mysuru, Agra, Aurangabad, Dehradun, Nashik, Madurai, Tirupati, Mangaluru, Raipur	Riyadh, Abu Dhabi, Doha, Istanbul, Nairobi, Lagos, Karachi, Dhaka, Ho Chi Minh City, Colombo, Kathmandu, Yangon, Lusaka, Accra
+C	Small City / Town	Anything not listed in categories A1, A, B1 or B	Anything not listed in categories A1, A, B1 or B
+X	Special Event City	Any city hosting a company event, conference, or trade show (temporary override)	Any city hosting a company event, conference, or trade show (temporary override)
+
+Note: Category X is a temporary override applied for specific events and expires after the event. The Finance team issues the override notice.
+
+
+ 
+4. Hotel & Accommodation Policy
+4.1 Domestic Hotel Limits (INR per night, room-only, inclusive of taxes)
+City Cat.	Band A	Band B	Band C	Band D	Band E
+A1	₹4,500	₹5,500	₹7,500	₹10,000	₹15,000
+A	₹3,500	₹4,500	₹6,000	₹8,500	₹12,000
+B1	₹2,800	₹3,500	₹5,000	₹7,000	₹10,000
+B	₹2,500	₹2,800	₹4,000	₹5,500	₹8,000
+C	₹2,000	₹2,200	₹3,000	₹4,500	₹6,500
+
+4.2 International Hotel Limits (USD per night, room-only)
+City Cat.	Band A	Band B	Band C	Band D	Band E
+A1	$200	$270	$370	$500	$700
+A	$160	$210	$290	$400	$580
+B1	$120	$160	$220	$310	$450
+B	$90	$120	$170	$240	$360
+C	$70	$100	$140	$200	$300
+
+4.3 Hotel Rules
+•	Rates shown are per-night limits. Exceeding limits requires prior written approval from the HOD and Finance.
+•	Hotel must be booked via the approved corporate travel portal or through the Admin/Travel desk. Direct bookings require explicit justification.
+•	Only single-occupancy rooms are covered. Double rooms for personal companions are not reimbursable.
+•	Mini-bar, laundry (personal), and in-room movies are not reimbursable. Business laundry for trips exceeding 5 nights is reimbursable up to ₹500/day (domestic) or USD 15/day (international).
+•	Early check-in or late check-out charges are reimbursable only if necessitated by flight schedules (attach boarding pass proof).
+•	Hotel loyalty reward points accrue to the employee personally.
+•	For Category X (event cities), the company may negotiate block bookings; employees must use the designated hotel unless unavailable.
+
+ 
+5. Per Diem & Daily Allowances
+5.1 Domestic Per Diem (INR per day)
+Band	Meals/Day	Local Transport/Day	Incidentals/Day	Total Per Diem/Day
+Band A	₹600	₹300	₹200	₹1,100
+Band B	₹750	₹375	₹250	₹1,375
+Band C	₹1,000	₹500	₹350	₹1,850
+Band D	₹1,400	₹700	₹500	₹2,600
+Band E	₹2,000	₹1,000	₹700	₹3,700
+
+5.2 International Per Diem (USD per day)
+Band	Meals/Day	Local Transport/Day	Incidentals/Day	Total Per Diem/Day
+Band A	$30	$20	$15	$65
+Band B	$40	$25	$20	$85
+Band C	$55	$35	$25	$115
+Band D	$80	$50	$35	$165
+Band E	$120	$70	$50	$240
+
+5.3 Per Diem Rules
+•	Per diem is a flat daily allowance. No receipts are required for per diem reimbursement.
+•	If the company or client provides meals (e.g., at a conference), the meal component is deducted: breakfast = 20%, lunch = 30%, dinner = 50% of the Meals/Day amount.
+•	For partial travel days: departure before 12 noon or arrival after 8 PM = full day per diem. All other partial days = 50% per diem.
+•	International per diem rates are in USD and will be reimbursed in INR at the RBI reference rate on the date of the transaction or expense submission (whichever is lower).
+
+ 
+6. Transportation Policy
+6.1 Air Travel
+Band	Domestic Flight	Short-Haul Intl (< 6 hrs)	Long-Haul Intl (6–12 hrs)	Ultra Long-Haul (> 12 hrs)
+Band A	Economy	Economy	Economy	Economy
+Band B	Economy	Economy	Economy	Economy 
+Band C	Economy	Economy	Economy 	Premium Economy
+Band D	Economy 	Economy 	Premium Economy	Business Class
+Band E	Economy	Premium Economy	Business Class 	Business Class
+
+•	All flights must be booked at least 14 days in advance for domestic and 21 days for international to avail the best fares.
+•	Booking must be done via the company's travel portal or authorized travel desk. Personal OTA bookings (MakeMyTrip, Cleartrip, etc.) require prior approval.
+•	Flight upgrades using personal money are not reimbursable.
+•	Frequent flyer miles and loyalty points accrue personally to the employee.
+•	If an employee voluntarily upgrades using points, any resulting ticket fare difference must not be claimed.
+•	Excess baggage charges: reimbursable only when transporting company materials (with documentation).
+
+6.2 Train Travel
+•	Domestic train travel is encouraged for journeys under 6 hours.
+•	Band A–B: 3A (AC 3-Tier) or Vande Bharat Chair Car.
+•	Band C–D: 2A (AC 2-Tier) or Vande Bharat Executive Chair Car.
+•	Band E: 1A (First Class AC) or Vande Bharat Executive / Shatabdi Executive.
+•	Rajdhani/Shatabdi and Vande Bharat are preferred over overnight buses.
+
+6.3 Ground Transportation
+•	Airport/station transfers: Ola/Uber preferred. Reimbursable at actuals with app receipt.
+•	Rental cars: require prior approval; Band D+ only for self-drive. Shared cabs are preferred.
+•	Personal vehicle use: reimbursed at ₹12/km (two-wheeler) or ₹18/km (four-wheeler) with fuel receipts.
+•	Tolls, parking at client site: reimbursable at actuals.
+•	Auto-rickshaw/metro/bus: reimbursable at actuals without receipts (up to ₹200/day).
+
+ 
+7. International Travel — Special Rules
+7.1 Pre-Travel Requirements
+1.	Travel Authorization Form (TAF) submitted in RazorpayX Expense minimum 10 business days before travel.
+2.	Business justification, trip agenda, and cost estimate to be attached.
+3.	Visa, travel insurance (mandatory), and foreign exchange arrangement must be completed before departure.
+4.	For travel to countries with travel advisories (MEA Level 3+), additional approval from CHRO/CEO is required.
+
+7.2 Foreign Exchange & Cards
+•	Company-issued corporate credit card to be used wherever possible.
+•	Forex cash advances: up to USD 500 per trip (Band A,B and C), USD 1,000 (Band D and E). Unspent forex must be surrendered within 5 days of return.
+•	Forex card / multi-currency card is preferred over cash for all international expenses.
+•	Reimbursement of personal foreign currency expenditure: at RBI reference rate on the date of submission or transaction (whichever is lower).
+
+7.3 Travel Insurance
+•	Mandatory travel insurance is arranged by the company for all international trips.
+•	Coverage includes: medical (USD 500,000), trip cancellation, baggage loss, and personal accident.
+•	Employees must carry the insurance card / policy number during travel.
+•	Medical emergencies: call the insurer helpline first. Out-of-pocket medical expenses are reimbursable up to the policy limit.
+
+7.4 Visa & Immigration
+•	Visa fees, FRRO registration, and embassy charges are fully reimbursable.
+•	Passport renewal for official travel purposes: reimbursable with HOD approval.
+•	Travel vaccination fees (if required for destination country): reimbursable.
+
+ 
+8. Expense Reimbursement — RazorpayX Expense
+8.1 Submission Process
+5.	Log in to RazorpayX Expense (app or web portal) using your company SSO credentials.
+6.	Create a new Expense Report and select the trip / cost center.
+7.	Add individual expense line items under the appropriate category (Flight, Hotel, Meals, Transport, etc.).
+8.	Upload scanned receipts or photos for each expense. Receipts must be legible and show: vendor name, date, amount, and GST/tax details where applicable.
+9.	Add business justification notes for any expense exceeding the policy limit (requires exception approval).
+10.	Submit the report to your reporting manager for L1 approval.
+11.	Finance reviews and processes payment within 7 business days of final approval.
+
+8.2 Approval Workflow
+Employee Band	Approval (if within policy)	Approval (exceptions)
+Band A and B	Band C	Band D
+Band C	Band D	Band E
+Band D	Band E	Band E
+Band E	Self-approval	Board (if > ₹5L)
+
+8.3 Advance / Imprest
+•	Travel advances can be requested in RazorpayX Expense under 'Cash Advance Request'.
+•	Advance must be settled within 15 days of return by submitting the expense report.
+•	Unreconciled advances after 30 days will be recovered from salary.
+
+8.4 GST Compliance
+•	Employees must capture the GST number of vendors (hotels, airlines) in RazorpayX for input tax credit (ITC) eligibility.
+•	Hotels and airlines must issue GST-compliant invoices; employees should specifically request these.
+•	Expenses without GST invoices where applicable may lead to partial reimbursement only.
+
+8.5 Currency & FX
+•	Submit all international expenses in the original transacted currency. RazorpayX will auto-convert at RBI reference rate.
+•	Attach bank/card statement showing the actual INR debit for reconciliation.
+
+ 
+9. Other Reimbursable & Non-Reimbursable Expenses
+Expense Category	Domestic Limit	International Limit	Notes
+Client Entertainment / Meals	₹2,000/person (max 5 ppl)	USD 80/person (max 5 ppl)	Requires names, company, and business purpose of attendees. Alcohol included only for Band 4+.
+Team Meals (Internal)	₹600/person	USD 25/person	Pre-approved; max quarterly limit applies.
+Internet / Roaming (Intl)	N/A	USD 20/day	Purchase a local SIM or international pack; preferred over roaming.
+Printing / Stationery	₹500/trip	USD 20/trip	Office supplies only; reimbursable at actuals.
+Conference / Event Registration	Actuals	Actuals	Prior approval required for amounts > ₹10,000.
+Training Materials	₹1,000/trip	USD 40/trip	Books, study guides for company-approved training.
+Parking (Company office)	Not reimbursable	Not reimbursable	Home-to-office commute is excluded.
+Medical / Vaccination (Travel)	Actuals	Actuals	Mandatory vaccinations for travel destination.
+Alcohol (domestic)	Not reimbursable	Not reimbursable	Except client entertainment for Band 4+ with approval.
+Gifts for Clients	Max ₹1,500 per gift	Max USD 50 per gift	Requires HOD pre-approval. FCPA/anti-bribery rules apply for intl.
+Tips / Gratuity	Not reimbursable	Up to USD 5/day	Only in countries with tipping culture.
+Personal Expenses (spa, gym, etc.)	Not reimbursable	Not reimbursable	—
+Travel to/from Airport from Home	Actuals (Ola/Uber)	Actuals (Ola/Uber)	Attach app receipt.
+
+
+ 
+10. Best Practices & Compliance
+10.1 Before Travel
+•	Always book travel via the authorized portal — last-minute bookings cost 30–50% more and will attract scrutiny.
+•	Obtain all required pre-approvals before making any bookings.
+•	Download the RazorpayX Expense mobile app before travel to capture receipts on the go.
+•	Check if a client/conference provides accommodation — avoid double-booking.
+•	Review the company's Corporate Travel Safety Guidelines for the destination country.
+
+10.2 During Travel
+•	Capture receipts immediately after each transaction using the RazorpayX app photo feature.
+•	For hotel stays, always request a GST-compliant tax invoice at checkout.
+•	Avoid cash transactions wherever possible — use corporate or personal card for traceability.
+•	Do not share hotel/transport details on public social media (security risk).
+•	Contact the travel helpdesk immediately for any emergency (medical, security, lost documents).
+
+10.3 After Travel
+•	Submit expense report within 15 business days. Late submissions (> 30 days) will require HOD + Finance exception approval.
+•	Reconcile all cash advances before submitting.
+•	Return unused foreign currency within 5 business days.
+•	Provide a trip report for international travel > 5 days to your HOD and HR.
+
+10.4 Policy Compliance & Audit
+•	Finance conducts quarterly random audits of 10% of all expense reports.
+•	Any falsification or inflation of expenses constitutes gross misconduct and may lead to disciplinary action including termination.
+•	Duplicate claims (same expense claimed more than once) are detected automatically by RazorpayX and flagged for investigation.
+•	Employees who identify policy violations by others should report them to hr@company.com (confidential whistleblower channel).
+•	Policy exceptions approved more than 3 times in a year for the same employee will trigger an HR review.
+
+10.5 Sustainability & Green Travel
+•	Prefer train over flight for journeys under 4 hours (lower carbon footprint).
+•	Share rides to/from airports where colleagues travel on the same route.
+•	Choose hotels with green/sustainability certifications where available within policy limits.
+•	Opt for video/virtual meetings as the first option before approving travel.
+
+ 
+11. Policy Administration
+11.1 Policy Owner
+This policy is jointly owned by the Finance (CFO's office) and HR teams. Any updates require co-sign from both CFO and CHRO.
+
+11.2 Review Cycle
+•	Policy is reviewed annually, typically in Q1 of each financial year.
+•	Ad-hoc revisions may be made for significant macroeconomic changes (e.g., >15% INR/USD movement, major inflation events).
+•	All revisions are communicated company-wide via email and updated in RazorpayX automatically.
+
+11.3 Exceptions
+•	All exceptions must be documented and approved before the expense is incurred wherever possible.
+•	Exception requests submitted via RazorpayX Expense under the 'Exception Approval' workflow.
+•	Retroactive exceptions (post-travel) are granted only in genuine emergencies.
+
+11.4 Contact
+•	For policy queries: finance-helpdesk@company.com
+•	For RazorpayX technical support: it-support@company.com
+•	For travel emergencies: +91-XXXXXXXXXX (24x7 Travel Helpline)
+
+11.5 Acknowledgement
+All employees are required to acknowledge this policy on RazorpayX upon onboarding and upon each annual policy update. Non-acknowledgement within 10 business days of notification will result in suspension of travel booking privileges.

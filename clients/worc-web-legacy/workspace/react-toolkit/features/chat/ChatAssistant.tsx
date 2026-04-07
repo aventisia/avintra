@@ -19,8 +19,13 @@ const ChatAssistant = ({ className }: ChatAssistantProps) => {
       </PopoverTrigger>
       <PopoverContent
         align="end"
-        className="hidden h-[calc(100vh-(3rem))] w-screen flex-col overflow-hidden rounded-t-lg border-t msm:flex mlg:h-[65vh] mlg:w-[26rem] mlg:rounded-lg mlg:border"
-      ></PopoverContent>
+        className="border rounded-lg h-[35rem] overflow-hidden w-[25rem]"
+      >
+        <iframe
+          className="h-[35rem]  w-[25rem]"
+          src="https://fe-local-worc.aventisia.com/worc/external/chats"
+        />
+      </PopoverContent>
     </Popover>
   );
 };

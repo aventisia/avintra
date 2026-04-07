@@ -21,7 +21,6 @@ import {
   FileBoxIcon,
   FolderCogIcon,
   LibraryIcon,
-  MessageCircleMoreIcon,
   MonitorPlayIcon,
   ServerIcon,
   Shield,
@@ -31,6 +30,7 @@ import {
 import { AiOutlineThunderbolt } from "react-icons/ai";
 
 import NewAgentIcon from "../NewAgentIcon";
+import NewChatIcon from "../NewChatIcon";
 
 const sidebarMenuSections: SidebarMenuSectionExtended[] = [
   {
@@ -170,7 +170,7 @@ const sidebarMenuSections: SidebarMenuSectionExtended[] = [
                 },
                 {
                   permissions: ["TU"],
-                  Icon: MessageCircleMoreIcon,
+                  Icon: NewChatIcon,
                   name: "chats",
                   route: "/assist/chats",
                   type: ["Commercial", "Enterprise"],
