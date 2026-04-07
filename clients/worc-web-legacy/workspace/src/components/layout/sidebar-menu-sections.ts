@@ -152,7 +152,7 @@ const sidebarMenuSections: SidebarMenuSectionExtended[] = [
         ]
       : [
           // In dev show assist section in both web and taruri
-          ...(import.meta.env.MODE == "development"
+          ...(import.meta.env.MODE !== "production"
             ? ([
                 {
                   permissions: ["TU"],
