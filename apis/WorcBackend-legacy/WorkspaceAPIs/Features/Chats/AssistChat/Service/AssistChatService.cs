@@ -41,9 +41,12 @@ public class AssistChatService : IAssistChatService
                 .GetByConditionAsync(w =>
                     w.Flow.Type == FlowTypesEnum.ChatAgent &&
                     w.IsPublished &&
-                    // Uncomment the condition below if archived flow versions should be excluded
-                    // !w.IsArchived &&
-                    w.FlowVersionUsers!.Any(a => a.UserId == _userId)
+                    !w.IsArchived &&
+                    w.FlowVersionUsers!.Any(a => a.UserId == _userId) &&
+                    w.Conversations!.Any(a =>
+                        a.Status != ConversationStatusEnum.Archived &&
+                        a.UserId == _userId
+                    )
                 )
                 .Select(s => new AssistChatDto
                 {
@@ -67,7 +70,7 @@ public class AssistChatService : IAssistChatService
                     LastModifiedOn = s.LastModifiedOn,
 
                     Timestamp = s.Conversations.Any() ? s.Conversations
-                        .Where(w1 => w1.Status != ConversationStatusEnum.Archived)
+                        .Where(w1 => w1.Status != ConversationStatusEnum.Archived && w1.UserId == _userId)
                         .Select(s1 => s1.Messages
                             .OrderByDescending(o => o.CreatedOn)
                             .Select(s2 => (DateTimeOffset?)s2.CreatedOn)
@@ -150,10 +153,11 @@ public class AssistChatService : IAssistChatService
                 .GetByConditionAsync(w =>
                     w.Flow.Type == FlowTypesEnum.ChatAgent &&
                     w.IsPublished &&
-                    // Uncomment the condition below if archived flow versions should be excluded
-                    // !w.IsArchived &&
+                    !w.IsArchived &&
                     w.FlowVersionUsers!.Any(a => a.UserId == _userId) &&
-                    w.Conversations!.Any(a => a.Status == ConversationStatusEnum.Archived &&
+                    w.Conversations!.Any(a =>
+                        a.Status == ConversationStatusEnum.Archived &&
+                        a.UserId == _userId &&
                         a.Messages.Any())
                 )
                 .Select(s => new AssistChatDto
@@ -175,7 +179,7 @@ public class AssistChatService : IAssistChatService
                     LastModifiedOn = s.LastModifiedOn,
 
                     Timestamp = s.Conversations.Any() ? s.Conversations
-                    .Where(w1 => w1.Status != ConversationStatusEnum.Archived)
+                    .Where(w1 => w1.Status != ConversationStatusEnum.Archived && w1.UserId == _userId)
                     .Select(s1 => s1.Messages
                         .OrderByDescending(o => o.CreatedOn)
                         .Select(s2 => (DateTimeOffset?)s2.CreatedOn)

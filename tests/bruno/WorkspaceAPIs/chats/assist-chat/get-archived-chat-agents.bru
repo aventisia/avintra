@@ -7,5 +7,9 @@ meta {
 get {
   url: {{WORC_APIS_BASE_URL}}/assist-chat/archived
   body: none
-  auth: none
+  auth: bearer
+}
+
+auth:bearer {
+  token: {{ACCESS_TOKEN}}
 }
