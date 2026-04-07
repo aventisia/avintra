@@ -29,7 +29,7 @@ public class ConversationMessageService : IConversationMessageService
         var serviceResponse = new ServiceResponse<ConversationMessageDto>
         {
             Data = null,
-            Message = "Unable to send message. Please try again."
+            Message = "Failed to send message. Please try again."
         };
 
         try
@@ -44,23 +44,89 @@ public class ConversationMessageService : IConversationMessageService
                 return serviceResponse;
             }
 
-            // Fetch conversation ensuring it belongs to current user
+            // Validate required identifiers
+            if (conversationMessageDto.FlowVersionId == Guid.Empty || conversationMessageDto.ConversationId == Guid.Empty)
+            {
+                _logger.LogWarning(
+                    "[SendMessage] Invalid FlowVersionId or ConversationId. UserId: {UserId}",
+                    _userId);
+
+                serviceResponse.Message = "Invalid request. FlowVersionId or ConversationId is invalid.";
+                return serviceResponse;
+            }
+
+            // Validate FlowVersion exists and is accessible
+            var flowVersion = await _unitOfWork.FlowVersionRepo
+                .GetByConditionAsync(w =>
+                    w.Id == conversationMessageDto.FlowVersionId &&
+                    w.Flow.Type == FlowTypesEnum.ChatAgent &&
+                    w.IsPublished &&
+                    w.FlowVersionUsers!.Any(a => a.UserId == _userId)
+                )
+                .Include(w => w.FlowVersionUsers)
+                .SingleOrDefaultAsync();
+
+            // Validate FlowVersion existence
+            if (flowVersion == null)
+            {
+                _logger.LogWarning(
+                    "[CreateConversation] FlowVersion not found or not valid. FlowVersionId: {FlowVersionId}, UserId: {UserId}",
+                    conversationMessageDto.FlowVersionId,
+                    _userId);
+
+                serviceResponse.Message = "Invalid or inaccessible flow version.";
+                return serviceResponse;
+            }
+
+            // Fetch conversation ensuring it belongs to the current user
             var conversation = await _unitOfWork.ConversationRepo
                 .GetByConditionAsync(w =>
                     w.Id == conversationMessageDto.ConversationId &&
                     w.UserId == _userId)
                 .SingleOrDefaultAsync();
 
-            // Handle missing or unauthorized conversation
-            if (conversation == null)
+            // Check if ConversationId is empty or default
+            var isNewConversationRequest =
+                conversationMessageDto.ConversationId == Guid.Empty;
+
+            // CASE 1: Create new conversation (no ID provided)
+            if (isNewConversationRequest && conversation == null)
+            {
+                _logger.LogInformation(
+                    "[SendMessage] No ConversationId provided. Creating new conversation. UserId: {UserId}",
+                    _userId);
+
+                conversation = new Conversation
+                {
+                    FlowVersionId = conversationMessageDto.FlowVersionId,
+                    Status = ConversationStatusEnum.Active,
+                    UserId = _userId,
+                    CreatedByUserId = _userId,
+                    LastModifiedByUserId = _userId
+                };
+
+                await _unitOfWork.ConversationRepo.InsertAsync(conversation);
+
+                if (!await _unitOfWork.SaveAsync())
+                {
+                    _logger.LogError("[SendMessage] Failed to create conversation. UserId: {UserId}", _userId);
+
+                    return serviceResponse;
+                }
+
+                // Assign new conversation ID back to DTO
+                conversationMessageDto.ConversationId = conversation.Id;
+            }
+
+            // CASE 2: ConversationId provided but not found → invalid
+            if (!isNewConversationRequest && conversation == null)
             {
                 _logger.LogWarning(
-                    "[SendMessage] Conversation not found or access denied. ConversationId: {ConversationId}, UserId: {UserId}",
+                    "[SendMessage] Invalid ConversationId. Conversation not found. ConversationId: {ConversationId}, UserId: {UserId}",
                     conversationMessageDto.ConversationId,
                     _userId);
 
-                // NOTE: Could auto-create conversation here if required
-                serviceResponse.Message = "Conversation not found.";
+                serviceResponse.Message = "Invalid conversation. Please verify the ConversationId and try again.";
                 return serviceResponse;
             }
 
