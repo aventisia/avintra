@@ -12,6 +12,7 @@ import { useFetchPaymentStatus } from "@/features/tenant/hooks/useFetchPaymentSt
 import { usePreventClose } from "@/hooks/usePreventClose";
 import useTauriUserMetadata from "@/hooks/useTauriUserMetadata";
 import useWebSocket from "@/hooks/useWebSocket";
+import { ChatAssistant } from "@/react-toolkit/features/chat/ChatAssistant";
 import { useValidateUserSession } from "@/react-toolkit/hooks/useValidateUserSession";
 import { useAllowedRoutesStore } from "@/stores/allowed-routes-auth-store";
 import { useTuariUserMetadataStore } from "@/stores/tuari-user-metadata-store";
@@ -216,7 +217,7 @@ export const AppLayout = () => {
           >
             <main
               className={cn(
-                "px-7 py-0 transition-[margin] duration-500",
+                "px-3 md:px-7 py-0 transition-[margin] duration-500",
                 sidebarExpand
                   ? "md:ml-[--sidebar-max-width]"
                   : "md:ml-[--sidebar-min-width]",
@@ -225,6 +226,7 @@ export const AppLayout = () => {
               <Outlet />
             </main>
           </ScrollArea>
+          {import.meta.env.MODE !== "production" && <ChatAssistant />}
         </div>
       )}
     </>

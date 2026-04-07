@@ -7,6 +7,8 @@ import { Navigate, RouteObject, createBrowserRouter } from "react-router-dom";
 import { AppErrorPage } from "./components/layout/AppErrorPage";
 import { AppLayout } from "./components/layout/AppLayout";
 import { AppRedirectPage } from "./components/layout/AppRedirectPage";
+import Chat from "./features/assist/my-chats/components/ChatSection";
+// import { NoChatSelected } from "./features/assist/my-chats/components/NoChatSelected";
 import GALayout from "./features/global-admin/on-prem-tenant/components/GALayout";
 import {
   AccountDeactivation,
@@ -27,6 +29,7 @@ import { AppIntegrationsPage } from "./pages/IntegrationsPage";
 import { LibraryPage } from "./pages/LibraryPage";
 import { ModelsPage } from "./pages/ModelsPage";
 import MyAccountPage from "./pages/MyAccountPage";
+import { MyChatsPage } from "./pages/MyChatsPage";
 import { PreferencesPage } from "./pages/PreferencesPage";
 import { PublicTemplatesApprovalPage } from "./pages/PublicTemplatesApprovalPage";
 import { SupportTicketsPage } from "./pages/SupportTicketsPage";
@@ -86,9 +89,21 @@ const routerConfig: RouteObject[] = [
         path: "/assist/queues",
         element: <MyQueuePage />,
       },
-       {
+      // routes/assist.tsx
+
+      {
         path: "/assist/chats",
-        element: <AgentsAssistPage />,
+        element: <MyChatsPage />,
+        children: [
+          {
+            path: ":flowVersionId",
+            element: <Chat />, // new chat
+          },
+          {
+            path: ":flowVersionId/:conversationId",
+            element: <Chat />, // existing chat
+          },
+        ],
       },
       {
         path: "/account",
@@ -303,6 +318,21 @@ const routerConfig: RouteObject[] = [
       },
     ],
   },
+  {
+    path: "/external/chats",
+    element: <MyChatsPage mode="popover" />,
+    children: [
+      {
+        path: ":flowVersionId",
+        element: <Chat mode="popover" />, // new chat
+      },
+      {
+        path: ":flowVersionId/:conversationId",
+        element: <Chat mode="popover" />, // existing chat
+      },
+    ],
+  },
+
   {
     path: "/assist",
     element: <GetDesktopPage />,
