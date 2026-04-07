@@ -13,7 +13,12 @@ public class ConversationMessageDto
     /// <summary>
     /// Gets or sets the unique identifier of the conversation this message belongs to.
     /// </summary>
-    public required Guid ConversationId { get; set; }
+    public Guid ConversationId { get; set; }
+
+    /// <summary>
+    /// Gets or sets the unique identifier of the related flow version.
+    /// </summary>
+    public Guid FlowVersionId { get; set; }
 
     /// <summary>
     /// Gets or sets the message content (text, prompt, or response).

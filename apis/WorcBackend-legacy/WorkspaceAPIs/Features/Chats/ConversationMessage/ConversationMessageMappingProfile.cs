@@ -13,6 +13,7 @@ namespace WorkspaceAPIs.MappingProfiles
                 .Map(dest => dest.Content, src => src.Content)
                 .Map(dest => dest.Role, src => src.Role)
                 .Map(dest => dest.Metadata, src => src.Metadata)
+                .Map(dest => dest.FlowVersionId, src => src.Conversation != null ? src.Conversation.FlowVersionId : Guid.Empty)
                 .Map(dest => dest.CreatedOn, src => src.CreatedOn);
 
             // Map from ConversationMessageDto to ConversationMessage
