@@ -1,6 +1,9 @@
+import NewChatIcon from "@/components/NewChatIcon";
+
 import { cn } from "@aventisia/ui/lib";
 import { Popover, PopoverContent, PopoverTrigger } from "@aventisia/ui/popover";
-import { ChatBubbleLeftRightIcon } from "@heroicons/react/24/outline";
+
+// import { ChatBubbleLeftRightIcon } from "@heroicons/react/24/outline";
 
 interface ChatAssistantProps {
   className?: string;
@@ -15,7 +18,7 @@ const ChatAssistant = ({ className }: ChatAssistantProps) => {
           className,
         )}
       >
-        <ChatBubbleLeftRightIcon className="h-6 w-6" />
+        <NewChatIcon className="h-6 w-6" />
       </PopoverTrigger>
       <PopoverContent
         align="end"
@@ -23,7 +26,7 @@ const ChatAssistant = ({ className }: ChatAssistantProps) => {
       >
         <iframe
           className="h-[35rem]  w-[25rem]"
-          src="https://fe-local-worc.aventisia.com/worc/external/chats"
+          src={`${window.location.origin}/worc/external/chats`}
         />
       </PopoverContent>
     </Popover>
