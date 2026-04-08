@@ -35,7 +35,7 @@ public class ExecuteFlowService : IExecuteFlowService
     {
         // IMPORTANT NOTE: For end user, a flow version is a simple flow, so end user specific messages should use 
         // the word "flow" instead of "flow version" to avoid confusion. We will use flow version in the backend 
-        // logic, commends, documentaions and database since it is more accurate, but the messages shown to end user 
+        // logic, comments, documentation and database since it is more accurate, but the messages shown to end user 
         // on frontend should flow instead of flow version.
         var serviceResponse = ServiceResponse<ExecuteFlowResponseDto>.Failure(message: "Failed to invoke flow. Please try again.");
 
@@ -69,21 +69,27 @@ public class ExecuteFlowService : IExecuteFlowService
             // Get the parsed ReactFlowObject
             var parsedFlow = ReactFlowHelper.Parse(flowVersion.ReactFlowObject);
 
-            // Validate: Invalid react flow object, return bad request
-            if (parsedFlow == null || parsedFlow.Nodes == null || parsedFlow.Nodes.Count == 0 || parsedFlow.Edges == null || parsedFlow.Edges.Count == 0)
-                return serviceResponse.Update(400, "Flow is missing or invalid.");
+            // Validations for unpublished flow versions. For published flow versions, we will skip validations since 
+            // published flow versions are non-editable and all validations should have been passed at the time of publishing.
+            // TODO: Need to add these validations at the time of publishing.
+            if (flowVersion.IsPublished == false)
+            {
+                // Validate: Invalid react flow object, return bad request
+                if (parsedFlow == null || parsedFlow.Nodes == null || parsedFlow.Nodes.Count == 0 || parsedFlow.Edges == null || parsedFlow.Edges.Count == 0)
+                    return serviceResponse.Update(400, "Flow is missing or invalid.");
 
-            // Validate: Flow contains one or more executable nodes that are desktop-only
-            if (FlowValidationHelper.DoesFlowContainsAnyDesktopOnlyNode(parsedFlow))
-                return serviceResponse.Update(400, "Flow contains desktop nodes which cannot be executed via web. Please remove desktop nodes from the flow and try again.");
+                // Validate: Flow contains one or more executable nodes that are desktop-only
+                if (FlowValidationHelper.DoesFlowContainsAnyDesktopOnlyNode(parsedFlow))
+                    return serviceResponse.Update(400, "Flow contains desktop nodes which cannot be executed via web. Please remove desktop nodes from the flow and try again.");
 
-            // Validate: Reject flow execution if it contains only support/placeholder nodes
-            if (FlowValidationHelper.IsEmptyFlow(parsedFlow))
-                return serviceResponse.Update(400, "Flow is empty and cannot be executed.");
+                // Validate: Reject flow execution if it contains only support/placeholder nodes
+                if (FlowValidationHelper.IsEmptyFlow(parsedFlow))
+                    return serviceResponse.Update(400, "Flow is empty and cannot be executed.");
 
-            // Validate: Flow graph is invalid (e.g. missing nodes or edges, or edges connecting to non-existing nodes)
-            if (FlowValidationHelper.IsValidFlowGraph(parsedFlow) is string flowGraphValidationError)
-                return serviceResponse.Update(400, $"Flow graph is invalid: {flowGraphValidationError}");
+                // Validate: Flow graph is invalid (e.g. missing nodes or edges, or edges connecting to non-existing nodes)
+                if (FlowValidationHelper.IsValidFlowGraph(parsedFlow) is string flowGraphValidationError)
+                    return serviceResponse.Update(400, $"Flow graph is invalid: {flowGraphValidationError}");
+            }
 
             // Insert a new job for the flow execution
             var newJob = new Job

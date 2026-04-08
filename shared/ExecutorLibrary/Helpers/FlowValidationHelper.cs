@@ -15,11 +15,6 @@ public static class FlowValidationHelper
         "branchStartNode",
         "branchNode1",
         "branchEndNode",
-        "ifElseNode",
-        "conditionalNode",
-        "whileLoopNode",
-        "forLoopNode",
-        "forEachLoopNode",
         "flowEndNode"
     ];
 
