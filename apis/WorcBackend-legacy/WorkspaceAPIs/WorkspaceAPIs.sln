@@ -7,6 +7,10 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "WorkspaceAPIs", "WorkspaceA
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "AspNetToolkit", "..\AspNetToolkit\AspNetToolkit.csproj", "{AD6036DC-392F-4296-8216-5866E0E60E9D}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ExecutorLibrary", "..\..\..\shared\ExecutorLibrary\ExecutorLibrary.csproj", "{B9F3FDA9-E242-57F0-E6C9-727C1DF703C2}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "NodeLibrary", "..\..\..\shared\NodeLibrary\NodeLibrary.csproj", "{3AC795FA-2874-74A5-6461-7654D002BE0C}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -21,6 +25,14 @@ Global
 		{AD6036DC-392F-4296-8216-5866E0E60E9D}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{AD6036DC-392F-4296-8216-5866E0E60E9D}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{AD6036DC-392F-4296-8216-5866E0E60E9D}.Release|Any CPU.Build.0 = Release|Any CPU
+		{B9F3FDA9-E242-57F0-E6C9-727C1DF703C2}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{B9F3FDA9-E242-57F0-E6C9-727C1DF703C2}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{B9F3FDA9-E242-57F0-E6C9-727C1DF703C2}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{B9F3FDA9-E242-57F0-E6C9-727C1DF703C2}.Release|Any CPU.Build.0 = Release|Any CPU
+		{3AC795FA-2874-74A5-6461-7654D002BE0C}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{3AC795FA-2874-74A5-6461-7654D002BE0C}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{3AC795FA-2874-74A5-6461-7654D002BE0C}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{3AC795FA-2874-74A5-6461-7654D002BE0C}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
