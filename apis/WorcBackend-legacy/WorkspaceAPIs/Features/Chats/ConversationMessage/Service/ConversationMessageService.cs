@@ -193,7 +193,7 @@ public class ConversationMessageService : IConversationMessageService
                 .GetByConditionAsync(w =>
                     w.ConversationId == conversationId &&
                     w.Conversation.UserId == _userId)
-                .OrderByDescending(o => o.CreatedOn)
+                .OrderBy(o => o.CreatedOn)
                 .ProjectToType<ConversationMessageDto>()
                 .ToListAsync();
 
