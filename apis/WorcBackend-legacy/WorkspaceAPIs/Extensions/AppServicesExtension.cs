@@ -78,6 +78,11 @@ public static class AppServicesExtension
         services.AddSingleton(Guard.Against.Null(config.GetSection("EnvironmentConfig").Get<EnvironmentConfig>(), "EnvironmentConfig cannot be null"));
         services.AddSingleton(Guard.Against.Null(config.GetSection("AppDefaultConfig").Get<AppDefaultConfig>(), "AppDefaultConfig cannot be null"));
 
+        // ExecuteFlow feature services
+        services.AddScoped<IExecuteFlowService, ExecuteFlowService>();
+        services.AddScoped<IFlowNotificationService, FlowNotificationService>();
+        services.AddSingleton<IFlowExecutionService, FlowExecutionService>();
+
         // Feature Services
         services.AddScoped<IWorkspaceUserService, WorkspaceUserService>();
         services.AddScoped<INotificationHelperService, NotificationHelperService>();
@@ -140,6 +145,7 @@ public static class AppServicesExtension
         services.AddScoped<IAzureConnectorsService, AzureConnectorsService>();
         services.AddScoped<IM365OutlookConnectorsService, M365OutlookConnectorsService>();
         services.AddScoped<IM365SharePointConnectorsService, M365SharePointConnectorsService>();
+        
         // Common services
         services.AddScoped<IUnitOfWork, UnitOfWork>();
     }
