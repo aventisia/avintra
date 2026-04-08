@@ -20,6 +20,7 @@ import {
  */
 export const createHistoryAdapter = (
   threadId: string,
+  flowVersionId: string,
 ): ThreadHistoryAdapter => {
   /**
    * Role mapping
@@ -65,7 +66,7 @@ export const createHistoryAdapter = (
     const role = mapRole(msg.role);
 
     const base = {
-      id: msg.id,
+      id: msg.id ?? "",
       createdAt: new Date(msg.createdOn),
     };
 
@@ -98,9 +99,8 @@ export const createHistoryAdapter = (
   };
 
   const mapThreadToDto = (msg: ThreadMessage): ConversationMessageDto => ({
-    id: msg.id,
     conversationId: threadId,
-    flowVersionId: "",
+    flowVersionId,
     content: extractText(msg),
     role: mapToDtoRole(msg.role),
     metadata: msg.metadata as any,
@@ -115,7 +115,7 @@ export const createHistoryAdapter = (
     async load(): Promise<ExportedMessageRepository> {
       try {
         const res = await getConversationMessages(threadId);
-        const data = res?.data ?? [];
+        const data = res?.data?.reverse() ?? [];
 
         //  Treat empty thread correctly
         if (data.length === 0) {

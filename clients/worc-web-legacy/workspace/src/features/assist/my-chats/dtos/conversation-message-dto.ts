@@ -8,7 +8,7 @@ export enum ConversationMessageSenderEnum {
 // DTO
 export interface ConversationMessageDto {
   /** Unique identifier of the message */
-  id: string; // Guid → string
+  id?: string; // Guid → string
 
   /** Conversation ID this message belongs to */
   conversationId: string;

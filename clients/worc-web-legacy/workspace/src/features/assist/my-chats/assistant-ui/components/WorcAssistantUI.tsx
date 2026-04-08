@@ -21,8 +21,8 @@ export const WorcAssistantUI = ({
   const { conversationId, flowVersionId } = useParams();
 
   const historyAdapter = useMemo(
-    () => createHistoryAdapter(conversationId ?? ""),
-    [conversationId],
+    () => createHistoryAdapter(conversationId ?? "", flowVersionId ?? ""),
+    [conversationId, flowVersionId],
   );
 
   // Create a memoized Assistant UI runtime adapter for the execution flow context.
