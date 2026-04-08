@@ -41,7 +41,7 @@ export const isEmptyFlow = (nodes: Node<NodeDataType>[]): boolean => {
  * Examples allowed: [cloud, windows], [cloud], [cloud, linux], [cloud, windows, linux], [].
  * Note: If supportedPlatforms property is missing or empty, we will consider the node as cross-platform and allow it to be executed.
  */
-export const doesFlowContainDesktopOnlyNode = (
+export const doesFlowContainAnyDesktopOnlyNode = (
   nodes: Node<NodeDataType>[],
 ): boolean => {
   const desktopOnlyNodeCount = nodes.filter((node) => {
