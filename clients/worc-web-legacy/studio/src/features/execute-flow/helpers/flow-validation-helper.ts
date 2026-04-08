@@ -16,11 +16,6 @@ const SUPPORT_NODE_TYPES = new Set([
   "branchStartNode",
   "branchNode1",
   "branchEndNode",
-  "ifElseNode",
-  "conditionalNode",
-  "whileLoopNode",
-  "forLoopNode",
-  "forEachLoopNode",
   "flowEndNode",
 ]);
 
