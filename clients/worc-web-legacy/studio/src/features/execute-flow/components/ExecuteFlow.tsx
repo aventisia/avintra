@@ -19,7 +19,7 @@ import { useShallow } from "zustand/react/shallow";
 import {
   CURRENT_VERSION_ID_KEY,
   clearNodeExecutionLog,
-  doesFlowContainDesktopOnlyNode,
+  doesFlowContainAnyDesktopOnlyNode,
   isEmptyFlow,
   isValidFlowGraph,
   useExecuteFlowMutation,
@@ -121,7 +121,7 @@ const ExecuteFlow = () => {
     }
 
     // Get flag indicating whether flow can only be executed in desktop executor
-    const isDesktopOnlyFlow = doesFlowContainDesktopOnlyNode(
+    const isDesktopOnlyFlow = doesFlowContainAnyDesktopOnlyNode(
       nodes as Node<NodeDataType>[],
     );
 
