@@ -115,7 +115,7 @@ export const createHistoryAdapter = (
     async load(): Promise<ExportedMessageRepository> {
       try {
         const res = await getConversationMessages(threadId);
-        const data = res?.data?.reverse() ?? [];
+        const data = res?.data ?? [];
 
         //  Treat empty thread correctly
         if (data.length === 0) {
