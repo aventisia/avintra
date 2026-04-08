@@ -1,3 +1,6 @@
+using ExecutorLibrary.Models;
+using ExecutorLibrary.Helpers;
+
 namespace WorkspaceAPIs.Services;
 
 public class FlowBuilderService : IFlowBuilderService
@@ -142,6 +145,33 @@ public class FlowBuilderService : IFlowBuilderService
                 _logger.LogWarning($"User {_userId} is not authorized to modify this flow.");
                 serviceResponse.Message = "You don't have access to modify this flow.";
                 return serviceResponse;
+            }
+
+            // Validate: Flow version is already published
+            if (flowVersion.IsPublished == true)
+                return serviceResponse.Update(400, "Flow is already published.");
+                
+            // Validate flow graph for unpublished flow versions
+            if (flowVersion.IsPublished == false)
+            {
+                // Get the parsed ReactFlowObject
+                var parsedFlow = ReactFlowHelper.Parse(flowVersion.ReactFlowObject);
+
+                // Validate: Invalid react flow object, return bad request
+                if (parsedFlow == null || parsedFlow.Nodes == null || parsedFlow.Nodes.Count == 0 || parsedFlow.Edges == null || parsedFlow.Edges.Count == 0)
+                    return serviceResponse.Update(400, "Flow is missing or invalid.");
+
+                // Validate: Chat flow contains one or more executable nodes that are desktop-only
+                if (flowVersion.Flow.Type == FlowTypesEnum.ChatAgent && FlowValidationHelper.DoesFlowContainsAnyDesktopOnlyNode(parsedFlow))
+                    return serviceResponse.Update(400, "Flow contains desktop nodes which cannot be executed via web. Please remove desktop nodes from the flow and try again.");
+
+                // Validate: Reject flow execution if it contains only support/placeholder nodes
+                if (FlowValidationHelper.IsEmptyFlow(parsedFlow))
+                    return serviceResponse.Update(400, "Flow is empty and cannot be published.");
+
+                // Validate: Flow graph is invalid (e.g. missing nodes or edges, or edges connecting to non-existing nodes)
+                if (FlowValidationHelper.IsValidFlowGraph(parsedFlow) is string flowGraphValidationError)
+                    return serviceResponse.Update(400, $"Flow graph is invalid: {flowGraphValidationError}");
             }
 
             // Handle publish based on the type specified in the DTO
