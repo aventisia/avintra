@@ -48,6 +48,7 @@ global using Microsoft.EntityFrameworkCore;
 global using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 global using Microsoft.AspNetCore.Mvc.Filters;
 
+global using Pgvector;
 global using Mapster;
 global using Ardalis.GuardClauses;
 

@@ -17,7 +17,10 @@ public class WorkspaceDbContextDesignTimeFactory : IDesignTimeDbContextFactory<W
 
         // Use a placeholder connection string for design-time only.
         // Actual connection string is loaded from environment config at runtime.
-        optionsBuilder.UseNpgsql("Host=localhost;Database=WorkspaceDb;Username=postgres;Password=postgres");
+        optionsBuilder.UseNpgsql("Host=localhost;Database=WorkspaceDb;Username=postgres;Password=postgres", options =>
+        {
+            options.UseVector();
+        });
 
         // Create a minimal ICurrentTenantService stub for design-time
         var services = new ServiceCollection();

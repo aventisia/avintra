@@ -35,6 +35,7 @@ public interface IUnitOfWork
     IOnPremModelRepo OnPremModelRepo { get; }
     IConversationRepo ConversationRepo { get; }
     IConversationMessageRepo ConversationMessageRepo { get; }
+    IVectorStoreRepo VectorStoreRepo { get; }
 
     /// <summary>
     /// Saves the changes made in the unit of work asynchronously.
