@@ -186,6 +186,19 @@ public class FlowVersionService : IFlowVersionService
                 return serviceResponse;
             }
 
+            // TODO: Enable this guard if business rules require preventing disabling of published versions
+            // Guard: Prevent disabling a published flow version
+            // if (flowVersionDto?.IsDisabled == true && existingFlowVersion.IsPublished)
+            // {
+            //     _logger.LogWarning(
+            //         "Flow version disable denied. FlowVersionId: {FlowVersionId} is published.",
+            //         existingFlowVersion.Id
+            //     );
+
+            //     serviceResponse.Message = "Published version cannot be disabled.";
+            //     return serviceResponse;
+            // }
+
             // Check if the user is the creator or has the required access (Owner/Edit)
             var flowUserAccess = existingFlowVersion.Flow.FlowUsers?.FirstOrDefault(w =>
                 w.FlowId == existingFlowVersion.Flow.Id &&

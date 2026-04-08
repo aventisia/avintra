@@ -43,9 +43,9 @@ public class AssistChatService : IAssistChatService
                     w.IsPublished &&
                     !w.IsArchived &&
                     w.FlowVersionUsers!.Any(a => a.UserId == _userId) &&
-                    w.Conversations!.Any(a =>
-                        a.Status != ConversationStatusEnum.Archived &&
-                        a.UserId == _userId
+                    w.Conversations.Any(a =>
+                        a.UserId == _userId &&
+                        a.Status != ConversationStatusEnum.Archived
                     )
                 )
                 .Select(s => new AssistChatDto
@@ -82,7 +82,7 @@ public class AssistChatService : IAssistChatService
                     // Project conversations with latest activity details
                     Conversations = s.Conversations
                         // Include only active (non-archived) conversations
-                        .Where(w1 => w1.Status != ConversationStatusEnum.Archived)
+                        .Where(w1 => w1.Status != ConversationStatusEnum.Archived && w1.UserId == _userId)
                         .Select(s1 => new ConversationSummaryDto
                         {
                             Id = s1.Id,
@@ -155,7 +155,7 @@ public class AssistChatService : IAssistChatService
                     w.IsPublished &&
                     !w.IsArchived &&
                     w.FlowVersionUsers!.Any(a => a.UserId == _userId) &&
-                    w.Conversations!.Any(a =>
+                    w.Conversations.Any(a =>
                         a.Status == ConversationStatusEnum.Archived &&
                         a.UserId == _userId &&
                         a.Messages.Any())
@@ -190,7 +190,7 @@ public class AssistChatService : IAssistChatService
 
                     Conversations = s.Conversations
                         // Include only non-archived conversations
-                        .Where(w1 => w1.Status == ConversationStatusEnum.Archived && w1.Messages.Any())
+                        .Where(w1 => w1.Status == ConversationStatusEnum.Archived && w1.UserId == _userId && w1.Messages.Any())
                         .Select(s1 => new ConversationSummaryDto
                         {
                             Id = s1.Id,
