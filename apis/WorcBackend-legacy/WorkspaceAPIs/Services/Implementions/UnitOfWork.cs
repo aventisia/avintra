@@ -42,6 +42,7 @@ public class UnitOfWork : IUnitOfWork
     public IOnPremModelRepo OnPremModelRepo => new OnPremModelRepo(_workspaceDbContext);
     public IConversationRepo ConversationRepo => new ConversationRepo(_workspaceDbContext);
     public IConversationMessageRepo ConversationMessageRepo => new ConversationMessageRepo(_workspaceDbContext);
+    public IVectorStoreRepo VectorStoreRepo => new VectorStoreRepo(_workspaceDbContext);
 
     public async Task<bool> SaveAsync(bool checkHasChanges = false)
     {

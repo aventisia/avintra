@@ -6,6 +6,7 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
+using Pgvector;
 using WorkspaceAPIs.Data;
 
 #nullable disable
@@ -22,6 +23,7 @@ namespace WorkspaceAPIs.Data.Migrations
                 .HasAnnotation("ProductVersion", "8.0.7")
                 .HasAnnotation("Relational:MaxIdentifierLength", 63);
 
+            NpgsqlModelBuilderExtensions.HasPostgresExtension(modelBuilder, "vector");
             NpgsqlModelBuilderExtensions.UseIdentityByDefaultColumns(modelBuilder);
 
             modelBuilder.Entity("WorkspaceAPIs.Entities.AITask", b =>
@@ -1816,6 +1818,31 @@ namespace WorkspaceAPIs.Data.Migrations
                     b.HasIndex("LastModifiedByUserId");
 
                     b.ToTable("Vaults");
+                });
+
+            modelBuilder.Entity("WorkspaceAPIs.Entities.VectorStore", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uuid");
+
+                    b.Property<string>("Content")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.Property<Vector>("Embedding")
+                        .IsRequired()
+                        .HasColumnType("vector(1536)");
+
+                    b.Property<JsonDocument>("Metadata")
+                        .HasColumnType("jsonb");
+
+                    b.Property<Guid>("TenantId")
+                        .HasColumnType("uuid");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("worc_VectorStore");
                 });
 
             modelBuilder.Entity("WorkspaceAPIs.Entities.WorkItemEvent", b =>
