@@ -11,4 +11,6 @@ export enum VaultAppsEnum {
   ElevenLabs,
   OpenRouter,
   AzureStorage,
+  Postgres,
+  Qdrant,
 }
