@@ -51,6 +51,7 @@ public class WorkspaceDbContext : DbContext
         modelBuilder.Entity<OnPremModel>().HasQueryFilter(qf => qf.TenantId == CurrentTenantId);
         modelBuilder.Entity<Conversation>().HasQueryFilter(qf => qf.TenantId == CurrentTenantId);
         modelBuilder.Entity<ConversationMessage>().HasQueryFilter(qf => qf.TenantId == CurrentTenantId);
+        modelBuilder.Entity<VectorStore>().HasQueryFilter(qf => qf.TenantId == CurrentTenantId);
 
         // Unique property
         modelBuilder.Entity<WorkspaceUser>().HasIndex(index => index.UserName).IsUnique();
@@ -134,6 +135,17 @@ public class WorkspaceDbContext : DbContext
         modelBuilder.Entity<FlowVersionUser>().HasOne(one => one.FlowVersion).WithMany(many => many.FlowVersionUsers).HasForeignKey(fKey => fKey.FlowVersionId).IsRequired().OnDelete(DeleteBehavior.Cascade);
         modelBuilder.Entity<Conversation>().HasOne(one => one.FlowVersion).WithMany(many => many.Conversations).HasForeignKey(fKey => fKey.FlowVersionId).IsRequired().OnDelete(DeleteBehavior.Cascade);
         modelBuilder.Entity<ConversationMessage>().HasOne(one => one.Conversation).WithMany(many => many.Messages).HasForeignKey(fKey => fKey.ConversationId).IsRequired().OnDelete(DeleteBehavior.Cascade);
+
+
+        // Registers the pgvector extension in PostgreSQL.
+        // CRITICAL: Must be enabled before migrations or any vector column usage, otherwise the application will fail at runtime.
+        modelBuilder.HasPostgresExtension("vector");
+
+        // Maps Embedding to a 1536-dimension PostgreSQL vector column.
+        // CRITICAL: Dimension must exactly match the embedding model output, or inserts and similarity queries will fail.
+        modelBuilder.Entity<VectorStore>()
+                .Property(x => x.Embedding)
+                .HasColumnType("vector(1536)");
     }
     // On Save Changes - write tenant Id to table
     public override int SaveChanges()
@@ -196,4 +208,5 @@ public class WorkspaceDbContext : DbContext
     public DbSet<EncryptedKeyValue> EncryptedKeyValues { get; set; }
     public DbSet<AITask> AITasks { get; set; }
     public DbSet<OnPremModel> OnPremModels { get; set; }
+    public DbSet<VectorStore> VectorStores { get; set; }
 }

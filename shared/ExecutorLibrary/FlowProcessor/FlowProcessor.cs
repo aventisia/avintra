@@ -28,11 +28,20 @@ public class FlowProcessor
 
     public async Task<FlowExecutionResult> ExecuteAsync(
         ReactFlowDataModel flow,
+        Dictionary<string, object?>? initialVariables = null,
         CancellationToken cancellationToken = default)
     {
         var startTime = DateTimeOffset.UtcNow;
-        Thread.Sleep(10000); // Simulate some initial delay for testing cancellation and timeout handling
         var flowExecutionContext = new FlowExecutionContext();
+
+        // Seed context with initial variables (e.g. UserId, TenantId, AccessToken)
+        if (initialVariables is not null)
+        {
+            foreach (var kvp in initialVariables)
+            {
+                flowExecutionContext.Set(kvp.Key, kvp.Value);
+            }
+        }
         var logs = new List<NodeExecutionLog>();
         var conditionalStates = new Dictionary<string, ConditionalBranchState>(StringComparer.OrdinalIgnoreCase);
         var loopStates = new Dictionary<string, LoopState>(StringComparer.OrdinalIgnoreCase);

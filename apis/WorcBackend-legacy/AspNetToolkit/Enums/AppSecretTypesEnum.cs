@@ -89,6 +89,18 @@ public enum AppSecretTypesEnum
     [Description("Azure Storage Credentials")]
     AzureStorage,
 
+    /// <summary>
+    /// Represents the credentials required for PostgreSQL database access.
+    /// </summary>
+    [Description("PostgreSQL Credentials")]
+    Postgres,
+
+    /// <summary>
+    /// Represents the credentials required for Qdrant vector database access.
+    /// </summary>
+    [Description("Qdrant Credentials")]
+    Qdrant,
+
     EmailClient,
     AzureBlobStorage
 }

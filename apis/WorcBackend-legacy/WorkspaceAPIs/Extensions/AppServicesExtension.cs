@@ -23,7 +23,12 @@ public static class AppServicesExtension
         var appDbConnectionString = $"Host={pgHost};Port={pgPort};Username={pgUsername};Password={pgPassword};Database=WorkspaceDb;Include Error Detail=true";
         var tenantDbConnectionString = $"Host={pgHost};Port={pgPort};Username={pgUsername};Password={pgPassword};Database=AccountsDb;Include Error Detail=true";
 
-        services.AddDbContext<WorkspaceDbContext>(options => options.UseNpgsql(appDbConnectionString));
+        services.AddDbContext<WorkspaceDbContext>(options =>
+            options.UseNpgsql(
+                appDbConnectionString,
+                npgsqlOptions => npgsqlOptions.UseVector()
+            )
+        );
         services.AddDbContext<WorkspaceInternalDbContext>(options => options.UseNpgsql(appDbConnectionString));
         services.AddDbContext<TenantDbContext>(options => options.UseNpgsql(tenantDbConnectionString));
     }
@@ -145,7 +150,7 @@ public static class AppServicesExtension
         services.AddScoped<IAzureConnectorsService, AzureConnectorsService>();
         services.AddScoped<IM365OutlookConnectorsService, M365OutlookConnectorsService>();
         services.AddScoped<IM365SharePointConnectorsService, M365SharePointConnectorsService>();
-        
+
         // Common services
         services.AddScoped<IUnitOfWork, UnitOfWork>();
     }
