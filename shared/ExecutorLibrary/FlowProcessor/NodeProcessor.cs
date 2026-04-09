@@ -1,4 +1,5 @@
 using System.Collections.Concurrent;
+using System.ComponentModel;
 using System.Diagnostics;
 using System.Reflection;
 using ExecutorLibrary.Helpers;
@@ -60,7 +61,7 @@ public class NodeProcessor : INodeProcessor
             baseNode.StatusMessage = new OutArgument<string>();
 
             // 4. Map inputs from ReactFlow node data to InArgument properties
-            var inputLogs = new List<NodeLogKeyValue>();
+            var inputLogs = new Dictionary<string, string>();
             if (node.Data?.Inputs is { Count: > 0 })
             {
                 MapInputs(baseNode, nodeType, node.Data.Inputs, context, inputLogs);
@@ -77,7 +78,7 @@ public class NodeProcessor : INodeProcessor
 
             // 7. Collect outputs
             var outputValues = new Dictionary<string, object?>();
-            var outputLogs = new List<NodeLogKeyValue>();
+            var outputLogs = new Dictionary<string, string>();
             CollectOutputs(baseNode, nodeType, node.Data?.Outputs, outputValues, outputLogs);
 
             // 8. Read IsSuccess
@@ -118,7 +119,7 @@ public class NodeProcessor : INodeProcessor
         Type nodeType,
         List<ReactFlowNodeInput> inputs,
         FlowExecutionContext context,
-        List<NodeLogKeyValue> inputLogs)
+        Dictionary<string, string> inputLogs)
     {
         foreach (var input in inputs)
         {
@@ -143,12 +144,9 @@ public class NodeProcessor : INodeProcessor
             var inArgument = NodeArgumentHelper.CreateInArgument(genericArgType, convertedValue);
             property.SetValue(baseNode, inArgument);
 
-            // Log the input
-            inputLogs.Add(new NodeLogKeyValue
-            {
-                Key = input.Key,
-                Value = NodeLogHelper.ConvertValueForLogging(input.Key, convertedValue ?? "null", "Input", false),
-            });
+            // Log the input using DisplayName if available, otherwise property name
+            var displayName = property.GetCustomAttribute<DisplayNameAttribute>()?.DisplayName ?? input.Key;
+            inputLogs[displayName] = NodeLogHelper.ConvertValueForLogging(displayName, convertedValue ?? "null", "Input", false);
         }
     }
 
@@ -178,16 +176,26 @@ public class NodeProcessor : INodeProcessor
         Type nodeType,
         List<ReactFlowNodeOutput>? declaredOutputs,
         Dictionary<string, object?> outputValues,
-        List<NodeLogKeyValue> outputLogs)
+        Dictionary<string, string> outputLogs)
     {
-        // Build a set of enabled output keys from the ReactFlow node data
+        // Build lookup: property name → output variable alias (from ReactFlowNodeOutput.Value.Value)
+        // and set of enabled output keys
         var enabledOutputKeys = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
+        var outputAliasMap = new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase);
         if (declaredOutputs is { Count: > 0 })
         {
             foreach (var output in declaredOutputs)
             {
-                if (output.Value.Enabled && !string.IsNullOrWhiteSpace(output.Key))
+                if (string.IsNullOrWhiteSpace(output.Key))
+                    continue;
+
+                if (output.Value.Enabled)
                     enabledOutputKeys.Add(output.Key);
+
+                // The output variable alias is stored in Value.Value (e.g. "{{RandomNumber}}" → "RandomNumber")
+                var alias = output.Value.Value?.Replace("{{", "").Replace("}}", "").Trim();
+                if (!string.IsNullOrWhiteSpace(alias))
+                    outputAliasMap[output.Key] = alias;
             }
         }
 
@@ -197,9 +205,8 @@ public class NodeProcessor : INodeProcessor
             if (!NodeArgumentHelper.IsOutArgument(property))
                 continue;
 
-            // Skip base class internal outputs
-            if (string.Equals(property.Name, nameof(BaseNode.IsSuccess), StringComparison.OrdinalIgnoreCase) ||
-                string.Equals(property.Name, nameof(BaseNode.StatusMessage), StringComparison.OrdinalIgnoreCase))
+            // Skip IsSuccess — it's tracked separately on NodeExecutionLog.IsSuccess
+            if (string.Equals(property.Name, nameof(BaseNode.IsSuccess), StringComparison.OrdinalIgnoreCase))
                 continue;
 
             var argInstance = property.GetValue(baseNode);
@@ -208,18 +215,30 @@ public class NodeProcessor : INodeProcessor
 
             var value = NodeArgumentHelper.ReadArgumentValue(argInstance);
 
-            // Always log the output
-            outputLogs.Add(new NodeLogKeyValue
-            {
-                Key = property.Name,
-                Value = NodeLogHelper.ConvertValueForLogging(property.Name, value ?? "null", "Output", false),
-            });
+            // Skip outputs with null values (e.g. disabled conditional outputs like RandomNumbers when single mode)
+            if (value is null)
+                continue;
 
-            // Only add to flow context if output is enabled (or if no declared outputs exist, include all)
-            if (enabledOutputKeys.Count == 0 || enabledOutputKeys.Contains(property.Name))
+            // StatusMessage is logged as "Status" to match the legacy format
+            if (string.Equals(property.Name, nameof(BaseNode.StatusMessage), StringComparison.OrdinalIgnoreCase))
             {
-                outputValues[property.Name] = value;
+                outputLogs["Status"] = NodeLogHelper.ConvertValueForLogging("Status", value, "Output", false);
+                continue;
             }
+
+            // Only include outputs that are enabled (or all if none are explicitly declared)
+            if (enabledOutputKeys.Count > 0 && !enabledOutputKeys.Contains(property.Name))
+                continue;
+
+            // Determine log key: use output variable alias if available, otherwise property name
+            var logKey = outputAliasMap.TryGetValue(property.Name, out var alias) ? alias : property.Name;
+
+            // Log the output
+            outputLogs[logKey] = NodeLogHelper.ConvertValueForLogging(logKey, value, "Output", false);
+
+            // Add to flow context using the alias as the variable name
+            var contextKey = outputAliasMap.TryGetValue(property.Name, out var ctxAlias) ? ctxAlias : property.Name;
+            outputValues[contextKey] = value;
         }
     }
 
@@ -233,10 +252,10 @@ public class NodeProcessor : INodeProcessor
             NodeUniqueName = nodeId,
             IsSuccess = false,
             Duration = sw.Elapsed.TotalMilliseconds,
-            Outputs =
-            [
-                new NodeLogKeyValue { Key = "Error", Value = errorMessage }
-            ],
+            Outputs = new Dictionary<string, string>
+            {
+                ["Status"] = $"Node execution has failed: {errorMessage}"
+            },
         };
 
         return new NodeExecutionResult
