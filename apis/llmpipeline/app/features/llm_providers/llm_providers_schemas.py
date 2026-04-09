@@ -88,3 +88,28 @@ class LLMResponse(BaseModel):
     is_byok_enabled: Optional[bool] = False # TODO: Implement BYOK support
     credential_id: Optional[str] = None # TODO: Implement BYOK support
     error: Optional[str] = None
+
+
+class EmbeddingRequest(BaseModel):
+    provider: ProviderLiteral  # Embedding provider (e.g., openai, azure, etc.)
+    model: str  # Model name used for generating embeddings
+    input: Union[str, List[str]]  # Text or list of texts to embed
+    dimensions: Optional[int] = None  # Output vector size (if supported)
+    encoding_format: Literal['float', 'base64'] = 'float'  # Output format of embeddings
+    reference_id: Optional[str] = None  # ID of related object (doc, record, etc.)
+    reference_type: Optional[str] = None  # Type of reference (e.g., "document")
+    reference_name: Optional[str] = None  # Human-readable name
+    is_byok_enabled: bool = False  # Whether custom credentials are used
+    credential_id: Optional[str] = None  # ID of the credential
+
+class EmbeddingResponse(BaseModel):
+    provider: ProviderLiteral  # Provider used for embedding
+    model: str  # Model used
+    embeddings: List[List[float]]  # List of embedding vectors (one per input)
+    created_on: datetime = datetime.now(timezone.utc)  # Timestamp of response creation
+    time_taken: Optional[float] = 0.0  # Time taken to generate embeddings (in seconds)
+    is_byok_enabled: Optional[bool] = False  # Whether BYOK was used
+    credential_id: Optional[str] = None  # Credential identifier
+    input_tokens: Optional[int] = 0  # Number of tokens processed
+    status: Literal['completed', 'failed'] = 'completed'  # Execution status
+    error: Optional[str] = None  # Error message if failed

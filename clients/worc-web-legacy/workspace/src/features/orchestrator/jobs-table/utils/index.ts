@@ -19,6 +19,9 @@ const formatSecondsToCompactDuration = (totalSeconds?: number) => {
   if (m > 0) parts.push(`${m}m`);
   if (s > 0) parts.push(`${s}s`);
 
+  // If duration is less than 1 second, show "<1s"
+  if (parts.length === 0) return "<1s";
+
   return parts.join(" ");
 };
 

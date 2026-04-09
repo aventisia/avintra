@@ -894,9 +894,10 @@ public class AppSecretService : IAppSecretService
                     }
                     break;
                 }
-                case nameof (AppSecretTypesEnum.AzureBlobStorage):
+
+            case nameof(AppSecretTypesEnum.AzureBlobStorage):
                 {
-                      // Deserialize JSON into AzureBlobStorageCredentialsDto
+                    // Deserialize JSON into AzureBlobStorageCredentialsDto
                     var azureBlobCredentials = System.Text.Json.JsonSerializer.Deserialize<AzureBolbStorageCredentialsDto>(rawJson, jsonOptions);
                     if (azureBlobCredentials != null)
                     {
@@ -907,6 +908,39 @@ public class AppSecretService : IAppSecretService
                     else
                     {
                         validationResult.Remark = "Invalid connection string: required fields missing or format incorrect.";
+                    }
+                    break;
+                }
+
+            case nameof(AppSecretTypesEnum.Postgres):
+                {
+                    // Deserialize incoming JSON into PostgreSQL DTO
+                    var postgresCredentials = System.Text.Json.JsonSerializer.Deserialize<PostgresCredentialsDto>(rawJson, jsonOptions);
+                    if (postgresCredentials != null)
+                    {
+                        validationResult.EncryptedValues["ConnectionString"] = _encryptionService.EncryptString(postgresCredentials.ConnectionString);
+                        postgresCredentials.ConnectionString = string.Empty;
+                        sanitizedDataJson = System.Text.Json.JsonSerializer.Serialize(postgresCredentials, jsonOptions);
+                    }
+                    else
+                    {
+                        validationResult.Remark = "Invalid PostgreSQL credentials: required fields are missing or format is incorrect.";
+                    }
+                    break;
+                }
+            case nameof(AppSecretTypesEnum.Qdrant):
+                {
+                    // Deserialize incoming JSON into Qdrant DTO
+                    var qdrantCredentials = System.Text.Json.JsonSerializer.Deserialize<QdrantCredentialsDto>(rawJson, jsonOptions);
+                    if (qdrantCredentials != null && !string.IsNullOrWhiteSpace(qdrantCredentials.ApiKey))
+                    {
+                        validationResult.EncryptedValues["ApiKey"] = _encryptionService.EncryptString(qdrantCredentials.ApiKey);
+                        qdrantCredentials.ApiKey = string.Empty;
+                        sanitizedDataJson = System.Text.Json.JsonSerializer.Serialize(qdrantCredentials, jsonOptions);
+                    }
+                    else
+                    {
+                        validationResult.Remark = "Invalid Qdrant credentials: required fields are missing or format is incorrect.";
                     }
                     break;
                 }
