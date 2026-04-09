@@ -66,9 +66,16 @@ public class FlowExecutionService : IFlowExecutionService
                 return;
             }
 
-            // Initialize the flow processor and execute the flow
-            var flowProcessor = new FlowProcessor(new MockNodeProcessor());
-            var flowResult = await flowProcessor.ExecuteAsync(flow);
+            // Initialize the FlowProcessor with NodeProcessor and execute the flow
+            var initialVariables = new Dictionary<string, object?>
+            {
+                ["UserId"] = userId.ToString(),
+                ["TenantId"] = tenantId.ToString(),
+                ["AccessToken"] = string.Empty,
+            };
+
+            var flowProcessor = new FlowProcessor(new NodeProcessor());
+            var flowResult = await flowProcessor.ExecuteAsync(flow, initialVariables);
 
             // Update the job with the final status and results after execution
             job.Status = MapFlowStatusToJobStatus(flowResult.Status);
@@ -143,34 +150,4 @@ public class FlowExecutionService : IFlowExecutionService
         };
     }
 
-    // Temporary mock node processor that simulates successful execution of any node. 
-    // This is used for testing the flow execution framework without implementing actual node logic.
-    private sealed class MockNodeProcessor : INodeProcessor
-    {
-        public Task<NodeExecutionResult> ExecuteAsync(
-            ReactFlowNodeModel node,
-            FlowExecutionContext context,
-            CancellationToken cancellationToken = default)
-        {
-            var nodeDisplayName = string.IsNullOrWhiteSpace(node.Data?.Name)
-                ? node.Type
-                : node.Data.Name;
-
-            var nodeLog = new NodeExecutionLog
-            {
-                NodeId = node.Id,
-                NodeName = nodeDisplayName,
-                NodeUniqueName = node.Id,
-                IsSuccess = true,
-                Duration = 0,
-            };
-
-            return Task.FromResult(new NodeExecutionResult
-            {
-                IsSuccess = true,
-                NodeLog = nodeLog,
-                OutputValues = new Dictionary<string, object?>()
-            });
-        }
-    }
 }
