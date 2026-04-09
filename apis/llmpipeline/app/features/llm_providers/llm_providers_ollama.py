@@ -6,7 +6,7 @@ import httpx
 from datetime import datetime, timezone
 from app.core.config import settings
 from app.core.logger import log_exception, logger
-from app.features.llm_providers.llm_providers_schemas import LLMChunkResponse, LLMRequest, LLMResponse
+from app.features.llm_providers.llm_providers_schemas import EmbeddingRequest, EmbeddingResponse, LLMChunkResponse, LLMRequest, LLMResponse
 from app.features.llm_providers.llm_providers_utils import extract_json_from_llm_response
 from .llm_providers_base import BaseLLMProvider
 from datetime import datetime
@@ -331,3 +331,130 @@ class OllamaProvider(BaseLLMProvider):
             "length": "max_output_tokens",
         }
         return mapping.get(done_reason, None)
+
+    # Method: Generate embeddings via Ollama
+    async def generate_embeddings(self, embedding_request: EmbeddingRequest, user: User):
+        logger.info(f"[EMBEDDING] Request sent to Ollama with model: {embedding_request.model}")
+
+        # Handle BYOK or credits (same as LLM)
+        if embedding_request.is_byok_enabled and embedding_request.credential_id:
+            vault_manager = VaultManager()
+            credential = vault_manager.get_vault_secret_by_id(
+                vault_secret_id=embedding_request.credential_id,
+                jwt=user.access_token
+            )
+
+            if not credential:
+                raise HTTPException(400, "Invalid BYOK credentials")
+
+            self.api_url = credential.get("data", {}).get("Url", self.api_url)
+            self.api_key = credential.get("data", {}).get("ApiKey", self.api_key)
+
+        else:
+            credit_mgr = CreditManagerService()
+            if not credit_mgr.has_sufficient_credits("ollama", user.access_token):
+                raise HTTPException(400, "Insufficient credits")
+
+        start_time = time.perf_counter()
+
+        payload = {
+            "model": embedding_request.model,
+            "prompt": embedding_request.input
+        }
+
+        headers = {
+            "Content-Type": "application/json"
+        }
+
+        if self.api_key:
+            headers["API-KEY"] = self.api_key
+
+        try:
+            async with httpx.AsyncClient(timeout=httpx.Timeout(300.0)) as client:
+                response = await client.post(
+                    f"{self.api_url}/api/embeddings",
+                    json=payload,
+                    headers=headers
+                )
+
+                response.raise_for_status()
+                response_data = response.json()
+
+                logger.info(f"Ollama embedding response:\n{json.dumps(response_data, indent=2)}")
+
+                embeddings = [response_data.get("embedding")]
+
+                end_time = time.perf_counter()
+
+                # Ollama does NOT give tokens → estimate
+                estimated_tokens = self._estimate_tokens(embedding_request.input)
+
+                embedding_response = EmbeddingResponse(
+                    provider=embedding_request.provider,
+                    model=embedding_request.model,
+                    embeddings=embeddings,
+                    created_on=datetime.now(timezone.utc),
+                    time_taken=round(end_time - start_time, 2),
+                    input_tokens=estimated_tokens,
+                    is_byok_enabled=embedding_request.is_byok_enabled,
+                    credential_id=embedding_request.credential_id,
+                    status="completed"
+                )
+
+                # Credit usage
+                if not embedding_request.is_byok_enabled and not embedding_request.credential_id:
+                    credit_usage = self._build_ollama_embedding_credit_usage(
+                        embedding_request,
+                        embedding_response
+                    )
+
+                    credit_manager = CreditManagerService()
+                    credit_manager.post_credit_usage(
+                        task="ollama",
+                        request=credit_usage,
+                        jwt=user.access_token
+                    )
+
+                return embedding_response
+
+        except Exception as e:
+            log_exception(logger, e, "Ollama embedding error")
+
+            return EmbeddingResponse(
+                provider=embedding_request.provider,
+                model=embedding_request.model,
+                embeddings=[],
+                status="failed",
+                error=str(e)
+            )
+        
+    def _build_ollama_embedding_credit_usage(
+        self,
+        embedding_request: EmbeddingRequest,
+        embedding_response: EmbeddingResponse
+    ):
+        model_name = (embedding_request.model or "").strip().lower()
+
+        input_tokens = max(embedding_response.input_tokens or 0, 0)
+
+        # Map models (customize as needed)
+        MODEL_MAP = {
+            "nomic-embed-text": "OllamaNomicEmbedding",
+            "mxbai-embed-large": "OllamaMxbaiEmbedding",
+        }
+
+        service_type = MODEL_MAP.get(model_name)
+
+        if not service_type:
+            normalized = "".join(part.capitalize() for part in model_name.split("-"))
+            service_type = f"{normalized}Embedding"
+
+        return [{
+            "ServiceType": service_type,
+            "ConsumedUnit": input_tokens,
+            "RefType": embedding_request.reference_type,
+            "RefId": embedding_request.reference_id,
+            "RefName": embedding_request.reference_name,
+            "Action": "embedding",
+            "TriggeredByAgent": None
+        }]

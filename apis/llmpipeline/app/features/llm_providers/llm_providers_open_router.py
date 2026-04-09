@@ -10,6 +10,8 @@ from app.core.vault_manager import VaultManager
 from app.core.credit_manager import CreditManagerService
 from app.features.llm_providers.llm_providers_utils import extract_json_from_llm_response
 from app.features.llm_providers.llm_providers_schemas import (
+    EmbeddingRequest,
+    EmbeddingResponse,
     LLMChunkResponse,
     LLMRequest,
     LLMResponse,
@@ -150,7 +152,7 @@ class OpenRouterProvider(BaseLLMProvider):
                         # Parse JSON chunk from stream
                         chunk = json.loads(data)
 
-                        # 🔥 ADD THIS
+                        # ADD THIS
                         if "usage" in chunk:
                             usage_data = chunk["usage"]
 
@@ -547,3 +549,138 @@ class OpenRouterProvider(BaseLLMProvider):
         logger.info("Credit usage: %s", json.dumps(credit_usage, default=str))
 
         return credit_usage
+    
+    # Method: Generate embeddings via OpenRouter (OpenAI-compatible)
+    async def generate_embeddings(self, embedding_request: EmbeddingRequest, user: User):
+        logger.info(f"[EMBEDDING] Request sent to OpenRouter with model: {embedding_request.model}")
+
+        # Handle BYOK or credit validation
+        if embedding_request.is_byok_enabled and embedding_request.credential_id:
+            vault = VaultManager()
+            credential = vault.get_vault_secret_by_id(
+                embedding_request.credential_id, user.access_token
+            )
+
+            if not credential:
+                raise HTTPException(400, "Invalid BYOK credentials")
+
+            self.api_key = credential["data"]["ApiKey"]
+
+        else:
+            credit_mgr = CreditManagerService()
+            if not credit_mgr.has_sufficient_credits("openrouter", user.access_token):
+                raise HTTPException(400, "Insufficient credits")
+            
+        response_data = {}
+        start_time = time.perf_counter()
+
+        # Build request payload
+        payload = {
+            "model": embedding_request.model,
+            "input": embedding_request.input,
+            "encoding_format": embedding_request.encoding_format
+        }
+
+        if embedding_request.dimensions:
+            payload["dimensions"] = embedding_request.dimensions
+
+        headers = {
+            "Content-Type": "application/json",
+            "Authorization": f"Bearer {self.api_key}"
+        }
+
+        timeout = httpx.Timeout(300.0)
+
+        try:
+            async with httpx.AsyncClient(timeout=timeout) as client:
+                response = await client.post(
+                    f"{self.api_url}/embeddings",
+                    json=payload,
+                    headers=headers
+                )
+
+                response.raise_for_status()
+                response_data = response.json()
+
+                logger.info(f"OpenRouter embedding response:\n{json.dumps(response_data, indent=2)}")
+
+                # Extract embeddings
+                embeddings = [item["embedding"] for item in response_data.get("data", [])]
+
+                end_time = time.perf_counter()
+
+                embedding_response = EmbeddingResponse(
+                    provider=embedding_request.provider,
+                    model=embedding_request.model,
+                    embeddings=embeddings,
+                    created_on=datetime.now(timezone.utc),
+                    time_taken=round(end_time - start_time, 2),
+                    input_tokens=response_data.get("usage", {}).get("total_tokens", 0),
+                    is_byok_enabled=embedding_request.is_byok_enabled,
+                    credential_id=embedding_request.credential_id,
+                    status="completed"
+                )
+
+                # Credit consumption
+                if not embedding_request.is_byok_enabled and not embedding_request.credential_id:
+                    credit_usage = self._build_openrouter_embedding_credit_usage(
+                        embedding_request,
+                        embedding_response
+                    )
+
+                    credit_manager = CreditManagerService()
+                    try:
+                        credit_manager.post_credit_usage(
+                            task="openrouter",
+                            request=credit_usage,
+                            jwt=user.access_token
+                        )
+                        logger.info("Embedding credit usage posted successfully.")
+                    except Exception as e:
+                        logger.error(f"Failed to post embedding credit usage: {str(e)}")
+                        raise HTTPException(status_code=500, detail="Credit usage failed")
+
+                return embedding_response
+
+        except Exception as e:
+            log_exception(logger, e, "OpenRouter embedding error", response_data.get("error", ""))
+
+            return EmbeddingResponse(
+                provider=embedding_request.provider,
+                model=embedding_request.model,
+                embeddings=[],
+                status="failed",
+                error=str(e)
+            )
+        
+    def _build_openrouter_embedding_credit_usage(self, embedding_request: EmbeddingRequest, embedding_response: EmbeddingResponse):
+        """
+        Build credit usage for embeddings (OpenRouter)
+        """
+
+        model_name = (embedding_request.model or "").strip().lower()
+        model_name = model_name.split("/")[-1]
+
+        input_tokens = max(embedding_response.input_tokens or 0, 0)
+
+        # Model mapping
+        EMBEDDING_MODEL_MAP = {
+            "text-embedding-3-small": "OpenRouterEmbeddingSmall",
+            "text-embedding-3-large": "OpenRouterEmbeddingLarge",
+        }
+
+        service_type = EMBEDDING_MODEL_MAP.get(model_name)
+
+        if not service_type:
+            normalized = "".join(part.capitalize() for part in model_name.split("-"))
+            service_type = f"{normalized}Embedding"
+
+        return [{
+            "ServiceType": service_type,
+            "ConsumedUnit": input_tokens,
+            "RefType": embedding_request.reference_type,
+            "RefId": embedding_request.reference_id,
+            "RefName": embedding_request.reference_name,
+            "Action": "embedding",
+            "TriggeredByAgent": None
+        }]
