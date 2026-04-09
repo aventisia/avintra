@@ -398,9 +398,29 @@ public class AzureStorageCredentialsDto
 
 public class AzureBolbStorageCredentialsDto
 {
-     /// <summary>
+    /// <summary>
     /// Gets or sets the ConnectionString.
     /// </summary>
-    public string ConnectionString {get;set;} = string.Empty;
+    public string ConnectionString { get; set; } = string.Empty;
 }
 
+public class PostgresCredentialsDto
+{
+    /// <summary>
+    /// Gets or sets the PostgreSQL connection string.
+    /// </summary>
+    public string ConnectionString { get; set; } = string.Empty;
+}
+
+public class QdrantCredentialsDto
+{
+    /// <summary>
+    /// Gets or sets the base URL of the Qdrant service.
+    /// </summary>
+    public string Url { get; set; } = string.Empty;
+
+    /// <summary>
+    /// Gets or sets the API key used for Qdrant authentication (optional).
+    /// </summary>
+    public string ApiKey { get; set; } = string.Empty;
+}
