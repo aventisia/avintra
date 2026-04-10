@@ -912,10 +912,10 @@ public class AppSecretService : IAppSecretService
                     break;
                 }
 
-            case nameof(AppSecretTypesEnum.Postgres):
+            case nameof(AppSecretTypesEnum.ConnectionString):
                 {
                     // Deserialize incoming JSON into PostgreSQL DTO
-                    var postgresCredentials = System.Text.Json.JsonSerializer.Deserialize<PostgresCredentialsDto>(rawJson, jsonOptions);
+                    var postgresCredentials = System.Text.Json.JsonSerializer.Deserialize<ConnectionStringCredentialsDto>(rawJson, jsonOptions);
                     if (postgresCredentials != null)
                     {
                         validationResult.EncryptedValues["ConnectionString"] = _encryptionService.EncryptString(postgresCredentials.ConnectionString);

@@ -71,19 +71,19 @@ public class LLMProviderService : ILLMProviderService
                 case LLMProviderTypesEnum.OpenAI:
                     client = new RestClient("https://api.openai.com");
                     client.AddDefaultHeader("Authorization", $"Bearer {apiKey}");
-                    serviceResponse = await GetModelsAsync(requestDto.ProviderType, client);
+                    serviceResponse = await GetModelsAsync(requestDto, client);
                     break;
 
                 case LLMProviderTypesEnum.OpenRouter:
                     client = new RestClient("https://openrouter.ai/api");
                     client.AddDefaultHeader("Authorization", $"Bearer {apiKey}");
-                    serviceResponse = await GetModelsAsync(requestDto.ProviderType, client);
+                    serviceResponse = await GetModelsAsync(requestDto, client);
                     break;
 
                 case LLMProviderTypesEnum.Gemini:
                     client = new RestClient("https://generativelanguage.googleapis.com");
                     client.AddDefaultHeader("x-goog-api-key", apiKey);
-                    serviceResponse = await GetModelsAsync(requestDto.ProviderType, client);
+                    serviceResponse = await GetModelsAsync(requestDto, client);
                     break;
 
                 default:
@@ -101,7 +101,7 @@ public class LLMProviderService : ILLMProviderService
             return serviceResponse;
         }
     }
-    private async Task<ServiceResponse<IEnumerable<SelectOptionDto>>> GetModelsAsync(LLMProviderTypesEnum providerType, RestClient client)
+    private async Task<ServiceResponse<IEnumerable<SelectOptionDto>>> GetModelsAsync(LLMProviderModelRequestDto lLMProviderModelRequestDto, RestClient client)
     {
         var serviceResponse = new ServiceResponse<IEnumerable<SelectOptionDto>>();
 
@@ -109,10 +109,13 @@ public class LLMProviderService : ILLMProviderService
         {
             // Define the API endpoint based on the provider type
             // Select models endpoint based on provider
-            string endpoint = providerType switch
+            string endpoint = lLMProviderModelRequestDto.ProviderType switch
             {
                 LLMProviderTypesEnum.OpenAI => "v1/models",
-                LLMProviderTypesEnum.OpenRouter => "v1/models",
+                LLMProviderTypesEnum.OpenRouter =>
+                    string.IsNullOrWhiteSpace(lLMProviderModelRequestDto.OutputModalities)
+                        ? "v1/models?output_modalities=all"
+                        : $"v1/models?output_modalities={lLMProviderModelRequestDto.OutputModalities}",
                 LLMProviderTypesEnum.Gemini => "v1beta/models",
                 _ => throw new NotImplementedException("Unsupported provider")
             };
@@ -126,23 +129,23 @@ public class LLMProviderService : ILLMProviderService
             // Validate response
             if (!response.IsSuccessful || string.IsNullOrWhiteSpace(response.Content))
             {
-                serviceResponse.Message = $"Failed to retrieve models from {providerType}. Status: {response.StatusCode}";
+                serviceResponse.Message = $"Failed to retrieve models from {lLMProviderModelRequestDto.ProviderType}. Status: {response.StatusCode}";
                 return serviceResponse;
             }
 
             // Log success
-            _logger.LogInformation("Successfully retrieved models from {Provider} API.", providerType);
+            _logger.LogInformation("Successfully retrieved models from {Provider} API.", lLMProviderModelRequestDto.ProviderType);
 
             // Parse JSON response body
             JObject jsonResponse = JObject.Parse(response.Content);
 
             // Extract data based on provider type
-            IEnumerable<JToken>? dataArray = providerType switch
+            IEnumerable<JToken>? dataArray = lLMProviderModelRequestDto.ProviderType switch
             {
                 LLMProviderTypesEnum.OpenAI => jsonResponse["data"]?.ToArray(),
                 LLMProviderTypesEnum.Gemini => jsonResponse["models"]?.ToArray(),
                 LLMProviderTypesEnum.OpenRouter => jsonResponse["data"]?.ToArray(),
-                _ => throw new NotImplementedException($"No data extraction logic defined for {providerType}")
+                _ => throw new NotImplementedException($"No data extraction logic defined for {lLMProviderModelRequestDto.ProviderType}")
             };
 
             if (dataArray == null || !dataArray.Any())
@@ -151,20 +154,43 @@ public class LLMProviderService : ILLMProviderService
                 return serviceResponse;
             }
 
-            // Create a list of SelectOptionDto objects from the JSON data
-            List<SelectOptionDto> models = dataArray
-                .Select(item => MapToSelectOptionDto(item, providerType))
+            // Determine if request is for embeddings
+            bool isEmbeddingRequest = lLMProviderModelRequestDto.OutputModalities?
+                .Equals("Embeddings", StringComparison.OrdinalIgnoreCase) == true;
+
+            // Extract model IDs
+            var modelItems = dataArray.Select(item => new
+            {
+                Raw = item,
+                Id = item["id"]?.ToString() ?? string.Empty
+            });
+
+            // Filter (inline embedding check)
+            var filteredItems = isEmbeddingRequest
+                ? modelItems.Where(x =>
+                {
+                    bool isEmbeddingModel =
+                        x.Id.Contains("embed", StringComparison.OrdinalIgnoreCase) ||
+                        x.Id.Contains("embedding", StringComparison.OrdinalIgnoreCase);
+
+                    return isEmbeddingModel; // only embedding models
+                })
+                : modelItems; // no filtering, return all
+
+            // Map to DTO and sort
+            List<SelectOptionDto> models = filteredItems
+                .Select(x => MapToSelectOptionDto(x.Raw, lLMProviderModelRequestDto.ProviderType))
                 .OrderBy(o => o.Label)
                 .ToList();
 
             // Set the service response data and message
             serviceResponse.Data = models;
-            serviceResponse.Message = $"Successfully retrieved models from {providerType} API.";
+            serviceResponse.Message = $"Successfully retrieved models from {lLMProviderModelRequestDto.ProviderType} API.";
             serviceResponse.StatusCode = 200;
         }
         catch (Exception ex)
         {
-            _logger.LogError(ex, "Error occurred while fetching models from {ProviderType} API for user {UserId}.", providerType, _userId);
+            _logger.LogError(ex, "Error occurred while fetching models from {ProviderType} API for user {UserId}.", lLMProviderModelRequestDto.ProviderType, _userId);
         }
 
         return serviceResponse;
