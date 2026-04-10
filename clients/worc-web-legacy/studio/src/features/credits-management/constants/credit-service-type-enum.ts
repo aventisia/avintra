@@ -57,4 +57,17 @@ export enum CreditServiceTypesEnum {
   OnPremTTS,
   OnPremGpuText,
   AIModelExecutionTime,
+  // OpenAI Embedding Models
+  OpenAIEmbeddingAda002,
+  OpenAIEmbedding3Small,
+  OpenAIEmbedding3Large,
+
+  // OpenRouter Embedding Models
+  OpenRouterQwenEmbedding06B,
+  OpenRouterQwenEmbedding4B,
+  OpenRouterQwenEmbedding8B,
+
+  // Google Gemini Embedding Models
+  GeminiEmbeddingV1,
+  GeminiEmbeddingV2Preview,
 }
