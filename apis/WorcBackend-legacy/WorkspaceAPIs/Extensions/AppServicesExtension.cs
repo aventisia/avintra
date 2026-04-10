@@ -4,6 +4,8 @@ using WorkspaceAPIs.Features.CloudConnectors.LLMProvider;
 using WorkspaceAPIs.Features.CloudConnectors.M365.SharePoint;
 using WorkspaceAPIs.Features.CloudConnectors.SendGrid;
 using WorkspaceAPIs.Features.CloudConnectors.Twilio;
+using WorkspaceAPIs.Features.CloudConnectors.VectorStore;
+using WorkspaceAPIs.Features.CloudConnectors.VectorStore.PgVector;
 
 namespace WorkspaceAPIs.Extensions;
 
@@ -150,6 +152,8 @@ public static class AppServicesExtension
         services.AddScoped<IAzureConnectorsService, AzureConnectorsService>();
         services.AddScoped<IM365OutlookConnectorsService, M365OutlookConnectorsService>();
         services.AddScoped<IM365SharePointConnectorsService, M365SharePointConnectorsService>();
+        services.AddScoped<IVectorStoreService, VectorStoreService>();
+        services.AddScoped<IPgVectorConnectorsService, PgVectorConnectorsService>();
 
         // Common services
         services.AddScoped<IUnitOfWork, UnitOfWork>();
