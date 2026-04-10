@@ -43,6 +43,8 @@ import { TenantInstancePage } from "./pages/global-admin/TenantInstancePage";
 import { ExecutionLogsPage } from "./pages/orchestrator/ExecutionLogsPage";
 import { JobsPage } from "./pages/orchestrator/JobsPage";
 import { KeystorePage } from "./pages/orchestrator/KeystorePage";
+import { KnowledgeBaseDetailsPage } from "./pages/orchestrator/KnowledgeBaseDetailsPage";
+import { KnowledgeBasePage } from "./pages/orchestrator/KnowledgeBasePage";
 import { MachinesPage } from "./pages/orchestrator/MachinesPage";
 import { MyQueuePage } from "./pages/orchestrator/MyQueuePage";
 import { Orchestrator } from "./pages/orchestrator/Orchestrator";
@@ -232,6 +234,19 @@ const routerConfig: RouteObject[] = [
           {
             path: "/orchestrator/vault/:id?/:a?",
             element: <VaultPage />,
+          },
+          {
+            path: "/orchestrator/knowledge-base",
+            children: [
+              {
+                index: true, // /orchestrator/knowledge-base
+                element: <KnowledgeBasePage />, // table/list view
+              },
+              {
+                path: ":id", // /orchestrator/knowledge-base/:id
+                element: <KnowledgeBaseDetailsPage />, // detail view
+              },
+            ],
           },
         ],
       },
