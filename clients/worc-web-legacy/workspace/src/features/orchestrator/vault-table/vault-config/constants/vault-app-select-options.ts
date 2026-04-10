@@ -28,7 +28,10 @@ export const vaultAppsSelectOptions: Record<
     label: "Azure Storage",
     value: "AzureStorage",
   },
-  [VaultAppsEnum.Postgres]: { label: "Postgres", value: "Postgres" },
+  [VaultAppsEnum.ConnectionString]: {
+    label: "Connection String",
+    value: "ConnectionString",
+  },
   [VaultAppsEnum.Qdrant]: { label: "Qdrant", value: "Qdrant" },
 };
 
