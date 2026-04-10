@@ -53,4 +53,18 @@ export enum ServiceTypeEnum {
   "OnPremTTS" = "On-prem TTS",
   "OnPremGpuText" = "On-prem GPU-text",
   "AIModelExecutionTime" = "AIModel Execution Time",
+
+  // OpenAI Embedding Models
+  "OpenAIEmbeddingAda002" = "OpenAI Embedding ada002",
+  "OpenAIEmbedding3Small" = "OpenAI Embedding 3Small",
+  "OpenAIEmbedding3Large" = "OpenAI Embedding 3Large",
+
+  // OpenRouter Embedding Models
+  "OpenRouterQwenEmbedding06B" = "OpenRouter Qwen Embedding 06B",
+  "OpenRouterQwenEmbedding4B" = "OpenRouter Qwen Embedding 4B",
+  "OpenRouterQwenEmbedding8B" = "OpenRouter Qwen Embedding 8B",
+
+  // Google Gemini Embedding Models
+  "GeminiEmbeddingV1" = "Gemini Embedding V1",
+  "GeminiEmbeddingV2Preview" = "Gemini Embedding V2Preview",
 }
