@@ -17,6 +17,7 @@ import { DesktopIcon } from "@radix-ui/react-icons";
 import {
   ArchiveIcon,
   BadgeDollarSignIcon,
+  BookOpenCheckIcon,
   CheckCheckIcon,
   FileBoxIcon,
   FolderCogIcon,
@@ -109,6 +110,13 @@ const sidebarMenuSections: SidebarMenuSectionExtended[] = [
         Icon: Shield,
         name: "Vault",
         route: "/orchestrator/vault",
+        type: ["Commercial", "Enterprise"],
+      },
+      {
+        permissions: ["OM"],
+        Icon: BookOpenCheckIcon,
+        name: "knowledge base",
+        route: "/orchestrator/knowledge-base",
         type: ["Commercial", "Enterprise"],
       },
     ],
