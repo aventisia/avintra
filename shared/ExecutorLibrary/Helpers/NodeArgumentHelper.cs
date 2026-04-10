@@ -122,10 +122,19 @@ public static class NodeArgumentHelper
     {
         try
         {
-            // Fast paths for common primitives
+            // Fast path for string target
             if (targetType == typeof(string))
                 return element.ValueKind == JsonValueKind.String ? element.GetString() : element.GetRawText();
 
+            // When the JsonElement holds a string value (e.g. "1" instead of 1),
+            // extract the string and parse it via ConvertFromString
+            if (element.ValueKind == JsonValueKind.String)
+            {
+                var str = element.GetString();
+                return str is not null ? ConvertFromString(str, targetType) : (targetType.IsValueType ? Activator.CreateInstance(targetType) : null);
+            }
+
+            // Fast paths for numeric JsonElements
             if (targetType == typeof(int) && element.TryGetInt32(out var intVal))
                 return intVal;
 
@@ -134,6 +143,12 @@ public static class NodeArgumentHelper
 
             if (targetType == typeof(double) && element.TryGetDouble(out var dblVal))
                 return dblVal;
+
+            if (targetType == typeof(float) && element.TryGetDouble(out var floatVal))
+                return (float)floatVal;
+
+            if (targetType == typeof(decimal) && element.TryGetDecimal(out var decVal))
+                return decVal;
 
             if (targetType == typeof(bool) && element.ValueKind is JsonValueKind.True or JsonValueKind.False)
                 return element.GetBoolean();
