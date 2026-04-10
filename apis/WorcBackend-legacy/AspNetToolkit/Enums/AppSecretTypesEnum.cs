@@ -90,10 +90,10 @@ public enum AppSecretTypesEnum
     AzureStorage,
 
     /// <summary>
-    /// Represents the credentials required for PostgreSQL database access.
+    /// Represents credentials required to access a data source using a connection string.
     /// </summary>
-    [Description("PostgreSQL Credentials")]
-    Postgres,
+    [Description("Connection String Credentials")]
+    ConnectionString,
 
     /// <summary>
     /// Represents the credentials required for Qdrant vector database access.
