@@ -99,6 +99,7 @@ class EmbeddingRequest(BaseModel):
     reference_id: Optional[str] = None  # ID of related object (doc, record, etc.)
     reference_type: Optional[str] = None  # Type of reference (e.g., "document")
     reference_name: Optional[str] = None  # Human-readable name
+    action: str # Action being performed (e.g., "AgentExecution", "AIModelExecution", "WorkflowExecution")
     is_byok_enabled: bool = False  # Whether custom credentials are used
     credential_id: Optional[str] = None  # ID of the credential
 

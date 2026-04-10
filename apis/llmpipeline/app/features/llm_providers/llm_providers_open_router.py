@@ -653,34 +653,51 @@ class OpenRouterProvider(BaseLLMProvider):
                 error=str(e)
             )
         
-    def _build_openrouter_embedding_credit_usage(self, embedding_request: EmbeddingRequest, embedding_response: EmbeddingResponse):
+    def _build_openrouter_embedding_credit_usage(
+        self,
+        embedding_request: EmbeddingRequest,
+        embedding_response: EmbeddingResponse
+    ):
         """
-        Build credit usage for embeddings (OpenRouter)
+        Construct credit usage payload for OpenRouter embedding requests.
+
+        - Extracts the model name from provider-prefixed format (e.g., "qwen/...")
+        - Maps model to internal ServiceType
+        - Uses input tokens as consumed units
         """
 
-        model_name = (embedding_request.model or "").strip().lower()
-        model_name = model_name.split("/")[-1]
+        # Normalize model name (handle None, casing, whitespace)
+        raw_model = (embedding_request.model or "").strip().lower()
 
+        # Extract provider + model (OpenRouter format: "provider/model")
+        # Keep both full and short name for flexible matching
+        full_model_name = raw_model
+        short_model_name = raw_model.split("/")[-1] if "/" in raw_model else raw_model
+
+        # Ensure token count is non-negative
         input_tokens = max(embedding_response.input_tokens or 0, 0)
 
-        # Model mapping
+        # Mapping of OpenRouter models → internal service identifiers (with owner)
         EMBEDDING_MODEL_MAP = {
-            "text-embedding-3-small": "OpenRouterEmbeddingSmall",
-            "text-embedding-3-large": "OpenRouterEmbeddingLarge",
+            "qwen/qwen3-embedding-0.6b": "OpenRouterQwenEmbedding06B",
+            "qwen/qwen3-embedding-4b": "OpenRouterQwenEmbedding4B",
+            "qwen/qwen3-embedding-8b": "OpenRouterQwenEmbedding8B",
         }
 
-        service_type = EMBEDDING_MODEL_MAP.get(model_name)
+        # Resolve service type (try full name first, then fallback to short name)
+        service_type = (
+            EMBEDDING_MODEL_MAP.get(full_model_name)
+            or EMBEDDING_MODEL_MAP.get(short_model_name)
+        )
 
-        if not service_type:
-            normalized = "".join(part.capitalize() for part in model_name.split("-"))
-            service_type = f"{normalized}Embedding"
-
+        # Build and return usage payload
         return [{
             "ServiceType": service_type,
             "ConsumedUnit": input_tokens,
             "RefType": embedding_request.reference_type,
             "RefId": embedding_request.reference_id,
             "RefName": embedding_request.reference_name,
-            "Action": "embedding",
+            "Action": embedding_request.action,
             "TriggeredByAgent": None
         }]
+    

@@ -404,10 +404,13 @@ public class AzureBolbStorageCredentialsDto
     public string ConnectionString { get; set; } = string.Empty;
 }
 
-public class PostgresCredentialsDto
+/// <summary>
+/// Represents credentials containing a database connection string.
+/// </summary>
+public class ConnectionStringCredentialsDto
 {
     /// <summary>
-    /// Gets or sets the PostgreSQL connection string.
+    /// The connection string used to connect to a data source.
     /// </summary>
     public string ConnectionString { get; set; } = string.Empty;
 }

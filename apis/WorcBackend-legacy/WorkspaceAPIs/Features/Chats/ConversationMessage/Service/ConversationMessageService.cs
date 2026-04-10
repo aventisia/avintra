@@ -135,7 +135,6 @@ public class ConversationMessageService : IConversationMessageService
 
             // Create new message entity
             var message = conversationMessageDto.Adapt<ConversationMessage>();
-            message.Role = ConversationMessageSenderEnum.User;
 
             // Insert message into repository
             await _unitOfWork.ConversationMessageRepo.InsertAsync(message);
