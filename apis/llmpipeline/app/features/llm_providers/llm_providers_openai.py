@@ -556,33 +556,44 @@ class OpenAIProvider(BaseLLMProvider):
                 error=str(e)
             )
         
-    def _build_embedding_credit_usage(self, embedding_request: EmbeddingRequest, embedding_response: EmbeddingResponse):
+    def _build_embedding_credit_usage(
+        self,
+        embedding_request: EmbeddingRequest,
+        embedding_response: EmbeddingResponse
+    ):
         """
-        Build credit usage for embeddings
+        Build credit usage payload for embedding requests.
+
+        - Maps model name → internal ServiceType
+        - Uses input token count as consumed units
+        - Falls back to PascalCase conversion if model is unknown
+        - Does NOT assign any default ServiceType if model is empty/invalid
         """
 
+        # Normalize model name to avoid case / whitespace issues
         model_name = (embedding_request.model or "").strip().lower()
+
+        # Ensure token count is always a non-negative integer
         input_tokens = max(embedding_response.input_tokens or 0, 0)
 
-        # Model mapping (extend as needed)
+        # Known model → ServiceType mapping
+        # Extend this dictionary when adding new supported models
         EMBEDDING_MODEL_MAP = {
-            "text-embedding-ada-002": "EmbeddingAda",
-            "text-embedding-3-small": "EmbeddingSmall",
-            "text-embedding-3-large": "EmbeddingLarge",
+            "text-embedding-ada-002": "OpenAIEmbeddingAda002",
+            "text-embedding-3-small": "OpenAIEmbedding3Small",
+            "text-embedding-3-large": "OpenAIEmbedding3Large",
         }
 
+        # Try resolving ServiceType from predefined mapping
         service_type = EMBEDDING_MODEL_MAP.get(model_name)
 
-        if not service_type:
-            normalized = "".join(part.capitalize() for part in model_name.split("-"))
-            service_type = f"{normalized}Embedding"
-
+        # Build and return credit usage payload
         return [{
             "ServiceType": service_type,
             "ConsumedUnit": input_tokens,
             "RefType": embedding_request.reference_type,
             "RefId": embedding_request.reference_id,
             "RefName": embedding_request.reference_name,
-            "Action": "embedding",
+            "Action": embedding_request.action,
             "TriggeredByAgent": None
         }]
