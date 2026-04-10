@@ -101,6 +101,7 @@ public class LLMProviderService : ILLMProviderService
             return serviceResponse;
         }
     }
+
     private async Task<ServiceResponse<IEnumerable<SelectOptionDto>>> GetModelsAsync(LLMProviderModelRequestDto lLMProviderModelRequestDto, RestClient client)
     {
         var serviceResponse = new ServiceResponse<IEnumerable<SelectOptionDto>>();
@@ -154,10 +155,6 @@ public class LLMProviderService : ILLMProviderService
                 return serviceResponse;
             }
 
-            // Determine if request is for embeddings
-            bool isEmbeddingRequest = lLMProviderModelRequestDto.OutputModalities?
-                .Equals("Embeddings", StringComparison.OrdinalIgnoreCase) == true;
-
             // Extract model IDs
             var modelItems = dataArray.Select(item => new
             {
@@ -165,26 +162,25 @@ public class LLMProviderService : ILLMProviderService
                 Id = item["id"]?.ToString() ?? string.Empty
             });
 
-            // Filter (inline embedding check)
-            var filteredItems = isEmbeddingRequest
-                ? modelItems.Where(x =>
-                {
-                    bool isEmbeddingModel =
-                        x.Id.Contains("embed", StringComparison.OrdinalIgnoreCase) ||
-                        x.Id.Contains("embedding", StringComparison.OrdinalIgnoreCase);
-
-                    return isEmbeddingModel; // only embedding models
-                })
-                : modelItems; // no filtering, return all
-
             // Map to DTO and sort
-            List<SelectOptionDto> models = filteredItems
+            var selectOptions = modelItems
                 .Select(x => MapToSelectOptionDto(x.Raw, lLMProviderModelRequestDto.ProviderType))
                 .OrderBy(o => o.Label)
                 .ToList();
 
+            // Check if the request is specifically asking for embedding models
+            if (lLMProviderModelRequestDto.OutputModalities?.Equals("Embeddings", StringComparison.OrdinalIgnoreCase) == true)
+            {
+                selectOptions = selectOptions
+                    .Where(w => !string.IsNullOrEmpty(w.Value) &&
+                            (w.Value.Contains("embed", StringComparison.OrdinalIgnoreCase) ||
+                                w.Value.Contains("embedding", StringComparison.OrdinalIgnoreCase)))
+                    .OrderBy(o => o.Label)
+                    .ToList();
+            }
+
             // Set the service response data and message
-            serviceResponse.Data = models;
+            serviceResponse.Data = selectOptions;
             serviceResponse.Message = $"Successfully retrieved models from {lLMProviderModelRequestDto.ProviderType} API.";
             serviceResponse.StatusCode = 200;
         }
