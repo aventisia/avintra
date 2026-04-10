@@ -690,31 +690,40 @@ class GeminiProvider(BaseLLMProvider):
                 error=str(e)
             )
     
-    def _build_gemini_embedding_credit_usage(self, embedding_request: EmbeddingRequest, embedding_response: EmbeddingResponse):
+    def _build_gemini_embedding_credit_usage(
+        self,
+        embedding_request: EmbeddingRequest,
+        embedding_response: EmbeddingResponse
+    ):
         """
-        Build credit usage for Gemini embeddings
+        Construct credit usage payload for Gemini embedding requests.
+
+        - Resolves the model name to an internal ServiceType
+        - Uses input token count as the consumed unit
         """
 
+        # Normalize model name (handles None, casing, and extra spaces)
         model_name = (embedding_request.model or "").strip().lower()
+
+        # Ensure token usage is always non-negative
         input_tokens = max(embedding_response.input_tokens or 0, 0)
 
+        # Mapping of Gemini embedding models to internal service identifiers
         GEMINI_EMBEDDING_MODEL_MAP = {
-            "text-embedding-004": "GeminiEmbedding004",
-            "embedding-001": "GeminiEmbedding001",
+            "gemini-embedding-001": "GeminiEmbeddingV1",
+            "gemini-embedding-2-preview": "GeminiEmbeddingV2Preview",
         }
 
+        # Resolve service type based on model name
         service_type = GEMINI_EMBEDDING_MODEL_MAP.get(model_name)
 
-        if not service_type:
-            normalized = "".join(part.capitalize() for part in model_name.split("-"))
-            service_type = f"{normalized}Embedding"
-
+        # Build and return usage payload
         return [{
             "ServiceType": service_type,
             "ConsumedUnit": input_tokens,
             "RefType": embedding_request.reference_type,
             "RefId": embedding_request.reference_id,
             "RefName": embedding_request.reference_name,
-            "Action": "embedding",
+            "Action": embedding_request.action,
             "TriggeredByAgent": None
         }]
