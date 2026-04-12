@@ -1,5 +1,5 @@
 from fastapi import Depends, HTTPException, Request, status
-from apis.llmpipeline.app.core.jwt_helper import get_jwt, get_user_from_jwt
+from app.core.jwt_helper import get_jwt, get_user_from_jwt
 from app.features.auth.authenticated_user import User
 from app.core.logger import logger
 
