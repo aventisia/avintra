@@ -1,4 +1,5 @@
 from collections.abc import Callable
+from contextlib import asynccontextmanager
 from typing import AsyncGenerator, Optional
 from uuid import UUID
 
@@ -110,9 +111,16 @@ async def get_db_session(request: Request) -> AsyncGenerator[AsyncSession, None]
 class TenantDB:
     """Carries an AsyncSession plus authenticated tenant_id for tenant-scoped data access."""
 
-    def __init__(self, session: AsyncSession, tenant_id: UUID) -> None:
+    def __init__(self, session: Optional[AsyncSession], tenant_id: UUID) -> None:
         self.session = session
         self.tenant_id = tenant_id
+
+
+@asynccontextmanager
+async def get_db_session_context(database_name: str) -> AsyncGenerator[AsyncSession, None]:
+    """Async context manager for opening a session against a specific database."""
+    async with _get_session_factory(database_name)() as session:
+        yield session
 
 
 def get_tenant_db_session(

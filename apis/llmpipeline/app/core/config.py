@@ -20,6 +20,8 @@ class Settings(BaseSettings):
     POSTGRESQL_PORT: str
     POSTGRESQL_USERNAME: str
     POSTGRESQL_PASSWORD: str
+    POSTGRESQL_WORC_DB_NAME: str = "WorkspaceDb"
+    POSTGRESQL_ACCOUNTS_DB_NAME: str = "AccountsDb"
     
     # JWT Settings
     JWT_SECRET_KEY: str

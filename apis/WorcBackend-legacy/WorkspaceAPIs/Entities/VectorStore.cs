@@ -11,7 +11,8 @@ public class VectorStore : IMustHaveTenant
     /// <summary>
     /// Gets the unique identifier for the vector record. Set is private to prevent external modification.
     /// </summary>
-    public Guid Id { get; private set; }
+    [Key]
+    public Guid Id { get; set; }
 
     /// <summary>
     /// Gets or sets the original textual content that was transformed into a vector embedding.
