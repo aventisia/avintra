@@ -25,6 +25,12 @@ public class ProcessLLMRequestNode : BaseNode
     [DisplayName("Result")]
     public OutArgument<JsonElement> Result { get; set; } = new OutArgument<JsonElement>();
 
+    [DisplayName("Thread Messages")]
+    public InArgument<string> ThreadMessages { get; set; } = new InArgument<string>();
+
+    [DisplayName("User Input")]
+    public InArgument<string> UserInput { get; set; } = new InArgument<string>();
+
     protected override async Task ExecuteAsync(INodeContext context)
     {
         try
@@ -36,6 +42,8 @@ public class ProcessLLMRequestNode : BaseNode
             var accessToken = AccessToken.Get(context);
             var agentId = AgentId.Get(context);
             var agentName = AgentName.Get(context);
+            var threadMessages = ThreadMessages.Get(context);
+            var userInput = UserInput.Get(context);
 
             var formattedFilesList = FormatFilesList(filesList);
 
@@ -48,11 +56,14 @@ public class ProcessLLMRequestNode : BaseNode
             var hasKbNames = kbNames is { Count: > 0 };
             var topK = hasKbNames ? (GetIntProperty(kbConfig, "numberOfChunks") ?? 5) : (int?)null;
 
+            // Determine the input format: chat mode (list of messages) or prompt mode (string)
+            object inputPayload = BuildInputPayload(prompt, threadMessages, userInput);
+
             var requestObj = new
             {
                 provider = GetStringProperty(modelConfig, "provider"),
                 model = GetStringProperty(modelConfig, "model"),
-                input = prompt ?? string.Empty,
+                input = inputPayload,
                 files = formattedFilesList,
                 is_json_output = GetBoolProperty(modelConfig, "is_json_output") ?? false,
                 json_schema = GetStringProperty(modelConfig, "json_schema"),
@@ -284,4 +295,60 @@ public class ProcessLLMRequestNode : BaseNode
         ".xml" => "application/xml",
         _ => "application/octet-stream"
     };
+
+    /// <summary>
+    /// Builds the input payload for the LLM request.
+    /// Chat mode: when ThreadMessages is provided, builds a list of {role, content} messages with the current UserInput appended.
+    /// Prompt mode: when only Prompt is provided, returns the prompt string directly.
+    /// </summary>
+    private static object BuildInputPayload(string? prompt, string? threadMessages, string? userInput)
+    {
+        // Chat mode: ThreadMessages is a JSON array of {role, content} objects
+        if (!string.IsNullOrWhiteSpace(threadMessages))
+        {
+            var messages = new List<object>();
+
+            try
+            {
+                using var doc = JsonDocument.Parse(threadMessages);
+                if (doc.RootElement.ValueKind == JsonValueKind.Array)
+                {
+                    foreach (var element in doc.RootElement.EnumerateArray())
+                    {
+                        var role = element.TryGetProperty("role", out var roleProp) ? roleProp.GetString() : null;
+                        var content = element.TryGetProperty("content", out var contentProp) ? contentProp.GetString() : null;
+
+                        if (!string.IsNullOrWhiteSpace(role) && !string.IsNullOrWhiteSpace(content))
+                        {
+                            messages.Add(new { role, content });
+                        }
+                    }
+                }
+            }
+            catch
+            {
+                // If parsing fails, fall through to prompt mode
+            }
+
+            // If we have a valid prompt, add it as a system message at the beginning
+            if (!string.IsNullOrWhiteSpace(prompt))
+            {
+                messages.Insert(0, new { role = "system", content = prompt });
+            }
+
+            // Append the current user input as the latest user message
+            if (!string.IsNullOrWhiteSpace(userInput))
+            {
+                messages.Add(new { role = "user", content = userInput });
+            }
+
+            if (messages.Count > 0)
+            {
+                return messages;
+            }
+        }
+
+        // Prompt mode: return the prompt string directly
+        return prompt ?? string.Empty;
+    }
 }

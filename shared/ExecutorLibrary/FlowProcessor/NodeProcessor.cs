@@ -293,7 +293,7 @@ public class NodeProcessor : INodeProcessor
                        && !rawName.Equals("OlmOCRActivity", StringComparison.OrdinalIgnoreCase)
                        && !rawName.Equals("InvokeInferenceModelWebServiceNode", StringComparison.OrdinalIgnoreCase)
                        && !rawName.Equals("OlmOCRNode", StringComparison.OrdinalIgnoreCase)
-                => PreprocessAiNode(inputs),
+                => PreprocessAiNode(inputs, context),
             _ => (rawName, inputs),
         };
     }
@@ -350,8 +350,10 @@ public class NodeProcessor : INodeProcessor
     /// <summary>
     /// Remaps aiNode's double-underscore-delimited keys (e.g. __ModelConfig__) to
     /// the property names expected by ProcessLLMRequestNode.
+    /// When the flow is triggered by a chat interaction, automatically injects
+    /// ChatUserInput and ChatThreadMessages from the flow execution context.
     /// </summary>
-    private static (string, List<ReactFlowNodeInput>) PreprocessAiNode(List<ReactFlowNodeInput> inputs)
+    private static (string, List<ReactFlowNodeInput>) PreprocessAiNode(List<ReactFlowNodeInput> inputs, FlowExecutionContext context)
     {
         var newInputs = new List<ReactFlowNodeInput>();
 
@@ -372,6 +374,21 @@ public class NodeProcessor : INodeProcessor
             };
 
             newInputs.Add(new ReactFlowNodeInput { Key = key, Value = input.Value });
+        }
+
+        // Auto-inject chat variables when flow is triggered by a chat interaction
+        if (context.TryGet<string>("TriggeredBy", out var triggeredBy) &&
+            string.Equals(triggeredBy, "chat", StringComparison.OrdinalIgnoreCase))
+        {
+            if (context.TryGet<string>("ChatThreadMessages", out var threadMessages) && !string.IsNullOrWhiteSpace(threadMessages))
+            {
+                newInputs.Add(new ReactFlowNodeInput { Key = "ThreadMessages", Value = threadMessages });
+            }
+
+            if (context.TryGet<string>("ChatUserInput", out var userInput) && !string.IsNullOrWhiteSpace(userInput))
+            {
+                newInputs.Add(new ReactFlowNodeInput { Key = "UserInput", Value = userInput });
+            }
         }
 
         return ("ProcessLLMRequestNode", newInputs);
