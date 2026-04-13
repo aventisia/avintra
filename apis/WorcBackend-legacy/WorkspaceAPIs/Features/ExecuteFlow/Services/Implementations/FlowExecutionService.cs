@@ -20,14 +20,14 @@ public class FlowExecutionService : IFlowExecutionService
 
     // Note: This method is intentionally not async and does not await the background execution task. 
     // We want the API to return immediately after starting the background execution without waiting for it to complete.
-    public void StartExecution(Guid tenantId, Guid userId, Guid jobId, ReactFlowDataModel flow)
+    public void StartExecution(Guid tenantId, Guid userId, Guid jobId, ReactFlowDataModel flow, string accessToken)
     {
-        _ = Task.Run(() => ExecuteInBackgroundAsync(jobId, flow, tenantId, userId));
+        _ = Task.Run(() => ExecuteInBackgroundAsync(jobId, flow, tenantId, userId, accessToken));
     }
 
     // This method runs the flow execution in the background and updates the job status in the database accordingly. 
     // It also handles any unhandled exceptions to ensure that the job status is updated to Failed if something goes wrong during execution.
-    private async Task ExecuteInBackgroundAsync(Guid jobId, ReactFlowDataModel flow, Guid tenantId, Guid userId)
+    private async Task ExecuteInBackgroundAsync(Guid jobId, ReactFlowDataModel flow, Guid tenantId, Guid userId, string accessToken)
     {
         try
         {
@@ -71,7 +71,7 @@ public class FlowExecutionService : IFlowExecutionService
             {
                 ["UserId"] = userId.ToString(),
                 ["TenantId"] = tenantId.ToString(),
-                ["AccessToken"] = string.Empty,
+                ["AccessToken"] = accessToken,
             };
 
             var flowProcessor = new FlowProcessor(new NodeProcessor());

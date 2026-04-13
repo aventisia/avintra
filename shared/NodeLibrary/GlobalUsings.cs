@@ -17,6 +17,8 @@ global using System.Reflection;
 global using System.Text;
 global using System.Text.Json;
 global using System.Text.Json.Serialization;
+global using System.Net.Http;
+global using System.Net.Http.Headers;
 
 using System.Runtime.CompilerServices;
 

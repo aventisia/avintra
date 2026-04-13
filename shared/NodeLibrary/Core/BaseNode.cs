@@ -14,15 +14,33 @@ public abstract class BaseNode
     public required OutArgument<string> StatusMessage { get; set; }
 
     /// <summary>
-    /// Execute method that derived classes must implement
+    /// Synchronous execute method. Override this for synchronous nodes.
     /// </summary>
-    protected abstract void Execute(INodeContext context);
+    protected virtual void Execute(INodeContext context) { }
 
     /// <summary>
-    /// Internal method called by the executor
+    /// Asynchronous execute method. Override this for async nodes.
+    /// Default implementation delegates to the synchronous Execute method.
+    /// </summary>
+    protected virtual Task ExecuteAsync(INodeContext context)
+    {
+        Execute(context);
+        return Task.CompletedTask;
+    }
+
+    /// <summary>
+    /// Internal method called by the executor (synchronous)
     /// </summary>
     internal void InternalExecute(INodeContext context)
     {
         Execute(context);
+    }
+
+    /// <summary>
+    /// Internal method called by the executor (asynchronous)
+    /// </summary>
+    internal Task InternalExecuteAsync(INodeContext context)
+    {
+        return ExecuteAsync(context);
     }
 }

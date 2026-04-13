@@ -12,7 +12,8 @@ public class ExecuteFlowService : IExecuteFlowService
     private readonly INotificationHelperService _notificationHelperService;
     private readonly IFlowExecutionService _flowExecutionService;
     private readonly Guid _userId;
-
+    private readonly string _accessToken;
+    
     public ExecuteFlowService(
         ILogger<ExecuteFlowService> logger,
         IUnitOfWork unitOfWork,
@@ -29,6 +30,7 @@ public class ExecuteFlowService : IExecuteFlowService
         _userId = Guid.TryParse(httpContextAccessor.HttpContext?.User?.FindFirstValue("uid"), out var userId)
             ? userId
             : Guid.Empty;
+        _accessToken = GetJwtOfRequestUtil.GetJwtOfRequest(httpContextAccessor.HttpContext) ?? string.Empty;
     }
 
     public async Task<ServiceResponse<ExecuteFlowResponseDto>> ExecuteFlowAsync(ExecuteFlowRequestDto requestDto)
@@ -68,6 +70,10 @@ public class ExecuteFlowService : IExecuteFlowService
 
             // Get the parsed ReactFlowObject
             var parsedFlow = ReactFlowHelper.Parse(flowVersion.ReactFlowObject);
+
+            // Validate: Invalid react flow object
+            if (parsedFlow == null)
+                return serviceResponse.Update(400, "Flow is missing or invalid.");
 
             // Validations for unpublished flow versions. For published flow versions, we will skip validations since 
             // published flow versions are non-editable and all validations should have been passed at the time of publishing.
@@ -117,7 +123,7 @@ public class ExecuteFlowService : IExecuteFlowService
             }
 
             // Start flow execution asynchronously
-            _flowExecutionService.StartExecution(_currentTenantService.CurrentTenantId, _userId, newJob.Id, parsedFlow);
+            _flowExecutionService.StartExecution(_currentTenantService.CurrentTenantId, _userId, newJob.Id, parsedFlow, _accessToken);
 
             // TODO: Create a notificaiton for the user that the flow execution has been started
 
