@@ -4,4 +4,5 @@
 export interface ExecuteFlowRequestDto {
   flowVersionId: string;
   InputArgumentsJson?: string;
+  waitForCompletion?: boolean;
 }

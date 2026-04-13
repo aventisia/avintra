@@ -15,4 +15,10 @@ public class FlowExecutionResult
     public IReadOnlyList<NodeExecutionLog> NodeLogs { get; set; } = new List<NodeExecutionLog>();
 
     public string? ErrorMessage { get; set; }
+
+    /// <summary>
+    /// Snapshot of non-sensitive flow execution context variables at the end of execution.
+    /// Used to extract outputs like _ChatLLMResult for chat-triggered flows.
+    /// </summary>
+    public Dictionary<string, object?>? OutputVariables { get; set; }
 }

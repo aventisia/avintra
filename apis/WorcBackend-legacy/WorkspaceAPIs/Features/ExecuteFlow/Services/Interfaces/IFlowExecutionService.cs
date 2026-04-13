@@ -1,3 +1,4 @@
+using ExecutorLibrary.FlowProcessor.Models;
 using ExecutorLibrary.Models;
 
 namespace WorkspaceAPIs.Services;
@@ -14,4 +15,9 @@ public interface IFlowExecutionService
     /// <remarks>
     /// TenantId is required to set the correct scoped services else we won't be able to access tenant specific data during flow execution.
     void StartExecution(Guid tenantId, Guid userId, Guid jobId, ReactFlowDataModel flow, string accessToken);
+
+    /// <summary>
+    /// Executes a flow synchronously and returns the result. Used for chat-triggered flows where the caller needs the output inline.
+    /// </summary>
+    Task<FlowExecutionResult> StartExecutionAndWaitAsync(Guid tenantId, Guid userId, Guid jobId, ReactFlowDataModel flow, string accessToken);
 }

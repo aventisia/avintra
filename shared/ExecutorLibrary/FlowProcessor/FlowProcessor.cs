@@ -94,13 +94,13 @@ public class FlowProcessor
                 // If no next node is available, execution is complete.
                 if (nextNodeId is null)
                 {
-                    return CreateCompletedResult(startTime, logs);
+                    return CreateCompletedResult(startTime, logs, flowExecutionContext);
                 }
 
                 currentNodeId = nextNodeId;
             }
 
-            return CreateCompletedResult(startTime, logs);
+            return CreateCompletedResult(startTime, logs, flowExecutionContext);
         }
         catch (OperationCanceledException)
         {
@@ -183,6 +183,18 @@ public class FlowProcessor
         foreach (var output in result.OutputValues)
         {
             flowExecutionContext.Set(output.Key, output.Value);
+        }
+
+        // For chat-triggered flows: capture the LLM result from aiNode into a well-known variable
+        if (string.Equals(node.Type, "aiNode", StringComparison.OrdinalIgnoreCase) &&
+            flowExecutionContext.TryGet<string>("TriggeredBy", out var triggeredBy) &&
+            string.Equals(triggeredBy, "chat", StringComparison.OrdinalIgnoreCase))
+        {
+            // Look for the "Result" output which contains the LLM response JsonElement
+            if (result.OutputValues.Values.FirstOrDefault() is { } firstOutput)
+            {
+                flowExecutionContext.Set("_ChatLLMResult", firstOutput);
+            }
         }
 
         return FindNextEdgeTarget(flow, node.Id);
@@ -381,7 +393,13 @@ public class FlowProcessor
             || string.Equals(nodeType, "triggerNode", StringComparison.OrdinalIgnoreCase);
     }
 
-    private static FlowExecutionResult CreateCompletedResult(DateTimeOffset startTime, IReadOnlyList<NodeExecutionLog> logs)
+    // Variables to exclude from output snapshot (sensitive or internal data)
+    private static readonly HashSet<string> ExcludedOutputVariables = new(StringComparer.OrdinalIgnoreCase)
+    {
+        "UserId", "TenantId", "AccessToken", "InputArgumentsJson"
+    };
+
+    private static FlowExecutionResult CreateCompletedResult(DateTimeOffset startTime, IReadOnlyList<NodeExecutionLog> logs, FlowExecutionContext? context = null)
     {
         return new FlowExecutionResult
         {
@@ -390,6 +408,7 @@ public class FlowProcessor
             StartTime = startTime,
             EndTime = DateTimeOffset.UtcNow,
             NodeLogs = logs,
+            OutputVariables = SnapshotOutputVariables(context),
         };
     }
 
@@ -416,5 +435,22 @@ public class FlowProcessor
             NodeLogs = logs,
             ErrorMessage = errorMessage,
         };
+    }
+
+    private static Dictionary<string, object?>? SnapshotOutputVariables(FlowExecutionContext? context)
+    {
+        if (context is null)
+            return null;
+
+        var snapshot = new Dictionary<string, object?>(StringComparer.OrdinalIgnoreCase);
+        foreach (var kvp in context.Variables)
+        {
+            if (ExcludedOutputVariables.Contains(kvp.Key))
+                continue;
+
+            snapshot[kvp.Key] = kvp.Value;
+        }
+
+        return snapshot.Count > 0 ? snapshot : null;
     }
 }

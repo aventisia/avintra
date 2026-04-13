@@ -1,3 +1,4 @@
+using System.Text.Json.Nodes;
 using NodeLibrary.Enums;
 using ExecutorLibrary.Models;
 using ExecutorLibrary.Helpers;
@@ -13,7 +14,7 @@ public class ExecuteFlowService : IExecuteFlowService
     private readonly IFlowExecutionService _flowExecutionService;
     private readonly Guid _userId;
     private readonly string _accessToken;
-    
+
     public ExecuteFlowService(
         ILogger<ExecuteFlowService> logger,
         IUnitOfWork unitOfWork,
@@ -122,20 +123,49 @@ public class ExecuteFlowService : IExecuteFlowService
                 return serviceResponse;
             }
 
-            // Start flow execution asynchronously
-            _flowExecutionService.StartExecution(_currentTenantService.CurrentTenantId, _userId, newJob.Id, parsedFlow, _accessToken);
-
-            // TODO: Create a notificaiton for the user that the flow execution has been started
-
-            // Send response back to the user with the job details
-            var executeFlowResponse = new ExecuteFlowResponseDto
+            // Start flow execution asynchronously or synchronously based on WaitForCompletion flag
+            if (requestDto.WaitForCompletion)
             {
-                JobId = newJob.Id,
-                FlowVersionId = newJob.FlowVersionId,
-                JobStatus = newJob.Status,
-                OutputDataJson = null,
-            };
-            return serviceResponse.Update(200, "Flow execution initiated successfully.", executeFlowResponse);
+                // Synchronous: await flow completion and return the output inline (used for chat-triggered flows)
+                var flowResult = await _flowExecutionService.StartExecutionAndWaitAsync(
+                    _currentTenantService.CurrentTenantId, _userId, newJob.Id, parsedFlow, _accessToken);
+
+                // Re-fetch the job to get the updated OutputDataJson
+                var updatedJob = await _unitOfWork.JobRepo.GetByConditionAsync(w => w.Id == newJob.Id).AsNoTracking().SingleOrDefaultAsync();
+
+                var executeFlowResponse = new ExecuteFlowResponseDto
+                {
+                    JobId = newJob.Id,
+                    FlowVersionId = newJob.FlowVersionId,
+                    JobStatus = updatedJob?.Status ?? JobStatusTypesEnum.Failed,
+                    OutputDataJson = !string.IsNullOrWhiteSpace(updatedJob?.OutputDataJson)
+                        ? JsonValue.Create(updatedJob.OutputDataJson)
+                        : null,
+                };
+
+                if (!flowResult.IsSuccess)
+                {
+                    return serviceResponse.Update(200, flowResult.ErrorMessage ?? "Flow execution failed.", executeFlowResponse);
+                }
+
+                return serviceResponse.Update(200, "Flow execution completed successfully.", executeFlowResponse);
+            }
+            else
+            {
+                // Asynchronous: start execution in background and return immediately
+                _flowExecutionService.StartExecution(_currentTenantService.CurrentTenantId, _userId, newJob.Id, parsedFlow, _accessToken);
+
+                // TODO: Create a notificaiton for the user that the flow execution has been started
+
+                var executeFlowResponse = new ExecuteFlowResponseDto
+                {
+                    JobId = newJob.Id,
+                    FlowVersionId = newJob.FlowVersionId,
+                    JobStatus = newJob.Status,
+                    OutputDataJson = null,
+                };
+                return serviceResponse.Update(200, "Flow execution initiated successfully.", executeFlowResponse);
+            }
         }
         catch (Exception ex)
         {

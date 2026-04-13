@@ -6,9 +6,11 @@ import {
 
 import { executeFlowOnWeb } from "../../apis/execute-flow-apis";
 import { ExecuteFlowRequestDto } from "../../dtos/execute-flow-request-dto";
+import { LLMMessageType } from "../types/llm-message.type";
 
 type CreateAssistantUIModelAdapterParams = {
   flowVersionId: string;
+  conversationId: string | undefined;
 };
 
 /**
@@ -32,25 +34,35 @@ const toMessageText = (
  */
 export const createAssistantUIModelAdapter = ({
   flowVersionId,
+  conversationId,
 }: CreateAssistantUIModelAdapterParams): ChatModelAdapter => {
   return {
     async *run(options) {
-      // 1. Isolate the very last message in the thread (what the user just typed)
+      // Full thread history except the last message which is the current user input
+      const allMessageExceptlastOne = options.messages.slice(0, -1);
+      const threadMessages = mapThreadToLLMMessages(allMessageExceptlastOne);
+
+      // Get the most recent user message
       const lastMessage = options.messages[options.messages.length - 1];
 
-      // 2. Convert that message into plain text
+      // Convert that message into plain text
       const userInputText = lastMessage
         ? toMessageText(lastMessage.content)
         : "";
 
-      // 3. Construct the input arguments for the flow
+      // TODO: For now we'll pass the full converstation from frontend but later on we can just pass the user current input and fetch the conversation history in the backend using converstationId (if required for context).
+      // Construct the input arguments for the flow
       const inputArguments = {
-        user: userInputText,
+        triggeredBy: "chat",
+        threadMessages: threadMessages,
+        userInput: userInputText,
+        conversationId: conversationId,
       };
 
       const request: ExecuteFlowRequestDto = {
         flowVersionId: flowVersionId,
         InputArgumentsJson: JSON.stringify(inputArguments),
+        waitForCompletion: true,
       };
 
       try {
@@ -85,3 +97,14 @@ export const createAssistantUIModelAdapter = ({
     },
   };
 };
+function mapThreadToLLMMessages(
+  messages: readonly ThreadMessage[],
+): LLMMessageType[] {
+  return messages
+    .filter((msg) => msg.role === "user" || msg.role === "assistant")
+    .map((msg) => ({
+      role: msg.role as LLMMessageType["role"],
+      content: toMessageText(msg.content),
+    }))
+    .filter((msg) => msg.content.length > 0);
+}

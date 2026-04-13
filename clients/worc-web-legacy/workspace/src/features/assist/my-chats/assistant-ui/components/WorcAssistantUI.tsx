@@ -31,8 +31,9 @@ export const WorcAssistantUI = ({
       () =>
         createAssistantUIModelAdapter({
           flowVersionId: flowVersionId ?? "",
+          conversationId: conversationId,
         }),
-      [flowVersionId],
+      [flowVersionId, conversationId],
     ),
     {
       adapters: {
