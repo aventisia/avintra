@@ -19,7 +19,7 @@ public class NodeProcessor : INodeProcessor
     /// </summary>
     private static readonly Lazy<ConcurrentDictionary<string, Type>> NodeTypeCache = new(BuildNodeTypeCache);
 
-    public Task<NodeExecutionResult> ExecuteAsync(
+    public async Task<NodeExecutionResult> ExecuteAsync(
         ReactFlowNodeModel node,
         FlowExecutionContext context,
         CancellationToken cancellationToken = default)
@@ -33,21 +33,24 @@ public class NodeProcessor : INodeProcessor
         {
             cancellationToken.ThrowIfCancellationRequested();
 
-            // 1. Resolve node class from the type cache. Replace suffix "Activity" with "Node" to get the BaseNode class name (e.g. "GenerateRandomNumberActivity" → "GenerateRandomNumberNode")
+            // 1. Preprocess special node types (cloudConnectorNode, aiNode) — remaps inputs and resolves the correct class name
+            var (preprocessedName, preprocessedInputs) = PreprocessNode(node, context);
+
+            // Resolve node class from the type cache. Replace suffix "Activity" with "Node" to get the BaseNode class name (e.g. "GenerateRandomNumberActivity" → "GenerateRandomNumberNode")
             // Need to remove the Activity from the last part of the name only, to support cases like "MyCustomActivityNode". This is only to support older flows that were created before we standardized on the "Node" suffix, and can be removed in the future once all flows have been updated to use the "Node" suffix.
-            var nodeClassName = node.Data?.Name ?? string.Empty;
+            var nodeClassName = preprocessedName;
             nodeClassName = nodeClassName.EndsWith("Activity", StringComparison.OrdinalIgnoreCase)
                 ? nodeClassName.Substring(0, nodeClassName.Length - "Activity".Length) + "Node"
                 : nodeClassName;
 
             if (string.IsNullOrWhiteSpace(nodeClassName))
             {
-                return Task.FromResult(CreateFailedResult(node.Id, nodeDisplayName, sw, "Node data is missing the 'Name' field (class name)."));
+                return CreateFailedResult(node.Id, nodeDisplayName, sw, "Node data is missing the 'Name' field (class name).");
             }
 
             if (!NodeTypeCache.Value.TryGetValue(nodeClassName, out var nodeType))
             {
-                return Task.FromResult(CreateFailedResult(node.Id, nodeDisplayName, sw, $"No BaseNode class found for '{nodeClassName}'. Ensure the node class exists in the NodeLibrary assembly."));
+                return CreateFailedResult(node.Id, nodeDisplayName, sw, $"No BaseNode class found for '{nodeClassName}'. Ensure the node class exists in the NodeLibrary assembly.");
             }
 
             // 2. Create instance
@@ -62,9 +65,9 @@ public class NodeProcessor : INodeProcessor
 
             // 4. Map inputs from ReactFlow node data to InArgument properties
             var inputLogs = new Dictionary<string, string>();
-            if (node.Data?.Inputs is { Count: > 0 })
+            if (preprocessedInputs is { Count: > 0 })
             {
-                MapInputs(baseNode, nodeType, node.Data.Inputs, context, inputLogs);
+                MapInputs(baseNode, nodeType, preprocessedInputs, context, inputLogs);
             }
 
             // 5. Initialize any remaining OutArgument properties that are still null
@@ -72,7 +75,7 @@ public class NodeProcessor : INodeProcessor
 
             // 6. Execute the node
             var nodeContext = new NodeContext();
-            baseNode.InternalExecute(nodeContext);
+            await baseNode.InternalExecuteAsync(nodeContext);
 
             sw.Stop();
 
@@ -96,12 +99,12 @@ public class NodeProcessor : INodeProcessor
                 Outputs = outputLogs,
             };
 
-            return Task.FromResult(new NodeExecutionResult
+            return new NodeExecutionResult
             {
                 IsSuccess = isSuccess,
                 NodeLog = nodeLog,
                 OutputValues = outputValues,
-            });
+            };
         }
         catch (OperationCanceledException)
         {
@@ -110,7 +113,7 @@ public class NodeProcessor : INodeProcessor
         catch (Exception ex)
         {
             sw.Stop();
-            return Task.FromResult(CreateFailedResult(node.Id, nodeDisplayName, sw, ex.Message));
+            return CreateFailedResult(node.Id, nodeDisplayName, sw, ex.Message);
         }
     }
 
@@ -265,6 +268,119 @@ public class NodeProcessor : INodeProcessor
             OutputValues = new Dictionary<string, object?>(),
         };
     }
+
+    // -------------------------------------------------------------------------
+    // Node preprocessing — mirrors ActivityExecutorService.ConvertNodeData
+    // -------------------------------------------------------------------------
+
+    /// <summary>
+    /// For special node types (cloudConnectorNode, aiNode), transforms the raw
+    /// ReactFlow inputs into the shape expected by the corresponding BaseNode
+    /// implementation and returns the resolved class name.
+    /// For all other types, the node name and inputs are returned unchanged.
+    /// </summary>
+    private static (string resolvedClassName, List<ReactFlowNodeInput> inputs) PreprocessNode(
+        ReactFlowNodeModel node,
+        FlowExecutionContext context)
+    {
+        var rawName = node.Data?.Name ?? string.Empty;
+        var inputs = node.Data?.Inputs ?? [];
+
+        return node.Type switch
+        {
+            "cloudConnectorNode" => PreprocessCloudConnectorNode(rawName, inputs, context),
+            "aiNode" when !rawName.Equals("InvokeInferenceModelWebServiceActivity", StringComparison.OrdinalIgnoreCase)
+                       && !rawName.Equals("OlmOCRActivity", StringComparison.OrdinalIgnoreCase)
+                       && !rawName.Equals("InvokeInferenceModelWebServiceNode", StringComparison.OrdinalIgnoreCase)
+                       && !rawName.Equals("OlmOCRNode", StringComparison.OrdinalIgnoreCase)
+                => PreprocessAiNode(inputs),
+            _ => (rawName, inputs),
+        };
+    }
+
+    /// <summary>
+    /// Transforms cloudConnectorNode inputs into (Provider, Action, CredentialId, Payload)
+    /// and routes execution to ProcessConnectorRequestNode.
+    /// </summary>
+    private static (string, List<ReactFlowNodeInput>) PreprocessCloudConnectorNode(
+        string rawName,
+        List<ReactFlowNodeInput> inputs,
+        FlowExecutionContext context)
+    {
+        // rawName format: "{provider}/{actionConnector}" e.g. "Google/SendEmailConnector"
+        var segments = rawName.Split('/');
+        var provider = string.Join("/", segments.Take(segments.Length - 1));
+        var action = segments.Last();
+        if (action.EndsWith("Connector", StringComparison.OrdinalIgnoreCase))
+            action = action[..^"Connector".Length];
+
+        var newInputs = new List<ReactFlowNodeInput>
+        {
+            new() { Key = "Provider", Value = provider },
+            new() { Key = "Action", Value = action },
+        };
+
+        var payloadDict = new Dictionary<string, object?>();
+
+        foreach (var input in inputs)
+        {
+            if (string.IsNullOrEmpty(input.Value?.ToString())) continue;
+            if (IsSystemInput(input.Key)) continue;
+
+            if (input.Key.Contains("__CredentialId__"))
+            {
+                newInputs.Add(new ReactFlowNodeInput { Key = "CredentialId", Value = input.Value });
+                continue;
+            }
+
+            // Resolve any template variables before embedding into the payload JSON
+            var resolvedValue = context.ResolveTemplateObject(input.Value);
+            payloadDict[input.Key] = resolvedValue;
+        }
+
+        newInputs.Add(new ReactFlowNodeInput
+        {
+            Key = "Payload",
+            Value = JsonSerializer.Serialize(payloadDict)
+        });
+
+        return ("ProcessConnectorRequestNode", newInputs);
+    }
+
+    /// <summary>
+    /// Remaps aiNode's double-underscore-delimited keys (e.g. __ModelConfig__) to
+    /// the property names expected by ProcessLLMRequestNode.
+    /// </summary>
+    private static (string, List<ReactFlowNodeInput>) PreprocessAiNode(List<ReactFlowNodeInput> inputs)
+    {
+        var newInputs = new List<ReactFlowNodeInput>();
+
+        foreach (var input in inputs)
+        {
+            if (string.IsNullOrEmpty(input.Value?.ToString())) continue;
+            if (IsSystemInput(input.Key)) continue;
+
+            var key = input.Key switch
+            {
+                var k when k.Contains("__ModelConfig__") => "ModelConfig",
+                var k when k.Contains("__Prompt__") => "Prompt",
+                var k when k.Contains("__KbConfig__") => "KbConfig",
+                var k when k.Contains("__MemoryConfig__") => "MemoryConfig",
+                var k when k.Contains("__ToolsConfig__") => "ToolsConfig",
+                var k when k.Contains("__Files__") => "Files",
+                _ => input.Key,
+            };
+
+            newInputs.Add(new ReactFlowNodeInput { Key = key, Value = input.Value });
+        }
+
+        return ("ProcessLLMRequestNode", newInputs);
+    }
+
+    private static bool IsSystemInput(string key) =>
+        key.Equals("AgentId", StringComparison.OrdinalIgnoreCase) ||
+        key.Equals("AgentName", StringComparison.OrdinalIgnoreCase) ||
+        key.Equals("AccessToken", StringComparison.OrdinalIgnoreCase);
 
     private static ConcurrentDictionary<string, Type> BuildNodeTypeCache()
     {

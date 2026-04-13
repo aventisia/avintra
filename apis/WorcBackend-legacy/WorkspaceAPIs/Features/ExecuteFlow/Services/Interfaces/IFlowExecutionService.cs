@@ -13,5 +13,5 @@ public interface IFlowExecutionService
     /// <param name="flow">The flow data model to be executed.</param>
     /// <remarks>
     /// TenantId is required to set the correct scoped services else we won't be able to access tenant specific data during flow execution.
-    void StartExecution(Guid tenantId, Guid userId, Guid jobId, ReactFlowDataModel flow);
+    void StartExecution(Guid tenantId, Guid userId, Guid jobId, ReactFlowDataModel flow, string accessToken);
 }
