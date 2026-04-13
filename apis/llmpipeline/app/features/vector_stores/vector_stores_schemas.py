@@ -51,6 +51,7 @@ class QueryDocRequest(BaseModel):
     embedding_model: str
     query: str
     top_k: int = Field(default=5, ge=1, le=100)
+    doc_names: Optional[List[str]] = None  # Optional list of document names to scope chunk search
     store_credential_id: Optional[str] = None  # TODO: Implement BYOK support. Credential ID for vector store (if applicable)
     embedding_credential_id: Optional[str] = None  # TODO: Implement BYOK support. Credential ID for embedding provider (if applicable)
     ref_type: str # Type of the reference (e.g., "Agent", "Workflow", "AIProject"). TODO: Yet to confirm the better implemenation of this.

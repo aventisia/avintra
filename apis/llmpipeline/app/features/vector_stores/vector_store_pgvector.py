@@ -3,7 +3,7 @@ import time
 import uuid
 
 from fastapi import HTTPException, status
-from sqlalchemy import text
+from sqlalchemy import bindparam, text
 
 from app.core.database import TenantDB
 from app.core.logger import log_exception, logger
@@ -179,28 +179,50 @@ class PgVectorStore(BaseVectorStore):
 
             # Retrieve similar chunks from pgvector column using vector similarity search with the generated query embedding
             query_embedding = embedding_response.embeddings[0]
+            requested_doc_names = query_doc_request.doc_names
+            normalized_doc_names = (
+                [name.strip() for name in requested_doc_names if (name or "").strip()]
+                if requested_doc_names is not None
+                else []
+            )
+
+            if requested_doc_names is not None and not normalized_doc_names:
+                raise HTTPException(
+                    status_code=status.HTTP_400_BAD_REQUEST,
+                    detail="doc_names cannot be empty when provided.",
+                )
+
+            document_filter_sql = ""
+            if normalized_doc_names:
+                document_filter_sql = ' AND ("Metadata" ->> \'doc_name\') IN :doc_names '
+
             query_sql = text(
-                """
+                f"""
                 SELECT
                     "Content" AS content,
                     "Metadata" AS metadata,
                     (1 - ("Embedding" <=> CAST(:query_embedding AS vector))) AS similarity_score
                 FROM "worc_VectorStore"
                 WHERE "TenantId" = :tenant_id
+                {document_filter_sql}
                 ORDER BY "Embedding" <=> CAST(:query_embedding AS vector)
                 LIMIT :top_k
                 """
             )
 
+            if normalized_doc_names:
+                query_sql = query_sql.bindparams(bindparam("doc_names", expanding=True))
+
             # Execute the query and fetch results
-            result = await self.session.execute(
-                query_sql,
-                {
-                    "tenant_id": str(self.db.tenant_id),
-                    "query_embedding": self._to_pgvector_literal(query_embedding),
-                    "top_k": query_doc_request.top_k,
-                },
-            )
+            query_params = {
+                "tenant_id": str(self.db.tenant_id),
+                "query_embedding": self._to_pgvector_literal(query_embedding),
+                "top_k": query_doc_request.top_k,
+            }
+            if normalized_doc_names:
+                query_params["doc_names"] = normalized_doc_names
+
+            result = await self.session.execute(query_sql, query_params)
             rows = result.mappings().all()
 
             # Transform query results into list of RetrievedChunk objects for response
