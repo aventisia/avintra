@@ -1,12 +1,17 @@
 import {
   DTPagination,
   DTSearchBox,
+  DTViewOptions,
   DataTable,
   DataTableSkeleton,
+  getDataTablePreferences,
 } from "@aventisia/ui/data-table";
 import { useDataTable } from "@aventisia/ui/hooks";
 import { useParams } from "react-router-dom";
 
+import { DETAIL_TABLE_KEY } from "../../constants";
+import { columnDisplayNames } from "../../constants/kb-files-column-display-names";
+import { columnVisibilityState } from "../../constants/kb-files-column-visibility-state";
 import { useFetchKBFiles } from "../../hooks/useFetchKBFiles";
 import AddFileDD from "./AddFileDropDown";
 import { KBFileUploadDialog } from "./KBFileUploadDialog";
@@ -21,6 +26,12 @@ import { TableHeading } from "./TableHeading";
  */
 export const KBFilesTable = () => {
   const { id } = useParams();
+  // Get data-table preferences from local storage
+  const { columnVisibility, sortState } = getDataTablePreferences(
+    DETAIL_TABLE_KEY,
+    columnVisibilityState,
+  );
+
   // Fetch KBFilesFiles data
   const { data } = useFetchKBFiles();
   // const data = { data: [] };
@@ -29,8 +40,8 @@ export const KBFilesTable = () => {
   const table = useDataTable(
     KBFilesTableColumns,
     data?.data || [],
-    {},
-    [],
+    columnVisibility,
+    sortState,
     true,
   );
 
@@ -49,6 +60,9 @@ export const KBFilesTable = () => {
                 table={table}
                 searchColumn={"id"}
                 placeholder="Search..."
+              />
+              <DTViewOptions
+                {...{ table, columnDisplayNames, tableKey: DETAIL_TABLE_KEY }}
               />
               <AddFileDD />
             </div>

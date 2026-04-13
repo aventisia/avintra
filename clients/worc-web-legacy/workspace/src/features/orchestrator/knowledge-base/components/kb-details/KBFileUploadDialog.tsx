@@ -6,9 +6,9 @@ import {
 // import { ScrollArea } from "@aventisia/ui/scroll";
 import { useShallow } from "zustand/react/shallow";
 
+import FileUploadList from "../../file-uploader-setup/components/FileUploadList";
 import { useKBFilesDialogStore } from "../../stores/kb-files-upload-dialog-store";
 import { KBAddTextForm } from "./KBAddTextForm";
-import FileUploadList from "../../file-uploader-setup/components/FileUploadList";
 
 export const KBFileUploadDialog = () => {
   // Get crud dialog store state
@@ -33,6 +33,7 @@ export const KBFileUploadDialog = () => {
           heading={type == "text" ? "Raw Text Input" : "Upload Files"}
           className="p-3"
         />
+
         {type == "text" ? <KBAddTextForm /> : <FileUploadList />}
       </DialogContent>
     </Dialog>
