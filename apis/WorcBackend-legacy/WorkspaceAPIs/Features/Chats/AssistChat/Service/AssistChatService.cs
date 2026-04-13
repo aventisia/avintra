@@ -40,13 +40,14 @@ public class AssistChatService : IAssistChatService
             var flowVersions = await _unitOfWork.FlowVersionRepo
                 .GetByConditionAsync(w =>
                     w.Flow.Type == FlowTypesEnum.ChatAgent &&
-                    w.IsPublished &&
-                    !w.IsArchived &&
-                    w.FlowVersionUsers!.Any(a => a.UserId == _userId) &&
-                    w.Conversations.Any(a =>
-                        a.UserId == _userId &&
-                        a.Status != ConversationStatusEnum.Archived
-                    )
+                    w.IsPublished
+                    // TODO: Just for the testing
+                    // !w.IsArchived &&
+                    // w.FlowVersionUsers!.Any(a => a.UserId == _userId) &&
+                    // w.Conversations.Any(a =>
+                    //     a.UserId == _userId &&
+                    //     a.Status != ConversationStatusEnum.Archived
+                    // )
                 )
                 .Select(s => new AssistChatDto
                 {
