@@ -11,6 +11,7 @@ import { LLMMessageType } from "../types/llm-message.type";
 type CreateAssistantUIModelAdapterParams = {
   flowVersionId: string;
   conversationId: string | undefined;
+  onRequestComplete?: () => void;
 };
 
 /**
@@ -35,6 +36,7 @@ const toMessageText = (
 export const createAssistantUIModelAdapter = ({
   flowVersionId,
   conversationId,
+  onRequestComplete,
 }: CreateAssistantUIModelAdapterParams): ChatModelAdapter => {
   return {
     async *run(options) {
@@ -83,6 +85,8 @@ export const createAssistantUIModelAdapter = ({
             },
           ],
         };
+
+        onRequestComplete?.();
       } catch (error) {
         console.error("Execution API failed:", error);
         yield {

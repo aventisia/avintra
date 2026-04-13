@@ -86,8 +86,8 @@ class CreditManagerService:
             sanitized["RefId"] = self._sanitize_guid(sanitized.get("RefId"))
             sanitized["RefName"] = self._sanitize_optional_text(sanitized.get("RefName"))
             sanitized["TriggeredByAgent"] = self._sanitize_optional_text(sanitized.get("TriggeredByAgent"))
-            sanitized["RefType"] = self._sanitize_optional_text(sanitized.get("RefType"))
-            sanitized["Action"] = self._sanitize_optional_text(sanitized.get("Action"))
+            sanitized["RefType"] = self._sanitize_ref_type(sanitized.get("RefType"))
+            sanitized["Action"] = self._sanitize_action(sanitized.get("Action"))
             sanitized_items.append(sanitized)
 
         return sanitized_items
@@ -113,3 +113,40 @@ class CreditManagerService:
                 return None
 
         return None
+
+    def _sanitize_ref_type(self, value):
+        sanitized = self._sanitize_optional_text(value)
+        if sanitized is None:
+            return None
+
+        if not isinstance(sanitized, str):
+            return None
+
+        normalized = sanitized.strip().lower()
+        alias_map = {
+            "agent": "Agent",
+            "chatagent": "Agent",
+            "workflowagent": "Agent",
+            "aimodel": "AIModel",
+            "model": "AIModel",
+            "platform": "Platform",
+        }
+
+        return alias_map.get(normalized)
+
+    def _sanitize_action(self, value):
+        sanitized = self._sanitize_optional_text(value)
+        if sanitized is None:
+            return None
+
+        if not isinstance(sanitized, str):
+            return None
+
+        normalized = sanitized.strip().lower()
+        alias_map = {
+            "agentexecution": "AgentExecution",
+            "aimodelexecution": "AIModelExecution",
+            "templatedescriptiongeneration": "TemplateDescriptionGeneration",
+        }
+
+        return alias_map.get(normalized)
