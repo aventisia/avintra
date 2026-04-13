@@ -7,6 +7,7 @@ import {
   //ThreadPrimitive,
   useLocalRuntime,
 } from "@assistant-ui/react";
+import { useQueryClient } from "@tanstack/react-query";
 // import { Button } from "@aventisia/ui/buttons";
 // import { ChatBubbleBottomCenterTextIcon } from "@heroicons/react/24/outline";
 // import { SparklesIcon } from "lucide-react";
@@ -19,6 +20,7 @@ import {
   //MessageBubble,
   createAssistantUIModelAdapter,
 } from "..";
+import { AC_QUERY_KEY } from "../../available-credits/available-credits-constants";
 import { loadPolicyDocuments } from "../utils/load-policy-documents";
 // import { ThreadList } from "./thread-list";
 import { Thread } from "./thread";
@@ -75,6 +77,8 @@ export const WorcAssistantUI = ({
   provider = "openai",
   model = "gpt-4o-mini",
 }: WorcAssistantUIProps) => {
+  const queryClient = useQueryClient();
+
   // Access current flow details for model adapter metadata.
   const { currentFlow } = useCurrentFlowStore(
     useShallow((state) => ({ currentFlow: state.currentFlow })),
@@ -101,8 +105,18 @@ export const WorcAssistantUI = ({
           flowName: currentFlow.name,
           systemPrompt,
           policyContext: POLICY_CONTEXT,
+          onRequestComplete: () => {
+            queryClient.invalidateQueries({ queryKey: AC_QUERY_KEY });
+          },
         }),
-      [provider, model, currentFlow.versionId, currentFlow.name, systemPrompt],
+      [
+        provider,
+        model,
+        currentFlow.versionId,
+        currentFlow.name,
+        systemPrompt,
+        queryClient,
+      ],
     ),
   );
 

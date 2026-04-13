@@ -1,4 +1,7 @@
+import { AC_QUERY_KEY } from "@/features/available-credits/available-credits-constants";
+
 import { AssistantRuntimeProvider, useLocalRuntime } from "@assistant-ui/react";
+import { useQueryClient } from "@tanstack/react-query";
 import { useMemo } from "react";
 import { useParams } from "react-router-dom";
 
@@ -17,6 +20,8 @@ export const WorcAssistantUI = ({
   description,
   archived,
 }: WorcAssistantUIProps) => {
+  const queryClient = useQueryClient();
+
   // Extract flowVersionId to pass to the execution adapter
   const { conversationId, flowVersionId } = useParams();
 
@@ -32,8 +37,11 @@ export const WorcAssistantUI = ({
         createAssistantUIModelAdapter({
           flowVersionId: flowVersionId ?? "",
           conversationId: conversationId,
+          onRequestComplete: () => {
+            queryClient.invalidateQueries({ queryKey: AC_QUERY_KEY });
+          },
         }),
-      [flowVersionId, conversationId],
+      [flowVersionId, conversationId, queryClient],
     ),
     {
       adapters: {
