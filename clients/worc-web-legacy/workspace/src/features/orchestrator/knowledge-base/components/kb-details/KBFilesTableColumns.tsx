@@ -14,6 +14,9 @@ import { KBFilesTableRowAction } from "./KBFilesTableRowAction";
 export const KBFilesTableColumns: ColumnDef<KnowledgeBaseFileDto>[] = [
   {
     accessorKey: "id",
+    size: 24,
+    maxSize: 24,
+    enableResizing: false,
     header: ({ table }) => (
       <Checkbox
         checked={
@@ -49,6 +52,21 @@ export const KBFilesTableColumns: ColumnDef<KnowledgeBaseFileDto>[] = [
     ),
   },
   {
+    accessorKey: "category",
+    header: ({ column }) => (
+      <DTColumnHeader
+        tableKey={DETAIL_TABLE_KEY}
+        column={column}
+        title={"Category"}
+      />
+    ),
+    cell: ({ row }) => (
+      <div className="w-auto truncate font-medium">
+        {row.original?.category}
+      </div>
+    ),
+  },
+  {
     accessorKey: "createdBy",
     header: ({ column }) => (
       <DTColumnHeader
@@ -72,7 +90,9 @@ export const KBFilesTableColumns: ColumnDef<KnowledgeBaseFileDto>[] = [
 
   {
     id: "actions",
-
+    size: 24,
+    maxSize: 24,
+    enableResizing: false,
     cell: ({ row }) => (
       // Render the queues row actions component
       <KBFilesTableRowAction rowId={row.original.id ?? "rowId"} />
