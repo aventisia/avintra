@@ -1,4 +1,5 @@
 import json
+import uuid
 import requests
 from app.core.logger import logger
 from app.core.config import settings
@@ -62,12 +63,53 @@ class CreditManagerService:
         # Add Authorization header if JWT is provided
         if jwt:
             headers["Authorization"] = f"Bearer {jwt}"
+
+        sanitized_request = self._sanitize_credit_usage_payload(request)
             
         # Try to post credit usage
         try:
-            logger.info(f"Credit usage post list:\n{json.dumps(request, indent=2)}")
-            response = requests.post(f"{self.api_url}/bulk", json=request, headers=headers, timeout=60)
+            logger.info(f"Credit usage post list:\n{json.dumps(sanitized_request, indent=2)}")
+            response = requests.post(f"{self.api_url}/bulk", json=sanitized_request, headers=headers, timeout=60)
             response.raise_for_status()
             logger.info(f"CreditManagerService: Successfully posted credit usage for task {task}")
         except Exception as e:
             logger.error(f"CreditManagerService: Failed to post credit usage for task {task}: {e}")
+
+    def _sanitize_credit_usage_payload(self, payload: list[dict]) -> list[dict]:
+        """
+        Normalizes payload fields to match Accounts API DTO expectations.
+        """
+        sanitized_items = []
+
+        for item in payload:
+            sanitized = dict(item)
+            sanitized["RefId"] = self._sanitize_guid(sanitized.get("RefId"))
+            sanitized["RefName"] = self._sanitize_optional_text(sanitized.get("RefName"))
+            sanitized["TriggeredByAgent"] = self._sanitize_optional_text(sanitized.get("TriggeredByAgent"))
+            sanitized["RefType"] = self._sanitize_optional_text(sanitized.get("RefType"))
+            sanitized["Action"] = self._sanitize_optional_text(sanitized.get("Action"))
+            sanitized_items.append(sanitized)
+
+        return sanitized_items
+
+    def _sanitize_optional_text(self, value):
+        if value is None:
+            return None
+        if isinstance(value, str) and not value.strip():
+            return None
+        return value
+
+    def _sanitize_guid(self, value):
+        if value is None:
+            return None
+
+        if isinstance(value, str):
+            stripped = value.strip()
+            if not stripped:
+                return None
+            try:
+                return str(uuid.UUID(stripped))
+            except ValueError:
+                return None
+
+        return None
