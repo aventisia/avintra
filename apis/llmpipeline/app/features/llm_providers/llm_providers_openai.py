@@ -504,7 +504,7 @@ class OpenAIProvider(BaseLLMProvider):
                 response.raise_for_status()
                 response_data = response.json()
 
-                logger.info(f"OpenAI embedding response:\n{json.dumps(response_data, indent=2)}")
+                logger.info(f"OpenAI embedding usage response:\n{json.dumps(response_data.get("usage", {}).get("total_tokens", 0), indent=2)}")
 
                 # Extract embeddings
                 embeddings = [item["embedding"] for item in response_data.get("data", [])]
