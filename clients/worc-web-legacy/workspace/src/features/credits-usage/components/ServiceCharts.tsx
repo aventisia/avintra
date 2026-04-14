@@ -1,3 +1,5 @@
+import { ServiceTypeEnum } from "@/features/sa/credit-plans-table/enums/service-type-enum";
+
 import { Button } from "@aventisia/ui/buttons";
 import {
   Select,
@@ -14,8 +16,7 @@ import {
 } from "@heroicons/react/24/outline";
 import { useMemo, useState } from "react";
 
-import { ServiceTypeEnum } from "@/features/sa/credit-plans-table/enums/service-type-enum";
-
+import { IResourceUsages } from "../dtos/credits-usage-dto";
 import { useFetchCreditUsageSummary } from "../hooks/useFetchCreditUsageSummary";
 import { ChartBarInteractive } from "../shared/charts/BarChart";
 import { ChartConfig } from "../shared/charts/Chart";
@@ -44,8 +45,24 @@ const ServiceCharts = () => {
     return sortedItems.slice(start, start + itemsPerPage);
   }, [currentPage, items, itemsPerPage]);
 
-  function formatUnit(unit: string) {
-    return unit.endsWith("s") ? unit.slice(0, -1) + "/s" : unit + "/s";
+  function generateServiceLabel(item: IResourceUsages) {
+    const baseLabel = `Total credits: ${item.totalCredits.toLocaleString(
+      "en-US",
+      {
+        maximumFractionDigits: 2,
+        minimumFractionDigits: 2,
+      },
+    )}`;
+
+    // Inline formatUnit logic
+    const formatUnit = (unit: string) =>
+      unit.endsWith("s") ? unit.slice(0, -1) : unit;
+
+    if (item.credits != null && item.unitType != null) {
+      return `${baseLabel} (${item.credits} ${item.credits > 1 ? "Credits" : "Credit"} per ${item.oneUnit > 1 ? item.oneUnit : ""} ${formatUnit(item.unitType)})`;
+    }
+
+    return baseLabel;
   }
 
   return (
@@ -60,13 +77,7 @@ const ServiceCharts = () => {
                   item.serviceType as keyof typeof ServiceTypeEnum
                 ]
               }
-              label={`Total credits: ${item.totalCredits.toLocaleString(
-                "en-US",
-                {
-                  maximumFractionDigits: 2,
-                  minimumFractionDigits: 2,
-                },
-              )} (${item.credits} ${item.credits > 1 ? "Credits" : "Credit"} per ${item.oneUnit > 1 ? item.oneUnit : ""} ${formatUnit(item.unitType)})`}
+              label={generateServiceLabel(item)}
               data={item.usageTimeline}
               chartConfig={totalCreditsChartConfig}
               valueKey="totalCount"
