@@ -1,0 +1,43 @@
+meta {
+  name: qdrant - ingest text document
+  type: http
+  seq: 1
+}
+
+post {
+  url: {{LLM_PIPELINE_APIS_BASE_URL}}/vector-store/ingest
+  body: json
+  auth: bearer
+}
+
+auth:bearer {
+  token: {{ACCESS_TOKEN}}
+}
+
+body:json {
+  {
+    "vector_store": "qdrant",
+    "embedding_provider": "openai",
+    "embedding_model": "text-embedding-3-small",
+    "input": "Vector stores help retrieve semantically relevant context for LLM prompts.",
+    "chunk_size": 500,
+    "chunk_overlap": 100,
+    "store_credential_id": null,
+    "embedding_credential_id": null,
+    "metadata": {
+      "doc_name" : "test.txt"
+    },
+    "batch_size": 100,
+    "dimensions": null,
+    "ref_type": "Platform",
+    "ref_id": "",
+    "ref_name": "vector-store-bruno-test-doc",
+    "action": "vector_store_ingest",
+    "agent_name": null
+  }
+}
+
+settings {
+  encodeUrl: true
+  timeout: 0
+}

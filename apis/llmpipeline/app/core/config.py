@@ -41,7 +41,7 @@ class Settings(BaseSettings):
     # TODO: Need to adjust later
     OLLAMA_API_URL: str = ""
     OLLAMA_API_KEY: str = ""
-    QDRANT_URL: str = ""
+    QDRANT_URL: str = "https://dev-qdrant-db.aventisia.com"
     QDRANT_API_KEY: str = ""
     
     model_config = SettingsConfigDict(
