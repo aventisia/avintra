@@ -34,20 +34,12 @@ public class AssistChatService : IAssistChatService
             // - Flow type must be ChatAgent
             // - Only published and non-archived flow versions are included
             // - Flow version must be assigned to the current user
-            // - Must contain at least one non-archived conversation
-            // - Conversations are included only if they are not archived
-            // - Conversation title and timestamp are derived from the latest message (if available)
             var flowVersions = await _unitOfWork.FlowVersionRepo
                 .GetByConditionAsync(w =>
                     w.Flow.Type == FlowTypesEnum.ChatAgent &&
-                    w.IsPublished
-                    // TODO: Just for the testing
-                    // !w.IsArchived &&
-                    // w.FlowVersionUsers!.Any(a => a.UserId == _userId) &&
-                    // w.Conversations.Any(a =>
-                    //     a.UserId == _userId &&
-                    //     a.Status != ConversationStatusEnum.Archived
-                    // )
+                    w.IsPublished &&
+                    !w.IsArchived &&
+                    w.FlowVersionUsers!.Any(a => a.UserId == _userId)
                 )
                 .Select(s => new AssistChatDto
                 {
