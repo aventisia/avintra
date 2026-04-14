@@ -145,17 +145,17 @@ public class ResourceUsageDetailDto
     /// <summary>
     /// Gets or sets the type of unit used to measure usage, like seconds, tokens, or messages.
     /// </summary>
-    public UnitTypesEnum UnitType { get; set; }
+    public UnitTypesEnum? UnitType { get; set; }
 
     /// <summary>
     /// Gets or sets how much usage is in one unit, like 30 seconds or 1000 tokens.
     /// </summary>
-    public double OneUnit { get; set; }
+    public double? OneUnit { get; set; }
 
     /// <summary>
     /// Gets or sets how many credits are used for each unit.
     /// </summary>
-    public double Credits { get; set; }
+    public double? Credits { get; set; }
 
     /// <summary>
     /// Gets or sets how many credits are used by the service.

@@ -146,9 +146,11 @@ public class CreditUsageService : ICreditUsageService
                         return new ResourceUsageDetailDto
                         {
                             ServiceType = s.Key,
-                            OneUnit = matchingPlan.OneUnit,
-                            UnitType = matchingPlan.UnitType,
-                            Credits = matchingPlan.Credits,
+                            // TODO: credits/unit infor by default is disabled for all tenants. However, We should be able to enable it to specific tenants in the future if needed so only specified tenant can see these details
+                            // We'll keep these 3 fields nullable and will only set values if the tenant has enabled credits/unit information in the future. Frontend can use the presence of values in these fields to decide whether to show credits/unit details or not.
+                            //OneUnit = matchingPlan.OneUnit,
+                            //UnitType = matchingPlan.UnitType,
+                            //Credits = matchingPlan.Credits,
                             TotalCredits = s.Sum(sm => sm.CreditsUsed),
                             TotalTransactions = s.Count(),
                             UsageTimeline = s
