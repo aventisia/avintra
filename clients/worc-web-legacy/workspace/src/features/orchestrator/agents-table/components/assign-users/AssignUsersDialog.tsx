@@ -27,28 +27,29 @@ const AssignUsersDialog = () => {
   // Get query client
   const queryClient = useQueryClient();
 
+  // The draft state (Checkbox)
   const [assignAll, setAssignAll] = useState(false);
+  // The backend truth state
+  const [savedAssignAll, setSavedAssignAll] = useState(false);
 
   useEffect(() => {
-    // Get flows data from query client
-    const flowsData = queryClient.getQueryData<{
-      data: AgentsTableDto[];
-    }>(DATA_QUERY_KEY);
+    if (open) {
+      const flowsData = queryClient.getQueryData<{
+        data: AgentsTableDto[];
+      }>(DATA_QUERY_KEY);
 
-    // Get flow data by id
-    const flowData = flowsData?.data.find((item) => item.id === flowVersionId);
-    if (flowData) {
-      setAssignAll(!!flowData?.isAssignedToAllUsers);
+      const flowData = flowsData?.data.find(
+        (item) => item.id === flowVersionId,
+      );
+      const isAssignedToAll = !!flowData?.isAssignedToAllUsers;
+
+      setAssignAll(isAssignedToAll);
+      setSavedAssignAll(isAssignedToAll);
     }
-  }, [flowVersionId, queryClient]);
+  }, [open, flowVersionId, queryClient]);
 
   return (
-    <Dialog
-      open={open}
-      onOpenChange={(open: boolean) => {
-        setOpen(open);
-      }}
-    >
+    <Dialog open={open} onOpenChange={setOpen}>
       <DialogContent className="h-[65vh]">
         <DialogDefaultHeader heading={`Chat Agent Users`} />
         <ScrollArea className="h-[calc(65vh-4rem)]">
@@ -56,18 +57,26 @@ const AssignUsersDialog = () => {
             <CustomCheckbox
               checked={assignAll}
               label="Assign to all team members"
-              description="All users in this workspace will be assigned automatically
-            "
+              description="All users in this workspace will be assigned automatically"
               onCheckedChange={setAssignAll}
             />
           </div>
-          <SearchUsers assignAll={assignAll} />
-          {assignAll ? null : (
+
+          <SearchUsers
+            assignAll={assignAll}
+            savedAssignAll={savedAssignAll}
+            onUpdateSuccess={(newValue) => setSavedAssignAll(newValue)}
+          />
+
+          {/* List only shows/hides based on the SAVED backend state */}
+          {!savedAssignAll && (
             <>
-              <p className="text-md font-semibold px-4">Assigned User(s)</p>
-              <div className=" p-2 px-4 pb-4">
+              <p className="text-md font-semibold px-4 mt-2">
+                Assigned User(s)
+              </p>
+              <div className="p-2 px-4 pb-4">
                 <UsersList />
-              </div>{" "}
+              </div>
             </>
           )}
         </ScrollArea>
