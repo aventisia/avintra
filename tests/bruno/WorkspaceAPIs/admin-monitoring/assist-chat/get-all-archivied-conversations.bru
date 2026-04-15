@@ -1,0 +1,19 @@
+meta {
+  name: Get all archivied conversations
+  type: http
+  seq: 3
+}
+
+get {
+  url: {{WORC_APIS_BASE_URL}}/admin/conversations?isArchived=true
+  body: none
+  auth: bearer
+}
+
+params:query {
+  isArchived: true
+}
+
+auth:bearer {
+  token: {{ACCESS_TOKEN}}
+}
