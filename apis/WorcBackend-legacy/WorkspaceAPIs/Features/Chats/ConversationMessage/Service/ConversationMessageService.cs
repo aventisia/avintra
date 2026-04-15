@@ -61,7 +61,7 @@ public class ConversationMessageService : IConversationMessageService
                     w.Id == conversationMessageDto.FlowVersionId &&
                     w.Flow.Type == FlowTypesEnum.ChatAgent &&
                     w.IsPublished &&
-                    w.FlowVersionUsers!.Any(a => a.UserId == _userId)
+                    (w.IsTenantWideAccess || w.FlowVersionUsers!.Any(a => a.UserId == _userId))
                 )
                 .Include(w => w.FlowVersionUsers)
                 .SingleOrDefaultAsync();
