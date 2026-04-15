@@ -10,58 +10,55 @@ import {
 } from "../../constants/kb-add-text-feild-props";
 import { kbAddTextSchema } from "../../constants/kb-add-text-zod-schema";
 import { useDefineKBAddTextForm } from "../../hooks/useDefineKBAddTextForm";
-import FileUploadInfo from "./FileUploadInfo";
+import FileUploadDisclaimer from "./FileUploadDisclaimer";
 
 export const KBAddTextForm = () => {
   const { form } = useDefineKBAddTextForm();
 
+  const generateFileNameFromText = (text: string, wordLimit = 5) => {
+    if (!text) return "untitled.txt";
+
+    const words = text.trim().split(/\s+/).slice(0, wordLimit).join(" ");
+
+    return (
+      words
+        .toLowerCase()
+        .replace(/[^a-z0-9\s]/g, "") // remove special chars
+        .replace(/\s+/g, "-") + ".txt"
+    );
+  };
+
   const onSubmit = (data: z.infer<typeof kbAddTextSchema>) => {
-    console.log(" Payload:", data);
+    const fileName = generateFileNameFromText(data.textContent, 5);
+    console.log(" Payload:", { ...data, fileName });
   };
 
   return (
-    <ScrollArea className="h-[calc(85vh-4rem)] py-2">
-      <Form
-        methods={form}
-        onSubmit={form.handleSubmit(onSubmit)}
-        className="space-y-4 p-4 pt-1"
-      >
-        {/* Query */}
-        <TextareaField {...textContentProps} />
+    <div className=" flex flex-col justify-between">
+      <ScrollArea className="h-[calc(85vh-7.5rem)]  py-2">
+        <Form
+          methods={form}
+          onSubmit={form.handleSubmit(onSubmit)}
+          className="space-y-4 p-4 pt-1"
+        >
+          {/* Query */}
+          <TextareaField {...textContentProps} />
 
-        {/* Number of chunks */}
-        <div className="grid grid-cols-2 gap-2">
-          <InputField {...chunkSizeProps} />
+          {/* Number of chunks */}
+          <div className="grid grid-cols-2 gap-2">
+            <InputField {...chunkSizeProps} />
 
-          <InputField {...chunkOverlapProps} />
-        </div>
-        <div className="bg-accent rounded-lg p-2">
-          <p className="text-sm font-semibold">Text Processing Information</p>
-          <ul className="text-xs ml-6 list-disc [&>li]:mt-2">
-            <li>Text will be automatically chunked for optimal retrieval</li>
-            <li>Formatting well be preserved where possible</li>
-            <li>Very long texts will be split into manageable sections</li>
-            <li>Headless Browser: Required for javascript-heavy sites</li>
-            <li>The sources will be identified as 'Raw Text Input'</li>
-          </ul>
-        </div>
-        <FileUploadInfo />
-        {/* Actions */}
-        <div className="flex justify-end gap-2.5 pt-4">
-          {/* <Button
-            size={"sm"}
-            type="button"
-            variant="outline"
-            onClick={() => form.reset()}
-          >
-            Reset
-          </Button> */}
-
-          <Button size={"sm"} type="submit">
-            Add Text
-          </Button>
-        </div>
-      </Form>
-    </ScrollArea>
+            <InputField {...chunkOverlapProps} />
+          </div>
+          <FileUploadDisclaimer />
+          {/* Actions */}
+        </Form>
+      </ScrollArea>
+      <div className="flex h-16 border-t px-4 justify-end items-center">
+        <Button size={"sm"} type="submit">
+          Add Text
+        </Button>
+      </div>
+    </div>
   );
 };

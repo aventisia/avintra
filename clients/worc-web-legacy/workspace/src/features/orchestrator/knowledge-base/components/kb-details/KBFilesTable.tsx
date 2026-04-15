@@ -1,3 +1,5 @@
+// import { FileUploader } from "@/components/file-uploader/components";
+
 import {
   DTPagination,
   DTSearchBox,
@@ -14,6 +16,7 @@ import { columnDisplayNames } from "../../constants/kb-files-column-display-name
 import { columnVisibilityState } from "../../constants/kb-files-column-visibility-state";
 import { useFetchKBFiles } from "../../hooks/useFetchKBFiles";
 import AddFileDD from "./AddFileDropDown";
+// import FileUploadDisclaimer from "./FileUploadDisclaimer";
 import { KBFileUploadDialog } from "./KBFileUploadDialog";
 import { KBFilesTableColumns } from "./KBFilesTableColumns";
 import { KBRetrievalSection } from "./KBRetrievalSection";
@@ -77,6 +80,16 @@ export const KBFilesTable = () => {
 
               {/* Data table Pagination component */}
               <DTPagination table={table} />
+              {/* <div className="h-fit">
+                <FileUploader
+                  hideFooter
+                  disclaimer={<FileUploadDisclaimer />}
+                  acceptedTypes={{
+                    "application/pdf": [".pdf"],
+                    "image/jpeg": [".jpg", ".jpeg"],
+                  }}
+                />
+              </div> */}
             </div>
             <div className="col-span-3 border bg-background rounded-lg">
               <KBRetrievalSection />
