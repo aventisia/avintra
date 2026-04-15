@@ -10,6 +10,7 @@ namespace WorkspaceAPIs.MappingProfiles
                 .Map(dest => dest.MachineCount, src => src.MachineFlows != null ? src.MachineFlows.Count() : 0)
                 .Map(dest => dest.Name, src => src.Flow != null ? src.Flow.Name : null)
                 .Map(dest => dest.Type, src => src.Flow != null ? src.Flow.Type.ToString() : FlowTypesEnum.Agent.ToString()) // Preserve actual flow type (Agent/ChatAgent), fallback to Agent when flow is unavailable.
+                .Map(dest => dest.IsAssignedToAllUsers, src => src.IsTenantWideAccess)
                 .Map(dest => dest.CreatedBy, src => src.CreatedByUser != null ? $"{src.CreatedByUser.FirstName} {src.CreatedByUser.LastName}" : null)
                 .Map(dest => dest.CreatedByUsername, src => src.CreatedByUser != null ? src.CreatedByUser.UserName : null)
                 .Map(dest => dest.LastModifiedBy, src => src.LastModifiedByUser != null ? $"{src.LastModifiedByUser.FirstName} {src.LastModifiedByUser.LastName}" : null);

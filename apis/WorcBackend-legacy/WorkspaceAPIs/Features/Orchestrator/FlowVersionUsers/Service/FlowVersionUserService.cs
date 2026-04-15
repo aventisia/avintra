@@ -131,25 +131,11 @@ public class FlowVersionUserService : IFlowVersionUserService
 
         try
         {
-            // Check if mapping already exists to prevent duplicates
-            var existingFlowVersionUser = await _unitOfWork.FlowVersionUserRepo
-                .GetByConditionAsync(w =>
-                    w.FlowVersionId == flowVersionUserDto.FlowVersionId &&
-                    w.UserId == flowVersionUserDto.UserId)
-                .FirstOrDefaultAsync();
-
-            // Validate duplicate condition
-            if (existingFlowVersionUser != null)
-            {
-                serviceResponse.StatusCode = 409;
-                serviceResponse.Message = "Flow version user already exists.";
-                return serviceResponse;
-            }
-
-            // Fetch FlowVersion
+            // Fetch FlowVersion (only published versions are allowed)
             var flowVersion = await _unitOfWork.FlowVersionRepo
                 .GetByConditionAsync(w =>
                     w.Id == flowVersionUserDto.FlowVersionId &&
+                    // w.Flow.Type == FlowTypesEnum.ChatAgent &&
                     w.IsPublished
                 )
                 .FirstOrDefaultAsync();
@@ -161,33 +147,102 @@ public class FlowVersionUserService : IFlowVersionUserService
                 return serviceResponse;
             }
 
-            // Fetch WorkspaceUser
-            var workspaceUser = await _unitOfWork.WorkspaceUserRepo
-                .GetByConditionAsync(w => w.Id == flowVersionUserDto.UserId)
-                .FirstOrDefaultAsync();
-
-            if (workspaceUser == null)
+            // Handle assignment to all users (Tenant-wide access)
+            if (flowVersionUserDto.IsAssignedToAllUsers)
             {
-                _logger.LogError("WorkspaceUser not found. UserId: {UserId}", flowVersionUserDto.UserId);
-                serviceResponse.Message = "Workspace user not found.";
+                // Enable tenant-wide access if not already enabled
+                if (!flowVersion.IsTenantWideAccess)
+                {
+                    flowVersion.IsTenantWideAccess = true;
+                    flowVersion.LastModifiedByUserId = _userId;
+
+                    // Update FlowVersion
+                    _unitOfWork.FlowVersionRepo.Update(flowVersion);
+                }
+
+                // Verify persistence
+                if (!await _unitOfWork.SaveAsync())
+                {
+                    _logger.LogError("[InsertFlowVersionUser] Failed to persist tenant-wide access update.");
+                    return serviceResponse;
+                }
+
+                // No user mapping needed when assigned to all users
+                serviceResponse.StatusCode = 200;
+                serviceResponse.Message = "Flow version assigned to all users successfully.";
                 return serviceResponse;
             }
-
-            // Map dto to entity and assign audit fields
-            var flowVersionUser = flowVersionUserDto.Adapt<FlowVersionUser>();
-
-            // Insert new record
-            await _unitOfWork.FlowVersionUserRepo.InsertAsync(flowVersionUser);
-
-            // Verify persistence
-            if (!await _unitOfWork.SaveAsync())
+            else
             {
-                _logger.LogError("[InsertFlowVersionUser] Failed to persist new flow version user.");
-                return serviceResponse;
+                // If previously tenant-wide, disable it (FIXED BUG: was setting true again)
+                if (flowVersion.IsTenantWideAccess)
+                {
+                    flowVersion.IsTenantWideAccess = false;
+                    flowVersion.LastModifiedByUserId = _userId;
+
+                    // Update FlowVersion
+                    _unitOfWork.FlowVersionRepo.Update(flowVersion);
+
+                    // Verify persistence
+                    if (!await _unitOfWork.SaveAsync())
+                    {
+                        _logger.LogError("[InsertFlowVersionUser] Failed to update tenant-wide access.");
+                        return serviceResponse;
+                    }
+
+                    // If no specific user provided, just revoke tenant-wide access and return success
+                    if (flowVersionUserDto.UserId == Guid.Empty)
+                    {
+                        serviceResponse.StatusCode = 200;
+                        serviceResponse.Message = "Flow version revoked from tenant-wide access successfully.";
+                        return serviceResponse;
+                    }
+                }
+
+                // Check if mapping already exists to prevent duplicates
+                var existingFlowVersionUser = await _unitOfWork.FlowVersionUserRepo
+                    .GetByConditionAsync(w =>
+                        w.FlowVersionId == flowVersionUserDto.FlowVersionId &&
+                        w.UserId == flowVersionUserDto.UserId)
+                    .FirstOrDefaultAsync();
+
+                // Validate duplicate condition
+                if (existingFlowVersionUser != null)
+                {
+                    serviceResponse.StatusCode = 409;
+                    serviceResponse.Message = "Flow version user already exists.";
+                    return serviceResponse;
+                }
+
+                // Fetch WorkspaceUser (validate user exists in workspace)
+                var workspaceUser = await _unitOfWork.WorkspaceUserRepo
+                    .GetByConditionAsync(w => w.Id == flowVersionUserDto.UserId)
+                    .FirstOrDefaultAsync();
+
+                if (workspaceUser == null)
+                {
+                    _logger.LogError("WorkspaceUser not found. UserId: {UserId}", flowVersionUserDto.UserId);
+                    serviceResponse.Message = "Workspace user not found.";
+                    return serviceResponse;
+                }
+
+                // Map dto to entity and assign audit fields
+                var flowVersionUser = flowVersionUserDto.Adapt<FlowVersionUser>();
+
+                // Insert new record
+                await _unitOfWork.FlowVersionUserRepo.InsertAsync(flowVersionUser);
+
+                // Verify persistence (includes both FlowVersion update + insert if any)
+                if (!await _unitOfWork.SaveAsync())
+                {
+                    _logger.LogError("[InsertFlowVersionUser] Failed to persist new flow version user.");
+                    return serviceResponse;
+                }
+
+                serviceResponse.Data = flowVersionUser.Adapt<FlowVersionUserDto>();
             }
 
             // Assign success response
-            serviceResponse.Data = flowVersionUser.Adapt<FlowVersionUserDto>();
             serviceResponse.StatusCode = 200;
             serviceResponse.Message = "Flow version user created successfully.";
         }

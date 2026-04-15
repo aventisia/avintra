@@ -14,7 +14,7 @@ public class FlowVersionUserDto
     /// <summary>
     /// Gets or sets the unique identifier for the associated user.
     /// </summary>
-    public required Guid UserId { get; set; }
+    public Guid UserId { get; set; }
 
     /// <summary>
     /// Gets or sets the first name of the associated user.
@@ -40,6 +40,12 @@ public class FlowVersionUserDto
     /// Gets or sets the unique identifier for the flow version.
     /// </summary>
     public required Guid FlowVersionId { get; set; }
+
+    /// <summary>
+    /// Gets or sets a value indicating whether the flow version is assigned to all users.
+    /// When true, the assignment applies to all team members instead of specific users.
+    /// </summary>
+    public bool IsAssignedToAllUsers { get; set; }
 
     /// <summary>
     /// Gets or sets the name of the flow version.

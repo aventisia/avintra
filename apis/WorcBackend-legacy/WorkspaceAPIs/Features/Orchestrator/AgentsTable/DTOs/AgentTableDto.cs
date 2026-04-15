@@ -49,6 +49,12 @@ public class AgentTableDto
     public bool IsArchived { get; set; }
 
     /// <summary>
+    /// Gets or sets a value indicating whether the flow version is assigned to all users.
+    /// When true, the assignment applies to all team members instead of specific users.
+    /// </summary>
+    public bool IsAssignedToAllUsers { get; set; }
+
+    /// <summary>
     /// Gets or sets a value indicating whether the record is disabled. Use this to mark a record as disabled if it's outdated or no longer required when deletion is not possible.
     /// </summary>
     public bool IsDisabled { get; set; } = false;
