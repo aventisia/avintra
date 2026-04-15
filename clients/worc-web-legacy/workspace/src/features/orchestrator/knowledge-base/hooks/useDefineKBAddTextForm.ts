@@ -9,8 +9,8 @@ export const useDefineKBAddTextForm = () => {
     resolver: zodResolver(kbAddTextSchema),
     defaultValues: {
       textContent: "",
-      chunkSize: 10,
-      chunkOverlap: 100,
+      chunkSize: 500,
+      chunkOverlap: 50, //  10% of Chunk size
     },
   });
 
