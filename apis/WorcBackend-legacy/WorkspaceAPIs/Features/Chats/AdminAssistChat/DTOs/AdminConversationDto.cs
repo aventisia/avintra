@@ -24,21 +24,29 @@ public class AdminConversationDto
     public ConversationStatusEnum Status { get; set; }
 
     /// <summary>
+    /// Gets or sets the total number of exchange.
+    /// </summary>
+    public int TotalExchange { get; set; }
+
+    /// <summary>
     /// Gets or sets the unique identifier of the user.
     /// </summary>
     public Guid UserId { get; set; }
 
     /// <summary>
-    /// Gets or sets the first name of the user (maximum length: 50 characters).
+    /// Gets or sets the first name of the user.
     /// </summary>
-    [MaxLength(50)]
     public required string FirstName { get; set; }
 
     /// <summary>
-    /// Gets or sets the last name of the user (maximum length: 50 characters).
+    /// Gets or sets the last name of the user.
     /// </summary>
-    [MaxLength(50)]
     public required string LastName { get; set; }
+
+    /// <summary>
+    /// Gets or sets the username of the user.
+    /// </summary>
+    public required string Username { get; set; }
 
     /// <summary>
     /// Gets or sets the identifier of the associated flow version.
@@ -54,19 +62,4 @@ public class AdminConversationDto
     /// Gets or sets the version number of the associated flow.
     /// </summary>
     public int VersionNumber { get; set; }
-
-    /// <summary>
-    /// Gets or sets the username of the user who last modified the record.
-    /// </summary>
-    public string? LastModifiedByUsername { get; set; }
-
-    /// <summary>
-    /// Gets or sets the display name of the user who last modified the record (response only).
-    /// </summary>
-    public string? LastModifiedBy { get; set; }
-
-    /// <summary>
-    /// Gets or sets the date and time when the record was last updated (response only).
-    /// </summary>
-    public DateTimeOffset? LastModifiedOn { get; set; }
 }

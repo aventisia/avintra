@@ -12,17 +12,16 @@ public class AdminConversationController : BaseApiController
         _adminConversationService = adminConversationService;
     }
 
-    // Retrieves conversations for administrative monitoring based on the provided filters.
+    // Retrieves a filtered list of conversations for administrative monitoring and analysis.
     [HttpGet]
-    public async Task<ActionResult<ServiceResponse<IEnumerable<AdminConversationDto>>>> GetConversationsAsync(
-        [FromQuery] ConversationFilterDto conversationFilterDto)
+    public async Task<ActionResult<ServiceResponse<IEnumerable<AdminConversationDto>>>> GetConversationsAsync([FromQuery] ConversationFilterDto conversationFilterDto)
     {
         return ResultHelper(await _adminConversationService.GetAdminConversationsAsync(conversationFilterDto));
     }
 
-    // Retrieves conversations for administrative monitoring based on the provided filters.
+    // Retrieves a specific conversation along with its full message history.
     [HttpGet("{conversationId}/messages")]
-    public async Task<ActionResult<ServiceResponse<IEnumerable<AdminConversationDto>>>> GetConversationsAsync(Guid conversationId)
+    public async Task<ActionResult<ServiceResponse<AdminConversationMessageDto>>> GetConversationMessagesAsync(Guid conversationId)
     {
         return ResultHelper(await _adminConversationService.GetMessagesByConversationIdAsync(conversationId));
     }
