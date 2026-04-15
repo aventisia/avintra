@@ -77,24 +77,34 @@ export const KBFilesTableColumns: ColumnDef<KnowledgeBaseFileDto>[] = [
       />
     ),
     cell: ({ row }) => (
-      <div className="">
-        <div className="w-auto truncate font-medium">
-          {row.getValue("createdBy")}
-        </div>
-        <div className="w-auto text-muted-foreground  text-xs font-medium">
-          {dateFormatter(row.original.createdOn)}
-        </div>
+      <div className="w-auto truncate font-medium">
+        {row.getValue("createdBy")}
       </div>
     ),
   },
-
+  {
+    accessorKey: "createdOn",
+    header: ({ column }) => (
+      <DTColumnHeader
+        tableKey={DETAIL_TABLE_KEY}
+        column={column}
+        title={"Created On"}
+        className="max-w-16"
+      />
+    ),
+    cell: ({ row }) => (
+      <div className="w-auto  font-medium">
+        {row.original.createdOn ? dateFormatter(row.original.createdOn) : "NA"}
+      </div>
+    ),
+  },
   {
     id: "actions",
-    size: 24,
-    maxSize: 24,
+    size: 48, 
+    minSize: 48,
+    maxSize: 48,
     enableResizing: false,
     cell: ({ row }) => (
-      // Render the queues row actions component
       <KBFilesTableRowAction rowId={row.original.id ?? "rowId"} />
     ),
   },

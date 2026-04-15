@@ -6,7 +6,7 @@ export const textContentProps: TextareaFieldProps = {
   label: "Text Content",
   placeholder: "Enter or paste your text content here...",
   className: "min-h-[8rem]",
-  isRequired: true,
+  isRequired: true,rows:14
 };
 
 // Chunk Size

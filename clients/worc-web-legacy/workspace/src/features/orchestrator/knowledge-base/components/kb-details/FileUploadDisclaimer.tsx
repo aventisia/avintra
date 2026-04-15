@@ -1,4 +1,14 @@
-export default function FileUploadInfo() {
+import { useUserSessionStore } from "@/react-toolkit/stores/user-session-store";
+
+import { useShallow } from "zustand/react/shallow";
+
+export default function FileUploadDisclaimer() {
+  const { userSession } = useUserSessionStore(
+    useShallow((state) => ({
+      userSession: state.userSession,
+    })),
+  );
+  if (userSession?.deploymentType == "Enterprise") return <></>;
   return (
     <p className="text-xs">
       By uploading documents to Aventisia, you confirm that you have the right
