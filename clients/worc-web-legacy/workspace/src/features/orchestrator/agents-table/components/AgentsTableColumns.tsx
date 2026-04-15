@@ -12,6 +12,11 @@ import { AgentsTableDto } from "../dtos/agents-table-dto";
 import { TableCellLink } from "./TableCellLink";
 import { TableActions } from "./table-actions/TableActions";
 
+const flowTypeLabelOverrides: Record<string, string> = {
+  Agent: "Automation Agent",
+  ChatAgent: "Chat Agent",
+};
+
 /**
  * Array of table columns for the agents table.
  * Each column object contains an accessorKey, header component, and cell component.
@@ -67,9 +72,14 @@ export const agentsTableColumns: ColumnDef<AgentsTableDto>[] = [
         title={getColumnName("type")}
       />
     ),
-    cell: ({ row }) => (
-      <div className="w-auto truncate font-medium">{row.getValue("type")}</div>
-    ),
+    cell: ({ row }) => {
+      const typeValue = String(row.getValue("type"));
+      return (
+        <div className="w-auto truncate font-medium">
+          {flowTypeLabelOverrides[typeValue] || typeValue}
+        </div>
+      );
+    },
   },
   {
     accessorKey: "machineCount",
