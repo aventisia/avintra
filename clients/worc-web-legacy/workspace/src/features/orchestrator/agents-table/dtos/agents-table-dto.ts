@@ -62,6 +62,7 @@ export interface AgentsTableDto {
    */
   isPublished: boolean;
 
+  isAssignedToAllUsers?: boolean;
   /**
    *  Gets or sets a value indicating whether the version has been archived.
    * @type {boolean}

@@ -3,7 +3,7 @@ export interface ChatAgentUserDto {
   id?: string;
 
   /** Unique identifier for the user associated with the chatAgent */
-  userId: string;
+  userId?: string;
 
   /** FirstName of the user that the chatAgent is associated with */
   firstName?: string | null;
@@ -23,5 +23,6 @@ export interface ChatAgentUserDto {
   /** Name of the chatAgent that the user is associated with */
   name?: string | null;
 
+  isAssignedToAllUsers?: boolean;
   versionNumber?: number;
 }

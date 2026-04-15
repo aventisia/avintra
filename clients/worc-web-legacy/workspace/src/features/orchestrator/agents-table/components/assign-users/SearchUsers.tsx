@@ -1,12 +1,13 @@
 import { LoadingSpinner } from "@aventisia/ui";
 import { Button } from "@aventisia/ui/buttons";
 
+import { useAssignUserMutation } from "../../hooks/user/useAssignUserMutation";
 import { useSearchUserMultiSelect } from "../../hooks/user/useSearchUserMultiSelect";
 import { MultiSelector } from "./MultiSelector";
 
 // import { SelectType } from "./SelectType";
 
-export const SearchUsers: React.FC = () => {
+export const SearchUsers = ({ assignAll }: { assignAll: boolean }) => {
   const {
     searchTerm,
     setSearchTerm,
@@ -18,9 +19,16 @@ export const SearchUsers: React.FC = () => {
     searchData,
     isLoading,
     isError,
+    flowVersionId,
     // selectedValue,
     // setSelectedValue,
   } = useSearchUserMultiSelect();
+
+  const { mutate: assignToAllUsers } = useAssignUserMutation();
+
+  const handleAssignAll = () => {
+    assignToAllUsers({ flowVersionId, isAssignedToAllUsers: !!assignAll });
+  };
 
   return (
     <div className="flex gap-2 p-4">
@@ -32,18 +40,25 @@ export const SearchUsers: React.FC = () => {
         onSearchChange={setSearchTerm}
         searchQuery={searchTerm}
         isLoading={isLoading}
+        disabled={!!assignAll}
         isError={isError}
         placeholder="Assign Users..."
         maxHeight="300px"
       />
       <Button
-        onClick={handleSubmit}
-        disabled={selectedItems?.length === 0 || isSubmitting}
+        onClick={() => {
+          if (assignAll) {
+            handleAssignAll();
+          } else {
+            handleSubmit();
+          }
+        }}
+        disabled={!assignAll && (selectedItems?.length === 0 || isSubmitting)}
         className="min-w-20"
       >
         {isSubmitting ? (
           <>
-            <LoadingSpinner className="mr-2 h-4 w-4" /> Assigning
+            <LoadingSpinner className="mr-2 h-4 w-4" />
           </>
         ) : (
           <>Assign</>
