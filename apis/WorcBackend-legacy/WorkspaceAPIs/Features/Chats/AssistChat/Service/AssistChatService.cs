@@ -39,7 +39,7 @@ public class AssistChatService : IAssistChatService
                     w.Flow.Type == FlowTypesEnum.ChatAgent &&
                     w.IsPublished &&
                     !w.IsArchived &&
-                    w.FlowVersionUsers!.Any(a => a.UserId == _userId)
+                    (w.IsTenantWideAccess || w.FlowVersionUsers!.Any(a => a.UserId == _userId))
                 )
                 .Select(s => new AssistChatDto
                 {
@@ -147,7 +147,7 @@ public class AssistChatService : IAssistChatService
                     w.Flow.Type == FlowTypesEnum.ChatAgent &&
                     w.IsPublished &&
                     !w.IsArchived &&
-                    w.FlowVersionUsers!.Any(a => a.UserId == _userId) &&
+                    (w.IsTenantWideAccess || w.FlowVersionUsers!.Any(a => a.UserId == _userId)) &&
                     w.Conversations.Any(a =>
                         a.Status == ConversationStatusEnum.Archived &&
                         a.UserId == _userId &&

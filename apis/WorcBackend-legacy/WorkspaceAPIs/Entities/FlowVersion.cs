@@ -60,6 +60,11 @@ public class FlowVersion : BaseEntity, IMustHaveTenant
     public int VersionNumber { get; set; }
 
     /// <summary>
+    /// Gets or sets a value indicating whether the flow version is accessible to all users within the tenant.
+    /// </summary>
+    public bool IsTenantWideAccess { get; set; }
+
+    /// <summary>
     /// Configures the many-to-many relationship between machine flow and flow versions.
     /// </summary>
     public virtual ICollection<MachineFlow>? MachineFlows { get; set; }
