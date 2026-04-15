@@ -34,31 +34,34 @@ export const KBAddTextForm = () => {
   };
 
   return (
-    <div className=" flex flex-col justify-between">
-      <ScrollArea className="h-[calc(85vh-7.5rem)]  py-2">
-        <Form
-          methods={form}
-          onSubmit={form.handleSubmit(onSubmit)}
-          className="space-y-4 p-4 pt-1"
-        >
-          {/* Query */}
-          <TextareaField {...textContentProps} />
+    <Form
+      methods={form}
+      onSubmit={form.handleSubmit(onSubmit)}
+      className="space-y-0 p-0 "
+    >
+      <div className="flex flex-col justify-between">
+        <ScrollArea className="h-[calc(85vh-7.5rem)] p-4 pt-3 ">
+          <div className="space-y-4">
+            {/* Query */}
+            <TextareaField {...textContentProps} />
 
-          {/* Number of chunks */}
-          <div className="grid grid-cols-2 gap-2">
-            <InputField {...chunkSizeProps} />
+            {/* Number of chunks */}
+            <div className="grid grid-cols-2 gap-2">
+              <InputField {...chunkSizeProps} />
 
-            <InputField {...chunkOverlapProps} />
+              <InputField {...chunkOverlapProps} />
+            </div>
+
+            <FileUploadDisclaimer />
           </div>
-          <FileUploadDisclaimer />
-          {/* Actions */}
-        </Form>
-      </ScrollArea>
-      <div className="flex h-16 border-t px-4 justify-end items-center">
-        <Button size={"sm"} type="submit">
-          Add Text
-        </Button>
+        </ScrollArea>
+
+        <div className="flex h-16 border-t px-4 justify-end items-center">
+          <Button size={"sm"} type="submit">
+            Add Text
+          </Button>
+        </div>
       </div>
-    </div>
+    </Form>
   );
 };
