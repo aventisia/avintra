@@ -20,6 +20,7 @@ interface MultiSelectorProps {
   isError: boolean;
   placeholder?: string;
   maxHeight?: string;
+  disabled?: boolean;
 }
 
 export const MultiSelector: React.FC<MultiSelectorProps> = ({
@@ -32,6 +33,7 @@ export const MultiSelector: React.FC<MultiSelectorProps> = ({
   isLoading,
   isError,
   placeholder = "Search and select items...",
+  disabled,
   //   maxHeight = "200px",
 }) => {
   const [isOpen, setIsOpen] = useState(false);
@@ -91,7 +93,7 @@ export const MultiSelector: React.FC<MultiSelectorProps> = ({
       <div className="flex min-h-10 items-center justify-between gap-2 rounded-md border border-input bg-background px-2 py-1.5 text-sm ring-offset-background focus-within:ring-2 focus-within:ring-ring focus-within:ring-offset-2">
         <ScrollArea
           onClick={() => {
-            inputRef.current?.focus();
+            if (!disabled) inputRef.current?.focus();
           }}
           className={cn("grow", selectedItems.length > 2 && "h-16")}
         >
@@ -123,6 +125,7 @@ export const MultiSelector: React.FC<MultiSelectorProps> = ({
                   variant="ghost"
                   size="icon5"
                   className="rounded-full"
+                            disabled={disabled}
                   onClick={() => onItemRemove(item.id)}
                 >
                   <X className="h-3.5 w-3.5" />
@@ -136,6 +139,7 @@ export const MultiSelector: React.FC<MultiSelectorProps> = ({
                 ref={inputRef}
                 type="text"
                 value={inputValue}
+                disabled={disabled}
                 onChange={(e) => handleInputChange(e.target.value)}
                 onFocus={handleInputFocus}
                 onKeyDown={handleKeyDown}
@@ -151,6 +155,7 @@ export const MultiSelector: React.FC<MultiSelectorProps> = ({
           type="button"
           variant="ghost"
           size="sm"
+          disabled={disabled}
           className="ml-1 h-6 w-6 p-0"
           onClick={() => setIsOpen(!isOpen)}
         >
