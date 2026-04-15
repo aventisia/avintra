@@ -52,10 +52,15 @@ public class AdminConversationService : IAdminConversationService
                 .Include(i => i.Messages)
                 .Include(i => i.User)
                 .Include(i => i.FlowVersion)
-                    .ThenInclude(fv => fv.Flow)
+                    .ThenInclude(i2 => i2.Flow)
+                .ProjectToType<AdminConversationDto>()
                 .ToListAsync();
 
-            serviceResponse.Data = conversations.Adapt<List<AdminConversationDto>>();
+            // Order and return
+            serviceResponse.Data = conversations
+                .OrderByDescending(o => o.Timestamp)
+                .ToList();
+
             serviceResponse.StatusCode = 200;
             serviceResponse.Message = "Conversations retrieved successfully.";
         }
@@ -73,10 +78,10 @@ public class AdminConversationService : IAdminConversationService
     }
 
     // Retrieves all messages for a specific conversation ordered chronologically.
-    public async Task<ServiceResponse<IEnumerable<ConversationMessageDto>>> GetMessagesByConversationIdAsync(Guid conversationId)
+    public async Task<ServiceResponse<AdminConversationMessageDto>> GetMessagesByConversationIdAsync(Guid conversationId)
     {
         // Default response in case of failure
-        var serviceResponse = new ServiceResponse<IEnumerable<ConversationMessageDto>>
+        var serviceResponse = new ServiceResponse<AdminConversationMessageDto>
         {
             Data = null,
             Message = "Unable to retrieve conversation messages."
@@ -84,14 +89,17 @@ public class AdminConversationService : IAdminConversationService
 
         try
         {
-            // Fetch messages for the given conversation
-            var messages = await _unitOfWork.ConversationMessageRepo
-                .GetByConditionAsync(w => w.ConversationId == conversationId)
-                .OrderBy(m => m.CreatedOn)
-                .ProjectToType<ConversationMessageDto>()
-                .ToListAsync();
+            // Fetch conversations with related entities within the date range
+            var conversationMessage = await _unitOfWork.ConversationRepo
+                .GetByConditionAsync(w => w.Id == conversationId)
+                .Include(i => i.LastModifiedByUser)
+                .Include(i => i.Messages)
+                .Include(i => i.User)
+                .Include(i => i.FlowVersion)
+                    .ThenInclude(i2 => i2.Flow)
+                .FirstOrDefaultAsync();
 
-            serviceResponse.Data = messages;
+            serviceResponse.Data = conversationMessage.Adapt<AdminConversationMessageDto>();
             serviceResponse.StatusCode = 200;
             serviceResponse.Message = "Messages retrieved successfully.";
         }
