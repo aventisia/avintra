@@ -4,6 +4,8 @@ export function transformTemplateType(templateType: string | undefined): string 
     switch (templateType) {
       case ProjectTemplateTypesEnum.AIProject:
         return "AI Model";
+      case ProjectTemplateTypesEnum.Agent:
+        return "Automation Agent";
       case ProjectTemplateTypesEnum.ChatAgent:
         return "Chat Agent";
       default:

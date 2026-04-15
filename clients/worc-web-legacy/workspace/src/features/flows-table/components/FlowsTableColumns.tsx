@@ -1,16 +1,18 @@
 import { Checkbox } from "@aventisia/ui";
 import { DTColumnHeader } from "@aventisia/ui/data-table";
-import { dateFormatter, getEnumValueByKey } from "@aventisia/ui/utils";
+import { dateFormatter } from "@aventisia/ui/utils";
 import { ColumnDef } from "@tanstack/react-table";
-
-import { FlowTypesEnum } from "@/react-toolkit/enums/flow-types-enum";
 
 import { TABLE_KEY } from "../constants";
 import { getColumnName } from "../constants/column-display-names";
 import { FlowsTableDto } from "../dtos/flows-table-dto";
-
-import { FlowRowActions } from "./flow-row-actions/FlowRowActions";
 import { FlowsTableCellLink } from "./FlowsTableCellLink";
+import { FlowRowActions } from "./flow-row-actions/FlowRowActions";
+
+const flowTypeLabelOverrides: Record<string, string> = {
+  Agent: "Automation Agent",
+  ChatAgent: "Chat Agent",
+};
 
 /**
  * Array of table columns for the flows table.
@@ -65,11 +67,14 @@ export const flowsTableColumns: ColumnDef<FlowsTableDto>[] = [
         title={getColumnName("type")}
       />
     ),
-    cell: ({ row }) => (
-      <div className="w-auto truncate font-medium">
-        {getEnumValueByKey(FlowTypesEnum, row.getValue("type"))}
-      </div>
-    ),
+    cell: ({ row }) => {
+      const typeValue = String(row.getValue("type"));
+      return (
+        <div className="w-auto truncate font-medium">
+          {flowTypeLabelOverrides[typeValue] || typeValue}
+        </div>
+      );
+    },
   },
   {
     accessorKey: "flowCommentCount",
