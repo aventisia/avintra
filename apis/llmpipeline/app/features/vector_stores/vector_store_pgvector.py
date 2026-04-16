@@ -340,6 +340,7 @@ class PgVectorStore(BaseVectorStore):
             raise
         except Exception as exc:
             await self.session.rollback()
+            elapsed = round(time.perf_counter() - started, 2)
             log_exception(logger, exc, "[VECTOR-DELETE] pgvector deletion failed")
             return DeleteDocResponse(
                 vector_store=delete_doc_request.vector_store,

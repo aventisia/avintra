@@ -88,7 +88,6 @@ async def delete_document_route(
     _user: User = Depends(authorize()),
 ):
     # Normalize credential IDs
-    delete_doc_request.embedding_credential_id = _normalize_optional_credential(delete_doc_request.embedding_credential_id)
     delete_doc_request.store_credential_id = _normalize_optional_credential(delete_doc_request.store_credential_id)
 
     logger.info("[VECTOR-DELETE] route called store=%s user=%s", delete_doc_request.vector_store, _user.username)
