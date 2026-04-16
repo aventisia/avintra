@@ -48,6 +48,15 @@ export const KBAddFileForm = ({
       }
 
       for (const file of files) {
+        const registered = await registerKnowledgeBaseFile(knowledgeBaseId, {
+          fileUrl: file.path,
+          fileName: file.name,
+          fileSizeInBytes: file.size,
+          fileExtension: file.extension,
+          chunkSize: data.chunkSize,
+          chunkOverlap: data.chunkOverlap,
+        });
+
         await ingestVectorStoreInput({
           vector_store: knowledgeBase.vectorStore,
           embedding_provider: knowledgeBase.embeddingProvider,
@@ -55,6 +64,7 @@ export const KBAddFileForm = ({
           input: file.path,
           metadata: {
             doc_name: file.name,
+            kb_file_id: registered.data!.id,
           },
           chunk_size: data.chunkSize,
           chunk_overlap: data.chunkOverlap,
@@ -64,15 +74,6 @@ export const KBAddFileForm = ({
           ref_id: knowledgeBaseId,
           ref_name: knowledgeBaseName,
           action: "KnowledgeBaseFileIngest",
-        });
-
-        await registerKnowledgeBaseFile(knowledgeBaseId, {
-          fileUrl: file.path,
-          fileName: file.name,
-          fileSizeInBytes: file.size,
-          fileExtension: file.extension,
-          chunkSize: data.chunkSize,
-          chunkOverlap: data.chunkOverlap,
         });
       }
     },

@@ -55,6 +55,13 @@ export const KBAddTextForm = ({
 
       const fileName = generateFileNameFromText(data.textContent, 5);
 
+      const registered = await registerKnowledgeBaseText(knowledgeBaseId, {
+        textContent: data.textContent,
+        fileName,
+        chunkSize: data.chunkSize,
+        chunkOverlap: data.chunkOverlap,
+      });
+
       await ingestVectorStoreInput({
         vector_store: knowledgeBase.vectorStore,
         embedding_provider: knowledgeBase.embeddingProvider,
@@ -62,6 +69,7 @@ export const KBAddTextForm = ({
         input: data.textContent,
         metadata: {
           doc_name: fileName,
+          kb_file_id: registered.data!.id,
         },
         chunk_size: data.chunkSize,
         chunk_overlap: data.chunkOverlap,
@@ -71,13 +79,6 @@ export const KBAddTextForm = ({
         ref_id: knowledgeBaseId,
         ref_name: knowledgeBaseName,
         action: "KnowledgeBaseTextIngest",
-      });
-
-      await registerKnowledgeBaseText(knowledgeBaseId, {
-        textContent: data.textContent,
-        fileName,
-        chunkSize: data.chunkSize,
-        chunkOverlap: data.chunkOverlap,
       });
     },
     onSuccess: async () => {
