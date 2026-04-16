@@ -12,11 +12,11 @@ public class KnowledgeBaseMappingProfile : IRegister
     {
         // Map KnowledgeBase entity to KnowledgeBaseDto
         config.NewConfig<KnowledgeBase, KnowledgeBaseDto>()
-            .Map(dest => dest.CreatedBy, 
+            .Map(dest => dest.CreatedBy,
                 src => src.CreatedByUser != null
                     ? src.CreatedByUser.FirstName + " " + src.CreatedByUser.LastName
                     : null)
-            .Map(dest => dest.LastModifiedBy, 
+            .Map(dest => dest.LastModifiedBy,
                 src => src.LastModifiedByUser != null
                     ? src.LastModifiedByUser.FirstName + " " + src.LastModifiedByUser.LastName
                     : null);
