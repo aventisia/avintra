@@ -17,6 +17,7 @@ import {
   ProfileInfo,
   Security,
 } from "./features/my-account/components";
+import { ConversationsTable } from "./features/orchestrator/conversations-table/components/ConversationsTable";
 import { STCreatePage } from "./features/support-tickets-table/components/support-ticket-create-page/STCreatePage";
 import { SupportTicketEditForm } from "./features/support-tickets-table/components/support-ticket-crud-dialog/SupportTicketEditForm";
 import { AchievesPage } from "./pages/AchievesPage";
@@ -60,6 +61,7 @@ import { CreditPlansPage } from "./pages/sa/CreditPlansPage";
 import { OnPremLLMPage } from "./pages/sa/OnPremLLMPage";
 import { SubscriptionPlansPage } from "./pages/sa/SubscriptionPlansPage";
 import { TenantsPage } from "./pages/sa/TenantsPage";
+import { ConversationDetailsPage } from "./pages/orchestrator/conversations/ConversationDetailsPage";
 
 const routerConfig: RouteObject[] = [
   {
@@ -201,6 +203,19 @@ const routerConfig: RouteObject[] = [
           {
             path: "/orchestrator/jobs/:id",
             element: <ExecutionLogsPage />,
+          },
+          {
+            path: "/orchestrator/conversations",
+            children: [
+              {
+                index: true, // /orchestrator/conversations
+                element: <ConversationsTable />, // table/list view
+              },
+              {
+                path: ":id", // /orchestrator/conversations/:id
+                element: <ConversationDetailsPage />, // detail view
+              },
+            ],
           },
           {
             path: "/orchestrator/triggers",

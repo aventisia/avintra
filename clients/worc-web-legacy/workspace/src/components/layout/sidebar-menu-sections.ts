@@ -100,6 +100,13 @@ const sidebarMenuSections: SidebarMenuSectionExtended[] = [
       },
       {
         permissions: ["OM"],
+        Icon: NewChatIcon,
+        name: "Conversations",
+        route: "/orchestrator/conversations",
+        type: ["Commercial", "Enterprise"],
+      },
+      {
+        permissions: ["OM"],
         Icon: FolderCogIcon,
         name: "Key Store",
         route: "/orchestrator/keystore",
