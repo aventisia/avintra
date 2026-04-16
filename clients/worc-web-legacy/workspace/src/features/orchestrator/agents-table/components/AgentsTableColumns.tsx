@@ -55,12 +55,17 @@ export const agentsTableColumns: ColumnDef<AgentsTableDto>[] = [
       />
     ),
     cell: ({ row }) => (
-      <TableCellLink
-        rowId={row.original.refId || "rowId"}
-        versionId={row.original.id || "rowId"}
-        cellValue={row.getValue("name")}
-        type={row.original.type || ""}
-      />
+      <div className="flex   items-center gap-3 ">
+        <TableCellLink
+          rowId={row.original.refId || "rowId"}
+          versionId={row.original.id || "rowId"}
+          cellValue={row.getValue("name")}
+          type={row.original.type || ""}
+        />
+        <span className="bg-muted border text-2xs leading-none h-[1.4rem] w-[1.4rem] flex items-center justify-center  text-primary    rounded-full">
+          v{row.original.versionNumber ?? 0}
+        </span>
+      </div>
     ),
   },
   {
@@ -100,19 +105,37 @@ export const agentsTableColumns: ColumnDef<AgentsTableDto>[] = [
     ),
   },
   {
-    accessorKey: "versionNumber",
+    accessorKey: "supportedPlatform",
     header: ({ column }) => (
       <DTColumnHeader
         tableKey={TABLE_KEY}
         column={column}
-        title={getColumnName("versionNumber")}
+        title={getColumnName("supportedPlatform")}
       />
     ),
-    cell: ({ row }) => (
-      <div className="w-auto truncate font-medium">
-        {"v" + row.getValue("versionNumber")}
-      </div>
-    ),
+    cell: ({ row }) => {
+      const supportedPlatform = row.original?.supportedPlatform;
+      let platform = "Desktop";
+      if (supportedPlatform == "windows") {
+        platform = "Desktop";
+      }
+      if (supportedPlatform == "cloud") {
+        platform = "Web & Desktop";
+      }
+      if (
+        // supportedPlatform == "cloud" &&
+        row.original.type == FlowTypesEnum.ChatAgent
+      ) {
+        platform = "Web";
+      }
+      return (
+        <div className="w-auto truncate font-medium">
+          <Badge className="" variant={"outline"}>
+            {platform}
+          </Badge>
+        </div>
+      );
+    },
   },
   {
     accessorKey: "status",
