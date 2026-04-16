@@ -67,7 +67,7 @@ export const KnowledgeBaseTable = () => {
                 {table.getRowModel().rows.map((row) => (
                   <NavLink
                     key={row.id}
-                    to={`/orchestrator/knowledge-base/${row.original.id}`}
+                    to={`/orchestrator/knowledge-base/${row.original.id}?kb=${row.getValue("name")}`}
                   >
                     <div className="flex flex-col cursor-pointer h-36  justify-between rounded-lg border bg-background p-2.5 shadow-sm transition-shadow hover:border-primary-200 hover:ring-1 hover:ring-primary-200">
                       <div className="flex flex-1 flex-col">

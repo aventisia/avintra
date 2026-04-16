@@ -9,9 +9,8 @@ export const useDefineKnowledgeBaseRetrievalForm = () => {
     resolver: zodResolver(knowledgeBaseRetrievalSchema),
     defaultValues: {
       query: "",
-      numberOfChunks: 100,
-      retrievalType: "Basic",
-      scoreThreshold: 1.0,
+      numberOfChunks: 5,
+      scoreThreshold: 0.8,
     },
   });
 

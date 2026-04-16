@@ -4,27 +4,92 @@ import { formatFileSize } from "@/components/file-uploader/utils/file-uploader-u
 import { Button } from "@aventisia/ui/buttons";
 import { Form, InputField } from "@aventisia/ui/form";
 import { ScrollArea } from "@aventisia/ui/scroll";
+import { toast } from "@aventisia/ui/sonner";
+import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { FileTextIcon } from "lucide-react";
 import { Dispatch, SetStateAction } from "react";
 import { z } from "zod";
 
+import {
+  ingestVectorStoreInput,
+  registerKnowledgeBaseFile,
+} from "../../apis/knowledge-base-file-apis";
+import { DETAIL_DATA_QUERY_KEY } from "../../constants";
 import { kbAddFilesSchema } from "../../constants/kb-add-files-zod-schema";
 import {
   chunkOverlapProps,
   chunkSizeProps,
 } from "../../constants/kb-add-text-feild-props";
+import { KnowledgeBaseTableDto } from "../../dtos/knowledge-base-table-dto";
 import { useDefineKBAddFilesForm } from "../../hooks/useDefineKBAddFilesForm";
 
 export const KBAddFileForm = ({
   files,
   setUploadStep,
+  knowledgeBaseId,
+  knowledgeBaseName,
+  knowledgeBase,
+  onCompleted,
 }: {
   files: FileUploadDto[];
   setUploadStep: Dispatch<SetStateAction<number>>;
+  knowledgeBaseId: string;
+  knowledgeBaseName: string;
+  knowledgeBase?: KnowledgeBaseTableDto;
+  onCompleted: () => void;
 }) => {
   const { form } = useDefineKBAddFilesForm();
+  const queryClient = useQueryClient();
+
+  const { mutate: submitFiles, isPending } = useMutation({
+    mutationFn: async (data: z.infer<typeof kbAddFilesSchema>) => {
+      if (!knowledgeBase) {
+        throw new Error("Knowledge base configuration is not available");
+      }
+
+      for (const file of files) {
+        await ingestVectorStoreInput({
+          vector_store: knowledgeBase.vectorStore,
+          embedding_provider: knowledgeBase.embeddingProvider,
+          embedding_model: knowledgeBase.embeddingModel,
+          input: file.path,
+          metadata: {
+            doc_name: file.name,
+          },
+          chunk_size: data.chunkSize,
+          chunk_overlap: data.chunkOverlap,
+          store_credential_id: knowledgeBase.storeCredentialId,
+          embedding_credential_id: knowledgeBase.embeddingCredentialId,
+          ref_type: "KnowledgeBase",
+          ref_id: knowledgeBaseId,
+          ref_name: knowledgeBaseName,
+          action: "KnowledgeBaseFileIngest",
+        });
+
+        await registerKnowledgeBaseFile(knowledgeBaseId, {
+          fileUrl: file.path,
+          fileName: file.name,
+          fileSizeInBytes: file.size,
+          fileExtension: file.extension,
+          chunkSize: data.chunkSize,
+          chunkOverlap: data.chunkOverlap,
+        });
+      }
+    },
+    onSuccess: async () => {
+      toast.success("Files added to knowledge base successfully");
+      await queryClient.invalidateQueries({
+        queryKey: [...DETAIL_DATA_QUERY_KEY, knowledgeBaseId],
+      });
+      onCompleted();
+    },
+    onError: (error) => {
+      toast.error((error as Error).message || "Failed to add files");
+    },
+  });
+
   const onSubmit = (data: z.infer<typeof kbAddFilesSchema>) => {
-    console.log(" Payload:", data);
+    submitFiles(data);
   };
 
   return (
@@ -81,10 +146,11 @@ export const KBAddFileForm = ({
             type="button"
             variant="outline"
             onClick={() => setUploadStep(0)}
+            disabled={isPending}
           >
             Back
           </Button>
-          <Button size={"sm"} type="submit">
+          <Button size={"sm"} type="submit" disabled={isPending}>
             Submit Files
           </Button>
         </div>

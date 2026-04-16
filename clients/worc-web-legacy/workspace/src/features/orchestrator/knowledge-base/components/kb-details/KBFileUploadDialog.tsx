@@ -13,12 +13,21 @@ import { useState } from "react";
 import { useShallow } from "zustand/react/shallow";
 
 // import FileUploadList from "../../file-uploader-setup/components/FileUploadList";
+import { KnowledgeBaseTableDto } from "../../dtos/knowledge-base-table-dto";
 import { useKBFilesDialogStore } from "../../stores/kb-files-upload-dialog-store";
 import FileUploadDisclaimer from "./FileUploadDisclaimer";
 import { KBAddFileForm } from "./KBAddFileForm";
 import { KBAddTextForm } from "./KBAddTextForm";
 
-export const KBFileUploadDialog = () => {
+export const KBFileUploadDialog = ({
+  knowledgeBaseId,
+  knowledgeBaseName,
+  knowledgeBase,
+}: {
+  knowledgeBaseId: string;
+  knowledgeBaseName: string;
+  knowledgeBase?: KnowledgeBaseTableDto;
+}) => {
   // Get crud dialog store state
   const { showDialog, setShowDialog, type } = useKBFilesDialogStore(
     useShallow((state) => ({
@@ -49,6 +58,11 @@ export const KBFileUploadDialog = () => {
       }, 0); // Small delay lets the closing animation finish before wiping UI
     }
   };
+
+  const handleComplete = () => {
+    handleOpenChange(false);
+  };
+
   // Return dialog
   return (
     <Dialog open={showDialog} onOpenChange={handleOpenChange}>
@@ -62,7 +76,12 @@ export const KBFileUploadDialog = () => {
         />
         <div className="flex-1  overflow-hidden">
           {type == "text" ? (
-            <KBAddTextForm />
+            <KBAddTextForm
+              knowledgeBaseId={knowledgeBaseId}
+              knowledgeBaseName={knowledgeBaseName}
+              knowledgeBase={knowledgeBase}
+              onCompleted={handleComplete}
+            />
           ) : (
             <>
               {uploadStep == 0 && (
@@ -85,7 +104,14 @@ export const KBFileUploadDialog = () => {
                 />
               )}
               {uploadStep == 1 && (
-                <KBAddFileForm files={files} setUploadStep={setUploadStep} />
+                <KBAddFileForm
+                  files={files}
+                  setUploadStep={setUploadStep}
+                  knowledgeBaseId={knowledgeBaseId}
+                  knowledgeBaseName={knowledgeBaseName}
+                  knowledgeBase={knowledgeBase}
+                  onCompleted={handleComplete}
+                />
               )}
             </>
           )}

@@ -1,15 +1,8 @@
 import {
   InputFieldProps,
-  SelectFieldProps,
   TextareaFieldProps,
 } from "@aventisia/ui/form";
-import { enumToArray } from "@aventisia/ui/utils";
 
-export enum RetrievalTypeEnum {
-  Basic = "Basic",
-  Advance = "Advance",
-  Hybrid = "Hybrid",
-}
 // Query
 export const queryProps: TextareaFieldProps = {
   name: "query",
@@ -25,12 +18,4 @@ export const numberOfChunksProps: InputFieldProps = {
   label: "Number of Chunks",
   type: "number",
   isRequired: true,
-};
-
-// Retrieval Type
-export const retrievalTypeProps: SelectFieldProps = {
-  name: "retrievalType",
-  label: "Retrieval Type",
-  isRequired: true,
-  selectOptions: enumToArray(RetrievalTypeEnum),
 };

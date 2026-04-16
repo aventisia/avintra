@@ -1,19 +1,38 @@
 import { Button } from "@aventisia/ui/buttons";
 import { Form, InputField, TextareaField } from "@aventisia/ui/form";
 import { ScrollArea } from "@aventisia/ui/scroll";
+import { toast } from "@aventisia/ui/sonner";
+import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { z } from "zod";
 
+import {
+  ingestVectorStoreInput,
+  registerKnowledgeBaseText,
+} from "../../apis/knowledge-base-file-apis";
+import { DETAIL_DATA_QUERY_KEY } from "../../constants";
 import {
   chunkOverlapProps,
   chunkSizeProps,
   textContentProps,
 } from "../../constants/kb-add-text-feild-props";
 import { kbAddTextSchema } from "../../constants/kb-add-text-zod-schema";
+import { KnowledgeBaseTableDto } from "../../dtos/knowledge-base-table-dto";
 import { useDefineKBAddTextForm } from "../../hooks/useDefineKBAddTextForm";
 import FileUploadDisclaimer from "./FileUploadDisclaimer";
 
-export const KBAddTextForm = () => {
+export const KBAddTextForm = ({
+  knowledgeBaseId,
+  knowledgeBaseName,
+  knowledgeBase,
+  onCompleted,
+}: {
+  knowledgeBaseId: string;
+  knowledgeBaseName: string;
+  knowledgeBase?: KnowledgeBaseTableDto;
+  onCompleted: () => void;
+}) => {
   const { form } = useDefineKBAddTextForm();
+  const queryClient = useQueryClient();
 
   const generateFileNameFromText = (text: string, wordLimit = 5) => {
     if (!text) return "untitled.txt";
@@ -28,9 +47,53 @@ export const KBAddTextForm = () => {
     );
   };
 
+  const { mutate: submitText, isPending } = useMutation({
+    mutationFn: async (data: z.infer<typeof kbAddTextSchema>) => {
+      if (!knowledgeBase) {
+        throw new Error("Knowledge base configuration is not available");
+      }
+
+      const fileName = generateFileNameFromText(data.textContent, 5);
+
+      await ingestVectorStoreInput({
+        vector_store: knowledgeBase.vectorStore,
+        embedding_provider: knowledgeBase.embeddingProvider,
+        embedding_model: knowledgeBase.embeddingModel,
+        input: data.textContent,
+        metadata: {
+          doc_name: fileName,
+        },
+        chunk_size: data.chunkSize,
+        chunk_overlap: data.chunkOverlap,
+        store_credential_id: knowledgeBase.storeCredentialId,
+        embedding_credential_id: knowledgeBase.embeddingCredentialId,
+        ref_type: "KnowledgeBase",
+        ref_id: knowledgeBaseId,
+        ref_name: knowledgeBaseName,
+        action: "KnowledgeBaseTextIngest",
+      });
+
+      await registerKnowledgeBaseText(knowledgeBaseId, {
+        textContent: data.textContent,
+        fileName,
+        chunkSize: data.chunkSize,
+        chunkOverlap: data.chunkOverlap,
+      });
+    },
+    onSuccess: async () => {
+      toast.success("Text added to knowledge base successfully");
+      await queryClient.invalidateQueries({
+        queryKey: [...DETAIL_DATA_QUERY_KEY, knowledgeBaseId],
+      });
+      onCompleted();
+    },
+    onError: (error) => {
+      toast.error((error as Error).message || "Failed to add text");
+    },
+  });
+
   const onSubmit = (data: z.infer<typeof kbAddTextSchema>) => {
-    const fileName = generateFileNameFromText(data.textContent, 5);
-    console.log(" Payload:", { ...data, fileName });
+    submitText(data);
   };
 
   return (
@@ -57,7 +120,7 @@ export const KBAddTextForm = () => {
         </ScrollArea>
 
         <div className="flex h-16 border-t px-4 justify-end items-center">
-          <Button size={"sm"} type="submit">
+          <Button size={"sm"} type="submit" disabled={isPending}>
             Add Text
           </Button>
         </div>
