@@ -65,6 +65,11 @@ public class FlowVersion : BaseEntity, IMustHaveTenant
     public bool IsTenantWideAccess { get; set; }
 
     /// <summary>
+    /// Gets or sets the supported platforms for the flow version as a comma-separated string.
+    /// </summary>
+    public string? SupportedPlatform { get; set; }
+
+    /// <summary>
     /// Configures the many-to-many relationship between machine flow and flow versions.
     /// </summary>
     public virtual ICollection<MachineFlow>? MachineFlows { get; set; }
