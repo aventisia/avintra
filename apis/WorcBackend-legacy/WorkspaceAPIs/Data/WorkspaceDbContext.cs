@@ -52,6 +52,8 @@ public class WorkspaceDbContext : DbContext
         modelBuilder.Entity<Conversation>().HasQueryFilter(qf => qf.TenantId == CurrentTenantId);
         modelBuilder.Entity<ConversationMessage>().HasQueryFilter(qf => qf.TenantId == CurrentTenantId);
         modelBuilder.Entity<VectorStore>().HasQueryFilter(qf => qf.TenantId == CurrentTenantId);
+        modelBuilder.Entity<KnowledgeBase>().HasQueryFilter(qf => qf.TenantId == CurrentTenantId);
+        modelBuilder.Entity<KnowledgeBaseFile>().HasQueryFilter(qf => qf.TenantId == CurrentTenantId);
 
         // Unique property
         modelBuilder.Entity<WorkspaceUser>().HasIndex(index => index.UserName).IsUnique();
@@ -86,6 +88,8 @@ public class WorkspaceDbContext : DbContext
         modelBuilder.Entity<WorkItemEvent>().Property(e => e.EventType).HasConversion(new EnumToStringConverter<WorkItemEventTypesEnum>());
         modelBuilder.Entity<Conversation>().Property(e => e.Status).HasConversion(new EnumToStringConverter<ConversationStatusEnum>());
         modelBuilder.Entity<ConversationMessage>().Property(e => e.Role).HasConversion(new EnumToStringConverter<ConversationMessageSenderEnum>());
+        modelBuilder.Entity<KnowledgeBase>().Property(e => e.VectorStore).HasConversion(new EnumToStringConverter<VectorStoreEnum>());
+        modelBuilder.Entity<KnowledgeBaseFile>().Property(e => e.Status).HasConversion(new EnumToStringConverter<VectorizationStatusEnum>());
 
         // Configure Many-to-Many relationship between User and Notification
         modelBuilder.Entity<WorkspaceUser>().HasMany(many => many.NotificationUsers).WithOne(one => one.User).HasForeignKey(fKey => fKey.UserId).IsRequired();
@@ -112,6 +116,7 @@ public class WorkspaceDbContext : DbContext
         modelBuilder.Entity<TemplateResource>().HasOne(one => one.ProjectTemplate).WithMany(many => many.TemplateResources).HasForeignKey(fKey => fKey.ProjectTemplateId).OnDelete(DeleteBehavior.Cascade);
         modelBuilder.Entity<SupportTicketRemark>().HasOne(one => one.SupportTicket).WithMany(many => many.SupportTicketRemarks).HasForeignKey(fKey => fKey.SupportTicketId).OnDelete(DeleteBehavior.Cascade);
         modelBuilder.Entity<NotificationUser>().HasOne(one => one.Notification).WithMany(many => many.NotificationUsers).HasForeignKey(fKey => fKey.NotificationId).OnDelete(DeleteBehavior.Cascade);
+        modelBuilder.Entity<KnowledgeBaseFile>().HasOne(one => one.KnowledgeBase).WithMany(many => many.Files).HasForeignKey(fKey => fKey.KnowledgeBaseId).IsRequired().OnDelete(DeleteBehavior.Cascade);
 
         // Configure One-to-One relationship between Notification and WorkspaceUser
         modelBuilder.Entity<Notification>().HasOne(one => one.CreatedByUser).WithMany().HasForeignKey(f => f.CreatedByUserId).OnDelete(DeleteBehavior.Restrict);
@@ -135,8 +140,7 @@ public class WorkspaceDbContext : DbContext
         modelBuilder.Entity<FlowVersionUser>().HasOne(one => one.FlowVersion).WithMany(many => many.FlowVersionUsers).HasForeignKey(fKey => fKey.FlowVersionId).IsRequired().OnDelete(DeleteBehavior.Cascade);
         modelBuilder.Entity<Conversation>().HasOne(one => one.FlowVersion).WithMany(many => many.Conversations).HasForeignKey(fKey => fKey.FlowVersionId).IsRequired().OnDelete(DeleteBehavior.Cascade);
         modelBuilder.Entity<ConversationMessage>().HasOne(one => one.Conversation).WithMany(many => many.Messages).HasForeignKey(fKey => fKey.ConversationId).IsRequired().OnDelete(DeleteBehavior.Cascade);
-
-
+        
         // Registers the pgvector extension in PostgreSQL.
         // CRITICAL: Must be enabled before migrations or any vector column usage, otherwise the application will fail at runtime.
         modelBuilder.HasPostgresExtension("vector");
@@ -209,4 +213,6 @@ public class WorkspaceDbContext : DbContext
     public DbSet<AITask> AITasks { get; set; }
     public DbSet<OnPremModel> OnPremModels { get; set; }
     public DbSet<VectorStore> VectorStores { get; set; }
+    public DbSet<KnowledgeBase> KnowledgeBases { get; set; }
+    public DbSet<KnowledgeBaseFile> KnowledgeBaseFiles { get; set; }
 }
