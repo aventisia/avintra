@@ -1,34 +1,72 @@
 import { SliderField } from "@/components/Slider/SliderField";
 
 import { Button } from "@aventisia/ui/buttons";
-import {
-  Form,
-  InputField,
-  SelectField,
-  TextareaField,
-} from "@aventisia/ui/form";
+import { Form, InputField, TextareaField } from "@aventisia/ui/form";
+import { toast } from "@aventisia/ui/sonner";
+import { useMutation } from "@tanstack/react-query";
 import { Dispatch, SetStateAction } from "react";
 import { Controller } from "react-hook-form";
 import { z } from "zod";
 
 import {
+  RetrievedChunkDto,
+  queryVectorStore,
+} from "../../apis/knowledge-base-file-apis";
+import {
   numberOfChunksProps,
   queryProps,
-  retrievalTypeProps,
 } from "../../constants/kb-retrieval-feild-props";
 import { knowledgeBaseRetrievalSchema } from "../../constants/kb-retrieval-zod-schema";
+import { KnowledgeBaseTableDto } from "../../dtos/knowledge-base-table-dto";
 import { useDefineKnowledgeBaseRetrievalForm } from "../../hooks/useDefineKBRetrievalForm";
 
 export const KnowledgeBaseRetrievalForm = ({
   setChunksRetrieved,
+  setChunks,
+  knowledgeBaseId,
+  knowledgeBaseName,
+  knowledgeBase,
 }: {
   setChunksRetrieved: Dispatch<SetStateAction<boolean>>;
+  setChunks: Dispatch<SetStateAction<RetrievedChunkDto[]>>;
+  knowledgeBaseId: string;
+  knowledgeBaseName: string;
+  knowledgeBase?: KnowledgeBaseTableDto;
 }) => {
   const { form } = useDefineKnowledgeBaseRetrievalForm();
 
+  const { mutate: retrieveChunks, isPending } = useMutation({
+    mutationFn: async (data: z.infer<typeof knowledgeBaseRetrievalSchema>) => {
+      if (!knowledgeBase) {
+        throw new Error("Knowledge base configuration is not available");
+      }
+
+      return queryVectorStore({
+        vector_store: knowledgeBase.vectorStore,
+        embedding_provider: knowledgeBase.embeddingProvider,
+        embedding_model: knowledgeBase.embeddingModel,
+        query: data.query,
+        top_k: data.numberOfChunks,
+        score_threshold: data.scoreThreshold,
+        embedding_credential_id: knowledgeBase.embeddingCredentialId,
+        store_credential_id: knowledgeBase.storeCredentialId,
+        ref_type: "KnowledgeBase",
+        ref_id: knowledgeBaseId,
+        ref_name: knowledgeBaseName,
+        action: "KnowledgeBaseRetrieval",
+      });
+    },
+    onSuccess: (response) => {
+      setChunks(response?.chunks ?? []);
+      setChunksRetrieved(true);
+    },
+    onError: (error) => {
+      toast.error((error as Error).message || "Failed to retrieve chunks");
+    },
+  });
+
   const onSubmit = (data: z.infer<typeof knowledgeBaseRetrievalSchema>) => {
-    console.log("Retrieval Payload:", data);
-    setChunksRetrieved(true);
+    retrieveChunks(data);
   };
 
   return (
@@ -43,11 +81,7 @@ export const KnowledgeBaseRetrievalForm = ({
       {/* Number of chunks */}
       <InputField {...numberOfChunksProps} />
 
-      {/* Retrieval type */}
-      <SelectField {...retrievalTypeProps} />
-
       {/* Score threshold */}
-
       <Controller
         control={form.control}
         name={`scoreThreshold`}
@@ -59,7 +93,7 @@ export const KnowledgeBaseRetrievalForm = ({
               onValueChange={(val) => field.onChange(val[0])}
               onValueCommit={field.onBlur}
               min={0}
-              max={1.2}
+              max={1.0}
               step={0.1}
               className="text-sm resize-none"
               label="Score Threshold"
@@ -80,7 +114,7 @@ export const KnowledgeBaseRetrievalForm = ({
           Reset
         </Button>
 
-        <Button size={"sm"} type="submit">
+        <Button size={"sm"} type="submit" disabled={isPending}>
           Retrieve
         </Button>
       </div>

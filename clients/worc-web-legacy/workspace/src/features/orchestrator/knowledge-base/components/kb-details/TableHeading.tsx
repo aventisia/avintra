@@ -11,6 +11,7 @@ import { NavLink } from "react-router-dom";
 
 import { TABLE_HEADING } from "../../constants";
 
+// TODO: This component should be part of data-table components
 export const TableHeading = ({
   kbName = "KB Details",
 }: {

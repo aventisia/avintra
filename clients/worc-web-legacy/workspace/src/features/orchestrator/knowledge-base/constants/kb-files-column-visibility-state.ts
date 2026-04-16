@@ -2,7 +2,6 @@
 export const columnVisibilityState = {
   id: false,
   name: true,
-  category: false,
   createdBy: true,
   createdOn: true,
 };

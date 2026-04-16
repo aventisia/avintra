@@ -5,13 +5,17 @@ import { ColumnDef } from "@tanstack/react-table";
 
 import { DETAIL_TABLE_KEY } from "../../constants";
 import { KnowledgeBaseFileDto } from "../../dtos/kb-file-dto";
+import { KnowledgeBaseTableDto } from "../../dtos/knowledge-base-table-dto";
 import { KBFilesTableRowAction } from "./KBFilesTableRowAction";
 
 /**
  * Array of table columns for the KBFilesTable.
  * Each column object contains an accessorKey, header component, and cell component.
  */
-export const KBFilesTableColumns: ColumnDef<KnowledgeBaseFileDto>[] = [
+export const getKBFilesTableColumns = (
+  knowledgeBaseId: string,
+  knowledgeBase?: KnowledgeBaseTableDto,
+): ColumnDef<KnowledgeBaseFileDto>[] => [
   {
     accessorKey: "id",
     size: 24,
@@ -52,21 +56,6 @@ export const KBFilesTableColumns: ColumnDef<KnowledgeBaseFileDto>[] = [
     ),
   },
   {
-    accessorKey: "category",
-    header: ({ column }) => (
-      <DTColumnHeader
-        tableKey={DETAIL_TABLE_KEY}
-        column={column}
-        title={"Category"}
-      />
-    ),
-    cell: ({ row }) => (
-      <div className="w-auto truncate font-medium">
-        {row.original?.category}
-      </div>
-    ),
-  },
-  {
     accessorKey: "createdBy",
     header: ({ column }) => (
       <DTColumnHeader
@@ -100,12 +89,16 @@ export const KBFilesTableColumns: ColumnDef<KnowledgeBaseFileDto>[] = [
   },
   {
     id: "actions",
-    size: 48, 
+    size: 48,
     minSize: 48,
     maxSize: 48,
     enableResizing: false,
     cell: ({ row }) => (
-      <KBFilesTableRowAction rowId={row.original.id ?? "rowId"} />
+      <KBFilesTableRowAction
+        row={row.original}
+        knowledgeBaseId={knowledgeBaseId}
+        knowledgeBase={knowledgeBase}
+      />
     ),
   },
 ];
