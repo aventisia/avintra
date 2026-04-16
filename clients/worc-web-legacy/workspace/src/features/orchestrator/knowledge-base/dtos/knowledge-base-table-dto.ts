@@ -1,65 +1,79 @@
+import { VectorStoreEnum } from "../enums/vector-store-enum";
+
 /**
  * Represents a data transfer object (DTO) for a KnowledgeBase
  */
 export interface KnowledgeBaseTableDto {
-  /**
-   * Gets or sets the primary key of the KnowledgeBase record.
-   *
-   * Not making it required because same DTO is used for insert and update.
-   */
   id?: string;
 
   /**
-   * Gets or sets the name of the KnowledgeBase Max-255
+   * Name of the Knowledge Base (max 255 chars).
    */
   name: string;
 
   /**
-   * Gets or sets the description of the KnowledgeBase
+   * Description of the Knowledge Base.
    */
-  description: string;
-  kb: {
-    is_byok_enabled: boolean;
-    credential_id?: string;
-    provider: string;
-    model: string;
-  };
-  /**
-   * Gets or sets the vectorStore of the KnowledgeBase
-   */
-  vectorStore: string;
+  description?: string;
 
   /**
-   * Gets or sets the embeddingModel of the KnowledgeBase
+   * Type of vector store used for this Knowledge Base.
+   * Should match backend VectorStoreEnum values.
+   */
+  vectorStore: VectorStoreEnum;
+
+  /**
+   * Embedding provider used for vectorizing content (max 255 chars).
+   */
+  embeddingProvider: string;
+
+  /**
+   * Embedding model name used for vectorizing content (max 255 chars).
    */
   embeddingModel: string;
 
   /**
-   * Gets or sets a flag indicating whether the KnowledgeBase record is disabled.
-   *
-   * Not making it required because same DTO is used for insert and update.
-   *
-   * Its important to have this property nullable because we need to differentiate between true, false and null.
+   * Credential ID used for the embedding model provider.
+   */
+  embeddingCredentialId?: string;
+
+  /**
+   * Credential ID used for the vector store.
+   */
+  storeCredentialId?: string;
+
+  /**
+   * Name of the collection/index in the vector store.
+   */
+  collectionName?: string;
+
+  /**
+   * Dynamic JSON configuration for the external vector store.
+   */
+  vectorStoreConfig?: string;
+
+  /**
+   * Flag indicating whether the Knowledge Base record is disabled.
    */
   isDisabled?: boolean;
 
   /**
-   * Gets or sets the username of the user who created the KnowledgeBase record. Max-254
+   * Username of the user who created the Knowledge Base record.
    */
   createdBy?: string;
 
   /**
-   * Gets or sets the date and time when the KnowledgeBase record was created.
+   * Date and time when the Knowledge Base record was created.
    */
-  createdOn?: Date;
+  createdOn?: string;
 
   /**
-   * Gets or sets the username of the user who last modified the KnowledgeBase record. Max-254
+   * Username of the user who last modified the Knowledge Base record.
    */
   lastModifiedBy?: string;
 
   /**
-   * Gets or sets the date and time when the KnowledgeBase record was last modified.
+   * Date and time when the Knowledge Base record was last modified.
    */
-  lastModifiedOn?: Date;
+  lastModifiedOn?: string;
 }

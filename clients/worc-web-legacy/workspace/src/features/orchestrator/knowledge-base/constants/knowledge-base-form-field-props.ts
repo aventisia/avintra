@@ -6,7 +6,6 @@ import {
 } from "@aventisia/ui/form";
 import { enumToArray } from "@aventisia/ui/utils";
 
-import { EmbeddingModelEnum } from "../enums/embedding-models-enum";
 import { VectorStoreEnum } from "../enums/vector-store-enum";
 
 //  Id
@@ -18,8 +17,9 @@ const idProps: InputFieldProps = {
 
 // Name
 const nameProps: InputFieldProps = {
+  autoFocus: true,
   name: "name",
-  label: "Name (Cannot be edited after creation)",
+  label: "Name",
   isRequired: true,
   description: "A unique name for your knowledge base.",
 };
@@ -29,8 +29,6 @@ const descriptionProps: TextareaFieldProps = {
   name: "description",
   label: "Description",
   className: "min-h-[6rem]",
-   isRequired: true,
- 
 };
 
 // Vector Store
@@ -40,15 +38,6 @@ const vectorStoreProps: SelectFieldProps = {
   description: "Select the vector database used for storing embeddings.",
   isRequired: true,
   selectOptions: enumToArray(VectorStoreEnum),
-};
-
-// Embedding Model
-const embeddingModelProps: SelectFieldProps = {
-  name: "embeddingModel",
-  label: "Embedding Model",
-  description: "Model used to generate embeddings for semantic search.",
-  isRequired: true,
-  selectOptions: enumToArray(EmbeddingModelEnum),
 };
 
 // Is Disabled
@@ -63,6 +52,5 @@ export {
   nameProps,
   descriptionProps,
   vectorStoreProps,
-  embeddingModelProps,
   isDisabledProps,
 };

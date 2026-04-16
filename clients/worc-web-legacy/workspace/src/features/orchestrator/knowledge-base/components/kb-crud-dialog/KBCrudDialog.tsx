@@ -1,48 +1,38 @@
-import {
-  Dialog,
-  DialogContent,
-  DialogDefaultHeader,
-} from "@aventisia/ui/dialog";
+import { DTCrudDialogWrapper } from "@aventisia/ui/data-table";
+import { DialogContent, DialogDefaultHeader } from "@aventisia/ui/dialog";
 import { ScrollArea } from "@aventisia/ui/scroll";
+import { useDTCrudDialogStore } from "@aventisia/ui/stores";
 import { useShallow } from "zustand/react/shallow";
 
 import { getDialogHeadingDescription } from "../../constants";
-import { useKBCrudDialogStore } from "../../stores/kb-crud-dialog-store";
 import { KBCrudForm } from "./KBCrudForm";
 
-export const KBCrudDialog = () => {
-  // Get crud dialog store state
-  const { showDialog, action, setShowDialog, setType, setRowId, setAction } =
-    useKBCrudDialogStore(
-      useShallow((state) => ({
-        showDialog: state.showDialog,
-        action: state.action,
-        setShowDialog: state.setShowDialog,
-        setType: state.setType,
-        setAction: state.setAction,
-        setRowId: state.setRowId,
-      })),
-    );
+export const KBCrudDialog = ({ children }: React.PropsWithChildren) => {
+  // Get crud dialog store to show dialog state
+  const {
+    crudDialogOptions: { crudAction },
+  } = useDTCrudDialogStore(
+    useShallow((state) => ({
+      crudDialogOptions: state.crudDialogOptions,
+    })),
+  );
+
+  // Get dialog heading and description
+  const dialogHeaderOptions = getDialogHeadingDescription(crudAction);
 
   // Return dialog
   return (
-    <Dialog
-      open={showDialog}
-      onOpenChange={(open: boolean) => {
-        if (!open) {
-          setType("");
-          setRowId("");
-          setAction("create");
-        }
-        setShowDialog(open);
-      }}
-    >
+    <DTCrudDialogWrapper>
+      {children}
       <DialogContent side={"right"} className="!max-w-[32rem]">
-        <DialogDefaultHeader {...getDialogHeadingDescription(action)} />
+        <DialogDefaultHeader
+          heading={dialogHeaderOptions.heading}
+          description={dialogHeaderOptions.description}
+        />
         <ScrollArea className="h-[calc(100vh-4rem)] px-2.5 pb-0 pt-4">
           <KBCrudForm />
         </ScrollArea>
       </DialogContent>
-    </Dialog>
+    </DTCrudDialogWrapper>
   );
 };

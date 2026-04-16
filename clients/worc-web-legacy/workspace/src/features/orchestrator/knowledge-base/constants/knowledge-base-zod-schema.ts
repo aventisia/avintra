@@ -17,37 +17,36 @@ export const knowledgeBaseNameSchema = z
     message: variableError("Name"),
   });
 
-const modelConfigSchema = z
-  .object({
-    is_byok_enabled: z.boolean().default(false),
-    credential_id: z.string().optional(),
-    provider: z.string().min(1, { message: reqError("Provider") }),
-    model: z.string().min(1, { message: reqError("Model") }),
-  })
-  .superRefine((data, ctx) => {
-    if (data.is_byok_enabled && !data.credential_id) {
-      ctx.addIssue({
-        code: z.ZodIssueCode.custom,
-        message: reqError("Credential"),
-        path: ["credential_id"],
-      });
-    }
-  });
 /**
  * Represents the Zod schema for a knowledgeBase.
  */
-export const knowledgeBaseZodSchema = z.object({
-  id: z.string(),
-  name: knowledgeBaseNameSchema,
-  description: z.string().min(1, { message: reqError("Description") }),
-  vectorStore: z.string().min(1, { message: reqError("vectorStore") }),
-  embeddingModel: z.string().min(1, { message: reqError("embeddingModel") }),
-  isDisabled: z.boolean().default(false).optional(),
-
-  kb: modelConfigSchema,
-
-  createdBy: z.string(),
-  createdOn: z.date(),
-  lastModifiedBy: z.string(),
-  lastModifiedOn: z.date(),
-});
+export const knowledgeBaseZodSchema = z
+  .object({
+    id: z.string(),
+    name: knowledgeBaseNameSchema,
+    description: z.string().optional(),
+    vectorStore: z.string().min(1, { message: reqError("Vector Store") }),
+    embeddingConfig: z.object({
+      isByokEnabled: z.boolean().default(false),
+      provider: z.string().min(1, { message: reqError("Embedding Provider") }),
+      credentialId: z.string().optional(),
+      model: z.string().min(1, { message: reqError("Embedding Model") }),
+    }),
+    isDisabled: z.boolean().default(false).optional(),
+    createdBy: z.string(),
+    createdOn: z.date(),
+    lastModifiedBy: z.string(),
+    lastModifiedOn: z.date(),
+  })
+  .superRefine((data, ctx) => {
+    if (
+      data.embeddingConfig.isByokEnabled &&
+      !data.embeddingConfig.credentialId
+    ) {
+      ctx.addIssue({
+        code: z.ZodIssueCode.custom,
+        message: reqError("Credential"),
+        path: ["embeddingConfig", "credentialId"],
+      });
+    }
+  });
