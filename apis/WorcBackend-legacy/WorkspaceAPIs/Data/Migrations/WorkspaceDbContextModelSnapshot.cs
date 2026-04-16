@@ -511,6 +511,9 @@ namespace WorkspaceAPIs.Data.Migrations
                     b.Property<string>("ReactFlowObject")
                         .HasColumnType("text");
 
+                    b.Property<string>("SupportedPlatform")
+                        .HasColumnType("text");
+
                     b.Property<Guid>("TenantId")
                         .HasColumnType("uuid");
 
