@@ -1,6 +1,6 @@
 import { useState } from "react";
 
-import { RetrievedChunkDto } from "../../apis/knowledge-base-apis";
+import { RetrievedChunkDto } from "../../apis/knowledge-base-file-apis";
 import { KnowledgeBaseTableDto } from "../../dtos/knowledge-base-table-dto";
 import { KnowledgeBaseRetrievalForm } from "./KBRetrievalForm";
 import { RetrievedChunksAccordion } from "./RetrievedChunksAccordion";
