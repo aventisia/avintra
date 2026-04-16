@@ -99,7 +99,7 @@ export const createHistoryAdapter = (
   };
 
   const mapThreadToDto = (msg: ThreadMessage): ConversationMessageDto => ({
-    conversationId: threadId,
+    conversationId: threadId||null,
     flowVersionId,
     content: extractText(msg),
     role: mapToDtoRole(msg.role),
