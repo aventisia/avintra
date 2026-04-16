@@ -1,0 +1,451 @@
+namespace WorkspaceAPIs.Services;
+
+/// <summary>
+/// Represents a service for managing Knowledge Bases.
+/// Handles CRUD operations and business logic for knowledge base management.
+/// </summary>
+public class KnowledgeBaseService : IKnowledgeBaseService
+{
+    private readonly ILogger<KnowledgeBaseService> _logger;
+    private readonly IUnitOfWork _unitOfWork;
+    private readonly Guid _userId;
+    private readonly ICurrentTenantService _currentTenantService;
+
+    public KnowledgeBaseService(
+        ILogger<KnowledgeBaseService> logger,
+        IUnitOfWork unitOfWork,
+        IHttpContextAccessor httpContextAccessor,
+        ICurrentTenantService currentTenantService)
+    {
+        // Extract user ID from HttpContext
+        _userId = Guid.Parse(httpContextAccessor.HttpContext?.User?.FindFirstValue("uid") ?? Guid.Empty.ToString());
+
+        _logger = logger;
+        _unitOfWork = unitOfWork;
+        _currentTenantService = currentTenantService;
+    }
+
+    /// <summary>
+    /// Retrieves all knowledge bases created by the current user.
+    /// </summary>
+    public async Task<ServiceResponse<IEnumerable<KnowledgeBaseDto>>> GetKnowledgeBasesAsync()
+    {
+        var serviceResponse = new ServiceResponse<IEnumerable<KnowledgeBaseDto>>
+        {
+            Data = null,
+            StatusCode = 400
+        };
+
+        try
+        {
+            // Get knowledge bases created by the current user
+            var knowledgeBases = await _unitOfWork.KnowledgeBaseRepo
+                .GetByConditionAsync(kb => kb.CreatedByUserId == _userId)
+                .OrderByDescending(kb => kb.CreatedOn)
+                .Include(kb => kb.CreatedByUser)
+                .Include(kb => kb.LastModifiedByUser)
+                .ToListAsync();
+
+            // Map entities to DTOs
+            var kbDtoList = knowledgeBases.Adapt<List<KnowledgeBaseDto>>();
+
+            serviceResponse.Data = kbDtoList;
+            serviceResponse.StatusCode = 200;
+            serviceResponse.Message = "Knowledge bases retrieved successfully";
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex, "Error retrieving knowledge bases for user {UserId}", _userId);
+            serviceResponse.Message = "Failed to retrieve knowledge bases. Please try again";
+        }
+
+        return serviceResponse;
+    }
+
+    /// <summary>
+    /// Checks if a knowledge base name is available for the current user.
+    /// </summary>
+    public async Task<ServiceResponse<TrueFalseResultDto>> IsKnowledgeBaseNameAvailableAsync(CheckAvailabilityDto checkAvailabilityDto)
+    {
+        var serviceResponse = new ServiceResponse<TrueFalseResultDto>
+        {
+            Data = null,
+            Message = "Failed to check knowledge base name availability. Please try again"
+        };
+
+        try
+        {
+            if (string.IsNullOrWhiteSpace(checkAvailabilityDto.UserInput))
+            {
+                serviceResponse.Data = new TrueFalseResultDto { Result = false };
+                serviceResponse.StatusCode = 400;
+                serviceResponse.Message = "Knowledge base name is required";
+                return serviceResponse;
+            }
+
+            var normalizedName = checkAvailabilityDto.UserInput.Trim().ToLower();
+
+            // Check for duplicate name
+            var existingKB = await _unitOfWork.KnowledgeBaseRepo
+                .GetByConditionAsync(kb =>
+                    kb.CreatedByUserId == _userId &&
+                    kb.Name.ToLower() == normalizedName)
+                .FirstOrDefaultAsync();
+
+            var isAvailable = existingKB == null;
+
+            serviceResponse.Data = new TrueFalseResultDto { Result = isAvailable };
+            serviceResponse.StatusCode = 200;
+            serviceResponse.Message = isAvailable
+                ? "Knowledge base name is available"
+                : "Knowledge base name is already in use";
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex, "Error checking knowledge base name availability for user {UserId}", _userId);
+        }
+
+        return serviceResponse;
+    }
+
+    /// <summary>
+    /// Inserts a new knowledge base.
+    /// </summary>
+    public async Task<ServiceResponse<KnowledgeBaseDto>> InsertKnowledgeBaseAsync(KnowledgeBaseDto knowledgeBaseDto)
+    {
+        var serviceResponse = new ServiceResponse<KnowledgeBaseDto>
+        {
+            Data = null,
+            StatusCode = 400
+        };
+
+        try
+        {
+            knowledgeBaseDto = TrimDtoStringPropsUtil.TrimDtoStringProps(knowledgeBaseDto);
+
+            // Validate input
+            if (string.IsNullOrWhiteSpace(knowledgeBaseDto.Name))
+            {
+                serviceResponse.Message = "Knowledge base name is required";
+                return serviceResponse;
+            }
+
+            if (string.IsNullOrWhiteSpace(knowledgeBaseDto.EmbeddingProvider))
+            {
+                serviceResponse.Message = "Embedding provider is required";
+                return serviceResponse;
+            }
+
+            if (string.IsNullOrWhiteSpace(knowledgeBaseDto.EmbeddingModel))
+            {
+                serviceResponse.Message = "Embedding model is required";
+                return serviceResponse;
+            }
+
+            // Check if name already exists for this user
+            var existingKB = await _unitOfWork.KnowledgeBaseRepo
+                .GetByConditionAsync(kb =>
+                    kb.CreatedByUserId == _userId &&
+                    kb.Name.ToLower() == knowledgeBaseDto.Name.ToLower())
+                .FirstOrDefaultAsync();
+
+            if (existingKB != null)
+            {
+                serviceResponse.Message = "A knowledge base with this name already exists";
+                return serviceResponse;
+            }
+
+            // Create new entity
+            var newKB = new KnowledgeBase
+            {
+                Id = Guid.NewGuid(),
+                Name = knowledgeBaseDto.Name,
+                Description = knowledgeBaseDto.Description,
+                VectorStore = knowledgeBaseDto.VectorStore,
+                EmbeddingProvider = knowledgeBaseDto.EmbeddingProvider,
+                EmbeddingModel = knowledgeBaseDto.EmbeddingModel,
+                EmbeddingCredentialId = knowledgeBaseDto.EmbeddingCredentialId,
+                StoreCredentialId = knowledgeBaseDto.StoreCredentialId,
+                CollectionName = knowledgeBaseDto.CollectionName,
+                VectorStoreConfig = knowledgeBaseDto.VectorStoreConfig,
+                IsDisabled = knowledgeBaseDto.IsDisabled ?? false,
+                CreatedByUserId = _userId,
+                LastModifiedByUserId = _userId,
+                CreatedOn = DateTimeOffset.UtcNow,
+                LastModifiedOn = DateTimeOffset.UtcNow,
+                TenantId = _currentTenantService.CurrentTenantId
+            };
+
+            await _unitOfWork.KnowledgeBaseRepo.InsertAsync(newKB);
+            await _unitOfWork.SaveAsync();
+
+            // Map back to DTO for response
+            var resultDto = newKB.Adapt<KnowledgeBaseDto>();
+            var createdByUser = await _unitOfWork.WorkspaceUserRepo
+                .GetByConditionAsync(u => u.Id == _userId)
+                .FirstOrDefaultAsync();
+            resultDto.CreatedBy = createdByUser?.UserName;
+
+            serviceResponse.Data = resultDto;
+            serviceResponse.StatusCode = 201;
+            serviceResponse.Message = "Knowledge base created successfully";
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex, "Error inserting knowledge base for user {UserId}", _userId);
+            serviceResponse.Message = "Failed to create knowledge base. Please try again";
+        }
+
+        return serviceResponse;
+    }
+
+    /// <summary>
+    /// Updates an existing knowledge base.
+    /// </summary>
+    public async Task<ServiceResponse<KnowledgeBaseDto>> UpdateKnowledgeBaseAsync(KnowledgeBaseDto knowledgeBaseDto)
+    {
+        var serviceResponse = new ServiceResponse<KnowledgeBaseDto>
+        {
+            Data = null,
+            StatusCode = 400
+        };
+
+        try
+        {
+            knowledgeBaseDto = TrimDtoStringPropsUtil.TrimDtoStringProps(knowledgeBaseDto);
+
+            // Validate input
+            if (!knowledgeBaseDto.Id.HasValue || knowledgeBaseDto.Id == Guid.Empty)
+            {
+                serviceResponse.Message = "Knowledge base ID is required";
+                return serviceResponse;
+            }
+
+            if (string.IsNullOrWhiteSpace(knowledgeBaseDto.Name))
+            {
+                serviceResponse.Message = "Knowledge base name is required";
+                return serviceResponse;
+            }
+
+            if (string.IsNullOrWhiteSpace(knowledgeBaseDto.EmbeddingProvider))
+            {
+                serviceResponse.Message = "Embedding provider is required";
+                return serviceResponse;
+            }
+
+            if (string.IsNullOrWhiteSpace(knowledgeBaseDto.EmbeddingModel))
+            {
+                serviceResponse.Message = "Embedding model is required";
+                return serviceResponse;
+            }
+
+            // Get existing knowledge base
+            var existingKB = await _unitOfWork.KnowledgeBaseRepo
+                .GetByConditionAsync(kb => kb.Id == knowledgeBaseDto.Id.Value)
+                .FirstOrDefaultAsync();
+
+            if (existingKB == null)
+            {
+                serviceResponse.Message = "Knowledge base not found";
+                serviceResponse.StatusCode = 404;
+                return serviceResponse;
+            }
+
+            // Check if user owns this knowledge base
+            if (existingKB.CreatedByUserId != _userId)
+            {
+                serviceResponse.Message = "You are not authorized to update this knowledge base";
+                serviceResponse.StatusCode = 403;
+                return serviceResponse;
+            }
+
+            // Check if new name already exists for this user (exclude current KB)
+            var duplicateName = await _unitOfWork.KnowledgeBaseRepo
+                .GetByConditionAsync(kb =>
+                    kb.CreatedByUserId == _userId &&
+                    kb.Id != knowledgeBaseDto.Id.Value &&
+                    kb.Name.ToLower() == knowledgeBaseDto.Name.ToLower())
+                .FirstOrDefaultAsync();
+
+            if (duplicateName != null)
+            {
+                serviceResponse.Message = "A knowledge base with this name already exists";
+                return serviceResponse;
+            }
+
+            // Update fields
+            existingKB.Name = knowledgeBaseDto.Name;
+            existingKB.Description = knowledgeBaseDto.Description;
+            existingKB.VectorStore = knowledgeBaseDto.VectorStore;
+            existingKB.EmbeddingProvider = knowledgeBaseDto.EmbeddingProvider;
+            existingKB.EmbeddingModel = knowledgeBaseDto.EmbeddingModel;
+            existingKB.EmbeddingCredentialId = knowledgeBaseDto.EmbeddingCredentialId;
+            existingKB.StoreCredentialId = knowledgeBaseDto.StoreCredentialId;
+            existingKB.CollectionName = knowledgeBaseDto.CollectionName;
+            existingKB.VectorStoreConfig = knowledgeBaseDto.VectorStoreConfig;
+            existingKB.IsDisabled = knowledgeBaseDto.IsDisabled ?? false;
+            existingKB.LastModifiedByUserId = _userId;
+            existingKB.LastModifiedOn = DateTimeOffset.UtcNow;
+
+            _unitOfWork.KnowledgeBaseRepo.Update(existingKB);
+            await _unitOfWork.SaveAsync();
+
+            // Map back to DTO for response
+            var resultDto = existingKB.Adapt<KnowledgeBaseDto>();
+            var lastModifiedUser = await _unitOfWork.WorkspaceUserRepo
+                .GetByConditionAsync(u => u.Id == existingKB.LastModifiedByUserId)
+                .FirstOrDefaultAsync();
+            resultDto.LastModifiedBy = lastModifiedUser?.UserName;
+
+            serviceResponse.Data = resultDto;
+            serviceResponse.StatusCode = 200;
+            serviceResponse.Message = "Knowledge base updated successfully";
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex, "Error updating knowledge base for user {UserId}", _userId);
+            serviceResponse.Message = "Failed to update knowledge base. Please try again";
+        }
+
+        return serviceResponse;
+    }
+
+    /// <summary>
+    /// Deletes a knowledge base and its associated vector store entries.
+    /// </summary>
+    public async Task<ServiceResponse<bool>> DeleteKnowledgeBaseAsync(Guid id)
+    {
+        var serviceResponse = new ServiceResponse<bool>
+        {
+            Data = false,
+            StatusCode = 400
+        };
+
+        try
+        {
+            // Get the knowledge base
+            var kb = await _unitOfWork.KnowledgeBaseRepo
+                .GetByConditionAsync(k => k.Id == id)
+                .FirstOrDefaultAsync();
+
+            if (kb == null)
+            {
+                serviceResponse.Message = "Knowledge base not found";
+                serviceResponse.StatusCode = 404;
+                return serviceResponse;
+            }
+
+            // Check if user owns this knowledge base
+            if (kb.CreatedByUserId != _userId)
+            {
+                serviceResponse.Message = "You are not authorized to delete this knowledge base";
+                serviceResponse.StatusCode = 403;
+                return serviceResponse;
+            }
+
+            // Delete associated vector store entries (cascade delete)
+            var vectorStores = await _unitOfWork.VectorStoreRepo
+                .GetByConditionAsync(vs => vs.TenantId == _currentTenantService.CurrentTenantId && vs.Metadata != null)
+                .ToListAsync();
+
+            var kbVectorStores = vectorStores.Where(vs => IsVectorStoreForKnowledgeBase(vs, id)).ToList();
+
+            foreach (var vs in kbVectorStores)
+            {
+                _unitOfWork.VectorStoreRepo.Delete(vs);
+            }
+
+            // Delete the knowledge base
+            _unitOfWork.KnowledgeBaseRepo.Delete(kb);
+            await _unitOfWork.SaveAsync();
+
+            serviceResponse.Data = true;
+            serviceResponse.StatusCode = 200;
+            serviceResponse.Message = "Knowledge base deleted successfully";
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex, "Error deleting knowledge base {Id} for user {UserId}", id, _userId);
+            serviceResponse.Message = "Failed to delete knowledge base. Please try again";
+        }
+
+        return serviceResponse;
+    }
+
+    /// <summary>
+    /// Deletes multiple knowledge bases by their IDs.
+    /// </summary>
+    public async Task<ServiceResponse<bool>> DeleteKnowledgeBasesAsync(List<Guid> ids)
+    {
+        var serviceResponse = new ServiceResponse<bool>
+        {
+            Data = false,
+            StatusCode = 400
+        };
+
+        try
+        {
+            if (ids == null || ids.Count == 0)
+            {
+                serviceResponse.Message = "No knowledge bases specified for deletion";
+                return serviceResponse;
+            }
+
+            // Get knowledge bases owned by the current user
+            var kbs = await _unitOfWork.KnowledgeBaseRepo
+                .GetByConditionAsync(kb => ids.Contains(kb.Id) && kb.CreatedByUserId == _userId)
+                .ToListAsync();
+
+            if (kbs.Count == 0)
+            {
+                serviceResponse.Message = "No knowledge bases found to delete";
+                serviceResponse.StatusCode = 404;
+                return serviceResponse;
+            }
+
+            // Delete associated vector store entries for all KBs
+            var kbIdSet = kbs.Select(kb => kb.Id).ToHashSet();
+            var vectorStores = await _unitOfWork.VectorStoreRepo
+                .GetByConditionAsync(vs => vs.TenantId == _currentTenantService.CurrentTenantId && vs.Metadata != null)
+                .ToListAsync();
+
+            var kbVectorStores = vectorStores
+                .Where(vs => kbIdSet.Any(kbId => IsVectorStoreForKnowledgeBase(vs, kbId)))
+                .ToList();
+
+            foreach (var vs in kbVectorStores)
+            {
+                _unitOfWork.VectorStoreRepo.Delete(vs);
+            }
+
+            foreach (var kb in kbs)
+            {
+                _unitOfWork.KnowledgeBaseRepo.Delete(kb);
+            }
+
+            await _unitOfWork.SaveAsync();
+
+            serviceResponse.Data = true;
+            serviceResponse.StatusCode = 200;
+            serviceResponse.Message = $"{kbs.Count} knowledge base(s) deleted successfully";
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex, "Error deleting multiple knowledge bases for user {UserId}", _userId);
+            serviceResponse.Message = "Failed to delete knowledge bases. Please try again";
+        }
+
+        return serviceResponse;
+    }
+
+    private static bool IsVectorStoreForKnowledgeBase(VectorStore vectorStore, Guid kbId)
+    {
+        if (vectorStore.Metadata == null)
+            return false;
+
+        if (!vectorStore.Metadata.RootElement.TryGetProperty("knowledge_base_id", out var kbIdElement))
+            return false;
+
+        return string.Equals(kbIdElement.GetString(), kbId.ToString(), StringComparison.OrdinalIgnoreCase);
+    }
+}
