@@ -6,7 +6,7 @@ export const columnVisibilityState = {
   type: true,
   createdBy: true,
   createdOn: true,
-  versionNumber: true,
+  supportedPlatform: true,
   machineCount: true,
   status: true,
 };

@@ -70,6 +70,8 @@ export interface AgentsTableDto {
    */
   isArchived: boolean;
 
+  supportedPlatform?: string;
+
   /**
    *  Gets or sets a value indicating whether the version has been disabled.
    * @type {boolean}
