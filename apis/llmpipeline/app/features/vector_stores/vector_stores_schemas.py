@@ -13,7 +13,7 @@ class IngestDocRequest(BaseModel):
     embedding_provider: ProviderLiteral  # LLM provider for embeddings (e.g., openai)
     embedding_model: str  # Embedding model ID (e.g., text-embedding-3-small)
     input: str  # Single file path, URL, data URI, or raw text string
-    metadata: dict # Optional metadata to associate with the ingested document (e.g., {"doc_name": "test.txt", "description": "Test document"})
+    metadata: dict # Optional metadata to associate with the ingested document (e.g., {"kb_file_id": "12345", "doc_name": "test.txt", "description": "Test document"})
     chunk_size: int = Field(default=500, ge=100, le=8000)  # Max characters per chunk
     chunk_overlap: int = Field(default=100, ge=0)  # Overlapping characters between chunks
     store_credential_id: Optional[str] = None  # TODO: Implement BYOK support. Credential ID for vector store (if applicable)
@@ -32,7 +32,7 @@ class IngestDocResponse(BaseModel):
     vector_store: VectorStoreLiteral # The vector storage backend where embeddings are stored
     embedding_provider: ProviderLiteral # The LLM provider used for generating embeddings
     embedding_model: str # The embedding model used for generating embeddings
-    doc_name: str
+    metadata: dict # Metadata associated with the ingested document
     chunks_created: int # Number of chunks created from the ingested document
     embeddings_stored: int # Number of embeddings successfully stored in the vector database
     created_at: datetime = Field(default_factory=lambda: datetime.now(timezone.utc))
@@ -51,6 +51,7 @@ class QueryDocRequest(BaseModel):
     embedding_model: str
     query: str
     top_k: int = Field(default=5, ge=1, le=100)
+    score_threshold: float = Field(default=0.8, ge=0.0, le=1.0)
     doc_names: Optional[List[str]] = None  # Optional list of document names to scope chunk search
     store_credential_id: Optional[str] = None  # TODO: Implement BYOK support. Credential ID for vector store (if applicable)
     embedding_credential_id: Optional[str] = None  # TODO: Implement BYOK support. Credential ID for embedding provider (if applicable)
@@ -79,4 +80,23 @@ class QueryDocResponse(BaseModel):
     input_tokens: Optional[int] = 0
     store_credential_id: Optional[str] = None
     embedding_credential_id: Optional[str] = None
+    error: Optional[str] = None
+
+
+# ------------------------------------------------------------------------------------------------------
+
+# Request schemas for document deletion endpoint
+class DeleteDocRequest(BaseModel):
+    vector_store: VectorStoreLiteral
+    kb_file_id: str
+    doc_name: str
+    store_credential_id: Optional[str] = None
+
+# Response schema for document deletion endpoint
+class DeleteDocResponse(BaseModel):
+    vector_store: VectorStoreLiteral
+    kb_file_id: str
+    doc_name: str
+    deleted_chunks: int
+    time_taken: float
     error: Optional[str] = None

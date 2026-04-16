@@ -12,6 +12,8 @@ from app.features.llm_providers.llm_providers_factory import get_llm_provider
 from app.features.llm_providers.llm_providers_schemas import EmbeddingRequest
 from app.features.vector_stores.vector_store_base import BaseVectorStore
 from app.features.vector_stores.vector_stores_schemas import (
+    DeleteDocRequest,
+    DeleteDocResponse,
     IngestDocRequest,
     IngestDocResponse,
     QueryDocRequest,
@@ -40,7 +42,6 @@ class PgVectorStore(BaseVectorStore):
         try:
             # Resolve source text from input (raw text, file path, URL, or data URI)
             source_text = VectorStoreInputResolver.resolve_source_text(ingest_doc_request.input)
-            doc_name_from_metadata = ingest_doc_request.metadata.get("doc_name") if ingest_doc_request.metadata else None
             chunks = VectorStoreTextChunker.chunk_text(source_text, ingest_doc_request.chunk_size, ingest_doc_request.chunk_overlap)
             chunks_created = len(chunks)
 
@@ -85,11 +86,6 @@ class PgVectorStore(BaseVectorStore):
 
             # Iterate over chunks and their corresponding embeddings, and insert into database
             for chunk, embedding in zip(chunks, embedding_response.embeddings):
-                # Set chunk-level metadata
-                chunk_metadata = {
-                    "doc_name": doc_name_from_metadata,
-                }
-
                 # Insert chunk, metadata, and embedding into pgvector column using parameterized query to prevent SQL injection
                 await self.session.execute(
                     insert_sql,
@@ -97,7 +93,7 @@ class PgVectorStore(BaseVectorStore):
                         "id": str(uuid.uuid4()),
                         "tenant_id": str(self.db.tenant_id),
                         "content": chunk,
-                        "metadata": json.dumps(chunk_metadata),
+                        "metadata": json.dumps(ingest_doc_request.metadata),
                         "embedding": self._to_pgvector_literal(embedding),
                     },
                 )
@@ -115,7 +111,7 @@ class PgVectorStore(BaseVectorStore):
                 vector_store=ingest_doc_request.vector_store,
                 embedding_provider=ingest_doc_request.embedding_provider,
                 embedding_model=ingest_doc_request.embedding_model,
-                doc_name=doc_name_from_metadata,
+                metadata=ingest_doc_request.metadata,
                 chunks_created=chunks_created,
                 embeddings_stored=embeddings_stored,
                 time_taken=elapsed,
@@ -136,7 +132,7 @@ class PgVectorStore(BaseVectorStore):
                 vector_store=ingest_doc_request.vector_store,
                 embedding_provider=ingest_doc_request.embedding_provider,
                 embedding_model=ingest_doc_request.embedding_model,
-                doc_name="error",
+                metadata=ingest_doc_request.metadata,
                 chunks_created=chunks_created,
                 embeddings_stored=embeddings_stored,
                 time_taken=elapsed,
@@ -228,10 +224,14 @@ class PgVectorStore(BaseVectorStore):
             # Transform query results into list of RetrievedChunk objects for response
             chunks: list[RetrievedChunk] = []
             for row in rows:
+                similarity = float(row["similarity_score"] or 0.0)
+                if similarity < query_doc_request.score_threshold:
+                    continue
+
                 chunks.append(
                     RetrievedChunk(
                         content=row["content"],
-                        similarity_score=float(row["similarity_score"] or 0.0),
+                        similarity_score=similarity,
                         metadata=row["metadata"] or {},
                     )
                 )
@@ -276,6 +276,77 @@ class PgVectorStore(BaseVectorStore):
                 input_tokens=0,
                 store_credential_id=query_doc_request.store_credential_id,
                 embedding_credential_id=query_doc_request.embedding_credential_id,
+                error=str(exc),
+            )
+
+    # Method: Delete document chunks from pgvector column based on document identity metadata (e.g., kb_file_id) provided in request
+    async def delete_document(self, delete_doc_request: DeleteDocRequest, user: User) -> DeleteDocResponse:
+        started = time.perf_counter()
+
+        try:
+            # Get document identity metadata from request
+            kb_file_id = (delete_doc_request.kb_file_id or "").strip()
+            
+            # Error: kb_file_id is required for deletion to identify which document chunks to delete
+            if not kb_file_id:
+                raise HTTPException(
+                    status_code=status.HTTP_400_BAD_REQUEST,
+                    detail="Knowledge base file id cannot be empty.",
+                )
+
+            # Create parameterized SQL statement to delete chunks from pgvector
+            delete_sql = text(
+                f"""
+                DELETE FROM "worc_VectorStore"
+                WHERE "TenantId" = :tenant_id
+                  AND ("Metadata" ->> 'kb_file_id') = :kb_file_id
+                """
+            )
+
+            # Set parameters for deletion query
+            delete_params = {
+                "tenant_id": str(self.db.tenant_id),
+                "kb_file_id": kb_file_id,
+            }
+            
+            # Execute deletion query and commit transaction
+            result = await self.session.execute(
+                delete_sql,
+                delete_params,
+            )
+            await self.session.commit()
+
+            # Log success with number of chunks deleted
+            deleted_chunks = int(result.rowcount or 0)
+            elapsed = round(time.perf_counter() - started, 2)
+            logger.info(
+                "[VECTOR-DELETE] success tenant_id=%s kb_file_id=%s deleted=%s elapsed_s=%s",
+                self.db.tenant_id,
+                kb_file_id,
+                deleted_chunks,
+                elapsed,
+            )
+
+            return DeleteDocResponse(
+                vector_store=delete_doc_request.vector_store,
+                kb_file_id=kb_file_id,
+                doc_name=delete_doc_request.doc_name,
+                deleted_chunks=deleted_chunks,
+                time_taken=elapsed,
+                error=None,
+            )
+        except HTTPException:
+            await self.session.rollback()
+            raise
+        except Exception as exc:
+            await self.session.rollback()
+            log_exception(logger, exc, "[VECTOR-DELETE] pgvector deletion failed")
+            return DeleteDocResponse(
+                vector_store=delete_doc_request.vector_store,
+                kb_file_id=kb_file_id,
+                doc_name=delete_doc_request.doc_name,
+                deleted_chunks=0,
+                time_taken=elapsed,
                 error=str(exc),
             )
     
