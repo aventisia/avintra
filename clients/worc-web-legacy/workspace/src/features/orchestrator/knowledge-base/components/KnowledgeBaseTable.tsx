@@ -1,5 +1,5 @@
-import { Button } from "@aventisia/ui/buttons";
 import {
+  DTCreateButton,
   DTHeading,
   DTPagination,
   DTSearchBox,
@@ -7,23 +7,18 @@ import {
 } from "@aventisia/ui/data-table";
 import { useDataTable, useDocumentTitle } from "@aventisia/ui/hooks";
 import { dateFormatter } from "@aventisia/ui/utils";
-import { PlusIcon } from "@heroicons/react/24/outline";
 import { NavLink } from "react-router-dom";
-import { useShallow } from "zustand/react/shallow";
 
 import { SEARCH_COLUMN, TABLE_HEADING, TABLE_KEY } from "../constants";
 import { columnVisibilityState } from "../constants/column-visibility-state";
 import { useFetchKnowledgeBase } from "../hooks/useFetchKnowledgeBase";
-import { useKBCrudDialogStore } from "../stores/kb-crud-dialog-store";
 import { KBTableColumns } from "./KBTableColumns";
 import { KBTableSkeleton } from "./KBTableSkeleton";
 import { KBCrudDialog } from "./kb-crud-dialog/KBCrudDialog";
 import { KBRowActions } from "./kb-row-actions/KBRowActions";
 
 /**
- * Renders a table of configs.
- *
- * @returns The rendered KnowledgeBaseTable component.
+ * Renders a list of knowledge bases
  */
 export const KnowledgeBaseTable = () => {
   // Set the document title
@@ -35,14 +30,6 @@ export const KnowledgeBaseTable = () => {
     columnVisibilityState,
   );
 
-  const { setShowDialog, setAction, setRowId, setType } = useKBCrudDialogStore(
-    useShallow((state) => ({
-      setShowDialog: state.setShowDialog,
-      setType: state.setType,
-      setAction: state.setAction,
-      setRowId: state.setRowId,
-    })),
-  );
   // Fetch configs data
   const { data } = useFetchKnowledgeBase();
 
@@ -60,68 +47,58 @@ export const KnowledgeBaseTable = () => {
     <>
       {data ? (
         <div className="space-y-4 pb-4 pt-[17px]">
-          {/* Table toolbar */}
-          <div className="flex items-center justify-between">
-            <DTHeading heading={TABLE_HEADING} />
+          <KBCrudDialog>
+            {/* Table toolbar */}
+            <div className="flex items-center justify-between">
+              <DTHeading heading={TABLE_HEADING} />
 
-            <div className="flex items-center gap-2">
-              <DTSearchBox
-                table={table}
-                searchColumn={SEARCH_COLUMN}
-                placeholder="Search..."
-              />
-              <Button
-                size={"xs"}
-                className="gap-2 text-sm tracking-wide"
-                onClick={() => {
-                  setShowDialog(true);
-                  setAction("create");
-                  setRowId("");
-                  setType("");
-                }}
-              >
-                <PlusIcon className="h-4 w-4" />
-                Add
-              </Button>{" "}
+              <div className="flex items-center gap-2">
+                <DTSearchBox
+                  table={table}
+                  searchColumn={SEARCH_COLUMN}
+                  placeholder="Search..."
+                />
+                <DTCreateButton buttonText="Add" />
+              </div>
             </div>
-          </div>
-          {/* DT with only rows and custom design */}
-          {table.getRowModel().rows?.length > 0 ? (
-            <div className="grid grid-cols-3 gap-3 rounded-lg border bg-white px-2.5 py-3">
-              {table.getRowModel().rows.map((row) => (
-                <NavLink
-                  key={row.id}
-                  to={`/orchestrator/knowledge-base/${row.original.id}`}
-                >
-                  <div className="flex flex-col cursor-pointer h-36  justify-between rounded-lg border bg-background p-2.5 shadow-sm transition-shadow hover:border-primary-200 hover:ring-1 hover:ring-primary-200">
-                    <div className="flex flex-1 flex-col">
-                      <div className="flex justify-between items-center">
-                        <span className="text-sm font-medium">
-                          {row.getValue("name")}
+            {/* DT with only rows and custom design */}
+            {table.getRowModel().rows?.length > 0 ? (
+              <div className="grid grid-cols-3 gap-3 rounded-lg border bg-white px-2.5 py-3">
+                {table.getRowModel().rows.map((row) => (
+                  <NavLink
+                    key={row.id}
+                    to={`/orchestrator/knowledge-base/${row.original.id}`}
+                  >
+                    <div className="flex flex-col cursor-pointer h-36  justify-between rounded-lg border bg-background p-2.5 shadow-sm transition-shadow hover:border-primary-200 hover:ring-1 hover:ring-primary-200">
+                      <div className="flex flex-1 flex-col">
+                        <div className="flex justify-between items-center">
+                          <span className="text-sm font-medium">
+                            {row.getValue("name")}
+                          </span>
+                          {/* Action trigger */}
+                          <KBRowActions rowId={row.original.id || ""} />
+                        </div>
+                        <span className="text-xs text-muted-foreground line-clamp-3">
+                          {row.getValue("description") as string}
                         </span>
-                        {/* Action trigger */}
-                        <KBRowActions rowId={row.original.id || ""} />
                       </div>
-                      <span className="text-xs text-muted-foreground line-clamp-3">
-                        {row.getValue("description") as string}
-                      </span>
+                      <div className="border-t py-2.5 h-7 w-full">
+                        <p className="text-xs text-muted-foreground">
+                          Created on {dateFormatter(row.getValue("createdOn"))}
+                        </p>
+                      </div>
                     </div>
-                    <div className="border-t py-2.5 h-7 w-full">
-                      <p className="text-xs text-muted-foreground">
-                        Created on {dateFormatter(row.getValue("createdOn"))}
-                      </p>
-                    </div>
-                  </div>
-                </NavLink>
-              ))}
-            </div>
-          ) : (
-            <div className="flex h-24 flex-col items-center justify-center gap-3 rounded-lg border bg-white px-2.5 py-3">
-              <p className="text-sm text-muted-foreground">
-                No knowledge base found. Please add new knowledge base.
-              </p>
-            </div>
-          )}
+                  </NavLink>
+                ))}
+              </div>
+            ) : (
+              <div className="flex h-24 flex-col items-center justify-center gap-3 rounded-lg border bg-white px-2.5 py-3">
+                <p className="text-sm text-muted-foreground">
+                  No knowledge base found. Please add new knowledge base.
+                </p>
+              </div>
+            )}
+          </KBCrudDialog>
           {/* Data table Pagination component */}
           <DTPagination
             table={table}
@@ -133,7 +110,6 @@ export const KnowledgeBaseTable = () => {
         // Show data table skeleton while fetching the configs data
         <KBTableSkeleton />
       )}
-      <KBCrudDialog />
     </>
   );
 };

@@ -9,30 +9,21 @@ import {
 
 import { KnowledgeBaseTableDto } from "../dtos/knowledge-base-table-dto";
 
-export const baseAPIURL: string = `${import.meta.env.VITE_WORC_API_PATH}/key-store`;
+export const baseAPIURL: string = `${import.meta.env.VITE_WORC_API_PATH}/knowledge-base`;
 
 /**
- * Retrieves list of keystores.
+ * Retrieves list of knowledge bases created by the current user.
  */
-export const getKeystore = () => {
+export const getKnowledgeBases = () => {
   return axiosInstance
     .get<IHttpResponse<KnowledgeBaseTableDto[]>>(`${baseAPIURL}/list`)
     .then((res) => res.data);
 };
 
 /**
- * Retrieves list of keystores.
+ * Checks the availability of a knowledge base name.
  */
-export const getDecryptedKey = (rowId: string) => {
-  return axiosInstance
-    .get<IHttpResponse<string>>(`${baseAPIURL}/decrypt/${rowId}`)
-    .then((res) => res.data);
-};
-
-/**
- * Checks the availability of a keystore name.
- */
-export const isKeystoreNameAvailable = (postObj: CheckAvailabilityDto) => {
+export const isKnowledgeBaseNameAvailable = (postObj: CheckAvailabilityDto) => {
   return axiosInstance
     .post<
       IHttpResponse<TrueFalseResultDto>
@@ -41,61 +32,69 @@ export const isKeystoreNameAvailable = (postObj: CheckAvailabilityDto) => {
 };
 
 /**
- * Inserts a new keystore.
+ * Inserts a new knowledge base.
  */
-export const insertKeystore = (newKeystore: KnowledgeBaseTableDto) => {
+export const insertKnowledgeBase = (
+  newKnowledgeBase: KnowledgeBaseTableDto,
+) => {
   return axiosInstance
-    .post<IHttpResponse<KnowledgeBaseTableDto>>(`${baseAPIURL}`, newKeystore)
+    .post<
+      IHttpResponse<KnowledgeBaseTableDto>
+    >(`${baseAPIURL}`, newKnowledgeBase)
     .then((res) => res.data);
 };
 
 /**
- * Updates an existing keystore.
+ * Updates an existing knowledge base.
  */
-export const updateKeystore = (updatedKeystore: KnowledgeBaseTableDto) => {
+export const updateKnowledgeBase = (
+  updatedKnowledgeBase: KnowledgeBaseTableDto,
+) => {
   return axiosInstance
-    .put<IHttpResponse<KnowledgeBaseTableDto>>(`${baseAPIURL}`, updatedKeystore)
+    .put<
+      IHttpResponse<KnowledgeBaseTableDto>
+    >(`${baseAPIURL}`, updatedKnowledgeBase)
     .then((res) => res.data);
 };
 
 /**
- * Deletes a keystore by its ID.
+ * Deletes a knowledge base by its ID.
  */
-export const deleteKeystore = (id: string) => {
+export const deleteKnowledgeBase = (id: string) => {
   return axiosInstance
     .delete<IHttpResponse<boolean>>(`${baseAPIURL}/${id}`)
     .then((res) => res.data);
 };
 
 /**
- * Deletes multiple keystores by their IDs.
+ * Deletes multiple knowledge bases by their IDs.
  */
-export const deleteKeystores = (ids: string[]) => {
+export const deleteKnowledgeBases = (ids: string[]) => {
   return axiosInstance
     .post<IHttpResponse<boolean>>(`${baseAPIURL}/delete-multiple`, ids)
     .then((res) => res.data);
 };
 
 /**
- * Performs an optimistic mutation on a keystore based on the provided CRUD action.
+ * Performs an optimistic mutation on a knowledge base based on the provided CRUD action.
  *
  * @param {IOptimisticMutation<KnowledgeBaseTableDto | string | string[]>} options - The options for the optimistic mutation.
  * @returns {Promise<any>} - A promise that resolves to the result of the mutation.
  * @throws {Error} - If an invalid action type is provided.
  */
-export const keystoreOptimisticMutationFn = ({
+export const knowledgeBaseOptimisticMutationFn = ({
   payload,
   crudAction,
 }: IOptimisticMutation<KnowledgeBaseTableDto | string | string[]>) => {
   switch (crudAction) {
     case "create":
-      return insertKeystore(payload as KnowledgeBaseTableDto);
+      return insertKnowledgeBase(payload as KnowledgeBaseTableDto);
     case "update":
-      return updateKeystore(payload as KnowledgeBaseTableDto);
+      return updateKnowledgeBase(payload as KnowledgeBaseTableDto);
     case "delete":
-      return deleteKeystore(payload as string);
+      return deleteKnowledgeBase(payload as string);
     case "delete-multiple":
-      return deleteKeystores(payload as string[]);
+      return deleteKnowledgeBases(payload as string[]);
     default:
       throw new Error("Invalid action type");
   }

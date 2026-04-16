@@ -14,12 +14,12 @@ import { getProviderModels } from "../../apis/llm-pipelines-apis";
 import { Model, modelProviders } from "../../constants/model-providers";
 import { CredentialsSelectField } from "./CredentialsSelectField";
 
-interface ModelConfigFieldProps {
+interface EmbeddingConfigFieldProps {
   /** The name of the form field. */
   name: string;
 }
 
-const ModelConfigField = ({ name }: ModelConfigFieldProps) => {
+const EmbeddingConfigField = ({ name }: EmbeddingConfigFieldProps) => {
   const [byokModels, setByokModels] = useState<Model[]>([]);
   const [isLoading, setByokLoading] = useState(false);
   const [isInitialized, setIsInitialized] = useState(false);
@@ -41,14 +41,14 @@ const ModelConfigField = ({ name }: ModelConfigFieldProps) => {
 
   // Field names
   const fieldNames = {
-    is_byok_enabled: `${name}.is_byok_enabled`,
-    credential_id: `${name}.credential_id`,
+    isByokEnabled: `${name}.isByokEnabled`,
+    credentialId: `${name}.credentialId`,
     provider: `${name}.provider`,
     model: `${name}.model`,
   } as const satisfies Record<string, FieldPath<FieldValues>>;
 
   // Form context
-  const { control, setValue } = useFormContext();
+  const { control, setValue, formState } = useFormContext();
 
   // Controllers
   const { field: providerField } = useController({
@@ -57,26 +57,27 @@ const ModelConfigField = ({ name }: ModelConfigFieldProps) => {
   });
 
   const { field: isByokField } = useController({
-    name: fieldNames.is_byok_enabled,
+    name: fieldNames.isByokEnabled,
     control,
   });
 
   const { field: credentialsField } = useController({
-    name: fieldNames.credential_id,
+    name: fieldNames.credentialId,
     control,
   });
 
   // Derived values
   const providerValue = providerField.value;
-  const is_byok_enabled = Boolean(isByokField.value);
+  const isByokEnabled = Boolean(isByokField.value);
   const credentialsValue = credentialsField.value;
 
   // Track previous values to detect actual changes
   const prevValues = useRef({
-    is_byok_enabled,
+    isByokEnabled,
     providerValue,
     credentialsValue,
   });
+  const hasInitialized = useRef(false);
 
   // 1. Non-BYOK providers
   const filteredProviders = useMemo(() => {
@@ -89,12 +90,15 @@ const ModelConfigField = ({ name }: ModelConfigFieldProps) => {
         }),
       }))
       .filter((p) => p.models.length > 0);
-  }, [name]);
+  }, []);
 
   // 2. Initialize on mount (for saved data)
   useEffect(() => {
+    if (hasInitialized.current) return;
+    hasInitialized.current = true;
+
     const initializeForm = async () => {
-      if (!is_byok_enabled) {
+      if (!isByokEnabled) {
         // Static models mode - no need to fetch
         setIsInitialized(true);
       } else {
@@ -129,20 +133,23 @@ const ModelConfigField = ({ name }: ModelConfigFieldProps) => {
     };
 
     initializeForm();
-  }, []); // Run once on mount
+  }, []);
 
   // 3. Handle BYOK toggle (only after initialization)
   useEffect(() => {
     if (!isInitialized) return;
-    if (prevValues.current.is_byok_enabled === is_byok_enabled) return;
+    if (prevValues.current.isByokEnabled === isByokEnabled) return;
 
-    prevValues.current.is_byok_enabled = is_byok_enabled;
+    prevValues.current.isByokEnabled = isByokEnabled;
+
+    // Skip reset during initial form hydration (for edit/read mode).
+    if (!formState.isDirty) return;
 
     // Reset dependent fields
-    setValue(fieldNames.credential_id, "", { shouldDirty: true });
+    setValue(fieldNames.credentialId, "", { shouldDirty: true });
     setValue(fieldNames.model, "", { shouldDirty: true });
     setByokModels([]);
-  }, [is_byok_enabled, isInitialized, setValue, fieldNames]);
+  }, [isByokEnabled, isInitialized, setValue, fieldNames, formState.isDirty]);
 
   // 4. Handle provider change (only after initialization)
   useEffect(() => {
@@ -151,11 +158,14 @@ const ModelConfigField = ({ name }: ModelConfigFieldProps) => {
 
     prevValues.current.providerValue = providerValue;
 
+    // Skip reset during initial form hydration (for edit/read mode).
+    if (!formState.isDirty) return;
+
     // Reset dependent fields
-    setValue(fieldNames.credential_id, "", { shouldDirty: true });
+    setValue(fieldNames.credentialId, "", { shouldDirty: true });
     setValue(fieldNames.model, "", { shouldDirty: true });
     setByokModels([]);
-  }, [providerValue, isInitialized, setValue, fieldNames]);
+  }, [providerValue, isInitialized, setValue, fieldNames, formState.isDirty]);
 
   // 5. Fetch BYOK models on credential change
   useEffect(() => {
@@ -183,8 +193,10 @@ const ModelConfigField = ({ name }: ModelConfigFieldProps) => {
         const models = await getProviderModels(provider, credentialsValue);
         setByokModels(models?.data as Model[]);
 
-        // Reset model selection when credentials change
-        setValue(fieldNames.model, "", { shouldDirty: true });
+        // Reset model only on user-driven credential changes.
+        if (formState.isDirty) {
+          setValue(fieldNames.model, "", { shouldDirty: true });
+        }
       } catch (err) {
         toast.error(err as string);
         setByokModels([]);
@@ -196,7 +208,9 @@ const ModelConfigField = ({ name }: ModelConfigFieldProps) => {
     const timeoutId = setTimeout(() => {
       if (!providerValue || !credentialsValue) {
         setByokModels([]);
-        setValue(fieldNames.model, "", { shouldDirty: true });
+        if (formState.isDirty) {
+          setValue(fieldNames.model, "", { shouldDirty: true });
+        }
         return;
       }
       fetchModels();
@@ -205,12 +219,19 @@ const ModelConfigField = ({ name }: ModelConfigFieldProps) => {
     return () => {
       if (timeoutId) clearTimeout(timeoutId);
     };
-  }, [credentialsValue, isInitialized, providerValue, setValue, fieldNames]);
+  }, [
+    credentialsValue,
+    isInitialized,
+    providerValue,
+    setValue,
+    fieldNames,
+    formState.isDirty,
+  ]);
 
   // Available models
   const availableModels = useMemo(() => {
     let models = [];
-    if (is_byok_enabled) {
+    if (isByokEnabled) {
       models = byokModels;
     } else {
       const provider = filteredProviders.find((p) => p.value === providerValue);
@@ -219,7 +240,7 @@ const ModelConfigField = ({ name }: ModelConfigFieldProps) => {
     }
 
     return uniqueAndNormalizeArray(models);
-  }, [is_byok_enabled, byokModels, filteredProviders, providerValue]);
+  }, [isByokEnabled, byokModels, filteredProviders, providerValue]);
 
   // Current provider
   const currentProvider = filteredProviders.find(
@@ -231,7 +252,7 @@ const ModelConfigField = ({ name }: ModelConfigFieldProps) => {
     <div className="w-full space-y-3.5">
       <SwitchField
         size="sm"
-        name={fieldNames.is_byok_enabled}
+        name={fieldNames.isByokEnabled}
         label="Bring your own API key"
         description="Enable this if you want to use your own provider API key instead of the platform-hosted models."
       />
@@ -244,10 +265,10 @@ const ModelConfigField = ({ name }: ModelConfigFieldProps) => {
         label=" Provider"
       />
 
-      {is_byok_enabled && (
+      {isByokEnabled && (
         <CredentialsSelectField
           isRequired
-          name={fieldNames.credential_id}
+          name={fieldNames.credentialId}
           size="base"
           label={`${currentProvider?.label ?? ""} Credentials`}
           modelProvider={providerValue}
@@ -264,7 +285,7 @@ const ModelConfigField = ({ name }: ModelConfigFieldProps) => {
             label="Embedding Model"
             primaryText="Models"
             isLoading={isLoading}
-            disabled={!isInitialized || (is_byok_enabled && !credentialsValue)}
+            disabled={!isInitialized || (isByokEnabled && !credentialsValue)}
           />
         </div>
       </div>
@@ -272,6 +293,6 @@ const ModelConfigField = ({ name }: ModelConfigFieldProps) => {
   );
 };
 
-ModelConfigField.displayName = "ModelConfigField";
+EmbeddingConfigField.displayName = "EmbeddingConfigField";
 
-export { ModelConfigField, type ModelConfigFieldProps };
+export { EmbeddingConfigField, type EmbeddingConfigFieldProps };

@@ -4,7 +4,7 @@ import {
   useShowAlertHandler,
 } from "@aventisia/ui/hooks";
 
-import { keystoreOptimisticMutationFn } from "../../apis/keystores-table-apis";
+import { knowledgeBaseOptimisticMutationFn } from "../../apis/knowledge-base-apis";
 import { DATA_QUERY_KEY } from "../../constants";
 import { KnowledgeBaseTableDto } from "../../dtos/knowledge-base-table-dto";
 
@@ -17,11 +17,11 @@ export const KBRowDeleteAction = ({ rowId }: KBRowDeleteActionProps) => {
   const { showCustomAlertDialog } = useShowAlertHandler();
 
   // Get mutation function to delete the config
-  const { mutate: deleteConfig } = useListOptimisticMutation<
+  const { mutate: deleteKnowledgeBase } = useListOptimisticMutation<
     string,
     KnowledgeBaseTableDto | boolean,
     KnowledgeBaseTableDto
-  >([rowId], keystoreOptimisticMutationFn, DATA_QUERY_KEY);
+  >([rowId], knowledgeBaseOptimisticMutationFn, DATA_QUERY_KEY);
 
   // Return Delete alert dialog trigger
   return (
@@ -29,14 +29,14 @@ export const KBRowDeleteAction = ({ rowId }: KBRowDeleteActionProps) => {
       onClick={() => {
         showCustomAlertDialog({
           confirmActionFn: () =>
-            deleteConfig({
+            deleteKnowledgeBase({
               payload: rowId,
               crudAction: "delete",
             }),
-          confirmBtnText: "Yes, delete knowledgeBase",
-          title: "Delete knowledgeBase?",
+          confirmBtnText: "Yes, delete",
+          title: "Delete knowledge base?",
           description:
-            "Are you sure you want to delete knowledgeBase? This may affect any agent that uses it.",
+            "Are you sure you want to delete this knowledge base? This may affect any agent that uses it.",
         });
       }}
     />

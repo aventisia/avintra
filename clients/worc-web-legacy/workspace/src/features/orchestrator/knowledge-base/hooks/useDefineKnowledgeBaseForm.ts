@@ -9,20 +9,21 @@ import { useForm } from "react-hook-form";
 import { z } from "zod";
 import { useShallow } from "zustand/react/shallow";
 
-import { isKeystoreNameAvailable } from "../apis/keystores-table-apis";
+import { isKnowledgeBaseNameAvailable } from "../apis/knowledge-base-apis";
 import { DATA_QUERY_KEY } from "../constants";
 import {
   knowledgeBaseNameSchema,
   knowledgeBaseZodSchema,
 } from "../constants/knowledge-base-zod-schema";
 import { KnowledgeBaseTableDto } from "../dtos/knowledge-base-table-dto";
+import { VectorStoreEnum } from "../enums/vector-store-enum";
 
 /**
- * Custom hook for defining a keystore form.
+ * Custom hook for defining a knowledge base form.
  */
 export const useDefineKnowledgeBaseForm = () => {
-  // Set keystore name state (required for availability check)
-  const [keystoreName, setKeystoreName] = useState("");
+  // Set knowledge base name state (required for availability check)
+  const [knowledgeBaseName, setKnowledgeBaseName] = useState("");
 
   // Get user session
   const { userSession } = useUserSessionStore(
@@ -55,17 +56,14 @@ export const useDefineKnowledgeBaseForm = () => {
       id: "",
       name: "",
       description: "",
-      vectorStore: "",
-      embeddingModel: "",
-      isDisabled: false,
-
-      kb: {
-        is_byok_enabled: false,
-        credential_id: "",
-        provider: "",
+      vectorStore: "pgvector",
+      embeddingConfig: {
+        isByokEnabled: false,
+        provider: "openai",
+        credentialId: "",
         model: "",
       },
-
+      isDisabled: false,
       createdBy: userSession?.firstName + " " + userSession?.lastName,
       createdOn: new Date(),
       lastModifiedBy: userSession?.firstName + " " + userSession?.lastName,
@@ -78,50 +76,45 @@ export const useDefineKnowledgeBaseForm = () => {
     formState: { isDirty },
   } = form;
 
-  // Fetch keystore data when rowId changes
+  // Fetch knowledge base data when rowId changes
   useEffect(() => {
-    // Get keystores data from query client
-    const keystoresData = queryClient.getQueryData<{
+    // Get knowledgeBase data from query client
+    const knowledgeBaseDataList = queryClient.getQueryData<{
       data: KnowledgeBaseTableDto[];
     }>(DATA_QUERY_KEY);
 
-    // Get keystore data by id
-    const keystoreData = keystoresData?.data?.find((item) => item.id === rowId);
+    // Get knowledge base data by id
+    const knowledgeBaseData = knowledgeBaseDataList?.data?.find(
+      (item) => item.id === rowId,
+    );
 
-    // Set keystore name
-    setKeystoreName(keystoreData?.name ?? "");
+    // Set knowledge base name
+    setKnowledgeBaseName(knowledgeBaseData?.name ?? "");
 
-    // Set keystore data to form
+    // Set knowledge base data to form
     form.reset({
       id: rowId,
-      name: keystoreData?.name ?? "",
-      description: keystoreData?.description ?? "",
-      vectorStore: keystoreData?.vectorStore ?? "Qdrant",
-      embeddingModel: keystoreData?.embeddingModel ?? "text-embedding-3-small",
-
-      kb: {
-        is_byok_enabled: keystoreData?.kb?.is_byok_enabled ?? false,
-        credential_id: keystoreData?.kb?.credential_id ?? "",
-        provider: keystoreData?.kb?.provider ?? "openai",
-        model: keystoreData?.kb?.model ?? "text-embedding-3-small",
+      name: knowledgeBaseData?.name ?? "",
+      description: knowledgeBaseData?.description ?? "",
+      vectorStore: knowledgeBaseData?.vectorStore ?? "pgvector",
+      embeddingConfig: {
+        isByokEnabled: knowledgeBaseData?.embeddingCredentialId ? true : false,
+        provider: knowledgeBaseData?.embeddingProvider ?? "openai",
+        credentialId: knowledgeBaseData?.embeddingCredentialId ?? "",
+        model: knowledgeBaseData?.embeddingModel ?? "",
       },
-
-      isDisabled: keystoreData?.isDisabled,
-
+      isDisabled: knowledgeBaseData?.isDisabled ?? false,
       createdBy:
-        keystoreData?.createdBy ??
+        knowledgeBaseData?.createdBy ??
         userSession?.firstName + " " + userSession?.lastName,
-
-      createdOn: keystoreData?.createdOn
-        ? new Date(keystoreData?.createdOn)
+      createdOn: knowledgeBaseData?.createdOn
+        ? new Date(knowledgeBaseData?.createdOn)
         : new Date(),
-
       lastModifiedBy:
-        keystoreData?.lastModifiedBy ??
+        knowledgeBaseData?.lastModifiedBy ??
         userSession?.firstName + " " + userSession?.lastName,
-
-      lastModifiedOn: keystoreData?.lastModifiedOn
-        ? new Date(keystoreData?.lastModifiedOn)
+      lastModifiedOn: knowledgeBaseData?.lastModifiedOn
+        ? new Date(knowledgeBaseData?.lastModifiedOn)
         : new Date(),
     });
   }, [rowId, form, queryClient, userSession]);
@@ -135,20 +128,31 @@ export const useDefineKnowledgeBaseForm = () => {
     setAvailabilityMessage,
   } = useCheckAvailability<z.infer<typeof knowledgeBaseZodSchema>, z.ZodString>(
     {
-      defaultInputValue: keystoreName,
+      defaultInputValue: knowledgeBaseName,
       fieldName: "name",
       form,
       fieldSchema: knowledgeBaseNameSchema,
-      checkAvailabilityAPIFn: isKeystoreNameAvailable,
+      checkAvailabilityAPIFn: isKnowledgeBaseNameAvailable,
     },
   );
 
   // Refine form data based on crud action
-  const refineFormData = (formData: z.infer<typeof knowledgeBaseZodSchema>) => {
+  const refineFormData = (
+    formData: z.infer<typeof knowledgeBaseZodSchema>,
+  ): KnowledgeBaseTableDto => {
     return {
-      ...formData,
-      lastModifiedBy: userSession?.email ?? "",
-      lastModifiedOn: new Date().toISOString(),
+      id: formData.id || undefined,
+      name: formData.name,
+      description: formData.description,
+      vectorStore: formData.vectorStore as VectorStoreEnum,
+      embeddingProvider: formData.embeddingConfig.provider,
+      embeddingCredentialId: formData.embeddingConfig.credentialId || undefined,
+      embeddingModel: formData.embeddingConfig.model,
+      isDisabled: formData.isDisabled,
+      createdBy: formData.createdBy,
+      createdOn: formData.createdOn?.toISOString(),
+      lastModifiedBy: formData.lastModifiedBy,
+      lastModifiedOn: formData.lastModifiedOn?.toISOString(),
     };
   };
 
