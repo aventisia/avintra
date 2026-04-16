@@ -10,7 +10,7 @@ import { Tooltip } from "@aventisia/ui/tooltip";
 import { ArrowLeftIcon, ChevronRight } from "lucide-react";
 import { Dispatch, SetStateAction } from "react";
 
-import { RetrievedChunkDto } from "../../apis/knowledge-base-apis";
+import { RetrievedChunkDto } from "../../apis/knowledge-base-file-apis";
 
 export function RetrievedChunksAccordion({
   setChunksRetrieved,
