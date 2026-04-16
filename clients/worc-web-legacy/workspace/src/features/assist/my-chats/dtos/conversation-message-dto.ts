@@ -11,7 +11,7 @@ export interface ConversationMessageDto {
   id?: string; // Guid → string
 
   /** Conversation ID this message belongs to */
-  conversationId: string;
+  conversationId?: string | null;
 
   /** Related flow version ID */
   flowVersionId: string;
