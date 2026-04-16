@@ -11,6 +11,8 @@ from app.features.llm_providers.llm_providers_factory import get_llm_provider
 from app.features.llm_providers.llm_providers_schemas import EmbeddingRequest
 from app.features.vector_stores.vector_store_base import BaseVectorStore
 from app.features.vector_stores.vector_stores_schemas import (
+    DeleteDocRequest,
+    DeleteDocResponse,
     IngestDocRequest,
     IngestDocResponse,
     QueryDocRequest,
@@ -137,13 +139,6 @@ class QdrantVectorStore(BaseVectorStore):
                 logger.error("[INGEST] Empty input text")
                 raise HTTPException(status_code=400, detail="Input text is empty")
 
-            # Extract document name from metadata
-            doc_name = (
-                ingest_doc_request.metadata.get("doc_name")
-                if ingest_doc_request.metadata
-                else None
-            )
-
             # Split text into chunks
             chunks = VectorStoreTextChunker.chunk_text(
                 source_text,
@@ -245,7 +240,7 @@ class QdrantVectorStore(BaseVectorStore):
                 vector_store=ingest_doc_request.vector_store,
                 embedding_provider=ingest_doc_request.embedding_provider,
                 embedding_model=ingest_doc_request.embedding_model,
-                doc_name=doc_name,
+                metadata=ingest_doc_request.metadata,
                 chunks_created=chunks_created,
                 embeddings_stored=embeddings_stored,
                 time_taken=elapsed,
@@ -269,7 +264,7 @@ class QdrantVectorStore(BaseVectorStore):
                 vector_store=ingest_doc_request.vector_store,
                 embedding_provider=ingest_doc_request.embedding_provider,
                 embedding_model=ingest_doc_request.embedding_model,
-                doc_name="error",
+                metadata=ingest_doc_request.metadata,
                 chunks_created=chunks_created,
                 embeddings_stored=embeddings_stored,
                 time_taken=elapsed,
@@ -396,3 +391,9 @@ class QdrantVectorStore(BaseVectorStore):
                 input_tokens=0,
                 error=str(exc),
             )        
+    # TODO: Implement doc delete just like pgvector
+    async def delete_document(self, delete_doc_request: DeleteDocRequest, user: User) -> DeleteDocResponse:
+        raise HTTPException(
+            status_code=status.HTTP_501_NOT_IMPLEMENTED,
+            detail="Qdrant document deletion is not implemented yet.",
+        )
