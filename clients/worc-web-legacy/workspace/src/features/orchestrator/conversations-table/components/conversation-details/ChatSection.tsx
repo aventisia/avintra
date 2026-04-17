@@ -7,6 +7,14 @@ import { Badge } from "@aventisia/ui/badge";
 import { AdminConversationDto } from "../../dtos/conversations-table-dto";
 
 export default function ChatSection({ data }: { data: AdminConversationDto }) {
+  // map conversation messages with thread message
+  const messages = data?.messages?.map((a) => {
+    return {
+      content: a.content,
+      role: a.role.toLowerCase(),
+    };
+  }) as unknown as ThreadMessageLike[];
+
   return (
     <div className="flex flex-col h-full w-full">
       <div className="px-3 h-16 min-h-16 max-h-16 border-b flex items-center justify-between">
@@ -25,17 +33,7 @@ export default function ChatSection({ data }: { data: AdminConversationDto }) {
       </div>
 
       <div className="h-[calc(100%-4rem)] w-full">
-        <WorcAssistantUI
-          readOnly
-          initialMessages={
-            data?.messages?.map((a, i) => {
-              return {
-                content: a.content,
-                role: i % 2 == 0 ? "user" : "assistant",
-              };
-            }) as unknown as ThreadMessageLike[]
-          }
-        />
+        <WorcAssistantUI readOnly initialMessages={messages} />
       </div>
     </div>
   );

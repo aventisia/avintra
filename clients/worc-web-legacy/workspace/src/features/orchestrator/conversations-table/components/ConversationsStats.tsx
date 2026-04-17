@@ -17,6 +17,7 @@ export const ConversationsStats = ({ data }: StatsProps) => {
       return {
         conversations: 0,
         agents: 0,
+        totalExchanges: 0,
       };
     }
 
@@ -24,9 +25,14 @@ export const ConversationsStats = ({ data }: StatsProps) => {
 
     const uniqueAgents = new Set(data.map((x) => x.firstName).filter(Boolean));
 
+    const totalExchanges = data.reduce(
+      (acc, x) => acc + (x.totalExchange ?? 0),
+      0,
+    );
     return {
       conversations,
       agents: uniqueAgents.size,
+      totalExchanges,
     };
   }, [data]);
 
@@ -48,8 +54,8 @@ export const ConversationsStats = ({ data }: StatsProps) => {
 
       {/* Total exchanges */}
       <StatsCard
-        title="Total exchanges"
-        mainText={0}
+        title="Total Exchanges"
+        mainText={stats.totalExchanges}
         icon={
           <MessageCircleMoreIcon stroke="var(--primary)" className="h-9 w-9" />
         }
