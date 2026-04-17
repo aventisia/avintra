@@ -30,6 +30,8 @@ const WorcLibraryTemplates = ({
       if (selectedCategory === "All templates") return true;
       if (selectedCategory === "AI Model")
         return ["AIProject", "Inferencing", "Conversation", "Generative"].includes(templateType);
+      if (selectedCategory === "Automation Agent")
+        return ["Agent"].includes(templateType);
       if (selectedCategory === "Chat Agent")
         return ["ChatAgent"].includes(templateType);
       return templateType.includes(selectedCategory);

@@ -24,7 +24,7 @@ const WorcLibrary = () => {
   const categories = [
     "All templates",
     "AI Model",
-    "Agent",
+    "Automation Agent",
     "Chat Agent",
     // "Inferencing",
     // "Conversation",

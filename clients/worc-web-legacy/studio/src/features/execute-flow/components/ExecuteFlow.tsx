@@ -16,12 +16,18 @@ import { Node } from "@xyflow/react";
 import { Loader2 } from "lucide-react";
 import { useShallow } from "zustand/react/shallow";
 
-import { CURRENT_VERSION_ID_KEY, clearNodeExecutionLog } from "..";
+import {
+  CURRENT_VERSION_ID_KEY,
+  clearNodeExecutionLog,
+  doesFlowContainAnyDesktopOnlyNode,
+  isEmptyFlow,
+  isValidFlowGraph,
+  useExecuteFlowMutation,
+  useJobNotifications,
+} from "..";
 import useWebSocket from "../hooks/useWebSocket";
 import { useJobDataStore } from "../stores/job-data-store";
 import { extractUniqueConfigKeys } from "../utils/config-key-utils";
-
-// import { hasWindowsOnlySupportedNode } from "../utils/has-desktop-node";
 
 const ExecuteFlow = () => {
   // Get user session state and actions
@@ -60,6 +66,34 @@ const ExecuteFlow = () => {
   // Connect to websocket server and get sendCommand function
   const { sendCommand } = useWebSocket();
 
+  // Get execute flow on web mutation
+  const { executeFlowOnWebMutationAsync } = useExecuteFlowMutation();
+
+  // Connect to SignalR job notification hub to receive real-time job updates
+  useJobNotifications(
+    (notification) => {
+      // Handle job completion notification
+      console.log("Job completed:", notification);
+
+      if (notification.status === "Completed") {
+        toast.success(
+          notification.message || "Flow execution completed successfully!",
+        );
+        setExecutionState("stopped");
+      } else if (notification.status === "Failed") {
+        toast.error(notification.message || "Flow execution failed.");
+        setExecutionState("stopped");
+      } else if (notification.status === "Abort") {
+        toast.info(notification.message || "Flow execution was aborted.");
+        setExecutionState("stopped");
+      }
+    },
+    (notification) => {
+      // Handle job progress notification (optional)
+      console.log("Job progress:", notification);
+    },
+  );
+
   const minCredits = 10;
 
   const isCommercial = userSession?.deploymentType == "Commercial";
@@ -68,10 +102,48 @@ const ExecuteFlow = () => {
 
   // Start execution
   const startExecution = async () => {
+    // Validate: Archived flow version cannot be executed
+    if (currentFlow?.isArchived) {
+      toast.info("Archived flows cannot be executed.");
+      return;
+    }
+
+    // Validate: published flow version can only be executed via orchestrator
     if (currentFlow?.isPublished) {
       toast.info("Published agents can only be executed via the Orchestrator.");
       return;
     }
+
+    // Validate: Reject flow execution if it contains only support/placeholder nodes
+    if (isEmptyFlow(nodes as Node<NodeDataType>[])) {
+      toast.error("Flow is empty and cannot be executed.");
+      return;
+    }
+
+    // Get flag indicating whether flow can only be executed in desktop executor
+    const isDesktopOnlyFlow = doesFlowContainAnyDesktopOnlyNode(
+      nodes as Node<NodeDataType>[],
+    );
+
+    // Validate: Flow contains one or more executable nodes that are desktop-only and app is not running in Tauri
+    if (!IS_TAURI && isDesktopOnlyFlow) {
+      toast.error(
+        "Flow contains desktop nodes which cannot be executed via web. Please remove desktop nodes from the flow and try again.",
+      );
+      return;
+    }
+
+    // Validate: Invalid react flow object or flow graph
+    const flowGraphError = isValidFlowGraph(
+      nodes as Node<NodeDataType>[],
+      edges,
+    );
+    if (flowGraphError) {
+      toast.error(`Flow graph is invalid: ${flowGraphError}`);
+      return;
+    }
+
+    // Validate: Check credits for commercial deployment
     if (isCommercial) {
       const creditsData = await getAvailableCredits();
 
@@ -81,50 +153,49 @@ const ExecuteFlow = () => {
         return;
       }
     }
-    // Check plan for enterprise
+
+    // Validate: Check for active plan in enterprise deployment
     if (isEnterprise && !hasActivePlan) {
       // Show toast notification for inactive plan
       toast.error(
         "This action is currently unavailable. Please contact your administrator or support.",
       );
-
       return;
     }
+
     // Set the execution state to launching executor
     setExecutionState("launching-executor");
 
     // Get the jwt by calling the getMySession API
     const userSession = await getMySession();
 
-    // If session is valid, proceed to open the desktop executor
+    // If session is valid, proceed to execute the flow
     if (userSession) {
       // Get the access token from the session
       const accessToken = userSession.data?.accessToken;
 
+      // TODO: Need to confirm whether we want to keep this log or not.
       console.log(
         "ConfigKeys:",
         extractUniqueConfigKeys(nodes as Node<NodeDataType>[]),
       );
 
-      // Open the desktop executor if the app is running in Tauri
-      if (IS_TAURI) {
+      if (isDesktopOnlyFlow) {
         localStorage.removeItem("flowExecutionStack"); //  Clear any previous subflow stack
         localStorage.setItem("conditionalExecutionGroup", JSON.stringify([]));
         localStorage.setItem("loopExecutionGroup", JSON.stringify([]));
         openDesktopExecutor(accessToken);
       } else {
-        toast.info(
-          "Please use our desktop app. Execution in browser is not supported.",
-        );
-        // Reset the execution state to stopped if not in Tauri
-        setExecutionState("stopped");
-        //  if (hasWindowsOnlySupportedNode(nodes as Node<NodeDataType>[])) {
-        //   toast.info(
-        //     "Desktop-only node(s) present. Use the desktop app or remove them to execute in the browser.",
-        //   );
-        //   // Reset the execution state to stopped if not in Tauri
-        //   setExecutionState("stopped");
-        // }
+        try {
+          // Call the execute endpoint to create a job and flow execution
+          await executeFlowOnWebMutationAsync({
+            flowVersionId: currentFlow.versionId,
+          });
+        } catch {
+          // Reset the execution state on API failure
+          setExecutionState("stopped");
+          return;
+        }
       }
     }
   };

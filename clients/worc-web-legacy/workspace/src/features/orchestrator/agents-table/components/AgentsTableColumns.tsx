@@ -12,6 +12,11 @@ import { AgentsTableDto } from "../dtos/agents-table-dto";
 import { TableCellLink } from "./TableCellLink";
 import { TableActions } from "./table-actions/TableActions";
 
+const flowTypeLabelOverrides: Record<string, string> = {
+  Agent: "Automation Agent",
+  ChatAgent: "Chat Agent",
+};
+
 /**
  * Array of table columns for the agents table.
  * Each column object contains an accessorKey, header component, and cell component.
@@ -50,12 +55,17 @@ export const agentsTableColumns: ColumnDef<AgentsTableDto>[] = [
       />
     ),
     cell: ({ row }) => (
-      <TableCellLink
-        rowId={row.original.refId || "rowId"}
-        versionId={row.original.id || "rowId"}
-        cellValue={row.getValue("name")}
-        type={row.original.type || ""}
-      />
+      <div className="flex   items-center gap-3 ">
+        <TableCellLink
+          rowId={row.original.refId || "rowId"}
+          versionId={row.original.id || "rowId"}
+          cellValue={row.getValue("name")}
+          type={row.original.type || ""}
+        />
+        <span className="bg-muted border text-2xs leading-none h-[1.4rem] w-[1.4rem] flex items-center justify-center  text-primary    rounded-full">
+          v{row.original.versionNumber ?? 0}
+        </span>
+      </div>
     ),
   },
   {
@@ -67,9 +77,14 @@ export const agentsTableColumns: ColumnDef<AgentsTableDto>[] = [
         title={getColumnName("type")}
       />
     ),
-    cell: ({ row }) => (
-      <div className="w-auto truncate font-medium">{row.getValue("type")}</div>
-    ),
+    cell: ({ row }) => {
+      const typeValue = String(row.getValue("type"));
+      return (
+        <div className="w-auto truncate font-medium">
+          {flowTypeLabelOverrides[typeValue] || typeValue}
+        </div>
+      );
+    },
   },
   {
     accessorKey: "machineCount",
@@ -90,19 +105,28 @@ export const agentsTableColumns: ColumnDef<AgentsTableDto>[] = [
     ),
   },
   {
-    accessorKey: "versionNumber",
+    accessorKey: "supportedPlatform",
     header: ({ column }) => (
       <DTColumnHeader
         tableKey={TABLE_KEY}
         column={column}
-        title={getColumnName("versionNumber")}
+        title={getColumnName("supportedPlatform")}
       />
     ),
-    cell: ({ row }) => (
-      <div className="w-auto truncate font-medium">
-        {"v" + row.getValue("versionNumber")}
-      </div>
-    ),
+    cell: ({ row }) => {
+      const supportedPlatform = row.original?.supportedPlatform;
+      let platform = "Cloud & Windows";
+      if (supportedPlatform == "windows") {
+        platform = "Windows";
+      }
+      return (
+        <div className="w-auto truncate font-medium">
+          <Badge className="" variant={"outline"}>
+            {platform}
+          </Badge>
+        </div>
+      );
+    },
   },
   {
     accessorKey: "status",

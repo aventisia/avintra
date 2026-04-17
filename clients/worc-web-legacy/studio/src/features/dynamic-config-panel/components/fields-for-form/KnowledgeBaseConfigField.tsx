@@ -1,4 +1,6 @@
-import { InputField, MultiSelectField, SelectField } from "@aventisia/ui/form";
+import { SliderField } from "@/components/Slider/SliderField";
+
+import { InputField, SelectField } from "@aventisia/ui/form";
 import {
   Controller,
   FieldPath,
@@ -6,7 +8,7 @@ import {
   useController,
   useFormContext,
 } from "react-hook-form";
-import { SliderField } from "@/components/Slider/SliderField";
+
 import { GroupedFieldsWrapper } from "./GroupedFieldsWrapper";
 
 interface KnowledgeBaseConfigFieldProps {
@@ -36,7 +38,7 @@ const KnowledgeBaseConfigField = ({ name }: KnowledgeBaseConfigFieldProps) => {
   // Render the KnowledgeBaseConfigField component
   return (
     <GroupedFieldsWrapper groupName="Configure Knowledge Base">
-      <MultiSelectField
+      {/* <MultiSelectField
         size="sm"
         name={knowledgeBaseFieldName}
         label="Knowledge Base"
@@ -52,6 +54,31 @@ const KnowledgeBaseConfigField = ({ name }: KnowledgeBaseConfigFieldProps) => {
             description: "",
           },
         ]}
+      /> */}
+      <Controller
+        name={knowledgeBaseFieldName}
+        control={control}
+        render={({ field }) => (
+          <InputField
+            {...field}
+            fieldSize="sm"
+            type="text"
+            label="Knowledge Base"
+            placeholder="Enter document names separated by comma (e.g., doc1, doc2, doc3)"
+            value={field.value || ""}
+            onChange={(e) => {
+              field.onChange(e.target.value);
+            }}
+            onBlur={(e) => {
+              const inputValue = e.target.value;
+              const arrayValue = inputValue
+                .split(",")
+                .map((item) => item.trim())
+                .filter((item) => item.length > 0);
+              field.onChange(arrayValue);
+            }}
+          />
+        )}
       />
 
       <div className="grid grid-cols-2 gap-2">

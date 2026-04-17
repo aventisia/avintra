@@ -13,4 +13,6 @@ export interface FlowSilentUpdateDto {
   inputOutputObject?: string;
 
   versionId?: string;
+
+  supportedPlatform?: string;
 }

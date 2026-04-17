@@ -1,0 +1,97 @@
+{
+    "name": "GetMany",
+    "description": "Performs a vector similarity search on a PostgreSQL database using pgvector to retrieve the most relevant records based on a given text prompt.",
+    "version": "1.0.0",
+    "author": "@rahmat",
+    "supportedPlatforms": [
+        "cloud",
+        "windows"
+    ],
+    "errorHandling": "standard",
+    "testScreenType": "standard",
+    "fields": [
+        {
+            "direction": "Input",
+            "type": "credentials-select",
+            "name": "__CredentialId__Postgres",
+            "label": "PostgreSQL Credential",
+            "description": "Select the credentials required to connect to the PostgreSQL database that hosts the pgvector-enabled table.",
+            "defaultValue": ""
+        },
+        {
+            "direction": "Input",
+            "type": "text",
+            "name": "tableName",
+            "label": "Table Name",
+            "description": "Specify the name of the PostgreSQL table containing the vector embeddings.",
+            "defaultValue": ""
+        },
+        {
+            "direction": "Input",
+            "type": "text",
+            "name": "prompt",
+            "label": "Prompt",
+            "description": "Input text used to generate an embedding and perform the similarity search.",
+            "defaultValue": ""
+        },
+        {
+            "direction": "Input",
+            "type": "number",
+            "name": "limit",
+            "label": "Limit",
+            "description": "Defines the maximum number of similar records to return.",
+            "defaultValue": 5
+        },
+        {
+            "direction": "Input",
+            "type": "text",
+            "name": "vectorColumns",
+            "label": "Vector Column Mapping",
+            "description": "Provide column names for the vector store in the exact order: id, content, metadata, embedding. Use a comma-separated list (e.g., id, content, metadata, embedding). This order is required for correct field mapping.",
+            "defaultValue": ""
+        },
+        {
+            "direction": "Input",
+            "type": "switch",
+            "name": "vectorColumns",
+            "label": "Specify Embedding Column",
+            "description": "Enable this option to explicitly provide the name of the column in your PostgreSQL table that contains vector embeddings. This field is required for proper connector functionality.",
+            "renderif": {
+                "condition": [
+                    {
+                        "field": "vectorColumns",
+                        "equal": true
+                    }
+                ]
+            }
+        },
+        {
+            "direction": "Input",
+            "type": "model-config-select",
+            "name": "__ModelConfig__Embedding",
+            "label": "Embedding Model Config",
+            "description": "Configuration for the embedding model used to convert the input prompt into a vector representation.",
+            "defaultValue": {
+                "is_byok_enabled": false,
+                "provider": "openai",
+                "credential_id": "00000000-0000-0000-0000-000000000000",
+                "model": "text-embedding-3-small",
+                "dimensions": "",
+                "encoding_format": ""
+            },
+            "required": false,
+            "category": "Embedding"
+        },
+        {
+            "direction": "Output",
+            "type": "config-panel-output",
+            "name": "Result",
+            "label": "Result",
+            "description": "Returns the top matching records ranked by similarity to the input prompt.",
+            "defaultValue": {
+                "value": "Result",
+                "enabled": true
+            }
+        }
+    ]
+}

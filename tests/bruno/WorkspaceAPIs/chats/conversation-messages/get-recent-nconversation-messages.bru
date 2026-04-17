@@ -1,0 +1,19 @@
+meta {
+  name: Get recent nconversation messages
+  type: http
+  seq: 3
+}
+
+get {
+  url: {{WORC_APIS_BASE_URL}}/assist/conversations/messages/{{CONVERSATION_ID}}/recent?count=2
+  body: none
+  auth: bearer
+}
+
+params:query {
+  count: 2
+}
+
+auth:bearer {
+  token: {{ACCESS_TOKEN}}
+}

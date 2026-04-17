@@ -20,6 +20,7 @@ public class UnitOfWork : IUnitOfWork
     public IProjectTemplateRepo ProjectTemplateRepo => new ProjectTemplateRepo(_workspaceDbContext);
     public ITemplateResourceRepo TemplateResourceRepo => new TemplateResourceRepo(_workspaceDbContext);
     public IFlowVersionRepo FlowVersionRepo => new FlowVersionRepo(_workspaceDbContext);
+    public IFlowVersionUserRepo FlowVersionUserRepo => new FlowVersionUserRepo(_workspaceDbContext);
     public IFlowVersionHistoryRepo FlowVersionHistoryRepo => new FlowVersionHistoryRepo(_workspaceDbContext);
     public IMachineRepo MachineRepo => new MachineRepo(_workspaceDbContext);
     public IMachineFlowRepo MachineFlowRepo => new MachineFlowRepo(_workspaceDbContext);
@@ -39,6 +40,11 @@ public class UnitOfWork : IUnitOfWork
     public IEncryptedKeyValueRepo EncryptedKeyValueRepo => new EncryptedKeyValueRepo(_workspaceDbContext);
     public IAITaskRepo AITaskRepo => new AITaskRepo(_workspaceDbContext);
     public IOnPremModelRepo OnPremModelRepo => new OnPremModelRepo(_workspaceDbContext);
+    public IConversationRepo ConversationRepo => new ConversationRepo(_workspaceDbContext);
+    public IConversationMessageRepo ConversationMessageRepo => new ConversationMessageRepo(_workspaceDbContext);
+    public IVectorStoreRepo VectorStoreRepo => new VectorStoreRepo(_workspaceDbContext);
+    public IKnowledgeBaseRepo KnowledgeBaseRepo => new KnowledgeBaseRepo(_workspaceDbContext);
+    public IKnowledgeBaseFileRepo KnowledgeBaseFileRepo => new KnowledgeBaseFileRepo(_workspaceDbContext);
 
     public async Task<bool> SaveAsync(bool checkHasChanges = false)
     {

@@ -1,0 +1,22 @@
+meta {
+  name: Get all conversations with date filter
+  type: http
+  seq: 2
+}
+
+get {
+  url: {{WORC_APIS_BASE_URL}}/admin/conversations?endDate=2026-04-14&startDate=2026-01-14&userIds=[]&flowVersionIds=[]
+  body: none
+  auth: bearer
+}
+
+params:query {
+  endDate: 2026-04-14
+  startDate: 2026-01-14
+  userIds: []
+  flowVersionIds: []
+}
+
+auth:bearer {
+  token: {{ACCESS_TOKEN}}
+}

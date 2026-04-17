@@ -1,9 +1,14 @@
 import { useCurrentFlowStore } from "@/stores/current-flow-store";
 import { useReactFlowExtStore } from "@/stores/react-flow-ext-store";
+import { NodeDataType } from "@/types/node-data-type";
+
 import { toast } from "@aventisia/ui/sonner";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
+import { Node } from "@xyflow/react";
 import { useShallow } from "zustand/react/shallow";
+
 import { updateFlowSilently } from "../apis/react-flow-apis";
+import { doesFlowContainAnyDesktopOnlyNode } from "../utils/has-desktop-nodes";
 
 export const useSaveFlow = () => {
   // Get global store state & actions
@@ -86,6 +91,9 @@ export const useSaveFlow = () => {
       edges: edges,
       viewport: viewport,
     };
+    const hasDesktopOnlyNode = doesFlowContainAnyDesktopOnlyNode(
+      nodes as Node<NodeDataType>[],
+    );
     //set viewport state for react flow oject ext(only for reference its not for ReactFLow)
     // setViewport(viewportState);
 
@@ -99,6 +107,7 @@ export const useSaveFlow = () => {
       flowVariablesObject: JSON.stringify(flowVariablesObject ?? []),
       inputOutputObject: JSON.stringify(inputOutputObject),
       versionId: currentFlow.versionId,
+      supportedPlatform: hasDesktopOnlyNode ? "windows" : "cloud",
     });
   };
 

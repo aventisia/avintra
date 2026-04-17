@@ -4,6 +4,8 @@ using WorkspaceAPIs.Features.CloudConnectors.LLMProvider;
 using WorkspaceAPIs.Features.CloudConnectors.M365.SharePoint;
 using WorkspaceAPIs.Features.CloudConnectors.SendGrid;
 using WorkspaceAPIs.Features.CloudConnectors.Twilio;
+using WorkspaceAPIs.Features.CloudConnectors.VectorStore;
+using WorkspaceAPIs.Features.CloudConnectors.VectorStore.PgVector;
 
 namespace WorkspaceAPIs.Extensions;
 
@@ -23,7 +25,12 @@ public static class AppServicesExtension
         var appDbConnectionString = $"Host={pgHost};Port={pgPort};Username={pgUsername};Password={pgPassword};Database=WorkspaceDb;Include Error Detail=true";
         var tenantDbConnectionString = $"Host={pgHost};Port={pgPort};Username={pgUsername};Password={pgPassword};Database=AccountsDb;Include Error Detail=true";
 
-        services.AddDbContext<WorkspaceDbContext>(options => options.UseNpgsql(appDbConnectionString));
+        services.AddDbContext<WorkspaceDbContext>(options =>
+            options.UseNpgsql(
+                appDbConnectionString,
+                npgsqlOptions => npgsqlOptions.UseVector()
+            )
+        );
         services.AddDbContext<WorkspaceInternalDbContext>(options => options.UseNpgsql(appDbConnectionString));
         services.AddDbContext<TenantDbContext>(options => options.UseNpgsql(tenantDbConnectionString));
     }
@@ -64,6 +71,13 @@ public static class AppServicesExtension
         config.Apply(new AITaskMappingProfile());
         config.Apply(new OnPremModelMappingProfile());
         config.Apply(new QueueWorkItemMappingProfile());
+        config.Apply(new FlowVersionUserMappingProfile());
+        config.Apply(new AssistChatMappingProfile());
+        config.Apply(new ConversationMappingProfile());
+        config.Apply(new ConversationMessageMappingProfile());
+        config.Apply(new AdminConversationMappingProfile());
+        config.Apply(new KnowledgeBaseMappingProfile());
+        config.Apply(new KnowledgeBaseFileMappingProfile());
 
         services.AddSingleton(config);
     }
@@ -73,6 +87,11 @@ public static class AppServicesExtension
         // Signleton
         services.AddSingleton(Guard.Against.Null(config.GetSection("EnvironmentConfig").Get<EnvironmentConfig>(), "EnvironmentConfig cannot be null"));
         services.AddSingleton(Guard.Against.Null(config.GetSection("AppDefaultConfig").Get<AppDefaultConfig>(), "AppDefaultConfig cannot be null"));
+
+        // ExecuteFlow feature services
+        services.AddScoped<IExecuteFlowService, ExecuteFlowService>();
+        services.AddScoped<IFlowNotificationService, FlowNotificationService>();
+        services.AddSingleton<IFlowExecutionService, FlowExecutionService>();
 
         // Feature Services
         services.AddScoped<IWorkspaceUserService, WorkspaceUserService>();
@@ -120,6 +139,13 @@ public static class AppServicesExtension
         services.AddScoped<IQueueWorkItemService, QueueWorkItemService>();
         services.AddScoped<IAgentBuilderStore, AgentBuilderStore>();
         services.AddSingleton<ConcurrentDictionary<Guid, AgentBuilderModel>>();
+        services.AddScoped<IFlowVersionUserService, FlowVersionUserService>();
+        services.AddScoped<IAssistChatService, AssistChatService>();
+        services.AddScoped<IConversationService, ConversationService>();
+        services.AddScoped<IConversationMessageService, ConversationMessageService>();
+        services.AddScoped<IAdminConversationService, AdminConversationService>();
+        services.AddScoped<IKnowledgeBaseService, KnowledgeBaseService>();
+        services.AddScoped<IKnowledgeBaseFileService, KnowledgeBaseFileService>();
 
         // Cloud Connectors feature
         services.AddScoped<ICloudConnectorsVaultService, CloudConnectorsVaultService>();
@@ -132,6 +158,9 @@ public static class AppServicesExtension
         services.AddScoped<IAzureConnectorsService, AzureConnectorsService>();
         services.AddScoped<IM365OutlookConnectorsService, M365OutlookConnectorsService>();
         services.AddScoped<IM365SharePointConnectorsService, M365SharePointConnectorsService>();
+        services.AddScoped<IVectorStoreService, VectorStoreService>();
+        services.AddScoped<IPgVectorConnectorsService, PgVectorConnectorsService>();
+
         // Common services
         services.AddScoped<IUnitOfWork, UnitOfWork>();
     }

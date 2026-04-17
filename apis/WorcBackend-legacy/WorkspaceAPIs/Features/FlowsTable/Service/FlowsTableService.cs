@@ -230,7 +230,9 @@ public class FlowsTableService : IFlowsTableService
                                                     w.FlowUsers != null && w.FlowUsers.Any(a => a.UserId == _userId)
                                                 )
                                             )
-                                        ).Include(i => i.FlowUsers)
+                                        )
+                                        .Include(i => i.FlowUsers)
+                                        .Include(i => i.FlowVersions)
                                         .SingleOrDefaultAsync();
 
             // Flow does not exist
@@ -238,6 +240,17 @@ public class FlowsTableService : IFlowsTableService
             {
                 _logger.LogInformation($"Flow does not exist");
                 serviceResponse.Message = "Flow does not exist";
+                return serviceResponse;
+            }
+
+            // Guard: Prevent disabling a flow that has published versions
+            if (flowsTableDto.IsDisabled == true && flow.FlowVersions?.Any(v => v.IsPublished) == true)
+            {
+                _logger.LogWarning(
+                    "Flow disable denied. FlowId: {FlowId} has published versions.",
+                    flow.Id
+                );
+                serviceResponse.Message = "Flow cannot be disabled because it has published versions.";
                 return serviceResponse;
             }
 

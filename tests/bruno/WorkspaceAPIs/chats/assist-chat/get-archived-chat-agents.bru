@@ -1,0 +1,15 @@
+meta {
+  name: Get archived agents
+  type: http
+  seq: 2
+}
+
+get {
+  url: {{WORC_APIS_BASE_URL}}/assist-chat/archived
+  body: none
+  auth: bearer
+}
+
+auth:bearer {
+  token: {{ACCESS_TOKEN}}
+}

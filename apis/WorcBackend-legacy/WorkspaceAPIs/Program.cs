@@ -99,6 +99,7 @@ app.MapControllers();
 
 app.MapHub<OrchestratorHub>("/orchestrator-hub");
 app.MapHub<AgentBuilderHub>("/agentbuilder/hub");
+app.MapHub<FlowExecutionHub>("/hubs/flow-execution");
 
 await app.SeedInitialData();
 

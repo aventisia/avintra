@@ -17,6 +17,7 @@ import { DesktopIcon } from "@radix-ui/react-icons";
 import {
   ArchiveIcon,
   BadgeDollarSignIcon,
+  BookOpenCheckIcon,
   CheckCheckIcon,
   FileBoxIcon,
   FolderCogIcon,
@@ -30,6 +31,7 @@ import {
 import { AiOutlineThunderbolt } from "react-icons/ai";
 
 import NewAgentIcon from "../NewAgentIcon";
+import NewChatIcon from "../NewChatIcon";
 
 const sidebarMenuSections: SidebarMenuSectionExtended[] = [
   {
@@ -98,6 +100,13 @@ const sidebarMenuSections: SidebarMenuSectionExtended[] = [
       },
       {
         permissions: ["OM"],
+        Icon: NewChatIcon,
+        name: "Conversations",
+        route: "/orchestrator/conversations",
+        type: ["Commercial", "Enterprise"],
+      },
+      {
+        permissions: ["OM"],
         Icon: FolderCogIcon,
         name: "Key Store",
         route: "/orchestrator/keystore",
@@ -110,6 +119,13 @@ const sidebarMenuSections: SidebarMenuSectionExtended[] = [
         route: "/orchestrator/vault",
         type: ["Commercial", "Enterprise"],
       },
+      {
+        permissions: ["OM"],
+        Icon: BookOpenCheckIcon,
+        name: "knowledge base",
+        route: "/orchestrator/knowledge-base",
+        type: ["Commercial", "Enterprise"],
+      },
     ],
   },
   {
@@ -119,25 +135,64 @@ const sidebarMenuSections: SidebarMenuSectionExtended[] = [
           {
             permissions: ["TU"],
             Icon: NewAgentIcon,
-            name: "my agents",
-            route: "/assist/my-agents",
+            name: "agents",
+            route: "/assist/agents",
             type: ["Commercial", "Enterprise"],
           },
 
-          // Add Assist my queue only if not production
+          // Add Assist queues only if not production
           ...(import.meta.env.MODE !== "production"
             ? ([
                 {
                   permissions: ["TU"],
                   Icon: QueueListIcon,
-                  name: "my queue",
-                  route: "/assist/my-queue",
+                  name: "queues",
+                  route: "/assist/queues",
+                  type: ["Commercial", "Enterprise"],
+                },
+              ] as SidebarMenuItemExtended[])
+            : []),
+          // Add Assist chats only if not production
+          ...(import.meta.env.MODE !== "production"
+            ? ([
+                {
+                  permissions: ["TU"],
+                  Icon: QueueListIcon,
+                  name: "chats",
+                  route: "/assist/chats",
                   type: ["Commercial", "Enterprise"],
                 },
               ] as SidebarMenuItemExtended[])
             : []),
         ]
-      : [],
+      : [
+          // In dev show assist section in both web and taruri
+          ...(import.meta.env.MODE !== "production"
+            ? ([
+                {
+                  permissions: ["TU"],
+                  Icon: NewAgentIcon,
+                  name: "agents",
+                  route: "/assist/agents",
+                  type: ["Commercial", "Enterprise"],
+                },
+                {
+                  permissions: ["TU"],
+                  Icon: QueueListIcon,
+                  name: "queues",
+                  route: "/assist/queues",
+                  type: ["Commercial", "Enterprise"],
+                },
+                {
+                  permissions: ["TU"],
+                  Icon: NewChatIcon,
+                  name: "chats",
+                  route: "/assist/chats",
+                  type: ["Commercial", "Enterprise"],
+                },
+              ] as SidebarMenuItemExtended[])
+            : []),
+        ],
   },
   {
     sectionName: "Tenant Admin",

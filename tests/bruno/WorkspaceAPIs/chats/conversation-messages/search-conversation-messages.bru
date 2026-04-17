@@ -1,0 +1,19 @@
+meta {
+  name: Search conversation messages
+  type: http
+  seq: 4
+}
+
+get {
+  url: {{WORC_APIS_BASE_URL}}/assist/conversations/messages/search?query={{SEARCH_KEY}}
+  body: none
+  auth: bearer
+}
+
+params:query {
+  query: {{SEARCH_KEY}}
+}
+
+auth:bearer {
+  token: {{ACCESS_TOKEN}}
+}

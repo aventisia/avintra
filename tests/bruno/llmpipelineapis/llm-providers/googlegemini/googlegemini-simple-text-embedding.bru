@@ -1,0 +1,36 @@
+meta {
+  name: googlegemini - simple text embedding
+  type: http
+  seq: 4
+}
+
+post {
+  url: {{LLM_PIPELINE_APIS_BASE_URL}}/llm/embeddings
+  body: json
+  auth: bearer
+}
+
+auth:bearer {
+  token: {{ACCESS_TOKEN}}
+}
+
+body:json {
+  {
+    "provider": "googlegemini",
+    "model": "gemini-embedding-2-preview",
+    "input": "This is a test sentence for embedding.",
+    "is_byok_enabled": false,
+    "credential_id": null,
+    "dimensions": 1536,
+    "encoding_format": "float",
+    "ref_type": "Platform",
+    "ref_id": "",
+    "ref_name": "",
+    "action": "imporve_prompt"
+  }
+}
+
+settings {
+  encodeUrl: true
+  timeout: 0
+}

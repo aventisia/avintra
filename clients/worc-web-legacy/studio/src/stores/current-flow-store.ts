@@ -1,6 +1,7 @@
 import { ExecutionStateType } from "@/features/execute-flow/types/execution-state-type";
 import { UserType } from "@/features/share-access/dtos/flow-user-dto";
 import { FlowTypesEnum } from "@/react-toolkit/enums/flow-types-enum";
+
 import { create } from "zustand";
 
 interface ICurrentFlowDetails {
@@ -33,6 +34,9 @@ interface LoopExecutionGroup {
 type State = {
   /** Details of the currently opened flow */
   currentFlow: ICurrentFlowDetails;
+
+  /** Flag to indicate if flow type is ChatAgent */
+  isChatAgent: boolean;
 
   /** Flag to indicate if flow is loading */
   isFlowLoading: boolean;
@@ -83,13 +87,20 @@ export const useCurrentFlowStore = create<State & Actions>((set) => ({
     type: FlowTypesEnum.Agent, // Default to Agent, but it will be set correctly when a flow is loaded
     description: "",
   },
+
+  isChatAgent: false,
+
   isFlowLoading: false,
   isFlowSaving: false,
   executionState: "stopped",
   conditionalExecutionGroup: [],
   loopExecutionGroup: [],
 
-  setCurrentFlow: (flowDetails) => set({ currentFlow: flowDetails }),
+  setCurrentFlow: (flowDetails) =>
+    set({
+      currentFlow: flowDetails,
+      isChatAgent: flowDetails.type === FlowTypesEnum.ChatAgent,
+    }),
 
   setIsFlowLoading: (isLoading) => set({ isFlowLoading: isLoading }),
 

@@ -28,6 +28,11 @@ export const vaultAppsSelectOptions: Record<
     label: "Azure Storage",
     value: "AzureStorage",
   },
+  [VaultAppsEnum.ConnectionString]: {
+    label: "Connection String",
+    value: "ConnectionString",
+  },
+  [VaultAppsEnum.Qdrant]: { label: "Qdrant", value: "Qdrant" },
 };
 
 // export const appList = [

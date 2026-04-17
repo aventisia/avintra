@@ -11,6 +11,7 @@ public interface IUnitOfWork
     ISupportTicketRemarkRepo SupportTicketRemarkRepo { get; }
     IFlowLogRepo FlowLogRepo { get; }
     IFlowVersionRepo FlowVersionRepo { get; }
+    IFlowVersionUserRepo FlowVersionUserRepo { get; }
     IFlowVersionHistoryRepo FlowVersionHistoryRepo { get; }
     IMachineRepo MachineRepo { get; }
     IMachineFlowRepo MachineFlowRepo { get; }
@@ -32,6 +33,11 @@ public interface IUnitOfWork
     IEncryptedKeyValueRepo EncryptedKeyValueRepo { get; }
     IAITaskRepo AITaskRepo { get; }
     IOnPremModelRepo OnPremModelRepo { get; }
+    IConversationRepo ConversationRepo { get; }
+    IConversationMessageRepo ConversationMessageRepo { get; }
+    IVectorStoreRepo VectorStoreRepo { get; }
+    IKnowledgeBaseRepo KnowledgeBaseRepo { get; }
+    IKnowledgeBaseFileRepo KnowledgeBaseFileRepo { get; }
 
     /// <summary>
     /// Saves the changes made in the unit of work asynchronously.

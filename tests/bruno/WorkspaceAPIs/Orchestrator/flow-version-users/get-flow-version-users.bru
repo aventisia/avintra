@@ -1,0 +1,10 @@
+meta {
+  name: Get flow version users
+  type: http
+  seq: 6
+}
+
+get {
+  url: {{WORC_APIS_BASE_URL}}/flowversion-user/{{FLOW_VERSION_ID}}/list
+  body: none
+}

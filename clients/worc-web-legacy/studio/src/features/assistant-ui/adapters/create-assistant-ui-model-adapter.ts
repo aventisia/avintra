@@ -20,6 +20,7 @@ type CreateAssistantUIModelAdapterParams = {
   flowName: string;
   systemPrompt?: string;
   policyContext?: string;
+  onRequestComplete?: () => void;
 };
 
 /**
@@ -70,6 +71,7 @@ export const createAssistantUIModelAdapter = ({
   flowName,
   systemPrompt,
   policyContext,
+  onRequestComplete,
 }: CreateAssistantUIModelAdapterParams): ChatModelAdapter => {
   return {
     /**
@@ -125,6 +127,8 @@ export const createAssistantUIModelAdapter = ({
           ],
         };
       }
+
+      onRequestComplete?.();
     },
   };
 };

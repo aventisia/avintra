@@ -60,7 +60,10 @@ class LLMRequest(BaseModel):
     ref_name: str # Name of the reference (e.g., name of the Agent/Workflow/AIProject)
     action: str # Action being performed (e.g., "AgentExecution", "AIModelExecution", "WorkflowExecution")
     agent_name: Optional[str] = None
-    
+    # Knowledge base retrieval (OpenAI / pgvector, optional)
+    kb_names: Optional[List[str]] = None  # Document names to scope KB chunk retrieval (maps to doc_names in vector store)
+    top_k: Optional[int] = Field(default=5, ge=1, le=100)  # Number of top chunks to retrieve from the knowledge base
+
 # Chunk response schema for streaming LLM response
 class LLMChunkResponse(BaseModel):
     provider: ProviderLiteral
@@ -88,3 +91,29 @@ class LLMResponse(BaseModel):
     is_byok_enabled: Optional[bool] = False # TODO: Implement BYOK support
     credential_id: Optional[str] = None # TODO: Implement BYOK support
     error: Optional[str] = None
+
+
+class EmbeddingRequest(BaseModel):
+    provider: ProviderLiteral  # Embedding provider (e.g., openai, azure, etc.)
+    model: str  # Model name used for generating embeddings
+    input: Union[str, List[str]]  # Text or list of texts to embed
+    dimensions: Optional[int] = None  # Output vector size (if supported)
+    encoding_format: Literal['float', 'base64'] = 'float'  # Output format of embeddings
+    reference_id: Optional[str] = None  # ID of related object (doc, record, etc.)
+    reference_type: Optional[str] = None  # Type of reference (e.g., "document")
+    reference_name: Optional[str] = None  # Human-readable name
+    action: str # Action being performed (e.g., "AgentExecution", "AIModelExecution", "WorkflowExecution")
+    is_byok_enabled: bool = False  # Whether custom credentials are used
+    credential_id: Optional[str] = None  # ID of the credential
+
+class EmbeddingResponse(BaseModel):
+    provider: ProviderLiteral  # Provider used for embedding
+    model: str  # Model used
+    embeddings: List[List[float]]  # List of embedding vectors (one per input)
+    created_on: datetime = datetime.now(timezone.utc)  # Timestamp of response creation
+    time_taken: Optional[float] = 0.0  # Time taken to generate embeddings (in seconds)
+    is_byok_enabled: Optional[bool] = False  # Whether BYOK was used
+    credential_id: Optional[str] = None  # Credential identifier
+    input_tokens: Optional[int] = 0  # Number of tokens processed
+    status: Literal['completed', 'failed'] = 'completed'  # Execution status
+    error: Optional[str] = None  # Error message if failed

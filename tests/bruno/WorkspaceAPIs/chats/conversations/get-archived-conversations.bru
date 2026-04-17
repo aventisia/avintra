@@ -1,0 +1,15 @@
+meta {
+  name: Get archived conversations
+  type: http
+  seq: 8
+}
+
+get {
+  url: {{WORC_APIS_BASE_URL}}/assist/conversations/{{FLOW_VERSION_ID}}/archived
+  body: none
+  auth: bearer
+}
+
+auth:bearer {
+  token: {{ACCESS_TOKEN}}
+}

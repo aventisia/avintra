@@ -60,6 +60,16 @@ public class FlowVersion : BaseEntity, IMustHaveTenant
     public int VersionNumber { get; set; }
 
     /// <summary>
+    /// Gets or sets a value indicating whether the flow version is accessible to all users within the tenant.
+    /// </summary>
+    public bool IsTenantWideAccess { get; set; }
+
+    /// <summary>
+    /// Gets or sets the supported platforms for the flow version as a comma-separated string.
+    /// </summary>
+    public string? SupportedPlatform { get; set; }
+
+    /// <summary>
     /// Configures the many-to-many relationship between machine flow and flow versions.
     /// </summary>
     public virtual ICollection<MachineFlow>? MachineFlows { get; set; }
@@ -84,9 +94,18 @@ public class FlowVersion : BaseEntity, IMustHaveTenant
     /// </summary>
     public virtual ICollection<TimeTriggersFlowVersion>? TriggerFlowVersions { get; set; }
 
-
     /// <summary>
     /// Configures the many-to-many relationship between flow version history and flow versions.
     /// </summary>
     public virtual ICollection<FlowVersionHistory>? FlowVersionHistories { get; set; }
+
+    /// <summary>
+    /// Configures the many-to-many relationship between user and flow versions.
+    /// </summary>
+    public virtual ICollection<FlowVersionUser>? FlowVersionUsers { get; set; } = new List<FlowVersionUser>();
+
+    /// <summary>
+    /// Configures the many-to-many relationship between conversation and flow versions.
+    /// </summary>
+    public virtual ICollection<Conversation> Conversations { get; set; } = new List<Conversation>();
 }

@@ -12,4 +12,9 @@ public class LLMProviderModelRequestDto
     /// Gets or sets the unique identifier for the credential associated with the external provider's API.
     /// </summary>
     public required Guid CredentialId { get; set; }
+
+    /// <summary>
+    /// Optional output modalities (e.g., text, image, audio, embeddings) supported or requested for the model.
+    /// </summary>
+    public string? OutputModalities { get; set; }
 }

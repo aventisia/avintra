@@ -1,12 +1,8 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
-# Visual Studio Version 17
-VisualStudioVersion = 17.0.31903.59
+# Visual Studio Version 18
+VisualStudioVersion = 18.4.11620.152 stable
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "apis", "apis", "{CFAC8DAC-FC21-4D0D-ABA0-80E8DF5B5F8D}"
-EndProject
-Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "WorcBackend-legacy", "WorcBackend-legacy", "{3C39276B-1E2E-42B4-8C78-2F478ED91F8F}"
-EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AccountsAPIs", "apis\WorcBackend-legacy\AccountsAPIs\AccountsAPIs.csproj", "{B1C7664C-7B49-4350-87AD-318A2CEC77F9}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AspNetToolkit", "apis\WorcBackend-legacy\AspNetToolkit\AspNetToolkit.csproj", "{A00E87BC-6AAD-447C-86EE-50DDEA1FCD98}"
@@ -15,13 +11,14 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MLModelBuilderAPIs", "apis\
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "WorkspaceAPIs", "apis\WorcBackend-legacy\WorkspaceAPIs\WorkspaceAPIs.csproj", "{BE35771E-F3ED-4BEA-BBAD-76E354DB286E}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "NodeLibrary", "shared\NodeLibrary\NodeLibrary.csproj", "{1F25FEDF-8555-8E07-1449-F18CA00ADD32}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ExecutorLibrary", "shared\ExecutorLibrary\ExecutorLibrary.csproj", "{B3E72054-3349-4630-8EF5-C3A2023FB8DD}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
 		Release|Any CPU = Release|Any CPU
-	EndGlobalSection
-	GlobalSection(SolutionProperties) = preSolution
-		HideSolutionNode = FALSE
 	EndGlobalSection
 	GlobalSection(ProjectConfigurationPlatforms) = postSolution
 		{B1C7664C-7B49-4350-87AD-318A2CEC77F9}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
@@ -40,12 +37,16 @@ Global
 		{BE35771E-F3ED-4BEA-BBAD-76E354DB286E}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{BE35771E-F3ED-4BEA-BBAD-76E354DB286E}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{BE35771E-F3ED-4BEA-BBAD-76E354DB286E}.Release|Any CPU.Build.0 = Release|Any CPU
+		{1F25FEDF-8555-8E07-1449-F18CA00ADD32}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{1F25FEDF-8555-8E07-1449-F18CA00ADD32}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{1F25FEDF-8555-8E07-1449-F18CA00ADD32}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{1F25FEDF-8555-8E07-1449-F18CA00ADD32}.Release|Any CPU.Build.0 = Release|Any CPU
+		{B3E72054-3349-4630-8EF5-C3A2023FB8DD}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{B3E72054-3349-4630-8EF5-C3A2023FB8DD}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{B3E72054-3349-4630-8EF5-C3A2023FB8DD}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{B3E72054-3349-4630-8EF5-C3A2023FB8DD}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
-	GlobalSection(NestedProjects) = preSolution
-		{3C39276B-1E2E-42B4-8C78-2F478ED91F8F} = {CFAC8DAC-FC21-4D0D-ABA0-80E8DF5B5F8D}
-		{B1C7664C-7B49-4350-87AD-318A2CEC77F9} = {3C39276B-1E2E-42B4-8C78-2F478ED91F8F}
-		{A00E87BC-6AAD-447C-86EE-50DDEA1FCD98} = {3C39276B-1E2E-42B4-8C78-2F478ED91F8F}
-		{72902AEA-79DB-4398-B7DF-B881E9E70BB3} = {3C39276B-1E2E-42B4-8C78-2F478ED91F8F}
-		{BE35771E-F3ED-4BEA-BBAD-76E354DB286E} = {3C39276B-1E2E-42B4-8C78-2F478ED91F8F}
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
 	EndGlobalSection
 EndGlobal

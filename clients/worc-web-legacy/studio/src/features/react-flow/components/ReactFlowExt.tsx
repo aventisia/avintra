@@ -1,6 +1,7 @@
 import { CustomEdgeTypeObj } from "@/constants/custom-edge-type-obj";
 import { CustomNodeTypeObj } from "@/constants/custom-node-type-obj";
 import { defaultEdgeOptions } from "@/constants/default-edge-options";
+import { WorcAssistantUI } from "@/features/assistant-ui";
 import { useHistoryTracker } from "@/hooks/useHistoryTracker";
 import { useTrackSelection } from "@/hooks/useTrackSelection";
 import { useUndoRedoShortcuts } from "@/hooks/useUndoRedoShortcuts";
@@ -41,7 +42,6 @@ import { ReactFlowDialogWrapper } from "./ReactFlowDialogWrapper";
 import { TestChatAgent } from "./TestChatAgent";
 import { ReactFlowContextMenu } from "./context-menu";
 import { ViewControls } from "./view-controls";
-import { WorcAssistantUI } from "@/features/assistant-ui";
 
 /**
  * A custom extension of the ReactFlow component.
@@ -197,7 +197,7 @@ export const ReactFlowExt = () => {
   // Render ReactFlow component
   return (
     <ResizablePanelGroup orientation="horizontal" className="!bg-slate-200">
-      <ResizablePanel>
+      <ResizablePanel minSize={"50%"}>
         <div ref={reactFlowWrapper} className="relative h-full w-full">
           <ReactFlow
             fitView
@@ -242,7 +242,7 @@ export const ReactFlowExt = () => {
       {flowType === FlowTypesEnum.ChatAgent && isTestChatOpen && (
         <>
           <ResizableHandle withHandle className="bg-slate-300" />
-          <ResizablePanel defaultSize="35%">
+          <ResizablePanel minSize={"30%"} defaultSize="35%">
             <WorcAssistantUI />
           </ResizablePanel>
         </>

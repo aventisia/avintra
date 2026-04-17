@@ -9,7 +9,7 @@ interface IGraphData {
   totalCount: number;
 }
 
-interface IResourceUsages {
+export interface IResourceUsages {
   serviceType: string;
   unitType: string;
   oneUnit: number;

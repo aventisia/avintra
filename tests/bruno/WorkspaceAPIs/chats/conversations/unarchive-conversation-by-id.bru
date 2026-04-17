@@ -1,0 +1,15 @@
+meta {
+  name: Unarchive conversation by id
+  type: http
+  seq: 4
+}
+
+post {
+  url: {{WORC_APIS_BASE_URL}}/assist/conversations/{{CONVERSATION_ID}}/unarchive
+  body: none
+  auth: bearer
+}
+
+auth:bearer {
+  token: {{ACCESS_TOKEN}}
+}
