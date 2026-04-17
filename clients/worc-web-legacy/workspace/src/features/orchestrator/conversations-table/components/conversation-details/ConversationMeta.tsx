@@ -1,7 +1,5 @@
-import { Button } from "@aventisia/ui/buttons";
 import { ScrollArea } from "@aventisia/ui/scroll";
 import { format } from "date-fns";
-import { Copy } from "lucide-react";
 
 import { AdminConversationDto } from "../../dtos/conversations-table-dto";
 
@@ -10,10 +8,6 @@ export default function ConversationMeta({
 }: {
   data: AdminConversationDto;
 }) {
-  const copyToClipboard = (text: string) => {
-    navigator.clipboard.writeText(text);
-  };
-
   return (
     <ScrollArea className="h-full">
       <div className="p-4 space-y-6 text-sm">
@@ -22,16 +16,7 @@ export default function ConversationMeta({
           <p className="text-xs text-muted-foreground">Conversation</p>
 
           <div className="space-y-1">
-            <div className="flex items-center justify-between gap-2">
-              <p className="truncate text-xs ">{data.id}</p>
-              <Button
-                size="icon7"
-                variant="ghost"
-                onClick={() => copyToClipboard(data.id)}
-              >
-                <Copy className="h-3 w-3" />
-              </Button>
-            </div>
+            <p className="truncate text-xs ">Id: {data.id}</p>
 
             <p className="text-xs text-muted-foreground">
               {format(new Date(data.timestamp), "dd MMM yyyy, hh:mm a")}

@@ -1,3 +1,5 @@
+import { useCarryParams } from "@/hooks/useForwardQueryParams";
+
 import {
   Breadcrumb,
   BreadcrumbItem,
@@ -15,7 +17,10 @@ import ConversationMeta from "./ConversationMeta";
 export default function ConversationDetail() {
   // Get conversation id form url
   const { id } = useParams();
-  //
+
+  // forward query params
+  const withQueryParams = useCarryParams(["from", "to"]);
+
   // fetch conversations details data
   const { data, isLoading } = useFetchConversationDetails(id);
 
@@ -26,11 +31,7 @@ export default function ConversationDetail() {
           <BreadcrumbList>
             <BreadcrumbItem>
               <BreadcrumbLink asChild>
-                <NavLink
-                  to={{
-                    pathname: "/orchestrator/conversations",
-                  }}
-                >
+                <NavLink to={withQueryParams("/orchestrator/conversations")}>
                   Conversations
                 </NavLink>
               </BreadcrumbLink>
