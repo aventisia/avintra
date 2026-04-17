@@ -115,18 +115,9 @@ export const agentsTableColumns: ColumnDef<AgentsTableDto>[] = [
     ),
     cell: ({ row }) => {
       const supportedPlatform = row.original?.supportedPlatform;
-      let platform = "Desktop";
+      let platform = "Cloud & Windows";
       if (supportedPlatform == "windows") {
-        platform = "Desktop";
-      }
-      if (supportedPlatform == "cloud") {
-        platform = "Web & Desktop";
-      }
-      if (
-        // supportedPlatform == "cloud" &&
-        row.original.type == FlowTypesEnum.ChatAgent
-      ) {
-        platform = "Web";
+        platform = "Windows";
       }
       return (
         <div className="w-auto truncate font-medium">
