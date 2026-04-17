@@ -108,7 +108,7 @@ export const conversationsTableColumns: ColumnDef<AdminConversationDto>[] = [
     ),
     cell: ({ row }) => (
       <div className="w-auto truncate font-medium">
-        {row.getValue("username") ? row.getValue("username") : "NA"}
+        {`${row.original.firstName} ${row.original.lastName}`}
       </div>
     ),
   },

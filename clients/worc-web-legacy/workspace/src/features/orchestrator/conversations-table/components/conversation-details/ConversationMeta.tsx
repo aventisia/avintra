@@ -16,7 +16,7 @@ export default function ConversationMeta({
           <p className="text-xs text-muted-foreground">Conversation</p>
 
           <div className="space-y-1">
-            <p className="truncate text-xs ">Id: {data.id}</p>
+            <p className="truncate text-xs ">{data.id}</p>
 
             <p className="text-xs text-muted-foreground">
               {format(new Date(data.timestamp), "dd MMM yyyy, hh:mm a")}
