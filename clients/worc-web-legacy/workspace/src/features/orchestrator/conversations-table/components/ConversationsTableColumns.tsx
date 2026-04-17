@@ -49,6 +49,21 @@ export const conversationsTableColumns: ColumnDef<AdminConversationDto>[] = [
     ),
   },
   {
+    accessorKey: "totalExchange",
+    header: ({ column }) => (
+      <DTColumnHeader
+        tableKey={TABLE_KEY}
+        column={column}
+        title={getColumnName("totalExchange")}
+      />
+    ),
+    cell: ({ row }) => (
+      <div className="w-auto truncate font-medium">
+        {row.getValue("totalExchange")}
+      </div>
+    ),
+  },
+  {
     accessorKey: "status",
     header: ({ column }) => (
       <DTColumnHeader
@@ -83,17 +98,17 @@ export const conversationsTableColumns: ColumnDef<AdminConversationDto>[] = [
   },
 
   {
-    accessorKey: "lastModifiedBy",
+    accessorKey: "username",
     header: ({ column }) => (
       <DTColumnHeader
         tableKey={TABLE_KEY}
         column={column}
-        title={getColumnName("lastModifiedBy")}
+        title={getColumnName("username")}
       />
     ),
     cell: ({ row }) => (
       <div className="w-auto truncate font-medium">
-        {row.getValue("lastModifiedBy") ? row.getValue("lastModifiedBy") : "NA"}
+        {row.getValue("username") ? row.getValue("username") : "NA"}
       </div>
     ),
   },

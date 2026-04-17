@@ -1,11 +1,8 @@
-import { Badge } from "@aventisia/ui/badge";
 import { Button } from "@aventisia/ui/buttons";
-import { cn } from "@aventisia/ui/lib";
 import { ScrollArea } from "@aventisia/ui/scroll";
 import { format } from "date-fns";
 import { Copy } from "lucide-react";
 
-import { statusColor } from "../../constants/column-display-names";
 import { AdminConversationDto } from "../../dtos/conversations-table-dto";
 
 export default function ConversationMeta({
@@ -25,12 +22,15 @@ export default function ConversationMeta({
           <p className="text-xs text-muted-foreground">Conversation</p>
 
           <div className="space-y-1">
-            <div className="flex gap-2 items-center">
-              <p className="font-medium line-clamp-2">{data.title + "..."}</p>
-
-              <Badge className={cn(statusColor[data.status])}>
-                {data.status}
-              </Badge>
+            <div className="flex items-center justify-between gap-2">
+              <p className="truncate text-xs ">{data.id}</p>
+              <Button
+                size="icon7"
+                variant="ghost"
+                onClick={() => copyToClipboard(data.id)}
+              >
+                <Copy className="h-3 w-3" />
+              </Button>
             </div>
 
             <p className="text-xs text-muted-foreground">
@@ -69,22 +69,9 @@ export default function ConversationMeta({
 
           <div className="space-y-1">
             <p>
-              Messages:{" "}
-              <span className="font-medium">{data.messages?.length ?? 0}</span>
+              Exchanges:{" "}
+              <span className="font-medium">{data.totalExchange ?? 0}</span>
             </p>
-
-            <div className="flex items-center justify-between gap-2">
-              <p className="truncate text-xs text-muted-foreground">
-                {data.id}
-              </p>
-              <Button
-                size="icon7"
-                variant="ghost"
-                onClick={() => copyToClipboard(data.id)}
-              >
-                <Copy size={14} />
-              </Button>
-            </div>
           </div>
         </div>
       </div>

@@ -2,7 +2,8 @@
 export const columnVisibilityState = {
   id: false,
   title: true,
-  status: true,
+  totalExchange: true,
+  status: false,
   timestamp: true,
   lastModifiedBy: true,
   lastModifiedOn: false,
