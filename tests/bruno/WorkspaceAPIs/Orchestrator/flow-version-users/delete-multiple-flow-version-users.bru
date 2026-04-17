@@ -1,0 +1,28 @@
+meta {
+  name: Delete multiple flow version users
+  type: http
+  seq: 10
+}
+
+post {
+  url: {{WORC_APIS_BASE_URL}}/flowversion-user/delete-multiple
+  body: json
+  auth: none
+}
+
+body:json {
+  ["{{FLOW_VERSION_USER_ID}}"]
+}
+
+script:post-response {
+  if(res.getStatus() == 200){
+      bru.setGlobalEnvVar(
+        "FLOW_VERSION_USER_ID", 
+        "00000000-0000-0000-0000-000000000000"
+      );
+  }
+}
+
+docs {
+  > TODO: Implement functionality to delete multiple projects only if the user provides an OTP or password, especially when the projects are linked to other sub-content.
+}

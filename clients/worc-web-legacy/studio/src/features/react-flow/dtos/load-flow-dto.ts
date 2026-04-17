@@ -31,5 +31,7 @@ export interface LoadFlowDto {
   type: FlowTypesEnum;
   description?: string;
 
+  supportedPlatform?: string;
+
   accessType?: UserType;
 }

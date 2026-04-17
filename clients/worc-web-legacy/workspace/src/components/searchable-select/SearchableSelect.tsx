@@ -81,8 +81,12 @@ export const SearchableSelect = ({
             className,
           )}
         >
-          <span className="line-clamp-1">
-            {selectedOption?.label ?? placeholder}
+          <span className="line-clamp-1 text-foreground font-normal">
+            {selectedOption?.label ? (
+              <>{selectedOption?.label}</>
+            ) : (
+              <span className="text-muted-foreground">{placeholder}</span>
+            )}
           </span>
           <ChevronDown className={cn("ml-2 h-4 w-4 opacity-50")} />
         </Button>

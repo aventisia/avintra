@@ -89,6 +89,18 @@ public enum AppSecretTypesEnum
     [Description("Azure Storage Credentials")]
     AzureStorage,
 
+    /// <summary>
+    /// Represents credentials required to access a data source using a connection string.
+    /// </summary>
+    [Description("Connection String Credentials")]
+    ConnectionString,
+
+    /// <summary>
+    /// Represents the credentials required for Qdrant vector database access.
+    /// </summary>
+    [Description("Qdrant Credentials")]
+    Qdrant,
+
     EmailClient,
     AzureBlobStorage
 }

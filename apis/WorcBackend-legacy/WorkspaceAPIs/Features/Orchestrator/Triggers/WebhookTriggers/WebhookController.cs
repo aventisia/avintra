@@ -140,7 +140,7 @@ public class WebhookController : ControllerBase
             RefId = triggerId,
             Status = JobStatusTypesEnum.Created,
             Priority = JobPriorityTypesEnum.Normal,
-            InputArgumentJson = request?.Payload.HasValue == true ? request.Payload.Value.GetRawText() : null,
+            InputArgumentsJson = request?.Payload.HasValue == true ? request.Payload.Value.GetRawText() : null,
             CreatedOn = DateTimeOffset.UtcNow
         };
 
@@ -233,7 +233,7 @@ public class WebhookController : ControllerBase
             Status = job.Status.ToString(),
             StartTime = job.StartTime,
             EndTime = job.EndTime,
-            InputArgumentJson = job.InputArgumentJson,
+            InputArgumentsJson = job.InputArgumentsJson,
             OutputDataJson = job.OutputDataJson
         });
     }

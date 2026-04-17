@@ -9,7 +9,7 @@ export const columnDisplayNames: KeyValueLookupType[] = [
   { key: "status", value: "Status" },
   { key: "createdBy", value: "Published By" },
   { key: "createdOn", value: "Published On" },
-  { key: "versionNumber", value: "Version" },
+  { key: "supportedPlatform", value: "Platform" },
   { key: "lastModifiedBy", value: "Last Modified By" },
   { key: "lastModifiedOn", value: "Last Modified On" },
   { key: "machineCount", value: "Machines" },

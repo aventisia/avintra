@@ -6,7 +6,7 @@ import httpx
 from datetime import datetime, timezone
 from app.core.config import settings
 from app.core.logger import log_exception, logger
-from app.features.llm_providers.llm_providers_schemas import LLMChunkResponse, LLMRequest, LLMResponse
+from app.features.llm_providers.llm_providers_schemas import EmbeddingRequest, EmbeddingResponse, LLMChunkResponse, LLMRequest, LLMResponse
 from app.features.llm_providers.llm_providers_utils import extract_json_from_llm_response
 from .llm_providers_base import BaseLLMProvider
 from app.features.llm_providers.llm_job_manager import active_llm_jobs
@@ -442,3 +442,158 @@ class OpenAIProvider(BaseLLMProvider):
             credit_usage.append(build_entry(service_map["output"], output_tokens))
         
         return credit_usage
+    
+
+    # Method: Generate embeddings from OpenAI
+    async def generate_embeddings(self, embedding_request: EmbeddingRequest, user: User):
+        logger.info(f"[EMBEDDING] Request sent to OpenAI provider with model: {embedding_request.model}")
+
+        # Handle BYOK (Bring Your Own Key)
+        if embedding_request.is_byok_enabled and embedding_request.credential_id:
+            vault_manager = VaultManager()
+
+            logger.info(f"Fetching credentials from vault for credential_id: {embedding_request.credential_id}")
+            credential = vault_manager.get_vault_secret_by_id(
+                vault_secret_id=embedding_request.credential_id,
+                jwt=user.access_token
+            )
+
+            if credential:
+                self.api_url = credential.get('data', {}).get('Url')
+                self.api_key = credential.get("data", {}).get("ApiKey")
+                logger.info("BYOK credentials successfully applied.")
+            else:
+                logger.error("Invalid BYOK credential_id")
+                raise HTTPException(status_code=400, detail="No valid credentials found.")
+        else:
+            credit_manager = CreditManagerService()
+            if not credit_manager.has_sufficient_credits(task="openai", jwt=user.access_token):
+                logger.warning(f"Insufficient credits for embeddings, user: {user.username}")
+                raise HTTPException(status_code=400, detail="Insufficient credits.")
+
+        # Initialize
+        start_time = time.perf_counter()
+        response_data = {}
+
+        # Build request payload
+        request_payload = {
+            "model": embedding_request.model,
+            "input": embedding_request.input,
+            "encoding_format": embedding_request.encoding_format
+        }
+
+        # Optional params
+        if embedding_request.dimensions:
+            request_payload["dimensions"] = embedding_request.dimensions
+
+        request_headers = {
+            "Content-Type": "application/json",
+            "Authorization": f"Bearer {self.api_key}"
+        }
+
+        timeout = httpx.Timeout(300.0)
+
+        try:
+            async with httpx.AsyncClient(timeout=timeout) as client:
+                response = await client.post(
+                    f"{self.api_url.rstrip('/')}/embeddings",
+                    json=request_payload,
+                    headers=request_headers
+                )
+
+                response.raise_for_status()
+                response_data = response.json()
+
+                logger.info(f"OpenAI embedding usage response:\n{json.dumps(response_data.get("usage", {}).get("total_tokens", 0), indent=2)}")
+
+                # Extract embeddings
+                embeddings = [item["embedding"] for item in response_data.get("data", [])]
+
+                # Build response
+                end_time = time.perf_counter()
+
+                embedding_response = EmbeddingResponse(
+                    provider=embedding_request.provider,
+                    model=embedding_request.model,
+                    embeddings=embeddings,
+                    created_on=datetime.now(timezone.utc),
+                    time_taken=round(end_time - start_time, 2),
+                    input_tokens=response_data.get("usage", {}).get("total_tokens", 0),
+                    is_byok_enabled=embedding_request.is_byok_enabled,
+                    credential_id=embedding_request.credential_id,
+                    status="completed"
+                )
+
+                # Credit consumption (same pattern as LLM)
+                if not embedding_request.is_byok_enabled and not embedding_request.credential_id:
+                    credit_usage = self._build_embedding_credit_usage(
+                        embedding_request,
+                        embedding_response
+                    )
+
+                    credit_manager = CreditManagerService()
+                    try:
+                        credit_manager.post_credit_usage(
+                            task="openai",
+                            request=credit_usage,
+                            jwt=user.access_token
+                        )
+                        logger.info("Embedding credit usage posted successfully.")
+                    except Exception as e:
+                        logger.error(f"Failed to post embedding credit usage: {str(e)}")
+                        raise HTTPException(status_code=500, detail="Credit usage failed")
+
+                return embedding_response
+
+        except Exception as e:
+            log_exception(logger, e, "OpenAI embedding error", response_data.get('error', ''))
+
+            return EmbeddingResponse(
+                provider=embedding_request.provider,
+                model=embedding_request.model,
+                embeddings=[],
+                status="failed",
+                error=str(e)
+            )
+        
+    def _build_embedding_credit_usage(
+        self,
+        embedding_request: EmbeddingRequest,
+        embedding_response: EmbeddingResponse
+    ):
+        """
+        Build credit usage payload for embedding requests.
+
+        - Maps model name → internal ServiceType
+        - Uses input token count as consumed units
+        - Falls back to PascalCase conversion if model is unknown
+        - Does NOT assign any default ServiceType if model is empty/invalid
+        """
+
+        # Normalize model name to avoid case / whitespace issues
+        model_name = (embedding_request.model or "").strip().lower()
+
+        # Ensure token count is always a non-negative integer
+        input_tokens = max(embedding_response.input_tokens or 0, 0)
+
+        # Known model → ServiceType mapping
+        # Extend this dictionary when adding new supported models
+        EMBEDDING_MODEL_MAP = {
+            "text-embedding-ada-002": "OpenAIEmbeddingAda002",
+            "text-embedding-3-small": "OpenAIEmbedding3Small",
+            "text-embedding-3-large": "OpenAIEmbedding3Large",
+        }
+
+        # Try resolving ServiceType from predefined mapping
+        service_type = EMBEDDING_MODEL_MAP.get(model_name)
+
+        # Build and return credit usage payload
+        return [{
+            "ServiceType": service_type,
+            "ConsumedUnit": input_tokens,
+            "RefType": embedding_request.reference_type,
+            "RefId": embedding_request.reference_id,
+            "RefName": embedding_request.reference_name,
+            "Action": embedding_request.action,
+            "TriggeredByAgent": None
+        }]

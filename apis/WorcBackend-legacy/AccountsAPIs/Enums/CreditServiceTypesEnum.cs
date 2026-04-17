@@ -49,6 +49,17 @@ public enum CreditServiceTypesEnum
     Claude45HaikuInput,
     Claude45HaikuOutput,
     Claude45HaikuCached,
+
+    // Embedding models
+    OpenAIEmbeddingAda002,
+    OpenAIEmbedding3Small,
+    OpenAIEmbedding3Large,
+    GeminiEmbeddingV1,
+    GeminiEmbeddingV2Preview,
+    OpenRouterQwenEmbedding06B,
+    OpenRouterQwenEmbedding4B,
+    OpenRouterQwenEmbedding8B,
+
     // Other services
     ElevenLabsSTT,
     ElevenLabsTTS,

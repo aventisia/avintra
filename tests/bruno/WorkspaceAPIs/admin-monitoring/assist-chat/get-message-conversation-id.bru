@@ -1,0 +1,15 @@
+meta {
+  name: Get message conversation id
+  type: http
+  seq: 4
+}
+
+get {
+  url: {{WORC_APIS_BASE_URL}}/admin/conversations/{{CONVERSATION_ID}}/messages
+  body: none
+  auth: bearer
+}
+
+auth:bearer {
+  token: {{ACCESS_TOKEN}}
+}

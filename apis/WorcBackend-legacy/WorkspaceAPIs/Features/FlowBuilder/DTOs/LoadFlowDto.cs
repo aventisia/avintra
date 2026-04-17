@@ -75,4 +75,9 @@ public class LoadFlowDto
     /// Gets or sets the access type of the user within the flow.
     /// </summary>
     public ProjectUserAccessEnum? AccessType { get; set; }
+
+    /// <summary>
+    /// Gets or sets the supported platforms for the flow version as a comma-separated string.
+    /// </summary>
+    public string? SupportedPlatform { get; set; }
 }

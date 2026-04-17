@@ -29,6 +29,7 @@ export interface LoadFlowDto {
   isArchived: boolean;
   type: FlowTypesEnum;
   description?: string;
+  supportedPlatform?: string;
 
   accessType?: string;
 }

@@ -46,10 +46,14 @@ public class ManageTenantService : IManageTenantService
             // Fetch tenant ID from current tenant service (set via passing tenantId in the header), which should be used for deletion
             var tenantIdToBeDeleted = _currentTenantService.CurrentTenantId;
 
+            // Delete VectorStore
+            if (!await DeleteEntitiesAsync(_unitOfWork.VectorStoreRepo, w => w.TenantId == tenantIdToBeDeleted, nameof(KeyStore), tenantIdToBeDeleted))
+                return serviceResponse;
+
             // Delete KeyStore
             if (!await DeleteEntitiesAsync(_unitOfWork.KeyStoreRepo, w => w.TenantId == tenantIdToBeDeleted, nameof(KeyStore), tenantIdToBeDeleted))
                 return serviceResponse;
-            
+
             // Delete EncryptedKeyValue - DeleteBehavior.Cascade set with AppSecret
 
             // Delete AppSecret
@@ -63,13 +67,13 @@ public class ManageTenantService : IManageTenantService
             // Delete Job
             if (!await DeleteEntitiesAsync(_unitOfWork.JobRepo, j => j.TenantId == tenantIdToBeDeleted, nameof(Job), tenantIdToBeDeleted))
                 return serviceResponse;
-            
+
             // Delete TimeTriggerFlowVersion - DeleteBehavior.Cascade set with TimeTrigger
 
             // Delete TimeTrigger
             if (!await DeleteEntitiesAsync(_unitOfWork.TriggerRepo, t => t.TenantId == tenantIdToBeDeleted, nameof(TimeTrigger), tenantIdToBeDeleted))
                 return serviceResponse;
-            
+
             // Delete WorkItemEvent - DeleteBehavior.Cascade set with QueueTransaction
             // Delete QueueTransaction - DeleteBehavior.Cascade set with Queue
             // Delete QueueFlowVersion - DeleteBehavior.Cascade set with Queue

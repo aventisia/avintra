@@ -1,0 +1,15 @@
+meta {
+  name: Get all conversations
+  type: http
+  seq: 1
+}
+
+get {
+  url: {{WORC_APIS_BASE_URL}}/admin/conversations
+  body: none
+  auth: bearer
+}
+
+auth:bearer {
+  token: {{ACCESS_TOKEN}}
+}

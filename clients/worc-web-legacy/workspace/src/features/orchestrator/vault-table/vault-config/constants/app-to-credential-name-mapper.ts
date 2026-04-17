@@ -13,4 +13,6 @@ export const appToCredentialNameMapper: Record<VaultAppsEnum, string> = {
   [VaultAppsEnum.OpenRouter]: "open_router",
   [VaultAppsEnum.ElevenLabs]: "eleven_labs",
   [VaultAppsEnum.AzureStorage]: "azure_storage",
+  [VaultAppsEnum.ConnectionString]: "connection_string",
+  [VaultAppsEnum.Qdrant]: "qdrant_api_key",
 };

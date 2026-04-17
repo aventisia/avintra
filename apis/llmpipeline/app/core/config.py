@@ -20,6 +20,8 @@ class Settings(BaseSettings):
     POSTGRESQL_PORT: str
     POSTGRESQL_USERNAME: str
     POSTGRESQL_PASSWORD: str
+    POSTGRESQL_WORC_DB_NAME: str = "WorkspaceDb"
+    POSTGRESQL_ACCOUNTS_DB_NAME: str = "AccountsDb"
     
     # JWT Settings
     JWT_SECRET_KEY: str
@@ -39,7 +41,7 @@ class Settings(BaseSettings):
     # TODO: Need to adjust later
     OLLAMA_API_URL: str = ""
     OLLAMA_API_KEY: str = ""
-    QDRANT_URL: str = ""
+    QDRANT_URL: str = "https://dev-qdrant-db.aventisia.com"
     QDRANT_API_KEY: str = ""
     
     model_config = SettingsConfigDict(

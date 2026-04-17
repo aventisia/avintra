@@ -1,10 +1,10 @@
 import {
-  DataTable,
-  DataTableSkeleton,
   DTHeading,
   DTPagination,
   DTSearchBox,
   DTViewOptions,
+  DataTable,
+  DataTableSkeleton,
   getDataTablePreferences,
 } from "@aventisia/ui/data-table";
 import { useDataTable, useDocumentTitle } from "@aventisia/ui/hooks";
@@ -13,10 +13,10 @@ import { SEARCH_COLUMN, TABLE_KEY } from "../constants";
 import { columnDisplayNames } from "../constants/column-display-names";
 import { columnVisibilityState } from "../constants/column-visibility-state";
 import { useFetchAgents } from "../hooks/useFetchAgents";
-
-import { agentsTableColumns } from "./AgentsTableColumns";
 import { AgentStats } from "./AgentStats";
+import { agentsTableColumns } from "./AgentsTableColumns";
 import AssignMachinesDialog from "./assign-machines/AssignMachinesDialog";
+import AssignUsersDialog from "./assign-users/AssignUsersDialog";
 import { AgentsBulkActions } from "./table-actions/AgentsBulkActions";
 import DisableAgentDialog from "./table-actions/DisableAgentDialog";
 
@@ -89,6 +89,7 @@ export const AgentsTable = () => {
         <DataTableSkeleton />
       )}
       <AssignMachinesDialog />
+      <AssignUsersDialog />
       <DisableAgentDialog />
     </>
   );

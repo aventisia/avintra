@@ -32,7 +32,7 @@ namespace CodeActivitiesLibrary.DataTransformations.DateTimeActivities
                 StandardFormatOptionEnum.ShortDate);
 
         [DisplayName("Custom Format String")]
-        [Description("A custom format string for the DateTime value (e.g., yyyyMMdd).")]
+        [Description("A custom format string for the DateTime value (e.g., yyyyMMdd). For more info on custom format strings, see: https://www.c-sharpcorner.com/blogs/date-and-time-format-in-c-sharp-programming1")]
         [RenderIfCondition(nameof(FormatToUse), FormatOptionEnum.Custom)]
         public InArgument<string> CustomFormat { get; set; }
 

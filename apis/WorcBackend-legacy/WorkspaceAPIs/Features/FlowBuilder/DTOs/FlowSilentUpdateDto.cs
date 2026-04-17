@@ -38,4 +38,9 @@ public class FlowSilentUpdateDto
     /// <summary>
     /// Gets or sets the InputOutputObject, which is a JSON string that defines the input and output data for the flow.
     public string? InputOutputObject { get; set; }
+
+    /// <summary>
+    /// Gets or sets the supported platforms for the flow version as a comma-separated string.
+    /// </summary>
+    public string? SupportedPlatform { get; set; }
 }

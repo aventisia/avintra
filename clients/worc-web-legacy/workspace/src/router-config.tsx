@@ -7,6 +7,8 @@ import { Navigate, RouteObject, createBrowserRouter } from "react-router-dom";
 import { AppErrorPage } from "./components/layout/AppErrorPage";
 import { AppLayout } from "./components/layout/AppLayout";
 import { AppRedirectPage } from "./components/layout/AppRedirectPage";
+import Chat from "./features/assist/my-chats/components/ChatSection";
+// import { NoChatSelected } from "./features/assist/my-chats/components/NoChatSelected";
 import GALayout from "./features/global-admin/on-prem-tenant/components/GALayout";
 import {
   AccountDeactivation,
@@ -15,6 +17,7 @@ import {
   ProfileInfo,
   Security,
 } from "./features/my-account/components";
+import { ConversationsTable } from "./features/orchestrator/conversations-table/components/ConversationsTable";
 import { STCreatePage } from "./features/support-tickets-table/components/support-ticket-create-page/STCreatePage";
 import { SupportTicketEditForm } from "./features/support-tickets-table/components/support-ticket-crud-dialog/SupportTicketEditForm";
 import { AchievesPage } from "./pages/AchievesPage";
@@ -27,6 +30,7 @@ import { AppIntegrationsPage } from "./pages/IntegrationsPage";
 import { LibraryPage } from "./pages/LibraryPage";
 import { ModelsPage } from "./pages/ModelsPage";
 import MyAccountPage from "./pages/MyAccountPage";
+import { MyChatsPage } from "./pages/MyChatsPage";
 import { PreferencesPage } from "./pages/PreferencesPage";
 import { PublicTemplatesApprovalPage } from "./pages/PublicTemplatesApprovalPage";
 import { SupportTicketsPage } from "./pages/SupportTicketsPage";
@@ -40,6 +44,8 @@ import { TenantInstancePage } from "./pages/global-admin/TenantInstancePage";
 import { ExecutionLogsPage } from "./pages/orchestrator/ExecutionLogsPage";
 import { JobsPage } from "./pages/orchestrator/JobsPage";
 import { KeystorePage } from "./pages/orchestrator/KeystorePage";
+import { KnowledgeBaseDetailsPage } from "./pages/orchestrator/KnowledgeBaseDetailsPage";
+import { KnowledgeBasePage } from "./pages/orchestrator/KnowledgeBasePage";
 import { MachinesPage } from "./pages/orchestrator/MachinesPage";
 import { MyQueuePage } from "./pages/orchestrator/MyQueuePage";
 import { Orchestrator } from "./pages/orchestrator/Orchestrator";
@@ -55,6 +61,7 @@ import { CreditPlansPage } from "./pages/sa/CreditPlansPage";
 import { OnPremLLMPage } from "./pages/sa/OnPremLLMPage";
 import { SubscriptionPlansPage } from "./pages/sa/SubscriptionPlansPage";
 import { TenantsPage } from "./pages/sa/TenantsPage";
+import { ConversationDetailsPage } from "./pages/orchestrator/conversations/ConversationDetailsPage";
 
 const routerConfig: RouteObject[] = [
   {
@@ -79,12 +86,28 @@ const routerConfig: RouteObject[] = [
         element: <ComingSoon />,
       },
       {
-        path: "/assist/my-agents",
+        path: "/assist/agents",
         element: <AgentsAssistPage />,
       },
       {
-        path: "/assist/my-queue",
+        path: "/assist/queues",
         element: <MyQueuePage />,
+      },
+      // routes/assist.tsx
+
+      {
+        path: "/assist/chats",
+        element: <MyChatsPage />,
+        children: [
+          {
+            path: ":flowVersionId",
+            element: <Chat />, // new chat
+          },
+          {
+            path: ":flowVersionId/:conversationId",
+            element: <Chat />, // existing chat
+          },
+        ],
       },
       {
         path: "/account",
@@ -182,6 +205,19 @@ const routerConfig: RouteObject[] = [
             element: <ExecutionLogsPage />,
           },
           {
+            path: "/orchestrator/conversations",
+            children: [
+              {
+                index: true, // /orchestrator/conversations
+                element: <ConversationsTable />, // table/list view
+              },
+              {
+                path: ":id", // /orchestrator/conversations/:id
+                element: <ConversationDetailsPage />, // detail view
+              },
+            ],
+          },
+          {
             path: "/orchestrator/triggers",
             children: [
               {
@@ -213,6 +249,19 @@ const routerConfig: RouteObject[] = [
           {
             path: "/orchestrator/vault/:id?/:a?",
             element: <VaultPage />,
+          },
+          {
+            path: "/orchestrator/knowledge-base",
+            children: [
+              {
+                index: true, // /orchestrator/knowledge-base
+                element: <KnowledgeBasePage />, // table/list view
+              },
+              {
+                path: ":id", // /orchestrator/knowledge-base/:id
+                element: <KnowledgeBaseDetailsPage />, // detail view
+              },
+            ],
           },
         ],
       },
@@ -299,6 +348,21 @@ const routerConfig: RouteObject[] = [
       },
     ],
   },
+  {
+    path: "/external/chats",
+    element: <MyChatsPage mode="popover" />,
+    children: [
+      {
+        path: ":flowVersionId",
+        element: <Chat mode="popover" />, // new chat
+      },
+      {
+        path: ":flowVersionId/:conversationId",
+        element: <Chat mode="popover" />, // existing chat
+      },
+    ],
+  },
+
   {
     path: "/assist",
     element: <GetDesktopPage />,

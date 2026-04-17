@@ -1,3 +1,4 @@
+import { useCurrentFlowStore } from "@/stores/current-flow-store";
 import { NodeDataType } from "@/types/node-data-type";
 
 import { cn } from "@aventisia/ui/lib";
@@ -35,6 +36,13 @@ const ActionsList = ({
       setShowDialog: state.setShowDialog,
     })),
   );
+
+  const { isChatAgent } = useCurrentFlowStore(
+    useShallow((state) => ({
+      isChatAgent: state.isChatAgent,
+    })),
+  );
+
   if (!items || items.length === 0) {
     return (
       <div className="p-4 text-center text-sm text-muted-foreground">
@@ -49,7 +57,11 @@ const ActionsList = ({
         if (action.hidden) return null;
 
         const isFocused = isFocusedPane && rightIndex === idx;
-
+        const isDisabled =
+          action.disabled ||
+          (isChatAgent &&
+            action.supportedPlatforms?.length === 1 &&
+            action.supportedPlatforms?.includes("windows"));
         return (
           <button
             key={action.name}
@@ -59,7 +71,7 @@ const ActionsList = ({
             }}
             role="option"
             aria-selected={isFocused}
-            disabled={action.disabled}
+            disabled={isDisabled}
             tabIndex={isFocused ? 0 : -1}
             onClick={() => {
               nodeSelectionHandler(action);
@@ -71,7 +83,7 @@ const ActionsList = ({
               isFocused
                 ? "bg-accent text-accent-foreground"
                 : "hover:bg-accent hover:text-accent-foreground",
-              action.disabled && "cursor-not-allowed opacity-50",
+              isDisabled && "cursor-not-allowed opacity-50",
             )}
           >
             <ActionToSelect data={action} />

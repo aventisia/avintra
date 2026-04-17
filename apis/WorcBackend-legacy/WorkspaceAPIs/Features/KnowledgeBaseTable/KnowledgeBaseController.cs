@@ -1,0 +1,59 @@
+namespace WorkspaceAPIs.Controllers;
+
+/// <summary>
+/// Controller for managing Knowledge Base CRUD operations.
+/// </summary>
+[Route("knowledge-base")]
+[ApiController]
+[Authorize]
+public class KnowledgeBaseController : BaseApiController
+{
+    private readonly IKnowledgeBaseService _knowledgeBaseService;
+
+    public KnowledgeBaseController(IKnowledgeBaseService knowledgeBaseService)
+    {
+        _knowledgeBaseService = knowledgeBaseService;
+    }
+
+    // Retrieves all knowledge bases created by the current user.
+    [HttpGet("list")]
+    public async Task<ActionResult<ServiceResponse<IEnumerable<KnowledgeBaseDto>>>> GetKnowledgeBases()
+    {
+        return ResultHelper(await _knowledgeBaseService.GetKnowledgeBasesAsync());
+    }
+
+    // Checks the availability of a knowledge base name.
+    [HttpPost("is-available")]
+    public async Task<ActionResult<ServiceResponse<TrueFalseResultDto>>> IsKnowledgeBaseNameAvailable([FromBody] CheckAvailabilityDto checkAvailabilityDto)
+    {
+        return ResultHelper(await _knowledgeBaseService.IsKnowledgeBaseNameAvailableAsync(checkAvailabilityDto));
+    }
+
+    // Creates a new knowledge base.
+    [HttpPost]
+    public async Task<ActionResult<ServiceResponse<KnowledgeBaseDto>>> CreateKnowledgeBase([FromBody] KnowledgeBaseDto knowledgeBaseDto)
+    {
+        return ResultHelper(await _knowledgeBaseService.InsertKnowledgeBaseAsync(knowledgeBaseDto));
+    }
+
+    // Updates an existing knowledge base.
+    [HttpPut]
+    public async Task<ActionResult<ServiceResponse<KnowledgeBaseDto>>> UpdateKnowledgeBase([FromBody] KnowledgeBaseDto knowledgeBaseDto)
+    {
+        return ResultHelper(await _knowledgeBaseService.UpdateKnowledgeBaseAsync(knowledgeBaseDto));
+    }
+
+    // Deletes a knowledge base by its ID.
+    [HttpDelete("{id}")]
+    public async Task<ActionResult<ServiceResponse<bool>>> DeleteKnowledgeBase(Guid id)
+    {
+        return ResultHelper(await _knowledgeBaseService.DeleteKnowledgeBaseAsync(id));
+    }
+
+    // Deletes multiple knowledge bases.
+    [HttpPost("delete-multiple")]
+    public async Task<ActionResult<ServiceResponse<bool>>> DeleteMultipleKnowledgeBases([FromBody] List<Guid> ids)
+    {
+        return ResultHelper(await _knowledgeBaseService.DeleteKnowledgeBasesAsync(ids));
+    }
+}
