@@ -152,14 +152,14 @@ export const KBAddFileForm = ({
             {/* File Input */}
             <div className="flex flex-col gap-2">
               <h4 className="text-sm font-medium text-slate-700">
-                Select Files
+                Select File
               </h4>
               <label
                 htmlFor={fileInputId}
                 className="flex items-center h-20 justify-center rounded-lg border-2 border-dashed border-gray-300 p-4 cursor-pointer hover:border-primary hover:bg-primary/5 transition-colors"
               >
                 <span className="text-sm font-medium text-gray-600">
-                  Click to browse or drag files here (.pdf, .docx, .txt)
+                  Click to browse (.pdf, .docx, .txt)
                 </span>
                 <input
                   id={fileInputId}

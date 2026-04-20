@@ -43,7 +43,7 @@ const KnowledgeBaseConfigField = ({ name }: KnowledgeBaseConfigFieldProps) => {
     label: option.label,
     value: option.value,
     description: option.description,
-    disabled: option.disabled,
+    disable: option.disable,
   }));
 
   useEffect(() => {
@@ -128,7 +128,7 @@ const KnowledgeBaseConfigField = ({ name }: KnowledgeBaseConfigFieldProps) => {
             onValueCommit={field.onBlur}
             trackColor="bg-muted"
             min={0}
-            max={1.2}
+            max={1.0}
             step={0.1}
             className="resize-none text-sm"
           />

@@ -30,6 +30,7 @@ public class KnowledgeBaseController : BaseApiController
     }
 
     // Checks the availability of a knowledge base name.
+    [Authorize(Roles = "SA,TA,OM")]
     [HttpPost("is-available")]
     public async Task<ActionResult<ServiceResponse<TrueFalseResultDto>>> IsKnowledgeBaseNameAvailable([FromBody] CheckAvailabilityDto checkAvailabilityDto)
     {
@@ -37,6 +38,7 @@ public class KnowledgeBaseController : BaseApiController
     }
 
     // Creates a new knowledge base.
+    [Authorize(Roles = "SA,TA,OM")]
     [HttpPost]
     public async Task<ActionResult<ServiceResponse<KnowledgeBaseDto>>> CreateKnowledgeBase([FromBody] KnowledgeBaseDto knowledgeBaseDto)
     {
@@ -44,6 +46,7 @@ public class KnowledgeBaseController : BaseApiController
     }
 
     // Updates an existing knowledge base.
+    [Authorize(Roles = "SA,TA,OM")]
     [HttpPut]
     public async Task<ActionResult<ServiceResponse<KnowledgeBaseDto>>> UpdateKnowledgeBase([FromBody] KnowledgeBaseDto knowledgeBaseDto)
     {
@@ -51,6 +54,7 @@ public class KnowledgeBaseController : BaseApiController
     }
 
     // Deletes a knowledge base by its ID.
+    [Authorize(Roles = "SA,TA,OM")]
     [HttpDelete("{id}")]
     public async Task<ActionResult<ServiceResponse<bool>>> DeleteKnowledgeBase(Guid id)
     {
@@ -58,6 +62,7 @@ public class KnowledgeBaseController : BaseApiController
     }
 
     // Deletes multiple knowledge bases.
+    [Authorize(Roles = "SA,TA,OM")]
     [HttpPost("delete-multiple")]
     public async Task<ActionResult<ServiceResponse<bool>>> DeleteMultipleKnowledgeBases([FromBody] List<Guid> ids)
     {

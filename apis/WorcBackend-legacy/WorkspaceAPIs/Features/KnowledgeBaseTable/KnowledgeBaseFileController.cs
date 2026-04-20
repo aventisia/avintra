@@ -5,7 +5,7 @@ namespace WorkspaceAPIs.Controllers;
 /// </summary>
 [Route("knowledge-base")]
 [ApiController]
-[Authorize]
+[Authorize(Roles = "SA,TA,OM")]
 public class KnowledgeBaseFileController : BaseApiController
 {
     private readonly IKnowledgeBaseFileService _knowledgeBaseFileService;

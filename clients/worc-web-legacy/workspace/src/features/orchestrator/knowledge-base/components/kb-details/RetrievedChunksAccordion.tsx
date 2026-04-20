@@ -45,7 +45,8 @@ export function RetrievedChunksAccordion({
                 <ChevronRight className="h-3.5 w-3.5 text-primary transition-transform duration-200  group-data-[state=open]:rotate-90" />
               </div>
               <p className="text-sm font-medium flex-1 text-left hover:underline hover:underline-offset-4">
-                Chunk {index + 1}
+                {index + 1}.{" "}
+                {(item.metadata?.kb_file_name as string) || "Unknown Source"}
               </p>
               <Badge
                 variant={"outline"}
