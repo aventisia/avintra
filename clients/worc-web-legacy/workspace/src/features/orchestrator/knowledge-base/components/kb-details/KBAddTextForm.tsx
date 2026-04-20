@@ -68,8 +68,10 @@ export const KBAddTextForm = ({
         embedding_model: knowledgeBase.embeddingModel,
         input: data.textContent,
         metadata: {
-          doc_name: fileName,
+          kb_id: knowledgeBaseId,
           kb_file_id: registered.data!.id,
+          kb_name: knowledgeBaseName,
+          kb_file_name: fileName,
         },
         chunk_size: data.chunkSize,
         chunk_overlap: data.chunkOverlap,
