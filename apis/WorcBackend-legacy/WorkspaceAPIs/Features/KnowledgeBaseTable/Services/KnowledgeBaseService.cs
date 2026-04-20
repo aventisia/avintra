@@ -63,6 +63,43 @@ public class KnowledgeBaseService : IKnowledgeBaseService
     }
 
     /// <summary>
+    /// Retrieves knowledge bases created by the current user in select-option format.
+    /// </summary>
+    public async Task<ServiceResponse<IEnumerable<SelectOptionDto>>> GetSelectableKnowledgeBaseOptionsAsync()
+    {
+        var serviceResponse = new ServiceResponse<IEnumerable<SelectOptionDto>>
+        {
+            Data = null,
+            StatusCode = 400,
+            Message = "Failed to retrieve knowledge base options. Please try again"
+        };
+
+        try
+        {
+            var options = await _unitOfWork.KnowledgeBaseRepo
+                .GetByConditionAsync(kb => kb.IsDisabled == false)
+                .OrderBy(kb => kb.Name)
+                .Select(kb => new SelectOptionDto
+                {
+                    Value = kb.Id.ToString(),
+                    Label = kb.Name,
+                    Description = kb.Description,
+                })
+                .ToListAsync();
+
+            serviceResponse.Data = options;
+            serviceResponse.StatusCode = 200;
+            serviceResponse.Message = "Knowledge base options retrieved successfully";
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex, "Error retrieving knowledge base options for user {UserId}", _userId);
+        }
+
+        return serviceResponse;
+    }
+
+    /// <summary>
     /// Checks if a knowledge base name is available for the current user.
     /// </summary>
     public async Task<ServiceResponse<TrueFalseResultDto>> IsKnowledgeBaseNameAvailableAsync(CheckAvailabilityDto checkAvailabilityDto)

@@ -22,6 +22,13 @@ public class KnowledgeBaseController : BaseApiController
         return ResultHelper(await _knowledgeBaseService.GetKnowledgeBasesAsync());
     }
 
+    // Retrieves knowledge bases in select-option format for dropdowns.
+    [HttpGet("kb-to-select")]
+    public async Task<ActionResult<ServiceResponse<IEnumerable<SelectOptionDto>>>> GetSelectableKnowledgeBaseOptions()
+    {
+        return ResultHelper(await _knowledgeBaseService.GetSelectableKnowledgeBaseOptionsAsync());
+    }
+
     // Checks the availability of a knowledge base name.
     [HttpPost("is-available")]
     public async Task<ActionResult<ServiceResponse<TrueFalseResultDto>>> IsKnowledgeBaseNameAvailable([FromBody] CheckAvailabilityDto checkAvailabilityDto)
