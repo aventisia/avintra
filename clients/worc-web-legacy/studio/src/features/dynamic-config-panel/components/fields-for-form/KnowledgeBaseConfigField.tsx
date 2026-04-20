@@ -1,6 +1,8 @@
 import { SliderField } from "@/components/Slider/SliderField";
 
-import { InputField, SelectField } from "@aventisia/ui/form";
+import { InputField, MultiSelectField, SelectField } from "@aventisia/ui/form";
+import { useQuery } from "@tanstack/react-query";
+import { useEffect } from "react";
 import {
   Controller,
   FieldPath,
@@ -9,6 +11,7 @@ import {
   useFormContext,
 } from "react-hook-form";
 
+import { getKnowledgeBaseSelectOptions } from "../../apis/knowledge-base-apis.ts";
 import { GroupedFieldsWrapper } from "./GroupedFieldsWrapper";
 
 interface KnowledgeBaseConfigFieldProps {
@@ -28,7 +31,48 @@ const KnowledgeBaseConfigField = ({ name }: KnowledgeBaseConfigFieldProps) => {
     `${name}.sourceThreshold` as FieldPath<FieldValues>;
 
   // Get the form context
-  const { control } = useFormContext();
+  const { control, setValue, getValues } = useFormContext();
+
+  const { data: kbOptionsData } = useQuery({
+    queryKey: ["knowledge-base-options"],
+    queryFn: getKnowledgeBaseSelectOptions,
+    select: (response) => response?.data ?? [],
+  });
+
+  const knowledgeBaseSelectOptions = (kbOptionsData ?? []).map((option) => ({
+    label: option.label,
+    value: option.value,
+    description: option.description,
+    disabled: option.disabled,
+  }));
+
+  useEffect(() => {
+    const currentValue = getValues(knowledgeBaseFieldName);
+
+    if (Array.isArray(currentValue)) {
+      return;
+    }
+
+    if (typeof currentValue === "string") {
+      const normalizedValue = currentValue
+        .split(",")
+        .map((item) => item.trim())
+        .filter((item) => item.length > 0);
+
+      setValue(knowledgeBaseFieldName, normalizedValue, {
+        shouldDirty: false,
+        shouldTouch: false,
+        shouldValidate: false,
+      });
+      return;
+    }
+
+    setValue(knowledgeBaseFieldName, [], {
+      shouldDirty: false,
+      shouldTouch: false,
+      shouldValidate: false,
+    });
+  }, [getValues, knowledgeBaseFieldName, setValue]);
 
   const { field: sourceThresholdField } = useController({
     name: sourceThresholdFieldName,
@@ -38,47 +82,12 @@ const KnowledgeBaseConfigField = ({ name }: KnowledgeBaseConfigFieldProps) => {
   // Render the KnowledgeBaseConfigField component
   return (
     <GroupedFieldsWrapper groupName="Configure Knowledge Base">
-      {/* <MultiSelectField
+      <MultiSelectField
         size="sm"
         name={knowledgeBaseFieldName}
         label="Knowledge Base"
-        selectOptions={[
-          {
-            label: "Knowledge Base 1",
-            value: "Knowledge Base 1",
-            description: "",
-          },
-          {
-            label: "Knowledge Base 2",
-            value: "Knowledge Base 2",
-            description: "",
-          },
-        ]}
-      /> */}
-      <Controller
-        name={knowledgeBaseFieldName}
-        control={control}
-        render={({ field }) => (
-          <InputField
-            {...field}
-            fieldSize="sm"
-            type="text"
-            label="Knowledge Base"
-            placeholder="Enter document names separated by comma (e.g., doc1, doc2, doc3)"
-            value={field.value || ""}
-            onChange={(e) => {
-              field.onChange(e.target.value);
-            }}
-            onBlur={(e) => {
-              const inputValue = e.target.value;
-              const arrayValue = inputValue
-                .split(",")
-                .map((item) => item.trim())
-                .filter((item) => item.length > 0);
-              field.onChange(arrayValue);
-            }}
-          />
-        )}
+        placeholder="Select knowledge base(s)"
+        selectOptions={knowledgeBaseSelectOptions}
       />
 
       <div className="grid grid-cols-2 gap-2">
