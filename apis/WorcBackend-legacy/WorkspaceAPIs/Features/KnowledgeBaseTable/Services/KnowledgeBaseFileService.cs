@@ -46,13 +46,6 @@ public class KnowledgeBaseFileService : IKnowledgeBaseFileService
                 return serviceResponse;
             }
 
-            if (kb.CreatedByUserId != _userId)
-            {
-                serviceResponse.Message = "You are not authorized to access this knowledge base";
-                serviceResponse.StatusCode = 403;
-                return serviceResponse;
-            }
-
             var files = await _unitOfWork.KnowledgeBaseFileRepo
                 .GetByConditionAsync(f => f.KnowledgeBaseId == knowledgeBaseId)
                 .Include(f => f.CreatedByUser)
@@ -104,13 +97,6 @@ public class KnowledgeBaseFileService : IKnowledgeBaseFileService
                 return serviceResponse;
             }
 
-            if (kb.CreatedByUserId != _userId)
-            {
-                serviceResponse.Message = "You are not authorized to modify this knowledge base";
-                serviceResponse.StatusCode = 403;
-                return serviceResponse;
-            }
-
             var extension = dto.FileExtension;
             if (string.IsNullOrWhiteSpace(extension))
                 extension = Path.GetExtension(dto.FileName);
@@ -124,7 +110,7 @@ public class KnowledgeBaseFileService : IKnowledgeBaseFileService
                 Extension = extension,
                 ContentType = GetContentTypeFromExtension(extension),
                 SizeInBytes = dto.FileSizeInBytes,
-                Status = VectorizationStatusEnum.Completed,
+                Status = VectorizationStatusEnum.Pending,
                 VectorizationErrorMessage = null,
                 CreatedByUserId = _userId,
                 LastModifiedByUserId = _userId,
@@ -176,20 +162,13 @@ public class KnowledgeBaseFileService : IKnowledgeBaseFileService
             }
 
             var kb = await _unitOfWork.KnowledgeBaseRepo
-                .GetByConditionAsync(k => k.Id == knowledgeBaseId)
+                .GetByConditionAsync(k => k.Id == knowledgeBaseId && k.TenantId == _currentTenantService.CurrentTenantId)
                 .FirstOrDefaultAsync();
 
             if (kb == null)
             {
                 serviceResponse.Message = "Knowledge base not found";
                 serviceResponse.StatusCode = 404;
-                return serviceResponse;
-            }
-
-            if (kb.CreatedByUserId != _userId)
-            {
-                serviceResponse.Message = "You are not authorized to modify this knowledge base";
-                serviceResponse.StatusCode = 403;
                 return serviceResponse;
             }
 
@@ -203,7 +182,7 @@ public class KnowledgeBaseFileService : IKnowledgeBaseFileService
                 Extension = ".txt",
                 ContentType = "text/plain",
                 SizeInBytes = textBytes,
-                Status = VectorizationStatusEnum.Completed,
+                Status = VectorizationStatusEnum.Pending,
                 VectorizationErrorMessage = null,
                 CreatedByUserId = _userId,
                 LastModifiedByUserId = _userId,
@@ -247,20 +226,13 @@ public class KnowledgeBaseFileService : IKnowledgeBaseFileService
         try
         {
             var kb = await _unitOfWork.KnowledgeBaseRepo
-                .GetByConditionAsync(k => k.Id == knowledgeBaseId)
+                .GetByConditionAsync(k => k.Id == knowledgeBaseId && k.TenantId == _currentTenantService.CurrentTenantId)
                 .FirstOrDefaultAsync();
 
             if (kb == null)
             {
                 serviceResponse.Message = "Knowledge base not found";
                 serviceResponse.StatusCode = 404;
-                return serviceResponse;
-            }
-
-            if (kb.CreatedByUserId != _userId)
-            {
-                serviceResponse.Message = "You are not authorized to modify this knowledge base";
-                serviceResponse.StatusCode = 403;
                 return serviceResponse;
             }
 

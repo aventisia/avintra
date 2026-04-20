@@ -26,7 +26,7 @@ public class KnowledgeBaseService : IKnowledgeBaseService
     }
 
     /// <summary>
-    /// Retrieves all knowledge bases created by the current user.
+    /// Retrieves all knowledge bases for the current tenant.
     /// </summary>
     public async Task<ServiceResponse<IEnumerable<KnowledgeBaseDto>>> GetKnowledgeBasesAsync()
     {
@@ -38,9 +38,9 @@ public class KnowledgeBaseService : IKnowledgeBaseService
 
         try
         {
-            // Get knowledge bases created by the current user
+            // Get tenant-wide knowledge bases
             var knowledgeBases = await _unitOfWork.KnowledgeBaseRepo
-                .GetByConditionAsync(kb => kb.CreatedByUserId == _userId)
+                .GetByConditionAsync(kb => true) // No user-based filtering, show all tenant KBs
                 .OrderByDescending(kb => kb.CreatedOn)
                 .Include(kb => kb.CreatedByUser)
                 .Include(kb => kb.LastModifiedByUser)
@@ -63,7 +63,7 @@ public class KnowledgeBaseService : IKnowledgeBaseService
     }
 
     /// <summary>
-    /// Retrieves knowledge bases created by the current user in select-option format.
+    /// Retrieves tenant-wide knowledge bases in select-option format.
     /// </summary>
     public async Task<ServiceResponse<IEnumerable<SelectOptionDto>>> GetSelectableKnowledgeBaseOptionsAsync()
     {
@@ -100,7 +100,7 @@ public class KnowledgeBaseService : IKnowledgeBaseService
     }
 
     /// <summary>
-    /// Checks if a knowledge base name is available for the current user.
+    /// Checks if a knowledge base name is available within the current tenant.
     /// </summary>
     public async Task<ServiceResponse<TrueFalseResultDto>> IsKnowledgeBaseNameAvailableAsync(CheckAvailabilityDto checkAvailabilityDto)
     {
@@ -124,9 +124,7 @@ public class KnowledgeBaseService : IKnowledgeBaseService
 
             // Check for duplicate name
             var existingKB = await _unitOfWork.KnowledgeBaseRepo
-                .GetByConditionAsync(kb =>
-                    kb.CreatedByUserId == _userId &&
-                    kb.Name.ToLower() == normalizedName)
+                .GetByConditionAsync(kb => kb.Name.ToLower() == normalizedName)
                 .FirstOrDefaultAsync();
 
             var isAvailable = existingKB == null;
@@ -179,11 +177,9 @@ public class KnowledgeBaseService : IKnowledgeBaseService
                 return serviceResponse;
             }
 
-            // Check if name already exists for this user
+            // Check if name already exists in this tenant
             var existingKB = await _unitOfWork.KnowledgeBaseRepo
-                .GetByConditionAsync(kb =>
-                    kb.CreatedByUserId == _userId &&
-                    kb.Name.ToLower() == knowledgeBaseDto.Name.ToLower())
+                .GetByConditionAsync(kb => kb.Name.ToLower() == knowledgeBaseDto.Name.ToLower())
                 .FirstOrDefaultAsync();
 
             if (existingKB != null)
@@ -288,18 +284,9 @@ public class KnowledgeBaseService : IKnowledgeBaseService
                 return serviceResponse;
             }
 
-            // Check if user owns this knowledge base
-            if (existingKB.CreatedByUserId != _userId)
-            {
-                serviceResponse.Message = "You are not authorized to update this knowledge base";
-                serviceResponse.StatusCode = 403;
-                return serviceResponse;
-            }
-
             // Check if new name already exists for this user (exclude current KB)
             var duplicateName = await _unitOfWork.KnowledgeBaseRepo
                 .GetByConditionAsync(kb =>
-                    kb.CreatedByUserId == _userId &&
                     kb.Id != knowledgeBaseDto.Id.Value &&
                     kb.Name.ToLower() == knowledgeBaseDto.Name.ToLower())
                 .FirstOrDefaultAsync();
@@ -372,14 +359,6 @@ public class KnowledgeBaseService : IKnowledgeBaseService
                 return serviceResponse;
             }
 
-            // Check if user owns this knowledge base
-            if (kb.CreatedByUserId != _userId)
-            {
-                serviceResponse.Message = "You are not authorized to delete this knowledge base";
-                serviceResponse.StatusCode = 403;
-                return serviceResponse;
-            }
-
             // Delete associated vector store entries (cascade delete)
             var vectorStores = await _unitOfWork.VectorStoreRepo
                 .GetByConditionAsync(vs => vs.TenantId == _currentTenantService.CurrentTenantId && vs.Metadata != null)
@@ -428,22 +407,34 @@ public class KnowledgeBaseService : IKnowledgeBaseService
                 return serviceResponse;
             }
 
-            // Get knowledge bases owned by the current user
-            var kbs = await _unitOfWork.KnowledgeBaseRepo
-                .GetByConditionAsync(kb => ids.Contains(kb.Id) && kb.CreatedByUserId == _userId)
+            var requestedIds = ids
+                .Where(id => id != Guid.Empty)
+                .Distinct()
+                .ToList();
+
+            if (requestedIds.Count == 0)
+            {
+                serviceResponse.Message = "No valid knowledge base IDs were provided";
+                return serviceResponse;
+            }
+
+            var allMatchedKBs = await _unitOfWork.KnowledgeBaseRepo
+                .GetByConditionAsync(kb => requestedIds.Contains(kb.Id))
                 .ToListAsync();
 
-            if (kbs.Count == 0)
+            if (allMatchedKBs.Count != requestedIds.Count)
             {
-                serviceResponse.Message = "No knowledge bases found to delete";
+                serviceResponse.Message = "One or more knowledge bases were not found";
                 serviceResponse.StatusCode = 404;
                 return serviceResponse;
             }
 
+            var kbs = allMatchedKBs;
+
             // Delete associated vector store entries for all KBs
             var kbIdSet = kbs.Select(kb => kb.Id).ToHashSet();
             var vectorStores = await _unitOfWork.VectorStoreRepo
-                .GetByConditionAsync(vs => vs.TenantId == _currentTenantService.CurrentTenantId && vs.Metadata != null)
+                .GetByConditionAsync(vs => vs.Metadata != null)
                 .ToListAsync();
 
             var kbVectorStores = vectorStores

@@ -46,7 +46,8 @@ interface VectorStoreQueryRequestDto {
   query: string;
   top_k: number;
   score_threshold?: number;
-  kb_ids?: string[];
+  kb_ids: string[];
+  kb_file_ids?: string[];
   store_credential_id?: string;
   embedding_credential_id?: string;
   ref_type: string;
@@ -59,7 +60,7 @@ interface VectorStoreQueryRequestDto {
 interface VectorStoreDeleteRequestDto {
   vector_store: string;
   kb_file_ids: string[];
-  kb_ids: string[];
+  kb_ids?: string[];
   store_credential_id?: string;
 }
 

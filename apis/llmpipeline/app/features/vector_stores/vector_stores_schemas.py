@@ -51,7 +51,7 @@ class QueryDocRequest(BaseModel):
     embedding_model: str
     query: str
     top_k: int = Field(default=5, ge=1, le=100)
-    score_threshold: float = Field(default=0.8, ge=0.0, le=1.0)
+    score_threshold: float = Field(default=0.1, ge=0.0, le=1.0)
     kb_ids: List[str]  # list of knowledge base IDs to scope chunk search
     kb_file_ids: Optional[List[str]] = None
     store_credential_id: Optional[str] = None  # TODO: Implement BYOK support. Credential ID for vector store (if applicable)
@@ -76,7 +76,6 @@ class QueryDocResponse(BaseModel):
     embedding_model: str
     query: str
     top_k: int
-    metadata: dict
     chunks: List[RetrievedChunk]
     time_taken: float
     input_tokens: Optional[int] = 0
