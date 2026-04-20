@@ -12,6 +12,12 @@ public interface IKnowledgeBaseService
     Task<ServiceResponse<IEnumerable<KnowledgeBaseDto>>> GetKnowledgeBasesAsync();
 
     /// <summary>
+    /// Retrieves knowledge bases for the current user in selectable option format.
+    /// </summary>
+    /// <returns>The task result contains the service response with selectable knowledge base options.</returns>
+    Task<ServiceResponse<IEnumerable<SelectOptionDto>>> GetSelectableKnowledgeBaseOptionsAsync();
+
+    /// <summary>
     /// Checks the availability of a knowledge base name for the current user.
     /// </summary>
     /// <param name="checkAvailabilityDto">The DTO containing the knowledge base name to check.</param>
