@@ -49,7 +49,7 @@
       "name": "__KbConfig__Inferencing",
       "label": "Knowledge Base",
       "defaultValue": {
-        "knowledgeBase": "",
+        "knowledgeBase": [],
         "retrievalType": "Basic",
         "sourceThreshold": 1,
         "numberOfChunks": 10

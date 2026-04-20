@@ -5,7 +5,8 @@ import {
   minLenError,
   reqError,
 } from "@aventisia/ui/utils";
-import { z, ZodBoolean, ZodNumber, ZodString, ZodTypeAny } from "zod";
+import { ZodBoolean, ZodNumber, ZodString, ZodTypeAny, z } from "zod";
+
 import { DCPFieldSchemaType } from "..";
 
 function applyFieldOptions<T extends ZodString | ZodNumber | ZodBoolean>(
@@ -168,7 +169,20 @@ function getModelConfigSchema(field: DCPFieldSchemaType): ZodTypeAny {
 
 function getKnowledgeBaseConfigSchema(field: DCPFieldSchemaType): ZodTypeAny {
   // Start by defining the schema without default values
-  const knowledgeBaseSchema = z.string();
+  const knowledgeBaseSchema = z.preprocess((val) => {
+    if (Array.isArray(val)) {
+      return val;
+    }
+
+    if (typeof val === "string") {
+      return val
+        .split(",")
+        .map((item) => item.trim())
+        .filter((item) => item.length > 0);
+    }
+
+    return [];
+  }, z.array(z.string()));
   const retrievalTypeSchema = z.string();
   const sourceThresholdSchema = z.number();
   const numberOfChunksSchema = z.number();
@@ -178,7 +192,17 @@ function getKnowledgeBaseConfigSchema(field: DCPFieldSchemaType): ZodTypeAny {
     // If the structure is valid, apply default values to the schema
 
     if ("knowledgeBase" in field.defaultValue) {
-      knowledgeBaseSchema.default(field?.defaultValue?.knowledgeBase as string);
+      const defaultKnowledgeBase = field?.defaultValue?.knowledgeBase;
+      const normalizedKnowledgeBase = Array.isArray(defaultKnowledgeBase)
+        ? defaultKnowledgeBase
+        : typeof defaultKnowledgeBase === "string"
+          ? defaultKnowledgeBase
+              .split(",")
+              .map((item) => item.trim())
+              .filter((item) => item.length > 0)
+          : [];
+
+      knowledgeBaseSchema.default(normalizedKnowledgeBase as string[]);
     }
     if ("retrievalType" in field.defaultValue) {
       retrievalTypeSchema.default(field?.defaultValue?.retrievalType as string);
