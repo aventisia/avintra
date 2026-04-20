@@ -52,7 +52,8 @@ class QueryDocRequest(BaseModel):
     query: str
     top_k: int = Field(default=5, ge=1, le=100)
     score_threshold: float = Field(default=0.8, ge=0.0, le=1.0)
-    doc_names: Optional[List[str]] = None  # Optional list of document names to scope chunk search
+    kb_ids: List[str]  # list of knowledge base IDs to scope chunk search
+    kb_file_ids: Optional[List[str]] = None
     store_credential_id: Optional[str] = None  # TODO: Implement BYOK support. Credential ID for vector store (if applicable)
     embedding_credential_id: Optional[str] = None  # TODO: Implement BYOK support. Credential ID for embedding provider (if applicable)
     ref_type: str # Type of the reference (e.g., "Agent", "Workflow", "AIProject"). TODO: Yet to confirm the better implemenation of this.
@@ -75,6 +76,7 @@ class QueryDocResponse(BaseModel):
     embedding_model: str
     query: str
     top_k: int
+    metadata: dict
     chunks: List[RetrievedChunk]
     time_taken: float
     input_tokens: Optional[int] = 0
@@ -88,15 +90,15 @@ class QueryDocResponse(BaseModel):
 # Request schemas for document deletion endpoint
 class DeleteDocRequest(BaseModel):
     vector_store: VectorStoreLiteral
-    kb_file_id: str
-    doc_name: str
+    kb_file_ids: List[str]
+    kb_ids: Optional[List[str]] = None # Optional list of knowledge base IDs to scope deletion
     store_credential_id: Optional[str] = None
 
 # Response schema for document deletion endpoint
 class DeleteDocResponse(BaseModel):
     vector_store: VectorStoreLiteral
-    kb_file_id: str
-    doc_name: str
+    kb_file_ids: List[str]
+    kb_ids: Optional[List[str]] = None
     deleted_chunks: int
     time_taken: float
     error: Optional[str] = None
