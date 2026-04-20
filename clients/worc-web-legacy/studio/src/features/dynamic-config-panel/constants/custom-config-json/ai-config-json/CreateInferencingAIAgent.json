@@ -51,8 +51,8 @@
       "defaultValue": {
         "knowledgeBase": [],
         "retrievalType": "Basic",
-        "sourceThreshold": 1,
-        "numberOfChunks": 10
+        "sourceThreshold": 0.1,
+        "numberOfChunks": 5
       },
       "required": false,
       "category": "Memory"
