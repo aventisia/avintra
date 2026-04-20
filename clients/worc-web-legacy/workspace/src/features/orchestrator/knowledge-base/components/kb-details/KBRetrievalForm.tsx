@@ -1,6 +1,6 @@
 import { SliderField } from "@/components/Slider/SliderField";
 
-import { Button } from "@aventisia/ui/buttons";
+import { Button, SubmitButton } from "@aventisia/ui/buttons";
 import { Form, InputField, TextareaField } from "@aventisia/ui/form";
 import { toast } from "@aventisia/ui/sonner";
 import { useMutation } from "@tanstack/react-query";
@@ -47,6 +47,7 @@ export const KnowledgeBaseRetrievalForm = ({
         embedding_model: knowledgeBase.embeddingModel,
         query: data.query,
         top_k: data.numberOfChunks,
+        kb_ids: [knowledgeBaseId],
         score_threshold: data.scoreThreshold,
         embedding_credential_id: knowledgeBase.embeddingCredentialId,
         store_credential_id: knowledgeBase.storeCredentialId,
@@ -114,9 +115,14 @@ export const KnowledgeBaseRetrievalForm = ({
           Reset
         </Button>
 
-        <Button size={"sm"} type="submit" disabled={isPending}>
-          Retrieve
-        </Button>
+        <SubmitButton
+          size={"sm"}
+          type="submit"
+          isPending={isPending}
+          primaryText="Retrieve"
+          secondaryText="Retrieving..."
+          disabled={isPending}
+        />
       </div>
     </Form>
   );

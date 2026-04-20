@@ -1,13 +1,10 @@
-import { FileUploadDto } from "@/components/file-uploader/apis/file-upload-apis";
-import { formatFileSize } from "@/components/file-uploader/utils/file-uploader-util";
-
-import { Button } from "@aventisia/ui/buttons";
+import { Button, SubmitButton } from "@aventisia/ui/buttons";
 import { Form, InputField } from "@aventisia/ui/form";
 import { ScrollArea } from "@aventisia/ui/scroll";
 import { toast } from "@aventisia/ui/sonner";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
-import { FileTextIcon } from "lucide-react";
-import { Dispatch, SetStateAction } from "react";
+import { FileTextIcon, XIcon } from "lucide-react";
+import { useCallback, useMemo, useState } from "react";
 import { z } from "zod";
 
 import {
@@ -23,16 +20,18 @@ import {
 import { KnowledgeBaseTableDto } from "../../dtos/knowledge-base-table-dto";
 import { useDefineKBAddFilesForm } from "../../hooks/useDefineKBAddFilesForm";
 
+interface FileWithDataURI {
+  id: string;
+  file: File;
+  dataUri: string;
+}
+
 export const KBAddFileForm = ({
-  files,
-  setUploadStep,
   knowledgeBaseId,
   knowledgeBaseName,
   knowledgeBase,
   onCompleted,
 }: {
-  files: FileUploadDto[];
-  setUploadStep: Dispatch<SetStateAction<number>>;
   knowledgeBaseId: string;
   knowledgeBaseName: string;
   knowledgeBase?: KnowledgeBaseTableDto;
@@ -40,6 +39,51 @@ export const KBAddFileForm = ({
 }) => {
   const { form } = useDefineKBAddFilesForm();
   const queryClient = useQueryClient();
+  const [selectedFiles, setSelectedFiles] = useState<FileWithDataURI[]>([]);
+
+  const fileInputId = useMemo(() => `file-input-${Math.random()}`, []);
+
+  /**
+   * Convert file to data URI
+   */
+  const fileToDataUri = useCallback((file: File): Promise<string> => {
+    return new Promise((resolve, reject) => {
+      const reader = new FileReader();
+      reader.onload = () => resolve(reader.result as string);
+      reader.onerror = reject;
+      reader.readAsDataURL(file);
+    });
+  }, []);
+
+  /**
+   * Handle file selection
+   */
+  const handleFileSelect = useCallback(
+    async (event: React.ChangeEvent<HTMLInputElement>) => {
+      const file = event.target.files?.[0];
+      if (!file) return;
+
+      const dataUri = await fileToDataUri(file);
+      setSelectedFiles([
+        {
+          id: crypto.randomUUID(),
+          file,
+          dataUri,
+        },
+      ]);
+
+      // Reset input
+      event.target.value = "";
+    },
+    [fileToDataUri],
+  );
+
+  /**
+   * Remove file from selection
+   */
+  const handleRemoveFile = useCallback((id: string) => {
+    setSelectedFiles((prev) => prev.filter((f) => f.id !== id));
+  }, []);
 
   const { mutate: submitFiles, isPending } = useMutation({
     mutationFn: async (data: z.infer<typeof kbAddFilesSchema>) => {
@@ -47,12 +91,12 @@ export const KBAddFileForm = ({
         throw new Error("Knowledge base configuration is not available");
       }
 
-      for (const file of files) {
+      for (const fileItem of selectedFiles) {
         const registered = await registerKnowledgeBaseFile(knowledgeBaseId, {
-          fileUrl: file.path,
-          fileName: file.name,
-          fileSizeInBytes: file.size,
-          fileExtension: file.extension,
+          fileUrl: fileItem.dataUri,
+          fileName: fileItem.file.name,
+          fileSizeInBytes: fileItem.file.size,
+          fileExtension: fileItem.file.name.split(".").pop() || "",
           chunkSize: data.chunkSize,
           chunkOverlap: data.chunkOverlap,
         });
@@ -61,10 +105,12 @@ export const KBAddFileForm = ({
           vector_store: knowledgeBase.vectorStore,
           embedding_provider: knowledgeBase.embeddingProvider,
           embedding_model: knowledgeBase.embeddingModel,
-          input: file.path,
+          input: fileItem.dataUri,
           metadata: {
-            doc_name: file.name,
+            kb_id: knowledgeBaseId,
             kb_file_id: registered.data!.id,
+            kb_name: knowledgeBaseName,
+            kb_file_name: fileItem.file.name,
           },
           chunk_size: data.chunkSize,
           chunk_overlap: data.chunkOverlap,
@@ -82,6 +128,7 @@ export const KBAddFileForm = ({
       await queryClient.invalidateQueries({
         queryKey: [...DETAIL_DATA_QUERY_KEY, knowledgeBaseId],
       });
+      setSelectedFiles([]);
       onCompleted();
     },
     onError: (error) => {
@@ -102,16 +149,39 @@ export const KBAddFileForm = ({
       <div className="flex flex-col justify-between">
         <ScrollArea className="h-[calc(85vh-7.5rem)] p-4 pt-3 ">
           <div className="space-y-4">
-            {files?.length > 0 && (
+            {/* File Input */}
+            <div className="flex flex-col gap-2">
+              <h4 className="text-sm font-medium text-slate-700">
+                Select Files
+              </h4>
+              <label
+                htmlFor={fileInputId}
+                className="flex items-center h-20 justify-center rounded-lg border-2 border-dashed border-gray-300 p-4 cursor-pointer hover:border-primary hover:bg-primary/5 transition-colors"
+              >
+                <span className="text-sm font-medium text-gray-600">
+                  Click to browse or drag files here (.pdf, .docx, .txt)
+                </span>
+                <input
+                  id={fileInputId}
+                  type="file"
+                  accept=".pdf,.docx,.txt,application/pdf,application/vnd.openxmlformats-officedocument.wordprocessingml.document,text/plain"
+                  onChange={handleFileSelect}
+                  className="hidden"
+                />
+              </label>
+            </div>
+
+            {/* Selected Files List */}
+            {selectedFiles.length > 0 && (
               <div className="flex flex-col gap-2">
                 <h4 className="text-sm font-medium text-slate-700">
-                  Selected Files
+                  Selected Files ({selectedFiles.length})
                 </h4>
                 <div className="flex flex-col gap-2">
-                  {files.map((file) => {
+                  {selectedFiles.map((fileItem) => {
                     return (
                       <div
-                        key={file.name}
+                        key={fileItem.id}
                         className="flex items-center justify-between rounded-xl bg-muted p-2"
                       >
                         <div className="flex items-center gap-3">
@@ -120,40 +190,46 @@ export const KBAddFileForm = ({
                           </div>
                           <div className="flex flex-col">
                             <p className="text-sm font-medium truncate max-w-[200px]">
-                              {file.name}
+                              {fileItem.file.name}
                             </p>
                             <p className="text-xs text-muted-foreground mt-0.5">
-                              {formatFileSize(file.size)}{" "}
+                              {(fileItem.file.size / 1024).toFixed(2)} KB
                             </p>
                           </div>
                         </div>
+                        <Button
+                          type="button"
+                          onClick={() => handleRemoveFile(fileItem.id)}
+                          variant="caution"
+                          size="icon7"
+                          disabled={isPending}
+                          aria-label="Remove file"
+                        >
+                          <XIcon className="h-4 w-4" />
+                        </Button>
                       </div>
                     );
                   })}
                 </div>
               </div>
             )}
-            {/* Number of chunks */}
+
+            {/* Chunk Configuration */}
             <div className="grid grid-cols-2 gap-2">
               <InputField {...chunkSizeProps} />
-
               <InputField {...chunkOverlapProps} />
             </div>
           </div>
         </ScrollArea>
         <div className="flex h-16 border-t px-4 justify-end gap-3 items-center">
-          <Button
+          <SubmitButton
             size={"sm"}
-            type="button"
-            variant="outline"
-            onClick={() => setUploadStep(0)}
-            disabled={isPending}
-          >
-            Back
-          </Button>
-          <Button size={"sm"} type="submit" disabled={isPending}>
-            Submit Files
-          </Button>
+            type="submit"
+            isPending={isPending}
+            primaryText="Submit"
+            secondaryText="Chunking..."
+            disabled={isPending || selectedFiles.length === 0}
+          />
         </div>
       </div>
     </Form>
