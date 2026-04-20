@@ -19,8 +19,22 @@ public class ExecuteFlowController : BaseApiController
     [HttpPost("execute")]
     public async Task<ActionResult<ServiceResponse<ExecuteFlowResponseDto>>> ExecuteFlowAsync([FromBody] ExecuteFlowRequestDto requestDto)
     {
-        return ResultHelper(await _executeFlowService.ExecuteFlowAsync(requestDto));
+        // TODO: need to decide on what kind of this trigger type we want to use for non published and published flow execution
+        return ResultHelper(await _executeFlowService.ExecuteFlowAsync(requestDto, TriggerTypesEnum.ManualTrigger));
     }
 
-    // TODO: Endpoint to execute the flow on web via webhook trigger from external system. It can only execute published flows via webhook triggers only. Yet to implement or finalized
+    /// <summary>
+    /// Executes a flow via webhook trigger from external systems.
+    /// 
+    /// - Requires API key authentication (handled by WebhookTriggerAuthorizeAttribute)
+    /// - Only published flows can be executed
+    /// - Accepts raw JSON payload from external source
+    /// </summary>
+    [HttpPost("webhook")]
+    [AllowAnonymous] // bypass JWT/auth
+    [WebhookTriggerAuthorize]
+    public async Task<ActionResult<ServiceResponse<ExecuteFlowResponseDto>>> ExecuteFlowFromWebhookAsync([FromBody] ExecuteFlowRequestDto requestDto)
+    {
+        return ResultHelper(await _executeFlowService.ExecuteFlowAsync(requestDto, TriggerTypesEnum.WebhookTrigger));
+    }
 }
