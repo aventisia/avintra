@@ -60,8 +60,8 @@ class LLMRequest(BaseModel):
     ref_name: str # Name of the reference (e.g., name of the Agent/Workflow/AIProject)
     action: str # Action being performed (e.g., "AgentExecution", "AIModelExecution", "WorkflowExecution")
     agent_name: Optional[str] = None
-    # Knowledge base retrieval (OpenAI / pgvector, optional)
-    kb_names: Optional[List[str]] = None  # Document names to scope KB chunk retrieval (maps to doc_names in vector store)
+    # Knowledge base retrieval (optional)
+    kb_ids: Optional[List[str]] = None  # Knowledge base IDs used to scope KB chunk retrieval
     top_k: Optional[int] = Field(default=5, ge=1, le=100)  # Number of top chunks to retrieve from the knowledge base
 
 # Chunk response schema for streaming LLM response

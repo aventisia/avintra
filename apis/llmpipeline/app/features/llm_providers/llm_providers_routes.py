@@ -23,8 +23,8 @@ async def generate_llm_response_route(llm_request: LLMRequest, _user: User = Dep
     else:
         llm_request.credential_id = credential_id
 
-    # Retrieve KB context chunks and inject into input if kb_names are provided
-    if llm_request.kb_names:
+    # Retrieve KB context chunks and inject into input if kb_ids are provided
+    if llm_request.kb_ids:
         await retrieve_and_inject_kb_context(llm_request, _user)
         
     # Send request to provider and return response (streaming or non-streaming)

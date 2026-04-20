@@ -35,7 +35,7 @@ def _inject_context_into_input(llm_request: LLMRequest, context_str: str) -> Non
 async def retrieve_and_inject_kb_context(llm_request: LLMRequest, user: User) -> None:
     """
     Queries the pgvector knowledge base using the LLM request's input as the query,
-    retrieves the top-k relevant chunks scoped to the specified kb_names (doc_names),
+    retrieves the top-k relevant chunks scoped to the specified kb_ids,
     and injects them as a formatted context block into llm_request.input in-place.
 
     Defaults: vector_store=pgvector, embedding_provider=openai, embedding_model=text-embedding-3-small.
@@ -52,7 +52,7 @@ async def retrieve_and_inject_kb_context(llm_request: LLMRequest, user: User) ->
         embedding_provider="openai",
         embedding_model="text-embedding-3-small",
         query=query_text,
-        doc_names=llm_request.kb_names,
+        kb_ids=llm_request.kb_ids,
         top_k=llm_request.top_k or 5,
         store_credential_id=None,
         embedding_credential_id=llm_request.credential_id,
