@@ -43,6 +43,10 @@ class Settings(BaseSettings):
     OLLAMA_API_KEY: str = ""
     QDRANT_URL: str = "https://dev-qdrant-db.aventisia.com"
     QDRANT_API_KEY: str = ""
+
+    # TTS/STT
+    ELEVENLABS_API_URL: str = "https://api.elevenlabs.io/v1",
+    ELEVENLABS_API_KEY: str = "",
     
     model_config = SettingsConfigDict(
         env_file=env_files, # System env vars take precedence over these files

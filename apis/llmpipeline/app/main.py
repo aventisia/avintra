@@ -14,6 +14,8 @@ from app.features.vector_stores.vector_stores_routes import router as vector_sto
 from app.features.auth.authenticated_user import User
 from app.features.convert_to_pdf.convert_to_pdf_routes import router as convert_to_pdf_router
 from app.features.olmocr.olmocr_routes import router as olmocr_router
+from app.features.tts_providers.tts_providers_routes import router as tts_router
+from app.features.stt_providers.stt_providers_routes import router as stt_router
 from app.core.logger import logger
 
 # The lifespan function is used to perform any necessary cleanup when the application shuts down.
@@ -33,6 +35,8 @@ app.include_router(llm_router, tags=["LLM Providers"])
 app.include_router(vector_stores_router, tags=["Vector Stores"])
 app.include_router(convert_to_pdf_router, tags=["Convert to PDF"])
 app.include_router(olmocr_router, tags=["olmOCR"])
+app.include_router(tts_router, tags=["Text to Speech"])
+app.include_router(stt_router, tags=["Speech to Text"])
 
 app.add_middleware(
     CORSMiddleware,
