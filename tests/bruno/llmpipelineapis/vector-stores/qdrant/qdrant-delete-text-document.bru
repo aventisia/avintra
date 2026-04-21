@@ -1,0 +1,33 @@
+meta {
+  name: qdrant - delete text document
+  type: http
+  seq: 3
+}
+
+delete {
+  url: {{LLM_PIPELINE_APIS_BASE_URL}}/api/vector-store/delete
+  body: json
+  auth: bearer
+}
+
+auth:bearer {
+  token: {{ACCESS_TOKEN}}
+}
+
+body:json {
+  {
+    "vector_store": "qdrant",
+    "kb_file_ids": [
+      "d480944d-8344-4ac8-8bc1-91ec64f8f53a"
+    ],
+    "kb_ids": [
+      "4cca5b2a-5d06-47e4-a250-38f26c707727"
+    ],
+    "store_credential_id": "cred_789"
+  }
+}
+
+settings {
+  encodeUrl: true
+  timeout: 0
+}

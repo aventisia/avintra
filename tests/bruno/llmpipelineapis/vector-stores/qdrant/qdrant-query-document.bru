@@ -7,7 +7,11 @@ meta {
 post {
   url: {{LLM_PIPELINE_APIS_BASE_URL}}/vector-store/query
   body: json
-  auth: inherit
+  auth: bearer
+}
+
+auth:bearer {
+  token: {{ACCESS_TOKEN}}
 }
 
 body:json {
@@ -17,6 +21,10 @@ body:json {
     "embedding_model": "text-embedding-3-small",
     "query": "Vector stores help retrieve semantically relevant context for LLM prompts",
     "top_k": 5,
+    "kb_ids": [
+      "4cca5b2a-5d06-47e4-a250-38f26c707727"
+    ],
+    "kb_file_ids": [],
     "doc_names": [
       "test.txt"
     ],

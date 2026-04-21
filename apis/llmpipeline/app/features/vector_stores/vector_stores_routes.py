@@ -69,7 +69,7 @@ async def query_document_route(
             vector_store = get_vector_store(query_doc_request.vector_store, db)
             return await vector_store.query_document(query_doc_request, _user)
 
-    # Qdrant TODO: Yet to be implemented
+    # Qdrant
     if query_doc_request.vector_store == "qdrant":
         db = TenantDB(session=None, tenant_id=_user.tenant_id)
         vector_store = get_vector_store(query_doc_request.vector_store, db)
