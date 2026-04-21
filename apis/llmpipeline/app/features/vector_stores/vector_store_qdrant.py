@@ -30,8 +30,8 @@ class QdrantVectorStore(BaseVectorStore):
 
     def __init__(
             self,
-            api_url: str = settings.OPENROUTER_API_URL,
-            api_key: str = settings.OPENROUTER_API_KEY,
+            api_url: str = settings.QDRANT_URL,
+            api_key: str = settings.QDRANT_API_KEY,
             # TODO: move collection_name to request (IngestDocRequest / QueryDocRequest)
             collection_name: str = "test_collection_384"
         ):
@@ -391,9 +391,147 @@ class QdrantVectorStore(BaseVectorStore):
                 input_tokens=0,
                 error=str(exc),
             )        
-    # TODO: Implement doc delete just like pgvector
-    async def delete_document(self, delete_doc_request: DeleteDocRequest, user: User) -> DeleteDocResponse:
-        raise HTTPException(
-            status_code=status.HTTP_501_NOT_IMPLEMENTED,
-            detail="Qdrant document deletion is not implemented yet.",
-        )
+    
+    # Implement doc delete just like pgvector
+    async def delete_document(
+        self, delete_doc_request: DeleteDocRequest, user: User
+    ) -> DeleteDocResponse:
+
+        # Start timer for performance tracking
+        started = time.perf_counter()
+
+        try:
+            # Normalize kb_file_ids (REQUIRED)
+            normalized_kb_file_ids = [
+                k.strip() for k in delete_doc_request.kb_file_ids if (k or "").strip()
+            ]
+
+            if not normalized_kb_file_ids:
+                logger.error(
+                    "[VECTOR-DELETE-QDRANT] Invalid input: kb_file_ids empty | tenant_id=%s",
+                    user.tenant_id,
+                )
+                raise HTTPException(
+                    status_code=status.HTTP_400_BAD_REQUEST,
+                    detail="kb_file_ids cannot be empty.",
+                )
+
+            # Normalize kb_ids (OPTIONAL filter)
+            normalized_kb_ids = (
+                [k.strip() for k in delete_doc_request.kb_ids if (k or "").strip()]
+                if delete_doc_request.kb_ids
+                else []
+            )
+                        
+            # OR conditions (match any)
+            should_filters = []
+
+            # Build Qdrant filter
+            must_filters = [
+                {
+                    "key": "tenant_id",
+                    "match": {"value": str(user.tenant_id)},
+                }
+            ]
+
+            # Add optional kb_id filter
+            if normalized_kb_file_ids:
+                should_filters.append(
+                    {
+                        "key": "metadata.kb_file_id",
+                        "match": {"any": normalized_kb_file_ids},
+                    }
+                )
+                
+            if normalized_kb_ids:
+                should_filters.append(
+                    {
+                        "key": "metadata.kb_id",
+                        "match": {"any": normalized_kb_ids},
+                    }
+                )
+
+            payload = {
+                "filter": {
+                    "must": must_filters,
+                    "should": should_filters
+                }
+            }
+
+            logger.info(
+                "[VECTOR-DELETE-QDRANT] Initiating delete | tenant_id=%s kb_file_ids=%s kb_ids=%s",
+                user.tenant_id,
+                normalized_kb_file_ids,
+                normalized_kb_ids if normalized_kb_ids else None,
+            )
+
+            # Execute delete request to Qdrant
+            result = await self._make_request(
+                "POST",
+                f"/collections/{self.collection_name}/points/delete?wait=true",
+                payload,
+            )
+
+            # Extract operation_id (Qdrant does not return deleted count)
+            operation_id = result.get("result", {}).get("operation_id")
+
+            # Calculate elapsed time
+            elapsed = round(time.perf_counter() - started, 2)
+
+            logger.info(
+                "[VECTOR-DELETE-QDRANT] Success | tenant_id=%s kb_file_ids=%s operation_id=%s elapsed_s=%s",
+                user.tenant_id,
+                normalized_kb_file_ids,
+                operation_id,
+                elapsed,
+            )
+
+            return DeleteDocResponse(
+                vector_store=delete_doc_request.vector_store,
+                kb_file_ids=normalized_kb_file_ids,
+                kb_ids=delete_doc_request.kb_ids,
+                deleted_chunks=0,  # Qdrant does not provide exact count
+                time_taken=elapsed,
+                error=None,
+            )
+
+        except HTTPException as http_exc:
+            # Handle expected HTTP errors
+            elapsed = round(time.perf_counter() - started, 2)
+
+            logger.warning(
+                "[VECTOR-DELETE-QDRANT] HTTPException | tenant_id=%s kb_file_ids=%s error=%s elapsed_s=%s",
+                user.tenant_id,
+                delete_doc_request.kb_file_ids,
+                str(http_exc.detail),
+                elapsed,
+            )
+
+            raise
+
+        except Exception as exc:
+            # Handle unexpected failures
+            elapsed = round(time.perf_counter() - started, 2)
+
+            log_exception(
+                logger,
+                exc,
+                "[VECTOR-DELETE-QDRANT] Unexpected failure during deletion",
+            )
+
+            logger.error(
+                "[VECTOR-DELETE-QDRANT] Failed | tenant_id=%s kb_file_ids=%s kb_ids=%s elapsed_s=%s",
+                user.tenant_id,
+                delete_doc_request.kb_file_ids,
+                delete_doc_request.kb_ids,
+                elapsed,
+            )
+
+            return DeleteDocResponse(
+                vector_store=delete_doc_request.vector_store,
+                kb_file_ids=delete_doc_request.kb_file_ids,
+                kb_ids=delete_doc_request.kb_ids,
+                deleted_chunks=0,
+                time_taken=elapsed,
+                error=str(exc),
+            )
