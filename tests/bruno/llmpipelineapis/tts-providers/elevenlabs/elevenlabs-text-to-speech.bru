@@ -1,0 +1,34 @@
+meta {
+  name: Elevenlab - Text to Speech
+  type: http
+  seq: 2
+}
+
+post {
+  url: {{LLM_PIPELINE_APIS_BASE_URL}}/tts/synthesize
+  body: json
+  auth: bearer
+}
+
+auth:bearer {
+  token: {{ACCESS_TOKEN}}
+}
+
+body:json {
+  {
+    "provider": "elevenlabs",
+    "input": "Hello! This is a sample text to speech conversion.",
+    "model": "eleven_v3",
+    "voice_id": "JBFqnCBsd6RMkjVDRZzb",
+    "language": "en",
+    "speed": 1.0,
+    "pitch": 1.0,
+    "stream": false,
+    "credentials_id": null,
+    "is_byok_enabled": false,
+    "ref_id": "req-12345",
+    "ref_type": "test",
+    "agent_name": "demo-agent",
+    "action": "tts_generate"
+  }
+}
