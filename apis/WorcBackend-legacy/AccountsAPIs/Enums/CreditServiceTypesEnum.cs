@@ -60,6 +60,19 @@ public enum CreditServiceTypesEnum
     OpenRouterQwenEmbedding4B,
     OpenRouterQwenEmbedding8B,
 
+    // ===== ElevenLabs STT Models =====
+    ElevenLabsScribeV1,
+    ElevenLabsScribeV2,
+    ElevenLabsScribeV2Realtime,
+
+    // ===== ElevenLabs TTS Models =====
+    ElevenLabsV3,
+    ElevenLabsMultilingualV2,
+    ElevenLabsMultilingualV3,
+    ElevenLabsTurboV2,
+    ElevenLabsFlashV2,
+    ElevenLabsEnglishV2,
+
     // Other services
     ElevenLabsSTT,
     ElevenLabsTTS,
