@@ -115,6 +115,7 @@ public partial class AccountsDbContext : IdentityDbContext<
     // On Save Changes - write tenant Id to table
     public override int SaveChanges()
     {
+        // EnforceReadOnly(); // Ensure read-only users cannot modify data
         foreach (var entry in ChangeTracker.Entries<IMustHaveTenant>().ToList())
         {
             switch (entry.State)
@@ -154,6 +155,7 @@ public partial class AccountsDbContext : IdentityDbContext<
     // On Save Changes Async - write tenant Id to table
     public override async Task<int> SaveChangesAsync(CancellationToken cancellationToken = new CancellationToken())
     {
+        // EnforceReadOnly(); // Ensure read-only users cannot modify data
         foreach (var entry in ChangeTracker.Entries<IMustHaveTenant>().ToList())
         {
             switch (entry.State)
@@ -199,4 +201,36 @@ public partial class AccountsDbContext : IdentityDbContext<
         .ToDictionary(k => k.Metadata.Name, v => new { NewValue = v.CurrentValue, OldValue = v.OriginalValue })),
         _ => null
     };
+
+    // TODO: Restrict read-only users (is_temp=true) from Add/Update/Delete operations
+    //     // Prevents write operations (Add/Update/Delete) when the user has a read-only token. Defaults to false if claim is missing or invalid.
+    //     private void EnforceReadOnly()
+    //     {
+    //         // Get the current user from HttpContext
+    //         var user = _httpContextAccessor.HttpContext?.User;
+
+    //         // Read the "is_temp" claim (string or null)
+    //         var claimValue = user?.FindFirst("is_temp")?.Value;
+
+    //         // Safely parse to bool
+    //         // If null, empty, or invalid → defaults to false
+    //         bool.TryParse(claimValue, out bool isReadOnly);
+
+    //         // If user is marked as read-only, block write operations
+    //         if (isReadOnly)
+    //         {
+    //             // Check if there are any tracked entities with write operations
+    //             var hasWriteOperation = ChangeTracker.Entries()
+    //                 .Any(e => e.State == EntityState.Added ||
+    //                           e.State == EntityState.Modified ||
+    //                           e.State == EntityState.Deleted);
+
+    //             // Throw if any write operation is detected
+    //             if (hasWriteOperation)
+    //             {
+    //                 throw new UnauthorizedAccessException(
+    //                     "Read-only token cannot modify data.");
+    //             }
+    //         }
+    //     }
 }
