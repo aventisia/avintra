@@ -1,0 +1,30 @@
+meta {
+  name: Tenant - Generate token
+  type: http
+  seq: 7
+}
+
+post {
+  url: {{ACCOUNTS_APIS_BASE_URL}}/sa/auth/tenant/token
+  body: json
+  auth: bearer
+}
+
+headers {
+  tntid: {{TENANT_ID}}
+}
+
+auth:bearer {
+  token: {{ACCESS_TOKEN}}
+}
+
+body:json {
+  {
+    "isTenantToken": true
+  }
+}
+
+settings {
+  encodeUrl: true
+  timeout: 0
+}
