@@ -6,12 +6,14 @@ import {
   SimpleDDMenuItem,
 } from "@aventisia/ui/dropdown-menu";
 import { cn } from "@aventisia/ui/lib";
+import { Tooltip } from "@aventisia/ui/tooltip";
 import {
   ChevronDownIcon,
   FileTextIcon,
   // GlobeIcon,
   TypeIcon,
 } from "lucide-react";
+import { useHotkeys } from "react-hotkeys-hook";
 import { useShallow } from "zustand/react/shallow";
 
 import { useKBFilesDialogStore } from "../../stores/kb-files-upload-dialog-store";
@@ -23,20 +25,29 @@ export default function AddFileDropDown() {
       setType: state.setType,
     })),
   );
+
+  // Handle create action
+  const handleAddFile = () => {
+    setShowDialog(true);
+    setType("file");
+  };
+
+  // Register the Ctrl+Alt+N shortcut
+  useHotkeys("ctrl+alt+n", handleAddFile, { preventDefault: true });
+
   return (
     <div className="flex items-center">
       {/* Left: direct action button */}
-      <Button
-        className={cn("rounded-r-none border-r-0 flex items-center gap-1.5")}
-        size={"xs"}
-        onClick={() => {
-          setShowDialog(true);
-          setType("file");
-        }}
-      >
-        <FileTextIcon className="h-3.5 w-3.5" />
-        Add File
-      </Button>
+      <Tooltip content={""} shortcut="Ctrl+Alt+N">
+        <Button
+          className={cn("rounded-r-none border-r-0 flex items-center gap-1.5")}
+          size={"xs"}
+          onClick={handleAddFile}
+        >
+          <FileTextIcon className="h-3.5 w-3.5" />
+          Add File
+        </Button>
+      </Tooltip>
 
       {/* Divider */}
       <div className="w-px self-stretch bg-gray-500/80" />

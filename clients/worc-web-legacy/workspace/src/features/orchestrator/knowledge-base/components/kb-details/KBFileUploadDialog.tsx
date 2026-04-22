@@ -41,13 +41,13 @@ export const KBFileUploadDialog = ({
     <Dialog open={showDialog} onOpenChange={handleOpenChange}>
       <DialogContent
         side={"center"}
-        className="!max-w-3xl  h-[calc(85vh)] flex flex-col p-0 overflow-hidden"
+        className="!max-w-3xl h-[40rem] flex flex-col p-0 overflow-hidden"
       >
         <DialogDefaultHeader
-          heading={type == "text" ? "Raw Text Input" : "Add Files"}
-          className="p-3"
+          heading={type == "text" ? "Raw Text Input" : "Add File"}
+          className="p-3 px-4"
         />
-        <div className="flex-1  overflow-hidden">
+        <div className="flex-1 overflow-hidden">
           {type == "text" ? (
             <KBAddTextForm
               knowledgeBaseId={knowledgeBaseId}

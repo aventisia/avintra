@@ -26,7 +26,7 @@ export const getKBFilesTableColumns = (
       />
     ),
     cell: ({ row }) => (
-      <div className="w-auto truncate font-medium">{row.original.fileName}</div>
+      <div className="w-auto max-w-80 truncate font-medium">{row.original.fileName}</div>
     ),
   },
   {
@@ -41,7 +41,7 @@ export const getKBFilesTableColumns = (
       />
     ),
     cell: ({ row }) => (
-      <div className="w-auto truncate font-medium">
+      <div className="w-36 truncate font-medium">
         {row.getValue("createdBy")}
       </div>
     ),
@@ -58,7 +58,7 @@ export const getKBFilesTableColumns = (
       />
     ),
     cell: ({ row }) => (
-      <div className="w-auto  font-medium">
+      <div className="w-20 font-medium">
         {row.original.createdOn ? dateFormatter(row.original.createdOn) : "NA"}
       </div>
     ),
