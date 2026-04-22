@@ -4,6 +4,8 @@ import time
 import httpx
 import json
 import websockets
+import io
+from pydub import AudioSegment
 
 from fastapi import HTTPException
 
@@ -336,15 +338,30 @@ class ElevenLabsSTTProvider(BaseSpeechToTextProvider):
         base_response.status = "completed"
         base_response.output = transcript
         base_response.time_taken = round(end_time - start_time, 2)
-        base_response.character_count = len(transcript)
+        base_response.token_count = self.get_audio_duration(req.input)
 
         # CREDIT USAGE (NON-BYOK)
         if not req.is_byok_enabled and not req.credentials_id:
             try:
                 credit_manager = CreditManagerService()
+                
+                # Mapping of request model names to internal service type identifiers
+                # This ensures consistent naming for billing/reporting
+                STT_MODEL_MAP = {
+                    "scribe_v2", "ElevenLabsScribeV2",
+                    "scribe_v2_realtime", "ElevenLabsScribeV2Realtime",
+                    "scribe_v1", "ElevenLabsScribeV1",
+                }
 
+                # Resolve the internal service type based on requested model
+                service_type = STT_MODEL_MAP.get(req.model)
+                
+                # Validate model support to avoid silent billing errors
+                if not service_type:
+                    raise ValueError(f"Unsupported TTS model: {req.model}")
+                
                 credit_usage = {
-                    "ServiceType": "ElevenLabsSTT",
+                    "ServiceType": service_type,
                     "ConsumedUnit": base_response.character_count,
                     "RefType": req.ref_type,
                     "RefId": req.ref_id,
@@ -369,3 +386,21 @@ class ElevenLabsSTTProvider(BaseSpeechToTextProvider):
                 )
 
         return base_response
+
+    def get_audio_duration(self, base64_str: str) -> float:
+        try:
+            # Remove base64 header if present
+            if "," in base64_str:
+                base64_str = base64_str.split(",", 1)[1]
+
+            # Decode base64
+            audio_bytes = base64.b64decode(base64_str)
+
+            # Load audio (auto-detect format via ffmpeg)
+            audio = AudioSegment.from_file(io.BytesIO(audio_bytes))
+
+            # Return duration in seconds
+            return len(audio) / 1000.0
+
+        except Exception as e:
+            raise ValueError(f"Failed to process audio: {e}")

@@ -247,15 +247,33 @@ class ElevenLabsTTSProvider(BaseTextToSpeechProvider):
         base_response.status = "completed"
         base_response.output = audio_base64
         base_response.time_taken = round(end_time - start_time, 2)
-        base_response.token_count = len(req.input.split())
+        base_response.token_count = len(req.input)
 
         # Post credit usage if not BYOK
         if not req.is_byok_enabled and not req.credentials_id:
             try:
                 credit_manager = CreditManagerService()
 
+                # Mapping of request model names to internal service type identifiers
+                # This ensures consistent naming for billing/reporting
+                TTS_MODEL_MAP = {
+                    "eleven_v3": "ElevenLabsV3",
+                    "eleven_multilingual_v2": "ElevenLabsMultilingualV2",
+                    "eleven_multilingual_v3": "ElevenLabsMultilingualV3",
+                    "eleven_turbo_v2": "ElevenLabsTurboV2",
+                    "eleven_flash_v2": "ElevenLabsFlashV2",
+                    "eleven_english_v2": "ElevenLabsEnglishV2",
+                }
+
+                # Resolve the internal service type based on requested model
+                service_type = TTS_MODEL_MAP.get(req.model)
+                
+                # Validate model support to avoid silent billing errors
+                if not service_type:
+                    raise ValueError(f"Unsupported TTS model: {req.model}")
+
                 credit_usage = {
-                    "ServiceType": "ElevenLabsTTS",
+                    "ServiceType": service_type,
                     "ConsumedUnit": base_response.token_count,
                     "RefType": req.ref_type,
                     "RefId": req.ref_id,

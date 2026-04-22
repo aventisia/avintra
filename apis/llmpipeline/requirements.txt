@@ -49,3 +49,4 @@ tzdata==2025.3
 urllib3==2.6.3
 uvicorn==0.40.0
 websockets==16.0
+pydub==0.25.1
