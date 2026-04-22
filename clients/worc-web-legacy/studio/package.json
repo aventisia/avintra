@@ -14,7 +14,7 @@
   "dependencies": {
     "@assistant-ui/react": "^0.12.21",
     "@assistant-ui/react-markdown": "^0.12.7",
-    "@aventisia/ui": "^0.0.68",
+    "@aventisia/ui": "^0.0.69",
     "@codemirror/lang-html": "^6.4.9",
     "@codemirror/lang-javascript": "^6.2.2",
     "@codemirror/lang-python": "^6.1.6",
