@@ -119,7 +119,6 @@ export const deleteKnowledgeBaseFile = (
 };
 
 export const ingestVectorStoreInput = (dto: VectorStoreIngestRequestDto) => {
-  console.log("Ingesting to vector store with DTO:", dto);
   return axiosInstance
     .post(`${vectorStoreApiBaseUrl}/ingest`, dto, { timeout: 5 * 60 * 1000 })
     .then((res) => {
