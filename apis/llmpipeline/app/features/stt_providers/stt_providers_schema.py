@@ -38,7 +38,7 @@ class STTProviderResponse(BaseModel):
     credentials_id: Optional[str] = Field(None)
     is_byok_enabled: Optional[bool] = Field(False)
     duration_seconds: Optional[float] = Field(None)
-    character_count: Optional[float] = Field(None)
+    token_count: Optional[float] = Field(None)
     time_taken: Optional[float] = Field(None)
     created_on: datetime = Field(default_factory=datetime.utcnow)
     ref_id: Optional[str] = Field(None)
