@@ -90,14 +90,15 @@ const KnowledgeBaseConfigField = ({ name }: KnowledgeBaseConfigFieldProps) => {
         selectOptions={knowledgeBaseSelectOptions}
       />
 
-      <div className="grid grid-cols-2 gap-2">
-        <InputField
-          name={numberOfChunksFieldName}
-          type="number"
-          label="Number Of Chunks"
-          fieldSize="sm"
-        />
+      <InputField
+        name={numberOfChunksFieldName}
+        type="number"
+        label="Number Of Chunks"
+        fieldSize="sm"
+      />
 
+      {/* TODO: Once we have different retrieval types, we can show this field and make it dynamic based on the retrieval type selected */}
+      <div className="hidden grid-cols-2 gap-2">
         <SelectField
           size="sm"
           name={retrievalTypeFieldName}

@@ -35,7 +35,7 @@ export default function AddFileDropDown() {
         }}
       >
         <FileTextIcon className="h-3.5 w-3.5" />
-        Add Files
+        Add File
       </Button>
 
       {/* Divider */}
@@ -62,7 +62,7 @@ export default function AddFileDropDown() {
               setType("file");
             }}
             Icon={FileTextIcon}
-            content="Add Files"
+            content="Add File"
           />
           <SimpleDDMenuItem
             size="md"
