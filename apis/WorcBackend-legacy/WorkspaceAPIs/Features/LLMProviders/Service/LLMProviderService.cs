@@ -116,7 +116,7 @@ public class LLMProviderService : ILLMProviderService
                 LLMProviderTypesEnum.OpenRouter =>
                     string.IsNullOrWhiteSpace(lLMProviderModelRequestDto.OutputModalities)
                         ? "v1/models?output_modalities=all"
-                        : $"v1/models?output_modalities={lLMProviderModelRequestDto.OutputModalities}",
+                        : $"v1/models?output_modalities={lLMProviderModelRequestDto.OutputModalities.ToLower()}",
                 LLMProviderTypesEnum.Gemini => "v1beta/models",
                 _ => throw new NotImplementedException("Unsupported provider")
             };
