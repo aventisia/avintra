@@ -118,10 +118,13 @@ async def retrieve_and_inject_kb_context(llm_request: LLMRequest, user: User) ->
         async with get_db_session_context(settings.POSTGRESQL_WORC_DB_NAME) as session:
             session.info["tenant_id"] = user.tenant_id
             db = TenantDB(session=session, tenant_id=user.tenant_id)
-            vector_store = get_vector_store("pgvector", db)
-
+            
+            # Iterate through each KB configuration
             for kb_config in kb_configs:
-                if kb_config["vector_store"] != "pgvector":
+                store_type = kb_config.get("vector_store")
+
+                # Guard: skip if vector store not defined
+                if not store_type:
                     logger.warning(
                         "[KB-RETRIEVAL] Unsupported vector store '%s' for kb_id=%s. Skipping.",
                         kb_config["vector_store"],
@@ -129,8 +132,22 @@ async def retrieve_and_inject_kb_context(llm_request: LLMRequest, user: User) ->
                     )
                     continue
 
+                try:
+                    # Dynamically initialize the appropriate vector store backend
+                    vector_store = get_vector_store(store_type, db)
+                except Exception as e:
+                    # Fail gracefully if store init fails (do not block other KBs)
+                    logger.warning(
+                        "[KB-RETRIEVAL] Failed to initialize vector store '%s' for kb_id=%s. Error: %s",
+                        store_type,
+                        kb_config["kb_id"],
+                        str(e),
+                    )
+                    continue
+                
+                # Build query request for this KB
                 query_doc_request = QueryDocRequest(
-                    vector_store="pgvector",
+                    vector_store=store_type,
                     embedding_provider=kb_config["embedding_provider"],
                     embedding_model=kb_config["embedding_model"],
                     query=query_text,
@@ -145,8 +162,10 @@ async def retrieve_and_inject_kb_context(llm_request: LLMRequest, user: User) ->
                     agent_name=llm_request.agent_name,
                 )
 
+                # Execute semantic search against vector store
                 result = await vector_store.query_document(query_doc_request, user)
 
+                # Handle query errors per KB (non-blocking)
                 if result.error:
                     logger.warning(
                         "[KB-RETRIEVAL] query_document returned an error for kb_id=%s: %s",
@@ -155,12 +174,14 @@ async def retrieve_and_inject_kb_context(llm_request: LLMRequest, user: User) ->
                     )
                     continue
 
+                # Aggregate retrieved chunks
                 all_chunks.extend(result.chunks)
-
+        # Guard: no results from any KB
         if not all_chunks:
             logger.info("[KB-RETRIEVAL] No chunks retrieved from knowledge base.")
             return
 
+         # Rank chunks globally by similarity score (descending)
         all_chunks.sort(key=lambda chunk: chunk.similarity_score, reverse=True)
 
         # Format retrieved chunks as a context block and inject into LLMRequest input
