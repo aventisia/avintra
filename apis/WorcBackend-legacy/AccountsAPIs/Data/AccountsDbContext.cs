@@ -202,35 +202,30 @@ public partial class AccountsDbContext : IdentityDbContext<
         _ => null
     };
 
-    // TODO: Restrict read-only users (is_temp=true) from Add/Update/Delete operations
-    //     // Prevents write operations (Add/Update/Delete) when the user has a read-only token. Defaults to false if claim is missing or invalid.
-    //     private void EnforceReadOnly()
+    // TODO: Move this enforcement to a centralized EF Core SaveChanges interceptor to ensure consistent enforcement across all DbContexts and improve testability.
+    // Enforces read-only access by blocking any write operations (Add/Update/Delete). Write access is allowed unless the "access_mode" claim is explicitly set to "read_only".
+    // private void EnforceReadOnly()
+    // {
+    //     var user = _httpContextAccessor.HttpContext?.User;
+
+    //     // Extract access mode claim (e.g., "read_only", "read_write")
+    //     var accessMode = user?.FindFirst("access_mode")?.Value;
+
+    //     // Exit early if session is not read-only
+    //     if (!string.Equals(accessMode, "read_only", StringComparison.OrdinalIgnoreCase))
+    //         return;
+
+    //     // Check if there are any tracked entities with write operations
+    //     var hasWriteOperation = ChangeTracker.Entries()
+    //         .Any(e => e.State == EntityState.Added ||
+    //                   e.State == EntityState.Modified ||
+    //                   e.State == EntityState.Deleted);
+
+    //     // Throw if any write operation is detected
+    //     if (hasWriteOperation)
     //     {
-    //         // Get the current user from HttpContext
-    //         var user = _httpContextAccessor.HttpContext?.User;
-
-    //         // Read the "is_temp" claim (string or null)
-    //         var claimValue = user?.FindFirst("is_temp")?.Value;
-
-    //         // Safely parse to bool
-    //         // If null, empty, or invalid → defaults to false
-    //         bool.TryParse(claimValue, out bool isReadOnly);
-
-    //         // If user is marked as read-only, block write operations
-    //         if (isReadOnly)
-    //         {
-    //             // Check if there are any tracked entities with write operations
-    //             var hasWriteOperation = ChangeTracker.Entries()
-    //                 .Any(e => e.State == EntityState.Added ||
-    //                           e.State == EntityState.Modified ||
-    //                           e.State == EntityState.Deleted);
-
-    //             // Throw if any write operation is detected
-    //             if (hasWriteOperation)
-    //             {
-    //                 throw new UnauthorizedAccessException(
-    //                     "Read-only token cannot modify data.");
-    //             }
-    //         }
+    //         throw new UnauthorizedAccessException(
+    //             "Read-only token cannot modify data.");
     //     }
+    // }
 }

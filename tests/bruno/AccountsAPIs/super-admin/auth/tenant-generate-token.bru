@@ -5,8 +5,8 @@ meta {
 }
 
 post {
-  url: {{ACCOUNTS_APIS_BASE_URL}}/sa/auth/tenant/token
-  body: json
+  url: {{ACCOUNTS_APIS_BASE_URL}}/sa/tenants/auth/tokens
+  body: none
   auth: bearer
 }
 
@@ -16,12 +16,6 @@ headers {
 
 auth:bearer {
   token: {{ACCESS_TOKEN}}
-}
-
-body:json {
-  {
-    "isTenantToken": true
-  }
 }
 
 settings {
