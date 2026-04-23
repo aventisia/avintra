@@ -34,7 +34,7 @@ public class TenantAuthService : ITenantAuthService
     }
 
     // Creates a session for the user and returns JWT + refresh token. Validates user, tenant, request data, and session limits before creating a session.
-    public async Task<ServiceResponse<UserSessionDto>> GenerateTenantTokenAsync(TenantTokenDto tenantTokenDto)
+    public async Task<ServiceResponse<UserSessionDto>> CreateSessionAsync()
     {
         // Default failure response
         var serviceResponse = new ServiceResponse<UserSessionDto>
@@ -65,12 +65,18 @@ public class TenantAuthService : ITenantAuthService
                 return serviceResponse;
             }
 
-            // Resolve tenant based on request type
-            Tenant? tenant = tenantTokenDto.IsTenantToken
+            // Determine if the request is accessing a different tenant than the user's primary tenant
+            var isCrossTenantAccess = user.Tenant.Id != _currentTenantService.CurrentTenantId;
+
+            // Resolve tenant based on context
+            Tenant? tenant = isCrossTenantAccess
                 ? await _unitOfWork.TenantRepo
                     .GetByConditionAsync(w => w.Id == _currentTenantService.CurrentTenantId)
                     .SingleOrDefaultAsync()
                 : user.Tenant;
+
+            // Mark session as read-only when accessing a different tenant
+            var isReadOnly = isCrossTenantAccess;
 
             // Validate tenant existence
             if (tenant == null)
@@ -78,8 +84,6 @@ public class TenantAuthService : ITenantAuthService
                 _logger.LogError($"Tenant not found for user {user.UserName}");
                 return serviceResponse;
             }
-            _logger.LogError($"Tenant Name {tenant.Name}");
-
 
             // Read user-agent from request
             var userAgent = _httpContext.Request.Headers["User-Agent"].ToString();
@@ -113,7 +117,7 @@ public class TenantAuthService : ITenantAuthService
 
             // Generate session identifiers and tokens
             var sessionId = Guid.NewGuid();
-            var jwt = CreateJwt(user, jwtExpiresOn, false, sessionId, currentPlan, tenant.Id, tenantTokenDto.IsTenantToken);
+            var jwt = CreateJwt(user, jwtExpiresOn, false, sessionId, currentPlan, tenant.Id, isReadOnly);
             var refreshToken = _authHelperService.CreateRefreshToken();
 
             // Extract client device and network details
@@ -179,6 +183,245 @@ public class TenantAuthService : ITenantAuthService
         }
     }
 
+    // Refreshes the user's session for the requested device.
+    public async Task<ServiceResponse<UserSessionDto>> RefreshSessionAsync()
+    {
+        // Initialize ServiceResponse with failed response
+        var serviceResponse = new ServiceResponse<UserSessionDto>
+        {
+            Data = null,
+            StatusCode = 401,
+            Message = "Unable to refresh the session. Please try again."
+        };
+
+        try
+        {
+            // Get SessionId, Username, RefreshToken and User-Agent
+            _httpContext.Request.Cookies.TryGetValue(CookieNamesEnum.SessionId.ToString(), out var sessionIdString);
+            _httpContext.Request.Cookies.TryGetValue(CookieNamesEnum.UserName.ToString(), out var userName);
+            _httpContext.Request.Cookies.TryGetValue(CookieNamesEnum.RefreshToken.ToString(), out var refreshToken);
+            var userAgent = _httpContext.Request.Headers["User-Agent"].ToString();
+
+            // Set all cookies to blank
+            _authHelperService.RemoveCookie(CookieNamesEnum.SessionId.ToString());
+            _authHelperService.RemoveCookie(CookieNamesEnum.AccessToken.ToString());
+            _authHelperService.RemoveCookie(CookieNamesEnum.RefreshToken.ToString());
+            _authHelperService.RemoveCookie(CookieNamesEnum.UserName.ToString());
+
+            // Something is missing
+            if (sessionIdString == null || userName == null || userAgent == null)
+            {
+                _logger.LogInformation("{SessionId} or {UserName} or User-Agent not found", CookieNamesEnum.SessionId, CookieNamesEnum.UserName);
+                serviceResponse.Message = "Unable to refresh the session";
+                return serviceResponse;
+            }
+
+            // RefreshToken not found
+            if (refreshToken == null)
+            {
+                _logger.LogInformation("Log:3 RefreshToken not found for sessionId {SessionIdString} and user {UserName}", sessionIdString, userName);
+
+                // Expired sessions will be deleted once user try to create new session via logging in
+                _logger.LogInformation($"Session has expired for {sessionIdString} because {CookieNamesEnum.RefreshToken} not found");
+                serviceResponse.Message = "Session has expired";
+                return serviceResponse;
+            }
+
+            // Get user (Includes Tenant and Roles)
+            var user = await _unitOfWork.AccountUserRepo
+                .GetByConditionAsync(w => EF.Functions.ILike(userName, w.UserName))
+                .Include(i => i.UserRoles)
+                        .ThenInclude(i1 => i1.Role)
+                            .ThenInclude(i2 => i2.RolePermissions)
+                                .ThenInclude(i3 => i3.Permission)
+                    .AsNoTracking()
+                    .AsSplitQuery()
+                    .SingleOrDefaultAsync();
+
+            // User doesn't exist
+            if (user == null)
+            {
+                _logger.LogInformation("Log:4 User {UserName} not found in database", userName);
+                _logger.LogInformation("{UserName} account not found", userName);
+                serviceResponse.Message = "Invalid credentials";
+                return serviceResponse;
+            }
+
+            // Determine if the request is accessing a different tenant than the user's primary tenant
+            var isCrossTenantAccess = user.Tenant.Id != _currentTenantService.CurrentTenantId;
+
+            // Resolve tenant based on context
+            Tenant? tenant = isCrossTenantAccess
+                ? await _unitOfWork.TenantRepo
+                    .GetByConditionAsync(w => w.Id == _currentTenantService.CurrentTenantId)
+                    .SingleOrDefaultAsync()
+                : user.Tenant;
+
+            // Mark session as read-only when accessing a different tenant
+            var isReadOnly = isCrossTenantAccess;
+
+            // // Tenant is null/disabled/expired
+            // if (!_authHelperService.IsUserTenantValid(tenant, user.UserName))
+            // {
+            //     serviceResponse.Message = "Not able to retrieve your tenant's details. Please contact support administrator";
+            //     return serviceResponse;
+            // }
+
+            // // Account is locked
+            // if (user.LockoutEnd > DateTimeOffset.UtcNow)
+            // {
+            //     _logger.LogInformation("{UserName} account is locked", userName);
+            //     serviceResponse.Message = "Your account is locked. Please contact support administrator";
+            //     return serviceResponse;
+            // }
+
+            // // Account is disabled
+            // if (user.IsDisabled)
+            // {
+            //     _logger.LogInformation("{UserName} account is disabled", userName);
+            //     serviceResponse.Message = "Your account is disabled. Please contact support administrator";
+            //     return serviceResponse;
+            // }
+
+            // // Password has expired
+            // if (!tenant.IsPwdNeverExpiresEnabled && (DateTimeOffset.UtcNow - user.PwdSetOn)?.Days > tenant.DaysBeforePwdExpires)
+            // {
+            //     _logger.LogInformation("{UserName} account's password has been expired", userName);
+            //     /********IMPORTANCT NOTE********
+            //     DO NOT CHANGE the message's part "Your password has
+            //     been expired" as it has to match on frontend side
+            //     ********IMPORTANCT NOTE********/
+            //     serviceResponse.Message = "Your password has been expired. Please reset it to use your account";
+            //     return serviceResponse;
+            // }
+
+            // Get session
+            var sessionId = new Guid(sessionIdString);
+            var activeSession = await _unitOfWork.ActiveSessionRepo
+                .GetByConditionAsync(w => w.Id == sessionId && w.UserId == user.Id)
+                .SingleOrDefaultAsync();
+
+            // Session not found
+            if (activeSession == null)
+            {
+                _logger.LogInformation($"Active session not found for account {userName}");
+                serviceResponse.Message = "Invalid credentials";
+                return serviceResponse;
+            }
+
+            // TODO: Uncomment the DeviceId mismatch check when needed
+            // // DeviceId did not match
+            // if (activeSession.DeviceId != userAgent)
+            // {
+            //     _logger.LogInformation($"DeviceId did not match for session {activeSession.Id} and account {userName}");
+            //     serviceResponse.Message = "Invalid credentials";
+            //     return serviceResponse;
+            // }
+
+            // // RefreshToken did not match
+            // if (activeSession.RefreshToken != refreshToken)
+            // {
+            //     _logger.LogInformation($"RefreshToken did not match for session {activeSession.Id} and account {userName}");
+            //     serviceResponse.Message = "Invalid credentials";
+            //     return serviceResponse;
+            // }
+
+            /*No need to check refreshToken expiry bcz 
+            cookie won't exist if refreshToken is expired*/
+
+            // Get Jwt and RefreshToken validity config
+            var jwtExpiresOn = DateTimeOffset.UtcNow.AddMinutes(_environmentConfig.JwtValidityInMinutes);
+            var refreshTokenExpiresOn = DateTimeOffset.UtcNow.AddDays(_environmentConfig.JwtRefreshTokenValidityInDays);
+
+            // Retrieve the tenant's subscription along with the associated plan details.
+            var tenantSubscription = await _unitOfWork.TenantSubscriptionRepo
+                 .GetByConditionAsync(w => w.TenantId == tenant.Id && w.IsActive)
+                 .Include(i => i.Plan)
+                 .FirstOrDefaultAsync();
+
+            // Extract the current plan type from the subscription, if available.
+            string? currentPlan = tenantSubscription?.Plan?.Type.ToString();
+
+            // Create new Jwt string
+            var jwt = CreateJwt(user, jwtExpiresOn, false, sessionId, currentPlan, tenant.Id, isReadOnly);
+
+            // Create new RefreshToken
+            var newRefreshToken = _authHelperService.CreateRefreshToken();
+
+            // Update info of activeSession instance
+            activeSession.RefreshToken = newRefreshToken;
+            activeSession.SessionExpiresOn = refreshTokenExpiresOn;
+            activeSession.LastRefreshOn = DateTimeOffset.UtcNow;
+
+            // Update ActiveSession with concurrency handling
+            // This handles React Strict Mode causing duplicate refresh requests
+            try
+            {
+                _unitOfWork.ActiveSessionRepo.Update(activeSession);
+
+                // Update ActiveSession failed
+                if (!await _unitOfWork.SaveAsync())
+                {
+                    _logger.LogInformation($"Context SaveChanges failed while refreshing active session for {user.UserName} and sessionId {sessionIdString}");
+                    return serviceResponse;
+                }
+            }
+            catch (DbUpdateConcurrencyException)
+            {
+                // Another concurrent request already refreshed this session (e.g., React Strict Mode double-call)
+                // Re-fetch the updated session and use its tokens
+
+                // Re-fetch the session that was updated by the concurrent request
+                activeSession = await _unitOfWork.ActiveSessionRepo
+                    .GetByConditionAsync(w => w.Id == sessionId && w.UserId == user.Id)
+                    .AsNoTracking()
+                    .SingleOrDefaultAsync();
+
+                if (activeSession == null)
+                {
+                    serviceResponse.Message = "Invalid credentials";
+                    return serviceResponse;
+                }
+
+                // Use the tokens from the already-refreshed session
+                newRefreshToken = activeSession.RefreshToken;
+                refreshTokenExpiresOn = activeSession.SessionExpiresOn;
+            }
+
+            // Append SessionId, Jwt/AccessToken, RefreshToken, and Username to cookies
+            _authHelperService.SetCookie(CookieNamesEnum.SessionId.ToString(), activeSession.Id.ToString(), refreshTokenExpiresOn);
+            _authHelperService.SetCookie(CookieNamesEnum.AccessToken.ToString(), jwt, jwtExpiresOn);
+            _authHelperService.SetCookie(CookieNamesEnum.RefreshToken.ToString(), newRefreshToken, refreshTokenExpiresOn);
+            _authHelperService.SetCookie(CookieNamesEnum.UserName.ToString(), user.UserName, refreshTokenExpiresOn);
+
+
+            // Create UserSessionDto
+            var userSessionDto = new UserSessionDto()
+            {
+                TenantName = tenant.Name,
+                FirstName = user.FirstName,
+                LastName = user.LastName,
+                UserInitials = GetUserInitialsUtil.GetUserInitials(user.FirstName, user.LastName),
+                AccessToken = jwt,
+                RefreshToken = refreshToken,
+                RTExpiresOn = refreshTokenExpiresOn,
+                Country = tenant != null ? tenant.Country.ToString() : "NA",
+                PlatformVersion = _appDefaultConfig.PlatformVersion
+            };
+
+            serviceResponse.Message = "Session has been refreshed successfully.";
+            serviceResponse.Data = userSessionDto;
+            serviceResponse.StatusCode = 200;
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex, "Error occurred while performing {Name}", ex.TargetSite.Name);
+            return serviceResponse;
+        }
+
+        return serviceResponse;
+    }
+
     // Extracts client IP address, browser, and operating system from the request.
     static (string? ipAddress, string Browser, string OS) GetClientBrowserAndOs(HttpContext context)
     {
@@ -208,7 +451,7 @@ public class TenantAuthService : ITenantAuthService
         Guid? sessionId = null,
         string? currentPlan = null,
         Guid? tenantId = null,
-        bool isTemporary = false)
+        bool isReadOnly = false)
     {
         // Initialize base claims required for all tokens
         var claims = new Dictionary<string, object>
@@ -217,7 +460,7 @@ public class TenantAuthService : ITenantAuthService
             ["uid"] = user.Id.ToString(),
             ["uname"] = user.UserName,
             [JwtRegisteredClaimNames.Jti] = Guid.NewGuid().ToString(),
-            ["is_temp"] = isTemporary
+            ["access_mode"] = isReadOnly ? "read_only" : "read_write"
         };
 
         // Add extended claims only for session-based tokens

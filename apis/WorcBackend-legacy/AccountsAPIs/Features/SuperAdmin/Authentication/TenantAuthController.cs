@@ -1,6 +1,6 @@
 namespace AccountsAPIs.Controllers;
 
-[Route("sa/auth")]
+[Route("sa/tenants/auth")]
 [ApiController]
 [Authorize(Roles = "SA")]
 
@@ -14,9 +14,17 @@ public class TenantAuthController : BaseApiController
     }
 
     // Generates a token for a specific tenant
-    [HttpPost("tenant/token")]
-    public async Task<ActionResult<ServiceResponse<UserSessionDto>>> GenerateTenantToken(TenantTokenDto tenantTokenDto)
+    [HttpPost("tokens")]
+    public async Task<ActionResult<ServiceResponse<UserSessionDto>>> GenerateTenantToken()
     {
-        return ResultHelper(await _tenantAuthService.GenerateTenantTokenAsync(tenantTokenDto));
+        return ResultHelper(await _tenantAuthService.CreateSessionAsync());
+    }
+
+    // Refreshes user session (tokens).
+    [AllowAnonymous]
+    [HttpPut("tokens/refresh")]
+    public async Task<ActionResult<ServiceResponse<UserSessionDto>>> RefreshSession()
+    {
+        return ResultHelper(await _tenantAuthService.RefreshSessionAsync());
     }
 }

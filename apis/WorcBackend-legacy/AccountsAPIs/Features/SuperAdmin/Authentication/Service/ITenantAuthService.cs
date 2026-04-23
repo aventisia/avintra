@@ -3,9 +3,13 @@ namespace AccountsAPIs.Services;
 public interface ITenantAuthService
 {
     /// <summary>
-    /// Generates an access token for a tenant.
-    /// TenantId is resolved internally from the request context (e.g., X-Tenant-Id header).
+    /// Creates a tenant-scoped session by allowing a Super Admin to access a specific tenant.
+    /// Issues access and refresh tokens for the selected tenant context.
     /// </summary>
-    /// <returns>A task containing the user session.</returns>
-    Task<ServiceResponse<UserSessionDto>> GenerateTenantTokenAsync(TenantTokenDto tenantTokenDto);
+    Task<ServiceResponse<UserSessionDto>> CreateSessionAsync();
+
+    /// <summary>
+    /// Refreshes an existing session using a valid refresh token.
+    /// </summary>
+    Task<ServiceResponse<UserSessionDto>> RefreshSessionAsync();
 }
