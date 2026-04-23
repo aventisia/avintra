@@ -261,7 +261,7 @@ class ElevenLabsSTTProvider(BaseSpeechToTextProvider):
                 logger.error("Invalid BYOK credentials")
                 raise HTTPException(400, "Invalid credential_id")
 
-            self.api_url = credential.get("data", {}).get("Url")
+            self.api_url = credential.get("data", {}).get("Host")
             self.api_key = credential.get("data", {}).get("ApiKey")
 
         else:

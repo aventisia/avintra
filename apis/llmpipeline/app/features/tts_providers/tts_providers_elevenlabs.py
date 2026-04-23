@@ -182,7 +182,7 @@ class ElevenLabsTTSProvider(BaseTextToSpeechProvider):
                 raise HTTPException(400, "Invalid credential_id")
 
             # Override API config from vault
-            self.api_url = credential.get("data", {}).get("Url")
+            self.api_url = credential.get("data", {}).get("Host")
             self.api_key = credential.get("data", {}).get("ApiKey")
 
         else:
