@@ -40,6 +40,8 @@ class Settings(BaseSettings):
     OPENROUTER_API_URL: str = "https://openrouter.ai/api/v1"
     CLAUDE_API_URL: str = "https://api.anthropic.com/v1"
 
+    CLAUDE_VERSION: str = "2023-06-01"
+
     # TODO: Need to adjust later
     OLLAMA_API_URL: str = ""
     OLLAMA_API_KEY: str = ""
