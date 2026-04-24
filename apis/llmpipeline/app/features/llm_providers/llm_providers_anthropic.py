@@ -1,12 +1,11 @@
 import json
 import time
-import base64
 from app.features.auth.authenticated_user import User
 import httpx
 from datetime import datetime, timezone
 from app.core.config import settings
 from app.core.logger import log_exception, logger
-from app.features.llm_providers.llm_providers_schemas import EmbeddingRequest, EmbeddingResponse, LLMChunkResponse, LLMMessage, LLMRequest, LLMResponse
+from app.features.llm_providers.llm_providers_schemas import LLMChunkResponse, LLMRequest, LLMResponse
 from app.features.llm_providers.llm_providers_utils import extract_json_from_llm_response
 from .llm_providers_base import BaseLLMProvider
 from app.features.llm_providers.llm_job_manager import active_llm_jobs
@@ -17,9 +16,10 @@ from app.utils.file_util import FileUtils
 
 class AnthropicProvider(BaseLLMProvider):
     # Constructor: To initialize API URL and key
-    def __init__(self, api_url: str = settings.CLAUDE_API_URL, api_key: str = settings.CLAUDE_API_KEY):
+    def __init__(self, api_url: str = settings.CLAUDE_API_URL, api_key: str = settings.CLAUDE_API_KEY, anthropic_version: str = settings.CLAUDE_VERSION):
         self.api_url = api_url
         self.api_key = api_key
+        self.anthropic_version = anthropic_version
 
     # Method: Generate a response from the LLM
     async def generate_llm_response(self, llm_request: LLMRequest, user: User):
@@ -317,23 +317,15 @@ class AnthropicProvider(BaseLLMProvider):
         else:
             raise ValueError("Invalid input format. Must be string or list of messages.")
         
-        # Build request payload and headers
+        # Build request payload
         request_payload = {
             "model": llm_request.model,
             "messages": messages, 
             "stream": llm_request.stream,
+            # IMPORTANT NOTE: The top_p and temperature parameters have been deprecated in Anthropic APIs and may be removed in future versions
+            # "top_p": llm_request.top_p 
             # "temperature": llm_request.temperature,
             # "store": False # Disabling openai parameter to store the generated model response for later retrieval via API.
-        }
-
-        #  # Conditionally add 'top_p'
-        # if llm_request.top_p is not None:
-        #     request_payload["top_p"] = llm_request.top_p        
-                
-        request_headers = {
-            "Content-Type": "application/json",
-            "x-api-key": self.api_key,
-            "anthropic-version": "2023-06-01"
         }
         
         if llm_request.json_schema:
@@ -355,43 +347,46 @@ class AnthropicProvider(BaseLLMProvider):
         # Add base64 files if any are provided
         if llm_request.files:
             for file_data in llm_request.files:
-                if isinstance(file_data, str):  # If file_data is a URL
+                # Check if file_data is a URL, else it's a file object
+                if isinstance(file_data, str):  
                     mime_type, encoded_content = FileUtils.get_file_data_from_url(file_data)
-                else:  # If file_data is an object
+                else:  # If file_data is an object containing mime type and encoded content
                     mime_type = file_data.mime_type
                     encoded_content = file_data.encoded_content
 
-                # Only add to payload if mime_type and encoded_content are found
+                # Only add the file data to payload if mime_type and encoded_content are present
                 if mime_type and encoded_content:
-                    # Check if the file is an image and set the content type accordingly
-                    if mime_type.startswith("image/"):
-                        request_payload["messages"].append({
-                            "type": "image",
-                            "source": {
-                                "type": "base64",
-                                "media_type": mime_type,
-                                "data": encoded_content
+                    # Determine the file type and set the 'type' in the payload accordingly
+                    file_type = "document"  # Default file type is 'document'
+                    
+                    if mime_type.startswith("image/"):  # For images
+                        file_type = "image"
+                    elif mime_type.startswith("application/pdf"):  # For PDFs
+                        file_type = "document"
+                    
+                    # Add the file to the payload
+                    request_payload["messages"].append({
+                        "role": "user",  # The role of the user submitting the file
+                        "content": [
+                            {
+                                "type": file_type,  # Dynamically set type (image or document)
+                                "source": {
+                                    "type": "base64",  # Encoding type is base64
+                                    "media_type": mime_type,  # The file's mime type (e.g., image/jpeg)
+                                    "data": encoded_content  # The base64-encoded file content
+                                }
                             }
-                        })
-                    elif mime_type.startswith("application/pdf"):  # For PDF documents
-                        request_payload["messages"].append({
-                            "type": "document",
-                            "source": {
-                                "type": "base64",
-                                "media_type": mime_type,
-                                "data": encoded_content
-                            }
-                        })
-                    else:  # For other file types (non-image, non-PDF)
-                        request_payload["messages"].append({
-                            "type": "document",  # You can adjust this if you have other types
-                            "source": {
-                                "type": "base64",
-                                "media_type": mime_type,
-                                "data": encoded_content
-                            }
-                        })
+                        ]
+                    })
 
+        # Build request headers
+        request_headers = {
+            "Content-Type": "application/json",
+            "x-api-key": self.api_key,
+            "anthropic-version": self.anthropic_version
+        }
+
+        # Return the final request payload and headers
         return request_payload, request_headers
     
     def _extract_output_text_from_response(self, response_data: dict) -> str:
