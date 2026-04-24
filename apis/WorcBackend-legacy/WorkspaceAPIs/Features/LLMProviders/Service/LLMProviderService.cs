@@ -86,6 +86,13 @@ public class LLMProviderService : ILLMProviderService
                     serviceResponse = await GetModelsAsync(requestDto, client);
                     break;
 
+                case LLMProviderTypesEnum.Anthropic:
+                    client = new RestClient("https://api.anthropic.com");
+                    client.AddDefaultHeader("x-api-key", apiKey);
+                    client.AddDefaultHeader("anthropic-version", "2023-06-01");
+                    serviceResponse = await GetModelsAsync(requestDto, client);
+                    break;
+
                 default:
                     serviceResponse.Message = "Provider type not supported.";
                     _logger.LogWarning("Unsupported provider type: {ProviderType}", requestDto.ProviderType);
@@ -118,6 +125,7 @@ public class LLMProviderService : ILLMProviderService
                         ? "v1/models?output_modalities=all"
                         : $"v1/models?output_modalities={lLMProviderModelRequestDto.OutputModalities.ToLower()}",
                 LLMProviderTypesEnum.Gemini => "v1beta/models",
+                LLMProviderTypesEnum.Anthropic => "v1/models",
                 _ => throw new NotImplementedException("Unsupported provider")
             };
 
@@ -146,6 +154,7 @@ public class LLMProviderService : ILLMProviderService
                 LLMProviderTypesEnum.OpenAI => jsonResponse["data"]?.ToArray(),
                 LLMProviderTypesEnum.Gemini => jsonResponse["models"]?.ToArray(),
                 LLMProviderTypesEnum.OpenRouter => jsonResponse["data"]?.ToArray(),
+                LLMProviderTypesEnum.Anthropic => jsonResponse["data"]?.ToArray(),
                 _ => throw new NotImplementedException($"No data extraction logic defined for {lLMProviderModelRequestDto.ProviderType}")
             };
 
@@ -200,6 +209,7 @@ public class LLMProviderService : ILLMProviderService
             LLMProviderTypesEnum.OpenAI => RemovePrefix(item["id"]?.ToString() ?? string.Empty),
             LLMProviderTypesEnum.Gemini => RemovePrefix(item["name"]?.ToString() ?? string.Empty),
             LLMProviderTypesEnum.OpenRouter => item["canonical_slug"]?.ToString(),
+            LLMProviderTypesEnum.Anthropic => item["id"]?.ToString(),
             _ => throw new NotImplementedException($"No value extraction logic defined for {providerType}")
         };
 
@@ -208,6 +218,7 @@ public class LLMProviderService : ILLMProviderService
             LLMProviderTypesEnum.OpenAI => RemovePrefix(item["id"]?.ToString() ?? string.Empty),
             LLMProviderTypesEnum.Gemini => item["displayName"]?.ToString(),
             LLMProviderTypesEnum.OpenRouter => item["name"]?.ToString(),
+            LLMProviderTypesEnum.Anthropic => item["display_name"]?.ToString(),
             _ => throw new NotImplementedException($"No label extraction logic defined for {providerType}")
         };
 
@@ -216,6 +227,7 @@ public class LLMProviderService : ILLMProviderService
             LLMProviderTypesEnum.OpenAI => $"Owned by {item["owned_by"]?.ToString()}",
             LLMProviderTypesEnum.Gemini => item["description"]?.ToString(),
             LLMProviderTypesEnum.OpenRouter => item["description"]?.ToString(),
+            LLMProviderTypesEnum.Anthropic => item["display_name"]?.ToString(),
             _ => throw new NotImplementedException($"No description extraction logic defined for {providerType}")
         };
 

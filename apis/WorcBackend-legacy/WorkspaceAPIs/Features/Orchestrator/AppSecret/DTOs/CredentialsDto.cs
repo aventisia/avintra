@@ -273,7 +273,12 @@ public class M365CredentialsDto
 public class AnthropicCredentialsDto
 {
     /// <summary>
-    /// Gets or sets the API key used for authenticating requests to the Anthropic API.
+    /// Gets or sets the base URL of the Anthropic service.
+    /// </summary>
+    public string Url { get; set; } = string.Empty;
+
+    /// <summary>
+    /// Gets or sets the API key used for Anthropic authentication (optional).
     /// </summary>
     public string ApiKey { get; set; } = string.Empty;
 }
