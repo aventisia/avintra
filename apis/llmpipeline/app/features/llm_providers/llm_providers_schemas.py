@@ -5,7 +5,7 @@ from datetime import datetime, timezone
 from typing import Union, List
 
 # Centralized provider literal for all schemas
-ProviderLiteral: TypeAlias = Literal['openai', 'ollama', 'deepinfra', 'googlegemini', 'openrouter']
+ProviderLiteral: TypeAlias = Literal['openai', 'ollama', 'deepinfra', 'googlegemini', 'openrouter', "anthropic"]
 
 # LLM message structure for chat-based models
 class LLMMessage(BaseModel):
