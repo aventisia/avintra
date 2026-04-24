@@ -31,13 +31,15 @@ class Settings(BaseSettings):
     DEEPINFRA_API_KEY: str = ""
     GEMINI_API_KEY: str = ""
     OPENROUTER_API_KEY: str = ""
-    
+    CLAUDE_API_KEY: str = ""
+
     # LLM Providers api urls
     OPENAI_API_URL: str = "https://api.openai.com/v1"
     DEEPINFRA_API_URL: str = "https://api.deepinfra.com/v1/openai/chat/completions"
     GEMINI_API_URL: str = "https://generativelanguage.googleapis.com/v1beta"
     OPENROUTER_API_URL: str = "https://openrouter.ai/api/v1"
-    
+    CLAUDE_API_URL: str = "https://api.anthropic.com/v1"
+
     # TODO: Need to adjust later
     OLLAMA_API_URL: str = ""
     OLLAMA_API_KEY: str = ""
