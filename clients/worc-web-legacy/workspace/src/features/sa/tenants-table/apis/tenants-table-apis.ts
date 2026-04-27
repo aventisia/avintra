@@ -1,3 +1,6 @@
+import { UserSessionDto } from "@/react-toolkit/dtos/response/user-session-dto";
+import { axiosInstance } from "@/react-toolkit/lib/axios-instance";
+
 import {
   CheckAvailabilityDto,
   IHttpResponse,
@@ -5,8 +8,6 @@ import {
   TrueFalseResultDto,
 } from "@aventisia/ui/dtos";
 import { ISelectOption } from "@aventisia/ui/types";
-
-import { axiosInstance } from "@/react-toolkit/lib/axios-instance";
 
 import { TenantsTableDto } from "../dtos/tenants-table-dto";
 
@@ -96,6 +97,17 @@ const updateTenant = (updatedTenant: TenantsTableDto) => {
 };
 
 /**
+ * Switch a tenant by its ID.
+ */
+const switchTenant = (id: string) => {
+  return axiosInstance
+    .post<
+      IHttpResponse<UserSessionDto>
+    >(`${import.meta.env.VITE_ACCOUNTS_API_PATH}/sa/tenants/auth/tokens`, {},{ headers: { tntid: id } })
+    .then((res) => res.data);
+};
+
+/**
  * Deletes a tenant by its ID.
  */
 const deleteTenant = (id: string) => {
@@ -146,4 +158,5 @@ export {
   deleteTenant,
   disableTenants,
   tenantOptimisticMutationFn,
+  switchTenant,
 };
