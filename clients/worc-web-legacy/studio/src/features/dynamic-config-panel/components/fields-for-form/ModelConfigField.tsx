@@ -129,7 +129,7 @@ const ModelConfigField = ({ name }: ModelConfigFieldProps) => {
               openai: "OpenAI",
               googlegemini: "Gemini",
               openrouter: "OpenRouter",
-              Anthropic: "Anthropic",
+              anthropic: "Anthropic",
             };
 
             const provider = mapper[providerValue];
@@ -195,7 +195,7 @@ const ModelConfigField = ({ name }: ModelConfigFieldProps) => {
           openai: "OpenAI",
           googlegemini: "Gemini",
           openrouter: "OpenRouter",
-          Anthropic: "Anthropic",
+          anthropic: "Anthropic",
         };
 
         const provider = mapper[providerValue];

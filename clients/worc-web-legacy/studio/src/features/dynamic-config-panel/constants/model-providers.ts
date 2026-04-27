@@ -722,7 +722,7 @@ export const modelProviders: Provider[] = [
     models: openRouterModelList,
   },
    {
-    value: "Anthropic",
+    value: "anthropic",
     label: "Anthropic",
     isEnabled: true,
     models: [],
