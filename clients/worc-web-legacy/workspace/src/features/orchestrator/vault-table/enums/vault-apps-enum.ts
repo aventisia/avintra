@@ -13,4 +13,5 @@ export enum VaultAppsEnum {
   AzureStorage,
   ConnectionString,
   Qdrant,
+  Anthropic,
 }
