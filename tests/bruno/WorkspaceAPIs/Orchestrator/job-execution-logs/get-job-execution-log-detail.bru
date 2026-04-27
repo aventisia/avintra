@@ -1,0 +1,16 @@
+meta {
+  name: Get job execution log detail
+  type: http
+  seq: 2
+}
+
+get {
+  url: {{WORC_APIS_BASE_URL}}/job-execution-logs/detail/{{JOB_ID}}
+  body: none
+  auth: inherit
+}
+
+settings {
+  encodeUrl: true
+  timeout: 0
+}
