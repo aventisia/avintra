@@ -715,7 +715,7 @@ public class MessageTriggerService : IMessageTriggerService
     }
 
     // Creates jobs for all flow versions associated with the given trigger ID.
-    public async Task<ServiceResponse<bool>> CreateJobByMessageTriggerIdAsync(string triggerId)
+    public async Task<ServiceResponse<bool>> CreateJobByMessageTriggerIdAsync(string triggerId, JsonElement payload)
     {
         // Default failure response
         var serviceResponse = new ServiceResponse<bool>
@@ -780,6 +780,7 @@ public class MessageTriggerService : IMessageTriggerService
                     TenantId = triggerFlowVersion.TenantId,
                     FlowVersionId = triggerFlowVersion.FlowVersionId,
                     TriggerType = trigger.TriggerType,
+                    InputArgumentsJson = ExtractAndBuildInputJson(payload),
                     MachineId = null,
                     Priority = JobPriorityTypesEnum.Normal,
                     Status = JobStatusTypesEnum.Created,
@@ -1135,5 +1136,54 @@ public class MessageTriggerService : IMessageTriggerService
             Encoding.UTF8,
             "application/json"
         );
+    }
+
+    private string ExtractAndBuildInputJson(JsonElement payload)
+    {
+        string? messageId = null; // will store message id
+        string? chatId = null;    // will store chat id
+        string? resource = null;  // will store full resource string
+
+        // Graph webhook data is usually inside "value" array
+        if (payload.TryGetProperty("value", out var values) && values.GetArrayLength() > 0)
+        {
+            var item = values[0]; // take first event
+
+            // get resource string like chats('...')/messages('...')
+            if (item.TryGetProperty("resource", out var resourceProp))
+            {
+                resource = resourceProp.GetString();
+
+                if (!string.IsNullOrEmpty(resource))
+                {
+                    // Regex pulls value inside chats('...')
+                    var chatMatch = Regex.Match(resource, @"chats\('([^']+)'\)");
+                    if (chatMatch.Success)
+                        chatId = chatMatch.Groups[1].Value;
+
+                    // Regex pulls value inside messages('...')
+                    var msgMatch = Regex.Match(resource, @"messages\('([^']+)'\)");
+                    if (msgMatch.Success)
+                        messageId = msgMatch.Groups[1].Value;
+                }
+            }
+
+            // get message id directly from resourceData (preferred)
+            if (item.TryGetProperty("resourceData", out var resourceData) &&
+                resourceData.TryGetProperty("id", out var idProp))
+            {
+                messageId = idProp.GetString();
+            }
+        }
+
+        var result = new
+        {
+            triggeredBy = "message-trigger", // custom flag
+            resource,   // full resource path
+            chatId,     // extracted chat id
+            messageId   // extracted message id
+        };
+
+        return System.Text.Json.JsonSerializer.Serialize(result); // convert to JSON
     }
 }

@@ -49,10 +49,10 @@
       "name": "__KbConfig__Inferencing",
       "label": "Knowledge Base",
       "defaultValue": {
-        "knowledgeBase": "",
+        "knowledgeBase": [],
         "retrievalType": "Basic",
-        "sourceThreshold": 1,
-        "numberOfChunks": 10
+        "sourceThreshold": 0.1,
+        "numberOfChunks": 5
       },
       "required": false,
       "category": "Memory"

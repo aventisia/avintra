@@ -4,6 +4,7 @@ from .llm_providers_ollama import OllamaProvider
 from .llm_providers_deepinfra import DeepInfraProvider
 from .llm_providers_gemini import GeminiProvider
 from .llm_providers_open_router import OpenRouterProvider
+from .llm_providers_anthropic import AnthropicProvider
 
 LLM_PROVIDER_MAP = {
     'openai': OpenAIProvider,
@@ -11,6 +12,7 @@ LLM_PROVIDER_MAP = {
     'deepinfra': DeepInfraProvider,
     'googlegemini': GeminiProvider,
     'openrouter': OpenRouterProvider,
+    'anthropic': AnthropicProvider
 }
 
 def get_llm_provider(provider_name: str):

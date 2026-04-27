@@ -102,8 +102,8 @@ export const KnowledgeBaseTable = () => {
           {/* Data table Pagination component */}
           <DTPagination
             table={table}
-            singularLabel="item"
-            pluralLabel="items"
+            singularLabel="KB"
+            pluralLabel="KBs"
           />
         </div>
       ) : (

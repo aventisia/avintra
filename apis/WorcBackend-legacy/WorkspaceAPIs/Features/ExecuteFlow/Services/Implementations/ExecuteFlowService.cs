@@ -34,7 +34,7 @@ public class ExecuteFlowService : IExecuteFlowService
         _accessToken = GetJwtOfRequestUtil.GetJwtOfRequest(httpContextAccessor.HttpContext) ?? string.Empty;
     }
 
-    public async Task<ServiceResponse<ExecuteFlowResponseDto>> ExecuteFlowAsync(ExecuteFlowRequestDto requestDto)
+    public async Task<ServiceResponse<ExecuteFlowResponseDto>> ExecuteFlowAsync(ExecuteFlowRequestDto requestDto, TriggerTypesEnum triggerType)
     {
         // IMPORTANT NOTE: For end user, a flow version is a simple flow, so end user specific messages should use 
         // the word "flow" instead of "flow version" to avoid confusion. We will use flow version in the backend 
@@ -103,7 +103,7 @@ public class ExecuteFlowService : IExecuteFlowService
             {
                 TenantId = _currentTenantService.CurrentTenantId,
                 FlowVersionId = flowVersion.Id,
-                TriggerType = TriggerTypesEnum.ManualTrigger, // TODO: need to decide on what kind of this trigger type we want to use for non published and published flow execution.
+                TriggerType = triggerType,
                 Priority = JobPriorityTypesEnum.Normal,
                 Status = JobStatusTypesEnum.Created,
                 StartTime = null,

@@ -24,5 +24,11 @@ public enum LLMProviderTypesEnum
     OpenAI,
 
     /// <summary>
+    /// Represents the Anthropic provider.
+    /// </summary>
+    [Description("Anthropic provider")]
+    Anthropic
+
+    /// <summary>
     /// TODO: Add more provider types as they become available.
 }

@@ -1,8 +1,11 @@
 import { useUserSessionStore } from "@/react-toolkit/stores/user-session-store";
 
+import { cn } from "@aventisia/ui/lib";
 import { useShallow } from "zustand/react/shallow";
 
-export default function FileUploadDisclaimer() {
+export default function FileUploadDisclaimer({
+  className,
+}: React.HTMLAttributes<HTMLParagraphElement>) {
   const { userSession } = useUserSessionStore(
     useShallow((state) => ({
       userSession: state.userSession,
@@ -10,7 +13,7 @@ export default function FileUploadDisclaimer() {
   );
   if (userSession?.deploymentType == "Enterprise") return <></>;
   return (
-    <p className="text-xs">
+    <p className={cn("text-xs px-1", className)}>
       By uploading documents to Aventisia, you confirm that you have the right
       to share the information contained within them. You must not upload any
       documents that contain sensitive personal data (such as health records,

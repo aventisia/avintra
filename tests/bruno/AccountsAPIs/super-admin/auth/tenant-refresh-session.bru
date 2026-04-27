@@ -1,0 +1,16 @@
+meta {
+  name: Tenant - Refresh session
+  type: http
+  seq: 2
+}
+
+put {
+  url: {{ACCOUNTS_APIS_BASE_URL}}/sa/tenants/auth/tokens/refresh
+  body: none
+  auth: none
+}
+
+settings {
+  encodeUrl: true
+  timeout: 0
+}
