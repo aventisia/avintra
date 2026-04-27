@@ -78,6 +78,7 @@ public static class AppServicesExtension
         config.Apply(new AdminConversationMappingProfile());
         config.Apply(new KnowledgeBaseMappingProfile());
         config.Apply(new KnowledgeBaseFileMappingProfile());
+        config.Apply(new JobExecutionLogMappingProfile());
 
         services.AddSingleton(config);
     }
@@ -146,6 +147,7 @@ public static class AppServicesExtension
         services.AddScoped<IAdminConversationService, AdminConversationService>();
         services.AddScoped<IKnowledgeBaseService, KnowledgeBaseService>();
         services.AddScoped<IKnowledgeBaseFileService, KnowledgeBaseFileService>();
+        services.AddScoped<IJobExecutionLogService, JobExecutionLogService>();
 
         // Cloud Connectors feature
         services.AddScoped<ICloudConnectorsVaultService, CloudConnectorsVaultService>();

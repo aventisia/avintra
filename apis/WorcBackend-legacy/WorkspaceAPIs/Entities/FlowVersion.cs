@@ -97,7 +97,7 @@ public class FlowVersion : BaseEntity, IMustHaveTenant
     /// <summary>
     /// Configures the many-to-many relationship between flow version history and flow versions.
     /// </summary>
-    public virtual ICollection<FlowVersionHistory>? FlowVersionHistories { get; set; }
+    public virtual ICollection<FlowVersionHistory> FlowVersionHistories { get; set; } = new List<FlowVersionHistory>();
 
     /// <summary>
     /// Configures the many-to-many relationship between user and flow versions.

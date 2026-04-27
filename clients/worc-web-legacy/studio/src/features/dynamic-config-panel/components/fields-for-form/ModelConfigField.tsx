@@ -1,4 +1,18 @@
+import { SliderField } from "@/components/Slider/SliderField";
+import {
+  Model,
+  getSpecialtyFromNode,
+  modelProviders,
+} from "@/features/dynamic-config-panel/constants/model-providers";
+import { SearchableSelectField } from "@/react-toolkit/ui/searchable-select/SearchableSelectField";
+
+import { buttonVariants } from "@aventisia/ui/buttons";
 import { InputField, SelectField, SwitchField } from "@aventisia/ui/form";
+import { cn } from "@aventisia/ui/lib";
+import { Popover, PopoverContent, PopoverTrigger } from "@aventisia/ui/popover";
+import { toast } from "@aventisia/ui/sonner";
+import { Settings2Icon } from "lucide-react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import {
   Controller,
   FieldPath,
@@ -6,22 +20,10 @@ import {
   useController,
   useFormContext,
 } from "react-hook-form";
-import { SliderField } from "@/components/Slider/SliderField";
-import { useEffect, useMemo, useRef, useState } from "react";
-import {
-  modelProviders,
-  getSpecialtyFromNode,
-  Model,
-} from "@/features/dynamic-config-panel/constants/model-providers";
-import { Popover, PopoverContent, PopoverTrigger } from "@aventisia/ui/popover";
-import { Settings2Icon } from "lucide-react";
-import { cn } from "@aventisia/ui/lib";
-import { buttonVariants } from "@aventisia/ui/buttons";
-import { CredentialsSelectField } from "./CredentialsSelectField";
+
 import { getProviderModels } from "../../apis/llm-pipelines-apis";
-import { toast } from "@aventisia/ui/sonner";
-import { SearchableSelectField } from "@/react-toolkit/ui/searchable-select/SearchableSelectField";
 import { uniqueAndNormalizeArray } from "../../utils/uniqueAndNormalizeArray";
+import { CredentialsSelectField } from "./CredentialsSelectField";
 
 interface ModelConfigFieldProps {
   /** The name of the form field. */
@@ -108,8 +110,8 @@ const ModelConfigField = ({ name }: ModelConfigFieldProps) => {
           );
           return specialtyMatch && m.available;
         }),
-      }))
-      .filter((p) => p.models.length > 0);
+      }));
+    // .filter((p) => p.models.length > 0);
   }, [name]);
 
   // 2. Initialize on mount (for saved data)
@@ -123,11 +125,11 @@ const ModelConfigField = ({ name }: ModelConfigFieldProps) => {
         if (credentialsValue && providerValue) {
           try {
             setByokLoading(true);
-
             const mapper: Record<string, string> = {
               openai: "OpenAI",
               googlegemini: "Gemini",
               openrouter: "OpenRouter",
+              Anthropic: "Anthropic",
             };
 
             const provider = mapper[providerValue];
@@ -193,6 +195,7 @@ const ModelConfigField = ({ name }: ModelConfigFieldProps) => {
           openai: "OpenAI",
           googlegemini: "Gemini",
           openrouter: "OpenRouter",
+          Anthropic: "Anthropic",
         };
 
         const provider = mapper[providerValue];

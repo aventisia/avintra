@@ -67,11 +67,10 @@ public interface IMessageTriggerService
     /// <summary>
     /// Receives an external notification and initiates job creation based on the provided trigger ID.
     /// </summary>
-    /// <param name="triggerId">
-    /// The unique identifier of the message trigger.
-    /// </param>
+    /// <param name="triggerId"> The unique identifier of the message trigger.</param>
+    /// <param name="payload"> Notification payload received from the message trigger. <returns>
     /// <returns>
     /// A <see cref="ServiceResponse{T}"/> indicating whether the job was created successfully.
     /// </returns>
-    Task<ServiceResponse<bool>> CreateJobByMessageTriggerIdAsync(string triggerId);
+    Task<ServiceResponse<bool>> CreateJobByMessageTriggerIdAsync(string triggerId, JsonElement payload);
 }

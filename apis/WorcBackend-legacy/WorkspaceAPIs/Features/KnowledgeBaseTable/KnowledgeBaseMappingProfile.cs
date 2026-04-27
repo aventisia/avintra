@@ -20,12 +20,5 @@ public class KnowledgeBaseMappingProfile : IRegister
                 src => src.LastModifiedByUser != null
                     ? src.LastModifiedByUser.FirstName + " " + src.LastModifiedByUser.LastName
                     : null);
-
-        // Mapping for inserting or updating a knowledge base record
-        config.NewConfig<FlowsTableDto, Flow>()
-            .Ignore(dest => dest.Id)
-            .Ignore(dest => dest.CreatedOn)
-            .Ignore(dest => dest.LastModifiedOn)
-            .IgnoreNullValues(true);
     }
 }

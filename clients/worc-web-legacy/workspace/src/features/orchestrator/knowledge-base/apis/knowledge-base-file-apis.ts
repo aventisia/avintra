@@ -46,7 +46,8 @@ interface VectorStoreQueryRequestDto {
   query: string;
   top_k: number;
   score_threshold?: number;
-  doc_names?: string[];
+  kb_ids: string[];
+  kb_file_ids?: string[];
   store_credential_id?: string;
   embedding_credential_id?: string;
   ref_type: string;
@@ -58,8 +59,8 @@ interface VectorStoreQueryRequestDto {
 
 interface VectorStoreDeleteRequestDto {
   vector_store: string;
-  kb_file_id: string;
-  doc_name: string;
+  kb_file_ids: string[];
+  kb_ids?: string[];
   store_credential_id?: string;
 }
 
@@ -118,9 +119,8 @@ export const deleteKnowledgeBaseFile = (
 };
 
 export const ingestVectorStoreInput = (dto: VectorStoreIngestRequestDto) => {
-  console.log("Ingesting to vector store with DTO:", dto);
   return axiosInstance
-    .post(`${vectorStoreApiBaseUrl}/ingest`, dto)
+    .post(`${vectorStoreApiBaseUrl}/ingest`, dto, { timeout: 5 * 60 * 1000 })
     .then((res) => {
       const payload = res.data as { data?: unknown } | unknown;
       return (payload as { data?: unknown })?.data ?? payload;

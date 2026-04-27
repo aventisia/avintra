@@ -10,7 +10,7 @@ export const useDefineKnowledgeBaseRetrievalForm = () => {
     defaultValues: {
       query: "",
       numberOfChunks: 5,
-      scoreThreshold: 0.8,
+      scoreThreshold: 0.1,
     },
   });
 

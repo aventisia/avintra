@@ -1,0 +1,79 @@
+meta {
+  name: anthropic - strict json schema response
+  type: http
+  seq: 4
+}
+
+post {
+  url: {{LLM_PIPELINE_APIS_BASE_URL}}/llm/generate
+  body: json
+  auth: bearer
+}
+
+auth:bearer {
+  token: {{ACCESS_TOKEN}}
+}
+
+body:json {
+  {
+    "provider": "anthropic",
+    "model": "claude-haiku-4-5-20251001",
+    "input": "Give me top 3 benefits of daily exercise",
+    "files": null,
+    "is_json_output": true,
+    "json_schema": {
+      "type": "object",
+      "properties": {
+        "topic": {
+          "type": "string"
+        },
+        "benefits": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "properties": {
+              "benefit": {
+                "type": "string"
+              },
+              "tags": {
+                "type": "array",
+                "items": {
+                  "type": "string"
+                }
+              }
+            },
+            "required": [
+              "benefit",
+              "tags"
+            ],
+            "additionalProperties": false
+          }
+        },
+        "source": {
+          "type": "string"
+        }
+      },
+      "required": [
+        "topic",
+        "benefits",
+        "source"
+      ],
+      "additionalProperties": false
+    },
+    "max_output_tokens": 100,
+    "is_byok_enabled": false,
+    "credential_id": null,
+    "temperature": "1.0",
+    "top_p": "1.0",
+    "stream": false,
+    "ref_type": "Platform",
+    "ref_id": "",
+    "ref_name": "",
+    "action": "imporve_prompt"
+  }
+}
+
+settings {
+  encodeUrl: true
+  timeout: 0
+}

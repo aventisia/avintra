@@ -1,8 +1,9 @@
-import { Button } from "@aventisia/ui/buttons";
+import { SubmitButton } from "@aventisia/ui/buttons";
 import { Form, InputField, TextareaField } from "@aventisia/ui/form";
 import { ScrollArea } from "@aventisia/ui/scroll";
 import { toast } from "@aventisia/ui/sonner";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
+import { useEffect } from "react";
 import { z } from "zod";
 
 import {
@@ -33,6 +34,16 @@ export const KBAddTextForm = ({
 }) => {
   const { form } = useDefineKBAddTextForm();
   const queryClient = useQueryClient();
+
+  useEffect(() => {
+    const timer = window.setTimeout(() => {
+      form.setFocus("textContent");
+    }, 0);
+
+    return () => {
+      window.clearTimeout(timer);
+    };
+  }, [form]);
 
   const generateFileNameFromText = (text: string, wordLimit = 5) => {
     if (!text) return "untitled.txt";
@@ -68,8 +79,10 @@ export const KBAddTextForm = ({
         embedding_model: knowledgeBase.embeddingModel,
         input: data.textContent,
         metadata: {
-          doc_name: fileName,
+          kb_id: knowledgeBaseId,
           kb_file_id: registered.data!.id,
+          kb_name: knowledgeBaseName,
+          kb_file_name: fileName,
         },
         chunk_size: data.chunkSize,
         chunk_overlap: data.chunkOverlap,
@@ -104,13 +117,13 @@ export const KBAddTextForm = ({
       className="space-y-0 p-0 "
     >
       <div className="flex flex-col justify-between">
-        <ScrollArea className="h-[calc(85vh-7.5rem)] p-4 pt-3 ">
-          <div className="space-y-4">
+        <ScrollArea className="h-[calc(40rem-7.5rem)] p-4 pt-3 ">
+          <div className="space-y-4 px-1">
             {/* Query */}
-            <TextareaField {...textContentProps} />
+            <TextareaField {...textContentProps} autoFocus />
 
             {/* Number of chunks */}
-            <div className="grid grid-cols-2 gap-2">
+            <div className="grid grid-cols-2 gap-4">
               <InputField {...chunkSizeProps} />
 
               <InputField {...chunkOverlapProps} />
@@ -121,9 +134,14 @@ export const KBAddTextForm = ({
         </ScrollArea>
 
         <div className="flex h-16 border-t px-4 justify-end items-center">
-          <Button size={"sm"} type="submit" disabled={isPending}>
-            Add Text
-          </Button>
+          <SubmitButton
+            size={"sm"}
+            type="submit"
+            isPending={isPending}
+            primaryText="Submit"
+            secondaryText="Chunking..."
+            disabled={isPending}
+          />
         </div>
       </div>
     </Form>

@@ -2,7 +2,6 @@
 import {
   DTPagination,
   DTSearchBox,
-  DTViewOptions,
   DataTable,
   DataTableSkeleton,
   getDataTablePreferences,
@@ -12,7 +11,6 @@ import { useMemo } from "react";
 import { useParams, useSearchParams } from "react-router-dom";
 
 import { DETAIL_TABLE_KEY } from "../../constants";
-import { columnDisplayNames } from "../../constants/kb-files-column-display-names";
 import { columnVisibilityState } from "../../constants/kb-files-column-visibility-state";
 import { useFetchKBFiles } from "../../hooks/useFetchKBFiles";
 import { useFetchKnowledgeBase } from "../../hooks/useFetchKnowledgeBase";
@@ -76,11 +74,8 @@ export const KBFilesTable = () => {
             <div className="flex items-center gap-2">
               <DTSearchBox
                 table={table}
-                searchColumn={"id"}
+                searchColumn={"fileName"}
                 placeholder="Search..."
-              />
-              <DTViewOptions
-                {...{ table, columnDisplayNames, tableKey: DETAIL_TABLE_KEY }}
               />
               <AddFileDD />
             </div>
@@ -91,7 +86,11 @@ export const KBFilesTable = () => {
               <DataTable table={table} columnsLength={columns.length} />
 
               {/* Data table Pagination component */}
-              <DTPagination table={table} />
+              <DTPagination
+                table={table}
+                singularLabel="File"
+                pluralLabel="Files"
+              />
               {/* <div className="h-fit">
                 <FileUploader
                   hideFooter

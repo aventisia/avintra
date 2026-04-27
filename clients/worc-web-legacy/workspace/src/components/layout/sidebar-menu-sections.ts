@@ -7,7 +7,7 @@ import { deploymentType } from "@/react-toolkit/types/user-session-types";
 
 import {
   BanknotesIcon,
-  ChartPieIcon,
+  // ChartPieIcon,
   IdentificationIcon,
   QuestionMarkCircleIcon,
   QueueListIcon,
@@ -277,13 +277,13 @@ const sidebarMenuSections: SidebarMenuSectionExtended[] = [
         route: "/sa/tenants",
         type: ["Commercial"],
       },
-      {
-        permissions: ["SA"],
-        Icon: UsersIcon,
-        name: "users",
-        route: "/users",
-        type: ["Commercial"],
-      },
+      // {
+      //   permissions: ["SA"],
+      //   Icon: UsersIcon,
+      //   name: "users",
+      //   route: "/users",
+      //   type: ["Commercial"],
+      // },
       {
         permissions: ["SA"],
         Icon: CheckCheckIcon,
@@ -305,13 +305,13 @@ const sidebarMenuSections: SidebarMenuSectionExtended[] = [
         route: "/sa/credit-plans",
         type: ["Commercial"],
       },
-      {
-        permissions: ["SA"],
-        Icon: ChartPieIcon,
-        name: "Tenants Consumption",
-        route: "/sa/tenants-consumption",
-        type: ["Commercial"],
-      },
+      // {
+      //   permissions: ["SA"],
+      //   Icon: ChartPieIcon,
+      //   name: "Tenants Consumption",
+      //   route: "/sa/tenants-consumption",
+      //   type: ["Commercial"],
+      // },
     ],
   },
   {

@@ -115,6 +115,7 @@ public partial class AccountsDbContext : IdentityDbContext<
     // On Save Changes - write tenant Id to table
     public override int SaveChanges()
     {
+        // EnforceReadOnly(); // Ensure read-only users cannot modify data
         foreach (var entry in ChangeTracker.Entries<IMustHaveTenant>().ToList())
         {
             switch (entry.State)
@@ -154,6 +155,7 @@ public partial class AccountsDbContext : IdentityDbContext<
     // On Save Changes Async - write tenant Id to table
     public override async Task<int> SaveChangesAsync(CancellationToken cancellationToken = new CancellationToken())
     {
+        // EnforceReadOnly(); // Ensure read-only users cannot modify data
         foreach (var entry in ChangeTracker.Entries<IMustHaveTenant>().ToList())
         {
             switch (entry.State)
@@ -199,4 +201,31 @@ public partial class AccountsDbContext : IdentityDbContext<
         .ToDictionary(k => k.Metadata.Name, v => new { NewValue = v.CurrentValue, OldValue = v.OriginalValue })),
         _ => null
     };
+
+    // TODO: Move this enforcement to a centralized EF Core SaveChanges interceptor to ensure consistent enforcement across all DbContexts and improve testability.
+    // Enforces read-only access by blocking any write operations (Add/Update/Delete). Write access is allowed unless the "access_mode" claim is explicitly set to "read_only".
+    // private void EnforceReadOnly()
+    // {
+    //     var user = _httpContextAccessor.HttpContext?.User;
+
+    //     // Extract access mode claim (e.g., "read_only", "read_write")
+    //     var accessMode = user?.FindFirst("access_mode")?.Value;
+
+    //     // Exit early if session is not read-only
+    //     if (!string.Equals(accessMode, "read_only", StringComparison.OrdinalIgnoreCase))
+    //         return;
+
+    //     // Check if there are any tracked entities with write operations
+    //     var hasWriteOperation = ChangeTracker.Entries()
+    //         .Any(e => e.State == EntityState.Added ||
+    //                   e.State == EntityState.Modified ||
+    //                   e.State == EntityState.Deleted);
+
+    //     // Throw if any write operation is detected
+    //     if (hasWriteOperation)
+    //     {
+    //         throw new UnauthorizedAccessException(
+    //             "Read-only token cannot modify data.");
+    //     }
+    // }
 }

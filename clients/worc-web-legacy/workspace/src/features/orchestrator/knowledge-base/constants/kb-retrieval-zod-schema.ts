@@ -8,7 +8,7 @@ export const knowledgeBaseRetrievalSchema = z.object({
     .number({
       invalid_type_error: "Must be a number",
     })
-    .min(50, { message: "Minimum 50 chunk required" })
+    .min(1, { message: "Minimum 1 chunk required" })
     .max(8000, { message: "Maximum 8000 chunks allowed" }),
   scoreThreshold: z
     .number()

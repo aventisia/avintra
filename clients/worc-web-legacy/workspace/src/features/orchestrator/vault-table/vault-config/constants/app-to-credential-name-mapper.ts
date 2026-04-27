@@ -15,4 +15,5 @@ export const appToCredentialNameMapper: Record<VaultAppsEnum, string> = {
   [VaultAppsEnum.AzureStorage]: "azure_storage",
   [VaultAppsEnum.ConnectionString]: "connection_string",
   [VaultAppsEnum.Qdrant]: "qdrant_api_key",
+  [VaultAppsEnum.Anthropic]: "anthropic_api_key",
 };

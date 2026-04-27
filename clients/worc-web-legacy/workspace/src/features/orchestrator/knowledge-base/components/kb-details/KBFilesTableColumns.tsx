@@ -1,4 +1,3 @@
-import { Checkbox } from "@aventisia/ui";
 import { DTColumnHeader } from "@aventisia/ui/data-table";
 import { dateFormatter } from "@aventisia/ui/utils";
 import { ColumnDef } from "@tanstack/react-table";
@@ -17,42 +16,17 @@ export const getKBFilesTableColumns = (
   knowledgeBase?: KnowledgeBaseTableDto,
 ): ColumnDef<KnowledgeBaseFileDto>[] => [
   {
-    accessorKey: "id",
-    size: 24,
-    maxSize: 24,
-    enableResizing: false,
-    header: ({ table }) => (
-      <Checkbox
-        checked={
-          table.getIsAllPageRowsSelected() ||
-          (table.getIsSomePageRowsSelected() && "indeterminate")
-        }
-        onCheckedChange={(value) => table.toggleAllPageRowsSelected(!!value)}
-        aria-label="Select all"
-        className="translate-y-[2px] "
-      />
-    ),
-    cell: ({ row }) => (
-      <Checkbox
-        checked={row.getIsSelected()}
-        onCheckedChange={(value) => row.toggleSelected(!!value)}
-        aria-label="Select row"
-        className="translate-y-[2px]"
-      />
-    ),
-    enableSorting: false,
-  },
-  {
-    accessorKey: "name",
+    accessorKey: "fileName",
     header: ({ column }) => (
       <DTColumnHeader
         tableKey={DETAIL_TABLE_KEY}
         column={column}
         title={"File Name"}
+        enableHiding={false}
       />
     ),
     cell: ({ row }) => (
-      <div className="w-auto truncate font-medium">{row.original.fileName}</div>
+      <div className="w-auto max-w-80 truncate font-medium">{row.original.fileName}</div>
     ),
   },
   {
@@ -63,10 +37,11 @@ export const getKBFilesTableColumns = (
         column={column}
         title={"Created By"}
         className="max-w-16"
+        enableHiding={false}
       />
     ),
     cell: ({ row }) => (
-      <div className="w-auto truncate font-medium">
+      <div className="w-36 truncate font-medium">
         {row.getValue("createdBy")}
       </div>
     ),
@@ -79,10 +54,11 @@ export const getKBFilesTableColumns = (
         column={column}
         title={"Created On"}
         className="max-w-16"
+        enableHiding={false}
       />
     ),
     cell: ({ row }) => (
-      <div className="w-auto  font-medium">
+      <div className="w-20 font-medium">
         {row.original.createdOn ? dateFormatter(row.original.createdOn) : "NA"}
       </div>
     ),

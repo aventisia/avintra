@@ -33,6 +33,7 @@ export const vaultAppsSelectOptions: Record<
     value: "ConnectionString",
   },
   [VaultAppsEnum.Qdrant]: { label: "Qdrant", value: "Qdrant" },
+  [VaultAppsEnum.Anthropic]: { label: "Anthropic", value: "Anthropic" },
 };
 
 // export const appList = [

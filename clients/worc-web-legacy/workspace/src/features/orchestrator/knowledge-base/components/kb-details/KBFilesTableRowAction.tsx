@@ -1,4 +1,5 @@
 import { Button } from "@aventisia/ui/buttons";
+import { useShowAlertHandler } from "@aventisia/ui/hooks";
 import { toast } from "@aventisia/ui/sonner";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { Loader2Icon, Trash2Icon } from "lucide-react";
@@ -23,6 +24,7 @@ export const KBFilesTableRowAction = ({
   knowledgeBase,
 }: KBFilesTableRowActionProps) => {
   const queryClient = useQueryClient();
+  const { showCustomAlertDialog } = useShowAlertHandler();
 
   const { mutate: deleteFile, isPending } = useMutation({
     mutationFn: async () => {
@@ -32,8 +34,8 @@ export const KBFilesTableRowAction = ({
 
       await deleteVectorStoreDocument({
         vector_store: knowledgeBase.vectorStore,
-        kb_file_id: row.id,
-        doc_name: row.fileName,
+        kb_file_ids: [row.id],
+        kb_ids: [knowledgeBaseId],
         store_credential_id: knowledgeBase.storeCredentialId,
       });
 
@@ -52,7 +54,15 @@ export const KBFilesTableRowAction = ({
 
   return (
     <Button
-      onClick={() => deleteFile()}
+      onClick={() => {
+        showCustomAlertDialog({
+          confirmActionFn: () => deleteFile(),
+          confirmBtnText: "Yes, delete",
+          title: "Delete file?",
+          description:
+            "Are you sure you want to delete this file from the knowledge base?",
+        });
+      }}
       variant="caution"
       size="icon7"
       disabled={isPending}
