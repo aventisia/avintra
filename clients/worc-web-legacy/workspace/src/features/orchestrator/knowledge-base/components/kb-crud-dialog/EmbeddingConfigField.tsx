@@ -88,8 +88,8 @@ const EmbeddingConfigField = ({ name }: EmbeddingConfigFieldProps) => {
         models: p.models.filter((m) => {
           return m.specialty.includes("text") && m.available;
         }),
-      }))
-      .filter((p) => p.models.length > 0);
+      }));
+    // .filter((p) => p.models.length > 0);
   }, []);
 
   // 2. Initialize on mount (for saved data)
@@ -111,6 +111,7 @@ const EmbeddingConfigField = ({ name }: EmbeddingConfigFieldProps) => {
               openai: "OpenAI",
               googlegemini: "Gemini",
               openrouter: "OpenRouter",
+              Anthropic: "Anthropic",
             };
 
             const provider = mapper[providerValue];
@@ -182,6 +183,7 @@ const EmbeddingConfigField = ({ name }: EmbeddingConfigFieldProps) => {
           openai: "OpenAI",
           googlegemini: "Gemini",
           openrouter: "OpenRouter",
+          Anthropic: "Anthropic",
         };
 
         const provider = mapper[providerValue];
