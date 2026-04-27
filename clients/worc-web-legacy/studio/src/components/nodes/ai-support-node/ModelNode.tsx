@@ -62,12 +62,14 @@ export const ModelNode = memo(({ id, data }: NodeProps) => {
     openai: "/brand-img/openai.svg",
     googlegemini: "/brand-img/gemini.svg",
     openrouter: "/brand-img/openrouter.svg",
+    anthropic: "/brand-img/anthropic.svg",
   };
 
   const providerLabelMapper: Record<string, string> = {
     openai: "OpenAI",
     googlegemini: "Google Gemini",
     openrouter: "OpenRouter",
+    anthropic: "Anthropic",
   };
 
   const { setShowDialog, setNodeId, setNodeData, setSelectedTab } =
