@@ -714,18 +714,17 @@ export const modelProviders: Provider[] = [
     isEnabled: true,
     models: googleModelList,
   },
-
+  {
+    value: "anthropic",
+    label: "Anthropic",
+    isEnabled: true,
+    models: [],
+  },
   {
     value: "openrouter",
     label: "OpenRouter",
     isEnabled: true,
     models: openRouterModelList,
-  },
-   {
-    value: "anthropic",
-    label: "Anthropic",
-    isEnabled: true,
-    models: [],
   },
 ];
 
