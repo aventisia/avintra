@@ -67,11 +67,9 @@ public interface IEmailTriggerService
     /// <summary>
     /// Receives an external notification and initiates job creation based on the provided trigger ID.
     /// </summary>
-    /// <param name="triggerId">
-    /// The unique identifier of the message trigger.
-    /// </param>
-    /// <returns>
+    /// <param name="triggerId"> The unique identifier of the message trigger. </param>
+    /// <param name="payload"> Notification payload received from the email trigger. <returns>
     /// A <see cref="ServiceResponse{T}"/> indicating whether the job was created successfully.
     /// </returns>
-    Task<ServiceResponse<bool>> CreateJobByEmailTriggerIdAsync(string triggerId);
+    Task<ServiceResponse<bool>> CreateJobByEmailTriggerIdAsync(string triggerId, JsonElement payload);
 }

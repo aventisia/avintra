@@ -718,7 +718,7 @@ public class EmailTriggerService : IEmailTriggerService
     }
 
     // Creates jobs for all flow versions associated with the given trigger ID.
-    public async Task<ServiceResponse<bool>> CreateJobByEmailTriggerIdAsync(string triggerId)
+    public async Task<ServiceResponse<bool>> CreateJobByEmailTriggerIdAsync(string triggerId, JsonElement payload)
     {
         // Default failure response
         var serviceResponse = new ServiceResponse<bool>
@@ -783,6 +783,7 @@ public class EmailTriggerService : IEmailTriggerService
                     TenantId = triggerFlowVersion.TenantId,
                     FlowVersionId = triggerFlowVersion.FlowVersionId,
                     TriggerType = trigger.TriggerType,
+                    InputArgumentsJson = ExtractAndBuildInputJson(payload),
                     MachineId = null,
                     Priority = JobPriorityTypesEnum.Normal,
                     Status = JobStatusTypesEnum.Created,
@@ -1137,5 +1138,53 @@ public class EmailTriggerService : IEmailTriggerService
             Encoding.UTF8,
             "application/json"
         );
+    }
+
+    private string ExtractAndBuildInputJson(JsonElement payload)
+    {
+        string? messageId = null; // email message id
+        string? userId = null;    // user id (mailbox)
+        string? resource = null;  // full resource string
+
+        // Graph webhook data is usually inside "value" array
+        if (payload.TryGetProperty("value", out var values) && values.GetArrayLength() > 0)
+        {
+            var item = values[0]; // take first event
+
+            // get resource like users('...')/messages('...')
+            if (item.TryGetProperty("resource", out var resourceProp))
+            {
+                resource = resourceProp.GetString();
+
+                if (!string.IsNullOrEmpty(resource))
+                {
+                    // Format: Users/{userId}/Messages/{messageId}
+                    var parts = resource.Split('/');
+
+                    if (parts.Length >= 4)
+                    {
+                        userId = parts[1];
+                        messageId = parts[3];
+                    }
+                }
+            }
+
+            // get message id directly from resourceData (preferred)
+            if (item.TryGetProperty("resourceData", out var resourceData) &&
+                resourceData.TryGetProperty("id", out var idProp))
+            {
+                messageId = idProp.GetString();
+            }
+        }
+
+        var result = new
+        {
+            triggeredBy = "email-trigger", // email trigger flag
+            resource,   // full resource path
+            userId,     // extracted user id
+            messageId   // email message id
+        };
+
+        return System.Text.Json.JsonSerializer.Serialize(result); // convert to JSON
     }
 }
