@@ -72,8 +72,8 @@ public class EmailTriggerController : BaseApiController
     // Receives an external notification and initiates job creation based on the provided trigger ID.
     [AllowAnonymous, GraphWebhookAuthorize]
     [HttpPost("notify/{triggerId}")]
-    public async Task<ActionResult<ServiceResponse<bool>>> CreateJobByEmailTriggerId(string triggerId)
+    public async Task<ActionResult<ServiceResponse<bool>>> CreateJobByEmailTriggerId(string triggerId, [FromBody] JsonElement payload)
     {
-        return ResultHelper(await _emailTriggerService.CreateJobByEmailTriggerIdAsync(triggerId));
+        return ResultHelper(await _emailTriggerService.CreateJobByEmailTriggerIdAsync(triggerId, payload));
     }
 }
