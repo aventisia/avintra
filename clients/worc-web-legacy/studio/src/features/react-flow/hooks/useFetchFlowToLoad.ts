@@ -1,4 +1,5 @@
 import { ZOOM_ANIMATION_DURATION } from "@/constants";
+import { useImportStore } from "@/features/import-flow/stores/import-flow-store";
 import { useDagreAutoLayout } from "@/hooks/useDagreAutoLayout";
 import { FlowTypesEnum } from "@/react-toolkit/enums/flow-types-enum";
 import { useCurrentFlowStore } from "@/stores/current-flow-store";
@@ -70,10 +71,13 @@ export const useFetchFlowToLoad = () => {
   useEffect(() => {
     setIsFlowLoading(isLoading);
   }, [isLoading, setIsFlowLoading]);
+  const { isImport } = useImportStore(
+    useShallow((state) => ({ isImport: state.upload })),
+  );
 
   // One-time hydration from server data
   useEffect(() => {
-    if (!data?.data || hasHydratedRef.current) return;
+    if (!data?.data || (hasHydratedRef.current && !!isImport)) return;
 
     hasHydratedRef.current = true;
 
