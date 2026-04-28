@@ -14,9 +14,9 @@ public class TenantsTableController : BaseApiController
 
     // Retrieves all tenants.
     [HttpGet]
-    public async Task<ActionResult<ServiceResponse<IEnumerable<TenantsTableDto>>>> GetTenants()
+    public async Task<ActionResult<ServiceResponse<IEnumerable<TenantsTableDto>>>> GetTenants([FromQuery] TenantFilterQuery tenantFilterQuery)
     {
-        return ResultHelper(await _tenantsTableService.GetTenantsAsync());
+        return ResultHelper(await _tenantsTableService.GetTenantsAsync(tenantFilterQuery));
     }
 
     // Retrieves all tenants.
