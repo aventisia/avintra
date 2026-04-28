@@ -626,6 +626,9 @@ namespace WorkspaceAPIs.Data.Migrations
                     b.Property<DateTimeOffset?>("EndTime")
                         .HasColumnType("timestamp with time zone");
 
+                    b.Property<Guid?>("FlowVersionHistoryId")
+                        .HasColumnType("uuid");
+
                     b.Property<Guid>("FlowVersionId")
                         .HasColumnType("uuid");
 
@@ -669,6 +672,8 @@ namespace WorkspaceAPIs.Data.Migrations
                         .HasColumnType("text");
 
                     b.HasKey("Id");
+
+                    b.HasIndex("FlowVersionHistoryId");
 
                     b.HasIndex("FlowVersionId");
 
@@ -2340,6 +2345,10 @@ namespace WorkspaceAPIs.Data.Migrations
 
             modelBuilder.Entity("WorkspaceAPIs.Entities.Job", b =>
                 {
+                    b.HasOne("WorkspaceAPIs.Entities.FlowVersionHistory", "FlowVersionHistory")
+                        .WithMany("Jobs")
+                        .HasForeignKey("FlowVersionHistoryId");
+
                     b.HasOne("WorkspaceAPIs.Entities.FlowVersion", "FlowVersion")
                         .WithMany("Jobs")
                         .HasForeignKey("FlowVersionId")
@@ -2351,6 +2360,8 @@ namespace WorkspaceAPIs.Data.Migrations
                         .HasForeignKey("MachineId");
 
                     b.Navigation("FlowVersion");
+
+                    b.Navigation("FlowVersionHistory");
 
                     b.Navigation("Machine");
                 });
@@ -2917,6 +2928,11 @@ namespace WorkspaceAPIs.Data.Migrations
                     b.Navigation("QueueTransactions");
 
                     b.Navigation("TriggerFlowVersions");
+                });
+
+            modelBuilder.Entity("WorkspaceAPIs.Entities.FlowVersionHistory", b =>
+                {
+                    b.Navigation("Jobs");
                 });
 
             modelBuilder.Entity("WorkspaceAPIs.Entities.KnowledgeBase", b =>

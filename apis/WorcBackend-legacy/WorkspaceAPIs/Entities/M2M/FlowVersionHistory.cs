@@ -37,4 +37,9 @@ public class FlowVersionHistory : BaseEntity, IMustHaveTenant
     /// </summary>
     [ForeignKey("FlowVersionId")]
     public virtual FlowVersion? FlowVersion { get; set; }
+
+    /// <summary>
+    /// Navigation property for jobs executed using this flow version history snapshot.
+    /// </summary>
+    public virtual ICollection<Job> Jobs { get; set; } = new List<Job>();
 }
