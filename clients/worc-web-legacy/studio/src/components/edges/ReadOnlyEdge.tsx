@@ -13,6 +13,7 @@ import { memo } from "react";
 import { ChevronMarkerEnd } from "./ChevronMarkerEnd";
 import "./override-edge-style.css";
 
+/** Built on top of CustomStepEdge to keep Execution edge design separate */
 export const ReadOnlyEdge = memo(
   ({
     id,
@@ -69,7 +70,7 @@ export const ReadOnlyEdge = memo(
       }
     } else {
       // --- Standard Edge ---
-      isActive = !!executionMap[target]?.[pathKey]?.isSuccess==true;
+      isActive = !!executionMap[target]?.[pathKey]?.isSuccess == true;
     }
 
     const stroke = isExecutionLog && isActive ? "#22c55e" : "#94a3b8";

@@ -5,7 +5,7 @@ interface ChevronMarkerEndProps {
   stroke: string;
 }
 
-export const ChevronMarkerEnd = ({ stroke,edgeId }: ChevronMarkerEndProps) => {
+export const ChevronMarkerEnd = ({ stroke, edgeId }: ChevronMarkerEndProps) => {
   return (
     <svg>
       <defs>
