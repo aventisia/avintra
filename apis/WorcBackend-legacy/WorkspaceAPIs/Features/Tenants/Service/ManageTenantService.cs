@@ -221,10 +221,11 @@ public class ManageTenantService : IManageTenantService
 
             // Build unified tenant list (union of both datasets)
             // NOTE: Only includes tenants with activity
-            // ---------------------------------------------------
-            var tenantIds = tenantExecutionData
-                .Select(s => s.TenantId)
-                .Union(tenantExecutionData.Select(s => s.TenantId))
+            var executionTenantIds = tenantExecutionData.Select(x => x.TenantId);
+            var publishTenantIds = tenantPublishAgentData.Select(x => x.TenantId);
+
+            var tenantIds = executionTenantIds
+                .Concat(publishTenantIds)
                 .Distinct()
                 .ToList();
 
