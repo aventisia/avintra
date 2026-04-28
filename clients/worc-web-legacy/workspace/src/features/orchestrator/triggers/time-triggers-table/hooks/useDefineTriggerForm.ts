@@ -175,7 +175,7 @@ export const useDefineTriggerForm = () => {
         queryKey: ["select-trigger-agent", rowId],
       });
     }
-  }, [queryClient, rowId,  showDialog]);
+  }, [queryClient, rowId, showDialog]);
 
   // Return form, validation state, and methods
   return {
