@@ -17,13 +17,14 @@ namespace NodeExecutor
             string wsPort = e.Args.Length > 1 ? e.Args[1] : "9001";
             string agentId = e.Args.Length > 2 ? e.Args[2] : Guid.Empty.ToString();
             string agentName = e.Args.Length > 3 ? e.Args[3] : "Agent Name";
-            string accessToken = e.Args.Length > 4 ? e.Args[4] : "";
+            string inputArgumentsJson = e.Args.Length > 4 ? e.Args[4] : "{}";
+            string accessToken = e.Args.Length > 5 ? e.Args[5] : "";
 
             // Update the APP_BASE_URL configuration value
             UpdateAppSetting("APP_BASE_URL", appBaseUrl);
 
             // You can now pass these to your main window or use as needed
-            var mainWindow = new MainWindow(wsPort, agentId, agentName, accessToken);
+            var mainWindow = new MainWindow(wsPort, agentId, agentName, inputArgumentsJson, accessToken);
             mainWindow.Show();
         }
 

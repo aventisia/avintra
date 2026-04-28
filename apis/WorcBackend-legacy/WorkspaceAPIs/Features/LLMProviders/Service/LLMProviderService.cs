@@ -209,7 +209,8 @@ public class LLMProviderService : ILLMProviderService
             LLMProviderTypesEnum.OpenAI => RemovePrefix(item["id"]?.ToString() ?? string.Empty),
             LLMProviderTypesEnum.Gemini => RemovePrefix(item["name"]?.ToString() ?? string.Empty),
             LLMProviderTypesEnum.OpenRouter => item["canonical_slug"]?.ToString(),
-            LLMProviderTypesEnum.Anthropic => item["id"]?.ToString(),
+            LLMProviderTypesEnum.Anthropic =>
+                $"{item["id"]?.ToString()}/{item["max_tokens"]?.ToString()}",
             _ => throw new NotImplementedException($"No value extraction logic defined for {providerType}")
         };
 

@@ -204,4 +204,49 @@ public class AzureBlobStorageService : IAzureBlobStorageService
         // Return the full SAS URI as a string.
         return sasUri.ToString();
     }
+
+    // Retrieves the sizes of specified containers in the Azure Blob Storage account. If no container names are provided, it retrieves the sizes for all containers.
+    public async Task<Dictionary<string, long>> GetAllContainersWithSizeAsync(List<string>? containerNames)
+    {
+        // Initialize a list to hold tasks for parallel execution
+        var tasks = new List<Task<KeyValuePair<string, long>>>();
+
+        // Iterate over each container in the storage account
+        await foreach (var container in _blobServiceClient.GetBlobContainersAsync())
+        {
+            // If containerNames is provided and it contains the current container's name, include it
+            if (containerNames == null || containerNames.Contains(container.Name))
+            {
+                // Add a task to calculate the size for this container
+                tasks.Add(GetSize(container.Name));
+            }
+        }
+
+        // Wait for all tasks to complete in parallel
+        var results = await Task.WhenAll(tasks);
+
+        // Convert the results into a dictionary: ContainerName -> SizeInBytes
+        return results.ToDictionary(x => x.Key, x => x.Value);
+
+        // Helper method to calculate the total size of a specific container.
+        // Iterates over all blobs in the container and sums their sizes.
+        async Task<KeyValuePair<string, long>> GetSize(string containerName)
+        {
+            // Get a reference to the container using the container name
+            var containerClient = _blobServiceClient.GetBlobContainerClient(containerName);
+
+            // Initialize the total size of the container to zero
+            long totalSize = 0;
+
+            // Iterate through all blobs in the container
+            await foreach (var blob in containerClient.GetBlobsAsync())
+            {
+                // Safely add the size of each blob (handle null ContentLength gracefully)
+                totalSize += blob.Properties.ContentLength ?? 0;
+            }
+
+            // Return a key-value pair: ContainerName -> TotalSizeInBytes
+            return new KeyValuePair<string, long>(containerName, totalSize);
+        }
+    }
 }

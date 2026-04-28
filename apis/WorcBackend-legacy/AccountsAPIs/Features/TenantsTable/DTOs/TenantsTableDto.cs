@@ -154,4 +154,90 @@ public class TenantsTableDto
     /// Gets or sets the currency of tenant.
     /// </summary>
     public required CurrencyTypesEnum Currency { get; set; }
+
+    /// <summary>
+    /// Gets or sets a flag indicating if the tenant is set as the system default.
+    /// </summary>
+    public bool IsDefault { get; set; }
+
+    /// <summary>
+    /// Gets or sets a flag indicating if system default records are allowed to be modified.
+    /// </summary>
+    public bool IsEditable { get; set; }
+
+    /// <summary>
+    /// Gets or sets the database credentials for the Isolated/DedicatedServer option.
+    /// </summary>
+    public string? DbCredentials { get; set; }
+
+    /// <summary>
+    /// Gets or sets the email domain associated with this tenant.
+    /// </summary>
+    [StringLength(100)]
+    public string Domain { get; set; } = string.Empty;
+
+    /// <summary>
+    /// Gets or sets the number of employees in the organization.
+    /// </summary>
+    public int NumberOfEmployees { get; set; }
+
+    /// <summary>
+    /// Gets or sets the industry in which the organization operates.
+    /// </summary>
+    public string? Industry { get; set; }
+
+    /// <summary>
+    /// Gets or sets the country where the tenant is located.
+    /// </summary>
+    public CountriesEnum Country { get; set; }
+
+    /// <summary>
+    /// Gets or sets the role of the user who registered or manages the tenant.
+    /// </summary>
+    public string? Role { get; set; }
+
+    /// <summary>
+    /// Gets or sets the multiplier applied to the tenant's credits for discount or inflation.
+    /// </summary>
+    [Range(0, 10)]
+    public double? Discount { get; set; } = null;
+
+    /// <summary>
+    /// Gets or sets the container name associated with the tenant.
+    /// </summary>
+    public string ContainerName { get; set; } = string.Empty;
+
+    /// <summary>
+    /// Gets or sets the publish agent ID.
+    /// </summary>
+    public int PublishAgent { get; set; }
+
+    /// <summary>
+    /// Gets or sets the total execution time in seconds.
+    /// </summary>
+    public double TotalExecutionTime { get; set; }
+
+    /// <summary>
+    /// Represents the total consumed or used credits (e.g., time, resources, etc.) during an operation.
+    /// </summary>
+    public double ConsumedCredits { get; set; }
+
+    /// <summary>
+    /// Gets or sets the number of active users for the tenant.
+    /// </summary>
+    public int TotalUsers { get; set; }
+
+    /// <summary>
+    /// Gets or sets the available credits for the tenant.
+    /// </summary>
+    public decimal AvailableCredits { get; set; }
+
+    /// <summary>
+    /// Gets or sets the current or active plan for the tenant.
+    /// </summary>
+    public SubscriptionPlan? CurrentActivePlan { get; set; }
+
+    /// <summary>
+    /// Gets or sets the total used file storage size in bytes.
+    public long StorageSize { get; set; }
 }

@@ -64,8 +64,6 @@ public interface IAzureBlobStorageService
     /// <returns>The total size of the container in bytes.</returns>
     Task<long> GetContainerSizeAsync(string containerName);
 
-    // ----------------------------------------------------------------------
-
     /// <summary>
     /// Generates a Shared Access Signature (SAS) token for a specific file.
     /// </summary>
@@ -74,4 +72,12 @@ public interface IAzureBlobStorageService
     /// <param name="tokenLifetimeMinutes">The duration, in minutes, that the SAS token remains valid.</param>
     /// <returns>A SAS token granting temporary access to the file.</returns>
     string GenerateSasToken(string containerName, string fileName, int tokenLifetimeMinutes);
+
+    /// <summary>
+    /// Retrieves the sizes of specified containers in the Azure Blob Storage account. 
+    /// If no container names are provided, it retrieves the sizes for all containers.
+    /// </summary>
+    /// <param name="containerNames">An optional list of container names to filter by. If null or empty, retrieves all containers.</param>
+    /// <returns>A dictionary where the key is the container name and the value is the size of the container in bytes.</returns>
+    Task<Dictionary<string, long>> GetAllContainersWithSizeAsync(List<string>? containerNames = null);
 }

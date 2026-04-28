@@ -7,6 +7,7 @@ pub fn launch_desktop_executor(
     ws_port: u16,
     agent_id: String,
     agent_name: String,
+    input_arguments_json: String,
     access_token: String,
 ) -> Result<(), String> {
     // Get the directory where tauri_app.exe is running
@@ -33,6 +34,7 @@ pub fn launch_desktop_executor(
         .arg(ws_port.to_string())
         .arg(agent_id)
         .arg(agent_name)
+        .arg(input_arguments_json)
         .arg(access_token)
         .spawn()
         .map_err(|e| format!("Failed to start the executor: {}", e))?;

@@ -212,6 +212,7 @@ const ExecuteFlow = () => {
         wsPort,
         agentId: currentFlow.versionId,
         agentName: currentFlow.name,
+        inputArgumentsJson: JSON.stringify({}), // For manuall trigger we can send empty input arguments. 
         accessToken,
       });
       console.log("Executor launched successfully:", res);

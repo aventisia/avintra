@@ -18,4 +18,11 @@ public class ManageTenantController : BaseApiController
     {
         return ResultHelper(await _manageTenantService.DeleteTenantAsync());
     }
+
+    // Gets tenant job summary (execution time and published agents).
+    [HttpGet("tenant/summary")]
+    public async Task<ActionResult<ServiceResponse<IEnumerable<TenantTableSummaryDto>>>> GetTenantJobSummary([FromQuery] DateTimeOffset? startDate, [FromQuery] DateTimeOffset? endDate)
+    {
+        return ResultHelper(await _manageTenantService.GetTenantJobSummaryAsync(startDate, endDate));
+    }
 }

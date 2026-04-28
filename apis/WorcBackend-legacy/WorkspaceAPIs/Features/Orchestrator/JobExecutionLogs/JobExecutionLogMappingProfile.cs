@@ -38,18 +38,12 @@ public class JobExecutionLogMappingProfile : IRegister
                     ? src.InputArgumentsJson
                     : null)
             .Map(dest => dest.ReactFlowObject,
-                src => src.FlowVersion != null
-                    ? src.FlowVersion.FlowVersionHistories
-                        .OrderByDescending(o => o.CreatedOn)
-                        .Select(h => h.ReactFlowObject)
-                        .FirstOrDefault()
+                src => src.FlowVersionHistory != null
+                    ? src.FlowVersionHistory.ReactFlowObject
                     : null)
             .Map(dest => dest.FlowVariablesObject,
                 src => src.FlowVersion != null
-                    ? src.FlowVersion.FlowVersionHistories
-                        .OrderByDescending(o => o.CreatedOn)
-                        .Select(h => h.ReactFlowObject)
-                        .FirstOrDefault()
+                    ? src.FlowVersionHistory.FlowVariablesObject
                     : null)
             .Map(dest => dest.VersionNumber,
                 src => src.FlowVersion != null

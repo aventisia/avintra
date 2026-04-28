@@ -316,10 +316,17 @@ class AnthropicProvider(BaseLLMProvider):
                     })
         else:
             raise ValueError("Invalid input format. Must be string or list of messages.")
-        
+
+        # Split into model + max_tokens (if present)
+        model_raw = llm_request.model or ""
+        parts = model_raw.split("/")
+
+        model_name = parts[0]
+        max_tokens_from_model = int(parts[1]) if len(parts) > 1 and parts[1].isdigit() else None
+
         # Build request payload
         request_payload = {
-            "model": llm_request.model,
+            "model": model_name,
             "messages": messages, 
             "stream": llm_request.stream,
             # IMPORTANT NOTE: The top_p and temperature parameters have been deprecated in Anthropic APIs and may be removed in future versions
@@ -327,7 +334,13 @@ class AnthropicProvider(BaseLLMProvider):
             # "temperature": llm_request.temperature,
             # "store": False # Disabling openai parameter to store the generated model response for later retrieval via API.
         }
-        
+
+        # Decide max_tokens
+        if llm_request.max_output_tokens and llm_request.max_output_tokens > 0:
+            request_payload["max_tokens"] = llm_request.max_output_tokens
+        elif max_tokens_from_model:
+            request_payload["max_tokens"] = max_tokens_from_model
+    
         if llm_request.json_schema:
             schema_str = json.dumps(llm_request.json_schema, indent=2)
 
@@ -340,9 +353,6 @@ class AnthropicProvider(BaseLLMProvider):
                         Do not include any extra text.
                         """
                     break
-            
-        if llm_request.max_output_tokens:
-            request_payload["max_tokens"] = llm_request.max_output_tokens
         
         # Add base64 files if any are provided
         if llm_request.files:

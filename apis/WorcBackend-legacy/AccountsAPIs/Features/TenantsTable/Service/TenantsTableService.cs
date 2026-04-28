@@ -31,7 +31,7 @@ public class TenantsTableService : ITenantsTableService
     }
 
     // Retrieves all tenants.
-    public async Task<ServiceResponse<IEnumerable<TenantsTableDto>>> GetTenantsAsync()
+    public async Task<ServiceResponse<IEnumerable<TenantsTableDto>>> GetTenantsAsync(TenantFilterQuery tenantFilterQuery)
     {
         // Initialize ServiceResponse with failed response
         var serviceResponse = new ServiceResponse<IEnumerable<TenantsTableDto>>
@@ -42,44 +42,113 @@ public class TenantsTableService : ITenantsTableService
 
         try
         {
-            // Try to get tenants
+            // If either StartDate or EndDate is not provided, default the date range to the last 1 month (from today in UTC)
+            if (!tenantFilterQuery.StartDate.HasValue || !tenantFilterQuery.EndDate.HasValue)
+            {
+                tenantFilterQuery.StartDate = DateTime.UtcNow.Date.AddMonths(-1);
+                tenantFilterQuery.EndDate = DateTime.UtcNow.Date;
+            }
+
+            // Fetch the list of tenants based on the condition (editable, not default, and not the current tenant)
             var tenants = await _unitOfWork.TenantRepo
-                .GetByConditionAsync(w =>
-                    w.IsEditable && !w.IsDefault &&
-                    w.Id != _currentTenantService.CurrentTenantId) //  TODO: Update condition
+                .GetByConditionAsync(w => w.IsEditable && !w.IsDefault && w.Id != _currentTenantService.CurrentTenantId)
                 .OrderByDescending(o => o.CreatedOn)
                 .ToListAsync();
 
-            // Get tenant manager's full name list
-            var tenantManagers = await _unitOfWork.AccountUserRepo
-                .GetByConditionAsync(w =>
-                    tenants.Select(s => s.CreatedByUserId).Contains(w.Id) ||
-                    tenants.Select(s => s.LastModifiedByUserId).Contains(w.Id))
-                .Select(s => new { s.Id, UserFullName = s.FirstName + " " + s.LastName })
+            // Extract tenantIds and userIds for use in other queries
+            var tenantIds = tenants.Select(s => s.Id).ToList();
+            var userIds = tenants.SelectMany(s => new[] { s.CreatedByUserId, s.LastModifiedByUserId }).Distinct().ToList();
+
+            // Fetch data for account users, tenant subscriptions, tenant credits, and container sizes in parallel
+            var accountUsers = await _unitOfWork.AccountUserRepo
+                .GetByConditionAsync(w => w.TenantId != null && tenantIds.Contains(w.TenantId.Value))
                 .ToListAsync();
 
-            // Create tenantsTableDto list
-            var tenantsTableDtoList = new List<TenantsTableDto>();
-            foreach (var tenant in tenants)
+            var tenantSubscriptions = await _unitOfWork.TenantSubscriptionRepo
+                .GetByConditionAsync(w => tenantIds.Contains(w.TenantId) && w.IsActive)
+                .GroupBy(g => g.TenantId)
+                .Select(s => s.First())
+                .ToDictionaryAsync(td => td.TenantId, td => td.Plan);
+
+            var tenantCredits = await _unitOfWork.TenantCreditRepo
+                .GetByConditionAsync(w => tenantIds.Contains(w.TenantId) && w.ExpiredOn.Date > DateTimeOffset.UtcNow.Date)
+                .GroupBy(g => g.TenantId)
+                .Select(s => new { TenantId = s.Key, TotalCredits = s.Sum(x => x.AvailableCredits) })
+                .ToDictionaryAsync(td => td.TenantId, td => td.TotalCredits);
+
+            var tenantCreditsUssages = await _unitOfWork.CreditUsageRepo
+                .GetByConditionAsync(w => tenantIds.Contains(w.TenantId) &&
+                                         w.UsedAt.Date >= tenantFilterQuery.StartDate &&
+                                         w.UsedAt.Date <= tenantFilterQuery.EndDate)
+                .GroupBy(g => g.TenantId)
+                .Select(s => new { TenantId = s.Key, TotalCredits = s.Sum(x => x.CreditsUsed) })
+                .ToDictionaryAsync(td => td.TenantId, td => td.TotalCredits);
+
+            // This one is safe to run separately (not EF)
+            var tenantContainerSizes = await _azureBlobStorageService
+                .GetAllContainersWithSizeAsync(tenants.Select(s => s.ContainerName).ToList());
+
+            // Create a dictionary for tenant managers' names (CreatedBy and LastModifiedBy)
+            var tenantManagers = accountUsers
+                .Where(w => userIds.Contains(w.Id))
+                .ToDictionary(td => td.Id, td => td.FirstName + " " + td.LastName);
+
+            var tenantSummaries = new Dictionary<Guid, TenantTableSummaryDto>();
+
+            // Build query string with dynamic date filters (ISO 8601 format)
+            var url = $"{_environmentConfig.WorcApiBaseUrl}/api/sa/tenant/summary" +
+                      $"?startDate={tenantFilterQuery.StartDate:O}&endDate={tenantFilterQuery.EndDate:O}";
+
+            // Call external API with query parameters
+            HttpResponseMessage response = await RequestExternalAPIUtil.RequestExternalAPI(
+                CrudTypesEnum.Read,
+                url,
+                _jwt);
+
+            // Proceed only if API call was successful (status code 2xx)
+            if (response.IsSuccessStatusCode)
             {
-                // Default mapping
+                // Read response content as JSON string
+                var content = await response.Content.ReadAsStringAsync();
+
+                // Deserialize JSON into ServiceResponse DTO (case-insensitive mapping)
+                var result = JsonSerializer.Deserialize<ServiceResponse<IEnumerable<TenantTableSummaryDto>>>(
+                    content,
+                    new JsonSerializerOptions { PropertyNameCaseInsensitive = true });
+
+                // Convert list into dictionary for faster lookup by TenantId
+                if (result?.Data != null)
+                    tenantSummaries = result.Data.ToDictionary(td => td.TenantId, td => td);
+            }
+
+            // Map the retrieved data into a list of TenantsTableDto objects
+            var tenantsTableDtoList = tenants.Select(tenant =>
+            {
+                // Map tenant data to TenantsTableDto
                 var tenantsTableDto = tenant.Adapt<TenantsTableDto>();
 
-                // Get CreatedBy user full name
-                tenantsTableDto.CreatedBy = tenantManagers
-                    .Where(w => w.Id == tenant.CreatedByUserId)
-                    .Select(s => s.UserFullName)
-                    .SingleOrDefault();
+                // Retrieve related data for each tenant using TryGetValue to avoid missing data errors
+                tenantManagers.TryGetValue(tenant.CreatedByUserId, out var createdBy);
+                tenantManagers.TryGetValue(tenant.LastModifiedByUserId, out var modifiedBy);
+                tenantSubscriptions.TryGetValue(tenant.Id, out var plan);
+                tenantCredits.TryGetValue(tenant.Id, out var credit);
+                tenantContainerSizes.TryGetValue(tenant.ContainerName, out var containerSize);
+                tenantCreditsUssages.TryGetValue(tenant.Id, out var creditsUsed);
+                tenantSummaries.TryGetValue(tenant.Id, out var summary);
 
-                // Get LastModifiedBy user full name
-                tenantsTableDto.LastModifiedBy = tenantManagers
-                    .Where(w => w.Id == tenant.LastModifiedByUserId)
-                    .Select(s => s.UserFullName)
-                    .SingleOrDefault();
+                // Assign values to the DTO properties
+                tenantsTableDto.CreatedBy = createdBy;
+                tenantsTableDto.LastModifiedBy = modifiedBy;
+                tenantsTableDto.CurrentActivePlan = plan;
+                tenantsTableDto.AvailableCredits = (decimal)credit;
+                tenantsTableDto.TotalUsers = accountUsers.Count(w => w.TenantId == tenantsTableDto.Id);
+                tenantsTableDto.StorageSize = containerSize;
+                tenantsTableDto.ConsumedCredits = creditsUsed;
+                tenantsTableDto.TotalExecutionTime = summary?.ExecutionTime ?? 0;
+                tenantsTableDto.PublishAgent = summary?.PublishAgent ?? 0;
 
-                // Add tenantsTableDto to list
-                tenantsTableDtoList.Add(tenantsTableDto);
-            }
+                return tenantsTableDto;
+            }).ToList();
 
             // Task successful
             serviceResponse.Data = tenantsTableDtoList;
