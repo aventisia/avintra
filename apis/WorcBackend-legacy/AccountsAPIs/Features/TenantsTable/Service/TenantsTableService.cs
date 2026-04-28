@@ -66,9 +66,10 @@ public class TenantsTableService : ITenantsTableService
 
             var tenantSubscriptions = await _unitOfWork.TenantSubscriptionRepo
                 .GetByConditionAsync(w => tenantIds.Contains(w.TenantId) && w.IsActive)
+                .Include(i => i.Plan)
                 .GroupBy(g => g.TenantId)
                 .Select(s => s.First())
-                .ToDictionaryAsync(td => td.TenantId, td => td.Plan);
+                .ToDictionaryAsync(td => td.TenantId, td => td.Plan.Name);
 
             var tenantCredits = await _unitOfWork.TenantCreditRepo
                 .GetByConditionAsync(w => tenantIds.Contains(w.TenantId) && w.ExpiredOn.Date > DateTimeOffset.UtcNow.Date)
@@ -95,9 +96,10 @@ public class TenantsTableService : ITenantsTableService
 
             var tenantSummaries = new Dictionary<Guid, TenantTableSummaryDto>();
 
-            // Build query string with dynamic date filters (ISO 8601 format)
-            var url = $"{_environmentConfig.WorcApiBaseUrl}/api/sa/tenant/summary" +
-                      $"?startDate={tenantFilterQuery.StartDate:O}&endDate={tenantFilterQuery.EndDate:O}";
+            // Build query string with dynamic date filters
+            var url = $"{_environmentConfig.WorcApiBaseUrl}/sa/tenant/summary" +
+                $"?startDate={tenantFilterQuery.StartDate.Value.UtcDateTime:O}" +
+                $"&endDate={tenantFilterQuery.EndDate.Value.UtcDateTime:O}";
 
             // Call external API with query parameters
             HttpResponseMessage response = await RequestExternalAPIUtil.RequestExternalAPI(
@@ -139,7 +141,7 @@ public class TenantsTableService : ITenantsTableService
                 // Assign values to the DTO properties
                 tenantsTableDto.CreatedBy = createdBy;
                 tenantsTableDto.LastModifiedBy = modifiedBy;
-                tenantsTableDto.CurrentActivePlan = plan;
+                tenantsTableDto.ActivePlan = plan;
                 tenantsTableDto.AvailableCredits = (decimal)credit;
                 tenantsTableDto.TotalUsers = accountUsers.Count(w => w.TenantId == tenantsTableDto.Id);
                 tenantsTableDto.StorageSize = containerSize;
