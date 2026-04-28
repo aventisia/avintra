@@ -105,6 +105,7 @@ export default function useExecuteFlow() {
           edges,
           data?.name || "",
           data.flowVersionId,
+          data.inputArgumentsJson || "{}",
         );
       } else {
         toast.info(
@@ -123,6 +124,7 @@ export default function useExecuteFlow() {
     edges: Edge[],
     agentName: string,
     versionId: string,
+    inputArgumentsJson: string,
   ) => {
     try {
       // Get websocket port
@@ -134,6 +136,7 @@ export default function useExecuteFlow() {
         wsPort,
         agentId: versionId,
         agentName: agentName,
+        inputArgumentsJson: inputArgumentsJson,
         accessToken,
       });
       console.log("Executor launched successfully:", res);
