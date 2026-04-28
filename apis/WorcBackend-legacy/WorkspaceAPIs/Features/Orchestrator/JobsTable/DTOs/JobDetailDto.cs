@@ -68,9 +68,9 @@ public class JobDetailDto
     public string? FlowVariablesObject { get; set; }
 
     /// <summary>
-    /// Gets or sets a JSON string defining the input and output data for the flow.
+    /// Gets or sets a JSON string defining the input arguments for the job from the trigger.
     /// </summary>
-    public string? InputOutputObject { get; set; }
+    public string? InputArgumentsJson { get; set; }
 
     /// <summary>
     /// Gets or sets the type of the flow (e.g., regular, conditional, batch).

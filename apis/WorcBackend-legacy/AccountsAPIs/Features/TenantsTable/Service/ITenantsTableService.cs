@@ -5,8 +5,9 @@ public interface ITenantsTableService
     /// <summary>
     /// Retrieves all tenants.
     /// </summary>
+    /// <param name="tenantFilterQuery">The filter criteria to apply when retrieving tenants.</param>
     /// <returns>A task representing the asynchronous operation. The task result contains a <see cref="ServiceResponse{T}"/> with the list of retrieved tenants.</returns>
-    Task<ServiceResponse<IEnumerable<TenantsTableDto>>> GetTenantsAsync();
+    Task<ServiceResponse<IEnumerable<TenantsTableDto>>> GetTenantsAsync(TenantFilterQuery tenantFilterQuery);
 
     /// <summary>
     /// Retrieves all tenants.

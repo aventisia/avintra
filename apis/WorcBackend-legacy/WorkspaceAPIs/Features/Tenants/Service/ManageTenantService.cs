@@ -5,6 +5,7 @@ public class ManageTenantService : IManageTenantService
     private readonly ILogger<ManageTenantService> _logger;
     private readonly IUnitOfWork _unitOfWork;
     private readonly ICurrentTenantService _currentTenantService;
+    private readonly WorkspaceInternalDbContext _workspaceInternalDbContext;
     private readonly Guid _userId;
     private readonly Guid _userTenantId;
 
@@ -12,7 +13,8 @@ public class ManageTenantService : IManageTenantService
         ILogger<ManageTenantService> logger,
         IUnitOfWork unitOfWork,
         IHttpContextAccessor httpContextAccessor,
-        ICurrentTenantService currentTenantService)
+        ICurrentTenantService currentTenantService,
+        WorkspaceInternalDbContext workspaceInternalDbContext)
     {
         _logger = logger;
         _unitOfWork = unitOfWork;
@@ -21,6 +23,7 @@ public class ManageTenantService : IManageTenantService
         // Set _userId
         _userId = Guid.Parse(httpContextAccessor.HttpContext?.User?.FindFirstValue("uid") ?? Guid.Empty.ToString());
         _userTenantId = Guid.Parse(httpContextAccessor.HttpContext?.User?.FindFirstValue("tntid") ?? Guid.Empty.ToString());
+        _workspaceInternalDbContext = workspaceInternalDbContext;
     }
 
     // Deletes a tenant and all associated data from the database.
@@ -169,5 +172,91 @@ public class ManageTenantService : IManageTenantService
         }
 
         return true;
+    }
+
+    // Retrieves aggregated job metrics (execution time + published agents count) grouped by TenantId
+    public async Task<ServiceResponse<IEnumerable<TenantTableSummaryDto>>> GetTenantJobSummaryAsync(DateTimeOffset? startDate, DateTimeOffset? endDate)
+    {
+        // Initialize default failure response
+        var serviceResponse = new ServiceResponse<IEnumerable<TenantTableSummaryDto>>
+        {
+            Data = null,
+            Message = "Failed to retrieve tenant job summary. Please try again later."
+        };
+
+        try
+        {
+            // If no date range is provided, default to last 1 month (UTC)
+            if (!startDate.HasValue || !endDate.HasValue)
+            {
+                startDate = DateTime.UtcNow.Date.AddMonths(-1);
+                endDate = DateTime.UtcNow.Date;
+            }
+
+            // Fetch and aggregate job execution time per tenant
+            var tenantExecutionData = await _workspaceInternalDbContext.Jobs
+                .Where(w => w.CreatedOn >= startDate && w.CreatedOn < endDate)
+                .GroupBy(g => g.TenantId)
+                .Select(s => new
+                {
+                    TenantId = s.Key,
+                    ExecutionTime = s.Sum(sm =>
+                        sm.EndTime != null && sm.StartTime != null
+                            ? (sm.EndTime.Value - sm.StartTime.Value).TotalSeconds
+                            : 0
+                    )
+                })
+                .ToListAsync();
+
+            // Fetch and count published agents per tenant
+            var tenantPublishAgentData = await _workspaceInternalDbContext.FlowVersions
+                .Where(w => w.IsPublished)
+                .GroupBy(g => g.TenantId)
+                .Select(s => new
+                {
+                    TenantId = s.Key,
+                    PublishAgentCount = s.Count()
+                })
+                .ToListAsync();
+
+            // Build unified tenant list (union of both datasets)
+            // NOTE: Only includes tenants with activity
+            // ---------------------------------------------------
+            var tenantIds = tenantExecutionData
+                .Select(s => s.TenantId)
+                .Union(tenantExecutionData.Select(s => s.TenantId))
+                .Distinct()
+                .ToList();
+
+            // Merge execution data with published agent counts
+            var tenantSummaries = tenantIds
+                .Select(tenantId =>
+                {
+                    var execution = tenantExecutionData
+                        .FirstOrDefault(x => x.TenantId == tenantId);
+
+                    var published = tenantPublishAgentData
+                        .FirstOrDefault(x => x.TenantId == tenantId);
+
+                    return new TenantTableSummaryDto
+                    {
+                        TenantId = tenantId,
+                        ExecutionTime = execution?.ExecutionTime ?? 0,
+                        PublishAgent = published?.PublishAgentCount ?? 0
+                    };
+                })
+                .ToList();
+
+            // Populate success response
+            serviceResponse.Data = tenantSummaries;
+            serviceResponse.StatusCode = 200;
+            serviceResponse.Message = "Tenant job summary retrieved successfully.";
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError("Error retrieving tenant job summary: {ErrorDetails}", ex.ToString());
+        }
+
+        return serviceResponse;
     }
 }

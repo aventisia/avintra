@@ -230,6 +230,7 @@ public class JobTableService : IJobTableService
             // Retrieve the flow version associated with the job using the FlowVersionId from the DTO.
             var flowVersion = await _unitOfWork.FlowVersionRepo
                     .GetByConditionAsync(w => w.Id == jobTableDto.FlowVersionId)
+                    .Include(i => i.FlowVersionHistories)
                     .AsNoTracking()
                     .FirstOrDefaultAsync();
 
@@ -276,6 +277,10 @@ public class JobTableService : IJobTableService
                 Status = JobStatusTypesEnum.Created,
                 CreatedOn = DateTimeOffset.UtcNow,
                 IsPublished = flowVersion.IsPublished,
+                FlowVersionHistoryId = flowVersion.FlowVersionHistories
+                    .OrderByDescending(o => o.CreatedOn)
+                    .Select(s => (Guid?)s.Id)
+                    .FirstOrDefault()
             };
 
             // If the flow version is NOT published, allow the caller to explicitly control job execution details

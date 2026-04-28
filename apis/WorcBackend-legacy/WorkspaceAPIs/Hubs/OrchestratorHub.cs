@@ -244,6 +244,7 @@ public class OrchestratorHub : Hub
             var agent = await _workspaceInternalDbContext.FlowVersions
                 .Where(w => w.Id == agentId && w.IsPublished)
                 .Include(i => i.MachineFlows)
+                .Include(i => i.FlowVersionHistories)
                 .SingleOrDefaultAsync();
 
             // If the agent is not found or not published, return an error
@@ -306,7 +307,11 @@ public class OrchestratorHub : Hub
                 Status = JobStatusTypesEnum.Created,
                 Priority = JobPriorityTypesEnum.Normal,
                 TenantId = tenantId,
-                TriggerType = TriggerTypesEnum.ManualTrigger
+                TriggerType = TriggerTypesEnum.ManualTrigger,
+                FlowVersionHistoryId = agent.FlowVersionHistories
+                    .OrderByDescending(o => o.CreatedOn)
+                    .Select(s => (Guid?)s.Id)
+                    .FirstOrDefault()
             };
 
             // Retrieve the machine status from the client status store

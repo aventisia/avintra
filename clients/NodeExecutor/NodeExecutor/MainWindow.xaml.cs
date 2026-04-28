@@ -4,6 +4,7 @@ using Newtonsoft.Json.Serialization;
 using NodeExecutor.Models;
 using NodeExecutor.Services;
 using System;
+using System.Collections.Generic;
 using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Input;
@@ -24,7 +25,12 @@ namespace NodeExecutor
         private readonly string _agentName;
         private readonly string _accessToken;
 
-        public MainWindow(string wsPort, string agentId, string agentName, string accessToken)
+        public MainWindow(
+            string wsPort,
+            string agentId,
+            string agentName,
+            string inputArgumentsJson,
+            string accessToken)
         {
             InitializeComponent();
 
@@ -41,8 +47,55 @@ namespace NodeExecutor
             // Initialize interpreter with lambda expressions enabled and case-insensitive variable names
             this._interpreter = new Interpreter(InterpreterOptions.Default | InterpreterOptions.LambdaExpressions | InterpreterOptions.CaseInsensitive);
 
+            // Add the arguments to executionContext
+            AddArgumentsToContext("_agentId", _agentId);
+            AddArgumentsToContext("_agentName", _agentName);
+            AddArgumentsToContext("_accessToken", _accessToken);
+            AddInputArgumentsToContext(inputArgumentsJson);
+
             // Start the WebSocket and timer
             InitServices();
+        }
+
+        // Add arguments to the execution context and interpreter variables so they can be used in the nodes
+        private void AddArgumentsToContext(string name, string value)
+        {
+            _executionContext.Set(name, value);
+            _interpreter.SetVariable(name, value);
+        }
+
+        // Parse and add input arguments as a nested object structure
+        private void AddInputArgumentsToContext(string inputArgumentsJson)
+        {
+            try
+            {
+                // Parse the JSON string into a dictionary
+                var inputArgumentsDict = JsonConvert.DeserializeObject<Dictionary<string, object>>(inputArgumentsJson);
+
+                if (inputArgumentsDict == null)
+                {
+                    inputArgumentsDict = new Dictionary<string, object>();
+                }
+
+                // Create a job object with inputArguments nested inside
+                var jobObject = new Dictionary<string, object>
+                {
+                    { "inputArguments", inputArgumentsDict }
+                };
+
+                // Add to execution context
+                _executionContext.Set("job", jobObject);
+
+                // Add to interpreter so it can be accessed via dot notation
+                _interpreter.SetVariable("job", jobObject);
+            }
+            catch (JsonException ex)
+            {
+                MessageBox.Show($"Error parsing input arguments JSON: {ex.Message}");
+                // Add empty structure as fallback
+                _executionContext.Set("job", new Dictionary<string, object> { { "inputArguments", new Dictionary<string, object>() } });
+                _interpreter.SetVariable("job", new Dictionary<string, object> { { "inputArguments", new Dictionary<string, object>() } });
+            }
         }
 
         // Window Closed Event

@@ -8,7 +8,9 @@ public class TimeTriggerMappingProfile : IRegister
         config.NewConfig<TimeTrigger, TimeTriggerDto>()
             .Map(dest => dest.Agents,
                 src => src.TimeTriggerFlowVersions != null
-                    ? src.TimeTriggerFlowVersions.Select(s => new AgentInfoDto()
+                    ? src.TimeTriggerFlowVersions
+                    .Where(w => w.FlowVersion != null)
+                    .Select(s => new AgentInfoDto()
                     {
                         Id = s.FlowVersion.Id,
                         Name = s.FlowVersion.Flow.Name,
