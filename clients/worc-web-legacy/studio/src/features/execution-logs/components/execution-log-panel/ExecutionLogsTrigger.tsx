@@ -12,7 +12,7 @@ export const ExecutionLogsTrigger = () => {
         className={cn()}
         href={
           import.meta.env.VITE_AGENTBUILDER_PATH +
-          withQueryParams("execution")
+          withQueryParams("execution-log")
         }
       >
         <SimpleDDMenuItem size="md" Icon={LogsIcon} content="Execution Logs" />

@@ -1,7 +1,8 @@
 import { Accordion } from "@aventisia/ui/accordion";
-import VHAccordionSection from "./VHAccordionSection";
-import { DaySection } from "../../types/agent-history-type";
 import { useEffect, useState } from "react";
+
+import { DaySection } from "../../types/log-list-type";
+import ExecutionAccordionSection from "./ExecutionAccordionSection";
 
 interface Props {
   data: DaySection[];
@@ -9,7 +10,7 @@ interface Props {
   onSelect: (id: string) => void;
 }
 
-export default function VersionHistoryAccordion({
+export default function ExecutionLogAccordion({
   data,
   selectedEntry,
   onSelect,
@@ -36,7 +37,7 @@ export default function VersionHistoryAccordion({
       onValueChange={setOpenItems}
     >
       {data.map((section) => (
-        <VHAccordionSection
+        <ExecutionAccordionSection
           key={section.date}
           section={section}
           selectedEntry={selectedEntry}

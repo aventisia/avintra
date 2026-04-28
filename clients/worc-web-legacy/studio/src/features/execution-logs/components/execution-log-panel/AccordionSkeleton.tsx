@@ -1,6 +1,6 @@
 import { Skeleton } from "@aventisia/ui";
 
-export default function VersionAccordionSkeleton() {
+export default function AccordionSkeleton() {
   return (
     <div className="space-y-2">
       {/* Header */}

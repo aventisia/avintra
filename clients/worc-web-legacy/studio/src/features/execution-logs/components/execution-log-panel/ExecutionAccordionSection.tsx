@@ -4,8 +4,9 @@ import {
   AccordionTrigger,
 } from "@aventisia/ui/accordion";
 import { ChevronDown } from "lucide-react";
-import { DaySection } from "../../types/agent-history-type";
-import VHAccordionItem from "./VHAccordionItem";
+
+import { DaySection } from "../../types/log-list-type";
+import ExecutionLogAccordionItem from "./ExecutionLogAccordionItem";
 
 interface Props {
   section: DaySection;
@@ -13,7 +14,7 @@ interface Props {
   onSelect: (id: string) => void;
 }
 
-export default function VHAccordionSection({
+export default function ExecutionAccordionSection({
   section,
   selectedEntry,
   onSelect,
@@ -37,7 +38,7 @@ export default function VHAccordionSection({
         <div className="relative ml-4 space-y-0">
           {/* Timeline Entries */}
           {section.entries.map((entry) => (
-            <VHAccordionItem
+            <ExecutionLogAccordionItem
               key={entry.id}
               entry={entry}
               isSelected={entry.id === selectedEntry}

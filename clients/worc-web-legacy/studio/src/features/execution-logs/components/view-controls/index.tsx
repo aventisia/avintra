@@ -7,6 +7,7 @@ import { useShallow } from "zustand/react/shallow";
 import { VCActionButton } from "./VCActionButton";
 import { VCBContainer } from "./VCBContainer";
 import { memo } from "react";
+import { VCBranchStatsButton } from "./VCBranchStatsButton";
 
 export const ViewControls = memo(() => {
   // Get Studio Preferences store state
@@ -22,6 +23,10 @@ export const ViewControls = memo(() => {
       <div className="flex flex-col items-end space-y-4">
         {zoomControls && (
           <VCBContainer>
+            <VCBranchStatsButton/>
+                {/* Separate from zoom in-out */}
+            <Separator orientation="horizontal" className="my-1 h-[0.5px]" />
+
             {/* Fit view button */}
             <VCActionButton action="fitView" Icon={Scan} />
 

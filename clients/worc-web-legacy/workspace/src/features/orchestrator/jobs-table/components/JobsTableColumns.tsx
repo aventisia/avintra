@@ -8,9 +8,8 @@ import { TABLE_KEY } from "../constants";
 import { getColumnName, statusColor } from "../constants/column-display-names";
 import { JobsTableDto } from "../dtos/jobs-table-dto";
 import { formatSecondsToCompactDuration } from "../utils";
-
-import { JobRowActions } from "./jobs-row-actions/JobRowActions";
 import { JobsTableCellLink } from "./JobsTableCellLink";
+import { JobRowActions } from "./jobs-row-actions/JobRowActions";
 
 export const jobsTableColumns: ColumnDef<JobsTableDto>[] = [
   {
@@ -30,6 +29,7 @@ export const jobsTableColumns: ColumnDef<JobsTableDto>[] = [
         return (
           <JobsTableCellLink
             rowId={row.original.id ?? ""}
+            versionId={row.original.flowVersionId ?? ""}
             cellValue={row.getValue("name")}
           />
         );

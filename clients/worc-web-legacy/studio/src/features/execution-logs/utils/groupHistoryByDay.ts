@@ -1,19 +1,19 @@
-import { FlowVersionHistoryDto } from "../dtos/agent-history-dto";
-import { DaySection } from "../types/agent-history-type";
+import { JobExecutionLogDto } from "../dtos/job-execution-log-dto";
+import { DaySection } from "../types/log-list-type";
 
 export const groupHistoryByDay = (
-  data: FlowVersionHistoryDto[] | undefined,
+  data: JobExecutionLogDto[] | undefined,
 ): DaySection[] => {
   if (!data?.length) return [];
 
   const sorted = [...data].sort(
-    (a, b) => new Date(b.createdOn).getTime() - new Date(a.createdOn).getTime(),
+    (a, b) => new Date(b.startTime).getTime() - new Date(a.startTime).getTime(),
   );
 
   const map = new Map<string, DaySection>();
 
   sorted.forEach((item) => {
-    const dateObj = new Date(item.createdOn);
+    const dateObj = new Date(item.startTime);
 
     const fullDate = dateObj.toLocaleDateString("en-US", {
       month: "short",
@@ -42,9 +42,10 @@ export const groupHistoryByDay = (
     map.get(fullDate)!.entries.push({
       id: item.id,
       time,
+      duration: item.duration,
       user: {
-        name: item.createdBy ?? "Unknown",
-        initials: item.createdByUserInitials ?? "NA",
+        name: "Unknown",
+        initials: "NA",
       },
     });
   });

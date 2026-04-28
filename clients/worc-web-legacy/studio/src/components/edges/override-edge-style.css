@@ -1,19 +1,29 @@
-.react-flow__edge path {
-  stroke: #94a3b8 !important; /* stroke-slate-400 */
+/* default (build phase) */
+.react-flow__edge .react-flow__edge-path {
+  stroke: #94a3b8 !important;
 }
 
-.react-flow__edge marker path {
-  stroke-width: 1 !important;
+/* .react-flow__edge marker path {
+  stroke: #94a3b8 !important;
+} */
+
+/* SUCCESS */
+.react-flow__edge .react-flow__edge-path.edge-success {
+  stroke: #22c55e !important;
 }
 
-.react-flow__edge.selected path {
-  stroke: var(--primary) !important;
+
+
+.react-flow__edge.edge-success marker path {
+  stroke: #22c55e !important;
 }
 
-.react-flow__edge.selected marker path {
-  stroke-width: 1.05 !important;
+/* ERROR */
+.react-flow__edge .react-flow__edge-path.edge-error {
+  stroke: #ef4444 !important;
 }
 
-.react-flow__edge.selectable:hover:not(.selected) path {
-  stroke: #60a5fa !important; /* stroke-blue-500 */
+.react-flow__edge.edge-error marker path {
+  stroke: #ef4444 !important;
 }
+

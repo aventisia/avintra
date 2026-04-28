@@ -1,5 +1,6 @@
 import { AvailableCredits } from "@/features/available-credits/AvailableCredits";
 import { ExecuteFlow } from "@/features/execute-flow";
+import { useIsExecutionLogsRoute } from "@/features/execution-logs/hooks/useIsExecutionLogsRoute";
 import { FlowComments } from "@/features/flow-comments/components/FlowComments";
 import { SettingsTrigger } from "@/features/flow-settings/components/SettingsTrigger";
 import { FlowVersions } from "@/features/flow-versions/components";
@@ -37,6 +38,7 @@ const AppHeader: React.FC = () => {
     userSession?.tenantName === DefaultTenantsEnum.IndividualUsers;
 
   const isAgentHistory = useIsVersionHistoryRoute();
+  const isExecutionLog = useIsExecutionLogsRoute();
 
   const goBack = () => {
     window.location.href = `${import.meta.env.VITE_WORC_PATH}`;
@@ -75,7 +77,7 @@ const AppHeader: React.FC = () => {
             <AvailableCredits />
           ) : null}{" "}
         </div>
-        {!isAgentHistory ? (
+        {!isAgentHistory && !isExecutionLog ? (
           <div className="flex w-2/5 justify-end">
             <div>
               {isIndividualUser ? (
@@ -111,6 +113,7 @@ const AppHeader: React.FC = () => {
           </div>
         ) : (
           <div className="flex w-2/5 items-center justify-end gap-1">
+            <SearchCommandTrigger />
             <Button
               variant={"ghost"}
               size={"xs"}
@@ -120,7 +123,7 @@ const AppHeader: React.FC = () => {
             >
               View Only
             </Button>
-            <VersionHistoryCloseButton />
+            {isAgentHistory && <VersionHistoryCloseButton />}{" "}
           </div>
         )}
       </Header>

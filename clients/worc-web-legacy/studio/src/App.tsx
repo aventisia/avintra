@@ -42,7 +42,7 @@ const router = createBrowserRouter(
           element: <AgentHistoryPage />,
         },
         {
-          path: "/execution",
+          path: "/execution-log",
           element: <ExecutionLogsPage />,
         },
         {

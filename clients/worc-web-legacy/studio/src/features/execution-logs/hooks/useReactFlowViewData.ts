@@ -1,17 +1,28 @@
 import { ZOOM_ANIMATION_DURATION } from "@/constants";
-import { Edge, Node, useReactFlow, Viewport } from "@xyflow/react";
+import { deepParse } from "@/features/react-flow/utils/deepParse";
+
+import { useQuery } from "@tanstack/react-query";
+import { Edge, Node, Viewport, useReactFlow } from "@xyflow/react";
 import { useEffect } from "react";
 import { useSearchParams } from "react-router-dom";
 import { useShallow } from "zustand/react/shallow";
+
+import { getAgentsExecutionLogsById } from "../apis/job-execution-log-apis";
+import { useExecutionStore } from "../stores/execution-log-store";
 import { useReactFlowViewStore } from "../stores/react-flow-view-store";
-import { deepParse } from "@/features/react-flow/utils/deepParse";
-import { useQuery } from "@tanstack/react-query";
-import { getAgentsHistoryById } from "../apis/agents-history-apis";
+import { NodeExecutionLogType } from "../types/execution-log-types";
 
 export const useReactFlowViewData = () => {
-  const [searchParams] = useSearchParams();
+  const [searchParams, setSearchParams] = useSearchParams();
 
-  const historyId = searchParams.get("h");
+  const jobId = searchParams.get("j");
+  const flowId = searchParams.get("f");
+
+  const setFlowId = (id: string) => {
+    const params = new URLSearchParams(searchParams);
+    params.set("f", id);
+    setSearchParams(params, { replace: true });
+  };
 
   // Get ReactFlowExt store state & actions
   const {
@@ -29,22 +40,26 @@ export const useReactFlowViewData = () => {
       setName: state.setName,
     })),
   );
+  const { initLogs } = useExecutionStore();
 
   // Get react flow hook to set viewport
   const { fitView } = useReactFlow();
 
   //Get flow
   const { data, isLoading } = useQuery({
-    queryKey: ["AGENT_HISTORY_DETAIL", historyId],
-    queryFn: () => getAgentsHistoryById(historyId ?? ""),
-    enabled: !!historyId,
+    queryKey: ["JOB_EXECUTION_DETAIL", jobId],
+    queryFn: () => getAgentsExecutionLogsById(jobId ?? ""),
+    enabled: !!jobId,
     select: (res) => res.data,
   });
 
   useEffect(() => {
     if (!data) return;
+    if (!flowId) {
+      setFlowId(data.flowId);
+    }
 
-    setName(data.flowName ?? "");
+    setName(data.name ?? "");
     // Parse react flow object
     const flow = deepParse(
       data?.reactFlowObject ?? JSON.stringify([]),
@@ -63,6 +78,16 @@ export const useReactFlowViewData = () => {
       // Set nodes and edges
       setNodes(flow.nodes);
       setEdges(flow.edges);
+      if (data.nodeExecutionLogs) {
+        console.log(deepParse(data.nodeExecutionLogs));
+        initLogs(
+          deepParse(
+            data.nodeExecutionLogs,
+          ) as unknown as NodeExecutionLogType[],
+          flow.nodes,
+          flow.edges,
+        );
+      }
       setFlowVariablesObject(flowVarObjs || []);
       //set viewport state for react flow oject ext(only for reference its not for ReactFLow)
       setViewportState(flow.viewport);

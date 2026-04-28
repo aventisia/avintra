@@ -3,7 +3,6 @@ import { NodeContainer } from "@/components/node-container";
 import { NodeHeading } from "@/components/node-container/node-header/NodeHeading";
 import { NodeImage } from "@/components/node-container/node-header/NodeImage";
 import { useIsExecutionLogsRoute } from "@/features/execution-logs/hooks/useIsExecutionLogsRoute";
-import { useNodePopoverStore } from "@/features/execution-logs/stores/node-popover-store";
 import { useGroupToggle } from "@/features/react-flow/hooks/useGroupToggle";
 import { NodeDataType } from "@/types/node-data-type";
 
@@ -12,7 +11,6 @@ import { cn } from "@aventisia/ui/lib";
 import { Tooltip } from "@aventisia/ui/tooltip";
 import {
   BoxesIcon,
-  CheckCircle2Icon,
   ExpandIcon,
   GroupIcon,
   MonitorIcon,
@@ -20,7 +18,9 @@ import {
   ShrinkIcon,
   SplitIcon,
 } from "lucide-react";
-import React, { useRef } from "react";
+import React from "react";
+
+import OpenNodeLog from "../node-container/OpenNodeLog";
 
 interface BaseNodeProps extends React.HTMLAttributes<HTMLDivElement> {
   selected?: boolean;
@@ -37,9 +37,6 @@ const BaseNode: React.FC<BaseNodeProps> = ({
 }) => {
   const { toggleGroupExpand } = useGroupToggle();
   const isExecutionLog = useIsExecutionLogsRoute();
-  const { openPopover, closePopover } = useNodePopoverStore();
-
-  const hoverTimeout = useRef<NodeJS.Timeout | null>(null);
 
   const renderCount = nodeData?.count
     ? nodeData?.count === 2
@@ -59,37 +56,8 @@ const BaseNode: React.FC<BaseNodeProps> = ({
     BlockNodeIcon: <BoxesIcon className="h-6 w-6 text-[#1E1B4B]" />,
   };
 
-  // ✅ Hover handlers (Popover control)
-  const handleMouseEnter = (e: React.MouseEvent<HTMLDivElement>) => {
-    if (!isExecutionLog) return;
-
-    const rect = e.currentTarget.getBoundingClientRect();
-
-    hoverTimeout.current = setTimeout(() => {
-      openPopover(nodeId, nodeData, rect);
-    }, 200); // prevents flicker
-  };
-
-  const handleMouseLeave = () => {
-    if (hoverTimeout.current) {
-      clearTimeout(hoverTimeout.current);
-    }
-
-    //  prevent closing if cursor moved into popover
-    setTimeout(() => {
-      if (!useNodePopoverStore.getState().isHoveringPopover) {
-        closePopover();
-      }
-    }, 100);
-  };
-
   return (
-    <div
-      className="relative"
-      onMouseEnter={handleMouseEnter}
-      onMouseLeave={handleMouseLeave}
-    >
-      {/* Group stacked preview */}
+    <OpenNodeLog nodeId={nodeId}>
       {nodeData?.isGroupHead &&
         !nodeData?.isExpanded &&
         Array.from({ length: renderCount }).map((_, i) => (
@@ -108,18 +76,11 @@ const BaseNode: React.FC<BaseNodeProps> = ({
           <GroupIcon />
         ) : (
           <>
-            {/* Platform indicator */}
             {nodeData.supportedPlatforms?.length === 1 &&
               nodeData.supportedPlatforms.includes("windows") && (
                 <MonitorIcon className="absolute left-1 top-1 h-2.5 w-2.5 text-muted-foreground" />
               )}
 
-            {/* Execution success indicator */}
-            {isExecutionLog && (
-              <CheckCircle2Icon className="absolute right-1 top-1 h-[0.7rem] w-[0.7rem] text-green-600" />
-            )}
-
-            {/* Icon */}
             {nodeData.icon ? (
               Object.keys(customIconMapper).includes(nodeData.icon) ? (
                 customIconMapper[nodeData.icon]
@@ -130,7 +91,6 @@ const BaseNode: React.FC<BaseNodeProps> = ({
               <NodeImage src={nodeData.img} />
             )}
 
-            {/* Heading */}
             <NodeHeading
               className={cn(nodeData.type === "blockNode" && "text-[#1E1B4B]")}
             >
@@ -139,7 +99,6 @@ const BaseNode: React.FC<BaseNodeProps> = ({
           </>
         )}
 
-        {/* Expand / Collapse button (non-execution mode only) */}
         {!isExecutionLog && nodeData?.isGroupHead && (
           <div className="absolute -top-3 left-1/2 -translate-x-1/2">
             <Tooltip content={nodeData?.isExpanded ? "Collapse" : "Expand"}>
@@ -161,7 +120,7 @@ const BaseNode: React.FC<BaseNodeProps> = ({
 
         {children}
       </NodeContainer>
-    </div>
+    </OpenNodeLog>
   );
 };
 
