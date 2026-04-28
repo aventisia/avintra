@@ -1,5 +1,6 @@
 import { InputHandle } from "@/components/handles/InputHandle";
 import { OutputHandle } from "@/components/handles/OutputHandle";
+import { useIsExecutionLogsRoute } from "@/features/execution-logs/hooks/useIsExecutionLogsRoute";
 import { useGroupToggle } from "@/features/react-flow/hooks/useGroupToggle";
 import { useNodeHover } from "@/hooks/useNodeHover";
 import { ModelConfigType } from "@/types/model-config-type";
@@ -20,6 +21,7 @@ import { BrainCircuitIcon, ExpandIcon, ShrinkIcon } from "lucide-react";
 import { memo, useEffect } from "react";
 
 import { ModelInputHandle } from "../handles/ModelInputHandle";
+import OpenNodeLog from "../node-container/OpenNodeLog";
 import { NodeImage } from "../node-container/node-header/NodeImage";
 import { OpenNodeConfig } from "../node-container/node-header/OpenNodeConfig";
 
@@ -76,6 +78,7 @@ export const AIModelNode = memo(
       return value?.model ? [value.model] : [];
     }
 
+    const isExecutionLog = useIsExecutionLogsRoute();
     //Get llm for the selected model
     const llm = data.name.includes("AIAgent")
       ? getModel(data?.inputs)
@@ -90,44 +93,47 @@ export const AIModelNode = memo(
             selected && "border-primary ring ring-ring",
             data?.isDisabled && "opacity-50",
             data?.isCut && "border-red-400 opacity-60",
+            isExecutionLog && "border-0 ring-0",
           )}
           onMouseEnter={onMouseEnter}
           onMouseLeave={onMouseLeave}
         >
-          <OpenNodeConfig {...{ nodeData: data, nodeId: id }}>
-            <div className="h-full w-full flex items-center gap-2 px-2.5">
-              {data.img ? (
-                <NodeImage
-                  className="!opacity-100 !brightness-[5] h-7 w-7"
-                  src={data.img}
-                />
-              ) : (
-                <BrainCircuitIcon className="text-white" />
-              )}
-
-              <div className="flex h-full w-full  flex-col justify-center gap-1">
-                <h3 className="w-[8.5rem]  truncate text-start text-sm font-medium text-white capitalize">
-                  {data.label}
-                </h3>
-
-                {/* LLM Badge */}
-
-                {llm?.length > 0 && (
-                  <div className="flex items-center gap-2">
-                    {llm.map((value: string) => (
-                      <Badge
-                        key={value}
-                        variant="outline"
-                        className="bg-white/10  text-white text-3xs leading-tight"
-                      >
-                        <span className="max-w-28  truncate">{value}</span>
-                      </Badge>
-                    ))}
-                  </div>
+          <OpenNodeLog nodeId={id}>
+            <OpenNodeConfig {...{ nodeData: data, nodeId: id }}>
+              <div className="h-full w-full flex items-center gap-2 px-2.5">
+                {data.img ? (
+                  <NodeImage
+                    className="!opacity-100 !brightness-[5] h-7 w-7"
+                    src={data.img}
+                  />
+                ) : (
+                  <BrainCircuitIcon className="text-white" />
                 )}
+
+                <div className="flex h-full w-full  flex-col justify-center gap-1">
+                  <h3 className="w-[8.5rem]  truncate text-start text-sm font-medium text-white capitalize">
+                    {data.label}
+                  </h3>
+
+                  {/* LLM Badge */}
+
+                  {llm?.length > 0 && (
+                    <div className="flex items-center gap-2">
+                      {llm.map((value: string) => (
+                        <Badge
+                          key={value}
+                          variant="outline"
+                          className="bg-white/10  text-white text-3xs leading-tight"
+                        >
+                          <span className="max-w-28  truncate">{value}</span>
+                        </Badge>
+                      ))}
+                    </div>
+                  )}
+                </div>
               </div>
-            </div>
-          </OpenNodeConfig>
+            </OpenNodeConfig>
+          </OpenNodeLog>
         </div>
         <NodeToolbar offset={5} isVisible={isHovered} position={Position.Top}>
           {data?.isGroupHead && (

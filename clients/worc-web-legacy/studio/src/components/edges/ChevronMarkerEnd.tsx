@@ -2,9 +2,10 @@ import { MARKER_ARROW_PREFIX } from "@/constants";
 
 interface ChevronMarkerEndProps {
   edgeId: string;
+  stroke: string;
 }
 
-export const ChevronMarkerEnd = ({ edgeId }: ChevronMarkerEndProps) => {
+export const ChevronMarkerEnd = ({ stroke, edgeId }: ChevronMarkerEndProps) => {
   return (
     <svg>
       <defs>
@@ -20,6 +21,7 @@ export const ChevronMarkerEnd = ({ edgeId }: ChevronMarkerEndProps) => {
           <path
             d="M4 3 L7 6 L4 9"
             fill="none"
+            stroke={stroke}
             strokeLinecap="round"
             strokeLinejoin="round"
           />

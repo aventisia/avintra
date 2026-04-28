@@ -45,7 +45,7 @@ export const CustomStepEdge = memo(
     return (
       <>
         {markerEnd && nodeType !== "flowEndNode" ? (
-          <ChevronMarkerEnd edgeId={id} />
+          <ChevronMarkerEnd edgeId={id} stroke="#94a3b8" />
         ) : null}
         <BaseEdge
           id={id}

@@ -1,5 +1,7 @@
 import { InputHandle } from "@/components/handles/InputHandle";
 import { OutputHandle } from "@/components/handles/OutputHandle";
+import { useIsExecutionLogsRoute } from "@/features/execution-logs/hooks/useIsExecutionLogsRoute";
+import { useIsVersionHistoryRoute } from "@/features/version-history/hooks/useIsVersionHistoryRoute";
 import { useAddConditionalBranch } from "@/hooks/useAddConditionalBranch";
 import { ConditionalNodeDataType } from "@/types/conditional-node-data-type";
 
@@ -26,6 +28,8 @@ export const ConditionalNode = memo(
     const addConditionalBranch = useAddConditionalBranch();
 
     const showPlusIcon = data?.isGroupHead && !data?.isExpanded;
+    const isAgentHistory = useIsVersionHistoryRoute();
+    const isExecutionLog = useIsExecutionLogsRoute();
 
     return (
       <>
@@ -33,7 +37,7 @@ export const ConditionalNode = memo(
           <InputHandle position={targetPosition} />
           <OutputHandle position={sourcePosition} connectionCount={2} />
         </BaseNode>
-        {showPlusIcon ? null : (
+        {showPlusIcon || isAgentHistory || isExecutionLog ? null : (
           <NodeToolbar offset={5} position={Position.Right}>
             <Button
               className={cn(

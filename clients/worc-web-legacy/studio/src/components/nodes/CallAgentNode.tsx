@@ -1,5 +1,6 @@
 import { InputHandle } from "@/components/handles/InputHandle";
 import { OutputHandle } from "@/components/handles/OutputHandle";
+import { useIsExecutionLogsRoute } from "@/features/execution-logs/hooks/useIsExecutionLogsRoute";
 import { useGroupToggle } from "@/features/react-flow/hooks/useGroupToggle";
 import { useNodeHover } from "@/hooks/useNodeHover";
 import { NodeDataType } from "@/types/node-data-type";
@@ -18,6 +19,7 @@ import {
 import { ExpandIcon, ShrinkIcon } from "lucide-react";
 import { memo, useEffect } from "react";
 
+import OpenNodeLog from "../node-container/OpenNodeLog";
 import { NodeHeading } from "../node-container/node-header/NodeHeading";
 import { NodeImage } from "../node-container/node-header/NodeImage";
 import { OpenNodeConfig } from "../node-container/node-header/OpenNodeConfig";
@@ -34,6 +36,7 @@ export const CallAgentNode = memo(
   }: NodeProps<CallAgentNode>) => {
     const { toggleGroupExpand } = useGroupToggle();
     const { isHovered, onMouseEnter, onMouseLeave } = useNodeHover();
+    const isExecutionLog = useIsExecutionLogsRoute();
 
     const { updateNodeData } = useReactFlow();
     useEffect(() => {
@@ -61,20 +64,22 @@ export const CallAgentNode = memo(
             selected && "border-primary ring ring-ring",
             data?.isDisabled && "opacity-50",
             data?.isCut && "border-red-400 opacity-60",
+            isExecutionLog && "border-0 ring-0",
           )}
           onMouseEnter={onMouseEnter}
           onMouseLeave={onMouseLeave}
         >
-          <OpenNodeConfig {...{ nodeData: data, nodeId: id }}>
-            <div className="flex h-full w-full items-center justify-center">
-              {/* <NodeHeader> */}
-              {/* <CheckCircleIcon className="absolute left-[1.625rem] top-1 h-2 w-2 text-green-500" /> */}
-              <NodeImage src="/assets/NewAgentIcon.svg" />
-              <NodeHeading className="text-2xs">{data.label}</NodeHeading>
-              <InputHandle position={targetPosition} />
-              <OutputHandle position={sourcePosition} />
-            </div>
-          </OpenNodeConfig>
+          <OpenNodeLog nodeId={id}>
+            <OpenNodeConfig {...{ nodeData: data, nodeId: id }}>
+              <div className="flex h-full w-full items-center justify-center">
+                {/* <NodeHeader> */}
+                <NodeImage src="/assets/NewAgentIcon.svg" />
+                <NodeHeading className="text-2xs">{data.label}</NodeHeading>
+                <InputHandle position={targetPosition} />
+                <OutputHandle position={sourcePosition} />
+              </div>
+            </OpenNodeConfig>
+          </OpenNodeLog>
           <NodeToolbar offset={5} isVisible={isHovered} position={Position.Top}>
             {data?.isGroupHead && (
               <Tooltip content={data?.isExpanded ? "Collapse" : "Expand"}>

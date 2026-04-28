@@ -5,8 +5,9 @@ import { Tooltip } from "@aventisia/ui/tooltip";
 import { useEffect, useState } from "react";
 import { useShallow } from "zustand/react/shallow";
 import AutoSizeInput from "./AutsizeInput";
-import { useReactFlowViewStore } from "@/features/version-history/stores/react-flow-view-store";
 import { useIsVersionHistoryRoute } from "@/features/version-history/hooks/useIsVersionHistoryRoute";
+import { useIsExecutionLogsRoute } from "@/features/execution-logs/hooks/useIsExecutionLogsRoute";
+import { useReactFlowViewStore } from "@/features/execution-logs/stores/react-flow-view-store";
 
 const AgentName = () => {
   // Get global store state and actions
@@ -31,10 +32,12 @@ const AgentName = () => {
 
   const isAgentHistory = useIsVersionHistoryRoute();
 
+    const isExecutionLog = useIsExecutionLogsRoute();
+
   return (
     <Tooltip content={currentFlow.name ?? viewAgentName}>
       <div className="flex items-center">
-        {!isAgentHistory ? (
+        {(!isAgentHistory && !isExecutionLog) ? (
           <>
             <AutoSizeInput
               name="label"
