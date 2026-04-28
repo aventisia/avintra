@@ -123,57 +123,34 @@ public class M365OutlookConnectorsService : IM365OutlookConnectorsService
 
             case M365OutlookActionsEnum.GetEmailById:
                 {
-                    // Retrieve required message ID
                     var messageId = CloudConnectionPayloadUtil.GetValue(payload, "messageId");
-
-                    // Build base request URL
-                    var rootEmailUrl = $"{messagesApiUrl}/messages/{messageId}";
-
-                    // Determine whether attachments should be included
                     var includeAttachments = CloudConnectionPayloadUtil.GetBool(payload, "includeAttachments", false);
 
-                    // Add query parameters if needed
-                    if (includeAttachments)
-                        rootEmailUrl += "?$expand=attachments";
+                    var baseMessageUrl = $"{messagesApiUrl}/messages/{messageId}";
+                    var rootEmailUrl = includeAttachments
+                        ? $"{baseMessageUrl}?$expand=attachments"
+                        : baseMessageUrl;
 
-                    // Add header to prefer email body in text format
                     var headers = new Dictionary<string, string>
                     {
                         { "Prefer", "outlook.body-content-type=\"text\"" }
                     };
 
-                    // 1. Fetch root email
                     var rootEmail = await HttpClientHelper.GetAsync(rootEmailUrl, accessToken, headers);
                     if (rootEmail == null) return null;
-                    var emailResponse = new M365OutlookEmailDto()
+
+                    var structured = await BuildStructuredFlatEmailResponseAsync(
+                        rootEmail,
+                        baseMessageUrl,
+                        accessToken,
+                        headers);
+
+                    var camelCaseOptions = new JsonSerializerOptions
                     {
-                        RootEmail = rootEmail,
-                        NestedEmails = new List<JsonDocument>()
+                        PropertyNamingPolicy = JsonNamingPolicy.CamelCase
                     };
 
-                    // 2. Handle itemAttachment
-                    if (rootEmail.RootElement.TryGetProperty("attachments", out var attachments) && attachments.GetArrayLength() > 0)
-                    {
-                        foreach (var attachment in attachments.EnumerateArray())
-                        {
-                            string type = attachment.GetProperty("@odata.type").GetString() ?? string.Empty;
-                            string attachmentId = attachment.GetProperty("id").GetString() ?? string.Empty;
-
-                            if (type == "#microsoft.graph.itemAttachment")
-                            {
-                                string nestedUrl = $"{rootEmailUrl.Split('?')[0]}/attachments/{attachmentId}/?$expand=microsoft.graph.itemattachment/item";
-                                emailResponse.NestedEmails.Add(await HttpClientHelper.GetAsync(nestedUrl, accessToken, headers));
-                            }
-                        }
-                    }
-
-                    emailResponse.NestedEmails.Reverse(); // Change the order
-
-                    // Response back
-                    var responseJson = System.Text.Json.JsonSerializer.Serialize(emailResponse);
-                    var camelCaseOptions = new JsonSerializerOptions { PropertyNamingPolicy = JsonNamingPolicy.CamelCase };
-                    var responseJsonCamel = System.Text.Json.JsonSerializer.Serialize(emailResponse, camelCaseOptions);
-                    return JsonDocument.Parse(responseJsonCamel);
+                    return JsonDocument.Parse(System.Text.Json.JsonSerializer.Serialize(structured, camelCaseOptions));
                 }
             case M365OutlookActionsEnum.GetEmails:
                 return await GetEmailsAsync(messagesApiUrl, accessToken, payload);
@@ -648,5 +625,289 @@ public class M365OutlookConnectorsService : IM365OutlookConnectorsService
         url = CloudConnectionPayloadUtil.AppendQueryParameter(url, "$skip", skip.ToString());
 
         return url;
+    }
+
+    private async Task<object> BuildStructuredFlatEmailResponseAsync(
+        JsonDocument rootEmailDoc,
+        string rootMessageBaseUrl,
+        string accessToken,
+        Dictionary<string, string> headers)
+    {
+        var messages = new List<object>();
+        var queue = new Queue<EmailQueueItem>();
+
+        var rootId = GetString(rootEmailDoc.RootElement, "id");
+        queue.Enqueue(new EmailQueueItem(
+            rootEmailDoc.RootElement,
+            0,
+            "0",
+            null,
+            null,
+            rootMessageBaseUrl));
+
+        while (queue.Count > 0)
+        {
+            var current = queue.Dequeue();
+            var message = current.Message;
+
+            var currentMessageId = GetString(message, "id");
+            var attachments = ExtractAttachments(message);
+
+            messages.Add(new
+            {
+                messageId = currentMessageId,
+                parentMessageId = current.ParentMessageId,
+                parentAttachmentId = current.ParentAttachmentId,
+                level = current.Level,
+                path = current.Path,
+                subject = GetString(message, "subject"),
+                bodyPreview = GetString(message, "bodyPreview"),
+                receivedDateTime = GetString(message, "receivedDateTime"),
+                sentDateTime = GetString(message, "sentDateTime"),
+                createdDateTime = GetString(message, "createdDateTime"),
+                lastModifiedDateTime = GetString(message, "lastModifiedDateTime"),
+                internetMessageId = GetString(message, "internetMessageId"),
+                conversationId = GetString(message, "conversationId"),
+                conversationIndex = GetString(message, "conversationIndex"),
+                importance = GetString(message, "importance"),
+                isRead = GetBool(message, "isRead"),
+                isDraft = GetBool(message, "isDraft"),
+                hasAttachments = GetBool(message, "hasAttachments"),
+                from = ExtractAddressObject(message, "from"),
+                sender = ExtractAddressObject(message, "sender"),
+                toRecipients = ExtractRecipients(message, "toRecipients"),
+                ccRecipients = ExtractRecipients(message, "ccRecipients"),
+                bccRecipients = ExtractRecipients(message, "bccRecipients"),
+                body = ExtractBody(message),
+                attachments = attachments
+            });
+
+            var childIndex = 0;
+            foreach (var attachment in EnumerateAttachments(message))
+            {
+                var odataType = GetString(attachment, "@odata.type");
+                if (!string.Equals(odataType, "#microsoft.graph.itemAttachment", StringComparison.OrdinalIgnoreCase))
+                    continue;
+
+                var attachmentId = GetString(attachment, "id");
+                if (string.IsNullOrWhiteSpace(attachmentId))
+                    continue;
+
+                JsonElement? childMessage = null;
+
+                if (attachment.TryGetProperty("item", out var inlinedItem) &&
+                    inlinedItem.ValueKind == JsonValueKind.Object)
+                {
+                    childMessage = inlinedItem;
+                }
+                else
+                {
+                    var nestedUrl = $"{current.MessageBaseUrl}/attachments/{attachmentId}/?$expand=microsoft.graph.itemattachment/item";
+                    var nestedDoc = await HttpClientHelper.GetAsync(nestedUrl, accessToken, headers);
+
+                    if (nestedDoc != null &&
+                        nestedDoc.RootElement.TryGetProperty("item", out var fetchedItem) &&
+                        fetchedItem.ValueKind == JsonValueKind.Object)
+                    {
+                        childMessage = fetchedItem;
+                    }
+                }
+
+                if (childMessage.HasValue)
+                {
+                    var childMessageId = GetString(childMessage.Value, "id");
+                    var childBaseUrl = !string.IsNullOrWhiteSpace(childMessageId)
+                        ? $"{rootMessageBaseUrl.Split("/messages/")[0]}/messages/{childMessageId}"
+                        : current.MessageBaseUrl;
+
+                    queue.Enqueue(new EmailQueueItem(
+                        childMessage.Value,
+                        current.Level + 1,
+                        $"{current.Path}.{childIndex}",
+                        currentMessageId,
+                        attachmentId,
+                        childBaseUrl));
+
+                    childIndex++;
+                }
+            }
+        }
+
+        return new
+        {
+            rootMessageId = rootId,
+            messages = messages
+        };
+    }
+
+    private sealed record EmailQueueItem(
+        JsonElement Message,
+        int Level,
+        string Path,
+        string? ParentMessageId,
+        string? ParentAttachmentId,
+        string MessageBaseUrl);
+
+    private static IEnumerable<JsonElement> EnumerateAttachments(JsonElement message)
+    {
+        if (message.TryGetProperty("attachments", out var attachments) &&
+            attachments.ValueKind == JsonValueKind.Array)
+        {
+            foreach (var att in attachments.EnumerateArray())
+                yield return att;
+        }
+    }
+
+    private static object[] ExtractAttachments(JsonElement message)
+    {
+        return EnumerateAttachments(message)
+            .Select(att => new
+            {
+                attachmentId = GetString(att, "id"),
+                odataType = GetString(att, "@odata.type"),
+                name = GetString(att, "name"),
+                contentType = GetString(att, "contentType"),
+                size = GetLong(att, "size"),
+                isInline = GetBool(att, "isInline"),
+                contentId = GetString(att, "contentId"),
+                contentLocation = GetString(att, "contentLocation"),
+                contentBytes = GetString(att, "contentBytes")
+            })
+            .Cast<object>()
+            .ToArray();
+    }
+
+    private static object ExtractBody(JsonElement message)
+    {
+        if (message.TryGetProperty("body", out var body) && body.ValueKind == JsonValueKind.Object)
+        {
+            var contentType = GetString(body, "contentType");
+            var content = GetString(body, "content");
+
+            // Graph does not honour the Prefer: outlook.body-content-type header for nested
+            // itemAttachment item bodies, so they may return as HTML or as text with HTML entities.
+            // Always normalise: strip tags if HTML, then decode any remaining HTML entities.
+            if (string.Equals(contentType, "html", StringComparison.OrdinalIgnoreCase))
+            {
+                content = StripHtml(content);
+                contentType = "text";
+            }
+
+            // Always decode HTML entities — Graph returns &nbsp;, &amp; etc. even in text bodies.
+            if (!string.IsNullOrEmpty(content))
+                content = System.Net.WebUtility.HtmlDecode(content);
+
+            return new { contentType, content };
+        }
+
+        return new { contentType = (string?)null, content = (string?)null };
+    }
+
+    private static string? StripHtml(string? html)
+    {
+        if (string.IsNullOrWhiteSpace(html))
+            return html;
+
+        var doc = new HtmlAgilityPack.HtmlDocument();
+        doc.LoadHtml(html);
+
+        // Remove <script>, <style>, and <head> nodes entirely
+        foreach (var node in doc.DocumentNode
+            .SelectNodes("//script|//style|//head") ?? Enumerable.Empty<HtmlAgilityPack.HtmlNode>())
+        {
+            node.Remove();
+        }
+
+        // Replace <br> and block-level elements with a newline sentinel before extracting text
+        foreach (var node in doc.DocumentNode
+            .SelectNodes("//br|//p|//div|//tr|//li|//h1|//h2|//h3|//h4|//h5|//h6")
+            ?? Enumerable.Empty<HtmlAgilityPack.HtmlNode>())
+        {
+            node.ParentNode?.InsertBefore(doc.CreateTextNode("\n"), node);
+        }
+
+        // InnerText decodes HTML entities and returns the raw text content
+        var text = doc.DocumentNode.InnerText;
+
+        // Collapse runs of blank lines to at most two, and trim
+        text = System.Text.RegularExpressions.Regex.Replace(text, @"[ \t]+", " ");
+        text = System.Text.RegularExpressions.Regex.Replace(text, @"\n{3,}", "\n\n").Trim();
+
+        return text;
+    }
+
+    private static object? ExtractAddressObject(JsonElement message, string prop)
+    {
+        if (!message.TryGetProperty(prop, out var wrapper) || wrapper.ValueKind != JsonValueKind.Object)
+            return null;
+
+        if (!wrapper.TryGetProperty("emailAddress", out var ea) || ea.ValueKind != JsonValueKind.Object)
+            return null;
+
+        return new
+        {
+            name = GetString(ea, "name"),
+            address = GetString(ea, "address")
+        };
+    }
+
+    private static object[] ExtractRecipients(JsonElement message, string prop)
+    {
+        if (!message.TryGetProperty(prop, out var recipients) || recipients.ValueKind != JsonValueKind.Array)
+            return Array.Empty<object>();
+
+        return recipients.EnumerateArray()
+            .Select(r =>
+            {
+                if (r.TryGetProperty("emailAddress", out var ea) && ea.ValueKind == JsonValueKind.Object)
+                {
+                    return (object)new
+                    {
+                        name = GetString(ea, "name"),
+                        address = GetString(ea, "address")
+                    };
+                }
+
+                return new { name = (string?)null, address = (string?)null };
+            })
+            .ToArray();
+    }
+
+    private static string? GetString(JsonElement obj, string prop)
+    {
+        if (obj.ValueKind == JsonValueKind.Object &&
+            obj.TryGetProperty(prop, out var value) &&
+            value.ValueKind != JsonValueKind.Null &&
+            value.ValueKind != JsonValueKind.Undefined)
+        {
+            return value.GetString();
+        }
+
+        return null;
+    }
+
+    private static bool? GetBool(JsonElement obj, string prop)
+    {
+        if (obj.ValueKind == JsonValueKind.Object &&
+            obj.TryGetProperty(prop, out var value) &&
+            (value.ValueKind == JsonValueKind.True || value.ValueKind == JsonValueKind.False))
+        {
+            return value.GetBoolean();
+        }
+
+        return null;
+    }
+
+    private static long? GetLong(JsonElement obj, string prop)
+    {
+        if (obj.ValueKind == JsonValueKind.Object &&
+            obj.TryGetProperty(prop, out var value) &&
+            value.ValueKind == JsonValueKind.Number &&
+            value.TryGetInt64(out var parsed))
+        {
+            return parsed;
+        }
+
+        return null;
     }
 }
