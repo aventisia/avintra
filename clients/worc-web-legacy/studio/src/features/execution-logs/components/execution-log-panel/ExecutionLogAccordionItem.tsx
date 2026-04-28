@@ -3,17 +3,19 @@ import { cn } from "@aventisia/ui/lib";
 import { CheckCircle2 } from "lucide-react";
 import { useEffect, useRef } from "react";
 
-import { HistoryEntry } from "../../types/agent-history-type";
-
-// import VersionHistoryActions from "./version-history-actions";
+import { LogEntry } from "../../types/log-list-type";
 
 interface Props {
-  entry: HistoryEntry;
+  entry: LogEntry;
   isSelected: boolean;
   onClick: (id: string) => void;
 }
 
-export default function VHAccordionItem({ entry, isSelected, onClick }: Props) {
+export default function ExecutionLogAccordionItem({
+  entry,
+  isSelected,
+  onClick,
+}: Props) {
   const ref = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
@@ -76,7 +78,7 @@ export default function VHAccordionItem({ entry, isSelected, onClick }: Props) {
           </span>
         </div>
         <span className="text-2xs font-medium text-muted-foreground h-[1.1rem]">
-          {formatSecondsToCompactDuration(100)}
+          {formatSecondsToCompactDuration(entry.duration)}
         </span>
       </div>
     </div>

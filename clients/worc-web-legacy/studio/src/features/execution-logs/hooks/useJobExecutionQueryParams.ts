@@ -1,22 +1,22 @@
 import { useSearchParams } from "react-router-dom";
 
-export function useVersionHistoryQueryParams() {
+export function useJobExecutionQueryParams() {
   const [searchParams, setSearchParams] = useSearchParams();
 
   const flowId = searchParams.get("f");
   const versionId = searchParams.get("v");
-  const historyId = searchParams.get("h");
+  const jobId = searchParams.get("j");
 
-  const setHistoryId = (id: string) => {
+  const setJobId = (id: string) => {
     const params = new URLSearchParams(searchParams);
-    params.set("h", id);
+    params.set("j", id);
     setSearchParams(params, { replace: true });
   };
 
   return {
     flowId,
     versionId,
-    historyId,
-    setHistoryId,
+    jobId,
+    setJobId,
   };
 }

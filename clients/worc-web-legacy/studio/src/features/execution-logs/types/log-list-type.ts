@@ -1,6 +1,7 @@
-export interface HistoryEntry {
+export interface LogEntry {
   id: string;
   time: string;
+  duration: number;
   user: {
     name: string;
     initials: string;
@@ -11,5 +12,5 @@ export interface HistoryEntry {
 export interface DaySection {
   date: string;
   dateFormatted: string;
-  entries: HistoryEntry[];
+  entries: LogEntry[];
 }

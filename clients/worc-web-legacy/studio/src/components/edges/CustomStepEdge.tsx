@@ -1,7 +1,8 @@
-// import { EDGE_BORDER_RADIUS } from "@/constants";
 import { useIsExecutionLogsRoute } from "@/features/execution-logs/hooks/useIsExecutionLogsRoute";
+import { useExecutionStore } from "@/features/execution-logs/stores/execution-log-store";
 import { useIsVersionHistoryRoute } from "@/features/version-history/hooks/useIsVersionHistoryRoute";
 
+import { cn } from "@aventisia/ui/lib";
 import {
   BaseEdge,
   EdgeProps,
@@ -23,9 +24,10 @@ export const CustomStepEdge = memo(
     targetY,
     sourcePosition,
     targetPosition,
-    // style,
     markerEnd,
     label,
+    source,
+    target,
   }: EdgeProps) => {
     const { getNode, getEdge } = useReactFlow();
     const nodeType = getNode(getEdge(id)?.target ?? "")?.type;
@@ -35,26 +37,59 @@ export const CustomStepEdge = memo(
       sourceY,
       targetX: nodeType == "flowEndNode" ? sourceX : targetX,
       targetY,
-      // borderRadius: EDGE_BORDER_RADIUS,
       sourcePosition,
       targetPosition,
-      // curvature:0
     });
 
     const isAgentHistory = useIsVersionHistoryRoute();
     const isExecutionLog = useIsExecutionLogsRoute();
 
+    const {
+      executionMap,
+      nodeToParentStack,
+      activeIteration,
+      routerConfig,
+      routerVisits,
+      routerTruePaths,
+    } = useExecutionStore();
+
+    const parents = nodeToParentStack[target] || [];
+    const pathKey =
+      parents.map((id) => activeIteration[id] ?? 0).join("-") || "global";
+
+    let isActive = false;
+    const isTargetRouterBranch = routerConfig[source];
+
+    if (isTargetRouterBranch) {
+      if (target === isTargetRouterBranch.defaultId) {
+        // --- Default Path Inference Logic ---
+        const visited = routerVisits[source]?.has(pathKey);
+        const conditionalsTrue = routerTruePaths[source]?.has(pathKey);
+        isActive = !!visited && !conditionalsTrue;
+      } else {
+        // --- Conditional Branch Edge ---
+        isActive =
+          executionMap[target]?.[pathKey]?.outputs?.ConditionsResult === "True";
+      }
+    } else {
+      // --- Standard Edge ---
+      isActive = !!executionMap[target]?.[pathKey];
+    }
+
+    const stroke = isExecutionLog && isActive ? "#22c55e" : "#94a3b8";
+    const statusClass = isExecutionLog && isActive ? "edge-success" : "";
+
     return (
       <>
         {markerEnd && nodeType !== "flowEndNode" ? (
-          <ChevronMarkerEnd edgeId={id} />
+          <ChevronMarkerEnd edgeId={id} stroke={stroke} />
         ) : null}
         <BaseEdge
           id={id}
           path={edgePath}
           markerEnd={markerEnd}
-          // style={style}
-          className="stroke-1 !text-green-500"
+          className={cn("stroke-1 ", statusClass)}
+          style={{ stroke }} // Explicit inline override to ensure color applies
         />
         {label && !isAgentHistory && !isExecutionLog ? (
           <EdgeLabelContainer

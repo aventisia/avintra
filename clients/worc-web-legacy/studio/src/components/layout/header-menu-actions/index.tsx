@@ -1,7 +1,7 @@
 import { IS_TAURI } from "@/constants";
 import { useInputOutputsStore } from "@/features/add-input-output/stores/inputs-outputs-store";
-import { ExecutionLogsTrigger } from "@/features/execution-logs/components/execution-log-panel/VersionHistoryTrigger";
-// import { useFlowExecutionLogStore } from "@/features/flow-execution-log/stores/flow-execution-lof-store";
+import { ExecutionLogsTrigger } from "@/features/execution-logs/components/execution-log-panel/ExecutionLogsTrigger";
+import { useFlowExecutionLogStore } from "@/features/flow-execution-log/stores/flow-execution-lof-store";
 import { useImportStore } from "@/features/import-flow/stores/import-flow-store";
 import { useKeyboardShortcutsStore } from "@/features/keyboard-shortcuts/stores/keyboard-shortcuts-store";
 import { PublishFlow } from "@/features/publish-flow/PublishFlow";
@@ -25,7 +25,7 @@ import {
   ImportIcon,
   KeyboardIcon,
   LockOpenIcon,
-  // LogsIcon,
+  LogsIcon,
   UploadIcon,
 } from "lucide-react";
 import { useShallow } from "zustand/react/shallow";
@@ -34,11 +34,11 @@ import { HeaderActionMenuTrigger } from "./HeaderActionMenuTrigger";
 
 export const HeaderActionMenu: React.FC = () => {
   // Get flow execution store state & actions
-  // const { setShowDialog } = useFlowExecutionLogStore(
-  //   useShallow((state) => ({
-  //     setShowDialog: state.setShowDialog,
-  //   })),
-  // );
+  const { setShowDialog } = useFlowExecutionLogStore(
+    useShallow((state) => ({
+      setShowDialog: state.setShowDialog,
+    })),
+  );
 
   const { setShowDialog: setExportDialog } = useInputOutputsStore(
     useShallow((state) => ({
@@ -104,7 +104,16 @@ export const HeaderActionMenu: React.FC = () => {
         className="mt-0 w-[13rem] min-w-[13rem] mlg:mt-4"
       >
         {/* <FlowLogHeader /> */}
-        <ExecutionLogsTrigger />
+        {import.meta.env.MODE == "production" ? (
+          <SimpleDDMenuItem
+            size="md"
+            Icon={LogsIcon}
+            content="Execution Logs"
+            onClick={() => setShowDialog(true)}
+          />
+        ) : (
+          <ExecutionLogsTrigger />
+        )}
 
         {IS_TAURI && !isChatAgent ? (
           <SimpleDDMenuItem
