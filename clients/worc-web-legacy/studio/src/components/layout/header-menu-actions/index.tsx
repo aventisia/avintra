@@ -1,5 +1,6 @@
 import { IS_TAURI } from "@/constants";
 import { useInputOutputsStore } from "@/features/add-input-output/stores/inputs-outputs-store";
+import { ExecutionLogsTrigger } from "@/features/execution-logs/components/execution-log-panel/ExecutionLogsTrigger";
 import { useFlowExecutionLogStore } from "@/features/flow-execution-log/stores/flow-execution-lof-store";
 import { useImportStore } from "@/features/import-flow/stores/import-flow-store";
 import { useKeyboardShortcutsStore } from "@/features/keyboard-shortcuts/stores/keyboard-shortcuts-store";
@@ -103,12 +104,16 @@ export const HeaderActionMenu: React.FC = () => {
         className="mt-0 w-[13rem] min-w-[13rem] mlg:mt-4"
       >
         {/* <FlowLogHeader /> */}
-        <SimpleDDMenuItem
-          size="md"
-          Icon={LogsIcon}
-          content="Execution Logs"
-          onClick={() => setShowDialog(true)}
-        />
+        {import.meta.env.MODE == "production" ? (
+          <SimpleDDMenuItem
+            size="md"
+            Icon={LogsIcon}
+            content="Execution Logs"
+            onClick={() => setShowDialog(true)}
+          />
+        ) : (
+          <ExecutionLogsTrigger />
+        )}
 
         {IS_TAURI && !isChatAgent ? (
           <SimpleDDMenuItem

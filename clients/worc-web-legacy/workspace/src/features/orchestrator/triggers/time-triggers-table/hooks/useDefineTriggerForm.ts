@@ -1,15 +1,15 @@
 import { useUserSessionStore } from "@/react-toolkit/stores/user-session-store";
 
-import { useCheckAvailability } from "@aventisia/ui/hooks";
+// import { useCheckAvailability } from "@aventisia/ui/hooks";
 import { useDTCrudDialogStore } from "@aventisia/ui/stores";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useQueryClient } from "@tanstack/react-query";
-import { useEffect, useState } from "react";
+import { useEffect } from "react";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
 import { useShallow } from "zustand/react/shallow";
 
-import { isNameAvailable } from "../apis/triggers-table-apis";
+// import { isNameAvailable } from "../apis/triggers-table-apis";
 import { DATA_QUERY_KEY } from "../constants";
 import {
   getTimeFromDate,
@@ -18,7 +18,7 @@ import {
   weekdaysToNumbers,
 } from "../constants/form-utils";
 import {
-  triggerNameSchema,
+  // triggerNameSchema,
   triggerZodSchema,
 } from "../constants/trigger-zod-schema";
 import { TimeTriggerDto } from "../dtos/time-trigger-dto";
@@ -28,7 +28,7 @@ import { TimeTriggerDto } from "../dtos/time-trigger-dto";
  */
 export const useDefineTriggerForm = () => {
   // Trigger name state for availability check
-  const [triggerName, setTriggerName] = useState("");
+  // const [triggerName, setTriggerName] = useState("");
 
   // Get user session
   const { userSession } = useUserSessionStore(
@@ -93,7 +93,7 @@ export const useDefineTriggerForm = () => {
     const triggerData = triggersData?.data.find((item) => item.id === rowId);
 
     // Set trigger name for availability check
-    setTriggerName(triggerData?.name ?? "");
+    // setTriggerName(triggerData?.name ?? "");
 
     // Reset form with fetched trigger data
     form.reset({
@@ -126,19 +126,19 @@ export const useDefineTriggerForm = () => {
   }, [rowId, form, queryClient, userSession]);
 
   // Get check availability state and methods
-  const {
-    isAvailable,
-    isCheckPending,
-    handleInputChange,
-    availabilityMessage,
-    setAvailabilityMessage,
-  } = useCheckAvailability<z.infer<typeof triggerZodSchema>, z.ZodString>({
-    defaultInputValue: triggerName,
-    fieldName: "name",
-    form,
-    fieldSchema: triggerNameSchema,
-    checkAvailabilityAPIFn: isNameAvailable,
-  });
+  // const {
+  //   isAvailable,
+  //   isCheckPending,
+  //   handleInputChange,
+  //   availabilityMessage,
+  //   setAvailabilityMessage,
+  // } = useCheckAvailability<z.infer<typeof triggerZodSchema>, z.ZodString>({
+  //   defaultInputValue: triggerName,
+  //   fieldName: "name",
+  //   form,
+  //   fieldSchema: triggerNameSchema,
+  //   checkAvailabilityAPIFn: isNameAvailable,
+  // });
 
   // Refine form data before submission
   const refineFormData = (formData: z.infer<typeof triggerZodSchema>) => {
@@ -170,12 +170,12 @@ export const useDefineTriggerForm = () => {
   // Reset availability message and invalidate agents list when dialog closes
   useEffect(() => {
     if (!showDialog) {
-      setAvailabilityMessage(null);
+      // setAvailabilityMessage(null);
       queryClient.invalidateQueries({
         queryKey: ["select-trigger-agent", rowId],
       });
     }
-  }, [queryClient, rowId, setAvailabilityMessage, showDialog]);
+  }, [queryClient, rowId,  showDialog]);
 
   // Return form, validation state, and methods
   return {
@@ -185,9 +185,9 @@ export const useDefineTriggerForm = () => {
     crudAction,
     setShowDialog,
     refineFormData,
-    isAvailable,
-    availabilityMessage,
-    isCheckPending,
-    handleInputChange,
+    // isAvailable,
+    // availabilityMessage,
+    // isCheckPending,
+    // handleInputChange,
   };
 };

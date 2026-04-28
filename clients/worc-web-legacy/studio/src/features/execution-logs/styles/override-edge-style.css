@@ -1,0 +1,4 @@
+.react-flow__edge {
+  /* This replaces your entire d3-timer logic and runs at a buttery 60fps */
+  transition: transform 0.3s ease-out !important;
+}

@@ -3,6 +3,7 @@ import { NodeDataType } from "@/types/node-data-type";
 import { cn } from "@aventisia/ui/lib";
 
 import { OpenNodeConfig } from "./node-header/OpenNodeConfig";
+import { useIsExecutionLogsRoute } from "@/features/execution-logs/hooks/useIsExecutionLogsRoute";
 
 interface NodeContainerProps extends React.HTMLAttributes<HTMLDivElement> {
   nodeId: string;
@@ -18,6 +19,8 @@ export const NodeContainer = ({
   children,
   ...props
 }: NodeContainerProps) => {
+   const isExecutionLog = useIsExecutionLogsRoute();
+   
   return (
     <div
       className={cn(
@@ -30,6 +33,7 @@ export const NodeContainer = ({
         selected && "border-primary",
         nodeData?.isDisabled && "opacity-50",
         nodeData?.isCut && "border-red-400 opacity-60",
+        isExecutionLog && "border-0"
       )}
       {...props}
     >
