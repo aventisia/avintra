@@ -95,9 +95,10 @@ public class TenantsTableService : ITenantsTableService
 
             var tenantSummaries = new Dictionary<Guid, TenantTableSummaryDto>();
 
-            // Build query string with dynamic date filters (ISO 8601 format)
+            // Build query string with dynamic date filters
             var url = $"{_environmentConfig.WorcApiBaseUrl}/api/sa/tenant/summary" +
-                      $"?startDate={tenantFilterQuery.StartDate:O}&endDate={tenantFilterQuery.EndDate:O}";
+                $"?startDate={tenantFilterQuery.StartDate.Value.UtcDateTime:O}" +
+                $"&endDate={tenantFilterQuery.EndDate.Value.UtcDateTime:O}";
 
             // Call external API with query parameters
             HttpResponseMessage response = await RequestExternalAPIUtil.RequestExternalAPI(
