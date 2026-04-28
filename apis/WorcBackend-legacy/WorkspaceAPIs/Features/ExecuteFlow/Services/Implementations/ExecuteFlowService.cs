@@ -48,6 +48,7 @@ public class ExecuteFlowService : IExecuteFlowService
             var flowVersion = await _unitOfWork.FlowVersionRepo
                 .GetByConditionAsync(w => w.Id == requestDto.FlowVersionId)
                 .Include(i => i.Flow)
+                .Include(i => i.FlowVersionHistories)
                 .AsNoTracking()
                 .SingleOrDefaultAsync();
 
@@ -112,7 +113,11 @@ public class ExecuteFlowService : IExecuteFlowService
                 IsPublished = flowVersion.IsPublished,
                 InputArgumentsJson = requestDto.InputArgumentsJson?.ToJsonString(),
                 OutputDataJson = null,
-                NodeExecutionLogs = null
+                NodeExecutionLogs = null,
+                FlowVersionHistoryId = flowVersion.FlowVersionHistories
+                    .OrderByDescending(o => o.CreatedOn)
+                    .Select(s => (Guid?)s.Id)
+                    .FirstOrDefault()
             };
             await _unitOfWork.JobRepo.InsertAsync(newJob);
 

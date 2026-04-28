@@ -94,6 +94,11 @@ public class Job
     public bool IsPublished { get; set; }
 
     /// <summary>
+    /// Gets or sets the FlowVersionHistoryId associated with this job.
+    /// </summary>
+    public Guid? FlowVersionHistoryId { get; set; }
+
+    /// <summary>
     /// Gets or sets the navigation property to the flow version associated with this job.
     /// </summary>
     [ForeignKey("FlowVersionId")]
@@ -104,4 +109,10 @@ public class Job
     /// </summary>
     [ForeignKey("MachineId")]
     public virtual Machine? Machine { get; set; }
+
+    /// <summary>
+    /// Gets or sets the FlowVersionHistory entity linked to this job via FlowVersionHistoryId.
+    /// </summary>
+    [ForeignKey("FlowVersionHistoryId")]
+    public virtual FlowVersionHistory? FlowVersionHistory { get; set; }
 }

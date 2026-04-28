@@ -746,6 +746,7 @@ public class EmailTriggerService : IEmailTriggerService
                 .Where(x => x.Id == triggerGuid)
                 .Include(i => i.TriggerFlowVersions)
                     .ThenInclude(i2 => i2.FlowVersion)
+                        .ThenInclude(i3 => i3.FlowVersionHistories)
                 .AsNoTracking()
                 .FirstOrDefaultAsync();
 
@@ -789,6 +790,10 @@ public class EmailTriggerService : IEmailTriggerService
                     Status = JobStatusTypesEnum.Created,
                     CreatedOn = DateTimeOffset.UtcNow,
                     IsPublished = triggerFlowVersion.FlowVersion.IsPublished,
+                    FlowVersionHistoryId = triggerFlowVersion.FlowVersion.FlowVersionHistories
+                        .OrderByDescending(o => o.CreatedOn)
+                        .Select(s => (Guid?)s.Id)
+                        .FirstOrDefault()
                 };
 
                 // Insert the new job into the repository
