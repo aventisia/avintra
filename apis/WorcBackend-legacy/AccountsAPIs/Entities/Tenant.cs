@@ -126,11 +126,6 @@ public class Tenant : BaseEntity
     public DateTimeOffset EffectiveDate { get; set; }
 
     /// <summary>
-    /// Indicates the date for the renewal of the tenant's agreement or settings.
-    /// </summary>
-    public DateTimeOffset RenewalDate { get; set; }
-
-    /// <summary>
     /// Gets or sets the resource type associated with the tenant.
     /// </summary>
     public required TenantResourceTypesEnum ResourceType { get; set; }
@@ -192,4 +187,9 @@ public class Tenant : BaseEntity
     /// Gets or sets the container name associated with the tenant.
     /// </summary>
     public string ContainerName { get; set; } = string.Empty;
+
+    /// <summary>
+    /// Indicates the date for the renewal of the tenant's agreement or settings.
+    /// </summary>
+    public DateTimeOffset RenewalDate { get; set; }
 }
