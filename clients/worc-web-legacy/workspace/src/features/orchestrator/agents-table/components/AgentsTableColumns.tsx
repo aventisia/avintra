@@ -55,7 +55,7 @@ export const agentsTableColumns: ColumnDef<AgentsTableDto>[] = [
       />
     ),
     cell: ({ row }) => (
-      <div className="flex   items-center gap-3 ">
+      <div className="flex max-w-80 items-center gap-3 ">
         <TableCellLink
           rowId={row.original.refId || "rowId"}
           versionId={row.original.id || "rowId"}
@@ -174,7 +174,7 @@ export const agentsTableColumns: ColumnDef<AgentsTableDto>[] = [
       />
     ),
     cell: ({ row }) => (
-      <div className="w-auto truncate font-medium">
+      <div className="w-auto truncate max-w-72 font-medium">
         {row.getValue("createdBy")}
       </div>
     ),
