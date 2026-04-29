@@ -16,9 +16,11 @@ const baseAPIURL: string = `${import.meta.env.VITE_ACCOUNTS_API_PATH}/tenant`;
 /**
  * Retrieves list of tenants.
  */
-const getTenants = () => {
+const getTenants = (startDate: string = "", endDate: string = "") => {
   return axiosInstance
-    .get<IHttpResponse<TenantsTableDto[]>>(`${baseAPIURL}`)
+    .get<
+      IHttpResponse<TenantsTableDto[]>
+    >(`${baseAPIURL}?startDate=${startDate}&endDate=${endDate}`)
     .then((res) => res.data);
 };
 
@@ -53,7 +55,8 @@ export const searchTenantsToSearchSelect = async (query?: string) => {
 
 export const getTenantDetails = (id?: string | null) => {
   if (!id)
-    return Promise.resolve<IHttpResponse<TenantsTableDto>>({
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    return Promise.resolve<IHttpResponse<any>>({
       statusCode: 201,
       message: "",
       data: {
@@ -103,7 +106,7 @@ const switchTenant = (id: string) => {
   return axiosInstance
     .post<
       IHttpResponse<UserSessionDto>
-    >(`${import.meta.env.VITE_ACCOUNTS_API_PATH}/sa/tenants/auth/tokens`, {},{ headers: { tntid: id } })
+    >(`${import.meta.env.VITE_ACCOUNTS_API_PATH}/sa/tenants/auth/tokens`, {}, { headers: { tntid: id } })
     .then((res) => res.data);
 };
 
