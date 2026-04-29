@@ -875,6 +875,21 @@ public class MessageTriggerService : IMessageTriggerService
                     // Endpoint to receive Graph change notifications
                     var notificationUrl = $"{baseUrl}/worc/api/message-trigger/notify/{triggerId}";
 
+                    // Check if subscription has expired and adjust actions accordingly
+                    if (messageTriggerModel.ExpiryDateTime <= DateTimeOffset.UtcNow)
+                    {
+                        if (action.Equals("update", StringComparison.OrdinalIgnoreCase))
+                        {
+                            action = "created"; // Expired, create a new subscription instead of updating
+                        }
+                        else if (action.Equals("delete", StringComparison.OrdinalIgnoreCase))
+                        {
+                            // Do not delete if expired, return success response with 200 status code
+                            serviceResponse.StatusCode = 200;
+                            return serviceResponse;
+                        }
+                    }
+
                     HttpResponseMessage response;
 
                     // Execute action: create (new), update (renew), delete (remove)

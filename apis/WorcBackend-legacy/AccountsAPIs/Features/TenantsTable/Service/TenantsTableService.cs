@@ -66,9 +66,10 @@ public class TenantsTableService : ITenantsTableService
 
             var tenantSubscriptions = await _unitOfWork.TenantSubscriptionRepo
                 .GetByConditionAsync(w => tenantIds.Contains(w.TenantId) && w.IsActive)
+                .Include(i => i.Plan)
                 .GroupBy(g => g.TenantId)
-                .Select(s => s.First())
-                .ToDictionaryAsync(td => td.TenantId, td => td.Plan);
+                .Select(s => s.FirstOrDefault())
+                .ToDictionaryAsync(td => td.TenantId, td => td);
 
             var tenantCredits = await _unitOfWork.TenantCreditRepo
                 .GetByConditionAsync(w => tenantIds.Contains(w.TenantId) && w.ExpiredOn.Date > DateTimeOffset.UtcNow.Date)
@@ -77,9 +78,7 @@ public class TenantsTableService : ITenantsTableService
                 .ToDictionaryAsync(td => td.TenantId, td => td.TotalCredits);
 
             var tenantCreditsUssages = await _unitOfWork.CreditUsageRepo
-                .GetByConditionAsync(w => tenantIds.Contains(w.TenantId) &&
-                                         w.UsedAt.Date >= tenantFilterQuery.StartDate &&
-                                         w.UsedAt.Date <= tenantFilterQuery.EndDate)
+                .GetByConditionAsync(w => tenantIds.Contains(w.TenantId) && w.UsedAt.Date >= tenantFilterQuery.StartDate.Value && w.UsedAt.Date <= tenantFilterQuery.EndDate.Value)
                 .GroupBy(g => g.TenantId)
                 .Select(s => new { TenantId = s.Key, TotalCredits = s.Sum(x => x.CreditsUsed) })
                 .ToDictionaryAsync(td => td.TenantId, td => td.TotalCredits);
@@ -96,7 +95,7 @@ public class TenantsTableService : ITenantsTableService
             var tenantSummaries = new Dictionary<Guid, TenantTableSummaryDto>();
 
             // Build query string with dynamic date filters
-            var url = $"{_environmentConfig.WorcApiBaseUrl}/api/sa/tenant/summary" +
+            var url = $"{_environmentConfig.WorcApiBaseUrl}/sa/tenant/summary" +
                 $"?startDate={tenantFilterQuery.StartDate.Value.UtcDateTime:O}" +
                 $"&endDate={tenantFilterQuery.EndDate.Value.UtcDateTime:O}";
 
@@ -131,7 +130,7 @@ public class TenantsTableService : ITenantsTableService
                 // Retrieve related data for each tenant using TryGetValue to avoid missing data errors
                 tenantManagers.TryGetValue(tenant.CreatedByUserId, out var createdBy);
                 tenantManagers.TryGetValue(tenant.LastModifiedByUserId, out var modifiedBy);
-                tenantSubscriptions.TryGetValue(tenant.Id, out var plan);
+                tenantSubscriptions.TryGetValue(tenant.Id, out var subscription);
                 tenantCredits.TryGetValue(tenant.Id, out var credit);
                 tenantContainerSizes.TryGetValue(tenant.ContainerName, out var containerSize);
                 tenantCreditsUssages.TryGetValue(tenant.Id, out var creditsUsed);
@@ -140,7 +139,10 @@ public class TenantsTableService : ITenantsTableService
                 // Assign values to the DTO properties
                 tenantsTableDto.CreatedBy = createdBy;
                 tenantsTableDto.LastModifiedBy = modifiedBy;
-                tenantsTableDto.CurrentActivePlan = plan;
+                tenantsTableDto.ActivePlan = subscription?.Plan?.Name;
+                tenantsTableDto.RenewalDate = subscription?.NextBillingDate != null
+                                            ? (DateTimeOffset)subscription.NextBillingDate
+                                            : default;
                 tenantsTableDto.AvailableCredits = (decimal)credit;
                 tenantsTableDto.TotalUsers = accountUsers.Count(w => w.TenantId == tenantsTableDto.Id);
                 tenantsTableDto.StorageSize = containerSize;
