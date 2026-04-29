@@ -1,11 +1,11 @@
 import {
-  DataTable,
-  DataTableSkeleton,
   DTCreateButton,
   DTHeading,
   DTPagination,
   DTSearchBox,
   DTViewOptions,
+  DataTable,
+  DataTableSkeleton,
   getDataTablePreferences,
 } from "@aventisia/ui/data-table";
 import { useDataTable, useDocumentTitle } from "@aventisia/ui/hooks";
@@ -17,10 +17,12 @@ import { SEARCH_COLUMN, TABLE_HEADING, TABLE_KEY } from "../constants";
 import { columnDisplayNames } from "../constants/column-display-names";
 import { columnVisibilityState } from "../constants/column-visibility-state";
 import { useFetchTenants } from "../hooks/useFetchTenants";
-
-import { TenantCrudDialog } from "./tenant-crud-dialog/TenantCrudDialog";
+import { DateRangeFilter } from "./DateRangeFilter";
+import { PlanFilter } from "./PlanFilter";
+import { SATenantStats } from "./SATenantStats";
 import { TenantsBulkActions } from "./TenantsBulkActions";
 import { tenantsTableColumns } from "./TenantsTableColumns";
+import { TenantCrudDialog } from "./tenant-crud-dialog/TenantCrudDialog";
 
 /**
  * Renders a table of tenants.
@@ -73,29 +75,37 @@ export const TenantsTable = () => {
                   searchColumn={SEARCH_COLUMN}
                   placeholder="Search tenants..."
                 />
+                <DateRangeFilter />
+                <PlanFilter
+                  table={table}
+                  data={data.data}
+                  columnId="activePlan"
+                />{" "}
                 <DTViewOptions
                   {...{ table, columnDisplayNames, tableKey: TABLE_KEY }}
                 />
                 <DTCreateButton />
               </div>
             </div>
+            <div className="flex flex-col gap-2">
+              <SATenantStats data={data?.data} />
 
-            {/* Data table to render data */}
-            <ScrollArea
-              className={
-                sidebarExpand
-                  ? "md:w-[calc(100vw-var(--sidebar-max-width)-3.5rem)]"
-                  : "md:w-[calc(100vw-var(--sidebar-min-width)-3.5rem)]"
-              }
-            >
-              <DataTable
-                table={table}
-                columnsLength={tenantsTableColumns.length}
-              />
-              <ScrollBar orientation="horizontal" />
-            </ScrollArea>
+              {/* Data table to render data */}
+              <ScrollArea
+                className={
+                  sidebarExpand
+                    ? "md:w-[calc(100vw-var(--sidebar-max-width)-3.5rem)]"
+                    : "md:w-[calc(100vw-var(--sidebar-min-width)-3.5rem)]"
+                }
+              >
+                <DataTable
+                  table={table}
+                  columnsLength={tenantsTableColumns.length}
+                />
+                <ScrollBar orientation="horizontal" />
+              </ScrollArea>
+            </div>
           </TenantCrudDialog>
-
           {/* Data table Pagination component */}
           <DTPagination table={table} />
 

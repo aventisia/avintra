@@ -1,13 +1,13 @@
 import { Checkbox } from "@aventisia/ui";
 import { DTColumnHeader } from "@aventisia/ui/data-table";
-import { CurrenciesEnum } from "@aventisia/ui/enums";
+import { CountriesEnum, CurrenciesEnum } from "@aventisia/ui/enums";
 import { dateFormatter, getEnumValueByKey } from "@aventisia/ui/utils";
 import { ColumnDef } from "@tanstack/react-table";
 
 import { TABLE_KEY } from "../constants";
 import { getColumnName } from "../constants/column-display-names";
 import { TenantsTableDto } from "../dtos/tenants-table-dto";
-
+import { formatSecondsToCompactDuration, round2 } from "../utils";
 import { TenantRowActions } from "./tenant-row-actions/TenantRowActions";
 
 /**
@@ -15,6 +15,7 @@ import { TenantRowActions } from "./tenant-row-actions/TenantRowActions";
  * Each column object contains an accessorKey, header component, and cell component.
  */
 export const tenantsTableColumns: ColumnDef<TenantsTableDto>[] = [
+  // SELECT
   {
     accessorKey: "id",
     header: ({ table }) => (
@@ -24,20 +25,18 @@ export const tenantsTableColumns: ColumnDef<TenantsTableDto>[] = [
           (table.getIsSomePageRowsSelected() && "indeterminate")
         }
         onCheckedChange={(value) => table.toggleAllPageRowsSelected(!!value)}
-        aria-label="Select all"
-        className="translate-y-[2px]"
       />
     ),
     cell: ({ row }) => (
       <Checkbox
         checked={row.getIsSelected()}
         onCheckedChange={(value) => row.toggleSelected(!!value)}
-        aria-label="Select row"
-        className="translate-y-[2px]"
       />
     ),
     enableSorting: false,
   },
+
+  // CORE
   {
     accessorKey: "name",
     header: ({ column }) => (
@@ -48,7 +47,12 @@ export const tenantsTableColumns: ColumnDef<TenantsTableDto>[] = [
       />
     ),
     cell: ({ row }) => (
-      <div className="w-auto truncate font-medium">{row.getValue("name")}</div>
+      <div
+        className="truncate max-w-72 font-medium"
+        title={row.getValue("name")}
+      >
+        {row.getValue("name")}
+      </div>
     ),
   },
   {
@@ -60,24 +64,30 @@ export const tenantsTableColumns: ColumnDef<TenantsTableDto>[] = [
         title={getColumnName("type")}
       />
     ),
-    cell: ({ row }) => (
-      <div className="w-auto truncate font-medium">{row.getValue("type")}</div>
-    ),
+    cell: ({ row }) => <div className="truncate">{row.getValue("type")}</div>,
   },
   {
-    accessorKey: "effectiveDate",
+    accessorKey: "activePlan",
     header: ({ column }) => (
       <DTColumnHeader
         tableKey={TABLE_KEY}
         column={column}
-        title={getColumnName("effectiveDate")}
+        title={getColumnName("activePlan")}
       />
     ),
-    cell: ({ row }) => (
-      <div className="w-auto truncate font-medium">
-        {dateFormatter(row.getValue("effectiveDate"))}
-      </div>
-    ),
+
+    // To support plan filter filter
+    filterFn: (row, columnId, filterValue: string[]) => {
+      if (!filterValue?.length) return true;
+
+      const plan = row.getValue<string>(columnId) ?? "Unknown";
+      return filterValue.includes(plan);
+    },
+
+    cell: ({ row }) => {
+      const plan = (row.getValue("activePlan") as string) ?? "Unknown";
+      return <div className="truncate">{plan}</div>;
+    },
   },
   {
     accessorKey: "renewalDate",
@@ -88,11 +98,10 @@ export const tenantsTableColumns: ColumnDef<TenantsTableDto>[] = [
         title={getColumnName("renewalDate")}
       />
     ),
-    cell: ({ row }) => (
-      <div className="w-auto truncate font-medium">
-        {dateFormatter(row.getValue<Date>("renewalDate"))}
-      </div>
-    ),
+    cell: ({ row }) =>
+      row.getValue("renewalDate")
+        ? dateFormatter(row.getValue<Date>("renewalDate"))
+        : "-",
   },
   {
     accessorKey: "currency",
@@ -104,10 +113,39 @@ export const tenantsTableColumns: ColumnDef<TenantsTableDto>[] = [
       />
     ),
     cell: ({ row }) => (
-      <div className="w-auto truncate font-medium">
+      <div className="truncate">
         {getEnumValueByKey(CurrenciesEnum, row.getValue("currency"))}
       </div>
     ),
+  },
+  {
+    accessorKey: "resourceType",
+    header: ({ column }) => (
+      <DTColumnHeader
+        tableKey={TABLE_KEY}
+        column={column}
+        title={getColumnName("resourceType")}
+      />
+    ),
+    cell: ({ row }) => (
+      <div className="truncate">{row.getValue("resourceType")}</div>
+    ),
+  },
+
+  // DATES
+  {
+    accessorKey: "effectiveDate",
+    header: ({ column }) => (
+      <DTColumnHeader
+        tableKey={TABLE_KEY}
+        column={column}
+        title={getColumnName("effectiveDate")}
+      />
+    ),
+    cell: ({ row }) =>
+      row.getValue("effectiveDate")
+        ? dateFormatter(row.getValue<Date>("effectiveDate"))
+        : "-",
   },
   {
     accessorKey: "expiresOn",
@@ -118,12 +156,131 @@ export const tenantsTableColumns: ColumnDef<TenantsTableDto>[] = [
         title={getColumnName("expiresOn")}
       />
     ),
-    cell: ({ row }) => (
-      <div className="w-auto truncate font-medium">
-        {dateFormatter(row.getValue<Date>("expiresOn"))}
-      </div>
-    ),
+    cell: ({ row }) =>
+      row.getValue("expiresOn")
+        ? dateFormatter(row.getValue<Date>("expiresOn"))
+        : "-",
   },
+
+  // BUSINESS
+  {
+    accessorKey: "domain",
+    header: ({ column }) => (
+      <DTColumnHeader
+        tableKey={TABLE_KEY}
+        column={column}
+        title={getColumnName("domain")}
+      />
+    ),
+    cell: ({ row }) => row.getValue("domain") || "-",
+  },
+  {
+    accessorKey: "country",
+    header: ({ column }) => (
+      <DTColumnHeader
+        tableKey={TABLE_KEY}
+        column={column}
+        title={getColumnName("country")}
+      />
+    ),
+    cell: ({ row }) =>
+      getEnumValueByKey(CountriesEnum, row.getValue("country")),
+  },
+  {
+    accessorKey: "numberOfEmployees",
+    header: ({ column }) => (
+      <DTColumnHeader
+        tableKey={TABLE_KEY}
+        column={column}
+        title={getColumnName("numberOfEmployees")}
+      />
+    ),
+    cell: ({ row }) => row.getValue("numberOfEmployees") ?? "-",
+  },
+  {
+    accessorKey: "industry",
+    header: ({ column }) => (
+      <DTColumnHeader
+        tableKey={TABLE_KEY}
+        column={column}
+        title={getColumnName("industry")}
+      />
+    ),
+    cell: ({ row }) => row.getValue("industry") || "-",
+  },
+
+  // METRICS
+  {
+    accessorKey: "totalUsers",
+    header: ({ column }) => (
+      <DTColumnHeader
+        tableKey={TABLE_KEY}
+        column={column}
+        title={getColumnName("totalUsers")}
+      />
+    ),
+    cell: ({ row }) => row.getValue("totalUsers"),
+  },
+  {
+    accessorKey: "availableCredits",
+    header: ({ column }) => (
+      <DTColumnHeader
+        tableKey={TABLE_KEY}
+        column={column}
+        title={getColumnName("availableCredits")}
+      />
+    ),
+    cell: ({ row }) => round2(row.getValue("availableCredits")),
+  },
+  {
+    accessorKey: "consumedCredits",
+    header: ({ column }) => (
+      <DTColumnHeader
+        tableKey={TABLE_KEY}
+        column={column}
+        title={getColumnName("consumedCredits")}
+      />
+    ),
+    cell: ({ row }) => round2(row.getValue("consumedCredits")),
+  },
+  {
+    accessorKey: "totalExecutionTime",
+    header: ({ column }) => (
+      <DTColumnHeader
+        tableKey={TABLE_KEY}
+        column={column}
+        title={getColumnName("totalExecutionTime")}
+      />
+    ),
+    cell: ({ row }) =>
+      formatSecondsToCompactDuration(row.getValue("totalExecutionTime")),
+  },
+  {
+    accessorKey: "storageSize",
+    header: ({ column }) => (
+      <DTColumnHeader
+        tableKey={TABLE_KEY}
+        column={column}
+        title={getColumnName("storageSize")}
+      />
+    ),
+    cell: ({ row }) => row.getValue("storageSize"),
+  },
+
+  // FLAGS
+  {
+    accessorKey: "isDisabled",
+    header: ({ column }) => (
+      <DTColumnHeader
+        tableKey={TABLE_KEY}
+        column={column}
+        title={getColumnName("isDisabled")}
+      />
+    ),
+    cell: ({ row }) => (row.getValue("isDisabled") ? "Yes" : "No"),
+  },
+
+  // AUDIT
   {
     accessorKey: "createdBy",
     header: ({ column }) => (
@@ -133,33 +290,51 @@ export const tenantsTableColumns: ColumnDef<TenantsTableDto>[] = [
         title={getColumnName("createdBy")}
       />
     ),
-    cell: ({ row }) => (
-      <div className="w-auto truncate font-medium">
-        {row.getValue("createdBy")}
-      </div>
-    ),
+    cell: ({ row }) => row.getValue("createdBy") || "-",
   },
   {
     accessorKey: "createdOn",
     header: ({ column }) => (
       <DTColumnHeader
         tableKey={TABLE_KEY}
-        className="w-[7rem]"
         column={column}
         title={getColumnName("createdOn")}
       />
     ),
-    cell: ({ row }) => (
-      <div className="w-auto truncate font-medium">
-        {dateFormatter(row.getValue("createdOn"))}
-      </div>
-    ),
+    cell: ({ row }) =>
+      row.getValue("createdOn")
+        ? dateFormatter(row.getValue<Date>("createdOn"))
+        : "-",
   },
   {
-    id: "actions",
-    cell: ({ row }) => (
-      // Render the tenants row actions component
-      <TenantRowActions rowId={row.original.id ?? "rowId"} />
+    accessorKey: "lastModifiedBy",
+    header: ({ column }) => (
+      <DTColumnHeader
+        tableKey={TABLE_KEY}
+        column={column}
+        title={getColumnName("lastModifiedBy")}
+      />
     ),
+    cell: ({ row }) => row.getValue("lastModifiedBy") || "-",
+  },
+  {
+    accessorKey: "lastModifiedOn",
+    header: ({ column }) => (
+      <DTColumnHeader
+        tableKey={TABLE_KEY}
+        column={column}
+        title={getColumnName("lastModifiedOn")}
+      />
+    ),
+    cell: ({ row }) =>
+      row.getValue("lastModifiedOn")
+        ? dateFormatter(row.getValue<Date>("lastModifiedOn"))
+        : "-",
+  },
+
+  // ACTIONS
+  {
+    id: "actions",
+    cell: ({ row }) => <TenantRowActions rowId={row.original.id ?? "rowId"} />,
   },
 ];

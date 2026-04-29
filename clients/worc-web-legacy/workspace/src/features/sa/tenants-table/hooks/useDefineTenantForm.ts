@@ -1,14 +1,15 @@
+import { DatabaseOptionsEnum } from "@/react-toolkit/enums/database-options-enum";
+import { useUserSessionStore } from "@/react-toolkit/stores/user-session-store";
+
 import { useCheckAvailability } from "@aventisia/ui/hooks";
 import { useDTCrudDialogStore } from "@aventisia/ui/stores";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useQueryClient } from "@tanstack/react-query";
+import { format } from "date-fns";
 import { useEffect, useState } from "react";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
 import { useShallow } from "zustand/react/shallow";
-
-import { DatabaseOptionsEnum } from "@/react-toolkit/enums/database-options-enum";
-import { useUserSessionStore } from "@/react-toolkit/stores/user-session-store";
 
 import { isTenantNameAvailable } from "../apis/tenants-table-apis";
 import { DATA_QUERY_KEY } from "../constants";
@@ -17,6 +18,7 @@ import {
   tenantZodSchema,
 } from "../constants/tenant-zod-schema";
 import { TenantsTableDto } from "../dtos/tenants-table-dto";
+import { useDateRangePickerStore } from "../stores/date-range-store";
 
 /**
  * Custom hook for defining a tenant form.
@@ -47,6 +49,12 @@ export const useDefineTenantForm = () => {
     })),
   );
 
+  const { dateRange } = useDateRangePickerStore(
+    useShallow((state) => ({ dateRange: state.dateRange })),
+  );
+
+  const from = format(dateRange!.from!, "yyyy-MM-dd");
+  const to = format(dateRange!.to!, "yyyy-MM-dd");
   // Get query client
   const queryClient = useQueryClient();
 
@@ -95,7 +103,7 @@ export const useDefineTenantForm = () => {
     // Get tenants data from query client
     const tenantsData = queryClient.getQueryData<{
       data: TenantsTableDto[];
-    }>(DATA_QUERY_KEY);
+    }>([...DATA_QUERY_KEY, from, to]);
 
     // Get tenant data by id
     const tenantData = tenantsData?.data.find((item) => item.id === rowId);
