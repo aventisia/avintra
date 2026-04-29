@@ -240,4 +240,9 @@ public class TenantsTableDto
     /// <summary>
     /// Gets or sets the total used file storage size in bytes.
     public long StorageSize { get; set; }
+
+    /// <summary>
+    /// Gets or sets the total number of jobs. associated with the tenant.
+    /// </summary>
+    public int TotalJobs { get; set; }
 }

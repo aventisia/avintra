@@ -12,10 +12,14 @@ public class TenantTableSummaryDto
     public Guid TenantId { get; set; }
 
     /// <summary>
-    /// Gets or sets the total number of publish agents (or published flows/jobs)
-    /// associated with the tenant.
+    /// Gets or sets the total number of publish agents (or published flows/jobs) associated with the tenant.
     /// </summary>
     public int PublishAgent { get; set; }
+
+    /// <summary>
+    /// Gets or sets the total number of jobs associated with the tenant.
+    /// </summary>
+    public int TotalJobs { get; set; }
 
     /// <summary>
     /// Gets or sets the total execution time (or consumed credits, depending on usage)
