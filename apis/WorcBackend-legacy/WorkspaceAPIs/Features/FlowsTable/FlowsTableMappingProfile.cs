@@ -6,15 +6,21 @@ public class FlowsTableMappingProfile : IRegister
     {
         // Mapping for flow record or records.
         config.NewConfig<Flow, FlowsTableDto>()
-            .Map(dest => dest.FlowCommentCount, 
+            .Map(dest => dest.FlowCommentCount,
                 src => src.FlowComments != null
                     ? src.FlowComments.Count
                     : 0)
-            .Map(dest => dest.CreatedBy, 
+             .Map(dest => dest.VersionNumber,
+                src => src.FlowVersions != null && src.FlowVersions.Any()
+                    ? src.FlowVersions
+                        .OrderByDescending(w => w.VersionNumber)
+                        .First().VersionNumber
+                    : 0)
+            .Map(dest => dest.CreatedBy,
                 src => src.CreatedByUser != null
                     ? src.CreatedByUser.FirstName + " " + src.CreatedByUser.LastName
                     : null)
-            .Map(dest => dest.LastModifiedBy, 
+            .Map(dest => dest.LastModifiedBy,
                 src => src.LastModifiedByUser != null
                     ? src.LastModifiedByUser.FirstName + " " + src.LastModifiedByUser.LastName
                     : null);
