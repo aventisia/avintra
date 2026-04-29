@@ -233,9 +233,9 @@ public class TenantsTableDto
     public decimal AvailableCredits { get; set; }
 
     /// <summary>
-    /// Gets or sets the current or active plan for the tenant.
+    /// Gets or sets the active plan for the tenant.
     /// </summary>
-    public SubscriptionPlan? CurrentActivePlan { get; set; }
+    public string? ActivePlan { get; set; }
 
     /// <summary>
     /// Gets or sets the total used file storage size in bytes.

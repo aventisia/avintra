@@ -1,5 +1,6 @@
 ﻿using DynamicExpresso;
 using Newtonsoft.Json;
+using Newtonsoft.Json.Linq;
 using Newtonsoft.Json.Serialization;
 using NodeExecutor.Models;
 using NodeExecutor.Services;
@@ -48,11 +49,10 @@ namespace NodeExecutor
             this._interpreter = new Interpreter(InterpreterOptions.Default | InterpreterOptions.LambdaExpressions | InterpreterOptions.CaseInsensitive);
 
             // Add the arguments to executionContext
-            AddArgumentsToContext("_agentId", _agentId);
-            AddArgumentsToContext("_agentName", _agentName);
+            AddAgentMetadataToContext(_agentId, _agentName);
             AddArgumentsToContext("_accessToken", _accessToken);
             AddInputArgumentsToContext(inputArgumentsJson);
-
+            
             // Start the WebSocket and timer
             InitServices();
         }
@@ -64,37 +64,49 @@ namespace NodeExecutor
             _interpreter.SetVariable(name, value);
         }
 
+        // Add agent metadata as nested JObject in the execution context
+        private void AddAgentMetadataToContext(string agentId, string agentName)
+        {
+            var agentMetadata = new JObject
+            {
+                ["id"] = agentId,
+                ["name"] = agentName
+            };
+
+            _executionContext.Set("_agent", agentMetadata);
+            _interpreter.SetVariable("_agent", agentMetadata);
+        }
+
         // Parse and add input arguments as a nested object structure
         private void AddInputArgumentsToContext(string inputArgumentsJson)
         {
             try
             {
-                // Parse the JSON string into a dictionary
-                var inputArgumentsDict = JsonConvert.DeserializeObject<Dictionary<string, object>>(inputArgumentsJson);
-
-                if (inputArgumentsDict == null)
-                {
-                    inputArgumentsDict = new Dictionary<string, object>();
-                }
+                var inputArgumentsObject = string.IsNullOrWhiteSpace(inputArgumentsJson)
+                    ? new JObject()
+                    : JObject.Parse(inputArgumentsJson);
 
                 // Create a job object with inputArguments nested inside
-                var jobObject = new Dictionary<string, object>
+                var jobObject = new JObject
                 {
-                    { "inputArguments", inputArgumentsDict }
+                    ["inputArguments"] = inputArgumentsObject
                 };
 
                 // Add to execution context
-                _executionContext.Set("job", jobObject);
+                _executionContext.Set("_job", jobObject);
 
                 // Add to interpreter so it can be accessed via dot notation
-                _interpreter.SetVariable("job", jobObject);
+                _interpreter.SetVariable("_job", jobObject);
             }
-            catch (JsonException ex)
+            catch
             {
-                MessageBox.Show($"Error parsing input arguments JSON: {ex.Message}");
                 // Add empty structure as fallback
-                _executionContext.Set("job", new Dictionary<string, object> { { "inputArguments", new Dictionary<string, object>() } });
-                _interpreter.SetVariable("job", new Dictionary<string, object> { { "inputArguments", new Dictionary<string, object>() } });
+                var fallbackJob = new JObject
+                {
+                    ["inputArguments"] = new JObject()
+                };
+                _executionContext.Set("_job", fallbackJob);
+                _interpreter.SetVariable("_job", fallbackJob);
             }
         }
 
@@ -335,7 +347,7 @@ namespace NodeExecutor
                 {
                     await _webSocket.SendCommandAsync("save-execution-log", JsonConvert.SerializeObject(result.nodeExecutionLog, new JsonSerializerSettings
                     {
-                       ContractResolver = new CamelCasePropertyNamesContractResolver()
+                        ContractResolver = new CamelCasePropertyNamesContractResolver()
                     }));
 
                     // Check if the node execution was successful
