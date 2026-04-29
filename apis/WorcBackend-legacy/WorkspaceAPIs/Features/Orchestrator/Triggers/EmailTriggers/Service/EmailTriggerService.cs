@@ -874,6 +874,21 @@ public class EmailTriggerService : IEmailTriggerService
                         ? $"/users/{emailTriggerModel.Mailbox}/mailFolders/{emailTriggerModel.Folder}/messages"
                         : $"/users/{emailTriggerModel.Mailbox}/messages";
 
+                    // Check if subscription has expired and adjust actions accordingly
+                    if (emailTriggerModel.ExpiryDateTime <= DateTimeOffset.UtcNow)
+                    {
+                        if (action.Equals("update", StringComparison.OrdinalIgnoreCase))
+                        {
+                            action = "created"; // Expired, create a new subscription instead of updating
+                        }
+                        else if (action.Equals("delete", StringComparison.OrdinalIgnoreCase))
+                        {
+                            // Do not delete if expired, return success response with 200 status code
+                            serviceResponse.StatusCode = 200;
+                            return serviceResponse;
+                        }
+                    }
+
                     HttpResponseMessage response;
 
                     // Execute action-specific API call (create, renew/update, delete)
