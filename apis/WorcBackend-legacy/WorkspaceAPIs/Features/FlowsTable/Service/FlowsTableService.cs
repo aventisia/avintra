@@ -46,6 +46,8 @@ public class FlowsTableService : IFlowsTableService
                 ) // TODO: Update condition
                 .OrderByDescending(w => w.CreatedOn)
                 .Include(i => i.FlowUsers)
+                .Include(i => i.FlowComments)
+                .Include(i => i.FlowVersions)
                 .Include(i => i.CreatedByUser)
                 .ToListAsync();
 
