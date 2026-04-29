@@ -11,7 +11,6 @@ public class JobTableMappingProfile : IRegister
         config.NewConfig<Job, JobDetailDto>()
             .Map(dest => dest.FlowId, src => src.FlowVersion != null ? src.FlowVersion.FlowId : Guid.Empty)
             .Map(dest => dest.Name, src => src.FlowVersion != null ? src.FlowVersion.Flow.Name : null)
-            .Map(dest => dest.InputArgumentsJson, src => src.FlowVersion != null ? src.FlowVersion.InputOutputObject : null)
             .Map(dest => dest.ReactFlowObject, src => src.FlowVersion != null ? src.FlowVersion.ReactFlowObject : null)
             .Map(dest => dest.FlowVariablesObject, src => src.FlowVersion != null ? src.FlowVersion.FlowVariablesObject : null)
             .Map(dest => dest.VersionNumber, src => src.FlowVersion != null ? src.FlowVersion.VersionNumber : 0)
