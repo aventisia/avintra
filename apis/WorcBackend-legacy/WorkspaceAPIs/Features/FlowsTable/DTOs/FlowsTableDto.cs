@@ -42,6 +42,11 @@ public class FlowsTableDto
     public int? FlowCommentCount { get; set; }
 
     /// <summary>
+    /// Gets or sets the version number of a last flow version record
+    /// </summary>
+    public int VersionNumber { get; set; }
+
+    /// <summary>
     /// Gets or sets the access type of the user within the flow.
     /// </summary>
     public ProjectUserAccessEnum AccessType { get; set; }

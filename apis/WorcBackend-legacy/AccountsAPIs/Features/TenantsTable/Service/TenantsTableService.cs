@@ -149,6 +149,7 @@ public class TenantsTableService : ITenantsTableService
                 tenantsTableDto.ConsumedCredits = creditsUsed;
                 tenantsTableDto.TotalExecutionTime = summary?.ExecutionTime ?? 0;
                 tenantsTableDto.PublishAgent = summary?.PublishAgent ?? 0;
+                tenantsTableDto.TotalJobs = summary?.TotalJobs ?? 0;
 
                 return tenantsTableDto;
             }).ToList();

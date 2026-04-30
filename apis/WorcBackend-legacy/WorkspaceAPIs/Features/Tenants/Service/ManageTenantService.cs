@@ -200,6 +200,7 @@ public class ManageTenantService : IManageTenantService
                 .Select(s => new
                 {
                     TenantId = s.Key,
+                    TotalJobs = s.Count(),
                     ExecutionTime = s.Sum(sm =>
                         sm.EndTime != null && sm.StartTime != null
                             ? (sm.EndTime.Value - sm.StartTime.Value).TotalSeconds
@@ -242,6 +243,7 @@ public class ManageTenantService : IManageTenantService
                     return new TenantTableSummaryDto
                     {
                         TenantId = tenantId,
+                        TotalJobs = execution?.TotalJobs ?? 0,
                         ExecutionTime = execution?.ExecutionTime ?? 0,
                         PublishAgent = published?.PublishAgentCount ?? 0
                     };
