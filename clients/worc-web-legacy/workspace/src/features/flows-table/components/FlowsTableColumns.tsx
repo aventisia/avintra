@@ -52,10 +52,15 @@ export const flowsTableColumns: ColumnDef<FlowsTableDto>[] = [
       />
     ),
     cell: ({ row }) => (
-      <FlowsTableCellLink
-        rowId={row.original.id || "rowId"}
-        cellValue={row.getValue("name")}
-      />
+      <div className="flex max-w-80 items-center gap-3 ">
+        <FlowsTableCellLink
+          rowId={row.original.id || "rowId"}
+          cellValue={row.getValue("name")}
+        />
+        <span className="bg-muted border text-2xs leading-none h-[1.4rem] w-[1.4rem] flex items-center justify-center  text-primary    rounded-full">
+          v{row.original.versionNumber ?? 0}
+        </span>
+      </div>
     ),
   },
   {
