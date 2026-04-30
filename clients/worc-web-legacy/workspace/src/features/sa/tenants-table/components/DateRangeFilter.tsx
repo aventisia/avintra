@@ -60,11 +60,13 @@ export const DateRangeFilter = () => {
     if (!urlRange) {
       const params = Object.fromEntries(searchParams.entries());
       Object.assign(params, rangeToParams(finalRange));
-      setSearchParams(params);
+      setTimeout(() => {
+        setSearchParams(params);
+      }, 100);
     }
 
     hydratedRef.current = true;
-  }, [searchParams, setSearchParams, setDateRange]);
+  }, [searchParams, setSearchParams, setDateRange, defaultRange]);
 
   const applyRange = useCallback(
     (range?: DateRange) => {

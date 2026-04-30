@@ -57,6 +57,7 @@ export interface TenantsTableDto {
 
   containerName: string;
   publishAgent: number;
+  totalJobs:number;
 
   totalExecutionTime: number;
   consumedCredits: number;

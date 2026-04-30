@@ -1,3 +1,9 @@
+import { IS_TAURI } from "@/constants/constants";
+import { AvailableCredits } from "@/features/available-credits/AvailableCredits";
+import { UnreadNotifications } from "@/react-toolkit/features/unread-notifications/components/unread-notifications";
+import { UserAccountModal } from "@/react-toolkit/features/user-account/UserAccountModal";
+import { useUserSessionStore } from "@/react-toolkit/stores/user-session-store";
+
 import { Button } from "@aventisia/ui/buttons";
 import {
   Header,
@@ -10,13 +16,8 @@ import { Tooltip } from "@aventisia/ui/tooltip";
 import { DownloadIcon } from "lucide-react";
 import { useShallow } from "zustand/react/shallow";
 
-import { IS_TAURI } from "@/constants/constants";
-import { AvailableCredits } from "@/features/available-credits/AvailableCredits";
-import { UnreadNotifications } from "@/react-toolkit/features/unread-notifications/components/unread-notifications";
-import { UserAccountModal } from "@/react-toolkit/features/user-account/UserAccountModal";
-import { useUserSessionStore } from "@/react-toolkit/stores/user-session-store";
-
 import { AppLogo } from "./AppLogo";
+import { TenantSwitchBadge } from "./TenantSwitchBadge";
 import TrustLocalhostSSLButton from "./TrustLocalhostSSLButton";
 
 const AppHeader: React.FC = () => {
@@ -35,6 +36,7 @@ const AppHeader: React.FC = () => {
             className="flex md:hidden"
           />
           <AppLogo />
+          {userSession?.access_mode == "read_only" && <TenantSwitchBadge />}
         </div>
         {import.meta.env.MODE !== "production" ? <SearchBox /> : null}
         <div className="ml-4 flex items-center gap-4">

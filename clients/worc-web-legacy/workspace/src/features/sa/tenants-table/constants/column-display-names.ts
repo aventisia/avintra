@@ -9,7 +9,7 @@ export const columnDisplayNames: KeyValueLookupType[] = [
   { key: "type", value: "Type" },
   { key: "currency", value: "Currency" },
   { key: "resourceType", value: "Resource Type" },
-  { key: "activePlan", value: "Active Plan" },
+  { key: "activePlan", value: "Plan" },
 
   //  Dates
   { key: "effectiveDate", value: "Effective Date" },
@@ -23,11 +23,13 @@ export const columnDisplayNames: KeyValueLookupType[] = [
   { key: "industry", value: "Industry" },
 
   //  Usage / Metrics
-  { key: "totalUsers", value: "Total Users" },
+  { key: "totalUsers", value: "Users" },
   { key: "availableCredits", value: "Available Credits" },
   { key: "consumedCredits", value: "Consumed Credits" },
   { key: "totalExecutionTime", value: "Execution Time" },
   { key: "storageSize", value: "Storage Size" },
+  { key: "publishAgent", value: "Publish Agent" },
+  { key: "totalJobs", value: "Jobs" },
 
   //  Flags
   { key: "isDisabled", value: "Disabled" },

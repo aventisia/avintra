@@ -20,6 +20,8 @@ export const columnVisibilityState = {
   industry: false,
 
   // Usage / Metrics
+  publishAgent: false,
+  totalJobs: false,
   totalUsers: true,
   availableCredits: true,
   consumedCredits: true,

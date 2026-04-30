@@ -56,7 +56,9 @@ export function PlanFilter<TData>({
     }
 
     if (planOptions.length > 0) {
-      const defaultPlan = [planOptions[0]];
+      const defaultPlan = planOptions.includes("Pro")
+        ? ["Pro"]
+        : [planOptions[0]];
       column?.setFilterValue(defaultPlan);
 
       const params = Object.fromEntries(searchParams.entries());

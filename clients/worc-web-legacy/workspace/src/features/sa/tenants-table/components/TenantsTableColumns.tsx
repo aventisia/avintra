@@ -8,6 +8,7 @@ import { TABLE_KEY } from "../constants";
 import { getColumnName } from "../constants/column-display-names";
 import { TenantsTableDto } from "../dtos/tenants-table-dto";
 import { formatSecondsToCompactDuration, round2 } from "../utils";
+import { formatBytes } from "../utils/file-uploader-util";
 import { TenantRowActions } from "./tenant-row-actions/TenantRowActions";
 
 /**
@@ -211,6 +212,28 @@ export const tenantsTableColumns: ColumnDef<TenantsTableDto>[] = [
 
   // METRICS
   {
+    accessorKey: "publishAgent",
+    header: ({ column }) => (
+      <DTColumnHeader
+        tableKey={TABLE_KEY}
+        column={column}
+        title={getColumnName("publishAgent")}
+      />
+    ),
+    cell: ({ row }) => row.getValue("publishAgent"),
+  },
+  {
+    accessorKey: "totalJobs",
+    header: ({ column }) => (
+      <DTColumnHeader
+        tableKey={TABLE_KEY}
+        column={column}
+        title={getColumnName("totalJobs")}
+      />
+    ),
+    cell: ({ row }) => row.getValue("totalJobs"),
+  },
+  {
     accessorKey: "totalUsers",
     header: ({ column }) => (
       <DTColumnHeader
@@ -264,7 +287,7 @@ export const tenantsTableColumns: ColumnDef<TenantsTableDto>[] = [
         title={getColumnName("storageSize")}
       />
     ),
-    cell: ({ row }) => row.getValue("storageSize"),
+    cell: ({ row }) => formatBytes(row.getValue("storageSize") || 0),
   },
 
   // FLAGS
