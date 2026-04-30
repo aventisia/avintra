@@ -14,6 +14,9 @@ interface IUserSessionStore {
   userRoles: string[];
   expiresOn: Date;
   avatarSrc?: string;
+
+  // TODO: Temporarily added for switch tenant feat
+  access_mode?: string;
 }
 
 export type deploymentType = "Commercial" | "Enterprise";
@@ -41,6 +44,9 @@ interface IJwtPayload {
   "http://schemas.microsoft.com/ws/2008/06/identity/claims/role": string[];
   plan: string;
   type: deploymentType;
+
+  // TODO: Temporarily added for switch tenant feat
+  access_mode?: string;
 }
 
 export { type IUserSessionStore, type IJwtPayload };

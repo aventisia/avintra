@@ -1,3 +1,7 @@
+import { logOffFromCurrentSession } from "@/react-toolkit/apis/accounts-me-apis";
+import { useUserSessionStore } from "@/react-toolkit/stores/user-session-store";
+import Lucide from "@/react-toolkit/ui/Lucide";
+
 import { Separator } from "@aventisia/ui";
 import { Avatar, AvatarFallback } from "@aventisia/ui/avatar";
 import { Button } from "@aventisia/ui/buttons";
@@ -11,10 +15,6 @@ import { useMutation } from "@tanstack/react-query";
 import { Loader2 } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import { useShallow } from "zustand/react/shallow";
-
-import { logOffFromCurrentSession } from "@/react-toolkit/apis/accounts-me-apis";
-import { useUserSessionStore } from "@/react-toolkit/stores/user-session-store";
-import Lucide from "@/react-toolkit/ui/Lucide";
 
 interface UserAccountModalProps {
   /** Additional class name to override popover content container style */
@@ -48,6 +48,8 @@ const UserAccountModal = ({
     onSuccess: (httpResponse) => {
       if (httpResponse.data) {
         setUserSession(null);
+        // TODO: Temporarily added for switch tenant feat
+        localStorage.removeItem("tenant_switch");
         navigate(
           "/redirect?msg=Logging out...&url=" +
             import.meta.env.VITE_ACCOUNTS_PATH,

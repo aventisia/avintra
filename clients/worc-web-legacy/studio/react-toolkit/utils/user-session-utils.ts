@@ -1,11 +1,11 @@
-import { jwtDecode } from "jwt-decode";
-
 import { SESSION_EXPIRED_LS_KEY } from "@/react-toolkit/constants";
 import { UserSessionDto } from "@/react-toolkit/dtos/response/user-session-dto";
 import {
   IJwtPayload,
   IUserSessionStore,
 } from "@/react-toolkit/types/user-session-types";
+
+import { jwtDecode } from "jwt-decode";
 
 const setUserSessionLocally = (
   userSession: UserSessionDto,
@@ -34,6 +34,9 @@ const setUserSessionLocally = (
     platformVersion: userSession.platformVersion,
     planType: decodedJwt?.plan,
     deploymentType: decodedJwt.type,
+
+    // TODO: Temporarily added for switch tenant feat
+    access_mode: decodedJwt.access_mode,
   };
 };
 

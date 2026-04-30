@@ -24,6 +24,7 @@ import { useShallow } from "zustand/react/shallow";
 import AgentName from "./AgentName";
 import { AppLogo } from "./AppLogo";
 import SearchCommandTrigger from "./Search";
+import { TenantSwitchBadge } from "./TenantSwitchBadge";
 import { HeaderActionMenu } from "./header-menu-actions";
 
 const AppHeader: React.FC = () => {
@@ -43,11 +44,11 @@ const AppHeader: React.FC = () => {
   const goBack = () => {
     window.location.href = `${import.meta.env.VITE_WORC_PATH}`;
   };
-
+  const isViewTenant = userSession?.access_mode == "read_only";
   return (
     <HeaderContainer className="bg-slate-200">
-      <Header>
-        <div className="flex w-2/5 items-center gap-3 text-white">
+      <Header className="grid p-0 grid-cols-[1fr_auto_1fr]">
+        <div className="flex items-center gap-3 min-w-0 text-white">
           {/* Back Button */}
           <Tooltip content="Back to Worc">
             <Button
@@ -67,18 +68,19 @@ const AppHeader: React.FC = () => {
           <span className="rotate-12 text-white/50">/</span>
 
           {/* Agent name */}
-          <AgentName />
+          <AgentName className={isViewTenant ?"max-w-56":""}/>
 
           {/* Version selector */}
           <FlowVersions />
+          {isViewTenant  && <TenantSwitchBadge />}
         </div>
-        <div className="flex w-1/5 justify-center">
+        <div className="flex items-center justify-center ">
           {userSession?.deploymentType == "Commercial" ? (
             <AvailableCredits />
           ) : null}{" "}
         </div>
         {!isAgentHistory && !isExecutionLog ? (
-          <div className="flex w-2/5 justify-end">
+          <div className="flex items-center  justify-end">
             <div>
               {isIndividualUser ? (
                 <Avatar className={cn("flex h-7 w-7")}>
@@ -112,7 +114,7 @@ const AppHeader: React.FC = () => {
             </div>
           </div>
         ) : (
-          <div className="flex w-2/5 items-center justify-end gap-1">
+          <div className="flex items-center gap-1 justify-end">
             <SearchCommandTrigger />
             <Button
               variant={"ghost"}

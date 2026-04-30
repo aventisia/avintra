@@ -14,6 +14,9 @@ interface IUserSessionStore {
   userRoles: string[];
   expiresOn: Date;
   avatarSrc?: string;
+
+  // TODO: Temporarily added for switch tenant feat
+  access_mode?: string;
 }
 
 export type deploymentType = "Commercial" | "Enterprise";
@@ -43,6 +46,9 @@ interface IJwtPayload {
   plan: string;
 
   type: deploymentType;
+
+  // TODO: Temporarily added for switch tenant feat
+  access_mode?: string;
 }
 
 export { type IUserSessionStore, type IJwtPayload };
