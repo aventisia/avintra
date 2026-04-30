@@ -15,6 +15,7 @@ import useWebSocket from "@/hooks/useWebSocket";
 import { ChatAssistant } from "@/react-toolkit/features/chat/ChatAssistant";
 import { useValidateUserSession } from "@/react-toolkit/hooks/useValidateUserSession";
 import { useAllowedRoutesStore } from "@/stores/allowed-routes-auth-store";
+import { useAppLoaderStore } from "@/stores/app-loader-store";
 import { useTuariUserMetadataStore } from "@/stores/tuari-user-metadata-store";
 import { getWebSocketUrl } from "@/utils/get-websocket-url";
 
@@ -28,6 +29,7 @@ import { useShallow } from "zustand/react/shallow";
 
 import AppBanner from "./AppBanner";
 import AppHeader from "./AppHeader";
+import { AppLoader } from "./AppLoader";
 import { AppRedirectPage } from "./AppRedirectPage";
 import { getSidebarMenuBasedOnPermissions } from "./sidebar-menu-sections";
 
@@ -48,7 +50,9 @@ export const AppLayout = () => {
         setSidebarMenuSections: state.setSidebarMenuSections,
       })),
     );
-
+  const { isLoading: isAppLoading } = useAppLoaderStore(
+    useShallow((state) => ({ isLoading: state.isLoading })),
+  );
   const { allowedRoutes, setAllowedRoutes } = useAllowedRoutesStore(
     useShallow((state) => ({
       allowedRoutes: state.allowedRoutes,
@@ -192,6 +196,8 @@ export const AppLayout = () => {
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [isPending, osID, userSession]);
+
+  if (isAppLoading) return <AppLoader />;
 
   return (
     <>
