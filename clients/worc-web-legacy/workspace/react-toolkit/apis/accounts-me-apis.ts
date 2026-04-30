@@ -1,9 +1,9 @@
-import { IHttpResponse } from "@aventisia/ui/dtos";
-import { toast } from "@aventisia/ui/sonner";
-
 import { UserSessionDto } from "@/react-toolkit/dtos/response/user-session-dto";
 import { axiosInstance } from "@/react-toolkit/lib/axios-instance";
 import { redirectToLoginOn401Util } from "@/react-toolkit/utils/redirect-util";
+
+import { IHttpResponse } from "@aventisia/ui/dtos";
+import { toast } from "@aventisia/ui/sonner";
 
 const baseAPIURL: string = `${import.meta.env.VITE_ACCOUNTS_API_PATH}/me`;
 
@@ -14,10 +14,17 @@ const getMySession = () => {
     .then((res) => res.data);
 };
 
+// TODO: Temporarily added for switch tenant feat
+const isTenantSwitch = localStorage.getItem("tenant_switch") == "true";
+
 /** Refreshes user session using cookies */
 const refreshSession = () => {
   return axiosInstance
-    .put<IHttpResponse<UserSessionDto>>(`${baseAPIURL}/refresh-session`)
+    .put<IHttpResponse<UserSessionDto>>(
+      isTenantSwitch
+        ? `${import.meta.env.VITE_ACCOUNTS_API_PATH}/sa/tenants/auth/tokens/refresh`
+        : `${baseAPIURL}/refresh-session`,
+    )
     .then((res) => res.data)
     .catch((error) => {
       // Show error toast
