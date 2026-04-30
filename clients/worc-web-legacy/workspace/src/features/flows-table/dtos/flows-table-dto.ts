@@ -24,6 +24,10 @@ export interface FlowsTableDto {
   name: string;
 
   /**
+   * Gets the latest version of the flow.
+   */
+  versionNumber?: number;
+  /**
    * Gets or sets the thumbnail of the flow.
    */
   thumbnail?: string;
