@@ -55,16 +55,22 @@ export function PlanFilter<TData>({
       return;
     }
 
-    if (planOptions.length > 0) {
+    if (planOptions?.length > 0) {
       const defaultPlan = planOptions.includes("Pro")
         ? ["Pro"]
         : [planOptions[0]];
       column?.setFilterValue(defaultPlan);
 
-      const params = Object.fromEntries(searchParams.entries());
+      //  Read live URL for query params
+      const params = Object.fromEntries(
+        new URLSearchParams(window.location.search).entries(),
+      );
+
       params[QUERY_KEY] = defaultPlan.join(",");
-      setSearchParams(params);
+
+      setSearchParams(params, { replace: true });
     }
+
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [planOptions]);
 

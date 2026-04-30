@@ -58,11 +58,14 @@ export const DateRangeFilter = () => {
 
     // If URL missing, push default to URL
     if (!urlRange) {
-      const params = Object.fromEntries(searchParams.entries());
+      //  Read live URL, for query params
+      const params = Object.fromEntries(
+        new URLSearchParams(window.location.search).entries(),
+      );
+
       Object.assign(params, rangeToParams(finalRange));
-      setTimeout(() => {
-        setSearchParams(params);
-      }, 100);
+
+      setSearchParams(params, { replace: true });
     }
 
     hydratedRef.current = true;
