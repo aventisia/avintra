@@ -1,0 +1,29 @@
+meta {
+  name: pgvector - delete document
+  type: http
+  seq: 3
+}
+
+delete {
+  url: {{LLM_PIPELINE_APIS_BASE_URL}}/vector-store/delete
+  body: json
+  auth: inherit
+}
+
+body:json {
+  {
+    "vector_store": "pgvector",
+    "kb_file_ids": [
+      "7846132a-7044-4f91-8be5-c9a75de39d6f"
+    ],
+    "kb_ids": [
+      "b73a3dc2-c5b0-4059-b316-081ff27b398b"
+    ],
+    "store_credential_id": null
+  }
+}
+
+settings {
+  encodeUrl: true
+  timeout: 0
+}
