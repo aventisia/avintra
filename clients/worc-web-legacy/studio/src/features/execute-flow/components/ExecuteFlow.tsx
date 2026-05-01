@@ -18,6 +18,7 @@ import { useShallow } from "zustand/react/shallow";
 
 import {
   CURRENT_VERSION_ID_KEY,
+  EXECUTION_LOG_KEY,
   clearNodeExecutionLog,
   doesFlowContainAnyDesktopOnlyNode,
   isEmptyFlow,
@@ -212,7 +213,7 @@ const ExecuteFlow = () => {
         wsPort,
         agentId: currentFlow.versionId,
         agentName: currentFlow.name,
-        inputArgumentsJson: JSON.stringify({}), // For manuall trigger we can send empty input arguments. 
+        inputArgumentsJson: JSON.stringify({}), // For manual trigger we can send empty input arguments.
         accessToken,
       });
       console.log("Executor launched successfully:", res);
@@ -222,7 +223,9 @@ const ExecuteFlow = () => {
 
       // Set versionId, nodes and edges in local storage for executor
       localStorage.setItem(CURRENT_VERSION_ID_KEY, currentFlow.versionId || "");
-      clearNodeExecutionLog();
+      // clearNodeExecutionLog();
+      // Removing the full execution log to prevent Error: QuotaExceededError: Failed to execute 'setltem' on 'Storage': Setting the value of 'nodes' exceeded the quota.
+      localStorage.removeItem(EXECUTION_LOG_KEY);
       localStorage.setItem("nodes", JSON.stringify(nodes));
       localStorage.setItem("edges", JSON.stringify(edges));
     } catch (error) {
