@@ -122,7 +122,7 @@ const sidebarMenuSections: SidebarMenuSectionExtended[] = [
       {
         permissions: ["OM"],
         Icon: BookOpenCheckIcon,
-        name: "knowledge base",
+        name: "knowledge bases",
         route: "/orchestrator/knowledge-base",
         type: ["Commercial", "Enterprise"],
       },
