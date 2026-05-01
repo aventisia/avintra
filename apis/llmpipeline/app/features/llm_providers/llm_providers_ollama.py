@@ -380,8 +380,6 @@ class OllamaProvider(BaseLLMProvider):
                 response.raise_for_status()
                 response_data = response.json()
 
-                logger.info(f"Ollama embedding response:\n{json.dumps(response_data, indent=2)}")
-
                 embeddings = [response_data.get("embedding")]
 
                 end_time = time.perf_counter()
