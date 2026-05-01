@@ -18,6 +18,7 @@ import AddFileDD from "./AddFileDropDown";
 // import FileUploadDisclaimer from "./FileUploadDisclaimer";
 import { KBFileUploadDialog } from "./KBFileUploadDialog";
 import { getKBFilesTableColumns } from "./KBFilesTableColumns";
+import { KBMetadataSummary } from "./KBMetadataSummary";
 import { KBRetrievalSection } from "./KBRetrievalSection";
 import { TableHeading } from "./TableHeading";
 
@@ -82,6 +83,7 @@ export const KBFilesTable = () => {
           </div>
           <div className="grid grid-cols-9 h-[calc(100vh-2.7*var(--header-height))] gap-3">
             <div className="col-span-6 space-y-4">
+              <KBMetadataSummary knowledgeBase={knowledgeBase} />
               {/* Data table to render data */}
               <DataTable table={table} columnsLength={columns.length} />
 
