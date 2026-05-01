@@ -602,8 +602,6 @@ class OpenRouterProvider(BaseLLMProvider):
                 response.raise_for_status()
                 response_data = response.json()
 
-                logger.info(f"OpenRouter embedding response:\n{json.dumps(response_data, indent=2)}")
-
                 # Extract embeddings
                 embeddings = [item["embedding"] for item in response_data.get("data", [])]
 
