@@ -27,7 +27,7 @@ export const columnDisplayNames: KeyValueLookupType[] = [
   { key: "availableCredits", value: "Available Credits" },
   { key: "consumedCredits", value: "Consumed Credits" },
   { key: "totalExecutionTime", value: "Execution Time" },
-  { key: "storageSize", value: "Storage Size" },
+  { key: "storageSize", value: "Storage" },
   { key: "publishAgent", value: "Publish Agent" },
   { key: "totalJobs", value: "Jobs" },
 

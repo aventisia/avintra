@@ -1,9 +1,11 @@
+import { CustomDTViewOptions } from "@/components/CustomDTViewOptions";
+
 import {
   DTCreateButton,
   DTHeading,
   DTPagination,
   DTSearchBox,
-  DTViewOptions,
+  // DTViewOptions,
   DataTable,
   DataTableSkeleton,
   getDataTablePreferences,
@@ -81,7 +83,7 @@ export const TenantsTable = () => {
                   data={data.data}
                   columnId="activePlan"
                 />{" "}
-                <DTViewOptions
+                <CustomDTViewOptions
                   {...{ table, columnDisplayNames, tableKey: TABLE_KEY }}
                 />
                 <DTCreateButton />
