@@ -600,20 +600,11 @@ class GeminiProvider(BaseLLMProvider):
             
         response_data = {}
         start_time = time.perf_counter()
-
-        # Gemini embedding endpoint payload
-        payload = {
-            "model": f"models/{embedding_request.model}",
-            "content": {
-                "parts": [
-                    {"text": text} for text in (
-                        embedding_request.input
-                        if isinstance(embedding_request.input, list)
-                        else [embedding_request.input]
-                    )
-                ]
-            }
-        }
+        input_texts = (
+            embedding_request.input
+            if isinstance(embedding_request.input, list)
+            else [embedding_request.input]
+        )
 
         headers = {
             "x-goog-api-key": self.api_key,
@@ -624,16 +615,40 @@ class GeminiProvider(BaseLLMProvider):
 
         try:
             async with httpx.AsyncClient(timeout=timeout) as client:
-                response = await client.post(
-                    f"{self.api_url}/models/{embedding_request.model}:embedContent",
-                    headers=headers,
-                    json=payload
-                )
+                # Gemini embedContent returns a single embedding. For multiple chunks,
+                # use batchEmbedContents to receive one embedding per input text.
+                if len(input_texts) > 1:
+                    payload = {
+                        "requests": [
+                            {
+                                "model": f"models/{embedding_request.model}",
+                                "content": {
+                                    "parts": [{"text": text}],
+                                },
+                            }
+                            for text in input_texts
+                        ]
+                    }
+                    response = await client.post(
+                        f"{self.api_url}/models/{embedding_request.model}:batchEmbedContents",
+                        headers=headers,
+                        json=payload,
+                    )
+                else:
+                    payload = {
+                        "model": f"models/{embedding_request.model}",
+                        "content": {
+                            "parts": [{"text": input_texts[0]}],
+                        },
+                    }
+                    response = await client.post(
+                        f"{self.api_url}/models/{embedding_request.model}:embedContent",
+                        headers=headers,
+                        json=payload,
+                    )
 
                 response.raise_for_status()
                 response_data = response.json()
-
-                logger.info(f"Gemini embedding response:\n{json.dumps(response_data, indent=2)}")
 
                 # Extract embeddings (Gemini structure)
                 embeddings = []
