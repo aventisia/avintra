@@ -1,28 +1,40 @@
 namespace WorkspaceAPIs.Entities;
 
 /// <summary>
-/// TODO: Since this is not Tenant specific, we can keep this entity in AccountsDb or WorcDb only on single place. Need to decide on that.
 /// Represents a predefined task for executing AI-related operations. 
 /// This task stores the configuration for LLM (Large Language Model) execution including the 
 /// input prompts, model settings, and output preferences.
 /// </summary>
-[Table("worc_AITasks")]
-public class AITask : BaseEntity
+[Table("worc_PromptTemplates")]
+public class PromptTemplate : BaseEntity, IMustHaveTenant
 {
+    /// <summary>
+    /// Gets or sets the tenant record's primary key for global filter (multi-tenancy architecture).
+    /// </summary>
+    public Guid TenantId { get; set; }
+
     /// <summary>
     /// Gets or sets the name of the task, used to identify and reference it within the system.
     /// </summary>
+    [MaxLength(255)]
     public required string Name { get; set; }
+
+    /// <summary>
+    /// Gets or sets the description of the flow. Max-500 characters.
+    /// </summary>
+    [MaxLength(500)]
+    public string? Description { get; set; }
+
+    /// <summary>
+    /// Gets or sets the access scope of the prompt template. This determines who can view and use the template (Self, Tenant, or Public).
+    /// </summary>
+    [Required]
+    public required PromptTemplateAccessTypeEnum AccessType { get; set; }
 
     /// <summary>
     /// Gets or sets the system-level input prompt template for the task, providing context or instructions for the LLM to process.
     /// </summary>
-    public string? SystemInput { get; set; }
-
-    /// <summary>
-    /// Gets or sets the user-level input prompt template, where dynamic user-provided data is injected for the task execution.
-    /// </summary>
-    public string? UserInput { get; set; }
+    public required string SystemInput { get; set; }
 
     /// <summary>
     /// Gets or sets the name of the model provider (e.g., OpenAI, Anthropic, etc.) used for task execution.

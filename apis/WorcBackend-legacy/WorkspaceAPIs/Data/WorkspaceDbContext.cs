@@ -90,6 +90,7 @@ public class WorkspaceDbContext : DbContext
         modelBuilder.Entity<ConversationMessage>().Property(e => e.Role).HasConversion(new EnumToStringConverter<ConversationMessageSenderEnum>());
         modelBuilder.Entity<KnowledgeBase>().Property(e => e.VectorStore).HasConversion(new EnumToStringConverter<VectorStoreEnum>());
         modelBuilder.Entity<KnowledgeBaseFile>().Property(e => e.Status).HasConversion(new EnumToStringConverter<VectorizationStatusEnum>());
+        modelBuilder.Entity<PromptTemplate>().Property(e => e.AccessType).HasConversion(new EnumToStringConverter<PromptTemplateAccessTypeEnum>());
 
         // Configure Many-to-Many relationship between User and Notification
         modelBuilder.Entity<WorkspaceUser>().HasMany(many => many.NotificationUsers).WithOne(one => one.User).HasForeignKey(fKey => fKey.UserId).IsRequired();
@@ -140,7 +141,7 @@ public class WorkspaceDbContext : DbContext
         modelBuilder.Entity<FlowVersionUser>().HasOne(one => one.FlowVersion).WithMany(many => many.FlowVersionUsers).HasForeignKey(fKey => fKey.FlowVersionId).IsRequired().OnDelete(DeleteBehavior.Cascade);
         modelBuilder.Entity<Conversation>().HasOne(one => one.FlowVersion).WithMany(many => many.Conversations).HasForeignKey(fKey => fKey.FlowVersionId).IsRequired().OnDelete(DeleteBehavior.Cascade);
         modelBuilder.Entity<ConversationMessage>().HasOne(one => one.Conversation).WithMany(many => many.Messages).HasForeignKey(fKey => fKey.ConversationId).IsRequired().OnDelete(DeleteBehavior.Cascade);
-        
+
         // Registers the pgvector extension in PostgreSQL.
         // CRITICAL: Must be enabled before migrations or any vector column usage, otherwise the application will fail at runtime.
         modelBuilder.HasPostgresExtension("vector");
@@ -210,7 +211,7 @@ public class WorkspaceDbContext : DbContext
     public DbSet<TriggerFlowVersion> TriggerFlowVersions { get; set; }
     public DbSet<AppSecret> AppSecrets { get; set; }
     public DbSet<EncryptedKeyValue> EncryptedKeyValues { get; set; }
-    public DbSet<AITask> AITasks { get; set; }
+    public DbSet<PromptTemplate> PromptTemplates { get; set; }
     public DbSet<OnPremModel> OnPremModels { get; set; }
     public DbSet<VectorStore> VectorStores { get; set; }
     public DbSet<KnowledgeBase> KnowledgeBases { get; set; }

@@ -68,7 +68,7 @@ public static class AppServicesExtension
         config.Apply(new EmailTriggerMappingProfile());
         config.Apply(new MessageTriggerMappingProfile());
         config.Apply(new WebhookTriggerMappingProfile());
-        config.Apply(new AITaskMappingProfile());
+        config.Apply(new PromptTemplateMappingProfile());
         config.Apply(new OnPremModelMappingProfile());
         config.Apply(new QueueWorkItemMappingProfile());
         config.Apply(new FlowVersionUserMappingProfile());
@@ -132,7 +132,7 @@ public static class AppServicesExtension
         services.AddSingleton<ConcurrentDictionary<Guid, ClientDataStore>>();
         services.AddScoped<IClientStatusStore, ClientStatusStore>();
         services.AddScoped<IJobsExecutorService, JobsExecutorService>();
-        services.AddScoped<IAITaskService, AITaskService>();
+        services.AddScoped<IPromptTemplateService, PromptTemplateService>();
         services.AddScoped<IProjectUsageService, ProjectUsageService>();
         services.AddScoped<IOnPremModelService, OnPremModelService>();
         services.AddScoped<ILLMProviderService, LLMProviderService>();

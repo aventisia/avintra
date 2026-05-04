@@ -1,0 +1,24 @@
+meta {
+  name: Delete multiple prompt templates
+  type: http
+  seq: 10
+}
+
+post {
+  url: {{WORC_APIS_BASE_URL}}/prompt-template/delete-multiple
+  body: json
+  auth: none
+}
+
+body:json {
+  ["{{PROMPT_TEMPLATE_ID}}"]
+}
+
+script:post-response {
+  if(res.getStatus() == 200){
+      bru.setGlobalEnvVar(
+        "PROMPT_TEMPLATE_ID", 
+        "00000000-0000-0000-0000-000000000000"
+      );
+  }
+}

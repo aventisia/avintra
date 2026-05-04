@@ -1,0 +1,11 @@
+meta {
+  name: Get prompt template by name
+  type: http
+  seq: 6
+}
+
+get {
+  url: {{WORC_APIS_BASE_URL}}/prompt-template/name/{{PROMPT_TEMPLATE_NAME}}
+  body: none
+  auth: none
+}
