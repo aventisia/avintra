@@ -97,13 +97,29 @@ class ElevenLabsSTTProvider(BaseSpeechToTextProvider):
         start_time = time.perf_counter()
 
         try:
-            # Handle BYOK or credit validation
+            # Handle authentication (BYOK) or validate user credits before making request
             self._handle_auth_and_credits(stt_request, user)
-            
+
+            # Start building query string with required parameter
+            query = f"model_id={stt_request.model}"
+
+            # Add language_code only if user provided it
+            # If not provided, provider will use default / auto-detect
+            if stt_request.language:
+                query += f"&language_code={stt_request.language}"
+
+            # Add audio_format only if provided
+            # Avoid sending empty query params like audio_format=
+            if stt_request.audio_format:
+                query += f"&audio_format={stt_request.audio_format}"
+
+            # Construct WebSocket URL with dynamic query parameters
+            # Replace https with wss for WebSocket connection
             url = self._create_url(
-                f"speech-to-text/realtime?model_id={stt_request.model}&language_code=en"
+                f"speech-to-text/realtime?{query}"
             ).replace("https://", "wss://")
 
+            # Prepare request headers (includes API key or BYOK credentials)
             headers = self._create_headers()
 
             # Input validation
@@ -287,19 +303,32 @@ class ElevenLabsSTTProvider(BaseSpeechToTextProvider):
 
         input_data = req.input
 
-        # Handle base64 string
+        # If input is a base64 string with metadata (e.g. "data:audio/wav;base64,..."),
+        # strip the prefix and keep only the raw base64 content
         if isinstance(input_data, str) and "," in input_data:
             input_data = input_data.split(",")[1]
 
+        # Decode base64 string into raw audio bytes
         file_bytes = base64.b64decode(input_data)
 
+        # Use provided audio format if available, otherwise default to "audio/mpeg"
+        # This helps the provider correctly interpret the file type
+        mime_type = req.audio_format or "audio/mpeg"
+
+        # Prepare multipart file payload for the API request
         files = {
-            "file": ("audio.mp3", file_bytes, "audio/mpeg")
+            "file": ("audio", file_bytes, mime_type)
         }
 
+        # Base form data with required model identifier
         data = {
             "model_id": req.model
         }
+
+        # Include language_code only if explicitly provided by the user
+        # If omitted, provider may auto-detect or use default language
+        if req.language:
+            data["language_code"] = req.language
 
         return files, data
 
