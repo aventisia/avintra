@@ -1,4 +1,4 @@
-namespace NodeLibrary.DataTransformations.Variables;
+namespace NodeLibrary.VariablesNodes;
 
 [DisplayName("Shuffle List"), Description("Randomly reorders the items in a list.")]
 [NodeMetadata(icon: "/assets/Variables.svg")]

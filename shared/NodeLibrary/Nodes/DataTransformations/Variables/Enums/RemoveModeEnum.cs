@@ -1,6 +1,4 @@
-using System.ComponentModel.DataAnnotations;
-
-namespace NodeLibrary.DataTransformations.Variables.Enums;
+namespace NodeLibrary.VariablesNodes.Enums;
 
 public enum RemoveModeEnum
 {

@@ -1,4 +1,4 @@
-namespace NodeLibrary.DataTransformations.Variables;
+namespace NodeLibrary.VariablesNodes;
 
 [DisplayName("Clear List"), Description("Removes all elements from the specified list.")]
 [NodeMetadata(icon: "/assets/Variables.svg")]

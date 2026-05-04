@@ -1,4 +1,4 @@
-namespace NodeLibrary.DataTransformations.Variables;
+namespace NodeLibrary.VariablesNodes;
 
 [DisplayName("Remove Duplicate Items From List"), Description("Removes duplicate items from a list using case-sensitive or case-insensitive comparison.")]
 [NodeMetadata(icon: "/assets/Variables.svg")]
@@ -43,7 +43,7 @@ public class RemoveDuplicateItemsFromListNode : BaseNode
         }
         catch (Exception ex)
         {
-            DeduplicatedList.Set(context, null);
+            DeduplicatedList.Set(context, null!);
             IsSuccess.Set(context, false);
             StatusMessage.Set(context, $"Error removing duplicates from list: {ex.Message}");
         }

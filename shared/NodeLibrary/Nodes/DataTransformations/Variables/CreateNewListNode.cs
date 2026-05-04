@@ -1,4 +1,4 @@
-namespace NodeLibrary.DataTransformations.Variables;
+namespace NodeLibrary.VariablesNodes;
 
 [DisplayName("Create New List"), Description("Creates a new empty list to be used in other activities.")]
 [NodeMetadata(icon: "/assets/Variables.svg")]

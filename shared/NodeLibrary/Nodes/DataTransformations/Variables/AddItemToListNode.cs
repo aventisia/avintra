@@ -1,4 +1,4 @@
-namespace NodeLibrary.DataTransformations.Variables;
+namespace NodeLibrary.VariablesNodes;
 
 [DisplayName("Add Item to List"), Description("Adds one or more items to a list. Converts types if necessary.")]
 [NodeMetadata(icon: "/assets/Variables.svg")]
@@ -35,7 +35,7 @@ public class AddItemToListNode : BaseNode
         }
         catch (Exception ex)
         {
-            ModifiedList.Set(context, null);
+            ModifiedList.Set(context, null!);
             IsSuccess.Set(context, false);
             StatusMessage.Set(context, $"Error adding item(s) to list: {ex.Message}");
         }

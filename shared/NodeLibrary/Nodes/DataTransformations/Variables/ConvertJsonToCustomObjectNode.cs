@@ -1,6 +1,4 @@
-using System.Text.Json;
-
-namespace NodeLibrary.DataTransformations.Variables;
+namespace NodeLibrary.VariablesNodes;
 
 [DisplayName("Convert JSON to Custom Object"), Description("Converts a JSON string into a strongly-typed custom object.")]
 [NodeMetadata(icon: "/assets/Variables.svg")]
@@ -35,7 +33,7 @@ public class ConvertJsonToCustomObjectNode : BaseNode
         }
         catch (Exception ex)
         {
-            CustomObject.Set(context, null);
+            CustomObject.Set(context, null!);
             IsSuccess.Set(context, false);
             StatusMessage.Set(context, $"Error converting JSON to object: {ex.Message}");
         }

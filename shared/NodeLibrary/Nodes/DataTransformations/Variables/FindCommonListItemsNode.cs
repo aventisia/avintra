@@ -1,4 +1,4 @@
-namespace NodeLibrary.DataTransformations.Variables;
+namespace NodeLibrary.VariablesNodes;
 
 [DisplayName("Find Common List Items"), Description("Finds common items between two lists and returns them as a new list.")]
 [NodeMetadata(icon: "/assets/Variables.svg")]

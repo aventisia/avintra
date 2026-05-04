@@ -1,6 +1,4 @@
-using System.Data;
-
-namespace NodeLibrary.DataTransformations.Variables;
+namespace NodeLibrary.VariablesNodes;
 
 [DisplayName("Retrieve Data Table Column Into List"), Description("Extracts data from a specified column of a data table into a list. The column can be identified by name or index.")]
 [NodeMetadata(icon: "/assets/Variables.svg")]
@@ -54,7 +52,7 @@ public class RetrieveDataTableColumnIntoListNode : BaseNode
         }
         catch (Exception ex)
         {
-            ColumnAsList.Set(context, null);
+            ColumnAsList.Set(context, null!);
             IsSuccess.Set(context, false);
             StatusMessage.Set(context, $"Error retrieving column into list: {ex.Message}");
         }

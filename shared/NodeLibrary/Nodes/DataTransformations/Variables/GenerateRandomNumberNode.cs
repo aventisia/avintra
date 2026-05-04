@@ -1,4 +1,4 @@
-namespace NodeLibrary.DataTransformations.Variables;
+namespace NodeLibrary.VariablesNodes;
 
 [DisplayName("Generate Random Number"), Description("Generates a random number or list of numbers within a specified range.")]
 [NodeMetadata(icon: "/assets/Variables.svg")]
