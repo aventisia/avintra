@@ -94,15 +94,16 @@ export const TriggerCrudForm = () => {
 
   const timezone = form.watch("timezone");
 
+  // sync expiry date with selected timezone
   useEffect(() => {
     const freq = Number(resubscribeFrequency);
     if (!freq || isNaN(freq) || !timezone) return;
 
-    // 1. Base date (now)
-    const now = new Date();
+    // 1. Get expiry date
+    const currDate = form.getValues("expiryDateTime") || new Date();
 
     // 2. Convert to selected timezone
-    const tzDate = applyTimeZoneOffset(now, timezone);
+    const tzDate = applyTimeZoneOffset(currDate, timezone);
 
     // 3. Add minutes in THAT timezone
     tzDate.setMinutes(tzDate.getMinutes() + freq);
