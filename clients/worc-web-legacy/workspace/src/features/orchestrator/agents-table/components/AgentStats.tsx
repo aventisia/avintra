@@ -1,4 +1,5 @@
 import NewAgentIcon from "@/components/NewAgentIcon";
+import { FlowTypesEnum } from "@/react-toolkit/enums/flow-types-enum";
 import { StatsCard } from "@/react-toolkit/ui/card/StatsCard";
 
 import Enumerable from "linq";
@@ -7,7 +8,6 @@ import { useEffect, useState } from "react";
 import { BsRobot } from "react-icons/bs";
 
 import type { AgentsTableDto } from "../dtos/agents-table-dto";
-import { FlowTypesEnum } from "@/react-toolkit/enums/flow-types-enum";
 
 type StatsProps = {
   data: AgentsTableDto[];
@@ -28,7 +28,10 @@ export const AgentStats = ({ data }: StatsProps) => {
     const totalData = Enumerable.from(data);
     setStats({
       totalMachineCount: totalData.sum((x) => x.machineCount ?? 0),
-      agents: totalData.count((x) => x.type === FlowTypesEnum.Agent || x.type === FlowTypesEnum.ChatAgent),
+      agents: totalData.count(
+        (x) =>
+          x.type === FlowTypesEnum.Agent || x.type === FlowTypesEnum.ChatAgent,
+      ),
       models: totalData.count((x) => x.type === "AI Model"),
       active: totalData.count((x) => x.isActive),
       inactive: totalData.count((x) => !x.isActive),
@@ -45,8 +48,8 @@ export const AgentStats = ({ data }: StatsProps) => {
         // description={`${stats?.agents} Agents & ${stats?.models} AI Models`}
       />
       <StatsCard
-        title={"Total Hosts"}
-        key={"Total Hosts"}
+        title={"Total Machines"}
+        key={"Total Machines"}
         mainText={stats?.totalMachineCount ?? 0}
         icon={<Monitor stroke="var(--primary)" className="h-10 w-10" />}
       />

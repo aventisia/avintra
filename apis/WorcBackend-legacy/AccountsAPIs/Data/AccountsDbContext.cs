@@ -37,10 +37,10 @@ public partial class AccountsDbContext : IdentityDbContext<
         base.OnModelCreating(builder);
 
         // Global TenantId filters
+        builder.Entity<AppIntegration>().HasQueryFilter(qf => qf.TenantId == CurrentTenantId);
+        builder.Entity<CreditUsage>().HasQueryFilter(qf => qf.TenantId == CurrentTenantId);
         if (CurrentTenantId != Guid.Empty)
         {
-            builder.Entity<AppIntegration>().HasQueryFilter(qf => qf.TenantId == CurrentTenantId);
-            builder.Entity<CreditUsage>().HasQueryFilter(qf => qf.TenantId == CurrentTenantId);
             builder.Entity<BillingDetail>().HasQueryFilter(qf => qf.TenantId == CurrentTenantId);
             builder.Entity<BillingHistory>().HasQueryFilter(qf => qf.TenantId == CurrentTenantId);
             builder.Entity<TenantSubscription>().HasQueryFilter(qf => qf.TenantId == CurrentTenantId);

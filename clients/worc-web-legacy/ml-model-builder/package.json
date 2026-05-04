@@ -12,7 +12,7 @@
     "preview": "vite preview"
   },
   "dependencies": {
-    "@aventisia/ui": "^0.0.69",
+    "@aventisia/ui": "^0.0.56",
     "@heroicons/react": "^2.2.0",
     "@hookform/resolvers": "^3.10.0",
     "@llamaindex/chat-ui": "^0.5.6",

@@ -1,3 +1,5 @@
+import { SliderField } from "@/components/Slider/SliderField";
+
 import { SelectField } from "@aventisia/ui/form";
 import {
   Controller,
@@ -6,7 +8,7 @@ import {
   useController,
   useFormContext,
 } from "react-hook-form";
-import { SliderField } from "@/components/Slider/SliderField";
+
 import { GroupedFieldsWrapper } from "./GroupedFieldsWrapper";
 
 interface MemoryConfigFieldProps {
@@ -32,23 +34,25 @@ const MemoryConfigField = ({ name }: MemoryConfigFieldProps) => {
   // Render the MemoryConfigField component
   return (
     <GroupedFieldsWrapper groupName="Configure Memory">
-      <SelectField
-        size="sm"
-        name={memoryProviderFieldName}
-        selectOptions={[
-          {
-            label: "Memory Provider 1",
-            value: "Memory Provider 1",
-            description: "",
-          },
-          {
-            label: "Memory Provider 2",
-            value: "Memory Provider 2",
-            description: "",
-          },
-        ]}
-        label="Memory Provider"
-      />
+      <div className="hidden">
+        <SelectField
+          size="sm"
+          name={memoryProviderFieldName}
+          selectOptions={[
+            {
+              label: "Memory Provider 1",
+              value: "Memory Provider 1",
+              description: "",
+            },
+            {
+              label: "Memory Provider 2",
+              value: "Memory Provider 2",
+              description: "",
+            },
+          ]}
+          label="Memory Provider"
+        />
+      </div>
 
       <Controller
         {...maxDataStoredField}

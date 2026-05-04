@@ -9,7 +9,7 @@ const DETAIL_DATA_QUERY_KEY = ["knowledgeBase-details"];
 /**
  * The heading for the knowledgeBase table.
  */
-const TABLE_HEADING = "Knowledge Base";
+const TABLE_HEADING = "Knowledge Bases";
 
 const TABLE_KEY = "knowledge-base";
 const DETAIL_TABLE_KEY = "knowledge-base-details";

@@ -57,7 +57,7 @@ export const TriggersTable = () => {
             <div className="flex items-center justify-between">
               <div className="flex items-center gap-2">
                 <DTHeading heading={TABLE_HEADING} />
-                {import.meta.env.MODE !== "production" && <TriggerTabs />}
+                <TriggerTabs />
               </div>
               <div className="flex items-center gap-2">
                 <DTSearchBox
