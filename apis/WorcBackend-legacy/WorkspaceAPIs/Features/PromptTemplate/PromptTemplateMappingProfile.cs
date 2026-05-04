@@ -1,23 +1,23 @@
 namespace WorkspaceAPIs.MappingProfiles;
 
 /// <summary>
-/// This class defines the mapping configurations for mapping between AITaskTableDto 
-/// and AITask entities using Mapster.
+/// This class defines the mapping configurations for mapping between PromptTemplateTableDto 
+/// and PromptTemplate entities using Mapster.
 /// </summary>
-public class AITaskMappingProfile : IRegister
+public class PromptTemplateMappingProfile : IRegister
 {
-    //Registers the mappings between DTOs and entities for AITask.
+    // Registers the mappings between DTOs and entities for PromptTemplate.
     public void Register(TypeAdapterConfig config)
     {
-        // Mapping for inserting or updating an AITask entity (from AITaskTableDto to AITask)
-        config.NewConfig<AITaskTableDto, AITask>()
+        // Mapping for inserting or updating a PromptTemplate entity (from PromptTemplateTableDto to PromptTemplate)
+        config.NewConfig<PromptTemplateTableDto, PromptTemplate>()
             .Ignore(dest => dest.Id)
             .Ignore(dest => dest.CreatedOn)
             .Ignore(dest => dest.LastModifiedOn)
             .IgnoreNullValues(true);
 
-        // Mapping for getting AITask record (from AITask to AITaskTableDto)
-        config.NewConfig<AITask, AITaskTableDto>()
+        // Mapping for getting PromptTemplate record (from PromptTemplate to PromptTemplateTableDto)
+        config.NewConfig<PromptTemplate, PromptTemplateTableDto>()
             .Map(dest => dest.CreatedBy, src =>
                 src.CreatedByUser != null ? $"{src.CreatedByUser.FirstName} {src.CreatedByUser.LastName}" : null)
             .Map(dest => dest.LastModifiedBy, src =>

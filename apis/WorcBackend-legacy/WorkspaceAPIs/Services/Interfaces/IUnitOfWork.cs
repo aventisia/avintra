@@ -31,7 +31,7 @@ public interface IUnitOfWork
     IFlowUserRepo FlowUserRepo { get; }
     IAppSecretRepo AppSecretRepo { get; }
     IEncryptedKeyValueRepo EncryptedKeyValueRepo { get; }
-    IAITaskRepo AITaskRepo { get; }
+    IPromptTemplateRepo PromptTemplateRepo { get; }
     IOnPremModelRepo OnPremModelRepo { get; }
     IConversationRepo ConversationRepo { get; }
     IConversationMessageRepo ConversationMessageRepo { get; }

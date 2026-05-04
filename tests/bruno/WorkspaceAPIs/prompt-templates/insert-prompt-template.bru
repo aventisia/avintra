@@ -1,0 +1,37 @@
+meta {
+  name: Insert prompt template
+  type: http
+  seq: 2
+}
+
+post {
+  url: {{WORC_APIS_BASE_URL}}/prompt-template
+  body: json
+  auth: none
+}
+
+body:json {
+  {
+    "name": "Example Prompt Template",
+    "description": "User-specific input data for the task.",
+    "accessType": "Self",
+    "systemInput": "The system-level input template for task execution.",
+    "modelProvider": "OpenAI",
+    "model": "GPT-4",
+    "isJsonOutput": true,
+    "jsonSchema": "{\"type\":\"object\",\"properties\":{\"output\":{\"type\":\"string\"}}}",
+    "maxOutputTokens": 1000,
+    "temperature": 0.7,
+    "topP": 0.9,
+    "stream": true,
+    "isDisabled": false
+  }
+}
+
+script:post-response {
+  if(res.getStatus() == 200){
+      bru.setGlobalEnvVar("PROMPT_TEMPLATE_ID",res.getBody().data.id);
+      bru.setGlobalEnvVar("SEARCH_KEY",res.getBody().data.name);
+      bru.setGlobalEnvVar("PROMPT_TEMPLATE_NAME",res.getBody().data.name);
+  }
+}
