@@ -85,7 +85,7 @@ const KnowledgeBaseConfigField = ({ name }: KnowledgeBaseConfigFieldProps) => {
       <MultiSelectField
         size="sm"
         name={knowledgeBaseFieldName}
-        label="Knowledge Base"
+        label="Knowledge Base(s)"
         placeholder="Select knowledge base(s)"
         selectOptions={knowledgeBaseSelectOptions}
       />

@@ -47,7 +47,7 @@
       "direction": "Input",
       "type": "knowledge-base-config",
       "name": "__KbConfig__Inferencing",
-      "label": "Knowledge Base",
+      "label": "Knowledge Base(s)",
       "defaultValue": {
         "knowledgeBase": [],
         "retrievalType": "Basic",

@@ -19,11 +19,7 @@ export const JobsTableCellLink = ({
   // Return the component
   return (
     <NavLink
-      to={
-        import.meta.env.MODE == "production"
-          ? rowId
-          : `${window.location.origin}${import.meta.env.VITE_AGENTBUILDER_PATH}execution-log?v=${versionId}&j=${rowId}`
-      }
+      to={`${window.location.origin}${import.meta.env.VITE_AGENTBUILDER_PATH}execution-log?v=${versionId}&j=${rowId}`}
       className={cn(
         buttonVariants({ variant: "link" }),
         "!h-8 w-auto cursor-pointer truncate font-medium text-foreground hover:text-primary",
