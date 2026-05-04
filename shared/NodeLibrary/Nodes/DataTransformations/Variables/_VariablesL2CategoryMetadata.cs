@@ -1,4 +1,4 @@
-﻿namespace NodeLibrary.DataTransformations.Variables;
+﻿namespace NodeLibrary.VariablesNodes;
 
 [NodeL2CategoryMetadata(
     label: "Variables",

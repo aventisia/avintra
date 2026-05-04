@@ -1,7 +1,7 @@
 using System.Linq.Dynamic.Core;
 using System.Linq.Expressions;
 
-namespace NodeLibrary.DataTransformations.Variables;
+namespace NodeLibrary.VariablesNodes;
 
 // IMPORTANT NOTE: DO NOT CHANGE THE NAME OF THIS class AND InArgument/OutArgument NAMES
 // THESE NAMES ARE BEING USED IN AGENT BUILDER REACT APP

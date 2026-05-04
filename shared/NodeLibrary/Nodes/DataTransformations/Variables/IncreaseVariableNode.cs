@@ -1,4 +1,4 @@
-namespace NodeLibrary.DataTransformations.Variables;
+namespace NodeLibrary.VariablesNodes;
 
 [DisplayName("Increase Variable"), Description("Increases a numeric variable by a specified value.")]
 [NodeMetadata(icon: "/assets/Variables.svg")]

@@ -1,6 +1,4 @@
-using Newtonsoft.Json;
-
-namespace NodeLibrary.DataTransformations.Variables;
+namespace NodeLibrary.VariablesNodes;
 
 [DisplayName("Parse Fragmented JSON List"), Description("Converts a list of JSON string fragments (e.g., from Add Item to List) into a list of proper objects.")]
 [NodeMetadata(icon: "/assets/Variables.svg")]
@@ -88,7 +86,7 @@ public class ParseFragmentedJsonListNode : BaseNode
         try
         {
             string json = "{" + string.Join(",", lines) + "}";
-            var obj = JsonConvert.DeserializeObject<Dictionary<string, object>>(json);
+            var obj = JsonSerializer.Deserialize<Dictionary<string, object>>(json);
             if (obj != null)
                 target.Add(obj);
         }

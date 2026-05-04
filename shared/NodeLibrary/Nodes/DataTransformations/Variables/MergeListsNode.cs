@@ -1,4 +1,4 @@
-namespace NodeLibrary.DataTransformations.Variables;
+namespace NodeLibrary.VariablesNodes;
 
 [DisplayName("Merge Lists"), Description("Merges two lists into a new list. The original lists remain unchanged.")]
 [NodeMetadata(icon: "/assets/Variables.svg")]
@@ -35,7 +35,7 @@ public class MergeListsNode : BaseNode
         }
         catch (Exception ex)
         {
-            MergedList.Set(context, null);
+            MergedList.Set(context, null!);
             IsSuccess.Set(context, false);
             StatusMessage.Set(context, $"Error merging lists: {ex.Message}");
         }

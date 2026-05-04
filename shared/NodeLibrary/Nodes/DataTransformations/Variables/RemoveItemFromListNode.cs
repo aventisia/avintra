@@ -1,6 +1,6 @@
-using NodeLibrary.DataTransformations.Variables.Enums;
+using NodeLibrary.VariablesNodes.Enums;
 
-namespace NodeLibrary.DataTransformations.Variables;
+namespace NodeLibrary.VariablesNodes;
 
 [DisplayName("Remove Item From List"), Description("Removes an item from a list by index or value.")]
 [NodeMetadata(icon: "/assets/Variables.svg")]

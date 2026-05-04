@@ -1,4 +1,4 @@
-namespace NodeLibrary.DataTransformations.Variables;
+namespace NodeLibrary.VariablesNodes;
 
 [DisplayName("Decrease Variable"), Description("Decreases a numeric variable by a specified value.")]
 [NodeMetadata(icon: "/assets/Variables.svg")]

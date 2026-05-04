@@ -1,6 +1,4 @@
-using System.ComponentModel.DataAnnotations;
-
-namespace NodeLibrary.DataTransformations.Variables;
+namespace NodeLibrary.VariablesNodes;
 
 [DisplayName("Truncate Number"), Description("Gets the integral or fractional digits of a numeric value, or rounds up/down the value to a specified number of decimal places.")]
 [NodeMetadata(icon: "/assets/Variables.svg")]

@@ -1,4 +1,4 @@
-namespace NodeLibrary.DataTransformations.Variables;
+namespace NodeLibrary.VariablesNodes;
 
 [DisplayName("Reverse List"), Description("Reverses the order of items in a list.")]
 [NodeMetadata(icon: "/assets/Variables.svg")]
@@ -31,7 +31,7 @@ public class ReverseListNode : BaseNode
         }
         catch (Exception ex)
         {
-            ReversedList.Set(context, null);
+            ReversedList.Set(context, null!);
             IsSuccess.Set(context, false);
             StatusMessage.Set(context, $"Error reversing list: {ex.Message}");
         }

@@ -1,6 +1,4 @@
-using System.ComponentModel.DataAnnotations;
-
-namespace NodeLibrary.DataTransformations.Variables;
+namespace NodeLibrary.VariablesNodes;
 
 [DisplayName("Sort List"), Description("Sorts a list by one or more properties. Supports ascending or descending order.")]
 [NodeMetadata(icon: "/assets/Variables.svg")]
@@ -94,7 +92,7 @@ public class SortListNode : BaseNode
         }
         catch (Exception ex)
         {
-            SortedList.Set(context, null);
+            SortedList.Set(context, null!);
             IsSuccess.Set(context, false);
             StatusMessage.Set(context, $"Error sorting list: {ex.Message}");
         }

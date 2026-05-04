@@ -1,4 +1,4 @@
-namespace NodeLibrary.DataTransformations.Variables;
+namespace NodeLibrary.VariablesNodes;
 
 [DisplayName("Subtract Lists"), Description("Removes items from the first list that exist in the second list.")]
 [NodeMetadata(icon: "/assets/Variables.svg")]
