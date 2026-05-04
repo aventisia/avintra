@@ -52,21 +52,18 @@ public class CreditUsageService : ICreditUsageService
                 serviceResponse.Message = "Tenant not found.";
                 return serviceResponse;
             }
-            // Log the incoming request and filters for traceability
-            _logger.LogInformation("Starting credit usage fetch. Filters - StartDate: {Start}, EndDate: {End}",
-                startDate, endDate);
 
             // Build the query for CreditUsage with optional filters
             var creditUsageQuery = _unitOfWork.CreditUsageRepo
                     .GetByConditionAsync(w =>
-                        w.UsedAt.Date >= startDate.Value && w.UsedAt.Date <= endDate.Value
+                        w.UsedAt.Date >= startDate.Value && w.UsedAt.Date <= endDate.Value &&
+                        w.TenantId == _tenantId
                     )
                     .Include(i => i.UsedByUser)
                     .AsQueryable();
 
             // Execute the query and retrieve filtered credit usage data
             var creditUsages = await creditUsageQuery.ToListAsync();
-            _logger.LogInformation("Fetched {Count} credit usage records after filtering.", creditUsages.Count);
 
             // Load all credit plan definitions from DB (used to match service type details)
             var creditPlans = await _unitOfWork.CreditPlanRepo.GetAllAsync().Select(s => new
@@ -224,9 +221,6 @@ public class CreditUsageService : ICreditUsageService
             serviceResponse.Data = creditUsageDto;
             serviceResponse.StatusCode = 200;
             serviceResponse.Message = "Credit usage data retrieved successfully.";
-
-            // Log success
-            _logger.LogInformation("Successfully generated credit usage summary.");
         }
         catch (Exception ex)
         {
@@ -249,9 +243,6 @@ public class CreditUsageService : ICreditUsageService
 
         try
         {
-            _logger.LogInformation("Initiating credit usage insertion for User ID: {UserId}, Service Type: {ServiceType}",
-                creditUsageDto.UsedByUserId, creditUsageDto.ServiceType);
-
             var tenant = await _unitOfWork.TenantRepo
                 .GetByConditionAsync(w => w.Id == _tenantId)
                 .FirstOrDefaultAsync();
@@ -373,10 +364,6 @@ public class CreditUsageService : ICreditUsageService
             serviceResponse.Data = true;
             serviceResponse.StatusCode = 200;
             serviceResponse.Message = "Credit usage recorded successfully.";
-
-            // Log success with relevant details
-            _logger.LogInformation("Credit usage successfully recorded for User ID: {UserId}, Service Type: {ServiceType}.",
-                creditUsageDto.UsedByUserId, creditUsageDto.ServiceType);
         }
         catch (Exception ex)
         {
@@ -400,8 +387,6 @@ public class CreditUsageService : ICreditUsageService
 
         try
         {
-            _logger.LogInformation("Initiating multiple credit usage insertions for {Count} records.", creditUsageDtos.Count());
-
             var tenant = await _unitOfWork.TenantRepo
                 .GetByConditionAsync(w => w.Id == _tenantId)
                 .FirstOrDefaultAsync();
@@ -523,9 +508,6 @@ public class CreditUsageService : ICreditUsageService
             serviceResponse.Data = true;
             serviceResponse.StatusCode = 200;
             serviceResponse.Message = "Credit usage records recorded successfully.";
-
-            // Log success with relevant details
-            _logger.LogInformation("{Count} credit usage records successfully recorded for TenantId: {TenantId}.", creditUsageDtos.Count(), _tenantId);
         }
         catch (Exception ex)
         {
@@ -631,9 +613,6 @@ public class CreditUsageService : ICreditUsageService
                 .ProjectToType<ExportCreditUsageResponseDto>()
                 .ToListAsync();
 
-            // Log the count of credit usage records being exported
-            _logger.LogInformation("Exporting {Count} credit usage record(s) based on applied filters.", creditUsages.Count);
-
             // Load all credit plan definitions from DB (used to match service type details)
             var creditPlans = await _unitOfWork.CreditPlanRepo.GetAllAsync().Select(s => new
             {
@@ -674,8 +653,6 @@ public class CreditUsageService : ICreditUsageService
             serviceResponse.Data = fileResult;
             serviceResponse.StatusCode = 200;
             serviceResponse.Message = "Credit usage data exported successfully.";
-
-            _logger.LogInformation("Credit usage export completed. File generated: {FileName}", fileResult.FileDownloadName);
         }
         catch (Exception ex)
         {
@@ -706,9 +683,6 @@ public class CreditUsageService : ICreditUsageService
                 return serviceResponse;
             }
 
-            // Log the start of the credit retrieval process
-            _logger.LogInformation("Starting credit retrieval for user: {UserId}", _userId);
-
             // Handle credit retrieval for Commercial tenants
             if (_environmentConfig.OnPremTenantType == OnPremTenantTypesEnum.Commercial.ToString())
             {
@@ -737,8 +711,6 @@ public class CreditUsageService : ICreditUsageService
             // Update response with successful data
             serviceResponse.StatusCode = 200;
             serviceResponse.Message = "Available credits fetched successfully.";
-
-            _logger.LogInformation("Credit balance successfully retrieved for user: {UserId}", _userId);
         }
         catch (Exception ex)
         {
@@ -760,9 +732,6 @@ public class CreditUsageService : ICreditUsageService
 
         try
         {
-            // Log the start of the summary retrieval process
-            _logger.LogInformation("Starting credit summary retrieval for user: {UserId}", _userId);
-
             // Fetch available tenant credits for the current user
             var availableCreditsQuery = _unitOfWork.TenantCreditRepo
                 .GetByConditionAsync(w =>
@@ -790,8 +759,6 @@ public class CreditUsageService : ICreditUsageService
             serviceResponse.Data = availableCreditDto;
             serviceResponse.StatusCode = 200;
             serviceResponse.Message = "Credit summary retrieved successfully.";
-
-            _logger.LogInformation("Credit summary successfully retrieved for user: {UserId}", _userId);
         }
         catch (Exception ex)
         {
