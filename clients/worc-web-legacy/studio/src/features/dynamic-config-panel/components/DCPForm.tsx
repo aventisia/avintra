@@ -23,7 +23,7 @@ import { DCPTabsList } from "./dcp-tabs/DCPTabsList";
 import { DCPTabsListWrapper } from "./dcp-tabs/DCPTabsListWrapper";
 import { DCPTabsTrigger } from "./dcp-tabs/DCPTabsTrigger";
 import { DCPTabsWrapper } from "./dcp-tabs/DCPTabsWrapper";
-import TestTabContent from "./dcp-tabs/test-tab/TestTabContent";
+import TestTabContent from "./dcp-tabs/node-test-tab/TestTabContent";
 
 export const DCPForm = () => {
   const [showOuputFields, setShowOutputFields] = useState(false);

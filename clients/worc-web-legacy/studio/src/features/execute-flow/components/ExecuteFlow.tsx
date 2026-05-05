@@ -19,7 +19,7 @@ import { useShallow } from "zustand/react/shallow";
 import {
   CURRENT_VERSION_ID_KEY,
   EXECUTION_LOG_KEY,
-  clearNodeExecutionLog,
+  // clearNodeExecutionLog,
   doesFlowContainAnyDesktopOnlyNode,
   isEmptyFlow,
   isValidFlowGraph,

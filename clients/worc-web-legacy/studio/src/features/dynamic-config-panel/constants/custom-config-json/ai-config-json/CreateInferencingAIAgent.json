@@ -1,7 +1,7 @@
 {
   "name": "CreateInferencingAIAgent",
-  "label": "Inferencing Model",
-  "description": "Inferencing Model.",
+  "label": "Text AI",
+  "description": "Text AI.",
   "version": "1.0.0",
   "auther": "@aventisia",
   "supportedPlatforms": ["cloud", "desktop"],

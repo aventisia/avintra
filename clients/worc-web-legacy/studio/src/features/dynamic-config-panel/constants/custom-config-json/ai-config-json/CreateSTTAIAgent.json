@@ -1,6 +1,6 @@
 {
   "name": "CreateSTTAIAgent",
-  "label": "Speech To Text Model",
+  "label": "Speech To Text",
   "description": "Convert spoken language into written text using AI.",
   "version": "1.0.0",
   "auther": "@aventisia",
@@ -13,14 +13,10 @@
       "type": "model-config-select",
       "name": "__ModelConfig__SpeechToText",
       "defaultValue": {
-        "is_byok_enabled": false,
-        "provider": "openai",
+        "is_byok_enabled": true,
+        "provider": "elevenlabs",
         "credential_id": "",
-        "model": "gpt-4o-mini",
-        "temperature": 1,
-        "top_p": 1,
-        "is_json_output": true,
-        "max_output_tokens": 50
+        "model": "scribe_v2"
       },
       "required": false,
       "category": "Models"
@@ -30,27 +26,18 @@
       "type": "text",
       "name": "files",
       "label": "Files",
+      "required": false,
+      "category": "Inputs"
+    },
 
-      "required": false,
-      "category": "Models"
-    },
-    {
-      "direction": "Input",
-      "type": "prompt-input",
-      "name": "prompt",
-      "required": false,
-      "min": 22,
-      "defaultValue": "",
-      "category": "Prompt"
-    },
     {
       "direction": "Output",
       "type": "config-panel-output",
-      "name": "AIModelResult",
+      "name": "STTResponse",
       "label": "Button Clicked Successfully",
-      "description": "AI Model Result.",
+      "description": "STT Response.",
       "defaultValue": {
-        "value": "AIModelResult",
+        "value": "STTResponse",
         "enabled": true
       },
       "required": false,
