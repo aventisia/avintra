@@ -13,7 +13,7 @@ from app.core.config import settings
 from app.core.logger import logger, log_exception
 from app.core.vault_manager import VaultManager
 from app.core.credit_manager import CreditManagerService
-
+from app.core.file_converter import FileToBase64Converter
 from app.features.auth.authenticated_user import User
 from app.features.stt_providers.stt_providers_schema import (
     STTProviderRequest,
@@ -100,6 +100,14 @@ class ElevenLabsSTTProvider(BaseSpeechToTextProvider):
             # Handle authentication (BYOK) or validate user credits before making request
             self._handle_auth_and_credits(stt_request, user)
 
+            # Handle audio input
+            converter = FileToBase64Converter()
+            base64_uri = converter.convert_to_base64(stt_request.input)
+        
+            # Split into MIME type and base64 content
+            header, base64_str = base64_uri.split(",", 1)
+            mime_type = header.split(";")[0].replace("data:", "")
+
             # Start building query string with required parameter
             query = f"model_id={stt_request.model}"
 
@@ -107,11 +115,6 @@ class ElevenLabsSTTProvider(BaseSpeechToTextProvider):
             # If not provided, provider will use default / auto-detect
             if stt_request.language:
                 query += f"&language_code={stt_request.language}"
-
-            # Add audio_format only if provided
-            # Avoid sending empty query params like audio_format=
-            if stt_request.audio_format:
-                query += f"&audio_format={stt_request.audio_format}"
 
             # Construct WebSocket URL with dynamic query parameters
             # Replace https with wss for WebSocket connection
@@ -122,23 +125,8 @@ class ElevenLabsSTTProvider(BaseSpeechToTextProvider):
             # Prepare request headers (includes API key or BYOK credentials)
             headers = self._create_headers()
 
-            # Input validation
-            audio_bytes = stt_request.input
-
-            if not audio_bytes:
-                raise ValueError("Empty audio input")
-
-            if isinstance(audio_bytes, str):
-                if audio_bytes.startswith("http"):
-                    async with httpx.AsyncClient(timeout=300) as client:
-                        resp = await client.get(audio_bytes)
-                        resp.raise_for_status()
-                        audio_bytes = resp.content
-                else:
-                    try:
-                        audio_bytes = base64.b64decode(audio_bytes)
-                    except Exception:
-                        raise ValueError("Invalid base64 audio input")
+            # Decode base64 into raw bytes for streaming
+            audio_bytes = base64.b64decode(base64_str)
 
             if not isinstance(audio_bytes, (bytes, bytearray)):
                 raise ValueError("Audio must be bytes")
@@ -300,22 +288,20 @@ class ElevenLabsSTTProvider(BaseSpeechToTextProvider):
         }
 
     def _create_request_payload(self, req: STTProviderRequest):
+        converter = FileToBase64Converter()
 
-        input_data = req.input
+        # Convert input to base64 string and get MIME type
+        # We'll return both base64 and MIME from converter for safety
+        base64_uri = converter.convert_to_base64(req.input)
 
-        # If input is a base64 string with metadata (e.g. "data:audio/wav;base64,..."),
-        # strip the prefix and keep only the raw base64 content
-        if isinstance(input_data, str) and "," in input_data:
-            input_data = input_data.split(",")[1]
+        # Split into MIME type and base64 content
+        header, base64_str = base64_uri.split(",", 1)
+        mime_type = header.split(";")[0].replace("data:", "")
 
-        # Decode base64 string into raw audio bytes
-        file_bytes = base64.b64decode(input_data)
+        # Decode to bytes
+        file_bytes = base64.b64decode(base64_str)
 
-        # Use provided audio format if available, otherwise default to "audio/mpeg"
-        # This helps the provider correctly interpret the file type
-        mime_type = req.audio_format or "audio/mpeg"
-
-        # Prepare multipart file payload for the API request
+        # Prepare multipart file payload for API request
         files = {
             "file": ("audio", file_bytes, mime_type)
         }
@@ -325,8 +311,7 @@ class ElevenLabsSTTProvider(BaseSpeechToTextProvider):
             "model_id": req.model
         }
 
-        # Include language_code only if explicitly provided by the user
-        # If omitted, provider may auto-detect or use default language
+        # Include language_code only if explicitly provided
         if req.language:
             data["language_code"] = req.language
 
@@ -340,7 +325,6 @@ class ElevenLabsSTTProvider(BaseSpeechToTextProvider):
             status="processing",
             output="",
             stream=req.stream,
-            audio_format=req.audio_format,
             language=req.language,
             credentials_id=req.credentials_id,
             is_byok_enabled=req.is_byok_enabled,
@@ -391,7 +375,7 @@ class ElevenLabsSTTProvider(BaseSpeechToTextProvider):
                 
                 credit_usage = {
                     "ServiceType": service_type,
-                    "ConsumedUnit": base_response.character_count,
+                    "ConsumedUnit": base_response.token_count,
                     "RefType": req.ref_type,
                     "RefId": req.ref_id,
                     "RefName": req.ref_name,

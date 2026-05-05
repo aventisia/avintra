@@ -8,10 +8,9 @@ class STTProviderRequest(BaseModel):
     Standard request schema for all STT providers.
     """
 
-    input: Union[bytes, str, HttpUrl]
+    input: Union[str, HttpUrl]
     provider: str
     model: str
-    audio_format: Optional[str] = Field("audio/wav")
     language: Optional[str] = Field(None)
     stream: bool = Field(False)
     credentials_id: Optional[str] = Field(None)
