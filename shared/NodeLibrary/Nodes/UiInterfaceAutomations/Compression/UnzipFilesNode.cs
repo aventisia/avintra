@@ -80,7 +80,7 @@ public class UnzipFilesNode : BaseNode
     private static bool MatchesMask(string fileName, string mask)
     {
         if (string.IsNullOrEmpty(mask)) return true;
-        foreach (var pattern in mask.Split([';'], StringSplitOptions.RemoveEmptyEntries))
+        foreach (var pattern in mask.Split(';', StringSplitOptions.RemoveEmptyEntries))
         {
             var regexPattern = "^" + Regex.Escape(pattern.Trim()).Replace("\\*", ".*").Replace("\\?", ".") + "$";
             if (Regex.IsMatch(fileName, regexPattern, RegexOptions.IgnoreCase))
