@@ -13,7 +13,7 @@ import { Button } from "@aventisia/ui/buttons";
 import { AlertCircle, ChevronLeft } from "lucide-react";
 import { useEffect, useState } from "react";
 
-import AIAudioPlayer from "./AIAudioPlayer";
+import AudioPlayer from "./AudioPlayer";
 import ExecuteButton from "./ExecuteButton";
 import FileUploadStep from "./FileUploadStep";
 import STTInputStep, { STTInputValue } from "./STTInputStep";
@@ -134,9 +134,11 @@ const ModelTestContent = ({
            * Pass the format from the response when available so the player
            * constructs the correct data URL scheme (e.g. audio/wav vs audio/mpeg).
            */}
-          <AIAudioPlayer
-            base64Data={ttsData.output}
-            format="audio/mpeg" // ElevenLabs default; swap for ttsData.format if BE adds it
+          <AudioPlayer
+            src={ttsData.output}
+            format="audio/mpeg"
+            title="Generated Speech"
+            autoPlay={false} // TODO: Auto-play makes sense here after execution
           />
         </div>
       );

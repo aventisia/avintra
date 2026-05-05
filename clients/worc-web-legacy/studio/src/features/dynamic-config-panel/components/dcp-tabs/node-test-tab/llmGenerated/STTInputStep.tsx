@@ -7,7 +7,7 @@ import { FileMusicIcon } from "lucide-react";
 import { useState } from "react";
 import { useDropzone } from "react-dropzone";
 
-import STTFilePreview from "./STTFilePreview";
+import AudioPlayer from "./AudioPlayer";
 
 export interface STTInputValue {
   mode: STTInputMode;
@@ -133,10 +133,7 @@ const STTInputStep = ({ onNext }: STTInputStepProps) => {
                * STTFilePreview handles the object URL lifecycle and renders
                * a native <audio> player for preview before submission.
                */
-              <STTFilePreview
-                file={file}
-                onRemove={() => setFile(null)} // Let user re-pick without leaving the step
-              />
+              <AudioPlayer src={file} onRemove={() => setFile(null)} />
             )}
           </div>
         )}
