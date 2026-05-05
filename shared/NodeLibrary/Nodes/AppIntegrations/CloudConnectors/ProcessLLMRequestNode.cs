@@ -50,7 +50,7 @@ public class ProcessLLMRequestNode : BaseNode
             if (filesList != null && formattedFilesList?.Count != filesList.Count)
                 throw new FileNotFoundException("One or more files in the provided Files List were not found.");
 
-            var baseUrl = Environment.GetEnvironmentVariable("APP_BASE_URL");
+            var baseUrl = AppConfigHelper.ResolveAppBaseUrl();
             var apiUrl = $"https://{baseUrl}/llmpipeline/api/llm/generate";
             var kbIds = GetStringArrayProperty(kbConfig, "knowledgeBase");
             var hasKbIds = kbIds is { Count: > 0 };

@@ -34,7 +34,7 @@ public class ProcessConnectorRequestNode : BaseNode
             var agentName = AgentName.Get(context);
             var accessToken = AccessToken.Get(context);
 
-            var baseUrl = Environment.GetEnvironmentVariable("APP_BASE_URL");
+            var baseUrl = AppConfigHelper.ResolveAppBaseUrl();
             var apiUrl = $"https://{baseUrl}/worc/api/cloud-connector/{provider?.ToLower()}/invoke";
 
             var requestObj = new
