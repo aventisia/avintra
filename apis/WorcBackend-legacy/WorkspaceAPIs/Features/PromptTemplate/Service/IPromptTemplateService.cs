@@ -67,4 +67,12 @@ public interface IPromptTemplateService
     /// <param name="templateName">The name (or part of the name) of the prompt templates to search for.</param>
     /// <returns>A ServiceResponse containing a collection of prompt template DTOs that match the search term.</returns>
     Task<ServiceResponse<IEnumerable<PromptTemplateTableDto>>> SearchPromptTemplatesByNameAsync(string templateName);
+
+    /// <summary>
+    /// Retrieves a list of prompt templates formatted as select options.
+    /// </summary>
+    /// <returns>
+    /// A collection of <see cref="SelectOptionDto"/> representing prompt templates for use in dropdowns or selection controls.
+    /// </returns>
+    Task<ServiceResponse<IEnumerable<SelectOptionDto>>> GetPromptTemplateOptionsAsync();
 }

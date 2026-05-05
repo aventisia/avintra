@@ -74,4 +74,11 @@ public class PromptTemplateController : BaseApiController
     {
         return ResultHelper(await _promptTemplateService.SearchPromptTemplatesByNameAsync(templateName));
     }
+
+    // Get select options
+    [HttpGet("select-options")]
+    public async Task<ActionResult<ServiceResponse<IEnumerable<SelectOptionDto>>>> GetSelectOptions()
+    {
+        return ResultHelper(await _promptTemplateService.GetPromptTemplateOptionsAsync());
+    }
 }
