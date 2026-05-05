@@ -8,3 +8,10 @@ export interface ModelConfigType {
   is_json_output: boolean;
   max_output_tokens: number;
 }
+
+export interface VoiceConfigType {
+  language: string;
+  voice: string;
+  speed: number;
+  pitch: number;
+}

@@ -1,24 +1,27 @@
+import { SliderField } from "@/components/Slider/SliderField";
+import { JsonEditorField } from "@/components/json-editor/JsonEditorField";
+
 import {
   InputField,
   MultiSelectField,
   SelectField,
   SwitchField,
 } from "@aventisia/ui/form";
+
 import {
   ConditionGroupsField,
   ConfigPanelAutosizeTextareaField,
   ConfigPanelOuputField,
   DCPFieldSchemaType,
 } from "..";
-import { CredentialsSelectField } from "./fields-for-form/CredentialsSelectField";
 import { ConfigPanelModelOutputField } from "./fields-for-form/ConfigPanelModelOutputField";
-import { ModelConfigField } from "./fields-for-form/ModelConfigField";
-import { SliderField } from "@/components/Slider/SliderField";
-import { PromptConfigField } from "./fields-for-form/prompt-field/PromptField";
+import { CredentialsSelectField } from "./fields-for-form/CredentialsSelectField";
 import { KnowledgeBaseConfigField } from "./fields-for-form/KnowledgeBaseConfigField";
 import { MemoryConfigField } from "./fields-for-form/MemoryConfigField";
-import { JsonEditorField } from "@/components/json-editor/JsonEditorField";
+import { ModelConfigField } from "./fields-for-form/ModelConfigField";
 import { QueueSelectorField } from "./fields-for-form/QueueSelectorField";
+import { VoiceConfigField } from "./fields-for-form/VoiceConfigField";
+import { PromptConfigField } from "./fields-for-form/prompt-field/PromptField";
 import { QueueConditionGroupsField } from "./queue-condition-groups/QueueConditionGroupsField";
 import { QueuePriorityGroupsField } from "./queue-condition-groups/QueuePriorityGroupsField";
 
@@ -71,6 +74,8 @@ export const RenderField = (field: DCPFieldSchemaType) => {
       return <ConfigPanelModelOutputField {...baseProps} />;
     case "model-config-select":
       return <ModelConfigField name={field.name} />;
+    case "voice-config-select":
+      return <VoiceConfigField name={field.name} />;
     case "prompt-input":
       return <PromptConfigField {...baseProps} rows={field.min ?? 5} />;
     case "multi-selector":

@@ -167,6 +167,51 @@ function getModelConfigSchema(field: DCPFieldSchemaType): ZodTypeAny {
   });
 }
 
+export function getVoiceConfigSchema(field: DCPFieldSchemaType): ZodTypeAny {
+  // 1. Explicitly type variables as ZodTypeAny so they can accept the ZodDefault wrapper later
+  let languageSchema: ZodTypeAny = z.string();
+  let voiceSchema: ZodTypeAny = z.string();
+  let speedSchema: ZodTypeAny = z.number().min(0.25).max(4.0);
+  let pitchSchema: ZodTypeAny = z.number().min(0.5).max(2.0);
+
+  // 2. Reassign the variables with the newly generated default schemas
+  if (field.defaultValue && typeof field.defaultValue === "object") {
+    if ("language" in field.defaultValue) {
+      languageSchema = z
+        .string()
+        .default(field.defaultValue.language as string);
+    }
+
+    if ("voice" in field.defaultValue) {
+      voiceSchema = z.string().default(field.defaultValue.voice as string);
+    }
+
+    if ("speed" in field.defaultValue) {
+      speedSchema = z
+        .number()
+        .min(0.25)
+        .max(4.0)
+        .default(field.defaultValue.speed as number);
+    }
+
+    if ("pitch" in field.defaultValue) {
+      pitchSchema = z
+        .number()
+        .min(0.5)
+        .max(2.0)
+        .default(field.defaultValue.pitch as number);
+    }
+  }
+
+  // 3. Return the final object
+  return z.object({
+    language: languageSchema,
+    voice: voiceSchema,
+    speed: speedSchema,
+    pitch: pitchSchema,
+  });
+}
+
 function getKnowledgeBaseConfigSchema(field: DCPFieldSchemaType): ZodTypeAny {
   // Start by defining the schema without default values
   const knowledgeBaseSchema = z.preprocess((val) => {
@@ -311,6 +356,8 @@ function getZodType(field: DCPFieldSchemaType): ZodTypeAny {
       return getNodeOutputSchema(field);
     case "model-config-select":
       return getModelConfigSchema(field);
+    case "voice-config-select":
+      return getVoiceConfigSchema(field);
     case "knowledge-base-config":
       return getKnowledgeBaseConfigSchema(field);
     case "memory-config":

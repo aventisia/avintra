@@ -1,4 +1,4 @@
-import ModelTestContent from "./llmGenerateRequest/ModelTestContent";
+import ModelTestContent from "./llmGenerated/ModelTestContent";
 import StandardTestContent from "./standard/StandardTestContent";
 
 const TestTabContent = ({
