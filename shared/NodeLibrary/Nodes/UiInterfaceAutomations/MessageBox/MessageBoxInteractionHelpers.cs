@@ -148,7 +148,7 @@ internal static class MessageBoxInteractionHelpers
             return output;
         }
 
-        var tokens = input.Split([',', ';'], StringSplitOptions.RemoveEmptyEntries | StringSplitOptions.TrimEntries);
+        var tokens = input.Split(',', ';', StringSplitOptions.RemoveEmptyEntries | StringSplitOptions.TrimEntries);
         foreach (var token in tokens)
         {
             if (!int.TryParse(token, out var index))
@@ -184,7 +184,7 @@ internal static class MessageBoxInteractionHelpers
         }
 
         return input
-            .Split([',', ';', '\n', '\r'], StringSplitOptions.RemoveEmptyEntries | StringSplitOptions.TrimEntries)
+            .Split(new[] { ',', ';', '\n', '\r' }, StringSplitOptions.RemoveEmptyEntries | StringSplitOptions.TrimEntries)
             .Where(p => !string.IsNullOrWhiteSpace(p))
             .Distinct(StringComparer.OrdinalIgnoreCase)
             .ToList();

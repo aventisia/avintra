@@ -41,10 +41,10 @@ public class ZipFilesNode : BaseNode
             }
             else if (input is string str && !string.IsNullOrWhiteSpace(str))
             {
-                sourcePaths = str.Split([','], StringSplitOptions.RemoveEmptyEntries)
-                                 .Select(p => p.Trim().Trim('"', '\'').Trim())
-                                 .Where(p => !string.IsNullOrEmpty(p))
-                                 .ToArray();
+                sourcePaths = str.Split(new[] { ',' }, StringSplitOptions.RemoveEmptyEntries)
+                  .Select(p => p.Trim().Trim('"', '\'').Trim())
+                  .Where(p => !string.IsNullOrEmpty(p))
+                  .ToArray();
             }
             else
             {
