@@ -195,7 +195,11 @@ public class ManageTenantService : IManageTenantService
 
             // Fetch and aggregate job execution time per tenant
             var tenantExecutionData = await _workspaceInternalDbContext.Jobs
-                .Where(w => w.CreatedOn >= startDate && w.CreatedOn < endDate)
+                .Where(w =>
+                    w.EndTime != null &&
+                    w.CreatedOn >= startDate &&
+                    w.CreatedOn < endDate
+                )
                 .GroupBy(g => g.TenantId)
                 .Select(s => new
                 {
@@ -211,7 +215,11 @@ public class ManageTenantService : IManageTenantService
 
             // Fetch and count published agents per tenant
             var tenantPublishAgentData = await _workspaceInternalDbContext.FlowVersions
-                .Where(w => w.IsPublished)
+                .Where(w =>
+                    w.IsPublished &&
+                    w.LastModifiedOn >= startDate &&
+                    w.LastModifiedOn < endDate
+                )
                 .GroupBy(g => g.TenantId)
                 .Select(s => new
                 {
