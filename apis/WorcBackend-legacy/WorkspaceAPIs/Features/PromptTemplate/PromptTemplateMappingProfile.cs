@@ -22,5 +22,12 @@ public class PromptTemplateMappingProfile : IRegister
                 src.CreatedByUser != null ? $"{src.CreatedByUser.FirstName} {src.CreatedByUser.LastName}" : null)
             .Map(dest => dest.LastModifiedBy, src =>
                 src.LastModifiedByUser != null ? $"{src.LastModifiedByUser.FirstName} {src.LastModifiedByUser.LastName}" : null);
+
+        // New Mapping for PromptTemplate to SelectOptionDto(For dropdowns or select lists)
+        config.NewConfig<PromptTemplate, SelectOptionDto>()
+                .Map(dest => dest.Value, src => src.Id)
+                .Map(dest => dest.Label, src => src.Name)
+                .Map(dest => dest.Description, src => src.Description)
+                .Map(dest => dest.Disabled, src => src.IsDisabled);
     }
 }

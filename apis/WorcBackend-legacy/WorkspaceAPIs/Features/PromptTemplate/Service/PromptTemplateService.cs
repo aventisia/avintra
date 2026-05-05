@@ -513,4 +513,44 @@ public class PromptTemplateService : IPromptTemplateService
 
         return serviceResponse;
     }
+
+
+    // Retrieves all prompt templates and maps them into select option DTOs.
+    public async Task<ServiceResponse<IEnumerable<SelectOptionDto>>> GetPromptTemplateOptionsAsync()
+    {
+        // Initialize response with default failure state
+        var serviceResponse = new ServiceResponse<IEnumerable<SelectOptionDto>>
+        {
+            Data = null,
+            Message = "Failed to retrieve prompt templates, please try again."
+        };
+
+        try
+        {
+            // Fetch prompt templates and map to select options
+            var templates = await _unitOfWork.PromptTemplateRepo
+                .GetByConditionAsync(w =>
+                    (w.AccessType == PromptTemplateAccessTypeEnum.Tenant && w.TenantId == _currentTenantService.CurrentTenantId) ||
+                    (w.AccessType == PromptTemplateAccessTypeEnum.Self && w.CreatedByUserId == _currentTenantService.CurrentUserId) ||
+                    w.AccessType == PromptTemplateAccessTypeEnum.Public
+                )
+                .ProjectToType<SelectOptionDto>()
+                .AsNoTracking()
+                .ToListAsync();
+
+            // Success response
+            serviceResponse.Data = templates;
+            serviceResponse.StatusCode = 200;
+            serviceResponse.Message = "Prompt templates retrieved successfully";
+        }
+        catch (Exception ex)
+        {
+            // Log detailed error for debugging
+            _logger.LogError(ex,
+                "Error occurred in {MethodName}. Failed to retrieve prompt template select options.",
+                nameof(GetPromptTemplateOptionsAsync));
+        }
+
+        return serviceResponse;
+    }
 }
