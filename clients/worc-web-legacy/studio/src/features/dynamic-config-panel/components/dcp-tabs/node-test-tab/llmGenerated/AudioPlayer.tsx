@@ -3,8 +3,6 @@ import { cn } from "@aventisia/ui/lib";
 import { FileAudio, Pause, Play, Volume2, X } from "lucide-react";
 import { useEffect, useRef, useState } from "react";
 
-// Ensure you have your cn utility
-
 export interface AudioPlayerProps {
   src: File | string | null | undefined;
   title?: string;
@@ -12,6 +10,12 @@ export interface AudioPlayerProps {
   format?: string;
   autoPlay?: boolean;
   onRemove?: () => void;
+  /**
+   * When true, renders a single-line compact variant suitable for file lists.
+   * All controls (icon, name, meta, play/pause, scrubber, time, remove) are
+   * packed into one horizontal row instead of the default card layout.
+   */
+  compact?: boolean;
 }
 
 const AudioPlayer = ({
@@ -21,10 +25,10 @@ const AudioPlayer = ({
   format = "audio/mpeg",
   autoPlay = false,
   onRemove,
+  compact = false,
 }: AudioPlayerProps) => {
   const audioRef = useRef<HTMLAudioElement>(null);
 
-  // State
   const [isPlaying, setIsPlaying] = useState(false);
   const [audioUrl, setAudioUrl] = useState<string | null>(null);
   const [error, setError] = useState<string | null>(null);
@@ -32,7 +36,7 @@ const AudioPlayer = ({
   const [currentTime, setCurrentTime] = useState(0);
   const [duration, setDuration] = useState(0);
 
-  // ─── 1. Source Processing (Base64, File, URL) ───
+  // ─── 1. Source Processing (Base64, File, URL) ───────────────────────────
   useEffect(() => {
     if (!src) {
       setAudioUrl(null);
@@ -60,7 +64,6 @@ const AudioPlayer = ({
           }
           const byteArray = new Uint8Array(byteNumbers);
           const blob = new Blob([byteArray], { type: format });
-
           objectUrl = URL.createObjectURL(blob);
           setAudioUrl(objectUrl);
         }
@@ -76,7 +79,7 @@ const AudioPlayer = ({
     };
   }, [src, format]);
 
-  // ─── 2. Audio Control Logic ───
+  // ─── 2. Audio Control Logic ──────────────────────────────────────────────
   const togglePlayPause = () => {
     if (!audioRef.current) return;
     if (isPlaying) {
@@ -107,7 +110,6 @@ const AudioPlayer = ({
     audioRef.current.currentTime = percent * audioRef.current.duration;
   };
 
-  // Helper to format seconds into mm:ss
   const formatTime = (time: number) => {
     if (isNaN(time)) return "0:00";
     const mins = Math.floor(time / 60);
@@ -125,22 +127,106 @@ const AudioPlayer = ({
 
   const isFile = src instanceof File;
 
+  // Shared hidden <audio> element — identical in both modes
+  const audioElement = (
+    <audio
+      ref={audioRef}
+      src={audioUrl}
+      autoPlay={autoPlay}
+      onTimeUpdate={handleTimeUpdate}
+      onLoadedMetadata={handleLoadedMetadata}
+      onPlay={() => setIsPlaying(true)}
+      onPause={() => setIsPlaying(false)}
+      onEnded={() => setIsPlaying(false)}
+      className="hidden"
+    />
+  );
+
+  // ─── Compact Mode: everything in one horizontal row ──────────────────────
+  if (compact) {
+    return (
+      <div className="flex items-center gap-2 rounded-lg border border-border/50 bg-muted/20 px-3 py-2">
+        {audioElement}
+
+        {/* File-type icon */}
+        <div className="shrink-0 text-primary">
+          {isFile ? (
+            <FileAudio className="h-5 w-5" />
+          ) : (
+            <Volume2 className="h-5 w-5" />
+          )}
+        </div>
+
+        {/* Name + size — takes flexible space before the controls */}
+        <div className="flex min-w-0 w-40 flex-col leading-tight">
+          <span className="truncate text-xs font-medium text-foreground">
+            {isFile ? src.name : title}
+          </span>
+          <span className="text-[10px] text-muted-foreground">
+            {subtitle ??
+              (isFile
+                ? `${(src.size / 1024 / 1024).toFixed(2)} MB`
+                : format.replace("audio/", "").toUpperCase())}
+          </span>
+        </div>
+
+        {/* Play / Pause */}
+        <button
+          onClick={togglePlayPause}
+          className="flex h-6 w-6 shrink-0 items-center justify-center rounded-full bg-primary text-primary-foreground shadow-sm transition-transform hover:scale-105 active:scale-95"
+          aria-label={isPlaying ? "Pause" : "Play"}
+        >
+          {isPlaying ? (
+            <Pause className="h-3 w-3 fill-current" />
+          ) : (
+            <Play className="h-3 w-3 fill-current pl-px" />
+          )}
+        </button>
+
+        {/* Scrubber track — flex-1 so it fills all remaining space */}
+        <div
+          className="group/compact-scrubber relative flex h-5 flex-1 cursor-pointer items-center"
+          onClick={handleSeek}
+        >
+          <div className="absolute h-1 w-full overflow-hidden rounded-full bg-muted">
+            <div
+              className="h-full bg-primary transition-all duration-100 ease-linear"
+              style={{ width: `${progress}%` }}
+            />
+          </div>
+          {/* Thumb — appears on hover */}
+          <div
+            className="absolute h-2.5 w-2.5 -ml-1 rounded-full bg-primary shadow opacity-0 scale-50 transition-all group-hover/compact-scrubber:opacity-100 group-hover/compact-scrubber:scale-100"
+            style={{ left: `${progress}%` }}
+          />
+        </div>
+
+        {/* Current / Total time */}
+        <span className="shrink-0 font-mono text-[10px] leading-tight mt-0.5 text-muted-foreground">
+          {formatTime(currentTime)}&thinsp;/&thinsp;{formatTime(duration)}
+        </span>
+
+        {/* Remove button */}
+        {onRemove && (
+          <Button
+            onClick={onRemove}
+            variant={"caution"}
+            size={"icon7"}
+            aria-label="Remove audio"
+          >
+            <X className="h-4 w-4" />
+          </Button>
+        )}
+      </div>
+    );
+  }
+
+  // ─── Full Mode: original card layout ────────────────────────────────────
   return (
     <div className="group relative flex w-full flex-col gap-4 rounded-xl border border-border/50 bg-background/60 p-4 backdrop-blur-xl shadow-sm transition-all duration-300 hover:shadow-md hover:bg-background/80">
-      {/* Hidden Audio Element */}
-      <audio
-        ref={audioRef}
-        src={audioUrl}
-        autoPlay={autoPlay}
-        onTimeUpdate={handleTimeUpdate}
-        onLoadedMetadata={handleLoadedMetadata}
-        onPlay={() => setIsPlaying(true)}
-        onPause={() => setIsPlaying(false)}
-        onEnded={() => setIsPlaying(false)}
-        className="hidden"
-      />
+      {audioElement}
 
-      {/* ─── Header: Icon, Title, and Remove Button ─── */}
+      {/* Header: Icon, Title, and Remove Button */}
       <div className="flex items-start justify-between">
         <div className="flex items-center gap-3">
           <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-gradient-to-br from-primary/20 to-primary/5 text-primary shadow-inner">
@@ -155,7 +241,7 @@ const AudioPlayer = ({
               {isFile ? src.name : title}
             </p>
             <p className="text-xs text-muted-foreground uppercase tracking-wider">
-              {subtitle ||
+              {subtitle ??
                 (isFile
                   ? `${(src.size / 1024 / 1024).toFixed(2)} MB`
                   : format.replace("audio/", ""))}
@@ -164,18 +250,13 @@ const AudioPlayer = ({
         </div>
 
         {onRemove && (
-          <Button
-            variant={"caution"}
-            onClick={onRemove}
-            size={"icon7"}
-            // className="rounded-full p-1.5 text-muted-foreground/60 transition-all hover:bg-destructive/10 hover:text-destructive"
-          >
+          <Button variant={"caution"} onClick={onRemove} size={"icon7"}>
             <X className="h-4 w-4" />
           </Button>
         )}
       </div>
 
-      {/* ─── Controls: Play Button & Scrubber ─── */}
+      {/* Controls: Play Button & Scrubber */}
       <div className="flex items-center gap-4">
         {/* Play/Pause Button */}
         <button
@@ -191,21 +272,16 @@ const AudioPlayer = ({
 
         {/* Scrubber Area */}
         <div className="flex flex-1 flex-col gap-1.5">
-          {/* Visualizer & Timeline Container */}
           <div
             className="group/scrubber relative flex h-6 cursor-pointer items-center"
             onClick={handleSeek}
           >
-            {/* Background Track */}
             <div className="absolute w-full h-1.5 rounded-full bg-muted overflow-hidden">
-              {/* Active Progress */}
               <div
                 className="h-full bg-primary transition-all duration-100 ease-linear"
                 style={{ width: `${progress}%` }}
               />
             </div>
-
-            {/* Scrubber Thumb (Appears on hover) */}
             <div
               className="absolute h-3 w-3 -ml-1.5 rounded-full bg-primary shadow opacity-0 scale-50 transition-all group-hover/scrubber:opacity-100 group-hover/scrubber:scale-100"
               style={{ left: `${progress}%` }}
@@ -223,7 +299,7 @@ const AudioPlayer = ({
                   key={i}
                   className={cn(
                     "w-0.5 rounded-sm bg-primary/60 transition-all",
-                    isPlaying ? "animate-pulse" : "h-[2px]", // Flatten when paused
+                    isPlaying ? "animate-pulse" : "h-[2px]",
                   )}
                   style={{
                     height: isPlaying

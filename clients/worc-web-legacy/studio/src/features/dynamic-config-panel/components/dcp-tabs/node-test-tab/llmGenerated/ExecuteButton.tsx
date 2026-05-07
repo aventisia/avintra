@@ -79,6 +79,16 @@ interface ExecuteButtonProps {
   providerType: "llm" | "stt" | "tts";
   llmFiles?: File[];
   sttInput?: STTInputValue;
+  /**
+   * When provided, overrides formData["InputText"] as the TTS input string.
+   *
+   * The TTS test screen now shows its own editable textarea so the user can
+   * type (or paste) text without having to close the test panel and edit the
+   * node config form.  ModelTestContent controls that textarea and passes its
+   * current value here so the payload builder uses it instead of whatever was
+   * saved in the node configuration.
+   */
+  ttsInputOverride?: string;
 }
 
 const ExecuteButton = ({
@@ -88,6 +98,7 @@ const ExecuteButton = ({
   providerType,
   llmFiles,
   sttInput,
+  ttsInputOverride,
 }: ExecuteButtonProps) => {
   const { currentFlow } = useCurrentFlowStore(
     useShallow((state) => ({ currentFlow: state.currentFlow })),
@@ -161,7 +172,6 @@ const ExecuteButton = ({
         }
 
         input = await fileToDataUrl(sttInput.file);
-
         break;
       }
 
@@ -206,7 +216,15 @@ const ExecuteButton = ({
 
   /* Compile TTS Execution Payload */
   async function buildTTSPayload(): Promise<TTSRequestDto | null> {
-    const input = formData["InputText"] as string;
+    /*
+     * Prefer the override value coming from the test tab's own textarea.
+     * Fall back to whatever is stored in the node's formData so execution
+     * still works even when ttsInputOverride isn't wired up.
+     */
+    const input =
+      ttsInputOverride !== undefined
+        ? ttsInputOverride
+        : (formData["InputText"] as string);
 
     const modelConfigData = getModelConfig(formData);
     const voiceConfigData = getVoiceConfig(formData);
