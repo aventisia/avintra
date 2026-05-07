@@ -247,7 +247,7 @@ const ModelConfigField = ({ name }: ModelConfigFieldProps) => {
         size="sm"
         name={fieldNames.is_byok_enabled}
         label="Bring your own API key"
-        description="Use your own LLM provider API key instead of platform-hosted models."
+        description="Use your own provider API key instead of platform-hosted models."
       />
 
       <SelectField
