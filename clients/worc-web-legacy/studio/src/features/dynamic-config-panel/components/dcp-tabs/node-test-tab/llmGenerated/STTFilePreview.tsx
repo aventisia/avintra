@@ -19,6 +19,12 @@ function formatBytes(bytes: number): string {
  *
  * Uses URL.createObjectURL so no base64 encoding happens here — the data URL
  * for the actual STT request is only created when Execute is clicked.
+ *
+ * NOTE: Within the STT test tab this component has been superseded by the
+ * compact variant of AudioPlayer (<AudioPlayer src={file} compact />), which
+ * packs everything into a single line and integrates better with the
+ * single-screen layout.  STTFilePreview is kept for any other call-sites
+ * outside the test tab that may still reference it.
  */
 const STTFilePreview = ({ file, onRemove }: STTFilePreviewProps) => {
   const [objectUrl, setObjectUrl] = useState<string>("");
