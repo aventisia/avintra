@@ -1,0 +1,56 @@
+using Excel = Microsoft.Office.Interop.Excel;
+
+namespace NodeLibrary.ExcelNodes;
+
+[DisplayName("Get Column Name on Excel Worksheet"), Description("Gets the column letter name for a given column index in the specified Excel worksheet.")]
+[NodeMetadata(icon: "/assets/Excel.svg")]
+public class GetColumnNameOnExcelWorksheetNode : BaseNode
+{
+    [DisplayName("Worksheet Instance"), Description("The Excel Worksheet instance.")]
+    public required InArgument<Excel.Worksheet> WorksheetInstance { get; set; }
+
+    [DisplayName("Column Index"), Description("The 1-based column index to convert to a column letter name.")]
+    public required InArgument<int> ColumnIndex { get; set; }
+
+    [DisplayName("Column Name"), Description("The letter name of the column (e.g., 'A', 'B', 'AA').")]
+    public OutArgument<string> ColumnName { get; set; } = new OutArgument<string>();
+
+    protected override void Execute(INodeContext context)
+    {
+        try
+        {
+            var worksheet = WorksheetInstance.Get(context);
+            var columnIndex = ColumnIndex.Get(context);
+
+            if (worksheet == null)
+                throw new InvalidOperationException("Worksheet instance cannot be null.");
+
+            if (columnIndex < 1)
+                throw new ArgumentOutOfRangeException(nameof(ColumnIndex), "Column index must be >= 1.");
+
+            string columnName = GetColumnLetter(columnIndex);
+
+            ColumnName.Set(context, columnName);
+            IsSuccess.Set(context, true);
+            StatusMessage.Set(context, $"Column index {columnIndex} corresponds to column '{columnName}'.");
+        }
+        catch (Exception ex)
+        {
+            ColumnName.Set(context, string.Empty);
+            IsSuccess.Set(context, false);
+            StatusMessage.Set(context, $"Error getting column name: {ex.Message}");
+        }
+    }
+
+    private static string GetColumnLetter(int columnNumber)
+    {
+        string result = string.Empty;
+        while (columnNumber > 0)
+        {
+            columnNumber--;
+            result = (char)('A' + columnNumber % 26) + result;
+            columnNumber /= 26;
+        }
+        return result;
+    }
+}
