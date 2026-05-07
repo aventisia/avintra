@@ -13,7 +13,7 @@ from app.core.config import settings
 from app.core.logger import logger, log_exception
 from app.core.vault_manager import VaultManager
 from app.core.credit_manager import CreditManagerService
-from app.core.file_converter import FileToBase64Converter
+from app.utils.file_converter_utils import file_to_base64
 from app.features.auth.authenticated_user import User
 from app.features.stt_providers.stt_providers_schema import (
     STTProviderRequest,
@@ -101,8 +101,7 @@ class ElevenLabsSTTProvider(BaseSpeechToTextProvider):
             self._handle_auth_and_credits(stt_request, user)
 
             # Handle audio input
-            converter = FileToBase64Converter()
-            base64_uri = converter.convert_to_base64(stt_request.input)
+            base64_uri = file_to_base64(stt_request.input)
         
             # Split into MIME type and base64 content
             header, base64_str = base64_uri.split(",", 1)
@@ -288,11 +287,9 @@ class ElevenLabsSTTProvider(BaseSpeechToTextProvider):
         }
 
     def _create_request_payload(self, req: STTProviderRequest):
-        converter = FileToBase64Converter()
 
-        # Convert input to base64 string and get MIME type
-        # We'll return both base64 and MIME from converter for safety
-        base64_uri = converter.convert_to_base64(req.input)
+        # Handle audio input
+        base64_uri = file_to_base64(req.input)
 
         # Split into MIME type and base64 content
         header, base64_str = base64_uri.split(",", 1)
