@@ -1,4 +1,4 @@
-﻿namespace NodeLibrary.Nodes.DataTransformations;
+﻿namespace NodeLibrary.Nodes;
 
 [NodeL1CategoryMetadata(
     label: "Data Transformations",
