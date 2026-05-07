@@ -25,7 +25,7 @@
       "direction": "Input",
       "type": "text",
       "name": "files",
-      "label": "Files",
+      "label": "File Path/Url",
       "required": false,
       "category": "Inputs"
     },
