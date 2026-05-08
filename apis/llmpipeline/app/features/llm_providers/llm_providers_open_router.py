@@ -18,7 +18,7 @@ from app.features.llm_providers.llm_providers_schemas import (
 )
 from app.features.llm_providers.llm_job_manager import active_llm_jobs
 from .llm_providers_base import BaseLLMProvider
-from app.utils.file_util import FileUtils
+from app.utils.file_converter_utils import file_to_base64
 
 class OpenRouterProvider(BaseLLMProvider):
     """
@@ -234,75 +234,59 @@ class OpenRouterProvider(BaseLLMProvider):
         # Add base64 files if any are provided (Gemini 'inline_data')
         if llm_request.files:
             for file_data in llm_request.files:
-                # If file_data is a URL (string), fetch file content
-                if isinstance(file_data, str):
-                    mime_type, encoded_content = FileUtils.get_file_data_from_url(file_data)
-                    filename = file_data.split("/")[-1]  # Extract filename from URL
-                else:
-                    # Handle case where file_data is an object with mime_type and encoded_content
-                    mime_type = file_data.mime_type
-                    encoded_content = file_data.encoded_content
-                    filename = getattr(file_data, "filename", "file")  # Use provided filename or default
+                # Determine filename
+                filename = getattr(file_data, "filename", "file_from_base64")
 
-                # Determine content type and add appropriate message
+                # Convert to base64 using file_to_base64
+                base64_uri = file_to_base64(file_data)
+                if not base64_uri:
+                    continue  # skip invalid files
+
+                # Extract MIME type and format from base64 URI if available
+                if base64_uri.startswith("data:"):
+                    mime_type = base64_uri.split(";")[0].replace("data:", "")
+                    file_format = mime_type.split("/")[-1]
+                else:
+                    mime_type = "application/octet-stream"
+                    file_format = "bin"
+
+                # Build message content depending on type
                 if mime_type.startswith("image/"):
-                    # Image
-                    messages.append({
-                        "role": "user",
-                        "content": [
-                            {
-                                "type": "image_url",
-                                "imageUrl": {
-                                    "url": f"data:{mime_type};base64,{encoded_content}"
-                                }
-                            }
-                        ]
-                    })
+                    content_item = {
+                        "type": "image_url",
+                        "imageUrl": {"url": base64_uri}
+                    }
                 elif mime_type.startswith("video/"):
-                    # Video
-                    messages.append({
-                        "role": "user",
-                        "content": [
-                            {
-                                "type": "input_video",
-                                "input_video": {
-                                    "data": encoded_content,
-                                    "format": mime_type.split("/")[-1],  # e.g., 'mp4', 'webm'
-                                    "filename": filename
-                                }
-                            }
-                        ]
-                    })
+                    content_item = {
+                        "type": "input_video",
+                        "input_video": {
+                            "data": base64_uri,
+                            "format": file_format,
+                            "filename": filename
+                        }
+                    }
                 elif mime_type.startswith("audio/"):
-                    # Audio
-                    messages.append({
-                        "role": "user",
-                        "content": [
-                            {
-                                "type": "input_audio",
-                                "input_audio": {
-                                    "data": encoded_content,
-                                    "format": mime_type.split("/")[-1],  # e.g., 'mp3', 'wav'
-                                    "filename": filename
-                                }
-                            }
-                        ]
-                    })
+                    content_item = {
+                        "type": "input_audio",
+                        "input_audio": {
+                            "data": base64_uri,
+                            "format": file_format,
+                            "filename": filename
+                        }
+                    }
                 else:
-                    # Documents or other file types (PDF, DOCX, CSV, etc.)
-                    messages.append({
-                        "role": "user",
-                        "content": [
-                            {
-                                "type": "file",
-                                "file": {
-                                    "filename": filename,
-                                    "file_data": f"data:{mime_type};base64,{encoded_content}"
-                                }
-                            }
-                        ]
-                    })
+                    # All other file types
+                    content_item = {
+                        "type": "file",
+                        "file": {
+                            "filename": filename,
+                            "file_data": f"data:{mime_type};base64,{base64_uri}"
+                        }
+                    }
 
+                # Append to messages
+                messages.append({"role": "user", "content": [content_item]})
+                     
         # Building the payload with dynamic elements
         payload = {
             "model": llm_request.model,

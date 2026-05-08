@@ -13,7 +13,7 @@ from app.features.llm_providers.llm_job_manager import active_llm_jobs
 from app.core.vault_manager import VaultManager
 from app.core.credit_manager import CreditManagerService
 from fastapi import HTTPException
-from app.utils.file_util import FileUtils
+from app.utils.file_converter_utils import file_to_base64
 
 class DeepInfraProvider(BaseLLMProvider):
     # Constructor: To initialize API URL and key
@@ -234,35 +234,42 @@ class DeepInfraProvider(BaseLLMProvider):
         else:
             raise ValueError("Invalid input format. Must be string or list of messages.")
 
-         # Add base64 files if any are provided
+        # Add base64 files if any are provided
         if llm_request.files:
             for file_data in llm_request.files:
-                # If file_data is a URL (assuming it's a string), fetch file content from URL
-                if isinstance(file_data, str):
-                    mime_type, encoded_content = FileUtils.get_file_data_from_url(file_data)
-                    filename = file_data.split('/')[-1]  # Extract filename from URL
+                # Determine filename
+                filename = getattr(file_data, "filename", "file_from_base64")
+
+                # Convert to base64 using file_to_base64
+                base64_uri = file_to_base64(file_data)
+                if not base64_uri:
+                    continue  # skip invalid files
+
+                # Extract MIME type and encoded content from base64 URI
+                if base64_uri.startswith("data:"):
+                    mime_type = base64_uri.split(";")[0].replace("data:", "")
                 else:
-                    mime_type = file_data.mime_type
-                    encoded_content = file_data.encoded_content
-                    filename = getattr(file_data, "filename", "file")  # Use provided filename or default
+                    mime_type = "application/octet-stream"
 
-                # Ensure mime_type and encoded_content are valid
-                if mime_type and encoded_content:
-                    # Handle image files (JPEG, PNG, GIF, etc.)
-                    if mime_type.startswith("image/"):
-                        messages[0]["content"].append({
-                            "type": "input_image",
-                            "image_url": f"data:{mime_type};base64,{encoded_content}"
-                        })
+                # Ensure messages[0]["content"] exists
+                if not messages:
+                    messages.append({"role": "user", "content": []})
+                elif "content" not in messages[0]:
+                    messages[0]["content"] = []
 
-                    # Handle other file types (PDF, DOCX, CSV, TXT, JSON, etc.)
-                    else:
-                        messages[0]["content"].append({
-                            "type": "input_file",
-                            "filename": filename,
-                            "file_data": f"data:{mime_type};base64,{encoded_content}"
-                        })
-
+                # Handle images
+                if mime_type.startswith("image/"):
+                    messages[0]["content"].append({
+                        "type": "input_image",
+                        "image_url": base64_uri
+                    })
+                # Handle other file types
+                else:
+                    messages[0]["content"].append({
+                        "type": "input_file",
+                        "filename": filename,
+                        "file_data": base64_uri
+                    })
         # Build request payload and headers
         request_payload = {
             "model": llm_request.model,

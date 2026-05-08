@@ -14,6 +14,7 @@ from app.features.llm_providers.llm_job_manager import active_llm_jobs
 from app.core.vault_manager import VaultManager
 from app.core.credit_manager import CreditManagerService
 from fastapi import HTTPException
+from app.utils.file_converter_utils import file_to_base64
 
 class OllamaProvider(BaseLLMProvider):
     # Constructor: To initialize API URL and key
@@ -192,7 +193,37 @@ class OllamaProvider(BaseLLMProvider):
             # Basically we are assuming a single request to do OCR or image captioning.
             # In case of llm_request.input is a list of messages, assuming user has already included images array in the messages.
             # TODO: Testing is pending for files + messages both being sent together.
-            messages = [{"role": "user", "content": llm_request.input}, {"role": "user", "images": llm_request.files}]
+            # If input is a string and files are provided
+            if llm_request.files and isinstance(llm_request.input, str):
+                # Add the text input as the first message
+                messages.append({"role": "user", "content": llm_request.input})
+
+                # Process each file
+                for file_data in llm_request.files:
+                    # Determine filename
+                    filename = getattr(file_data, "filename", "file_from_base64")
+
+                    # Convert to base64
+                    base64_uri = file_to_base64(file_data)
+                    if not base64_uri:
+                        continue  # skip invalid files
+
+                    # Extract MIME type and pure base64 data
+                    if base64_uri.startswith("data:"):
+                        mime_type = base64_uri.split(";")[0].replace("data:", "")
+                        encoded_content = base64_uri.split(",")[1]
+                    else:
+                        mime_type = "application/octet-stream"
+                        encoded_content = base64_uri
+
+                    # Determine type for Ollama
+                    if mime_type.startswith("image/"):
+                        content_item = {"images": [{"type": "base64", "mime_type": mime_type, "data": encoded_content, "filename": filename}]}
+                    else:
+                        content_item = {"files": [{"type": "base64", "mime_type": mime_type, "data": encoded_content, "filename": filename}]}
+
+                    # Add file content to messages
+                    messages.append({"role": "user", **content_item})            
         elif isinstance(llm_request.input, str):
             messages = [{"role": "user", "content": llm_request.input}]
         elif isinstance(llm_request.input, list):

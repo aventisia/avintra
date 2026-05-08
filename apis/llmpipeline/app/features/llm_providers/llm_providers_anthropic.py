@@ -12,7 +12,7 @@ from app.features.llm_providers.llm_job_manager import active_llm_jobs
 from fastapi import HTTPException
 from app.core.vault_manager import VaultManager
 from app.core.credit_manager import CreditManagerService
-from app.utils.file_util import FileUtils
+from app.utils.file_converter_utils import file_to_base64
 
 class AnthropicProvider(BaseLLMProvider):
     # Constructor: To initialize API URL and key
@@ -357,37 +357,42 @@ class AnthropicProvider(BaseLLMProvider):
         # Add base64 files if any are provided
         if llm_request.files:
             for file_data in llm_request.files:
-                # Check if file_data is a URL, else it's a file object
-                if isinstance(file_data, str):  
-                    mime_type, encoded_content = FileUtils.get_file_data_from_url(file_data)
-                else:  # If file_data is an object containing mime type and encoded content
-                    mime_type = file_data.mime_type
-                    encoded_content = file_data.encoded_content
+                # Determine filename (optional, could be used later)
+                filename = getattr(file_data, "filename", "file_from_base64")
 
-                # Only add the file data to payload if mime_type and encoded_content are present
-                if mime_type and encoded_content:
-                    # Determine the file type and set the 'type' in the payload accordingly
-                    file_type = "document"  # Default file type is 'document'
-                    
-                    if mime_type.startswith("image/"):  # For images
-                        file_type = "image"
-                    elif mime_type.startswith("application/pdf"):  # For PDFs
-                        file_type = "document"
-                    
-                    # Add the file to the payload
-                    request_payload["messages"].append({
-                        "role": "user",  # The role of the user submitting the file
-                        "content": [
-                            {
-                                "type": file_type,  # Dynamically set type (image or document)
-                                "source": {
-                                    "type": "base64",  # Encoding type is base64
-                                    "media_type": mime_type,  # The file's mime type (e.g., image/jpeg)
-                                    "data": encoded_content  # The base64-encoded file content
-                                }
+                # Convert file_data to base64 using file_to_base64
+                base64_uri = file_to_base64(file_data)
+                if not base64_uri:
+                    continue  # skip invalid files
+
+                # Extract MIME type and encoded content from base64 URI
+                if base64_uri.startswith("data:"):
+                    mime_type = base64_uri.split(";")[0].replace("data:", "")
+                    encoded_content = base64_uri.split(",")[1]  # pure base64 content
+                else:
+                    mime_type = "application/octet-stream"
+                    encoded_content = base64_uri
+
+                # Determine file_type for payload
+                if mime_type.startswith("image/"):
+                    file_type = "image"
+                else:
+                    file_type = "document"
+
+                # Add to request payload
+                request_payload["messages"].append({
+                    "role": "user",
+                    "content": [
+                        {
+                            "type": file_type,
+                            "source": {
+                                "type": "base64",
+                                "media_type": mime_type,
+                                "data": encoded_content
                             }
-                        ]
-                    })
+                        }
+                    ]
+                })
 
         # Build request headers
         request_headers = {

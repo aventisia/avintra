@@ -18,7 +18,7 @@ from app.features.llm_providers.llm_providers_schemas import (
 from app.features.llm_providers.llm_providers_utils import extract_json_from_llm_response
 from app.features.llm_providers.llm_job_manager import active_llm_jobs
 from .llm_providers_base import BaseLLMProvider
-from app.utils.file_util import FileUtils
+from app.utils.file_converter_utils import file_to_base64
 
 class GeminiProvider(BaseLLMProvider):
     """
@@ -268,25 +268,33 @@ class GeminiProvider(BaseLLMProvider):
         # Add base64 files if any are provided (Gemini 'inline_data')
         if llm_request.files:
             for file_data in llm_request.files:
-                # If file_data is a URL (assuming it's a string), fetch file content from URL
-                if isinstance(file_data, str):  # Assuming file_data is a URL if it's a string
-                    mime_type, encoded_content = FileUtils.get_file_data_from_url(file_data)
-                else:
-                    # Handle the case where file_data is an object with mime_type and encoded_content
-                    mime_type = file_data.mime_type
-                    encoded_content = file_data.encoded_content
+                # Determine filename (optional, could be used later)
+                filename = getattr(file_data, "filename", "file_from_base64")
 
-                if mime_type and encoded_content:
-                    contents.append({
-                        "parts": [
-                            {
-                                "inline_data": {
-                                    "mime_type": mime_type,
-                                    "data": encoded_content
-                                }
+                # Convert file_data to base64 using file_to_base64
+                base64_uri = file_to_base64(file_data)
+                if not base64_uri:
+                    continue  # skip invalid files
+
+                # Extract MIME type from base64 URI if present
+                if base64_uri.startswith("data:"):
+                    mime_type = base64_uri.split(";")[0].replace("data:", "")
+                    encoded_content = base64_uri.split(",")[1]  # actual base64 data
+                else:
+                    mime_type = "application/octet-stream"
+                    encoded_content = base64_uri
+
+                # Add to contents
+                contents.append({
+                    "parts": [
+                        {
+                            "inline_data": {
+                                "mime_type": mime_type,
+                                "data": encoded_content
                             }
-                        ]
-                    })
+                        }
+                    ]
+                })
 
         generation_config = {
             "responseMimeType": "text/plain"  # Default MIME type; may be overridden below

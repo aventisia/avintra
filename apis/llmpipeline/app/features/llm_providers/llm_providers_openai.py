@@ -13,7 +13,7 @@ from app.features.llm_providers.llm_job_manager import active_llm_jobs
 from fastapi import HTTPException
 from app.core.vault_manager import VaultManager
 from app.core.credit_manager import CreditManagerService
-from app.utils.file_util import FileUtils
+from app.utils.file_converter_utils import file_to_base64
 
 class OpenAIProvider(BaseLLMProvider):
     # Constructor: To initialize API URL and key
@@ -240,32 +240,25 @@ class OpenAIProvider(BaseLLMProvider):
         if llm_request.files:
             # Iterate through the files provided in llm_request.files
             for file_data in llm_request.files:
-                # If file_data is a URL (assuming it's a string), fetch file content from URL
-                if isinstance(file_data, str):  # Assuming file_data is a URL if it's a string
-                    mime_type, encoded_content = FileUtils.get_file_data_from_url(file_data)
-                    filename = file_data.split('/')[-1]
+                # Convert to base64 URI
+                base64_uri = file_to_base64(file_data)
+                if not base64_uri:
+                    continue  # skip invalid files
+
+                # Add to payload
+                if base64_uri.startswith("data:image/"):
+                    request_payload["input"][0]["content"].append({
+                        "type": "input_image",
+                        "image_url": base64_uri
+                    })
                 else:
-                    # Handle the case where file_data is an object with mime_type and encoded_content
-                    mime_type = file_data.mime_type
-                    encoded_content = file_data.encoded_content
-                    filename = getattr(file_data, "filename", "file")  # Use provided filename or default
-
-                # Ensure mime_type and encoded_content are valid
-                if mime_type and encoded_content:
-                    # IMAGE: Handle image files (JPEG, PNG, GIF, etc.)
-                    if mime_type.startswith("image/"):
-                        request_payload["input"][0]["content"].append({
-                            "type": "input_image",
-                            "image_url": f"data:{mime_type};base64,{encoded_content}"
-                        })
-
-                    # ALL OTHER FILE TYPES (PDF, DOCX, CSV, TXT, JSON, etc.)
-                    else:
-                        request_payload["input"][0]["content"].append({
-                            "type": "input_file",
-                            "filename": filename,
-                            "file_data": f"data:{mime_type};base64,{encoded_content}"
-                        })
+                    # Simplified filename
+                    filename = getattr(file_data, "filename", "file_from_base64")
+                    request_payload["input"][0]["content"].append({
+                        "type": "input_file",
+                        "filename": filename,
+                        "file_data": base64_uri
+                    })
 
         # Return both payload and headers
         return request_payload, request_headers
