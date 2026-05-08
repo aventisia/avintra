@@ -316,6 +316,7 @@ class QdrantVectorStore(BaseVectorStore):
                 "vector": query_vector,
                 "limit": query_doc_request.top_k,
                 "with_payload": True,
+                "score_threshold": query_doc_request.score_threshold,
                 "filter": {
                     "must": [
                         {
