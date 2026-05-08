@@ -211,7 +211,10 @@ class ElevenLabsTTSProvider(BaseTextToSpeechProvider):
     def _create_request_payload(self, req: TTSProviderRequest):
         return {
             "text": req.input,
-            "model_id": req.model
+            "model_id": req.model,
+            "voice_settings": {
+                "speed": req.speed or 1.0
+            }
         }
 
     # Create initial response object

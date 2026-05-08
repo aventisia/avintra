@@ -14,7 +14,6 @@ class TTSProviderRequest(BaseModel):
     voice_id: Optional[str] = Field(None)
     language: Optional[str] = Field(None)
     speed: Optional[float] = 1.0
-    pitch: Optional[float] = 1.0
     stream: bool = Field(False)
     credentials_id: Optional[str] = Field(None)
     is_byok_enabled: Optional[bool] = Field(False)
