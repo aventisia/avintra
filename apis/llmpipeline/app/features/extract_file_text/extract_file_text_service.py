@@ -265,6 +265,22 @@ def _extract_text_from_pdf(pdf_path: str) -> str:
                             x1 = min(img["x1"], page.width)
                             top = max(img["top"], 0)
                             bottom = min(img["bottom"], page.height)
+                           
+                            width = x1 - x0
+                            height = bottom - top
+
+                            # Ignore tiny objects
+                            if width < 50 or height < 50:
+                                continue
+
+                            # Ignore horizontal line-like objects
+                            if width > 10 * height:
+                                continue
+
+                            # Ignore vertical line-like objects
+                            if height > 10 * width:
+                               continue
+                            
                             if x0 < x1 and top < bottom:
                                 cropped = page.crop((x0, top, x1, bottom))
                                 pil_image = cropped.to_image(resolution=300).original
