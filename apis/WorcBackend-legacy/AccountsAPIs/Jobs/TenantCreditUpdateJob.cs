@@ -57,11 +57,11 @@ public class TenantCreditAllocationJob : IJob
                     // If billing date is older than 1 month (job might have missed runs) reset it to current time to avoid multiple backdated credits
                     if (subscription.NextBillingDate < currentDateTime.AddMonths(-1))
                     {
-                        subscription.NextBillingDate = currentDateTime;
+                        subscription.NextBillingDate = currentDateTime.Date;
                     }
 
                     // Move the billing cycle forward by 1 month
-                    subscription.NextBillingDate = subscription.NextBillingDate.AddMonths(1);
+                    subscription.NextBillingDate = subscription.NextBillingDate.Date.AddMonths(1);
 
                     // Update the subscription record
                     _unitOfWork.TenantSubscriptionRepo.Update(subscription);
@@ -72,7 +72,7 @@ public class TenantCreditAllocationJob : IJob
                         TenantId = subscription.TenantId,
                         AvailableCredits = subscription.MaxCredits,
                         CreditedOn = currentDateTime.ToUniversalTime(),
-                        ExpiredOn = subscription.NextBillingDate,
+                        ExpiredOn = subscription.NextBillingDate.Date,
                         Type = CreditTypesEnum.Subscription,
                         SubscriptionId = subscription.Id,
                         CreatedByUserId = subscription.CreatedByUserId,

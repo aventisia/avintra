@@ -453,8 +453,8 @@ public class TenantSubscriptionService : ITenantSubscriptionService
                 tenantSubscription.IsActive = true;
                 // Since Starter plan starts immediately, need to set NextBillingDate accordingly.
                 tenantSubscription.NextBillingDate = tenantSubscriptionPurchaseDto.Frequency == SubscriptionFrequenciesEnum.Monthly
-                                                        ? DateTimeOffset.UtcNow.AddMonths(1)
-                                                        : DateTimeOffset.UtcNow.AddYears(1);
+                                                        ? DateTimeOffset.UtcNow.Date.AddMonths(1)
+                                                        : DateTimeOffset.UtcNow.Date.AddYears(1);
             }
 
             // Insert tenant subscription if new
@@ -611,7 +611,7 @@ public class TenantSubscriptionService : ITenantSubscriptionService
                 {
                     foreach (var tenantCredit in tenantCredits)
                     {
-                        tenantCredit.ExpiredOn = DateTimeOffset.UtcNow.AddDays(-1).Date;
+                        tenantCredit.ExpiredOn = DateTimeOffset.UtcNow.Date.AddDays(-1);
                         tenantCredit.LastModifiedByUserId = _userId;
 
                         // Update the expired tenant credits in the repository
@@ -714,8 +714,8 @@ public class TenantSubscriptionService : ITenantSubscriptionService
                     Price = currentPlan.Price,
                     Currency = currentPlan.Currency,
                     AvailableCredits = availableCredits,
-                    ExpiredOn = tenantSubscription.NextBillingDate, // TO CHECK
-                    IsActive = tenantSubscription.NextBillingDate > DateTimeOffset.UtcNow.Date, // TO CHECK
+                    ExpiredOn = tenantSubscription.NextBillingDate,
+                    IsActive = tenantSubscription.NextBillingDate.Date > DateTimeOffset.UtcNow.Date,
                     IsRecurringPayment = tenantSubscription.IsRecurringPayment,
                     RazorpaySubscriptionId = tenantSubscription?.RazorpaySubscriptionId,
                     Feature = new CurrentSubscriptionPlanDetailDto()
@@ -873,7 +873,7 @@ public class TenantSubscriptionService : ITenantSubscriptionService
                 tenantSubscription.RazorpaySubscriptionId = exitingtSubscription?.RazorpaySubscriptionId;
                 tenantSubscription.IsActive = subscriptionPlan.Type == SubscriptionPlanTypeEnum.Starter ? true : false;
                 tenantSubscription.Status = subscriptionPlan.Type == SubscriptionPlanTypeEnum.Starter ? SubscriptionStatusTypesEnum.Active : SubscriptionStatusTypesEnum.Initiated;
-                tenantSubscription.NextBillingDate = DateTimeOffset.UtcNow.Date; // TO CHECK
+                tenantSubscription.NextBillingDate = DateTimeOffset.UtcNow.Date;
                 tenantSubscription.IsRecurringPayment = tenantSubscriptionPurchaseDto.IsRecurringPayment;
                 tenantSubscription.CreatedByUserId = _userId;
                 tenantSubscription.LastModifiedByUserId = _userId;
