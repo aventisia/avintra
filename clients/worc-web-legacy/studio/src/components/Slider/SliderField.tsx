@@ -8,8 +8,12 @@ import { FieldPath, FieldValues, useFormContext } from "react-hook-form";
 
 import { Slider } from "./Slider";
 
+// Omit the native Radix values so they don't clash with React Hook Form
 interface SliderFieldProps
-  extends React.ComponentPropsWithoutRef<typeof SliderPrimitive.Root> {
+  extends Omit<
+    React.ComponentPropsWithoutRef<typeof SliderPrimitive.Root>,
+    "value" | "defaultValue" | "onValueChange"
+  > {
   /** The name of the form field. */
   name: FieldPath<FieldValues>;
 
@@ -17,7 +21,7 @@ interface SliderFieldProps
   label?: string;
 
   description?: string;
-
+  isRequired?: boolean;
   thumbColor?: string;
   trackColor?: string;
 }
@@ -34,25 +38,35 @@ const SliderField = ({
   min,
   max,
   description,
+  isRequired,
   ...props
 }: SliderFieldProps) => {
   const { control } = useFormContext<FieldValues>();
 
   return (
     <FormField
-      {...{ name, control }}
+      control={control}
+      name={name}
       render={({ field }) => (
         <FormItem>
           <div>
-            {label && <FormLabelExt label={label} description={description} />}
+            {label && (
+              <FormLabelExt
+                label={label}
+                description={description}
+                isRequired={isRequired}
+              />
+            )}
             <div className="mt-1 grid grid-cols-[auto_1fr_auto_auto] items-center gap-2 rounded-lg border p-2.5">
-              <span className="text-sm">{min}</span>
+              <span className="text-xs">{min}</span>
 
               <FormControl>
                 <Slider
                   disabled={disabled}
-                  value={field.value ?? [0]}
-                  onValueChange={field.onChange}
+                  // Convert RHF's number into Radix's number array
+                  value={[field.value ?? min ?? 0]}
+                  // Extract the first number from Radix's array for RHF
+                  onValueChange={(val) => field.onChange(val[0])}
                   onValueCommit={field.onBlur}
                   thumbColor={thumbColor}
                   trackColor={trackColor}
@@ -61,7 +75,7 @@ const SliderField = ({
                   {...props}
                 />
               </FormControl>
-              <span className="text-sm">{max}</span>
+              <span className="text-xs">{max}</span>
             </div>
           </div>
 

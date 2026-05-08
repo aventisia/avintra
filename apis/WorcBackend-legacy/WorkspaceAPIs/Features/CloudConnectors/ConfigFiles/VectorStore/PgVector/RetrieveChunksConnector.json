@@ -29,7 +29,7 @@
       "name": "ScoreThreshold",
       "label": "ScoreThreshold",
       "description": "Provide Score Threshold.",
-      "defaultValue": [0.1],
+      "defaultValue": 0.1,
       "min": 0,
       "max": 1
     },

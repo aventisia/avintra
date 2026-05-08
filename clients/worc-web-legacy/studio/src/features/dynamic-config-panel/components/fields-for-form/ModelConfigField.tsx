@@ -297,9 +297,6 @@ const ModelConfigField = ({ name }: ModelConfigFieldProps) => {
                   <SliderField
                     label="Temperature"
                     name={field.name}
-                    value={[field.value ?? 0.6]}
-                    onValueChange={(val) => field.onChange(val[0])}
-                    onValueCommit={field.onBlur}
                     min={0}
                     max={1.2}
                     step={0.1}
@@ -313,9 +310,6 @@ const ModelConfigField = ({ name }: ModelConfigFieldProps) => {
                   <SliderField
                     label="TopP"
                     name={field.name}
-                    value={[field.value ?? 0.6]}
-                    onValueChange={(val) => field.onChange(val[0])}
-                    onValueCommit={field.onBlur}
                     min={0}
                     max={1.2}
                     step={0.1}

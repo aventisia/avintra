@@ -136,9 +136,6 @@ const VoiceConfigField = ({ name }: VoiceConfigFieldProps) => {
                 <SliderField
                   label="Speed"
                   name={field.name}
-                  value={[field.value ?? 1.0]}
-                  onValueChange={(val) => field.onChange(val[0])}
-                  onValueCommit={field.onBlur}
                   min={0.25}
                   max={4.0}
                   step={0.1}
@@ -152,9 +149,6 @@ const VoiceConfigField = ({ name }: VoiceConfigFieldProps) => {
                 <SliderField
                   label="Pitch"
                   name={field.name}
-                  value={[field.value ?? 1.0]}
-                  onValueChange={(val) => field.onChange(val[0])}
-                  onValueCommit={field.onBlur}
                   min={0.5}
                   max={2.0}
                   step={0.1}
