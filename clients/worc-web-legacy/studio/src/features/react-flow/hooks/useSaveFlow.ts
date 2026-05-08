@@ -44,8 +44,8 @@ export const useSaveFlow = () => {
     })),
   );
 
-  // Create a mutation to update flow silently
-  const { mutate: updateFlow, isPending } = useMutation({
+  // Create a mutation to update flow
+  const { mutateAsync: updateFlow, isPending } = useMutation({
     mutationFn: updateFlowSilently,
     onSuccess: () => {
       // Capture the exact state that was persisted to the database
@@ -73,35 +73,35 @@ export const useSaveFlow = () => {
   });
 
   // Function to perform save logic
-  const saveData = () => {
+  const saveData = async () => {
     if (currentFlow?.accessType === "View" && isSavePending) {
       toast.info("You are in View-only mode. Changes will not be saved.");
-      return;
+      return false;
     }
 
-    if (isPublished && isSavePending)
+    if (isPublished && isSavePending) {
       toast.info("Changes will not be saved for published agent");
+      return false;
+    }
 
     // Check if save is pending
-    if (!isSavePending || isPublished) return;
+    if (!isSavePending || isPublished) return true;
 
     // Create react flow object
     const reactFlowObject = {
-      nodes: nodes,
-      edges: edges,
-      viewport: viewport,
+      nodes,
+      edges,
+      viewport,
     };
+
     const hasDesktopOnlyNode = doesFlowContainAnyDesktopOnlyNode(
       nodes as Node<NodeDataType>[],
     );
-    //set viewport state for react flow oject ext(only for reference its not for ReactFLow)
-    // setViewport(viewportState);
 
     // Set isFlowSaving to true
     setIsFlowSaving(true);
 
-    // Save flow silently
-    updateFlow({
+    await updateFlow({
       id: currentFlow.id,
       reactFlowObject: JSON.stringify(reactFlowObject),
       flowVariablesObject: JSON.stringify(flowVariablesObject ?? []),
@@ -109,7 +109,8 @@ export const useSaveFlow = () => {
       versionId: currentFlow.versionId,
       supportedPlatform: hasDesktopOnlyNode ? "windows" : "cloud",
     });
-  };
 
+    return true;
+  };
   return { saveData, isPending, isSavePending };
 };
