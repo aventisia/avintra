@@ -15,6 +15,14 @@
       "description": "Input text used to generate an embedding and perform the similarity search.",
       "defaultValue": ""
     },
+     {
+      "direction": "Input",
+      "type": "text",
+      "name": "DocumentName",
+      "label": "Document Name",
+      "description": "Enter comma separated document names.",
+      "defaultValue": ""
+    },
     {
       "direction": "Input",
       "type": "number",
