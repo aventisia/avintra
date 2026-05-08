@@ -16,6 +16,7 @@ import { useEffect, useMemo, useRef, useState } from "react";
 import { Controller, useController, useFormContext } from "react-hook-form";
 
 import { getProviderModels } from "../../apis/llm-pipelines-apis";
+import { embeddingModelProviders } from "../../constants/embedding-model-providers";
 import { sttModelProviders } from "../../constants/stt-model-proivder";
 import { ttsModelProviders } from "../../constants/tts-model-proivder";
 import { uniqueAndNormalizeArray } from "../../utils/uniqueAndNormalizeArray";
@@ -106,7 +107,7 @@ const ModelConfigField = ({ name }: ModelConfigFieldProps) => {
 
     if (nodeKey == "SpeechToText") return sttModelProviders;
     if (nodeKey == "TextToSpeech") return ttsModelProviders;
-
+    if (nodeKey == "Embedding") return embeddingModelProviders;
     return modelProviders
       .filter((p) => p.isEnabled !== false)
       .map((p) => ({
