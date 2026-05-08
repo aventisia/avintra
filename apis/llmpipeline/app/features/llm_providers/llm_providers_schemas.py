@@ -46,7 +46,7 @@ class LLMRequest(BaseModel):
     provider: ProviderLiteral
     model: str
     input: Union[str, List[LLMMessage]]  # Accepts string or list of messages
-    files: Optional[Union[List[str], List[LLMEncodedFile]]] = None  
+    files: Optional[List[str]] = None  
     is_json_output: Optional[bool] = False # Try to extract JSON from response and sends no streaming response in one go even if streaming is true
     json_schema: Optional[Union[str, dict]] = None  # Can be JSON string or dict object
     max_output_tokens: Optional[int] = Field(default=None, ge=0) # None or 0 means no limit
