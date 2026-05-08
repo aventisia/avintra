@@ -1,5 +1,6 @@
 import { IS_TAURI } from "@/constants";
 import { getAvailableCredits } from "@/features/available-credits/available-credits-apis";
+import { useSaveFlow } from "@/features/react-flow/hooks/useSaveFlow";
 import { getMySession } from "@/react-toolkit/apis/accounts-me-apis";
 import { FlowTypesEnum } from "@/react-toolkit/enums/flow-types-enum";
 import { useUserSessionStore } from "@/react-toolkit/stores/user-session-store";
@@ -64,6 +65,9 @@ const ExecuteFlow = () => {
     })),
   );
 
+  // Save flow
+  const { isPending: isSaving, saveData, isSavePending } = useSaveFlow();
+
   // Connect to websocket server and get sendCommand function
   const { sendCommand } = useWebSocket();
 
@@ -113,6 +117,15 @@ const ExecuteFlow = () => {
     if (currentFlow?.isPublished) {
       toast.info("Published agents can only be executed via the Orchestrator.");
       return;
+    }
+
+    // Save flow before execution and wait until complete
+    if (isSavePending) {
+      const saved = await saveData();
+
+      if (!saved) {
+        return;
+      }
     }
 
     // Validate: Reject flow execution if it contains only support/placeholder nodes
@@ -298,6 +311,7 @@ const ExecuteFlow = () => {
             onClick={() => {
               startExecution();
             }}
+            disabled={isSaving}
           >
             {executionState === "launching-executor" ? (
               <Loader2 className="h-[1.1rem] w-[1.1rem] animate-spin text-white/80" />
