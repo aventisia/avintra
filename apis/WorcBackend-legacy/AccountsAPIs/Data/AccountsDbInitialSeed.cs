@@ -528,7 +528,7 @@ public static class AccountsDbInitialSeed
                 Frequency = SubscriptionFrequenciesEnum.Yearly,
                 IsActive = true,
                 Status = SubscriptionStatusTypesEnum.Active,
-                NextBillingDate = DateTimeOffset.MaxValue,
+                NextBillingDate = DateTimeOffset.MaxValue.Date,
                 MaxCredits = ulong.MaxValue,
                 MaxPublishedItems = int.MaxValue,
                 MaxSpaces = int.MaxValue,

@@ -381,7 +381,7 @@ public class WebhookService : IWebhookService
                 : DateTimeOffset.UtcNow.AddYears(1));
 
             // Update subscription details including the next billing date and status.
-            tenantSubscription.NextBillingDate = nextBillingDate;
+            tenantSubscription.NextBillingDate = nextBillingDate.Date;
             tenantSubscription.IsActive = true;
             tenantSubscription.Status = SubscriptionStatusTypesEnum.Active;
             tenantSubscription.LastModifiedByUserId = tenant.LastModifiedByUserId;
@@ -602,8 +602,8 @@ public class WebhookService : IWebhookService
             SubscriptionId = tenantSubscription.Id,
             CreditedOn = DateTimeOffset.UtcNow,
             ExpiredOn = tenantSubscription.Frequency == SubscriptionFrequenciesEnum.Monthly
-                        ? DateTimeOffset.UtcNow.AddMonths(1).Date
-                        : DateTimeOffset.UtcNow.AddYears(1).Date,
+                        ? DateTimeOffset.UtcNow.Date.AddMonths(1)
+                        : DateTimeOffset.UtcNow.Date.AddYears(1),
             AvailableCredits = totalCredits,
             Type = CreditTypesEnum.Subscription,
             TenantId = tenantSubscription.TenantId,
@@ -881,14 +881,14 @@ public class WebhookService : IWebhookService
                     // Determine the base date (either now or the existing NextBillingDate)
                     DateTimeOffset baseDate = tenantSubscription.NextBillingDate <= DateTimeOffset.UtcNow.Date
                         ? DateTimeOffset.UtcNow.Date
-                        : tenantSubscription.NextBillingDate;
+                        : tenantSubscription.NextBillingDate.Date;
 
                     // Adjust the NextBillingDate based on the frequency (monthly or yearly)
                     tenantSubscription.NextBillingDate = tenantSubscription.Frequency switch
                     {
-                        SubscriptionFrequenciesEnum.Monthly => baseDate.AddMonths(1),
-                        SubscriptionFrequenciesEnum.Yearly => baseDate.AddYears(1),
-                        _ => tenantSubscription.NextBillingDate // Retain the original date if frequency is not monthly/yearly
+                        SubscriptionFrequenciesEnum.Monthly => baseDate.Date.AddMonths(1),
+                        SubscriptionFrequenciesEnum.Yearly => baseDate.Date.AddYears(1),
+                        _ => tenantSubscription.NextBillingDate.Date // Retain the original date if frequency is not monthly/yearly
                     };
 
                     // Update the tenant subscription in the database
@@ -937,7 +937,7 @@ public class WebhookService : IWebhookService
                     AvailableCredits = totalCredits,
                     Type = CreditTypesEnum.TopUp,
                     CreditedOn = DateTimeOffset.UtcNow,
-                    ExpiredOn = DateTimeOffset.UtcNow.AddYears(1).Date,
+                    ExpiredOn = DateTimeOffset.UtcNow.Date.AddYears(1),
                     SubscriptionId = billingHistory.BillingDetail.SubscriptionId,
                     TenantId = billingHistory.TenantId,
                     CreatedByUserId = billingHistory.CreatedByUserId,
@@ -1185,8 +1185,8 @@ public class WebhookService : IWebhookService
                     // Determine the next billing date based on the subscription frequency
                     var nextBillingDate = subscription.Frequency switch
                     {
-                        SubscriptionFrequenciesEnum.Monthly => subscription.NextBillingDate.AddMonths(1),
-                        SubscriptionFrequenciesEnum.Yearly => subscription.NextBillingDate.AddYears(1),
+                        SubscriptionFrequenciesEnum.Monthly => subscription.NextBillingDate.Date.AddMonths(1),
+                        SubscriptionFrequenciesEnum.Yearly => subscription.NextBillingDate.Date.AddYears(1),
                         _ => subscription.NextBillingDate
                     };
 
