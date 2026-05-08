@@ -60,9 +60,6 @@ const MemoryConfigField = ({ name }: MemoryConfigFieldProps) => {
           <SliderField
             label="Max. messages stored as Short-term Memory"
             name={field.name}
-            value={[field.value ?? 1]}
-            onValueChange={(val) => field.onChange(val[0])}
-            onValueCommit={field.onBlur}
             trackColor="bg-muted"
             min={0}
             max={10}

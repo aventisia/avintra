@@ -90,9 +90,6 @@ export const KnowledgeBaseRetrievalForm = ({
           return (
             <SliderField
               name={field.name}
-              value={[field.value ?? 0]}
-              onValueChange={(val) => field.onChange(val[0])}
-              onValueCommit={field.onBlur}
               min={0}
               max={1.0}
               step={0.1}

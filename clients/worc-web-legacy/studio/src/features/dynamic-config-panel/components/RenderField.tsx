@@ -89,7 +89,6 @@ export const RenderField = (field: DCPFieldSchemaType) => {
       return (
         <SliderField
           {...baseProps}
-          defaultValue={field.defaultValue as number[]}
           min={field.min}
           max={field.max}
           step={0.1}
