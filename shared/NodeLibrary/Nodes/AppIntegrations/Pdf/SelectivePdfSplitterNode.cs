@@ -132,7 +132,7 @@ public class SelectivePdfSplitterNode : BaseNode
                         if (pageNum < 1 || pageNum > totalPdfPages)
                             throw new ArgumentOutOfRangeException($"Page {pageNum} is out of range (1-{totalPdfPages}).");
 
-                        WritePdfPages(inputDoc, outputDir, $"{prefix}{pageNum}.pdf", [pageNum]);
+                        WritePdfPages(inputDoc, outputDir, $"{prefix}{pageNum}.pdf", new List<int> { pageNum });
                         pageCount++;
                     }
                 }
@@ -169,7 +169,7 @@ public class SelectivePdfSplitterNode : BaseNode
             throw new ArgumentException("Page range is required for 'Range' mode.");
 
         var result = new List<(int start, int end)>();
-        var parts = rangeStr.Split([','], StringSplitOptions.RemoveEmptyEntries);
+        var parts = rangeStr.Split(new char[] { ',' }, StringSplitOptions.RemoveEmptyEntries);
 
         foreach (var part in parts)
         {
@@ -212,7 +212,7 @@ public class SelectivePdfSplitterNode : BaseNode
             throw new ArgumentException("Set of pages is required for 'Specific Pages' mode.");
 
         var result = new HashSet<int>();
-        var parts = pagesStr.Split([',', ';', ' '], StringSplitOptions.RemoveEmptyEntries);
+        var parts = pagesStr.Split(new char[] { ',', ';', ' ' }, StringSplitOptions.RemoveEmptyEntries);
 
         foreach (var part in parts)
         {
@@ -231,7 +231,7 @@ public class SelectivePdfSplitterNode : BaseNode
         if (result.Count == 0)
             throw new ArgumentException("No valid pages provided.");
 
-        return [.. result.OrderBy(x => x)];
+        return result.OrderBy(x => x).ToList();
     }
 }
 

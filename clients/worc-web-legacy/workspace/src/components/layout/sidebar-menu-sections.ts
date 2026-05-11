@@ -1,13 +1,10 @@
-import { IS_TAURI } from "@/constants/constants";
 import {
-  SidebarMenuItemExtended,
-  SidebarMenuSectionExtended,
-} from "@/react-toolkit/types/sidebar-menu-types";
-import { deploymentType } from "@/react-toolkit/types/user-session-types";
-
+  DeploymentType,
+  SidebarMenuItemType,
+  SidebarMenuSectionType,
+} from "@aventisia/ui/types";
 import {
   BanknotesIcon,
-  // ChartPieIcon,
   IdentificationIcon,
   QuestionMarkCircleIcon,
   QueueListIcon,
@@ -33,7 +30,7 @@ import { AiOutlineThunderbolt } from "react-icons/ai";
 import NewAgentIcon from "../NewAgentIcon";
 import NewChatIcon from "../NewChatIcon";
 
-const sidebarMenuSections: SidebarMenuSectionExtended[] = [
+const sidebarMenuSections: SidebarMenuSectionType[] = [
   {
     sectionName: "my projects",
     menuItems: [
@@ -130,69 +127,29 @@ const sidebarMenuSections: SidebarMenuSectionExtended[] = [
   },
   {
     sectionName: "Assist",
-    menuItems: IS_TAURI
-      ? [
-          {
-            permissions: ["TU"],
-            Icon: NewAgentIcon,
-            name: "agents",
-            route: "/assist/agents",
-            type: ["Commercial", "Enterprise"],
-          },
-
-          // Add Assist queues only if not production
-          ...(import.meta.env.MODE !== "production"
-            ? ([
-                {
-                  permissions: ["TU"],
-                  Icon: QueueListIcon,
-                  name: "queues",
-                  route: "/assist/queues",
-                  type: ["Commercial", "Enterprise"],
-                },
-              ] as SidebarMenuItemExtended[])
-            : []),
-          // Add Assist chats only if not production
-          ...(import.meta.env.MODE !== "production"
-            ? ([
-                {
-                  permissions: ["TU"],
-                  Icon: QueueListIcon,
-                  name: "chats",
-                  route: "/assist/chats",
-                  type: ["Commercial", "Enterprise"],
-                },
-              ] as SidebarMenuItemExtended[])
-            : []),
-        ]
-      : [
-          // In dev show assist section in both web and taruri
-          ...(import.meta.env.MODE !== "production"
-            ? ([
-                {
-                  permissions: ["TU"],
-                  Icon: NewAgentIcon,
-                  name: "agents",
-                  route: "/assist/agents",
-                  type: ["Commercial", "Enterprise"],
-                },
-                {
-                  permissions: ["TU"],
-                  Icon: QueueListIcon,
-                  name: "queues",
-                  route: "/assist/queues",
-                  type: ["Commercial", "Enterprise"],
-                },
-                {
-                  permissions: ["TU"],
-                  Icon: NewChatIcon,
-                  name: "chats",
-                  route: "/assist/chats",
-                  type: ["Commercial", "Enterprise"],
-                },
-              ] as SidebarMenuItemExtended[])
-            : []),
-        ],
+    menuItems: [
+      {
+        permissions: ["TU"],
+        Icon: NewAgentIcon,
+        name: "agents",
+        route: "/assist/agents",
+        type: ["Commercial", "Enterprise"],
+      },
+      {
+        permissions: ["TU"],
+        Icon: QueueListIcon,
+        name: "queues",
+        route: "/assist/queues",
+        type: ["Commercial", "Enterprise"],
+      },
+      {
+        permissions: ["TU"],
+        Icon: NewChatIcon,
+        name: "chats",
+        route: "/assist/chats",
+        type: ["Commercial", "Enterprise"],
+      },
+    ],
   },
   {
     sectionName: "Tenant Admin",
@@ -221,7 +178,7 @@ const sidebarMenuSections: SidebarMenuSectionExtended[] = [
               route: "/integrations",
               type: ["Commercial", "Enterprise"],
             },
-          ] as SidebarMenuItemExtended[])
+          ] as SidebarMenuItemType[])
         : []),
       {
         permissions: ["TA"],
@@ -277,13 +234,6 @@ const sidebarMenuSections: SidebarMenuSectionExtended[] = [
         route: "/sa/tenants",
         type: ["Commercial"],
       },
-      // {
-      //   permissions: ["SA"],
-      //   Icon: UsersIcon,
-      //   name: "users",
-      //   route: "/users",
-      //   type: ["Commercial"],
-      // },
       {
         permissions: ["SA"],
         Icon: CheckCheckIcon,
@@ -333,8 +283,8 @@ const sidebarMenuSections: SidebarMenuSectionExtended[] = [
 
 export function getSidebarMenuBasedOnPermissions(
   userRoles: string[],
-  deploymentType: deploymentType,
-): SidebarMenuSectionExtended[] {
+  deploymentType: DeploymentType,
+): SidebarMenuSectionType[] {
   return sidebarMenuSections
     .map((section) => {
       // Filter menuItems based on item-level permissions (if present)
@@ -354,12 +304,12 @@ export function getSidebarMenuBasedOnPermissions(
       };
     })
     .filter(
-      (section): section is SidebarMenuSectionExtended => section !== null,
+      (section): section is SidebarMenuSectionType => section !== null,
     );
 }
 
 export function flattenMenuRoutes(
-  sections: SidebarMenuSectionExtended[],
+  sections: SidebarMenuSectionType[],
 ): string[] {
   return sections.flatMap((section) =>
     section.menuItems.flatMap((item) => [
