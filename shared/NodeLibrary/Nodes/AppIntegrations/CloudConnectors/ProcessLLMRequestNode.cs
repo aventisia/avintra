@@ -52,9 +52,9 @@ public class ProcessLLMRequestNode : BaseNode
 
             var baseUrl = AppConfigHelper.ResolveAppBaseUrl();
             var apiUrl = $"https://{baseUrl}/llmpipeline/api/llm/generate";
-            var kbIds = GetStringArrayProperty(kbConfig, "knowledgeBase");
-            var hasKbIds = kbIds is { Count: > 0 };
-            var topK = hasKbIds ? (GetIntProperty(kbConfig, "numberOfChunks") ?? 5) : (int?)null;
+            var kbNames = GetStringArrayProperty(kbConfig, "knowledgeBase");
+            var hasKbNames = kbNames is { Count: > 0 };
+            var topK = hasKbNames ? (GetIntProperty(kbConfig, "numberOfChunks") ?? 5) : (int?)null;
 
             // Determine the input format: chat mode (list of messages) or prompt mode (string)
             object inputPayload = BuildInputPayload(prompt, threadMessages, userInput);
@@ -78,7 +78,7 @@ public class ProcessLLMRequestNode : BaseNode
                 ref_name = agentName,
                 action = "AgentExecution",
                 agent_name = agentName,
-                kb_ids = hasKbIds ? kbIds : null,
+                kb_names = hasKbNames ? kbNames : null,
                 top_k = topK,
             };
 

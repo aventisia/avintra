@@ -312,18 +312,42 @@ class QdrantVectorStore(BaseVectorStore):
             query_vector = embedding_response.embeddings[0]
 
             # Prepare search payload with tenant-level filtering
+            # Build dynamic filter conditions based on provided parameters
+            must_filters = [
+                {
+                    "key": "tenant_id",
+                    "match": {"value": str(user.tenant_id)},
+                }
+            ]
+
+            # Name-based filters (preferred)
+            normalized_kb_names = (
+                [k.strip() for k in query_doc_request.kb_names if (k or "").strip()]
+                if query_doc_request.kb_names else []
+            )
+            if normalized_kb_names:
+                must_filters.append({
+                    "key": "metadata.kb_name",
+                    "match": {"any": normalized_kb_names},
+                })
+
+            normalized_doc_names = (
+                [k.strip() for k in query_doc_request.doc_names if (k or "").strip()]
+                if query_doc_request.doc_names else []
+            )
+            if normalized_doc_names:
+                must_filters.append({
+                    "key": "metadata.doc_name",
+                    "match": {"any": normalized_doc_names},
+                })
+
             payload = {
                 "vector": query_vector,
                 "limit": query_doc_request.top_k,
                 "with_payload": True,
                 "score_threshold": query_doc_request.score_threshold,
                 "filter": {
-                    "must": [
-                        {
-                            "key": "tenant_id",
-                            "match": {"value": str(user.tenant_id)},
-                        }
-                    ]
+                    "must": must_filters,
                 },
             }
 
@@ -402,68 +426,66 @@ class QdrantVectorStore(BaseVectorStore):
         started = time.perf_counter()
 
         try:
-            # Normalize kb_file_ids (REQUIRED)
-            normalized_kb_file_ids = [
-                k.strip() for k in delete_doc_request.kb_file_ids if (k or "").strip()
-            ]
+            # Build dynamic filter conditions based on provided parameters
+            # At least one filter must be provided to prevent accidental full-collection deletion
+            should_filters = []
 
-            if not normalized_kb_file_ids:
+            # Name-based filters (preferred)
+            normalized_kb_names = (
+                [k.strip() for k in delete_doc_request.kb_names if (k or "").strip()]
+                if delete_doc_request.kb_names else []
+            )
+            if normalized_kb_names:
+                should_filters.append({
+                    "key": "metadata.kb_name",
+                    "match": {"any": normalized_kb_names},
+                })
+
+            normalized_doc_names = (
+                [k.strip() for k in delete_doc_request.doc_names if (k or "").strip()]
+                if delete_doc_request.doc_names else []
+            )
+            if normalized_doc_names:
+                should_filters.append({
+                    "key": "metadata.doc_name",
+                    "match": {"any": normalized_doc_names},
+                })
+
+            if not should_filters:
                 logger.error(
-                    "[VECTOR-DELETE-QDRANT] Invalid input: kb_file_ids empty | tenant_id=%s",
+                    "[VECTOR-DELETE-QDRANT] Invalid input: no filters provided | tenant_id=%s",
                     user.tenant_id,
                 )
                 raise HTTPException(
                     status_code=status.HTTP_400_BAD_REQUEST,
-                    detail="kb_file_ids cannot be empty.",
+                    detail="At least one filter (kb_names, doc_names) must be provided.",
                 )
 
-            # Normalize kb_ids (OPTIONAL filter)
-            normalized_kb_ids = (
-                [k.strip() for k in delete_doc_request.kb_ids if (k or "").strip()]
-                if delete_doc_request.kb_ids
-                else []
-            )
-                        
-            # OR conditions (match any)
-            should_filters = []
-
-            # Build Qdrant filter
+            # Build Qdrant filter.
+            # All conditions are placed in 'must' (AND logic) so that when both kb_name and
+            # doc_name are supplied, only chunks matching BOTH are deleted — not chunks from
+            # other KBs that happen to share the same doc_name.
             must_filters = [
                 {
                     "key": "tenant_id",
                     "match": {"value": str(user.tenant_id)},
-                }
+                },
+                *should_filters,  # each name filter is ANDed, not ORed
             ]
-
-            # Add optional kb_id filter
-            if normalized_kb_file_ids:
-                should_filters.append(
-                    {
-                        "key": "metadata.kb_file_id",
-                        "match": {"any": normalized_kb_file_ids},
-                    }
-                )
-                
-            if normalized_kb_ids:
-                should_filters.append(
-                    {
-                        "key": "metadata.kb_id",
-                        "match": {"any": normalized_kb_ids},
-                    }
-                )
 
             payload = {
                 "filter": {
                     "must": must_filters,
-                    "should": should_filters
                 }
             }
 
             logger.info(
-                "[VECTOR-DELETE-QDRANT] Initiating delete | tenant_id=%s kb_file_ids=%s kb_ids=%s",
+                "[VECTOR-DELETE-QDRANT] Initiating delete | tenant_id=%s filters=%s",
                 user.tenant_id,
-                normalized_kb_file_ids,
-                normalized_kb_ids if normalized_kb_ids else None,
+                {k: v for k, v in {
+                    "kb_names": normalized_kb_names or None,
+                    "doc_names": normalized_doc_names or None,
+                }.items() if v},
             )
 
             # Execute delete request to Qdrant
@@ -480,17 +502,16 @@ class QdrantVectorStore(BaseVectorStore):
             elapsed = round(time.perf_counter() - started, 2)
 
             logger.info(
-                "[VECTOR-DELETE-QDRANT] Success | tenant_id=%s kb_file_ids=%s operation_id=%s elapsed_s=%s",
+                "[VECTOR-DELETE-QDRANT] Success | tenant_id=%s operation_id=%s elapsed_s=%s",
                 user.tenant_id,
-                normalized_kb_file_ids,
                 operation_id,
                 elapsed,
             )
 
             return DeleteDocResponse(
                 vector_store=delete_doc_request.vector_store,
-                kb_file_ids=normalized_kb_file_ids,
-                kb_ids=delete_doc_request.kb_ids,
+                kb_names=delete_doc_request.kb_names,
+                doc_names=delete_doc_request.doc_names,
                 deleted_chunks=0,  # Qdrant does not provide exact count
                 time_taken=elapsed,
                 error=None,
@@ -501,9 +522,10 @@ class QdrantVectorStore(BaseVectorStore):
             elapsed = round(time.perf_counter() - started, 2)
 
             logger.warning(
-                "[VECTOR-DELETE-QDRANT] HTTPException | tenant_id=%s kb_file_ids=%s error=%s elapsed_s=%s",
+                "[VECTOR-DELETE-QDRANT] HTTPException | tenant_id=%s kb_names=%s doc_names=%s error=%s elapsed_s=%s",
                 user.tenant_id,
-                delete_doc_request.kb_file_ids,
+                delete_doc_request.kb_names,
+                delete_doc_request.doc_names,
                 str(http_exc.detail),
                 elapsed,
             )
@@ -521,17 +543,15 @@ class QdrantVectorStore(BaseVectorStore):
             )
 
             logger.error(
-                "[VECTOR-DELETE-QDRANT] Failed | tenant_id=%s kb_file_ids=%s kb_ids=%s elapsed_s=%s",
+                "[VECTOR-DELETE-QDRANT] Failed | tenant_id=%s elapsed_s=%s",
                 user.tenant_id,
-                delete_doc_request.kb_file_ids,
-                delete_doc_request.kb_ids,
                 elapsed,
             )
 
             return DeleteDocResponse(
                 vector_store=delete_doc_request.vector_store,
-                kb_file_ids=delete_doc_request.kb_file_ids,
-                kb_ids=delete_doc_request.kb_ids,
+                kb_names=delete_doc_request.kb_names,
+                doc_names=delete_doc_request.doc_names,
                 deleted_chunks=0,
                 time_taken=elapsed,
                 error=str(exc),

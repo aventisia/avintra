@@ -176,26 +176,32 @@ class PgVectorStore(BaseVectorStore):
             # Retrieve similar chunks from pgvector column using vector similarity search with the generated query embedding
             query_embedding = embedding_response.embeddings[0]
 
-            # Normalize kb_ids (required filter)
-            normalized_kb_ids = [k.strip() for k in query_doc_request.kb_ids if (k or "").strip()]
-            if not normalized_kb_ids:
-                raise HTTPException(
-                    status_code=status.HTTP_400_BAD_REQUEST,
-                    detail="kb_ids cannot be empty.",
-                )
+            # Build dynamic filter clauses based on provided parameters
+            # Supports: kb_names, doc_names (name-based) or global search (none)
+            filter_clauses: list[str] = []
+            bind_params: dict = {}
 
-            # Normalize kb_file_ids (optional filter)
-            kb_file_ids = query_doc_request.kb_file_ids
-            normalized_kb_file_ids = (
-                [k.strip() for k in kb_file_ids if (k or "").strip()]
-                if kb_file_ids is not None
-                else []
+            # Name-based filters (preferred)
+            normalized_kb_names = (
+                [k.strip() for k in query_doc_request.kb_names if (k or "").strip()]
+                if query_doc_request.kb_names else []
             )
+            if normalized_kb_names:
+                filter_clauses.append('("Metadata" ->> \'kb_name\') IN :kb_names')
+                bind_params["kb_names"] = normalized_kb_names
 
-            kb_filter_sql = ' AND ("Metadata" ->> \'kb_id\') IN :kb_ids '
-            kb_file_filter_sql = ""
-            if normalized_kb_file_ids:
-                kb_file_filter_sql = ' AND ("Metadata" ->> \'kb_file_id\') IN :kb_file_ids '
+            normalized_doc_names = (
+                [k.strip() for k in query_doc_request.doc_names if (k or "").strip()]
+                if query_doc_request.doc_names else []
+            )
+            if normalized_doc_names:
+                filter_clauses.append('("Metadata" ->> \'doc_name\') IN :doc_names')
+                bind_params["doc_names"] = normalized_doc_names
+
+            # Compose optional WHERE fragment
+            filter_sql = ""
+            if filter_clauses:
+                filter_sql = " AND " + " AND ".join(filter_clauses)
 
             query_sql = text(
                 f"""
@@ -205,26 +211,23 @@ class PgVectorStore(BaseVectorStore):
                     (1 - ("Embedding" <=> CAST(:query_embedding AS vector))) AS similarity_score
                 FROM "worc_VectorStore"
                 WHERE "TenantId" = :tenant_id
-                {kb_filter_sql}
-                {kb_file_filter_sql}
+                {filter_sql}
                 ORDER BY "Embedding" <=> CAST(:query_embedding AS vector)
                 LIMIT :top_k
                 """
             )
 
-            query_sql = query_sql.bindparams(bindparam("kb_ids", expanding=True))
-            if normalized_kb_file_ids:
-                query_sql = query_sql.bindparams(bindparam("kb_file_ids", expanding=True))
+            # Bind expanding params for IN clauses
+            for key in bind_params:
+                query_sql = query_sql.bindparams(bindparam(key, expanding=True))
 
             # Execute the query and fetch results
             query_params = {
                 "tenant_id": str(self.db.tenant_id),
                 "query_embedding": self._to_pgvector_literal(query_embedding),
                 "top_k": query_doc_request.top_k,
-                "kb_ids": normalized_kb_ids,
+                **bind_params,
             }
-            if normalized_kb_file_ids:
-                query_params["kb_file_ids"] = normalized_kb_file_ids
 
             result = await self.session.execute(query_sql, query_params)
             rows = result.mappings().all()
@@ -287,52 +290,60 @@ class PgVectorStore(BaseVectorStore):
                 error=str(exc),
             )
 
-    # Method: Delete document chunks from pgvector column based on kb_file_ids (required) and optionally scoped by kb_ids
+    # Method: Delete document chunks from pgvector column based on name or ID filters
     async def delete_document(self, delete_doc_request: DeleteDocRequest, user: User) -> DeleteDocResponse:
         started = time.perf_counter()
 
         try:
-            # Normalize kb_file_ids (required for deletion)
-            normalized_kb_file_ids = [k.strip() for k in delete_doc_request.kb_file_ids if (k or "").strip()]
-            if not normalized_kb_file_ids:
+            # Build dynamic filter clauses based on provided parameters
+            filter_clauses: list[str] = []
+            bind_params: dict = {}
+
+            # Name-based filters (preferred)
+            normalized_kb_names = (
+                [k.strip() for k in delete_doc_request.kb_names if (k or "").strip()]
+                if delete_doc_request.kb_names else []
+            )
+            if normalized_kb_names:
+                filter_clauses.append('("Metadata" ->> \'kb_name\') IN :kb_names')
+                bind_params["kb_names"] = normalized_kb_names
+
+            normalized_doc_names = (
+                [k.strip() for k in delete_doc_request.doc_names if (k or "").strip()]
+                if delete_doc_request.doc_names else []
+            )
+            if normalized_doc_names:
+                filter_clauses.append('("Metadata" ->> \'doc_name\') IN :doc_names')
+                bind_params["doc_names"] = normalized_doc_names
+
+            # At least one filter must be provided to prevent accidental full-table deletion
+            if not filter_clauses:
                 raise HTTPException(
                     status_code=status.HTTP_400_BAD_REQUEST,
-                    detail="kb_file_ids cannot be empty.",
+                    detail="At least one filter (kb_names, doc_names) must be provided.",
                 )
 
-            # Normalize kb_ids (optional scope filter)
-            kb_ids = delete_doc_request.kb_ids
-            normalized_kb_ids = (
-                [k.strip() for k in kb_ids if (k or "").strip()]
-                if kb_ids is not None
-                else []
-            )
-
-            kb_id_filter_sql = ""
-            if normalized_kb_ids:
-                kb_id_filter_sql = ' AND ("Metadata" ->> \'kb_id\') IN :kb_ids '
+            # Compose WHERE fragment
+            filter_sql = " AND ".join(filter_clauses)
 
             # Create parameterized SQL statement to delete chunks from pgvector
             delete_sql = text(
                 f"""
                 DELETE FROM "worc_VectorStore"
                 WHERE "TenantId" = :tenant_id
-                  AND ("Metadata" ->> 'kb_file_id') IN :kb_file_ids
-                  {kb_id_filter_sql}
+                  AND {filter_sql}
                 """
             )
 
-            delete_sql = delete_sql.bindparams(bindparam("kb_file_ids", expanding=True))
-            if normalized_kb_ids:
-                delete_sql = delete_sql.bindparams(bindparam("kb_ids", expanding=True))
+            # Bind expanding params for IN clauses
+            for key in bind_params:
+                delete_sql = delete_sql.bindparams(bindparam(key, expanding=True))
 
             # Set parameters for deletion query
             delete_params: dict = {
                 "tenant_id": str(self.db.tenant_id),
-                "kb_file_ids": normalized_kb_file_ids,
+                **bind_params,
             }
-            if normalized_kb_ids:
-                delete_params["kb_ids"] = normalized_kb_ids
 
             # Execute deletion query and commit transaction
             result = await self.session.execute(delete_sql, delete_params)
@@ -342,17 +353,17 @@ class PgVectorStore(BaseVectorStore):
             deleted_chunks = int(result.rowcount or 0)
             elapsed = round(time.perf_counter() - started, 2)
             logger.info(
-                "[VECTOR-DELETE] success tenant_id=%s kb_file_ids=%s deleted=%s elapsed_s=%s",
+                "[VECTOR-DELETE] success tenant_id=%s filters=%s deleted=%s elapsed_s=%s",
                 self.db.tenant_id,
-                normalized_kb_file_ids,
+                {k: v for k, v in bind_params.items()},
                 deleted_chunks,
                 elapsed,
             )
 
             return DeleteDocResponse(
                 vector_store=delete_doc_request.vector_store,
-                kb_file_ids=normalized_kb_file_ids,
-                kb_ids=delete_doc_request.kb_ids,
+                kb_names=delete_doc_request.kb_names,
+                doc_names=delete_doc_request.doc_names,
                 deleted_chunks=deleted_chunks,
                 time_taken=elapsed,
                 error=None,
@@ -366,8 +377,8 @@ class PgVectorStore(BaseVectorStore):
             log_exception(logger, exc, "[VECTOR-DELETE] pgvector deletion failed")
             return DeleteDocResponse(
                 vector_store=delete_doc_request.vector_store,
-                kb_file_ids=delete_doc_request.kb_file_ids,
-                kb_ids=delete_doc_request.kb_ids,
+                kb_names=delete_doc_request.kb_names,
+                doc_names=delete_doc_request.doc_names,
                 deleted_chunks=0,
                 time_taken=elapsed,
                 error=str(exc),

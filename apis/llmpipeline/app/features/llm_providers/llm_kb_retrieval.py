@@ -33,23 +33,23 @@ def _inject_context_into_input(llm_request: LLMRequest, context_str: str) -> Non
         llm_request.input = [context_message] + list(llm_request.input)
 
 
-async def _resolve_kb_embedding_configs(kb_ids: list[str], tenant_id: str) -> list[dict]:
+async def _resolve_kb_embedding_configs(kb_names: list[str], tenant_id: str) -> list[dict]:
     """
     Resolve per-KB retrieval configuration for selected knowledge bases.
 
     All selected KBs must exist, be active, and belong to the tenant.
     """
-    normalized_kb_ids = [kb_id.strip() for kb_id in kb_ids if (kb_id or "").strip()]
-    if not normalized_kb_ids:
-        raise ValueError("kb_ids cannot be empty.")
+    normalized_kb_names = [kb_name.strip() for kb_name in kb_names if (kb_name or "").strip()]
+    if not normalized_kb_names:
+        raise ValueError("kb_names cannot be empty.")
 
-    unique_kb_ids = list(dict.fromkeys(normalized_kb_ids))
+    unique_kb_names = list(dict.fromkeys(normalized_kb_names))  # Preserve order and ensure uniqueness
 
     async with get_db_session_context(settings.POSTGRESQL_WORC_DB_NAME) as session:
         query_sql = text(
             """
             SELECT
-                "Id"::text AS kb_id,
+                "Name"::text AS kb_name,
                 "EmbeddingProvider" AS embedding_provider,
                 "EmbeddingModel" AS embedding_model,
                 "EmbeddingCredentialId"::text AS embedding_credential_id,
@@ -57,29 +57,29 @@ async def _resolve_kb_embedding_configs(kb_ids: list[str], tenant_id: str) -> li
                 "VectorStore" AS vector_store
             FROM "worc_KBs"
             WHERE "TenantId" = :tenant_id
-              AND "Id"::text IN :kb_ids
+              AND "Name"::text IN :kb_names
             """
-        ).bindparams(bindparam("kb_ids", expanding=True))
+        ).bindparams(bindparam("kb_names", expanding=True))
 
         result = await session.execute(
             query_sql,
             {
                 "tenant_id": str(tenant_id),
-                "kb_ids": unique_kb_ids,
+                "kb_names": unique_kb_names,
             },
         )
         rows = result.mappings().all()
 
-    if len(rows) != len(unique_kb_ids):
-        raise ValueError("One or more kb_ids are missing, disabled, or not accessible for this tenant.")
+    if len(rows) != len(unique_kb_names):
+        raise ValueError("One or more kb_names are missing, disabled, or not accessible for this tenant.")
 
-    kb_configs_by_id = {str(row["kb_id"]): row for row in rows}
+    kb_configs_by_name = {str(row["kb_name"]): row for row in rows}
     ordered_configs: list[dict] = []
-    for kb_id in unique_kb_ids:
-        row = kb_configs_by_id[kb_id]
+    for kb_name in unique_kb_names:
+        row = kb_configs_by_name[kb_name]
         ordered_configs.append(
             {
-                "kb_id": kb_id,
+                "kb_name": kb_name,
                 "embedding_provider": str(row["embedding_provider"]),
                 "embedding_model": str(row["embedding_model"]),
                 "embedding_credential_id": row["embedding_credential_id"],
@@ -95,7 +95,7 @@ async def _resolve_kb_embedding_configs(kb_ids: list[str], tenant_id: str) -> li
 async def retrieve_and_inject_kb_context(llm_request: LLMRequest, user: User) -> None:
     """
     Queries the pgvector knowledge base using the LLM request's input as the query,
-    retrieves the top-k relevant chunks scoped to the specified kb_ids,
+    retrieves the top-k relevant chunks scoped to the specified kb_names,
     and injects them as a formatted context block into llm_request.input in-place.
 
     Defaults: vector_store=pgvector, embedding_provider=openai, embedding_model=text-embedding-3-small.
@@ -109,7 +109,7 @@ async def retrieve_and_inject_kb_context(llm_request: LLMRequest, user: User) ->
 
     try:
         kb_configs = await _resolve_kb_embedding_configs(
-            kb_ids=llm_request.kb_ids or [],
+            kb_names=llm_request.kb_names or [],
             tenant_id=str(user.tenant_id),
         )
 
@@ -126,9 +126,9 @@ async def retrieve_and_inject_kb_context(llm_request: LLMRequest, user: User) ->
                 # Guard: skip if vector store not defined
                 if not store_type:
                     logger.warning(
-                        "[KB-RETRIEVAL] Unsupported vector store '%s' for kb_id=%s. Skipping.",
+                        "[KB-RETRIEVAL] Unsupported vector store '%s' for kb_name=%s. Skipping.",
                         kb_config["vector_store"],
-                        kb_config["kb_id"],
+                        kb_config["kb_name"],
                     )
                     continue
 
@@ -138,9 +138,9 @@ async def retrieve_and_inject_kb_context(llm_request: LLMRequest, user: User) ->
                 except Exception as e:
                     # Fail gracefully if store init fails (do not block other KBs)
                     logger.warning(
-                        "[KB-RETRIEVAL] Failed to initialize vector store '%s' for kb_id=%s. Error: %s",
+                        "[KB-RETRIEVAL] Failed to initialize vector store '%s' for kb_name=%s. Error: %s",
                         store_type,
-                        kb_config["kb_id"],
+                        kb_config["kb_name"],
                         str(e),
                     )
                     continue
@@ -151,7 +151,7 @@ async def retrieve_and_inject_kb_context(llm_request: LLMRequest, user: User) ->
                     embedding_provider=kb_config["embedding_provider"],
                     embedding_model=kb_config["embedding_model"],
                     query=query_text,
-                    kb_ids=[kb_config["kb_id"]],
+                    kb_names=[kb_config["kb_name"]],
                     top_k=llm_request.top_k or 5,
                     store_credential_id=kb_config["store_credential_id"],
                     embedding_credential_id=kb_config["embedding_credential_id"] or llm_request.credential_id,
@@ -168,8 +168,8 @@ async def retrieve_and_inject_kb_context(llm_request: LLMRequest, user: User) ->
                 # Handle query errors per KB (non-blocking)
                 if result.error:
                     logger.warning(
-                        "[KB-RETRIEVAL] query_document returned an error for kb_id=%s: %s",
-                        kb_config["kb_id"],
+                        "[KB-RETRIEVAL] query_document returned an error for kb_name=%s: %s",
+                        kb_config["kb_name"],
                         result.error,
                     )
                     continue

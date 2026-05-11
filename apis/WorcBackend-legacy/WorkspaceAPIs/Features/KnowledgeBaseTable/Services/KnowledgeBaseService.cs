@@ -81,7 +81,7 @@ public class KnowledgeBaseService : IKnowledgeBaseService
                 .OrderBy(kb => kb.Name)
                 .Select(kb => new SelectOptionDto
                 {
-                    Value = kb.Id.ToString(),
+                    Value = kb.Name, // Use Name as Value for select options since KBs are tenant-wide and Name is unique within a tenant
                     Label = kb.Name,
                     Description = kb.Description,
                 })
@@ -364,7 +364,7 @@ public class KnowledgeBaseService : IKnowledgeBaseService
                 .GetByConditionAsync(vs => vs.TenantId == _currentTenantService.CurrentTenantId && vs.Metadata != null)
                 .ToListAsync();
 
-            var kbVectorStores = vectorStores.Where(vs => IsVectorStoreForKnowledgeBase(vs, id)).ToList();
+            var kbVectorStores = vectorStores.Where(vs => IsVectorStoreForKnowledgeBase(vs, kb.Name)).ToList();
 
             foreach (var vs in kbVectorStores)
             {
@@ -432,13 +432,16 @@ public class KnowledgeBaseService : IKnowledgeBaseService
             var kbs = allMatchedKBs;
 
             // Delete associated vector store entries for all KBs
-            var kbIdSet = kbs.Select(kb => kb.Id).ToHashSet();
+            var kbNameSet = kbs
+                .Select(kb => kb.Name)
+                .Where(name => !string.IsNullOrWhiteSpace(name))
+                .ToHashSet(StringComparer.OrdinalIgnoreCase);
             var vectorStores = await _unitOfWork.VectorStoreRepo
                 .GetByConditionAsync(vs => vs.Metadata != null)
                 .ToListAsync();
 
             var kbVectorStores = vectorStores
-                .Where(vs => kbIdSet.Any(kbId => IsVectorStoreForKnowledgeBase(vs, kbId)))
+                .Where(vs => kbNameSet.Any(kbName => IsVectorStoreForKnowledgeBase(vs, kbName)))
                 .ToList();
 
             foreach (var vs in kbVectorStores)
@@ -466,14 +469,20 @@ public class KnowledgeBaseService : IKnowledgeBaseService
         return serviceResponse;
     }
 
-    private static bool IsVectorStoreForKnowledgeBase(VectorStore vectorStore, Guid kbId)
+    private static bool IsVectorStoreForKnowledgeBase(VectorStore vectorStore, string kbName)
     {
         if (vectorStore.Metadata == null)
             return false;
 
-        if (!vectorStore.Metadata.RootElement.TryGetProperty("knowledge_base_id", out var kbIdElement))
+        if (vectorStore.Metadata.RootElement.ValueKind != JsonValueKind.Object)
             return false;
 
-        return string.Equals(kbIdElement.GetString(), kbId.ToString(), StringComparison.OrdinalIgnoreCase);
+        if (!vectorStore.Metadata.RootElement.TryGetProperty("kb_name", out var kbNameElement))
+            return false;
+
+        var metadataKbName = kbNameElement.GetString();
+        return !string.IsNullOrWhiteSpace(metadataKbName)
+            && !string.IsNullOrWhiteSpace(kbName)
+            && string.Equals(metadataKbName, kbName, StringComparison.OrdinalIgnoreCase);
     }
 }
