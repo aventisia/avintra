@@ -1,3 +1,5 @@
+import { DeploymentType } from "@aventisia/ui/types";
+
 interface IUserSessionStore {
   tenantId: string;
   tenantName: string;
@@ -7,7 +9,7 @@ interface IUserSessionStore {
   userInitials: string;
   platformVersion: string;
   planType?: string;
-  deploymentType: deploymentType;
+  deploymentType: DeploymentType;
 
   /** IsAventisiaEmployee */
   isAE: boolean;
@@ -18,8 +20,6 @@ interface IUserSessionStore {
   // TODO: Temporarily added for switch tenant feat
   access_mode?: string;
 }
-
-export type deploymentType = "Commercial" | "Enterprise";
 
 interface IJwtPayload {
   /** jwt audience */
@@ -43,7 +43,7 @@ interface IJwtPayload {
   /** List of user roles */
   "http://schemas.microsoft.com/ws/2008/06/identity/claims/role": string[];
   plan: string;
-  type: deploymentType;
+  type: DeploymentType;
 
   // TODO: Temporarily added for switch tenant feat
   access_mode?: string;
