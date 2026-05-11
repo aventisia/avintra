@@ -131,10 +131,8 @@ export const useFileUploadQueue = ({
             embedding_model: knowledgeBase.embeddingModel,
             input: fileItem.dataUri,
             metadata: {
-              kb_id: knowledgeBaseId,
-              kb_file_id: registered.data!.id,
               kb_name: knowledgeBaseName,
-              kb_file_name: fileItem.file.name,
+              doc_name: registered.data!.fileName,
             },
             chunk_size: data.chunkSize,
             chunk_overlap: data.chunkOverlap,
@@ -182,10 +180,10 @@ export const useFileUploadQueue = ({
         onCompleted();
       } else if (successCount > 0) {
         toast.warning(
-          `${successCount} succeeded, ${failureCount} failed. Check status above.`,
+          `${successCount} file(s) succeeded, ${failureCount} file(s) failed. Check status above.`,
         );
       } else {
-        toast.error("All files failed to upload. Please check the errors.");
+        toast.error("Files failed to upload. Please check the errors.");
       }
     },
 

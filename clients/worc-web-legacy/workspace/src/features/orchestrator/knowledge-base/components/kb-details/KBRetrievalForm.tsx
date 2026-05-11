@@ -47,7 +47,7 @@ export const KnowledgeBaseRetrievalForm = ({
         embedding_model: knowledgeBase.embeddingModel,
         query: data.query,
         top_k: data.numberOfChunks,
-        kb_ids: [knowledgeBaseId],
+        kb_names: [knowledgeBaseName],
         score_threshold: data.scoreThreshold,
         embedding_credential_id: knowledgeBase.embeddingCredentialId,
         store_credential_id: knowledgeBase.storeCredentialId,

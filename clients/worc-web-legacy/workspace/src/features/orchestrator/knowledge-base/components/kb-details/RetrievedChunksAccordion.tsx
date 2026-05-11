@@ -46,7 +46,7 @@ export function RetrievedChunksAccordion({
               </div>
               <p className="text-sm font-medium flex-1 text-left hover:underline hover:underline-offset-4">
                 {index + 1}.{" "}
-                {(item.metadata?.kb_file_name as string) || "Unknown Source"}
+                {(item.metadata?.doc_name as string) || "Unknown Source"}
               </p>
               <Badge
                 variant={"outline"}

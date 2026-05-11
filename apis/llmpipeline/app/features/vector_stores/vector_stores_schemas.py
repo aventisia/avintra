@@ -13,7 +13,7 @@ class IngestDocRequest(BaseModel):
     embedding_provider: ProviderLiteral  # LLM provider for embeddings (e.g., openai)
     embedding_model: str  # Embedding model ID (e.g., text-embedding-3-small)
     input: str  # Single file path, URL, data URI, or raw text string
-    metadata: dict # Optional metadata to associate with the ingested document (e.g., {"kb_file_id": "12345", "doc_name": "test.txt", "description": "Test document"})
+    metadata: dict # Required metadata to associate with the ingested document (e.g., {"kb_name": "my_kb", "doc_name": "test.txt", "description": "Test document"})
     chunk_size: int = Field(default=500, ge=100, le=8000)  # Max characters per chunk
     chunk_overlap: int = Field(default=100, ge=0)  # Overlapping characters between chunks
     store_credential_id: Optional[str] = None  # TODO: Implement BYOK support. Credential ID for vector store (if applicable)
@@ -52,8 +52,8 @@ class QueryDocRequest(BaseModel):
     query: str
     top_k: int = Field(default=5, ge=1, le=100)
     score_threshold: float = Field(default=0.1, ge=0.0, le=1.0)
-    kb_ids: List[str]  # list of knowledge base IDs to scope chunk search
-    kb_file_ids: Optional[List[str]] = None
+    kb_names: Optional[List[str]] = None  # Filter by Knowledge Base name(s)
+    doc_names: Optional[List[str]] = None  # Filter by document/file name(s)
     store_credential_id: Optional[str] = None  # TODO: Implement BYOK support. Credential ID for vector store (if applicable)
     embedding_credential_id: Optional[str] = None  # TODO: Implement BYOK support. Credential ID for embedding provider (if applicable)
     ref_type: str # Type of the reference (e.g., "Agent", "Workflow", "AIProject"). TODO: Yet to confirm the better implemenation of this.
@@ -89,15 +89,16 @@ class QueryDocResponse(BaseModel):
 # Request schemas for document deletion endpoint
 class DeleteDocRequest(BaseModel):
     vector_store: VectorStoreLiteral
-    kb_file_ids: List[str]
-    kb_ids: Optional[List[str]] = None # Optional list of knowledge base IDs to scope deletion
+    # One of the kb_name or doc_name should be provided to identify the documents to delete. If both are provided, kb_name will take precedence.
+    kb_names: Optional[List[str]] = None  # Delete by Knowledge Base name(s)
+    doc_names: Optional[List[str]] = None  # Delete by document/file name(s)
     store_credential_id: Optional[str] = None
 
 # Response schema for document deletion endpoint
 class DeleteDocResponse(BaseModel):
     vector_store: VectorStoreLiteral
-    kb_file_ids: List[str]
-    kb_ids: Optional[List[str]] = None
+    kb_names: Optional[List[str]] = None
+    doc_names: Optional[List[str]] = None
     deleted_chunks: int
     time_taken: float
     error: Optional[str] = None

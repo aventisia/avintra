@@ -46,8 +46,8 @@ interface VectorStoreQueryRequestDto {
   query: string;
   top_k: number;
   score_threshold?: number;
-  kb_ids: string[];
-  kb_file_ids?: string[];
+  kb_names?: string[];
+  doc_names?: string[];
   store_credential_id?: string;
   embedding_credential_id?: string;
   ref_type: string;
@@ -59,8 +59,9 @@ interface VectorStoreQueryRequestDto {
 
 interface VectorStoreDeleteRequestDto {
   vector_store: string;
-  kb_file_ids: string[];
-  kb_ids?: string[];
+  // One of the kb_name or doc_name should be provided to identify the documents to delete. If both are provided, kb_name will take precedence.
+  kb_names?: string[];
+  doc_names?: string[];
   store_credential_id?: string;
 }
 

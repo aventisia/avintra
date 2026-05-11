@@ -61,7 +61,7 @@ class LLMRequest(BaseModel):
     action: str # Action being performed (e.g., "AgentExecution", "AIModelExecution", "WorkflowExecution")
     agent_name: Optional[str] = None
     # Knowledge base retrieval (optional)
-    kb_ids: Optional[List[str]] = None  # Knowledge base IDs used to scope KB chunk retrieval
+    kb_names: Optional[List[str]] = None  # Knowledge base names used to scope KB chunk retrieval
     top_k: Optional[int] = Field(default=5, ge=1, le=100)  # Number of top chunks to retrieve from the knowledge base
 
 # Chunk response schema for streaming LLM response

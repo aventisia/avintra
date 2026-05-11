@@ -97,6 +97,18 @@ public class KnowledgeBaseFileService : IKnowledgeBaseFileService
                 return serviceResponse;
             }
 
+            // Enforce unique document name within the knowledge base
+            var duplicate = await _unitOfWork.KnowledgeBaseFileRepo
+                .GetByConditionAsync(f => f.KnowledgeBaseId == knowledgeBaseId && f.FileName == dto.FileName)
+                .FirstOrDefaultAsync();
+
+            if (duplicate != null)
+            {
+                serviceResponse.Message = $"A document named '{dto.FileName}' already exists in this knowledge base";
+                serviceResponse.StatusCode = 409;
+                return serviceResponse;
+            }
+
             var extension = dto.FileExtension;
             if (string.IsNullOrWhiteSpace(extension))
                 extension = Path.GetExtension(dto.FileName);
@@ -169,6 +181,18 @@ public class KnowledgeBaseFileService : IKnowledgeBaseFileService
             {
                 serviceResponse.Message = "Knowledge base not found";
                 serviceResponse.StatusCode = 404;
+                return serviceResponse;
+            }
+
+            // Enforce unique document name within the knowledge base
+            var duplicateText = await _unitOfWork.KnowledgeBaseFileRepo
+                .GetByConditionAsync(f => f.KnowledgeBaseId == knowledgeBaseId && f.FileName == dto.FileName)
+                .FirstOrDefaultAsync();
+
+            if (duplicateText != null)
+            {
+                serviceResponse.Message = $"A document named '{dto.FileName}' already exists in this knowledge base";
+                serviceResponse.StatusCode = 409;
                 return serviceResponse;
             }
 
