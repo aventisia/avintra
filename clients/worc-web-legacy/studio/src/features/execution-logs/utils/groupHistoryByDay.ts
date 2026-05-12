@@ -43,6 +43,7 @@ export const groupHistoryByDay = (
       id: item.id,
       time,
       duration: item.duration,
+      status: item.status,
       user: {
         name: "Unknown",
         initials: "NA",
