@@ -28,6 +28,7 @@ import { Loader2, Sparkles } from "lucide-react";
 import { useShallow } from "zustand/react/shallow";
 
 import { STTInputValue } from "./STTInputStep";
+import ViewerButton from "./ViewerButton";
 
 /* Helper to extract the primary ModelConfig object regardless of node type suffix */
 function getModelConfig(
@@ -274,7 +275,8 @@ const ExecuteButton = ({
   };
 
   return (
-    <DCPTabsFooterWrapper className="justify-start">
+    <DCPTabsFooterWrapper className="justify-between">
+      <ViewerButton />
       <Button
         onClick={handleExecute}
         size="sm"
