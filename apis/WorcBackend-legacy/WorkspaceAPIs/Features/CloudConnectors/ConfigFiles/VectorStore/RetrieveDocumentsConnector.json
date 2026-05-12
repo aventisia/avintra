@@ -12,40 +12,23 @@
     "fields": [
         {
             "direction": "Input",
-            "type": "credentials-select",
-            "name": "__CredentialId__VectorStore",
-            "label": "Vector Store Credential",
-            "description": "Credentials for connecting to the selected vector database provider.",
-            "defaultValue": "00000000-0000-0000-0000-000000000000"
-        },
-        {
-            "direction": "Input",
-            "type": "text",
+            "type": "select",
             "name": "vectorStore",
             "label": "Vector Store",
             "description": "Select the vector database provider used for storing and searching embeddings.",
             "defaultValue": "pgvector",
             "selectOptions": [
                 {
-                    "label": "PgVector",
+                    "label": "pgvector",
                     "value": "pgvector",
                     "description": "PostgreSQL extension for vector similarity search"
                 },
                 {
-                    "label": "Qdrant",
+                    "label": "qdrant",
                     "value": "qdrant",
                     "description": "Open-source vector database optimized for embeddings and semantic search"
                 }
             ]
-        },
-        {
-            "direction": "Input",
-            "type": "text",
-            "name": "collectionName",
-            "label": "Collection / Table Name",
-            "description": "Enter the collection or table name used to store vector embeddings.",
-            "placeholder": "e.g. worc_VectorStore",
-            "defaultValue": "worc_VectorStore"
         },
         {
             "direction": "Input",
@@ -58,12 +41,50 @@
         },
         {
             "direction": "Input",
+            "type": "select",
+            "name": "searchFilterType",
+            "label": "Search or Filter By",
+            "description": "Choose how the search should be filtered.",
+            "defaultValue": "none",
+            "selectOptions": [
+                {
+                    "label": "None",
+                    "value": "none",
+                    "description": "Do not apply additional filtering"
+                },
+                {
+                    "label": "Document Names",
+                    "value": "documentNames",
+                    "description": "Filter using document names"
+                },
+                {
+                    "label": "Knowledge Base Names",
+                    "value": "knowledgeBaseNames",
+                    "description": "Filter using knowledge base names"
+                },
+                {
+                    "label": "Both",
+                    "value": "both",
+                    "description": "Filter using both document names and knowledge base names"
+                }
+            ]
+        },
+        {
+            "direction": "Input",
             "type": "text",
             "name": "documentNames",
             "label": "Document Names",
             "description": "Enter one or more document names, separated by commas.",
             "placeholder": "e.g. Invoice.pdf, Contract.docx, Report.xlsx",
-            "defaultValue": ""
+            "defaultValue": "",
+            "renderif": {
+                "condition": [
+                    {
+                        "field": "searchFilterType",
+                        "equals": "documentNames"
+                    }
+                ]
+            }
         },
         {
             "direction": "Input",
@@ -72,7 +93,15 @@
             "label": "Knowledge Base Names",
             "description": "Enter one or more knowledge base names, separated by commas.",
             "placeholder": "e.g. HR Policies, Product Docs, Support Articles",
-            "defaultValue": ""
+            "defaultValue": "",
+            "renderif": {
+                "condition": [
+                    {
+                        "field": "searchFilterType",
+                        "equals": "knowledgeBaseNames"
+                    }
+                ]
+            }
         },
         {
             "direction": "Input",
@@ -92,39 +121,6 @@
             "defaultValue": 0.5,
             "min": 0,
             "max": 1
-        },
-        {
-            "direction": "Input",
-            "type": "text",
-            "name": "vectorColumns",
-            "label": "Vector Field Mapping",
-            "description": "Provide field names for the vector store in the exact order: id, content, metadata, embedding. Use a comma-separated list (e.g. id, content, metadata, embedding).",
-            "defaultValue": ""
-        },
-        {
-            "direction": "Input",
-            "type": "switch",
-            "name": "specifyEmbeddingColumn",
-            "label": "Specify Embedding Field",
-            "description": "Enable this option to explicitly provide the embedding field or column name used by the selected vector store.",
-            "defaultValue": false
-        },
-        {
-            "direction": "Input",
-            "type": "text",
-            "name": "embeddingColumn",
-            "label": "Embedding Field Name",
-            "description": "Enter the field or column name that contains vector embeddings.",
-            "placeholder": "e.g. embedding",
-            "defaultValue": "",
-            "renderif": {
-                "condition": [
-                    {
-                        "field": "specifyEmbeddingColumn",
-                        "equal": true
-                    }
-                ]
-            }
         },
         {
             "direction": "Input",

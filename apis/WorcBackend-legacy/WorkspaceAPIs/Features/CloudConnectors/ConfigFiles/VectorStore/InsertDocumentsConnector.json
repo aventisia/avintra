@@ -12,16 +12,7 @@
     "fields": [
         {
             "direction": "Input",
-            "type": "credentials-select",
-            "name": "__CredentialId__VectorStore",
-            "label": "Vector Store Credential",
-            "description": "Credentials for connecting to the selected vector database provider.",
-            "defaultValue": "00000000-0000-0000-0000-000000000000",
-            "required": true
-        },
-        {
-            "direction": "Input",
-            "type": "text",
+            "type": "select",
             "name": "vectorStore",
             "label": "Vector Store",
             "description": "Select the vector database provider used for storing and searching embeddings.",
@@ -33,21 +24,12 @@
                     "description": "PostgreSQL extension for vector similarity search"
                 },
                 {
-                    "label": "Qdrant",
+                    "label": "qdrant",
                     "value": "qdrant",
                     "description": "Open-source vector database optimized for embeddings and semantic search"
                 }
             ],
             "disabled": false
-        },
-        {
-            "direction": "Input",
-            "type": "text",
-            "name": "collectionName",
-            "label": "Collection / Table Name",
-            "description": "Enter the collection or table name used to store vector embeddings.",
-            "placeholder": "e.g. worc_VectorStore",
-            "defaultValue": "worc_VectorStore"
         },
         {
             "direction": "Input",
