@@ -28,7 +28,7 @@ const VoiceConfigField = ({ name }: VoiceConfigFieldProps) => {
         language: `${name}.language`,
         voice: `${name}.voice`,
         speed: `${name}.speed`,
-        pitch: `${name}.pitch`,
+        // pitch: `${name}.pitch`,
       }) as const,
     [name],
   );
@@ -45,10 +45,10 @@ const VoiceConfigField = ({ name }: VoiceConfigFieldProps) => {
     name: fieldNames.speed,
     control,
   });
-  const { field: pitchField } = useController({
-    name: fieldNames.pitch,
-    control,
-  });
+  // const { field: pitchField } = useController({
+  //   name: fieldNames.pitch,
+  //   control,
+  // });
 
   const languageValue = languageField.value;
   const prevLanguage = useRef(languageValue);
@@ -143,7 +143,7 @@ const VoiceConfigField = ({ name }: VoiceConfigFieldProps) => {
               )}
             />
 
-            <Controller
+            {/* <Controller
               {...pitchField}
               render={({ field }) => (
                 <SliderField
@@ -154,7 +154,7 @@ const VoiceConfigField = ({ name }: VoiceConfigFieldProps) => {
                   step={0.1}
                 />
               )}
-            />
+            /> */}
           </PopoverContent>
         </Popover>
       </div>

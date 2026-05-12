@@ -28,8 +28,7 @@
       "defaultValue": {
         "language": "en",
         "voice": "",
-        "speed": 1,
-        "pitch": 1
+        "speed": 1
       },
       "required": false,
       "category": "Models"

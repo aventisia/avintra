@@ -13,5 +13,5 @@ export interface VoiceConfigType {
   language: string;
   voice: string;
   speed: number;
-  pitch: number;
+  // pitch: number;
 }
