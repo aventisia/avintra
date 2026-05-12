@@ -79,7 +79,6 @@ export const useReactFlowViewData = () => {
       setNodes(flow.nodes);
       setEdges(flow.edges);
       if (data.nodeExecutionLogs) {
-        console.log(deepParse(data.nodeExecutionLogs));
         initLogs(
           deepParse(
             data.nodeExecutionLogs,

@@ -42,9 +42,7 @@ const FileUploadList = ({ isPublic }: { isPublic?: boolean }) => {
   };
 
   const handleDelete = (name: string) => {
-    console.log(name);
     const uploadedFile = filesToUpload.find((f) => f.name === name);
-    console.log(uploadedFile);
     if (uploadedFile) addFileToDelete(uploadedFile);
   };
 

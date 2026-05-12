@@ -16,7 +16,6 @@ export const useExecutionStore = create<ExecutionState & ExecutionActions>(
     showBranchStats: false,
     initLogs: (logs, nodes, edges) => {
       const data = mapLogsToFlow(logs, nodes, edges);
-      console.log({ ...data });
       const indices: Record<string, number> = {};
       Object.keys(data.loopRegistry).forEach((id) => (indices[id] = 0));
       set({ ...data, activeIteration: indices });
