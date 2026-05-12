@@ -1,5 +1,5 @@
 {
-    "name": "Insert",
+    "name": "InsertDocuments",
     "description": "Inserts documents into a PostgreSQL pgvector table by generating embeddings from input content and storing both vectors and metadata. Similar to vector store nodes in n8n.",
     "version": "1.1.0",
     "author": "@rahmat",
@@ -13,20 +13,41 @@
         {
             "direction": "Input",
             "type": "credentials-select",
-            "name": "__CredentialId__Postgres",
-            "label": "PostgreSQL Credential",
-            "description": "Credentials for connecting to the PostgreSQL database that contains the pgvector extension enabled.",
-            "defaultValue": "",
+            "name": "__CredentialId__VectorStore",
+            "label": "Vector Store Credential",
+            "description": "Credentials for connecting to the selected vector database provider.",
+            "defaultValue": "00000000-0000-0000-0000-000000000000",
             "required": true
         },
         {
             "direction": "Input",
             "type": "text",
-            "name": "tableName",
-            "label": "Table Name",
-            "description": "Name of the pgvector table where documents and embeddings will be stored.",
-            "defaultValue": "",
-            "required": true
+            "name": "vectorStore",
+            "label": "Vector Store",
+            "description": "Select the vector database provider used for storing and searching embeddings.",
+            "defaultValue": "pgvector",
+            "selectOptions": [
+                {
+                    "label": "pgvector",
+                    "value": "pgvector",
+                    "description": "PostgreSQL extension for vector similarity search"
+                },
+                {
+                    "label": "Qdrant",
+                    "value": "qdrant",
+                    "description": "Open-source vector database optimized for embeddings and semantic search"
+                }
+            ],
+            "disabled": false
+        },
+        {
+            "direction": "Input",
+            "type": "text",
+            "name": "collectionName",
+            "label": "Collection / Table Name",
+            "description": "Enter the collection or table name used to store vector embeddings.",
+            "placeholder": "e.g. worc_VectorStore",
+            "defaultValue": "worc_VectorStore"
         },
         {
             "direction": "Input",
@@ -41,15 +62,17 @@
             "direction": "Input",
             "type": "model-config-select",
             "name": "__ModelConfig__Embedding",
-            "label": "Embedding Model",
-            "description": "Model used to convert document content into vector embeddings.",
+            "label": "Embedding Model Config",
+            "description": "Configuration for the embedding model used to convert the input prompt into a vector representation.",
             "defaultValue": {
                 "is_byok_enabled": false,
                 "provider": "openai",
                 "credential_id": "00000000-0000-0000-0000-000000000000",
-                "model": "text-embedding-3-small"
+                "model": "text-embedding-3-small",
+                "dimensions": "",
+                "encoding_format": ""
             },
-            "required": true,
+            "required": false,
             "category": "Embedding"
         },
         {

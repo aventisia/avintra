@@ -9,17 +9,17 @@ public enum PgVectorActionsEnum
     /// <summary>
     /// Add new documents / embeddings to the pgvector store (fails if document with same ID exists).
     /// </summary>
-    Insert,
+    InsertDocuments,
+
+    /// <summary>
+    /// Upsert documents / embeddings in the pgvector store (insert or update based on existence).
+    /// </summary>
+    RetrieveDocuments,
 
     /// <summary>
     /// Update documents / embeddings in the pgvector store.
     /// </summary>
     Update,
-
-    /// <summary>
-    /// Upsert documents / embeddings in the pgvector store (insert or update based on existence).
-    /// </summary>
-    GetMany,
 
     /// <summary>
     /// Delete documents / embeddings from the pgvector store based on document IDs or other criteria.

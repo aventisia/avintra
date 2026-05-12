@@ -160,8 +160,7 @@ public static class AppServicesExtension
         services.AddScoped<IAzureConnectorsService, AzureConnectorsService>();
         services.AddScoped<IM365OutlookConnectorsService, M365OutlookConnectorsService>();
         services.AddScoped<IM365SharePointConnectorsService, M365SharePointConnectorsService>();
-        services.AddScoped<IVectorStoreService, VectorStoreService>();
-        services.AddScoped<IPgVectorConnectorsService, PgVectorConnectorsService>();
+        services.AddScoped<IVectorConnectorsService, VectorConnectorsService>();
 
         // Common services
         services.AddScoped<IUnitOfWork, UnitOfWork>();
