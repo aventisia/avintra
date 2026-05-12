@@ -7,6 +7,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using CredentialManagement;
+using System.Security;
 
 namespace CodeActivitiesLibrary.UiInterfaceAutomations.CredentialManagerActivities
 {
@@ -25,12 +26,11 @@ namespace CodeActivitiesLibrary.UiInterfaceAutomations.CredentialManagerActiviti
         // Output Arguments
         [DisplayName("Password")]
         [Description("The retrieved password for the specified credential target.")]
-        public OutArgument<string> Password { get; set; }
+        public OutArgument<SecureString> Password { get; set; }
 
         protected override void Execute(CodeActivityContext context)
         {
             string target = TargetName.Get(context);
-            string retrievedPassword = null;
 
             try
             {
@@ -41,26 +41,27 @@ namespace CodeActivitiesLibrary.UiInterfaceAutomations.CredentialManagerActiviti
 
                 if (credential.Load())
                 {
-                    retrievedPassword = credential.Password;
+                    var securePassword = new SecureString();
+                    foreach (char c in credential.Password ?? string.Empty)
+                        securePassword.AppendChar(c);
+                    securePassword.MakeReadOnly();
+                    Password.Set(context, securePassword);
                     IsSuccess.Set(context, true);
                     StatusMessage.Set(context, $"Successfully retrieved password for target '{target}'.");
                 }
                 else
                 {
-                    retrievedPassword = "Password not found";
+                    Password.Set(context, null);
                     IsSuccess.Set(context, false);
                     StatusMessage.Set(context, $"No matching credential found for target '{target}'.");
                 }
             }
             catch (Exception ex)
             {
-                Console.WriteLine($"Error retrieving password: {ex.Message}");
-                retrievedPassword = "Error occurred";
+                Password.Set(context, null);
                 IsSuccess.Set(context, false);
                 StatusMessage.Set(context, $"Error retrieving password: {ex.Message}");
             }
-
-            Password.Set(context, retrievedPassword);
         }
     }
 }

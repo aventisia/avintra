@@ -1221,6 +1221,15 @@
           },
           {
             "type": "activityNode",
+            "name": "PopulatePasswordFieldInWindowActivity",
+            "label": "Populate Password Field in Window",
+            "description": "Fills a password field in a window with a secure password value using the method you choose.",
+            "docsLink": "https://docs.aventisia.com",
+            "img": "/assets/UIAutomation.svg",
+            "supportedPlatforms": ["windows"]
+          },
+          {
+            "type": "activityNode",
             "name": "PopulateTextFieldInWindowActivity",
             "label": "Populate Text Field in Window",
             "description": "Fills a text box or editable field in a window with the specified text using the method you choose.",
@@ -2183,6 +2192,15 @@
             "name": "LaunchBrowserActivity",
             "label": "Launch Browser",
             "description": "Launches a web browser instance of Microsoft Edge or Google Chrome.",
+            "docsLink": "https://docs.aventisia.com",
+            "img": "/assets/BrowserAutomation.svg",
+            "supportedPlatforms": ["windows"]
+          },
+          {
+            "type": "activityNode",
+            "name": "PopulatePasswordFieldActivity",
+            "label": "Populate Password Field on Web Page",
+            "description": "Fills a password field in a web browser with a secure password value using the method you choose.",
             "docsLink": "https://docs.aventisia.com",
             "img": "/assets/BrowserAutomation.svg",
             "supportedPlatforms": ["windows"]

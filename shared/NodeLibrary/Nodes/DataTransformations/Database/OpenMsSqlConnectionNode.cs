@@ -18,7 +18,7 @@ public class OpenMsSqlConnectionNode : BaseNode
 
         try
         {
-            var connectionString = ConvertSecureStringToString(ConnectionString.Get(context));
+            var connectionString = SecureStringHelper.ConvertSecureStringToString(ConnectionString.Get(context) ?? new SecureString());
 
             // Validate input
             if (string.IsNullOrWhiteSpace(connectionString))
@@ -51,22 +51,6 @@ public class OpenMsSqlConnectionNode : BaseNode
             SqlConnection.Set(context, null!);
             IsSuccess.Set(context, false);
             StatusMessage.Set(context, $"Error opening database connection: {ex.Message}");
-        }
-    }
-
-    private static string? ConvertSecureStringToString(SecureString? secureString)
-    {
-        if (secureString == null)
-            return string.Empty;
-
-        var ptr = System.Runtime.InteropServices.Marshal.SecureStringToGlobalAllocUnicode(secureString);
-        try
-        {
-            return System.Runtime.InteropServices.Marshal.PtrToStringUni(ptr);
-        }
-        finally
-        {
-            System.Runtime.InteropServices.Marshal.ZeroFreeGlobalAllocUnicode(ptr);
         }
     }
 }

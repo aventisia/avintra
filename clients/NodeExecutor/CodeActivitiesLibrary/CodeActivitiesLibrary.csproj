@@ -1,5 +1,6 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
-<Project ToolsVersion="15.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+<Project ToolsVersion="15.0"
+  xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <Import Project="$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props" Condition="Exists('$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props')" />
   <PropertyGroup>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
@@ -530,6 +531,7 @@
     <Compile Include="Activities\UIInterfaceAutomations\BrowserAutomationActivities\Enums\DialogActionEnum.cs" />
     <Compile Include="Activities\UIInterfaceAutomations\BrowserAutomationActivities\Enums\ElementSelectorTypeEnum.cs" />
     <Compile Include="Activities\UIInterfaceAutomations\BrowserAutomationActivities\Enums\ElementStateEnum.cs" />
+    <Compile Include="Activities\UIInterfaceAutomations\BrowserAutomationActivities\Enums\IfFieldNotEmptyActionEnum.cs" />
     <Compile Include="Activities\UIInterfaceAutomations\BrowserAutomationActivities\Enums\LaunchModeEnum.cs" />
     <Compile Include="Activities\UIInterfaceAutomations\BrowserAutomationActivities\Enums\MousePositionEnum.cs" />
     <Compile Include="Activities\UIInterfaceAutomations\BrowserAutomationActivities\Enums\TargetDesktopEnum.cs" />
@@ -551,6 +553,7 @@
     <Compile Include="Activities\UIInterfaceAutomations\BrowserAutomationActivities\LaunchBrowserActivity.cs" />
     <Compile Include="Activities\UIInterfaceAutomations\BrowserAutomationActivities\OnHold\TakeScreenshotOfWebPageActivity.cs" />
     <Compile Include="Activities\UIInterfaceAutomations\BrowserAutomationActivities\OnHold\WaitForWebPageContentActivity.cs" />
+    <Compile Include="Activities\UIInterfaceAutomations\BrowserAutomationActivities\PopulatePasswordFieldActivity.cs" />
     <Compile Include="Activities\UIInterfaceAutomations\BrowserAutomationActivities\PopulateTextFieldActivity.cs" />
     <Compile Include="Activities\UIInterfaceAutomations\BrowserAutomationActivities\PressButtonOnWebPageActivity.cs" />
     <Compile Include="Activities\UIInterfaceAutomations\BrowserAutomationActivities\RunJavaScriptFunctionOnWebPageActivity.cs" />
@@ -697,6 +700,7 @@
     <Compile Include="Activities\UIInterfaceAutomations\UIAutomationActivities\OnHold\WaitForImageActivity.cs" />
     <Compile Include="Activities\UIInterfaceAutomations\UIAutomationActivities\OnHold\WaitForWindowActivity.cs" />
     <Compile Include="Activities\UIInterfaceAutomations\UIAutomationActivities\OnHold\WaitForWindowContentActivity.cs" />
+    <Compile Include="Activities\UIInterfaceAutomations\UIAutomationActivities\PopulatePasswordFieldInWindowActivity.cs" />
     <Compile Include="Activities\UIInterfaceAutomations\UIAutomationActivities\PopulateTextFieldInWindowActivity.cs" />
     <Compile Include="Activities\UIInterfaceAutomations\UIAutomationActivities\ResizeWindowActivity.cs" />
     <Compile Include="Activities\UIInterfaceAutomations\UIAutomationActivities\SelectRadioButtonActivity.cs" />
