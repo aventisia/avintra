@@ -2,11 +2,11 @@
   "name": "ExtractFileText",
   "label": "Extract File Text",
   "description": "Extracts text from a file using the Aventisia cloud API. Supported formats: .pdf, .png, .jpg, .jpeg, .bmp, .tiff, .tif, .docx, .xlsx, .txt, .csv, .rtf, .odt, .md",
-  "version": null,
-  "auther": null,
+  "version": "1.0.0",
+  "auther": "@aventisia",
   "supportedPlatforms": ["cloud", "windows"],
-  "errorHandling": null,
-  "testScreenType": null,
+  "errorHandling": "standard",
+  "testScreenType": "standard",
   "fields": [
     {
       "direction": "Input",

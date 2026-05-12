@@ -149,27 +149,6 @@
     {
       "direction": "Input",
       "type": "select",
-      "name": "InputMode",
-      "label": "Input Mode",
-      "description": "Specifies whether to use plain text or secure string input.",
-      "defaultValue": "PlainText",
-      "required": false,
-      "selectOptions": [
-        {
-          "label": "Plain Text",
-          "value": "PlainText",
-          "description": "Uses regular text input."
-        },
-        {
-          "label": "Encrypted Text",
-          "value": "EncryptedText",
-          "description": "Uses secure string or masked input."
-        }
-      ]
-    },
-    {
-      "direction": "Input",
-      "type": "select",
       "name": "FieldContentAction",
       "label": "Field Content Action",
       "description": "Specifies what to do if the text field already has content.",

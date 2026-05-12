@@ -14,6 +14,7 @@ namespace CodeActivitiesLibrary.UiInterfaceAutomations.FileActivities
 {
     [DisplayName("Extract File Text")]
     [Description("Extracts text from a file using the Aventisia cloud API. Supported formats: .pdf, .png, .jpg, .jpeg, .bmp, .tiff, .tif, .docx, .xlsx, .txt, .csv, .rtf, .odt, .md")]
+    [ActivityMetaData(nodeImg: "/assets/File.svg")]
     public class ExtractFileTextActivity : BaseAsyncCodeActivity
     {
         [RequiredArgument]

@@ -22,9 +22,6 @@ public class PopulateTextFieldNode : BaseNode
     [DisplayName("Text To Populate"), Description("The text to type into the text field.")]
     public required InArgument<string> TextToPopulate { get; set; }
 
-    [DisplayName("Input Mode"), Description("Specifies whether to use plain text or secure string input.")]
-    public InArgument<InputTextModeEnum> InputMode { get; set; } = new InArgument<InputTextModeEnum>(InputTextModeEnum.PlainText);
-
     [DisplayName("Field Content Action"), Description("Specifies what to do if the text field already has content.")]
     public InArgument<IfFieldNotEmptyActionEnum> FieldContentAction { get; set; } = new InArgument<IfFieldNotEmptyActionEnum>(IfFieldNotEmptyActionEnum.ReplaceText);
 
@@ -153,15 +150,6 @@ public class PopulateTextFieldNode : BaseNode
             StatusMessage.Set(context, status);
         }
     }
-}
-
-public enum InputTextModeEnum
-{
-    [Display(Name = "Plain Text", Description = "Uses regular text input.")]
-    PlainText,
-
-    [Display(Name = "Encrypted Text", Description = "Uses secure string or masked input.")]
-    EncryptedText
 }
 
 public enum IfFieldNotEmptyActionEnum

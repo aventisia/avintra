@@ -31,12 +31,12 @@ public class GetCredentialsNode : BaseNode
             if (!credential.Load())
             {
                 AccountName.Set(context, "Account not found");
-                Password.Set(context, new SecureString());
+                Password.Set(context, null!);
                 throw new InvalidOperationException($"No matching credential found for target: '{target}'.");
             }
 
             AccountName.Set(context, credential.Username);
-            Password.Set(context, ToSecureString(credential.Password));
+            Password.Set(context, SecureStringHelper.ConvertStringToSecureString(credential.Password));
             status = "Successfully retrieved credentials.";
 
             IsSuccess.Set(context, true);
@@ -45,24 +45,9 @@ public class GetCredentialsNode : BaseNode
         catch (Exception ex)
         {
             AccountName.Set(context, "Error occurred");
-            Password.Set(context, new SecureString());
+            Password.Set(context, null!);
             IsSuccess.Set(context, false);
             StatusMessage.Set(context, $"Error retrieving credentials: {ex.Message}");
         }
-    }
-
-    private static SecureString ToSecureString(string password)
-    {
-        if (string.IsNullOrEmpty(password))
-            return new SecureString();
-
-        var secure = new SecureString();
-        foreach (var c in password)
-        {
-            secure.AppendChar(c);
-        }
-
-        secure.MakeReadOnly();
-        return secure;
     }
 }

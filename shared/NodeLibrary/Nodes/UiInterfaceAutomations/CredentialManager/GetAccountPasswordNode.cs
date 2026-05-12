@@ -10,13 +10,11 @@ public class GetAccountPasswordNode : BaseNode
     public required InArgument<string> TargetName { get; set; }
 
     [DisplayName("Password"), Description("The retrieved password for the specified credential target.")]
-    public OutArgument<string> Password { get; set; } = new OutArgument<string>();
+    public OutArgument<SecureString> Password { get; set; } = new OutArgument<SecureString>();
 
     protected override void Execute(INodeContext context)
     {
-        var status = "Operation completed successfully.";
         var target = TargetName.Get(context);
-        var retrievedPassword = string.Empty;
 
         try
         {
@@ -25,29 +23,25 @@ public class GetAccountPasswordNode : BaseNode
                 Target = target
             };
 
-            if (!credential.Load())
+            if (credential.Load())
             {
-                retrievedPassword = "Password not found";
-                throw new InvalidOperationException($"No matching credential found for target '{target}'.");
+                var securePassword = SecureStringHelper.ConvertStringToSecureString(credential.Password ?? string.Empty);
+                Password.Set(context, securePassword);
+                IsSuccess.Set(context, true);
+                StatusMessage.Set(context, $"Successfully retrieved password for target '{target}'.");
             }
-
-            retrievedPassword = credential.Password;
-            status = $"Successfully retrieved password for target '{target}'.";
-
-            IsSuccess.Set(context, true);
-            StatusMessage.Set(context, status);
+            else
+            {
+                Password.Set(context, null!);
+                IsSuccess.Set(context, false);
+                StatusMessage.Set(context, $"No matching credential found for target '{target}'.");
+            }
         }
         catch (Exception ex)
         {
-            if (string.IsNullOrEmpty(retrievedPassword))
-            {
-                retrievedPassword = "Error occurred";
-            }
-
+            Password.Set(context, null!);
             IsSuccess.Set(context, false);
             StatusMessage.Set(context, $"Error retrieving password: {ex.Message}");
         }
-
-        Password.Set(context, retrievedPassword);
     }
 }

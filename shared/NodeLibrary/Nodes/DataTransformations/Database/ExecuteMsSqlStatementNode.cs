@@ -53,7 +53,7 @@ public class ExecuteMsSqlStatementNode : BaseNode
             switch (mode)
             {
                 case SqlConnectionMode.UseConnectionString:
-                    var connectionString = ConvertSecureStringToString(ConnectionString.Get(context));
+                    var connectionString = SecureStringHelper.ConvertSecureStringToString(ConnectionString.Get(context) ?? new SecureString());
 
                     if (string.IsNullOrWhiteSpace(connectionString))
                         throw new ArgumentException("Connection string is required.");
@@ -147,21 +147,5 @@ public class ExecuteMsSqlStatementNode : BaseNode
 
         [Display(Name = "Use Existing Connection", Description = "Use an existing SQL connection from Open MS SQL Connection node.")]
         UseExistingConnection
-    }
-
-    private static string? ConvertSecureStringToString(SecureString? secureString)
-    {
-        if (secureString == null)
-            return string.Empty;
-
-        var ptr = System.Runtime.InteropServices.Marshal.SecureStringToGlobalAllocUnicode(secureString);
-        try
-        {
-            return System.Runtime.InteropServices.Marshal.PtrToStringUni(ptr);
-        }
-        finally
-        {
-            System.Runtime.InteropServices.Marshal.ZeroFreeGlobalAllocUnicode(ptr);
-        }
     }
 }

@@ -18,10 +18,6 @@ namespace CodeActivitiesLibrary.UiInterfaceAutomations.BrowserAutomationActiviti
     [ActivityMetaData(nodeImg: "/assets/BrowserAutomation.svg")]
     public class PopulateTextFieldActivity : BaseCodeActivity
     {
-        // ----------------------
-        // Input Arguments
-        // ----------------------
-
         [RequiredArgument]
         [DisplayName("Web Browser Instance")]
         [Description("Enter or choose the variable that contains the web browser instance to work with.")]
@@ -41,11 +37,6 @@ namespace CodeActivitiesLibrary.UiInterfaceAutomations.BrowserAutomationActiviti
         [DisplayName("Text To Populate")]
         [Description("The text to type into the text field.")]
         public InArgument<string> TextToPopulate { get; set; }
-
-        [DisplayName("Input Mode")]
-        [Description("Specifies whether to use plain text or secure string input.")]
-        [DefaultValue(InputTextModeEnum.PlainText)]
-        public InArgument<InputTextModeEnum> InputMode { get; set; }
 
         [DisplayName("Field Content Action")]
         [Description("Specifies what to do if the text field already has content.")]
@@ -88,10 +79,6 @@ namespace CodeActivitiesLibrary.UiInterfaceAutomations.BrowserAutomationActiviti
         [DefaultValue("Ok")]
         public InArgument<string> DialogButtonToPress { get; set; }
 
-
-        // ----------------------
-        // Execution Logic
-        // ----------------------
         protected override void Execute(CodeActivityContext context)
         {
             var status = "Operation completed successfully.";
@@ -102,7 +89,6 @@ namespace CodeActivitiesLibrary.UiInterfaceAutomations.BrowserAutomationActiviti
                 var findType = FindType.Get(context);
                 var searchKeywords = ValueToFind.Get(context);
                 var textToPopulate = TextToPopulate.Get(context);
-                var inputMode = InputMode.Get(context);
                 var fieldContentAction = FieldContentAction.Get(context);
                 var waitForElement = WaitForElement.Get(context);
                 var timeout = TimeSpan.FromSeconds(TimeoutSeconds.Get(context));
@@ -212,23 +198,5 @@ namespace CodeActivitiesLibrary.UiInterfaceAutomations.BrowserAutomationActiviti
                 StatusMessage.Set(context, status);
             }
         }
-    }
-
-    public enum InputTextModeEnum
-    {
-        [Display(Name = "Plain Text", Description = "Uses regular text input.")]
-        PlainText,
-
-        [Display(Name = "Encrypted Text", Description = "Uses secure string or masked input.")]
-        EncryptedText
-    }
-
-    public enum IfFieldNotEmptyActionEnum
-    {
-        [Display(Name = "Replace Text", Description = "Clears existing text and replaces it with new input.")]
-        ReplaceText,
-
-        [Display(Name = "Append Text", Description = "Adds new text to the end of existing text.")]
-        AppendText
     }
 }
