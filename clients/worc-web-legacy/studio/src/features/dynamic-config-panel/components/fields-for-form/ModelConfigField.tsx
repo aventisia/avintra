@@ -138,6 +138,12 @@ const ModelConfigField = ({ name }: ModelConfigFieldProps) => {
 
             return;
           }
+          if (nodeKey == "Embedding") {
+            setByokModels(embeddingModelProviders[0].models as Model[]);
+            setIsInitialized(true);
+
+            return;
+          }
           setIsLoading(true);
 
           const provider = PROVIDER_MAP[providerValue];
@@ -187,6 +193,10 @@ const ModelConfigField = ({ name }: ModelConfigFieldProps) => {
     if (nodeKey == "TextToSpeech") {
       setByokModels(ttsModelProviders[0].models as Model[]);
 
+      return;
+    }
+    if (nodeKey == "Embedding") {
+      setByokModels(embeddingModelProviders[0].models as Model[]);
       return;
     }
 
