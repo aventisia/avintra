@@ -40,7 +40,6 @@ export const ReactFlowViewOnly = () => {
       closePanel: state.closePanel,
     })),
   );
-  console.log({ nodes, edges });
 
   useEffect(() => {
     openPanel(PANEL_ID, "left");

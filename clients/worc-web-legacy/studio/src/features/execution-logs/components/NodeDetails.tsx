@@ -13,7 +13,7 @@ export const NodeDetail = ({ nodeData }: { nodeData: NodeDataType }) => {
   const { loopRegistry, activeIteration, setIteration } = useExecutionStore();
   const current = activeIteration[openNodeId ?? ""] || 0;
   const total = loopRegistry[openNodeId ?? ""]?.total || 0;
-  console.log(nodeData);
+
   return (
     <div className="flex flex-col  bg-background gap-2 p-2">
       {nodeData.type == "forLoopNode" && (

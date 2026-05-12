@@ -80,7 +80,7 @@ export async function generateOutputConfigFromData() {
       ],
     },
   }));
-  console.log(llmItems);
+
   return [
     {
       direction: "Input",
