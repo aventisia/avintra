@@ -172,7 +172,7 @@ export function getVoiceConfigSchema(field: DCPFieldSchemaType): ZodTypeAny {
   let languageSchema: ZodTypeAny = z.string();
   let voiceSchema: ZodTypeAny = z.string();
   let speedSchema: ZodTypeAny = z.number().min(0.25).max(4.0);
-  let pitchSchema: ZodTypeAny = z.number().min(0.5).max(2.0);
+  // let pitchSchema: ZodTypeAny = z.number().min(0.5).max(2.0);
 
   // 2. Reassign the variables with the newly generated default schemas
   if (field.defaultValue && typeof field.defaultValue === "object") {
@@ -194,13 +194,13 @@ export function getVoiceConfigSchema(field: DCPFieldSchemaType): ZodTypeAny {
         .default(field.defaultValue.speed as number);
     }
 
-    if ("pitch" in field.defaultValue) {
-      pitchSchema = z
-        .number()
-        .min(0.5)
-        .max(2.0)
-        .default(field.defaultValue.pitch as number);
-    }
+    // if ("pitch" in field.defaultValue) {
+    //   pitchSchema = z
+    //     .number()
+    //     .min(0.5)
+    //     .max(2.0)
+    //     .default(field.defaultValue.pitch as number);
+    // }
   }
 
   // 3. Return the final object
@@ -208,7 +208,7 @@ export function getVoiceConfigSchema(field: DCPFieldSchemaType): ZodTypeAny {
     language: languageSchema,
     voice: voiceSchema,
     speed: speedSchema,
-    pitch: pitchSchema,
+    // pitch: pitchSchema,
   });
 }
 

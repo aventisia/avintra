@@ -241,7 +241,7 @@ const ExecuteButton = ({
       voice_id: voiceConfigData?.config.voice || null,
       language: voiceConfigData?.config.language || null,
       speed: voiceConfigData?.config.speed,
-      pitch: voiceConfigData?.config.pitch,
+      // pitch: voiceConfigData?.config.pitch,
       stream: false,
       credentials_id: modelConfigData.config.credential_id || null,
       is_byok_enabled: modelConfigData.config.is_byok_enabled,

@@ -11,7 +11,7 @@ import { useExecuteTTSMutation } from "@/features/dynamic-config-panel/hooks/use
 import { Textarea } from "@aventisia/ui";
 import { Button } from "@aventisia/ui/buttons";
 import { AlertCircle, ChevronLeft } from "lucide-react";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 
 import AudioPlayer from "./AudioPlayer";
 import ExecuteButton from "./ExecuteButton";
@@ -101,6 +101,10 @@ const ModelTestContent = ({
   const [ttsText, setTtsText] = useState<string>(
     (formData["InputText"] as string) ?? "",
   );
+
+  useEffect(() => {
+    setTtsText((formData["InputText"] as string) ?? "");
+  }, [formData["InputText"]]);
 
   // Select the right mutation based on node type
   const activeMutation =
