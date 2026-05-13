@@ -51,6 +51,7 @@ export const RenderField = (field: DCPFieldSchemaType) => {
       return (
         <SelectField
           {...baseProps}
+          matchPopoverWidth={true}
           selectOptions={field.selectOptions || []}
           size="sm"
         />
