@@ -1,4 +1,5 @@
 using NodeLibrary.MouseAndKeyboardNodes.Helpers;
+using NodeLibrary.MouseAndKeyboardNodes.Enums;
 
 namespace NodeLibrary.MouseAndKeyboardNodes;
 
@@ -7,7 +8,7 @@ namespace NodeLibrary.MouseAndKeyboardNodes;
 public class PressReleaseKeyNode : BaseNode
 {
     [DisplayName("Action To Perform"), Description("Select whether to press or release the keys.")]
-    public required InArgument<ActionTypeEnum> ActionToPerform { get; set; }
+    public required InArgument<ActionTypeEnum> ActionToPerform { get; set; } = new InArgument<ActionTypeEnum>(ActionTypeEnum.Press);
 
     [DisplayName("Control"), Description("Toggle to include the Control key in the action.")]
     public InArgument<bool> UseControl { get; set; } = new InArgument<bool>(false);
@@ -22,7 +23,7 @@ public class PressReleaseKeyNode : BaseNode
     public InArgument<bool> UseWin { get; set; } = new InArgument<bool>(false);
 
     [DisplayName("Key To Press"), Description("The main key to simulate (e.g., A, Enter, Tab). Leave blank if only using modifiers).")]
-    public InArgument<VirtualKeyCode> KeyToPress { get; set; } = new InArgument<VirtualKeyCode>(VirtualKeyCode.None);
+    public InArgument<VirtualKeyEnum> KeyToPress { get; set; } = new InArgument<VirtualKeyEnum>(VirtualKeyEnum.None);
 
     [DisplayName("Wait Before Releasing (ms)"), Description("Optional delay in milliseconds before releasing the key (used when pressing only).")]
     public InArgument<int> WaitBeforeReleasing { get; set; } = new InArgument<int>(0);
@@ -76,17 +77,17 @@ public class PressReleaseKeyNode : BaseNode
         }
     }
 
-    private static VirtualKeyCode[] GetSelectedKeys(bool useControl, bool useAlt, bool useShift, bool useWin,
-        VirtualKeyCode key)
+    private static VirtualKeyEnum[] GetSelectedKeys(bool useControl, bool useAlt, bool useShift, bool useWin,
+        VirtualKeyEnum key)
     {
-        var selectedKeys = new List<VirtualKeyCode>();
+        var selectedKeys = new List<VirtualKeyEnum>();
 
-        if (useControl) selectedKeys.Add(VirtualKeyCode.Control);
-        if (useAlt) selectedKeys.Add(VirtualKeyCode.Alt);
-        if (useShift) selectedKeys.Add(VirtualKeyCode.Shift);
-        if (useWin) selectedKeys.Add(VirtualKeyCode.LeftWindows);
+        if (useControl) selectedKeys.Add(VirtualKeyEnum.Ctrl);
+        if (useAlt) selectedKeys.Add(VirtualKeyEnum.Alt);
+        if (useShift) selectedKeys.Add(VirtualKeyEnum.Shift);
+        if (useWin) selectedKeys.Add(VirtualKeyEnum.LeftWindowsKey);
 
-        if (key != VirtualKeyCode.None)
+        if (key != VirtualKeyEnum.None)
             selectedKeys.Add(key);
 
         return selectedKeys.ToArray();

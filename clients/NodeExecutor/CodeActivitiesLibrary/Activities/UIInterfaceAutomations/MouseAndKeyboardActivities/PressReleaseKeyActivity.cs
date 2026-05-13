@@ -1,4 +1,5 @@
-﻿using CodeActivitiesLibrary.Extensions;
+﻿using CodeActivitiesLibrary.UiInterfaceAutomations.MouseAndKeyboardActivities.Enums;
+using CodeActivitiesLibrary.Extensions;
 using System;
 using System.Activities;
 using System.Collections.Generic;
@@ -21,6 +22,7 @@ namespace CodeActivitiesLibrary.UiInterfaceAutomations.MouseAndKeyboardActivitie
         [RequiredArgument]
         [DisplayName("Action To Perform")]
         [Description("Select whether to press or release the keys.")]
+        [DefaultValue(ActionTypeEnum.Press)]
         public InArgument<ActionTypeEnum> ActionToPerform { get; set; }
 
         [DisplayName("Control")]
@@ -41,7 +43,7 @@ namespace CodeActivitiesLibrary.UiInterfaceAutomations.MouseAndKeyboardActivitie
 
         [DisplayName("Key To Press")]
         [Description("The main key to simulate (e.g., A, Enter, Tab). Leave blank if only using modifiers).")]
-        public InArgument<Keys> KeyToPress { get; set; }
+        public InArgument<VirtualKeyEnum> KeyToPress { get; set; }
 
         [DisplayName("Wait Before Releasing (ms)")]
         [Description("Optional delay in milliseconds before releasing the key (used when pressing only).")]
@@ -100,16 +102,16 @@ namespace CodeActivitiesLibrary.UiInterfaceAutomations.MouseAndKeyboardActivitie
             }
         }
 
-        private static Keys[] GetSelectedKeys(bool useControl, bool useAlt, bool useShift, bool useWin, Keys key)
+        private static VirtualKeyEnum[] GetSelectedKeys(bool useControl, bool useAlt, bool useShift, bool useWin, VirtualKeyEnum key)
         {
-            var selectedKeys = new List<Keys>();
+            var selectedKeys = new List<VirtualKeyEnum>();
 
-            if (useControl) selectedKeys.Add(Keys.Control);
-            if (useAlt) selectedKeys.Add(Keys.Alt);
-            if (useShift) selectedKeys.Add(Keys.Shift);
-            if (useWin) selectedKeys.Add(Keys.LWin);
+            if (useControl) selectedKeys.Add(VirtualKeyEnum.Ctrl);
+            if (useAlt) selectedKeys.Add(VirtualKeyEnum.Alt);
+            if (useShift) selectedKeys.Add(VirtualKeyEnum.Shift);
+            if (useWin) selectedKeys.Add(VirtualKeyEnum.LeftWindowsKey);
 
-            if (key != Keys.None)
+            if (key != VirtualKeyEnum.None)
                 selectedKeys.Add(key);
 
             return selectedKeys.ToArray();
@@ -120,12 +122,12 @@ namespace CodeActivitiesLibrary.UiInterfaceAutomations.MouseAndKeyboardActivitie
             [DllImport("user32.dll")]
             private static extern void keybd_event(byte bVk, byte bScan, uint dwFlags, UIntPtr dwExtraInfo);
 
-            public static void KeyDown(Keys key)
+            public static void KeyDown(VirtualKeyEnum key)
             {
                 keybd_event((byte)key, 0, 0, UIntPtr.Zero); // KEYEVENTF_KEYDOWN
             }
 
-            public static void KeyUp(Keys key)
+            public static void KeyUp(VirtualKeyEnum key)
             {
                 keybd_event((byte)key, 0, 0x0002, UIntPtr.Zero); // KEYEVENTF_KEYUP
             }

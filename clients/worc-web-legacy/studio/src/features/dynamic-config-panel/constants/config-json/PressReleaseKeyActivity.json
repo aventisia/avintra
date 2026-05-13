@@ -14,7 +14,7 @@
       "name": "ActionToPerform",
       "label": "Action To Perform",
       "description": "Select whether to press or release the keys.",
-      "defaultValue": "",
+      "defaultValue": "Press",
       "required": true,
       "selectOptions": [
         {
@@ -77,972 +77,582 @@
         {
           "label": "None",
           "value": "None",
-          "description": ""
+          "description": "No key pressed"
         },
         {
-          "label": "LButton",
-          "value": "LButton",
-          "description": ""
-        },
-        {
-          "label": "RButton",
-          "value": "RButton",
-          "description": ""
-        },
-        {
-          "label": "Cancel",
-          "value": "Cancel",
-          "description": ""
-        },
-        {
-          "label": "MButton",
-          "value": "MButton",
-          "description": ""
-        },
-        {
-          "label": "XButton1",
-          "value": "XButton1",
-          "description": ""
-        },
-        {
-          "label": "XButton2",
-          "value": "XButton2",
-          "description": ""
-        },
-        {
-          "label": "Back",
-          "value": "Back",
-          "description": ""
+          "label": "Backspace",
+          "value": "Backspace",
+          "description": "The BACKSPACE key"
         },
         {
           "label": "Tab",
           "value": "Tab",
-          "description": ""
-        },
-        {
-          "label": "LineFeed",
-          "value": "LineFeed",
-          "description": ""
+          "description": "The TAB key"
         },
         {
           "label": "Clear",
           "value": "Clear",
-          "description": ""
+          "description": "The CLEAR key"
         },
         {
-          "label": "Return",
-          "value": "Return",
-          "description": ""
-        },
-        {
-          "label": "Return",
-          "value": "Return",
-          "description": ""
-        },
-        {
-          "label": "ShiftKey",
-          "value": "ShiftKey",
-          "description": ""
-        },
-        {
-          "label": "ControlKey",
-          "value": "ControlKey",
-          "description": ""
-        },
-        {
-          "label": "Menu",
-          "value": "Menu",
-          "description": ""
-        },
-        {
-          "label": "Pause",
-          "value": "Pause",
-          "description": ""
-        },
-        {
-          "label": "Capital",
-          "value": "Capital",
-          "description": ""
-        },
-        {
-          "label": "Capital",
-          "value": "Capital",
-          "description": ""
-        },
-        {
-          "label": "KanaMode",
-          "value": "KanaMode",
-          "description": ""
-        },
-        {
-          "label": "KanaMode",
-          "value": "KanaMode",
-          "description": ""
-        },
-        {
-          "label": "KanaMode",
-          "value": "KanaMode",
-          "description": ""
-        },
-        {
-          "label": "JunjaMode",
-          "value": "JunjaMode",
-          "description": ""
-        },
-        {
-          "label": "FinalMode",
-          "value": "FinalMode",
-          "description": ""
-        },
-        {
-          "label": "HanjaMode",
-          "value": "HanjaMode",
-          "description": ""
-        },
-        {
-          "label": "HanjaMode",
-          "value": "HanjaMode",
-          "description": ""
-        },
-        {
-          "label": "Escape",
-          "value": "Escape",
-          "description": ""
-        },
-        {
-          "label": "IMEConvert",
-          "value": "IMEConvert",
-          "description": ""
-        },
-        {
-          "label": "IMENonconvert",
-          "value": "IMENonconvert",
-          "description": ""
-        },
-        {
-          "label": "IMEAceept",
-          "value": "IMEAceept",
-          "description": ""
-        },
-        {
-          "label": "IMEAceept",
-          "value": "IMEAceept",
-          "description": ""
-        },
-        {
-          "label": "IMEModeChange",
-          "value": "IMEModeChange",
-          "description": ""
-        },
-        {
-          "label": "Space",
-          "value": "Space",
-          "description": ""
-        },
-        {
-          "label": "PageUp",
-          "value": "PageUp",
-          "description": ""
-        },
-        {
-          "label": "PageUp",
-          "value": "PageUp",
-          "description": ""
-        },
-        {
-          "label": "Next",
-          "value": "Next",
-          "description": ""
-        },
-        {
-          "label": "Next",
-          "value": "Next",
-          "description": ""
-        },
-        {
-          "label": "End",
-          "value": "End",
-          "description": ""
-        },
-        {
-          "label": "Home",
-          "value": "Home",
-          "description": ""
-        },
-        {
-          "label": "Left",
-          "value": "Left",
-          "description": ""
-        },
-        {
-          "label": "Up",
-          "value": "Up",
-          "description": ""
-        },
-        {
-          "label": "Right",
-          "value": "Right",
-          "description": ""
-        },
-        {
-          "label": "Down",
-          "value": "Down",
-          "description": ""
-        },
-        {
-          "label": "Select",
-          "value": "Select",
-          "description": ""
-        },
-        {
-          "label": "Print",
-          "value": "Print",
-          "description": ""
-        },
-        {
-          "label": "Execute",
-          "value": "Execute",
-          "description": ""
-        },
-        {
-          "label": "PrintScreen",
-          "value": "PrintScreen",
-          "description": ""
-        },
-        {
-          "label": "PrintScreen",
-          "value": "PrintScreen",
-          "description": ""
-        },
-        {
-          "label": "Insert",
-          "value": "Insert",
-          "description": ""
-        },
-        {
-          "label": "Delete",
-          "value": "Delete",
-          "description": ""
-        },
-        {
-          "label": "Help",
-          "value": "Help",
-          "description": ""
-        },
-        {
-          "label": "D0",
-          "value": "D0",
-          "description": ""
-        },
-        {
-          "label": "D1",
-          "value": "D1",
-          "description": ""
-        },
-        {
-          "label": "D2",
-          "value": "D2",
-          "description": ""
-        },
-        {
-          "label": "D3",
-          "value": "D3",
-          "description": ""
-        },
-        {
-          "label": "D4",
-          "value": "D4",
-          "description": ""
-        },
-        {
-          "label": "D5",
-          "value": "D5",
-          "description": ""
-        },
-        {
-          "label": "D6",
-          "value": "D6",
-          "description": ""
-        },
-        {
-          "label": "D7",
-          "value": "D7",
-          "description": ""
-        },
-        {
-          "label": "D8",
-          "value": "D8",
-          "description": ""
-        },
-        {
-          "label": "D9",
-          "value": "D9",
-          "description": ""
-        },
-        {
-          "label": "A",
-          "value": "A",
-          "description": ""
-        },
-        {
-          "label": "B",
-          "value": "B",
-          "description": ""
-        },
-        {
-          "label": "C",
-          "value": "C",
-          "description": ""
-        },
-        {
-          "label": "D",
-          "value": "D",
-          "description": ""
-        },
-        {
-          "label": "E",
-          "value": "E",
-          "description": ""
-        },
-        {
-          "label": "F",
-          "value": "F",
-          "description": ""
-        },
-        {
-          "label": "G",
-          "value": "G",
-          "description": ""
-        },
-        {
-          "label": "H",
-          "value": "H",
-          "description": ""
-        },
-        {
-          "label": "I",
-          "value": "I",
-          "description": ""
-        },
-        {
-          "label": "J",
-          "value": "J",
-          "description": ""
-        },
-        {
-          "label": "K",
-          "value": "K",
-          "description": ""
-        },
-        {
-          "label": "L",
-          "value": "L",
-          "description": ""
-        },
-        {
-          "label": "M",
-          "value": "M",
-          "description": ""
-        },
-        {
-          "label": "N",
-          "value": "N",
-          "description": ""
-        },
-        {
-          "label": "O",
-          "value": "O",
-          "description": ""
-        },
-        {
-          "label": "P",
-          "value": "P",
-          "description": ""
-        },
-        {
-          "label": "Q",
-          "value": "Q",
-          "description": ""
-        },
-        {
-          "label": "R",
-          "value": "R",
-          "description": ""
-        },
-        {
-          "label": "S",
-          "value": "S",
-          "description": ""
-        },
-        {
-          "label": "T",
-          "value": "T",
-          "description": ""
-        },
-        {
-          "label": "U",
-          "value": "U",
-          "description": ""
-        },
-        {
-          "label": "V",
-          "value": "V",
-          "description": ""
-        },
-        {
-          "label": "W",
-          "value": "W",
-          "description": ""
-        },
-        {
-          "label": "X",
-          "value": "X",
-          "description": ""
-        },
-        {
-          "label": "Y",
-          "value": "Y",
-          "description": ""
-        },
-        {
-          "label": "Z",
-          "value": "Z",
-          "description": ""
-        },
-        {
-          "label": "LWin",
-          "value": "LWin",
-          "description": ""
-        },
-        {
-          "label": "RWin",
-          "value": "RWin",
-          "description": ""
-        },
-        {
-          "label": "Apps",
-          "value": "Apps",
-          "description": ""
-        },
-        {
-          "label": "Sleep",
-          "value": "Sleep",
-          "description": ""
-        },
-        {
-          "label": "NumPad0",
-          "value": "NumPad0",
-          "description": ""
-        },
-        {
-          "label": "NumPad1",
-          "value": "NumPad1",
-          "description": ""
-        },
-        {
-          "label": "NumPad2",
-          "value": "NumPad2",
-          "description": ""
-        },
-        {
-          "label": "NumPad3",
-          "value": "NumPad3",
-          "description": ""
-        },
-        {
-          "label": "NumPad4",
-          "value": "NumPad4",
-          "description": ""
-        },
-        {
-          "label": "NumPad5",
-          "value": "NumPad5",
-          "description": ""
-        },
-        {
-          "label": "NumPad6",
-          "value": "NumPad6",
-          "description": ""
-        },
-        {
-          "label": "NumPad7",
-          "value": "NumPad7",
-          "description": ""
-        },
-        {
-          "label": "NumPad8",
-          "value": "NumPad8",
-          "description": ""
-        },
-        {
-          "label": "NumPad9",
-          "value": "NumPad9",
-          "description": ""
-        },
-        {
-          "label": "Multiply",
-          "value": "Multiply",
-          "description": ""
-        },
-        {
-          "label": "Add",
-          "value": "Add",
-          "description": ""
-        },
-        {
-          "label": "Separator",
-          "value": "Separator",
-          "description": ""
-        },
-        {
-          "label": "Subtract",
-          "value": "Subtract",
-          "description": ""
-        },
-        {
-          "label": "Decimal",
-          "value": "Decimal",
-          "description": ""
-        },
-        {
-          "label": "Divide",
-          "value": "Divide",
-          "description": ""
-        },
-        {
-          "label": "F1",
-          "value": "F1",
-          "description": ""
-        },
-        {
-          "label": "F2",
-          "value": "F2",
-          "description": ""
-        },
-        {
-          "label": "F3",
-          "value": "F3",
-          "description": ""
-        },
-        {
-          "label": "F4",
-          "value": "F4",
-          "description": ""
-        },
-        {
-          "label": "F5",
-          "value": "F5",
-          "description": ""
-        },
-        {
-          "label": "F6",
-          "value": "F6",
-          "description": ""
-        },
-        {
-          "label": "F7",
-          "value": "F7",
-          "description": ""
-        },
-        {
-          "label": "F8",
-          "value": "F8",
-          "description": ""
-        },
-        {
-          "label": "F9",
-          "value": "F9",
-          "description": ""
-        },
-        {
-          "label": "F10",
-          "value": "F10",
-          "description": ""
-        },
-        {
-          "label": "F11",
-          "value": "F11",
-          "description": ""
-        },
-        {
-          "label": "F12",
-          "value": "F12",
-          "description": ""
-        },
-        {
-          "label": "F13",
-          "value": "F13",
-          "description": ""
-        },
-        {
-          "label": "F14",
-          "value": "F14",
-          "description": ""
-        },
-        {
-          "label": "F15",
-          "value": "F15",
-          "description": ""
-        },
-        {
-          "label": "F16",
-          "value": "F16",
-          "description": ""
-        },
-        {
-          "label": "F17",
-          "value": "F17",
-          "description": ""
-        },
-        {
-          "label": "F18",
-          "value": "F18",
-          "description": ""
-        },
-        {
-          "label": "F19",
-          "value": "F19",
-          "description": ""
-        },
-        {
-          "label": "F20",
-          "value": "F20",
-          "description": ""
-        },
-        {
-          "label": "F21",
-          "value": "F21",
-          "description": ""
-        },
-        {
-          "label": "F22",
-          "value": "F22",
-          "description": ""
-        },
-        {
-          "label": "F23",
-          "value": "F23",
-          "description": ""
-        },
-        {
-          "label": "F24",
-          "value": "F24",
-          "description": ""
-        },
-        {
-          "label": "NumLock",
-          "value": "NumLock",
-          "description": ""
-        },
-        {
-          "label": "Scroll",
-          "value": "Scroll",
-          "description": ""
-        },
-        {
-          "label": "LShiftKey",
-          "value": "LShiftKey",
-          "description": ""
-        },
-        {
-          "label": "RShiftKey",
-          "value": "RShiftKey",
-          "description": ""
-        },
-        {
-          "label": "LControlKey",
-          "value": "LControlKey",
-          "description": ""
-        },
-        {
-          "label": "RControlKey",
-          "value": "RControlKey",
-          "description": ""
-        },
-        {
-          "label": "LMenu",
-          "value": "LMenu",
-          "description": ""
-        },
-        {
-          "label": "RMenu",
-          "value": "RMenu",
-          "description": ""
-        },
-        {
-          "label": "BrowserBack",
-          "value": "BrowserBack",
-          "description": ""
-        },
-        {
-          "label": "BrowserForward",
-          "value": "BrowserForward",
-          "description": ""
-        },
-        {
-          "label": "BrowserRefresh",
-          "value": "BrowserRefresh",
-          "description": ""
-        },
-        {
-          "label": "BrowserStop",
-          "value": "BrowserStop",
-          "description": ""
-        },
-        {
-          "label": "BrowserSearch",
-          "value": "BrowserSearch",
-          "description": ""
-        },
-        {
-          "label": "BrowserFavorites",
-          "value": "BrowserFavorites",
-          "description": ""
-        },
-        {
-          "label": "BrowserHome",
-          "value": "BrowserHome",
-          "description": ""
-        },
-        {
-          "label": "VolumeMute",
-          "value": "VolumeMute",
-          "description": ""
-        },
-        {
-          "label": "VolumeDown",
-          "value": "VolumeDown",
-          "description": ""
-        },
-        {
-          "label": "VolumeUp",
-          "value": "VolumeUp",
-          "description": ""
-        },
-        {
-          "label": "MediaNextTrack",
-          "value": "MediaNextTrack",
-          "description": ""
-        },
-        {
-          "label": "MediaPreviousTrack",
-          "value": "MediaPreviousTrack",
-          "description": ""
-        },
-        {
-          "label": "MediaStop",
-          "value": "MediaStop",
-          "description": ""
-        },
-        {
-          "label": "MediaPlayPause",
-          "value": "MediaPlayPause",
-          "description": ""
-        },
-        {
-          "label": "LaunchMail",
-          "value": "LaunchMail",
-          "description": ""
-        },
-        {
-          "label": "SelectMedia",
-          "value": "SelectMedia",
-          "description": ""
-        },
-        {
-          "label": "LaunchApplication1",
-          "value": "LaunchApplication1",
-          "description": ""
-        },
-        {
-          "label": "LaunchApplication2",
-          "value": "LaunchApplication2",
-          "description": ""
-        },
-        {
-          "label": "Oem1",
-          "value": "Oem1",
-          "description": ""
-        },
-        {
-          "label": "Oem1",
-          "value": "Oem1",
-          "description": ""
-        },
-        {
-          "label": "Oemplus",
-          "value": "Oemplus",
-          "description": ""
-        },
-        {
-          "label": "Oemcomma",
-          "value": "Oemcomma",
-          "description": ""
-        },
-        {
-          "label": "OemMinus",
-          "value": "OemMinus",
-          "description": ""
-        },
-        {
-          "label": "OemPeriod",
-          "value": "OemPeriod",
-          "description": ""
-        },
-        {
-          "label": "OemQuestion",
-          "value": "OemQuestion",
-          "description": ""
-        },
-        {
-          "label": "OemQuestion",
-          "value": "OemQuestion",
-          "description": ""
-        },
-        {
-          "label": "Oemtilde",
-          "value": "Oemtilde",
-          "description": ""
-        },
-        {
-          "label": "Oemtilde",
-          "value": "Oemtilde",
-          "description": ""
-        },
-        {
-          "label": "OemOpenBrackets",
-          "value": "OemOpenBrackets",
-          "description": ""
-        },
-        {
-          "label": "OemOpenBrackets",
-          "value": "OemOpenBrackets",
-          "description": ""
-        },
-        {
-          "label": "Oem5",
-          "value": "Oem5",
-          "description": ""
-        },
-        {
-          "label": "Oem5",
-          "value": "Oem5",
-          "description": ""
-        },
-        {
-          "label": "Oem6",
-          "value": "Oem6",
-          "description": ""
-        },
-        {
-          "label": "Oem6",
-          "value": "Oem6",
-          "description": ""
-        },
-        {
-          "label": "Oem7",
-          "value": "Oem7",
-          "description": ""
-        },
-        {
-          "label": "Oem7",
-          "value": "Oem7",
-          "description": ""
-        },
-        {
-          "label": "Oem8",
-          "value": "Oem8",
-          "description": ""
-        },
-        {
-          "label": "OemBackslash",
-          "value": "OemBackslash",
-          "description": ""
-        },
-        {
-          "label": "OemBackslash",
-          "value": "OemBackslash",
-          "description": ""
-        },
-        {
-          "label": "ProcessKey",
-          "value": "ProcessKey",
-          "description": ""
-        },
-        {
-          "label": "Packet",
-          "value": "Packet",
-          "description": ""
-        },
-        {
-          "label": "Attn",
-          "value": "Attn",
-          "description": ""
-        },
-        {
-          "label": "Crsel",
-          "value": "Crsel",
-          "description": ""
-        },
-        {
-          "label": "Exsel",
-          "value": "Exsel",
-          "description": ""
-        },
-        {
-          "label": "EraseEof",
-          "value": "EraseEof",
-          "description": ""
-        },
-        {
-          "label": "Play",
-          "value": "Play",
-          "description": ""
-        },
-        {
-          "label": "Zoom",
-          "value": "Zoom",
-          "description": ""
-        },
-        {
-          "label": "NoName",
-          "value": "NoName",
-          "description": ""
-        },
-        {
-          "label": "Pa1",
-          "value": "Pa1",
-          "description": ""
-        },
-        {
-          "label": "OemClear",
-          "value": "OemClear",
-          "description": ""
-        },
-        {
-          "label": "KeyCode",
-          "value": "KeyCode",
-          "description": ""
+          "label": "Enter",
+          "value": "Enter",
+          "description": "The ENTER key"
         },
         {
           "label": "Shift",
           "value": "Shift",
-          "description": ""
+          "description": "The SHIFT key"
         },
         {
-          "label": "Control",
-          "value": "Control",
-          "description": ""
+          "label": "Ctrl",
+          "value": "Ctrl",
+          "description": "The CTRL key"
         },
         {
           "label": "Alt",
           "value": "Alt",
-          "description": ""
+          "description": "The ALT key"
         },
         {
-          "label": "Modifiers",
-          "value": "Modifiers",
-          "description": ""
+          "label": "Pause",
+          "value": "Pause",
+          "description": "The PAUSE key"
+        },
+        {
+          "label": "Caps Lock",
+          "value": "CapsLock",
+          "description": "The CAPS LOCK key"
+        },
+        {
+          "label": "Escape",
+          "value": "Escape",
+          "description": "The ESC key"
+        },
+        {
+          "label": "Space",
+          "value": "Space",
+          "description": "The SPACEBAR key"
+        },
+        {
+          "label": "Page Up",
+          "value": "PageUp",
+          "description": "The PAGE UP key"
+        },
+        {
+          "label": "Page Down",
+          "value": "PageDown",
+          "description": "The PAGE DOWN key"
+        },
+        {
+          "label": "End",
+          "value": "End",
+          "description": "The END key"
+        },
+        {
+          "label": "Home",
+          "value": "Home",
+          "description": "The HOME key"
+        },
+        {
+          "label": "Left Arrow",
+          "value": "LeftArrow",
+          "description": "The LEFT ARROW key"
+        },
+        {
+          "label": "Up Arrow",
+          "value": "UpArrow",
+          "description": "The UP ARROW key"
+        },
+        {
+          "label": "Right Arrow",
+          "value": "RightArrow",
+          "description": "The RIGHT ARROW key"
+        },
+        {
+          "label": "Down Arrow",
+          "value": "DownArrow",
+          "description": "The DOWN ARROW key"
+        },
+        {
+          "label": "Select",
+          "value": "Select",
+          "description": "The SELECT key"
+        },
+        {
+          "label": "Print",
+          "value": "Print",
+          "description": "The PRINT key"
+        },
+        {
+          "label": "Print Screen",
+          "value": "PrintScreen",
+          "description": "The PRINT SCREEN key"
+        },
+        {
+          "label": "Insert",
+          "value": "Insert",
+          "description": "The INS key"
+        },
+        {
+          "label": "Delete",
+          "value": "Delete",
+          "description": "The DEL key"
+        },
+        {
+          "label": "Help",
+          "value": "Help",
+          "description": "The HELP key"
+        },
+        {
+          "label": "Top Row 0",
+          "value": "TopRow0",
+          "description": "The 0 key on the top row"
+        },
+        {
+          "label": "Top Row 1",
+          "value": "TopRow1",
+          "description": "The 1 key on the top row"
+        },
+        {
+          "label": "Top Row 2",
+          "value": "TopRow2",
+          "description": "The 2 key on the top row"
+        },
+        {
+          "label": "Top Row 3",
+          "value": "TopRow3",
+          "description": "The 3 key on the top row"
+        },
+        {
+          "label": "Top Row 4",
+          "value": "TopRow4",
+          "description": "The 4 key on the top row"
+        },
+        {
+          "label": "Top Row 5",
+          "value": "TopRow5",
+          "description": "The 5 key on the top row"
+        },
+        {
+          "label": "Top Row 6",
+          "value": "TopRow6",
+          "description": "The 6 key on the top row"
+        },
+        {
+          "label": "Top Row 7",
+          "value": "TopRow7",
+          "description": "The 7 key on the top row"
+        },
+        {
+          "label": "Top Row 8",
+          "value": "TopRow8",
+          "description": "The 8 key on the top row"
+        },
+        {
+          "label": "Top Row 9",
+          "value": "TopRow9",
+          "description": "The 9 key on the top row"
+        },
+        {
+          "label": "A",
+          "value": "A",
+          "description": "The A key"
+        },
+        {
+          "label": "B",
+          "value": "B",
+          "description": "The B key"
+        },
+        {
+          "label": "C",
+          "value": "C",
+          "description": "The C key"
+        },
+        {
+          "label": "D",
+          "value": "D",
+          "description": "The D key"
+        },
+        {
+          "label": "E",
+          "value": "E",
+          "description": "The E key"
+        },
+        {
+          "label": "F",
+          "value": "F",
+          "description": "The F key"
+        },
+        {
+          "label": "G",
+          "value": "G",
+          "description": "The G key"
+        },
+        {
+          "label": "H",
+          "value": "H",
+          "description": "The H key"
+        },
+        {
+          "label": "I",
+          "value": "I",
+          "description": "The I key"
+        },
+        {
+          "label": "J",
+          "value": "J",
+          "description": "The J key"
+        },
+        {
+          "label": "K",
+          "value": "K",
+          "description": "The K key"
+        },
+        {
+          "label": "L",
+          "value": "L",
+          "description": "The L key"
+        },
+        {
+          "label": "M",
+          "value": "M",
+          "description": "The M key"
+        },
+        {
+          "label": "N",
+          "value": "N",
+          "description": "The N key"
+        },
+        {
+          "label": "O",
+          "value": "O",
+          "description": "The O key"
+        },
+        {
+          "label": "P",
+          "value": "P",
+          "description": "The P key"
+        },
+        {
+          "label": "Q",
+          "value": "Q",
+          "description": "The Q key"
+        },
+        {
+          "label": "R",
+          "value": "R",
+          "description": "The R key"
+        },
+        {
+          "label": "S",
+          "value": "S",
+          "description": "The S key"
+        },
+        {
+          "label": "T",
+          "value": "T",
+          "description": "The T key"
+        },
+        {
+          "label": "U",
+          "value": "U",
+          "description": "The U key"
+        },
+        {
+          "label": "V",
+          "value": "V",
+          "description": "The V key"
+        },
+        {
+          "label": "W",
+          "value": "W",
+          "description": "The W key"
+        },
+        {
+          "label": "X",
+          "value": "X",
+          "description": "The X key"
+        },
+        {
+          "label": "Y",
+          "value": "Y",
+          "description": "The Y key"
+        },
+        {
+          "label": "Z",
+          "value": "Z",
+          "description": "The Z key"
+        },
+        {
+          "label": "Left Windows Key",
+          "value": "LeftWindowsKey",
+          "description": "The left Windows logo key"
+        },
+        {
+          "label": "Right Windows Key",
+          "value": "RightWindowsKey",
+          "description": "The right Windows logo key"
+        },
+        {
+          "label": "Apps / Menu Key",
+          "value": "Apps",
+          "description": "The application context menu key"
+        },
+        {
+          "label": "Sleep",
+          "value": "Sleep",
+          "description": "The computer sleep key"
+        },
+        {
+          "label": "Numpad 0",
+          "value": "NumPad0",
+          "description": "The 0 key on the numeric keypad"
+        },
+        {
+          "label": "Numpad 1",
+          "value": "NumPad1",
+          "description": "The 1 key on the numeric keypad"
+        },
+        {
+          "label": "Numpad 2",
+          "value": "NumPad2",
+          "description": "The 2 key on the numeric keypad"
+        },
+        {
+          "label": "Numpad 3",
+          "value": "NumPad3",
+          "description": "The 3 key on the numeric keypad"
+        },
+        {
+          "label": "Numpad 4",
+          "value": "NumPad4",
+          "description": "The 4 key on the numeric keypad"
+        },
+        {
+          "label": "Numpad 5",
+          "value": "NumPad5",
+          "description": "The 5 key on the numeric keypad"
+        },
+        {
+          "label": "Numpad 6",
+          "value": "NumPad6",
+          "description": "The 6 key on the numeric keypad"
+        },
+        {
+          "label": "Numpad 7",
+          "value": "NumPad7",
+          "description": "The 7 key on the numeric keypad"
+        },
+        {
+          "label": "Numpad 8",
+          "value": "NumPad8",
+          "description": "The 8 key on the numeric keypad"
+        },
+        {
+          "label": "Numpad 9",
+          "value": "NumPad9",
+          "description": "The 9 key on the numeric keypad"
+        },
+        {
+          "label": "Numpad *",
+          "value": "NumPadMultiply",
+          "description": "The multiply key on the numeric keypad"
+        },
+        {
+          "label": "Numpad \u002B",
+          "value": "NumPadAdd",
+          "description": "The add key on the numeric keypad"
+        },
+        {
+          "label": "Numpad Separator",
+          "value": "NumPadSeparator",
+          "description": "The separator key on the numeric keypad"
+        },
+        {
+          "label": "Numpad -",
+          "value": "NumPadSubtract",
+          "description": "The subtract key on the numeric keypad"
+        },
+        {
+          "label": "Numpad .",
+          "value": "NumPadDecimal",
+          "description": "The decimal key on the numeric keypad"
+        },
+        {
+          "label": "Numpad /",
+          "value": "NumPadDivide",
+          "description": "The divide key on the numeric keypad"
+        },
+        {
+          "label": "F1",
+          "value": "F1",
+          "description": "The F1 key"
+        },
+        {
+          "label": "F2",
+          "value": "F2",
+          "description": "The F2 key"
+        },
+        {
+          "label": "F3",
+          "value": "F3",
+          "description": "The F3 key"
+        },
+        {
+          "label": "F4",
+          "value": "F4",
+          "description": "The F4 key"
+        },
+        {
+          "label": "F5",
+          "value": "F5",
+          "description": "The F5 key"
+        },
+        {
+          "label": "F6",
+          "value": "F6",
+          "description": "The F6 key"
+        },
+        {
+          "label": "F7",
+          "value": "F7",
+          "description": "The F7 key"
+        },
+        {
+          "label": "F8",
+          "value": "F8",
+          "description": "The F8 key"
+        },
+        {
+          "label": "F9",
+          "value": "F9",
+          "description": "The F9 key"
+        },
+        {
+          "label": "F10",
+          "value": "F10",
+          "description": "The F10 key"
+        },
+        {
+          "label": "F11",
+          "value": "F11",
+          "description": "The F11 key"
+        },
+        {
+          "label": "F12",
+          "value": "F12",
+          "description": "The F12 key"
+        },
+        {
+          "label": "Num Lock",
+          "value": "NumLock",
+          "description": "The NUM LOCK key"
+        },
+        {
+          "label": "Scroll Lock",
+          "value": "ScrollLock",
+          "description": "The SCROLL LOCK key"
+        },
+        {
+          "label": "Left Shift",
+          "value": "LeftShift",
+          "description": "The left SHIFT key"
+        },
+        {
+          "label": "Right Shift",
+          "value": "RightShift",
+          "description": "The right SHIFT key"
+        },
+        {
+          "label": "Left Ctrl",
+          "value": "LeftCtrl",
+          "description": "The left CTRL key"
+        },
+        {
+          "label": "Right Ctrl",
+          "value": "RightCtrl",
+          "description": "The right CTRL key"
+        },
+        {
+          "label": "Left Alt",
+          "value": "LeftAlt",
+          "description": "The left ALT key"
+        },
+        {
+          "label": "Right Alt",
+          "value": "RightAlt",
+          "description": "The right ALT key"
+        },
+        {
+          "label": "BrowserBack",
+          "value": "BrowserBack",
+          "description": "The browser back key (Windows 2000 or later)"
+        },
+        {
+          "label": "BrowserForward",
+          "value": "BrowserForward",
+          "description": "The browser forward key (Windows 2000 or later)"
+        },
+        {
+          "label": "BrowserRefresh",
+          "value": "BrowserRefresh",
+          "description": "The browser refresh key (Windows 2000 or later)"
+        },
+        {
+          "label": "BrowserStop",
+          "value": "BrowserStop",
+          "description": "The browser stop key (Windows 2000 or later)"
+        },
+        {
+          "label": "BrowserSearch",
+          "value": "BrowserSearch",
+          "description": "The browser search key (Windows 2000 or later)"
+        },
+        {
+          "label": "BrowserFavorites",
+          "value": "BrowserFavorites",
+          "description": "The browser favorites key (Windows 2000 or later)"
+        },
+        {
+          "label": "BrowserHome",
+          "value": "BrowserHome",
+          "description": "The browser home key (Windows 2000 or later)"
+        },
+        {
+          "label": "VolumeMute",
+          "value": "VolumeMute",
+          "description": "The volume mute key (Windows 2000 or later)"
+        },
+        {
+          "label": "VolumeDown",
+          "value": "VolumeDown",
+          "description": "The volume down key (Windows 2000 or later)"
+        },
+        {
+          "label": "VolumeUp",
+          "value": "VolumeUp",
+          "description": "The volume up key (Windows 2000 or later)"
+        },
+        {
+          "label": "MediaNextTrack",
+          "value": "MediaNextTrack",
+          "description": "The media next track key (Windows 2000 or later)"
+        },
+        {
+          "label": "MediaPreviousTrack",
+          "value": "MediaPreviousTrack",
+          "description": "The media previous track key (Windows 2000 or later)"
+        },
+        {
+          "label": "MediaStop",
+          "value": "MediaStop",
+          "description": "The media Stop key (Windows 2000 or later)"
+        },
+        {
+          "label": "MediaPlayPause",
+          "value": "MediaPlayPause",
+          "description": "The media play pause key (Windows 2000 or later)"
         }
       ]
     },
