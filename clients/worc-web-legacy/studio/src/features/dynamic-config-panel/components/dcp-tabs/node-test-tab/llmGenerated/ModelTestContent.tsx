@@ -7,18 +7,19 @@ import { TTSResponseDto } from "@/features/dynamic-config-panel/dtos/tts-model-d
 import { useExecuteModelMutation } from "@/features/dynamic-config-panel/hooks/useExecuteModelMutation";
 import { useExecuteSTTMutation } from "@/features/dynamic-config-panel/hooks/useExecuteSTTMutation";
 import { useExecuteTTSMutation } from "@/features/dynamic-config-panel/hooks/useExecuteTTSMutation";
+import { useLocalFileStore } from "@/features/file-viewer/stores/file-list-store";
 
 import { Textarea } from "@aventisia/ui";
-import { Button } from "@aventisia/ui/buttons";
-import { AlertCircle, ChevronLeft } from "lucide-react";
+import { AlertCircle } from "lucide-react";
 import { useEffect, useState } from "react";
+import { useShallow } from "zustand/react/shallow";
 
 import AudioPlayer from "./AudioPlayer";
 import ExecuteButton from "./ExecuteButton";
 import FileUploadStep from "./FileUploadStep";
 import STTInputStep, { STTInputValue } from "./STTInputStep";
 
-// ─── Provider type detection ──────────────────────────────────────────────────
+//  Provider type detection
 //
 // Detected from formData key naming convention (set by ModelConfigField):
 //   __ModelConfig__Inferencing  → "llm"
@@ -34,7 +35,7 @@ function detectProviderType(formData: Record<string, unknown>): ProviderType {
   return "llm";
 }
 
-// ─── STT transcript result panel ──────────────────────────────────────────────
+//  STT transcript result panel
 
 function STTResultPanel({ data }: { data: STTResponseDto }) {
   return (
@@ -58,17 +59,13 @@ function STTResultPanel({ data }: { data: STTResponseDto }) {
   );
 }
 
-// ─── Section label helper ─────────────────────────────────────────────────────
+//  Section label helper
 
 function SectionLabel({ children }: { children: React.ReactNode }) {
   return <p className="mb-1.5 text-2xs font-medium ">{children}</p>;
 }
 
-// ─── LLM step type ────────────────────────────────────────────────────────────
-
-type LLMStep = "upload" | "execute";
-
-// ─── Main component ───────────────────────────────────────────────────────────
+//  Main component
 
 const ModelTestContent = ({
   formData,
@@ -82,18 +79,21 @@ const ModelTestContent = ({
   // Derived once per render — formData keys are stable for a given node type
   const providerType = detectProviderType(formData);
 
-  // ── LLM: two-screen state ──────────────────────────────────────────────────
-  const [llmStep, setLlmStep] = useState<LLMStep>("upload");
-  const [llmFiles, setLlmFiles] = useState<File[]>([]);
+  //  LLM: Local Store Integration
+  // Replaced local step states with the global file store.
+  const storedLlmFiles = useLocalFileStore(useShallow((state) => state.files));
 
-  // ── STT: single-screen controlled file state ───────────────────────────────
+  // The execute button expects native File objects, so we map them out of the store.
+  const llmFilesToExecute = storedLlmFiles.map((file) => file.originalFile);
+
+  //  STT: single-screen controlled file state
   //
   // We own the file here so both the STTInputStep (picker) and the transcript
   // output area can live on the same screen without a "Continue" gate between
   // them.  STTInputValue is derived on the fly when ExecuteButton needs it.
   const [sttFile, setSttFile] = useState<File | null>(null);
 
-  // ── TTS: single-screen text state ─────────────────────────────────────────
+  //  TTS: single-screen text state
   //
   // The TTS test screen provides its own textarea so the user can type or edit
   // the synthesis input directly, without closing the test panel to update the
@@ -122,9 +122,7 @@ const ModelTestContent = ({
     ? { mode: "file", file: sttFile, audio_format: sttFile.type || "audio/wav" }
     : undefined;
 
-  // ══════════════════════════════════════════════════════════════════════════
-  // ── STT: single-screen (file picker above, transcript below) ─────────────
-  // ══════════════════════════════════════════════════════════════════════════
+  //  STT: single-screen (file picker above, transcript below)
   if (providerType === "stt") {
     const sttData = data as unknown as STTResponseDto | undefined;
 
@@ -142,7 +140,7 @@ const ModelTestContent = ({
         }
       >
         <div className="flex flex-col gap-4 p-3">
-          {/* ── Audio input: drop zone → compact preview ── */}
+          {/*  Audio input: drop zone → compact preview  */}
           <div>
             <SectionLabel>Audio Input</SectionLabel>
             {/*
@@ -154,7 +152,7 @@ const ModelTestContent = ({
             <STTInputStep file={sttFile} onFileChange={setSttFile} />
           </div>
 
-          {/* ── Transcript output ── */}
+          {/*  Transcript output  */}
           <div>
             <SectionLabel>Transcript</SectionLabel>
             <div className="overflow-hidden rounded-lg border border-border/50">
@@ -181,9 +179,7 @@ const ModelTestContent = ({
     );
   }
 
-  // ══════════════════════════════════════════════════════════════════════════
-  // ── TTS: single-screen (text input above, audio output below) ────────────
-  // ══════════════════════════════════════════════════════════════════════════
+  //  TTS: single-screen (text input above, audio output below)
   if (providerType === "tts") {
     const ttsData = data as unknown as TTSResponseDto | undefined;
 
@@ -206,7 +202,7 @@ const ModelTestContent = ({
         }
       >
         <div className="flex flex-col gap-4 p-3">
-          {/* ── Text to synthesize ── */}
+          {/*  Text to synthesize  */}
           <div>
             <SectionLabel>Text to Synthesize</SectionLabel>
             <Textarea
@@ -218,7 +214,7 @@ const ModelTestContent = ({
             />
           </div>
 
-          {/* ── Audio output ── */}
+          {/*  Audio output  */}
           <div>
             <SectionLabel>Generated Audio</SectionLabel>
             <div className="overflow-hidden rounded-lg border border-border/50">
@@ -253,27 +249,10 @@ const ModelTestContent = ({
     );
   }
 
-  // ══════════════════════════════════════════════════════════════════════════
-  // ── LLM: two-screen flow (file upload → execute + output) ────────────────
-  // ══════════════════════════════════════════════════════════════════════════
+  //  LLM: single-screen (File Upload above, Execution below)
 
   const llmData = data as unknown as LLMResponseDto | undefined;
 
-  // ── Screen 1: optional file upload ────────────────────────────────────────
-  if (llmStep === "upload") {
-    return (
-      <DCPTabsContent tabValue="Test">
-        <FileUploadStep
-          onNext={(files) => {
-            setLlmFiles(files);
-            setLlmStep("execute");
-          }}
-        />
-      </DCPTabsContent>
-    );
-  }
-
-  // ── Screen 2: execute + results ───────────────────────────────────────────
   const renderLLMOutput = () => {
     if (isPending) return <JsonViewerSkeleton />;
 
@@ -292,6 +271,7 @@ const ModelTestContent = ({
         rows={25}
         value={llmData?.output ?? JSON.stringify(formData, null, 2)}
         disabled
+        className="resize-none focus-visible:ring-0"
       />
     );
   };
@@ -305,27 +285,22 @@ const ModelTestContent = ({
           mutate={mutate}
           formData={formData}
           providerType="llm"
-          llmFiles={llmFiles}
+          llmFiles={llmFilesToExecute} // Feed files mapped straight from our global store
         />
       }
     >
-      {/* Back button — returns to file upload step */}
-      <div className="px-3 pt-2">
-        <Button
-          size="sm"
-          variant="ghost"
-          type="button"
-          className="gap-1 text-xs text-muted-foreground"
-          onClick={() => setLlmStep("upload")}
-          disabled={isPending}
-        >
-          <ChevronLeft className="h-3.5 w-3.5" />
-          Change files
-        </Button>
-      </div>
+      <div className="flex flex-col gap-4 p-1">
+        {/* Render Dropzone + Store Managed Files directly on the screen */}
+        <div>
+          <FileUploadStep />
+        </div>
 
-      <div className="border-dividers m-3 overflow-hidden rounded-lg border border-solid">
-        {renderLLMOutput()}
+        <div>
+          <SectionLabel> Output</SectionLabel>
+          <div className="overflow-hidden border border-solid rounded-lg border-dividers">
+            {renderLLMOutput()}
+          </div>
+        </div>
       </div>
     </DCPTabsContent>
   );
