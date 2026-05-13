@@ -11,15 +11,15 @@ public class SaveExcelNode : BaseNode
     public required InArgument<Excel.Application> ExcelApplication { get; set; }
 
     [DisplayName("Save Mode"), Description("Specifies how to save the workbook.")]
-    public required InArgument<ExcelFileSaveModeEnum> SaveMode { get; set; }
+    public required InArgument<ExcelFileSaveModeEnum> SaveMode { get; set; } = new InArgument<ExcelFileSaveModeEnum>(ExcelFileSaveModeEnum.Save);
 
-    [DisplayName("Document Path"), Description("The file path to save the workbook (required if 'Save Mode' is 'Save Document As').")]
-    [RenderIfCondition(nameof(SaveMode), ExcelFileSaveModeEnum.SaveDocumentAs)]
+    [DisplayName("Select Format"), Description("The file format to save the workbook as. This is required when 'Save Mode' is set to 'Save a Copy'.")]
+    [RenderIfCondition(nameof(SaveMode), ExcelFileSaveModeEnum.SaveCopy)]
+    public InArgument<ExcelFileSaveFormatEnum> SaveCopyFormat { get; set; } = new InArgument<ExcelFileSaveFormatEnum>();
+
+    [DisplayName("Document Path"), Description("The file path to save the copy of the workbook. Extension will be determined by the selected format and will be ignored if already present in the path")]
+    [RenderIfCondition(nameof(SaveMode), ExcelFileSaveModeEnum.SaveCopy)]
     public InArgument<string> DocumentPath { get; set; } = new InArgument<string>();
-
-    [DisplayName("Document Format"), Description("The file format to save the workbook as (required if 'Save Mode' is 'Save Document As').")]
-    [RenderIfCondition(nameof(SaveMode), ExcelFileSaveModeEnum.SaveDocumentAs)]
-    public InArgument<ExcelFileSaveFormatEnum> DocumentFormat { get; set; } = new InArgument<ExcelFileSaveFormatEnum>();
 
     protected override void Execute(INodeContext context)
     {
@@ -35,14 +35,14 @@ public class SaveExcelNode : BaseNode
 
             switch (saveMode)
             {
-                case ExcelFileSaveModeEnum.SaveDocument:
+                case ExcelFileSaveModeEnum.Save:
                     excelApp.ActiveWorkbook.Save();
                     break;
 
-                case ExcelFileSaveModeEnum.SaveDocumentAs:
+                case ExcelFileSaveModeEnum.SaveCopy:
                     {
                         var documentPath = DocumentPath.Get(context);
-                        var documentFormat = DocumentFormat.Get(context);
+                        var documentFormat = SaveCopyFormat.Get(context);
 
                         if (string.IsNullOrWhiteSpace(documentPath))
                             throw new ArgumentException("Document path cannot be empty when using 'Save Document As' mode.");

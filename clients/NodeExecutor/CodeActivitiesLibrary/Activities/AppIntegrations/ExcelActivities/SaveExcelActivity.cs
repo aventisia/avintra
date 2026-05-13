@@ -12,10 +12,6 @@ namespace CodeActivitiesLibrary.AppIntegrations.ExcelActivities
     [ActivityMetaData(nodeImg: "/assets/Excel.svg")]
     public class SaveExcelActivity : BaseCodeActivity
     {
-        // ----------------------
-        // Input Arguments
-        // ----------------------
-
         [RequiredArgument]
         [DisplayName("Excel Application")]
         [Description("The Excel Application object containing the workbook to save.")]
@@ -27,26 +23,16 @@ namespace CodeActivitiesLibrary.AppIntegrations.ExcelActivities
         [DefaultValue(ExcelFileSaveModeEnum.SaveDocument)]
         public InArgument<ExcelFileSaveModeEnum> SaveMode { get; set; }
 
-
-        [DisplayName("Document Path")]
-        [Description("The file path to save the workbook (required if 'Save Mode' is 'Save Document As').")]
-        [RenderIfCondition(nameof(SaveMode), ExcelFileSaveModeEnum.SaveDocumentAs)]
-        public InArgument<string> DocumentPath { get; set; }
-
-
-        [DisplayName("Document Format")]
-        [Description("The file format to save the workbook as (required if 'Save Mode' is 'Save Document As').")]
+        [DisplayName("Select Format")]
+        [Description("The file format to save the workbook as. This is required when 'Save Mode' is set to 'Save a Copy'.")]
         [RenderIfCondition(nameof(SaveMode), ExcelFileSaveModeEnum.SaveDocumentAs)]
         public InArgument<ExcelFileSaveFormatEnum> DocumentFormat { get; set; }
 
-        // ----------------------
-        // Output Arguments
-        // ----------------------
+        [DisplayName("Document Path")]
+        [Description("The file path to save the copy of the workbook. Extension will be determined by the selected format and will be ignored if already present in the path")]
+        [RenderIfCondition(nameof(SaveMode), ExcelFileSaveModeEnum.SaveDocumentAs)]
+        public InArgument<string> DocumentPath { get; set; }
 
-
-        // ----------------------
-        // Execution Logic
-        // ----------------------
         protected override void Execute(CodeActivityContext context)
         {
             var status = "Success";

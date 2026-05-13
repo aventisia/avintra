@@ -4,11 +4,10 @@ namespace CodeActivitiesLibrary.AppIntegrations.ExcelActivities.Enums
 {
     public enum ExcelFileSaveModeEnum
     {
-        [Display(Name = "Save Document", Description = "Saves the active workbook in its current format.")]
+        [Display(Name = "Save", Description = "Saves the active workbook in its current format.")]
         SaveDocument,
 
-        [Display(Name = "Save Document As",
-            Description = "Saves the active workbook to a specified path with a chosen format.")]
-        SaveDocumentAs
+        [Display(Name = "Save a Copy", Description = "Saves the active workbook to a specified path with a chosen format.")]
+        SaveDocumentAs,
     }
 }
