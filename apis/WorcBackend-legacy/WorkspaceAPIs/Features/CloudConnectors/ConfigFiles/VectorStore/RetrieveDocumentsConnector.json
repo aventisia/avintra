@@ -124,7 +124,7 @@
       "name": "scoreThreshold",
       "label": "Score Threshold",
       "description": "Set the minimum similarity score required to return matching results.",
-      "defaultValue": 0.5,
+      "defaultValue": 0.1,
       "min": 0,
       "max": 1
     },

@@ -110,7 +110,7 @@ const RetrieveDocumentsTest = ({ formData, testExecutionId }: Props) => {
         embedding_credential_id: modelConfig.credential_id || undefined,
 
         /* Flow execution metadata */
-       
+
         ref_type: "Agent",
 
         ref_id: currentFlow.id,
@@ -151,7 +151,7 @@ const RetrieveDocumentsTest = ({ formData, testExecutionId }: Props) => {
     }
   }
 
-  /*      Execute test ONLY when testExecutionId changes                    */
+  /*  Execute test ONLY when testExecutionId changes */
 
   useEffect(() => {
     // Prevent execution on first mount
@@ -171,17 +171,18 @@ const RetrieveDocumentsTest = ({ formData, testExecutionId }: Props) => {
     execute();
   }, [testExecutionId]);
 
-  /*       Render result        */
+  /* Render result */
 
   return (
     <DCPTabsContent tabValue="Test" hasFooter={false}>
+      <div className="text-xs ml-0.5 mb-1">Output</div>
       <div className="border-dividers overflow-hidden rounded-lg border border-solid">
         {/*   Loading state     */}
 
         {isPending ? (
           <JsonViewerSkeleton />
         ) : (
-          /*                     API response viewer */
+          /* API response viewer */
 
           <JsonViewer
             jsonData={JSON.stringify(data ?? {}, null, 2)}
