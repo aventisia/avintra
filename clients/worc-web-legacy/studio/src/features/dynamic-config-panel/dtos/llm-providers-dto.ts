@@ -58,7 +58,7 @@ export interface LLMRequestDto {
   /**
    * Maximum number of tokens for the output.
    */
-  max_output_tokens?: number;
+  max_output_tokens?: number |null;
 
   /**
    * Enables Bring Your Own Key (BYOK) support.

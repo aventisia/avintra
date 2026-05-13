@@ -135,7 +135,9 @@ const ExecuteButton = ({
       json_schema: formData.useJSONSchema
         ? (formData.json_schema as string)
         : null,
-      max_output_tokens: modelConfig.max_output_tokens,
+      max_output_tokens: modelConfig.max_output_tokens
+        ? modelConfig.max_output_tokens
+        : null,
       is_byok_enabled: modelConfig.is_byok_enabled,
       credential_id: modelConfig.credential_id || null,
       temperature: modelConfig.temperature,
