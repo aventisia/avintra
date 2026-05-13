@@ -1,15 +1,17 @@
 import { useDynamicConfigPanelStore } from "@/features/dynamic-config-panel/stores/dcp-store";
 
 import { Button } from "@aventisia/ui/buttons";
+import { cn } from "@aventisia/ui/lib";
 import { ArrowLeftIcon } from "lucide-react";
 import { useEffect } from "react";
 import { useShallow } from "zustand/react/shallow";
 
 export default function ViewerButton() {
   // Get state and actions from the DynamicConfigPanel store
-  const { showViewer, setShowViewer } = useDynamicConfigPanelStore(
+  const { showViewer, nodeData, setShowViewer } = useDynamicConfigPanelStore(
     useShallow((state) => ({
       showViewer: state.showViewer,
+      nodeData: state.nodeData,
       setShowViewer: state.setShowViewer,
     })),
   );
@@ -21,6 +23,8 @@ export default function ViewerButton() {
     };
   }, []);
 
+  if (nodeData?.name !== "CreateInferencingAIAgent") return <></>;
+
   return (
     <Button
       type="button"
@@ -29,7 +33,12 @@ export default function ViewerButton() {
         setShowViewer(!showViewer);
       }}
     >
-      <ArrowLeftIcon className="mr-2 h-4 w-4 text-primary-foreground" />
+      <ArrowLeftIcon
+        className={cn(
+          "mr-2 h-4 w-4 text-primary-foreground transition-transform",
+          showViewer && "rotate-180",
+        )}
+      />
       Viewer
     </Button>
   );
