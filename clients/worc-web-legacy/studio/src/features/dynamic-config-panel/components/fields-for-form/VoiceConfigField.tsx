@@ -136,8 +136,8 @@ const VoiceConfigField = ({ name }: VoiceConfigFieldProps) => {
                 <SliderField
                   label="Speed"
                   name={field.name}
-                  min={0.25}
-                  max={4.0}
+                  min={0.7}
+                  max={1.2}
                   step={0.1}
                 />
               )}
