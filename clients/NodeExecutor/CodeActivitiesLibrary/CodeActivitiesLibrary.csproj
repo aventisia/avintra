@@ -628,6 +628,7 @@
     <Compile Include="Activities\UIInterfaceAutomations\MessageBoxActivities\Enums\DialogResultEnum.cs" />
     <Compile Include="Activities\UIInterfaceAutomations\MessageBoxActivities\_MessageBoxCategoryMetaData.cs" />
     <Compile Include="Activities\UIInterfaceAutomations\MouseAndKeyboardActivities\BlockInputActivity.cs" />
+    <Compile Include="Activities\UIInterfaceAutomations\MouseAndKeyboardActivities\Enums\VirtualKeyEnum.cs" />
     <Compile Include="Activities\UIInterfaceAutomations\MouseAndKeyboardActivities\Enums\RelativeToEnum.cs" />
     <Compile Include="Activities\UIInterfaceAutomations\MouseAndKeyboardActivities\GetKeyboardIdentifierActivity.cs" />
     <Compile Include="Activities\UIInterfaceAutomations\MouseAndKeyboardActivities\GetMousePositionActivity.cs" />
