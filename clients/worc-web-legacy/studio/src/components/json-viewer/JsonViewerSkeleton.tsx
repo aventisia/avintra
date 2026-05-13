@@ -2,7 +2,7 @@ import { Skeleton } from "@aventisia/ui";
 
 export default function JsonViewerSkeleton() {
   return (
-    <div className="h-[60vh] w-[40vw] overflow-hidden rounded-md bg-gray-50 p-2">
+    <div className="h-[60vh] w-full overflow-hidden rounded-md bg-gray-50 p-2">
       <div className="space-y-2">
         {/* Simulating nested JSON structure */}
         <div className="flex items-start gap-2">
@@ -93,7 +93,6 @@ export default function JsonViewerSkeleton() {
           </div>
         </div>
       </div>
-      
     </div>
   );
 }

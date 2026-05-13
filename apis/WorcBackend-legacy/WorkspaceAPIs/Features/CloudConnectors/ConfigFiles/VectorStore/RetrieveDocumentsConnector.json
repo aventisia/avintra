@@ -12,7 +12,7 @@
       "type": "select",
       "name": "vectorStore",
       "label": "Vector Store",
-      "description": "Select the vector database provider used for storing and searching embeddings.",
+      "description": "Select the vector database provider used for searching embeddings.",
       "defaultValue": "pgvector",
       "selectOptions": [
         {
