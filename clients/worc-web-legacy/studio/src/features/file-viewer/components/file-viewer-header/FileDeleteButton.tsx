@@ -3,7 +3,7 @@ import { useShowAlertHandler } from "@aventisia/ui/hooks";
 import { Trash2Icon } from "lucide-react";
 import { useShallow } from "zustand/react/shallow";
 
-import { useLocalFileStore } from "../stores/file-list-store";
+import { useLocalFileStore } from "../../stores/file-list-store";
 
 export default function FileDeleteButton() {
   const { activeFileId, removeFile } = useLocalFileStore(
@@ -27,7 +27,7 @@ export default function FileDeleteButton() {
   };
 
   return (
-    <Button variant="caution" size="icon7" onClick={deleteFileHandler}>
+    <Button variant="caution" size="icon7" className="ml-1" onClick={deleteFileHandler}>
       <Trash2Icon className="size-4" />
     </Button>
   );
