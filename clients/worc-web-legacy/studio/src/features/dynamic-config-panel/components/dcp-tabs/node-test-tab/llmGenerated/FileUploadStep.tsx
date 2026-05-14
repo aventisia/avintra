@@ -8,8 +8,39 @@ import { useDropzone } from "react-dropzone";
 const FileUploadStep = () => {
   const addFiles = useLocalFileStore((state) => state.addFiles);
 
+  const SUPPORTED_FILE_TYPES = {
+    // Documents
+    "application/pdf": [".pdf"],
+
+    // Word / Rich Text
+    "application/vnd.openxmlformats-officedocument.wordprocessingml.document": [
+      ".docx",
+    ],
+    "application/rtf": [".rtf"],
+    "application/vnd.oasis.opendocument.text": [".odt"],
+    "text/markdown": [".md"],
+    "text/plain": [".txt"],
+
+    // Excel / CSV
+    "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet": [
+      ".xlsx",
+    ],
+    "text/csv": [".csv"],
+
+    // Images
+    "image/jpeg": [".jpg", ".jpeg"],
+    "image/png": [".png"],
+    "image/bmp": [".bmp"],
+    "image/tiff": [".tiff", ".tif"],
+  } as const;
+
+  const SUPPORTED_FORMAT_LABEL = Object.values(SUPPORTED_FILE_TYPES)
+    .flat()
+    .map((ext) => ext.replace(".", "").toUpperCase())
+    .join(", ");
+
   const { getRootProps, getInputProps, isDragActive } = useDropzone({
-    accept: { "application/pdf": [".pdf"] }, // Restrict to PDFs since we are passing to react-pdf
+    accept: SUPPORTED_FILE_TYPES,
     onDrop: (acceptedFiles) => {
       if (acceptedFiles.length > 0) {
         addFiles(acceptedFiles); // Push directly to Zustand
@@ -48,8 +79,7 @@ const FileUploadStep = () => {
                 to upload
               </span>
               <span className="text-muted-foreground text-2xs">
-                Supported formats: PDF, DOCX, XLSX, CSV, RTF, ODT, MD, TXT, JPG,
-                JPEG, PNG, BMP, TIFF, TIF
+                Supported formats: {SUPPORTED_FORMAT_LABEL}
               </span>
             </>
           )}
