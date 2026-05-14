@@ -1,8 +1,10 @@
+import { useUserSessionStore } from "@/react-toolkit/stores/user-session-store";
+
 import { toast } from "@aventisia/ui/sonner";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
-import { generateLLMResponse } from "../apis/llm-pipelines-apis";
-import { useUserSessionStore } from "@/react-toolkit/stores/user-session-store";
 import { useShallow } from "zustand/react/shallow";
+
+import { generateLLMResponse } from "../apis/llm-pipelines-apis";
 
 /**
  * Hook to handle template instruction generation mutation.
@@ -18,7 +20,7 @@ export const useExecuteModelMutation = () => {
 
   const queryClient = useQueryClient();
 
-  const { isPending, mutate, isSuccess, data } = useMutation({
+  const { isPending, mutate, isSuccess, data, reset } = useMutation({
     mutationFn: generateLLMResponse,
 
     onSuccess: () => {
@@ -31,5 +33,5 @@ export const useExecuteModelMutation = () => {
     },
   });
 
-  return { isPending, mutate, isSuccess, data };
+  return { isPending, mutate, isSuccess, data, reset };
 };

@@ -3,19 +3,26 @@ import JsonViewerSkeleton from "@/components/json-viewer/JsonViewerSkeleton";
 import { VectorStoreQueryRequestDto } from "@/features/dynamic-config-panel/apis/vector-store-apis";
 import { DCPTabsContent } from "@/features/dynamic-config-panel/components/dcp-tabs/DCPTabsContent";
 import { useRetrieveChunksMutation } from "@/features/dynamic-config-panel/hooks/useRetrieveChunksMutation";
+import { useDynamicConfigPanelStore } from "@/features/dynamic-config-panel/stores/dcp-store";
 import { useCurrentFlowStore } from "@/stores/current-flow-store";
 import { ModelConfigType } from "@/types/model-config-type";
 
 import { useEffect } from "react";
+import { useShallow } from "zustand/react/shallow";
 
 interface Props {
   formData: Record<string, unknown>;
-  testExecutionId: number;
 }
 
-const RetrieveDocumentsTest = ({ formData, testExecutionId }: Props) => {
+const RetrieveDocumentsTest = ({ formData }: Props) => {
   /*  Retrieve chunks mutation  */
   const { mutate, data, isPending } = useRetrieveChunksMutation();
+
+  const { selectedTab } = useDynamicConfigPanelStore(
+    useShallow((state) => ({
+      selectedTab: state.selectedTab,
+    })),
+  );
 
   /* Helper to parse comma separated values */
   function parseCommaSeparatedValues(
@@ -151,11 +158,11 @@ const RetrieveDocumentsTest = ({ formData, testExecutionId }: Props) => {
     }
   }
 
-  /*  Execute test ONLY when testExecutionId changes */
+  /*  Execute test ONLY when Test tab changes */
 
   useEffect(() => {
     // Prevent execution on first mount
-    if (!testExecutionId) return;
+    if (selectedTab !== "Test") return;
 
     async function execute() {
       // Build request payload
@@ -169,7 +176,7 @@ const RetrieveDocumentsTest = ({ formData, testExecutionId }: Props) => {
     }
 
     execute();
-  }, [testExecutionId]);
+  }, [selectedTab]);
 
   /* Render result */
 

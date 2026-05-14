@@ -28,10 +28,6 @@ import TestTabContent from "./dcp-tabs/node-test-tab/TestTabContent";
 export const DCPForm = () => {
   const [showOuputFields, setShowOutputFields] = useState(false);
 
-  // Used ONLY to trigger node test execution
-  // Every increment means "run test again"
-  const [testExecutionId, setTestExecutionId] = useState(0);
-
   const isAgentHistory = useIsVersionHistoryRoute();
 
   // Define form
@@ -137,10 +133,6 @@ export const DCPForm = () => {
                         className="flex items-center gap-1 text-primary hover:text-primary"
                         handleClick={() => {
                           onSubmit(form.getValues());
-
-                          setTestExecutionId((prev) => prev + 1);
-
-                          setSelectedTab("Test");
                         }}
                       >
                         <PlayIcon className="h-3 w-3" />
@@ -153,7 +145,9 @@ export const DCPForm = () => {
                       <DCPTabsTrigger
                         tabValue="Test"
                         className="flex items-center gap-1 text-primary hover:text-primary"
-                        handleClick={() => onSubmit(form.getValues())}
+                        handleClick={() => {
+                          onSubmit(form.getValues());
+                        }}
                       >
                         <FlaskConical className="h-3.5 w-3.5" />
                         <span> Test</span>
@@ -167,7 +161,9 @@ export const DCPForm = () => {
                     <DCPTabsTrigger
                       tabValue="Test"
                       className="flex items-center gap-1 text-primary hover:text-primary"
-                      handleClick={() => onSubmit(form.getValues())}
+                      handleClick={() => {
+                        onSubmit(form.getValues());
+                      }}
                     >
                       <FlaskConical className="h-3.5 w-3.5" />
                       <span> Test</span>
@@ -303,7 +299,6 @@ export const DCPForm = () => {
           <TestTabContent
             type={nodeConfig?.testScreenType ?? "standard"}
             formData={form.getValues()}
-            testExecutionId={testExecutionId}
           />
         </DCPTabsWrapper>
       )}

@@ -8,6 +8,7 @@ import { TTSResponseDto } from "@/features/dynamic-config-panel/dtos/tts-model-d
 import { useExecuteModelMutation } from "@/features/dynamic-config-panel/hooks/useExecuteModelMutation";
 import { useExecuteSTTMutation } from "@/features/dynamic-config-panel/hooks/useExecuteSTTMutation";
 import { useExecuteTTSMutation } from "@/features/dynamic-config-panel/hooks/useExecuteTTSMutation";
+import { useDynamicConfigPanelStore } from "@/features/dynamic-config-panel/stores/dcp-store";
 import { useLocalFileStore } from "@/features/file-viewer/stores/file-list-store";
 
 import { Textarea } from "@aventisia/ui";
@@ -63,7 +64,7 @@ function STTResultPanel({ data }: { data: STTResponseDto }) {
 //  Section label helper
 
 function SectionLabel({ children }: { children: React.ReactNode }) {
-  return <p className="mb-1.5 text-2xs font-medium ">{children}</p>;
+  return <p className="mb-1.5 text-xs font-medium ">{children}</p>;
 }
 
 //  Main component
@@ -73,10 +74,15 @@ const ModelTestContent = ({
 }: {
   formData: { [x: string]: unknown };
 }) => {
+  const { selectedTab } = useDynamicConfigPanelStore(
+    useShallow((state) => ({
+      selectedTab: state.selectedTab,
+    })),
+  );
+
   const llmMutation = useExecuteModelMutation();
   const sttMutation = useExecuteSTTMutation();
   const ttsMutation = useExecuteTTSMutation();
-
   // Derived once per render — formData keys are stable for a given node type
   const providerType = detectProviderType(formData);
   const [useCurrentFileOnly, setUseCurrentFileOnly] = useState(false);
@@ -127,7 +133,12 @@ const ModelTestContent = ({
         ? ttsMutation
         : llmMutation;
 
-  const { mutate, isPending, data } = activeMutation;
+  const { mutate, isPending, data, reset } = activeMutation;
+
+  // Reset mutation when user comes to Test tab
+  useEffect(() => {
+    if (selectedTab == "Test") reset();
+  }, [selectedTab]);
 
   // Derive STTInputValue from the controlled file — passed straight to
   // ExecuteButton which builds the network payload from it.
@@ -280,11 +291,10 @@ const ModelTestContent = ({
     }
 
     return (
-      <Textarea
-        rows={25}
-        value={llmData?.output ?? JSON.stringify(formData, null, 2)}
-        disabled
-        className="resize-none focus-visible:ring-0"
+      <JsonViewer
+        jsonData={llmData?.output ?? JSON.stringify(formData, null, 2)}
+        className="h-[calc(64vh)]"
+        enableCopy
       />
     );
   };
@@ -313,7 +323,7 @@ const ModelTestContent = ({
           />
         )}
         <div>
-          <SectionLabel> Output</SectionLabel>
+          <SectionLabel> {data || isPending ? "Output" : "Input"}</SectionLabel>
           <div className="overflow-hidden border border-solid rounded-lg border-dividers">
             {renderLLMOutput()}
           </div>

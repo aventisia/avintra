@@ -8,12 +8,10 @@ import STJsonViewer from "./STJsonViewer";
 
 const StandardTestContent = ({
   formData,
-  testExecutionId,
 }: {
   formData: {
     [x: string]: unknown;
   };
-  testExecutionId: number;
 }) => {
   const { nodeData } = useDynamicConfigPanelStore(
     useShallow((state) => ({
@@ -21,12 +19,7 @@ const StandardTestContent = ({
     })),
   );
   if (nodeData?.name == "VectorStore/RetrieveDocumentsConnector")
-    return (
-      <RetrieveDocumentsTest
-        testExecutionId={testExecutionId}
-        formData={formData}
-      />
-    );
+    return <RetrieveDocumentsTest formData={formData} />;
 
   return (
     <DCPTabsContent tabValue="Test" hasFooter={false}>
