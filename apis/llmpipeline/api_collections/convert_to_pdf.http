@@ -9,7 +9,7 @@
 #
 # Usage:
 #   - Each section demonstrates a POST request for a different file type.
-#   - The API expects a JSON body with a `file_path` parameter.
+#   - The API expects a JSON body with a `file` parameter.
 #
 # Example file types covered:
 #   - DOCX, DOC, RTF, ODT, TIFF, TIF
@@ -23,7 +23,7 @@ POST {{convertToPdfEndpoint}}
 Content-Type: application/json
 
 {
-  "file_path": "{{testFilesPath}}/convert_to_pdf_test_files/docx-file.docx"
+  "file": "{{testFilesPath}}/convert_to_pdf_test_files/docx-file.docx"
 }
 
 ### RTF: convert rtf to PDF
@@ -31,7 +31,7 @@ POST {{convertToPdfEndpoint}}
 Content-Type: application/json
 
 {
-  "file_path": "{{testFilesPath}}/convert_to_pdf_test_files/rich-text-format-file.rtf"
+  "file": "{{testFilesPath}}/convert_to_pdf_test_files/rich-text-format-file.rtf"
 }
 
 ### ODT: convert odt to PDF
@@ -39,7 +39,7 @@ POST {{convertToPdfEndpoint}}
 Content-Type: application/json
 
 {
-  "file_path": "{{testFilesPath}}/convert_to_pdf_test_files/opendocument-text-file.odt"
+  "file": "{{testFilesPath}}/convert_to_pdf_test_files/opendocument-text-file.odt"
 }
 
 ### TIFF: convert tiff image to PDF
@@ -47,7 +47,7 @@ POST {{convertToPdfEndpoint}}
 Content-Type: application/json
 
 {
-  "file_path": "{{testFilesPath}}/convert_to_pdf_test_files/tiff-image-file.tiff"
+  "file": "{{testFilesPath}}/convert_to_pdf_test_files/tiff-image-file.tiff"
 }
 
 ### TIF: convert tif image to PDF
@@ -55,5 +55,5 @@ POST {{convertToPdfEndpoint}}
 Content-Type: application/json
 
 {
-  "file_path": "{{testFilesPath}}/convert_to_pdf_test_files/tif-image-file.tif"
+  "file": "{{testFilesPath}}/convert_to_pdf_test_files/tif-image-file.tif"
 }

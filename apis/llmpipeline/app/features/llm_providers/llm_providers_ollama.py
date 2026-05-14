@@ -187,6 +187,8 @@ class OllamaProvider(BaseLLMProvider):
     # Helper: Create request payload and headers
     def _create_request_payload_and_headers(self, llm_request: LLMRequest) -> tuple:
 
+        messages = []
+
         # Convert LLMMessage objects to dicts if input is a list
         if llm_request.files and len(llm_request.files) > 0 and isinstance(llm_request.input, str):
             # IMPORTANT Note: If files are present, they will be included in the messages only if the input is a string.

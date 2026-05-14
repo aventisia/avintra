@@ -83,6 +83,77 @@ MIME_TO_EXTENSION = {
     "application/octet-stream": ".bin",
 }
 
+# Reverse mapping: extension -> mime type
+EXTENSION_TO_MIME = {ext: mime for mime, ext in MIME_TO_EXTENSION.items()}
+
+
+def file_to_local_path(file_input: str) -> tuple[str, bool]:
+    """
+    Resolve any file input (URL, data URI, or local path)
+    into a local file path.
+
+    Returns:
+        tuple of (local_file_path, is_temp)
+        - local_file_path: path to the file on disk
+        - is_temp: True if a temp file was created (caller must clean up)
+    """
+
+    # If input is a URL, download it
+    if _is_url(file_input):
+
+        temp_file_path = _download_remote_file(file_input)
+        return temp_file_path, True
+
+    # If input is a data URI, decode and save to temp
+    elif _is_data_uri(file_input):
+
+        # Extract mime type and encoded data
+        mime, encoded_payload = _parse_data_uri(file_input)
+
+        # Decode base64 content
+        decoded_bytes = _decode_base64_payload(encoded_payload)
+
+        # Check decoded file size
+        if len(decoded_bytes) > MAX_FILE_SIZE_MB * 1024 * 1024:
+
+            raise HTTPException(
+                status_code=400,
+                detail=f"File size exceeds {MAX_FILE_SIZE_MB}MB."
+            )
+
+        # Get extension from mime type
+        extension = _get_extension_from_mime(mime)
+
+        # Reject unsupported mime types
+        if not extension:
+
+            raise HTTPException(
+                status_code=400,
+                detail="Unsupported encoded file type."
+            )
+
+        # Save decoded content to temp file
+        temp_file_path = _write_temp_file(
+            decoded_bytes,
+            extension
+        )
+
+        return temp_file_path, True
+
+    # If input is an existing local file
+    elif os.path.exists(file_input):
+
+        return file_input, False
+
+    # Invalid input
+    else:
+
+        raise HTTPException(
+            status_code=400,
+            detail="Invalid file or URL provided."
+        )
+
+
 def file_to_base64(file_input: str) -> str:
     """
     Convert:
@@ -431,10 +502,10 @@ def _detect_mime_type(file_path: str) -> str:
     # Extract extension
     ext = Path(file_path).suffix.lower()
 
-    # Use custom mapping first
-    if ext in MIME_TO_EXTENSION:
+    # Use custom reverse mapping first
+    if ext in EXTENSION_TO_MIME:
 
-        return MIME_TO_EXTENSION[ext]
+        return EXTENSION_TO_MIME[ext]
 
     # Fallback to Python detection
     mime_type, _ = mimetypes.guess_type(file_path)
