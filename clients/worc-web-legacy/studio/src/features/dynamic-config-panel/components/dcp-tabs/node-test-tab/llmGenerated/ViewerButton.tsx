@@ -29,7 +29,11 @@ export default function ViewerButton() {
 
   // Open viewer upon file upload
   useEffect(() => {
-    if (files.length > 0 && !showViewer) {
+    if (
+      files.length > 0 &&
+      !showViewer &&
+      nodeData?.name == "CreateInferencingAIAgent"
+    ) {
       setShowViewer(true);
     }
   }, [files]);
