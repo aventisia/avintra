@@ -1,6 +1,7 @@
 import CallAgentConfigForm from "@/features/call-agent/components/CallAgentConfigForm";
 import CallBlockConfigForm from "@/features/call-block/components/CallBlockConfigForm";
 import ModelConfigForm from "@/features/call-model/components/ModelConfigForm";
+import FileViewer from "@/features/file-viewer/components/FileViewer";
 
 import { DialogContent, DialogWrapper } from "@aventisia/ui/dialog";
 import { cn } from "@aventisia/ui/lib";
@@ -60,7 +61,9 @@ export const DCPDialog = ({ children }: React.PropsWithChildren) => {
         )}
       >
         <div className={cn(showViewer && "grid grid-cols-2")}>
-          <div className={cn(showViewer ? "border-r" : "hidden")}></div>
+          <div className={cn(showViewer ? "border-r" : "hidden")}>
+            <FileViewer />
+          </div>
           <div className={cn(showViewer && " ")}>
             <DCPDialogHeader />
             {renderFormComponent()}
