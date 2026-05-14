@@ -15,7 +15,8 @@ namespace CodeActivityToJSON.Utils
     {
         public static List<string> _excludedCategories = new List<string>
         {
-            "CodeActivitiesLibrary.AppIntegrations.AzureActivities"
+            "CodeActivitiesLibrary.AppIntegrations.AzureActivities",
+            "CodeActivitiesLibrary.AppIntegrations.OutlookActivities"
         };
 
         public static List<string> _excludedActivities = new List<string>

@@ -27,12 +27,12 @@
       "required": true,
       "selectOptions": [
         {
-          "label": "Save Document",
+          "label": "Save",
           "value": "SaveDocument",
           "description": "Saves the active workbook in its current format."
         },
         {
-          "label": "Save Document As",
+          "label": "Save a Copy",
           "value": "SaveDocumentAs",
           "description": "Saves the active workbook to a specified path with a chosen format."
         }
@@ -40,27 +40,10 @@
     },
     {
       "direction": "Input",
-      "type": "text",
-      "name": "DocumentPath",
-      "label": "Document Path",
-      "description": "The file path to save the workbook (required if \u0027Save Mode\u0027 is \u0027Save Document As\u0027).",
-      "defaultValue": "",
-      "required": false,
-      "renderIf": {
-        "conditions": [
-          {
-            "field": "SaveMode",
-            "equals": "SaveDocumentAs"
-          }
-        ]
-      }
-    },
-    {
-      "direction": "Input",
       "type": "select",
       "name": "DocumentFormat",
-      "label": "Document Format",
-      "description": "The file format to save the workbook as (required if \u0027Save Mode\u0027 is \u0027Save Document As\u0027).",
+      "label": "Select Format",
+      "description": "The file format to save the workbook as. This is required when \u0027Save Mode\u0027 is set to \u0027Save a Copy\u0027.",
       "defaultValue": "",
       "required": false,
       "selectOptions": [
@@ -185,6 +168,23 @@
           "description": "Saves as Strict Open XML Spreadsheet (*.xlsx) compliant with standards."
         }
       ],
+      "renderIf": {
+        "conditions": [
+          {
+            "field": "SaveMode",
+            "equals": "SaveDocumentAs"
+          }
+        ]
+      }
+    },
+    {
+      "direction": "Input",
+      "type": "text",
+      "name": "DocumentPath",
+      "label": "Document Path",
+      "description": "The file path to save the copy of the workbook. Extension will be determined by the selected format and will be ignored if already present in the path",
+      "defaultValue": "",
+      "required": false,
       "renderIf": {
         "conditions": [
           {
