@@ -37,20 +37,27 @@ export default function ViewerButton() {
   if (nodeData?.name !== "CreateInferencingAIAgent") return <></>;
 
   return (
-    <Button
-      type="button"
-      size={"sm"}
-      onClick={() => {
-        setShowViewer(!showViewer);
-      }}
-    >
-      <ArrowLeftIcon
-        className={cn(
-          "mr-2 h-4 w-4 text-primary-foreground transition-transform",
-          showViewer && "rotate-180",
-        )}
-      />
-      Viewer
-    </Button>
+    <div className="flex gap-2 items-center">
+      <Button
+        type="button"
+        size={"sm"}
+        onClick={() => {
+          setShowViewer(!showViewer);
+        }}
+      >
+        <ArrowLeftIcon
+          className={cn(
+            "mr-2 h-4 w-4 text-primary-foreground transition-transform",
+            showViewer && "rotate-180",
+          )}
+        />
+        Viewer
+      </Button>
+      {files.length > 0 && (
+        <p className="text-sm text-muted-foreground">
+          {files?.length} file(s) uploaded
+        </p>
+      )}
+    </div>
   );
 }
