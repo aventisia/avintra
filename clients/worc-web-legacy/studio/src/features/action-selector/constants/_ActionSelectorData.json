@@ -3841,58 +3841,6 @@
         ]
       },
       {
-        "label": "Outlook",
-        "description": "Automate Microsoft Outlook operations.",
-        "img": "/assets/Outlook.svg",
-        "actions": [
-          {
-            "type": "activityNode",
-            "name": "CloseOutlookActivity",
-            "label": "Close Outlook Application",
-            "description": "Closes an Outlook application instance and releases COM resources.",
-            "docsLink": "https://docs.aventisia.com",
-            "img": "/assets/Outlook.svg",
-            "supportedPlatforms": ["windows"]
-          },
-          {
-            "type": "activityNode",
-            "name": "LaunchOutlookActivity",
-            "label": "Launch Outlook Application",
-            "description": "Launches an Outlook application instance. Optionally connects to a specific profile.",
-            "docsLink": "https://docs.aventisia.com",
-            "img": "/assets/Outlook.svg",
-            "supportedPlatforms": ["windows"]
-          },
-          {
-            "type": "activityNode",
-            "name": "ProcessEmailMessagesInOutlookActivity",
-            "label": "Process Email Messages in Outlook",
-            "description": "Moves or deletes a collection of email messages in Outlook.",
-            "docsLink": "https://docs.aventisia.com",
-            "img": "/assets/Outlook.svg",
-            "supportedPlatforms": ["windows"]
-          },
-          {
-            "type": "activityNode",
-            "name": "RetrieveEmailsFromOutlookActivity",
-            "label": "Retrieve Emails from Outlook",
-            "description": "Retrieves email messages from a specified Outlook folder. Optionally filters by unread status or subject.",
-            "docsLink": "https://docs.aventisia.com",
-            "img": "/assets/Outlook.svg",
-            "supportedPlatforms": ["windows"]
-          },
-          {
-            "type": "activityNode",
-            "name": "SaveOutlookEmailMessagesActivity",
-            "label": "Save Outlook Email Messages",
-            "description": "Saves selected Outlook email messages (.msg files) to a specified location.",
-            "docsLink": "https://docs.aventisia.com",
-            "img": "/assets/Outlook.svg",
-            "supportedPlatforms": ["windows"]
-          }
-        ]
-      },
-      {
         "label": "HTTP",
         "description": "Perform HTTP requests and integrations.",
         "img": "/assets/HTTP.svg",
