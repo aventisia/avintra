@@ -1,4 +1,5 @@
 import { NodeDataType } from "@/types/node-data-type";
+
 import { Node } from "@xyflow/react";
 
 const DEFAULT_IMAGE = "/function.png";
@@ -20,6 +21,8 @@ export function getUniqueFlowImages(nodes: Node<NodeDataType>[]): string[] {
       imagePath = `/assets/${node.data.icon}.svg`;
     } else if (node.data?.img) {
       imagePath = node.data.img;
+    } else if (node.type == "modelNode") {
+      imagePath = `/brand-img/${node.data.label}.svg`;
     }
 
     if (imagePath && imagePath !== DEFAULT_IMAGE) {

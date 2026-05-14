@@ -39,7 +39,7 @@ export const useUpdateTemplateMutation = () => {
         queryKey: PTA_QUERY_KEY,
       });
       queryClient.invalidateQueries({
-        queryKey: ["AGENT_TEMPLATES"],
+        queryKey: ["PROJECT_TEMPLATES"],
       });
     },
 
