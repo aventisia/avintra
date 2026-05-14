@@ -1,4 +1,5 @@
 import { useDynamicConfigPanelStore } from "@/features/dynamic-config-panel/stores/dcp-store";
+import { useLocalFileStore } from "@/features/file-viewer/stores/file-list-store";
 
 import { Button } from "@aventisia/ui/buttons";
 import { cn } from "@aventisia/ui/lib";
@@ -15,6 +16,9 @@ export default function ViewerButton() {
       setShowViewer: state.setShowViewer,
     })),
   );
+  const { files } = useLocalFileStore(
+    useShallow((s) => ({ files: s.files, activeFileId: s.activeFileId })),
+  );
 
   // Close viewer when moving away form test screen
   useEffect(() => {
@@ -22,6 +26,13 @@ export default function ViewerButton() {
       setShowViewer(false);
     };
   }, []);
+
+  // Open viewer upon file upload
+  useEffect(() => {
+    if (files.length > 0 && !showViewer) {
+      setShowViewer(true);
+    }
+  }, [files]);
 
   if (nodeData?.name !== "CreateInferencingAIAgent") return <></>;
 

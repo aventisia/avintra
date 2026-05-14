@@ -4,9 +4,10 @@ import { Button } from "@aventisia/ui/buttons";
 import { cn } from "@aventisia/ui/lib";
 import { CloudUploadIcon } from "lucide-react";
 import { useDropzone } from "react-dropzone";
+import { useShallow } from "zustand/react/shallow";
 
 const FileUploadStep = () => {
-  const addFiles = useLocalFileStore((state) => state.addFiles);
+  const addFiles = useLocalFileStore(useShallow((state) => state.addFiles));
 
   const SUPPORTED_FILE_TYPES = {
     // Documents
