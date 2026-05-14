@@ -1,3 +1,4 @@
+import CustomCheckbox from "@/components/CustomCheckbox";
 import { JsonViewer } from "@/components/json-viewer/JsonViewer";
 import JsonViewerSkeleton from "@/components/json-viewer/JsonViewerSkeleton";
 import { DCPTabsContent } from "@/features/dynamic-config-panel/components/dcp-tabs/DCPTabsContent";
@@ -78,13 +79,25 @@ const ModelTestContent = ({
 
   // Derived once per render — formData keys are stable for a given node type
   const providerType = detectProviderType(formData);
+  const [useCurrentFileOnly, setUseCurrentFileOnly] = useState(false);
 
-  //  LLM: Local Store Integration
-  // Replaced local step states with the global file store.
-  const storedLlmFiles = useLocalFileStore(useShallow((state) => state.files));
+  // LLM: Local Store Integration
+  const { files: storedLlmFiles, activeFileId } = useLocalFileStore(
+    useShallow((state) => ({
+      activeFileId: state.activeFileId,
+      files: state.files,
+    })),
+  );
 
-  // The execute button expects native File objects, so we map them out of the store.
-  const llmFilesToExecute = storedLlmFiles.map((file) => file.originalFile);
+  const activeFile = storedLlmFiles.find(
+    (file) => file.id === activeFileId,
+  )?.originalFile;
+
+  const llmFilesToExecute: File[] = useCurrentFileOnly
+    ? activeFile
+      ? [activeFile]
+      : []
+    : storedLlmFiles.map((file) => file.originalFile);
 
   //  STT: single-screen controlled file state
   //
@@ -275,7 +288,6 @@ const ModelTestContent = ({
       />
     );
   };
-
   return (
     <DCPTabsContent
       tabValue="Test"
@@ -285,16 +297,21 @@ const ModelTestContent = ({
           mutate={mutate}
           formData={formData}
           providerType="llm"
-          llmFiles={llmFilesToExecute} // Feed files mapped straight from our global store
+          llmFiles={llmFilesToExecute}
         />
       }
     >
       <div className="flex flex-col gap-4 p-1">
         {/* Render Dropzone + Store Managed Files directly on the screen */}
-        <div>
-          <FileUploadStep />
-        </div>
-
+        <FileUploadStep />
+        {storedLlmFiles.length > 1 && (
+          <CustomCheckbox
+            checked={useCurrentFileOnly}
+            label="Execute active file only"
+            description="Limits execution to the currently open file in the viewer instead of all uploaded files."
+            onCheckedChange={setUseCurrentFileOnly}
+          />
+        )}
         <div>
           <SectionLabel> Output</SectionLabel>
           <div className="overflow-hidden border border-solid rounded-lg border-dividers">
