@@ -2,6 +2,7 @@ import CallAgentConfigForm from "@/features/call-agent/components/CallAgentConfi
 import CallBlockConfigForm from "@/features/call-block/components/CallBlockConfigForm";
 import ModelConfigForm from "@/features/call-model/components/ModelConfigForm";
 import FileViewer from "@/features/file-viewer/components/FileViewer";
+import { useLocalFileStore } from "@/features/file-viewer/stores/file-list-store";
 
 import { DialogContent, DialogWrapper } from "@aventisia/ui/dialog";
 import { cn } from "@aventisia/ui/lib";
@@ -21,6 +22,10 @@ export const DCPDialog = ({ children }: React.PropsWithChildren) => {
         setShowDialog: state.setShowDialog,
       })),
     );
+
+  const { clearAllFiles } = useLocalFileStore(
+    useShallow((s) => ({ clearAllFiles: s.clearAllFiles })),
+  );
 
   // Function to render correct form component based on nodeData.type
   const renderFormComponent = () => {
@@ -43,7 +48,11 @@ export const DCPDialog = ({ children }: React.PropsWithChildren) => {
   return (
     <DialogWrapper
       open={showDialog}
-      onOpenChangeFn={() => setShowDialog(!showDialog)}
+      onOpenChangeFn={() => {
+        clearAllFiles();
+        // Dialog is closing
+        setShowDialog(!showDialog);
+      }}
     >
       {children}
       <DialogContent

@@ -20,7 +20,7 @@ export const useExecuteSTTMutation = () => {
 
   const queryClient = useQueryClient();
 
-  const { isPending, mutate, isSuccess, data } = useMutation({
+  const { isPending, mutate, isSuccess, data, reset } = useMutation({
     mutationFn: generateSTTResponse,
 
     onSuccess: () => {
@@ -33,5 +33,5 @@ export const useExecuteSTTMutation = () => {
     },
   });
 
-  return { isPending, mutate, isSuccess, data };
+  return { isPending, mutate, isSuccess, data, reset };
 };

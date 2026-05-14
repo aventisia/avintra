@@ -20,7 +20,7 @@ export const useExecuteTTSMutation = () => {
 
   const queryClient = useQueryClient();
 
-  const { isPending, mutate, isSuccess, data } = useMutation({
+  const { isPending, mutate, isSuccess, data, reset } = useMutation({
     mutationFn: generateTTSResponse,
 
     onSuccess: () => {
@@ -33,5 +33,5 @@ export const useExecuteTTSMutation = () => {
     },
   });
 
-  return { isPending, mutate, isSuccess, data };
+  return { isPending, mutate, isSuccess, data, reset };
 };
