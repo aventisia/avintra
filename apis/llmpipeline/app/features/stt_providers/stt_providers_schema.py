@@ -1,4 +1,4 @@
-from pydantic import BaseModel, Field, HttpUrl
+from pydantic import BaseModel, Field
 from typing import Optional, Literal, Dict, Any, Union
 from datetime import datetime
 
@@ -8,7 +8,7 @@ class STTProviderRequest(BaseModel):
     Standard request schema for all STT providers.
     """
 
-    input: Union[str, HttpUrl]
+    input: str  # URL, local file path, or data URI
     provider: str
     model: str
     language: Optional[str] = Field(None)

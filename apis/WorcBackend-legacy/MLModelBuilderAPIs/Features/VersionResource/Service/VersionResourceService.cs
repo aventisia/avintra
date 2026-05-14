@@ -795,7 +795,7 @@ public class VersionResourceService : IVersionResourceService
 
                 var requestDto = new
                 {
-                    file_path = filePath
+                    file = filePath
                 };
 
                 var jsonRequest = System.Text.Json.JsonSerializer.Serialize(requestDto);

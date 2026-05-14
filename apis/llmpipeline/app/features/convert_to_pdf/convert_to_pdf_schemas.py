@@ -2,7 +2,7 @@
 from pydantic import BaseModel
 
 class ConvertToPDFRequest(BaseModel):
-	file_path: str
+	file: str  # URL, local file path, or data URI
 
 class ConvertToPDFResponse(BaseModel):
 	name: str  # Name of the PDF file
