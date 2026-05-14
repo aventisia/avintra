@@ -76,6 +76,8 @@ class QueryDocResponse(BaseModel):
     embedding_model: str
     query: str
     top_k: int
+    kb_names: Optional[List[str]] = None
+    doc_names: Optional[List[str]] = None
     chunks: List[RetrievedChunk]
     time_taken: float
     input_tokens: Optional[int] = 0
