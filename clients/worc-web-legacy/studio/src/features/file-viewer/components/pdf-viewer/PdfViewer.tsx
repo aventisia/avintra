@@ -8,10 +8,9 @@ import { useViewerStore } from "../../stores/file-viewer-store";
 import { usePdfViewerStore } from "../../stores/pdf-previewer-store";
 import PdfLoaderTemplate from "./PdfLoaderTemplate";
 
-pdfjs.GlobalWorkerOptions.workerSrc = new URL(
-  "pdfjs-dist/build/pdf.worker.min.mjs",
-  import.meta.url,
-).toString();
+//Define pdfjs worker file path
+pdfjs.GlobalWorkerOptions.workerSrc = "assets/pdf.worker.min.js";
+
 interface PdfViewerProps {
   fileUrl: string;
 }
