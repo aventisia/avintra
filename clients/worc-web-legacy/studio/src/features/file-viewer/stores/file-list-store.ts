@@ -40,7 +40,7 @@ export const useLocalFileStore = create<LocalFileStoreState>((set, get) => ({
     set((state) => ({
       files: [...state.files, ...mappedFiles],
       // Auto-select the first newly added file if nothing is currently active
-      activeFileId: state.activeFileId || mappedFiles[0]?.id || null,
+      activeFileId:  mappedFiles[0]?.id || state.activeFileId || null,
     }));
   },
 
