@@ -12,7 +12,7 @@ from PIL import Image
 import os
 import camelot
 
-from app.utils.file_converter_utils import file_to_local_path
+from app.utils.file_converter_utils import file_to_local_path, check_pdf_not_encrypted
 
 
 def extract_text_from_file(file: str) -> str:
@@ -129,6 +129,9 @@ def _merge_camelot_tables(tables):
 # Helper: Extract text from a PDF, combining selectable text and OCR from images on each page.
 def _extract_text_from_pdf(pdf_path: str) -> str:
     """Extract text from a PDF, combining selectable text and OCR from images on each page."""
+
+    # Check if PDF is encrypted before processing
+    check_pdf_not_encrypted(pdf_path)
 
     # Initialize
     logger.info("Extracting text from PDF: %s", pdf_path)

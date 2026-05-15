@@ -2,13 +2,13 @@ from pathlib import Path
 from typing import Optional, Tuple
 from fastapi import HTTPException
 from app.core.logger import logger
+from pypdf import PdfReader
 import requests
 import tempfile
 import os
 import base64
 import mimetypes
 import uuid
-
 
 MAX_FILE_SIZE_MB = 50
 
@@ -85,6 +85,34 @@ MIME_TO_EXTENSION = {
 
 # Reverse mapping: extension -> mime type
 EXTENSION_TO_MIME = {ext: mime for mime, ext in MIME_TO_EXTENSION.items()}
+
+
+def check_pdf_not_encrypted(file_path: str) -> None:
+    """
+    Check if a PDF file is encrypted/password-protected.
+    Raises HTTPException with 400 if the PDF is encrypted.
+    Does nothing if the file is not a PDF or is not encrypted.
+    """
+
+    ext = Path(file_path).suffix.lower()
+    if ext != ".pdf":
+        return
+
+    try:
+        reader = PdfReader(file_path)
+        if reader.is_encrypted:
+            raise HTTPException(
+                status_code=400,
+                detail="The PDF file is encrypted or password-protected. Please provide an unprotected PDF."
+            )
+    except HTTPException:
+        raise
+    except Exception as e:
+        logger.warning(
+            "Unable to check PDF encryption for %s: %s",
+            file_path,
+            str(e)
+        )
 
 
 def file_to_local_path(file_input: str) -> tuple[str, bool]:
