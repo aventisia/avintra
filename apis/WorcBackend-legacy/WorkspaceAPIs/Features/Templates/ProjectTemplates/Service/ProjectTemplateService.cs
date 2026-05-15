@@ -37,7 +37,7 @@ namespace WorkspaceAPIs.Services
         }
 
         // Retrieve all project templates list
-        public async Task<ServiceResponse<IEnumerable<ProjectTemplateDto>>> GetAllProjectTemplatesAsync()
+        public async Task<ServiceResponse<IEnumerable<ProjectTemplateDto>>> GetAllProjectTemplatesAsync(ProjectTemplateTypesEnum? type)
         {
             // Initialize default response with failure message
             var serviceResponse = new ServiceResponse<IEnumerable<ProjectTemplateDto>>
@@ -51,7 +51,8 @@ namespace WorkspaceAPIs.Services
                 // Fetch project templates filtered by tenant and user, ordered by usage count, including related data
                 var projectTemplates = await _unitOfWork.ProjectTemplateRepo
                     .GetByConditionAsync(w =>
-                        w.CreatedByUserId == _userId
+                        w.CreatedByUserId == _userId &&
+                        (!type.HasValue || w.Type == type.Value)
                     )
                     .AsNoTracking()
                     .Include(i => i.CreatedByUser)
@@ -938,7 +939,7 @@ namespace WorkspaceAPIs.Services
         }
 
         // Searches project templates by name.
-        public async Task<ServiceResponse<IEnumerable<SearchProjectTemplateDto>>> SearchProjectTemplatesAsync(string searchKey)
+        public async Task<ServiceResponse<IEnumerable<SearchProjectTemplateDto>>> SearchProjectTemplatesAsync(string searchKey, ProjectTemplateTypesEnum? type)
         {
             // Initialize ServiceResponse to indicate failure by default.
             var serviceResponse = new ServiceResponse<IEnumerable<SearchProjectTemplateDto>>
@@ -953,6 +954,7 @@ namespace WorkspaceAPIs.Services
                 var projectTemplates = await _unitOfWork.ProjectTemplateRepo
                     .GetByConditionAsync(w =>
                         w.Name.ToLower().Contains(searchKey.ToLower()) &&
+                        (!type.HasValue || w.Type == type.Value) &&
                         w.Status == ProjectTemplateStatusesEnum.Approved &&
                         (
                             w.AccessType == TemplateAccessTypesEnum.Public ||
@@ -1356,6 +1358,51 @@ namespace WorkspaceAPIs.Services
             catch (Exception ex)
             {
                 _logger.LogError(ex, "ValidateProjectAccessAsync: Error validating project access.");
+            }
+
+            return serviceResponse;
+        }
+
+
+        // Retrieve project templates for select-option dropdown
+        public async Task<ServiceResponse<IEnumerable<SelectOptionDto>>> GetProjectTemplatesForSelectOptionsAsync(ProjectTemplateTypesEnum? type)
+        {
+            var serviceResponse = new ServiceResponse<IEnumerable<SelectOptionDto>>
+            {
+                Data = null,
+                Message = "Failed to retrieve templates. Please try again later."
+            };
+
+            try
+            {
+                // Fetch project templates created by the user, optionally filtered by type
+                var projectTemplates = await _unitOfWork.ProjectTemplateRepo
+                    .GetByConditionAsync(w =>
+                        w.Status == ProjectTemplateStatusesEnum.Approved &&
+                        (w.AccessType == TemplateAccessTypesEnum.Public || w.AccessType == TemplateAccessTypesEnum.TenantLevel) &&
+                        (!type.HasValue || w.Type == type.Value)
+                    )
+                    .AsNoTracking()
+                    .OrderByDescending(o => o.UsageCount)
+                    .ToListAsync();
+
+                // Map to SelectOptionDto (e.g., Id and Name for dropdown)
+                serviceResponse.Data = projectTemplates
+                    .Select(s => new SelectOptionDto
+                    {
+                        Label = s.Name,
+                        Description = s.Schema,
+                        Value = s.Id.ToString(),
+                    })
+                    .ToList();
+
+                serviceResponse.StatusCode = 200;
+                serviceResponse.Message = "Project templates retrieved successfully.";
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Error occurred while fetching select-option templates for user {UserId} in tenant {TenantId}.",
+                    _userId, _tenantId);
             }
 
             return serviceResponse;

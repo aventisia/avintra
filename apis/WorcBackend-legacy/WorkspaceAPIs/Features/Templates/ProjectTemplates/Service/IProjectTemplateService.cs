@@ -6,10 +6,11 @@ namespace WorkspaceAPIs.Services;
 public interface IProjectTemplateService
 {
     /// <summary>
-    /// Retrieves all project templates.
+    /// Retrieves a collection of project templates, optionally filtered by type.
     /// </summary>
-    /// <returns>A list of all project templates.</returns>
-    Task<ServiceResponse<IEnumerable<ProjectTemplateDto>>> GetAllProjectTemplatesAsync();
+    /// <param name="type">The type of project templates to retrieve (optional).</param>
+    /// <returns>A task that represents the asynchronous operation. The task result contains a list of project templates.</returns>
+    Task<ServiceResponse<IEnumerable<ProjectTemplateDto>>> GetAllProjectTemplatesAsync(ProjectTemplateTypesEnum? type);
 
     /// <summary>
     /// Retrieves a project template by its unique identifier.
@@ -84,8 +85,9 @@ public interface IProjectTemplateService
     /// Searches for project templates using a keyword.
     /// </summary>
     /// <param name="searchKey">The keyword to search for in project template data.</param>
+    /// <param name="type">The type of project templates to retrieve (optional).</param>
     /// <returns>A list of project templates that match the search key.</returns>
-    Task<ServiceResponse<IEnumerable<SearchProjectTemplateDto>>> SearchProjectTemplatesAsync(string searchKey);
+    Task<ServiceResponse<IEnumerable<SearchProjectTemplateDto>>> SearchProjectTemplatesAsync(string searchKey, ProjectTemplateTypesEnum? type);
 
     /// <summary>
     /// Retrieves a list of trending project templates.
@@ -113,4 +115,12 @@ public interface IProjectTemplateService
     /// <param name="projectAccessStatusDtos">A collection of project access status DTOs for validation.</param>
     /// <returns>A task that returns a service response containing validation results for each project.</returns>
     Task<ServiceResponse<List<ProjectAccessStatusDto>>> ValidateProjectAccessAsync(IEnumerable<ProjectAccessStatusDto> projectAccessStatusDtos);
+
+    /// <summary>
+    /// Retrieves a list of project templates for select-option dropdowns,
+    /// optionally filtered by type.
+    /// </summary>
+    /// <param name="type">Optional type of project templates to filter.</param>
+    /// <returns>A ServiceResponse containing a list of SelectOptionDto.</returns>
+    Task<ServiceResponse<IEnumerable<SelectOptionDto>>> GetProjectTemplatesForSelectOptionsAsync(ProjectTemplateTypesEnum? type = null);
 }

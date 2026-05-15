@@ -20,5 +20,10 @@ public enum ProjectTemplateTypesEnum
     /// <summary>
     /// A general AI-driven project template not specific to agents or block structures.
     /// </summary>
-    AIProject
+    AIProject,
+
+    /// <summary>
+    /// A template type used for prompts or keyword-based templates.
+    /// </summary>
+    Prompt
 }
