@@ -11,11 +11,11 @@ const workspaceUserApiUrl: string = `${import.meta.env.VITE_WORC_API_PATH}/user`
 /**
  * Retrieves all Workspace users.
  */
-const getSearchUser = (value?: string) => {
+const getSearchUser = (value?: string, includeCurrentUser: boolean = true) => {
   return axiosInstance
     .get<
       IHttpResponse<WorkspaceUserDto[]>
-    >(`${workspaceUserApiUrl}/search/${value}`)
+    >(`${workspaceUserApiUrl}/search/${value}?includeCurrentUser=${includeCurrentUser}`)
     .then((res) => res.data);
 };
 
