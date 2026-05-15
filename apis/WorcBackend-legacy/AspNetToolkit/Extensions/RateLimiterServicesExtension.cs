@@ -76,8 +76,9 @@ public static class RateLimiterServicesExtension
             options.OnRejected = async (context, token) =>
             {
                 context.HttpContext.Response.StatusCode = 429; // HTTP 429 Too Many Requests
+                context.HttpContext.Response.ContentType = "text/plain";
                 await context.HttpContext.Response.WriteAsync(
-                    "Too many requests. Please try later again... ",
+                    "Too many requests. Please try later.",
                     cancellationToken: token
                 );
             };

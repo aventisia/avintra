@@ -32,11 +32,11 @@ public class AuthController(IAuthService authService) : BaseApiController
         // If request type is TwoFA or UpdatePwd
         if (createVerificationCodeDto.RequestType == VerificationCodeRequestTypesEnum.TwoFA ||
             createVerificationCodeDto.RequestType == VerificationCodeRequestTypesEnum.UpdatePwd)
-            return Forbid("Request type is not allowed");
+            return PlainTextError(403, "Request type is not allowed");
 
         // Request type is not defined  in enum
         if (!Enum.IsDefined(typeof(VerificationCodeRequestTypesEnum), createVerificationCodeDto.RequestType))
-            return Forbid("Request type is not allowed");
+            return PlainTextError(403, "Request type is not allowed");
 
         return ResultHelper(await _authService.CreateVerificationCodeAsync(createVerificationCodeDto));
     }

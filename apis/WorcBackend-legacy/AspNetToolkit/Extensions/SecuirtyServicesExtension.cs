@@ -87,6 +87,19 @@ public static class SecurityServicesExtension
                         context.Token = context.Request.Cookies[CookieNamesEnum.AccessToken.ToString()];
                     }
                     return Task.CompletedTask;
+                },
+                OnChallenge = context =>
+                {
+                    context.HandleResponse();
+                    context.Response.StatusCode = StatusCodes.Status401Unauthorized;
+                    context.Response.ContentType = "text/plain";
+                    return context.Response.WriteAsync("Unauthorized");
+                },
+                OnForbidden = context =>
+                {
+                    context.Response.StatusCode = StatusCodes.Status403Forbidden;
+                    context.Response.ContentType = "text/plain";
+                    return context.Response.WriteAsync("Forbidden");
                 }
             };
         });

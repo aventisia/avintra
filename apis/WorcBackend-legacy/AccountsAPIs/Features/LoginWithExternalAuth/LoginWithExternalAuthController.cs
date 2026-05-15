@@ -30,11 +30,11 @@ public class LoginWithExternalAuthController : BaseApiController
 
         // Return BadRequest if token validation fails due to domain mismatch or other client error
         if (authenticateUserResult.StatusCode == 400)
-            return BadRequest(authenticateUserResult.Message);
+            return PlainTextError(400, authenticateUserResult.Message);
 
         // Return Unauthorized if the token is invalid or user is unauthorized
         if (authenticateUserResult.StatusCode == 401)
-            return Unauthorized(authenticateUserResult.Message);
+            return PlainTextError(401, authenticateUserResult.Message);
 
         // Delete any expired sessions for the authenticated user
         var terminateUserExpiredSessionsResult = await _authService.TerminateUserSessionsAsync(
@@ -42,9 +42,9 @@ public class LoginWithExternalAuthController : BaseApiController
             authenticateUserResult.Data.UserName,
             TerminateSessionReasonsEnum.SessionHasExpired);
 
-        // Return BadRequest if deleting expired sessions failed
-        if (terminateUserExpiredSessionsResult.StatusCode == 400)
-            return BadRequest(terminateUserExpiredSessionsResult.Message);
+        // Delete failed - return plain text
+        if (terminateUserExpiredSessionsResult.StatusCode != 200)
+            return ResultHelper(terminateUserExpiredSessionsResult);
 
         // Create a new user session for the authenticated user
         var createUserSessionResult = await _authService.CreateUserSessionAsync(authenticateUserResult.Data);

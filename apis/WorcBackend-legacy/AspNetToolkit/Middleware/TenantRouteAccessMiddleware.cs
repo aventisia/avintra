@@ -16,6 +16,7 @@ public class TenantRouteAccessMiddleware
         {
             // If parsing fails, return 403 Forbidden immediately
             context.Response.StatusCode = StatusCodes.Status403Forbidden;
+            context.Response.ContentType = "text/plain";
             await context.Response.WriteAsync($"Invalid or missing tenant type - {environmentConfig.OnPremTenantType}");
             return;
         }
@@ -35,6 +36,7 @@ public class TenantRouteAccessMiddleware
             restrictedRoutes.Contains(path))
         {
             context.Response.StatusCode = StatusCodes.Status403Forbidden;
+            context.Response.ContentType = "text/plain";
             // Updated message: "Invalid endpoint" to indicate the path is not allowed for the tenant
             await context.Response.WriteAsync("Invalid endpoint for the current tenant.");
             return;

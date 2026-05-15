@@ -19,7 +19,12 @@ public class ApiKeyAuthAttribute : Attribute, IAsyncActionFilter
         // Return 401 Unauthorized if no API key is provided
         if (apiKey == null)
         {
-            context.Result = new UnauthorizedObjectResult("Authentication failed: Missing API Key. Please provide a valid API key in the request header.");
+            context.Result = new ContentResult
+            {
+                StatusCode = StatusCodes.Status401Unauthorized,
+                Content = "Authentication failed: Missing API Key. Please provide a valid API key in the request header.",
+                ContentType = "text/plain"
+            };
             return;
         }
 
@@ -32,7 +37,12 @@ public class ApiKeyAuthAttribute : Attribute, IAsyncActionFilter
         // Return 401 Unauthorized if API key is invalid or inactive
         if (apiKeyRecord == null)
         {
-            context.Result = new UnauthorizedObjectResult("Authentication failed: Invalid or inactive API Key. Please check the provided API key and try again.");
+            context.Result = new ContentResult
+            {
+                StatusCode = StatusCodes.Status401Unauthorized,
+                Content = "Authentication failed: Invalid or inactive API Key. Please check the provided API key and try again.",
+                ContentType = "text/plain"
+            };
             return;
         }
 
