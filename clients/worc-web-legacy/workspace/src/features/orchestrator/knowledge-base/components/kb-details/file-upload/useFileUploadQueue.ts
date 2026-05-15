@@ -36,6 +36,27 @@ export const useFileUploadQueue = ({
   const [fileQueue, setFileQueue] = useState<FileQueueItem[]>([]);
   const [activeFileId, setActiveFileId] = useState<string | null>(null);
 
+  const getErrorMessage = useCallback((error: unknown): string => {
+    // Axios interceptor rejects with plain string for 400/409/429
+    if (typeof error === "string" && error.trim()) {
+      return error;
+    }
+
+    // For 403/404/500, interceptor rejects with full AxiosError — extract plain text body
+    if (typeof error === "object" && error !== null && "response" in error) {
+      const response = (error as { response?: { data?: unknown } }).response;
+      if (typeof response?.data === "string" && response.data.trim()) {
+        return response.data;
+      }
+    }
+
+    if (error instanceof Error && error.message.trim()) {
+      return error.message;
+    }
+
+    return "Upload failed";
+  }, []);
+
   // -- Queue helpers ---------------------------------------------------------
 
   /** Update the status fields of a single file in the queue */
@@ -102,6 +123,7 @@ export const useFileUploadQueue = ({
 
       for (const fileItem of fileQueue) {
         setActiveFileId(fileItem.id);
+        let registeredFileId: string | undefined;
 
         try {
           // Stage 1: Register the file metadata
@@ -118,6 +140,13 @@ export const useFileUploadQueue = ({
             chunkSize: data.chunkSize,
             chunkOverlap: data.chunkOverlap,
           });
+          registeredFileId = registered.data?.id;
+
+          if (!registeredFileId) {
+            throw new Error(
+              "File registration succeeded but no file ID was returned",
+            );
+          }
 
           // Stage 2: Ingest into the vector store
           updateFileStatus(fileItem.id, {
@@ -189,7 +218,7 @@ export const useFileUploadQueue = ({
 
     onError: (error) => {
       setActiveFileId(null);
-      toast.error((error as Error).message || "Upload process failed");
+      toast.error(getErrorMessage(error));
     },
   });
 
