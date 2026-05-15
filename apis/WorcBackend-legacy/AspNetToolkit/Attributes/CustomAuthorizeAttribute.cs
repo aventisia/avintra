@@ -25,7 +25,8 @@ public class CustomAuthorizeAttribute : Attribute, IAuthorizationFilter
             context.Result = new ContentResult()
             {
                 StatusCode = 401,
-                Content = "API Key is missing."
+                Content = "API Key is missing.",
+                ContentType = "text/plain"
             };
             return;
         }
@@ -37,7 +38,8 @@ public class CustomAuthorizeAttribute : Attribute, IAuthorizationFilter
             context.Result = new ContentResult()
             {
                 StatusCode = 403,
-                Content = "Invalid API Key."
+                Content = "Invalid API Key.",
+                ContentType = "text/plain"
             };
         }
     }

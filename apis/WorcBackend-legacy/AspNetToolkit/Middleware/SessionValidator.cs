@@ -38,6 +38,8 @@ public class SessionValidator
             if (sessionId.Equals(Guid.Empty))
             {
                 context.Response.StatusCode = StatusCodes.Status401Unauthorized;
+                context.Response.ContentType = "text/plain";
+                await context.Response.WriteAsync("Invalid session");
                 return;
             }
 
@@ -48,6 +50,8 @@ public class SessionValidator
             if (!isValid)
             {
                 context.Response.StatusCode = StatusCodes.Status401Unauthorized;
+                context.Response.ContentType = "text/plain";
+                await context.Response.WriteAsync("Session expired");
                 return;
             }
         }

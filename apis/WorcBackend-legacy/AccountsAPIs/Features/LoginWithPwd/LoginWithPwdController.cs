@@ -23,17 +23,17 @@ public class LoginWithPwdController : BaseApiController
 
         // Bad request
         if (authenticateUserResult.StatusCode == 400)
-            return BadRequest(authenticateUserResult.Message);
+            return PlainTextError(400, authenticateUserResult.Message);
 
         // User is unautherized
         if (authenticateUserResult.StatusCode == 401)
-            return Unauthorized(authenticateUserResult.Message);
+            return PlainTextError(401, authenticateUserResult.Message);
 
         // Return here if Password has expired
         if (authenticateUserResult.Message.Contains("Your password has been expired"))
         {
             authenticateUserResult.Data = null;
-            return Ok(authenticateUserResult);
+            return ResultHelper(authenticateUserResult);
         }
 
         /*TwoFA verification code has to be created here only bcz after checking TwoFA code
@@ -52,7 +52,7 @@ public class LoginWithPwdController : BaseApiController
             // Replacing the message with "TwoFA is enabled" as it has to match on client side
             createVerificationCodeResult.Message = "TwoFA is enabled";
 
-            return Ok(createVerificationCodeResult);
+            return ResultHelper(createVerificationCodeResult);
         }
 
         // Delete expired sessions
@@ -62,8 +62,8 @@ public class LoginWithPwdController : BaseApiController
             TerminateSessionReasonsEnum.SessionHasExpired);
 
         // Delete-ExpiredSessions job failed
-        if (terminateUserExpiredSessionsResult.StatusCode == 400)
-            return BadRequest(terminateUserExpiredSessionsResult.Message);
+        if (terminateUserExpiredSessionsResult.StatusCode != 200)
+            return ResultHelper(terminateUserExpiredSessionsResult);
 
         // Create UserSessionDto
         var createUserSessionResult = await _authService.CreateUserSessionAsync(authenticateUserResult.Data);
@@ -82,11 +82,11 @@ public class LoginWithPwdController : BaseApiController
 
         // Bad request
         if (authenticateUserResult.StatusCode == 400)
-            return BadRequest(authenticateUserResult.Message);
+            return PlainTextError(400, authenticateUserResult.Message);
 
         // User is unautherized
         if (authenticateUserResult.StatusCode == 401)
-            return Unauthorized(authenticateUserResult.Message);
+            return PlainTextError(401, authenticateUserResult.Message);
 
         // Delete expired sessions
         var terminateUserExpiredSessionsResult = await _authService.TerminateUserSessionsAsync(
@@ -95,17 +95,13 @@ public class LoginWithPwdController : BaseApiController
             TerminateSessionReasonsEnum.SessionHasExpired);
 
         // Delete-ExpiredSessions job failed
-        if (terminateUserExpiredSessionsResult.StatusCode == 400)
-            return BadRequest(terminateUserExpiredSessionsResult.Message);
+        if (terminateUserExpiredSessionsResult.StatusCode != 200)
+            return ResultHelper(terminateUserExpiredSessionsResult);
 
         // Create UserSessionDto
         var userSessionDto = await _authService.CreateUserSessionAsync(authenticateUserResult.Data);
 
-        // UserSessionDto creation failed
-        if (userSessionDto.StatusCode == 400)
-            return BadRequest(userSessionDto.Message);
-
         // Returns UserSessionDto
-        return Ok(userSessionDto);
+        return ResultHelper(userSessionDto);
     }
 }

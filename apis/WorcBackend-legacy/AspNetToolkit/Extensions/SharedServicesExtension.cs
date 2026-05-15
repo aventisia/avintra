@@ -14,6 +14,29 @@ public static class SharedServicesExtension
         {
             options.JsonSerializerOptions.Converters.Add(new JsonStringEnumConverter());
         });
+
+        // Override default model validation response to return ServiceResponse shape
+        services.Configure<ApiBehaviorOptions>(options =>
+        {
+            options.InvalidModelStateResponseFactory = context =>
+            {
+                var errors = context.ModelState
+                    .Where(e => e.Value?.Errors.Count > 0)
+                    .SelectMany(e => e.Value!.Errors.Select(err => err.ErrorMessage))
+                    .ToList();
+
+                var message = string.Join("; ", errors);
+                if (string.IsNullOrEmpty(message))
+                    message = "Validation failed";
+
+                return new ContentResult
+                {
+                    StatusCode = StatusCodes.Status400BadRequest,
+                    Content = message,
+                    ContentType = "text/plain"
+                };
+            };
+        });
     }
 
     public static void AddSwaggerConfig(this IServiceCollection services)
@@ -60,7 +83,7 @@ public static class SharedServicesExtension
         services.AddSingleton(config);
         services.AddSingleton(Guard.Against.Null(config.GetSection("EnvironmentConfig").Get<EnvironmentConfig>(), message: "EnvironmentConfig cannot be null"));
         services.AddSingleton(Guard.Against.Null(config.GetSection("AppDefaultConfig").Get<AppDefaultConfig>(), message: "AppDefaultConfig cannot be null"));
-        
+
         // Scoped
         services.AddScoped<ICurrentTenantService, CurrentTenantService>();
         services.AddScoped<IUserManagementGuardService, UserManagementGuardService>();

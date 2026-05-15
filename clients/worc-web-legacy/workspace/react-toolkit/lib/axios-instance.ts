@@ -1,10 +1,19 @@
+import { refreshSession } from "@/react-toolkit/apis/accounts-me-apis";
+import { INVALID_CREDS, REQUEST_TIMEOUT } from "@/react-toolkit/constants";
+import { redirectToLoginOn401Util } from "@/react-toolkit/utils/redirect-util";
+
 import { toast } from "@aventisia/ui/sonner";
 import { sleep } from "@aventisia/ui/utils";
 import axios from "axios";
 
-import { refreshSession } from "@/react-toolkit/apis/accounts-me-apis";
-import { INVALID_CREDS, REQUEST_TIMEOUT } from "@/react-toolkit/constants";
-import { redirectToLoginOn401Util } from "@/react-toolkit/utils/redirect-util";
+const getErrorMessageFromResponseData = (responseData: unknown): string => {
+  // Standard: errors are plain text strings
+  if (typeof responseData === "string" && responseData.trim()) {
+    return responseData;
+  }
+
+  return "Something went wrong. Please try again later";
+};
 
 /**
  * Creates an Axios instance with predefined configuration.
@@ -59,6 +68,7 @@ axiosInstance.interceptors.response.use(
 
     return response;
   },
+
   async (error) => {
     // Set original request
     const originalRequest = error.config;
@@ -117,24 +127,9 @@ axiosInstance.interceptors.response.use(
       }
     }
 
-    // Set empty error message
-    let errorMessage = "";
+    console.error("Error:", error.response.status, error.response.data);
 
-    // If error response data is string
-    if (typeof error.response.data == "string") {
-      errorMessage = error.response.data;
-    }
-
-    // Error is an object
-    if (typeof error.response.data == "object") {
-      // Log the validations errors. NOTE: Errors array is going to have lot of different types of error with differnt object and names so we are just logging the errors array.
-      console.log(error.response.data.errors);
-
-      // Get the only title of the error object if available.
-      errorMessage = error.response.data.title
-        ? error.response.data.title
-        : "Something went wrong. Please try again later";
-    }
+    const errorMessage = getErrorMessageFromResponseData(error.response.data);
 
     // Return toast notification basis Http Status code
     switch (error.response.status) {

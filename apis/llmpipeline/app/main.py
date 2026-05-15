@@ -3,8 +3,10 @@ import time
 import uuid
 from contextlib import asynccontextmanager
 
-from fastapi import Depends, FastAPI, Request
+from fastapi import Depends, FastAPI, HTTPException, Request
+from fastapi.exceptions import RequestValidationError
 from fastapi.middleware.cors import CORSMiddleware
+from fastapi.responses import PlainTextResponse
 
 from app.core.database import dispose_all_db_engines
 from app.features.extract_file_text.extract_file_text_routes import router as extract_file_text_router
@@ -28,6 +30,24 @@ async def lifespan(_: FastAPI):
 
 # Initialize the FastAPI application
 app = FastAPI(root_path="/api", lifespan=lifespan)
+
+
+# Global exception handlers — ensures all errors return plain text
+@app.exception_handler(HTTPException)
+async def http_exception_handler(_request: Request, exc: HTTPException):
+    return PlainTextResponse(str(exc.detail), status_code=exc.status_code)
+
+
+@app.exception_handler(RequestValidationError)
+async def validation_exception_handler(_request: Request, exc: RequestValidationError):
+    messages = "; ".join(e["msg"] for e in exc.errors())
+    return PlainTextResponse(messages or "Validation failed", status_code=422)
+
+
+@app.exception_handler(Exception)
+async def unhandled_exception_handler(_request: Request, exc: Exception):
+    logger.error(f"Unhandled exception: {exc}", exc_info=True)
+    return PlainTextResponse("Internal server error.", status_code=500)
 
 # Register API routes with tags for automatic documentation
 app.include_router(extract_file_text_router, tags=["Extract text from file"])

@@ -81,7 +81,7 @@ public class VersionResourceController : BaseApiController
 
         if (fileDetailsResponse.Data == null)
         {
-            return NotFound(fileDetailsResponse.Message);
+            return NotFound(fileDetailsResponse.Message ?? "File not found");
         }
 
         return File(fileDetailsResponse.Data.Content, fileDetailsResponse.Data.ContentType, fileDetailsResponse.Data.Name);

@@ -6,7 +6,7 @@ namespace WorkspaceAPIs.Controllers;
 /// </summary>
 [Route("webhook")]
 [ApiController]
-public class WebhookController : ControllerBase
+public class WebhookController : BaseApiController
 {
     private readonly WorkspaceInternalDbContext _dbContext;
     private readonly IJobsExecutorService _jobsExecutorService;
@@ -36,10 +36,10 @@ public class WebhookController : ControllerBase
         var tenantIdRaw = Request.Headers["X-Tenant-Id"].FirstOrDefault();
 
         if (string.IsNullOrWhiteSpace(apiKey) || string.IsNullOrWhiteSpace(tenantIdRaw))
-            return BadRequest(new { message = "X-Api-Key and X-Tenant-Id headers are required." });
+            return PlainTextError(400, "X-Api-Key and X-Tenant-Id headers are required.");
 
         if (!Guid.TryParse(tenantIdRaw, out var tenantId))
-            return BadRequest(new { message = "X-Tenant-Id must be a valid GUID." });
+            return PlainTextError(400, "X-Tenant-Id must be a valid GUID.");
 
         // ── 2. Load trigger (no tenant filter) ──────────────────────────────
         var trigger = await _dbContext.Triggers
@@ -49,27 +49,27 @@ public class WebhookController : ControllerBase
         if (trigger == null)
         {
             _logger.LogWarning("Webhook fire rejected: trigger {TriggerId} not found.", triggerId);
-            return NotFound(new { message = "Trigger not found." });
+            return PlainTextError(404, "Trigger not found.");
         }
 
         if (trigger.TriggerType != TriggerTypesEnum.WebhookTrigger)
         {
             _logger.LogWarning("Webhook fire rejected: trigger {TriggerId} is not a webhook trigger.", triggerId);
-            return NotFound(new { message = "Trigger not found." });
+            return PlainTextError(404, "Trigger not found.");
         }
 
         // ── 3. Validate tenant ───────────────────────────────────────────────
         if (trigger.TenantId != tenantId)
         {
             _logger.LogWarning("Webhook fire rejected: tenant mismatch for trigger {TriggerId}.", triggerId);
-            return BadRequest(new { message = "Invalid tenant." });
+            return PlainTextError(400, "Invalid tenant.");
         }
 
         // ── 4. Validate disabled state ───────────────────────────────────────
         if (trigger.IsDisabled)
         {
             _logger.LogWarning("Webhook fire rejected: trigger {TriggerId} is disabled.", triggerId);
-            return StatusCode(403, new { message = "This webhook trigger is disabled." });
+            return PlainTextError(403, "This webhook trigger is disabled.");
         }
 
         // ── 5. Deserialize metadata ──────────────────────────────────────────
@@ -88,18 +88,18 @@ public class WebhookController : ControllerBase
         catch (Exception ex)
         {
             _logger.LogError(ex, "Failed to deserialize metadata for trigger {TriggerId}.", triggerId);
-            return StatusCode(500, new { message = "Internal error reading trigger configuration." });
+            return PlainTextError(500, "Internal error reading trigger configuration.");
         }
 
         if (model == null)
-            return StatusCode(500, new { message = "Internal error reading trigger configuration." });
+            return PlainTextError(500, "Internal error reading trigger configuration.");
 
         // ── 6. Validate API key ──────────────────────────────────────────────
         var incomingHash = WebhookTriggerService.HashApiKey(apiKey);
         if (incomingHash != model.ApiKeyHash)
         {
             _logger.LogWarning("Webhook fire rejected: invalid API key for trigger {TriggerId}.", triggerId);
-            return Unauthorized(new { message = "Invalid API key." });
+            return PlainTextError(401, "Invalid API key.");
         }
 
         // ── 7. Optional JSON Schema validation ──────────────────────────────
@@ -112,13 +112,14 @@ public class WebhookController : ControllerBase
                 var isValid = payload.IsValid(schema, out IList<string> errors);
                 if (!isValid)
                 {
-                    return UnprocessableEntity(new { message = "Payload does not match the expected schema.", errors });
+                    var errorMessage = "Payload does not match the expected schema. " + string.Join("; ", errors);
+                    return PlainTextError(422, errorMessage);
                 }
             }
             catch (Exception ex)
             {
                 _logger.LogWarning(ex, "JSON Schema validation error for trigger {TriggerId}.", triggerId);
-                return UnprocessableEntity(new { message = "Payload schema validation failed.", error = ex.Message });
+                return PlainTextError(422, $"Payload schema validation failed. {ex.Message}");
             }
         }
 
@@ -127,7 +128,7 @@ public class WebhookController : ControllerBase
         if (flowVersionId == null || flowVersionId == Guid.Empty)
         {
             _logger.LogWarning("Webhook fire rejected: no agent linked to trigger {TriggerId}.", triggerId);
-            return BadRequest(new { message = "No agent is linked to this webhook trigger." });
+            return PlainTextError(400, "No agent is linked to this webhook trigger.");
         }
 
         // ── 9. Create job ───────────────────────────────────────────────────
@@ -184,15 +185,15 @@ public class WebhookController : ControllerBase
         var tenantIdRaw = Request.Headers["X-Tenant-Id"].FirstOrDefault();
 
         if (string.IsNullOrWhiteSpace(apiKey) || string.IsNullOrWhiteSpace(tenantIdRaw))
-            return BadRequest(new { message = "X-Api-Key and X-Tenant-Id headers are required." });
+            return PlainTextError(400, "X-Api-Key and X-Tenant-Id headers are required.");
 
         if (!Guid.TryParse(tenantIdRaw, out var tenantId))
-            return BadRequest(new { message = "X-Tenant-Id must be a valid GUID." });
+            return PlainTextError(400, "X-Tenant-Id must be a valid GUID.");
 
         // ── 2. Load job ──────────────────────────────────────────────────────
         var job = await _dbContext.Jobs.FirstOrDefaultAsync(j => j.Id == jobId);
         if (job == null || job.TenantId != tenantId || job.TriggerType != TriggerTypesEnum.WebhookTrigger)
-            return NotFound(new { message = "Job not found." });
+            return PlainTextError(404, "Job not found.");
 
         // ── 3. Validate API key against the linked trigger ──────────────────
         if (job.RefId.HasValue)
@@ -221,7 +222,7 @@ public class WebhookController : ControllerBase
                 {
                     var incomingHash = WebhookTriggerService.HashApiKey(apiKey);
                     if (incomingHash != model.ApiKeyHash)
-                        return Unauthorized(new { message = "Invalid API key." });
+                        return PlainTextError(401, "Invalid API key.");
                 }
             }
         }

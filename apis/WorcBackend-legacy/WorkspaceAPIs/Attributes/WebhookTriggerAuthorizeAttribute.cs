@@ -21,7 +21,8 @@ public class WebhookTriggerAuthorizeAttribute : Attribute, IAsyncAuthorizationFi
             context.Result = new ContentResult
             {
                 StatusCode = 401,
-                Content = "API key is missing."
+                Content = "API key is missing.",
+                ContentType = "text/plain"
             };
             return;
         }
@@ -35,7 +36,8 @@ public class WebhookTriggerAuthorizeAttribute : Attribute, IAsyncAuthorizationFi
             context.Result = new ContentResult
             {
                 StatusCode = 403,
-                Content = "API key is invalid."
+                Content = "API key is invalid.",
+                ContentType = "text/plain"
             };
             return;
         }
@@ -56,7 +58,8 @@ public class WebhookTriggerAuthorizeAttribute : Attribute, IAsyncAuthorizationFi
             context.Result = new ContentResult
             {
                 StatusCode = 400,
-                Content = "Request body cannot be empty."
+                Content = "Request body cannot be empty.",
+                ContentType = "text/plain"
             };
             return;
         }
@@ -74,7 +77,8 @@ public class WebhookTriggerAuthorizeAttribute : Attribute, IAsyncAuthorizationFi
                 context.Result = new ContentResult
                 {
                     StatusCode = 400,
-                    Content = "Invalid or missing 'flowVersionId'."
+                    Content = "Invalid or missing 'flowVersionId'.",
+                    ContentType = "text/plain"
                 };
                 return;
             }
@@ -84,7 +88,8 @@ public class WebhookTriggerAuthorizeAttribute : Attribute, IAsyncAuthorizationFi
             context.Result = new ContentResult
             {
                 StatusCode = 400,
-                Content = "Malformed JSON payload."
+                Content = "Malformed JSON payload.",
+                ContentType = "text/plain"
             };
             return;
         }
@@ -99,7 +104,8 @@ public class WebhookTriggerAuthorizeAttribute : Attribute, IAsyncAuthorizationFi
             context.Result = new ContentResult
             {
                 StatusCode = 404,
-                Content = "Webhook endpoint not found."
+                Content = "Webhook endpoint not found.",
+                ContentType = "text/plain"
             };
             return;
         }

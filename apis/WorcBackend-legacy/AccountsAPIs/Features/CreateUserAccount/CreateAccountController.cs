@@ -22,9 +22,9 @@ public class UserRegistrationController : BaseApiController
         // Create new user
         var newUser = await _userRegistrationService.CreateAccountAsync(createAccountDto);
 
-        // New user creation failed
-        if (newUser.StatusCode == 400 || newUser.Data == null)
-            return BadRequest(newUser.Message);
+        // New user creation failed - return plain text
+        if (newUser.StatusCode != 200 || newUser.Data == null)
+            return ResultHelper(newUser);
 
         // Create UserSessionDto
         var userSessionDto = await _authService.CreateUserSessionAsync(newUser.Data);
@@ -40,9 +40,9 @@ public class UserRegistrationController : BaseApiController
         // Update ogranization detail
         var updatedUser = await _userRegistrationService.UpdateTenantOrganizationAsync(tenantOrganizationDto);
 
-        // New user creation failed
-        if (updatedUser.StatusCode == 400 || updatedUser.Data == null)
-            return BadRequest(updatedUser.Message);
+        // Update failed - return plain text
+        if (updatedUser.StatusCode != 200 || updatedUser.Data == null)
+            return ResultHelper(updatedUser);
 
         // Create UserSessionDto
         var userSessionDto = await _authService.CreateUserSessionAsync(updatedUser.Data);
