@@ -5,7 +5,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@aventisia/ui/select";
-import { FileIcon, FileTextIcon, ImageIcon } from "lucide-react";
+import { FileIcon, ImageIcon } from "lucide-react";
 import { useShallow } from "zustand/react/shallow";
 
 import { useLocalFileStore } from "../../stores/file-list-store";
@@ -32,7 +32,7 @@ const FileViewerSelect = () => {
 
     switch (fileType) {
       case FILE_TYPE.PDF:
-        return <FileTextIcon className="size-4 text-slate-400 shrink-0" />;
+        return <img src="assets/PDF.svg" className="size-4 shrink-0" />;
       case FILE_TYPE.IMAGE:
         return <ImageIcon className="size-4 text-blue-400 shrink-0" />;
 
