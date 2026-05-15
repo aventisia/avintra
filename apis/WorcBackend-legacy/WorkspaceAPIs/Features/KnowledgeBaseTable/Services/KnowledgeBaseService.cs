@@ -44,6 +44,7 @@ public class KnowledgeBaseService : IKnowledgeBaseService
                 .OrderByDescending(kb => kb.CreatedOn)
                 .Include(kb => kb.CreatedByUser)
                 .Include(kb => kb.LastModifiedByUser)
+                .Include(kb => kb.Files)
                 .ToListAsync();
 
             // Map entities to DTOs

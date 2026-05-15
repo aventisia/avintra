@@ -36,6 +36,13 @@ public class KnowledgeBaseFileController : BaseApiController
         return ResultHelper(await _knowledgeBaseFileService.RegisterKnowledgeBaseTextAsync(kbId, dto));
     }
 
+    // Updates the vectorization status of a file after ingestion.
+    [HttpPatch("{kbId}/files/{fileId}/status")]
+    public async Task<ActionResult<ServiceResponse<KnowledgeBaseFileDto>>> UpdateFileStatus(Guid kbId, Guid fileId, [FromBody] KBUpdateFileStatusDto dto)
+    {
+        return ResultHelper(await _knowledgeBaseFileService.UpdateFileStatusAsync(kbId, fileId, dto));
+    }
+
     // Deletes a specific file metadata record from a knowledge base.
     [HttpDelete("{kbId}/files/{fileId}")]
     public async Task<ActionResult<ServiceResponse<bool>>> DeleteKnowledgeBaseFile(Guid kbId, Guid fileId)

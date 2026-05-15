@@ -9,6 +9,7 @@ import { z } from "zod";
 import {
   ingestVectorStoreInput,
   registerKnowledgeBaseText,
+  updateKnowledgeBaseFileStatus,
 } from "../../apis/knowledge-base-file-apis";
 import { DETAIL_DATA_QUERY_KEY } from "../../constants";
 import {
@@ -73,24 +74,58 @@ export const KBAddTextForm = ({
         chunkOverlap: data.chunkOverlap,
       });
 
-      await ingestVectorStoreInput({
-        vector_store: knowledgeBase.vectorStore,
-        embedding_provider: knowledgeBase.embeddingProvider,
-        embedding_model: knowledgeBase.embeddingModel,
-        input: data.textContent,
-        metadata: {
-          kb_name: knowledgeBaseName,
-          doc_name: registered.data!.fileName,
-        },
-        chunk_size: data.chunkSize,
-        chunk_overlap: data.chunkOverlap,
-        store_credential_id: knowledgeBase.storeCredentialId,
-        embedding_credential_id: knowledgeBase.embeddingCredentialId,
-        ref_type: "KnowledgeBase",
-        ref_id: knowledgeBaseId,
-        ref_name: knowledgeBaseName,
-        action: "KnowledgeBaseTextIngest",
-      });
+      const registeredFileId = registered.data?.id;
+
+      try {
+        const ingestResult = await ingestVectorStoreInput({
+          vector_store: knowledgeBase.vectorStore,
+          embedding_provider: knowledgeBase.embeddingProvider,
+          embedding_model: knowledgeBase.embeddingModel,
+          input: data.textContent,
+          metadata: {
+            kb_name: knowledgeBaseName,
+            doc_name: registered.data!.fileName,
+          },
+          chunk_size: data.chunkSize,
+          chunk_overlap: data.chunkOverlap,
+          store_credential_id: knowledgeBase.storeCredentialId,
+          embedding_credential_id: knowledgeBase.embeddingCredentialId,
+          ref_type: "KnowledgeBase",
+          ref_id: knowledgeBaseId,
+          ref_name: knowledgeBaseName,
+          action: "KnowledgeBaseTextIngest",
+        });
+
+        const chunksCreated =
+          (ingestResult as { chunks_created?: number })?.chunks_created ?? 0;
+
+        if (registeredFileId) {
+          await updateKnowledgeBaseFileStatus(
+            knowledgeBaseId,
+            registeredFileId,
+            {
+              status: "Completed",
+              chunksCount: chunksCreated,
+            },
+          );
+        }
+      } catch (ingestError) {
+        if (registeredFileId) {
+          await updateKnowledgeBaseFileStatus(
+            knowledgeBaseId,
+            registeredFileId,
+            {
+              status: "Failed",
+              chunksCount: 0,
+              errorMessage:
+                ingestError instanceof Error
+                  ? ingestError.message
+                  : "Ingestion failed",
+            },
+          );
+        }
+        throw ingestError;
+      }
     },
     onSuccess: async () => {
       toast.success("Text added to knowledge base successfully");

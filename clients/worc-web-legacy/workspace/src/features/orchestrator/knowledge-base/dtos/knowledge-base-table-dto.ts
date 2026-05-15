@@ -76,4 +76,9 @@ export interface KnowledgeBaseTableDto {
    * Date and time when the Knowledge Base record was last modified.
    */
   lastModifiedOn?: string;
+
+  /**
+   * Total number of chunks across all files in this Knowledge Base.
+   */
+  totalChunks?: number;
 }

@@ -15,6 +15,14 @@ public class KnowledgeBaseFileDto
     /// </summary>
     public required string FileSize { get; set; }
 
+    public string? ContentType { get; set; }
+
+    public int ChunksCount { get; set; }
+
+    public VectorizationStatusEnum Status { get; set; }
+
+    public string? VectorizationErrorMessage { get; set; }
+
     public string? CreatedBy { get; set; }
 
     public DateTimeOffset? CreatedOn { get; set; }

@@ -96,6 +96,21 @@ export const KBTableColumns: ColumnDef<KnowledgeBaseTableDto>[] = [
     ),
   },
   {
+    accessorKey: "totalChunks",
+    header: ({ column }) => (
+      <DTColumnHeader
+        tableKey={TABLE_KEY}
+        column={column}
+        title={getColumnName("totalChunks")}
+      />
+    ),
+    cell: ({ row }) => (
+      <div className="w-auto truncate font-medium">
+        {row.getValue("totalChunks") ?? 0}
+      </div>
+    ),
+  },
+  {
     id: "actions",
     cell: ({ row }) => (
       // Render the configs row actions component

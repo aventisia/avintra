@@ -21,6 +21,11 @@ public interface IKnowledgeBaseFileService
     Task<ServiceResponse<KnowledgeBaseFileDto>> RegisterKnowledgeBaseTextAsync(Guid knowledgeBaseId, KBRegisterTextDto dto);
 
     /// <summary>
+    /// Updates the vectorization status of a registered file after ingestion.
+    /// </summary>
+    Task<ServiceResponse<KnowledgeBaseFileDto>> UpdateFileStatusAsync(Guid knowledgeBaseId, Guid fileId, KBUpdateFileStatusDto dto);
+
+    /// <summary>
     /// Deletes a registered file metadata record from a knowledge base.
     /// </summary>
     Task<ServiceResponse<bool>> DeleteKnowledgeBaseFileAsync(Guid knowledgeBaseId, Guid fileId);

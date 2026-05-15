@@ -84,4 +84,9 @@ public class KnowledgeBaseDto
     /// Gets or sets the date and time when the Knowledge Base record was last modified.
     /// </summary>
     public DateTimeOffset? LastModifiedOn { get; set; }
+
+    /// <summary>
+    /// Gets or sets the total number of chunks across all files in this Knowledge Base.
+    /// </summary>
+    public int TotalChunks { get; set; }
 }

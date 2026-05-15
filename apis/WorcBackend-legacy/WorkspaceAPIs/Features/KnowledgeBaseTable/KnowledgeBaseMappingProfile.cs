@@ -19,6 +19,10 @@ public class KnowledgeBaseMappingProfile : IRegister
             .Map(dest => dest.LastModifiedBy,
                 src => src.LastModifiedByUser != null
                     ? src.LastModifiedByUser.FirstName + " " + src.LastModifiedByUser.LastName
-                    : null);
+                    : null)
+            .Map(dest => dest.TotalChunks,
+                src => src.Files != null
+                    ? src.Files.Sum(f => f.ChunksCount)
+                    : 0);
     }
 }

@@ -45,6 +45,11 @@ public class KnowledgeBaseFile : BaseEntity, IMustHaveTenant
     public long SizeInBytes { get; set; }
 
     /// <summary>
+    /// Gets or sets the number of chunks created from this file during vectorization.
+    /// </summary>
+    public int ChunksCount { get; set; }
+
+    /// <summary>
     /// Gets or sets the current vectorization status of the file.
     /// </summary>
     public VectorizationStatusEnum Status { get; set; } = VectorizationStatusEnum.Pending;
