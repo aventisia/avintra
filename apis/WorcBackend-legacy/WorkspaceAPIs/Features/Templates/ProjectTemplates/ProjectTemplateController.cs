@@ -14,9 +14,9 @@ public class ProjectTemplateController : BaseApiController
 
     // Fetch all project templates
     [HttpGet("list")]
-    public async Task<ActionResult<ServiceResponse<IEnumerable<ProjectTemplateDto>>>> GetAllTemplates()
+    public async Task<ActionResult<ServiceResponse<IEnumerable<ProjectTemplateDto>>>> GetAllTemplates([FromQuery] ProjectTemplateTypesEnum? type = null)
     {
-        return ResultHelper(await _projectTemplateService.GetAllProjectTemplatesAsync());
+        return ResultHelper(await _projectTemplateService.GetAllProjectTemplatesAsync(type));
     }
 
     // Fetch project template by its ID
@@ -93,9 +93,9 @@ public class ProjectTemplateController : BaseApiController
 
     // Search project templates based on the provided search key
     [HttpGet("search/{searchKey}")]
-    public async Task<ActionResult<ServiceResponse<IEnumerable<SearchProjectTemplateDto>>>> SearchTemplates(string searchKey)
+    public async Task<ActionResult<ServiceResponse<IEnumerable<SearchProjectTemplateDto>>>> SearchTemplates(string searchKey, [FromQuery] ProjectTemplateTypesEnum? type = null)
     {
-        return ResultHelper(await _projectTemplateService.SearchProjectTemplatesAsync(searchKey));
+        return ResultHelper(await _projectTemplateService.SearchProjectTemplatesAsync(searchKey, type));
     }
 
     // Retrieves all trending project templates
@@ -124,5 +124,12 @@ public class ProjectTemplateController : BaseApiController
     public async Task<ActionResult<ServiceResponse<List<ProjectAccessStatusDto>>>> ValidateProjectAccess([FromBody] IEnumerable<ProjectAccessStatusDto> projectAccessStatusDtos)
     {
         return ResultHelper(await _projectTemplateService.ValidateProjectAccessAsync(projectAccessStatusDtos));
+    }
+
+    // Retrieves a list of project templates for select-option dropdowns,optionally filtered by template type.
+    [HttpGet("select-option")]
+    public async Task<ActionResult<ServiceResponse<IEnumerable<SelectOptionDto>>>> GetProjectTemplatesForSelectOptions([FromQuery] ProjectTemplateTypesEnum? type = null)
+    {
+        return ResultHelper(await _projectTemplateService.GetProjectTemplatesForSelectOptionsAsync(type));
     }
 }
