@@ -1,6 +1,6 @@
-import { IHttpResponse } from "@aventisia/ui/dtos";
-
 import { axiosInstance } from "@/react-toolkit/lib/axios-instance";
+
+import { IHttpResponse } from "@aventisia/ui/dtos";
 
 import { QueueUserDto } from "../dtos/queue-users-dto";
 import { WorkspaceUserDto } from "../dtos/workspace-user-dto";
@@ -11,11 +11,12 @@ const workspaceUserApiUrl: string = `${import.meta.env.VITE_WORC_API_PATH}/user`
 /**
  * Retrieves all Workspace users.
  */
-const getSearchUser = (value?: string) => {
+
+const getSearchUser = (value?: string, includeCurrentUser: boolean = true) => {
   return axiosInstance
     .get<
       IHttpResponse<WorkspaceUserDto[]>
-    >(`${workspaceUserApiUrl}/search/${value}`)
+    >(`${workspaceUserApiUrl}/search/${value}?includeCurrentUser=${includeCurrentUser}`)
     .then((res) => res.data);
 };
 
