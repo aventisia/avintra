@@ -6,6 +6,7 @@ import { z } from "zod";
 import {
   ingestVectorStoreInput,
   registerKnowledgeBaseFile,
+  updateKnowledgeBaseFileStatus,
 } from "../../../apis/knowledge-base-file-apis";
 import { DETAIL_DATA_QUERY_KEY } from "../../../constants";
 import { kbAddFilesSchema } from "../../../constants/kb-add-files-zod-schema";
@@ -154,7 +155,7 @@ export const useFileUploadQueue = ({
             stageMessage: "Chunking in progress...",
           });
 
-          await ingestVectorStoreInput({
+          const ingestResult = await ingestVectorStoreInput({
             vector_store: knowledgeBase.vectorStore,
             embedding_provider: knowledgeBase.embeddingProvider,
             embedding_model: knowledgeBase.embeddingModel,
@@ -173,6 +174,19 @@ export const useFileUploadQueue = ({
             action: "KnowledgeBaseFileIngest",
           });
 
+          // Stage 3: Update file status with chunks count
+          const chunksCreated =
+            (ingestResult as { chunks_created?: number })?.chunks_created ?? 0;
+
+          await updateKnowledgeBaseFileStatus(
+            knowledgeBaseId,
+            registeredFileId,
+            {
+              status: "Completed",
+              chunksCount: chunksCreated,
+            },
+          );
+
           updateFileStatus(fileItem.id, {
             status: "completed",
             stageMessage: "Upload complete",
@@ -180,8 +194,29 @@ export const useFileUploadQueue = ({
           successCount++;
         } catch (error) {
           failureCount++;
-          const errorMessage =
-            error instanceof Error ? error.message : "Upload failed";
+          console.error("Error processing file:", fileItem.file.name, error);
+          const errorMessage = getErrorMessage(error);
+
+          // If registration succeeded but chunking failed, mark the file as failed
+          if (registeredFileId) {
+            try {
+              await updateKnowledgeBaseFileStatus(
+                knowledgeBaseId,
+                registeredFileId,
+                {
+                  status: "Failed",
+                  chunksCount: 0,
+                  errorMessage,
+                },
+              );
+            } catch (statusUpdateError) {
+              console.error(
+                "Failed to update file status:",
+                fileItem.file.name,
+                statusUpdateError,
+              );
+            }
+          }
 
           updateFileStatus(fileItem.id, {
             status: "failed",

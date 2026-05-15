@@ -237,6 +237,59 @@ public class KnowledgeBaseFileService : IKnowledgeBaseFileService
     }
 
     /// <summary>
+    /// Updates the vectorization status of a registered file after ingestion.
+    /// </summary>
+    public async Task<ServiceResponse<KnowledgeBaseFileDto>> UpdateFileStatusAsync(Guid knowledgeBaseId, Guid fileId, KBUpdateFileStatusDto dto)
+    {
+        var serviceResponse = new ServiceResponse<KnowledgeBaseFileDto>
+        {
+            Data = null,
+            StatusCode = 400
+        };
+
+        try
+        {
+            // Get kb file
+            var kbFile = await _unitOfWork.KnowledgeBaseFileRepo
+                .GetByConditionAsync(f => f.Id == fileId && f.KnowledgeBaseId == knowledgeBaseId)
+                .FirstOrDefaultAsync();
+            
+            // Kb is not found or file does not belong to kb
+            if (kbFile == null)
+            {
+                serviceResponse.Message = "Knowledge base file not found";
+                serviceResponse.StatusCode = 404;
+                return serviceResponse;
+            }
+
+            kbFile.Status = dto.Status;
+            kbFile.ChunksCount = dto.ChunksCount;
+            kbFile.VectorizationErrorMessage = dto.ErrorMessage;
+            kbFile.LastModifiedByUserId = _userId;
+            kbFile.LastModifiedOn = DateTimeOffset.UtcNow;
+
+            _unitOfWork.KnowledgeBaseFileRepo.Update(kbFile);
+            await _unitOfWork.SaveAsync();
+
+            var updatedFile = await _unitOfWork.KnowledgeBaseFileRepo
+                .GetByConditionAsync(f => f.Id == kbFile.Id)
+                .Include(f => f.CreatedByUser)
+                .FirstOrDefaultAsync();
+
+            serviceResponse.Data = (updatedFile ?? kbFile).Adapt<KnowledgeBaseFileDto>();
+            serviceResponse.StatusCode = 200;
+            serviceResponse.Message = "File status updated successfully";
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex, "Error updating file status for file {FileId} in knowledge base {KnowledgeBaseId}", fileId, knowledgeBaseId);
+            serviceResponse.Message = "Failed to update file status. Please try again";
+        }
+
+        return serviceResponse;
+    }
+
+    /// <summary>
     /// Deletes a registered file metadata record from a knowledge base.
     /// </summary>
     public async Task<ServiceResponse<bool>> DeleteKnowledgeBaseFileAsync(Guid knowledgeBaseId, Guid fileId)

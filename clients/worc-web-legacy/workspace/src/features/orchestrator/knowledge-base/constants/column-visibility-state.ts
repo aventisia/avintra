@@ -5,4 +5,5 @@ export const columnVisibilityState = {
   description: true,
   createdBy: true,
   createdOn: true,
+  totalChunks: true,
 };

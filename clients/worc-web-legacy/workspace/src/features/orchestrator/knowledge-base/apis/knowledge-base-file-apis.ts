@@ -2,7 +2,7 @@ import { axiosInstance } from "@/react-toolkit/lib/axios-instance";
 
 import { IHttpResponse } from "@aventisia/ui/dtos";
 
-import { KnowledgeBaseFileDto } from "../dtos/kb-file-dto";
+import { KnowledgeBaseFileDto, VectorizationStatus } from "../dtos/kb-file-dto";
 
 // TODO: Move the Dtos to a separate files
 
@@ -75,6 +75,12 @@ interface VectorStoreQueryResponseDto {
   chunks: RetrievedChunkDto[];
 }
 
+interface KBUpdateFileStatusDto {
+  status: VectorizationStatus;
+  chunksCount: number;
+  errorMessage?: string;
+}
+
 export const baseAPIURL: string = `${import.meta.env.VITE_WORC_API_PATH}/knowledge-base`;
 const vectorStoreApiBaseUrl: string = `${import.meta.env.VITE_LLMPIPELINE_API_PATH}/vector-store`;
 
@@ -119,6 +125,18 @@ export const deleteKnowledgeBaseFile = (
     .then((res) => res.data);
 };
 
+export const updateKnowledgeBaseFileStatus = (
+  knowledgeBaseId: string,
+  fileId: string,
+  dto: KBUpdateFileStatusDto,
+) => {
+  return axiosInstance
+    .patch<
+      IHttpResponse<KnowledgeBaseFileDto>
+    >(`${baseAPIURL}/${knowledgeBaseId}/files/${fileId}/status`, dto)
+    .then((res) => res.data);
+};
+
 export const ingestVectorStoreInput = (dto: VectorStoreIngestRequestDto) => {
   return axiosInstance
     .post(`${vectorStoreApiBaseUrl}/ingest`, dto, { timeout: 5 * 60 * 1000 })
@@ -158,6 +176,7 @@ export const deleteVectorStoreDocument = (dto: VectorStoreDeleteRequestDto) => {
 export type {
   KBRegisterFileDto,
   KBRegisterTextDto,
+  KBUpdateFileStatusDto,
   RetrievedChunkDto,
   VectorStoreDeleteRequestDto,
   VectorStoreIngestRequestDto,

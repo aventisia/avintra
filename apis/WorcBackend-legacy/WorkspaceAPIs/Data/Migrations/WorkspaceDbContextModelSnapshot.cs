@@ -743,6 +743,9 @@ namespace WorkspaceAPIs.Data.Migrations
 
                     b.HasIndex("LastModifiedByUserId");
 
+                    b.HasIndex("TenantId", "Name")
+                        .IsUnique();
+
                     b.ToTable("worc_KBs");
                 });
 
@@ -751,6 +754,9 @@ namespace WorkspaceAPIs.Data.Migrations
                     b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("uuid");
+
+                    b.Property<int>("ChunksCount")
+                        .HasColumnType("integer");
 
                     b.Property<string>("ContentType")
                         .HasMaxLength(100)
@@ -806,9 +812,10 @@ namespace WorkspaceAPIs.Data.Migrations
 
                     b.HasIndex("CreatedByUserId");
 
-                    b.HasIndex("KnowledgeBaseId");
-
                     b.HasIndex("LastModifiedByUserId");
+
+                    b.HasIndex("KnowledgeBaseId", "FileName")
+                        .IsUnique();
 
                     b.ToTable("worc_KBFiles");
                 });

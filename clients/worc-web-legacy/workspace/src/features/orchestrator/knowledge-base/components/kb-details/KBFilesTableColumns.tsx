@@ -1,11 +1,25 @@
+import { Badge } from "@aventisia/ui/badge";
 import { DTColumnHeader } from "@aventisia/ui/data-table";
 import { dateFormatter } from "@aventisia/ui/utils";
 import { ColumnDef } from "@tanstack/react-table";
 
 import { DETAIL_TABLE_KEY } from "../../constants";
-import { KnowledgeBaseFileDto } from "../../dtos/kb-file-dto";
+import {
+  KnowledgeBaseFileDto,
+  VectorizationStatus,
+} from "../../dtos/kb-file-dto";
 import { KnowledgeBaseTableDto } from "../../dtos/knowledge-base-table-dto";
 import { KBFilesTableRowAction } from "./KBFilesTableRowAction";
+
+const statusVariantMap: Record<
+  VectorizationStatus,
+  "default" | "secondary" | "destructive" | "outline"
+> = {
+  Pending: "outline",
+  Processing: "secondary",
+  Completed: "default",
+  Failed: "destructive",
+};
 
 /**
  * Array of table columns for the KBFilesTable.
@@ -26,8 +40,41 @@ export const getKBFilesTableColumns = (
       />
     ),
     cell: ({ row }) => (
-      <div className="w-auto max-w-80 truncate font-medium">{row.original.fileName}</div>
+      <div title={row.original.fileName} className="w-auto max-w-52 truncate font-medium">
+        {row.original.fileName}
+      </div>
     ),
+  },
+  {
+    accessorKey: "chunksCount",
+    header: ({ column }) => (
+      <DTColumnHeader
+        tableKey={DETAIL_TABLE_KEY}
+        column={column}
+        title={"Chunks"}
+        className="max-w-16"
+      />
+    ),
+    cell: ({ row }) => (
+      <div className="w-16 font-medium">{row.original.chunksCount || "—"}</div>
+    ),
+  },
+  {
+    accessorKey: "status",
+    header: ({ column }) => (
+      <DTColumnHeader
+        tableKey={DETAIL_TABLE_KEY}
+        column={column}
+        title={"Status"}
+        className="max-w-20"
+      />
+    ),
+    cell: ({ row }) => {
+      const status = row.original.status;
+      return (
+        <Badge variant={statusVariantMap[status] ?? "outline"}>{status}</Badge>
+      );
+    },
   },
   {
     accessorKey: "createdBy",
@@ -41,7 +88,7 @@ export const getKBFilesTableColumns = (
       />
     ),
     cell: ({ row }) => (
-      <div className="w-36 truncate font-medium">
+      <div title={row.getValue("createdBy")} className="w-28 truncate font-medium">
         {row.getValue("createdBy")}
       </div>
     ),
@@ -58,7 +105,7 @@ export const getKBFilesTableColumns = (
       />
     ),
     cell: ({ row }) => (
-      <div className="w-20 font-medium">
+      <div className="w-24 font-medium">
         {row.original.createdOn ? dateFormatter(row.original.createdOn) : "NA"}
       </div>
     ),
