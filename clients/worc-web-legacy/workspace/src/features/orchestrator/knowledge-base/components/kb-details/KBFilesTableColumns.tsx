@@ -9,6 +9,7 @@ import {
   VectorizationStatus,
 } from "../../dtos/kb-file-dto";
 import { KnowledgeBaseTableDto } from "../../dtos/knowledge-base-table-dto";
+import { FileNameCell } from "./FileNameCell";
 import { KBFilesTableRowAction } from "./KBFilesTableRowAction";
 
 const statusVariantMap: Record<
@@ -35,15 +36,11 @@ export const getKBFilesTableColumns = (
       <DTColumnHeader
         tableKey={DETAIL_TABLE_KEY}
         column={column}
-        title={"File Name"}
+        title={"File/Document Name"}
         enableHiding={false}
       />
     ),
-    cell: ({ row }) => (
-      <div title={row.original.fileName} className="w-auto max-w-52 truncate font-medium">
-        {row.original.fileName}
-      </div>
-    ),
+    cell: ({ row }) => <FileNameCell fileName={row.original.fileName} />,
   },
   {
     accessorKey: "chunksCount",
@@ -88,7 +85,10 @@ export const getKBFilesTableColumns = (
       />
     ),
     cell: ({ row }) => (
-      <div title={row.getValue("createdBy")} className="w-28 truncate font-medium">
+      <div
+        title={row.getValue("createdBy")}
+        className="w-28 truncate font-medium"
+      >
         {row.getValue("createdBy")}
       </div>
     ),
