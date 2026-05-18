@@ -483,6 +483,8 @@ $RECYCLE.BIN/
 # Vim temporary swap files
 *.swp
 
+*.csproj.lscache
+
 # Custom ignore rules
 [Pp]ublished/
 .env.local
