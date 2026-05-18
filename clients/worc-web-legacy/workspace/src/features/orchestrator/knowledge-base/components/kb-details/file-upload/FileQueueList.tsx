@@ -71,7 +71,7 @@ const FileQueueRow = ({
           {getStatusIcon(fileItem.status)}
         </div>
 
-        {/* File name & status */}
+        {/* File/Document name & status */}
         <div className="flex flex-col flex-1">
           <p className="text-xs font-medium truncate max-w-[80%]">
             {fileItem.file.name}

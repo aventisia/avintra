@@ -2,7 +2,7 @@ import { KeyValueLookupType } from "@aventisia/ui/types";
 
 /** Array of column names and their corresponding display names. */
 export const columnDisplayNames: KeyValueLookupType[] = [
-  { key: "fileName", value: "File Name" },
+  { key: "fileName", value: "File/Document Name" },
   { key: "chunksCount", value: "Chunks" },
   { key: "status", value: "Status" },
   { key: "createdBy", value: "Created By" },
