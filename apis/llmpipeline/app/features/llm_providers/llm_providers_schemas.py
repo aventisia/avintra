@@ -1,6 +1,6 @@
 # Schemas for LLM Providers feature
 from pydantic import BaseModel, Field
-from typing import Optional, Literal, TypeAlias, Any
+from typing import Dict, Optional, Literal, TypeAlias, Any
 from datetime import datetime, timezone
 from typing import Union, List
 
@@ -12,34 +12,14 @@ class LLMMessage(BaseModel):
     role: Literal['system', 'developer', 'user', 'assistant', 'model']
     content: str
 
-class LLMEncodedFile(BaseModel):
-    mime_type: Literal[
-        'application/pdf',
-        'image/png',
-        'image/jpeg',
-        'image/gif',
-        'image/bmp',
-        'image/tiff',
-        'video/mp4',
-        'video/webm',
-        'audio/mpeg',
-        'audio/wav',
-        'audio/ogg',
-        'application/msword',
-        'application/vnd.openxmlformats-officedocument.wordprocessingml.document',
-        'application/vnd.ms-excel',
-        'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
-        'application/vnd.ms-powerpoint',
-        'application/vnd.openxmlformats-officedocument.presentationml.presentation',
-        'application/zip',
-        'application/x-rar-compressed',
-        'application/csv',
-        'text/csv',
-        'text/plain',
-        'application/json',
-        'application/xml',
-    ]
-    encoded_content: str
+class ToolPermission(BaseModel):
+    capability: str    # Allowed action (e.g. "send_email")
+    approval: Literal["auto", "human"]    # Execution mode
+
+class ToolConfig(BaseModel):
+    platform: str    # Tool/service name (e.g. "gmail")
+    credential_id: str    # Credential reference ID
+    permissions: List[ToolPermission]   # Allowed capabilities
 
 # Request schema to generate LLM response
 class LLMRequest(BaseModel):
@@ -47,6 +27,7 @@ class LLMRequest(BaseModel):
     model: str
     input: Union[str, List[LLMMessage]]  # Accepts string or list of messages
     files: Optional[List[str]] = None  
+    tools: Optional[List[ToolConfig]] = None # Optional list of tool/service configurations
     is_json_output: Optional[bool] = False # Try to extract JSON from response and sends no streaming response in one go even if streaming is true
     json_schema: Optional[Union[str, dict]] = None  # Can be JSON string or dict object
     max_output_tokens: Optional[int] = Field(default=None, ge=0) # None or 0 means no limit
@@ -117,3 +98,20 @@ class EmbeddingResponse(BaseModel):
     input_tokens: Optional[int] = 0  # Number of tokens processed
     status: Literal['completed', 'failed'] = 'completed'  # Execution status
     error: Optional[str] = None  # Error message if failed
+
+
+class ToolParameter(BaseModel):
+    type: str
+    description: Optional[str] = None
+    enum: Optional[List[str]] = None
+
+
+class ToolDefinition(BaseModel):
+    name: str
+    description: str
+    parameters: Dict[str, Any]
+
+
+class ProviderTool(BaseModel):
+    type: Literal["function"] = "function"
+    function: ToolDefinition

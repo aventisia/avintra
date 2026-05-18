@@ -1,6 +1,9 @@
 # OpenAI LLM Provider implementation. Watch YT video for details on OpenAI new Responses APIs: https://www.youtube.com/watch?v=0pGxoubWI6s
 import json
 import time
+from app.features.llm_providers.services.tool_execution_service import ToolExecutionService
+from app.features.llm_providers.services.tool_schema_generator_service import ToolSchemaGeneratorService
+from app.features.llm_providers.services.tool_call_extractor import ToolCallExtractor
 from app.features.auth.authenticated_user import User
 import httpx
 from datetime import datetime, timezone
@@ -55,7 +58,7 @@ class OpenAIProvider(BaseLLMProvider):
         start_time = time.perf_counter()
         
         # Get request payload and headers
-        request_payload, request_headers = self._create_request_payload_and_headers(llm_request)
+        request_payload, request_headers = self._create_request_payload_and_headers(llm_request, user)
         
         # Set a long timeout for potentially lengthy responses
         timeout = httpx.Timeout(600.0) # 10 minutes
@@ -72,13 +75,69 @@ class OpenAIProvider(BaseLLMProvider):
                 # Handle response
                 response.raise_for_status()
                 response_data = response.json()
+
+                raw_output = None
+
+                tool_calls = (
+                    ToolCallExtractor.extract_openai_tool_calls(
+                        response_data
+                    )
+                )
+
+                if tool_calls:
+
+                    tool_outputs = (
+                        await ToolExecutionService.execute_tool_calls(
+                            tool_calls,
+                            llm_request,
+                            user
+                        )
+                    )
+                    
+                    # # Build tool response text
+                    # raw_msg = "\n".join(
+                    #     f"Tool {o.get('call_id')} returned: {json.loads(o.get('output', '{}'))}"
+                    #     for o in tool_outputs
+                    # )
+
+                    # tool_response = {
+                    #     "role": "assistant",
+                    #     "content": [{"type": "output_text", "text": raw_msg}]
+                    # }
+
+                    # # Merge original input with tool response
+                    # # If original input is a list of messages
+                    # original_input = request_payload.get("input", [])
+                    # if isinstance(original_input, list):
+                    #     merged_input = original_input + [tool_response]
+                    # else:
+                    #     # fallback if input is a single dict
+                    #     merged_input = [original_input, tool_response]
+
+                    # # Prepare continuation payload
+                    # continuation_payload = {
+                    #     "model": llm_request.model,
+                    #     "input": merged_input,
+                    #     "stream": False
+                    # }
+
+                    # response_data = await self._post_response(
+                    #     client,
+                    #     continuation_payload,
+                    #     request_headers
+                    # )
+                                    
+                    # Store raw tool outputs directly
+                    raw_output = tool_outputs
+
+                else:
+                    # Extract output text using robust helper method
+                    raw_output = self._extract_output_text_from_response(
+                        response_data
+                    )
                 
                 # Log response data for debugging (pretty-printed for readability)
                 logger.info(f"OpenAI response data:\n{json.dumps(response_data, indent=2)}")
-                
-                # Extract output text using robust helper method
-                raw_output = self._extract_output_text_from_response(response_data)
-                
                 # Handle is_json_output if requested
                 output = extract_json_from_llm_response(raw_output) if llm_request.is_json_output else raw_output
                 
@@ -195,8 +254,25 @@ class OpenAIProvider(BaseLLMProvider):
             log_exception(logger, e, "OpenAI provider stream error")
             yield f"Failed to generate response: {e}"
             
+    # async def _post_response(
+    #         self,
+    #         client: httpx.AsyncClient,
+    #         payload: dict,
+    #         headers: dict,
+    #     ) -> dict:
+
+    #         response = await client.post(
+    #             f"{self.api_url}/responses",
+    #             json=payload,
+    #             headers=headers,
+    #         )
+
+    #         response.raise_for_status()
+
+    #         return response.json()
+    
     # Helper: Create request payload and headers
-    def _create_request_payload_and_headers(self, llm_request: LLMRequest) -> tuple:
+    def _create_request_payload_and_headers(self, llm_request: LLMRequest, user: User=None) -> tuple:
         
         # Convert LLMMessage objects to dicts if input is a list
         if isinstance(llm_request.input, str):
@@ -205,7 +281,21 @@ class OpenAIProvider(BaseLLMProvider):
             input_serialized = [msg.model_dump() if hasattr(msg, 'model_dump') else msg for msg in llm_request.input]
         else:
             raise ValueError("Invalid input format. Must be string or list of messages.")
-        
+
+        if llm_request.tools:
+
+            has_system_prompt = any(
+                msg.get("role") == "assistant"
+                for msg in input_serialized
+            )
+
+            if not has_system_prompt:
+
+                input_serialized.insert(0, {
+                    "role": "assistant",
+                    "content": "if you don't know the answer, say you don't know. try to get from context if not ask user required arguments if not provided. use tools only when necessary."
+                })
+                
         # Build request payload and headers
         request_payload = {
             "model": llm_request.model,
@@ -215,6 +305,14 @@ class OpenAIProvider(BaseLLMProvider):
             "stream": llm_request.stream,
             "store": False # Disabling openai parameter to store the generated model response for later retrieval via API.
         }
+
+        if llm_request.tools:
+            request_payload["tools"] = (
+                ToolSchemaGeneratorService.generate_tools(
+                    llm_request.tools
+                )              
+            )
+            
         request_headers = {
             "Content-Type": "application/json",
             "Authorization": f"Bearer {self.api_key}"
