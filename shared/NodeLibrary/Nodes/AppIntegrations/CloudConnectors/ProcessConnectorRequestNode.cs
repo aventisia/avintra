@@ -44,7 +44,7 @@ public class ProcessConnectorRequestNode : BaseNode
                 provider,
                 action,
                 credentialId,
-                payload = ParsePayload(payload)
+                payload = ParsePayload(payload) // Parse the payload string into camelCase JSON only if it's a valid JSON, otherwise send as string
             };
 
             var requestJson = JsonSerializer.Serialize(requestObj);
@@ -84,11 +84,28 @@ public class ProcessConnectorRequestNode : BaseNode
 
         try
         {
-            return JsonDocument.Parse(payloadString).RootElement.Clone();
+            var doc = JsonDocument.Parse(payloadString);
+            return ConvertToCamelCase(doc.RootElement);
         }
         catch
         {
             return payloadString; // fallback: send as string if not valid JSON
         }
+    }
+
+    private static object? ConvertToCamelCase(JsonElement element)
+    {
+        return element.ValueKind switch
+        {
+            JsonValueKind.Object => element.EnumerateObject().ToDictionary(
+                p => char.ToLowerInvariant(p.Name[0]) + p.Name[1..],
+                p => ConvertToCamelCase(p.Value)),
+            JsonValueKind.Array => element.EnumerateArray().Select(ConvertToCamelCase).ToList(),
+            JsonValueKind.String => (object?)element.GetString(),
+            JsonValueKind.Number => element.TryGetInt64(out var l) ? l : element.GetDouble(),
+            JsonValueKind.True => true,
+            JsonValueKind.False => false,
+            _ => null
+        };
     }
 }
