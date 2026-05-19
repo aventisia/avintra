@@ -759,7 +759,11 @@ namespace WorkspaceAPIs.Services
 
                 if (existingProjectTemplate != null)
                 {
-                    _logger.LogWarning("Project template with reference ID {RefId} already exists and has been published.", publishProjectTemplateDto.RefId);
+                    _logger.LogWarning(
+                        "Project template with reference ID {RefId} and Type {Type} already exists and has been published.",
+                        publishProjectTemplateDto.RefId,
+                        existingProjectTemplate.Type);
+
                     serviceResponse.Message = "Project template has already been published.";
                     return serviceResponse;
                 }
