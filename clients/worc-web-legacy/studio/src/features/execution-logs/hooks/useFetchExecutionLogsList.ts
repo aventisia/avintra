@@ -19,6 +19,7 @@ export const useFetchExecutionLogsList = () => {
     queryKey: ["AGENT_JOB_EXECUTION", currVersionId],
     queryFn: () => getAgentsExecutionLogs(currVersionId),
     enabled: !!currVersionId,
+    refetchOnMount: "always",
   });
 
   // Show toast on fetch error

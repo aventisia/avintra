@@ -32,7 +32,7 @@ export const ReactFlowViewOnly = () => {
     useShallow((state) => ({ nodes: state.nodes, edges: state.edges })),
   );
 
-  const { isLoading } = useReactFlowViewData();
+  const { isPending, isLoading, isFetching } = useReactFlowViewData();
 
   const { openPanel, closePanel } = usePanelStore(
     useShallow((state) => ({
@@ -58,46 +58,46 @@ export const ReactFlowViewOnly = () => {
       <ExecutionLogPanel />
 
       <div className="relative h-full ml-[21.5rem] w-[calc(100%-21.5rem)]">
-        <ReactFlow
-          fitView
-          minZoom={0.1}
-          maxZoom={2}
-          // Enable panning and zooming for navigation
-          panOnDrag={true}
-          panOnScroll={true}
-          zoomOnScroll={true}
-          zoomOnPinch={true}
-          zoomOnDoubleClick={true}
-          // Disable all editing interactions
-          nodesDraggable={false}
-          nodesConnectable={false}
-          nodesFocusable={false}
-          edgesFocusable={false}
-          elementsSelectable={false}
-          // Disable deletion
-          deleteKeyCode={null}
-          // Provide data
-          nodes={nodes}
-          edges={edges}
-          nodeTypes={customNodeTypeObjMemo}
-          edgeTypes={customEdgesTypeObjMemo}
-          defaultEdgeOptions={defaultEdgeOptions}
-          // Snap to grid for consistent rendering
-          snapToGrid={true}
-          snapGrid={[16, 16]}
-          // No change handlers - read-only
-          onNodesChange={undefined}
-          onEdgesChange={undefined}
-          onConnect={undefined}
-        >
-          {/* Keep navigation controls */}
-          <ViewControls />
-        </ReactFlow>
-
-        {isLoading && (
+        {isPending || isLoading || isFetching ? (
           <div className="bg-background/70 absolute inset-0 flex items-center justify-center backdrop-blur-sm">
             <LoadingSpinner className="h-6 w-6 text-primary" />
           </div>
+        ) : (
+          <ReactFlow
+            fitView
+            minZoom={0.1}
+            maxZoom={2}
+            // Enable panning and zooming for navigation
+            panOnDrag={true}
+            panOnScroll={true}
+            zoomOnScroll={true}
+            zoomOnPinch={true}
+            zoomOnDoubleClick={true}
+            // Disable all editing interactions
+            nodesDraggable={false}
+            nodesConnectable={false}
+            nodesFocusable={false}
+            edgesFocusable={false}
+            elementsSelectable={false}
+            // Disable deletion
+            deleteKeyCode={null}
+            // Provide data
+            nodes={nodes}
+            edges={edges}
+            nodeTypes={customNodeTypeObjMemo}
+            edgeTypes={customEdgesTypeObjMemo}
+            defaultEdgeOptions={defaultEdgeOptions}
+            // Snap to grid for consistent rendering
+            snapToGrid={true}
+            snapGrid={[16, 16]}
+            // No change handlers - read-only
+            onNodesChange={undefined}
+            onEdgesChange={undefined}
+            onConnect={undefined}
+          >
+            {/* Keep navigation controls */}
+            <ViewControls />
+          </ReactFlow>
         )}
       </div>
       <BackgroundViewOnly />

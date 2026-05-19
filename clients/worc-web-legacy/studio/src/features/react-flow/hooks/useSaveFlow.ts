@@ -2,12 +2,14 @@ import { useCurrentFlowStore } from "@/stores/current-flow-store";
 import { useReactFlowExtStore } from "@/stores/react-flow-ext-store";
 import { NodeDataType } from "@/types/node-data-type";
 
+import { IHttpResponse } from "@aventisia/ui/dtos";
 import { toast } from "@aventisia/ui/sonner";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { Node } from "@xyflow/react";
 import { useShallow } from "zustand/react/shallow";
 
 import { updateFlowSilently } from "../apis/react-flow-apis";
+import { LoadFlowDto } from "../dtos/load-flow-dto";
 import { doesFlowContainAnyDesktopOnlyNode } from "../utils/has-desktop-nodes";
 
 export const useSaveFlow = () => {
@@ -49,12 +51,30 @@ export const useSaveFlow = () => {
     mutationFn: updateFlowSilently,
     onSuccess: () => {
       // Capture the exact state that was persisted to the database
-
       setSavedSnapshot({
         nodes,
         edges,
         flowVariablesObject,
       });
+
+      // Update the React Query cache so that returning to the flow editor
+      // after navigating away re-hydrates from the latest saved state
+      // instead of the stale initial fetch.
+      queryClient.setQueryData(
+        ["flow", currentFlow.id, currentFlow.versionId],
+        (old: IHttpResponse<LoadFlowDto> | null | undefined) => {
+          if (!old?.data) return old;
+          return {
+            ...old,
+            data: {
+              ...old.data,
+              reactFlowObject: JSON.stringify({ nodes, edges, viewport }),
+              flowVariablesObject: JSON.stringify(flowVariablesObject ?? []),
+              inputOutputObject: JSON.stringify(inputOutputObject),
+            },
+          };
+        },
+      );
 
       queryClient.invalidateQueries({
         queryKey: ["AGENT_HISTORY", currentFlow.versionId],
