@@ -39,6 +39,11 @@ public class PublishProjectTemplateDto
     public List<Guid>? SpaceIds { get; set; }
 
     /// <summary>
+    /// Gets or sets the JSON schema that defines the template's structure and rules.
+    /// </summary>
+    public string? Schema { get; set; }
+
+    /// <summary>
     /// Gets or sets the identifier of the referenced flow or model version linked to this template.
     /// </summary>
     public Guid RefId { get; set; }

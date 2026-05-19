@@ -773,7 +773,7 @@ namespace WorkspaceAPIs.Services
                 var projectTemplateTags = new List<string>() { publishProjectTemplateDto.Type.ToString() };
                 projectTemplateTags.AddRange(publishProjectTemplateDto.Tags);
 
-                // Map the DTO to the ProjectTemplate entity and set properties from the flow version
+                // Map the DTO to the ProjectTemplate entity and set common properties
                 var newProjectTemplate = publishProjectTemplateDto.Adapt<ProjectTemplate>();
                 newProjectTemplate.TenantId = publishProjectTemplateDto.AccessType != TemplateAccessTypesEnum.Public ? _tenantId : null;
                 newProjectTemplate.Version = 1;
@@ -781,74 +781,101 @@ namespace WorkspaceAPIs.Services
                 newProjectTemplate.CreatedByUserId = _userId;
                 newProjectTemplate.LastModifiedByUserId = _userId;
 
-                if (publishProjectTemplateDto.Type == ProjectTemplateTypesEnum.Block || publishProjectTemplateDto.Type == ProjectTemplateTypesEnum.Agent || publishProjectTemplateDto.Type == ProjectTemplateTypesEnum.ChatAgent)
+                // Use switch statement instead of if-else
+                switch (publishProjectTemplateDto.Type)
                 {
-                    // Fetch the flow version using RefId
-                    var flowVersion = await _unitOfWork.FlowVersionRepo
-                        .GetByConditionAsync(w => w.Id == publishProjectTemplateDto.RefId)
-                        .Include(i => i.Flow)
-                        .SingleOrDefaultAsync();
+                    case ProjectTemplateTypesEnum.Block:
+                    case ProjectTemplateTypesEnum.Agent:
+                    case ProjectTemplateTypesEnum.ChatAgent:
+                        {
+                            // Fetch the flow version using RefId
+                            var flowVersion = await _unitOfWork.FlowVersionRepo
+                                .GetByConditionAsync(w => w.Id == publishProjectTemplateDto.RefId)
+                                .Include(i => i.Flow)
+                                .SingleOrDefaultAsync();
 
-                    // Check if the flow version exists
-                    if (flowVersion == null)
-                    {
-                        _logger.LogInformation("PublishTemplateAsync: No flow version found for RefId: {RefId}.", publishProjectTemplateDto.RefId);
-                        serviceResponse.Message = "Specified flow version does not exist.";
+                            if (flowVersion == null)
+                            {
+                                _logger.LogInformation("PublishTemplateAsync: No flow version found for RefId: {RefId}.", publishProjectTemplateDto.RefId);
+                                serviceResponse.Message = "Specified flow version does not exist.";
+                                return serviceResponse;
+                            }
+
+                            // Extract distinct icons from the DTO, or initialize empty list
+                            var projectTemplateIcons = publishProjectTemplateDto?.Icons?.Distinct().ToList() ?? new List<string>();
+
+                            newProjectTemplate.RefId = flowVersion.Id;
+                            newProjectTemplate.Icons = IconSorterUtil.SortByPriority(projectTemplateIcons);
+                            newProjectTemplate.Schema = flowVersion.ReactFlowObject;
+                            newProjectTemplate.SchemaVersion = flowVersion.VersionNumber;
+                            newProjectTemplate.AccessPath = $"/agent?f={flowVersion.FlowId}&v={flowVersion.Id}";
+                            break;
+                        }
+
+                    case ProjectTemplateTypesEnum.AIProject:
+                        {
+                            // Get AI model template schema from external API
+                            HttpResponseMessage httpResponse = await RequestExternalAPIUtil.RequestExternalAPI(
+                                CrudTypesEnum.Read,
+                                $"{_environmentConfig.AiStudioApiBaseUrl}/api/ai-model-template/schema/{publishProjectTemplateDto.RefId}",
+                                _jwt
+                            );
+
+                            if (!httpResponse.IsSuccessStatusCode)
+                            {
+                                _logger.LogError("External API call failed. Status Code: {StatusCode}, Reason: {ReasonPhrase}",
+                                    httpResponse.StatusCode,
+                                    httpResponse.ReasonPhrase
+                                );
+                                // Provide a user-friendly error message
+                                serviceResponse.Message = "Failed to clone template.";
+                                return serviceResponse;
+                            }
+
+                            var responseContent = await httpResponse.Content.ReadAsStringAsync();
+                            var externalServiceResponse = JsonConvert.DeserializeObject<ServiceResponse<AIModelTemplateSchemaDto>>(
+                                responseContent,
+                                new JsonSerializerSettings
+                                {
+                                    MissingMemberHandling = MissingMemberHandling.Ignore,
+                                    ContractResolver = new Newtonsoft.Json.Serialization.CamelCasePropertyNamesContractResolver()
+                                }
+                            );
+
+                            if (externalServiceResponse.StatusCode != 200 || externalServiceResponse.Data == null)
+                            {
+                                _logger.LogError("Failed to deserialize the external API response for credits usage creation.");
+                                return serviceResponse;
+                            }
+
+                            var icons = GetServiceItemDetailUtil.GetIconsByDisplayNames(externalServiceResponse.Data.LLMNames);
+                            newProjectTemplate.RefId = externalServiceResponse.Data.VersionId;
+                            newProjectTemplate.Schema = externalServiceResponse.Data.DataObject;
+                            newProjectTemplate.SchemaVersion = externalServiceResponse.Data.VersionNumber;
+                            newProjectTemplate.Icons = IconSorterUtil.SortByPriority(icons);
+                            newProjectTemplate.AccessPath = $"/project?pid={externalServiceResponse.Data.Id}&v={externalServiceResponse.Data.VersionId}&pn=Test&t=setup&ml={externalServiceResponse.Data.Type.ToString().ToLower()}";
+                            break;
+                        }
+
+                    case ProjectTemplateTypesEnum.Prompt:
+                        {
+                            // Safely get distinct icons or initialize an empty list
+                            var icons = (publishProjectTemplateDto.Icons ?? new List<string>()).Distinct().ToList();
+
+                            newProjectTemplate.RefId = publishProjectTemplateDto.RefId;
+                            newProjectTemplate.Schema = publishProjectTemplateDto.Schema;
+                            newProjectTemplate.SchemaVersion = 1;
+                            newProjectTemplate.Icons = IconSorterUtil.SortByPriority(icons);
+
+                            // No specific access path for Prompt templates
+                            newProjectTemplate.AccessPath = string.Empty;
+
+                            break;
+                        }
+                    default:
+                        _logger.LogWarning("PublishTemplateAsync: Unhandled ProjectTemplateType {Type}.", publishProjectTemplateDto.Type);
+                        serviceResponse.Message = "Unsupported project template type.";
                         return serviceResponse;
-                    }
-
-                    // Extract distinct icons from the DTO, or initialize an empty list if none are provided
-                    var projectTemplateIcons = publishProjectTemplateDto?.Icons?.Distinct().ToList() ?? new List<string>();
-
-                    newProjectTemplate.RefId = flowVersion.Id;
-                    newProjectTemplate.Icons = IconSorterUtil.SortByPriority(projectTemplateIcons);
-                    newProjectTemplate.Schema = flowVersion.ReactFlowObject;
-                    newProjectTemplate.SchemaVersion = flowVersion.VersionNumber;
-                    newProjectTemplate.AccessPath = $"/agent?f={flowVersion.FlowId}&v={flowVersion.Id}";
-                }
-                else
-                {
-                    // Get AI model template schema
-                    HttpResponseMessage httpResponse = await RequestExternalAPIUtil.RequestExternalAPI(CrudTypesEnum.Read, $"{_environmentConfig.AiStudioApiBaseUrl}/api/ai-model-template/schema/{publishProjectTemplateDto.RefId}", _jwt);
-
-                    // Read and validate the external API response
-                    if (!httpResponse.IsSuccessStatusCode)
-                    {
-                        _logger.LogError("External API call failed. Status Code: {StatusCode}, Reason: {ReasonPhrase}",
-                            httpResponse.StatusCode,
-                            httpResponse.ReasonPhrase
-                        );
-
-                        // Provide a user-friendly error message
-                        serviceResponse.Message = "Failed to clone template.";
-                        return serviceResponse;
-                    }
-
-                    // Attempt to read and parse the response content
-                    var responseContent = await httpResponse.Content.ReadAsStringAsync();
-
-                    // Deserialize and validate structure of the service response
-                    var externalServiceResponse = JsonConvert.DeserializeObject<ServiceResponse<AIModelTemplateSchemaDto>>(
-                    responseContent,
-                    new JsonSerializerSettings
-                    {
-                        MissingMemberHandling = MissingMemberHandling.Ignore,
-                        ContractResolver = new Newtonsoft.Json.Serialization.CamelCasePropertyNamesContractResolver()
-                    });
-
-
-                    // Ensure response structure and data integrity
-                    if (externalServiceResponse.StatusCode != 200 || externalServiceResponse.Data == null)
-                    {
-                        _logger.LogError("Failed to deserialize the external API response for credits usage creation.");
-                        return serviceResponse;
-                    }
-                    var icons = GetServiceItemDetailUtil.GetIconsByDisplayNames(externalServiceResponse.Data.LLMNames);
-                    newProjectTemplate.RefId = externalServiceResponse.Data.VersionId;
-                    newProjectTemplate.Schema = externalServiceResponse.Data.DataObject;
-                    newProjectTemplate.SchemaVersion = externalServiceResponse.Data.VersionNumber;
-                    newProjectTemplate.Icons = IconSorterUtil.SortByPriority(icons);
-                    newProjectTemplate.AccessPath = $"/project?pid={externalServiceResponse.Data.Id}&v={externalServiceResponse.Data.VersionId}&pn=Test&t=setup&ml={externalServiceResponse.Data.Type.ToString().ToLower()}";
                 }
 
                 // If the access type is 'Space', create a ProjectTemplate for each SpaceId
