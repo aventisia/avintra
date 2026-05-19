@@ -12,6 +12,7 @@ import { Button } from "@aventisia/ui/buttons";
 import { toast } from "@aventisia/ui/sonner";
 import { Tooltip } from "@aventisia/ui/tooltip";
 import { PauseIcon, PlayIcon, StopIcon } from "@heroicons/react/24/solid";
+import { useQueryClient } from "@tanstack/react-query";
 import { invoke } from "@tauri-apps/api/core";
 import { Node } from "@xyflow/react";
 import { Loader2 } from "lucide-react";
@@ -32,6 +33,8 @@ import { useJobDataStore } from "../stores/job-data-store";
 import { extractUniqueConfigKeys } from "../utils/config-key-utils";
 
 const ExecuteFlow = () => {
+  const queryClient = useQueryClient();
+
   // Get user session state and actions
   const { userSession } = useUserSessionStore(
     useShallow((state) => ({
@@ -92,6 +95,9 @@ const ExecuteFlow = () => {
         toast.info(notification.message || "Flow execution was aborted.");
         setExecutionState("stopped");
       }
+
+      // Invalidate execution logs cache so the latest entry appears immediately
+      queryClient.invalidateQueries({ queryKey: ["AGENT_JOB_EXECUTION"] });
     },
     (notification) => {
       // Handle job progress notification (optional)

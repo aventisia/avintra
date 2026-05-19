@@ -46,12 +46,22 @@ export const useReactFlowViewData = () => {
   const { fitView } = useReactFlow();
 
   //Get flow
-  const { data, isLoading } = useQuery({
+  const { data, isPending, isLoading, isFetching } = useQuery({
     queryKey: ["JOB_EXECUTION_DETAIL", jobId],
     queryFn: () => getAgentsExecutionLogsById(jobId ?? ""),
     enabled: !!jobId,
+    refetchOnMount: "always",
     select: (res) => res.data,
   });
+
+  // Clear canvas whenever jobId is absent (list is still loading/auto-selecting)
+  // so stale nodes from a previous session are not shown.
+  useEffect(() => {
+    if (!jobId) {
+      setNodes([]);
+      setEdges([]);
+    }
+  }, [jobId]);
 
   useEffect(() => {
     if (!data) return;
@@ -97,5 +107,5 @@ export const useReactFlowViewData = () => {
     }
   }, [data]);
 
-  return { isLoading };
+  return { isPending, isLoading, isFetching };
 };

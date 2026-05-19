@@ -12,7 +12,7 @@ export default function ExecutionLogContent() {
   /**
    *  Fetch list
    */
-  const { data: logList, isLoading } = useFetchExecutionLogsList();
+  const { data: logList, isFetching, isLoading } = useFetchExecutionLogsList();
 
   const groupedLogs = useMemo(
     () => groupHistoryByDay(logList?.data),
@@ -20,9 +20,11 @@ export default function ExecutionLogContent() {
   );
 
   /**
-   *  If no jobId(j) in query param present, auto select first
+   *  If no jobId(j) in query param present, auto select first.
+   *  Only runs after fetching completes to avoid selecting from stale data.
    */
   useEffect(() => {
+    if (isFetching) return;
     if (!groupedLogs.length) return;
 
     if (jobId) return;
@@ -31,9 +33,9 @@ export default function ExecutionLogContent() {
     if (firstId) {
       setJobId(firstId);
     }
-  }, [groupedLogs, jobId]);
+  }, [groupedLogs, jobId, isFetching]);
 
-  if (isLoading) return <AccordionSkeleton />;
+  if (isLoading || isFetching) return <AccordionSkeleton />;
   return (
     <div className="relative p-2 pr-2.5">
       {/* Continuous Timeline - spans entire height from first to last accordion */}
