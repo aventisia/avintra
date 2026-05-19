@@ -1,18 +1,17 @@
-import { useEffect, useState } from "react";
-import { TextareaField } from "@aventisia/ui/form";
-import { useController, useFormContext } from "react-hook-form";
-import { useShowAlertHandler } from "@aventisia/ui/hooks";
-import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuGroup,
-  DropdownMenuItem,
-  DropdownMenuTrigger,
-} from "@aventisia/ui/dropdown-menu";
-import { Button } from "@aventisia/ui/buttons";
+import { PromptSelect } from "@/features/dynamic-config-panel/components/fields-for-form/prompt-field/prompt-seletor";
+import { SaveAsTemplateDialog } from "@/features/save-prompt-template /components/SaveAsTemplateDialog";
+import { useFetchTemplateList } from "@/features/save-prompt-template /hooks/useFetchTemplateList";
+import { useSavePromptTemplateStore } from "@/features/save-prompt-template /stores/save-prompt-template-store";
+import { PromptTemplateSchema } from "@/features/save-prompt-template /types/prompt-template-schema-type";
 
-import { promptTemplatesList } from "./prompt-templates-list";
-import { useFetchPromptTemplate } from "./useFetchPromptTemplate";
+import { Button } from "@aventisia/ui/buttons";
+import { TextareaField } from "@aventisia/ui/form";
+import { useShowAlertHandler } from "@aventisia/ui/hooks";
+import { Tooltip } from "@aventisia/ui/tooltip";
+import { BookCopyIcon } from "lucide-react";
+import { useMemo, useState } from "react";
+import { useController, useFormContext } from "react-hook-form";
+import { useShallow } from "zustand/react/shallow";
 
 interface PromptConfigFieldProps {
   name: string;
@@ -25,79 +24,174 @@ const PromptConfigField = ({
   rows,
   disabled,
 }: PromptConfigFieldProps) => {
-  const { control, setValue } = useFormContext();
-  const { field: promptField } = useController({ name, control });
+  const { control, setValue, getValues } = useFormContext();
+
+  const { field: promptField } = useController({
+    name,
+    control,
+  });
+
   const { showCustomAlertDialog } = useShowAlertHandler();
 
   const [selectedTemplate, setSelectedTemplate] = useState<string>();
 
-  const { data: templateContent } = useFetchPromptTemplate(selectedTemplate);
+  const { data: templatesData } = useFetchTemplateList();
 
-  useEffect(() => {
-    if (!templateContent) return;
+  const templateOptions = useMemo(() => {
+    return (
+      templatesData?.data?.map((template) => {
+        let promptDescription = "";
 
-    const applyTemplate = () => {
-      promptField.onChange(templateContent);
-      setValue("json_schema", "");
+        try {
+          const parsedSchema = JSON.parse(
+            template.schema ?? "{}",
+          ) as PromptTemplateSchema;
+
+          promptDescription = parsedSchema.prompt ?? "";
+        } catch {
+          promptDescription = "";
+        }
+
+        return {
+          label: template.name,
+          value: template.id ?? "",
+          description: promptDescription,
+        };
+      }) ?? []
+    );
+  }, [templatesData]);
+
+  const applyTemplate = (schema: PromptTemplateSchema) => {
+    const formValues = getValues();
+
+    const promptKey = Object.keys(formValues).find((key) =>
+      key.startsWith("__Prompt__"),
+    );
+
+    const modelConfigKey = Object.keys(formValues).find((key) =>
+      key.startsWith("__ModelConfig__"),
+    );
+
+    const toolsConfigKey = Object.keys(formValues).find((key) =>
+      key.startsWith("__ToolsConfig__"),
+    );
+
+    if (promptKey && schema.prompt !== undefined) {
+      setValue(promptKey, schema.prompt, {
+        shouldDirty: true,
+      });
+    }
+
+    if (modelConfigKey && schema.modelConfig) {
+      setValue(
+        modelConfigKey,
+        {
+          ...formValues[modelConfigKey],
+          ...schema.modelConfig,
+        },
+        {
+          shouldDirty: true,
+        },
+      );
+    }
+
+    if (toolsConfigKey) {
+      setValue(toolsConfigKey, schema.toolsConfig ?? "", {
+        shouldDirty: true,
+      });
+    }
+
+    setValue("json_schema", "");
+  };
+
+  const handleOptionChange = (templateId: string) => {
+    const selectedTemplateData = templatesData?.data?.find(
+      (template) => template.id === templateId,
+    );
+
+    if (!selectedTemplateData?.schema) return;
+
+    let parsedSchema: PromptTemplateSchema;
+
+    try {
+      parsedSchema = JSON.parse(
+        selectedTemplateData.schema,
+      ) as PromptTemplateSchema;
+    } catch {
+      return;
+    }
+
+    const executeApply = () => {
+      applyTemplate(parsedSchema);
+
+      // update selector only after successful apply
+      setSelectedTemplate(templateId);
     };
 
     if (promptField.value) {
       showCustomAlertDialog({
         title: "Use Prompt Template",
-        description: "This will replace the existing prompt content.",
+        description:
+          "This will replace the existing prompt content and model configurations.",
         confirmBtnText: "Continue",
         isDestructive: false,
-        confirmActionFn: applyTemplate,
+        confirmActionFn: executeApply,
       });
-    } else {
-      applyTemplate();
-    }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [templateContent]);
 
-  const handleOptionChange = (fileKey: string) => {
-    setSelectedTemplate(fileKey);
+      return;
+    }
+
+    executeApply();
   };
+  const { setShowDialog, setFormData, setTemplateId } =
+    useSavePromptTemplateStore(
+      useShallow((state) => ({
+        setShowDialog: state.setShowDialog,
+        setFormData: state.setFormData,
+        setTemplateId: state.setTemplateId,
+      })),
+    );
 
   return (
-    <div className="w-full space-y-3.5">
-      <DropdownMenu>
-        <DropdownMenuTrigger asChild disabled={disabled}>
-          <Button variant="outline" size="sm" className="w-full">
-            Select a prompt template
-          </Button>
-        </DropdownMenuTrigger>
+    <div className="w-full">
+      <div className="flex items-center justify-end gap-2 rounded-lg rounded-b-none border border-b-0 p-2">
+        <PromptSelect
+          options={templateOptions}
+          value={selectedTemplate}
+          disabled={disabled}
+          placeholder="Select a prompt"
+          size="sm"
+          className="max-w-md"
+          onValueChange={handleOptionChange}
+        />
 
-        <DropdownMenuContent
-          className="p-1"
-          align="start"
-          style={{ minWidth: "var(--radix-dropdown-menu-trigger-width)" }}
-        >
-          <DropdownMenuGroup>
-            {promptTemplatesList
-              .filter((item) => item.id == name)
-              .map((item) => (
-                <DropdownMenuItem
-                  key={item.label}
-                  onClick={() => handleOptionChange(item.value)}
-                  className="cursor-pointer flex-col items-start gap-1 border-b last:border-b-0"
-                >
-                  <h2 className="text-sm">{item.label}</h2>
-                  <p className="truncate text-xs text-muted-foreground">
-                    {item.description}
-                  </p>
-                </DropdownMenuItem>
-              ))}
-          </DropdownMenuGroup>
-        </DropdownMenuContent>
-      </DropdownMenu>
+        <Tooltip content="Save Prompt Template">
+          <Button
+            type="button"
+            variant="outline"
+            size="xs"
+            className="min-w-5"
+            onClick={() => {
+              setShowDialog(true);
+              setFormData(getValues());
+              setTemplateId(selectedTemplate || "");
+            }}
+          >
+            <BookCopyIcon className="mr-1 size-3.5" />
+            Save
+          </Button>
+        </Tooltip>
+      </div>
 
       <TextareaField
+        className="rounded-t-none"
         autoFocus
         placeholder="Enter the prompt..."
         name={name}
         rows={rows}
       />
+
+      <SaveAsTemplateDialog />
     </div>
   );
 };
