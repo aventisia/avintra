@@ -754,7 +754,7 @@ namespace WorkspaceAPIs.Services
 
                 // Query for a project template by reference ID, including related user and resources
                 var existingProjectTemplate = await _unitOfWork.ProjectTemplateRepo
-                    .GetByConditionAsync(w => w.RefId == publishProjectTemplateDto.RefId)
+                    .GetByConditionAsync(w => w.RefId == publishProjectTemplateDto.RefId && w.Type != ProjectTemplateTypesEnum.Prompt)
                     .FirstOrDefaultAsync();
 
                 if (existingProjectTemplate != null)
