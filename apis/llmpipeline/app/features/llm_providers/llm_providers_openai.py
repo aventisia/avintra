@@ -282,7 +282,7 @@ class OpenAIProvider(BaseLLMProvider):
         else:
             raise ValueError("Invalid input format. Must be string or list of messages.")
 
-        if llm_request.tools:
+        if llm_request.tool_config:
 
             has_system_prompt = any(
                 msg.get("role") == "assistant"
@@ -306,10 +306,10 @@ class OpenAIProvider(BaseLLMProvider):
             "store": False # Disabling openai parameter to store the generated model response for later retrieval via API.
         }
 
-        if llm_request.tools:
+        if llm_request.tool_config:
             request_payload["tools"] = (
                 ToolSchemaGeneratorService.generate_tools(
-                    llm_request.tools
+                    llm_request.tool_config
                 )              
             )
             

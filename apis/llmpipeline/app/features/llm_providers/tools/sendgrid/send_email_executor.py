@@ -50,18 +50,18 @@ class SendGridSendEmailExecutor:
                     "provided_fields": {k: arguments.get(k) for k in ["to", "subject", "from_email", "from_name"]}
                 }
 
-            # Find SendGrid credentialId dynamically from llm_request.tools
+            # Find SendGrid credentialId dynamically from llm_request.tool_config
             credential_id = None
-            for tool in getattr(llm_request, "tools", []):
+            for tool in getattr(llm_request, "tool_config", []):
                 if tool.get("platform", "").lower() == "sendgrid":
                     credential_id = tool.get("credential_id")
                     break
 
             if not credential_id:
-                logger.error("SendGrid credential not found in LLM tools")
+                logger.error("SendGrid credential not found in LLM tool_config")
                 return {
                     "status": "failed",
-                    "message": "No SendGrid credential found in LLM tools"
+                    "message": "No SendGrid credential found in LLM tool_config"
                 }
 
             # Set the cloud connector endpoint for SendGrid
