@@ -20,24 +20,24 @@ body:json {
     "model": "gpt-4.1-mini",
     "input": "Send email to user@domain.com and from user@domain.com with subject Welcome and body Welcome aboard! We're excited to have you with us and look forward to working together",
     "files": null,
-    "tools": [
+    "tool_config": [
       {
         "platform": "outlook",
         "credential_id": "DUMMY",
-        "permissions": [
+        "tools": [
           {
             "approval": "human", // "auto"
-            "capability": "send_email"
+            "tool": "send_email"
           }
         ]
       },
       {
           "platform": "github",
           "credential_id": "DUMMY",
-          "permissions": [
+          "tools": [
           {
             "approval": "human", // "auto"
-            "capability": "create_issue"
+            "tool": "create_issue"
           }
         ]
       }

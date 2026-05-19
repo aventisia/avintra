@@ -61,10 +61,10 @@ class OutlookSendEmailExecutor:
             arguments.setdefault("sensitivity", "Normal")
             arguments.setdefault("saveToSentItems", False)
 
-            # Find Outlook credentialId dynamically from llm_request.tools
+            # Find Outlook credentialId dynamically from llm_request.tool_config
             credential_id = None
 
-            for tool in getattr(llm_request, "tools", []):
+            for tool in getattr(llm_request, "tool_config", []):
                 platform = getattr(tool, "platform", "")
 
                 if platform.lower() == "outlook":
@@ -72,11 +72,11 @@ class OutlookSendEmailExecutor:
                     break
 
             if not credential_id:
-                logger.error("Outlook credential not found in LLM tools")
+                logger.error("Outlook credential not found in LLM tool_config")
 
                 return {
                     "status": "failed",
-                    "message": "No Outlook credential found in LLM tools"
+                    "message": "No Outlook credential found in LLM tool_config"
                 }
 
             # Set the cloud connector endpoint for M365 Outlook

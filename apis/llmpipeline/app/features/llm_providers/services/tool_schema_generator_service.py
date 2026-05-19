@@ -26,17 +26,17 @@ class ToolSchemaGeneratorService:
 
         for config in tool_configs:
 
-            permissions = (
-                config.permissions
-                if isinstance(config.permissions, list)
-                else [config.permissions]
+            tools = (
+                config.tools
+                if isinstance(config.tools, list)
+                else [config.tools]
             )
 
-            for capability in permissions:
+            for tool in tools:
 
                 tool_schema = cls._load_tool_schema(
                     platform=config.platform,
-                    capability=capability.capability
+                    capability=tool.tool
                 )
 
                 if tool_schema:

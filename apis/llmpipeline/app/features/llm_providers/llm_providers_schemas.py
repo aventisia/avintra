@@ -12,14 +12,14 @@ class LLMMessage(BaseModel):
     role: Literal['system', 'developer', 'user', 'assistant', 'model']
     content: str
 
-class ToolPermission(BaseModel):
-    capability: str    # Allowed action (e.g. "send_email")
+class ToolCapability(BaseModel):
+    tool: str    # Allowed action (e.g. "send_email")
     approval: Literal["auto", "human"]    # Execution mode
 
 class ToolConfig(BaseModel):
     platform: str    # Tool/service name (e.g. "gmail")
     credential_id: str    # Credential reference ID
-    permissions: List[ToolPermission]   # Allowed capabilities
+    tools: List[ToolCapability]   # Allowed capabilities
 
 # Request schema to generate LLM response
 class LLMRequest(BaseModel):
@@ -27,7 +27,7 @@ class LLMRequest(BaseModel):
     model: str
     input: Union[str, List[LLMMessage]]  # Accepts string or list of messages
     files: Optional[List[str]] = None  
-    tools: Optional[List[ToolConfig]] = None # Optional list of tool/service configurations
+    tool_config: Optional[List[ToolConfig]] = None # Optional list of tool/service configurations
     is_json_output: Optional[bool] = False # Try to extract JSON from response and sends no streaming response in one go even if streaming is true
     json_schema: Optional[Union[str, dict]] = None  # Can be JSON string or dict object
     max_output_tokens: Optional[int] = Field(default=None, ge=0) # None or 0 means no limit
