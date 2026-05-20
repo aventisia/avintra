@@ -20,6 +20,7 @@ import { KnowledgeBaseConfigField } from "./fields-for-form/KnowledgeBaseConfigF
 import { MemoryConfigField } from "./fields-for-form/MemoryConfigField";
 import { ModelConfigField } from "./fields-for-form/ModelConfigField";
 import { QueueSelectorField } from "./fields-for-form/QueueSelectorField";
+import { ToolsConfigField } from "./fields-for-form/ToolsConfigField";
 import { VoiceConfigField } from "./fields-for-form/VoiceConfigField";
 import { PromptConfigField } from "./fields-for-form/prompt-field/PromptField";
 import { QueueConditionGroupsField } from "./queue-condition-groups/QueueConditionGroupsField";
@@ -75,6 +76,8 @@ export const RenderField = (field: DCPFieldSchemaType) => {
       return <ConfigPanelModelOutputField {...baseProps} />;
     case "model-config-select":
       return <ModelConfigField name={field.name} />;
+    case "tools-config-select":
+      return <ToolsConfigField name={field.name} />;
     case "voice-config-select":
       return <VoiceConfigField name={field.name} />;
     case "prompt-input":

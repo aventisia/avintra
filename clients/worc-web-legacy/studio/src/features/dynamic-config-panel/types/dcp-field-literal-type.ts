@@ -47,6 +47,7 @@ export type DCPControlType =
   | "credentials-select"
   | "config-panel-model-output"
   | "model-config-select"
+  | "tools-config-select"
   | "voice-config-select"
   | "prompt-input"
   | "knowledge-base-config"

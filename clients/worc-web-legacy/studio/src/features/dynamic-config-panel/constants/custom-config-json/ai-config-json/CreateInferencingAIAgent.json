@@ -70,25 +70,9 @@
     },
     {
       "direction": "Input",
-      "type": "json-editor",
+      "type": "tools-config-select",
       "name": "__ToolsConfig__Inferencing",
-      "label": "Tool Definitions",
-      "description": "Declare callable tools/functions with JSON schema.",
-      "defaultValue": "",
-      "category": "Tools"
-    },
-
-    {
-      "direction": "Input",
-      "type": "select",
-      "name": "toolChoiceStrategy",
-      "label": "Tool Invocation Strategy",
-      "defaultValue": "auto",
-      "selectOptions": [
-        { "label": "Auto", "value": "auto" },
-        { "label": "Required", "value": "required" },
-        { "label": "None", "value": "none" }
-      ],
+      "defaultValue": [],
       "category": "Tools"
     },
     {

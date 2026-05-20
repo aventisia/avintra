@@ -15,10 +15,15 @@ import { FormFieldSizeType, ISelectOption } from "@aventisia/ui/types";
 import { Check, ChevronDown } from "lucide-react";
 import * as React from "react";
 
+// 1. Extend the option interface to accept an optional ReactNode for the icon
+export interface ISearchableSelectOption extends ISelectOption {
+  icon?: string;
+}
+
 interface SearchableSelectProps {
   value?: string;
   onValueChange: (value: string) => void;
-  options: ISelectOption[];
+  options: ISearchableSelectOption[];
   placeholder?: string;
   searchPlaceholder?: string;
   primaryText?: string;
@@ -55,6 +60,8 @@ export const SearchableSelect = ({
 
   const selectedItemRef = React.useRef<HTMLDivElement>(null);
 
+  const basePath = import.meta.env.VITE_AGENTBUILDER_PATH.replace(/\/$/, "");
+
   // Scroll to selected item when popover opens
   React.useEffect(() => {
     if (open) {
@@ -81,10 +88,23 @@ export const SearchableSelect = ({
             className,
           )}
         >
-          <span className="line-clamp-1">
-            {selectedOption?.label ?? placeholder}
+          {/* 2. Render the icon in the trigger if it exists */}
+          <span className="flex items-center gap-2 truncate">
+            {selectedOption?.icon && (
+              <img
+                className="flex h-4 w-4 shrink-0 items-center justify-center"
+                src={
+                  selectedOption.icon.includes("http")
+                    ? selectedOption.icon
+                    : basePath + selectedOption.icon
+                }
+              />
+            )}
+            <span className="line-clamp-1">
+              {selectedOption?.label ?? placeholder}
+            </span>
           </span>
-          <ChevronDown className={cn("ml-2 h-4 w-4 opacity-50")} />
+          <ChevronDown className={cn("ml-2 h-4 w-4 shrink-0 opacity-50")} />
         </Button>
       </PopoverTrigger>
 
@@ -128,10 +148,23 @@ export const SearchableSelect = ({
                     className={cn(value === option.value && "bg-accent")}
                   >
                     <div className="flex w-full items-center justify-between">
-                      {option.label}
+                      {/* 3. Render the icon in the dropdown list if it exists */}
+                      <div className="flex items-center gap-2">
+                        {option.icon && (
+                          <img
+                            className="flex h-4 w-4 shrink-0 items-center justify-center"
+                            src={
+                              option.icon.includes("http")
+                                ? option.icon
+                                : basePath + option.icon
+                            }
+                          />
+                        )}
+                        <span>{option.label}</span>
+                      </div>
                       <Check
                         className={cn(
-                          "h-3.5 w-3.5",
+                          "h-3.5 w-3.5 shrink-0",
                           value === option.value ? "opacity-100" : "opacity-0",
                         )}
                       />
