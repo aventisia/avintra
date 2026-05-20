@@ -124,9 +124,6 @@ const KnowledgeBaseConfigField = ({ name }: KnowledgeBaseConfigFieldProps) => {
           <SliderField
             label="Source Threshold"
             name={field.name}
-            value={[field.value ?? 0.6]}
-            onValueChange={(val) => field.onChange(val[0])}
-            onValueCommit={field.onBlur}
             trackColor="bg-muted"
             min={0}
             max={1.0}

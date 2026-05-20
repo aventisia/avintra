@@ -1,4 +1,7 @@
-import { SearchableSelect } from "@/react-toolkit/ui/searchable-select/SearchableSelect";
+import {
+  ISearchableSelectOption,
+  SearchableSelect,
+} from "@/react-toolkit/ui/searchable-select/SearchableSelect";
 
 import {
   BaseFieldProps,
@@ -8,12 +11,13 @@ import {
   FormLabelExt,
   FormMessage,
 } from "@aventisia/ui/form";
-import { FormFieldSizeType, ISelectOption } from "@aventisia/ui/types";
+import { FormFieldSizeType } from "@aventisia/ui/types";
 import { FieldPath, FieldValues, useFormContext } from "react-hook-form";
 
 interface SearchableSelectFieldProps extends BaseFieldProps {
   name: FieldPath<FieldValues>;
-  selectOptions: ISelectOption[];
+  // Update this prop to accept the extended option type
+  selectOptions: ISearchableSelectOption[];
   placeholder?: string;
   searchPlaceholder?: string;
   primaryText?: string;

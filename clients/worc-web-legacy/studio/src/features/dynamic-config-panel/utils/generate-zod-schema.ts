@@ -167,6 +167,31 @@ function getModelConfigSchema(field: DCPFieldSchemaType): ZodTypeAny {
   });
 }
 
+function getToolsConfigSchema(field: DCPFieldSchemaType): ZodTypeAny {
+  const actionItemSchema = z.object({
+    approval: z.string().default("human"),
+    action: z.string().min(1, "Action name is required"),
+  });
+
+  const toolConfigSchema = z.object({
+    tool: z.string().min(1, "Tool is required"),
+    credential_id: z.string().min(1, "Credential ID is required"),
+    actions: z
+      .array(actionItemSchema)
+      .min(1, "At least one action must be selected"),
+  });
+
+  let schema: ZodTypeAny = z.array(toolConfigSchema);
+
+  if (field?.defaultValue && Array.isArray(field.defaultValue)) {
+    schema = schema.default(field.defaultValue);
+  } else {
+    schema = schema.default([]);
+  }
+
+  return schema;
+}
+
 export function getVoiceConfigSchema(field: DCPFieldSchemaType): ZodTypeAny {
   // 1. Explicitly type variables as ZodTypeAny so they can accept the ZodDefault wrapper later
   let languageSchema: ZodTypeAny = z.string();
@@ -365,6 +390,8 @@ function getZodType(field: DCPFieldSchemaType): ZodTypeAny {
     case "queue-conditional-group":
     case "queue-priority-group":
       return getQueueConditionalGroupSchema(field);
+    case "tools-config-select":
+      return getToolsConfigSchema(field);
     default:
       return applyFieldOptions(z.string(), field); // Fallback to string
   }

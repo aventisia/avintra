@@ -16,6 +16,7 @@ import {
 } from "@aventisia/ui/select";
 import { useEffect, useState } from "react";
 import { FieldPath, FieldValues, useFormContext } from "react-hook-form";
+
 import { getCredSelectOptions } from "../../apis/app-secret-apis.ts";
 import { CredSelectDto } from "../../dtos/cred-select-dto.ts.ts";
 
@@ -58,7 +59,7 @@ const CredentialsSelectField = ({
 
     // Fetch credential_id list. Note: Every credential-field should have name ending with 'Credential'
     getCredSelectOptions(
-      name.includes(".credential_id")
+      name.includes("credential_id")
         ? modelProvider
         : name.replace("__CredentialId__", ""),
     )
