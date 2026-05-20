@@ -57,9 +57,9 @@ public class NodeProcessor : INodeProcessor
             var baseNode = (BaseNode)Activator.CreateInstance(nodeType)!;
 
             // 3. Set base class required properties from context
-            baseNode.AgentId = new InArgument<string>(context.Get<string>("AgentId") ?? string.Empty);
-            baseNode.AgentName = new InArgument<string>(context.Get<string>("AgentName") ?? string.Empty);
-            baseNode.AccessToken = new InArgument<string>(context.Get<string>("AccessToken") ?? string.Empty);
+            baseNode.FlowMetadata = new InArgument<FlowMetadata>(context.Get<FlowMetadata>("_agent") ?? new FlowMetadata());
+            baseNode.JobContext = new InArgument<JobContext>(context.Get<JobContext>("_job") ?? new JobContext());
+            baseNode.CallerContext = new InArgument<CallerContext>(context.Get<CallerContext>("_caller") ?? new CallerContext());
             baseNode.IsSuccess = new OutArgument<bool>();
             baseNode.StatusMessage = new OutArgument<string>();
 
@@ -395,9 +395,9 @@ public class NodeProcessor : INodeProcessor
     }
 
     private static bool IsSystemInput(string key) =>
-        key.Equals("AgentId", StringComparison.OrdinalIgnoreCase) ||
-        key.Equals("AgentName", StringComparison.OrdinalIgnoreCase) ||
-        key.Equals("AccessToken", StringComparison.OrdinalIgnoreCase);
+        key.Equals("FlowMetadata", StringComparison.OrdinalIgnoreCase) ||
+        key.Equals("JobContext", StringComparison.OrdinalIgnoreCase) ||
+        key.Equals("CallerContext", StringComparison.OrdinalIgnoreCase);
 
     private static ConcurrentDictionary<string, Type> BuildNodeTypeCache()
     {

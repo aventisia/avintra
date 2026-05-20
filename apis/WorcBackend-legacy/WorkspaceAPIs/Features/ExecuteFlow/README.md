@@ -5,11 +5,11 @@
 3. User adds loop node which will have a branch that will loop back to the same node here and there in the flow.
 4. User saves the flow and clicks on execute button.
 5. If user does not save the flow and clicks on execute button, then we will show a confirmation dialog to user that there are unsaved changes in the flow, do you want to save the flow before executing? If user clicks on yes, then we will save the flow and execute it, if user clicks on no, then we will execute the flow without saving it or if he cancels the dialog, then we will not execute the flow.
-5. If the flow has only the start node and placeholder nodes, then the give message to user that the flow is empty and cannot be executed.
-6. User will be able to see the execution status of each node in the flow in real time.
-7. While execution is happening, user can hover over the executed node to see the logged input and output data of that node.
-8. If any node fails during execution, user will be able to see the error message and the flow will stop executing further nodes.
-9. If the flow executes successfully, user will see a success message at the end of the flow execution.
+6. If the flow has only the start node and placeholder nodes, then the give message to user that the flow is empty and cannot be executed.
+7. User will be able to see the execution status of each node in the flow in real time.
+8. While execution is happening, user can hover over the executed node to see the logged input and output data of that node.
+9. If any node fails during execution, user will be able to see the error message and the flow will stop executing further nodes.
+10. If the flow executes successfully, user will see a success message at the end of the flow execution.
 
 ### Technical flow
 
@@ -42,11 +42,12 @@
 6. The NodeProcessor will be designed to be extensible, allowing for the addition of new node types and execution logic in the future as needed. This will ensure that the ExecutorLibrary can evolve and adapt to new requirements and use cases over time.
 
 ### Phase 1: Implement execute endpoint only without flow execution
+
 Part 1: Make only the required modificaiton on the frontend to call the execute endpoint when user clicks on execute button. We will pass the flowVersionId and user authentication token in the request without implementing the backend logic of execute endpoint.
 
 Part 2: Implement the execute endpoint in the backend to validate the flow version id, check permissions, fetch flow metadata and create a job in the database. We will also send a notification to frontend that the flow execution has started and provide the jobId for real-time updates. However, we will not implement the actual flow execution logic in this phase, and we will just return a success message to the user after creating the job. This will allow us to test the end-to-end flow execution process without actually executing the nodes in the flow.
 
-> removing the API key from executeFlow feature since this will be validated by the webhook trigger feature and that feature is going to call _executeFlowService.ExecuteFlowAsync for published flow execution
+> removing the API key from executeFlow feature since this will be validated by the webhook trigger feature and that feature is going to call \_executeFlowStep1Service.ExecuteFlowAsync for published flow execution
 
 ### Phase 2: Implement only the FlowProcessor to process the flow without NodeProcessor. In this phase, we will mock the node execution and just focus on the flow processing logic, including handling of conditional nodes and loop nodes.
 

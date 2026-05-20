@@ -1,6 +1,6 @@
 namespace WorkspaceAPIs.Services;
 
-public interface IExecuteFlowService
+public interface IExecuteFlowStep1Service
 {
     /// <summary>
     /// Endpoint to execute the flow version on web. If flow version is unpublished, 

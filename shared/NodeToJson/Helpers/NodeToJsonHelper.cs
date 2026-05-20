@@ -6,9 +6,9 @@ public static class NodeToJsonHelper
     {
         "StatusMessage",
         "IsSuccess",
-        "AccessToken",
-        "AgentId",
-        "AgentName"
+        "FlowMetadata",
+        "JobContext",
+        "CallerContext"
     };
 
     static Dictionary<NodeFieldTypeEnum, string> fieldTypeMapping = new Dictionary<NodeFieldTypeEnum, string>

@@ -5,11 +5,11 @@ namespace WorkspaceAPIs.Controllers;
 [Authorize]
 public class ExecuteFlowController : BaseApiController
 {
-    private readonly IExecuteFlowService _executeFlowService;
+    private readonly IExecuteFlowStep1Service _executeFlowStep1Service;
 
-    public ExecuteFlowController(IExecuteFlowService executeFlowService)
+    public ExecuteFlowController(IExecuteFlowStep1Service executeFlowStep1Service)
     {
-        _executeFlowService = executeFlowService;
+        _executeFlowStep1Service = executeFlowStep1Service;
     }
 
     /// <summary>
@@ -20,7 +20,7 @@ public class ExecuteFlowController : BaseApiController
     public async Task<ActionResult<ServiceResponse<ExecuteFlowResponseDto>>> ExecuteFlowAsync([FromBody] ExecuteFlowRequestDto requestDto)
     {
         // TODO: need to decide on what kind of this trigger type we want to use for non published and published flow execution
-        return ResultHelper(await _executeFlowService.ExecuteFlowAsync(requestDto, TriggerTypesEnum.ManualTrigger));
+        return ResultHelper(await _executeFlowStep1Service.ExecuteFlowAsync(requestDto, TriggerTypesEnum.ManualTrigger));
     }
 
     /// <summary>
@@ -35,6 +35,6 @@ public class ExecuteFlowController : BaseApiController
     [WebhookTriggerAuthorize]
     public async Task<ActionResult<ServiceResponse<ExecuteFlowResponseDto>>> ExecuteFlowFromWebhookAsync([FromBody] ExecuteFlowRequestDto requestDto)
     {
-        return ResultHelper(await _executeFlowService.ExecuteFlowAsync(requestDto, TriggerTypesEnum.WebhookTrigger));
+        return ResultHelper(await _executeFlowStep1Service.ExecuteFlowAsync(requestDto, TriggerTypesEnum.WebhookTrigger));
     }
 }

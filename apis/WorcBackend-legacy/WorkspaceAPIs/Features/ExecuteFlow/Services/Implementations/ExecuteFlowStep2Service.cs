@@ -2,17 +2,18 @@ using ExecutorLibrary.FlowProcessor;
 using ExecutorLibrary.FlowProcessor.Interfaces;
 using ExecutorLibrary.FlowProcessor.Models;
 using ExecutorLibrary.Models;
+using NodeLibrary.Core;
 
 namespace WorkspaceAPIs.Services;
 
-public class FlowExecutionService : IFlowExecutionService
+public class ExecuteFlowStep2Service : IExecuteFlowStep2Service
 {
     private readonly IServiceScopeFactory _scopeFactory;
-    private readonly ILogger<FlowExecutionService> _logger;
+    private readonly ILogger<ExecuteFlowStep2Service> _logger;
 
-    public FlowExecutionService(
+    public ExecuteFlowStep2Service(
         IServiceScopeFactory scopeFactory,
-        ILogger<FlowExecutionService> logger)
+        ILogger<ExecuteFlowStep2Service> logger)
     {
         _scopeFactory = scopeFactory;
         _logger = logger;
@@ -20,14 +21,14 @@ public class FlowExecutionService : IFlowExecutionService
 
     // Note: This method is intentionally not async and does not await the background execution task. 
     // We want the API to return immediately after starting the background execution without waiting for it to complete.
-    public void StartExecution(Guid tenantId, Guid userId, Guid jobId, ReactFlowDataModel flow, string accessToken)
+    public void StartExecution(FlowExecutionArgs flowExecutionArgs)
     {
-        _ = Task.Run(() => ExecuteInBackgroundAsync(jobId, flow, tenantId, userId, accessToken));
+        _ = Task.Run(() => ExecuteInBackgroundAsync(flowExecutionArgs));
     }
 
     // This method runs the flow execution in the background and updates the job status in the database accordingly. 
     // It also handles any unhandled exceptions to ensure that the job status is updated to Failed if something goes wrong during execution.
-    private async Task ExecuteInBackgroundAsync(Guid jobId, ReactFlowDataModel flow, Guid tenantId, Guid userId, string accessToken)
+    private async Task ExecuteInBackgroundAsync(FlowExecutionArgs flowExecutionArgs)
     {
         try
         {
@@ -36,21 +37,21 @@ public class FlowExecutionService : IFlowExecutionService
 
             // Set the current tenant in the scoped services so that we can access tenant-specific data during flow execution
             var currentTenantService = scope.ServiceProvider.GetRequiredService<ICurrentTenantService>();
-            currentTenantService.CurrentTenantId = tenantId;
+            currentTenantService.CurrentTenantId = flowExecutionArgs.TenantId;
 
             // Get the unit of work to access the database
             var unitOfWork = scope.ServiceProvider.GetRequiredService<IUnitOfWork>();
 
             // Get the flow notification service to send real-time updates
-            var flowNotificationService = scope.ServiceProvider.GetRequiredService<IFlowNotificationService>();
+            var executionNotificationService = scope.ServiceProvider.GetRequiredService<IExecutionNotificationService>();
 
             // Get the job from the database
-            var job = await unitOfWork.JobRepo.GetByConditionAsync(w => w.Id == jobId).SingleOrDefaultAsync();
+            var job = await unitOfWork.JobRepo.GetByConditionAsync(w => w.Id == flowExecutionArgs.JobId).SingleOrDefaultAsync();
 
             // Validate: Job not found
             if (job is null)
             {
-                _logger.LogWarning("Background flow execution skipped because job was not found. JobId: {JobId}", jobId);
+                _logger.LogWarning("Background flow execution skipped because job was not found. JobId: {JobId}", flowExecutionArgs.JobId);
                 return;
             }
 
@@ -62,24 +63,36 @@ public class FlowExecutionService : IFlowExecutionService
             // Error: Failed to save the job start status
             if (!await unitOfWork.SaveAsync())
             {
-                _logger.LogWarning("Context SaveChanges failed while updating job status to Running for background flow execution. JobId: {JobId}", jobId);
+                _logger.LogWarning("Context SaveChanges failed while updating job status to Running for background flow execution. JobId: {JobId}", flowExecutionArgs.JobId);
                 return;
             }
 
             // Initialize the FlowProcessor with NodeProcessor and execute the flow
             var initialVariables = new Dictionary<string, object?>
             {
-                ["UserId"] = userId.ToString(),
-                ["TenantId"] = tenantId.ToString(),
-                ["AccessToken"] = accessToken,
-                ["InputArgumentsJson"] = job.InputArgumentsJson
+                ["_agent"] = new FlowMetadata
+                {
+                    Id = flowExecutionArgs.FlowVersionId,
+                    Name = flowExecutionArgs.FlowName
+                },
+                ["_caller"] = new CallerContext
+                {
+                    UserId = flowExecutionArgs.UserId,
+                    TenantId = flowExecutionArgs.TenantId,
+                    AccessToken = flowExecutionArgs.AccessToken ?? string.Empty
+                },
+                ["_job"] = new JobContext
+                {
+                    Id = job.Id,
+                    InputArguments = ParseJobInputArguments(job.InputArgumentsJson)
+                }
             };
 
             // Parse InputArgumentsJson and inject chat-specific variables when triggeredBy == "chat"
             InjectChatVariables(job.InputArgumentsJson, initialVariables);
 
             var flowProcessor = new FlowProcessor(new NodeProcessor());
-            var flowResult = await flowProcessor.ExecuteAsync(flow, initialVariables);
+            var flowResult = await flowProcessor.ExecuteAsync(flowExecutionArgs.FlowData, initialVariables);
 
             // Extract chat-specific output if this is a chat-triggered flow
             var outputDataJson = ExtractOutputDataJson(initialVariables, flowResult);
@@ -94,40 +107,40 @@ public class FlowExecutionService : IFlowExecutionService
             // Error: Failed to save the final job status and results
             if (!await unitOfWork.SaveAsync())
             {
-                _logger.LogWarning("Context SaveChanges failed while persisting final flow execution status for job. JobId: {JobId}", jobId);
+                _logger.LogWarning("Context SaveChanges failed while persisting final flow execution status for job. JobId: {JobId}", flowExecutionArgs.JobId);
             }
             else
             {
                 // Send real-time notification to the user about job completion
-                await flowNotificationService.NotifyExecutionCompletedAsync(userId, jobId, job.Status);
+                await executionNotificationService.NotifyExecutionCompletedAsync(flowExecutionArgs.UserId, flowExecutionArgs.JobId, job.Status);
             }
         }
         catch (Exception ex)
         {
-            _logger.LogError(ex, "Unhandled error while running background flow execution. JobId: {JobId}", jobId);
-            await MarkJobAsFailedAsync(jobId, tenantId, userId, ex.Message);
+            _logger.LogError(ex, "Unhandled error while running background flow execution. JobId: {JobId}", flowExecutionArgs.JobId);
+            await MarkJobAsFailedAsync(flowExecutionArgs.JobId, flowExecutionArgs.TenantId, flowExecutionArgs.UserId, ex.Message);
         }
     }
 
     // Synchronous flow execution: awaits completion and returns the FlowExecutionResult.
     // Used for chat-triggered flows where the caller needs the output inline.
-    public async Task<FlowExecutionResult> StartExecutionAndWaitAsync(Guid tenantId, Guid userId, Guid jobId, ReactFlowDataModel flow, string accessToken)
+    public async Task<FlowExecutionResult> StartExecutionAndWaitAsync(FlowExecutionArgs flowExecutionArgs)
     {
         try
         {
             using var scope = _scopeFactory.CreateScope();
 
             var currentTenantService = scope.ServiceProvider.GetRequiredService<ICurrentTenantService>();
-            currentTenantService.CurrentTenantId = tenantId;
+            currentTenantService.CurrentTenantId = flowExecutionArgs.TenantId;
 
             var unitOfWork = scope.ServiceProvider.GetRequiredService<IUnitOfWork>();
-            var flowNotificationService = scope.ServiceProvider.GetRequiredService<IFlowNotificationService>();
+            var executionNotificationService = scope.ServiceProvider.GetRequiredService<IExecutionNotificationService>();
 
-            var job = await unitOfWork.JobRepo.GetByConditionAsync(w => w.Id == jobId).SingleOrDefaultAsync();
+            var job = await unitOfWork.JobRepo.GetByConditionAsync(w => w.Id == flowExecutionArgs.JobId).SingleOrDefaultAsync();
 
             if (job is null)
             {
-                _logger.LogWarning("Synchronous flow execution skipped because job was not found. JobId: {JobId}", jobId);
+                _logger.LogWarning("Synchronous flow execution skipped because job was not found. JobId: {JobId}", flowExecutionArgs.JobId);
                 return new FlowExecutionResult
                 {
                     IsSuccess = false,
@@ -145,7 +158,7 @@ public class FlowExecutionService : IFlowExecutionService
 
             if (!await unitOfWork.SaveAsync())
             {
-                _logger.LogWarning("Context SaveChanges failed while updating job status to Running for synchronous flow execution. JobId: {JobId}", jobId);
+                _logger.LogWarning("Context SaveChanges failed while updating job status to Running for synchronous flow execution. JobId: {JobId}", flowExecutionArgs.JobId);
                 return new FlowExecutionResult
                 {
                     IsSuccess = false,
@@ -159,17 +172,29 @@ public class FlowExecutionService : IFlowExecutionService
             // Initialize the FlowProcessor with NodeProcessor and execute the flow
             var initialVariables = new Dictionary<string, object?>
             {
-                ["UserId"] = userId.ToString(),
-                ["TenantId"] = tenantId.ToString(),
-                ["AccessToken"] = accessToken,
-                ["InputArgumentsJson"] = job.InputArgumentsJson
+                ["_agent"] = new FlowMetadata
+                {
+                    Id = flowExecutionArgs.FlowVersionId,
+                    Name = flowExecutionArgs.FlowName
+                },
+                ["_caller"] = new CallerContext
+                {
+                    UserId = flowExecutionArgs.UserId,
+                    TenantId = flowExecutionArgs.TenantId,
+                    AccessToken = flowExecutionArgs.AccessToken ?? string.Empty
+                },
+                ["_job"] = new JobContext
+                {
+                    Id = job.Id,
+                    InputArguments = ParseJobInputArguments(job.InputArgumentsJson)
+                }
             };
 
             // Parse InputArgumentsJson and inject chat-specific variables when triggeredBy == "chat"
             InjectChatVariables(job.InputArgumentsJson, initialVariables);
 
             var flowProcessor = new FlowProcessor(new NodeProcessor());
-            var flowResult = await flowProcessor.ExecuteAsync(flow, initialVariables);
+            var flowResult = await flowProcessor.ExecuteAsync(flowExecutionArgs.FlowData, initialVariables);
 
             // Extract chat-specific output if this is a chat-triggered flow
             var outputDataJson = ExtractOutputDataJson(initialVariables, flowResult);
@@ -183,19 +208,19 @@ public class FlowExecutionService : IFlowExecutionService
 
             if (!await unitOfWork.SaveAsync())
             {
-                _logger.LogWarning("Context SaveChanges failed while persisting final flow execution status for job. JobId: {JobId}", jobId);
+                _logger.LogWarning("Context SaveChanges failed while persisting final flow execution status for job. JobId: {JobId}", flowExecutionArgs.JobId);
             }
             else
             {
-                await flowNotificationService.NotifyExecutionCompletedAsync(userId, jobId, job.Status);
+                await executionNotificationService.NotifyExecutionCompletedAsync(flowExecutionArgs.UserId, flowExecutionArgs.JobId, job.Status);
             }
 
             return flowResult;
         }
         catch (Exception ex)
         {
-            _logger.LogError(ex, "Unhandled error while running synchronous flow execution. JobId: {JobId}", jobId);
-            await MarkJobAsFailedAsync(jobId, tenantId, userId, ex.Message);
+            _logger.LogError(ex, "Unhandled error while running synchronous flow execution. JobId: {JobId}", flowExecutionArgs.JobId);
+            await MarkJobAsFailedAsync(flowExecutionArgs.JobId, flowExecutionArgs.TenantId, flowExecutionArgs.UserId, ex.Message);
 
             return new FlowExecutionResult
             {
@@ -316,7 +341,7 @@ public class FlowExecutionService : IFlowExecutionService
             var currentTenantService = scope.ServiceProvider.GetRequiredService<ICurrentTenantService>();
             currentTenantService.CurrentTenantId = tenantId;
             var unitOfWork = scope.ServiceProvider.GetRequiredService<IUnitOfWork>();
-            var flowNotificationService = scope.ServiceProvider.GetRequiredService<IFlowNotificationService>();
+            var executionNotificationService = scope.ServiceProvider.GetRequiredService<IExecutionNotificationService>();
 
             var job = await unitOfWork.JobRepo
                 .GetByConditionAsync(w => w.Id == jobId)
@@ -335,12 +360,39 @@ public class FlowExecutionService : IFlowExecutionService
             if (await unitOfWork.SaveAsync())
             {
                 // Send real-time notification to the user about job failure
-                await flowNotificationService.NotifyExecutionCompletedAsync(userId, jobId, JobStatusTypesEnum.Failed, errorMessage);
+                await executionNotificationService.NotifyExecutionCompletedAsync(userId, jobId, JobStatusTypesEnum.Failed, errorMessage);
             }
         }
         catch (Exception ex)
         {
             _logger.LogError(ex, "Failed to update failure status for background flow execution job. JobId: {JobId}", jobId);
+        }
+    }
+
+    // Helper: Parses InputArgumentsJson and returns it as a System.Text.Json.Nodes.JsonNode for JobContext.InputArguments.
+    // Handles double-encoded JSON (stored via JsonNode.ToJsonString()) the same way InjectChatVariables does.
+    private static System.Text.Json.Nodes.JsonNode? ParseJobInputArguments(string? inputArgumentsJson)
+    {
+        try
+        {
+            if (string.IsNullOrWhiteSpace(inputArgumentsJson))
+                return null;
+
+            var jsonContent = inputArgumentsJson.Trim();
+
+            // Unwrap double-encoded JSON (e.g. stored as a JSON string literal)
+            if (jsonContent.StartsWith("\""))
+            {
+                jsonContent = System.Text.Json.JsonSerializer.Deserialize<string>(jsonContent) ?? string.Empty;
+                if (string.IsNullOrWhiteSpace(jsonContent))
+                    return null;
+            }
+
+            return System.Text.Json.Nodes.JsonNode.Parse(jsonContent);
+        }
+        catch
+        {
+            return null;
         }
     }
 

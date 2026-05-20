@@ -5,29 +5,29 @@ using ExecutorLibrary.Helpers;
 
 namespace WorkspaceAPIs.Services;
 
-public class ExecuteFlowService : IExecuteFlowService
+public class ExecuteFlowStep1Service : IExecuteFlowStep1Service
 {
-    private readonly ILogger<ExecuteFlowService> _logger;
+    private readonly ILogger<ExecuteFlowStep1Service> _logger;
     private readonly IUnitOfWork _unitOfWork;
     private readonly ICurrentTenantService _currentTenantService;
     private readonly INotificationHelperService _notificationHelperService;
-    private readonly IFlowExecutionService _flowExecutionService;
+    private readonly IExecuteFlowStep2Service _executeFlowStep2Service;
     private readonly Guid _userId;
     private readonly string _accessToken;
 
-    public ExecuteFlowService(
-        ILogger<ExecuteFlowService> logger,
+    public ExecuteFlowStep1Service(
+        ILogger<ExecuteFlowStep1Service> logger,
         IUnitOfWork unitOfWork,
         ICurrentTenantService currentTenantService,
         INotificationHelperService notificationHelperService,
-        IFlowExecutionService flowExecutionService,
+        IExecuteFlowStep2Service executeFlowStep2Service,
         IHttpContextAccessor httpContextAccessor)
     {
         _logger = logger;
         _unitOfWork = unitOfWork;
         _currentTenantService = currentTenantService;
         _notificationHelperService = notificationHelperService;
-        _flowExecutionService = flowExecutionService;
+        _executeFlowStep2Service = executeFlowStep2Service;
         _userId = Guid.TryParse(httpContextAccessor.HttpContext?.User?.FindFirstValue("uid"), out var userId)
             ? userId
             : Guid.Empty;
@@ -128,12 +128,23 @@ public class ExecuteFlowService : IExecuteFlowService
                 return serviceResponse;
             }
 
+            // Create FlowExecutionArgs
+            var flowExecutionArgs = new FlowExecutionArgs
+            {
+                TenantId = _currentTenantService.CurrentTenantId,
+                JobId = newJob.Id,
+                FlowVersionId = flowVersion.Id,
+                FlowName = flowVersion.Flow?.Name ?? string.Empty,
+                FlowData = parsedFlow,
+                UserId = _userId,
+                AccessToken = _accessToken,
+            };
+
             // Start flow execution asynchronously or synchronously based on WaitForCompletion flag
             if (requestDto.WaitForCompletion)
             {
                 // Synchronous: await flow completion and return the output inline (used for chat-triggered flows)
-                var flowResult = await _flowExecutionService.StartExecutionAndWaitAsync(
-                    _currentTenantService.CurrentTenantId, _userId, newJob.Id, parsedFlow, _accessToken);
+                var flowResult = await _executeFlowStep2Service.StartExecutionAndWaitAsync(flowExecutionArgs);
 
                 // Re-fetch the job to get the updated OutputDataJson
                 var updatedJob = await _unitOfWork.JobRepo.GetByConditionAsync(w => w.Id == newJob.Id).AsNoTracking().SingleOrDefaultAsync();
@@ -158,7 +169,7 @@ public class ExecuteFlowService : IExecuteFlowService
             else
             {
                 // Asynchronous: start execution in background and return immediately
-                _flowExecutionService.StartExecution(_currentTenantService.CurrentTenantId, _userId, newJob.Id, parsedFlow, _accessToken);
+                _executeFlowStep2Service.StartExecution(flowExecutionArgs);
 
                 // TODO: Create a notificaiton for the user that the flow execution has been started
 

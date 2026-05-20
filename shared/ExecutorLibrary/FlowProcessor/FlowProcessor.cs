@@ -396,7 +396,7 @@ public class FlowProcessor
     // Variables to exclude from output snapshot (sensitive or internal data)
     private static readonly HashSet<string> ExcludedOutputVariables = new(StringComparer.OrdinalIgnoreCase)
     {
-        "UserId", "TenantId", "AccessToken", "InputArgumentsJson"
+        "_agent", "_caller", "_job",
     };
 
     private static FlowExecutionResult CreateCompletedResult(DateTimeOffset startTime, IReadOnlyList<NodeExecutionLog> logs, FlowExecutionContext? context = null)
