@@ -1,7 +1,7 @@
 {
   "name": "InvokeWebService",
-  "label": "Invoke Web Service",
-  "description": "Invokes a web service (REST or SOAP) and returns the response text.",
+  "label": "HTTP Request",
+  "description": "Sends an HTTP request to a RESTful web service and returns the response body, status code, and headers.",
   "version": "1.0.0",
   "auther": "@aventisia",
   "supportedPlatforms": ["cloud", "windows"],
@@ -13,7 +13,7 @@
       "type": "text",
       "name": "EndpointUrl",
       "label": "Endpoint URL",
-      "description": "The URL of the web service endpoint (e.g., https://api.example.com/data).",
+      "description": "The full URL of the web service endpoint. Must include the scheme (e.g., \u0027https://api.example.com/v1/users\u0027).",
       "defaultValue": "",
       "required": true
     },
@@ -22,7 +22,7 @@
       "type": "select",
       "name": "HttpMethod",
       "label": "HTTP Method",
-      "description": "The HTTP method to use: GET, POST, PUT, DELETE, etc.",
+      "description": "The HTTP verb for the request. Defaults to GET.",
       "defaultValue": "GET",
       "required": true,
       "selectOptions": [
@@ -39,7 +39,7 @@
         {
           "label": "PUT",
           "value": "PUT",
-          "description": "Updates a current resource with new data."
+          "description": "Replaces the current resource with the provided data."
         },
         {
           "label": "DELETE",
@@ -58,7 +58,7 @@
       "type": "text",
       "name": "RequestBody",
       "label": "Request Body",
-      "description": "The request body to send in POST, PUT, etc. Leave empty for GET requests.",
+      "description": "The body payload for POST, PUT, or PATCH requests. Ignored for GET and DELETE. Example: \u0027{\u0022name\u0022:\u0022John\u0022,\u0022age\u0022:30}\u0027.",
       "defaultValue": "",
       "required": false
     },
@@ -67,7 +67,7 @@
       "type": "text",
       "name": "ContentType",
       "label": "Content Type",
-      "description": "Specifies the content type for the request body (e.g., application/json, text/xml).",
+      "description": "The MIME type of the request body. Defaults to \u0027application/json\u0027. Common values: \u0027application/json\u0027, \u0027text/xml\u0027, \u0027application/x-www-form-urlencoded\u0027.",
       "defaultValue": "application/json",
       "required": false
     },
@@ -76,7 +76,7 @@
       "type": "text",
       "name": "AcceptHeader",
       "label": "Accept Header",
-      "description": "Specifies the content type expected in the response (e.g., application/json, text/xml).",
+      "description": "The MIME type expected in the response. Defaults to \u0027application/json\u0027. Common values: \u0027application/json\u0027, \u0027text/xml\u0027, \u0027text/plain\u0027.",
       "defaultValue": "application/json",
       "required": false
     },
@@ -85,19 +85,24 @@
       "type": "select",
       "name": "AuthenticationType",
       "label": "Authentication Type",
-      "description": "Type of authentication to use: None, Basic, Bearer, etc.",
-      "defaultValue": "",
+      "description": "The authentication scheme to use. Set to \u0027None\u0027 for unauthenticated requests. Defaults to None.",
+      "defaultValue": "None",
       "required": false,
       "selectOptions": [
         {
+          "label": "None",
+          "value": "None",
+          "description": "No authentication. The request is sent without credentials."
+        },
+        {
           "label": "Basic",
           "value": "Basic",
-          "description": "Uses Basic authentication with username and password."
+          "description": "HTTP Basic authentication using a username and password."
         },
         {
           "label": "Bearer",
           "value": "Bearer",
-          "description": "Uses Bearer token authentication for OAuth 2.0."
+          "description": "OAuth 2.0 Bearer token authentication."
         }
       ]
     },
@@ -106,7 +111,7 @@
       "type": "text",
       "name": "Username",
       "label": "Username",
-      "description": "Username for basic authentication.",
+      "description": "The username for HTTP Basic authentication. Required when Authentication Type is \u0027Basic\u0027.",
       "defaultValue": "",
       "required": false,
       "renderIf": {
@@ -123,7 +128,7 @@
       "type": "password",
       "name": "Password",
       "label": "Password",
-      "description": "Password for basic authentication.",
+      "description": "The password for HTTP Basic authentication. Required when Authentication Type is \u0027Basic\u0027.",
       "defaultValue": "",
       "required": false,
       "renderIf": {
@@ -140,7 +145,7 @@
       "type": "text",
       "name": "BearerToken",
       "label": "Bearer Token",
-      "description": "Bearer token for OAuth authentication.",
+      "description": "The OAuth 2.0 bearer token (without the \u0027Bearer \u0027 prefix). Required when Authentication Type is \u0027Bearer\u0027.",
       "defaultValue": "",
       "required": false,
       "renderIf": {
@@ -156,8 +161,8 @@
       "direction": "Input",
       "type": "text",
       "name": "TimeoutSeconds",
-      "label": "Timeout Seconds",
-      "description": "Maximum time in seconds to wait for the service to respond.",
+      "label": "Timeout (Seconds)",
+      "description": "Maximum time in seconds to wait for the server to respond before aborting. Defaults to 60. Set to 0 for infinite timeout.",
       "defaultValue": 60,
       "required": false
     },
@@ -166,8 +171,8 @@
       "type": "switch",
       "name": "UseDefaultCredentials",
       "label": "Use Default Credentials",
-      "description": "If true, sends credentials of the current user with the request.",
-      "defaultValue": "",
+      "description": "When true, sends the current Windows user\u0027s credentials (NTLM/Kerberos) with the request. Defaults to false.",
+      "defaultValue": false,
       "required": false
     },
     {
@@ -175,16 +180,16 @@
       "type": "switch",
       "name": "IgnoreSslErrors",
       "label": "Ignore SSL Errors",
-      "description": "If true, ignores SSL certificate validation errors.",
-      "defaultValue": "",
+      "description": "When true, bypasses SSL/TLS certificate validation errors (e.g., self-signed certificates). Use only in development environments. Defaults to false.",
+      "defaultValue": false,
       "required": false
     },
     {
       "direction": "Input",
       "type": "text",
       "name": "Headers",
-      "label": "Headers",
-      "description": "Custom HTTP headers to include in the request.",
+      "label": "Custom Headers",
+      "description": "Additional HTTP headers to include in the request as key-value pairs. Example: { \u0022X-Api-Key\u0022: \u0022abc123\u0022, \u0022X-Correlation-Id\u0022: \u0022uuid\u0022 }.",
       "defaultValue": "",
       "required": false
     },
@@ -192,8 +197,8 @@
       "direction": "Output",
       "type": "config-panel-output",
       "name": "Result",
-      "label": "Result",
-      "description": "Returns the raw response from the web service as a string.",
+      "label": "Response Body",
+      "description": "The response from the web service. Returns a JsonNode if the response is valid JSON, otherwise returns the raw string.",
       "defaultValue": {
         "value": "Result",
         "enabled": true
@@ -205,7 +210,7 @@
       "type": "config-panel-output",
       "name": "ResponseCode",
       "label": "Response Code",
-      "description": "Returns the HTTP status code from the web service.",
+      "description": "The HTTP status code returned by the server (e.g., 200 for OK, 404 for Not Found).",
       "defaultValue": {
         "value": "ResponseCode",
         "enabled": true
@@ -217,7 +222,7 @@
       "type": "config-panel-output",
       "name": "ResponseHeaders",
       "label": "Response Headers",
-      "description": "Returns the response headers from the web service.",
+      "description": "All response headers returned by the server as key-value pairs.",
       "defaultValue": {
         "value": "ResponseHeaders",
         "enabled": true

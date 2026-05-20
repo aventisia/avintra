@@ -3857,8 +3857,8 @@
           {
             "type": "activityNode",
             "name": "InvokeWebServiceActivity",
-            "label": "Invoke Web Service",
-            "description": "Invokes a web service (REST or SOAP) and returns the response text.",
+            "label": "HTTP Request",
+            "description": "Sends an HTTP request to a RESTful web service and returns the response body, status code, and headers.",
             "docsLink": "https://docs.aventisia.com",
             "img": "/assets/HTTP.svg",
             "supportedPlatforms": ["cloud", "windows"]
