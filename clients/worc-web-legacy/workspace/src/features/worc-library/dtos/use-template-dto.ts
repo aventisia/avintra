@@ -31,6 +31,8 @@ export interface UseTemplateDTO {
 
   resources?: FileResource[];
 
+  schema?: string;
+
   /** Optional purpose or intent of the template */
   status?: StatusType;
 

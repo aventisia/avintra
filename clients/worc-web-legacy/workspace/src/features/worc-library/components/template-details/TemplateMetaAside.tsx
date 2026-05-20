@@ -9,6 +9,7 @@ import { Calendar, FileBoxIcon } from "lucide-react";
 import { ProjectTemplateTypesEnum } from "../../constants/template-types-enum";
 import { UseTemplateDTO } from "../../dtos/use-template-dto";
 import { useDownloadFile } from "../../hooks/useFileDownload";
+import { PromptTemplateSchema } from "../../types/prompt-template-schema-type";
 import { formatFileSize } from "../../utils";
 import { transformTemplateType } from "../../utils/transform-template-type";
 import { FileTypeIcon } from "./FileTypeIcon";
@@ -17,7 +18,15 @@ export function TemplateMetaAside({ template }: { template: UseTemplateDTO }) {
   const { mutate: downloadFile } = useDownloadFile(
     template.accessType == "Public",
   );
-
+  const parsedPromptSchema: PromptTemplateSchema | null = (() => {
+    try {
+      return template?.schema
+        ? (JSON.parse(template.schema) as PromptTemplateSchema)
+        : null;
+    } catch {
+      return null;
+    }
+  })();
   const basePath = import.meta.env.VITE_WORC_PATH;
 
   return (
@@ -76,6 +85,80 @@ export function TemplateMetaAside({ template }: { template: UseTemplateDTO }) {
           </div>
         </CardContent>
       </Card>
+      {parsedPromptSchema ? (
+        <Card>
+          <CardHeader>
+            <CardTitle>Prompt Configuration</CardTitle>
+          </CardHeader>
+
+          <CardContent className="space-y-3 text-sm">
+            {parsedPromptSchema.modelConfig ? (
+              <>
+                <div className="space-y-3">
+                  <div className="grid grid-cols-3 gap-2">
+                    <span className="text-muted-foreground">Provider</span>
+                    <span className="col-span-2">
+                      {parsedPromptSchema.modelConfig.provider || "-"}
+                    </span>
+                  </div>
+
+                  <div className="grid grid-cols-3 gap-2">
+                    <span className="text-muted-foreground">Model</span>
+                    <span className="col-span-2">
+                      {parsedPromptSchema.modelConfig.model || "-"}
+                    </span>
+                  </div>
+
+                  <div className="grid grid-cols-3 gap-2">
+                    <span className="text-muted-foreground">Temperature</span>
+                    <span className="col-span-2">
+                      {parsedPromptSchema.modelConfig.temperature ?? "-"}
+                    </span>
+                  </div>
+
+                  <div className="grid grid-cols-3 gap-2">
+                    <span className="text-muted-foreground">Top P</span>
+                    <span className="col-span-2">
+                      {parsedPromptSchema.modelConfig.top_p ?? "-"}
+                    </span>
+                  </div>
+
+                  <div className="grid grid-cols-3 gap-2">
+                    <span className="text-muted-foreground">JSON Output</span>
+                    <span className="col-span-2">
+                      {parsedPromptSchema.modelConfig.is_json_output
+                        ? "Enabled"
+                        : "Disabled"}
+                    </span>
+                  </div>
+                </div>
+              </>
+            ) : null}
+
+            {Array.isArray(parsedPromptSchema.toolsConfig) ? (
+              <>
+                <Separator />
+
+                <div className="space-y-2">
+                  <div className="text-muted-foreground">Tools</div>
+
+                  <div className="flex flex-wrap gap-2">
+                    {parsedPromptSchema.toolsConfig.map((tool, idx) => (
+                      <div
+                        key={`${tool.platform}-${idx}`}
+                        className="rounded-md border bg-muted/40 px-2 py-1 text-xs"
+                      >
+                        {tool.platform}
+                        {tool.service ? ` / ${tool.service}` : ""}
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              </>
+            ) : null}
+          </CardContent>
+        </Card>
+      ) : null}
       {(template?.resources ?? []).length !== 0 ? (
         <Card>
           <CardHeader>

@@ -9,4 +9,5 @@ export enum ProjectTemplateTypesEnum {
   ChatAgent = "ChatAgent",
   Block = "Block",
   AIProject = "AIProject",
+  Prompt = "Prompt",
 }
