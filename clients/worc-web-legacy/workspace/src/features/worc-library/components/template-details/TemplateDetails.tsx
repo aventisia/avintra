@@ -1,7 +1,7 @@
 import { LoadingSpinner } from "@aventisia/ui";
 
 import { useFetchTemplateDetails } from "../../hooks/useFetchTemplateDetails";
-
+import { PromptTemplateContent } from "./PromptTemplateContent";
 import { TemplateHeader } from "./TemplateHeader";
 import TemplateMarkdown from "./TemplateMarkdown";
 import { TemplateMetaAside } from "./TemplateMetaAside";
@@ -22,7 +22,11 @@ export function TemplateDetail() {
 
             <div className="grid grid-cols-1 gap-8 lg:grid-cols-12">
               <div className="min-w-0 lg:col-span-8">
-                <TemplateMarkdown content={data?.data?.instruction || ""} />
+                {data.data.type == "Prompt" ? (
+                  <PromptTemplateContent template={data.data} />
+                ) : (
+                  <TemplateMarkdown content={data?.data?.instruction || ""} />
+                )}
               </div>
               <div className="lg:col-span-4">
                 <TemplateMetaAside template={data?.data} />

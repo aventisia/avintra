@@ -1,3 +1,5 @@
+import { useDebounce } from "@/react-toolkit/hooks/useDebounce";
+
 import { Input } from "@aventisia/ui";
 import { Button } from "@aventisia/ui/buttons";
 import { cn } from "@aventisia/ui/lib";
@@ -5,10 +7,8 @@ import { SearchIcon } from "lucide-react";
 import { useState } from "react";
 import { useSearchParams } from "react-router-dom";
 
-import { useDebounce } from "@/react-toolkit/hooks/useDebounce";
-
-import { TemplateDetail } from "./template-details/TemplateDetails";
 import WorcLibraryTemplates from "./WorcLibraryTemplates";
+import { TemplateDetail } from "./template-details/TemplateDetails";
 
 const WorcLibrary = () => {
   const [searchParams] = useSearchParams();
@@ -30,6 +30,7 @@ const WorcLibrary = () => {
     // "Conversation",
     // "Generative",
     "Block",
+    "Prompt",
   ];
 
   if (templateID) return <TemplateDetail />;

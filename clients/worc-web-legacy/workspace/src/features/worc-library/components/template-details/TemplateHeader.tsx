@@ -1,4 +1,5 @@
 import { useUserSessionStore } from "@/react-toolkit/stores/user-session-store";
+
 import { DotSeparator, LoadingSpinner, Separator } from "@aventisia/ui";
 import { Badge } from "@aventisia/ui/badge";
 import { Button } from "@aventisia/ui/buttons";
@@ -6,6 +7,7 @@ import { useDocumentTitle } from "@aventisia/ui/hooks";
 import { dateFormatter } from "@aventisia/ui/utils";
 import { Clock, Download, Tag, User2 } from "lucide-react";
 import { useShallow } from "zustand/react/shallow";
+
 import { UseTemplateDTO } from "../../dtos/use-template-dto";
 import { useCloneTemplateMutation } from "../../hooks/useCloneTemplateMutation";
 import { transformTemplateType } from "../../utils/transform-template-type";
@@ -123,15 +125,19 @@ export function TemplateHeader({ template }: { template: UseTemplateDTO }) {
           {/* Right side: Button */}
 
           <div className="flex items-center gap-3">
-            <Button
-              id="get-started"
-              className="flex items-center gap-2"
-              disabled={template.status !== "Approved" || isPending}
-              onClick={handleUseTemplate}
-            >
-              {isPending && <LoadingSpinner className="h-4 w-4 animate-spin" />}
-              {isPending ? "Cloning..." : "Clone this template"}
-            </Button>
+            {template.type !== "Prompt" && (
+              <Button
+                id="get-started"
+                className="flex items-center gap-2"
+                disabled={template.status !== "Approved" || isPending}
+                onClick={handleUseTemplate}
+              >
+                {isPending && (
+                  <LoadingSpinner className="h-4 w-4 animate-spin" />
+                )}
+                {isPending ? "Cloning..." : "Clone this template"}
+              </Button>
+            )}
             {canDeleteTemplate && <DeleteTemplateButton id={template.id} />}
           </div>
         </div>
