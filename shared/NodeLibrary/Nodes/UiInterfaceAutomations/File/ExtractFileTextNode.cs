@@ -22,7 +22,7 @@ public class ExtractFileTextNode : BaseNode
             if (string.IsNullOrWhiteSpace(filePath))
                 throw new ArgumentException("File path is required.", nameof(FilePath));
 
-            var accessToken = AccessToken.Get(context);
+            var callerContext = CallerContext.Get(context) ?? throw new InvalidOperationException("Caller context is required");
             var formattedFile = FormatFile(filePath);
 
             var requestObj = new
@@ -34,7 +34,7 @@ public class ExtractFileTextNode : BaseNode
             using var client = new HttpClient();
             client.DefaultRequestHeaders.Accept.Clear();
             client.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
-            client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", accessToken);
+            client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", callerContext.AccessToken);
 
             var content = new StringContent(json, Encoding.UTF8, "application/json");
             var response = client.PostAsync(apiUrl, content).GetAwaiter().GetResult();

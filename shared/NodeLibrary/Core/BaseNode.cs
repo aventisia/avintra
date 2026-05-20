@@ -7,9 +7,9 @@ namespace NodeLibrary.Core;
 public abstract class BaseNode
 {
     // Common properties for all nodes
-    public required InArgument<string> AgentId { get; set; }
-    public required InArgument<string> AgentName { get; set; }
-    public required InArgument<string> AccessToken { get; set; }
+    public required InArgument<FlowMetadata> FlowMetadata { get; set; }
+    public required InArgument<JobContext> JobContext { get; set; }
+    public required InArgument<CallerContext> CallerContext { get; set; }
     public required OutArgument<bool> IsSuccess { get; set; }
     public required OutArgument<string> StatusMessage { get; set; }
 

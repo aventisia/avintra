@@ -39,9 +39,8 @@ public class ProcessLLMRequestNode : BaseNode
             var prompt = Prompt.Get(context);
             var filesList = Files.Get(context);
             var kbConfig = KbConfig.Get(context);
-            var accessToken = AccessToken.Get(context);
-            var agentId = AgentId.Get(context);
-            var agentName = AgentName.Get(context);
+            var flowMetadata = FlowMetadata.Get(context) ?? throw new InvalidOperationException("Agent metadata is required");
+            var callerContext = CallerContext.Get(context) ?? throw new InvalidOperationException("Caller context is required");
             var threadMessages = ThreadMessages.Get(context);
             var userInput = UserInput.Get(context);
 
@@ -74,10 +73,10 @@ public class ProcessLLMRequestNode : BaseNode
                 top_p = GetDoubleProperty(modelConfig, "top_p") ?? 1.0,
                 stream = false,
                 ref_type = "Agent",
-                ref_id = agentId,
-                ref_name = agentName,
+                ref_id = flowMetadata.Id,
+                ref_name = flowMetadata.Name,
                 action = "AgentExecution",
-                agent_name = agentName,
+                agent_name = flowMetadata.Name,
                 kb_names = hasKbNames ? kbNames : null,
                 top_k = topK,
             };
@@ -86,7 +85,7 @@ public class ProcessLLMRequestNode : BaseNode
 
             using var request = new HttpRequestMessage(HttpMethod.Post, apiUrl);
             request.Headers.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
-            request.Headers.Authorization = new AuthenticationHeaderValue("Bearer", accessToken);
+            request.Headers.Authorization = new AuthenticationHeaderValue("Bearer", callerContext.AccessToken);
             request.Content = new StringContent(requestJson, Encoding.UTF8, "application/json");
 
             var response = await _httpClient.SendAsync(request);

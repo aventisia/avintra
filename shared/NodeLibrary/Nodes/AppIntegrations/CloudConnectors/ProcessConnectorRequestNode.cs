@@ -30,17 +30,16 @@ public class ProcessConnectorRequestNode : BaseNode
             var action = Action.Get(context);
             var credentialId = CredentialId.Get(context);
             var payload = Payload.Get(context);
-            var agentId = AgentId.Get(context);
-            var agentName = AgentName.Get(context);
-            var accessToken = AccessToken.Get(context);
-
+            var flowMetadata = FlowMetadata.Get(context) ?? throw new InvalidOperationException("Agent metadata is required");
+            var callerContext = CallerContext.Get(context) ?? throw new InvalidOperationException("Caller context is required");
+            
             var baseUrl = AppConfigHelper.ResolveAppBaseUrl();
             var apiUrl = $"https://{baseUrl}/worc/api/cloud-connector/{provider?.ToLower()}/invoke";
 
             var requestObj = new
             {
-                agentId,
-                agentName,
+                agentId = flowMetadata.Id,
+                agentName = flowMetadata.Name,
                 provider,
                 action,
                 credentialId,
@@ -51,7 +50,7 @@ public class ProcessConnectorRequestNode : BaseNode
 
             using var request = new HttpRequestMessage(HttpMethod.Post, apiUrl);
             request.Headers.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
-            request.Headers.Authorization = new AuthenticationHeaderValue("Bearer", accessToken);
+            request.Headers.Authorization = new AuthenticationHeaderValue("Bearer", callerContext.AccessToken);
             request.Content = new StringContent(requestJson, Encoding.UTF8, "application/json");
 
             var response = await _httpClient.SendAsync(request);

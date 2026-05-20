@@ -1,13 +1,13 @@
 namespace WorkspaceAPIs.Services;
 
-public class FlowNotificationService : IFlowNotificationService
+public class ExecutionNotificationService : IExecutionNotificationService
 {
     private readonly IHubContext<FlowExecutionHub> _hubContext;
-    private readonly ILogger<FlowNotificationService> _logger;
+    private readonly ILogger<ExecutionNotificationService> _logger;
 
-    public FlowNotificationService(
+    public ExecutionNotificationService(
         IHubContext<FlowExecutionHub> hubContext,
-        ILogger<FlowNotificationService> logger)
+        ILogger<ExecutionNotificationService> logger)
     {
         _hubContext = hubContext;
         _logger = logger;

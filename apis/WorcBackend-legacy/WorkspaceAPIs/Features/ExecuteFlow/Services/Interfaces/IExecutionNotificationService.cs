@@ -1,6 +1,6 @@
 namespace WorkspaceAPIs.Services;
 
-public interface IFlowNotificationService
+public interface IExecutionNotificationService
 {
     /// <summary>
     /// Sends a job completion notification to the user who initiated the job.

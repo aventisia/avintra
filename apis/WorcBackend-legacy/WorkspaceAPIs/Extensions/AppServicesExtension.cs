@@ -90,9 +90,9 @@ public static class AppServicesExtension
         services.AddSingleton(Guard.Against.Null(config.GetSection("AppDefaultConfig").Get<AppDefaultConfig>(), "AppDefaultConfig cannot be null"));
 
         // ExecuteFlow feature services
-        services.AddScoped<IExecuteFlowService, ExecuteFlowService>();
-        services.AddScoped<IFlowNotificationService, FlowNotificationService>();
-        services.AddSingleton<IFlowExecutionService, FlowExecutionService>();
+        services.AddScoped<IExecuteFlowStep1Service, ExecuteFlowStep1Service>();
+        services.AddScoped<IExecutionNotificationService, ExecutionNotificationService>();
+        services.AddSingleton<IExecuteFlowStep2Service, ExecuteFlowStep2Service>();
 
         // Feature Services
         services.AddScoped<IWorkspaceUserService, WorkspaceUserService>();
