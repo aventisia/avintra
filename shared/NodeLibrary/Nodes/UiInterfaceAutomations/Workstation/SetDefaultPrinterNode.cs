@@ -6,7 +6,7 @@ namespace NodeLibrary.WorkstationNodes;
 [NodeMetadata(icon: "/assets/Workstation.svg")]
 public class SetDefaultPrinterNode : BaseNode
 {
-    [Description("The name of the printer to set as default.")]
+    [DisplayName("Printer Name"), Description("The name of the printer to set as default.")]
     public required InArgument<string> PrinterName { get; set; }
 
     protected override void Execute(INodeContext context)

@@ -4,13 +4,13 @@ namespace NodeLibrary.TextNodes;
 [NodeMetadata(icon: "/assets/Text.svg")]
 public class AppendLineToTextNode : BaseNode
 {
-    [Description("The original text to which a new line will be appended.")]
+    [DisplayName("Original Text"), Description("The original text to which a new line will be appended.")]
     public InArgument<string> OriginalText { get; set; }
 
-    [Description("The new line of text to append.")]
+    [DisplayName("New Line"), Description("The new line of text to append.")]
     public InArgument<string> NewLine { get; set; }
 
-    [Description("The resulting text after appending the new line.")]
+    [DisplayName("Result"), Description("The resulting text after appending the new line.")]
     public OutArgument<string> ResultOutput { get; set; } = new OutArgument<string>();
 
     protected override void Execute(INodeContext context)

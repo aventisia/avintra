@@ -67,25 +67,25 @@ public class GetCurrentDateTimeNode : BaseNode
 
     public enum RetrieveTypeEnum
     {
-        [Description("Retrieves the current date and time.")]
+        [Display(Name = "Current Date and Time", Description = "Retrieves the current date and time.")]
         CurrentDateTime,
 
-        [Description("Retrieves the current date only.")]
+        [Display(Name = "Current Date Only", Description = "Retrieves the current date only.")]
         CurrentDateOnly
     }
 
     public enum TimezoneTypeEnum
     {
-        [Description("Uses the system's local time zone.")]
+        [Display(Name = "System Time Zone", Description = "Uses the system's local time zone.")]
         SystemTimeZone,
 
-        [Description("Uses a specific time zone (to be deprecated).")]
+        [Display(Name = "Specific Time Zone", Description = "Uses a specific time zone (to be deprecated).")]
         SpecificTimeZone,
 
-        [Description("Uses the Windows time zone settings.")]
+        [Display(Name = "Windows Time Zone", Description = "Uses the Windows time zone settings.")]
         WindowsTimeZone,
 
-        [Description("Allows custom input for the time zone.")]
+        [Display(Name = "Custom Input", Description = "Allows custom input for the time zone.")]
         CustomInput
     }
 }
