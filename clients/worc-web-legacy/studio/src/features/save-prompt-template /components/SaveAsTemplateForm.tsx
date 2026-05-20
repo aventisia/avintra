@@ -19,8 +19,9 @@ import {
   templateNameProps,
 } from "../constants/save-as-template-feild-props";
 import { useDefineSATForm } from "../hooks/useDefineSATForm";
+
 // import DeleteTemplate from "./DeleteTemplate";
-import { StatusAlert } from "./StatusAlert";
+// import { StatusAlert } from "./StatusAlert";
 
 /**
  * SaveAsTemplateForm Component
@@ -34,12 +35,12 @@ export const SaveAsTemplateForm = () => {
     form,
     onSubmit,
     isPending,
-    isUpdatePending,
-    status,
+    // isUpdatePending,
+    // status,
     viewMode,
     // templateId,
-    templateRemark,
-    lastModifiedBy,
+    // templateRemark,
+    // lastModifiedBy,
   } = useDefineSATForm();
 
   return (
@@ -52,13 +53,13 @@ export const SaveAsTemplateForm = () => {
         className="space-y-4 p-4"
       >
         {/* Show approval status if validation passes */}
-        {
+        {/* {
           <StatusAlert
             status={status}
             remark={templateRemark}
             approvedBy={lastModifiedBy}
           />
-        }
+        } */}
 
         <div className="grid grid-cols-1 gap-3.5 xs:grid-cols-2">
           {/* Template name input field */}
@@ -96,14 +97,8 @@ export const SaveAsTemplateForm = () => {
           <div className="flex items-center justify-end gap-4 pb-4">
             {/* {templateId && <DeleteTemplate id={templateId || ""} />} */}
 
-            <Button
-              disabled={isPending || isUpdatePending}
-              size={"sm"}
-              type="submit"
-            >
-              {isPending || isUpdatePending ? (
-                <LoadingSpinner className="mr-2 h-4 w-4" />
-              ) : null}
+            <Button disabled={isPending} size={"sm"} type="submit">
+              {isPending ? <LoadingSpinner className="mr-2 h-4 w-4" /> : null}
               Submit For Approval
             </Button>
           </div>
