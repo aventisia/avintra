@@ -13,7 +13,7 @@
       "type": "text",
       "name": "FilesToRename",
       "label": "File(s) to rename",
-      "description": "The path(s) of the file(s) to rename. Supports wildcards like *.txt.",
+      "description": "The path(s) of the file(s) (separated by semicolons) to rename. Supports wildcards like *.txt.",
       "defaultValue": "",
       "required": true
     },

@@ -1,7 +1,7 @@
 {
   "name": "MoveFile",
   "label": "Move File(s)",
-  "description": "Moves one or more files into a destination folder.",
+  "description": "Moves one or more files to a destination folder. Supports wildcards and multiple source paths separated by semicolons.",
   "version": "1.0.0",
   "auther": "@aventisia",
   "supportedPlatforms": ["cloud", "windows"],
@@ -12,8 +12,8 @@
       "direction": "Input",
       "type": "text",
       "name": "SourceFiles",
-      "label": "File(s) to move",
-      "description": "The path(s) of the file(s) to move. Supports wildcards like *.txt.",
+      "label": "File(s) to Move",
+      "description": "The path(s) of the file(s) to move, separated by semicolons (;). Supports wildcards. Examples: C:\\Temp\\report.pdf | C:\\Temp\\*.txt;C:\\Archive\\old_*.docx",
       "defaultValue": "",
       "required": true
     },
@@ -21,8 +21,8 @@
       "direction": "Input",
       "type": "text",
       "name": "DestinationFolder",
-      "label": "Destination folder",
-      "description": "The destination folder where the files will be moved.",
+      "label": "Destination Folder",
+      "description": "The full path of the destination folder. The folder will be created if it does not exist. Example: C:\\Output\\Processed",
       "defaultValue": "",
       "required": true
     },
@@ -30,8 +30,8 @@
       "direction": "Input",
       "type": "select",
       "name": "IfExistsAction",
-      "label": "If file exists",
-      "description": "Specifies the behavior when a file already exists in the destination folder.",
+      "label": "If File Exists",
+      "description": "The action to take when a file with the same name already exists in the destination. Options: DoNothing (skip the file), Overwrite (delete and replace). Default: DoNothing.",
       "defaultValue": "DoNothing",
       "required": true,
       "selectOptions": [
@@ -52,7 +52,7 @@
       "type": "config-panel-output",
       "name": "MovedFile",
       "label": "Moved File",
-      "description": "Returns the path of the successfully moved file.",
+      "description": "The destination path of the last successfully moved file.",
       "defaultValue": {
         "value": "MovedFile",
         "enabled": true

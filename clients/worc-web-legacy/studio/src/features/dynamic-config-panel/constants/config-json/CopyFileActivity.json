@@ -1,7 +1,7 @@
 {
   "name": "CopyFile",
   "label": "Copy File(s)",
-  "description": "Copies one or more files into a destination folder.",
+  "description": "Copies one or more files to a destination folder. Supports wildcards and multiple source paths separated by semicolons.",
   "version": "1.0.0",
   "auther": "@aventisia",
   "supportedPlatforms": ["cloud", "windows"],
@@ -12,8 +12,8 @@
       "direction": "Input",
       "type": "text",
       "name": "SourceFiles",
-      "label": "File(s) to copy",
-      "description": "The path(s) of the file(s) to copy. Supports wildcards like *.txt.",
+      "label": "File(s) to Copy",
+      "description": "The path(s) of the file(s) to copy, separated by semicolons (;). Supports wildcards. Examples: C:\\Docs\\report.pdf | C:\\Docs\\*.txt;C:\\Archive\\*.pdf",
       "defaultValue": "",
       "required": true
     },
@@ -21,8 +21,8 @@
       "direction": "Input",
       "type": "text",
       "name": "DestinationFolder",
-      "label": "Destination folder",
-      "description": "The destination folder where the files will be copied.",
+      "label": "Destination Folder",
+      "description": "The full path of the destination folder. The folder will be created if it does not exist. Example: C:\\Output\\Reports",
       "defaultValue": "",
       "required": true
     },
@@ -30,8 +30,8 @@
       "direction": "Input",
       "type": "select",
       "name": "IfExistsAction",
-      "label": "If file exists",
-      "description": "Specifies the behavior when a file already exists in the destination folder.",
+      "label": "If File Exists",
+      "description": "The action to take when a file with the same name already exists in the destination. Options: DoNothing (skip the file), Overwrite (replace it). Default: DoNothing.",
       "defaultValue": "DoNothing",
       "required": true,
       "selectOptions": [
@@ -52,7 +52,7 @@
       "type": "config-panel-output",
       "name": "CopiedFiles",
       "label": "Copied Files",
-      "description": "Returns the list of successfully copied files.",
+      "description": "The list of full destination paths for all successfully copied files.",
       "defaultValue": {
         "value": "CopiedFiles",
         "enabled": true

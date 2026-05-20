@@ -1645,7 +1645,7 @@
             "type": "activityNode",
             "name": "FindFileInFolderActivity",
             "label": "Find File in Folder",
-            "description": "Finds a single file in a folder (and optionally subfolders) based on criteria like largest, smallest, newest, oldest, etc.",
+            "description": "Finds a single file in a folder (and optionally subfolders) that best matches a given criterion such as largest, newest, or first alphabetically.",
             "docsLink": "https://docs.aventisia.com",
             "img": "/assets/Folder.svg",
             "supportedPlatforms": ["cloud", "windows"]
@@ -1654,7 +1654,7 @@
             "type": "activityNode",
             "name": "GetFilesInFolderActivity",
             "label": "Retrieve Files in Folder",
-            "description": "This activity retrieves the list of files in a specified folder, with options to include subfolders and sort the results.",
+            "description": "Retrieves the list of files in a specified folder, with options to include subfolders, filter by file type, and sort the results.",
             "docsLink": "https://docs.aventisia.com",
             "img": "/assets/Folder.svg",
             "supportedPlatforms": ["cloud", "windows"]
@@ -1742,7 +1742,7 @@
             "type": "activityNode",
             "name": "CopyFileActivity",
             "label": "Copy File(s)",
-            "description": "Copies one or more files into a destination folder.",
+            "description": "Copies one or more files to a destination folder. Supports wildcards and multiple source paths separated by semicolons.",
             "docsLink": "https://docs.aventisia.com",
             "img": "/assets/File.svg",
             "supportedPlatforms": ["cloud", "windows"]
@@ -1751,7 +1751,7 @@
             "type": "activityNode",
             "name": "DeleteFileActivity",
             "label": "Delete File(s)",
-            "description": "Deletes one or more files.",
+            "description": "Deletes one or more files. Supports wildcards and multiple file paths separated by semicolons.",
             "docsLink": "https://docs.aventisia.com",
             "img": "/assets/File.svg",
             "supportedPlatforms": ["cloud", "windows"]
@@ -1796,7 +1796,7 @@
             "type": "activityNode",
             "name": "MoveFileActivity",
             "label": "Move File(s)",
-            "description": "Moves one or more files into a destination folder.",
+            "description": "Moves one or more files to a destination folder. Supports wildcards and multiple source paths separated by semicolons.",
             "docsLink": "https://docs.aventisia.com",
             "img": "/assets/File.svg",
             "supportedPlatforms": ["cloud", "windows"]
