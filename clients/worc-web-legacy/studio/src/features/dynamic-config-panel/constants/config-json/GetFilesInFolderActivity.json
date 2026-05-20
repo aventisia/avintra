@@ -22,7 +22,7 @@
       "type": "text",
       "name": "FileFilter",
       "label": "File Filter",
-      "description": "One or more file patterns separated by semicolons (;), pipes (|), or commas (,). Examples: *.txt | *.pdf;*.docx | invoice_*.xlsx. Default: * (all files).",
+      "description": "One or more file patterns separated by semicolons (;). Examples: *.txt;*.pdf;*.docx;invoice_*.xlsx. Default: * (all files).",
       "defaultValue": "*",
       "required": false
     },

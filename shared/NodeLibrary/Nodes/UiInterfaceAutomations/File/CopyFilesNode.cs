@@ -2,112 +2,101 @@
 
 namespace NodeLibrary.FileNodes;
 
-[DisplayName("Copy File(s)"), Description("Copies one or more files into a destination folder.")]
+[DisplayName("Copy File(s)"), Description("Copies one or more files into a destination folder. Supports wildcard patterns and multiple paths separated by semicolons.")]
 [NodeMetadata(icon: "/assets/File.svg")]
 public class CopyFileNode : BaseNode
 {
-    [DisplayName("File(s) to copy"), Description("The path(s) of the file(s) to copy. Supports wildcards like *.txt.")]
+    [DisplayName("Source file path(s)"), Description("One or more file paths to copy, separated by semicolons. Supports wildcards (e.g., 'C:\\Data\\*.txt;C:\\Logs\\report.csv').")]
     public required InArgument<string> SourceFiles { get; set; }
 
-    [DisplayName("Destination folder"), Description("The destination folder where the files will be copied.")]
+    [DisplayName("Destination folder"), Description("The folder where files will be copied to (e.g., 'C:\\Backup\\Documents'). Created automatically if it does not exist.")]
     public required InArgument<string> DestinationFolder { get; set; }
 
-    [DisplayName("If file exists"), Description("Specifies the behavior when a file already exists in the destination folder.")]
+    [DisplayName("If file exists"), Description("Action to take when a file with the same name already exists in the destination. Default: Do nothing (skip).")]
     public required InArgument<IfExistsActionEnum> IfExistsAction { get; set; } = new InArgument<IfExistsActionEnum>(IfExistsActionEnum.DoNothing);
 
-
-    [DisplayName("Copied Files"), Description("Returns the list of successfully copied files.")]
+    [DisplayName("Copied files"), Description("Returns the list of full paths of all successfully copied files.")]
     public OutArgument<IEnumerable<string>> CopiedFiles { get; set; } = new OutArgument<IEnumerable<string>>();
-
-
 
     protected override void Execute(INodeContext context)
     {
-        // Get input arguments
         var sourceFiles = SourceFiles.Get(context);
         var destinationFolder = DestinationFolder.Get(context);
         var ifExistsAction = IfExistsAction.Get(context);
 
-        // Validate inputs
         if (string.IsNullOrWhiteSpace(sourceFiles))
         {
-            throw new ArgumentException("Source files cannot be empty.");
+            IsSuccess.Set(context, false);
+            StatusMessage.Set(context, "Source file path(s) cannot be empty.");
+            return;
         }
 
         if (string.IsNullOrWhiteSpace(destinationFolder))
         {
-            throw new ArgumentException("Destination folder cannot be empty.");
+            IsSuccess.Set(context, false);
+            StatusMessage.Set(context, "Destination folder cannot be empty.");
+            return;
         }
-
-        var status = "Operation completed successfully.";
 
         try
         {
-            // Ensure destination folder exists
             Directory.CreateDirectory(destinationFolder);
 
-            // Split source files by semicolon (supports multiple files)
             var sourceFilePaths = sourceFiles.Split(new[] { ';' }, StringSplitOptions.RemoveEmptyEntries);
-
-            // List to store successfully copied files
             var copiedFiles = new List<string>();
 
             foreach (var sourceFilePath in sourceFilePaths)
             {
-                // Expand wildcards if present
-                var expandedPaths = GetExpandedPaths(sourceFilePath);
+                var trimmedPath = sourceFilePath.Trim();
+                var dir = Path.GetDirectoryName(trimmedPath);
+                var filePattern = Path.GetFileName(trimmedPath);
 
-                foreach (var expandedPath in expandedPaths)
+                if (string.IsNullOrEmpty(dir) || !Directory.Exists(dir))
+                    continue;
+
+                foreach (var expandedPath in Directory.EnumerateFiles(dir, filePattern))
                 {
-                    if (!File.Exists(expandedPath))
-                    {
-                        continue; // Skip non-existent files
-                    }
-
                     var fileName = Path.GetFileName(expandedPath);
                     var destinationPath = Path.Combine(destinationFolder, fileName);
 
-                    // Handle existing file scenario
                     if (File.Exists(destinationPath))
                     {
                         switch (ifExistsAction)
                         {
                             case IfExistsActionEnum.DoNothing:
-                                continue; // Skip existing file
+                                continue;
                             case IfExistsActionEnum.Overwrite:
-                                File.Copy(expandedPath, destinationPath, true); // Overwrite existing file
+                                File.Copy(expandedPath, destinationPath, overwrite: true);
                                 copiedFiles.Add(destinationPath);
                                 break;
-                            default:
-                                throw new ArgumentException("Invalid 'If file exists' action specified.");
                         }
                     }
                     else
                     {
-                        // Copy the file
                         File.Copy(expandedPath, destinationPath);
                         copiedFiles.Add(destinationPath);
                     }
                 }
             }
 
-            // Set output arguments
             CopiedFiles.Set(context, copiedFiles);
-            status = $"{copiedFiles.Count} file(s) copied successfully.";
             IsSuccess.Set(context, true);
-            StatusMessage.Set(context, status);
+            StatusMessage.Set(context, $"{copiedFiles.Count} file(s) copied successfully.");
+        }
+        catch (UnauthorizedAccessException ex)
+        {
+            IsSuccess.Set(context, false);
+            StatusMessage.Set(context, $"Access denied: {ex.Message}");
+        }
+        catch (IOException ex)
+        {
+            IsSuccess.Set(context, false);
+            StatusMessage.Set(context, $"I/O error copying files: {ex.Message}");
         }
         catch (Exception ex)
         {
-            status = $"Error copying files: {ex.Message}";
             IsSuccess.Set(context, false);
-            StatusMessage.Set(context, status);
+            StatusMessage.Set(context, $"Error copying files: {ex.Message}");
         }
-    }
-
-    private IEnumerable<string> GetExpandedPaths(string pattern)
-    {
-        // Expand wildcards using Directory.GetFiles
-        return Directory.GetFiles(Path.GetDirectoryName(pattern) ?? string.Empty, Path.GetFileName(pattern));
     }
 }

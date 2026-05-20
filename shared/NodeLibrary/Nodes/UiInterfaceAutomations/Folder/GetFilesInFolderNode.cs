@@ -1,60 +1,81 @@
 namespace NodeLibrary.FolderNodes;
 
-[DisplayName("Retrieve Files in Folder"), Description("This activity retrieves the list of files in a specified folder, with options to include subfolders and sort the results.")]
+[DisplayName("Retrieve Files in Folder"), Description("Retrieves a list of files from a specified folder with optional filtering, subfolder inclusion, and multi-level sorting.")]
 [NodeMetadata(icon: "/assets/Folder.svg")]
 public class GetFilesInFolderNode : BaseNode
 {
-    [DisplayName("Folder Path"), Description("Specifies the path to the folder where files will be retrieved.")]
+    [DisplayName("Folder path"), Description("The absolute path of the folder to retrieve files from (e.g., 'C:\\Documents\\Reports').")]
     public InArgument<string> FolderPath { get; set; } = new InArgument<string>(string.Empty);
 
-    [DisplayName("File Filter"), Description("A pattern to filter the files (e.g., \"*.txt\" for text files).")]
+    [DisplayName("File filter"), Description("One or more file patterns separated by semicolons (;). Examples: *.txt;*.pdf;*.docx;invoice_*.xlsx. Default: * (all files).")]
     public InArgument<string> FileFilter { get; set; } = new InArgument<string>("*");
 
-    [DisplayName("Include Subfolders"), Description("If true, includes files from all subfolders within the specified folder.")]
+    [DisplayName("Include subfolders"), Description("When true, includes files from all subdirectories recursively. Default: true.")]
     public InArgument<bool> IncludeSubfolders { get; set; } = new InArgument<bool>(true);
 
-    [DisplayName("Fail on Denied Access"), Description("If true, the activity will fail if access to any subfolder is denied.")]
+    [DisplayName("Fail on access denied"), Description("When true, the activity fails if access to any subfolder is denied. When false, inaccessible folders are skipped. Default: true.")]
     public InArgument<bool> FailUponDeniedAccess { get; set; } = new InArgument<bool>(true);
 
-    [DisplayName("Sort By"), Description("The primary criterion to sort the retrieved files (e.g., \"Name\", \"LastWriteTime\").")]
+    [DisplayName("Sort by"), Description("Primary sort criterion for the file list. Default: No sort.")]
     public InArgument<FileSortCriteria> SortBy { get; set; } = new InArgument<FileSortCriteria>(FileSortCriteria.NoSort);
 
-    [DisplayName("Descending Order"), Description("If true, sorts the files in descending order based on the primary sort criterion.")]
+    [DisplayName("Descending order"), Description("When true, sorts files in descending order. Default: false (ascending).")]
     public InArgument<bool> Descending { get; set; } = new InArgument<bool>(false);
 
-    [DisplayName("Then By"), Description("The secondary criterion to sort the retrieved files (e.g., \"Size\", \"CreationTime\").")]
+    [DisplayName("Then sort by"), Description("Secondary sort criterion applied after the primary sort. Default: No sort.")]
     public InArgument<FileSortCriteria> ThenBy { get; set; } = new InArgument<FileSortCriteria>(FileSortCriteria.NoSort);
 
-    [DisplayName("Retrieved Files"), Description("The list of files that were retrieved based on the specified criteria.")]
+    [DisplayName("Retrieved files"), Description("The list of full file paths that matched the filter and sort criteria.")]
     public OutArgument<IEnumerable<string>> RetrievedFiles { get; set; } = new OutArgument<IEnumerable<string>>();
 
     protected override void Execute(INodeContext context)
     {
-        var status = "Operation completed successfully.";
+        var folderPath = FolderPath.Get(context);
+        var fileFilter = FileFilter.Get(context);
+        var includeSubfolders = IncludeSubfolders.Get(context);
+        var failUponDeniedAccess = FailUponDeniedAccess.Get(context);
+        var sortBy = SortBy.Get(context);
+        var descending = Descending.Get(context);
+        var thenBy = ThenBy.Get(context);
+
+        if (string.IsNullOrWhiteSpace(folderPath))
+        {
+            IsSuccess.Set(context, false);
+            StatusMessage.Set(context, "Folder path cannot be empty.");
+            return;
+        }
+
+        if (!Directory.Exists(folderPath))
+        {
+            IsSuccess.Set(context, false);
+            StatusMessage.Set(context, $"The specified folder does not exist: {folderPath}");
+            return;
+        }
+
+        if (string.IsNullOrWhiteSpace(fileFilter))
+            fileFilter = "*";
 
         try
         {
-            var folderPath = FolderPath.Get(context);
-            var fileFilter = FileFilter.Get(context);
-            var includeSubfolders = IncludeSubfolders.Get(context);
-            var failUponDeniedAccess = FailUponDeniedAccess.Get(context);
-            var sortBy = SortBy.Get(context);
-            var descending = Descending.Get(context);
-            var thenBy = ThenBy.Get(context);
-
-            if (!Directory.Exists(folderPath))
-                throw new DirectoryNotFoundException($"The specified folder path does not exist: {folderPath}");
-
             var files = GetFiles(folderPath, fileFilter, includeSubfolders, failUponDeniedAccess);
 
             if (sortBy != FileSortCriteria.NoSort)
                 files = SortFiles(files, sortBy, descending, thenBy);
 
-            RetrievedFiles.Set(context, files);
-            status = "Files retrieved successfully.";
-
+            var result = files.ToList();
+            RetrievedFiles.Set(context, result);
             IsSuccess.Set(context, true);
-            StatusMessage.Set(context, status);
+            StatusMessage.Set(context, $"{result.Count} file(s) retrieved successfully.");
+        }
+        catch (UnauthorizedAccessException ex)
+        {
+            IsSuccess.Set(context, false);
+            StatusMessage.Set(context, $"Access denied: {ex.Message}");
+        }
+        catch (IOException ex)
+        {
+            IsSuccess.Set(context, false);
+            StatusMessage.Set(context, $"I/O error retrieving files: {ex.Message}");
         }
         catch (Exception ex)
         {
@@ -65,87 +86,112 @@ public class GetFilesInFolderNode : BaseNode
 
     private static IEnumerable<string> GetFiles(string folderPath, string fileFilter, bool includeSubfolders, bool failUponDeniedAccess)
     {
+        var searchOption = includeSubfolders ? SearchOption.AllDirectories : SearchOption.TopDirectoryOnly;
+        var patterns = fileFilter.Split(new[] { ';' }, StringSplitOptions.RemoveEmptyEntries);
+
+        if (!failUponDeniedAccess && includeSubfolders)
+        {
+            return patterns
+                .SelectMany(pattern => EnumerateFilesSkipDenied(folderPath, pattern.Trim()))
+                .Distinct();
+        }
+
         try
         {
-            var searchOption = includeSubfolders ? SearchOption.AllDirectories : SearchOption.TopDirectoryOnly;
-            return Directory.GetFiles(folderPath, fileFilter, searchOption);
+            return patterns
+                .SelectMany(pattern => Directory.EnumerateFiles(folderPath, pattern.Trim(), searchOption))
+                .Distinct()
+                .ToList();
         }
         catch (UnauthorizedAccessException ex)
         {
             if (failUponDeniedAccess)
                 throw new UnauthorizedAccessException($"Access denied to folder: {folderPath}", ex);
-
-            return [];
+            return Enumerable.Empty<string>();
         }
+    }
+
+    private static IEnumerable<string> EnumerateFilesSkipDenied(string folderPath, string pattern)
+    {
+        IEnumerable<string> topFiles = Enumerable.Empty<string>();
+        try { topFiles = Directory.EnumerateFiles(folderPath, pattern, SearchOption.TopDirectoryOnly); }
+        catch (UnauthorizedAccessException) { }
+
+        foreach (var file in topFiles)
+            yield return file;
+
+        IEnumerable<string> subDirs = Enumerable.Empty<string>();
+        try { subDirs = Directory.EnumerateDirectories(folderPath); }
+        catch (UnauthorizedAccessException) { }
+
+        foreach (var dir in subDirs)
+            foreach (var file in EnumerateFilesSkipDenied(dir, pattern))
+                yield return file;
     }
 
     private static IEnumerable<string> SortFiles(IEnumerable<string> files, FileSortCriteria sortBy, bool descending, FileSortCriteria thenBy)
     {
-        Func<string, object>? getSortKey = sortBy switch
-        {
-            FileSortCriteria.FullName => f => f,
-            FileSortCriteria.RootPath => Path.GetPathRoot,
-            FileSortCriteria.Directory => Path.GetDirectoryName,
-            FileSortCriteria.Name => Path.GetFileName,
-            FileSortCriteria.NameWithoutExtension => Path.GetFileNameWithoutExtension,
-            FileSortCriteria.Extension => Path.GetExtension,
-            FileSortCriteria.Size => f => new FileInfo(f).Length,
-            _ => null
-        };
-
+        var getSortKey = GetSortKeySelector(sortBy);
         if (getSortKey is null)
             return files;
-
-        Func<string, object>? getThenKey = thenBy switch
-        {
-            FileSortCriteria.FullName => f => f,
-            FileSortCriteria.RootPath => Path.GetPathRoot,
-            FileSortCriteria.Directory => Path.GetDirectoryName,
-            FileSortCriteria.Name => Path.GetFileName,
-            FileSortCriteria.NameWithoutExtension => Path.GetFileNameWithoutExtension,
-            FileSortCriteria.Extension => Path.GetExtension,
-            FileSortCriteria.Size => f => new FileInfo(f).Length,
-            _ => null
-        };
 
         IOrderedEnumerable<string> orderedFiles = descending
             ? files.OrderByDescending(getSortKey)
             : files.OrderBy(getSortKey);
 
-        if (thenBy != FileSortCriteria.NoSort && getThenKey is not null)
+        if (thenBy != FileSortCriteria.NoSort)
         {
-            orderedFiles = descending
-                ? orderedFiles.ThenByDescending(getThenKey)
-                : orderedFiles.ThenBy(getThenKey);
+            var getThenKey = GetSortKeySelector(thenBy);
+            if (getThenKey is not null)
+            {
+                orderedFiles = descending
+                    ? orderedFiles.ThenByDescending(getThenKey)
+                    : orderedFiles.ThenBy(getThenKey);
+            }
         }
 
-        return [.. orderedFiles];
+        return orderedFiles;
+    }
+
+    private static Func<string, object>? GetSortKeySelector(FileSortCriteria criteria)
+    {
+        return criteria switch
+        {
+            FileSortCriteria.FullName => f => f,
+            FileSortCriteria.RootPath => Path.GetPathRoot,
+            FileSortCriteria.Directory => Path.GetDirectoryName,
+            FileSortCriteria.Name => Path.GetFileName,
+            FileSortCriteria.NameWithoutExtension => Path.GetFileNameWithoutExtension,
+            FileSortCriteria.Extension => Path.GetExtension,
+            FileSortCriteria.Size => f => new FileInfo(f).Length,
+            _ => null
+        };
     }
 }
 
 public enum FileSortCriteria
 {
-    [Display(Name = "NoSort", Description = "No sorting applied.")]
+    [Display(Name = "No sort", Description = "No sorting applied; files returned in file-system order.")]
     NoSort,
 
-    [Display(Name = "FullName", Description = "Sort by the full file path.")]
+    [Display(Name = "Full path", Description = "Sort by the complete file path.")]
     FullName,
 
-    [Display(Name = "RootPath", Description = "Sort by the root directory path.")]
+    [Display(Name = "Root path", Description = "Sort by the root directory (e.g., 'C:\\').")]
     RootPath,
 
-    [Display(Name = "Directory", Description = "Sort by the directory containing the file.")]
+    [Display(Name = "Directory", Description = "Sort by the parent directory path.")]
     Directory,
 
-    [Display(Name = "Name", Description = "Sort by the file name.")]
+    [Display(Name = "File name", Description = "Sort by the file name including extension.")]
     Name,
 
-    [Display(Name = "NameWithoutExtension", Description = "Sort by the file name without the extension.")]
+    [Display(Name = "Name without extension", Description = "Sort by the file name excluding the extension.")]
     NameWithoutExtension,
 
-    [Display(Name = "Extension", Description = "Sort by the file extension.")]
+    [Display(Name = "Extension", Description = "Sort by the file extension (e.g., '.txt', '.pdf').")]
     Extension,
 
-    [Display(Name = "Size", Description = "Sort by the file size.")]
+    [Display(Name = "Size", Description = "Sort by the file size in bytes.")]
     Size
 }

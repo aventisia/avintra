@@ -2,102 +2,101 @@
 
 namespace NodeLibrary.FileNodes;
 
-[DisplayName("Rename File(s)"), Description("Renames one or more files with advanced schemes including datetime and sequential numbering.")]
+[DisplayName("Rename File(s)"), Description("Renames one or more files using various schemes: set new name, add/remove/replace text, change extension, add datetime stamp, or sequential numbering. Supports wildcard patterns and multiple paths separated by semicolons.")]
 [NodeMetadata(icon: "/assets/File.svg")]
 public class RenameFileNode : BaseNode
 {
-    [DisplayName("File(s) to rename"), Description("The path(s) of the file(s) to rename. Supports wildcards like *.txt.")]
+    [DisplayName("Source file path(s)"), Description("One or more file paths to rename, separated by semicolons. Supports wildcards (e.g., 'C:\\Data\\*.txt;C:\\Logs\\report_*.csv').")]
     public required InArgument<string> FilesToRename { get; set; }
 
-    [DisplayName("Rename scheme"), Description("Specifies the rename scheme to apply.")]
+    [DisplayName("Rename scheme"), Description("The renaming strategy to apply. Default: Set new name.")]
     public required InArgument<RenameSchemeEnum> RenameScheme { get; set; } = new InArgument<RenameSchemeEnum>(RenameSchemeEnum.SetNewName);
 
-    [DisplayName("Keep extension"), Description("Indicates whether to keep the original file extension.")]
+    [DisplayName("Keep original extension"), Description("When true, preserves the original file extension regardless of the rename scheme. Default: false.")]
     public required InArgument<bool> KeepExtension { get; set; }
 
-    [DisplayName("If file exists"), Description("Specifies the behavior when a file already exists in the destination folder.")]
+    [DisplayName("If file exists"), Description("Action to take when the target filename already exists. Default: Do nothing (skip).")]
     public required InArgument<IfExistsActionEnum> IfExistsAction { get; set; } = new InArgument<IfExistsActionEnum>(IfExistsActionEnum.DoNothing);
 
-    [DisplayName("New file name"), Description("The new name for the file(s). Required for 'Set new name'.")]
+    [DisplayName("New file name"), Description("The new name for the file (without extension if 'Keep original extension' is true). Example: 'monthly_report'.")]
     [RenderIfCondition(nameof(RenameScheme), RenameSchemeEnum.SetNewName)]
     public InArgument<string> NewFileName { get; set; }
 
-    [DisplayName("Text to add"), Description("The text to append or prepend to the filename.")]
+    [DisplayName("Text to add"), Description("The text to prepend or append to the existing filename. Example: '_backup'.")]
     [RenderIfCondition(nameof(RenameScheme), RenameSchemeEnum.AddText)]
     public InArgument<string> TextToAdd { get; set; }
 
-    [DisplayName("Add text position"), Description("Where to add the text: before or after the filename.")]
+    [DisplayName("Text position"), Description("Whether to insert the text before or after the filename. Default: After name.")]
     [RenderIfCondition(nameof(RenameScheme), RenameSchemeEnum.AddText)]
     public InArgument<AddTextPositionEnum> AddTextPosition { get; set; } = new InArgument<AddTextPositionEnum>(AddTextPositionEnum.AfterName);
 
-    [DisplayName("Text to remove"), Description("The text to remove from the filename.")]
+    [DisplayName("Text to remove"), Description("The exact text to remove from the filename. Example: '_draft' removes '_draft' from 'report_draft.txt'.")]
     [RenderIfCondition(nameof(RenameScheme), RenameSchemeEnum.RemoveText)]
     public InArgument<string> TextToRemove { get; set; }
 
-    [DisplayName("Text to replace"), Description("The text to be replaced in the filename.")]
+    [DisplayName("Text to find"), Description("The exact text in the filename to be replaced. Example: 'old' in 'old_report.txt'.")]
     [RenderIfCondition(nameof(RenameScheme), RenameSchemeEnum.ReplaceText)]
     public InArgument<string> TextToReplace { get; set; }
 
-    [DisplayName("Replace with"), Description("The replacement text for the matched string.")]
+    [DisplayName("Replace with"), Description("The replacement text. Example: 'new' replaces 'old' → 'new_report.txt'.")]
     [RenderIfCondition(nameof(RenameScheme), RenameSchemeEnum.ReplaceText)]
     public InArgument<string> ReplaceWith { get; set; }
 
-    [DisplayName("New extension"), Description("The new file extension (e.g., .pdf). Must include the dot (.).")]
+    [DisplayName("New extension"), Description("The new file extension including the leading dot. Example: '.pdf', '.bak'.")]
     [RenderIfCondition(nameof(RenameScheme), RenameSchemeEnum.ChangeExtension)]
     public InArgument<string> NewExtension { get; set; }
 
-    [DisplayName("Add datetime"), Description("Appends a timestamp to the file name.")]
+    [DisplayName("Use custom datetime"), Description("When true, allows selecting a custom datetime source instead of the current system time.")]
     [RenderIfCondition(nameof(RenameScheme), RenameSchemeEnum.AddDateTime)]
-    public InArgument<bool> UseCustomDateTime { get; set; } // Toggle custom date
+    public InArgument<bool> UseCustomDateTime { get; set; }
 
-    [DisplayName("Datetime source"), Description("Choose between current system time or a custom datetime value.")]
+    [DisplayName("Datetime source"), Description("Choose between current system time or a custom datetime value. Default: Current datetime.")]
     [RenderIfCondition(nameof(RenameScheme), RenameSchemeEnum.AddDateTime)]
     [RenderIfCondition(nameof(UseCustomDateTime), true)]
     public InArgument<DatetimeSourceEnum> DatetimeSource { get; set; } = new InArgument<DatetimeSourceEnum>(DatetimeSourceEnum.CurrentDateTime);
 
-    [DisplayName("Add datetime position"), Description("Where to place the datetime: before or after the filename.")]
+    [DisplayName("Datetime position"), Description("Whether to place the datetime stamp before or after the filename. Default: After name.")]
     [RenderIfCondition(nameof(RenameScheme), RenameSchemeEnum.AddDateTime)]
     public InArgument<AddTextPositionEnum> AddDateTimePosition { get; set; } = new InArgument<AddTextPositionEnum>(AddTextPositionEnum.AfterName);
 
-    [DisplayName("Separator"), Description("Character used to separate filename from datetime (e.g., '_', '-', '.').")]
+    [DisplayName("Datetime separator"), Description("Character placed between the filename and datetime stamp. Default: Underscore (_).")]
     [RenderIfCondition(nameof(RenameScheme), RenameSchemeEnum.AddDateTime)]
     public InArgument<SeparatorEnum> DateTimeSeparator { get; set; } = new InArgument<SeparatorEnum>(SeparatorEnum.Underscore);
 
-    [DisplayName("Datetime format"), Description("Custom format for the datetime (e.g., yyyyMMdd_HHmmss). Leave empty for default.")]
+    [DisplayName("Datetime format"), Description("The .NET datetime format string. Examples: 'yyyyMMdd_HHmmss' → '20250520_143022', 'yyyy-MM-dd' → '2025-05-20'. Default: 'yyyyMMdd_HHmmss'.")]
     [RenderIfCondition(nameof(RenameScheme), RenameSchemeEnum.AddDateTime)]
     public InArgument<string> DateTimeFormat { get; set; } = new InArgument<string>("yyyyMMdd_HHmmss");
 
-    // Make Sequential (Advanced)
-    [DisplayName("Make sequential"), Description("Renames files with sequential numbers (e.g., File_001, File_002).")]
+    [DisplayName("Base file name"), Description("The base name used for sequential renaming. If empty, the original filename is used. Example: 'Invoice'.")]
     [RenderIfCondition(nameof(RenameScheme), RenameSchemeEnum.MakeSequential)]
     public InArgument<string> BaseFileName { get; set; }
 
-    [DisplayName("Add number position"), Description("Where to place the sequential number: before or after the base name.")]
+    [DisplayName("Number position"), Description("Whether to place the sequential number before or after the base name. Default: After name.")]
     [RenderIfCondition(nameof(RenameScheme), RenameSchemeEnum.MakeSequential)]
     public InArgument<AddTextPositionEnum> AddNumberPosition { get; set; } = new InArgument<AddTextPositionEnum>(AddTextPositionEnum.AfterName);
 
-    [DisplayName("Start numbering at"), Description("The first number in the sequence (e.g., 1).")]
+    [DisplayName("Start number"), Description("The first number in the sequence. Default: 1.")]
     [RenderIfCondition(nameof(RenameScheme), RenameSchemeEnum.MakeSequential)]
     public InArgument<int> StartNumber { get; set; } = new InArgument<int>(1);
 
-    [DisplayName("Increment by"), Description("How much to increase the number for each subsequent file (e.g., 1, 5).")]
+    [DisplayName("Increment by"), Description("The step value between sequential numbers. Example: 5 produces 1, 6, 11, etc. Default: 1.")]
     [RenderIfCondition(nameof(RenameScheme), RenameSchemeEnum.MakeSequential)]
     public InArgument<int> IncrementBy { get; set; } = new InArgument<int>(1);
 
-    [DisplayName("Number separator"), Description("Character used to separate filename from number (e.g., '_', '-', space).")]
+    [DisplayName("Number separator"), Description("Character placed between the base name and sequential number. Default: Underscore (_).")]
     [RenderIfCondition(nameof(RenameScheme), RenameSchemeEnum.MakeSequential)]
     public InArgument<SeparatorEnum> NumberSeparator { get; set; } = new InArgument<SeparatorEnum>(SeparatorEnum.Underscore);
 
-    [DisplayName("Use padding"), Description("Whether to pad numbers with leading zeros (e.g., 001, 010).")]
+    [DisplayName("Pad with zeros"), Description("When true, pads the sequential number with leading zeros (e.g., 001, 002). Default: false.")]
     [RenderIfCondition(nameof(RenameScheme), RenameSchemeEnum.MakeSequential)]
     public InArgument<bool> UsePadding { get; set; } = new InArgument<bool>(false);
 
-    [DisplayName("Minimum digits"), Description("Minimum number of digits for padded numbers (e.g., 3 → 001, 002).")]
+    [DisplayName("Minimum digits"), Description("The minimum number of digits when zero-padding is enabled (e.g., 3 → 001, 002). Default: 3.")]
     [RenderIfCondition(nameof(RenameScheme), RenameSchemeEnum.MakeSequential)]
     [RenderIfCondition(nameof(UsePadding), true)]
     public InArgument<int> MinDigits { get; set; } = new InArgument<int>(3);
 
-    [DisplayName("Renamed Files"), Description("Returns the list of successfully renamed files.")]
+    [DisplayName("Renamed files"), Description("Returns the list of new full paths of all successfully renamed files.")]
     public OutArgument<List<string>> RenamedFiles { get; set; } = new OutArgument<List<string>>();
 
     protected override void Execute(INodeContext context)
@@ -109,7 +108,9 @@ public class RenameFileNode : BaseNode
 
         if (string.IsNullOrWhiteSpace(filesToRename))
         {
-            throw new ArgumentException("Files to rename cannot be empty.");
+            IsSuccess.Set(context, false);
+            StatusMessage.Set(context, "Source file path(s) cannot be empty.");
+            return;
         }
 
         try
@@ -119,13 +120,15 @@ public class RenameFileNode : BaseNode
 
             foreach (var pattern in filePatterns)
             {
-                var expandedPaths = GetExpandedPaths(pattern);
+                var trimmedPattern = pattern.Trim();
+                var dir = Path.GetDirectoryName(trimmedPattern);
+                var filePattern = Path.GetFileName(trimmedPattern);
 
-                foreach (var filePath in expandedPaths)
+                if (string.IsNullOrEmpty(dir) || !Directory.Exists(dir))
+                    continue;
+
+                foreach (var filePath in Directory.EnumerateFiles(dir, filePattern))
                 {
-                    if (!File.Exists(filePath))
-                        continue;
-
                     var newFilePath = ApplyRenameScheme(
                         filePath,
                         renameScheme,
@@ -160,8 +163,6 @@ public class RenameFileNode : BaseNode
                             case IfExistsActionEnum.Overwrite:
                                 File.Delete(newFilePath);
                                 break;
-                            default:
-                                throw new ArgumentException("Invalid 'If file exists' action specified.");
                         }
                     }
 
@@ -172,12 +173,34 @@ public class RenameFileNode : BaseNode
 
             RenamedFiles.Set(context, renamedFiles);
             IsSuccess.Set(context, true);
-            StatusMessage.Set(context, $"Successfully renamed {renamedFiles.Count} file(s).");
+            StatusMessage.Set(context, $"{renamedFiles.Count} file(s) renamed successfully.");
+        }
+        catch (UnauthorizedAccessException ex)
+        {
+            IsSuccess.Set(context, false);
+            StatusMessage.Set(context, $"Access denied: {ex.Message}");
+        }
+        catch (IOException ex)
+        {
+            IsSuccess.Set(context, false);
+            StatusMessage.Set(context, $"I/O error renaming files: {ex.Message}");
         }
         catch (Exception ex)
         {
             IsSuccess.Set(context, false);
             StatusMessage.Set(context, $"Error renaming files: {ex.Message}");
+        }
+    }
+
+    private static string GetSeparatorString(SeparatorEnum? separator)
+    {
+        switch (separator)
+        {
+            case SeparatorEnum.Period: return ".";
+            case SeparatorEnum.Underscore: return "_";
+            case SeparatorEnum.Dash: return "-";
+            case SeparatorEnum.Space: return " ";
+            default: return "_";
         }
     }
 
@@ -212,9 +235,13 @@ public class RenameFileNode : BaseNode
         switch (renameScheme)
         {
             case RenameSchemeEnum.SetNewName:
+                if (string.IsNullOrWhiteSpace(newFileName))
+                    throw new ArgumentException("New file name is required for 'Set new name' scheme.");
                 return Path.Combine(dir, $"{newFileName}{(keepExtension ? extension : "")}");
 
             case RenameSchemeEnum.AddText:
+                if (string.IsNullOrEmpty(textToAdd))
+                    throw new ArgumentException("Text to add cannot be empty for 'Add text' scheme.");
                 var pos = addTextPosition ?? AddTextPositionEnum.AfterName;
                 var addedText = pos == AddTextPositionEnum.BeforeName
                     ? $"{textToAdd}_{fileName}"
@@ -222,96 +249,48 @@ public class RenameFileNode : BaseNode
                 return Path.Combine(dir, $"{addedText}{(keepExtension ? extension : "")}");
 
             case RenameSchemeEnum.RemoveText:
+                if (string.IsNullOrEmpty(textToRemove))
+                    throw new ArgumentException("Text to remove cannot be empty for 'Remove text' scheme.");
                 var removed = fileName.Replace(textToRemove, "");
                 return Path.Combine(dir, $"{removed}{(keepExtension ? extension : "")}");
 
             case RenameSchemeEnum.ReplaceText:
-                var replaced = fileName.Replace(textToReplace, replaceWith);
+                if (string.IsNullOrEmpty(textToReplace))
+                    throw new ArgumentException("Text to find cannot be empty for 'Replace text' scheme.");
+                var replaced = fileName.Replace(textToReplace, replaceWith ?? "");
                 return Path.Combine(dir, $"{replaced}{(keepExtension ? extension : "")}");
 
             case RenameSchemeEnum.ChangeExtension:
                 if (string.IsNullOrWhiteSpace(newExtension))
-                    throw new ArgumentException("New extension cannot be empty when changing extension.");
+                    throw new ArgumentException("New extension cannot be empty for 'Change extension' scheme.");
                 if (!newExtension.StartsWith("."))
                     newExtension = "." + newExtension;
                 return Path.Combine(dir, $"{fileName}{newExtension}");
 
             case RenameSchemeEnum.AddDateTime:
-                var dt = useCustomDateTime == true && datetimeSource == DatetimeSourceEnum.CustomDateTime
-                    ? DateTime.Now
-                    : DateTime.Now;
-
+                var dt = DateTime.Now;
                 var format = string.IsNullOrWhiteSpace(dateTimeFormat) ? "yyyyMMdd_HHmmss" : dateTimeFormat;
                 var formattedDate = dt.ToString(format);
-
-                // C# 7.3 compatible separator mapping
-                string sep;
-                switch (dateTimeSeparator)
-                {
-                    case SeparatorEnum.Period:
-                        sep = ".";
-                        break;
-                    case SeparatorEnum.Underscore:
-                        sep = "_";
-                        break;
-                    case SeparatorEnum.Dash:
-                        sep = "-";
-                        break;
-                    case SeparatorEnum.Space:
-                        sep = " ";
-                        break;
-                    default:
-                        sep = "_";
-                        break;
-                }
-
-                var position = addDateTimePosition ?? AddTextPositionEnum.AfterName;
-                var result = position == AddTextPositionEnum.BeforeName
+                var sep = GetSeparatorString(dateTimeSeparator);
+                var dtPosition = addDateTimePosition ?? AddTextPositionEnum.AfterName;
+                var dtResult = dtPosition == AddTextPositionEnum.BeforeName
                     ? $"{formattedDate}{sep}{fileName}"
                     : $"{fileName}{sep}{formattedDate}";
-
-                return Path.Combine(dir, $"{result}{(keepExtension ? extension : "")}");
+                return Path.Combine(dir, $"{dtResult}{(keepExtension ? extension : "")}");
 
             case RenameSchemeEnum.MakeSequential:
                 var counter = startNumber ?? 1;
                 var increment = incrementBy ?? 1;
                 var baseName = string.IsNullOrWhiteSpace(baseFileName) ? fileName : baseFileName;
-
-                // C# 7.3 compatible separator mapping
-                string numSep;
-                switch (numberSeparator)
-                {
-                    case SeparatorEnum.Period:
-                        numSep = ".";
-                        break;
-                    case SeparatorEnum.Underscore:
-                        numSep = "_";
-                        break;
-                    case SeparatorEnum.Dash:
-                        numSep = "-";
-                        break;
-                    case SeparatorEnum.Space:
-                        numSep = " ";
-                        break;
-                    default:
-                        numSep = "_";
-                        break;
-                }
-
+                var numSep = GetSeparatorString(numberSeparator);
                 var positionNum = addNumberPosition ?? AddTextPositionEnum.AfterName;
                 var padding = usePadding == true && minDigits.HasValue ? minDigits.Value : 0;
 
                 while (true)
                 {
-                    string numberStr;
-                    if (padding > 0)
-                    {
-                        numberStr = counter.ToString($"D{padding}");
-                    }
-                    else
-                    {
-                        numberStr = counter.ToString();
-                    }
+                    var numberStr = padding > 0
+                        ? counter.ToString($"D{padding}")
+                        : counter.ToString();
 
                     var newName = positionNum == AddTextPositionEnum.BeforeName
                         ? $"{numberStr}{numSep}{baseName}"
@@ -320,23 +299,14 @@ public class RenameFileNode : BaseNode
                     var fullPath = Path.Combine(dir, $"{newName}{(keepExtension ? extension : "")}");
 
                     if (!File.Exists(fullPath))
-                    {
                         return fullPath;
-                    }
 
                     counter += increment;
                 }
 
             default:
-                throw new ArgumentException("Invalid rename scheme specified.");
+                throw new ArgumentException($"Unsupported rename scheme: {renameScheme}");
         }
-    }
-
-    private IEnumerable<string> GetExpandedPaths(string pattern)
-    {
-        var dir = Path.GetDirectoryName(pattern);
-        var name = Path.GetFileName(pattern);
-        return Directory.GetFiles(dir, name);
     }
 }
 
@@ -345,22 +315,22 @@ public enum RenameSchemeEnum
     [Display(Name = "Set new name", Description = "Sets a completely new name for the file.")]
     SetNewName,
 
-    [Display(Name = "Add text", Description = "Adds text to the existing file name.")]
+    [Display(Name = "Add text", Description = "Prepends or appends text to the existing filename.")]
     AddText,
 
-    [Display(Name = "Remove text", Description = "Removes specified text from the file name.")]
+    [Display(Name = "Remove text", Description = "Removes a specified substring from the filename.")]
     RemoveText,
 
-    [Display(Name = "Replace text", Description = "Replaces specified text in the file name.")]
+    [Display(Name = "Replace text", Description = "Replaces a specified substring in the filename with new text.")]
     ReplaceText,
 
-    [Display(Name = "Change extension", Description = "Changes the file extension.")]
+    [Display(Name = "Change extension", Description = "Changes the file extension to a new value.")]
     ChangeExtension,
 
-    [Display(Name = "Add datetime", Description = "Appends a timestamp to the file name.")]
+    [Display(Name = "Add datetime", Description = "Appends or prepends a formatted timestamp to the filename.")]
     AddDateTime,
 
-    [Display(Name = "Make sequential", Description = "Renames the file with a sequential number.")]
+    [Display(Name = "Make sequential", Description = "Renames files with sequential numbers (e.g., Invoice_001, Invoice_002).")]
     MakeSequential,
 }
 
