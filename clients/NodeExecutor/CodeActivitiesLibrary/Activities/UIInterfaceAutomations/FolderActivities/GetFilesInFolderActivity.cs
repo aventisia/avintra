@@ -19,7 +19,7 @@ namespace CodeActivitiesLibrary.UiInterfaceAutomations.FolderActivities
         public InArgument<string> FolderPath { get; set; }
 
         [DisplayName("File Filter")]
-        [Description("One or more file patterns separated by semicolons (;), pipes (|), or commas (,). Examples: *.txt | *.pdf;*.docx | invoice_*.xlsx. Default: * (all files).")]
+        [Description("One or more file patterns separated by semicolons (;). Examples: *.txt;*.pdf;*.docx;invoice_*.xlsx. Default: * (all files).")]
         public InArgument<string> FileFilter { get; set; } = new InArgument<string>("*");
 
         [DisplayName("Include Subfolders")]
@@ -88,7 +88,7 @@ namespace CodeActivitiesLibrary.UiInterfaceAutomations.FolderActivities
         private IEnumerable<string> GetFiles(string folderPath, string fileFilter, bool includeSubfolders, bool failUponDeniedAccess)
         {
             var searchOption = includeSubfolders ? SearchOption.AllDirectories : SearchOption.TopDirectoryOnly;
-            var patterns = fileFilter.Split(new[] { '|', ',', ';' }, StringSplitOptions.RemoveEmptyEntries);
+            var patterns = fileFilter.Split(new[] { ';' }, StringSplitOptions.RemoveEmptyEntries);
 
             if (!failUponDeniedAccess && includeSubfolders)
             {

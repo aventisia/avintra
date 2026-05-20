@@ -47,28 +47,28 @@ public class GetSpecialFolderPathNode : BaseNode
 
     public enum SpecialFolder
     {
-        [Description("The desktop directory for the current user.")]
+        [Display(Name = "Desktop", Description = "The desktop directory for the current user.")]
         Desktop,
 
-        [Description("The directory containing music files.")]
+        [Display(Name = "Music", Description = "The directory containing music files.")]
         Music,
 
-        [Description("The directory containing template files.")]
+        [Display(Name = "Templates", Description = "The directory containing template files.")]
         Templates,
 
-        [Description("The directory containing application data for all users.")]
+        [Display(Name = "Application Data", Description = "The directory containing application data for all users.")]
         ApplicationData,
 
-        [Description("The directory containing application data for the current user.")]
+        [Display(Name = "Local Application Data", Description = "The directory containing application data for the current user.")]
         LocalApplicationData,
 
-        [Description("The directory containing Internet cache files.")]
+        [Display(Name = "Internet Cache", Description = "The directory containing Internet cache files.")]
         InternetCache,
 
-        [Description("The directory containing cookies.")]
+        [Display(Name = "Cookies", Description = "The directory containing cookies.")]
         Cookies,
 
-        [Description("The directory containing browsing history.")]
+        [Display(Name = "History", Description = "The directory containing browsing history.")]
         History
     }
 }

@@ -51,9 +51,9 @@ public class IfFolderExistsNode : BaseNode
 
 public enum FolderCondition
 {
-    [Description("Check if the folder exists.")]
+    [Display(Name = "Exists", Description = "Check if the folder exists.")]
     Exists,
 
-    [Description("Check if the folder does not exist.")]
+    [Display(Name = "Does Not Exist", Description = "Check if the folder does not exist.")]
     DoesNotExist
 }

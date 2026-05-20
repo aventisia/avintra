@@ -2,22 +2,21 @@
 
 namespace NodeLibrary.FileNodes;
 
-[DisplayName("Move File(s)"), Description("Moves one or more files into a destination folder.")]
+[DisplayName("Move File(s)"), Description("Moves one or more files into a destination folder. Supports wildcard patterns and multiple paths separated by semicolons.")]
 [NodeMetadata(icon: "/assets/File.svg")]
 public class MoveFileNode : BaseNode
 {
-    [DisplayName("File(s) to move"), Description("The path(s) of the file(s) to move. Supports wildcards like *.txt.")]
+    [DisplayName("Source file path(s)"), Description("One or more file paths to move, separated by semicolons. Supports wildcards (e.g., 'C:\\Inbox\\*.pdf;C:\\Inbox\\report.docx').")]
     public required InArgument<string> SourceFiles { get; set; }
 
-    [DisplayName("Destination folder"), Description("The destination folder where the files will be moved.")]
+    [DisplayName("Destination folder"), Description("The folder where files will be moved to (e.g., 'C:\\Archive\\Reports'). Created automatically if it does not exist.")]
     public required InArgument<string> DestinationFolder { get; set; }
 
-    [DisplayName("If file exists"), Description("Specifies the behavior when a file already exists in the destination folder.")]
+    [DisplayName("If file exists"), Description("Action to take when a file with the same name already exists in the destination. Default: Do nothing (skip).")]
     public required InArgument<IfExistsActionEnum> IfExistsAction { get; set; } = new InArgument<IfExistsActionEnum>(IfExistsActionEnum.DoNothing);
 
-
-    [DisplayName("Moved File"), Description("Returns the path of the successfully moved file.")]
-    public OutArgument<string> MovedFile { get; set; } = new OutArgument<string>();
+    [DisplayName("Moved files"), Description("Returns the list of full paths of all successfully moved files in the destination folder.")]
+    public OutArgument<IEnumerable<string>> MovedFiles { get; set; } = new OutArgument<IEnumerable<string>>();
 
     protected override void Execute(INodeContext context)
     {
@@ -27,33 +26,36 @@ public class MoveFileNode : BaseNode
 
         if (string.IsNullOrWhiteSpace(sourceFiles))
         {
-            throw new ArgumentException("Source files cannot be empty.");
+            IsSuccess.Set(context, false);
+            StatusMessage.Set(context, "Source file path(s) cannot be empty.");
+            return;
         }
 
         if (string.IsNullOrWhiteSpace(destinationFolder))
         {
-            throw new ArgumentException("Destination folder cannot be empty.");
+            IsSuccess.Set(context, false);
+            StatusMessage.Set(context, "Destination folder cannot be empty.");
+            return;
         }
-
-        string movedFile = null;
 
         try
         {
             Directory.CreateDirectory(destinationFolder);
 
             var sourceFilePaths = sourceFiles.Split(new[] { ';' }, StringSplitOptions.RemoveEmptyEntries);
+            var movedFiles = new List<string>();
 
             foreach (var sourceFilePath in sourceFilePaths)
             {
-                var expandedPaths = GetExpandedPaths(sourceFilePath);
+                var trimmedPath = sourceFilePath.Trim();
+                var dir = Path.GetDirectoryName(trimmedPath);
+                var filePattern = Path.GetFileName(trimmedPath);
 
-                foreach (var expandedPath in expandedPaths)
+                if (string.IsNullOrEmpty(dir) || !Directory.Exists(dir))
+                    continue;
+
+                foreach (var expandedPath in Directory.EnumerateFiles(dir, filePattern))
                 {
-                    if (!File.Exists(expandedPath))
-                    {
-                        continue;
-                    }
-
                     var fileName = Path.GetFileName(expandedPath);
                     var destinationPath = Path.Combine(destinationFolder, fileName);
 
@@ -63,41 +65,39 @@ public class MoveFileNode : BaseNode
                         {
                             case IfExistsActionEnum.DoNothing:
                                 continue;
-
                             case IfExistsActionEnum.Overwrite:
                                 File.Delete(destinationPath);
                                 File.Move(expandedPath, destinationPath);
-                                movedFile = destinationPath;
+                                movedFiles.Add(destinationPath);
                                 break;
-
-                            default:
-                                throw new ArgumentException("Invalid 'If file exists' action specified.");
                         }
                     }
                     else
                     {
                         File.Move(expandedPath, destinationPath);
-                        movedFile = destinationPath;
+                        movedFiles.Add(destinationPath);
                     }
                 }
             }
 
-            MovedFile.Set(context, movedFile);
+            MovedFiles.Set(context, movedFiles);
             IsSuccess.Set(context, true);
-            StatusMessage.Set(context, "Moved files successfully");
+            StatusMessage.Set(context, $"{movedFiles.Count} file(s) moved successfully.");
         }
-
+        catch (UnauthorizedAccessException ex)
+        {
+            IsSuccess.Set(context, false);
+            StatusMessage.Set(context, $"Access denied: {ex.Message}");
+        }
+        catch (IOException ex)
+        {
+            IsSuccess.Set(context, false);
+            StatusMessage.Set(context, $"I/O error moving files: {ex.Message}");
+        }
         catch (Exception ex)
         {
-            MovedFile.Set(context, null);
             IsSuccess.Set(context, false);
             StatusMessage.Set(context, $"Error moving files: {ex.Message}");
         }
-    }
-
-
-    private IEnumerable<string> GetExpandedPaths(string pattern)
-    {
-        return Directory.GetFiles(Path.GetDirectoryName(pattern) ?? string.Empty, Path.GetFileName(pattern));
     }
 }
