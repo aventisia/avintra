@@ -15,7 +15,7 @@ namespace CodeActivitiesLibrary.UiInterfaceAutomations.FileActivities
     {
         [RequiredArgument]
         [DisplayName("File(s) to rename")]
-        [Description("The path(s) of the file(s) to rename. Supports wildcards like *.txt.")]
+        [Description("The path(s) of the file(s) (separated by semicolons) to rename. Supports wildcards like *.txt.")]
         public InArgument<string> FilesToRename { get; set; }
 
         [RequiredArgument]

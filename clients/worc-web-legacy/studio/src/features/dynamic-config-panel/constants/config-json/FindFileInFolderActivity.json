@@ -1,7 +1,7 @@
 {
   "name": "FindFileInFolder",
   "label": "Find File in Folder",
-  "description": "Finds a single file in a folder (and optionally subfolders) based on criteria like largest, smallest, newest, oldest, etc.",
+  "description": "Finds a single file in a folder (and optionally subfolders) that best matches a given criterion such as largest, newest, or first alphabetically.",
   "version": "1.0.0",
   "auther": "@aventisia",
   "supportedPlatforms": ["cloud", "windows"],
@@ -13,7 +13,7 @@
       "type": "text",
       "name": "FolderPath",
       "label": "Folder Path",
-      "description": "The path to the folder to search in.",
+      "description": "The full path of the folder to search. Example: C:\\Documents\\Reports",
       "defaultValue": "",
       "required": true
     },
@@ -22,49 +22,49 @@
       "type": "select",
       "name": "SearchOption",
       "label": "Search Option",
-      "description": "Criteria to select the file: Largest, Smallest, Newest, Oldest, etc.",
+      "description": "The criterion used to select the matching file. Options: Largest, Smallest, Newest, Oldest, NewestCreated, OldestCreated, FirstAlphabetical, LastAlphabetical. Default: Largest.",
       "defaultValue": "Largest",
       "required": true,
       "selectOptions": [
         {
           "label": "Largest",
           "value": "Largest",
-          "description": "Find the largest file."
+          "description": "Find the file with the largest size."
         },
         {
           "label": "Smallest",
           "value": "Smallest",
-          "description": "Find the smallest file."
+          "description": "Find the file with the smallest size."
         },
         {
-          "label": "Newest Modifed",
+          "label": "Newest Modified",
           "value": "Newest",
-          "description": "Find the newest (last modified) file."
+          "description": "Find the most recently modified file."
         },
         {
-          "label": "Oldest Modifed",
+          "label": "Oldest Modified",
           "value": "Oldest",
-          "description": "Find the oldest (last modified) file."
+          "description": "Find the least recently modified file."
         },
         {
           "label": "Newest Created",
           "value": "NewestCreated",
-          "description": "Find the newest (created) file."
+          "description": "Find the most recently created file."
         },
         {
           "label": "Oldest Created",
           "value": "OldestCreated",
-          "description": "Find the oldest (created) file."
+          "description": "Find the oldest created file."
         },
         {
           "label": "First Alphabetical",
           "value": "FirstAlphabetical",
-          "description": "First file alphabetically."
+          "description": "Find the first file in alphabetical order by name."
         },
         {
           "label": "Last Alphabetical",
           "value": "LastAlphabetical",
-          "description": "Last file alphabetically."
+          "description": "Find the last file in alphabetical order by name."
         }
       ]
     },
@@ -73,7 +73,7 @@
       "type": "text",
       "name": "FileFilter",
       "label": "File Filter",
-      "description": "File filter(s), e.g. \u0027*.txt\u0027 or \u0027*.jpg;*.png\u0027.",
+      "description": "One or more file patterns separated by semicolons (;). Examples: *.pdf or *.pdf;*.docx. Default: * (all files).",
       "defaultValue": "*",
       "required": false
     },
@@ -82,7 +82,7 @@
       "type": "switch",
       "name": "IncludeSubfolders",
       "label": "Include Subfolders",
-      "description": "If true, includes files from all subfolders.",
+      "description": "When true, searches all subfolders recursively. When false, only the top-level folder is searched. Default: true.",
       "defaultValue": true,
       "required": false
     },
@@ -91,7 +91,7 @@
       "type": "config-panel-output",
       "name": "ResultFilePath",
       "label": "Result File Path",
-      "description": "The file path of the found file.",
+      "description": "The full path of the file that best matches the search criteria. Empty if no matching file is found.",
       "defaultValue": {
         "value": "ResultFilePath",
         "enabled": true

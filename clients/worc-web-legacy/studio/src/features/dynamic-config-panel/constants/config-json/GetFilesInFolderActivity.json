@@ -1,7 +1,7 @@
 {
   "name": "GetFilesInFolder",
   "label": "Retrieve Files in Folder",
-  "description": "This activity retrieves the list of files in a specified folder, with options to include subfolders and sort the results.",
+  "description": "Retrieves the list of files in a specified folder, with options to include subfolders, filter by file type, and sort the results.",
   "version": "1.0.0",
   "auther": "@aventisia",
   "supportedPlatforms": ["cloud", "windows"],
@@ -13,7 +13,7 @@
       "type": "text",
       "name": "FolderPath",
       "label": "Folder Path",
-      "description": "Specifies the path to the folder where files will be retrieved.",
+      "description": "The full path of the folder to retrieve files from. Example: C:\\Users\\Documents\\Reports",
       "defaultValue": "",
       "required": false
     },
@@ -22,7 +22,7 @@
       "type": "text",
       "name": "FileFilter",
       "label": "File Filter",
-      "description": "A pattern to filter the files (e.g., \u0022*.txt\u0022 for text files).",
+      "description": "One or more file patterns separated by semicolons (;), pipes (|), or commas (,). Examples: *.txt | *.pdf;*.docx | invoice_*.xlsx. Default: * (all files).",
       "defaultValue": "*",
       "required": false
     },
@@ -31,7 +31,7 @@
       "type": "switch",
       "name": "IncludeSubfolders",
       "label": "Include Subfolders",
-      "description": "If true, includes files from all subfolders within the specified folder.",
+      "description": "When true, searches all subfolders recursively. When false, only the top-level folder is searched. Default: true.",
       "defaultValue": true,
       "required": false
     },
@@ -40,7 +40,7 @@
       "type": "switch",
       "name": "FailUponDeniedAccess",
       "label": "Fail on Denied Access",
-      "description": "If true, the activity will fail if access to any subfolder is denied.",
+      "description": "When true, throws an error if access to any folder is denied. When false, inaccessible folders are silently skipped. Default: true.",
       "defaultValue": true,
       "required": false
     },
@@ -49,49 +49,59 @@
       "type": "select",
       "name": "SortBy",
       "label": "Sort By",
-      "description": "The primary criterion to sort the retrieved files (e.g., \u0022Name\u0022, \u0022LastWriteTime\u0022).",
+      "description": "The primary sort criterion for the retrieved files. Options: NoSort, FullName, RootPath, Directory, Name, NameWithoutExtension, Extension, Size, CreationTime, LastWriteTime. Default: NoSort.",
       "defaultValue": "NoSort",
       "required": false,
       "selectOptions": [
         {
-          "label": "NoSort",
+          "label": "No Sort",
           "value": "NoSort",
           "description": "No sorting applied."
         },
         {
-          "label": "FullName",
+          "label": "Full Name",
           "value": "FullName",
           "description": "Sort by the full file path."
         },
         {
-          "label": "RootPath",
+          "label": "Root Path",
           "value": "RootPath",
-          "description": "Sort by the root directory path."
+          "description": "Sort by the root drive path (e.g., C:\\)."
         },
         {
           "label": "Directory",
           "value": "Directory",
-          "description": "Sort by the directory containing the file."
+          "description": "Sort by the parent directory path."
         },
         {
           "label": "Name",
           "value": "Name",
-          "description": "Sort by the file name."
+          "description": "Sort by the file name including extension."
         },
         {
-          "label": "NameWithoutExtension",
+          "label": "Name Without Extension",
           "value": "NameWithoutExtension",
           "description": "Sort by the file name without the extension."
         },
         {
           "label": "Extension",
           "value": "Extension",
-          "description": "Sort by the file extension."
+          "description": "Sort by the file extension (e.g., .pdf, .txt)."
         },
         {
           "label": "Size",
           "value": "Size",
-          "description": "Sort by the file size."
+          "description": "Sort by the file size in bytes."
+        },
+        {
+          "label": "Creation Time",
+          "value": "CreationTime",
+          "description": "Sort by the date and time the file was created."
+        },
+        {
+          "label": "Last Write Time",
+          "value": "LastWriteTime",
+          "description": "Sort by the date and time the file was last modified."
         }
       ]
     },
@@ -100,7 +110,7 @@
       "type": "switch",
       "name": "Descending",
       "label": "Descending Order",
-      "description": "If true, sorts the files in descending order based on the primary sort criterion.",
+      "description": "When true, sorts results in descending order. When false, sorts in ascending order. Default: false.",
       "defaultValue": false,
       "required": false
     },
@@ -109,49 +119,59 @@
       "type": "select",
       "name": "ThenBy",
       "label": "Then By",
-      "description": "The secondary criterion to sort the retrieved files (e.g., \u0022Size\u0022, \u0022CreationTime\u0022).",
+      "description": "The secondary (tiebreaker) sort criterion, applied only when Sort By is not NoSort. Default: NoSort.",
       "defaultValue": "NoSort",
       "required": false,
       "selectOptions": [
         {
-          "label": "NoSort",
+          "label": "No Sort",
           "value": "NoSort",
           "description": "No sorting applied."
         },
         {
-          "label": "FullName",
+          "label": "Full Name",
           "value": "FullName",
           "description": "Sort by the full file path."
         },
         {
-          "label": "RootPath",
+          "label": "Root Path",
           "value": "RootPath",
-          "description": "Sort by the root directory path."
+          "description": "Sort by the root drive path (e.g., C:\\)."
         },
         {
           "label": "Directory",
           "value": "Directory",
-          "description": "Sort by the directory containing the file."
+          "description": "Sort by the parent directory path."
         },
         {
           "label": "Name",
           "value": "Name",
-          "description": "Sort by the file name."
+          "description": "Sort by the file name including extension."
         },
         {
-          "label": "NameWithoutExtension",
+          "label": "Name Without Extension",
           "value": "NameWithoutExtension",
           "description": "Sort by the file name without the extension."
         },
         {
           "label": "Extension",
           "value": "Extension",
-          "description": "Sort by the file extension."
+          "description": "Sort by the file extension (e.g., .pdf, .txt)."
         },
         {
           "label": "Size",
           "value": "Size",
-          "description": "Sort by the file size."
+          "description": "Sort by the file size in bytes."
+        },
+        {
+          "label": "Creation Time",
+          "value": "CreationTime",
+          "description": "Sort by the date and time the file was created."
+        },
+        {
+          "label": "Last Write Time",
+          "value": "LastWriteTime",
+          "description": "Sort by the date and time the file was last modified."
         }
       ]
     },
@@ -160,7 +180,7 @@
       "type": "config-panel-output",
       "name": "RetrievedFiles",
       "label": "Retrieved Files",
-      "description": "The list of files that were retrieved based on the specified criteria.",
+      "description": "The list of full file paths that match the specified filter and sort criteria.",
       "defaultValue": {
         "value": "RetrievedFiles",
         "enabled": true

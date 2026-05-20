@@ -9,33 +9,33 @@ using System.Linq;
 namespace CodeActivitiesLibrary.UiInterfaceAutomations.FolderActivities
 {
     [DisplayName("Find File in Folder")]
-    [Description("Finds a single file in a folder (and optionally subfolders) based on criteria like largest, smallest, newest, oldest, etc.")]
+    [Description("Finds a single file in a folder (and optionally subfolders) that best matches a given criterion such as largest, newest, or first alphabetically.")]
     [ActivityMetaData(nodeImg: "/assets/Folder.svg")]
     public class FindFileInFolderActivity : BaseCodeActivity
     {
         [RequiredArgument]
         [DisplayName("Folder Path")]
-        [Description("The path to the folder to search in.")]
+        [Description("The full path of the folder to search. Example: C:\\Documents\\Reports")]
         public InArgument<string> FolderPath { get; set; }
 
         [RequiredArgument]
         [DisplayName("Search Option")]
-        [Description("Criteria to select the file: Largest, Smallest, Newest, Oldest, etc.")]
+        [Description("The criterion used to select the matching file. Options: Largest, Smallest, Newest, Oldest, NewestCreated, OldestCreated, FirstAlphabetical, LastAlphabetical. Default: Largest.")]
         [DefaultValue(FileSearchOption.Largest)]
         public InArgument<FileSearchOption> SearchOption { get; set; }
 
         [DisplayName("File Filter")]
-        [Description("File filter(s), e.g. '*.txt' or '*.jpg;*.png'.")]
+        [Description("One or more file patterns separated by semicolons (;). Examples: *.pdf or *.pdf;*.docx. Default: * (all files).")]
         [DefaultValue("*")]
         public InArgument<string> FileFilter { get; set; }
 
         [DisplayName("Include Subfolders")]
-        [Description("If true, includes files from all subfolders.")]
+        [Description("When true, searches all subfolders recursively. When false, only the top-level folder is searched. Default: true.")]
         [DefaultValue(true)]
         public InArgument<bool> IncludeSubfolders { get; set; }
 
         [DisplayName("Result File Path")]
-        [Description("The file path of the found file.")]
+        [Description("The full path of the file that best matches the search criteria. Empty if no matching file is found.")]
         public OutArgument<string> ResultFilePath { get; set; }
 
         protected override void Execute(CodeActivityContext context)
@@ -47,57 +47,67 @@ namespace CodeActivitiesLibrary.UiInterfaceAutomations.FolderActivities
 
             try
             {
+                if (string.IsNullOrWhiteSpace(folderPath))
+                    throw new ArgumentNullException(nameof(FolderPath), "Folder Path is required.");
+
+                if (!Directory.Exists(folderPath))
+                    throw new DirectoryNotFoundException($"The specified folder does not exist: {folderPath}");
+
                 if (string.IsNullOrWhiteSpace(fileFilter))
                     fileFilter = "*";
 
-                if (string.IsNullOrWhiteSpace(folderPath) || !Directory.Exists(folderPath))
-                    throw new DirectoryNotFoundException($"The specified folder path does not exist: {folderPath}");
-
-                var filters = fileFilter.Split(new[] { ';' }, StringSplitOptions.RemoveEmptyEntries);
                 var searchOpt = includeSubfolders ? System.IO.SearchOption.AllDirectories : System.IO.SearchOption.TopDirectoryOnly;
-                var files = filters.SelectMany(f => Directory.GetFiles(folderPath, f.Trim(), searchOpt))
-                                   .Where(f => (File.GetAttributes(f) & FileAttributes.Hidden) == 0)
-                                   .ToList();
+                var filters = fileFilter.Split(new[] { ';' }, StringSplitOptions.RemoveEmptyEntries);
 
-                if (!files.Any())
+                // Pre-compute FileInfo once to avoid repeated disk I/O inside sort comparisons
+                var fileInfos = filters
+                    .SelectMany(f => Directory.EnumerateFiles(folderPath, f.Trim(), searchOpt))
+                    .Distinct()
+                    .Where(f => (File.GetAttributes(f) & FileAttributes.Hidden) == 0)
+                    .Select(f => new FileInfo(f))
+                    .ToList();
+
+                if (!fileInfos.Any())
                 {
                     ResultFilePath.Set(context, null);
+                    IsSuccess.Set(context, true);
+                    StatusMessage.Set(context, "No matching files found.");
                     return;
                 }
 
-                string result = null;
+                FileInfo result;
                 switch (searchOption)
                 {
                     case FileSearchOption.Largest:
-                        result = files.OrderByDescending(f => new FileInfo(f).Length).FirstOrDefault();
+                        result = fileInfos.OrderByDescending(fi => fi.Length).First();
                         break;
                     case FileSearchOption.Smallest:
-                        result = files.OrderBy(f => new FileInfo(f).Length).FirstOrDefault();
+                        result = fileInfos.OrderBy(fi => fi.Length).First();
                         break;
                     case FileSearchOption.Newest:
-                        result = files.OrderByDescending(f => File.GetLastWriteTime(f)).FirstOrDefault();
+                        result = fileInfos.OrderByDescending(fi => fi.LastWriteTime).First();
                         break;
                     case FileSearchOption.Oldest:
-                        result = files.OrderBy(f => File.GetLastWriteTime(f)).FirstOrDefault();
+                        result = fileInfos.OrderBy(fi => fi.LastWriteTime).First();
                         break;
                     case FileSearchOption.NewestCreated:
-                        result = files.OrderByDescending(f => File.GetCreationTime(f)).FirstOrDefault();
+                        result = fileInfos.OrderByDescending(fi => fi.CreationTime).First();
                         break;
                     case FileSearchOption.OldestCreated:
-                        result = files.OrderBy(f => File.GetCreationTime(f)).FirstOrDefault();
+                        result = fileInfos.OrderBy(fi => fi.CreationTime).First();
                         break;
                     case FileSearchOption.FirstAlphabetical:
-                        result = files.OrderBy(f => Path.GetFileName(f)).FirstOrDefault();
+                        result = fileInfos.OrderBy(fi => fi.Name).First();
                         break;
                     case FileSearchOption.LastAlphabetical:
-                        result = files.OrderByDescending(f => Path.GetFileName(f)).FirstOrDefault();
+                        result = fileInfos.OrderByDescending(fi => fi.Name).First();
                         break;
                     default:
-                        result = files.FirstOrDefault();
+                        result = fileInfos.First();
                         break;
                 }
 
-                ResultFilePath.Set(context, result);
+                ResultFilePath.Set(context, result.FullName);
                 IsSuccess.Set(context, true);
                 StatusMessage.Set(context, "File found successfully.");
             }
@@ -111,28 +121,28 @@ namespace CodeActivitiesLibrary.UiInterfaceAutomations.FolderActivities
 
     public enum FileSearchOption
     {
-        [Display(Name = "Largest", Description = "Find the largest file.")]
+        [Display(Name = "Largest", Description = "Find the file with the largest size.")]
         Largest,
 
-        [Display(Name = "Smallest", Description = "Find the smallest file.")]
+        [Display(Name = "Smallest", Description = "Find the file with the smallest size.")]
         Smallest,
 
-        [Display(Name = "Newest Modifed", Description = "Find the newest (last modified) file.")]
+        [Display(Name = "Newest Modified", Description = "Find the most recently modified file.")]
         Newest,
 
-        [Display(Name = "Oldest Modifed", Description = "Find the oldest (last modified) file.")]
+        [Display(Name = "Oldest Modified", Description = "Find the least recently modified file.")]
         Oldest,
 
-        [Display(Name = "Newest Created", Description = "Find the newest (created) file.")]
+        [Display(Name = "Newest Created", Description = "Find the most recently created file.")]
         NewestCreated,
 
-        [Display(Name = "Oldest Created", Description = "Find the oldest (created) file.")]
+        [Display(Name = "Oldest Created", Description = "Find the oldest created file.")]
         OldestCreated,
 
-        [Display(Name = "First Alphabetical", Description = "First file alphabetically.")]
+        [Display(Name = "First Alphabetical", Description = "Find the first file in alphabetical order by name.")]
         FirstAlphabetical,
 
-        [Display(Name = "Last Alphabetical", Description = "Last file alphabetically.")]
+        [Display(Name = "Last Alphabetical", Description = "Find the last file in alphabetical order by name.")]
         LastAlphabetical
     }
 }

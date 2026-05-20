@@ -1,7 +1,7 @@
 {
   "name": "DeleteFile",
   "label": "Delete File(s)",
-  "description": "Deletes one or more files.",
+  "description": "Deletes one or more files. Supports wildcards and multiple file paths separated by semicolons.",
   "version": "1.0.0",
   "auther": "@aventisia",
   "supportedPlatforms": ["cloud", "windows"],
@@ -12,8 +12,8 @@
       "direction": "Input",
       "type": "text",
       "name": "FilesToDelete",
-      "label": "File(s) to delete",
-      "description": "The path(s) of the file(s) to delete. Supports wildcards like *.txt.",
+      "label": "File(s) to Delete",
+      "description": "The path(s) of the file(s) to delete, separated by semicolons (;). Supports wildcards. Examples: C:\\Temp\\report.pdf | C:\\Temp\\*.log;C:\\Archive\\old_*.txt",
       "defaultValue": "",
       "required": true
     }
