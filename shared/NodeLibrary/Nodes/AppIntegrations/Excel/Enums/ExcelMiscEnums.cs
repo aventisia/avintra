@@ -11,63 +11,63 @@ public enum ExcelWorksheetPositionEnum
 
 public enum ExcelColorEnum
 {
-    [Description("Red (#FF0000)")]
+    [Display(Name = "Red", Description = "Red (#FF0000)")]
     Red,
 
-    [Description("Green (#00FF00)")]
+    [Display(Name = "Green", Description = "Green (#00FF00)")]
     Green,
 
-    [Description("Blue (#0000FF)")]
+    [Display(Name = "Blue", Description = "Blue (#0000FF)")]
     Blue,
 
-    [Description("Yellow (#FFFF00)")]
+    [Display(Name = "Yellow", Description = "Yellow (#FFFF00)")]
     Yellow,
 
-    [Description("Black (#000000)")]
+    [Display(Name = "Black", Description = "Black (#000000)")]
     Black,
 
-    [Description("White (#FFFFFF)")]
+    [Display(Name = "White", Description = "White (#FFFFFF)")]
     White,
 
-    [Description("Aquamarine (#7FFFD4)")]
+    [Display(Name = "Aquamarine", Description = "Aquamarine (#7FFFD4)")]
     Aquamarine,
 
-    [Description("Azure (#F0FFFF)")]
+    [Display(Name = "Azure", Description = "Azure (#F0FFFF)")]
     Azure,
 
-    [Description("Bisque (#FFE4C4)")]
+    [Display(Name = "Bisque", Description = "Bisque (#FFE4C4)")]
     Bisque,
 
-    [Description("Coral (#FF7F50)")]
+    [Display(Name = "Coral", Description = "Coral (#FF7F50)")]
     Coral,
 
-    [Description("Dark Orange (#FF8C00)")]
+    [Display(Name = "Dark Orange", Description = "Dark Orange (#FF8C00)")]
     DarkOrange,
 
-    [Description("Gold (#FFD700)")]
+    [Display(Name = "Gold", Description = "Gold (#FFD700)")]
     Gold,
 
-    [Description("Lime (#00FF00)")]
+    [Display(Name = "Lime", Description = "Lime (#00FF00)")]
     Lime,
 
-    [Description("Magenta (#FF00FF)")]
+    [Display(Name = "Magenta", Description = "Magenta (#FF00FF)")]
     Magenta,
 
-    [Description("Orange (#FFA500)")]
+    [Display(Name = "Orange", Description = "Orange (#FFA500)")]
     Orange,
 
-    [Description("Pink (#FFC0CB)")]
+    [Display(Name = "Pink", Description = "Pink (#FFC0CB)")]
     Pink,
 
-    [Description("Purple (#800080)")]
+    [Display(Name = "Purple", Description = "Purple (#800080)")]
     Purple,
 
-    [Description("Teal (#008080)")]
+    [Display(Name = "Teal", Description = "Teal (#008080)")]
     Teal,
 
-    [Description("Turquoise (#40E0D0)")]
+    [Display(Name = "Turquoise", Description = "Turquoise (#40E0D0)")]
     Turquoise,
 
-    [Description("Violet (#EE82EE)")]
+    [Display(Name = "Violet", Description = "Violet (#EE82EE)")]
     Violet
 }

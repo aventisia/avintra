@@ -109,12 +109,12 @@ public class ExtractPdfPagesFromOldToNewPdfNode : BaseNode
 
 public enum PageSelectionModeEnum
 {
-    [Description("Extract all pages from the Pdf.")]
+    [Display(Name = "All", Description = "Extract all pages from the Pdf.")]
     All,
 
-    [Description("Extract only the specified single page.")]
+    [Display(Name = "Single", Description = "Extract only the specified single page.")]
     Single,
 
-    [Description("Extract a range of pages from the Pdf.")]
+    [Display(Name = "Range", Description = "Extract a range of pages from the Pdf.")]
     Range
 }
