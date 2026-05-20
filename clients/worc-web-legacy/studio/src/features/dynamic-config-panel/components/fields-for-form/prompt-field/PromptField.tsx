@@ -1,8 +1,8 @@
 import { PromptSelect } from "@/features/dynamic-config-panel/components/fields-for-form/prompt-field/prompt-seletor";
-import { SaveAsTemplateDialog } from "@/features/save-prompt-template /components/SaveAsTemplateDialog";
-import { useFetchTemplateList } from "@/features/save-prompt-template /hooks/useFetchTemplateList";
-import { useSavePromptTemplateStore } from "@/features/save-prompt-template /stores/save-prompt-template-store";
-import { PromptTemplateSchema } from "@/features/save-prompt-template /types/prompt-template-schema-type";
+import { SaveAsTemplateDialog } from "@/features/save-prompt-template/components/SaveAsTemplateDialog";
+import { useFetchTemplateList } from "@/features/save-prompt-template/hooks/useFetchTemplateList";
+import { useSavePromptTemplateStore } from "@/features/save-prompt-template/stores/save-prompt-template-store";
+import { PromptTemplateSchema } from "@/features/save-prompt-template/types/prompt-template-schema-type";
 
 import { Button } from "@aventisia/ui/buttons";
 import { TextareaField } from "@aventisia/ui/form";
