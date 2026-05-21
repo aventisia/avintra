@@ -34,7 +34,7 @@ class ToolExecutionService:
             outputs.append({
                 "type": "function_call_output",
                 "call_id": call_id,
-                "output": json.dumps(result)
+                "output": result
             })
 
         return outputs

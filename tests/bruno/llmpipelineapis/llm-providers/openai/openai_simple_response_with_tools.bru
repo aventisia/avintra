@@ -5,7 +5,7 @@ meta {
 }
 
 post {
-  url: {{LLM_PIPELINE_APIS_BASE_URL}}/llm/generate
+  url: ht{{LLM_PIPELINE_APIS_BASE_URL}}/llm/generatetp://127.0.0.1:8000/api/llm/generate
   body: json
   auth: bearer
 }
@@ -22,22 +22,22 @@ body:json {
     "files": null,
     "tool_config": [
       {
-        "platform": "outlook",
+        "tool": "outlook",
         "credential_id": "DUMMY",
-        "tools": [
+        "actions": [
           {
             "approval": "human", // "auto"
-            "tool": "send_email"
+            "action": "send_email"
           }
         ]
       },
       {
-          "platform": "github",
+          "tool": "github",
           "credential_id": "DUMMY",
-          "tools": [
+          "actions": [
           {
             "approval": "human", // "auto"
-            "tool": "create_issue"
+            "action": "create_issue"
           }
         ]
       }

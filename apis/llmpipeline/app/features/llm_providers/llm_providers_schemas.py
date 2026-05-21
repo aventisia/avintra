@@ -12,14 +12,16 @@ class LLMMessage(BaseModel):
     role: Literal['system', 'developer', 'user', 'assistant', 'model']
     content: str
 
-class ToolCapability(BaseModel):
-    tool: str    # Allowed action (e.g. "send_email")
-    approval: Literal["auto", "human"]    # Execution mode
+class ToolAction(BaseModel):
+    action: str    # Action that the tool is permitted to perform (e.g. "send_email")
+    approval: Literal["auto", "human"]    # Determines whether execution is automatic or requires approval
+
 
 class ToolConfig(BaseModel):
-    platform: str    # Tool/service name (e.g. "gmail")
-    credential_id: str    # Credential reference ID
-    tools: List[ToolCapability]   # Allowed capabilities
+    tool: str    # Name of the tool or external service (e.g. "gmail")
+    credential_id: str    # Identifier for the credentials used to access the tool
+    actions: List[ToolAction]    # List of permitted actions for this tool
+
 
 # Request schema to generate LLM response
 class LLMRequest(BaseModel):

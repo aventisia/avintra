@@ -65,9 +65,9 @@ class OutlookSendEmailExecutor:
             credential_id = None
 
             for tool in getattr(llm_request, "tool_config", []):
-                platform = getattr(tool, "platform", "")
+                tool_name = getattr(tool, "tool", "")
 
-                if platform.lower() == "outlook":
+                if tool_name.lower() == "outlook":
                     credential_id = getattr(tool, "credential_id", None)
                     break
 

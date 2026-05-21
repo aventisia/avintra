@@ -26,17 +26,17 @@ class ToolSchemaGeneratorService:
 
         for config in tool_configs:
 
-            tools = (
-                config.tools
-                if isinstance(config.tools, list)
-                else [config.tools]
+            actions = (
+                config.actions
+                if isinstance(config.actions, list)
+                else [config.actions]
             )
 
-            for tool in tools:
+            for action in actions:
 
                 tool_schema = cls._load_tool_schema(
-                    platform=config.platform,
-                    capability=tool.tool
+                    tool=config.tool,
+                    action=action.action
                 )
 
                 if tool_schema:
@@ -47,16 +47,16 @@ class ToolSchemaGeneratorService:
     @classmethod
     def _load_tool_schema(
         cls,
-        platform: str,
-        capability: str
+        tool: str,
+        action: str
     ) -> dict | None:
 
         try:
 
             tool_file = (
                 cls.TOOLS_BASE_PATH /
-                platform /
-                f"{capability}.json"
+                tool /
+                f"{action}.json"
             )
 
             if not tool_file.exists():
@@ -129,7 +129,7 @@ class ToolSchemaGeneratorService:
 
             logger.exception(
                 f"Failed loading tool schema "
-                f"{platform}/{capability}: {str(e)}"
+                f"{tool}/{action}: {str(e)}"
             )
 
             return None
