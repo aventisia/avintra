@@ -2,7 +2,7 @@
   "$schema": "../node_modules/@tauri-apps/cli/config.schema.json",
   "mainBinaryName": "WorcDesktopApp",
   "productName": "WorcDesktopApp",
-  "version": "0.1.64",
+  "version": "0.1.65",
   "identifier": "com.aventisia.worc",
   "build": {
     "frontendDist": "../dist",
@@ -16,7 +16,7 @@
         "title": "WorcDesktopApp",
         "resizable": true,
         "fullscreen": false,
-        "userAgent": "WorcDesktopApp/0.1.64"
+        "userAgent": "WorcDesktopApp/0.1.65"
       }
     ],
     "security": {

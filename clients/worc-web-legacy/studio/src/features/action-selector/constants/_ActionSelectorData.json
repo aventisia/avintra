@@ -1612,7 +1612,7 @@
             "description": "The path of the source folder that you want to copy the folder",
             "docsLink": "https://docs.aventisia.com",
             "img": "/assets/Folder.svg",
-            "supportedPlatforms": ["cloud", "windows"]
+            "supportedPlatforms": ["windows"]
           },
           {
             "type": "activityNode",
@@ -1621,7 +1621,7 @@
             "description": "Generates a new folder within the specified parent directory using a given folder name.",
             "docsLink": "https://docs.aventisia.com",
             "img": "/assets/Folder.svg",
-            "supportedPlatforms": ["cloud", "windows"]
+            "supportedPlatforms": ["windows"]
           },
           {
             "type": "activityNode",
@@ -1630,7 +1630,7 @@
             "description": "Removes the specified folder and its contents from the file system.",
             "docsLink": "https://docs.aventisia.com",
             "img": "/assets/Folder.svg",
-            "supportedPlatforms": ["cloud", "windows"]
+            "supportedPlatforms": ["windows"]
           },
           {
             "type": "activityNode",
@@ -1639,7 +1639,7 @@
             "description": "Removes all files and subdirectories within the specified folder, preserving the folder itself.",
             "docsLink": "https://docs.aventisia.com",
             "img": "/assets/Folder.svg",
-            "supportedPlatforms": ["cloud", "windows"]
+            "supportedPlatforms": ["windows"]
           },
           {
             "type": "activityNode",
@@ -1648,7 +1648,7 @@
             "description": "Finds a single file in a folder (and optionally subfolders) that best matches a given criterion such as largest, newest, or first alphabetically.",
             "docsLink": "https://docs.aventisia.com",
             "img": "/assets/Folder.svg",
-            "supportedPlatforms": ["cloud", "windows"]
+            "supportedPlatforms": ["windows"]
           },
           {
             "type": "activityNode",
@@ -1657,7 +1657,7 @@
             "description": "Retrieves the list of files in a specified folder, with options to include subfolders, filter by file type, and sort the results.",
             "docsLink": "https://docs.aventisia.com",
             "img": "/assets/Folder.svg",
-            "supportedPlatforms": ["cloud", "windows"]
+            "supportedPlatforms": ["windows"]
           },
           {
             "type": "activityNode",
@@ -1666,7 +1666,7 @@
             "description": "This activity retrieves the path of a Windows special folder, such as Desktop, My Pictures, Internet Cache, etc.",
             "docsLink": "https://docs.aventisia.com",
             "img": "/assets/Folder.svg",
-            "supportedPlatforms": ["cloud", "windows"]
+            "supportedPlatforms": ["windows"]
           },
           {
             "type": "activityNode",
@@ -1675,7 +1675,7 @@
             "description": "Returns a list of subfolder paths within the specified directory.",
             "docsLink": "https://docs.aventisia.com",
             "img": "/assets/Folder.svg",
-            "supportedPlatforms": ["cloud", "windows"]
+            "supportedPlatforms": ["windows"]
           },
           {
             "type": "activityNode",
@@ -1684,7 +1684,7 @@
             "description": "Checks whether the specified folder exists or doesn't exist based on the selected condition.",
             "docsLink": "https://docs.aventisia.com",
             "img": "/assets/Folder.svg",
-            "supportedPlatforms": ["cloud", "windows"]
+            "supportedPlatforms": ["windows"]
           },
           {
             "type": "activityNode",
@@ -1693,7 +1693,7 @@
             "description": "This activity moves an existing folder to a specified destination folder.",
             "docsLink": "https://docs.aventisia.com",
             "img": "/assets/Folder.svg",
-            "supportedPlatforms": ["cloud", "windows"]
+            "supportedPlatforms": ["windows"]
           },
           {
             "type": "activityNode",
@@ -1702,7 +1702,7 @@
             "description": "This activity renames an existing folder by specifying the original folder path and the new folder name.",
             "docsLink": "https://docs.aventisia.com",
             "img": "/assets/Folder.svg",
-            "supportedPlatforms": ["cloud", "windows"]
+            "supportedPlatforms": ["windows"]
           }
         ]
       },
@@ -1718,7 +1718,7 @@
             "description": "Converts a Base64-encoded string to plain text.",
             "docsLink": "https://docs.aventisia.com",
             "img": "/assets/File.svg",
-            "supportedPlatforms": ["cloud", "windows"]
+            "supportedPlatforms": ["windows"]
           },
           {
             "type": "activityNode",
@@ -1727,7 +1727,7 @@
             "description": "Converts binary data (byte[] or Base64 string) to a file at the specified path.",
             "docsLink": "https://docs.aventisia.com",
             "img": "/assets/File.svg",
-            "supportedPlatforms": ["cloud", "windows"]
+            "supportedPlatforms": ["windows"]
           },
           {
             "type": "activityNode",
@@ -1736,7 +1736,7 @@
             "description": "Converts a file to binary data.",
             "docsLink": "https://docs.aventisia.com",
             "img": "/assets/File.svg",
-            "supportedPlatforms": ["cloud", "windows"]
+            "supportedPlatforms": ["windows"]
           },
           {
             "type": "activityNode",
@@ -1745,7 +1745,7 @@
             "description": "Copies one or more files to a destination folder. Supports wildcards and multiple source paths separated by semicolons.",
             "docsLink": "https://docs.aventisia.com",
             "img": "/assets/File.svg",
-            "supportedPlatforms": ["cloud", "windows"]
+            "supportedPlatforms": ["windows"]
           },
           {
             "type": "activityNode",
@@ -1754,7 +1754,7 @@
             "description": "Deletes one or more files. Supports wildcards and multiple file paths separated by semicolons.",
             "docsLink": "https://docs.aventisia.com",
             "img": "/assets/File.svg",
-            "supportedPlatforms": ["cloud", "windows"]
+            "supportedPlatforms": ["windows"]
           },
           {
             "type": "activityNode",
@@ -1763,7 +1763,7 @@
             "description": "Extracts text from a file using the Aventisia cloud API. Supported formats: .pdf, .png, .jpg, .jpeg, .bmp, .tiff, .tif, .docx, .xlsx, .txt, .csv, .rtf, .odt, .md",
             "docsLink": "https://docs.aventisia.com",
             "img": "/assets/File.svg",
-            "supportedPlatforms": ["cloud", "windows"]
+            "supportedPlatforms": ["windows"]
           },
           {
             "type": "activityNode",
@@ -1772,7 +1772,7 @@
             "description": "Extracts various parts (directory, name, extension) from the given file path.",
             "docsLink": "https://docs.aventisia.com",
             "img": "/assets/File.svg",
-            "supportedPlatforms": ["cloud", "windows"]
+            "supportedPlatforms": ["windows"]
           },
           {
             "type": "activityNode",
@@ -1781,7 +1781,7 @@
             "description": "Creates a uniquely named empty temporary file on disk and returns its FileInfo object.",
             "docsLink": "https://docs.aventisia.com",
             "img": "/assets/File.svg",
-            "supportedPlatforms": ["cloud", "windows"]
+            "supportedPlatforms": ["windows"]
           },
           {
             "type": "activityNode",
@@ -1790,7 +1790,7 @@
             "description": "Checks if a file exists or does not exist and marks the beginning of a conditional block.",
             "docsLink": "https://docs.aventisia.com",
             "img": "/assets/File.svg",
-            "supportedPlatforms": ["cloud", "windows"]
+            "supportedPlatforms": ["windows"]
           },
           {
             "type": "activityNode",
@@ -1799,7 +1799,7 @@
             "description": "Moves one or more files to a destination folder. Supports wildcards and multiple source paths separated by semicolons.",
             "docsLink": "https://docs.aventisia.com",
             "img": "/assets/File.svg",
-            "supportedPlatforms": ["cloud", "windows"]
+            "supportedPlatforms": ["windows"]
           },
           {
             "type": "activityNode",
@@ -1808,7 +1808,7 @@
             "description": "Reads a CSV file into a DataTable.",
             "docsLink": "https://docs.aventisia.com",
             "img": "/assets/File.svg",
-            "supportedPlatforms": ["cloud", "windows"]
+            "supportedPlatforms": ["windows"]
           },
           {
             "type": "activityNode",
@@ -1817,7 +1817,7 @@
             "description": "Reads all text content from the specified file.",
             "docsLink": "https://docs.aventisia.com",
             "img": "/assets/File.svg",
-            "supportedPlatforms": ["cloud", "windows"]
+            "supportedPlatforms": ["windows"]
           },
           {
             "type": "activityNode",
@@ -1826,7 +1826,7 @@
             "description": "Renames one or more files with advanced schemes including datetime and sequential numbering.",
             "docsLink": "https://docs.aventisia.com",
             "img": "/assets/File.svg",
-            "supportedPlatforms": ["cloud", "windows"]
+            "supportedPlatforms": ["windows"]
           },
           {
             "type": "activityNode",
@@ -1835,7 +1835,7 @@
             "description": "Suspends running the flow until a file is created or deleted.",
             "docsLink": "https://docs.aventisia.com",
             "img": "/assets/File.svg",
-            "supportedPlatforms": ["cloud", "windows"]
+            "supportedPlatforms": ["windows"]
           },
           {
             "type": "activityNode",
@@ -1844,7 +1844,7 @@
             "description": "Writes the given text to the specified file using either Replace or Append mode.",
             "docsLink": "https://docs.aventisia.com",
             "img": "/assets/File.svg",
-            "supportedPlatforms": ["cloud", "windows"]
+            "supportedPlatforms": ["windows"]
           },
           {
             "type": "activityNode",
@@ -1853,7 +1853,7 @@
             "description": "Writes a data table, data row, or list to a CSV file.",
             "docsLink": "https://docs.aventisia.com",
             "img": "/assets/File.svg",
-            "supportedPlatforms": ["cloud", "windows"]
+            "supportedPlatforms": ["windows"]
           }
         ]
       },

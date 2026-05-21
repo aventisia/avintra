@@ -4,7 +4,7 @@
   "description": "Checks whether the specified folder exists or doesn\u0027t exist based on the selected condition.",
   "version": "1.0.0",
   "auther": "@aventisia",
-  "supportedPlatforms": ["cloud", "windows"],
+  "supportedPlatforms": ["windows"],
   "errorHandling": "standard",
   "testScreenType": "standard",
   "fields": [
