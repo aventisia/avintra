@@ -4,7 +4,7 @@
   "description": "Finds a single file in a folder (and optionally subfolders) that best matches a given criterion such as largest, newest, or first alphabetically.",
   "version": "1.0.0",
   "auther": "@aventisia",
-  "supportedPlatforms": ["cloud", "windows"],
+  "supportedPlatforms": ["windows"],
   "errorHandling": "standard",
   "testScreenType": "standard",
   "fields": [

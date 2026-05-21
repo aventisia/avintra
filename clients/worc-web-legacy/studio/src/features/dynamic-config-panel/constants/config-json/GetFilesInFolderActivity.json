@@ -4,7 +4,7 @@
   "description": "Retrieves the list of files in a specified folder, with options to include subfolders, filter by file type, and sort the results.",
   "version": "1.0.0",
   "auther": "@aventisia",
-  "supportedPlatforms": ["cloud", "windows"],
+  "supportedPlatforms": ["windows"],
   "errorHandling": "standard",
   "testScreenType": "standard",
   "fields": [
