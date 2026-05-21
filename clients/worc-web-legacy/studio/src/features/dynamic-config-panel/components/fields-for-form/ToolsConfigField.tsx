@@ -205,9 +205,7 @@ export function ToolsConfigField({ name }: ToolsConfigFieldProps) {
                 key={field.id}
                 className={cn(
                   "flex items-center justify-between rounded-lg border bg-background p-4 shadow-sm transition-colors",
-                  editingIndex === index
-                    ? "border-primary ring-1 ring-primary"
-                    : "border-border",
+                  editingIndex === index ? "border-primary" : "border-border",
                 )}
               >
                 <div className="flex items-center gap-4">
