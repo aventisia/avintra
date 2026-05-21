@@ -52,9 +52,12 @@ class SendGridSendEmailExecutor:
 
             # Find SendGrid credentialId dynamically from llm_request.tool_config
             credential_id = None
+            
             for tool in getattr(llm_request, "tool_config", []):
-                if tool.get("platform", "").lower() == "sendgrid":
-                    credential_id = tool.get("credential_id")
+                tool_name = getattr(tool, "tool", "")
+
+                if tool_name.lower() == "outlook":
+                    credential_id = getattr(tool, "credential_id", None)
                     break
 
             if not credential_id:
