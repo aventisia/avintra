@@ -1,4 +1,7 @@
-import { PromptTemplateSchema } from "../types/prompt-template-schema-type";
+import {
+  PromptTemplateSchema,
+  ToolConfig,
+} from "../types/prompt-template-schema-type";
 
 type Payload = {
   [key: string]: unknown;
@@ -29,9 +32,13 @@ export function buildPromptTemplateSchema(
     modelConfig: modelConfig
       ? {
           provider: modelConfig.provider as string | undefined,
+
           model: modelConfig.model as string | undefined,
+
           temperature: modelConfig.temperature as number | undefined,
+
           top_p: modelConfig.top_p as number | undefined,
+
           is_json_output: modelConfig.is_json_output as boolean | undefined,
         }
       : undefined,
@@ -45,8 +52,7 @@ export function buildPromptTemplateSchema(
 function normalizeToolsConfig(
   toolsConfig: unknown,
 ): PromptTemplateSchema["toolsConfig"] {
-  // Current we get empty string when tools are not configured.
-  // TODO: Add proper tool validation once tools config is implemented.
+  // We get empty string when tools are not configured
   if (!toolsConfig || toolsConfig === "") {
     return "";
   }
@@ -55,13 +61,23 @@ function normalizeToolsConfig(
     return "";
   }
 
-  return toolsConfig.map((tool) => {
+  return toolsConfig.map((tool): ToolConfig => {
     const typedTool = tool as Record<string, unknown>;
 
     return {
-      platform: typedTool.platform as string | undefined,
-      service: typedTool.service as string | undefined,
-      tools: typedTool.tools as unknown[] | undefined,
+      tool: typedTool.tool as string,
+
+      actions: Array.isArray(typedTool.actions)
+        ? typedTool.actions.map((action) => {
+            const typedAction = action as Record<string, unknown>;
+
+            return {
+              action: typedAction.action as string,
+
+              approval: typedAction.approval === "auto" ? "auto" : "human",
+            };
+          })
+        : [],
     };
   });
 }
