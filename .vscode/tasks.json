@@ -29,15 +29,6 @@
       "isBackground": true
     },
     {
-      "label": "aistudio",
-      "type": "shell",
-      "command": "npm run dev",
-      "options": {
-        "cwd": "${workspaceFolder}/clients/worc-web-legacy/ml-model-builder"
-      },
-      "isBackground": true
-    },
-    {
       "label": "accounts_apis",
       "type": "shell",
       "command": "dotnet run",
@@ -56,18 +47,6 @@
       "isBackground": true
     },
     {
-      "label": "aistudio_apis",
-      "type": "shell",
-      "command": "dotnet run",
-      "options": {
-        "cwd": "${workspaceFolder}/apis/WorcBackend-legacy/MLModelBuilderAPIs"
-      },
-      "isBackground": true,
-      "presentation": {
-        "panel": "dedicated"
-      }
-    },
-    {
       "label": "llmpipeline_apis",
       "type": "shell",
       "command": "ENV=local ./venv/bin/uvicorn app.main:app --port 4003 --reload",
@@ -76,14 +55,13 @@
     },
     {
       "label": "Run Frontends",
-      "dependsOn": ["accounts", "worc", "agentbuilder", "aistudio"]
+      "dependsOn": ["accounts", "worc", "agentbuilder"]
     },
     {
       "label": "Run Backends",
       "dependsOn": [
         "accounts_apis",
         "worc_apis",
-        "aistudio_apis",
         "llmpipeline_apis"
       ]
     },
