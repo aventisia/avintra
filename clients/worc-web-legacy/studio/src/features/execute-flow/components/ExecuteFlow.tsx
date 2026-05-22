@@ -141,9 +141,12 @@ const ExecuteFlow = () => {
     }
 
     // Get flag indicating whether flow can only be executed in desktop executor
-    const isDesktopOnlyFlow = doesFlowContainAnyDesktopOnlyNode(
+    let isDesktopOnlyFlow = doesFlowContainAnyDesktopOnlyNode(
       nodes as Node<NodeDataType>[],
     );
+
+    // Temporary fix to run all flows in desktop executor if app is running in Tauri until our web executor is bugs free and supports all nodes
+    if (IS_TAURI) isDesktopOnlyFlow = true;
 
     // Validate: Flow contains one or more executable nodes that are desktop-only and app is not running in Tauri
     if (!IS_TAURI && isDesktopOnlyFlow) {
