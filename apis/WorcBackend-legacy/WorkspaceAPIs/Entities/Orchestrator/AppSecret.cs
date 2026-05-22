@@ -37,6 +37,11 @@ public class AppSecret : BaseEntity, IMustHaveTenant
     public int UsageCount { get; set; }
 
     /// <summary>
+    /// Gets or sets a value indicating whether the app secret is accessible to all users within the tenant.
+    /// </summary>
+    public bool IsTenantWideAccess { get; set; }
+
+    /// <summary>
     /// Gets or sets the collection of encrypted key-value pairs associated with the app integration.
     /// </summary>
     /// <remarks>

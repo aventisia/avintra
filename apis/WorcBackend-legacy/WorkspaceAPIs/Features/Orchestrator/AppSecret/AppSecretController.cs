@@ -14,9 +14,9 @@ public class AppSecretController : BaseApiController
 
     // Get all app secrets.
     [HttpGet("list")]
-    public async Task<ActionResult<ServiceResponse<IEnumerable<AppSecretDto>>>> GetAllAppSecrets()
+    public async Task<ActionResult<ServiceResponse<IEnumerable<AppSecretDto>>>> GetAllAppSecrets([FromQuery] bool isPersonal)
     {
-        return ResultHelper(await _appSecretService.GetAllAppSecretsAsync());
+        return ResultHelper(await _appSecretService.GetAllAppSecretsAsync(isPersonal));
     }
 
     // Checks the availability of a app secret.
@@ -25,6 +25,7 @@ public class AppSecretController : BaseApiController
     {
         return ResultHelper(await _appSecretService.IsAppSecretNameAvailableAsync(checkAvailabilityDto));
     }
+
     // Get app secrets for selection.
     [HttpGet("option-to-select")]
     public async Task<ActionResult<ServiceResponse<IEnumerable<SelectOptionDto>>>> GetSelectableAppSecretOptions(AppSecretTypesEnum? type)

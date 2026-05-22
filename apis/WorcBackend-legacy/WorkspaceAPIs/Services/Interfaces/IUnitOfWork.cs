@@ -38,6 +38,7 @@ public interface IUnitOfWork
     IVectorStoreRepo VectorStoreRepo { get; }
     IKnowledgeBaseRepo KnowledgeBaseRepo { get; }
     IKnowledgeBaseFileRepo KnowledgeBaseFileRepo { get; }
+    IResourceShareRepo ResourceShareRepo { get; }
 
     /// <summary>
     /// Saves the changes made in the unit of work asynchronously.

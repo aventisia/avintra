@@ -48,6 +48,9 @@ namespace WorkspaceAPIs.Data.Migrations
                     b.Property<bool>("IsDisabled")
                         .HasColumnType("boolean");
 
+                    b.Property<bool>("IsTenantWideAccess")
+                        .HasColumnType("boolean");
+
                     b.Property<Guid>("LastModifiedByUserId")
                         .HasColumnType("uuid");
 
@@ -1499,6 +1502,36 @@ namespace WorkspaceAPIs.Data.Migrations
                     b.ToTable("worc_QueueUsers");
                 });
 
+            modelBuilder.Entity("WorkspaceAPIs.Entities.ResourceShare", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uuid");
+
+                    b.Property<string>("AccessLevel")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.Property<Guid>("ResourceId")
+                        .HasColumnType("uuid");
+
+                    b.Property<string>("ResourceType")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.Property<Guid>("TenantId")
+                        .HasColumnType("uuid");
+
+                    b.Property<Guid>("UserId")
+                        .HasColumnType("uuid");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("UserId");
+
+                    b.ToTable("worc_ResourceShares");
+                });
+
             modelBuilder.Entity("WorkspaceAPIs.Entities.SupportTicket", b =>
                 {
                     b.Property<Guid>("Id")
@@ -2678,6 +2711,17 @@ namespace WorkspaceAPIs.Data.Migrations
                     b.Navigation("LastModifiedByUser");
 
                     b.Navigation("Queue");
+
+                    b.Navigation("User");
+                });
+
+            modelBuilder.Entity("WorkspaceAPIs.Entities.ResourceShare", b =>
+                {
+                    b.HasOne("WorkspaceAPIs.Entities.WorkspaceUser", "User")
+                        .WithMany()
+                        .HasForeignKey("UserId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
 
                     b.Navigation("User");
                 });

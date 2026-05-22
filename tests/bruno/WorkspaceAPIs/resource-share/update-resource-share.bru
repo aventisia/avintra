@@ -1,0 +1,21 @@
+meta {
+  name: Update resource share
+  type: http
+  seq: 2
+}
+
+put {
+  url: {{WORC_APIS_BASE_URL}}/resource-share
+  body: json
+  auth: none
+}
+
+body:json {
+  {
+    "id": "{{RESOURCE_SHARE_ID}}",
+    "resourceType": "AppSecret",
+    "resourceId": "{{APP_SECRET_ID}}",
+    "accessLevel": "FullAccess",
+    "userId": "{{USER_ID}}"
+  }
+}
