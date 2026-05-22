@@ -4,7 +4,7 @@ import { DotSeparator, Separator } from "@aventisia/ui";
 import { Button } from "@aventisia/ui/buttons";
 import { Card, CardContent, CardHeader, CardTitle } from "@aventisia/ui/cards";
 import { dateFormatter } from "@aventisia/ui/utils";
-import { Calendar, FileBoxIcon } from "lucide-react";
+import { FileBoxIcon } from "lucide-react";
 
 import { ProjectTemplateTypesEnum } from "../../constants/template-types-enum";
 import { UseTemplateDTO } from "../../dtos/use-template-dto";
@@ -47,17 +47,13 @@ export function TemplateMetaAside({ template }: { template: UseTemplateDTO }) {
             <span className="col-span-2">{template?.schemaVersion}</span>
           </div>
           <div className="grid grid-cols-3 gap-2">
-            <span className="flex items-center gap-1 text-muted-foreground">
-              <Calendar className="h-4 w-4" /> Created
-            </span>
+            <span className="text-muted-foreground">Created</span>
             <span className="col-span-2">
               {dateFormatter(template?.createdOn || new Date())}{" "}
             </span>
           </div>
           <div className="grid grid-cols-3 gap-2">
-            <span className="flex items-center gap-1 text-muted-foreground">
-              <Calendar className="h-4 w-4" /> Updated
-            </span>
+            <span className="text-muted-foreground">Updated</span>
             <span className="col-span-2">
               {dateFormatter(template?.lastModifiedOn || new Date())}{" "}
             </span>
@@ -134,31 +130,36 @@ export function TemplateMetaAside({ template }: { template: UseTemplateDTO }) {
                 </div>
               </>
             ) : null}
-
-            {Array.isArray(parsedPromptSchema.toolsConfig) ? (
-              <>
-                <Separator />
-
-                <div className="space-y-2">
-                  <div className="text-muted-foreground">Tools</div>
-
-                  <div className="flex flex-wrap gap-2">
-                    {parsedPromptSchema.toolsConfig.map((tool, idx) => (
-                      <div
-                        key={`${tool.platform}-${idx}`}
-                        className="rounded-md border bg-muted/40 px-2 py-1 text-xs"
-                      >
-                        {tool.platform}
-                        {tool.service ? ` / ${tool.service}` : ""}
-                      </div>
-                    ))}
-                  </div>
-                </div>
-              </>
-            ) : null}
           </CardContent>
         </Card>
       ) : null}
+      {Array.isArray(parsedPromptSchema?.toolsConfig) &&
+      parsedPromptSchema.toolsConfig.length > 0 ? (
+        <Card>
+          <CardHeader>
+            <CardTitle>Tools</CardTitle>
+          </CardHeader>
+
+          <CardContent className="space-y-3 text-sm">
+            {parsedPromptSchema.toolsConfig.map((tool, idx) => (
+              <div key={`${tool.tool}-${idx}`}>
+                <div className="grid grid-cols-3 gap-2">
+                  <span className="text-muted-foreground capitalize">
+                    {tool.tool}
+                  </span>
+
+                  <span className="col-span-2 break-words">
+                    {tool.actions.length > 0
+                      ? tool.actions.map((action) => action.action).join(", ")
+                      : "-"}
+                  </span>
+                </div>
+              </div>
+            ))}
+          </CardContent>
+        </Card>
+      ) : null}
+
       {(template?.resources ?? []).length !== 0 ? (
         <Card>
           <CardHeader>

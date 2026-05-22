@@ -8,10 +8,9 @@ export type PromptTemplateSchema = {
     is_json_output?: boolean;
   };
   toolsConfig?:
-    | string
-    | Array<{
-        platform?: string;
-        service?: string;
-        tools?: unknown[];
-      }>;
+    | {
+        tool: string;
+        actions: { action: string; approval: "auto" | "human" }[];
+      }[]
+    | "";
 };
