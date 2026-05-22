@@ -23,7 +23,7 @@ namespace CodeActivitiesLibrary.UiInterfaceAutomations.MessageBoxActivities
 
         [DisplayName("Message to Display")]
         [Description("The main content of the message box (supports string, DataTable, or any object).")]
-        public InArgument<object> Message { get; set; }
+        public InArgument<string> Message { get; set; }
 
 
         [DisplayName("Message Box Icon")]
@@ -66,7 +66,7 @@ namespace CodeActivitiesLibrary.UiInterfaceAutomations.MessageBoxActivities
             try
             {
                 var title = context.GetValue(Title) ?? "Message";
-                var messageObj = context.GetValue(Message);
+                var messageText = context.GetValue(Message);
                 var iconEnum = context.GetValue(Icon);
                 var buttonEnum = context.GetValue(Buttons);
                 var defaultEnum = context.GetValue(DefaultButton);
@@ -77,8 +77,6 @@ namespace CodeActivitiesLibrary.UiInterfaceAutomations.MessageBoxActivities
                 var icon = GetMessageBoxIcon(iconEnum);
                 var buttons = GetMessageBoxButtons(buttonEnum);
                 var defaultButton = GetDefaultButton(defaultEnum);
-
-                string messageText = FormatMessage(messageObj);
 
                 DialogResult result;
 
@@ -161,71 +159,6 @@ namespace CodeActivitiesLibrary.UiInterfaceAutomations.MessageBoxActivities
                 IsSuccess.Set(context, false);
                 StatusMessage.Set(context, $"Error showing message box: {ex.Message}");
             }
-        }
-
-        private string FormatMessage(object obj)
-        {
-            if (obj == null) return string.Empty;
-
-            // If it's a DataTable, format as a simple grid-like text
-            if (obj is DataTable table)
-            {
-                return FormatDataTable(table);
-            }
-
-            string rawMessage = obj.ToString();
-            return ReplacePlaceholders(rawMessage);
-        }
-
-        private string ReplacePlaceholders(string input)
-        {
-            if (string.IsNullOrWhiteSpace(input))
-                return input;
-
-            var pattern = @"\{\{(.*?)\}\}";
-            var matches = Regex.Matches(input, pattern);
-
-            foreach (Match match in matches)
-            {
-                var placeholder = match.Value;
-                var varName = match.Groups[1].Value;
-
-                var envValue = Environment.GetEnvironmentVariable(varName);
-                if (!string.IsNullOrEmpty(envValue))
-                {
-                    input = input.Replace(placeholder, envValue);
-                }
-            }
-
-            return input;
-        }
-
-        private string FormatDataTable(DataTable table)
-        {
-            if (table.Rows.Count == 0 || table.Columns.Count == 0)
-                return "No data available.";
-
-            // Build header row
-            string header = string.Join(" | ", table.Columns.Cast<DataColumn>().Select(c => c.ColumnName));
-            string separator = new string('-', header.Length);
-
-            // Build data rows
-            var rows = new System.Collections.Generic.List<string>();
-            foreach (DataRow row in table.Rows)
-            {
-                rows.Add(string.Join(" | ", row.ItemArray));
-            }
-
-            // Combine all into a formatted string
-            var output = new System.Text.StringBuilder();
-            output.AppendLine(header);
-            output.AppendLine(separator);
-            foreach (var r in rows)
-            {
-                output.AppendLine(r);
-            }
-
-            return output.ToString();
         }
 
         private MessageBoxIcon GetMessageBoxIcon(MessageBoxIconEnum iconEnum)

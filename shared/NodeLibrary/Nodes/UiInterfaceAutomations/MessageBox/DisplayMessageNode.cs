@@ -9,8 +9,8 @@ public class DisplayMessageNode : BaseNode
     [DisplayName("Message Box Title"), Description("The title text displayed at the top of the message box.")]
     public InArgument<string> Title { get; set; } = new InArgument<string>();
 
-    [DisplayName("Message to Display"), Description("The main content of the message box (supports string, DataTable, or any object).")]
-    public InArgument<object> Message { get; set; } = new InArgument<object>();
+    [DisplayName("Message to Display"), Description("The main content of the message box.")]
+    public InArgument<string> Message { get; set; } = new InArgument<string>();
 
     [DisplayName("Message Box Icon"), Description("The icon to be displayed in the message box.")]
     public InArgument<MessageBoxIconEnum> Icon { get; set; } = new InArgument<MessageBoxIconEnum>();
@@ -41,15 +41,13 @@ public class DisplayMessageNode : BaseNode
         try
         {
             var title = Title.Get(context) ?? "Message";
-            var messageObj = Message.Get(context);
+            var messageText = Message.Get(context) ?? string.Empty;
             var iconEnum = Icon.Get(context);
             var buttonEnum = Buttons.Get(context);
             var defaultEnum = DefaultButton.Get(context);
             var keepOnTop = KeepOnTop.Get(context);
             var autoClose = AutoClose.Get(context);
             var timeout = Timeout.Get(context);
-
-            string messageText = FormatMessage(messageObj);
 
             var shown = MessageBoxInteractionHelpers.TryShowNativeMessage(
                 title,
@@ -88,66 +86,4 @@ public class DisplayMessageNode : BaseNode
             StatusMessage.Set(context, $"Error showing message box: {ex.Message}");
         }
     }
-
-    private string FormatMessage(object? obj)
-    {
-        if (obj == null) return string.Empty;
-
-        if (obj is DataTable table)
-        {
-            return FormatDataTable(table);
-        }
-
-        string rawMessage = obj.ToString() ?? string.Empty;
-        return ReplacePlaceholders(rawMessage);
-    }
-
-    private string ReplacePlaceholders(string? input)
-    {
-        if (string.IsNullOrWhiteSpace(input))
-            return input ?? string.Empty;
-
-        var pattern = @"\{\{(.*?)\}\}";
-        var matches = Regex.Matches(input, pattern);
-
-        foreach (Match match in matches)
-        {
-            var placeholder = match.Value;
-            var varName = match.Groups[1].Value;
-
-            var envValue = Environment.GetEnvironmentVariable(varName);
-            if (!string.IsNullOrEmpty(envValue))
-            {
-                input = input.Replace(placeholder, envValue);
-            }
-        }
-
-        return input;
-    }
-
-    private string FormatDataTable(DataTable table)
-    {
-        if (table.Rows.Count == 0 || table.Columns.Count == 0)
-            return "No data available.";
-
-        string header = string.Join(" | ", table.Columns.Cast<DataColumn>().Select(c => c.ColumnName));
-        string separator = new string('-', header.Length);
-
-        var rows = new List<string>();
-        foreach (DataRow row in table.Rows)
-        {
-            rows.Add(string.Join(" | ", row.ItemArray));
-        }
-
-        var output = new StringBuilder();
-        output.AppendLine(header);
-        output.AppendLine(separator);
-        foreach (var r in rows)
-        {
-            output.AppendLine(r);
-        }
-
-        return output.ToString();
-    }
-
 }
