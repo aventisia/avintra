@@ -45,6 +45,7 @@ public class UnitOfWork : IUnitOfWork
     public IVectorStoreRepo VectorStoreRepo => new VectorStoreRepo(_workspaceDbContext);
     public IKnowledgeBaseRepo KnowledgeBaseRepo => new KnowledgeBaseRepo(_workspaceDbContext);
     public IKnowledgeBaseFileRepo KnowledgeBaseFileRepo => new KnowledgeBaseFileRepo(_workspaceDbContext);
+    public IResourceShareRepo ResourceShareRepo => new ResourceShareRepo(_workspaceDbContext);
 
     public async Task<bool> SaveAsync(bool checkHasChanges = false)
     {

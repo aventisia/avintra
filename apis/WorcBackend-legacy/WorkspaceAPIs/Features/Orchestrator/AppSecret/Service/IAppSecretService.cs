@@ -8,10 +8,11 @@ public interface IAppSecretService
     /// <summary>
     /// Retrieves all app secrets in the system.
     /// </summary>
+    /// <param name="isPersonal"> If <c>true</c>, returns only personal secrets. If <c>false</c>, returns only shared secrets. </param>
     /// <returns>
     /// A task representing the asynchronous operation. The result contains a collection of <see cref="AppSecretDto"/>.
     /// </returns>
-    Task<ServiceResponse<IEnumerable<AppSecretDto>>> GetAllAppSecretsAsync();
+    Task<ServiceResponse<IEnumerable<AppSecretDto>>> GetAllAppSecretsAsync(bool isPersonal);
 
     /// <summary>
     /// Checks if a app secret name is available (not already taken).
