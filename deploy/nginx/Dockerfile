@@ -24,7 +24,6 @@ COPY deploy/nginx/502.html /usr/share/nginx/html/502.html
 COPY clients/worc-web-legacy/accounts/dist /usr/share/nginx/html/accounts
 COPY clients/worc-web-legacy/workspace/dist /usr/share/nginx/html/worc
 COPY clients/worc-web-legacy/studio/dist /usr/share/nginx/html/agentbuilder
-COPY clients/worc-web-legacy/ml-model-builder/dist /usr/share/nginx/html/aistudio
 
 # Create necessary directories
 RUN mkdir -p /var/log/nginx

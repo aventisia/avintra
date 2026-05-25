@@ -127,8 +127,6 @@ class CreditManagerService:
             "agent": "Agent",
             "chatagent": "Agent",
             "workflowagent": "Agent",
-            "aimodel": "AIModel",
-            "model": "AIModel",
             "platform": "Platform",
         }
 
@@ -145,7 +143,6 @@ class CreditManagerService:
         normalized = sanitized.strip().lower()
         alias_map = {
             "agentexecution": "AgentExecution",
-            "aimodelexecution": "AIModelExecution",
             "templatedescriptiongeneration": "TemplateDescriptionGeneration",
         }
 

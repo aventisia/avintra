@@ -43,7 +43,7 @@ public class CreditUsage : IMustHaveTenant
     public UsageSourceTypesEnum? RefType { get; set; }
 
     /// <summary>
-    /// Gets or sets the type of the entity or operation the credits were used for (e.g., AgentExecution, AIModelExecution).
+    /// Gets or sets the type of the entity or operation the credits were used for (e.g., AgentExecution).
     /// </summary>
     public ActionTypesEnum? Action { get; set; }
 

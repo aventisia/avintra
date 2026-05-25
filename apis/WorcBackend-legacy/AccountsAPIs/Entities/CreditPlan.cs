@@ -7,7 +7,7 @@ namespace AccountsAPIs.Entities;
 public class CreditPlan : BaseEntity
 {
     /// <summary>
-    /// Gets or sets the type of service this plan applies to, like OnPremGpuText.
+    /// Gets or sets the type of service this plan applies to
     /// </summary>
     public required CreditServiceTypesEnum ServiceType { get; set; }
 

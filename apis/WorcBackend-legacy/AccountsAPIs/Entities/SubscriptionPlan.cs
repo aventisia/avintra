@@ -42,7 +42,7 @@ public class SubscriptionPlan : BaseEntity
     public ulong MaxCredits { get; set; }
 
     /// <summary>
-    /// Gets or sets the maximum number of agents or AI models that can be published under this plan.
+    /// Gets or sets the maximum number of agents that can be published under this plan.
     /// </summary>
     public int MaxPublishedItems { get; set; }
 

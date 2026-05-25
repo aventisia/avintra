@@ -15,10 +15,10 @@ class STTProviderRequest(BaseModel):
     stream: bool = Field(False)
     credentials_id: Optional[str] = Field(None)
     is_byok_enabled: Optional[bool] = Field(False)
-    ref_type: str # Type of the reference (e.g., "Agent", "Workflow", "AIProject")
-    ref_id: str # Identifier to link back to Agent/Workflow/AIProject
-    ref_name: str # Name of the reference (e.g., name of the Agent/Workflow/AIProject)
-    action: str # Action being performed (e.g., "AgentExecution", "AIModelExecution", "WorkflowExecution")
+    ref_type: str # Type of the reference (e.g., "Agent", "Workflow")
+    ref_id: str # Identifier to link back to Agent/Workflow
+    ref_name: str # Name of the reference (e.g., name of the Agent/Workflow)
+    action: str # Action being performed (e.g., "AgentExecution", "WorkflowExecution")
     agent_name: Optional[str] = None
 
 

@@ -56,7 +56,7 @@ public class EmbeddingRequestDto
 
     /// <summary>
     /// Gets or sets the context or action triggering the embedding request 
-    /// (e.g., "AgentExecution", "AIModelExecution", "WorkflowExecution").
+    /// (e.g., "AgentExecution", "WorkflowExecution").
     /// </summary>
     [JsonPropertyName("action")]
     public string Action { get; set; } = string.Empty;

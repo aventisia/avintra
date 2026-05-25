@@ -96,7 +96,7 @@ public interface IProjectTemplateService
     Task<ServiceResponse<IEnumerable<TrendingTemplateDto>>> GetAllTrendingProjectTemplatesAsync();
 
     /// <summary>
-    /// Uses the selected project template to create a new Agent flow or AI model configuration, based on the template type.
+    /// Uses the selected project template to create a new Agent flow configuration, based on the template type.
     /// </summary>
     /// <param name="trendingTemplateDto">The trending project template to base the creation on.</param>
     /// <returns>A response containing the created entity details or an error message.</returns>

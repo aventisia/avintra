@@ -21,10 +21,10 @@ class IngestDocRequest(BaseModel):
     # The following fields are for future use
     batch_size: int = Field(default=100, ge=1, le=200)  # TODO: Yet to be test/implemented
     dimensions: Optional[int] = Field(default=None, ge=1)  # TODO: Yet to be test/implemented
-    ref_type: str # Type of the reference (e.g., "Agent", "Workflow", "AIProject"). TODO: Yet to confirm the better implemenation of this.
-    ref_id: str # Identifier to link back to Agent/Workflow/AIProject. TODO: Yet to confirm the better implemenation of this.
-    ref_name: str # Name of the reference (e.g., name of the Agent/Workflow/AIProject). TODO: Yet to confirm the better implemenation of this.
-    action: str # Action being performed (e.g., "AgentExecution", "AIModelExecution", "WorkflowExecution"). TODO: Yet to confirm the better implemenation of this.
+    ref_type: str # Type of the reference (e.g., "Agent", "Workflow"). TODO: Yet to confirm the better implemenation of this.
+    ref_id: str # Identifier to link back to Agent/Workflow. TODO: Yet to confirm the better implemenation of this.
+    ref_name: str # Name of the reference (e.g., name of the Agent/Workflow). TODO: Yet to confirm the better implemenation of this.
+    action: str # Action being performed (e.g., "AgentExecution", "WorkflowExecution"). TODO: Yet to confirm the better implemenation of this.
     agent_name: Optional[str] = None # TODO: Yet to confirm the better implemenation of this.
 
 # Response schema for document ingestion endpoint
@@ -56,10 +56,10 @@ class QueryDocRequest(BaseModel):
     doc_names: Optional[List[str]] = None  # Filter by document/file name(s)
     store_credential_id: Optional[str] = None  # TODO: Implement BYOK support. Credential ID for vector store (if applicable)
     embedding_credential_id: Optional[str] = None  # TODO: Implement BYOK support. Credential ID for embedding provider (if applicable)
-    ref_type: str # Type of the reference (e.g., "Agent", "Workflow", "AIProject"). TODO: Yet to confirm the better implemenation of this.
-    ref_id: str # Identifier to link back to Agent/Workflow/AIProject. TODO: Yet to confirm the better implemenation of this.
-    ref_name: str # Name of the reference (e.g., name of the Agent/Workflow/AIProject). TODO: Yet to confirm the better implemenation of this.
-    action: str # Action being performed (e.g., "AgentExecution", "AIModelExecution", "WorkflowExecution"). TODO: Yet to confirm the better implemenation of this.
+    ref_type: str # Type of the reference (e.g., "Agent", "Workflow"). TODO: Yet to confirm the better implemenation of this.
+    ref_id: str # Identifier to link back to Agent/Workflow. TODO: Yet to confirm the better implemenation of this.
+    ref_name: str # Name of the reference (e.g., name of the Agent/Workflow). TODO: Yet to confirm the better implemenation of this.
+    action: str # Action being performed (e.g., "AgentExecution", "WorkflowExecution"). TODO: Yet to confirm the better implemenation of this.
     agent_name: Optional[str] = None # TODO: Yet to confirm the better implemenation of this.
 
 

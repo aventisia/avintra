@@ -289,11 +289,7 @@ public class NodeProcessor : INodeProcessor
         return node.Type switch
         {
             "cloudConnectorNode" => PreprocessCloudConnectorNode(rawName, inputs, context),
-            "aiNode" when !rawName.Equals("InvokeInferenceModelWebServiceActivity", StringComparison.OrdinalIgnoreCase)
-                       && !rawName.Equals("OlmOCRActivity", StringComparison.OrdinalIgnoreCase)
-                       && !rawName.Equals("InvokeInferenceModelWebServiceNode", StringComparison.OrdinalIgnoreCase)
-                       && !rawName.Equals("OlmOCRNode", StringComparison.OrdinalIgnoreCase)
-                => PreprocessAiNode(inputs, context),
+            "aiNode" => PreprocessAiNode(inputs, context),
             _ => (rawName, inputs),
         };
     }

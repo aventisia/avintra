@@ -28,11 +28,6 @@ public class AppIntegrationDto
     public bool IsConnected { get; set; }
 
     /// <summary>
-    /// Gets or sets the number of AI models linked to this integration.
-    /// </summary>
-    public int AiModelsConnected { get; set; }
-
-    /// <summary>
     /// Gets or sets the number of agents associated with this integration.
     /// </summary>
     public int AgentsConnected { get; set; }

@@ -16,7 +16,7 @@ public class CreditsUsageDto
     public double ConsumedUnit { get; set; }
 
     /// <summary>
-    /// Gets or sets the type of reference entity or operation where the credits were applied (e.g., Agent, AI Model).
+    /// Gets or sets the type of reference entity or operation where the credits were applied (e.g., Agent).
     /// </summary>
     public UsageSourceTypesEnum? RefType { get; set; }
 
@@ -36,7 +36,7 @@ public class CreditsUsageDto
     public Guid? UsedByUserId { get; set; }
 
     /// <summary>
-    /// Gets or sets the type of the entity or operation the credits were used for (e.g., AgentExecution, AIModelExecution).
+    /// Gets or sets the type of the entity or operation the credits were used for (e.g., AgentExecution).
     /// </summary>
     public ActionTypesEnum? Action { get; set; }
 
@@ -82,11 +82,6 @@ public class CreditsUsageSummaryDto
     /// Gets or sets the usage data grouped by individual users.
     /// </summary>
     public List<UserUsageDto>? Users { get; set; }
-
-    /// <summary>
-    /// Gets or sets the usage count for each AI model.
-    /// </summary>
-    public List<AiModelUsageDto>? AiModels { get; set; }
 
     /// <summary>
     /// Gets or sets the usage count for each agent.
@@ -138,7 +133,7 @@ public class DataUsageDataPointDto
 public class ResourceUsageDetailDto
 {
     /// <summary>
-    /// Gets or sets the type of service this plan applies to, like OnPremGpuText.
+    /// Gets or sets the type of service this plan applies to.
     /// </summary>
     public CreditServiceTypesEnum ServiceType { get; set; }
 
@@ -211,27 +206,6 @@ public class UserUsageDto
 
     /// <summary>
     /// Gets or sets the total number of transactions performed by the user.
-    /// </summary>
-    public int TotalTransactions { get; set; }
-
-    /// <summary>
-    /// Gets or sets the total number of credits used by the user.
-    /// </summary>
-    public double TotalCredits { get; set; }
-}
-
-/// <summary>
-/// Represents usage metrics for a specific AI model.
-/// </summary>
-public class AiModelUsageDto
-{
-    /// <summary>
-    /// Gets or sets the name of the AI model.
-    /// </summary>
-    public string? ModelName { get; set; }
-
-    /// <summary>
-    /// Gets or sets the total number of transactions performed by the model.
     /// </summary>
     public int TotalTransactions { get; set; }
 

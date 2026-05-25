@@ -38,10 +38,10 @@ class LLMRequest(BaseModel):
     temperature: Optional[float] = 1.0
     top_p: Optional[float] = 1.0
     stream: Optional[bool] = False,
-    ref_type: str # Type of the reference (e.g., "Agent", "Workflow", "AIProject")
-    ref_id: str # Identifier to link back to Agent/Workflow/AIProject
-    ref_name: str # Name of the reference (e.g., name of the Agent/Workflow/AIProject)
-    action: str # Action being performed (e.g., "AgentExecution", "AIModelExecution", "WorkflowExecution")
+    ref_type: str # Type of the reference (e.g., "Agent", "Workflow")
+    ref_id: str # Identifier to link back to Agent/Workflow
+    ref_name: str # Name of the reference (e.g., name of the Agent/Workflow)
+    action: str # Action being performed (e.g., "AgentExecution", "WorkflowExecution")
     agent_name: Optional[str] = None
     # Knowledge base retrieval (optional)
     kb_names: Optional[List[str]] = None  # Knowledge base names used to scope KB chunk retrieval
@@ -85,7 +85,7 @@ class EmbeddingRequest(BaseModel):
     reference_id: Optional[str] = None  # ID of related object (doc, record, etc.)
     reference_type: Optional[str] = None  # Type of reference (e.g., "document")
     reference_name: Optional[str] = None  # Human-readable name
-    action: str # Action being performed (e.g., "AgentExecution", "AIModelExecution", "WorkflowExecution")
+    action: str # Action being performed (e.g., "AgentExecution", "WorkflowExecution")
     is_byok_enabled: bool = False  # Whether custom credentials are used
     credential_id: Optional[str] = None  # ID of the credential
 

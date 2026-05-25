@@ -16,7 +16,7 @@ public class ExportJobRequestDto
     public JobStatusTypesEnum? Status { get; set; }
 
     /// <summary>
-    /// Gets or sets the list of machine (AI model) IDs to include in the exported job data.
+    /// Gets or sets the list of machine IDs to include in the exported job data.
     /// </summary>
     public List<Guid>? MachineIds { get; set; } = new();
 

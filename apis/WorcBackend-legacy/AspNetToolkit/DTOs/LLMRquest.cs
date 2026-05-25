@@ -67,22 +67,22 @@ public class LLMRequest
     public bool Stream { get; set; } = false;
 
     /// <summary>
-    /// Gets or sets the type of reference (e.g., "Agent", "Workflow", "AIProject") linking back to the source entity.
+    /// Gets or sets the type of reference (e.g., "Agent", "Workflow") linking back to the source entity.
     /// </summary>
-    public string? RefType { get; set; } // Type of the reference (e.g., "Agent", "Workflow", "AIProject")
+    public string? RefType { get; set; } // Type of the reference (e.g., "Agent", "Workflow")
 
     /// <summary>
-    /// Gets or sets the unique identifier for the reference entity (e.g., Agent, Workflow, AIProject).
+    /// Gets or sets the unique identifier for the reference entity (e.g., Agent, Workflow).
     /// </summary>
     public string? RefId { get; set; }
 
     /// <summary>
-    /// Gets or sets the name of the reference entity (e.g., name of the Agent, Workflow, AIProject).
+    /// Gets or sets the name of the reference entity (e.g., name of the Agent, Workflow).
     /// </summary>
     public string? RefName { get; set; }
 
     /// <summary>
-    /// Gets or sets the action being performed (e.g., "AgentExecution", "AIModelExecution", "WorkflowExecution").
+    /// Gets or sets the action being performed (e.g., "AgentExecution", "WorkflowExecution").
     /// </summary>
     public string? Action { get; set; }
 

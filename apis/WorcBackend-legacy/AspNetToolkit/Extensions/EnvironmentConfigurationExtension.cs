@@ -73,7 +73,6 @@ public static class EnvironmentConfigurationExtension
         // Internal service URLs environment variables
         var ACCOUNTS_API_BASE_URL = Environment.GetEnvironmentVariable("ACCOUNTS_API_BASE_URL") ?? config["EnvironmentConfig:AccountsApiBaseUrl"] ?? "http://accounts-apis:4000";
         var WORC_API_BASE_URL = Environment.GetEnvironmentVariable("WORC_API_BASE_URL") ?? config["EnvironmentConfig:WorcApiBaseUrl"] ?? "http://worc-apis:4001";
-        var AISTUDIO_API_BASE_URL = Environment.GetEnvironmentVariable("AISTUDIO_API_BASE_URL") ?? config["EnvironmentConfig:AiStudioApiBaseUrl"] ?? "http://aistudio-apis:4002";
         var LLMPIPELINE_API_BASE_URL = Environment.GetEnvironmentVariable("LLMPIPELINE_API_BASE_URL") ?? config["EnvironmentConfig:LlmPipelineApiBaseUrl"] ?? "http://llmpipeline-apis:4003";
 
         // Sales and support emails environment variable
@@ -185,7 +184,6 @@ public static class EnvironmentConfigurationExtension
 
                     { "EnvironmentConfig:AccountsApiBaseUrl", ACCOUNTS_API_BASE_URL.TrimEnd('/') },
                     { "EnvironmentConfig:WorcApiBaseUrl", WORC_API_BASE_URL.TrimEnd('/') },
-                    { "EnvironmentConfig:AiStudioApiBaseUrl", AISTUDIO_API_BASE_URL.TrimEnd('/') },
                     { "EnvironmentConfig:LlmPipelineApiBaseUrl", LLMPIPELINE_API_BASE_URL.TrimEnd('/') },
 
                     { "EnvironmentConfig:SalesEmails", SALES_EMAILS },
