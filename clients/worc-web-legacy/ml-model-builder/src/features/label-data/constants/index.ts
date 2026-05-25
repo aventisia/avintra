@@ -1,5 +1,0 @@
-const MAX_FILE_SIZE = 10 * 1024 * 1024; // 10 MB
-const ALLOWED_FILE_TYPES = ["image/png"];
-const DEBOUNCE_SAVE_DELAY = 3000; // ms
-
-export { MAX_FILE_SIZE, ALLOWED_FILE_TYPES, DEBOUNCE_SAVE_DELAY };

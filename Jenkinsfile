@@ -42,7 +42,7 @@ def hasChangesInPath(path) {
 pipeline {
     agent any
     parameters {
-        string(name: 'REPOS_TO_BUILD', defaultValue: '', description: 'Comma-separated list of repo names to build on manual build (e.g., accounts_api,worc_api,aistudio_api,llmpipeline_api,docs,accounts,worc,agentbuilder,aistudio,aspnet_toolkit)')
+        string(name: 'REPOS_TO_BUILD', defaultValue: '', description: 'Comma-separated list of repo names to build on manual build (e.g., accounts_api,worc_api,llmpipeline_api,docs,accounts,worc,agentbuilder,aspnet_toolkit)')
     }
     stages {
         stage('Detect Changes') {
@@ -58,13 +58,11 @@ pipeline {
                         def reposToBuild = params.REPOS_TO_BUILD.tokenize(',').collect { it.trim().toLowerCase() }
                         env.BUILD_ACCOUNTS_API = reposToBuild.contains('accounts_api') ? 'true' : 'false'
                         env.BUILD_WORC_API = reposToBuild.contains('worc_api') ? 'true' : 'false'
-                        env.BUILD_AISTUDIO_API = reposToBuild.contains('aistudio_api') ? 'true' : 'false'
                         env.BUILD_LLMPIPELINE_API = reposToBuild.contains('llmpipeline_api') ? 'true' : 'false'
                         env.BUILD_DOCS_CLIENT = reposToBuild.contains('docs') ? 'true' : 'false'
                         env.BUILD_ACCOUNTS_CLIENT = reposToBuild.contains('accounts') ? 'true' : 'false'
                         env.BUILD_WORC_CLIENT = reposToBuild.contains('worc') ? 'true' : 'false'
                         env.BUILD_AGENTBUILDER_CLIENT = reposToBuild.contains('agentbuilder') ? 'true' : 'false'
-                        env.BUILD_AISTUDIO_CLIENT = reposToBuild.contains('aistudio') ? 'true' : 'false'
                         env.BUILD_ASPNET_TOOLKIT = reposToBuild.contains('aspnet_toolkit') ? 'true' : 'false'
                     } else {
                         echo 'Automatic build - detecting changes...'
@@ -75,13 +73,11 @@ pipeline {
                         // If AspNetToolkit changed, all .NET APIs need to be rebuilt
                         env.BUILD_ACCOUNTS_API = (hasChangesInPath('apis/WorcBackend-legacy/AccountsAPIs') || aspnetToolkitChanged) ? 'true' : 'false'
                         env.BUILD_WORC_API = (hasChangesInPath('apis/WorcBackend-legacy/WorkspaceAPIs') || aspnetToolkitChanged) ? 'true' : 'false'
-                        env.BUILD_AISTUDIO_API = (hasChangesInPath('apis/WorcBackend-legacy/MLModelBuilderAPIs') || aspnetToolkitChanged) ? 'true' : 'false'
                         env.BUILD_LLMPIPELINE_API = hasChangesInPath('apis/llmpipeline') ? 'true' : 'false'
                         env.BUILD_DOCS_CLIENT = hasChangesInPath('clients/docs') ? 'true' : 'false'
                         env.BUILD_ACCOUNTS_CLIENT = hasChangesInPath('clients/worc-web-legacy/accounts') ? 'true' : 'false'
                         env.BUILD_WORC_CLIENT = hasChangesInPath('clients/worc-web-legacy/workspace') ? 'true' : 'false'
                         env.BUILD_AGENTBUILDER_CLIENT = hasChangesInPath('clients/worc-web-legacy/studio') ? 'true' : 'false'
-                        env.BUILD_AISTUDIO_CLIENT = hasChangesInPath('clients/worc-web-legacy/ml-model-builder') ? 'true' : 'false'
                         env.BUILD_ASPNET_TOOLKIT = aspnetToolkitChanged ? 'true' : 'false'
                     }
                     
@@ -90,13 +86,11 @@ pipeline {
                     - AspNetToolkit: ${env.BUILD_ASPNET_TOOLKIT}
                     - Accounts API: ${env.BUILD_ACCOUNTS_API}
                     - Worc API: ${env.BUILD_WORC_API}
-                    - AI Studio API: ${env.BUILD_AISTUDIO_API}
                     - LLM Pipeline API: ${env.BUILD_LLMPIPELINE_API}
                     - Docs Client: ${env.BUILD_DOCS_CLIENT}
                     - Accounts Client: ${env.BUILD_ACCOUNTS_CLIENT}
                     - Worc Client: ${env.BUILD_WORC_CLIENT}
                     - Agent Builder Client: ${env.BUILD_AGENTBUILDER_CLIENT}
-                    - AI Studio Client: ${env.BUILD_AISTUDIO_CLIENT}
                     """.stripIndent()
                 }
             }
@@ -196,54 +190,6 @@ pipeline {
                                             sh "rsync -avz --delete ${WORKSPACE}/apis/WorcBackend-legacy/WorkspaceAPIs/Published/* admin@${server}:/var/www/aventisia.com/apis/worc/"
                                             sh "ssh admin@${server} 'sudo systemctl restart worc_apis.service'"
                                             echo "Successfully deployed Worc API to ${server}"
-                                        }
-                                    }
-                                }
-                            }
-                        }
-                    }
-                }
-                
-                stage('AI Studio API') {
-                    when {
-                        expression { env.BUILD_AISTUDIO_API == 'true' }
-                    }
-                    stages {
-                        stage('Restore - AI Studio API') {
-                            steps {
-                                dir('apis/WorcBackend-legacy/MLModelBuilderAPIs') {
-                                    echo 'Restoring AI Studio API packages...'
-                                    sh 'dotnet restore'
-                                }
-                            }
-                        }
-                        stage('Build - AI Studio API') {
-                            steps {
-                                dir('apis/WorcBackend-legacy/MLModelBuilderAPIs') {
-                                    echo 'Building AI Studio API...'
-                                    sh 'dotnet build --configuration Release'
-                                }
-                            }
-                        }
-                        stage('Publish - AI Studio API') {
-                            steps {
-                                dir('apis/WorcBackend-legacy/MLModelBuilderAPIs') {
-                                    echo 'Publishing AI Studio API...'
-                                    sh 'dotnet publish -c Release --property:PublishDir=./Published'
-                                }
-                            }
-                        }
-                        stage('Deploy - AI Studio API') {
-                            steps {
-                                script {
-                                    sshagent(credentials: ['aventisia_vps_ssh']) {
-                                        def targetServers = getTargetServers(env.BRANCH_NAME)
-                                        echo "Deploying AI Studio API to ${targetServers.size()} server(s)..."
-                                        
-                                        targetServers.each { server ->
-                                            sh "rsync -avz --delete ${WORKSPACE}/apis/WorcBackend-legacy/MLModelBuilderAPIs/Published/* admin@${server}:/var/www/aventisia.com/apis/aistudio/"
-                                            sh "ssh admin@${server} 'sudo systemctl restart aistudio_apis.service'"
-                                            echo "Successfully deployed AI Studio API to ${server}"
                                         }
                                     }
                                 }
@@ -459,49 +405,6 @@ pipeline {
                                         targetServers.each { server ->
                                             sh "rsync -avz --delete ${WORKSPACE}/clients/worc-web-legacy/studio/dist/* admin@${server}:/var/www/aventisia.com/clients/agentbuilder/"
                                             echo "Successfully deployed Agent Builder Client to ${server}"
-                                        }
-                                    }
-                                }
-                            }
-                        }
-                    }
-                }
-                
-                stage('AI Studio Client') {
-                    when {
-                        expression { env.BUILD_AISTUDIO_CLIENT == 'true' }
-                    }
-                    agent any
-                    tools {
-                        nodejs 'NodeJS 20.18.1'
-                    }
-                    stages {
-                        stage('Install - AI Studio Client') {
-                            steps {
-                                dir('clients/worc-web-legacy/ml-model-builder') {
-                                    echo 'Installing AI Studio Client dependencies...'
-                                    sh 'npm ci'
-                                }
-                            }
-                        }
-                        stage('Build - AI Studio Client') {
-                            steps {
-                                dir('clients/worc-web-legacy/ml-model-builder') {
-                                    echo 'Building AI Studio Builder Client...'
-                                    sh "npm run build -- --mode=${getBuildMode(env.BRANCH_NAME)}"
-                                }
-                            }
-                        }
-                        stage('Deploy - AI Studio Client') {
-                            steps {
-                                script {
-                                    sshagent(credentials: ['aventisia_vps_ssh']) {
-                                        def targetServers = getTargetServers(env.BRANCH_NAME)
-                                        echo "Deploying AI Studio Builder Client to ${targetServers.size()} server(s)..."
-                                        
-                                        targetServers.each { server ->
-                                            sh "rsync -avz --delete ${WORKSPACE}/clients/worc-web-legacy/ml-model-builder/dist/* admin@${server}:/var/www/aventisia.com/clients/aistudio/"
-                                            echo "Successfully deployed AI Studio Builder Client to ${server}"
                                         }
                                     }
                                 }
