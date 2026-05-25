@@ -661,9 +661,8 @@ class OpenRouterProvider(BaseLLMProvider):
 
         # Mapping of OpenRouter models → internal service identifiers (with owner)
         EMBEDDING_MODEL_MAP = {
-            "qwen/qwen3-embedding-0.6b": "OpenRouterQwenEmbedding06B",
-            "qwen/qwen3-embedding-4b": "OpenRouterQwenEmbedding4B",
-            "qwen/qwen3-embedding-8b": "OpenRouterQwenEmbedding8B",
+            "openai/text-embedding-3-small": "OpenRouterOpenAIEmbedding3Small",
+            "openai/text-embedding-ada-002": "OpenRouterOpenAIEmbeddingAda002",
         }
 
         # Resolve service type (try full name first, then fallback to short name)

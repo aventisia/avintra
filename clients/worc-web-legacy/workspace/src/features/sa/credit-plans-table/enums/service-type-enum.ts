@@ -57,14 +57,10 @@ export enum ServiceTypeEnum {
   // OpenAI Embedding Models
   "OpenAIEmbeddingAda002" = "OpenAI Embedding ada002",
   "OpenAIEmbedding3Small" = "OpenAI Embedding 3Small",
-  "OpenAIEmbedding3Large" = "OpenAI Embedding 3Large",
-
   // OpenRouter Embedding Models
-  "OpenRouterQwenEmbedding06B" = "OpenRouter Qwen Embedding 06B",
-  "OpenRouterQwenEmbedding4B" = "OpenRouter Qwen Embedding 4B",
-  "OpenRouterQwenEmbedding8B" = "OpenRouter Qwen Embedding 8B",
-
-  // Google Gemini Embedding Models
-  "GeminiEmbeddingV1" = "Gemini Embedding V1",
-  "GeminiEmbeddingV2Preview" = "Gemini Embedding V2Preview",
+  "OpenRouterOpenAIEmbedding3Small" = "OpenRouter OpenAI Embedding 3Small",
+  "OpenRouterOpenAIEmbeddingAda002" = "OpenRouter OpenAI Embedding ada002",
+  // Other services
+  "ElevenLabsSTT" = "ElevenLabs STT",
+  "ElevenLabsTTS" = "ElevenLabs TTS",
 }

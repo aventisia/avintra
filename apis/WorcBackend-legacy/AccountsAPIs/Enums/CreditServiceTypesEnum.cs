@@ -53,13 +53,8 @@ public enum CreditServiceTypesEnum
     // Embedding models
     OpenAIEmbeddingAda002,
     OpenAIEmbedding3Small,
-    OpenAIEmbedding3Large,
-    GeminiEmbeddingV1,
-    GeminiEmbeddingV2Preview,
-    OpenRouterQwenEmbedding06B,
-    OpenRouterQwenEmbedding4B,
-    OpenRouterQwenEmbedding8B,
-
+    OpenRouterOpenAIEmbedding3Small,
+    OpenRouterOpenAIEmbeddingAda002,
     // ===== ElevenLabs STT Models =====
     ElevenLabsScribeV1,
     ElevenLabsScribeV2,
