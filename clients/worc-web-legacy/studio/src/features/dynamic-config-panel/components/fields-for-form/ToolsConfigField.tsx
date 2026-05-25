@@ -2,7 +2,8 @@
 import { MultiSelectField } from "@/react-toolkit/ui/searchable-multi-select/MultiSelectField";
 import { SearchableSelectField } from "@/react-toolkit/ui/searchable-select/SearchableSelectField";
 
-import { NoContentMessage } from "@aventisia/ui";
+import { DotSeparator, NoContentMessage } from "@aventisia/ui";
+import { Badge } from "@aventisia/ui/badge";
 import { Button } from "@aventisia/ui/buttons";
 import { useShowAlertHandler } from "@aventisia/ui/hooks";
 import { cn } from "@aventisia/ui/lib";
@@ -306,6 +307,7 @@ export function ToolsConfigField({ name }: ToolsConfigFieldProps) {
             const toolConfigInfo = TOOLS.find((t) => t.value === field.tool);
             const actionNames = field.actions.map((a: any) => a.action);
             const approval = field.actions[0]?.approval || "human";
+            const credentialId = field.credential_id || "";
 
             // Format actions for display, capping at 3 with an overflow indicator
             const displayActions = actionNames.slice(0, 3).join(", ");
@@ -331,14 +333,9 @@ export function ToolsConfigField({ name }: ToolsConfigFieldProps) {
                       <h4 className="truncate text-2xs font-medium ">
                         {toolConfigInfo?.label || field.tool}
                       </h4>
-                      <span
-                        className={cn(
-                          "inline-flex shrink-0 items-center rounded-full px-1.5 py-0.5 text-3xs font-medium capitalize tracking-wider",
-                          "bg-muted text-muted-foreground",
-                        )}
-                      >
-                        {approval}
-                      </span>
+                      <Badge className="shrink-0 rounded-full px-2 py-px text-[0.625rem] font-medium  bg-muted text-muted-foreground">
+                        {credentialId}
+                      </Badge>
                     </div>
 
                     <div className="mt-0.5 flex items-center gap-1.5 text-[0.65rem] text-muted-foreground">
@@ -348,6 +345,13 @@ export function ToolsConfigField({ name }: ToolsConfigFieldProps) {
                           +{extraCount}
                         </span>
                       )}
+                      <DotSeparator className="mx-1" />
+                      <Badge
+                        className="shrink-0 rounded-full px-2 py-px text-[0.625rem] font-medium capitalize "
+                        variant={"outline"}
+                      >
+                        {approval}
+                      </Badge>
                     </div>
                   </div>
                 </div>
