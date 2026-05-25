@@ -37,7 +37,6 @@ npm --prefix clients/worc-web-legacy/ml-model-builder run build --mode=productio
 sudo docker build -f deploy/nginx/Dockerfile -t acr.aventisia.com/worc/frontend:0.1.0 .
 sudo docker build -f apis/WorcBackend-legacy/AccountsAPIs/Dockerfile -t acr.aventisia.com/worc/accounts-apis:0.1.0 .
 sudo docker build -f apis/WorcBackend-legacy/WorkspaceAPIs/Dockerfile -t acr.aventisia.com/worc/worc-apis:0.1.0 .
-sudo docker build -f apis/WorcBackend-legacy/MLModelBuilderAPIs/Dockerfile -t acr.aventisia.com/worc/aistudio-apis:0.1.0 .
 # Build fastapi llmpipline separately to optimize the build image
 cd apis/llmpipeline && sudo docker build -t acr.aventisia.com/worc/llmpipeline-apis:0.1.0 . && cd ../..
 
@@ -45,7 +44,6 @@ cd apis/llmpipeline && sudo docker build -t acr.aventisia.com/worc/llmpipeline-a
 sudo docker push acr.aventisia.com/worc/frontend:0.1.0
 sudo docker push acr.aventisia.com/worc/accounts-apis:0.1.0
 sudo docker push acr.aventisia.com/worc/worc-apis:0.1.0
-sudo docker push acr.aventisia.com/worc/aistudio-apis:0.1.0
 sudo docker push acr.aventisia.com/worc/llmpipeline-apis:0.1.0
 ```
 
@@ -60,7 +58,6 @@ Whenever we have stable version of the images in `acr.aventisia.com`, we need to
 sudo docker tag acr.aventisia.com/worc/frontend:0.1.0 aventisiaacr.azurecr.io/worc/frontend:0.1.0
 sudo docker tag acr.aventisia.com/worc/accounts-apis:0.1.0 aventisiaacr.azurecr.io/worc/accounts-apis:0.1.0
 sudo docker tag acr.aventisia.com/worc/worc-apis:0.1.0 aventisiaacr.azurecr.io/worc/worc-apis:0.1.0
-sudo docker tag acr.aventisia.com/worc/aistudio-apis:0.1.0 aventisiaacr.azurecr.io/worc/aistudio-apis:0.1.0
 sudo docker tag acr.aventisia.com/worc/llmpipeline-apis:0.1.0 aventisiaacr.azurecr.io/worc/llmpipeline-apis:0.1.0
 
 # Login to aventisiaacr.azurecr.io using the ACR Token username and password
@@ -70,6 +67,5 @@ sudo docker login aventisiaacr.azurecr.io -u internal-pushpull-token -p <acr_tok
 sudo docker push aventisiaacr.azurecr.io/worc/frontend:0.1.0
 sudo docker push aventisiaacr.azurecr.io/worc/accounts-apis:0.1.0
 sudo docker push aventisiaacr.azurecr.io/worc/worc-apis:0.1.0
-sudo docker push aventisiaacr.azurecr.io/worc/aistudio-apis:0.1.0
 sudo docker push aventisiaacr.azurecr.io/worc/llmpipeline-apis:0.1.0
 ```

@@ -2,7 +2,7 @@ namespace AspNetToolkit.Enums;
 
 /// <summary>
 /// Centralized provider literal for all schemas used for selecting LLM providers.
-/// This enum represents the available LLM providers for interacting with different AI models.
+/// This enum represents the available LLM providers for interacting with different models.
 /// </summary>
 public enum LLMProviderLiteral
 {
@@ -13,9 +13,9 @@ public enum LLMProviderLiteral
     OpenAI,
 
     /// <summary>
-    /// Ollama is an AI model provider offering cutting-edge language models.
+    /// Ollama
     /// </summary>
-    [Description("Ollama is an AI model provider offering cutting-edge language models.")]
+    [Description("Ollama")]
     Ollama,
 
     /// <summary>

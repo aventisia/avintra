@@ -26,7 +26,7 @@ public class TenantSubscription : BaseEntity
     public ulong MaxCredits { get; set; }
 
     /// <summary>
-    /// Gets or sets the maximum number of agents or AI models that can be published under this subscription.
+    /// Gets or sets the maximum number of agents that can be published under this subscription.
     /// </summary>
     public int MaxPublishedItems { get; set; }
 

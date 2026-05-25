@@ -12,7 +12,7 @@ public class CreditPlanDto
     public Guid Id { get; set; }
 
     /// <summary>
-    /// Gets or sets the type of service this plan applies to, like OnPremGpuText.
+    /// Gets or sets the type of service this plan applies to.
     /// </summary>
     public required CreditServiceTypesEnum ServiceType { get; set; }
 

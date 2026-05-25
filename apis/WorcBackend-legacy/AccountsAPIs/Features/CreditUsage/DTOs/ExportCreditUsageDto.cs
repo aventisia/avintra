@@ -16,11 +16,6 @@ public class ExportCreditUsageRequestDto
     public List<Guid> UserIds { get; set; } = new();
 
     /// <summary>
-    /// Gets or sets the list of AI model IDs to include in the exported data.
-    /// </summary>
-    public List<Guid> AIModelIds { get; set; } = new();
-
-    /// <summary>
     /// Gets or sets the list of agent IDs to filter the credit usage records.
     /// </summary>
     public List<Guid> AgentIds { get; set; } = new();
@@ -55,7 +50,7 @@ public class ExportCreditUsageResponseDto
     /// Gets or sets the unit of measurement for the usage, such as seconds, tokens, or messages.
     /// </summary>
     public UnitTypesEnum? UnitType { get; set; }
-    
+
     /// <summary>
     /// Gets or sets the quantity of usage measured in one unit (e.g., 30 seconds or 1000 tokens).
     /// </summary>
@@ -67,7 +62,7 @@ public class ExportCreditUsageResponseDto
     public double CreditsUsed { get; set; }
 
     /// <summary>
-    /// Gets or sets the type of reference entity linked to the credit usage, such as Agent or AI Model.
+    /// Gets or sets the type of reference entity linked to the credit usage, such as Agent.
     /// </summary>
     public UsageSourceTypesEnum? RefType { get; set; }
 
@@ -82,7 +77,7 @@ public class ExportCreditUsageResponseDto
     public string? Username { get; set; }
 
     /// <summary>
-    /// Gets or sets the type of the entity or operation the credits were used for (e.g., AgentExecution, AIModelExecution).
+    /// Gets or sets the type of the entity or operation the credits were used for (e.g., AgentExecution).
     /// </summary>
     public ActionTypesEnum? Action { get; set; }
 

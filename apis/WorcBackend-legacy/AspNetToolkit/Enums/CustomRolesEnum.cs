@@ -32,9 +32,9 @@ public enum CustomRolesEnum
     OM,
 
     /// <summary>
-    /// Tenant Developer. This role is for users who can create, manage, and develop automation agents and AI models within a specific tenant.
+    /// Tenant Developer. This role is for users who can create, manage, and develop automation agents within a specific tenant.
     /// </summary>
-    [Description("3; Tenant developer; This role is for users who can create, manage, and develop automation agents and AI models within a specific tenant.")]
+    [Description("3; Tenant developer; This role is for users who can create, manage, and develop automation agents within a specific tenant.")]
     TD,
 
     /// <summary>

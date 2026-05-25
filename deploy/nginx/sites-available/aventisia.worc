@@ -50,17 +50,6 @@ server
 		try_files $uri $uri.html $uri/ /index.html =404;
 	}
 
-	# ----------------- /aistudio -----------------
-	location /aistudio/api/ {
-		proxy_pass http://aistudio-apis:4002/api/;
-		include /etc/nginx/conf.d/common_api_config.conf;
-	}
-
-	location /aistudio/ {
-		alias /usr/share/nginx/html/aistudio/;
-		try_files $uri $uri.html $uri/ /index.html =404;
-    }
-
 	# ----------------- /llmpipeline -----------------
 	location /llmpipeline/api/ {
 		proxy_pass http://llmpipeline-apis:4003/api/;

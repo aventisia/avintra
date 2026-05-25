@@ -26,7 +26,7 @@ public class TrendingTemplateDto
     public string? Description { get; set; }
 
     /// <summary>
-    /// Gets or sets the functional purpose of the template (e.g., AIModel, Workflow, Automation).
+    /// Gets or sets the functional purpose of the template (e.g., Workflow, Automation).
     /// </summary>
     public string? Purpose { get; set; }
 

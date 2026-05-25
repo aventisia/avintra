@@ -179,22 +179,9 @@ public class CreditUsageService : ICreditUsageService
                                 .Where(w =>
                                     w.UsedByUserId == user.Id &&
                                     (
-                                        w.ServiceType == CreditServiceTypesEnum.AIModelExecutionTime ||
                                         w.ServiceType == CreditServiceTypesEnum.AgentExecutionTime
                                     )
                                 ).Count(),
-                            TotalCredits = s.Sum(sm => sm.CreditsUsed)
-                        };
-                    })
-                    .ToList(),
-                AiModels = creditUsages
-                    .Where(w => w.RefId != null && w.RefType == UsageSourceTypesEnum.AIModel)
-                    .GroupBy(g => g.RefId).Select(s =>
-                    {
-                        return new AiModelUsageDto
-                        {
-                            ModelName = s.First().RefName,
-                            TotalTransactions = creditUsages.Where(w => w.ServiceType == CreditServiceTypesEnum.AIModelExecutionTime && w.RefType == UsageSourceTypesEnum.AIModel && w.RefId == s.First().RefId).Count(),
                             TotalCredits = s.Sum(sm => sm.CreditsUsed)
                         };
                     })
@@ -585,15 +572,6 @@ public class CreditUsageService : ICreditUsageService
                                 exportCreditUsageRequestDto.AgentIds.Contains(w.RefId.Value));
             }
 
-            // Filter by AI Model IDs if provided (ensure RefId is not null and RefType is AIModel)
-            if (exportCreditUsageRequestDto.AIModelIds.Any())
-            {
-                creditUsageQuery = creditUsageQuery
-                    .Where(w => w.RefId != null &&
-                                w.RefType == UsageSourceTypesEnum.AIModel &&
-                                exportCreditUsageRequestDto.AIModelIds.Contains(w.RefId.Value));
-            }
-
             // Filter records to include only those with UsedAt date on or after the specified start date
             if (exportCreditUsageRequestDto.StartDate.HasValue)
             {
@@ -638,7 +616,7 @@ public class CreditUsageService : ICreditUsageService
                 "Unit Consumed",
                 "Credits Used",
                 "Type",
-                "Agent/AI Model",
+                "Agent",
                 "User",
                 "Action",
                 "Triggered By"

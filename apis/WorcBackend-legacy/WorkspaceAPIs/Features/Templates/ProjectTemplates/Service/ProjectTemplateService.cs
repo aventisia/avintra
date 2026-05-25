@@ -816,51 +816,6 @@ namespace WorkspaceAPIs.Services
                             break;
                         }
 
-                    case ProjectTemplateTypesEnum.AIProject:
-                        {
-                            // Get AI model template schema from external API
-                            HttpResponseMessage httpResponse = await RequestExternalAPIUtil.RequestExternalAPI(
-                                CrudTypesEnum.Read,
-                                $"{_environmentConfig.AiStudioApiBaseUrl}/api/ai-model-template/schema/{publishProjectTemplateDto.RefId}",
-                                _jwt
-                            );
-
-                            if (!httpResponse.IsSuccessStatusCode)
-                            {
-                                _logger.LogError("External API call failed. Status Code: {StatusCode}, Reason: {ReasonPhrase}",
-                                    httpResponse.StatusCode,
-                                    httpResponse.ReasonPhrase
-                                );
-                                // Provide a user-friendly error message
-                                serviceResponse.Message = "Failed to clone template.";
-                                return serviceResponse;
-                            }
-
-                            var responseContent = await httpResponse.Content.ReadAsStringAsync();
-                            var externalServiceResponse = JsonConvert.DeserializeObject<ServiceResponse<AIModelTemplateSchemaDto>>(
-                                responseContent,
-                                new JsonSerializerSettings
-                                {
-                                    MissingMemberHandling = MissingMemberHandling.Ignore,
-                                    ContractResolver = new Newtonsoft.Json.Serialization.CamelCasePropertyNamesContractResolver()
-                                }
-                            );
-
-                            if (externalServiceResponse.StatusCode != 200 || externalServiceResponse.Data == null)
-                            {
-                                _logger.LogError("Failed to deserialize the external API response for credits usage creation.");
-                                return serviceResponse;
-                            }
-
-                            var icons = GetServiceItemDetailUtil.GetIconsByDisplayNames(externalServiceResponse.Data.LLMNames);
-                            newProjectTemplate.RefId = externalServiceResponse.Data.VersionId;
-                            newProjectTemplate.Schema = externalServiceResponse.Data.DataObject;
-                            newProjectTemplate.SchemaVersion = externalServiceResponse.Data.VersionNumber;
-                            newProjectTemplate.Icons = IconSorterUtil.SortByPriority(icons);
-                            newProjectTemplate.AccessPath = $"/project?pid={externalServiceResponse.Data.Id}&v={externalServiceResponse.Data.VersionId}&pn=Test&t=setup&ml={externalServiceResponse.Data.Type.ToString().ToLower()}";
-                            break;
-                        }
-
                     case ProjectTemplateTypesEnum.Prompt:
                         {
                             // Safely get distinct icons or initialize an empty list
@@ -1065,7 +1020,7 @@ namespace WorkspaceAPIs.Services
             return serviceResponse;
         }
 
-        // Uses the selected project template to create a new Agent flow or AI model configuration, based on the template type.
+        // Uses the selected project template to create a new Agent flow configuration, based on the template type.
         public async Task<ServiceResponse<ProjectTemplateDto>> UseProjectTemplateAsync(TrendingTemplateDto trendingTemplateDto)
         {
             // Initialize the response with a default failure message
@@ -1148,55 +1103,7 @@ namespace WorkspaceAPIs.Services
 
                     _logger.LogInformation("Flow version saved successfully. Flow ID: {FlowId}, Version: 1", flowEntity.Id);
                 }
-                else
-                {
-                    var aiProjectRequest = new AIModelTemplateSchemaDto()
-                    {
-                        VersionId = projectTemplate.RefId,
-                        DataObject = projectTemplate.Schema ?? string.Empty,
-                        VersionNumber = projectTemplate.SchemaVersion,
-                        UsageCount = projectTemplate.UsageCount + 1,
-                    };
-
-                    // Create AI model by template schema
-                    HttpResponseMessage httpResponse = await RequestExternalAPIUtil.RequestExternalAPI(CrudTypesEnum.Create, $"{_environmentConfig.AiStudioApiBaseUrl}/api/ai-model-template/use", _jwt, aiProjectRequest);
-
-                    // Read and validate the external API response
-                    if (!httpResponse.IsSuccessStatusCode)
-                    {
-                        _logger.LogError("External API call failed. Status Code: {StatusCode}, Reason: {ReasonPhrase}",
-                            httpResponse.StatusCode,
-                            httpResponse.ReasonPhrase
-                        );
-
-                        // Provide a user-friendly error message
-                        serviceResponse.Message = "Failed to clone template.";
-                        return serviceResponse;
-                    }
-
-                    // Attempt to read and parse the response content
-                    var responseContent = await httpResponse.Content.ReadAsStringAsync();
-
-                    // Deserialize and validate structure of the service response
-                    var externalServiceResponse = JsonConvert.DeserializeObject<ServiceResponse<AIModelTemplateSchemaDto>>(
-                    responseContent,
-                    new JsonSerializerSettings
-                    {
-                        MissingMemberHandling = MissingMemberHandling.Ignore,
-                        ContractResolver = new Newtonsoft.Json.Serialization.CamelCasePropertyNamesContractResolver()
-                    });
-
-
-                    // Ensure response structure and data integrity
-                    if (externalServiceResponse.StatusCode != 200 || externalServiceResponse.Data == null)
-                    {
-                        _logger.LogError("Failed to deserialize the external API response for credits usage creation.");
-                        return serviceResponse;
-                    }
-                    projectTemplateDto.RefId = externalServiceResponse.Data.Id;
-                    projectTemplateDto.AccessPath = $"/project?pid={externalServiceResponse.Data.Id}&v={externalServiceResponse.Data.VersionId}&pn=Test&t=setup&ml={externalServiceResponse.Data.Type.ToString().ToLower()}";
-                }
-
+                
                 // Increment usage count and update the template
                 projectTemplate.UsageCount++;
                 _unitOfWork.ProjectTemplateRepo.Update(projectTemplate);
@@ -1244,7 +1151,6 @@ namespace WorkspaceAPIs.Services
             var promptFileName = genereateProjectInstructionRequestDto.RefType switch
             {
                 UsageSourceTypesEnum.Agent => "GenerateAgentTemplateDescriptionPrompt.txt",
-                UsageSourceTypesEnum.AIModel => "GenerateAIModelTemplateDescriptionPrompt.txt",
                 UsageSourceTypesEnum.Platform => "ImprovedPromptInstructions.txt",
                 _ => "NA"
             };

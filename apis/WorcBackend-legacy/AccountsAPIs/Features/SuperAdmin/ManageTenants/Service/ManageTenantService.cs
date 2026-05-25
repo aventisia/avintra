@@ -150,8 +150,6 @@ public class ManageTenantService : IManageTenantService
 
         try
         {
-            // Define the URLs for AI_STUDIO and Workspace API endpoints
-            var aiStudioApiUrl = $"{_environmentConfig.AiStudioApiBaseUrl}/api/sa/tenant";
             var worcApiUrl = $"{_environmentConfig.WorcApiBaseUrl}/api/sa/tenant";
 
             // Create a new HttpClient instance for making API requests
@@ -198,15 +196,6 @@ public class ManageTenantService : IManageTenantService
                 // Log success message after a successful deletion call
                 _logger.LogInformation("Successfully deleted tenant in API {ApiUrl} for tenant {TenantId}", apiUrl, tenantId);
                 return true;
-            }
-
-            // Call AI_STUDIO API for deletion
-            var aiResult = await CallExternalDeleteApi(aiStudioApiUrl, tenant.Id, tenant.Name);
-            if (!aiResult)
-            {
-                // Log failure and return early if AI_STUDIO API call failed
-                _logger.LogError("AI_STUDIO API call failed for tenant {TenantId}", tenant.Id);
-                return false;
             }
 
             // Call Workspace (Worc) API for deletion

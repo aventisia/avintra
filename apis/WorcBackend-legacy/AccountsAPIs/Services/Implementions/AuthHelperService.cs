@@ -312,16 +312,6 @@ public class AuthHelperService : IAuthHelperService
             return false;
         }
 
-        // Create or Update user in AiStudio database
-        HttpResponseMessage response2 = await RequestExternalAPIUtil.RequestExternalAPI(crudType, $"{_environmentConfig.AiStudioApiBaseUrl}/api/user", jwt, user);
-
-        if (!response2.IsSuccessStatusCode)
-        {
-            string errorContent = await response2.Content.ReadAsStringAsync();
-            _logger.LogError($"Failed to {crudType} user in AiStudio database for {user.UserName}. Response: {response2.StatusCode} - {errorContent}");
-            return false;
-        }
-
         return true;
     }
 
@@ -334,15 +324,6 @@ public class AuthHelperService : IAuthHelperService
         if (!response.IsSuccessStatusCode)
         {
             _logger.LogInformation($"Failed to delete user in Workspace database for user Id: {userId}");
-            return false;
-        }
-
-        // Delete user in AiStudio database
-        HttpResponseMessage response2 = await RequestExternalAPIUtil.RequestExternalAPI(CrudTypesEnum.Delete, $"{_environmentConfig.AiStudioApiBaseUrl}/api/user/{userId}", jwt);
-
-        if (!response2.IsSuccessStatusCode)
-        {
-            _logger.LogInformation($"Failed to delete user in AiStudio database for user Id: {userId}");
             return false;
         }
 

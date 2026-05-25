@@ -63,7 +63,6 @@ public class EnvironmentConfig
     // Internal Service URLs
     public string AccountsApiBaseUrl { get; set; } = string.Empty;
     public string WorcApiBaseUrl { get; set; } = string.Empty;
-    public string AiStudioApiBaseUrl { get; set; } = string.Empty;
     public string LlmPipelineApiBaseUrl { get; set; } = string.Empty;
 
     // Sales emails

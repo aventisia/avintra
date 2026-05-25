@@ -6,16 +6,10 @@ namespace AspNetToolkit.Enums;
 public enum ActionTypesEnum
 {
     /// <summary>
-    /// Indicates an action where an AI agent is triggered to execute.
+    /// Indicates an action where an agent is triggered to execute.
     /// </summary>
     [Description("Agent Execution")]
     AgentExecution,
-
-    /// <summary>
-    /// Indicates an action where an AI model is triggered to execute.
-    /// </summary>
-    [Description("AI Model Execution")]
-    AIModelExecution,
 
     /// <summary>
     /// Indicates an action where template description generation is performed.

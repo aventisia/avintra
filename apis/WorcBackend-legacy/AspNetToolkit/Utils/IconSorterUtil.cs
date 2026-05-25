@@ -5,10 +5,10 @@ public static class IconSorterUtil
     // Defines the priority for each icon. A lower number indicates a higher priority.
     private static readonly IReadOnlyDictionary<string, int> IconPriorityMap = new Dictionary<string, int>
     {
-        // AI models
+        // LLM & AI providers
         { "/assets/openai.svg", 1},         // OpenAI (ChatGPT / GPT models)
         { "/assets/gemini.svg", 2},         // Google DeepMind's Gemini
-        { "/assets/grok.svg", 3},           // xAI's Grok (Elon Musk's AI project)
+        { "/assets/grok.svg", 3},           // xAI's Grok
         { "/assets/claude.svg", 4},         // Anthropic's Claude
         { "/assets/llama.svg", 5},          // Meta's LLaMA (Large Language Model Meta AI)
         { "/assets/phi.svg", 6},            // Microsoft’s Phi models (lightweight LLMs)

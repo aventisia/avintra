@@ -35,7 +35,7 @@ public interface ICreditUsageService
     /// <summary>
     /// Exports the credit usage data as a CSV file based on the provided filters encapsulated in the request DTO.
     /// </summary>
-    /// <param name="exportCreditUsageRequestDto">A DTO containing optional filters like service type, user IDs, agent IDs, AI model IDs, and date range to filter the credit usage data.</param>
+    /// <param name="exportCreditUsageRequestDto">A DTO containing optional filters like service type, user IDs, agent IDs and date range to filter the credit usage data.</param>
     /// <returns>A service response containing the CSV file stream of the filtered credit usage data.</returns>
     Task<ServiceResponse<FileStreamResult>> ExportCreditUsageAsync(ExportCreditUsageRequestDto exportCreditUsageRequestDto);
 

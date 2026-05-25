@@ -1,5 +1,5 @@
 /// <summary>
-/// Represents a response that contains a collection of available AI models.
+/// Represents a response that contains a collection of available models.
 /// </summary>
 public class OllamaModelResponse
 {
@@ -10,7 +10,7 @@ public class OllamaModelResponse
 }
 
 /// <summary>
-/// Represents detailed metadata for a specific AI model.
+/// Represents detailed metadata for a specific model.
 /// </summary>
 public class ModelDetails
 {
