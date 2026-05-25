@@ -7,7 +7,7 @@ import { Badge } from "@aventisia/ui/badge";
 import { Button } from "@aventisia/ui/buttons";
 import { useShowAlertHandler } from "@aventisia/ui/hooks";
 import { cn } from "@aventisia/ui/lib";
-import { Grip, PencilIcon, Plus, Trash2 } from "lucide-react";
+import { Grip, PencilIcon, Trash2 } from "lucide-react";
 import { useEffect, useMemo, useRef, useState } from "react";
 import { useFieldArray, useFormContext, useWatch } from "react-hook-form";
 
@@ -262,7 +262,7 @@ export function ToolsConfigField({ name }: ToolsConfigFieldProps) {
           </p>
         )}
 
-        <div className="flex gap-2 items-center justify-end pt-2">
+        <div className="flex gap-2 items-center justify-end ">
           <Button
             type="button"
             variant="outline"
@@ -271,18 +271,12 @@ export function ToolsConfigField({ name }: ToolsConfigFieldProps) {
             onClick={handleSaveConfig}
             disabled={isAddDisabled}
           >
-            {editingIndex !== null ? (
-              "Save Changes"
-            ) : (
-              <>
-                <Plus className="mr-2 h-4 w-4" /> Add Tool
-              </>
-            )}
+            {editingIndex !== null ? "Save Changes" : "Add Tool"}
           </Button>
 
           <Button
             type="button"
-            variant="ghost"
+            variant="outline"
             size="sm"
             onClick={handleResetField}
             className="shrink-0"
