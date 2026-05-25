@@ -15,7 +15,6 @@ from app.features.llm_providers.llm_providers_routes import router as llm_router
 from app.features.vector_stores.vector_stores_routes import router as vector_stores_router
 from app.features.auth.authenticated_user import User
 from app.features.convert_to_pdf.convert_to_pdf_routes import router as convert_to_pdf_router
-from app.features.olmocr.olmocr_routes import router as olmocr_router
 from app.features.tts_providers.tts_providers_routes import router as tts_router
 from app.features.stt_providers.stt_providers_routes import router as stt_router
 from app.core.logger import logger
@@ -54,7 +53,6 @@ app.include_router(extract_file_text_router, tags=["Extract text from file"])
 app.include_router(llm_router, tags=["LLM Providers"])
 app.include_router(vector_stores_router, tags=["Vector Stores"])
 app.include_router(convert_to_pdf_router, tags=["Convert to PDF"])
-app.include_router(olmocr_router, tags=["olmOCR"])
 app.include_router(tts_router, tags=["Text to Speech"])
 app.include_router(stt_router, tags=["Speech to Text"])
 
