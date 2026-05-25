@@ -72,9 +72,7 @@ export function generateCreditConsumptionList(
   if (postCommand === "complete") {
     consumptionList.push({
       serviceType: CreditServiceTypesEnum.AgentExecutionTime,
-      consumedUnit: getAgentExecutionDuration(nodes, [
-        "InvokeInferenceModelWebServiceActivity",
-      ]),
+      consumedUnit: getAgentExecutionDuration(nodes, []),
       refType: UsageSourceTypesEnum.Agent,
       refId: agentId,
       refName: agentName,

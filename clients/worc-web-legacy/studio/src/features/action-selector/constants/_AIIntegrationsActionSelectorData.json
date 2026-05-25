@@ -1,36 +1,16 @@
 [
   {
     "label": "AI Integrations",
-    "description": "Integrate AI models for smarter automation, improving efficiency and intelligence.",
+    "description": "Integrate AI for smarter automation, improving efficiency and intelligence.",
     "icon": "IntelligentAutomationIcon",
     "img": null,
     "actionCategories": [
       {
         "label": "AI Actions",
-        "description": "Actions to build, deploy, and integrate AI models for tasks like text processing, image recognition, and speech conversion.",
+        "description": "Actions to build, deploy, and integrate AI for tasks like text processing, image recognition, and speech conversion.",
         "icon": "IntelligentAutomationIcon",
         "img": "/function.png",
         "actions": [
-          {
-            "type": "aiNode",
-            "name": "InvokeInferenceModelWebServiceActivity",
-            "label": "Attach AI Model",
-            "description": "Attach an existing AI model from AI Studio to your automation workflow.",
-            "docsLink": null,
-            "icon": "",
-            "img": "/assets/InferencingModel.svg",
-            "supportedPlatforms": ["cloud", "windows"]
-          },
-          {
-            "type": "activityNode",
-            "name": "OlmOCRActivity",
-            "label": "Olm OCR",
-            "description": "Perform OCR on a PDF document using AI",
-            "docsLink": null,
-            "icon": "",
-            "img": "/assets/olmocr.png",
-            "supportedPlatforms": ["cloud", "windows"]
-          },
           {
             "type": "aiNode",
             "name": "CreateVisionAIAgent",

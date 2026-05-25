@@ -1,6 +1,5 @@
 import { axiosInstance } from "@/react-toolkit/lib/axios-instance";
 import { DCPFieldSchemaType } from "..";
-import { generateOutputConfigFromData } from "../utils/generate-ai-config";
 import { IS_TAURI } from "@/constants";
 import { loadJsonFromTauriResources } from "@/utils/tauri-resource-loader";
 
@@ -31,10 +30,6 @@ export const getNodeConfig = async (
       sessionStorage.getItem("block-config") || "{}",
     );
     return blockConfig[nodeUniqueName];
-  }
-
-  if (nodeUniqueName == "AIModel") {
-    return (await generateOutputConfigFromData()) as DCPFieldSchemaType[];
   }
 
   if (nodeUniqueName.length > 9 && nodeUniqueName.slice(-9) === "Connector") {
