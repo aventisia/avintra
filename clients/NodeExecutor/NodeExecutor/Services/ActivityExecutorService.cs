@@ -1,5 +1,4 @@
-﻿using CodeActivitiesLibrary.AiIntegrations.AiStudioActivities;
-using CodeActivitiesLibrary.AppIntegrations.CloudConnectorsActivities;
+﻿using CodeActivitiesLibrary.AppIntegrations.CloudConnectorsActivities;
 using CodeActivitiesLibrary.Utils;
 using CodeActivitiesLibrary.Models;
 using DynamicExpresso;
@@ -114,7 +113,7 @@ namespace NodeExecutor.Services
                 }
 
                 // If node Type is aiNode then convert inputs accordingly
-                if (nodeData.Type == "aiNode" && nodeData.CodeActivityName != nameof(InvokeInferenceModelWebServiceActivity) && nodeData.CodeActivityName != nameof(OlmOCRActivity))
+                if (nodeData.Type == "aiNode")
                 {
                     // Process nodeData's inputs to convert them for aiNode
                     var newNodeInputs = new List<NodeInput>();

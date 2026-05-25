@@ -1,6 +1,5 @@
 import CallAgentConfigForm from "@/features/call-agent/components/CallAgentConfigForm";
 import CallBlockConfigForm from "@/features/call-block/components/CallBlockConfigForm";
-import ModelConfigForm from "@/features/call-model/components/ModelConfigForm";
 import FileViewer from "@/features/file-viewer/components/FileViewer";
 import { useLocalFileStore } from "@/features/file-viewer/stores/file-list-store";
 
@@ -34,12 +33,6 @@ export const DCPDialog = ({ children }: React.PropsWithChildren) => {
         return <CallAgentConfigForm />;
       case "blockNode":
         return <CallBlockConfigForm />;
-      case "aiNode":
-        return nodeData.name.includes("AIAgent") ? (
-          <DCPForm />
-        ) : (
-          <ModelConfigForm />
-        );
       default:
         return <DCPForm />;
     }

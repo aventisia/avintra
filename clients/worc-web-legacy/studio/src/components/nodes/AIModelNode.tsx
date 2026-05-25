@@ -39,14 +39,14 @@ export const AIModelNode = memo(
     const { isHovered, onMouseEnter, onMouseLeave } = useNodeHover();
 
     const { updateNodeData, updateNode, getNodes } = useReactFlow();
-    const isAttachAIModel =
-      data.name == "InvokeInferenceModelWebServiceActivity";
+    
     useEffect(() => {
       if (data.type !== "aiNode") return;
+      // TODO (AISTUDIO): Need to validate before we remove this
       const isNewMod = ["Attach AI Model", "Create AI Model"].includes(
         data.label,
       );
-      if (data.inputs && !isAttachAIModel) {
+      if (data.inputs) {
         const modelNode = getNodes().find(
           (n) => n.type == "modelNode" && n?.parentId == id,
         );
