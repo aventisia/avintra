@@ -670,7 +670,6 @@ class OpenAIProvider(BaseLLMProvider):
         EMBEDDING_MODEL_MAP = {
             "text-embedding-ada-002": "OpenAIEmbeddingAda002",
             "text-embedding-3-small": "OpenAIEmbedding3Small",
-            "text-embedding-3-large": "OpenAIEmbedding3Large",
         }
 
         # Try resolving ServiceType from predefined mapping
