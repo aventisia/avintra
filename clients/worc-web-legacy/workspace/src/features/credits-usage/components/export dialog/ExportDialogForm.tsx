@@ -14,7 +14,6 @@ import {
   startDateProps,
 } from "../../constants/export-chart-field-props";
 import { useAgentSearchMultiSelect } from "../../hooks/agents/useAgentSearchMultiSelect";
-import { useModelSearchMultiSelect } from "../../hooks/models/useModelSearchMultiSelect";
 import { useExportChartForm } from "../../hooks/useExportChartForm";
 import { useSearchMultiSelect } from "../../hooks/users/useSearchMultiSelect";
 import { useExportDialogStore } from "../../store/export-dialog-store";
@@ -50,18 +49,6 @@ const ExportDialogForm = () => {
     isError: agentIsError,
   } = useAgentSearchMultiSelect();
 
-  // Models Search
-  const {
-    searchTerm: modelSearchTerm,
-    setSearchTerm: modelSetSearchTerm,
-    selectedItems: modelSelectedItems,
-    handleItemSelect: modelHandleItemSelect,
-    handleItemRemove: modelHandleItemRemove,
-    searchData: modelSearchData,
-    isLoading: modelIsLoading,
-    isError: modelIsError,
-  } = useModelSearchMultiSelect();
-
   async function submitHandler(
     e: React.MouseEvent<HTMLButtonElement, MouseEvent>,
   ) {
@@ -70,7 +57,6 @@ const ExportDialogForm = () => {
       ...form.getValues(),
       users: selectedItems.map((item) => item.id),
       agents: agentSelectedItems.map((item) => item.id),
-      aiModels: modelSelectedItems.map((item) => item.id),
     };
     await mutateExportChartCSV(formData);
     setOpen(false);
@@ -123,26 +109,6 @@ const ExportDialogForm = () => {
                 isLoading={agentIsLoading}
                 isError={agentIsError}
                 placeholder="Search for Agents..."
-                maxHeight="300px"
-              />
-            </div>
-
-            {/* AI Models */}
-            <div className="space-y-1">
-              <Label className="ml-1 flex items-center gap-0.5 text-2xs">
-                Models
-                {/* <span className="text-destructive">*</span> */}
-              </Label>
-              <AgentsModelsMultiSelector
-                searchResults={modelSearchData?.data || []}
-                selectedItems={modelSelectedItems}
-                onItemSelect={modelHandleItemSelect}
-                onItemRemove={modelHandleItemRemove}
-                onSearchChange={modelSetSearchTerm}
-                searchQuery={modelSearchTerm}
-                isLoading={modelIsLoading}
-                isError={modelIsError}
-                placeholder="Search for AI Models..."
                 maxHeight="300px"
               />
             </div>

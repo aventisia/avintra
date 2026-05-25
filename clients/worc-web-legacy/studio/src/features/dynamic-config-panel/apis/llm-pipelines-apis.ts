@@ -9,9 +9,6 @@ import { TTSRequestDto, TTSResponseDto } from "../dtos/tts-model-dto";
 
 const baseAPIURL: string = `${import.meta.env.VITE_LLMPIPELINE_API_PATH}`;
 
-/**
- * Retrieves all ai models created by user
- */
 const generateLLMResponse = (obj: LLMRequestDto) => {
   return axiosInstance
     .post<IHttpResponse<LLMResponseDto>>(`${baseAPIURL}/llm/generate`, obj)

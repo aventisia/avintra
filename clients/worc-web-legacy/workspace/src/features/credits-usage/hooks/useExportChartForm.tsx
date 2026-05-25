@@ -17,7 +17,6 @@ export const useExportChartForm = () => {
     defaultValues: {
       serviceType: [],
       agents: [],
-      aiModels: [],
       users: [],
       startDate: startOfDay(subDays(new Date(), 7)), // 7 days ago, at start of the day (midnight)
       endDate: new Date(), // Current date

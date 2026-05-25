@@ -23,12 +23,8 @@ const WorcLibrary = () => {
   // List of available template categories for filtering
   const categories = [
     "All templates",
-    "AI Model",
     "Automation Agent",
     "Chat Agent",
-    // "Inferencing",
-    // "Conversation",
-    // "Generative",
     "Block",
     "Prompt",
   ];

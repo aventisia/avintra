@@ -25,10 +25,10 @@ export interface STTRequestDto {
   credentials_id?: string | null; // ← "credentials_id", NOT "credential_id"
   is_byok_enabled?: boolean;
 
-  ref_type: string; // "Agent" | "Workflow" | "AIProject"
+  ref_type: string; // "Agent" | "Workflow"
   ref_id: string;
   ref_name: string;
-  action: string; // "AgentExecution" | "AIModelExecution" | "WorkflowExecution"
+  action: string; // "AgentExecution" | "WorkflowExecution"
   agent_name?: string | null;
 }
 

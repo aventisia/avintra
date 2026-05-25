@@ -10,19 +10,6 @@ export const useFetchAgentsAndModelsCount = () => {
     queryFn: getAgentsCount,
   });
 
-  // const modelsQuery = useQuery({
-  //   queryKey: ["MODELS_COUNT"],
-  //   queryFn: getAIModelsCount,
-  // });
-
-  // ---- Combined count ----
-  // const totalCount = useMemo(() => {
-  //   const agents = agentsQuery.data?.data ?? 0;
-  //   const models = modelsQuery.data?.data ?? 0;
-
-  //   return Number(agents) + Number(models);
-  // }, [agentsQuery.data, modelsQuery.data]);
-
   // ---- Combined loading / fetching ----
   const isLoading = agentsQuery.isLoading;
   const isFetching = agentsQuery.isFetching;

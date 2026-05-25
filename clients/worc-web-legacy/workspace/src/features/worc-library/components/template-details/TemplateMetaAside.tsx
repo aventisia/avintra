@@ -4,9 +4,7 @@ import { DotSeparator, Separator } from "@aventisia/ui";
 import { Button } from "@aventisia/ui/buttons";
 import { Card, CardContent, CardHeader, CardTitle } from "@aventisia/ui/cards";
 import { dateFormatter } from "@aventisia/ui/utils";
-import { FileBoxIcon } from "lucide-react";
 
-import { ProjectTemplateTypesEnum } from "../../constants/template-types-enum";
 import { UseTemplateDTO } from "../../dtos/use-template-dto";
 import { useDownloadFile } from "../../hooks/useFileDownload";
 import { PromptTemplateSchema } from "../../types/prompt-template-schema-type";
@@ -71,11 +69,7 @@ export function TemplateMetaAside({ template }: { template: UseTemplateDTO }) {
             ) : (
               // Fallback icon
               <div className="rounded-lg bg-accent p-2">
-                {template?.type == ProjectTemplateTypesEnum.AIProject ? (
-                  <FileBoxIcon className="h-6 w-6" />
-                ) : (
-                  <NewAgentIcon className="h-6 w-6" />
-                )}
+                <NewAgentIcon className="h-6 w-6" />
               </div>
             )}
           </div>

@@ -86,7 +86,7 @@ export interface LLMRequestDto {
   stream?: boolean;
 
   /**
-   * Gets or sets the reference type (e.g.Agent, AIModel,Platform) associated with the usage.
+   * Gets or sets the reference type (e.g.Agent, Platform) associated with the usage.
    */
   ref_type: UsageSourceTypesEnum | string;
 
@@ -96,12 +96,12 @@ export interface LLMRequestDto {
   ref_id: string;
 
   /**
-   * Gets or sets the name of the reference object (e.g., Test AIModel).
+   * Gets or sets the name of the reference object (e.g., my_new_agent).
    */
   ref_name: string;
 
   /**
-   * Gets or sets the action type (e.g.AgentExecution, AIModelExecution) associated with the usage.
+   * Gets or sets the action type (e.g.AgentExecution) associated with the usage.
    */
   action: ActionTypesEnum | string;
 }

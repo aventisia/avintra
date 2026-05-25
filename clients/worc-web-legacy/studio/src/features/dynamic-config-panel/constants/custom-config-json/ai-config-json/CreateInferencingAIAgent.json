@@ -114,7 +114,7 @@
       "type": "config-panel-output",
       "name": "Result",
       "label": "Result",
-      "description": "AI Model Result.",
+      "description": "Result",
       "defaultValue": {
         "value": "Result",
         "enabled": true

@@ -31,14 +31,6 @@ const agentsProps: MultiSelectFieldProps = {
   selectOptions: [],
 };
 
-const aiModelsProps: MultiSelectFieldProps = {
-  name: "aiModels",
-  label: "AI Models",
-  isRequired: true,
-  className: "text-sm",
-  selectOptions: [],
-};
-
 const startDateProps: DatePickerFieldProps = {
   name: "startDate",
   label: "Start Date",
@@ -57,7 +49,6 @@ export {
   serviceTypeProps,
   usersProps,
   agentsProps,
-  aiModelsProps,
   startDateProps,
   endDateProps,
 };

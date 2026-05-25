@@ -47,16 +47,6 @@ export enum CreditServiceTypesEnum {
   Claude45HaikuInput,
   Claude45HaikuOutput,
   Claude45HaikuCached,
-  // Other services
-  ElevenLabsSTT,
-  ElevenLabsTTS,
-  OlmOcrInput,
-  OlmOcrOutput,
-  // TODO: Deprecated, Remove this later when no longer needed
-  OnPremSTT,
-  OnPremTTS,
-  OnPremGpuText,
-  AIModelExecutionTime,
   // OpenAI Embedding Models
   OpenAIEmbeddingAda002,
   OpenAIEmbedding3Small,

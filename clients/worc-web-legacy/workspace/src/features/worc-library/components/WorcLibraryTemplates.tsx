@@ -1,9 +1,8 @@
 import { useDocumentTitle } from "@aventisia/ui/hooks";
 import { Search } from "lucide-react";
-import { useMemo, useState, useEffect } from "react";
+import { useEffect, useMemo, useState } from "react";
 
 import { useFetchProjectTemplates } from "../hooks/useFetchProjectTemplates";
-
 import { TemplateCard } from "./TemplateCard";
 import { TemplateCardSkeleton } from "./TemplateCardSkelton";
 import { TemplatePagination } from "./TemplatePagination";
@@ -28,23 +27,18 @@ const WorcLibraryTemplates = ({
 
     const checkCategory = (templateType: string) => {
       if (selectedCategory === "All templates") return true;
-      if (selectedCategory === "AI Model")
-        return ["AIProject", "Inferencing", "Conversation", "Generative"].includes(templateType);
       if (selectedCategory === "Automation Agent")
         return ["Agent"].includes(templateType);
       if (selectedCategory === "Chat Agent")
         return ["ChatAgent"].includes(templateType);
       return templateType.includes(selectedCategory);
-    }
+    };
 
     return templates
       .filter((template) => checkCategory(template.type))
       ?.filter((template) => {
         const searchText =
-          template.name +
-          template?.tags.toString() +
-          (template?.type == "AIProject" ? "AIProjectAIModel" : template?.type);
-
+          template.name + template?.tags.toString() + template?.type;
         return searchQuery?.trim()
           ? searchText?.toLowerCase().includes(searchQuery.toLowerCase().trim())
           : true;
