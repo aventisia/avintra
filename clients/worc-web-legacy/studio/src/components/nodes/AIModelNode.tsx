@@ -39,7 +39,7 @@ export const AIModelNode = memo(
     const { isHovered, onMouseEnter, onMouseLeave } = useNodeHover();
 
     const { updateNodeData, updateNode, getNodes } = useReactFlow();
-    
+
     useEffect(() => {
       if (data.type !== "aiNode") return;
       // TODO (AISTUDIO): Need to validate before we remove this
@@ -175,9 +175,8 @@ export const AIModelNode = memo(
         <InputHandle position={targetPosition} id="main-in" />
         <OutputHandle position={sourcePosition} id="main-out" />
 
-        {isAttachAIModel ? null : (
-          <ModelInputHandle isConnectable={!!llm?.length} />
-        )}
+        <ModelInputHandle isConnectable={!!llm?.length} />
+
         {/* <Handle
           position={Position.Bottom}
           id="memory-input"
