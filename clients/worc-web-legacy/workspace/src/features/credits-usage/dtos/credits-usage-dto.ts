@@ -27,12 +27,6 @@ interface IUsers {
   totalCredits: number;
 }
 
-interface IAiModels {
-  modelName: string;
-  totalTransactions: number;
-  totalCredits: number;
-}
-
 interface IAgents {
   agentName: string;
   totalTransactions: number;
@@ -46,6 +40,5 @@ export interface CreditUsageDTO {
   agentTransactionUsages: IGraphData[];
   resourceUsages: IResourceUsages[];
   users: IUsers[];
-  aiModels: IAiModels[];
   agents: IAgents[];
 }

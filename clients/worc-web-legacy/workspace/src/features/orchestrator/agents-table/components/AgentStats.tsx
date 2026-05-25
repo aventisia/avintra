@@ -18,7 +18,6 @@ type StatusDetails = {
   active: number;
   inactive: number;
   agents: number;
-  models: number;
 };
 
 export const AgentStats = ({ data }: StatsProps) => {
@@ -32,7 +31,6 @@ export const AgentStats = ({ data }: StatsProps) => {
         (x) =>
           x.type === FlowTypesEnum.Agent || x.type === FlowTypesEnum.ChatAgent,
       ),
-      models: totalData.count((x) => x.type === "AI Model"),
       active: totalData.count((x) => x.isActive),
       inactive: totalData.count((x) => !x.isActive),
     });
@@ -45,7 +43,6 @@ export const AgentStats = ({ data }: StatsProps) => {
         title={"Total Published Agents"}
         mainText={data?.length}
         icon={<NewAgentIcon className="h-10 w-10 text-primary" />}
-        // description={`${stats?.agents} Agents & ${stats?.models} AI Models`}
       />
       <StatsCard
         title={"Total Machines"}

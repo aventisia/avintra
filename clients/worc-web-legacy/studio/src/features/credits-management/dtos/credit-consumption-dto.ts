@@ -17,7 +17,7 @@ export interface CreditConsumptionDto {
   consumedUnit: number;
 
   /**
-   * Gets or sets the reference type (e.g.Agent, AIModel,Platform) associated with the usage.
+   * Gets or sets the reference type (e.g.Agent, Platform) associated with the usage.
    */
   refType: UsageSourceTypesEnum | string;
 
@@ -27,12 +27,12 @@ export interface CreditConsumptionDto {
   refId: string;
 
   /**
-   * Gets or sets the name of the reference object (e.g., Test AIModel).
+   * Gets or sets the name of the reference object (e.g., my_new_agent).
    */
   refName: string;
 
   /**
-   * Gets or sets the action type (e.g.AgentExecution, AIModelExecution) associated with the usage.
+   * Gets or sets the action type (e.g.AgentExecution) associated with the usage.
    */
   action: ActionTypesEnum | string;
 

@@ -37,12 +37,6 @@ const ConnectedIntegrationDialogContent = () => {
           <span>14/07/2024</span>
         </div>
 
-        {/* AI Models Connected */}
-        <div className="flex items-center justify-between text-sm">
-          <span className="text-muted-foreground">AI Models Connected:</span>
-          <span className="text-primary underline">30</span>
-        </div>
-
         {/* Agents Connected */}
         <div className="flex items-center justify-between text-sm">
           <span className="text-muted-foreground">Agents Connected:</span>

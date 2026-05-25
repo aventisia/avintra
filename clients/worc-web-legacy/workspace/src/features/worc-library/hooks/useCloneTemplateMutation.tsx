@@ -34,9 +34,6 @@ export const useCloneTemplateMutation = () => {
 
     // On success, open Agent Builder with the applied template
     onSuccess: (data) => {
-      if (data?.data?.type == "AIProject") {
-        window.location.href = `${import.meta.env.VITE_AISTUDIO_PATH}${stripLeadingSlash(data.data.accessPath)}`;
-      }
       if (data?.data?.type == FlowTypesEnum.Agent || data?.data?.type == FlowTypesEnum.ChatAgent || data?.data?.type == FlowTypesEnum.Block) {
         window.location.href = `${import.meta.env.VITE_AGENTBUILDER_PATH}${stripLeadingSlash(data.data.accessPath)}`;
       }

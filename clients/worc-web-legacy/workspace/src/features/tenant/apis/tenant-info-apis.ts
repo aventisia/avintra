@@ -50,13 +50,6 @@ const getAgentsCount = () =>
     >(`${import.meta.env.VITE_WORC_API_PATH}/agent/total-published`)
     .then((res) => res.data);
 
-const getAIModelsCount = () =>
-  axiosInstance
-    .get<
-      IHttpResponse<number>
-    >(`${import.meta.env.VITE_AISTUDIO_API_PATH}/ml-model/total-published`)
-    .then((res) => res.data);
-
 export {
   getTenantCurrentPlan,
   getCompanyDetails,
@@ -65,5 +58,4 @@ export {
   updateCompanyDetails,
   getPaymentMethods,
   getAgentsCount,
-  getAIModelsCount,
 };

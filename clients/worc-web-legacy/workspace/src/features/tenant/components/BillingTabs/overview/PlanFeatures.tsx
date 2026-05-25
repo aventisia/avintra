@@ -66,7 +66,7 @@ interface PlanFeaturesProps {
  *
  * @param frequency - The billing frequency of the plan ("Monthly" or "Yearly").
  * @param credits - The number of credits included per billing period.
- * @param publishedItems - The number of published agents or AI models allowed (use 0 for unlimited).
+ * @param publishedItems - The number of published agents allowed (use 0 for unlimited).
  * @param historyRetentionDays - The number of days insights and workflow history are retained.
  * @param spaces - The number of spaces included in the plan.
  * @param storageLimitMB - The storage limit in megabytes.

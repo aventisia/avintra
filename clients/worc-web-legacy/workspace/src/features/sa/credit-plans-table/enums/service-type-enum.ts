@@ -43,17 +43,6 @@ export enum ServiceTypeEnum {
   "Claude45HaikuInput" = "Claude 4.5 Haiku-input",
   "Claude45HaikuOutput" = "Claude 4.5 Haiku-output",
   "Claude45HaikuCached" = "Claude 4.5 Haiku-cached",
-  // Other services
-  "ElevenLabsSTT" = "ElevenLabs STT",
-  "ElevenLabsTTS" = "ElevenLabs TTS",
-  "OlmOcrInput" = "Olm OCR Input",
-  "OlmOcrOutput" = "Olm OCR Output",
-  // TODO: Deprecated, Remove this later when no longer needed
-  "OnPremSTT" = "On-prem STT",
-  "OnPremTTS" = "On-prem TTS",
-  "OnPremGpuText" = "On-prem GPU-text",
-  "AIModelExecutionTime" = "AIModel Execution Time",
-
   // OpenAI Embedding Models
   "OpenAIEmbeddingAda002" = "OpenAI Embedding ada002",
   "OpenAIEmbedding3Small" = "OpenAI Embedding 3Small",

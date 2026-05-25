@@ -12,7 +12,7 @@ interface TableCellLinkProps {
   /** The cell value to display. */
   cellValue: string;
 
-  /** Type of row (Agent/AIProject). */
+  /** Type of row e.g. Agent. */
   type: string;
 }
 

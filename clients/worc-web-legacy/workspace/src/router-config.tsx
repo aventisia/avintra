@@ -28,7 +28,6 @@ import { FlowsPage } from "./pages/FlowsPage";
 import { GetDesktopPage } from "./pages/GetDesktopPage";
 import { AppIntegrationsPage } from "./pages/IntegrationsPage";
 import { LibraryPage } from "./pages/LibraryPage";
-import { ModelsPage } from "./pages/ModelsPage";
 import MyAccountPage from "./pages/MyAccountPage";
 import { MyChatsPage } from "./pages/MyChatsPage";
 import { PreferencesPage } from "./pages/PreferencesPage";
@@ -53,6 +52,7 @@ import { PublishedAgentsPage } from "./pages/orchestrator/PublishedAgentsPage";
 import { QueuesPage } from "./pages/orchestrator/QueuesPage";
 import { QueuesWorkItemsPage } from "./pages/orchestrator/QueuesWorkItemsPage";
 import { VaultPage } from "./pages/orchestrator/VaultPage";
+import { ConversationDetailsPage } from "./pages/orchestrator/conversations/ConversationDetailsPage";
 import { EmailTriggerPage } from "./pages/orchestrator/triggers/EmailTriggerPage";
 import { MessageTriggerPage } from "./pages/orchestrator/triggers/MessageTriggerPage";
 import { TimeTriggerPage } from "./pages/orchestrator/triggers/TimeTriggerPage";
@@ -61,7 +61,6 @@ import { CreditPlansPage } from "./pages/sa/CreditPlansPage";
 import { OnPremLLMPage } from "./pages/sa/OnPremLLMPage";
 import { SubscriptionPlansPage } from "./pages/sa/SubscriptionPlansPage";
 import { TenantsPage } from "./pages/sa/TenantsPage";
-import { ConversationDetailsPage } from "./pages/orchestrator/conversations/ConversationDetailsPage";
 
 const routerConfig: RouteObject[] = [
   {
@@ -72,10 +71,6 @@ const routerConfig: RouteObject[] = [
       {
         path: "/agents",
         element: <FlowsPage />,
-      },
-      {
-        path: "/ai-models",
-        element: <ModelsPage />,
       },
       {
         path: "/library",

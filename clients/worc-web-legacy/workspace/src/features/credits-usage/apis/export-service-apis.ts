@@ -7,7 +7,6 @@ import { ExportChartDTO } from "../dtos/export-chart-dto";
 import { WorkspaceUserDto } from "../dtos/workspace-user-dto";
 
 const workspaceUserApiUrl: string = `${import.meta.env.VITE_WORC_API_PATH}`;
-const mlModelBuilderAPIUrl: string = `${import.meta.env.VITE_AISTUDIO_API_PATH}`;
 const accountAPIURL: string = `${import.meta.env.VITE_ACCOUNTS_API_PATH}/credit-usage`;
 
 /**
@@ -29,14 +28,6 @@ const getSearchAgent = (value?: string) => {
     .then((res) => res.data);
 };
 
-const getSearchModel = (value?: string) => {
-  return axiosInstance
-    .get<
-      IHttpResponse<AgentModelDTO[]>
-    >(`${mlModelBuilderAPIUrl}/ai-models/list/${value}`)
-    .then((res) => res.data);
-};
-
 const exportCreditUsageCSV = (postObj: ExportChartDTO) => {
   return axiosInstance
     .post(`${accountAPIURL}/export`, postObj, {
@@ -45,4 +36,4 @@ const exportCreditUsageCSV = (postObj: ExportChartDTO) => {
     .then((res) => res.data); // just return the blob
 };
 
-export { getSearchUser, getSearchAgent, getSearchModel, exportCreditUsageCSV };
+export { getSearchUser, getSearchAgent, exportCreditUsageCSV };

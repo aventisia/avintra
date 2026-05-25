@@ -10,7 +10,7 @@ export const columnDisplayNames: KeyValueLookupType[] = [
   { key: "currency", value: "Currency" },
   { key: "frequency", value: "Billing Frequency" },
   { key: "maxCredits", value: "No of credits" },
-  { key: "maxPublishedItems", value: "Publish (Agents/AI Models)" },
+  { key: "maxPublishedItems", value: "Publish Agents" },
   { key: "historyRetentionDays", value: "Insights & History (Days)" },
   { key: "maxSpaces", value: "Spaces" },
   { key: "storageLimitMB", value: "Storage (MB)" },

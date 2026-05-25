@@ -9,7 +9,6 @@ const UsageTabs = () => {
 
   const { data } = useFetchCreditUsageSummary();
   const users = data?.data.users || [];
-  const aiModels = data?.data.aiModels || [];
   const agents = data?.data.agents || [];
 
   const renderRow = (label: string, value: string | undefined) => (
@@ -45,12 +44,6 @@ const UsageTabs = () => {
             className="rounded-none data-[state=active]:border-b-black"
           >
             Users
-          </TabsTrigger>
-          <TabsTrigger
-            value="aiModels"
-            className="rounded-none data-[state=active]:border-b-black"
-          >
-            AI Models
           </TabsTrigger>
           <TabsTrigger
             value="agents"
@@ -90,22 +83,6 @@ const UsageTabs = () => {
                       })}
                 </p>
               </div>
-            );
-          })}
-        </TabsContent>
-
-        {/* Tabs Content for AI Models */}
-        <TabsContent value="aiModels" className="space-y-4 px-4 py-2">
-          {aiModels.map((user) => {
-            return renderRow(
-              user.modelName,
-              selectedTab == "totalCredits"
-                ? user.totalCredits.toLocaleString("en-US", {
-                    maximumFractionDigits: 2,
-                  })
-                : user.totalTransactions.toLocaleString("en-US", {
-                    maximumFractionDigits: 2,
-                  }),
             );
           })}
         </TabsContent>

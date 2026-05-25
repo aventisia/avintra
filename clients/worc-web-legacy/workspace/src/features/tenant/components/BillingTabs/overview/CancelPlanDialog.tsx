@@ -1,3 +1,6 @@
+import { useCancelPlanDialogStore } from "@/features/tenant/store/overview/cancel-plan-dialog-store";
+import { useUserSessionStore } from "@/react-toolkit/stores/user-session-store";
+
 import { Separator } from "@aventisia/ui";
 import { Button, buttonVariants } from "@aventisia/ui/buttons";
 import {
@@ -12,9 +15,6 @@ import { Label } from "@aventisia/ui/label";
 import { RadioGroup, RadioGroupItem } from "@aventisia/ui/radio-group";
 import { AlertTriangleIcon, X } from "lucide-react";
 import { useShallow } from "zustand/react/shallow";
-
-import { useCancelPlanDialogStore } from "@/features/tenant/store/overview/cancel-plan-dialog-store";
-import { useUserSessionStore } from "@/react-toolkit/stores/user-session-store";
 
 const CancelPlanDialog = () => {
   const { isOpen, setOpen } = useCancelPlanDialogStore();
@@ -64,8 +64,8 @@ const CancelPlanDialog = () => {
                     <span className="font-semibold">
                       permanently delete your entire account immediately
                     </span>
-                    . All Agents, AI Models, and associated data will be lost
-                    and cannot be recovered.
+                    . All Agents and associated data will be lost and cannot be
+                    recovered.
                   </li>
                   <li>
                     Please export any data you wish to keep before proceeding.
@@ -81,8 +81,8 @@ const CancelPlanDialog = () => {
                     billing cycle.
                   </li>
                   <li>
-                    Once cancelled, your entire account - including all Agents,
-                    AI Models, and associated data - will be{" "}
+                    Once cancelled, your entire account - including all Agents
+                    and associated data - will be{" "}
                     <span className="font-semibold">
                       permanently deleted and cannot be recovered
                     </span>

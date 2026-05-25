@@ -16,7 +16,6 @@ import {
   BadgeDollarSignIcon,
   BookOpenCheckIcon,
   CheckCheckIcon,
-  FileBoxIcon,
   FolderCogIcon,
   LibraryIcon,
   MonitorPlayIcon,
@@ -38,13 +37,6 @@ const sidebarMenuSections: SidebarMenuSectionType[] = [
         Icon: NewAgentIcon,
         name: "agents",
         route: "/agents",
-        permissions: ["TD"],
-        type: ["Commercial", "Enterprise"],
-      },
-      {
-        Icon: FileBoxIcon,
-        name: "AI Models",
-        route: "/ai-models",
         permissions: ["TD"],
         type: ["Commercial", "Enterprise"],
       },
@@ -303,9 +295,7 @@ export function getSidebarMenuBasedOnPermissions(
         menuItems: filteredMenuItems,
       };
     })
-    .filter(
-      (section): section is SidebarMenuSectionType => section !== null,
-    );
+    .filter((section): section is SidebarMenuSectionType => section !== null);
 }
 
 export function flattenMenuRoutes(

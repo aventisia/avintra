@@ -71,11 +71,4 @@ public enum CreditServiceTypesEnum
     // Other services
     ElevenLabsSTT,
     ElevenLabsTTS,
-    OlmOcrInput,
-    OlmOcrOutput,
-    // TODO: Deprecated, Remove this later when no longer needed
-    OnPremSTT,
-    OnPremTTS,
-    OnPremGpuText,
-    AIModelExecutionTime,
 }

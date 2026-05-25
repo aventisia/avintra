@@ -41,7 +41,7 @@ const maxCreditsProps: InputFieldProps = {
 // Max Published Items
 const maxPublishedItemsProps: InputFieldProps = {
   name: "maxPublishedItems",
-  label: "Published Agents or AI Models",
+  label: "Published Agents",
   isRequired: true,
 };
 
