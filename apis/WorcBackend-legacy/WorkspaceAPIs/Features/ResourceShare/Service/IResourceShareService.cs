@@ -34,6 +34,13 @@ public interface IResourceShareService
     Task<ServiceResponse<ResourceShareDto>> CreateResourceShareAsync(ResourceShareDto resourceShareDto);
 
     /// <summary>
+    /// Creates resource shares and grants access to multiple users for the specified resource.
+    /// </summary>
+    /// <param name="createResourceShareDto"> The resource sharing request containing the resource details and recipient access assignments. </param>
+    /// <returns> A service response indicating whether the bulk resource sharing operation completed successfully. </returns>
+    Task<ServiceResponse<bool>> CreateBulkResourceShareAsync(CreateResourceShareDto createResourceShareDto);
+
+    /// <summary>
     /// Updates an existing resource share.
     /// </summary>
     /// <param name="resourceShareDto"> The updated resource share information. </param>

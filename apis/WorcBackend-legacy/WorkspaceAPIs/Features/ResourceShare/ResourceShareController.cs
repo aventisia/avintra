@@ -40,6 +40,12 @@ public class ResourceShareController : BaseApiController
         return ResultHelper(await _resourceShareService.CreateResourceShareAsync(resourceShareDto));
     }
 
+    // Creates resource shares and grants access to multiple users for the same resource.
+    [HttpPost("bulk")]
+    public async Task<ActionResult<ServiceResponse<bool>>> CreateBulkResourceShareAsync([FromBody] CreateResourceShareDto createResourceShareDto)
+    {
+        return ResultHelper(await _resourceShareService.CreateBulkResourceShareAsync(createResourceShareDto));
+    }
     // Updates an existing resource share.
     [HttpPut]
     public async Task<ActionResult<ServiceResponse<ResourceShareDto>>> UpdateResourceShareAsync([FromBody] ResourceShareDto resourceShareDto)
