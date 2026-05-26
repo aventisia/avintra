@@ -212,6 +212,88 @@ public class ResourceShareService : IResourceShareService
         return serviceResponse;
     }
 
+    // Creates resource shares and grants access to multiple users for the specified resource.
+    public async Task<ServiceResponse<bool>> CreateBulkResourceShareAsync(CreateResourceShareDto createResourceShareDto)
+    {
+        var serviceResponse = new ServiceResponse<bool>
+        {
+            Data = false,
+            Message = "Failed to add resource access. Please try again."
+        };
+
+        try
+        {
+            var userIds = createResourceShareDto.Users
+                .Select(s => s.UserId)
+                .Distinct()
+                .ToList();
+
+            // Get existing shares in one query.
+            var existingShares = await _unitOfWork.ResourceShareRepo
+                .GetByConditionAsync(w =>
+                    w.ResourceId == createResourceShareDto.ResourceId &&
+                    w.ResourceType == createResourceShareDto.ResourceType &&
+                    userIds.Contains(w.UserId))
+                .ToListAsync();
+
+            var existingUserIds = existingShares
+                .Select(s => s.UserId)
+                .ToHashSet();
+
+            // Get valid users in one query.
+            var validUsers = await _unitOfWork.WorkspaceUserRepo
+                .GetByConditionAsync(w => userIds.Contains(w.Id))
+                .Select(s => s.Id)
+                .ToListAsync();
+
+            var validUserIds = validUsers.ToHashSet();
+
+            // Build entities in memory.
+            var resourceShares = createResourceShareDto.Users
+                .Where(w => validUserIds.Contains(w.UserId) && !existingUserIds.Contains(w.UserId))
+                .Select(s => new ResourceShare
+                {
+                    ResourceId = createResourceShareDto.ResourceId,
+                    ResourceType = createResourceShareDto.ResourceType,
+                    UserId = s.UserId,
+                    AccessLevel = s.AccessLevel
+                })
+                .ToList();
+
+            if (!resourceShares.Any())
+            {
+                serviceResponse.StatusCode = 409;
+                serviceResponse.Message = "No valid users found or access already exists.";
+                return serviceResponse;
+            }
+
+            // Bulk insert.
+            await _unitOfWork.ResourceShareRepo.InsertAsync(resourceShares);
+
+            if (!await _unitOfWork.SaveAsync())
+            {
+                _logger.LogWarning(
+                    "[CreateBulkResourceShareAsync] Failed for ResourceId {ResourceId}",
+                    createResourceShareDto.ResourceId);
+
+                return serviceResponse;
+            }
+
+            serviceResponse.Data = true;
+            serviceResponse.StatusCode = 200;
+            serviceResponse.Message = "Resource access granted successfully.";
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(
+                ex,
+                "[CreateBulkResourceShareAsync] Failed for ResourceId {ResourceId}",
+                createResourceShareDto.ResourceId);
+        }
+
+        return serviceResponse;
+    }
+
     // Updates an existing resource share.
     public async Task<ServiceResponse<ResourceShareDto>> UpdateResourceShareAsync(ResourceShareDto resourceShareDto)
     {
