@@ -1,0 +1,17 @@
+import { getSearchPublishedAgents } from "@/features/03-orchestrator/agents-table/apis/agents-table-apis";
+import { useQuery } from "@tanstack/react-query";
+
+
+
+/**
+ * Custom hook to fetch flow users using react query.
+ * @returns An object containing the fetched data, isFetching flag, and isLoading flag.
+ */
+export const useSearchAgentsList = (query: string) => {
+  return useQuery({
+    queryKey: ["agents-list", query],
+    queryFn: () => getSearchPublishedAgents(query),
+
+    enabled: !!query,
+  });
+};

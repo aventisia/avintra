@@ -1,10 +1,8 @@
+import { IS_TAURI } from "@/constants/constants";
+import { Progress } from "@/features/05-tenant-admin/tenant/shared/Progress";
+
 import { Button } from "@aventisia/ui/buttons";
 import { toast } from "@aventisia/ui/sonner";
-import { useEffect, useRef, useState } from "react";
-
-import { IS_TAURI } from "@/constants/constants";
-import { Progress } from "@/features/tenant/shared/Progress";
-
 import {
   ArrowDownTrayIcon,
   ArrowPathIcon,
@@ -12,6 +10,8 @@ import {
   InformationCircleIcon,
   XMarkIcon,
 } from "@heroicons/react/24/outline";
+import { useEffect, useRef, useState } from "react";
+
 import { useAppUpdater } from "../hooks/useAppUpdater";
 
 interface AppUpdateToastProps {

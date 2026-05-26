@@ -7,60 +7,49 @@ import { Navigate, RouteObject, createBrowserRouter } from "react-router-dom";
 import { AppErrorPage } from "./components/layout/AppErrorPage";
 import { AppLayout } from "./components/layout/AppLayout";
 import { AppRedirectPage } from "./components/layout/AppRedirectPage";
-import Chat from "./features/assist/my-chats/components/ChatSection";
-// import { NoChatSelected } from "./features/assist/my-chats/components/NoChatSelected";
-import GALayout from "./features/global-admin/on-prem-tenant/components/GALayout";
-import {
-  AccountDeactivation,
-  DeviceHistory,
-  EmailSettings,
-  ProfileInfo,
-  Security,
-} from "./features/my-account/components";
-import { ConversationsTable } from "./features/orchestrator/conversations-table/components/ConversationsTable";
-import { STCreatePage } from "./features/support-tickets-table/components/support-ticket-create-page/STCreatePage";
-import { SupportTicketEditForm } from "./features/support-tickets-table/components/support-ticket-crud-dialog/SupportTicketEditForm";
-import { AchievesPage } from "./pages/AchievesPage";
-import { AgentsAssistPage } from "./pages/AgentsAssistPage";
-import ComingSoon from "./pages/CommingSoon";
-import { CreditsUsagePage } from "./pages/CreditsUsagePage";
-import { FlowsPage } from "./pages/FlowsPage";
+import { ConversationsTable } from "./features/03-orchestrator/conversations-table/components/ConversationsTable";
+import Chat from "./features/04-assist/my-chats/components/ChatSection";
+import { STCreatePage } from "./features/05-tenant-admin/support-tickets-table/components/support-ticket-create-page/STCreatePage";
+import { SupportTicketEditForm } from "./features/05-tenant-admin/support-tickets-table/components/support-ticket-crud-dialog/SupportTicketEditForm";
+import GALayout from "./features/07-global-admin/on-prem-tenant/components/GALayout";
+import { FlowsPage } from "./pages/01-build/FlowsPage";
+import { LibraryPage } from "./pages/01-build/LibraryPage";
+import { KeystorePage } from "./pages/02-configure/KeystorePage";
+import { VaultPage } from "./pages/02-configure/VaultPage";
+import { KnowledgeBaseDetailsPage } from "./pages/02-configure/knowledge-bases/KnowledgeBaseDetailsPage";
+import { KnowledgeBasePage } from "./pages/02-configure/knowledge-bases/KnowledgeBasePage";
+import { QueuesPage } from "./pages/02-configure/queues/QueuesPage";
+import { QueuesWorkItemsPage } from "./pages/02-configure/queues/QueuesWorkItemsPage";
+import { EmailTriggerPage } from "./pages/02-configure/triggers/EmailTriggerPage";
+import { MessageTriggerPage } from "./pages/02-configure/triggers/MessageTriggerPage";
+import { TimeTriggerPage } from "./pages/02-configure/triggers/TimeTriggerPage";
+import { WebhookTriggerPage } from "./pages/02-configure/triggers/WebhookTriggerPage";
+import { ExecutionLogsPage } from "./pages/03-orchestrator/ExecutionLogsPage";
+import { JobsPage } from "./pages/03-orchestrator/JobsPage";
+import { MachinesPage } from "./pages/03-orchestrator/MachinesPage";
+import { PublishedAgentsPage } from "./pages/03-orchestrator/PublishedAgentsPage";
+import { ConversationDetailsPage } from "./pages/03-orchestrator/conversations/ConversationDetailsPage";
+import { AgentsAssistPage } from "./pages/04-assist/AgentsAssistPage";
+import { MyChatsPage } from "./pages/04-assist/MyChatsPage";
+import { MyQueuePage } from "./pages/04-assist/MyQueuePage";
+import { AchievesPage } from "./pages/05-tenant-admin/AchievesPage";
+import { CreditsUsagePage } from "./pages/05-tenant-admin/CreditsUsagePage";
+import { AppIntegrationsPage } from "./pages/05-tenant-admin/IntegrationsPage";
+import { PreferencesPage } from "./pages/05-tenant-admin/PreferencesPage";
+import { SupportTicketsPage } from "./pages/05-tenant-admin/SupportTicketsPage";
+import { TenantPage } from "./pages/05-tenant-admin/TenantPage";
+import { TenantTemplatesApprovalPage } from "./pages/05-tenant-admin/TenantTemplatesApprovalPage";
+import { UsersPage } from "./pages/05-tenant-admin/UsersPage";
+import { CreditPlansPage } from "./pages/06-super-admin/CreditPlansPage";
+import { OnPremLLMPage } from "./pages/06-super-admin/OnPremLLMPage";
+import { PublicTemplatesApprovalPage } from "./pages/06-super-admin/PublicTemplatesApprovalPage";
+import { SubscriptionPlansPage } from "./pages/06-super-admin/SubscriptionPlansPage";
+import { TenantsPage } from "./pages/06-super-admin/TenantsPage";
+import { OnPremTenantsPage } from "./pages/07-global-admin/OnPremTenantsPage";
+import { TenantInstanceDataPage } from "./pages/07-global-admin/TenantInstanceDataPage";
+import { TenantInstancePage } from "./pages/07-global-admin/TenantInstancePage";
 import { GetDesktopPage } from "./pages/GetDesktopPage";
-import { AppIntegrationsPage } from "./pages/IntegrationsPage";
-import { LibraryPage } from "./pages/LibraryPage";
 import MyAccountPage from "./pages/MyAccountPage";
-import { MyChatsPage } from "./pages/MyChatsPage";
-import { PreferencesPage } from "./pages/PreferencesPage";
-import { PublicTemplatesApprovalPage } from "./pages/PublicTemplatesApprovalPage";
-import { SupportTicketsPage } from "./pages/SupportTicketsPage";
-import { SupportTicketsReviewerPage } from "./pages/SupportTicketsReviewerPage";
-import { TenantPage } from "./pages/TenantPage";
-import { TenantTemplatesApprovalPage } from "./pages/TenantTemplatesApprovalPage";
-import { UsersPage } from "./pages/UsersPage";
-import { OnPremTenantsPage } from "./pages/global-admin/OnPremTenantsPage";
-import { TenantInstanceDataPage } from "./pages/global-admin/TenantInstanceDataPage";
-import { TenantInstancePage } from "./pages/global-admin/TenantInstancePage";
-import { ExecutionLogsPage } from "./pages/orchestrator/ExecutionLogsPage";
-import { JobsPage } from "./pages/orchestrator/JobsPage";
-import { KeystorePage } from "./pages/orchestrator/KeystorePage";
-import { KnowledgeBaseDetailsPage } from "./pages/orchestrator/KnowledgeBaseDetailsPage";
-import { KnowledgeBasePage } from "./pages/orchestrator/KnowledgeBasePage";
-import { MachinesPage } from "./pages/orchestrator/MachinesPage";
-import { MyQueuePage } from "./pages/orchestrator/MyQueuePage";
-import { Orchestrator } from "./pages/orchestrator/Orchestrator";
-import { PublishedAgentsPage } from "./pages/orchestrator/PublishedAgentsPage";
-import { QueuesPage } from "./pages/orchestrator/QueuesPage";
-import { QueuesWorkItemsPage } from "./pages/orchestrator/QueuesWorkItemsPage";
-import { VaultPage } from "./pages/orchestrator/VaultPage";
-import { ConversationDetailsPage } from "./pages/orchestrator/conversations/ConversationDetailsPage";
-import { EmailTriggerPage } from "./pages/orchestrator/triggers/EmailTriggerPage";
-import { MessageTriggerPage } from "./pages/orchestrator/triggers/MessageTriggerPage";
-import { TimeTriggerPage } from "./pages/orchestrator/triggers/TimeTriggerPage";
-import { WebhookTriggerPage } from "./pages/orchestrator/triggers/WebhookTriggerPage";
-import { CreditPlansPage } from "./pages/sa/CreditPlansPage";
-import { OnPremLLMPage } from "./pages/sa/OnPremLLMPage";
-import { SubscriptionPlansPage } from "./pages/sa/SubscriptionPlansPage";
-import { TenantsPage } from "./pages/sa/TenantsPage";
 
 const routerConfig: RouteObject[] = [
   {
@@ -68,6 +57,7 @@ const routerConfig: RouteObject[] = [
     element: <AppLayout />,
     errorElement: <AppErrorPage />,
     children: [
+      // build section
       {
         path: "/agents",
         element: <FlowsPage />,
@@ -77,143 +67,27 @@ const routerConfig: RouteObject[] = [
         element: <LibraryPage />,
       },
       {
-        path: "/home",
-        element: <ComingSoon />,
-      },
-      {
-        path: "/assist/agents",
-        element: <AgentsAssistPage />,
-      },
-      {
-        path: "/assist/queues",
-        element: <MyQueuePage />,
-      },
-      // routes/assist.tsx
-
-      {
-        path: "/assist/chats",
-        element: <MyChatsPage />,
-        children: [
-          {
-            path: ":flowVersionId",
-            element: <Chat />, // new chat
-          },
-          {
-            path: ":flowVersionId/:conversationId",
-            element: <Chat />, // existing chat
-          },
-        ],
-      },
-      {
         path: "/account",
         element: <MyAccountPage />,
-        errorElement: <AppErrorPage />,
+      },
+      // configure section
+      {
+        path: "/configure",
         children: [
           {
             index: true,
-            path: "/account",
-            element: <ProfileInfo />,
+            element: <Navigate to="queues" replace />,
           },
           {
-            path: "/account/email-settings",
-            element: <EmailSettings />,
-          },
-          {
-            path: "/account/security",
-            element: <Security />,
-          },
-          {
-            path: "/account/device-history",
-            element: <DeviceHistory />,
-          },
-          {
-            path: "/account/account-deactivation",
-            element: <AccountDeactivation />,
-          },
-        ],
-      },
-      {
-        path: "/marketplace",
-        element: <ComingSoon />,
-      },
-      {
-        path: "/users",
-        element: <UsersPage />,
-      },
-      {
-        path: "/tenant",
-        element: <TenantPage />,
-      },
-      {
-        path: "/preferences",
-        element: <PreferencesPage />,
-      },
-      {
-        path: "/integrations",
-        element: <AppIntegrationsPage />,
-      },
-      {
-        path: "/on-prem-models",
-        element: <OnPremLLMPage />,
-      },
-      {
-        path: "/usage",
-        element: <CreditsUsagePage />,
-      },
-      {
-        path: "/archive",
-        element: <AchievesPage />,
-      },
-      {
-        path: "/approvals",
-        element: <TenantTemplatesApprovalPage />,
-      },
-      {
-        path: "/orchestrator",
-        element: <Orchestrator />,
-        errorElement: <AppErrorPage />,
-        children: [
-          {
-            index: true,
-            path: "/orchestrator/published-agents",
-            element: <PublishedAgentsPage />,
-          },
-          {
-            index: true,
-            path: "/orchestrator/machines/:id?/:a?",
-            element: <MachinesPage />,
-          },
-          {
-            path: "/orchestrator/queues/:id?/:a?",
+            path: "queues/:id?/:a?",
             element: <QueuesPage />,
           },
           {
-            path: "/orchestrator/queues/work-items/:qid",
+            path: "queues/work-items/:qid",
             element: <QueuesWorkItemsPage />,
           },
           {
-            path: "/orchestrator/jobs",
-            element: <JobsPage />,
-          },
-          {
-            path: "/orchestrator/jobs/:id",
-            element: <ExecutionLogsPage />,
-          },
-          {
-            path: "/orchestrator/conversations",
-            children: [
-              {
-                index: true, // /orchestrator/conversations
-                element: <ConversationsTable />, // table/list view
-              },
-              {
-                path: ":id", // /orchestrator/conversations/:id
-                element: <ConversationDetailsPage />, // detail view
-              },
-            ],
-          },
-          {
-            path: "/orchestrator/triggers",
+            path: "triggers",
             children: [
               {
                 index: true,
@@ -238,28 +112,185 @@ const routerConfig: RouteObject[] = [
             ],
           },
           {
-            path: "/orchestrator/keystore/:id?/:a?",
+            path: "keystore/:id?/:a?",
             element: <KeystorePage />,
           },
           {
-            path: "/orchestrator/vault/:id?/:a?",
+            path: "vault/:id?/:a?",
             element: <VaultPage />,
           },
           {
-            path: "/orchestrator/knowledge-base",
+            path: "knowledge-base",
             children: [
               {
-                index: true, // /orchestrator/knowledge-base
-                element: <KnowledgeBasePage />, // table/list view
+                index: true,
+                element: <KnowledgeBasePage />,
               },
               {
-                path: ":id", // /orchestrator/knowledge-base/:id
-                element: <KnowledgeBaseDetailsPage />, // detail view
+                path: ":id",
+                element: <KnowledgeBaseDetailsPage />,
               },
             ],
           },
         ],
       },
+      // orchestrator section
+      {
+        path: "/orchestrator",
+        children: [
+          {
+            index: true,
+            element: <Navigate to="published-agents" replace />,
+          },
+          {
+            path: "published-agents",
+            element: <PublishedAgentsPage />,
+          },
+          {
+            path: "machines/:id?/:a?",
+            element: <MachinesPage />,
+          },
+          {
+            path: "jobs",
+            element: <JobsPage />,
+          },
+          {
+            path: "jobs/:id",
+            element: <ExecutionLogsPage />,
+          },
+          {
+            path: "conversations",
+            children: [
+              {
+                index: true,
+                element: <ConversationsTable />,
+              },
+              {
+                path: ":id",
+                element: <ConversationDetailsPage />,
+              },
+            ],
+          },
+        ],
+      },
+      // assist section
+      {
+        path: "/assist",
+        children: [
+          {
+            index: true,
+            element: <Navigate to="agents" replace />,
+          },
+          {
+            path: "agents",
+            element: <AgentsAssistPage />,
+          },
+          {
+            path: "queues",
+            element: <MyQueuePage />,
+          },
+          {
+            path: "chats",
+            element: <MyChatsPage />,
+            children: [
+              {
+                path: ":flowVersionId",
+                element: <Chat />,
+              },
+              {
+                path: ":flowVersionId/:conversationId",
+                element: <Chat />,
+              },
+            ],
+          },
+        ],
+      },
+      // tenantAdmin section
+      {
+        path: "/tenant",
+        children: [
+          {
+            index: true,
+            element: <Navigate to="overview" replace />,
+          },
+          {
+            path: "overview",
+            element: <TenantPage />,
+          },
+          {
+            path: "preferences",
+            element: <PreferencesPage />, // Only applicabe in case of enterprise deployment
+          },
+          {
+            path: "users",
+            element: <UsersPage />,
+          },
+          {
+            path: "integrations",
+            element: <AppIntegrationsPage />,
+          },
+          {
+            path: "on-prem-models",
+            element: <OnPremLLMPage />,
+          },
+          {
+            path: "usage",
+            element: <CreditsUsagePage />,
+          },
+          {
+            path: "archive",
+            element: <AchievesPage />,
+          },
+          {
+            path: "approvals",
+            element: <TenantTemplatesApprovalPage />,
+          },
+          {
+            path: "support",
+            children: [
+              {
+                index: true,
+                element: <Navigate to="tickets" replace />,
+              },
+              {
+                path: "tickets",
+                element: <SupportTicketsPage />,
+              },
+              {
+                path: "ticket/details",
+                element: <SupportTicketEditForm />,
+              },
+              {
+                path: "ticket/create",
+                element: <STCreatePage />,
+              },
+            ],
+          },
+        ],
+      },
+      // superAdmin section
+      {
+        path: "/sa",
+        children: [
+          {
+            path: "tenants",
+            element: <TenantsPage />,
+          },
+          {
+            path: "subscription-plans",
+            element: <SubscriptionPlansPage />,
+          },
+          {
+            path: "credit-plans",
+            element: <CreditPlansPage />,
+          },
+          {
+            path: "approvals",
+            element: <PublicTemplatesApprovalPage />,
+          },
+        ],
+      },
+      // globalAdmin section
       {
         path: "/ga",
         element: <GALayout />,
@@ -287,51 +318,6 @@ const routerConfig: RouteObject[] = [
             ],
           },
         ],
-      },
-      {
-        path: "/sa",
-        children: [
-          {
-            path: "/sa/tenants",
-            element: <TenantsPage />,
-            index: true,
-          },
-          {
-            path: "/sa/subscription-plans",
-            element: <SubscriptionPlansPage />,
-            index: true,
-          },
-          {
-            path: "/sa/approvals",
-            element: <PublicTemplatesApprovalPage />,
-            index: true,
-          },
-
-          {
-            path: "/sa/credit-plans",
-            element: <CreditPlansPage />,
-          },
-          {
-            path: "/sa/tenants-consumption",
-            element: <ComingSoon />,
-          },
-        ],
-      },
-      {
-        path: "/supportticket",
-        element: <SupportTicketsPage />,
-      },
-      {
-        path: "/supportticket-reviewer",
-        element: <SupportTicketsReviewerPage />,
-      },
-      {
-        path: "/supportticket/details",
-        element: <SupportTicketEditForm />,
-      },
-      {
-        path: "/supportticket/create",
-        element: <STCreatePage />,
       },
       {
         path: "/page-not-found",
