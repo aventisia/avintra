@@ -28,6 +28,11 @@ public class EmailTriggerDto : EmailTriggerModel
     public List<AgentInfoDto>? Agents { get; set; }
 
     /// <summary>
+    /// Gets or sets a value indicating whether the email trigger is accessible to all users within the tenant.
+    /// </summary>
+    public bool IsTenantWideAccess { get; set; }
+
+    /// <summary>
     /// Gets or sets a value indicating whether the email trigger is disabled.
     /// Nullable to allow differentiation between enabled, disabled, and unspecified states.
     /// </summary>

@@ -2,7 +2,7 @@ namespace WorkspaceAPIs.Services;
 
 public interface IWebhookTriggerService
 {
-    Task<ServiceResponse<IEnumerable<WebhookTriggerDto>>> GetWebhookTriggerListAsync();
+    Task<ServiceResponse<IEnumerable<WebhookTriggerDto>>> GetWebhookTriggerListAsync(bool isPersonal);
     Task<ServiceResponse<WebhookTriggerDto>> GetWebhookTriggerAsync(Guid triggerId);
     Task<ServiceResponse<WebhookTriggerDto>> CreateWebhookTriggerAsync(WebhookTriggerDto dto);
     Task<ServiceResponse<WebhookTriggerDto>> UpdateWebhookTriggerAsync(WebhookTriggerDto dto);

@@ -6,12 +6,14 @@ public class KeyStoreService : IKeyStoreService
     private readonly IUnitOfWork _unitOfWork;
     private readonly Guid _userId;
     private readonly IStringEncryptionService _stringEncryptionService;
+    private readonly IResourceShareService _resourceShareService;
 
     public KeyStoreService(
         ILogger<KeyStoreService> logger,
         IUnitOfWork unitOfWork,
         IHttpContextAccessor httpContextAccessor,
-        IStringEncryptionService stringEncryptionService)
+        IStringEncryptionService stringEncryptionService,
+        IResourceShareService resourceShareService)
     {
         // Extract the user ID from the HTTP context, default to Guid.Empty if not found
         _userId = Guid.Parse(httpContextAccessor.HttpContext?.User?.FindFirstValue("uid") ?? Guid.Empty.ToString());
@@ -19,6 +21,7 @@ public class KeyStoreService : IKeyStoreService
         _logger = logger;
         _unitOfWork = unitOfWork;
         _stringEncryptionService = stringEncryptionService;
+        _resourceShareService = resourceShareService;
     }
 
     // Method to check if the key store name is available for the current user
@@ -70,7 +73,7 @@ public class KeyStoreService : IKeyStoreService
     }
 
     // Method to retrieve all key stores created by the current user
-    public async Task<ServiceResponse<IEnumerable<KeyStoreDto>>> GetKeyStoresAsync()
+    public async Task<ServiceResponse<IEnumerable<KeyStoreDto>>> GetKeyStoresAsync(bool isPersonal)
     {
         var serviceResponse = new ServiceResponse<IEnumerable<KeyStoreDto>>
         {
@@ -80,14 +83,38 @@ public class KeyStoreService : IKeyStoreService
 
         try
         {
-            // Retrieve and order the user's key stores by creation date
-            var keyStores = await _unitOfWork.KeyStoreRepo
-                .GetAllAsync()
-                .OrderByDescending(o => o.CreatedOn)
-                .ProjectToType<KeyStoreDto>()
-                .ToListAsync();
+            List<KeyStore> keyStores;
 
-            serviceResponse.Data = keyStores;
+            if (isPersonal)
+            {
+                // Retrieve only owned key stores
+                keyStores = await _unitOfWork.KeyStoreRepo
+                    .GetByConditionAsync(w => w.CreatedByUserId == _userId)
+                    .OrderByDescending(w => w.CreatedOn)
+                    .ToListAsync();
+            }
+            else
+            {
+                // Retrieve accessible key store ids
+                var accessibleIds =
+                    await _resourceShareService
+                        .GetAccessibleResourceIdsAsync(
+                            _userId,
+                            ResourceTypeEnum.KeyStore,
+                            ResourceAccessTypeEnum.Owner,
+                            ResourceAccessTypeEnum.View,
+                            ResourceAccessTypeEnum.FullAccess);
+
+                // Retrieve accessible key stores
+                keyStores = await _unitOfWork.KeyStoreRepo
+                    .GetByConditionAsync(w =>
+                        w.IsTenantWideAccess ||
+                        accessibleIds.Contains(w.Id))
+                    .OrderByDescending(w => w.CreatedOn)
+                    .ToListAsync();
+            }
+
+            serviceResponse.Data = keyStores.Adapt<IEnumerable<KeyStoreDto>>(); ;
             serviceResponse.StatusCode = 200;
             serviceResponse.Message = "Key stores retrieved successfully.";
         }
@@ -114,10 +141,40 @@ public class KeyStoreService : IKeyStoreService
             // Fetch the key store by ID, ensuring it's created by the current user
             var keyStore = await _unitOfWork.KeyStoreRepo
                 .GetByConditionAsync(w => w.Id == keyStoreId)
-                .ProjectToType<KeyStoreDto>()
                 .FirstOrDefaultAsync();
 
-            serviceResponse.Data = keyStore;
+            if (keyStore == null)
+            {
+                serviceResponse.Message =
+                    "Key store not found.";
+
+                return serviceResponse;
+            }
+
+            // Validate view access
+            var canView = await _resourceShareService.HasAccessAsync(
+                    _userId,
+                    keyStore.Id,
+                    ResourceTypeEnum.KeyStore,
+                    keyStore.CreatedByUserId,
+                    keyStore.IsTenantWideAccess,
+                    new[]
+                    {
+                        ResourceAccessTypeEnum.Owner,
+                        ResourceAccessTypeEnum.FullAccess,
+                        ResourceAccessTypeEnum.View,
+                        ResourceAccessTypeEnum.Edit,
+                        ResourceAccessTypeEnum.Delete,
+                    }
+                );
+
+            if (!canView)
+            {
+                serviceResponse.Message = "You do not have access to view this key store.";
+                return serviceResponse;
+            }
+
+            serviceResponse.Data = keyStore.Adapt<KeyStoreDto>();
             serviceResponse.StatusCode = 200;
             serviceResponse.Message = "Key store retrieved successfully.";
         }
@@ -183,6 +240,13 @@ public class KeyStoreService : IKeyStoreService
                 return serviceResponse;
             }
 
+            // Assign ownership
+            if (!await _resourceShareService.AssignOwnerAsync(_userId, newKeyStore.Id, ResourceTypeEnum.KeyStore))
+            {
+                serviceResponse.Message = "Failed assigning ownership.";
+                return serviceResponse;
+            }
+
             // Return the created key store in the response
             serviceResponse.Data = newKeyStore.Adapt<KeyStoreDto>();
             serviceResponse.StatusCode = 200;
@@ -226,6 +290,29 @@ public class KeyStoreService : IKeyStoreService
             {
                 _logger.LogInformation("Key store does not exist.");
                 serviceResponse.Message = "Key store does not exist.";
+                return serviceResponse;
+            }
+
+            // Validate update access
+            var canEdit = await _resourceShareService.HasAccessAsync(
+                _userId,
+                keyStore.Id,
+                ResourceTypeEnum.KeyStore,
+                keyStore.CreatedByUserId,
+                false,
+                new[]
+                {
+                    ResourceAccessTypeEnum.Owner,
+                    ResourceAccessTypeEnum.FullAccess,
+                    ResourceAccessTypeEnum.Edit,
+                }
+            );
+
+            if (!canEdit)
+            {
+                serviceResponse.Message =
+                    "You do not have access to update this key store.";
+
                 return serviceResponse;
             }
 
@@ -300,6 +387,30 @@ public class KeyStoreService : IKeyStoreService
                 return serviceResponse;
             }
 
+            // Validate delete permission
+            var canDelete = await _resourceShareService.HasAccessAsync(
+                _userId,
+                keyStore.Id,
+                ResourceTypeEnum.KeyStore,
+                keyStore.CreatedByUserId,
+                false,
+                new[]
+                {
+                    ResourceAccessTypeEnum.Owner,
+                    ResourceAccessTypeEnum.FullAccess,
+                    ResourceAccessTypeEnum.Delete,
+                }
+            );
+
+            if (!canDelete)
+            {
+                serviceResponse.Message = "You do not have access to delete this key store.";
+                return serviceResponse;
+            }
+
+            // Remove resource shares
+            await _resourceShareService.DeleteResourceSharesAsync(keyStoreId, ResourceTypeEnum.KeyStore);
+
             // Delete the key store from the repository
             _unitOfWork.KeyStoreRepo.Delete(keyStore);
 
@@ -348,6 +459,32 @@ public class KeyStoreService : IKeyStoreService
                 return serviceResponse;
             }
 
+            foreach (var keyStore in keyStores)
+            {
+                var allowed = await _resourceShareService.HasAccessAsync(
+                    _userId,
+                    keyStore.Id,
+                    ResourceTypeEnum.KeyStore,
+                    keyStore.CreatedByUserId,
+                    false,
+                    new[]
+                    {
+                        ResourceAccessTypeEnum.Owner,
+                        ResourceAccessTypeEnum.FullAccess,
+                        ResourceAccessTypeEnum.Delete,
+                    }
+                );
+
+                if (!allowed)
+                {
+                    serviceResponse.Message = "You do not have access to delete one or more key stores.";
+                    return serviceResponse;
+                }
+            }
+
+            // Remove resource shares
+            await _resourceShareService.DeleteResourceSharesAsync(keyStoreIds, ResourceTypeEnum.KeyStore);
+
             // Delete the key stores from the repository
             _unitOfWork.KeyStoreRepo.Delete(keyStores);
 
@@ -393,6 +530,31 @@ public class KeyStoreService : IKeyStoreService
             {
                 _logger.LogInformation("Key store not found.");
                 serviceResponse.Message = "Key store not found.";
+                return serviceResponse;
+            }
+
+            // Validate decrypt/view access
+            var canView = await _resourceShareService.HasAccessAsync(
+                _userId,
+                keyStore.Id,
+                ResourceTypeEnum.KeyStore,
+                keyStore.CreatedByUserId,
+                false,
+                new[]
+                {
+                    ResourceAccessTypeEnum.Owner,
+                    ResourceAccessTypeEnum.FullAccess,
+                    ResourceAccessTypeEnum.View,
+                    ResourceAccessTypeEnum.Edit,
+                    ResourceAccessTypeEnum.Delete,
+                }
+            );
+
+            if (!canView)
+            {
+                serviceResponse.Message =
+                    "You do not have access to decrypt this key store.";
+
                 return serviceResponse;
             }
 

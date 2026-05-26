@@ -33,11 +33,18 @@ public class MessageTriggerController : BaseApiController
         return ResultHelper(await _messageTriggerService.UpdateMessageTriggerAsync(messageTriggerDto));
     }
 
-    // Retrieves a list of all message triggers
+    // Retrieves a list of personal message triggers
     [HttpGet("list")]
-    public async Task<ActionResult<ServiceResponse<IEnumerable<MessageTriggerDto>>>> GetMessageTriggerList()
+    public async Task<ActionResult<ServiceResponse<IEnumerable<MessageTriggerDto>>>> GetPersonalMessageTriggerList()
     {
-        return ResultHelper(await _messageTriggerService.GetMessageTriggerListAsync());
+        return ResultHelper(await _messageTriggerService.GetMessageTriggerListAsync(true));
+    }
+
+    // Retrieves a list of shared message triggers
+    [HttpGet("list/shared")]
+    public async Task<ActionResult<ServiceResponse<IEnumerable<MessageTriggerDto>>>> GetSharedMessageTrigger()
+    {
+        return ResultHelper(await _messageTriggerService.GetMessageTriggerListAsync(false));
     }
 
     // Retrieves message trigger details by ID

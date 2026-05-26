@@ -13,18 +13,26 @@ public class QueueTableController : BaseApiController
         _queueTableService = queueTableService;
     }
 
-    // Retrieves all queues.
+    // Retrieves personal queues.
     [HttpGet("list")]
-    public async Task<ActionResult<ServiceResponse<IEnumerable<QueuesTableDto>>>> GetAllQueuesAsync()
+    public async Task<ActionResult<ServiceResponse<IEnumerable<QueuesTableDto>>>> GetPersonalQueuesAsync()
     {
-        return ResultHelper(await _queueTableService.GetAllQueuesAsync());
+        return ResultHelper(await _queueTableService.GetAllQueuesAsync(true));
     }
+
+    // Retrieves shared queues.
+    [HttpGet("list/shared")]
+    public async Task<ActionResult<ServiceResponse<IEnumerable<QueuesTableDto>>>> GetSharedQueuesAsync()
+    {
+        return ResultHelper(await _queueTableService.GetAllQueuesAsync(false));
+    }
+
 
     // Searches for queues by name.
     [HttpGet("search/{queueName}")]
-    public async Task<ActionResult<ServiceResponse<IEnumerable<QueuesTableDto>>>> SearchQueuesAsync(string queueName)
+    public async Task<ActionResult<ServiceResponse<IEnumerable<QueuesTableDto>>>> SearchQueuesAsync(string queueName, [FromQuery] bool isPersonal)
     {
-        return ResultHelper(await _queueTableService.SearchQueuesAsync(queueName));
+        return ResultHelper(await _queueTableService.SearchQueuesAsync(queueName, isPersonal));
     }
 
     // Retrieves a specific queue by its ID.

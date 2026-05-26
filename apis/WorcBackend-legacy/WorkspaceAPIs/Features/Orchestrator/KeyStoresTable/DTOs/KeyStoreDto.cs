@@ -47,6 +47,11 @@ public class KeyStoreDto
     public AccessLevelTypesEnum AccessLevel { get; set; }
 
     /// <summary>
+    /// Gets or sets a value indicating whether the vault is accessible to all users within the tenant.
+    /// </summary>
+    public bool IsTenantWideAccess { get; set; }
+
+    /// <summary>
     /// Flag indicating if the record is disabled (nullable to distinguish true/false/null).
     /// </summary>
     public bool? IsDisabled { get; set; }

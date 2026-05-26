@@ -19,11 +19,18 @@ public class VaultController : BaseApiController
         return ResultHelper(await _vaultService.IsVaultNameAvailableAsync(checkAvailabilityDto));
     }
 
-    // Get a list of vaults
+    // Get a list of personal vaults
     [HttpGet("list")]
-    public async Task<ActionResult<ServiceResponse<IEnumerable<VaultDto>>>> GetVaultsAsync()
+    public async Task<ActionResult<ServiceResponse<IEnumerable<VaultDto>>>> GetPersonalVaultsAsync()
     {
-        return ResultHelper(await _vaultService.GetVaultsAsync());
+        return ResultHelper(await _vaultService.GetVaultsAsync(true));
+    }
+
+    // Get a list of shared vaults
+    [HttpGet("list/shared")]
+    public async Task<ActionResult<ServiceResponse<IEnumerable<VaultDto>>>> GetSharedVaultsAsync()
+    {
+        return ResultHelper(await _vaultService.GetVaultsAsync(false));
     }
 
     // Get a specific vault by ID

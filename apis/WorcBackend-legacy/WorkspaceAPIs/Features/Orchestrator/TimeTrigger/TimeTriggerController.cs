@@ -32,12 +32,20 @@ public class TimeTriggerController : BaseApiController
         return ResultHelper(await _timeTriggerService.UpdateTimeTriggerAsync(triggerDto));
     }
 
-    // Retrieves list of time triggers.
+    // Retrieves list of personal time triggers.
     [HttpGet("list")]
-    public async Task<ActionResult<ServiceResponse<IEnumerable<TimeTriggerDto>>>> GetTimeTriggerList()
+    public async Task<ActionResult<ServiceResponse<IEnumerable<TimeTriggerDto>>>> GetPersonalTimeTriggerList()
     {
-        return ResultHelper(await _timeTriggerService.GetTimeTriggerListAsync());
+        return ResultHelper(await _timeTriggerService.GetTimeTriggerListAsync(true));
     }
+
+    // Retrieves list of shared time triggers.
+    [HttpGet("list/shared")]
+    public async Task<ActionResult<ServiceResponse<IEnumerable<TimeTriggerDto>>>> GetSharedTimeTriggerList()
+    {
+        return ResultHelper(await _timeTriggerService.GetTimeTriggerListAsync(false));
+    }
+
 
     // Deletes a time trigger by its ID.
     [HttpGet("{timeTriggerId}")]

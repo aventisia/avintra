@@ -6,6 +6,13 @@ public class AgentTableService : IAgentTableService
     private readonly IUnitOfWork _unitOfWork;
     private readonly IClientStatusStore _clientStatusStore;
     private readonly ICurrentTenantService _currentTenantService;
+    private readonly IResourceShareService _resourceShareService;
+
+    public AgentTableService(IResourceShareService resourceShareService)
+    {
+        _resourceShareService = resourceShareService;
+    }
+
     private readonly Guid _userId;
 
     public AgentTableService(
@@ -13,7 +20,8 @@ public class AgentTableService : IAgentTableService
         IUnitOfWork unitOfWork,
         IHttpContextAccessor httpContextAccessor,
         IClientStatusStore clientStatusStore,
-        ICurrentTenantService currentTenantService)
+        ICurrentTenantService currentTenantService,
+        IResourceShareService resourceShareService)
     {
         // Extract the user ID from the HTTP context and assign it to _userId.
         _userId = Guid.Parse(httpContextAccessor.HttpContext?.User?.FindFirstValue("uid") ?? Guid.Empty.ToString());
@@ -22,10 +30,11 @@ public class AgentTableService : IAgentTableService
         _unitOfWork = unitOfWork;
         _clientStatusStore = clientStatusStore;
         _currentTenantService = currentTenantService;
+        _resourceShareService = resourceShareService;
     }
 
     // Retrieves a list of published flow versions for a specific flow by its identifier.
-    public async Task<ServiceResponse<IEnumerable<AgentTableDto>>> GetPublishFlowVersionsAsync(Guid? flowId)
+    public async Task<ServiceResponse<IEnumerable<AgentTableDto>>> GetPublishFlowVersionsAsync(Guid? flowId, bool isPersonal)
     {
         // Initialize ServiceResponse to indicate failure by default.
         var serviceResponse = new ServiceResponse<IEnumerable<AgentTableDto>>
@@ -36,14 +45,51 @@ public class AgentTableService : IAgentTableService
 
         try
         {
-            // Try to retrieve the flow versions from the repository.
-            var publishedFlowVersions = await _unitOfWork.FlowVersionRepo
-                .GetByConditionAsync(w =>
-                    (flowId == null || w.FlowId == flowId) &&
-                    w.Flow.Type != FlowTypesEnum.Block &&
-                    w.IsPublished &&
-                    !w.IsArchived
-                )
+            // Declare query
+            IQueryable<FlowVersion> query;
+
+            // Personal → only current user's agents
+            if (isPersonal)
+            {
+                query = _unitOfWork.FlowVersionRepo
+                    .GetByConditionAsync(w =>
+                        (flowId == null || w.FlowId == flowId) &&
+                        w.Flow.Type != FlowTypesEnum.Block &&
+                        w.IsPublished &&
+                        !w.IsArchived &&
+                        w.CreatedByUserId == _userId
+                    );
+            }
+            else
+            {
+                // Retrieve accessible agent IDs
+                var accessibleFlowVersionIds = await _resourceShareService.GetAccessibleResourceIdsAsync(
+                    _userId,
+                    ResourceTypeEnum.FlowVersion,
+                    new[]
+                    {
+                        ResourceAccessTypeEnum.Owner,
+                        ResourceAccessTypeEnum.FullAccess,
+                        ResourceAccessTypeEnum.View,
+                        ResourceAccessTypeEnum.Edit,
+                        ResourceAccessTypeEnum.Delete,
+                    }
+                );
+
+                query = _unitOfWork.FlowVersionRepo
+                    .GetByConditionAsync(w =>
+                        (flowId == null || w.FlowId == flowId) &&
+                        w.Flow.Type != FlowTypesEnum.Block &&
+                        w.IsPublished &&
+                        !w.IsArchived &&
+                        (
+                            w.IsTenantWideAccess || accessibleFlowVersionIds.Contains(w.Id)
+                        )
+                    );
+            }
+
+            // Execute query
+            var publishedFlowVersions = await query
                 .Include(i => i.Flow)
                 .Include(i => i.MachineFlows)
                 .Include(i => i.CreatedByUser)
@@ -90,6 +136,28 @@ public class AgentTableService : IAgentTableService
                 return serviceResponse;
             }
 
+            // Validate update permission for the current user
+            var canEdit = await _resourceShareService.HasAccessAsync(
+                _userId,
+                existingVersion.Id,
+                ResourceTypeEnum.FlowVersion,
+                existingVersion.CreatedByUserId,
+                false,
+                new[]
+                {
+                    ResourceAccessTypeEnum.Owner,
+                    ResourceAccessTypeEnum.FullAccess,
+                    ResourceAccessTypeEnum.Edit,
+                }
+            );
+
+            if (!canEdit)
+            {
+                _logger.LogInformation("User {UserId} attempted unauthorized update of agent {AgentId}.", _userId, existingVersion.Id);
+                serviceResponse.Message = "You do not have access to update this agent.";
+                return serviceResponse;
+            }
+
             // Map the updated fields from the DTO to the entity
             existingVersion.IsArchived = agentTableDto.IsArchived;
             existingVersion.IsDisabled = agentTableDto.IsDisabled;
@@ -119,7 +187,7 @@ public class AgentTableService : IAgentTableService
     }
 
     // Retrieves a list of archived flow versions for a specific flow by its identifier.
-    public async Task<ServiceResponse<IEnumerable<AgentTableDto>>> GetArchiveFlowVersionsAsync(Guid? flowId)
+    public async Task<ServiceResponse<IEnumerable<AgentTableDto>>> GetArchiveFlowVersionsAsync(Guid? flowId, bool isPersonal)
     {
         var serviceResponse = new ServiceResponse<IEnumerable<AgentTableDto>>
         {
@@ -129,17 +197,53 @@ public class AgentTableService : IAgentTableService
 
         try
         {
-            // Try to retrieve the archived flow versions from the repository.
-            var archivedFlowVersions = await _unitOfWork.FlowVersionRepo
-                .GetByConditionAsync(w =>
-                    (flowId == null || w.FlowId == flowId) &&
-                    w.Flow.Type != FlowTypesEnum.Block &&
-                    w.IsArchived
-                )
+            // Declare query
+            IQueryable<FlowVersion> query;
+
+            // Personal → only current user's agents
+            if (isPersonal)
+            {
+                query = _unitOfWork.FlowVersionRepo
+                    .GetByConditionAsync(w =>
+                        (flowId == null || w.FlowId == flowId) &&
+                        w.Flow.Type != FlowTypesEnum.Block &&
+                        w.IsArchived &&
+                        w.CreatedByUserId == _userId
+                    );
+            }
+            else
+            {
+                // Retrieve accessible agent IDs
+                var accessibleFlowVersionIds =
+                    await _resourceShareService.GetAccessibleResourceIdsAsync(
+                        _userId,
+                        ResourceTypeEnum.FlowVersion,
+                        new[]
+                        {
+                            ResourceAccessTypeEnum.Owner,
+                            ResourceAccessTypeEnum.FullAccess,
+                            ResourceAccessTypeEnum.View,
+                            ResourceAccessTypeEnum.Edit,
+                            ResourceAccessTypeEnum.Delete,
+                        }
+                    );
+
+                query = _unitOfWork.FlowVersionRepo
+                    .GetByConditionAsync(w =>
+                        (flowId == null || w.FlowId == flowId) &&
+                        w.Flow.Type != FlowTypesEnum.Block &&
+                        w.IsArchived &&
+                        (
+                            w.IsTenantWideAccess || accessibleFlowVersionIds.Contains(w.Id)
+                        )
+                    );
+            }
+
+            // Execute query
+            var archivedFlowVersions = await query
                 .Include(i => i.Flow)
                 .Include(i => i.MachineFlows)
                 .Include(i => i.CreatedByUser)
-                .Include(i => i.LastModifiedByUser)
                 .OrderBy(o => o.VersionNumber)
                 .AsNoTracking()
                 .ToListAsync();
@@ -232,6 +336,28 @@ public class AgentTableService : IAgentTableService
                 // If agent does not exist or does not belong to the current user, return failure.
                 _logger.LogInformation("Agent not found.");
                 serviceResponse.Message = "The agent does not exist.";
+                return serviceResponse;
+            }
+
+            // Validate update permission for the current user
+            var canEdit = await _resourceShareService.HasAccessAsync(
+                _userId,
+                agent.Id,
+                ResourceTypeEnum.FlowVersion,
+                agent.CreatedByUserId,
+                false,
+                new[]
+                {
+                    ResourceAccessTypeEnum.Owner,
+                    ResourceAccessTypeEnum.FullAccess,
+                    ResourceAccessTypeEnum.Edit,
+                }
+            );
+
+            if (!canEdit)
+            {
+                _logger.LogInformation("User {UserId} attempted unauthorized update of agent {AgentId}.", _userId, agent.Id);
+                serviceResponse.Message = "You do not have access to assign machine to this agent.";
                 return serviceResponse;
             }
 
@@ -353,6 +479,28 @@ public class AgentTableService : IAgentTableService
                 return serviceResponse;
             }
 
+            // Validate update permission for the current user
+            var canEdit = await _resourceShareService.HasAccessAsync(
+                _userId,
+                agent.Id,
+                ResourceTypeEnum.FlowVersion,
+                agent.CreatedByUserId,
+                false,
+                new[]
+                {
+                    ResourceAccessTypeEnum.Owner,
+                    ResourceAccessTypeEnum.FullAccess,
+                    ResourceAccessTypeEnum.Edit,
+                }
+            );
+
+            if (!canEdit)
+            {
+                _logger.LogInformation("User {UserId} attempted unauthorized update of agent {AgentId}.", _userId, agent.Id);
+                serviceResponse.Message = "You do not have access to remove machine from this agent.";
+                return serviceResponse;
+            }
+
             // Check if machine flows exist for the provided machine IDs and are assigned to the agent.
             var machineFlows = await _unitOfWork.MachineFlowRepo
                 .GetByConditionAsync(w => machineIds.Contains(w.MachineId) && w.FlowVersionId == agentId)
@@ -431,6 +579,30 @@ public class AgentTableService : IAgentTableService
                 return serviceResponse;
             }
 
+            // Validate view permission for the current user
+            var canView = await _resourceShareService.HasAccessAsync(
+                _userId,
+                agent.Id,
+                ResourceTypeEnum.FlowVersion,
+                agent.CreatedByUserId,
+                agent.IsTenantWideAccess,
+                new[]
+                {
+                    ResourceAccessTypeEnum.Owner,
+                    ResourceAccessTypeEnum.FullAccess,
+                    ResourceAccessTypeEnum.View,
+                    ResourceAccessTypeEnum.Edit,
+                    ResourceAccessTypeEnum.Delete,
+                }
+            );
+
+            if (!canView)
+            {
+                _logger.LogInformation("User {UserId} attempted unauthorized view of agent {AgentId}.", _userId, agent.Id);
+                serviceResponse.Message = "You do not have access to view machines to this agent.";
+                return serviceResponse;
+            }
+
             // Retrieve the list of all machine flows.
             var machines = await _unitOfWork.MachineFlowRepo
                 .GetByConditionAsync(w => w.FlowVersionId == agentId)
@@ -467,7 +639,7 @@ public class AgentTableService : IAgentTableService
 
 
     // Searches and retrieves a list of published flow versions where the flow name matches the specified search key.
-    public async Task<ServiceResponse<IEnumerable<AgentTableDto>>> SearchPublishFlowVersionsAsync(string searchKey)
+    public async Task<ServiceResponse<IEnumerable<AgentTableDto>>> SearchPublishFlowVersionsAsync(string searchKey, bool isPersonal)
     {
         // Initialize a failed service response by default
         var serviceResponse = new ServiceResponse<IEnumerable<AgentTableDto>>
@@ -478,6 +650,20 @@ public class AgentTableService : IAgentTableService
 
         try
         {
+            // Retrieve accessible agent IDs
+            var accessibleFlowVersionIds = await _resourceShareService.GetAccessibleResourceIdsAsync(
+                    _userId,
+                    ResourceTypeEnum.FlowVersion,
+                    new[]
+                    {
+                        ResourceAccessTypeEnum.Owner,
+                        ResourceAccessTypeEnum.FullAccess,
+                        ResourceAccessTypeEnum.View,
+                        ResourceAccessTypeEnum.Edit,
+                        ResourceAccessTypeEnum.Delete,
+                    }
+                );
+
             // Query the repository for published flow versions where the flow name contains the search key (case-insensitive)
             var publishedFlowVersions = await _unitOfWork.FlowVersionRepo
                 .GetByConditionAsync(w =>
@@ -485,7 +671,10 @@ public class AgentTableService : IAgentTableService
                     !w.IsArchived &&
                     !w.IsDisabled &&
                     w.Flow.Type != FlowTypesEnum.Block &&
-                    w.Flow.Name.ToLower().Contains(searchKey.ToLower())
+                    w.Flow.Name.ToLower().Contains(searchKey.ToLower()) &&
+                    (
+                        w.CreatedByUserId == _userId || w.IsTenantWideAccess || accessibleFlowVersionIds.Contains(w.Id)
+                    )
                 )
                 .Include(i => i.Flow)
                 .Include(i => i.MachineFlows)

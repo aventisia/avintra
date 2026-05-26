@@ -15,11 +15,18 @@ public class KnowledgeBaseController : BaseApiController
         _knowledgeBaseService = knowledgeBaseService;
     }
 
-    // Retrieves all knowledge bases created by the current user.
+    // Retrieves all personal knowledge bases.
     [HttpGet("list")]
-    public async Task<ActionResult<ServiceResponse<IEnumerable<KnowledgeBaseDto>>>> GetKnowledgeBases()
+    public async Task<ActionResult<ServiceResponse<IEnumerable<KnowledgeBaseDto>>>> GetPersonalKnowledgeBases()
     {
-        return ResultHelper(await _knowledgeBaseService.GetKnowledgeBasesAsync());
+        return ResultHelper(await _knowledgeBaseService.GetKnowledgeBasesAsync(true));
+    }
+
+    // Retrieves all shared knowledge bases.
+    [HttpGet("list/shared")]
+    public async Task<ActionResult<ServiceResponse<IEnumerable<KnowledgeBaseDto>>>> GetSharedKnowledgeBases()
+    {
+        return ResultHelper(await _knowledgeBaseService.GetKnowledgeBasesAsync(false));
     }
 
     // Retrieves knowledge bases in select-option format for dropdowns.

@@ -10,12 +10,14 @@ public class KnowledgeBaseService : IKnowledgeBaseService
     private readonly IUnitOfWork _unitOfWork;
     private readonly Guid _userId;
     private readonly ICurrentTenantService _currentTenantService;
+    private readonly IResourceShareService _resourceShareService;
 
     public KnowledgeBaseService(
         ILogger<KnowledgeBaseService> logger,
         IUnitOfWork unitOfWork,
         IHttpContextAccessor httpContextAccessor,
-        ICurrentTenantService currentTenantService)
+        ICurrentTenantService currentTenantService,
+        IResourceShareService resourceShareService)
     {
         // Extract user ID from HttpContext
         _userId = Guid.Parse(httpContextAccessor.HttpContext?.User?.FindFirstValue("uid") ?? Guid.Empty.ToString());
@@ -23,12 +25,13 @@ public class KnowledgeBaseService : IKnowledgeBaseService
         _logger = logger;
         _unitOfWork = unitOfWork;
         _currentTenantService = currentTenantService;
+        _resourceShareService = resourceShareService;
     }
 
     /// <summary>
     /// Retrieves all knowledge bases for the current tenant.
     /// </summary>
-    public async Task<ServiceResponse<IEnumerable<KnowledgeBaseDto>>> GetKnowledgeBasesAsync()
+    public async Task<ServiceResponse<IEnumerable<KnowledgeBaseDto>>> GetKnowledgeBasesAsync(bool isPersonal)
     {
         var serviceResponse = new ServiceResponse<IEnumerable<KnowledgeBaseDto>>
         {
@@ -38,14 +41,48 @@ public class KnowledgeBaseService : IKnowledgeBaseService
 
         try
         {
-            // Get tenant-wide knowledge bases
-            var knowledgeBases = await _unitOfWork.KnowledgeBaseRepo
-                .GetByConditionAsync(kb => true) // No user-based filtering, show all tenant KBs
-                .OrderByDescending(kb => kb.CreatedOn)
-                .Include(kb => kb.CreatedByUser)
-                .Include(kb => kb.LastModifiedByUser)
-                .Include(kb => kb.Files)
-                .ToListAsync();
+            List<KnowledgeBase> knowledgeBases;
+
+            // Return only knowledge bases created by current user
+            if (isPersonal)
+            {
+                knowledgeBases = await _unitOfWork.KnowledgeBaseRepo
+                    .GetByConditionAsync(w => w.CreatedByUserId == _userId)
+                    .OrderByDescending(o => o.CreatedOn)
+                    .Include(i => i.CreatedByUser)
+                    .Include(i => i.LastModifiedByUser)
+                    .Include(i => i.Files)
+                    .ToListAsync();
+            }
+            else
+            {
+                // Retrieve knowledge base IDs accessible to current user
+                var accessibleKnowledgeBaseIds = await _resourceShareService
+                    .GetAccessibleResourceIdsAsync(
+                        _userId,
+                        ResourceTypeEnum.KnowledgeBase,
+                        new[]
+                        {
+                            ResourceAccessTypeEnum.Owner,
+                            ResourceAccessTypeEnum.FullAccess,
+                            ResourceAccessTypeEnum.View,
+                            ResourceAccessTypeEnum.Edit,
+                            ResourceAccessTypeEnum.Delete,
+                        }
+                    );
+
+                // Retrieve all accessible knowledge bases
+                knowledgeBases = await _unitOfWork.KnowledgeBaseRepo
+                    .GetByConditionAsync(w =>
+                        w.IsTenantWideAccess ||
+                        accessibleKnowledgeBaseIds.Contains(w.Id)
+                    )
+                    .OrderByDescending(kb => kb.CreatedOn)
+                    .Include(kb => kb.CreatedByUser)
+                    .Include(kb => kb.LastModifiedByUser)
+                    .Include(kb => kb.Files)
+                    .ToListAsync();
+            }
 
             // Map entities to DTOs
             var kbDtoList = knowledgeBases.Adapt<List<KnowledgeBaseDto>>();
@@ -77,8 +114,30 @@ public class KnowledgeBaseService : IKnowledgeBaseService
 
         try
         {
+            // Retrieve knowledge base IDs accessible to current user
+            var accessibleKnowledgeBaseIds = await _resourceShareService
+                .GetAccessibleResourceIdsAsync(
+                    _userId,
+                    ResourceTypeEnum.KnowledgeBase,
+                    new[]
+                    {
+                        ResourceAccessTypeEnum.Owner,
+                        ResourceAccessTypeEnum.FullAccess,
+                        ResourceAccessTypeEnum.View,
+                        ResourceAccessTypeEnum.Edit,
+                        ResourceAccessTypeEnum.Delete,
+                    }
+                );
+
             var options = await _unitOfWork.KnowledgeBaseRepo
-                .GetByConditionAsync(kb => kb.IsDisabled == false)
+                .GetByConditionAsync(w =>
+                    w.IsDisabled == false &&
+                    (
+                        w.CreatedByUserId == _userId ||
+                        w.IsTenantWideAccess ||
+                        accessibleKnowledgeBaseIds.Contains(w.Id)
+                    )
+                )
                 .OrderBy(kb => kb.Name)
                 .Select(kb => new SelectOptionDto
                 {
@@ -213,6 +272,14 @@ public class KnowledgeBaseService : IKnowledgeBaseService
             await _unitOfWork.KnowledgeBaseRepo.InsertAsync(newKB);
             await _unitOfWork.SaveAsync();
 
+            // Assign creator as resource owner. Ensures creator receives full management permissions
+            if (!await _resourceShareService.AssignOwnerAsync(_userId, newKB.Id, ResourceTypeEnum.KnowledgeBase))
+            {
+                _logger.LogWarning("Failed assigning owner access for KnowledgeBase {KnowledgeBaseId}", newKB.Id);
+                serviceResponse.Message = "Failed assigning ownership.";
+                return serviceResponse;
+            }
+
             // Map back to DTO for response
             var resultDto = newKB.Adapt<KnowledgeBaseDto>();
             var createdByUser = await _unitOfWork.WorkspaceUserRepo
@@ -298,6 +365,29 @@ public class KnowledgeBaseService : IKnowledgeBaseService
                 return serviceResponse;
             }
 
+            // Validate update permission
+            var canEdit = await _resourceShareService.HasAccessAsync(
+                _userId,
+                existingKB.Id,
+                ResourceTypeEnum.KnowledgeBase,
+                existingKB.CreatedByUserId,
+                false,
+                new[]
+                {
+                    ResourceAccessTypeEnum.Owner,
+                    ResourceAccessTypeEnum.FullAccess,
+                    ResourceAccessTypeEnum.Edit,
+                }
+            );
+
+            // Block unauthorized update
+            if (!canEdit)
+            {
+                _logger.LogWarning("User {UserId} attempted unauthorized KnowledgeBase update {KnowledgeBaseId}", _userId, existingKB.Id);
+                serviceResponse.Message = "You do not have access to update this knowledge base.";
+                return serviceResponse;
+            }
+
             // Update fields
             existingKB.Name = knowledgeBaseDto.Name;
             existingKB.Description = knowledgeBaseDto.Description;
@@ -360,6 +450,29 @@ public class KnowledgeBaseService : IKnowledgeBaseService
                 return serviceResponse;
             }
 
+            // Validate delete permission
+            var canDelete = await _resourceShareService.HasAccessAsync(
+                _userId,
+                kb.Id,
+                ResourceTypeEnum.KnowledgeBase,
+                kb.CreatedByUserId,
+                false,
+                new[]
+                {
+                    ResourceAccessTypeEnum.Owner,
+                    ResourceAccessTypeEnum.FullAccess,
+                    ResourceAccessTypeEnum.Delete,
+                }
+            );
+
+            // Reject unauthorized deletion
+            if (!canDelete)
+            {
+                _logger.LogWarning("Unauthorized KnowledgeBase deletion attempt. User {UserId}, KnowledgeBase {KnowledgeBaseId}", _userId, kb.Id);
+                serviceResponse.Message = "You do not have access to delete this knowledge base.";
+                return serviceResponse;
+            }
+
             // Delete associated vector store entries (cascade delete)
             var vectorStores = await _unitOfWork.VectorStoreRepo
                 .GetByConditionAsync(vs => vs.TenantId == _currentTenantService.CurrentTenantId && vs.Metadata != null)
@@ -371,6 +484,9 @@ public class KnowledgeBaseService : IKnowledgeBaseService
             {
                 _unitOfWork.VectorStoreRepo.Delete(vs);
             }
+
+            // Remove all resource sharing mappings. Prevent orphan permission records
+            await _resourceShareService.DeleteResourceSharesAsync(kb.Id, ResourceTypeEnum.KnowledgeBase);
 
             // Delete the knowledge base
             _unitOfWork.KnowledgeBaseRepo.Delete(kb);
@@ -431,6 +547,31 @@ public class KnowledgeBaseService : IKnowledgeBaseService
             }
 
             var kbs = allMatchedKBs;
+            // Validate delete permission for each knowledge base
+            foreach (var kb in kbs)
+            {
+                var allowed = await _resourceShareService.HasAccessAsync(
+                    _userId,
+                    kb.Id,
+                    ResourceTypeEnum.KnowledgeBase,
+                    kb.CreatedByUserId,
+                    false,
+                    new[]
+                    {
+                        ResourceAccessTypeEnum.Owner,
+                        ResourceAccessTypeEnum.FullAccess,
+                        ResourceAccessTypeEnum.Delete,
+                    }
+                );
+
+                // Stop operation if at least one KB is unauthorized
+                if (!allowed)
+                {
+                    _logger.LogWarning("Unauthorized bulk KnowledgeBase deletion. User {UserId}", _userId);
+                    serviceResponse.Message = "You do not have access to delete one or more knowledge bases.";
+                    return serviceResponse;
+                }
+            }
 
             // Delete associated vector store entries for all KBs
             var kbNameSet = kbs
@@ -456,6 +597,9 @@ public class KnowledgeBaseService : IKnowledgeBaseService
             }
 
             await _unitOfWork.SaveAsync();
+
+            // Remove resource access mappings. Prevent orphan permission records
+            await _resourceShareService.DeleteResourceSharesAsync(ids, ResourceTypeEnum.KnowledgeBase);
 
             serviceResponse.Data = true;
             serviceResponse.StatusCode = 200;

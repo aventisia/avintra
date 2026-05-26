@@ -69,6 +69,11 @@ public class Queue : BaseEntity, IMustHaveTenant
     public string? OutputSchema { get; set; }
 
     /// <summary>
+    /// Gets or sets a value indicating whether the queue is accessible to all users within the tenant.
+    /// </summary>
+    public bool IsTenantWideAccess { get; set; }
+
+    /// <summary>
     /// Configures the many-to-many relationship between queue transactions and queues.
     /// </summary>
     public virtual ICollection<QueueTransaction>? QueueTransactions { get; set; }

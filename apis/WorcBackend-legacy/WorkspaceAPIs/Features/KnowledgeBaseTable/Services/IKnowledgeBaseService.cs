@@ -6,10 +6,11 @@ namespace WorkspaceAPIs.Services;
 public interface IKnowledgeBaseService
 {
     /// <summary>
-    /// Retrieves all knowledge bases created by or accessible to the current user.
+    /// Retrieves all knowledge bases.
     /// </summary>
+    /// <param name="isPersonal"> If <c>true</c>, returns only personal knowledge bases. If <c>false</c>, returns only shared knowledge bases. </param>
     /// <returns>The task result contains the service response with the list of knowledge base details.</returns>
-    Task<ServiceResponse<IEnumerable<KnowledgeBaseDto>>> GetKnowledgeBasesAsync();
+    Task<ServiceResponse<IEnumerable<KnowledgeBaseDto>>> GetKnowledgeBasesAsync(bool isPersonal);
 
     /// <summary>
     /// Retrieves knowledge bases for the current user in selectable option format.

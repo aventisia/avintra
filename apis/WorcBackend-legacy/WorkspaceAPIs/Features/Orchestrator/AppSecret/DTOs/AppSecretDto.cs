@@ -32,6 +32,16 @@ public class AppSecretDto
     public required object Data { get; set; }
 
     /// <summary>
+    /// Gets or sets a value indicating whether the app secret is accessible to all users within the tenant.
+    /// </summary>
+    public bool IsTenantWideAccess { get; set; }
+
+    /// <summary>
+    /// Gets or sets the permission level granted to the user.
+    /// </summary>
+    public ResourceAccessTypeEnum AccessLevel { get; set; }
+
+    /// <summary>
     /// Gets or sets a value indicating whether the space is disabled.
     /// Nullable to distinguish between enabled, disabled, or undefined states.
     /// </summary>

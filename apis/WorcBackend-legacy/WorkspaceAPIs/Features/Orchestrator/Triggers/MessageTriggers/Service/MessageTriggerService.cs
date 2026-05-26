@@ -9,6 +9,7 @@ public class MessageTriggerService : IMessageTriggerService
     private readonly EnvironmentConfig _environmentConfig;
     private readonly IJobsExecutorService _jobsExecutorService;
     private readonly WorkspaceInternalDbContext _workspaceInternalDbContext;
+    private readonly IResourceShareService _resourceShareService;
     private const int MESSAGE_EXPIRY_MINUTES = 4320;
 
     public MessageTriggerService(
@@ -18,7 +19,8 @@ public class MessageTriggerService : IMessageTriggerService
         IStringEncryptionService stringEncryptionService,
         EnvironmentConfig environmentConfig,
         IJobsExecutorService jobsExecutorService,
-        WorkspaceInternalDbContext workspaceInternalDbContext)
+        WorkspaceInternalDbContext workspaceInternalDbContext,
+        IResourceShareService resourceShareService)
     {
         _logger = logger;
         _unitOfWork = unitOfWork;
@@ -29,10 +31,11 @@ public class MessageTriggerService : IMessageTriggerService
         _environmentConfig = environmentConfig;
         _jobsExecutorService = jobsExecutorService;
         _workspaceInternalDbContext = workspaceInternalDbContext;
+        _resourceShareService = resourceShareService;
     }
 
     // Retrieves all message triggers.
-    public async Task<ServiceResponse<IEnumerable<MessageTriggerDto>>> GetMessageTriggerListAsync()
+    public async Task<ServiceResponse<IEnumerable<MessageTriggerDto>>> GetMessageTriggerListAsync(bool isPersonal)
     {
         // Initialize response with failure defaults
         var serviceResponse = new ServiceResponse<IEnumerable<MessageTriggerDto>>
@@ -43,17 +46,56 @@ public class MessageTriggerService : IMessageTriggerService
 
         try
         {
-            // Fetch all message triggers ordered by creation date (latest first)
-            var messageTriggers = await _unitOfWork.TriggerRepo
-                .GetByConditionAsync(w => w.TriggerType == TriggerTypesEnum.MessageTrigger)
-                .OrderByDescending(o => o.CreatedOn)
-                .Include(i => i.CreatedByUser)
-                .Include(i => i.LastModifiedByUser)
-                .Include(i => i.TriggerFlowVersions)
-                    .ThenInclude(i2 => i2.FlowVersion)
-                        .ThenInclude(i3 => i3.Flow)
-                .AsNoTracking()
-                .ToListAsync();
+            List<Trigger> messageTriggers;
+
+            if (isPersonal)
+            {
+                // Retrieve owned triggers only
+                messageTriggers = await _unitOfWork.TriggerRepo
+                    .GetByConditionAsync(w =>
+                        w.TriggerType == TriggerTypesEnum.MessageTrigger &&
+                        w.CreatedByUserId == _userId)
+                    .OrderByDescending(o => o.CreatedOn)
+                    .Include(i => i.CreatedByUser)
+                    .Include(i => i.LastModifiedByUser)
+                    .Include(i => i.TriggerFlowVersions)
+                        .ThenInclude(i2 => i2.FlowVersion)
+                            .ThenInclude(i3 => i3.Flow)
+                    .AsNoTracking()
+                    .ToListAsync();
+            }
+            else
+            {
+                // Retrieve accessible trigger ids
+                var triggerIds = await _resourceShareService.GetAccessibleResourceIdsAsync(
+                    _userId,
+                    ResourceTypeEnum.Trigger,
+                    new[]
+                    {
+                        ResourceAccessTypeEnum.Owner,
+                        ResourceAccessTypeEnum.FullAccess,
+                        ResourceAccessTypeEnum.View,
+                        ResourceAccessTypeEnum.Edit,
+                        ResourceAccessTypeEnum.Delete,
+                    }
+                );
+
+                messageTriggers = await _unitOfWork.TriggerRepo
+                    .GetByConditionAsync(w =>
+                        w.TriggerType == TriggerTypesEnum.MessageTrigger &&
+                        (
+                            w.IsTenantWideAccess || triggerIds.Contains(w.Id)
+                        )
+                    )
+                    .OrderByDescending(o => o.CreatedOn)
+                    .Include(i => i.CreatedByUser)
+                    .Include(i => i.LastModifiedByUser)
+                    .Include(i => i.TriggerFlowVersions)
+                        .ThenInclude(i2 => i2.FlowVersion)
+                            .ThenInclude(i3 => i3.Flow)
+                    .AsNoTracking()
+                    .ToListAsync();
+            }
 
             // Map entities to DTOs for client response
             serviceResponse.Data = messageTriggers.Adapt<IEnumerable<MessageTriggerDto>>();
@@ -100,6 +142,27 @@ public class MessageTriggerService : IMessageTriggerService
                 return serviceResponse; // Return early if not found
             }
 
+            var canView = await _resourceShareService.HasAccessAsync(
+                _userId,
+                messageTrigger.Id,
+                ResourceTypeEnum.Trigger,
+                messageTrigger.CreatedByUserId,
+                messageTrigger.IsTenantWideAccess,
+                new[]
+                {
+                    ResourceAccessTypeEnum.Owner,
+                    ResourceAccessTypeEnum.FullAccess,
+                    ResourceAccessTypeEnum.View,
+                    ResourceAccessTypeEnum.Edit,
+                    ResourceAccessTypeEnum.Delete,
+                }
+            );
+
+            if (!canView)
+            {
+                serviceResponse.Message = "You do not have access to view this message trigger.";
+                return serviceResponse;
+            }
             // Map entity to DTO
             serviceResponse.Data = messageTrigger.Adapt<MessageTriggerDto>();
             serviceResponse.StatusCode = 200;
@@ -152,7 +215,6 @@ public class MessageTriggerService : IMessageTriggerService
                 return serviceResponse;
             }
 
-
             // Trim all string properties on the DTO
             messageTriggerDto = TrimDtoStringPropsUtil.TrimDtoStringProps(messageTriggerDto);
 
@@ -198,6 +260,13 @@ public class MessageTriggerService : IMessageTriggerService
             if (!await _unitOfWork.SaveAsync())
             {
                 _logger.LogError("Database SaveChanges failed while creating message trigger with name {messageTriggerName}.", messageTriggerDto.Name);
+                return serviceResponse;
+            }
+
+            // Assign ownership
+            if (!await _resourceShareService.AssignOwnerAsync(_userId, newMessageTrigger.Id, ResourceTypeEnum.Trigger))
+            {
+                serviceResponse.Message = "Failed assigning ownership.";
                 return serviceResponse;
             }
 
@@ -283,6 +352,26 @@ public class MessageTriggerService : IMessageTriggerService
                 _logger.LogInformation("Update failed. message trigger with ID {messageTriggerId} does not exist.", messageTriggerDto.Id);
                 serviceResponse.Message = "Message trigger does not exist";
                 return serviceResponse; // Early return
+            }
+
+            var canEdit = await _resourceShareService.HasAccessAsync(
+                _userId,
+                messageTrigger.Id,
+                ResourceTypeEnum.Trigger,
+                messageTrigger.CreatedByUserId,
+                false,
+                new[]
+                {
+                    ResourceAccessTypeEnum.Owner,
+                    ResourceAccessTypeEnum.FullAccess,
+                    ResourceAccessTypeEnum.Edit,
+                }
+            );
+
+            if (!canEdit)
+            {
+                serviceResponse.Message = "You do not have access to update this message trigger.";
+                return serviceResponse;
             }
 
             // Check for duplicate name among other triggers
@@ -515,6 +604,26 @@ public class MessageTriggerService : IMessageTriggerService
                 return serviceResponse;
             }
 
+            var canDelete = await _resourceShareService.HasAccessAsync(
+                _userId,
+                messageTrigger.Id,
+                ResourceTypeEnum.Trigger,
+                messageTrigger.CreatedByUserId,
+                false,
+                new[]
+                {
+                    ResourceAccessTypeEnum.Owner,
+                    ResourceAccessTypeEnum.FullAccess,
+                    ResourceAccessTypeEnum.Delete,
+                }
+            );
+
+            if (!canDelete)
+            {
+                serviceResponse.Message = "You do not have access to delete this message trigger.";
+                return serviceResponse;
+            }
+
             // Configure JSON options first
             var jsonOptions = new JsonSerializerOptions
             {
@@ -540,6 +649,8 @@ public class MessageTriggerService : IMessageTriggerService
                 serviceResponse.Message = subscription.Message;
                 return serviceResponse;
             }
+
+            await _resourceShareService.DeleteResourceSharesAsync(messageTrigger.Id, ResourceTypeEnum.Trigger);
 
             // Delete entity
             _unitOfWork.TriggerRepo.Delete(messageTrigger);
@@ -617,6 +728,31 @@ public class MessageTriggerService : IMessageTriggerService
                     }
                 }
             }
+
+            foreach (var trigger in messageTriggers)
+            {
+                var allowed = await _resourceShareService.HasAccessAsync(
+                    _userId,
+                    trigger.Id,
+                    ResourceTypeEnum.Trigger,
+                    trigger.CreatedByUserId,
+                    false,
+                    new[]
+                    {
+                        ResourceAccessTypeEnum.Owner,
+                        ResourceAccessTypeEnum.FullAccess,
+                        ResourceAccessTypeEnum.Delete,
+                    }
+                );
+
+                if (!allowed)
+                {
+                    serviceResponse.Message = "You do not have access to delete one or more message triggers.";
+                    return serviceResponse;
+                }
+            }
+
+            await _resourceShareService.DeleteResourceSharesAsync(messageTriggerIds, ResourceTypeEnum.Trigger);
 
             // Delete triggers
             _unitOfWork.TriggerRepo.Delete(messageTriggers);

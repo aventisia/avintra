@@ -15,8 +15,9 @@ public interface IKeyStoreService
     /// <summary>
     /// Fetches all configuration items associated with the current user.
     /// </summary>
+    /// <param name="isPersonal"> If <c>true</c>, returns only personal keystores. If <c>false</c>, returns only shared keystores. </param>
     /// <returns>A task representing the service response containing a list of configuration item details.</returns>
-    Task<ServiceResponse<IEnumerable<KeyStoreDto>>> GetKeyStoresAsync();
+    Task<ServiceResponse<IEnumerable<KeyStoreDto>>> GetKeyStoresAsync(bool isPersonal);
 
     /// <summary>
     /// Fetches a configuration item by its unique identifier.
@@ -55,7 +56,7 @@ public interface IKeyStoreService
     /// This method is recommended for deleting multiple configuration items at once, reducing the number of server requests.
     /// </remarks>
     Task<ServiceResponse<bool>> DeleteKeyStoresAsync(IEnumerable<Guid> keyStoreIds);
-    
+
     /// <summary>
     /// Decrypts the value of an encrypted key store based on its ID.
     /// </summary>

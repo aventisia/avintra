@@ -33,11 +33,18 @@ public class WebhookTriggerController : BaseApiController
         return ResultHelper(await _webhookTriggerService.UpdateWebhookTriggerAsync(webhookTriggerDto));
     }
 
-    // Retrieves a list of all webhook triggers
+    // Retrieves a list of personal webhook triggers
     [HttpGet("list")]
-    public async Task<ActionResult<ServiceResponse<IEnumerable<WebhookTriggerDto>>>> GetWebhookTriggerList()
+    public async Task<ActionResult<ServiceResponse<IEnumerable<WebhookTriggerDto>>>> GetPersonalWebhookTriggerList()
     {
-        return ResultHelper(await _webhookTriggerService.GetWebhookTriggerListAsync());
+        return ResultHelper(await _webhookTriggerService.GetWebhookTriggerListAsync(true));
+    }
+
+    // Retrieves a list of shared webhook triggers
+    [HttpGet("list/shared")]
+    public async Task<ActionResult<ServiceResponse<IEnumerable<WebhookTriggerDto>>>> GetSharedWebhookTriggerList()
+    {
+        return ResultHelper(await _webhookTriggerService.GetWebhookTriggerListAsync(false));
     }
 
     // Retrieves a single webhook trigger by ID

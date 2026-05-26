@@ -91,6 +91,11 @@ public class TimeTrigger : BaseEntity, IMustHaveTenant
     public List<DateOnly>? ExceptionDates { get; set; }
 
     /// <summary>
+    /// Gets or sets a value indicating whether the trigger is accessible to all users within the tenant.
+    /// </summary>
+    public bool IsTenantWideAccess { get; set; }
+
+    /// <summary>
     /// Gets or sets the collection of flow versions associated with this time trigger.
     /// </summary>
     public virtual ICollection<TimeTriggersFlowVersion> TimeTriggerFlowVersions { get; set; } = new List<TimeTriggersFlowVersion>();

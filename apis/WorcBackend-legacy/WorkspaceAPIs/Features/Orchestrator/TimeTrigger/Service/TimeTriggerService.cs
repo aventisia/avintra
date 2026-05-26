@@ -3,10 +3,12 @@ namespace WorkspaceAPIs.Services;
 public class TimeTriggerService(
     ILogger<TimeTriggerService> logger,
     IUnitOfWork unitOfWork,
+    IResourceShareService resourceShareService,
     IHttpContextAccessor httpContextAccessor) : ITimeTriggerService
 {
     private readonly ILogger<TimeTriggerService> _logger = logger;
     private readonly IUnitOfWork _unitOfWork = unitOfWork;
+    private readonly IResourceShareService _resourceShareService = resourceShareService;
     private readonly Guid _userId = Guid.Parse(httpContextAccessor.HttpContext?.User?.FindFirstValue("uid") ?? Guid.Empty.ToString());
 
     // Checks the availability of a time trigger name.
@@ -51,7 +53,6 @@ public class TimeTriggerService(
     }
 
     // Insert new time trigger 
-
     public async Task<ServiceResponse<TimeTriggerDto>> CreateNewTimeTriggerAsync(TimeTriggerDto triggerDto)
     {
         // Initialize ServiceResponse with a failed response
@@ -119,6 +120,14 @@ public class TimeTriggerService(
             if (!await _unitOfWork.SaveAsync())
             {
                 _logger.LogInformation("Context SaveChanges failed while inserting new time trigger");
+                return serviceResponse;
+            }
+
+            // Assign ownership of the newly created trigger to current user
+            if (!await _resourceShareService.AssignOwnerAsync(_userId, newTimeTrigger.Id, ResourceTypeEnum.Trigger))
+            {
+                _logger.LogError("Failed assigning owner permissions for email trigger {TriggerId}.", newTimeTrigger.Id);
+                serviceResponse.Message = "Failed assigning ownership.";
                 return serviceResponse;
             }
 
@@ -217,6 +226,29 @@ public class TimeTriggerService(
             {
                 _logger.LogInformation("Time Trigger does not exist");
                 serviceResponse.Message = "Time Trigger does not exist";
+                return serviceResponse;
+            }
+
+
+            // Validate current user has permission to update this trigger
+            var canEdit = await _resourceShareService.HasAccessAsync(
+                _userId,
+                trigger.Id,
+                ResourceTypeEnum.Trigger,
+                trigger.CreatedByUserId,
+                false,
+                new[]
+                {
+                    ResourceAccessTypeEnum.Owner,
+                    ResourceAccessTypeEnum.FullAccess,
+                    ResourceAccessTypeEnum.Edit,
+                }
+            );
+
+            if (!canEdit)
+            {
+                _logger.LogInformation("User {UserId} attempted unauthorized update of time trigger {TriggerId}.", _userId, trigger.Id);
+                serviceResponse.Message = "You do not have access to update this time trigger.";
                 return serviceResponse;
             }
 
@@ -376,6 +408,31 @@ public class TimeTriggerService(
                 return serviceResponse;
             }
 
+            // Validate current user has permission to delete this trigger
+            var canDelete = await _resourceShareService.HasAccessAsync(
+                _userId,
+                trigger.Id,
+                ResourceTypeEnum.Trigger,
+                trigger.CreatedByUserId,
+                false,
+                new[]
+                {
+                    ResourceAccessTypeEnum.Owner,
+                    ResourceAccessTypeEnum.FullAccess,
+                    ResourceAccessTypeEnum.Delete,
+                }
+            );
+
+            if (!canDelete)
+            {
+                _logger.LogInformation("User {UserId} attempted unauthorized deletion of time trigger {TriggerId}.", _userId, trigger.Id);
+                serviceResponse.Message = "You do not have access to delete this time trigger.";
+                return serviceResponse;
+            }
+
+            // Remove resource share mappings before deleting trigger
+            await _resourceShareService.DeleteResourceSharesAsync(trigger.Id, ResourceTypeEnum.Trigger);
+
             // Delete time trigger
             _unitOfWork.TimeTriggerRepo.Delete(trigger);
 
@@ -405,7 +462,7 @@ public class TimeTriggerService(
     }
 
     // Retrieve all time triggers associated with current user
-    public async Task<ServiceResponse<IEnumerable<TimeTriggerDto>>> GetTimeTriggerListAsync()
+    public async Task<ServiceResponse<IEnumerable<TimeTriggerDto>>> GetTimeTriggerListAsync(bool isPersonal)
     {
         // Initialize ServiceResponse with failed response
         var serviceResponse = new ServiceResponse<IEnumerable<TimeTriggerDto>>
@@ -416,17 +473,65 @@ public class TimeTriggerService(
 
         try
         {
-            // Try to get time triggers
-            var timeTriggers = await _unitOfWork.TimeTriggerRepo
-                .GetAllAsync()
-                .OrderByDescending(o => o.CreatedOn)
-                .Include(i => i.CreatedByUser)
-                .Include(i => i.LastModifiedByUser)
-                .Include(i => i.TimeTriggerFlowVersions)
-                    .ThenInclude(i2 => i2.FlowVersion)
-                        .ThenInclude(i3 => i3.Flow)
-                .AsNoTracking()
-                .ToListAsync();
+            // Retrieve time triggers based on ownership / shared access
+            List<TimeTrigger> timeTriggers;
+
+            // Personal mode → only current user's triggers
+            if (isPersonal)
+            {
+                timeTriggers = await _unitOfWork.TimeTriggerRepo
+                    .GetByConditionAsync(w => w.CreatedByUserId == _userId)
+                    .OrderByDescending(o => o.CreatedOn)
+                    .Include(i => i.CreatedByUser)
+                    .Include(i => i.LastModifiedByUser)
+                    .Include(i => i.TimeTriggerFlowVersions)
+                        .ThenInclude(i2 => i2.FlowVersion)
+                            .ThenInclude(i3 => i3.Flow)
+                    .AsNoTracking()
+                    .ToListAsync();
+            }
+            else
+            {
+                // Retrieve all trigger resource IDs that the current user can access
+                var triggerIds = await _resourceShareService.GetAccessibleResourceIdsAsync(
+                    _userId,
+                    ResourceTypeEnum.Trigger,
+                    new[]
+                    {
+                        ResourceAccessTypeEnum.Owner,
+                        ResourceAccessTypeEnum.FullAccess,
+                        ResourceAccessTypeEnum.View,
+                        ResourceAccessTypeEnum.Edit,
+                        ResourceAccessTypeEnum.Delete,
+                    }
+                );
+
+                // Retrieve shared and owned email triggers
+                timeTriggers = await _unitOfWork.TimeTriggerRepo
+                    .GetByConditionAsync(w =>
+                        w.IsTenantWideAccess || triggerIds.Contains(w.Id)
+                    )
+                     .OrderByDescending(o => o.CreatedOn)
+                    .Include(i => i.CreatedByUser)
+                    .Include(i => i.LastModifiedByUser)
+                    .Include(i => i.TimeTriggerFlowVersions)
+                        .ThenInclude(i2 => i2.FlowVersion)
+                            .ThenInclude(i3 => i3.Flow)
+                    .AsNoTracking()
+                    .ToListAsync();
+            }
+
+            // // Try to get time triggers
+            // var timeTriggers = await _unitOfWork.TimeTriggerRepo
+            //     .GetAllAsync()
+            //     .OrderByDescending(o => o.CreatedOn)
+            //     .Include(i => i.CreatedByUser)
+            //     .Include(i => i.LastModifiedByUser)
+            //     .Include(i => i.TimeTriggerFlowVersions)
+            //         .ThenInclude(i2 => i2.FlowVersion)
+            //             .ThenInclude(i3 => i3.Flow)
+            //     .AsNoTracking()
+            //     .ToListAsync();
 
             // Task successful
             serviceResponse.Data = timeTriggers.Adapt<IEnumerable<TimeTriggerDto>>();
@@ -473,6 +578,30 @@ public class TimeTriggerService(
                 return serviceResponse;
             }
 
+            // Verify current user has permission to view this trigger
+            var canView = await _resourceShareService.HasAccessAsync(
+                _userId,
+                timeTrigger.Id,
+                ResourceTypeEnum.Trigger,
+                timeTrigger.CreatedByUserId,
+                timeTrigger.IsTenantWideAccess,
+                new[]
+                {
+                    ResourceAccessTypeEnum.Owner,
+                    ResourceAccessTypeEnum.FullAccess,
+                    ResourceAccessTypeEnum.View,
+                    ResourceAccessTypeEnum.Edit,
+                    ResourceAccessTypeEnum.Delete,
+                }
+            );
+
+            if (!canView)
+            {
+                _logger.LogInformation("User {UserId} attempted unauthorized access to time trigger {TriggerId}.", _userId, timeTrigger.Id);
+                serviceResponse.Message = "You do not have access to view this time trigger.";
+                return serviceResponse;
+            }
+
             // Task successful
             serviceResponse.Data = timeTrigger.Adapt<TimeTriggerDto>();
             serviceResponse.StatusCode = 200;
@@ -486,7 +615,6 @@ public class TimeTriggerService(
 
         return serviceResponse;
     }
-
 
     // Deletes multiple timetriggers by their IDs.
     public async Task<ServiceResponse<bool>> DeleteTimeTriggersAsync(IEnumerable<Guid> timeTriggerIds)
@@ -516,6 +644,34 @@ public class TimeTriggerService(
                 return serviceResponse;
             }
 
+            // Validate delete access for all triggers
+            foreach (var trigger in timeTriggers)
+            {
+                var allowed = await _resourceShareService.HasAccessAsync(
+                    _userId,
+                    trigger.Id,
+                    ResourceTypeEnum.Trigger,
+                    trigger.CreatedByUserId,
+                    false,
+                    new[]
+                    {
+                        ResourceAccessTypeEnum.Owner,
+                        ResourceAccessTypeEnum.FullAccess,
+                        ResourceAccessTypeEnum.Delete,
+                    }
+                );
+
+                if (!allowed)
+                {
+                    _logger.LogInformation("User {UserId} attempted unauthorized bulk deletion.", _userId);
+                    serviceResponse.Message = "You do not have access to delete one or more time triggers.";
+                    return serviceResponse;
+                }
+            }
+
+            // Remove all resource share mappings before deleting triggers
+            await _resourceShareService.DeleteResourceSharesAsync(timeTriggerIds, ResourceTypeEnum.Trigger);
+
             // TODO: Check trigger relationship with other entities
 
             // Delete triggers
@@ -542,7 +698,6 @@ public class TimeTriggerService(
         return serviceResponse;
     }
 
-
     // Retrieve agent list
     public async Task<ServiceResponse<IEnumerable<AssignAgentTriggerDto>>> GetAgentsByTriggerAsync(Guid timeTriggerId)
     {
@@ -568,6 +723,30 @@ public class TimeTriggerService(
             {
                 _logger.LogInformation("Trigger with ID {TriggerId} not found for user {UserId}.", timeTriggerId, _userId);
                 serviceResponse.Message = "The trigger does not exist.";
+                return serviceResponse;
+            }
+
+            // Verify current user has permission to view this trigger
+            var canView = await _resourceShareService.HasAccessAsync(
+                _userId,
+                trigger.Id,
+                ResourceTypeEnum.Trigger,
+                trigger.CreatedByUserId,
+                trigger.IsTenantWideAccess,
+                new[]
+                {
+                    ResourceAccessTypeEnum.Owner,
+                    ResourceAccessTypeEnum.FullAccess,
+                    ResourceAccessTypeEnum.View,
+                    ResourceAccessTypeEnum.Edit,
+                    ResourceAccessTypeEnum.Delete,
+                }
+            );
+
+            if (!canView)
+            {
+                _logger.LogInformation("User {UserId} attempted unauthorized access to time trigger {TriggerId}.", _userId, timeTriggerId);
+                serviceResponse.Message = "You do not have access to view this time trigger.";
                 return serviceResponse;
             }
 

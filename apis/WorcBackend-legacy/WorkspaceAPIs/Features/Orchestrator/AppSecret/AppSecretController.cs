@@ -12,11 +12,18 @@ public class AppSecretController : BaseApiController
         _appSecretService = appSecretService;
     }
 
-    // Get all app secrets.
+    // Get personal app secrets.
     [HttpGet("list")]
-    public async Task<ActionResult<ServiceResponse<IEnumerable<AppSecretDto>>>> GetAllAppSecrets([FromQuery] bool isPersonal)
+    public async Task<ActionResult<ServiceResponse<IEnumerable<AppSecretDto>>>> GePersonalAppSecrets()
     {
-        return ResultHelper(await _appSecretService.GetAllAppSecretsAsync(isPersonal));
+        return ResultHelper(await _appSecretService.GetAllAppSecretsAsync(true));
+    }
+
+    // Get shared app secrets.
+    [HttpGet("list/shared")]
+    public async Task<ActionResult<ServiceResponse<IEnumerable<AppSecretDto>>>> GetSharedAppSecrets()
+    {
+        return ResultHelper(await _appSecretService.GetAllAppSecretsAsync(false));
     }
 
     // Checks the availability of a app secret.

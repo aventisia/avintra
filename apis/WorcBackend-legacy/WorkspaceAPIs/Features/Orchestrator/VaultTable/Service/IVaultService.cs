@@ -14,9 +14,10 @@ public interface IVaultService
 
     /// <summary>
     /// Fetches all configuration items associated with the current user.
+    /// <param name="isPersonal"> If <c>true</c>, returns only personal vaults. If <c>false</c>, returns only shared vaults. </param>
     /// </summary>
     /// <returns>A task representing the service response containing a list of configuration item details.</returns>
-    Task<ServiceResponse<IEnumerable<VaultDto>>> GetVaultsAsync();
+    Task<ServiceResponse<IEnumerable<VaultDto>>> GetVaultsAsync(bool isPersonal);
 
     /// <summary>
     /// Fetches a configuration item by its unique identifier.

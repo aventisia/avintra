@@ -15,14 +15,17 @@ public interface IQueueTableService
     /// <summary>
     /// Retrieves all queues.
     /// </summary>
+    /// <param name="isPersonal"> If <c>true</c>, returns only personal queues. If <c>false</c>, returns only shared queues. </param>
     /// <returns>The task result containing the service response with a list of queue details.</returns>
-    Task<ServiceResponse<IEnumerable<QueuesTableDto>>> GetAllQueuesAsync();
+    Task<ServiceResponse<IEnumerable<QueuesTableDto>>> GetAllQueuesAsync(bool isPersonal);
 
     /// <summary>
     /// Searches for queues by name.
     /// </summary>
+    /// <param name="queueName"> Search keyword. </param>
+    /// <param name="isPersonal"> If <c>true</c>, returns only personal queues. If <c>false</c>, returns only shared queues. </param>
     /// <returns>A task with the service response containing matching queues.</returns>
-    Task<ServiceResponse<IEnumerable<QueuesTableDto>>> SearchQueuesAsync(string queueName);
+    Task<ServiceResponse<IEnumerable<QueuesTableDto>>> SearchQueuesAsync(string queueName, bool isPersonal);
 
     /// <summary>
     /// Retrieves the details of a specific queue by its unique identifier.

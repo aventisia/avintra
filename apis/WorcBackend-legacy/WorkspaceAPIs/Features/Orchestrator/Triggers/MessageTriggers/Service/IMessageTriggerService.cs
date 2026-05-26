@@ -8,8 +8,9 @@ public interface IMessageTriggerService
     /// <summary>
     /// Retrieves a list of all message triggers.
     /// </summary>
+    /// <param name="isPersonal"> If <c>true</c>, returns only personal message triggers. If <c>false</c>, returns only shared message triggers. </param>
     /// <returns>A service response containing a collection of message triggers.</returns>
-    Task<ServiceResponse<IEnumerable<MessageTriggerDto>>> GetMessageTriggerListAsync();
+    Task<ServiceResponse<IEnumerable<MessageTriggerDto>>> GetMessageTriggerListAsync(bool iisPersonal);
 
     /// <summary>
     /// Retrieves the details of a specific message trigger.

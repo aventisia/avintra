@@ -7,13 +7,15 @@ public class FlowsTableService : IFlowsTableService
     private readonly Guid _userId;
     private readonly IFlowVersionService _flowVersionService;
     private readonly IFlowUserService _flowUserService;
+    private readonly IResourceShareService _resourceShareService;
 
     public FlowsTableService(
         ILogger<FlowsTableService> logger,
         IUnitOfWork unitOfWork,
         IHttpContextAccessor httpContextAccessor,
         IFlowVersionService flowVersionService,
-        IFlowUserService flowUserService)
+        IFlowUserService flowUserService,
+        IResourceShareService resourceShareService)
     {
         // Set _userId
         _userId = Guid.Parse(httpContextAccessor.HttpContext?.User?.FindFirstValue("uid") ?? Guid.Empty.ToString());
@@ -22,10 +24,11 @@ public class FlowsTableService : IFlowsTableService
         _unitOfWork = unitOfWork;
         _flowVersionService = flowVersionService;
         _flowUserService = flowUserService;
+        _resourceShareService = resourceShareService;
     }
 
     // Retrieves all flows created by the user.
-    public async Task<ServiceResponse<IEnumerable<FlowsTableDto>>> GetFlowsAsync()
+    public async Task<ServiceResponse<IEnumerable<FlowsTableDto>>> GetFlowsAsync(bool isPersonal)
     {
         // Initialize ServiceResponse with failed response
         var serviceResponse = new ServiceResponse<IEnumerable<FlowsTableDto>>
@@ -36,20 +39,64 @@ public class FlowsTableService : IFlowsTableService
 
         try
         {
+            // Retrieve flows based on ownership or shared access
+            List<Flow> flows;
+
+            if (isPersonal)
+            {
+                // Return only flows created by current user
+                flows = await _unitOfWork.FlowRepo
+                    .GetByConditionAsync(w => w.CreatedByUserId == _userId)
+                    .OrderByDescending(w => w.CreatedOn)
+                    .Include(i => i.FlowComments)
+                    .Include(i => i.FlowVersions)
+                    .Include(i => i.CreatedByUser)
+                    .ToListAsync();
+            }
+            else
+            {
+                // Retrieve IDs of flows user can access
+                var accessibleFlowIds =
+                    await _resourceShareService
+                        .GetAccessibleResourceIdsAsync(
+                            _userId,
+                            ResourceTypeEnum.Flow,
+                            new[]
+                            {
+                                ResourceAccessTypeEnum.Owner,
+                                ResourceAccessTypeEnum.FullAccess,
+                                ResourceAccessTypeEnum.View,
+                                ResourceAccessTypeEnum.Edit,
+                                ResourceAccessTypeEnum.Delete,
+                            }
+                        );
+
+                // Retrieve shared flows
+                flows = await _unitOfWork.FlowRepo
+                    .GetByConditionAsync(w =>
+                        w.IsTenantWideAccess ||
+                        accessibleFlowIds.Contains(w.Id))
+                    .OrderByDescending(w => w.CreatedOn)
+                    .Include(i => i.FlowComments)
+                    .Include(i => i.FlowVersions)
+                    .Include(i => i.CreatedByUser)
+                    .ToListAsync();
+            }
+
             // Get flows
-            var flows = await _unitOfWork.FlowRepo
-            .GetByConditionAsync(w =>
-                    w.CreatedByUserId == _userId ||
-                    (
-                        w.FlowUsers != null && w.FlowUsers.Any(a => a.UserId == _userId)
-                    )
-                ) // TODO: Update condition
-                .OrderByDescending(w => w.CreatedOn)
-                .Include(i => i.FlowUsers)
-                .Include(i => i.FlowComments)
-                .Include(i => i.FlowVersions)
-                .Include(i => i.CreatedByUser)
-                .ToListAsync();
+            // var flows = await _unitOfWork.FlowRepo
+            // .GetByConditionAsync(w =>
+            //         w.CreatedByUserId == _userId ||
+            //         (
+            //             w.FlowUsers != null && w.FlowUsers.Any(a => a.UserId == _userId)
+            //         )
+            //     ) // TODO: Update condition
+            //     .OrderByDescending(w => w.CreatedOn)
+            //     .Include(i => i.FlowUsers)
+            //     .Include(i => i.FlowComments)
+            //     .Include(i => i.FlowVersions)
+            //     .Include(i => i.CreatedByUser)
+            //     .ToListAsync();
 
             // Map the list of flows to a list of FlowsTableDto using the Adapt method
             var flowDtoList = flows.Adapt<List<FlowsTableDto>>();
@@ -175,6 +222,13 @@ public class FlowsTableService : IFlowsTableService
                 return serviceResponse;
             }
 
+            // Assign creator ownership
+            if (!await _resourceShareService.AssignOwnerAsync(_userId, newFlow.Id, ResourceTypeEnum.Flow))
+            {
+                serviceResponse.Message = "Failed assigning ownership.";
+                return serviceResponse;
+            }
+
             // Create a new FlowUserDto to associate the user with the flow
             var flowUserDto = new FlowUserDto()
             {
@@ -245,6 +299,7 @@ public class FlowsTableService : IFlowsTableService
                 return serviceResponse;
             }
 
+
             // Guard: Prevent disabling a flow that has published versions
             if (flowsTableDto.IsDisabled == true && flow.FlowVersions?.Any(v => v.IsPublished) == true)
             {
@@ -255,6 +310,29 @@ public class FlowsTableService : IFlowsTableService
                 serviceResponse.Message = "Flow cannot be disabled because it has published versions.";
                 return serviceResponse;
             }
+
+            // Validate update permission
+            var canEdit = await _resourceShareService.HasAccessAsync(
+                _userId,
+                flow.Id,
+                ResourceTypeEnum.Flow,
+                flow.CreatedByUserId,
+                false,
+                new[]
+                {
+                    ResourceAccessTypeEnum.Owner,
+                    ResourceAccessTypeEnum.FullAccess,
+                    ResourceAccessTypeEnum.Edit,
+                }
+            );
+
+            if (!canEdit)
+            {
+                _logger.LogWarning("Unauthorized flow update. User {UserId}, Flow {FlowId}", _userId, flow.Id);
+                serviceResponse.Message = "You do not have access to update this flow.";
+                return serviceResponse;
+            }
+
 
             // Check if the user is the creator or has the required access (Owner/Edit)
             var flowUserAccess = flow.FlowUsers?.FirstOrDefault(w =>
@@ -386,7 +464,29 @@ public class FlowsTableService : IFlowsTableService
                 return serviceResponse;
             }
 
+            var canDelete = await _resourceShareService.HasAccessAsync(
+                _userId,
+                flow.Id,
+                ResourceTypeEnum.Flow,
+                flow.CreatedByUserId,
+                false,
+                new[]
+                {
+                    ResourceAccessTypeEnum.Owner,
+                    ResourceAccessTypeEnum.FullAccess,
+                    ResourceAccessTypeEnum.Delete,
+                }
+            );
+
+            if (!canDelete)
+            {
+                serviceResponse.Message = "You do not have access to delete this flow.";
+                return serviceResponse;
+            }
+
             // TODO: Check flow relationship with other entities
+
+            await _resourceShareService.DeleteResourceSharesAsync(flow.Id, ResourceTypeEnum.Flow);
 
             // Delete flow
             _unitOfWork.FlowRepo.Delete(flow);
@@ -450,6 +550,26 @@ public class FlowsTableService : IFlowsTableService
             // Check if the user is the creator or has required access (Owner/Edit)
             foreach (var flow in flows)
             {
+                var allowed = await _resourceShareService.HasAccessAsync(
+                    _userId,
+                    flow.Id,
+                    ResourceTypeEnum.Flow,
+                    flow.CreatedByUserId,
+                    false,
+                    new[]
+                    {
+                        ResourceAccessTypeEnum.Owner,
+                        ResourceAccessTypeEnum.FullAccess,
+                        ResourceAccessTypeEnum.Delete,
+                    }
+                );
+
+                if (!allowed)
+                {
+                    serviceResponse.Message = "You do not have access to delete one or more flows.";
+                    return serviceResponse;
+                }
+
                 var flowUserAccess = flow.FlowUsers?.FirstOrDefault(w =>
                     w.FlowId == flow.Id &&
                     w.UserId == _userId &&
