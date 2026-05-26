@@ -103,8 +103,8 @@ class OutlookSendEmailExecutor:
             return {
                 "agentId": llm_request.ref_id,
                 "agentName": llm_request.ref_name,
-                "provider": "Outlook",
-                "action": "SendEmailThroughOutlook",
+                "provider": "M365/Outlook",
+                "action": "SendEmail",
                 "credentialId": credential_id,
                 "payload": arguments,
             }
