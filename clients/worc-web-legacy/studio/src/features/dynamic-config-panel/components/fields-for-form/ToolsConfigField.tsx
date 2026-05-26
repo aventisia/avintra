@@ -232,7 +232,7 @@ export function ToolsConfigField({ name }: ToolsConfigFieldProps) {
           name={fieldNames.credential_id}
           label="Select Credential"
           size="sm"
-          modelProvider={currentTool}
+          modelProvider={currentTool == "outlook" ? "m365" : currentTool}
           disabled={!currentTool}
           placeholder="Select Credential"
         />
@@ -344,7 +344,7 @@ export function ToolsConfigField({ name }: ToolsConfigFieldProps) {
                         className="shrink-0 rounded-full px-2 py-px text-[0.625rem] font-medium capitalize "
                         variant={"outline"}
                       >
-                        {approval}
+                        {approval + " Approval"}
                       </Badge>
                     </div>
                   </div>
