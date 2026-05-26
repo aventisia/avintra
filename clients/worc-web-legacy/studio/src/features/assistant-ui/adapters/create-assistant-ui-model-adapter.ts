@@ -18,7 +18,7 @@ type CreateAssistantUIModelAdapterParams = {
   model: string;
   flowVersionId: string;
   flowName: string;
-  systemPrompt?: string;
+  agentConfig?: Partial<LLMRequestDto>;
   policyContext?: string;
   onRequestComplete?: () => void;
 };
@@ -61,52 +61,114 @@ const mapThreadToLLMMessages = (
 
 /**
  * Creates a ChatModelAdapter for @assistant-ui/react.
- * The adapter maps thread history to the llm request DTO and streams chunks
- * back as assistant-ui text parts.
+ * The adapter maps thread history to the llm request DTO
+ * and streams chunks back as assistant-ui text parts.
  */
 export const createAssistantUIModelAdapter = ({
   provider,
   model,
   flowVersionId,
   flowName,
-  systemPrompt,
+  agentConfig,
   policyContext,
   onRequestComplete,
 }: CreateAssistantUIModelAdapterParams): ChatModelAdapter => {
   return {
     /**
      * Called by assistant-ui for each user turn.
-     * Yields incremental text chunks to render streaming assistant output.
+     * Yields incremental text chunks to render
+     * streaming assistant output.
      */
     async *run(options) {
       const threadMessages = mapThreadToLLMMessages(options.messages);
-      const normalizedSystemPrompt = systemPrompt?.trim();
+
+      const systemPrompt =
+        typeof agentConfig?.input === "string" ? agentConfig.input.trim() : "";
+
       const normalizedPolicyContext = policyContext?.trim();
 
       const systemMessages: LLMMessageType[] = [
-        ...(normalizedSystemPrompt
-          ? [{ role: "system" as const, content: normalizedSystemPrompt }]
+        ...(systemPrompt
+          ? [
+              {
+                role: "system" as const,
+                content: systemPrompt,
+              },
+            ]
           : []),
+
         ...(normalizedPolicyContext
-          ? [{ role: "system" as const, content: normalizedPolicyContext }]
+          ? [
+              {
+                role: "system" as const,
+                content: normalizedPolicyContext,
+              },
+            ]
           : []),
       ];
 
       const input = [...systemMessages, ...threadMessages];
-      let accumulatedText = "";
+
+      /**
+       * Tool execution currently
+       * requires non-stream mode.
+       */
+      const hasTools = !!agentConfig?.tool_config?.length;
+
+      const shouldStream = !hasTools;
 
       const request: LLMRequestDto = {
-        provider,
-        model,
+        ...agentConfig,
+
+        provider: agentConfig?.provider ?? provider,
+
+        model: agentConfig?.model ?? model,
+
         input,
-        stream: true,
-        is_byok_enabled: false,
-        credential_id: null,
+
+        stream: shouldStream,
+
         ref_type: FlowTypesEnum.ChatAgent,
+
         ref_id: flowVersionId || "chat-agent-flow",
+
         ref_name: flowName || "Chat Agent",
+
         action: "AgentExecution",
-      };
+      } as LLMRequestDto;
+
+      /**
+       * Non-stream mode
+       * Used for tools execution.
+       */
+      if (!shouldStream) {
+        let finalResponse = "";
+
+        for await (const response of streamLLMGenerate({
+          request,
+          signal: options.abortSignal,
+        })) {
+          finalResponse = response ?? "";
+        }
+
+        yield {
+          content: [
+            {
+              type: "text",
+              text: finalResponse,
+            },
+          ],
+        };
+
+        onRequestComplete?.();
+        return;
+      }
+
+      /**
+       * Stream mode
+       * Used for standard chat.
+       */
+      let accumulatedText = "";
 
       for await (const chunkText of streamLLMGenerate({
         request,
