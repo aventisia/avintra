@@ -1,6 +1,41 @@
-import { UsageSourceTypesEnum } from "@/features/credits-management/constants/usage-source-types-enum";
-import { LLMMessageType, LLMProviderType } from "..";
 import { ActionTypesEnum } from "@/features/credits-management/constants/action-types-enum";
+import { UsageSourceTypesEnum } from "@/features/credits-management/constants/usage-source-types-enum";
+
+import { LLMMessageType, LLMProviderType } from "..";
+
+export interface ToolAction {
+  /**
+   * Action that the tool is permitted to perform
+   * (e.g. "send_email")
+   */
+  action: string;
+
+  /**
+   * Determines whether execution is automatic
+   * or requires human approval.
+   */
+  approval: "auto" | "human";
+}
+
+export interface ToolConfig {
+  /**
+   * Name of the tool or external service
+   * (e.g. "gmail")
+   */
+  tool: string;
+
+  /**
+   * Identifier for the credentials
+   * used to access the tool.
+   */
+  credential_id: string;
+
+  /**
+   * List of permitted actions
+   * for this tool.
+   */
+  actions: ToolAction[];
+}
 
 /**
  * Represents a request for generating an LLM response.
@@ -27,6 +62,11 @@ export interface LLMRequestDto {
   files?: string[];
 
   /**
+   * Optional tool/service configurations.
+   */
+  tool_config?: ToolConfig[];
+
+  /**
    * Indicates whether the output should be parsed as JSON.
    */
   is_json_output?: boolean;
@@ -39,7 +79,7 @@ export interface LLMRequestDto {
   /**
    * Maximum number of tokens for the output.
    */
-  max_output_tokens?: number;
+  max_output_tokens?: number | null;
 
   /**
    * Enables Bring Your Own Key (BYOK) support.
@@ -85,4 +125,25 @@ export interface LLMRequestDto {
    * Gets or sets the action type (e.g.AgentExecution) associated with the usage.
    */
   action: ActionTypesEnum | string;
+
+  /**
+   * Optional agent name.
+   */
+  agent_name?: string | null;
+
+  /**
+   * Knowledge base names used
+   * for chunk retrieval scoping.
+   */
+  kb_names?: string[];
+
+  /**
+   * Number of KB chunks to retrieve.
+   *
+   * Backend constraints:
+   * min: 1
+   * max: 100
+   * default: 5
+   */
+  top_k?: number;
 }

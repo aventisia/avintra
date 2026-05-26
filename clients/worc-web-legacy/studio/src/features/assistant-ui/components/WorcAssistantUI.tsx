@@ -17,15 +17,13 @@ import { useShallow } from "zustand/react/shallow";
 
 import {
   LLMProviderType,
+  LLMRequestDto,
   //MessageBubble,
   createAssistantUIModelAdapter,
 } from "..";
 import { AC_QUERY_KEY } from "../../available-credits/available-credits-constants";
-import { loadPolicyDocuments } from "../utils/load-policy-documents";
 // import { ThreadList } from "./thread-list";
 import { Thread } from "./thread";
-
-const POLICY_CONTEXT = loadPolicyDocuments();
 
 type WorcAssistantUIProps = {
   provider?: LLMProviderType;
@@ -33,14 +31,45 @@ type WorcAssistantUIProps = {
 };
 
 const TARGET_NODE_NAME = "CreateInferencingAIAgent";
-const TARGET_PROMPT_KEY = "__Prompt__Inferencing";
+
+const INPUT_KEYS = {
+  PROMPT: "__Prompt__",
+  MODEL_CONFIG: "__ModelConfig__",
+  TOOLS_CONFIG: "__ToolsConfig__",
+  KB_CONFIG: "__KbConfig__",
+} as const;
 
 type NodeInputLike = {
   key?: string;
   value?: unknown;
 };
 
-const getSystemPromptFromFlowNodes = (nodes: Node[]): string => {
+type ModelConfigInput = {
+  provider?: LLMProviderType;
+  model?: string;
+  credential_id?: string | null;
+  is_byok_enabled?: boolean;
+  temperature?: number;
+  top_p?: number;
+  is_json_output?: boolean;
+  max_output_tokens?: number | null;
+};
+
+type KBConfigInput = {
+  knowledgeBase?: string[];
+  numberOfChunks?: number;
+};
+
+const getInputValue = <T,>(
+  inputs: NodeInputLike[],
+  key: string,
+): T | undefined => {
+  const match = inputs.find((input) => input?.key?.includes(key));
+
+  return match?.value as T | undefined;
+};
+
+const getAgentConfigFromFlowNodes = (nodes: Node[]): Partial<LLMRequestDto> => {
   const inferencingNode = nodes.find(
     (node) =>
       node.data &&
@@ -50,19 +79,49 @@ const getSystemPromptFromFlowNodes = (nodes: Node[]): string => {
   );
 
   if (!inferencingNode?.data || !("inputs" in inferencingNode.data)) {
-    return "";
+    return {};
   }
 
   const inputs = inferencingNode.data.inputs;
+
   if (!Array.isArray(inputs)) {
-    return "";
+    return {};
   }
 
-  const promptInput = (inputs as NodeInputLike[]).find(
-    (input) => input?.key === TARGET_PROMPT_KEY,
+  const nodeInputs = inputs as NodeInputLike[];
+
+  const prompt = getInputValue<string>(nodeInputs, INPUT_KEYS.PROMPT);
+
+  const modelConfig = getInputValue<ModelConfigInput>(
+    nodeInputs,
+    INPUT_KEYS.MODEL_CONFIG,
   );
 
-  return typeof promptInput?.value === "string" ? promptInput.value.trim() : "";
+  const tools = getInputValue<LLMRequestDto["tool_config"]>(
+    nodeInputs,
+    INPUT_KEYS.TOOLS_CONFIG,
+  );
+
+  const kbConfig = getInputValue<KBConfigInput>(
+    nodeInputs,
+    INPUT_KEYS.KB_CONFIG,
+  );
+
+  return {
+    provider: modelConfig?.provider,
+    model: modelConfig?.model,
+    credential_id: modelConfig?.credential_id ?? null,
+    is_byok_enabled: modelConfig?.is_byok_enabled ?? false,
+    temperature: modelConfig?.temperature ?? 1,
+    top_p: modelConfig?.top_p ?? 1,
+    is_json_output: modelConfig?.is_json_output ?? false,
+    max_output_tokens: modelConfig?.max_output_tokens ?? null,
+    tool_config: tools ?? [],
+    kb_names: kbConfig?.knowledgeBase ?? [],
+    top_k: kbConfig?.numberOfChunks ?? 5,
+    agent_name: TARGET_NODE_NAME,
+    input: typeof prompt === "string" ? prompt.trim() : "",
+  };
 };
 
 /**
@@ -88,8 +147,8 @@ export const WorcAssistantUI = ({
     useShallow((state) => ({ nodes: state.nodes })),
   );
 
-  const systemPrompt = useMemo(
-    () => getSystemPromptFromFlowNodes(nodes),
+  const agentConfig = useMemo(
+    () => getAgentConfigFromFlowNodes(nodes),
     [nodes],
   );
 
@@ -103,8 +162,7 @@ export const WorcAssistantUI = ({
           model,
           flowVersionId: currentFlow.versionId,
           flowName: currentFlow.name,
-          systemPrompt,
-          policyContext: POLICY_CONTEXT,
+          agentConfig,
           onRequestComplete: () => {
             queryClient.invalidateQueries({ queryKey: AC_QUERY_KEY });
           },
@@ -114,7 +172,7 @@ export const WorcAssistantUI = ({
         model,
         currentFlow.versionId,
         currentFlow.name,
-        systemPrompt,
+        agentConfig,
         queryClient,
       ],
     ),
