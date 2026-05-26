@@ -22,8 +22,9 @@ public interface ITimeTriggerService
     /// <summary>
     /// Retrieves a list of all time triggers.
     /// </summary>
+    /// <param name="isPersonal"> If <c>true</c>, returns only personal time triggers. If <c>false</c>, returns only shared time triggers. </param>
     /// <returns>A service response containing a collection of time triggers.</returns>
-    Task<ServiceResponse<IEnumerable<TimeTriggerDto>>> GetTimeTriggerListAsync();
+    Task<ServiceResponse<IEnumerable<TimeTriggerDto>>> GetTimeTriggerListAsync(bool isPersonal);
 
     /// <summary>
     /// Deletes a specific time trigger.

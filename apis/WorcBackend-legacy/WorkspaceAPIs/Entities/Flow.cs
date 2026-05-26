@@ -36,9 +36,14 @@ public class Flow : BaseEntity, IMustHaveTenant
     public string? Description { get; set; }
 
     /// <summary>
+    /// Gets or sets a value indicating whether the flow is accessible to all users within the tenant.
+    /// </summary>
+    public bool IsTenantWideAccess { get; set; }
+
+    /// <summary>
     /// Gets or sets the list of FlowComments to manage the one-to-many relation.
     /// </summary>
-    
+
     public virtual ICollection<FlowComment>? FlowComments { get; set; }
 
     /// <summary>

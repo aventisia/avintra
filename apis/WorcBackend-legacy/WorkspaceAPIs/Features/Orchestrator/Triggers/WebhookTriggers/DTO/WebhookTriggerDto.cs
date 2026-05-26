@@ -31,6 +31,11 @@ public class WebhookTriggerDto : WebhookTriggerModel
     public string? WebhookUrl { get; set; }
 
     /// <summary>
+    /// Gets or sets a value indicating whether the webhook trigger is accessible to all users within the tenant.
+    /// </summary>
+    public bool IsTenantWideAccess { get; set; }
+
+    /// <summary>
     /// Gets or sets the full name of the user who created the webhook trigger.
     /// </summary>
     public string? CreatedBy { get; set; }

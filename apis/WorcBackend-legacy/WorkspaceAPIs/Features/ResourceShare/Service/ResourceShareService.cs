@@ -387,4 +387,248 @@ public class ResourceShareService : IResourceShareService
 
         return serviceResponse;
     }
+
+
+    // Validate whether current user has permission to perform an operation on a resource
+    public async Task<bool> HasAccessAsync(
+        Guid userId,
+        Guid resourceId,
+        ResourceTypeEnum resourceType,
+        Guid createdByUserId,
+        bool isTenantWideAccess = false,
+        params ResourceAccessTypeEnum[] accessLevels)
+    {
+        try
+        {
+            // Allow access when user is resource creator
+            if (createdByUserId == userId)
+            {
+                return true;
+            }
+
+            // Allow access when resource is shared across the tenant
+            if (isTenantWideAccess)
+            {
+                return true;
+            }
+
+            // Retrieve user's access level for requested resource
+            var access = await _unitOfWork.ResourceShareRepo
+                .GetByConditionAsync(w =>
+                    w.UserId == userId &&
+                    w.ResourceId == resourceId &&
+                    w.ResourceType == resourceType)
+                .Select(s => s.AccessLevel)
+                .FirstOrDefaultAsync();
+
+            // Verify user access level matches allowed operation permissions
+            var allowed = accessLevels.Contains(access);
+
+            // Log unauthorized attempts
+            if (!allowed)
+            {
+                _logger.LogWarning(
+                    "Access denied for User {UserId}. Resource {ResourceId}, Type {ResourceType}",
+                    userId,
+                    resourceId,
+                    resourceType);
+            }
+
+            return allowed;
+        }
+        catch (Exception ex)
+        {
+            // Log unexpected validation failures
+            _logger.LogError(
+                ex,
+                "Error validating access for User {UserId}, Resource {ResourceId}",
+                userId,
+                resourceId);
+
+            return false;
+        }
+    }
+
+
+    // Retrieve resource identifiers accessible to current user for specific access levels
+    public async Task<List<Guid>> GetAccessibleResourceIdsAsync(
+        Guid userId,
+        ResourceTypeEnum resourceType,
+        params ResourceAccessTypeEnum[] accessLevels)
+    {
+        try
+        {
+            // Retrieve resource share mappings matching requested access levels
+            var resourceShareIds = await _unitOfWork.ResourceShareRepo
+                .GetByConditionAsync(w =>
+                    w.UserId == userId &&
+                    w.ResourceType == resourceType &&
+                    accessLevels.Contains(w.AccessLevel))
+                .Select(s => s.ResourceId)
+                .ToListAsync();
+
+            // Return accessible resource ids
+            return resourceShareIds;
+        }
+        catch (Exception ex)
+        {
+            // Log access retrieval failure
+            _logger.LogError(
+                ex,
+                "Failed retrieving accessible resources for User {UserId}",
+                userId);
+
+            return new();
+        }
+    }
+
+    // Retrieve resource identifiers and corresponding access levels
+    public async Task<Dictionary<Guid, ResourceAccessTypeEnum>> GetAccessibleResourcesWithAccessAsync(
+        Guid userId,
+        ResourceTypeEnum resourceType,
+        params ResourceAccessTypeEnum[] accessLevels)
+    {
+        try
+        {
+            // Query resource share mappings for the user and requested access levels
+            var accessibleResources = await _unitOfWork.ResourceShareRepo
+                .GetByConditionAsync(w =>
+                    w.UserId == userId &&
+                    w.ResourceType == resourceType &&
+                    accessLevels.Contains(w.AccessLevel))
+
+                // Convert results into ResourceId → AccessLevel pairs
+                .ToDictionaryAsync(td => td.ResourceId, td => td.AccessLevel);
+
+            // Return accessible resources with their access levels
+            return accessibleResources;
+        }
+        catch (Exception ex)
+        {
+            // Log failure while retrieving resource access mappings
+            _logger.LogError(
+                ex,
+                "Failed retrieving accessible resources for User {UserId}",
+                userId);
+
+            // Return empty result on failure
+            return new();
+        }
+    }
+
+
+    // Assign creator owner permission after resource creation
+    public async Task<bool> AssignOwnerAsync(
+        Guid userId,
+        Guid resourceId,
+        ResourceTypeEnum resourceType)
+    {
+        try
+        {
+            // Create ownership mapping
+            var resourceShare = new ResourceShare
+            {
+                UserId = userId,
+                ResourceId = resourceId,
+                ResourceType = resourceType,
+                AccessLevel = ResourceAccessTypeEnum.Owner
+            };
+
+            // Insert access mapping
+            await _unitOfWork.ResourceShareRepo.InsertAsync(resourceShare);
+
+            // Persist owner assignment
+            if (!await _unitOfWork.SaveAsync())
+            {
+                _logger.LogWarning(
+                    "Failed assigning owner access. User {UserId}, Resource {ResourceId}",
+                    userId,
+                    resourceId);
+
+                return false;
+            }
+
+            return true;
+        }
+        catch (Exception ex)
+        {
+            // Log unexpected owner assignment failure
+            _logger.LogError(
+                ex,
+                "Unexpected error assigning owner access. Resource {ResourceId}",
+                resourceId);
+
+            return false;
+        }
+    }
+
+
+    // Remove all resource access mappings
+    // associated with a single resource
+    public async Task DeleteResourceSharesAsync(
+        Guid resourceId,
+        ResourceTypeEnum resourceType)
+    {
+        try
+        {
+            // Retrieve resource share records
+            var resourceShares = await _unitOfWork.ResourceShareRepo
+                .GetByConditionAsync(w =>
+                    w.ResourceId == resourceId &&
+                    w.ResourceType == resourceType)
+                .ToListAsync();
+
+            // Skip deletion if none found
+            if (!resourceShares.Any())
+            {
+                _logger.LogInformation("No resource shares found for Resource {ResourceId}", resourceId);
+                return;
+            }
+
+            // Remove access mappings
+            _unitOfWork.ResourceShareRepo.Delete(resourceShares);
+        }
+        catch (Exception ex)
+        {
+            // Log deletion failure
+            _logger.LogError(
+                ex,
+                "Failed deleting resource shares. Resource {ResourceId}",
+                resourceId);
+        }
+    }
+
+
+    // Remove all resource access mappings associated with multiple resources
+    public async Task DeleteResourceSharesAsync(
+        IEnumerable<Guid> resourceIds,
+        ResourceTypeEnum resourceType)
+    {
+        try
+        {
+            // Retrieve all matching resource shares
+            var resourceShares = await _unitOfWork.ResourceShareRepo
+                .GetByConditionAsync(w =>
+                    resourceIds.Contains(w.ResourceId) &&
+                    w.ResourceType == resourceType)
+                .ToListAsync();
+
+            // Skip if no shares exist
+            if (!resourceShares.Any())
+            {
+                _logger.LogInformation("No resource shares found for bulk delete.");
+                return;
+            }
+
+            // Delete resource mappings
+            _unitOfWork.ResourceShareRepo.Delete(resourceShares);
+        }
+        catch (Exception ex)
+        {
+            // Log bulk deletion failure
+            _logger.LogError(
+                ex,
+                "Failed deleting resource share mappings.");
+        }
+    }
 }

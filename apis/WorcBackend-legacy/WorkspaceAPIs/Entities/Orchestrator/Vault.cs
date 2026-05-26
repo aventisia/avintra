@@ -41,4 +41,9 @@ public class Vault : BaseEntity, IMustHaveTenant
     [Required]
     [MaxLength(256)]
     public required string Password { get; set; }
+
+    /// <summary>
+    /// Gets or sets a value indicating whether the vaault is accessible to all users within the tenant.
+    /// </summary>
+    public bool IsTenantWideAccess { get; set; }
 }

@@ -4,13 +4,15 @@ public class QueueTableService : IQueueTableService
 {
     private readonly ILogger<QueueTableService> _logger;
     private readonly IUnitOfWork _unitOfWork;
+    private readonly IResourceShareService _resourceShareService;
     private readonly Guid _userId;
     private readonly Guid _tenantId;
 
     public QueueTableService(
         ILogger<QueueTableService> logger,
         IUnitOfWork unitOfWork,
-        IHttpContextAccessor httpContextAccessor)
+        IHttpContextAccessor httpContextAccessor,
+        IResourceShareService resourceShareService)
     {
         // Set _userId and _tenantId
         _userId = Guid.Parse(httpContextAccessor.HttpContext?.User?.FindFirstValue("uid") ?? Guid.Empty.ToString());
@@ -18,6 +20,7 @@ public class QueueTableService : IQueueTableService
 
         _logger = logger;
         _unitOfWork = unitOfWork;
+        _resourceShareService = resourceShareService;
     }
 
     // Checks the availability of a queue name.
@@ -62,7 +65,7 @@ public class QueueTableService : IQueueTableService
     }
 
     // Fetches all queues with optional filters
-    public async Task<ServiceResponse<IEnumerable<QueuesTableDto>>> GetAllQueuesAsync()
+    public async Task<ServiceResponse<IEnumerable<QueuesTableDto>>> GetAllQueuesAsync(bool isPersonal)
     {
         // Initialize ServiceResponse with failed response
         var serviceResponse = new ServiceResponse<IEnumerable<QueuesTableDto>>
@@ -73,13 +76,46 @@ public class QueueTableService : IQueueTableService
 
         try
         {
-            // Get queues for the current user
-            var queues = await _unitOfWork.QueueRepo
-                .GetAllAsync()
-                .Include(i => i.QueueTransactions)
-                .Include(i => i.CreatedByUser)
-                .OrderByDescending(o => o.CreatedOn)
-                .ToListAsync();
+            // Retrieve queues based on ownership or access permissions
+            List<Queue> queues;
+
+            if (isPersonal)
+            {
+                // Return only queues created by current user
+                queues = await _unitOfWork.QueueRepo
+                    .GetByConditionAsync(w => w.CreatedByUserId == _userId)
+                    .Include(i => i.QueueTransactions)
+                    .Include(i => i.CreatedByUser)
+                    .OrderByDescending(o => o.CreatedOn)
+                    .ToListAsync();
+            }
+            else
+            {
+                // Retrieve queue IDs accessible by current user
+                var accessibleQueueIds = await _resourceShareService.GetAccessibleResourceIdsAsync(
+                    _userId,
+                    ResourceTypeEnum.Queue,
+                    new[]
+                    {
+                        ResourceAccessTypeEnum.Owner,
+                        ResourceAccessTypeEnum.FullAccess,
+                        ResourceAccessTypeEnum.View,
+                        ResourceAccessTypeEnum.Edit,
+                        ResourceAccessTypeEnum.Delete,
+                    }
+                );
+
+                // Retrieve all accessible queues
+                queues = await _unitOfWork.QueueRepo
+                    .GetByConditionAsync(w =>
+                        w.CreatedByUserId == _userId ||
+                        w.IsTenantWideAccess ||
+                        accessibleQueueIds.Contains(w.Id))
+                    .Include(i => i.QueueTransactions)
+                    .Include(i => i.CreatedByUser)
+                    .OrderByDescending(o => o.CreatedOn)
+                    .ToListAsync();
+            }
 
             // Task successful
             serviceResponse.Data = queues.Adapt<IEnumerable<QueuesTableDto>>();
@@ -96,7 +132,7 @@ public class QueueTableService : IQueueTableService
     }
 
     // Searches for queues by name
-    public async Task<ServiceResponse<IEnumerable<QueuesTableDto>>> SearchQueuesAsync(string queueName)
+    public async Task<ServiceResponse<IEnumerable<QueuesTableDto>>> SearchQueuesAsync(string queueName, bool isPersonal)
     {
         // Initialize ServiceResponse with failed response
         var serviceResponse = new ServiceResponse<IEnumerable<QueuesTableDto>>
@@ -107,15 +143,55 @@ public class QueueTableService : IQueueTableService
 
         try
         {
-            // Get queues by the name
-            var queues = await _unitOfWork.QueueRepo
-                .GetByConditionAsync(w => w.Name.ToLower() == queueName.ToLower())
-                .OrderByDescending(o => o.CreatedOn)
-                .ProjectToType<QueuesTableDto>()
-                .ToListAsync();
+            List<Queue> queues;
+
+            if (isPersonal)
+            {
+                // Return only queues created by current user
+                queues = await _unitOfWork.QueueRepo
+                    .GetByConditionAsync(w =>
+                        w.CreatedByUserId == _userId &&
+                        w.Name.ToLower() == queueName.ToLower()
+                    )
+                    .Include(i => i.QueueTransactions)
+                    .Include(i => i.CreatedByUser)
+                    .OrderByDescending(o => o.CreatedOn)
+                    .ToListAsync();
+            }
+            else
+            {
+                // Retrieve queue IDs accessible by current user
+                var accessibleQueueIds = await _resourceShareService.GetAccessibleResourceIdsAsync(
+                    _userId,
+                    ResourceTypeEnum.Queue,
+                    new[]
+                    {
+                        ResourceAccessTypeEnum.Owner,
+                        ResourceAccessTypeEnum.FullAccess,
+                        ResourceAccessTypeEnum.View,
+                        ResourceAccessTypeEnum.Edit,
+                        ResourceAccessTypeEnum.Delete,
+                    }
+                );
+
+                // Retrieve all accessible queues
+                queues = await _unitOfWork.QueueRepo
+                    .GetByConditionAsync(w =>
+                        w.Name.ToLower() == queueName.ToLower() &&
+                        (
+                            w.CreatedByUserId == _userId ||
+                            w.IsTenantWideAccess ||
+                            accessibleQueueIds.Contains(w.Id)
+                        )
+                     )
+                    .Include(i => i.QueueTransactions)
+                    .Include(i => i.CreatedByUser)
+                    .OrderByDescending(o => o.CreatedOn)
+                    .ToListAsync();
+            }
 
             // Task successful
-            serviceResponse.Data = queues;
+            serviceResponse.Data = queues.Adapt<IEnumerable<QueuesTableDto>>();
             serviceResponse.StatusCode = 200;
             serviceResponse.Message = "Queues retrieved successfully";
         }
@@ -150,6 +226,30 @@ public class QueueTableService : IQueueTableService
             if (queue == null)
             {
                 serviceResponse.Message = "Queue not found";
+                return serviceResponse;
+            }
+
+            // Validate view permission
+            var canView = await _resourceShareService.HasAccessAsync(
+                _userId,
+                queue.Id,
+                ResourceTypeEnum.Queue,
+                queue.CreatedByUserId,
+                queue.IsTenantWideAccess,
+                new[]
+                {
+                    ResourceAccessTypeEnum.Owner,
+                    ResourceAccessTypeEnum.FullAccess,
+                    ResourceAccessTypeEnum.View,
+                    ResourceAccessTypeEnum.Edit,
+                    ResourceAccessTypeEnum.Delete,
+                }
+            );
+
+            if (!canView)
+            {
+                _logger.LogWarning("Unauthorized queue access. User {UserId}, Queue {QueueId}", _userId, id);
+                serviceResponse.Message = "You do not have access to this queue.";
                 return serviceResponse;
             }
 
@@ -206,6 +306,14 @@ public class QueueTableService : IQueueTableService
             if (!await _unitOfWork.SaveAsync())
             {
                 _logger.LogInformation("Context SaveChanges failed while creating a new queue");
+                return serviceResponse;
+            }
+
+            // Assign creator ownership
+            if (!await _resourceShareService.AssignOwnerAsync(_userId, newQueue.Id, ResourceTypeEnum.Queue))
+            {
+                _logger.LogWarning("Failed assigning queue ownership. Queue {QueueId}", newQueue.Id);
+                serviceResponse.Message = "Failed assigning ownership.";
                 return serviceResponse;
             }
 
@@ -267,6 +375,28 @@ public class QueueTableService : IQueueTableService
             if (queue == null)
             {
                 serviceResponse.Message = "Queue does not exist";
+                return serviceResponse;
+            }
+
+            // Validate edit permission
+            var canEdit = await _resourceShareService.HasAccessAsync(
+                _userId,
+                queue.Id,
+                ResourceTypeEnum.Queue,
+                queue.CreatedByUserId,
+                false,
+                new[]
+                {
+                    ResourceAccessTypeEnum.Owner,
+                    ResourceAccessTypeEnum.FullAccess,
+                    ResourceAccessTypeEnum.Edit,
+                }
+            );
+
+            if (!canEdit)
+            {
+                _logger.LogWarning("Unauthorized queue update. User {UserId}, Queue {QueueId}", _userId, queue.Id);
+                serviceResponse.Message = "You do not have access to update this queue.";
                 return serviceResponse;
             }
 
@@ -342,6 +472,30 @@ public class QueueTableService : IQueueTableService
                 return serviceResponse;
             }
 
+            // Validate delete permission
+            var canDelete = await _resourceShareService.HasAccessAsync(
+                _userId,
+                queue.Id,
+                ResourceTypeEnum.Queue,
+                queue.CreatedByUserId,
+                false,
+                new[]
+                {
+                    ResourceAccessTypeEnum.Owner,
+                    ResourceAccessTypeEnum.FullAccess,
+                    ResourceAccessTypeEnum.Delete,
+                }
+            );
+
+            if (!canDelete)
+            {
+                serviceResponse.Message = "You do not have access to delete this queue.";
+                return serviceResponse;
+            }
+
+            // Remove access mappings
+            await _resourceShareService.DeleteResourceSharesAsync(queue.Id, ResourceTypeEnum.Queue);
+
             // Delete queue
             _unitOfWork.QueueRepo.Delete(queue);
 
@@ -393,7 +547,36 @@ public class QueueTableService : IQueueTableService
                 return serviceResponse;
             }
 
+            // Validate delete permission for all queues
+            foreach (var queue in queues)
+            {
+                var allowed = await _resourceShareService.HasAccessAsync(
+                    _userId,
+                    queue.Id,
+                    ResourceTypeEnum.Queue,
+                    queue.CreatedByUserId,
+                    false,
+                    new[]
+                    {
+                        ResourceAccessTypeEnum.Owner,
+                        ResourceAccessTypeEnum.FullAccess,
+                        ResourceAccessTypeEnum.Delete,
+                    }
+                );
+
+                if (!allowed)
+                {
+                    serviceResponse.Message =
+                        "You do not have access to delete one or more queues.";
+
+                    return serviceResponse;
+                }
+            }
+
             // TODO: Check queues relationship with other entities
+
+            // Remove access mappings
+            await _resourceShareService.DeleteResourceSharesAsync(queueIds, ResourceTypeEnum.Queue);
 
             // Delete queues
             _unitOfWork.QueueRepo.Delete(queues);

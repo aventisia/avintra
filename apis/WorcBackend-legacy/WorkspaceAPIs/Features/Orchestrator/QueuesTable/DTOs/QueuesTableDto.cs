@@ -91,6 +91,11 @@ public class QueuesTableDto
     public int Total { get; set; }
 
     /// <summary>
+    /// Gets or sets a value indicating whether the queue is accessible to all users within the tenant.
+    /// </summary>
+    public bool IsTenantWideAccess { get; set; }
+
+    /// <summary>
     /// Gets or sets a flag indicating whether the user record is disabled.
     /// </summary>
     /// <remarks>

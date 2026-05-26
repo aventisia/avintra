@@ -33,11 +33,19 @@ public class EmailTriggerController : BaseApiController
         return ResultHelper(await _emailTriggerService.UpdateEmailTriggerAsync(emailTriggerDto));
     }
 
-    // Retrieves a list of all email triggers
+    // Retrieves a list of personal email triggers
     [HttpGet("list")]
-    public async Task<ActionResult<ServiceResponse<IEnumerable<EmailTriggerDto>>>> GetEmailTriggerList()
+    public async Task<ActionResult<ServiceResponse<IEnumerable<EmailTriggerDto>>>> GetPersonalEmailTriggerList()
     {
-        return ResultHelper(await _emailTriggerService.GetEmailTriggerListAsync());
+        return ResultHelper(await _emailTriggerService.GetEmailTriggerListAsync(true));
+    }
+
+
+    // Retrieves a list of shared email triggers
+    [HttpGet("list/shared")]
+    public async Task<ActionResult<ServiceResponse<IEnumerable<EmailTriggerDto>>>> GetSharedEmailTriggerList()
+    {
+        return ResultHelper(await _emailTriggerService.GetEmailTriggerListAsync(false));
     }
 
     // Retrieves email trigger details by ID

@@ -21,9 +21,16 @@ public class KeyStoreController : BaseApiController
 
     // Get a list of key stores
     [HttpGet("list")]
-    public async Task<ActionResult<ServiceResponse<IEnumerable<KeyStoreDto>>>> GetKeyStoresAsync()
+    public async Task<ActionResult<ServiceResponse<IEnumerable<KeyStoreDto>>>> GetPersonalKeyStoresAsync()
     {
-        return ResultHelper(await _keyStoreService.GetKeyStoresAsync());
+        return ResultHelper(await _keyStoreService.GetKeyStoresAsync(true));
+    }
+
+    // Get a list of shared key stores
+    [HttpGet("list/shared")]
+    public async Task<ActionResult<ServiceResponse<IEnumerable<KeyStoreDto>>>> GetSharedKeyStoresAsync()
+    {
+        return ResultHelper(await _keyStoreService.GetKeyStoresAsync(false));
     }
 
     // Get a specific key store by ID

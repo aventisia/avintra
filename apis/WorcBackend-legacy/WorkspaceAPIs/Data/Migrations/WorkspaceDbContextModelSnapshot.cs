@@ -215,6 +215,9 @@ namespace WorkspaceAPIs.Data.Migrations
                     b.Property<bool>("IsDisabled")
                         .HasColumnType("boolean");
 
+                    b.Property<bool>("IsTenantWideAccess")
+                        .HasColumnType("boolean");
+
                     b.Property<Guid>("LastModifiedByUserId")
                         .HasColumnType("uuid");
 
@@ -637,6 +640,9 @@ namespace WorkspaceAPIs.Data.Migrations
                     b.Property<bool>("IsEncrypted")
                         .HasColumnType("boolean");
 
+                    b.Property<bool>("IsTenantWideAccess")
+                        .HasColumnType("boolean");
+
                     b.Property<Guid>("LastModifiedByUserId")
                         .HasColumnType("uuid");
 
@@ -707,6 +713,9 @@ namespace WorkspaceAPIs.Data.Migrations
                         .HasColumnType("character varying(255)");
 
                     b.Property<bool>("IsDisabled")
+                        .HasColumnType("boolean");
+
+                    b.Property<bool>("IsTenantWideAccess")
                         .HasColumnType("boolean");
 
                     b.Property<Guid>("LastModifiedByUserId")
@@ -1300,6 +1309,9 @@ namespace WorkspaceAPIs.Data.Migrations
                     b.Property<bool>("IsStoredEncrypted")
                         .HasColumnType("boolean");
 
+                    b.Property<bool>("IsTenantWideAccess")
+                        .HasColumnType("boolean");
+
                     b.Property<bool>("IsUniqueReferencesEnforced")
                         .HasColumnType("boolean");
 
@@ -1768,6 +1780,9 @@ namespace WorkspaceAPIs.Data.Migrations
                     b.Property<bool>("IsDisabled")
                         .HasColumnType("boolean");
 
+                    b.Property<bool>("IsTenantWideAccess")
+                        .HasColumnType("boolean");
+
                     b.Property<Guid>("LastModifiedByUserId")
                         .HasColumnType("uuid");
 
@@ -1876,6 +1891,9 @@ namespace WorkspaceAPIs.Data.Migrations
                     b.Property<bool>("IsDisabled")
                         .HasColumnType("boolean");
 
+                    b.Property<bool>("IsTenantWideAccess")
+                        .HasColumnType("boolean");
+
                     b.Property<Guid>("LastModifiedByUserId")
                         .HasColumnType("uuid");
 
@@ -1982,6 +2000,9 @@ namespace WorkspaceAPIs.Data.Migrations
                         .HasColumnType("character varying(500)");
 
                     b.Property<bool>("IsDisabled")
+                        .HasColumnType("boolean");
+
+                    b.Property<bool>("IsTenantWideAccess")
                         .HasColumnType("boolean");
 
                     b.Property<Guid>("LastModifiedByUserId")

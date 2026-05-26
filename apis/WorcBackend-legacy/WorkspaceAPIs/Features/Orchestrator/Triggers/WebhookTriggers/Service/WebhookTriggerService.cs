@@ -6,21 +6,24 @@ public class WebhookTriggerService : IWebhookTriggerService
     private readonly IUnitOfWork _unitOfWork;
     private readonly Guid _userId;
     private readonly EnvironmentConfig _environmentConfig;
+    private readonly IResourceShareService _resourceShareService;
 
     public WebhookTriggerService(
         ILogger<WebhookTriggerService> logger,
         IUnitOfWork unitOfWork,
         IHttpContextAccessor httpContextAccessor,
-        EnvironmentConfig environmentConfig)
+        EnvironmentConfig environmentConfig,
+        IResourceShareService resourceShareService)
     {
         _logger = logger;
         _unitOfWork = unitOfWork;
         _userId = Guid.Parse(httpContextAccessor.HttpContext?.User?.FindFirstValue("uid") ?? Guid.Empty.ToString());
         _environmentConfig = environmentConfig;
+        _resourceShareService = resourceShareService;
     }
 
     // Retrieves all webhook triggers.
-    public async Task<ServiceResponse<IEnumerable<WebhookTriggerDto>>> GetWebhookTriggerListAsync()
+    public async Task<ServiceResponse<IEnumerable<WebhookTriggerDto>>> GetWebhookTriggerListAsync(bool isPersonal)
     {
         var serviceResponse = new ServiceResponse<IEnumerable<WebhookTriggerDto>>
         {
@@ -30,16 +33,55 @@ public class WebhookTriggerService : IWebhookTriggerService
 
         try
         {
-            var triggers = await _unitOfWork.TriggerRepo
-                .GetByConditionAsync(w => w.TriggerType == TriggerTypesEnum.WebhookTrigger)
-                .OrderByDescending(o => o.CreatedOn)
-                .Include(i => i.CreatedByUser)
-                .Include(i => i.LastModifiedByUser)
-                .Include(i => i.TriggerFlowVersions)
-                    .ThenInclude(i2 => i2.FlowVersion)
-                        .ThenInclude(i3 => i3.Flow)
-                .AsNoTracking()
-                .ToListAsync();
+            List<Trigger> triggers;
+
+            if (isPersonal)
+            {
+                // Retrieve only owned webhook triggers
+                triggers = await _unitOfWork.TriggerRepo
+                    .GetByConditionAsync(w =>
+                        w.TriggerType == TriggerTypesEnum.WebhookTrigger &&
+                        w.CreatedByUserId == _userId)
+                    .OrderByDescending(o => o.CreatedOn)
+                    .Include(i => i.CreatedByUser)
+                    .Include(i => i.LastModifiedByUser)
+                    .Include(i => i.TriggerFlowVersions)
+                        .ThenInclude(i2 => i2.FlowVersion)
+                            .ThenInclude(i3 => i3.Flow)
+                    .AsNoTracking()
+                    .ToListAsync();
+            }
+            else
+            {
+                // Retrieve accessible trigger IDs
+                var accessibleTriggerIds = await _resourceShareService.GetAccessibleResourceIdsAsync(
+                    _userId,
+                    ResourceTypeEnum.Trigger,
+                    new[]
+                    {
+                        ResourceAccessTypeEnum.Owner,
+                        ResourceAccessTypeEnum.FullAccess,
+                        ResourceAccessTypeEnum.View,
+                        ResourceAccessTypeEnum.Edit,
+                        ResourceAccessTypeEnum.Delete,
+                    }
+                );
+
+                // Retrieve accessible webhook triggers
+                triggers = await _unitOfWork.TriggerRepo
+                    .GetByConditionAsync(w =>
+                        w.TriggerType == TriggerTypesEnum.WebhookTrigger &&
+                        w.IsTenantWideAccess &&
+                        accessibleTriggerIds.Contains(w.Id))
+                    .OrderByDescending(o => o.CreatedOn)
+                    .Include(i => i.CreatedByUser)
+                    .Include(i => i.LastModifiedByUser)
+                    .Include(i => i.TriggerFlowVersions)
+                        .ThenInclude(i2 => i2.FlowVersion)
+                            .ThenInclude(i3 => i3.Flow)
+                    .AsNoTracking()
+                    .ToListAsync();
+            }
 
             var dtos = triggers.Adapt<IEnumerable<WebhookTriggerDto>>();
 
@@ -83,6 +125,29 @@ public class WebhookTriggerService : IWebhookTriggerService
             if (trigger == null)
             {
                 serviceResponse.Message = "Webhook trigger does not exist";
+                return serviceResponse;
+            }
+
+            // Validate view permission
+            var canView = await _resourceShareService.HasAccessAsync(
+                    _userId,
+                    trigger.Id,
+                    ResourceTypeEnum.Trigger,
+                    trigger.CreatedByUserId,
+                    trigger.IsTenantWideAccess,
+                    new[]
+                    {
+                        ResourceAccessTypeEnum.Owner,
+                        ResourceAccessTypeEnum.FullAccess,
+                        ResourceAccessTypeEnum.View,
+                        ResourceAccessTypeEnum.Edit,
+                        ResourceAccessTypeEnum.Delete,
+                    }
+                );
+
+            if (!canView)
+            {
+                serviceResponse.Message = "You do not have access to view this webhook trigger.";
                 return serviceResponse;
             }
 
@@ -152,6 +217,13 @@ public class WebhookTriggerService : IWebhookTriggerService
             if (!await _unitOfWork.SaveAsync())
             {
                 _logger.LogError("Database save failed while creating webhook trigger '{Name}'.", dto.Name);
+                return serviceResponse;
+            }
+
+            // Assign ownership
+            if (!await _resourceShareService.AssignOwnerAsync(_userId, newTrigger.Id, ResourceTypeEnum.Trigger))
+            {
+                serviceResponse.Message = "Failed assigning ownership.";
                 return serviceResponse;
             }
 
@@ -234,6 +306,27 @@ public class WebhookTriggerService : IWebhookTriggerService
             if (trigger == null)
             {
                 serviceResponse.Message = "Webhook trigger does not exist";
+                return serviceResponse;
+            }
+
+            // Validate edit permission
+            var canEdit = await _resourceShareService.HasAccessAsync(
+                _userId,
+                trigger.Id,
+                ResourceTypeEnum.Trigger,
+                trigger.CreatedByUserId,
+                false,
+                new[]
+                {
+                    ResourceAccessTypeEnum.Owner,
+                    ResourceAccessTypeEnum.FullAccess,
+                    ResourceAccessTypeEnum.Edit,
+                }
+            );
+
+            if (!canEdit)
+            {
+                serviceResponse.Message = "You do not have access to update this webhook trigger.";
                 return serviceResponse;
             }
 
@@ -397,6 +490,33 @@ public class WebhookTriggerService : IWebhookTriggerService
                 return serviceResponse;
             }
 
+            // Validate delete permission
+            var canDelete = await _resourceShareService.HasAccessAsync(
+                _userId,
+                trigger.Id,
+                ResourceTypeEnum.Trigger,
+                trigger.CreatedByUserId,
+                false,
+                new[]
+                {
+                    ResourceAccessTypeEnum.Owner,
+                    ResourceAccessTypeEnum.FullAccess,
+                    ResourceAccessTypeEnum.Delete,
+                }
+            );
+
+            if (!canDelete)
+            {
+                serviceResponse.Message = "You do not have access to delete this webhook trigger.";
+                return serviceResponse;
+            }
+
+            // Remove resource shares
+            await _resourceShareService
+                .DeleteResourceSharesAsync(
+                    trigger.Id,
+                    ResourceTypeEnum.Trigger);
+
             _unitOfWork.TriggerRepo.Delete(trigger);
             if (!await _unitOfWork.SaveAsync())
             {
@@ -436,6 +556,32 @@ public class WebhookTriggerService : IWebhookTriggerService
                 serviceResponse.Message = "Webhook triggers not found";
                 return serviceResponse;
             }
+
+            foreach (var trigger in triggers)
+            {
+                var allowed = await _resourceShareService.HasAccessAsync(
+                    _userId,
+                    trigger.Id,
+                    ResourceTypeEnum.Trigger,
+                    trigger.CreatedByUserId,
+                    false,
+                    new[]
+                    {
+                        ResourceAccessTypeEnum.Owner,
+                        ResourceAccessTypeEnum.FullAccess,
+                        ResourceAccessTypeEnum.Delete,
+                    }
+                );
+
+                if (!allowed)
+                {
+                    serviceResponse.Message = "You do not have access to delete one or more webhook triggers.";
+                    return serviceResponse;
+                }
+            }
+
+            // Remove access mappings
+            await _resourceShareService.DeleteResourceSharesAsync(triggerIds, ResourceTypeEnum.Trigger);
 
             _unitOfWork.TriggerRepo.Delete(triggers);
             if (!await _unitOfWork.SaveAsync())
@@ -511,6 +657,27 @@ public class WebhookTriggerService : IWebhookTriggerService
             if (trigger == null)
             {
                 serviceResponse.Message = "Webhook trigger does not exist";
+                return serviceResponse;
+            }
+
+            // Validate edit permission
+            var canEdit = await _resourceShareService.HasAccessAsync(
+                _userId,
+                trigger.Id,
+                ResourceTypeEnum.Trigger,
+                trigger.CreatedByUserId,
+                false,
+                new[]
+                {
+                    ResourceAccessTypeEnum.Owner,
+                    ResourceAccessTypeEnum.FullAccess,
+                    ResourceAccessTypeEnum.Edit,
+                }
+            );
+
+            if (!canEdit)
+            {
+                serviceResponse.Message = "You do not have access to generate api key this webhook trigger.";
                 return serviceResponse;
             }
 

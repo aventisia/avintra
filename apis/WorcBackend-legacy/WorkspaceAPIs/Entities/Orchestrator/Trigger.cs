@@ -35,6 +35,11 @@ public class Trigger : BaseEntity, IMustHaveTenant
     public required JsonDocument Metadata { get; set; }
 
     /// <summary>
+    /// Gets or sets a value indicating whether the trigger is accessible to all users within the tenant.
+    /// </summary>
+    public bool IsTenantWideAccess { get; set; }
+
+    /// <summary>
     /// Collection of flow versions associated with this trigger.
     /// Represents the workflows that are executed when the trigger fires.
     /// </summary>

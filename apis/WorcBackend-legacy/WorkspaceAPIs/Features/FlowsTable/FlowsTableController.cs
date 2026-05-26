@@ -14,9 +14,16 @@ public class FlowsTableController : BaseApiController
 
     // Retrieves all flows created by the user.
     [HttpGet("list")]
-    public async Task<ActionResult<ServiceResponse<IEnumerable<FlowsTableDto>>>> GetFlows()
+    public async Task<ActionResult<ServiceResponse<IEnumerable<FlowsTableDto>>>> GetPersonalFlows()
     {
-        return ResultHelper(await _flowsTableService.GetFlowsAsync());
+        return ResultHelper(await _flowsTableService.GetFlowsAsync(true));
+    }
+
+    // Retrieves all shared flows.
+    [HttpGet("list/shared")]
+    public async Task<ActionResult<ServiceResponse<IEnumerable<FlowsTableDto>>>> GetSharedFlows()
+    {
+        return ResultHelper(await _flowsTableService.GetFlowsAsync(false));
     }
 
     // Checks the availability of a flow name.

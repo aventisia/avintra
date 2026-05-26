@@ -61,6 +61,11 @@ public class KnowledgeBaseDto
     public string? VectorStoreConfig { get; set; }
 
     /// <summary>
+    /// Gets or sets a value indicating whether the knowledge base is accessible to all users within the tenant.
+    /// </summary>
+    public bool IsTenantWideAccess { get; set; }
+
+    /// <summary>
     /// Gets or sets a flag indicating whether the Knowledge Base record is disabled.
     /// </summary>
     public bool? IsDisabled { get; set; }

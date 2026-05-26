@@ -8,8 +8,9 @@ public interface IEmailTriggerService
     /// <summary>
     /// Retrieves a list of all email triggers.
     /// </summary>
+    /// <param name="isPersonal"> If <c>true</c>, returns only personal email triggers. If <c>false</c>, returns only shared email triggers. </param>
     /// <returns>A service response containing a collection of email triggers.</returns>
-    Task<ServiceResponse<IEnumerable<EmailTriggerDto>>> GetEmailTriggerListAsync();
+    Task<ServiceResponse<IEnumerable<EmailTriggerDto>>> GetEmailTriggerListAsync(bool isPersonal);
 
     /// <summary>
     /// Retrieves the details of a specific email trigger.

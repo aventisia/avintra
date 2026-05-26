@@ -9,7 +9,10 @@ public class EmailTriggerService : IEmailTriggerService
     private readonly EnvironmentConfig _environmentConfig;
     private readonly IJobsExecutorService _jobsExecutorService;
     private readonly WorkspaceInternalDbContext _workspaceInternalDbContext;
+    private readonly IResourceShareService _resourceShareService;
     private const int OUTLOOK_EXPIRY_MINUTES = 10080;
+
+    public IResourceShareService ResourceShareService => _resourceShareService;
 
     public EmailTriggerService(
         ILogger<EmailTriggerService> logger,
@@ -18,7 +21,8 @@ public class EmailTriggerService : IEmailTriggerService
         IStringEncryptionService stringEncryptionService,
         EnvironmentConfig environmentConfig,
         IJobsExecutorService jobsExecutorService,
-        WorkspaceInternalDbContext workspaceInternalDbContext)
+        WorkspaceInternalDbContext workspaceInternalDbContext,
+        IResourceShareService resourceShareService)
     {
         _logger = logger;
         _unitOfWork = unitOfWork;
@@ -29,10 +33,11 @@ public class EmailTriggerService : IEmailTriggerService
         _environmentConfig = environmentConfig;
         _jobsExecutorService = jobsExecutorService;
         _workspaceInternalDbContext = workspaceInternalDbContext;
+        _resourceShareService = resourceShareService;
     }
 
     // Retrieves all email triggers.
-    public async Task<ServiceResponse<IEnumerable<EmailTriggerDto>>> GetEmailTriggerListAsync()
+    public async Task<ServiceResponse<IEnumerable<EmailTriggerDto>>> GetEmailTriggerListAsync(bool isPersonal)
     {
         // Initialize response with failure defaults
         var serviceResponse = new ServiceResponse<IEnumerable<EmailTriggerDto>>
@@ -43,17 +48,58 @@ public class EmailTriggerService : IEmailTriggerService
 
         try
         {
-            // Fetch all email triggers ordered by creation date (latest first)
-            var emailTriggers = await _unitOfWork.TriggerRepo
-                .GetByConditionAsync(w => w.TriggerType == TriggerTypesEnum.EmailTrigger)
-                .OrderByDescending(o => o.CreatedOn)
-                .Include(i => i.CreatedByUser)
-                .Include(i => i.LastModifiedByUser)
-                .Include(i => i.TriggerFlowVersions)
-                    .ThenInclude(i2 => i2.FlowVersion)
-                        .ThenInclude(i3 => i3.Flow)
-                .AsNoTracking()
-                .ToListAsync();
+            // Retrieve email triggers based on ownership / shared access
+            List<Trigger> emailTriggers;
+
+            // Personal mode → only current user's triggers
+            if (isPersonal)
+            {
+                emailTriggers = await _unitOfWork.TriggerRepo
+                    .GetByConditionAsync(w =>
+                        w.TriggerType == TriggerTypesEnum.EmailTrigger &&
+                        w.CreatedByUserId == _userId)
+                    .OrderByDescending(o => o.CreatedOn)
+                    .Include(i => i.CreatedByUser)
+                    .Include(i => i.LastModifiedByUser)
+                    .Include(i => i.TriggerFlowVersions)
+                        .ThenInclude(i2 => i2.FlowVersion)
+                            .ThenInclude(i3 => i3.Flow)
+                    .AsNoTracking()
+                    .ToListAsync();
+            }
+            else
+            {
+                // Retrieve all trigger resource IDs that the current user can access
+                var triggerIds = await _resourceShareService.GetAccessibleResourceIdsAsync(
+                    _userId,
+                    ResourceTypeEnum.Trigger,
+                    new[]
+                    {
+                        ResourceAccessTypeEnum.Owner,
+                        ResourceAccessTypeEnum.FullAccess,
+                        ResourceAccessTypeEnum.View,
+                        ResourceAccessTypeEnum.Edit,
+                        ResourceAccessTypeEnum.Delete,
+                    }
+                );
+
+                // Retrieve shared and owned email triggers
+                emailTriggers = await _unitOfWork.TriggerRepo
+                    .GetByConditionAsync(w =>
+                        w.TriggerType == TriggerTypesEnum.EmailTrigger &&
+                        (
+                            w.IsTenantWideAccess || triggerIds.Contains(w.Id)
+                        )
+                    )
+                    .OrderByDescending(o => o.CreatedOn)
+                    .Include(i => i.CreatedByUser)
+                    .Include(i => i.LastModifiedByUser)
+                    .Include(i => i.TriggerFlowVersions)
+                        .ThenInclude(i2 => i2.FlowVersion)
+                            .ThenInclude(i3 => i3.Flow)
+                    .AsNoTracking()
+                    .ToListAsync();
+            }
 
             // Map entities to DTOs for client response
             serviceResponse.Data = emailTriggers.Adapt<IEnumerable<EmailTriggerDto>>();
@@ -98,6 +144,30 @@ public class EmailTriggerService : IEmailTriggerService
                 _logger.LogInformation("Email trigger with ID {EmailTriggerId} does not exist.", emailTriggerId);
                 serviceResponse.Message = "Email trigger does not exist";
                 return serviceResponse; // Return early if not found
+            }
+
+            // Verify current user has permission to view this trigger
+            var canView = await _resourceShareService.HasAccessAsync(
+                _userId,
+                emailTrigger.Id,
+                ResourceTypeEnum.Trigger,
+                emailTrigger.CreatedByUserId,
+                emailTrigger.IsTenantWideAccess,
+                new[]
+                {
+                    ResourceAccessTypeEnum.Owner,
+                    ResourceAccessTypeEnum.FullAccess,
+                    ResourceAccessTypeEnum.View,
+                    ResourceAccessTypeEnum.Edit,
+                    ResourceAccessTypeEnum.Delete,
+                }
+            );
+
+            if (!canView)
+            {
+                _logger.LogInformation("User {UserId} attempted unauthorized access to email trigger {TriggerId}.", _userId, emailTriggerId);
+                serviceResponse.Message = "You do not have access to view this email trigger.";
+                return serviceResponse;
             }
 
             // Map entity to DTO
@@ -201,6 +271,14 @@ public class EmailTriggerService : IEmailTriggerService
                 return serviceResponse;
             }
 
+            // Assign ownership of the newly created trigger to current user
+            if (!await _resourceShareService.AssignOwnerAsync(_userId, newEmailTrigger.Id, ResourceTypeEnum.Trigger))
+            {
+                _logger.LogError("Failed assigning owner permissions for email trigger {TriggerId}.", newEmailTrigger.Id);
+                serviceResponse.Message = "Failed assigning ownership.";
+                return serviceResponse;
+            }
+
             // Retrieve all agents from the database that are linked to the provided email trigger DTO.
             // Only include agents whose IDs are in emailTriggerDto.Agents and are marked as published.
             var agentIds = emailTriggerDto.Agents?
@@ -283,6 +361,28 @@ public class EmailTriggerService : IEmailTriggerService
                 _logger.LogInformation("Update failed. Email trigger with ID {EmailTriggerId} does not exist.", emailTriggerDto.Id);
                 serviceResponse.Message = "Email trigger does not exist";
                 return serviceResponse; // Early return
+            }
+
+            // Validate current user has permission to update this trigger
+            var canEdit = await _resourceShareService.HasAccessAsync(
+                _userId,
+                emailTrigger.Id,
+                ResourceTypeEnum.Trigger,
+                emailTrigger.CreatedByUserId,
+                false,
+                new[]
+                {
+                    ResourceAccessTypeEnum.Owner,
+                    ResourceAccessTypeEnum.FullAccess,
+                    ResourceAccessTypeEnum.Edit,
+                }
+            );
+
+            if (!canEdit)
+            {
+                _logger.LogInformation("User {UserId} attempted unauthorized update of email trigger {TriggerId}.", _userId, emailTrigger.Id);
+                serviceResponse.Message = "You do not have access to update this email trigger.";
+                return serviceResponse;
             }
 
             // Check for duplicate name among other triggers
@@ -542,6 +642,31 @@ public class EmailTriggerService : IEmailTriggerService
                 return serviceResponse;
             }
 
+            // Validate current user has permission to delete this trigger
+            var canDelete = await _resourceShareService.HasAccessAsync(
+                _userId,
+                emailTrigger.Id,
+                ResourceTypeEnum.Trigger,
+                emailTrigger.CreatedByUserId,
+                false,
+                new[]
+                {
+                    ResourceAccessTypeEnum.Owner,
+                    ResourceAccessTypeEnum.FullAccess,
+                    ResourceAccessTypeEnum.Delete,
+                }
+            );
+
+            if (!canDelete)
+            {
+                _logger.LogInformation("User {UserId} attempted unauthorized deletion of email trigger {TriggerId}.", _userId, emailTriggerId);
+                serviceResponse.Message = "You do not have access to delete this email trigger.";
+                return serviceResponse;
+            }
+
+            // Remove resource share mappings before deleting trigger
+            await _resourceShareService.DeleteResourceSharesAsync(emailTrigger.Id, ResourceTypeEnum.Trigger);
+
             // Delete entity
             _unitOfWork.TriggerRepo.Delete(emailTrigger);
 
@@ -619,6 +744,34 @@ public class EmailTriggerService : IEmailTriggerService
                     }
                 }
             }
+
+            // Validate delete access for all triggers
+            foreach (var trigger in emailTriggers)
+            {
+                var allowed = await _resourceShareService.HasAccessAsync(
+                    _userId,
+                    trigger.Id,
+                    ResourceTypeEnum.Trigger,
+                    trigger.CreatedByUserId,
+                    false,
+                    new[]
+                    {
+                        ResourceAccessTypeEnum.Owner,
+                        ResourceAccessTypeEnum.FullAccess,
+                        ResourceAccessTypeEnum.Delete,
+                    }
+                );
+
+                if (!allowed)
+                {
+                    _logger.LogInformation("User {UserId} attempted unauthorized bulk deletion.", _userId);
+                    serviceResponse.Message = "You do not have access to delete one or more email triggers.";
+                    return serviceResponse;
+                }
+            }
+
+            // Remove all resource share mappings before deleting triggers
+            await _resourceShareService.DeleteResourceSharesAsync(emailTriggerIds, ResourceTypeEnum.Trigger);
 
             // Delete triggers
             _unitOfWork.TriggerRepo.Delete(emailTriggers);

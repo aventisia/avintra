@@ -6,13 +6,13 @@ public class AppSecretService : IAppSecretService
     private readonly ILogger<AppSecretService> _logger;
     private readonly IStringEncryptionService _encryptionService;
     private readonly Guid _userId;
-
+    private readonly IResourceShareService _resourceShareService;
     public AppSecretService(
         IUnitOfWork unitOfWork,
         ILogger<AppSecretService> logger, IHttpContextAccessor
         httpContextAccessor,
         IStringEncryptionService encryptionService
-    )
+, IResourceShareService resourceShareService)
     {
         _unitOfWork = unitOfWork;
         _logger = logger;
@@ -20,6 +20,7 @@ public class AppSecretService : IAppSecretService
 
         // Extract user ID from the HTTP context, if available
         _userId = Guid.Parse(httpContextAccessor.HttpContext?.User?.FindFirstValue("uid") ?? Guid.Empty.ToString());
+        _resourceShareService = resourceShareService;
     }
 
     // Retrieve all vault credentials
@@ -34,40 +35,55 @@ public class AppSecretService : IAppSecretService
 
         try
         {
-            List<AppSecret>? appSecrets = null;
+            List<AppSecret>? appSecrets;
+            Dictionary<Guid, ResourceAccessTypeEnum>? resourceAccess = new();
+
             if (isPersonal)
             {
+                // Retrieve user's personal app secrets
                 appSecrets = await _unitOfWork.AppSecretRepo
-                .GetByConditionAsync(w => w.CreatedByUserId == _userId)
-                .OrderByDescending(w => w.CreatedOn)
-                .Include(i => i.CreatedByUser)
-                .ToListAsync();
+                    .GetByConditionAsync(w => w.CreatedByUserId == _userId)
+                    .OrderByDescending(w => w.CreatedOn)
+                    .Include(i => i.CreatedByUser)
+                    .ToListAsync();
             }
             else
             {
-                var appSecretIds = await _unitOfWork.ResourceShareRepo
-                    .GetByConditionAsync(w =>
-                        w.UserId == _userId &&
-                        w.ResourceType == ResourceTypeEnum.AppSecret &&
-                        (
-                            w.AccessLevel == ResourceAccessTypeEnum.View ||
-                            w.AccessLevel == ResourceAccessTypeEnum.FullAccess
-                        )
-                    )
-                    .Select(s => s.ResourceId)
-                    .ToListAsync();
+                // Retrieve accessible resource ids with access levels
+                resourceAccess = await _resourceShareService.GetAccessibleResourcesWithAccessAsync(
+                    _userId,
+                    ResourceTypeEnum.AppSecret,
+                    new[]
+                    {
+                        ResourceAccessTypeEnum.FullAccess,
+                        ResourceAccessTypeEnum.Owner,
+                        ResourceAccessTypeEnum.View,
+                        ResourceAccessTypeEnum.Edit,
+                        ResourceAccessTypeEnum.Delete
+                    }
+                );
 
+                // Retrieve tenant-wide and shared app secrets
                 appSecrets = await _unitOfWork.AppSecretRepo
                     .GetByConditionAsync(w =>
                         w.IsTenantWideAccess ||
-                        appSecretIds.Contains(w.Id))
+                        resourceAccess.Keys.Contains(w.Id))
                     .OrderByDescending(w => w.CreatedOn)
                     .Include(i => i.CreatedByUser)
                     .ToListAsync();
             }
 
+            var appSecretData = appSecrets.Adapt<IEnumerable<AppSecretDto>>().ToList();
+            appSecretData.ForEach(appSecret =>
+            {
+                if (isPersonal)
+                    appSecret.AccessLevel = ResourceAccessTypeEnum.Owner;
+                else
+                    appSecret.AccessLevel = resourceAccess.GetValueOrDefault(appSecret.Id, ResourceAccessTypeEnum.View);
+            });
+
             // Adapt the data to the DTO format and assign to service response
-            serviceResponse.Data = appSecrets.Adapt<IEnumerable<AppSecretDto>>();
+            serviceResponse.Data = appSecretData;
             serviceResponse.StatusCode = 200;
             serviceResponse.Message = "Credentials fetched successfully.";
 
@@ -147,32 +163,27 @@ public class AppSecretService : IAppSecretService
 
         try
         {
+            // Use ResourceShareService
+            var accessibleSecretIds = await _resourceShareService.GetAccessibleResourceIdsAsync(
+                _userId,
+                ResourceTypeEnum.AppSecret,
+                new[]
+                {
+                    ResourceAccessTypeEnum.Owner,
+                    ResourceAccessTypeEnum.FullAccess,
+                    ResourceAccessTypeEnum.View,
+                    ResourceAccessTypeEnum.Edit,
+                    ResourceAccessTypeEnum.Delete,
+                }
+            );
+
             // Attempt to fetch the selectable credential options from the repository
-            var appSecrets = await _unitOfWork.AppSecretRepo
-                .GetByConditionAsync(w => !type.HasValue || w.Type == type)
-                .ToListAsync();
-
-            // Get all resource shares for current user
-            var userAccesses = await _unitOfWork.ResourceShareRepo
+            var accessibleSecrets = await _unitOfWork.AppSecretRepo
                 .GetByConditionAsync(w =>
-                    w.UserId == _userId &&
-                    w.ResourceType == ResourceTypeEnum.AppSecret)
+                    (!type.HasValue || w.Type == type) &&
+                    (w.IsTenantWideAccess || w.CreatedByUserId == _userId || accessibleSecretIds.Contains(w.Id))
+                )
                 .ToListAsync();
-
-            // Build a lookup for faster permission checks
-            var accessLookup = userAccesses
-                .ToDictionary(x => x.ResourceId, x => x.AccessLevel);
-
-            // Filter credentials: user is creator or has Owner/FullAccess/View
-            var accessibleSecrets = appSecrets
-                .Where(w =>
-                    w.CreatedByUserId == _userId ||
-                    w.IsTenantWideAccess ||
-                    (accessLookup.TryGetValue(w.Id, out var access) &&
-                     access is ResourceAccessTypeEnum.Owner
-                            or ResourceAccessTypeEnum.FullAccess
-                            or ResourceAccessTypeEnum.View))
-                .ToList();
 
             // Assign the options to the service response
             serviceResponse.Data = accessibleSecrets.Adapt<IEnumerable<SelectOptionDto>>();
@@ -215,32 +226,28 @@ public class AppSecretService : IAppSecretService
                 return serviceResponse;
             }
 
-            // Retrieve user's access mapping
-            var resourceShare = await _unitOfWork.ResourceShareRepo
-                .GetByConditionAsync(w =>
-                    w.UserId == _userId &&
-                    w.ResourceId == appSecretId &&
-                    w.ResourceType == ResourceTypeEnum.AppSecret)
-                .FirstOrDefaultAsync();
 
-            // Verify the user is the creator or has read permissions
-            var canView =
-                appSecret.CreatedByUserId == _userId ||
-                resourceShare?.AccessLevel is
-                    ResourceAccessTypeEnum.Owner or
-                    ResourceAccessTypeEnum.FullAccess or
-                    ResourceAccessTypeEnum.View;
+            // Validate decrypt/view access
+            var canView = await _resourceShareService.HasAccessAsync(
+                _userId,
+                appSecret.Id,
+                ResourceTypeEnum.KeyStore,
+                appSecret.CreatedByUserId,
+                appSecret.IsTenantWideAccess,
+                new[]
+                {
+                    ResourceAccessTypeEnum.Owner,
+                    ResourceAccessTypeEnum.FullAccess,
+                    ResourceAccessTypeEnum.View,
+                    ResourceAccessTypeEnum.Edit,
+                    ResourceAccessTypeEnum.Delete,
+                }
+            );
 
             if (!canView)
             {
-                _logger.LogWarning(
-                    "User {UserId} is not authorized to view credential ID: {AppSecretId}",
-                    _userId,
-                    appSecretId);
-
-                serviceResponse.Message =
-                    "You do not have permission to view this credential.";
-
+                _logger.LogWarning("User {UserId} is not authorized to view credential ID: {AppSecretId}", _userId, appSecretId);
+                serviceResponse.Message = "You do not have permission to view this credential.";
                 return serviceResponse;
             }
 
@@ -337,21 +344,10 @@ public class AppSecretService : IAppSecretService
                 return serviceResponse;
             }
 
-            // Grant the creator ownership access to the newly created app secret
-            var resourceShare = new ResourceShare()
+            // Assign ownership
+            if (!await _resourceShareService.AssignOwnerAsync(_userId, newAppSecret.Id, ResourceTypeEnum.AppSecret))
             {
-                UserId = _userId,
-                ResourceId = newAppSecret.Id,
-                ResourceType = ResourceTypeEnum.AppSecret,
-                AccessLevel = ResourceAccessTypeEnum.Owner
-            };
-
-            // Save the ownership mapping for access control
-            await _unitOfWork.ResourceShareRepo.InsertAsync(resourceShare);
-
-            // Persist the ownership assignment
-            if (!await _unitOfWork.SaveAsync())
-            {
+                serviceResponse.Message = "Failed assigning ownership.";
                 _logger.LogError("Failed to assign owner access for Credential ID: {AppSecretId}", appSecretDto.Id);
                 return serviceResponse;
             }
@@ -400,32 +396,25 @@ public class AppSecretService : IAppSecretService
                 return serviceResponse;
             }
 
-            // Retrieve user's access mapping for this credential
-            var resourceShare = await _unitOfWork.ResourceShareRepo
-                .GetByConditionAsync(w =>
-                    w.UserId == _userId &&
-                    w.ResourceId == appSecretDto.Id &&
-                    w.ResourceType == ResourceTypeEnum.AppSecret)
-                .FirstOrDefaultAsync();
-
-            // Verify the user is the creator or has edit permissions
-            var canEdit =
-                existingAppSecret.CreatedByUserId == _userId ||
-                resourceShare?.AccessLevel is
-                    ResourceAccessTypeEnum.Owner or
-                    ResourceAccessTypeEnum.FullAccess or
-                    ResourceAccessTypeEnum.Edit;
+            // Validate update access
+            var canEdit = await _resourceShareService.HasAccessAsync(
+                _userId,
+                existingAppSecret.Id,
+                ResourceTypeEnum.KeyStore,
+                existingAppSecret.CreatedByUserId,
+                false,
+                new[]
+                {
+                    ResourceAccessTypeEnum.Owner,
+                    ResourceAccessTypeEnum.FullAccess,
+                    ResourceAccessTypeEnum.Edit,
+                }
+            );
 
             if (!canEdit)
             {
-                _logger.LogWarning(
-                    "User {UserId} is not authorized to update credential ID: {AppSecretId}",
-                    _userId,
-                    appSecretDto.Id);
-
-                serviceResponse.Message =
-                    "You do not have access to update this credential.";
-
+                _logger.LogWarning("User {UserId} is not authorized to update credential ID: {AppSecretId}", _userId, appSecretDto.Id);
+                serviceResponse.Message = "You do not have access to update this credential.";
                 return serviceResponse;
             }
 
@@ -584,40 +573,29 @@ public class AppSecretService : IAppSecretService
                 return serviceResponse;
             }
 
-            // Retrieve all access mappings for this credential
-            var resourceShares = await _unitOfWork.ResourceShareRepo
-                .GetByConditionAsync(w =>
-                    w.ResourceId == appSecretId &&
-                    w.ResourceType == ResourceTypeEnum.AppSecret)
-                .ToListAsync();
-
-            // Find the current user's access entry
-            var currentUserAccess = resourceShares.FirstOrDefault(w => w.UserId == _userId);
-
-            // Verify the user is the creator or has delete permissions
-            var canDelete =
-                appSecret.CreatedByUserId == _userId ||
-                currentUserAccess?.AccessLevel is
-                    ResourceAccessTypeEnum.Owner or
-                    ResourceAccessTypeEnum.FullAccess or
-                    ResourceAccessTypeEnum.Delete;
+            // Validate update access
+            var canDelete = await _resourceShareService.HasAccessAsync(
+                _userId,
+                appSecret.Id,
+                ResourceTypeEnum.AppSecret,
+                appSecret.CreatedByUserId,
+                false,
+                new[]
+                {
+                    ResourceAccessTypeEnum.Owner,
+                    ResourceAccessTypeEnum.FullAccess,
+                    ResourceAccessTypeEnum.Delete,
+                }
+            );
 
             if (!canDelete)
             {
-                _logger.LogWarning(
-                    "User {UserId} is not authorized to delete credential ID: {AppSecretId}",
-                    _userId,
-                    appSecretId);
-
+                _logger.LogWarning("User {UserId} is not authorized to delete credential ID: {AppSecretId}", _userId, appSecretId);
                 serviceResponse.Message = "You do not have access to delete this credential.";
                 return serviceResponse;
             }
 
-            // Delete all access mappings associated with the credential
-            if (resourceShares.Any())
-            {
-                _unitOfWork.ResourceShareRepo.Delete(resourceShares);
-            }
+            await _resourceShareService.DeleteResourceSharesAsync(appSecret.Id, ResourceTypeEnum.AppSecret);
 
             // Delete the credential from the repository
             _unitOfWork.AppSecretRepo.Delete(appSecret);
@@ -671,46 +649,30 @@ public class AppSecretService : IAppSecretService
                 serviceResponse.Message = "No credentials found to delete.";
                 return serviceResponse;
             }
-
-            // Retrieve all access mappings for requested credentials
-            var resourceShares = await _unitOfWork.ResourceShareRepo
-                .GetByConditionAsync(w =>
-                    appSecretIds.Contains(w.ResourceId) &&
-                    w.ResourceType == ResourceTypeEnum.AppSecret)
-                .ToListAsync();
-
-            // Build current user's access lookup
-            var accessLookup = resourceShares
-                .Where(w => w.UserId == _userId)
-                .ToDictionary(w => w.ResourceId, w => w.AccessLevel);
-
-            // Validate delete permission for every credential
-            var unauthorizedCount = appSecrets.Count(secret =>
-                secret.CreatedByUserId != _userId &&
-                (!accessLookup.TryGetValue(secret.Id, out var access) ||
-                 access is not (
-                     ResourceAccessTypeEnum.Owner or
-                     ResourceAccessTypeEnum.FullAccess or
-                     ResourceAccessTypeEnum.Delete)));
-
-            if (unauthorizedCount > 0)
+            foreach (var appSecret in appSecrets)
             {
-                _logger.LogWarning(
-                    "User {UserId} attempted unauthorized deletion of {Count} credential(s).",
+                var allowed = await _resourceShareService.HasAccessAsync(
                     _userId,
-                    unauthorizedCount);
+                    appSecret.Id,
+                    ResourceTypeEnum.KeyStore,
+                    appSecret.CreatedByUserId,
+                    false,
+                    new[]
+                    {
+                        ResourceAccessTypeEnum.Owner,
+                        ResourceAccessTypeEnum.FullAccess,
+                        ResourceAccessTypeEnum.Delete,
+                    }
+                );
 
-                serviceResponse.Message =
-                    "You do not have access to delete one or more selected credentials.";
-
-                return serviceResponse;
+                if (!allowed)
+                {
+                    serviceResponse.Message = "You do not have access to delete one or more selected credentials.";
+                    return serviceResponse;
+                }
             }
 
-            // Delete all related access mappings
-            if (resourceShares.Any())
-            {
-                _unitOfWork.ResourceShareRepo.Delete(resourceShares);
-            }
+            await _resourceShareService.DeleteResourceSharesAsync(appSecretIds, ResourceTypeEnum.AppSecret);
 
             // Delete the credentials from the repository
             _unitOfWork.AppSecretRepo.Delete(appSecrets);
@@ -721,18 +683,6 @@ public class AppSecretService : IAppSecretService
                 _logger.LogWarning("Failed to commit bulk deletion of credentials.");
                 return serviceResponse;
             }
-            // Delete all access mappings
-            if (resourceShares.Any())
-            {
-                _unitOfWork.ResourceShareRepo.Delete(resourceShares);
-                // Attempt to save changes to the database
-                if (!await _unitOfWork.SaveAsync())
-                {
-                    _logger.LogWarning("Failed to commit bulk deletion of credentials.");
-                    return serviceResponse;
-                }
-            }
-
             // Return success response
             serviceResponse.Data = true;
             serviceResponse.StatusCode = 200;
@@ -776,33 +726,28 @@ public class AppSecretService : IAppSecretService
                 serviceResponse.Message = "Credential not found.";
                 return serviceResponse;
             }
-            // Retrieve user's access mapping
-            var resourceShare = await _unitOfWork.ResourceShareRepo
-                .GetByConditionAsync(w =>
-                    w.UserId == _userId &&
-                    w.ResourceId == appSecret.Id &&
-                    w.ResourceType == ResourceTypeEnum.AppSecret)
-                .FirstOrDefaultAsync();
 
-            // Verify the user is the creator or has read permissions
-            var canView =
-                appSecret.CreatedByUserId == _userId ||
-                appSecret.IsTenantWideAccess ||
-                resourceShare?.AccessLevel is
-                    ResourceAccessTypeEnum.Owner or
-                    ResourceAccessTypeEnum.FullAccess or
-                    ResourceAccessTypeEnum.View;
+            // Validate view access
+            var canView = await _resourceShareService.HasAccessAsync(
+                _userId,
+                appSecret.Id,
+                ResourceTypeEnum.KeyStore,
+                appSecret.CreatedByUserId,
+                appSecret.IsTenantWideAccess,
+                new[]
+                {
+                    ResourceAccessTypeEnum.Owner,
+                    ResourceAccessTypeEnum.FullAccess,
+                    ResourceAccessTypeEnum.View,
+                    ResourceAccessTypeEnum.Edit,
+                    ResourceAccessTypeEnum.Delete,
+                }
+            );
 
             if (!canView)
             {
-                _logger.LogWarning(
-                    "User {UserId} is not authorized to view credential ID: {AppSecretId}",
-                    _userId,
-                    appSecretId);
-
-                serviceResponse.Message =
-                    "You do not have access to view this credential.";
-
+                _logger.LogWarning("User {UserId} is not authorized to view credential ID: {AppSecretId}", _userId, appSecretId);
+                serviceResponse.Message = "You do not have access to view this credential.";
                 return serviceResponse;
             }
 

@@ -6,12 +6,14 @@ public class VaultService : IVaultService
     private readonly IUnitOfWork _unitOfWork;
     private readonly Guid _userId;
     private readonly IStringEncryptionService _stringEncryptionService;
+    private readonly IResourceShareService _resourceShareService;
 
     public VaultService(
         ILogger<VaultService> logger,
         IUnitOfWork unitOfWork,
         IHttpContextAccessor httpContextAccessor,
-        IStringEncryptionService stringEncryptionService)
+        IStringEncryptionService stringEncryptionService,
+        IResourceShareService resourceShareService)
     {
         // Extract the user ID from the HTTP context, default to Guid.Empty if not found
         _userId = Guid.Parse(httpContextAccessor.HttpContext?.User?.FindFirstValue("uid") ?? Guid.Empty.ToString());
@@ -19,6 +21,7 @@ public class VaultService : IVaultService
         _logger = logger;
         _unitOfWork = unitOfWork;
         _stringEncryptionService = stringEncryptionService;
+        _resourceShareService = resourceShareService;
     }
 
     // Method to check if the vault name is available for the current user
@@ -63,7 +66,7 @@ public class VaultService : IVaultService
     }
 
     // Method to retrieve all vaults created by the current user
-    public async Task<ServiceResponse<IEnumerable<VaultDto>>> GetVaultsAsync()
+    public async Task<ServiceResponse<IEnumerable<VaultDto>>> GetVaultsAsync(bool isPersonal)
     {
         var serviceResponse = new ServiceResponse<IEnumerable<VaultDto>>
         {
@@ -73,14 +76,44 @@ public class VaultService : IVaultService
 
         try
         {
-            // Retrieve and order the user's vaults by creation date
-            var vaults = await _unitOfWork.VaultRepo
-                .GetByConditionAsync(w => w.CreatedByUserId == _userId)
-                .OrderByDescending(w => w.CreatedOn)
-                .ProjectToType<VaultDto>()
-                .ToListAsync();
+            List<Vault> vaults;
 
-            serviceResponse.Data = vaults;
+            // Return only vaults owned by current user
+            if (isPersonal)
+            {
+                vaults = await _unitOfWork.VaultRepo
+                    .GetByConditionAsync(w =>
+                        w.CreatedByUserId == _userId)
+                    .OrderByDescending(w => w.CreatedOn)
+                    .ToListAsync();
+            }
+            else
+            {
+                // Retrieve vault IDs user is allowed to access
+                var accessibleVaultIds = await _resourceShareService.GetAccessibleResourceIdsAsync(
+                    _userId,
+                    ResourceTypeEnum.Vault,
+                    new[]
+                    {
+                        ResourceAccessTypeEnum.Owner,
+                        ResourceAccessTypeEnum.FullAccess,
+                        ResourceAccessTypeEnum.View,
+                        ResourceAccessTypeEnum.Edit,
+                        ResourceAccessTypeEnum.Delete,
+                    }
+                );
+
+                // Retrieve vaults available for current user
+                vaults = await _unitOfWork.VaultRepo
+                    .GetByConditionAsync(w =>
+                        w.IsTenantWideAccess ||
+                        accessibleVaultIds.Contains(w.Id))
+                    .OrderByDescending(w => w.CreatedOn)
+                    .ToListAsync();
+            }
+
+            // Convert entities into DTO objects
+            serviceResponse.Data = vaults.Adapt<IEnumerable<VaultDto>>();
             serviceResponse.StatusCode = 200;
             serviceResponse.Message = "Vaults retrieved successfully.";
         }
@@ -106,11 +139,44 @@ public class VaultService : IVaultService
         {
             // Fetch the vault by ID, ensuring it's created by the current user
             var vault = await _unitOfWork.VaultRepo
-                .GetByConditionAsync(w => w.Id == vaultId && w.CreatedByUserId == _userId)
-                .ProjectToType<VaultDto>()
-                .FirstOrDefaultAsync();
+                .GetByConditionAsync(w => w.Id == vaultId)
+                .SingleOrDefaultAsync();
 
-            serviceResponse.Data = vault;
+            // Validate vault exists
+            if (vault == null)
+            {
+                _logger.LogInformation("Vault not found.");
+                serviceResponse.Message = "Vault not found.";
+                return serviceResponse;
+            }
+
+            // Validate access permission
+            var canView = await _resourceShareService.HasAccessAsync(
+                _userId,
+                vault.Id,
+                ResourceTypeEnum.Vault,
+                vault.CreatedByUserId,
+                vault.IsTenantWideAccess,
+                new[]
+                {
+                    ResourceAccessTypeEnum.Owner,
+                    ResourceAccessTypeEnum.FullAccess,
+                    ResourceAccessTypeEnum.View,
+                    ResourceAccessTypeEnum.Edit,
+                    ResourceAccessTypeEnum.Delete,
+                }
+            );
+
+            // Reject unauthorized access
+            if (!canView)
+            {
+                _logger.LogWarning("User {UserId} attempted unauthorized vault access.", _userId);
+                serviceResponse.Message = "You do not have access to view this vault.";
+                return serviceResponse;
+            }
+
+            // Convert entity into DTO response
+            serviceResponse.Data = vault.Adapt<VaultDto>();
             serviceResponse.StatusCode = 200;
             serviceResponse.Message = "Vault retrieved successfully.";
         }
@@ -172,6 +238,16 @@ public class VaultService : IVaultService
                 return serviceResponse;
             }
 
+            // Assign creator owner access
+            if (!await _resourceShareService.AssignOwnerAsync(
+                _userId,
+                newVault.Id,
+                ResourceTypeEnum.Vault))
+            {
+                serviceResponse.Message = "Failed assigning ownership.";
+                return serviceResponse;
+            }
+
             // Return the created vault in the response
             serviceResponse.Data = newVault.Adapt<VaultDto>();
             serviceResponse.StatusCode = 200;
@@ -199,8 +275,7 @@ public class VaultService : IVaultService
         {
             // Fetch the existing vault
             var vault = await _unitOfWork.VaultRepo
-                .GetByConditionAsync(w =>
-                    w.Id == vaultDto.Id && w.CreatedByUserId == _userId)
+                .GetByConditionAsync(w => w.Id == vaultDto.Id)
                 .SingleOrDefaultAsync();
 
             // If the item doesn't exist, return an error message
@@ -211,11 +286,32 @@ public class VaultService : IVaultService
                 return serviceResponse;
             }
 
+            // Validate update access
+            var canEdit = await _resourceShareService.HasAccessAsync(
+                _userId,
+                vault.Id,
+                ResourceTypeEnum.Vault,
+                vault.CreatedByUserId,
+                vault.IsTenantWideAccess,
+                new[]
+                {
+                    ResourceAccessTypeEnum.Owner,
+                    ResourceAccessTypeEnum.FullAccess,
+                    ResourceAccessTypeEnum.Edit,
+                }
+            );
+
+            if (!canEdit)
+            {
+                serviceResponse.Message = "You do not have access to update this vault.";
+                return serviceResponse;
+            }
+
             // Check if another vault with the same name exists
             var existingVault = await _unitOfWork.VaultRepo
                 .GetByConditionAsync(w =>
                     w.Name.ToLower() == vaultDto.Name.ToLower() &&
-                    w.CreatedByUserId == _userId &&
+                    w.CreatedByUserId == vault.CreatedByUserId &&
                     w.Id != vaultDto.Id)
                 .FirstOrDefaultAsync();
 
@@ -278,7 +374,7 @@ public class VaultService : IVaultService
         {
             // Fetch the vault to be deleted
             var vault = await _unitOfWork.VaultRepo
-                .GetByConditionAsync(w => w.Id == vaultId && w.CreatedByUserId == _userId)
+                .GetByConditionAsync(w => w.Id == vaultId)
                 .SingleOrDefaultAsync();
 
             // If the item doesn't exist, return an error message
@@ -288,6 +384,33 @@ public class VaultService : IVaultService
                 serviceResponse.Message = "Vault does not exist.";
                 return serviceResponse;
             }
+
+            // Validate delete permission
+            var canDelete = await _resourceShareService
+                .HasAccessAsync(
+                    _userId,
+                    vault.Id,
+                    ResourceTypeEnum.Vault,
+                    vault.CreatedByUserId,
+                    false,
+                    new[]
+                    {
+                        ResourceAccessTypeEnum.Owner,
+                        ResourceAccessTypeEnum.FullAccess,
+                        ResourceAccessTypeEnum.Delete,
+                    }
+                );
+
+            if (!canDelete)
+            {
+                serviceResponse.Message = "You do not have access to delete this vault.";
+                return serviceResponse;
+            }
+
+            // Remove access mappings
+            await _resourceShareService.DeleteResourceSharesAsync(
+                vaultId,
+                ResourceTypeEnum.Vault);
 
             // Delete the vault from the repository
             _unitOfWork.VaultRepo.Delete(vault);
@@ -326,7 +449,7 @@ public class VaultService : IVaultService
         {
             // Fetch the vaults to be deleted
             var vaults = await _unitOfWork.VaultRepo
-                .GetByConditionAsync(w => w.CreatedByUserId == _userId && vaultIds.Contains(w.Id))
+                .GetByConditionAsync(w => vaultIds.Contains(w.Id))
                 .ToListAsync();
 
             // If no items are found, return an error message
@@ -337,6 +460,35 @@ public class VaultService : IVaultService
                 return serviceResponse;
             }
 
+            // Validate permissions
+            foreach (var vault in vaults)
+            {
+                var allowed = await _resourceShareService.HasAccessAsync(
+                    _userId,
+                    vault.Id,
+                    ResourceTypeEnum.Vault,
+                    vault.CreatedByUserId,
+                    false,
+                    new[]
+                    {
+                        ResourceAccessTypeEnum.Owner,
+                        ResourceAccessTypeEnum.FullAccess,
+                        ResourceAccessTypeEnum.Delete,
+                    }
+                );
+
+                if (!allowed)
+                {
+                    serviceResponse.Message = "You do not have access to delete one or more vaults.";
+                    return serviceResponse;
+                }
+            }
+            // Remove access mappings
+            await _resourceShareService.DeleteResourceSharesAsync(
+                vaultIds,
+                ResourceTypeEnum.Vault);
+
+
             // Delete the vaults from the repository
             _unitOfWork.VaultRepo.Delete(vaults);
 
@@ -346,6 +498,7 @@ public class VaultService : IVaultService
                 _logger.LogInformation("Failed to save changes while deleting vaults.");
                 return serviceResponse;
             }
+
 
             // Return a success message with the count of deleted items
             serviceResponse.Data = true;
@@ -374,8 +527,7 @@ public class VaultService : IVaultService
         {
             // Fetch the encrypted vault by its ID
             var vault = await _unitOfWork.VaultRepo
-                .GetByConditionAsync(w =>
-                    w.Id == vaultId && w.CreatedByUserId == _userId)
+                .GetByConditionAsync(w => w.Id == vaultId)
                 .SingleOrDefaultAsync();
 
             // Return an error response if the vault does not exist
@@ -386,6 +538,31 @@ public class VaultService : IVaultService
                 return serviceResponse;
             }
 
+
+            // Validate access permission
+            var canView = await _resourceShareService.HasAccessAsync(
+                    _userId,
+                    vault.Id,
+                    ResourceTypeEnum.Vault,
+                    vault.CreatedByUserId,
+                    vault.IsTenantWideAccess,
+                    new[]
+                    {
+                        ResourceAccessTypeEnum.Owner,
+                        ResourceAccessTypeEnum.FullAccess,
+                        ResourceAccessTypeEnum.View,
+                        ResourceAccessTypeEnum.Edit,
+                        ResourceAccessTypeEnum.Delete,
+                    }
+                );
+
+            // Block unauthorized access
+            if (!canView)
+            {
+                _logger.LogWarning("User {UserId} attempted unauthorized vault access.", _userId);
+                serviceResponse.Message = "You do not have access to view this vault.";
+                return serviceResponse;
+            }
 
             var vaultDto = vault.Adapt<VaultDto>();
 

@@ -8,8 +8,9 @@ public interface IFlowsTableService
     /// <summary>
     /// Retrieves all flows created by the user.
     /// </summary>
+    /// <param name="isPersonal"> If <c>true</c>, returns only personal flows. If <c>false</c>, returns only shared flows. </param>
     /// <returns>The task result contains the service response with the list of flow details.</returns>
-    Task<ServiceResponse<IEnumerable<FlowsTableDto>>> GetFlowsAsync();
+    Task<ServiceResponse<IEnumerable<FlowsTableDto>>> GetFlowsAsync(bool isPersonal);
 
     /// <summary>
     /// Checks the availability of a flow name.

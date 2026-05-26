@@ -28,6 +28,11 @@ public class MessageTriggerDto : MessageTriggerModel
     public List<AgentInfoDto>? Agents { get; set; }
 
     /// <summary>
+    /// Gets or sets a value indicating whether the message trigger is accessible to all users within the tenant.
+    /// </summary>
+    public bool IsTenantWideAccess { get; set; }
+
+    /// <summary>
     /// Gets or sets a value indicating whether the message trigger is disabled.
     /// Nullable to allow differentiation between enabled, disabled, and unspecified states.
     /// </summary>

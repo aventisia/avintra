@@ -67,6 +67,11 @@ public class KnowledgeBase : BaseEntity, IMustHaveTenant
     public string? VectorStoreConfig { get; set; }
 
     /// <summary>
+    /// Gets or sets a value indicating whether the knowledge base is accessible to all users within the tenant.
+    /// </summary>
+    public bool IsTenantWideAccess { get; set; }
+
+    /// <summary>
     /// Navigation property for the files associated with this Knowledge Base.
     /// </summary>
     public virtual ICollection<KnowledgeBaseFile> Files { get; set; } = new List<KnowledgeBaseFile>();

@@ -39,5 +39,17 @@ public enum ResourceTypeEnum
     /// Represents a knowledge base resource used for storing and retrieving knowledge assets.
     /// </summary>
     [Description("Represents a knowledge base resource used for storing and retrieving knowledge assets.")]
-    KnowledgeBase
+    KnowledgeBase,
+
+    /// <summary>
+    /// Represents a flow resource used to define and execute workflow logic.
+    /// </summary>
+    [Description("Represents a flow resource used to define and execute workflow logic.")]
+    Flow,
+
+    /// <summary>
+    /// Represents a specific version of a flow resource used for versioned workflow execution and management.
+    /// </summary>
+    [Description("Represents a specific version of a flow resource used for versioned workflow execution and management.")]
+    FlowVersion
 }
