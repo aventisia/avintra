@@ -1,14 +1,14 @@
 import { DotPattern } from "@/components/layout/DotPattern";
 import { IS_TAURI } from "@/constants/constants";
-import useCheckJobTrigger from "@/features/execute-flow/hooks/useCheckJobTrigger";
-import { useCurrentFlowStore } from "@/features/execute-flow/stores/current-flow-store";
-import useCheckMachineStatus from "@/features/orchestrator/machines-table/hooks/useCheckMachineStatus";
-import { AppUpdateToast } from "@/features/tauri-updater/components/AppUpdateToast";
+import useCheckMachineStatus from "@/features/03-orchestrator/machines-table/hooks/useCheckMachineStatus";
 // import {
 //   useCheckForUpdate,
 //   useRedirectOnRelaunch,
 // } from "@/features/tauri-updater";
-import { useFetchPaymentStatus } from "@/features/tenant/hooks/useFetchPaymentStatus";
+import { useFetchPaymentStatus } from "@/features/05-tenant-admin/tenant/hooks/useFetchPaymentStatus";
+import useCheckJobTrigger from "@/features/execute-flow/hooks/useCheckJobTrigger";
+import { useCurrentFlowStore } from "@/features/execute-flow/stores/current-flow-store";
+import { AppUpdateToast } from "@/features/tauri-updater/components/AppUpdateToast";
 import { usePreventClose } from "@/hooks/usePreventClose";
 import useTauriUserMetadata from "@/hooks/useTauriUserMetadata";
 import useWebSocket from "@/hooks/useWebSocket";

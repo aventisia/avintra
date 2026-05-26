@@ -31,7 +31,8 @@ import NewChatIcon from "../NewChatIcon";
 
 const sidebarMenuSections: SidebarMenuSectionType[] = [
   {
-    sectionName: "my projects",
+    // sectionInternalName: build
+    sectionName: "build",
     menuItems: [
       {
         Icon: NewAgentIcon,
@@ -50,6 +51,48 @@ const sidebarMenuSections: SidebarMenuSectionType[] = [
     ],
   },
   {
+    // sectionInternalName: configure
+    sectionName: "configure", 
+    menuItems: [
+      {
+        permissions: ["OM"],
+        Icon: QueueListIcon,
+        name: "queues",
+        route: "/configure/queues",
+        type: ["Commercial"],
+      },
+      {
+        permissions: ["OM"],
+        Icon: AiOutlineThunderbolt,
+        name: "triggers",
+        route: "/configure/triggers",
+        type: ["Commercial", "Enterprise"],
+      },
+      {
+        permissions: ["OM"],
+        Icon: FolderCogIcon,
+        name: "Key Store",
+        route: "/configure/keystore",
+        type: ["Commercial", "Enterprise"],
+      },
+      {
+        permissions: ["OM"],
+        Icon: Shield,
+        name: "Vault",
+        route: "/configure/vault",
+        type: ["Commercial", "Enterprise"],
+      },
+      {
+        permissions: ["OM"],
+        Icon: BookOpenCheckIcon,
+        name: "knowledge bases",
+        route: "/configure/knowledge-base",
+        type: ["Commercial", "Enterprise"],
+      },
+    ],
+  },
+  {
+    // sectionInternalName: orchestrator
     sectionName: "Orchestrator",
     menuItems: [
       {
@@ -68,20 +111,6 @@ const sidebarMenuSections: SidebarMenuSectionType[] = [
       },
       {
         permissions: ["OM"],
-        Icon: QueueListIcon,
-        name: "queues",
-        route: "/orchestrator/queues",
-        type: ["Commercial"],
-      },
-      {
-        permissions: ["OM"],
-        Icon: AiOutlineThunderbolt,
-        name: "triggers",
-        route: "/orchestrator/triggers",
-        type: ["Commercial", "Enterprise"],
-      },
-      {
-        permissions: ["OM"],
         Icon: MonitorPlayIcon,
         name: "Jobs",
         route: "/orchestrator/jobs",
@@ -94,30 +123,10 @@ const sidebarMenuSections: SidebarMenuSectionType[] = [
         route: "/orchestrator/conversations",
         type: ["Commercial", "Enterprise"],
       },
-      {
-        permissions: ["OM"],
-        Icon: FolderCogIcon,
-        name: "Key Store",
-        route: "/orchestrator/keystore",
-        type: ["Commercial", "Enterprise"],
-      },
-      {
-        permissions: ["OM"],
-        Icon: Shield,
-        name: "Vault",
-        route: "/orchestrator/vault",
-        type: ["Commercial", "Enterprise"],
-      },
-      {
-        permissions: ["OM"],
-        Icon: BookOpenCheckIcon,
-        name: "knowledge bases",
-        route: "/orchestrator/knowledge-base",
-        type: ["Commercial", "Enterprise"],
-      },
     ],
   },
   {
+    // sectionInternalName: assist
     sectionName: "Assist",
     menuItems: [
       {
@@ -144,21 +153,29 @@ const sidebarMenuSections: SidebarMenuSectionType[] = [
     ],
   },
   {
+    // sectionInternalName: tenantAdmin
     sectionName: "Tenant Admin",
     menuItems: [
       {
         permissions: ["TA"],
         Icon: IdentificationIcon,
         name: "tenant",
-        route: "/tenant",
+        route: "/tenant/overview",
         type: ["Commercial"],
       },
       {
         permissions: ["TA"],
         Icon: IdentificationIcon,
         name: "preferences",
-        route: "/preferences",
+        route: "/tenant/preferences", // Only applicabe in case of enterprise deployment
         type: ["Enterprise"],
+      },
+      {
+        permissions: ["TA"],
+        Icon: UsersIcon,
+        name: "users",
+        route: "/tenant/users",
+        type: ["Commercial", "Enterprise"],
       },
       // Add integrations only if not production
       ...(import.meta.env.MODE !== "production"
@@ -167,7 +184,7 @@ const sidebarMenuSections: SidebarMenuSectionType[] = [
               permissions: ["TA"],
               Icon: Workflow,
               name: "integrations",
-              route: "/integrations",
+              route: "/tenant/integrations",
               type: ["Commercial", "Enterprise"],
             },
           ] as SidebarMenuItemType[])
@@ -176,47 +193,41 @@ const sidebarMenuSections: SidebarMenuSectionType[] = [
         permissions: ["TA"],
         Icon: ServerIcon,
         name: "on-prem models",
-        route: "/on-prem-models",
+        route: "/tenant/on-prem-models",
         type: ["Commercial", "Enterprise"],
       },
       {
         permissions: ["TA"],
         Icon: Wallet,
         name: "Usage",
-        route: "/usage",
+        route: "/tenant/usage",
         type: ["Commercial"],
       },
       {
         permissions: ["TA"],
         Icon: CheckCheckIcon,
         name: "Approvals",
-        route: "/approvals",
-        type: ["Commercial", "Enterprise"],
-      },
-      {
-        permissions: ["TA"],
-        Icon: UsersIcon,
-        name: "users",
-        route: "/users",
+        route: "/tenant/approvals",
         type: ["Commercial", "Enterprise"],
       },
       {
         permissions: ["TA"],
         Icon: ArchiveIcon,
         name: "archive",
-        route: "/archive",
+        route: "/tenant/archive",
         type: ["Commercial", "Enterprise"],
       },
       {
         permissions: ["TA"],
         Icon: QuestionMarkCircleIcon,
         name: "support",
-        route: "/supportticket",
+        route: "/tenant/support/tickets",
         type: ["Commercial"],
       },
     ],
   },
   {
+    // sectionInternalName: superAdmin
     sectionName: "Super Admin",
     menuItems: [
       {
@@ -257,6 +268,7 @@ const sidebarMenuSections: SidebarMenuSectionType[] = [
     ],
   },
   {
+    // sectionInternalName: globalAdmin
     sectionName: "Global Admin",
     menuItems: [
       {
