@@ -1,3 +1,5 @@
+import ToolsCall from "@/features/tool-widget/components/ToolsCall";
+
 import {
   ActionBarMorePrimitive,
   ActionBarPrimitive,
@@ -222,6 +224,9 @@ const AssistantMessage: FC = () => {
       <div className="aui-assistant-message-content wrap-break-word px-2 text-foreground leading-relaxed">
         <MessagePrimitive.Parts>
           {({ part }) => {
+            //TODO: add relevant type to handle tools
+            if (part.type === "text" && Array.isArray(part.text))
+              return <ToolsCall data={part.text} />;
             if (part.type === "text") return <MarkdownText />;
             if (part.type === "tool-call")
               return part.toolUI ?? <ToolFallback {...part} />;
