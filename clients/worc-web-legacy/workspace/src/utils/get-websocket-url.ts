@@ -24,7 +24,7 @@ export const getWebSocketUrl = ({
 }) => {
   // Determine the client type based on whether the app is running in Tauri or a web browser
   const clientType = IS_TAURI
-    ? ClientTypesEnum.AvPlatformDesktopApp
+    ? ClientTypesEnum.AvintraDesktopApp
     : ClientTypesEnum.WebBrowser;
 
   // Construct the WebSocket URL

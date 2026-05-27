@@ -181,8 +181,8 @@ namespace CodeActivityToJSON.Utils
                             var repofileName = Path.GetFullPath(Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "..", "..", "..", "..", "worc-web-legacy", "studio", "src", "features", "dynamic-config-panel", "constants", "config-json", activity.Name + ".json"));
                             File.WriteAllText(repofileName, jsonWithUnixLineEndings);
 
-                            // Create the file in %LOCALAPPDATA%\WorcDesktopApp\config-files\desktop-nodes (for form generation)
-                            var localAppDatadesktopNodesOutputDir = Path.Combine(localAppDataPath, "WorcDesktopApp", "config-files", "desktop-nodes");
+                            // Create the file in %LOCALAPPDATA%\AvintraDesktopApp\config-files\desktop-nodes (for form generation)
+                            var localAppDatadesktopNodesOutputDir = Path.Combine(localAppDataPath, "AvintraDesktopApp", "config-files", "desktop-nodes");
                             Directory.CreateDirectory(localAppDatadesktopNodesOutputDir);
                             var localAppDataFileName = Path.Combine(localAppDatadesktopNodesOutputDir, activity.Name + ".json");
                             File.WriteAllText(localAppDataFileName, jsonWithUnixLineEndings);
@@ -224,8 +224,8 @@ namespace CodeActivityToJSON.Utils
                 Console.WriteLine($"Activities mapping JSON saved to Windows repo");
             }
 
-            // Save the primary categories JSON file to %LOCALAPPDATA%\WorcDesktopApp\config-files\action-selector
-            var localAppDataActionSelectorOutputDir = Path.Combine(localAppDataPath, "WorcDesktopApp", "config-files", "action-selector");
+            // Save the primary categories JSON file to %LOCALAPPDATA%\AvintraDesktopApp\config-files\action-selector
+            var localAppDataActionSelectorOutputDir = Path.Combine(localAppDataPath, "AvintraDesktopApp", "config-files", "action-selector");
             Directory.CreateDirectory(localAppDataActionSelectorOutputDir);
             var localAppDataActionSelectorOutputFilePath = Path.Combine(localAppDataActionSelectorOutputDir, "_ActionSelectorData.json");
             using (var writer = new StreamWriter(localAppDataActionSelectorOutputFilePath))

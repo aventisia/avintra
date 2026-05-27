@@ -330,6 +330,11 @@ const routerConfig: RouteObject[] = [
     ],
   },
   {
+    path: "/redirect",
+    element: <AppRedirectPage />,
+    errorElement: <AppErrorPage />,
+  },
+  {
     path: "/external/chats",
     element: <MyChatsPage mode="popover" />,
     children: [
@@ -344,14 +349,10 @@ const routerConfig: RouteObject[] = [
     ],
   },
 
+  // TODO: Need to validate whether we still need this or not
   {
     path: "/assist",
     element: <GetDesktopPage />,
-  },
-  {
-    path: "/redirect",
-    element: <AppRedirectPage />,
-    errorElement: <AppErrorPage />,
   },
 ];
 

@@ -8,7 +8,7 @@ export default function NewAgentIcon({ className }: { className?: string }) {
       fill="none"
       xmlns="http://www.w3.org/2000/svg"
     >
-      <g clip-path="url(#clip0_2599_3135)">
+      <g clipPath="url(#clip0_2599_3135)">
         <path
           d="M49.5141 82.729C55.5819 82.729 60.5008 77.7941 60.5008 71.7065C60.5008 65.619 55.5819 60.6841 49.5141 60.6841C43.4463 60.6841 38.5273 65.619 38.5273 71.7065C38.5273 77.7941 43.4463 82.729 49.5141 82.729Z"
           fill="black"

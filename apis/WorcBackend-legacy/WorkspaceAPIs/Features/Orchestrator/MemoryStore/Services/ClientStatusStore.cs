@@ -53,7 +53,7 @@ public class ClientStatusStore : IClientStatusStore
         // Find the client by its connection ID.
         var clientData = ClientStore.Values
             .FirstOrDefault(w => w.ConnectionId == connectionId
-                && (w.Type == ClientTypesEnum.WorcMachine || w.Type != ClientTypesEnum.WorcMachine));
+                && (w.Type == ClientTypesEnum.AvintraMachine || w.Type != ClientTypesEnum.AvintraMachine));
 
         // Return the client status by clientId if found.
         if (clientData != null && ClientStore.TryGetValue(clientData.ClientId, out var clientDataStore))
@@ -83,17 +83,17 @@ public class ClientStatusStore : IClientStatusStore
     public Task<IEnumerable<ClientDataStore>> GetMachineStatusesAsync(Guid tenantId)
     {
         var machines = ClientStore.Values
-            .Where(w => w.TenantId == tenantId && w.Type == ClientTypesEnum.WorcMachine)
+            .Where(w => w.TenantId == tenantId && w.Type == ClientTypesEnum.AvintraMachine)
             .ToList();
 
         return Task.FromResult<IEnumerable<ClientDataStore>>(machines);
     }
 
-    // Retrieves a client based on the unique client identifier (clientId) for the WorcMachine type.
+    // Retrieves a client based on the unique client identifier (clientId) for the AvintraMachine type.
     public Task<ClientDataStore?> GetClientByIdAsync(Guid clientId)
     {
         var machine = ClientStore.Values
-            .FirstOrDefault(w => w.ClientId == clientId && w.Type == ClientTypesEnum.WorcMachine);
+            .FirstOrDefault(w => w.ClientId == clientId && w.Type == ClientTypesEnum.AvintraMachine);
 
         return Task.FromResult<ClientDataStore?>(machine);
     }
@@ -103,7 +103,7 @@ public class ClientStatusStore : IClientStatusStore
     {
         var users = ClientStore.Values
             .Where(w => w.TenantId == tenantId &&
-                (w.Type == ClientTypesEnum.WebBrowser || w.Type == ClientTypesEnum.WorcDesktopApp))
+                (w.Type == ClientTypesEnum.WebBrowser || w.Type == ClientTypesEnum.AvintraDesktopApp))
             .ToList();
 
         return Task.FromResult<IEnumerable<ClientDataStore>>(users);
