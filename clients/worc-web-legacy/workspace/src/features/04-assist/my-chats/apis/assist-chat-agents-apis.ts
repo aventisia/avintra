@@ -4,7 +4,7 @@ import { IHttpResponse } from "@aventisia/ui/dtos";
 
 import { AssistChatDto } from "../dtos/assist-chat-dto";
 
-const baseAPIURL: string = `${import.meta.env.VITE_WORC_API_PATH}/assist-chat`;
+const baseAPIURL: string = `${import.meta.env.VITE_WORKSPACE_API_PATH}/assist-chat`;
 
 /**
  * Retrieves list of active chat agents.

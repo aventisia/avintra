@@ -17,12 +17,11 @@ import { VaultAppsEnum } from "../enums/vault-apps-enum";
 import { useFetchVaults } from "../hooks/useFetchVaults";
 import { useVaultDialogStore } from "../stores/vault-dialog-store";
 import { vaultAppIconMapper } from "../vault-config/constants/vault-app-icon-mapper";
-
+import { VaultTableSkeleton } from "./VaultTableSkeleton";
+import { vaultsTableColumns } from "./VaultsTableColumns";
 import { VaultCrudDialog } from "./vault-crud-dialog/VaultCrudDialog";
 import { VaultRowActions } from "./vault-row-actions/VaultRowActions";
 import { VaultsBulkActions } from "./vault-row-actions/VaultsBulkActions";
-import { vaultsTableColumns } from "./VaultsTableColumns";
-import { VaultTableSkeleton } from "./VaultTableSkeleton";
 
 /**
  * Renders a table of configs.
@@ -60,7 +59,7 @@ export const VaultTable = () => {
     true,
   );
 
-  const basePath = import.meta.env.VITE_WORC_PATH.replace(/\/$/, "");
+  const basePath = import.meta.env.VITE_WORKSPACE_PATH.replace(/\/$/, "");
 
   // Return the rendered DataTable component.
   return (

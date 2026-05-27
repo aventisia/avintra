@@ -55,7 +55,7 @@ export const useValidateUserSession = () => {
         const redirect = params.get("redirect");
         const destination = redirect
           ? decodeURIComponent(redirect)
-          : import.meta.env.VITE_WORC_PATH;
+          : import.meta.env.VITE_WORKSPACE_PATH;
 
         navigate("/redirect?msg=Logging In...&url=" + destination);
       }

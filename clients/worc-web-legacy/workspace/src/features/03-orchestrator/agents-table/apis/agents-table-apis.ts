@@ -1,13 +1,13 @@
+import { axiosInstance } from "@/react-toolkit/lib/axios-instance";
+
 import type { IOptimisticMutation } from "@aventisia/ui/dtos";
 import { IHttpResponse } from "@aventisia/ui/dtos";
-
-import { axiosInstance } from "@/react-toolkit/lib/axios-instance";
 
 import { AgentAssignMachineDto } from "../dtos/agent-assign-machine-dto";
 import { AgentsTableDto } from "../dtos/agents-table-dto";
 import { AssignMachineDto } from "../dtos/assign-machine-dto";
 
-const baseAPIURL: string = `${import.meta.env.VITE_WORC_API_PATH}/agent`;
+const baseAPIURL: string = `${import.meta.env.VITE_WORKSPACE_API_PATH}/agent`;
 
 /**
  * Retrieves all published agents.
@@ -75,7 +75,7 @@ const deleteAgent = (id: string) => {
   return axiosInstance
     .delete<
       IHttpResponse<boolean>
-    >(`${import.meta.env.VITE_WORC_API_PATH}/flow-version/delete/${id}`)
+    >(`${import.meta.env.VITE_WORKSPACE_API_PATH}/flow-version/delete/${id}`)
     .then((res) => res.data);
 };
 

@@ -11,7 +11,7 @@ import { useEffect, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import { useShallow } from "zustand/react/shallow";
 
-import { WorcAssistantUI } from "../assistant-ui";
+import { AvPlatformAssistantUI } from "../assistant-ui";
 import { AssistChatDto } from "../dtos/assist-chat-dto";
 import { useArchiveConversationMutation } from "../hooks/useArchiveConversationMutation";
 // import { useInsertConversationMutation } from "../hooks/useInsertConversationMutation";
@@ -140,7 +140,7 @@ export default function ChatSection({ mode = "page" }: { mode?: LayoutMode }) {
       </div>
 
       <div className="h-[calc(100%-4rem)] w-full">
-        <WorcAssistantUI
+        <AvPlatformAssistantUI
           title={`Hello${userSession?.firstName ? ", " + userSession?.firstName : ""}`}
           archived={isArchived}
         />

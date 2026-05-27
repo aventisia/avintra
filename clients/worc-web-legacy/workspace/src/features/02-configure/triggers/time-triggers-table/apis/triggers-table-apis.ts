@@ -1,3 +1,5 @@
+import { axiosInstance } from "@/react-toolkit/lib/axios-instance";
+
 import {
   CheckAvailabilityDto,
   IHttpResponse,
@@ -5,13 +7,11 @@ import {
   TrueFalseResultDto,
 } from "@aventisia/ui/dtos";
 
-import { axiosInstance } from "@/react-toolkit/lib/axios-instance";
-
 import { SearchAgentsDto } from "../dtos/search-agent-dto";
 import { SelectAgentTableDto } from "../dtos/select-agent-table-dto";
 import { TimeTriggerDto } from "../dtos/time-trigger-dto";
 
-const baseAPIURL: string = `${import.meta.env.VITE_WORC_API_PATH}/time-trigger`;
+const baseAPIURL: string = `${import.meta.env.VITE_WORKSPACE_API_PATH}/time-trigger`;
 
 /**
  * Retrieves list of triggers.
@@ -67,7 +67,7 @@ export const getNewTriggerAgents = () => {
   return axiosInstance
     .get<
       IHttpResponse<SelectAgentTableDto[]>
-    >(`${import.meta.env.VITE_WORC_API_PATH}/agent/publish-flows`)
+    >(`${import.meta.env.VITE_WORKSPACE_API_PATH}/agent/publish-flows`)
     .then((res) => res.data);
 };
 

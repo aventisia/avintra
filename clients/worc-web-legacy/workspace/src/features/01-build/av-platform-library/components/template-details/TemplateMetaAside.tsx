@@ -25,7 +25,7 @@ export function TemplateMetaAside({ template }: { template: UseTemplateDTO }) {
       return null;
     }
   })();
-  const basePath = import.meta.env.VITE_WORC_PATH;
+  const basePath = import.meta.env.VITE_WORKSPACE_PATH;
 
   return (
     <aside className="space-y-4">

@@ -48,9 +48,10 @@ export const useCreateAccountMutation = () => {
         if (httpResponse.message.includes(ADD_TENANT)) {
           navigate(withQueryParams("/onboarding"));
         } else if (deploymentType == "Enterprise") {
-          // Redirect to worc app
+          // Redirect to workspace app
           navigate(
-            "/redirect?msg=Logging in...&url=" + import.meta.env.VITE_WORC_PATH,
+            "/redirect?msg=Logging in...&url=" +
+              import.meta.env.VITE_WORKSPACE_PATH,
           );
         }
       },

@@ -1,11 +1,11 @@
-import { IHttpResponse } from "@aventisia/ui/dtos";
-
 import { axiosInstance } from "@/react-toolkit/lib/axios-instance";
+
+import { IHttpResponse } from "@aventisia/ui/dtos";
 
 import { AgentsAssistDto } from "../dtos/agent-assist-dto";
 import { RemoveAgentsDto } from "../dtos/remove-agents-dto";
 
-const baseAPIURL: string = `${import.meta.env.VITE_WORC_API_PATH}/machine`;
+const baseAPIURL: string = `${import.meta.env.VITE_WORKSPACE_API_PATH}/machine`;
 
 /**
  * Retrieves list of agents of machine.

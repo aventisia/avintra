@@ -100,7 +100,7 @@ export const TriggerCrudForm = () => {
         agent: triggerData?.agent ? objectToArray(triggerData?.agent) : [],
         webhookUrl:
           triggerData?.webhookUrl ??
-          `${window.location.origin}${import.meta.env.VITE_WORC_API_PATH}/webhook/{Id}`,
+          `${window.location.origin}${import.meta.env.VITE_WORKSPACE_API_PATH}/webhook/{Id}`,
         apiKey: triggerData?.apiKey ?? "",
 
         callbackUrl: triggerData?.callbackUrl ?? "",

@@ -1,9 +1,10 @@
+import { axiosInstance } from "@/react-toolkit/lib/axios-instance";
+
 import { IHttpResponse } from "@aventisia/ui/dtos";
 
-import { axiosInstance } from "@/react-toolkit/lib/axios-instance";
 import { JobDetailsDto } from "../dtos/jobs-details-dto";
 
-const baseAPIURL: string = `${import.meta.env.VITE_WORC_API_PATH}/job`;
+const baseAPIURL: string = `${import.meta.env.VITE_WORKSPACE_API_PATH}/job`;
 
 /**
  * Inserts a new job.

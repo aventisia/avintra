@@ -52,7 +52,7 @@ const ChoosePlanOptions = () => {
                   <span className="block font-semibold">
                     Host on Your Infrastructure
                   </span>
-                  Deploy Worc securely within your private cloud or on-premise
+                  Deploy Avintra securely within your private cloud or on-premise
                   setup for complete control.
                 </div>
               </li>
@@ -145,7 +145,7 @@ const ChoosePlanOptions = () => {
                     <span className="block font-semibold">
                       Use Built-In APIs
                     </span>
-                    Access Worc’s powerful APIs for seamless integration with
+                    Access Avintra's powerful APIs for seamless integration with
                     your applications and workflows.
                   </div>
                 </li>

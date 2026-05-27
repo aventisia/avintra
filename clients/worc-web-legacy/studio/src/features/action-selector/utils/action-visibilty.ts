@@ -1,4 +1,4 @@
-import { deploymentType } from "@/react-toolkit/types/user-session-types";
+import { DeploymentType } from "@aventisia/ui/types";
 import { DoNotRenderIfType } from "../types/do-not-render-type";
 
 /**
@@ -36,7 +36,7 @@ const IS_PROD = import.meta.env.MODE === "production";
  */
 export const canWeRenderNodeOrCategory = (
   doNotRenderIf: DoNotRenderIfType | undefined,
-  deploymentType: deploymentType,
+  deploymentType: DeploymentType,
 ): boolean => {
   // No rules -> visible everywhere
   if (!doNotRenderIf) return true;

@@ -4,8 +4,8 @@ export enum ClientTypesEnum {
   WebBrowser = "WebBrowser",
 
   // A user accessing the system via a desktop application.
-  WorcDesktopApp = "WorcDesktopApp",
+  AvPlatformDesktopApp = "AvPlatformDesktopApp",
 
   // A user accessing the system via a desktop application as Assist app.
-  WorcMachine = "WorcMachine",
+  AvPlatformMachine = "AvPlatformMachine",
 }

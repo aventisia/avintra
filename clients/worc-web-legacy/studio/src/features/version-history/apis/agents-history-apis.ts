@@ -1,10 +1,11 @@
+import { axiosInstance } from "@/react-toolkit/lib/axios-instance";
+
 import { IHttpResponse } from "@aventisia/ui/dtos";
 
-import { axiosInstance } from "@/react-toolkit/lib/axios-instance";
-import { FlowVersionHistoryDto } from "../dtos/agent-history-dto";
 import { FlowVersionHistoryDetailDto } from "../dtos/agent-history-details-dto";
+import { FlowVersionHistoryDto } from "../dtos/agent-history-dto";
 
-const baseAPIURL: string = `${import.meta.env.VITE_WORC_API_PATH}/flow-version-history`;
+const baseAPIURL: string = `${import.meta.env.VITE_WORKSPACE_API_PATH}/flow-version-history`;
 
 /**
  * Retrieves all agents change history

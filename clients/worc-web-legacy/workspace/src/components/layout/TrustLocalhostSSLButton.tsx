@@ -6,7 +6,10 @@ const TrustLocalhostSSLButton: React.FC = () => {
   return (
     <a
       className="flex h-7 w-full items-center justify-center gap-1 rounded-lg bg-destructive px-1 text-xs text-white"
-      href={import.meta.env.VITE_WORC_API_PATH?.replace("/api", "/swagger")}
+      href={import.meta.env.VITE_WORKSPACE_API_PATH?.replace(
+        "/api",
+        "/swagger",
+      )}
     >
       <ShieldQuestionIcon className="size-4 stroke-[1.6]" />
       Trust Localhost SSL

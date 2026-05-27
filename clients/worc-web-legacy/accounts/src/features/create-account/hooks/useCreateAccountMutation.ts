@@ -33,10 +33,10 @@ export const useCreateAccountMutation = () => {
         // Set authenticated user locally
         setUserSessionLocally(httpResponse.data);
 
-        // Redirect to worc app
+        // Redirect to workspace app
         navigate(
           "/redirect?msg=Logging in...&url=" +
-            import.meta.env.VITE_WORC_PATH,
+            import.meta.env.VITE_WORKSPACE_PATH,
         );
       },
       onError: (error) => {

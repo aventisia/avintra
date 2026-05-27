@@ -27,7 +27,9 @@ export const useInsertSubscriptionMutation = () => {
       // Free Plan - No Razorpay needed
       if (variables.amount === 0) {
         localStorage.clear();
-        navigate("/redirect?url=" + import.meta.env.VITE_WORC_PATH + "tenant");
+        navigate(
+          "/redirect?url=" + import.meta.env.VITE_WORKSPACE_PATH + "tenant",
+        );
       }
     },
 

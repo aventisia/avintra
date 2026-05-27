@@ -1,3 +1,5 @@
+import { axiosInstance } from "@/react-toolkit/lib/axios-instance";
+
 import {
   CheckAvailabilityDto,
   IHttpResponse,
@@ -5,11 +7,9 @@ import {
   TrueFalseResultDto,
 } from "@aventisia/ui/dtos";
 
-import { axiosInstance } from "@/react-toolkit/lib/axios-instance";
-
 import { KeystoresTableDto } from "../dtos/keystores-table-dto";
 
-export const baseAPIURL: string = `${import.meta.env.VITE_WORC_API_PATH}/key-store`;
+export const baseAPIURL: string = `${import.meta.env.VITE_WORKSPACE_API_PATH}/key-store`;
 
 /**
  * Retrieves list of keystores.

@@ -1,11 +1,11 @@
+import { FlowTypesEnum } from "@/react-toolkit/enums/flow-types-enum";
+import { stripLeadingSlash } from "@/utils/strip-leading-slash";
+
 import { toast } from "@aventisia/ui/sonner";
 import { useMutation } from "@tanstack/react-query";
 
-import { stripLeadingSlash } from "@/utils/strip-leading-slash";
-
-import { applyAgentTemplate } from "../apis/wroc-templates-apis";
+import { applyAgentTemplate } from "../apis/av-platform-templates-apis";
 import { UseTemplateDTO } from "../dtos/use-template-dto";
-import { FlowTypesEnum } from "@/react-toolkit/enums/flow-types-enum";
 
 /**
  * useCloneTemplateMutation
@@ -34,7 +34,11 @@ export const useCloneTemplateMutation = () => {
 
     // On success, open Agent Builder with the applied template
     onSuccess: (data) => {
-      if (data?.data?.type == FlowTypesEnum.Agent || data?.data?.type == FlowTypesEnum.ChatAgent || data?.data?.type == FlowTypesEnum.Block) {
+      if (
+        data?.data?.type == FlowTypesEnum.Agent ||
+        data?.data?.type == FlowTypesEnum.ChatAgent ||
+        data?.data?.type == FlowTypesEnum.Block
+      ) {
         window.location.href = `${import.meta.env.VITE_AGENTBUILDER_PATH}${stripLeadingSlash(data.data.accessPath)}`;
       }
     },

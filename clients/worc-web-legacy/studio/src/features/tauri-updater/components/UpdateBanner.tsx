@@ -55,7 +55,7 @@ export function UpdateBanner() {
           }
           case "Finished":
             toast.success(
-              `Worc v${update.version} downloaded successfully. Restarting app...`,
+              `Avintra v${update.version} downloaded successfully. Restarting app...`,
             );
             setProgress(0);
             break;

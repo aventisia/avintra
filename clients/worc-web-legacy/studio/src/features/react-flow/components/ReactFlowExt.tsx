@@ -1,7 +1,7 @@
 import { CustomEdgeTypeObj } from "@/constants/custom-edge-type-obj";
 import { CustomNodeTypeObj } from "@/constants/custom-node-type-obj";
 import { defaultEdgeOptions } from "@/constants/default-edge-options";
-import { WorcAssistantUI } from "@/features/assistant-ui";
+import { AvPlatformAssistantUI } from "@/features/assistant-ui";
 import { useHistoryTracker } from "@/hooks/useHistoryTracker";
 import { useTrackSelection } from "@/hooks/useTrackSelection";
 import { useUndoRedoShortcuts } from "@/hooks/useUndoRedoShortcuts";
@@ -243,7 +243,7 @@ export const ReactFlowExt = () => {
         <>
           <ResizableHandle withHandle className="bg-slate-300" />
           <ResizablePanel minSize={"30%"} defaultSize="35%">
-            <WorcAssistantUI />
+            <AvPlatformAssistantUI />
           </ResizablePanel>
         </>
       )}

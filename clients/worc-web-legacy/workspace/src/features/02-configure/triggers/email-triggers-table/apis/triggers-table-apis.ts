@@ -11,7 +11,7 @@ import { EmailTriggerDto } from "../dtos/email-trigger-dto";
 import { SearchAgentsDto } from "../dtos/search-agent-dto";
 import { SelectAgentTableDto } from "../dtos/select-agent-table-dto";
 
-const baseAPIURL: string = `${import.meta.env.VITE_WORC_API_PATH}/email-trigger`;
+const baseAPIURL: string = `${import.meta.env.VITE_WORKSPACE_API_PATH}/email-trigger`;
 
 /**
  * Retrieves list of triggers.
@@ -67,7 +67,7 @@ export const getNewTriggerAgents = () => {
   return axiosInstance
     .get<
       IHttpResponse<SelectAgentTableDto[]>
-    >(`${import.meta.env.VITE_WORC_API_PATH}/agent/publish-flows`)
+    >(`${import.meta.env.VITE_WORKSPACE_API_PATH}/agent/publish-flows`)
     .then((res) => res.data);
 };
 

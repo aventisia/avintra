@@ -24,11 +24,11 @@ export const getWebSocketUrl = ({
 }) => {
   // Determine the client type based on whether the app is running in Tauri or a web browser
   const clientType = IS_TAURI
-    ? ClientTypesEnum.WorcDesktopApp
+    ? ClientTypesEnum.AvPlatformDesktopApp
     : ClientTypesEnum.WebBrowser;
 
   // Construct the WebSocket URL
-  let url = `${import.meta.env.VITE_WORC_API_PATH}/orchestrator-hub?clientType=${clientType}`;
+  let url = `${import.meta.env.VITE_WORKSPACE_API_PATH}/orchestrator-hub?clientType=${clientType}`;
 
   // Only include osID, hostname, and appVersion if the app is in Tauri (i.e., IS_TAURI is true)
   if (IS_TAURI) {

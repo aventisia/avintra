@@ -75,12 +75,12 @@ export const useAuthenticateUserMutation = () => {
           // Set authenticated user locally
           setUserSessionLocally(data);
 
-          // Redirect to worc app
+          // Redirect to workspace app
           const params = new URLSearchParams(window.location.search);
           const redirect = params.get("redirect");
           const destination = redirect
             ? decodeURIComponent(redirect)
-            : import.meta.env.VITE_WORC_PATH;
+            : import.meta.env.VITE_WORKSPACE_PATH;
 
           navigate("/redirect?msg=Logging in...&url=" + destination);
         }

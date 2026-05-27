@@ -1,10 +1,12 @@
-import { IHttpResponse } from "@aventisia/ui/dtos";
 import { axiosInstance } from "@/react-toolkit/lib/axios-instance";
+
+import { IHttpResponse } from "@aventisia/ui/dtos";
+
 import { FlowUserDto } from "../dtos/flow-user-dto";
 import { WorkspaceUserDto } from "../dtos/workspace-user-dto";
 
-const flowUserApiUrl: string = `${import.meta.env.VITE_WORC_API_PATH}/flow-user`;
-const workspaceUserApiUrl: string = `${import.meta.env.VITE_WORC_API_PATH}/user`;
+const flowUserApiUrl: string = `${import.meta.env.VITE_WORKSPACE_API_PATH}/flow-user`;
+const workspaceUserApiUrl: string = `${import.meta.env.VITE_WORKSPACE_API_PATH}/user`;
 
 /**
  * Retrieves all flows users of a flow.

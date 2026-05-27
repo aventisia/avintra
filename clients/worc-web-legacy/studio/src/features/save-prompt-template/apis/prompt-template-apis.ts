@@ -5,7 +5,7 @@ import { IHttpResponse } from "@aventisia/ui/dtos";
 import { PromptTemplateDto } from "../dto/prompt-template-dto";
 
 // Base API URL for all prompt-template related endpoints
-const baseAPIURL = `${import.meta.env.VITE_WORC_API_PATH}/project-template`;
+const baseAPIURL = `${import.meta.env.VITE_WORKSPACE_API_PATH}/project-template`;
 
 /**
  * Save and publish a new template.

@@ -1,10 +1,10 @@
-import { IHttpResponse, IOptimisticMutation } from "@aventisia/ui/dtos";
-
 import { axiosInstance } from "@/react-toolkit/lib/axios-instance";
+
+import { IHttpResponse, IOptimisticMutation } from "@aventisia/ui/dtos";
 
 import { SupportTicketRemarksDto } from "../dtos/SupportTicketRemarksDto";
 
-const baseAPIURL: string = `${import.meta.env.VITE_WORC_API_PATH}/supportticket-remarks`;
+const baseAPIURL: string = `${import.meta.env.VITE_WORKSPACE_API_PATH}/supportticket-remarks`;
 
 /**
  * Retrieves all remarks associated with a support ticket.

@@ -1,8 +1,8 @@
 import { Suspense, lazy } from "react";
 
 // Lazy load the FlowsTable component.
-const WorcLibrary = lazy(() =>
-  import("@/features/01-build/worc-library/components").then((module) => ({
+const AvPlatformLibrary = lazy(() =>
+  import("@/features/01-build/av-platform-library/components/AvPlatformLibrary").then((module) => ({
     default: module.default,
   })),
 );
@@ -14,7 +14,7 @@ const WorcLibrary = lazy(() =>
 export const LibraryPage = () => {
   return (
     <Suspense>
-      <WorcLibrary />
+      <AvPlatformLibrary />
     </Suspense>
   );
 };

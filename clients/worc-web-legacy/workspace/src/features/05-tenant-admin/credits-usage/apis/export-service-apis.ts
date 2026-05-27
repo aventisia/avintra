@@ -1,12 +1,12 @@
-import { IHttpResponse } from "@aventisia/ui/dtos";
-
 import { axiosInstance } from "@/react-toolkit/lib/axios-instance";
+
+import { IHttpResponse } from "@aventisia/ui/dtos";
 
 import { AgentModelDTO } from "../dtos/agents-models-dto";
 import { ExportChartDTO } from "../dtos/export-chart-dto";
 import { WorkspaceUserDto } from "../dtos/workspace-user-dto";
 
-const workspaceUserApiUrl: string = `${import.meta.env.VITE_WORC_API_PATH}`;
+const workspaceUserApiUrl: string = `${import.meta.env.VITE_WORKSPACE_API_PATH}`;
 const accountAPIURL: string = `${import.meta.env.VITE_ACCOUNTS_API_PATH}/credit-usage`;
 
 /**

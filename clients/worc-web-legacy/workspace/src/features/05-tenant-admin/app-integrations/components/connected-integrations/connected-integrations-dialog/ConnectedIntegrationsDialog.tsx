@@ -18,7 +18,7 @@ const ConnectedIntegrationsDialog = () => {
   const { isOpen, setOpen, integrationInfo } =
     useConnectedIntegrationsDialogStore();
 
-  const basePath = import.meta.env.VITE_WORC_PATH.replace(/\/$/, "");
+  const basePath = import.meta.env.VITE_WORKSPACE_PATH.replace(/\/$/, "");
 
   return (
     <Dialog open={isOpen} onOpenChange={setOpen}>

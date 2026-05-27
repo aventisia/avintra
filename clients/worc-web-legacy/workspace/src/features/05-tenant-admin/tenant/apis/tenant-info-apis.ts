@@ -1,6 +1,6 @@
-import { IHttpResponse } from "@aventisia/ui/dtos";
-
 import { axiosInstance } from "@/react-toolkit/lib/axios-instance";
+
+import { IHttpResponse } from "@aventisia/ui/dtos";
 
 import { CompanyDetailsDTO } from "../dtos/company-details-dto";
 import { CurrentPlanDto } from "../dtos/current-plan-dto";
@@ -47,7 +47,7 @@ const getAgentsCount = () =>
   axiosInstance
     .get<
       IHttpResponse<number>
-    >(`${import.meta.env.VITE_WORC_API_PATH}/agent/total-published`)
+    >(`${import.meta.env.VITE_WORKSPACE_API_PATH}/agent/total-published`)
     .then((res) => res.data);
 
 export {
