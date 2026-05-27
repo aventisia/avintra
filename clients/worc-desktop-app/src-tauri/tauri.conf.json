@@ -1,7 +1,7 @@
 {
   "$schema": "../node_modules/@tauri-apps/cli/config.schema.json",
-  "mainBinaryName": "WorcDesktopApp",
-  "productName": "WorcDesktopApp",
+  "mainBinaryName": "AvintraDesktopApp",
+  "productName": "AvintraDesktopApp",
   "version": "0.1.65",
   "identifier": "com.aventisia.worc",
   "build": {
@@ -13,10 +13,10 @@
   "app": {
     "windows": [
       {
-        "title": "WorcDesktopApp",
+        "title": "AvintraDesktopApp",
         "resizable": true,
         "fullscreen": false,
-        "userAgent": "WorcDesktopApp/0.1.65"
+        "userAgent": "AvintraDesktopApp/0.1.65"
       }
     ],
     "security": {

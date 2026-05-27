@@ -61,8 +61,8 @@ public class DesktopAppController : BaseApiController
         if (string.IsNullOrEmpty(filePath))
             return NotFound(message);
 
-        // Get the latest verison out. Assuming version is in the format WorcDesktopApp_{version}_x64-setup.exe
-        string latestVersion = Path.GetFileNameWithoutExtension(fileName).Split('_')[1]; // WorcDesktopApp_{version}_x64-setup.exe
+        // Get the latest verison out. Assuming version is in the format AvintraDesktopApp_{version}_x64-setup.exe
+        string latestVersion = Path.GetFileNameWithoutExtension(fileName).Split('_')[1]; // AvintraDesktopApp_{version}_x64-setup.exe
 
         var updateNotes = "Bug fixes and improvements.";
         var pubDate = DateTime.UtcNow.ToString("o"); // ISO 8601 format
@@ -107,9 +107,9 @@ public class DesktopAppController : BaseApiController
 
         // Set search pattern based on version
         if (!string.IsNullOrEmpty(version))
-            searchPattern = $"WorcDesktopApp_{version}_x64-setup.exe";
+            searchPattern = $"AvintraDesktopApp_{version}_x64-setup.exe";
         else
-            searchPattern = $"WorcDesktopApp_*_x64-setup.exe";
+            searchPattern = $"AvintraDesktopApp_*_x64-setup.exe";
 
         // Get files matching the search pattern
         var files = Directory.GetFiles(basePath, searchPattern);

@@ -15,11 +15,11 @@ public enum ClientTypesEnum
     /// A user interacting with the system via a desktop application, typically with offline support and advanced features.
     /// </summary>
     [Description("A user accessing the system via a desktop application.")]
-    WorcDesktopApp,
+    AvintraDesktopApp,
 
     /// <summary>
     /// An automated machine performing tasks and system operations without direct user interaction.
     /// </summary>
     [Description("An automated machine performing tasks and system operations.")]
-    WorcMachine
+    AvintraMachine
 }

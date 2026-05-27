@@ -34,7 +34,7 @@ public class OrchestratorHub : Hub
             var userId = Guid.Parse(Context?.User?.FindFirstValue("uid") ?? Guid.Empty.ToString());
             var tenantId = Guid.Parse(Context?.User?.FindFirstValue("tntid") ?? Guid.Empty.ToString());
 
-            // Try to parse the client type from the query string (e.g., 'WorcMachine', 'WebBrowser')
+            // Try to parse the client type from the query string (e.g., 'AvintraMachine', 'WebBrowser')
             Enum.TryParse<ClientTypesEnum>(httpContext.Request.Query["clientType"], true, out var clientType);
 
             // Retrieve additional query parameters (OSId, Hostname, AppVersion)
@@ -64,13 +64,13 @@ public class OrchestratorHub : Hub
                 if (machine != null)
                 {
                     clientId = machine.Id;
-                    clientType = ClientTypesEnum.WorcMachine;
+                    clientType = ClientTypesEnum.AvintraMachine;
                     _logger.LogInformation("Machine found with OSId: {OSId}, Hostname: {Hostname}. Assigned ClientId: {ClientId}, ClientType: {ClientType}.", osId, hostname, clientId, clientType);
                 }
                 else
                 {
                     // If no machine is found, default clientType to DesktopApp
-                    clientType = ClientTypesEnum.WorcDesktopApp;
+                    clientType = ClientTypesEnum.AvintraDesktopApp;
                     _logger.LogWarning("No machine found for OSId: {OSId}, Hostname: {Hostname}. Defaulting to client type {ClientType}.", osId, hostname, clientType);
                 }
             }
@@ -91,7 +91,7 @@ public class OrchestratorHub : Hub
             await _clientStatusStore.AddOrUpdateStatusAsync(clientDataStore);
 
             // If machine, also register the desktop/user client separately
-            if (clientType == ClientTypesEnum.WorcMachine)
+            if (clientType == ClientTypesEnum.AvintraMachine)
             {
                 // Prepare the client status object with initial values
                 var userClient = new ClientDataStore
@@ -99,7 +99,7 @@ public class OrchestratorHub : Hub
                     TenantId = tenantId,
                     ClientId = userId,
                     ConnectionId = connectionId,
-                    Type = ClientTypesEnum.WorcDesktopApp,
+                    Type = ClientTypesEnum.AvintraDesktopApp,
                     Status = MachineStatusTypeEnum.Online,
                     LastSeen = DateTimeOffset.UtcNow
                 };
@@ -113,7 +113,7 @@ public class OrchestratorHub : Hub
             _logger.LogInformation("Client {ConnectionId} added to group TENANT_{TenantId}.", connectionId, tenantId);
 
             // If the client is a machine, handle machine-specific logic (e.g., job assignment)
-            if (clientType == ClientTypesEnum.WorcMachine && !_environmentConfig.OnPremExecutionDisabled)
+            if (clientType == ClientTypesEnum.AvintraMachine && !_environmentConfig.OnPremExecutionDisabled)
             {
                 // Retrieve all FlowVersionIds associated with the current machine from the MachineFlow table
                 var flowVersionIds = await _workspaceInternalDbContext.MachineFlow
@@ -206,7 +206,7 @@ public class OrchestratorHub : Hub
                 var hasOtherConnections = await _clientStatusStore.GetUserStatusesAsync(clientDataStore.ClientId);
 
                 // Handle machine disconnection
-                if (hasOtherConnections.Any() && clientDataStore.Type == ClientTypesEnum.WorcMachine)
+                if (hasOtherConnections.Any() && clientDataStore.Type == ClientTypesEnum.AvintraMachine)
                 {
                     // Notify the tenant group about the machine going offline
                     await Clients.Group($"TENANT_{clientDataStore.TenantId}").SendAsync("machine_status_update", "A machine is offline now.");

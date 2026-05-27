@@ -164,10 +164,10 @@ internal class Program
                     var nodeJsonFilePath = Path.GetFullPath(Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "..", "..", "..", "..", "..", "worc-web-legacy", "studio", "src", "features", "dynamic-config-panel", "constants", "config-json", nodeType.Name.Replace("Node", "Activity") + ".json"));
                     WriteJsonToFile(nodeJsonFilePath, nodeJson, jsonSerializerOptions);
 
-                    // Save the same file in LocalAppData/WorcDesktopApp (if applicable)
+                    // Save the same file in LocalAppData/AvintraDesktopApp (if applicable)
                     if (OperatingSystem.IsWindows())
                     {
-                        nodeJsonFilePath = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData), "WorcDesktopApp", "config-files", "desktop-nodes", nodeType.Name.Replace("Node", "Activity") + ".json");
+                        nodeJsonFilePath = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData), "AvintraDesktopApp", "config-files", "desktop-nodes", nodeType.Name.Replace("Node", "Activity") + ".json");
                         WriteJsonToFile(nodeJsonFilePath, nodeJson, jsonSerializerOptions);
                     }
                 }
@@ -184,11 +184,11 @@ internal class Program
         var nodeSelectorJsonFilePath = Path.GetFullPath(Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "..", "..", "..", "..", "..", "worc-web-legacy", "studio", "src", "features", "action-selector", "constants", "_ActionSelectorData.json"));
         WriteJsonToFile(nodeSelectorJsonFilePath, nodeMappingObject, jsonSerializerOptions, "Nodes mapping JSON saved to worc-platform repo");
 
-        // Save same file _NodeSelectorData.json to LocalAppData/WorcDesktopApp (if applicable)
+        // Save same file _NodeSelectorData.json to LocalAppData/AvintraDesktopApp (if applicable)
         if (OperatingSystem.IsWindows())
         {
-            nodeSelectorJsonFilePath = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData), "WorcDesktopApp", "config-files", "action-selector", "_ActionSelectorData.json");
-            WriteJsonToFile(nodeSelectorJsonFilePath, nodeMappingObject, jsonSerializerOptions, "Node selector mapping JSON saved to AppData/Local/WorcDesktopApp");
+            nodeSelectorJsonFilePath = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData), "AvintraDesktopApp", "config-files", "action-selector", "_ActionSelectorData.json");
+            WriteJsonToFile(nodeSelectorJsonFilePath, nodeMappingObject, jsonSerializerOptions, "Node selector mapping JSON saved to AppData/Local/AvintraDesktopApp");
         }
 
         Console.WriteLine("Task complete");
