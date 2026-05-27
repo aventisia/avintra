@@ -24,6 +24,17 @@ public static class WorkspaceDbInitialSeed
             Console.WriteLine("Info: Applying database migrations...");
             await workspaceDbContext.Database.MigrateAsync();
             Console.WriteLine("Info: Database migrations applied successfully.");
+
+            // TODO (Remove ai-studio task): Temporary database data migration logic - remove once all dev/uat/prod database's data is updated
+
+            // TODO (Remove ai-studio task): Remove AIProject record from ProjectTemplate entity
+            var aiProjectTemplate = (await workspaceDbContext.ProjectTemplates.Where(w => w.Type == ProjectTemplateTypesEnum.AIProject).ToListAsync());
+            if (aiProjectTemplate != null && aiProjectTemplate.Any())
+            {
+                workspaceDbContext.ProjectTemplates.RemoveRange(aiProjectTemplate);
+                await workspaceDbContext.SaveChangesAsync();
+                Console.WriteLine("Info: Removed AIProject type template from ProjectTemplates entity.");
+            }
         }
         catch (Exception ex)
         {

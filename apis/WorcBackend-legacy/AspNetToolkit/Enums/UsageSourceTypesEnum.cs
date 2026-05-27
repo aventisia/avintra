@@ -12,6 +12,8 @@ public enum UsageSourceTypesEnum
     [Description("Agent")]
     Agent,
 
+    AIModel, // TODO (Remove ai-studio task): Deprecated services (to be removed after data migration)
+
     /// <summary>
     /// Indicates that the credits were consumed by the platform itself.
     /// </summary>
