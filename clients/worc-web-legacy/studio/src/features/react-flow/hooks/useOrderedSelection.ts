@@ -1,5 +1,5 @@
-import { useEffect, useState } from "react";
 import { Node } from "@xyflow/react";
+import { useEffect, useState } from "react";
 
 /**
  * Tracks the chronological order in which a user selects nodes.
@@ -36,7 +36,6 @@ export const useOrderedSelection = (nodes: Node[]) => {
       return [...maintained, ...added];
     });
     // We intentionally only depend on the stable hash to avoid infinite re-renders
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [selectedSetHash]);
 
   return orderedIds;

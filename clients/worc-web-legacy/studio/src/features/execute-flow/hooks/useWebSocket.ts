@@ -1,26 +1,28 @@
 import { IS_TAURI } from "@/constants";
+import { ActionTypesEnum } from "@/features/credits-management/constants/action-types-enum";
+import { CreditServiceTypesEnum } from "@/features/credits-management/constants/credit-service-type-enum";
+import { UsageSourceTypesEnum } from "@/features/credits-management/constants/usage-source-types-enum";
+import { usePostCreditConsumptionMutation } from "@/features/credits-management/hooks/usePostCreditConsumptionMutation";
 import { useCurrentFlowStore } from "@/stores/current-flow-store";
+
 import { invoke } from "@tauri-apps/api/core";
 import { useCallback, useEffect, useRef, useState } from "react";
 import { useShallow } from "zustand/react/shallow";
+
 import {
+  WebSocketCommandType,
+  WebSocketMessageType,
   getExecutionState,
   saveNodeExecutionLog,
   sendExecutionComplete,
   sendNextNodeToProcess,
   sendNodeToProcess,
-  WebSocketCommandType,
-  WebSocketMessageType,
 } from "..";
-import { usePostCreditConsumptionMutation } from "@/features/credits-management/hooks/usePostCreditConsumptionMutation";
+import { getLocalExecutionLog } from "../apis/get-version-execution-log";
+import { insertJob } from "../apis/jobs-table-apis";
 import { JobStatusTypesEnum } from "../enums/job-status-type-enum";
 import { useJobDataStore } from "../stores/job-data-store";
-import { CreditServiceTypesEnum } from "@/features/credits-management/constants/credit-service-type-enum";
-import { UsageSourceTypesEnum } from "@/features/credits-management/constants/usage-source-types-enum";
-import { ActionTypesEnum } from "@/features/credits-management/constants/action-types-enum";
-import { insertJob } from "../apis/jobs-table-apis";
-import { getLocalExecutionLog } from "@/features/flow-execution-log/apis/get-version-execution-log";
-import { ExecutionNode } from "@/features/flow-execution-log/types/execution-types";
+import { ExecutionNode } from "../types/execution-types";
 
 export default function useWebSocket() {
   const socketRef = useRef<WebSocket | null>(null);
@@ -89,7 +91,6 @@ export default function useWebSocket() {
         console.warn("WebSocket not connected");
       }
     },
-    // eslint-disable-next-line react-hooks/exhaustive-deps
     [setExecutionState],
   );
 
@@ -170,7 +171,6 @@ export default function useWebSocket() {
         socketRef.current.close(1000, "Component unmounted");
       }
     };
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [sendCommand]);
 
   useEffect(() => {
@@ -232,7 +232,6 @@ export default function useWebSocket() {
 
     // Run the function to handle both tasks
     handleExecutionData();
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [currExecCommand]);
 
   return { sendCommand };

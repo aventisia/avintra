@@ -1,6 +1,7 @@
-/* eslint-disable @typescript-eslint/no-explicit-any */
+import { JsonViewer } from "@/components/json-viewer/JsonViewer";
 import { VariableSelectorWrapper } from "@/components/variable-selector/VariableSelectorWrapper";
 import { useVariableSelectorStore } from "@/stores/variable-selector-store";
+
 import { Switch } from "@aventisia/ui";
 import { buttonVariants } from "@aventisia/ui/buttons";
 import { FormControl, FormField, FormItem } from "@aventisia/ui/form";
@@ -11,6 +12,7 @@ import {
   InformationCircleIcon,
   VariableIcon,
 } from "@heroicons/react/24/outline";
+import { useEffect } from "react";
 import {
   FieldPath,
   FieldValues,
@@ -18,9 +20,8 @@ import {
   useFormContext,
 } from "react-hook-form";
 import { useShallow } from "zustand/react/shallow";
+
 import { ConfigPanelAutosizeInput } from "../..";
-import { useEffect } from "react";
-import { JsonViewer } from "@/components/json-viewer/JsonViewer";
 
 interface ConfigPanelModelOutputFieldProps
   extends React.ComponentPropsWithoutRef<typeof ConfigPanelAutosizeInput> {

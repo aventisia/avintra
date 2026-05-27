@@ -1,8 +1,6 @@
 import { AgentExecutionLogType } from "@/features/execute-flow/types/execution-log-types";
-import {
-  Execution,
-  ExecutionNode,
-} from "@/features/flow-execution-log/types/execution-types";
+
+import { Execution, ExecutionNode } from "../types/execution-types";
 
 export const getLocalExecutionLog = async (versionId: string) => {
   try {
@@ -28,7 +26,7 @@ export const getLocalExecutionLog = async (versionId: string) => {
             nodeName: nodeLog.nodeName,
             isSuccess: nodeLog.isSuccess,
             duration: nodeLog.duration,
-
+            nodeUniqueName: nodeLog.nodeUniqueName,
             // Assign a unique ID to distinguish repeated instances of the same node (when used inside a loop)
             uniqueNodeId: window.crypto.randomUUID(),
 

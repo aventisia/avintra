@@ -1,15 +1,17 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
+import { getAITasksByName } from "@/features/ai-tasks/apis/ai-tasks-apis";
 import { useCurrentFlowStore } from "@/stores/current-flow-store";
+
+import { LoadingSpinner } from "@aventisia/ui";
 import { Button } from "@aventisia/ui/buttons";
 import { cn } from "@aventisia/ui/lib";
 import { SparklesIcon } from "lucide-react";
 import { useEffect } from "react";
 import { UseFormReturn } from "react-hook-form";
 import { useShallow } from "zustand/react/shallow";
-import { useImproveWithAIMutation } from "../../hooks/useImproveWithAIMutation";
-import { getAITasksByName } from "@/features/ai-tasks/apis/ai-tasks-apis";
+
 import { LLMResponseDto, ProviderLiteral } from "../../dtos/llm-providers-dto";
-import { LoadingSpinner } from "@aventisia/ui";
+import { useImproveWithAIMutation } from "../../hooks/useImproveWithAIMutation";
 
 const ImproveWithAIButton = ({
   form,
@@ -49,7 +51,6 @@ const ImproveWithAIButton = ({
         console.error("ImproveWithAI: Invalid LLM structured output");
       }
     }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [data]);
 
   const handleImproveWithAI = async () => {

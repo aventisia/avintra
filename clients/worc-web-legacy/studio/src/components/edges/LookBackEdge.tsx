@@ -93,7 +93,7 @@ export const LoopBackEdge = memo(
 
     return (
       <>
-        {markerEnd ? <ChevronMarkerEnd edgeId={id} /> : null}
+        {markerEnd ? <ChevronMarkerEnd edgeId={id} stroke="1" /> : null}
         <BaseEdge
           id={id}
           path={path}
