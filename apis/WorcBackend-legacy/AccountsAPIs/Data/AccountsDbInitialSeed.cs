@@ -79,6 +79,52 @@ public static class AccountsDbInitialSeed
             Console.WriteLine("Info: Applying database migrations...");
             await accountsDbContext.Database.MigrateAsync();
             Console.WriteLine("Info: Database migrations applied successfully.");
+
+
+            // TODO (Remove ai-studio task): Temporary database data migration logic - remove once all dev/uat/prod database's data is updated
+
+            // TODO (Remove ai-studio task)
+            var creditPlansRecords = (await accountsDbContext.CreditPlans.Where(w =>
+                w.ServiceType == CreditServiceTypesEnum.OnPremGpuText ||
+                w.ServiceType == CreditServiceTypesEnum.OlmOcrInput ||
+                w.ServiceType == CreditServiceTypesEnum.OlmOcrOutput ||
+                w.ServiceType == CreditServiceTypesEnum.OnPremSTT ||
+                w.ServiceType == CreditServiceTypesEnum.OnPremTTS ||
+                w.ServiceType == CreditServiceTypesEnum.OpenAIEmbedding3Large ||
+                w.ServiceType == CreditServiceTypesEnum.GeminiEmbeddingV1 ||
+                w.ServiceType == CreditServiceTypesEnum.GeminiEmbeddingV2Preview ||
+                w.ServiceType == CreditServiceTypesEnum.OpenRouterQwenEmbedding06B ||
+                w.ServiceType == CreditServiceTypesEnum.OpenRouterQwenEmbedding4B ||
+                w.ServiceType == CreditServiceTypesEnum.OpenRouterQwenEmbedding8B ||
+                w.ServiceType == CreditServiceTypesEnum.AIModelExecutionTime).ToListAsync());
+            if (creditPlansRecords != null && creditPlansRecords.Any())
+            {
+                accountsDbContext.CreditPlans.RemoveRange(creditPlansRecords);
+                await accountsDbContext.SaveChangesAsync();
+                Console.WriteLine("Info: Updated CreditPlans entity.");
+            }
+
+            // TODO (Remove ai-studio task)
+            var creditUsagesRecords = (await accountsDbContext.CreditUsages.Where(w =>
+                w.RefType == UsageSourceTypesEnum.AIModel ||
+                w.ServiceType == CreditServiceTypesEnum.OnPremGpuText ||
+                w.ServiceType == CreditServiceTypesEnum.OlmOcrInput ||
+                w.ServiceType == CreditServiceTypesEnum.OlmOcrOutput ||
+                w.ServiceType == CreditServiceTypesEnum.OnPremSTT ||
+                w.ServiceType == CreditServiceTypesEnum.OnPremTTS ||
+                w.ServiceType == CreditServiceTypesEnum.OpenAIEmbedding3Large ||
+                w.ServiceType == CreditServiceTypesEnum.GeminiEmbeddingV1 ||
+                w.ServiceType == CreditServiceTypesEnum.GeminiEmbeddingV2Preview ||
+                w.ServiceType == CreditServiceTypesEnum.OpenRouterQwenEmbedding06B ||
+                w.ServiceType == CreditServiceTypesEnum.OpenRouterQwenEmbedding4B ||
+                w.ServiceType == CreditServiceTypesEnum.OpenRouterQwenEmbedding8B ||
+                w.ServiceType == CreditServiceTypesEnum.AIModelExecutionTime).ToListAsync());
+            if (creditUsagesRecords != null && creditUsagesRecords.Any())
+            {
+                accountsDbContext.CreditUsages.RemoveRange(creditUsagesRecords);
+                await accountsDbContext.SaveChangesAsync();
+                Console.WriteLine("Info: Updated CreditUsages entity.");
+            }
         }
         catch (Exception ex)
         {
