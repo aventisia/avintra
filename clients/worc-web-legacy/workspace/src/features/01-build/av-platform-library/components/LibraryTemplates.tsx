@@ -7,7 +7,7 @@ import { TemplateCard } from "./TemplateCard";
 import { TemplateCardSkeleton } from "./TemplateCardSkelton";
 import { TemplatePagination } from "./TemplatePagination";
 
-const WorcLibraryTemplates = ({
+const LibraryTemplates = ({
   selectedCategory,
   searchQuery,
 }: {
@@ -111,4 +111,4 @@ const WorcLibraryTemplates = ({
   );
 };
 
-export default WorcLibraryTemplates;
+export default LibraryTemplates;

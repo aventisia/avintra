@@ -1,4 +1,4 @@
-import { WorcAssistantUI } from "@/features/04-assist/my-chats/assistant-ui";
+import { AvPlatformAssistantUI } from "@/features/04-assist/my-chats/assistant-ui";
 import { AgentIcon } from "@/features/04-assist/my-chats/components/chat-agents-list/AgentIcon";
 
 import { ThreadMessageLike } from "@assistant-ui/react";
@@ -33,7 +33,7 @@ export default function ChatSection({ data }: { data: AdminConversationDto }) {
       </div>
 
       <div className="h-[calc(100%-4rem)] w-full">
-        <WorcAssistantUI readOnly initialMessages={messages} />
+        <AvPlatformAssistantUI readOnly initialMessages={messages} />
       </div>
     </div>
   );

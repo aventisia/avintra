@@ -6,7 +6,7 @@ import { AppMinimalFooter } from "./AppMinimalFooter";
 export const AppRedirectPage = () => {
   return (
     <RedirectPage
-      appLogo={<AppLogo logoSrc="/logo.svg" />}
+      appLogo={<AppLogo className="h-7" logoSrc="/logo.svg" />}
       minimalFooter={<AppMinimalFooter />}
     />
   );

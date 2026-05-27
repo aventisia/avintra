@@ -5,7 +5,7 @@ import { IHttpResponse } from "@aventisia/ui/dtos";
 import { ExecuteFlowRequestDto } from "../dtos/execute-flow-request-dto";
 import { ExecuteFlowResponseDto } from "../dtos/execute-flow-response-dto";
 
-const baseAPIURL: string = `${import.meta.env.VITE_WORC_API_PATH}/execute-flow`;
+const baseAPIURL: string = `${import.meta.env.VITE_WORKSPACE_API_PATH}/execute-flow`;
 
 /**
  * Executes a flow on the web server by sending a POST request to the API with the flow version ID.

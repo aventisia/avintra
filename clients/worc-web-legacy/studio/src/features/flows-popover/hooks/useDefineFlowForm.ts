@@ -12,7 +12,7 @@ import { FLOWS_QUERY_KEY } from "../constants/constants";
 import { flowNameSchema, flowZodSchema } from "../constants/flow-zod-schema";
 import { FlowsTableDto } from "../dtos/flows-table-dto";
 
-/* Note: Its a copy of flows-table feature of worc app. 
+/* Note: Its a copy of flows-table feature of workspace app. 
   Any change to the this file is going to affect both the files/features. 
   So, we just need to replace the file's content in future.
 */

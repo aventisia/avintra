@@ -1,11 +1,13 @@
 import { LogoImage, LogoLink } from "@aventisia/ui/layout";
+import { cn } from "@aventisia/ui/lib";
 
 interface AppLogoProps {
   logoSrc?: string;
+  className?: string;
 }
 
 const AppLogo = (
-  { logoSrc }: AppLogoProps, // Optional prop for custom logo source
+  { logoSrc, className }: AppLogoProps, // Optional prop for custom logo source
 ) => {
   const logoSrcWithBaseUrl = logoSrc
     ? `${import.meta.env.BASE_URL}${logoSrc.toLowerCase()}`
@@ -13,7 +15,10 @@ const AppLogo = (
 
   return (
     <LogoLink>
-      <LogoImage src={logoSrcWithBaseUrl} />
+      <LogoImage
+        className={cn(className)}
+        src={logoSrcWithBaseUrl}
+      />
     </LogoLink>
   );
 };

@@ -49,7 +49,7 @@ export const useJobNotifications = (
     let isMounted = true;
 
     // Get the base URL from environment or window location
-    const hubUrl = `${import.meta.env.VITE_WORC_API_PATH}/hubs/flow-execution`;
+    const hubUrl = `${import.meta.env.VITE_WORKSPACE_API_PATH}/hubs/flow-execution`;
 
     // Build the SignalR connection
     const connection = new HubConnectionBuilder()

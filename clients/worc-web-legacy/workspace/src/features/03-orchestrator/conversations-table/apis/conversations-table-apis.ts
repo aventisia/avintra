@@ -4,7 +4,7 @@ import { IHttpResponse } from "@aventisia/ui/dtos";
 
 import { AdminConversationDto } from "../dtos/conversations-table-dto";
 
-const baseAPIURL: string = `${import.meta.env.VITE_WORC_API_PATH}/admin/conversations`;
+const baseAPIURL: string = `${import.meta.env.VITE_WORKSPACE_API_PATH}/admin/conversations`;
 
 /**
  * Retrieves list of Conversations.

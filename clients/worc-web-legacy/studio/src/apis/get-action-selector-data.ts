@@ -1,5 +1,6 @@
 import { IS_TAURI } from "@/constants";
 import { axiosInstance } from "@/react-toolkit/lib/axios-instance";
+
 import { PrimaryCategoryType } from "../features/action-selector/types/primary-category-type";
 import { loadJsonFromTauriResources } from "../utils/tauri-resource-loader";
 
@@ -134,7 +135,7 @@ export async function getActionSelectorData(): Promise<PrimaryCategoryType[]> {
       const response = await axiosInstance
         .get<
           PrimaryCategoryType[]
-        >(`${import.meta.env.VITE_WORC_API_PATH}/cloud-connector/config-file/CloudConnectorActionSelectorMappingFile.json`)
+        >(`${import.meta.env.VITE_WORKSPACE_API_PATH}/cloud-connector/config-file/CloudConnectorActionSelectorMappingFile.json`)
         .then((res) => res.data);
       if (response) {
         finalNodeList = mergeActionSelectorData(finalNodeList, response);

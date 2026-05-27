@@ -56,7 +56,7 @@ export function UpdateBanner() {
           }
           case "Finished":
             toast.success(
-              `WorcDesktopApp v${update.version} downloaded successfully. Restarting app...`,
+              `AvintraDesktopApp v${update.version} downloaded successfully. Restarting app...`,
             );
             setProgress(0);
             break;

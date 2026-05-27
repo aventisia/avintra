@@ -1,9 +1,11 @@
-import { IHttpResponse } from "@aventisia/ui/dtos";
 import { axiosInstance } from "@/react-toolkit/lib/axios-instance";
+
+import { IHttpResponse } from "@aventisia/ui/dtos";
+
 import { SearchBlocksDto } from "../dtos/search-block-dto";
 
 // Base API URL from environment variables
-const baseAPIURL: string = `${import.meta.env.VITE_WORC_API_PATH}`;
+const baseAPIURL: string = `${import.meta.env.VITE_WORKSPACE_API_PATH}`;
 
 /**
  * Fetch a list of blocks matching the search term.

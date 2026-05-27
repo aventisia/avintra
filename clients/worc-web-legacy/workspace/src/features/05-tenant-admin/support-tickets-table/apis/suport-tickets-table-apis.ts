@@ -1,11 +1,11 @@
-import { IHttpResponse, IOptimisticMutation } from "@aventisia/ui/dtos";
-
 import { axiosInstance } from "@/react-toolkit/lib/axios-instance";
+
+import { IHttpResponse, IOptimisticMutation } from "@aventisia/ui/dtos";
 
 import { STUpdateByReviewerDto } from "../dtos/STUpdateByReviewerDto";
 import { SupportTicketsTableDto } from "../dtos/SupportTicketsTableDto";
 
-const baseAPIURL: string = `${import.meta.env.VITE_WORC_API_PATH}/supportticket`;
+const baseAPIURL: string = `${import.meta.env.VITE_WORKSPACE_API_PATH}/supportticket`;
 
 /**
  * Retrieves a support ticket.

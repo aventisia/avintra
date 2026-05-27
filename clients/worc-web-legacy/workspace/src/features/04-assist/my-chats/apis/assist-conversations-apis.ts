@@ -5,7 +5,7 @@ import { IHttpResponse } from "@aventisia/ui/dtos";
 import { ConversationMessageDto } from "../dtos/conversation-message-dto";
 import { ConversationSummaryDto } from "../dtos/conversation-summary-dto";
 
-const baseAPIURL: string = `${import.meta.env.VITE_WORC_API_PATH}/assist/conversations`;
+const baseAPIURL: string = `${import.meta.env.VITE_WORKSPACE_API_PATH}/assist/conversations`;
 
 /**
  * Inserts a new conversation.

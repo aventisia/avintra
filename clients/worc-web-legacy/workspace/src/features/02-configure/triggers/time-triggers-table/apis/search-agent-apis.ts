@@ -1,11 +1,11 @@
-import { IHttpResponse } from "@aventisia/ui/dtos";
-
 import { axiosInstance } from "@/react-toolkit/lib/axios-instance";
+
+import { IHttpResponse } from "@aventisia/ui/dtos";
 
 import { SearchAgentsDto } from "../dtos/search-agent-dto";
 
 // Base API URL from environment variables
-const baseAPIURL: string = `${import.meta.env.VITE_WORC_API_PATH}/agent/search`;
+const baseAPIURL: string = `${import.meta.env.VITE_WORKSPACE_API_PATH}/agent/search`;
 
 /**
  * Fetch a list of agents matching the search term.

@@ -14,7 +14,7 @@ import { createHistoryAdapter } from "../adapters/history-adaptor";
 import { useThreadConfigStore } from "../stores/assitant-ui-store";
 import { Thread } from "./thread";
 
-type WorcAssistantUIProps = {
+type AvPlatformAssistantUIProps = {
   title?: string;
   description?: string;
   archived?: boolean;
@@ -22,13 +22,13 @@ type WorcAssistantUIProps = {
   initialMessages?: readonly ThreadMessageLike[];
 };
 
-export const WorcAssistantUI = ({
+export const AvPlatformAssistantUI = ({
   title,
   description,
   archived = false,
   readOnly = false,
   initialMessages = [],
-}: WorcAssistantUIProps) => {
+}: AvPlatformAssistantUIProps) => {
   const queryClient = useQueryClient();
 
   // Extract flowVersionId to pass to the execution adapter

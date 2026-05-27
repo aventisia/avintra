@@ -1,3 +1,5 @@
+import { axiosInstance } from "@/react-toolkit/lib/axios-instance";
+
 import {
   CheckAvailabilityDto,
   IHttpResponse,
@@ -5,11 +7,9 @@ import {
   TrueFalseResultDto,
 } from "@aventisia/ui/dtos";
 
-import { axiosInstance } from "@/react-toolkit/lib/axios-instance";
-
 import { VaultsTableDto } from "../dtos/vaults-table-dto";
 
-const baseAPIURL: string = `${import.meta.env.VITE_WORC_API_PATH}/app-secret`;
+const baseAPIURL: string = `${import.meta.env.VITE_WORKSPACE_API_PATH}/app-secret`;
 
 /**
  * Retrieves list of configs.

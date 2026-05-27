@@ -5,8 +5,8 @@ import { IHttpResponse } from "@aventisia/ui/dtos";
 import { QueueUserDto } from "../dtos/queue-users-dto";
 import { WorkspaceUserDto } from "../dtos/workspace-user-dto";
 
-const queueUserApiUrl: string = `${import.meta.env.VITE_WORC_API_PATH}/queue-user`;
-const workspaceUserApiUrl: string = `${import.meta.env.VITE_WORC_API_PATH}/user`;
+const queueUserApiUrl: string = `${import.meta.env.VITE_WORKSPACE_API_PATH}/queue-user`;
+const workspaceUserApiUrl: string = `${import.meta.env.VITE_WORKSPACE_API_PATH}/user`;
 
 /**
  * Retrieves all Workspace users.

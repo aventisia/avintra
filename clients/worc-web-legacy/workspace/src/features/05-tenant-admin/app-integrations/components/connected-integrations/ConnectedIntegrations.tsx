@@ -20,7 +20,7 @@ const ConnectedIntegrations = () => {
     setOpen(true);
     setIntegrationInfo(integrationInfo);
   };
-  const basePath = import.meta.env.VITE_WORC_PATH.replace(/\/$/, "");
+  const basePath = import.meta.env.VITE_WORKSPACE_PATH.replace(/\/$/, "");
 
   return (
     <div className="space-y-2">

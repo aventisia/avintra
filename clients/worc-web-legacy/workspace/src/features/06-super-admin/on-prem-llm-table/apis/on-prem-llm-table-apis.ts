@@ -1,3 +1,5 @@
+import { axiosInstance } from "@/react-toolkit/lib/axios-instance";
+
 import {
   CheckAvailabilityDto,
   IHttpResponse,
@@ -5,11 +7,9 @@ import {
   TrueFalseResultDto,
 } from "@aventisia/ui/dtos";
 
-import { axiosInstance } from "@/react-toolkit/lib/axios-instance";
-
 import { OnPremModelDto } from "../dtos/on-prem-llm-table-dto";
 
-const baseAPIURL: string = `${import.meta.env.VITE_WORC_API_PATH}/onprem-model`;
+const baseAPIURL: string = `${import.meta.env.VITE_WORKSPACE_API_PATH}/onprem-model`;
 
 /**
  * Retrieves all On Prem LLM

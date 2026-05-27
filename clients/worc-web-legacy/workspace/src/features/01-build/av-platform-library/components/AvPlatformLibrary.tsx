@@ -7,10 +7,10 @@ import { SearchIcon } from "lucide-react";
 import { useState } from "react";
 import { useSearchParams } from "react-router-dom";
 
-import WorcLibraryTemplates from "./WorcLibraryTemplates";
+import LibraryTemplates from "./LibraryTemplates";
 import { TemplateDetail } from "./template-details/TemplateDetails";
 
-const WorcLibrary = () => {
+const TemplateLibrary = () => {
   const [searchParams] = useSearchParams();
   const [searchQuery, setSearchQuery] = useState("");
   const debouncedSearch = useDebounce(searchQuery);
@@ -38,10 +38,10 @@ const WorcLibrary = () => {
           <div className="mx-auto max-w-7xl px-4 py-8">
             <div className="mx-auto mb-6 max-w-3xl text-center">
               <h2 className="text-[4rem] font-semibold tracking-wide">
-                Worc <span className="text-primary">Library</span>
+                Avintra <span className="text-primary">Library</span>
               </h2>
               <p className="text-base text-muted-foreground">
-                The Library of Worc brings together a rich catalog of
+                The Library of Avintra brings together a rich catalog of
                 ready-to-use automations and AI blueprints, empowering teams to
                 build faster, smarter, and at scale — no need to start from
                 scratch.
@@ -91,7 +91,7 @@ const WorcLibrary = () => {
         </div>
 
         {/* Displays templates filtered by the selected category */}
-        <WorcLibraryTemplates
+        <LibraryTemplates
           selectedCategory={selectedCategory}
           searchQuery={debouncedSearch}
         />
@@ -99,4 +99,4 @@ const WorcLibrary = () => {
     );
 };
 
-export default WorcLibrary;
+export default TemplateLibrary;

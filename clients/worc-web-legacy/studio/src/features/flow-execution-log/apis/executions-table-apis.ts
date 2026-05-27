@@ -1,9 +1,10 @@
+import { axiosInstance } from "@/react-toolkit/lib/axios-instance";
+
 import { IHttpResponse } from "@aventisia/ui/dtos";
 
-import { axiosInstance } from "@/react-toolkit/lib/axios-instance";
 import { ExecutionsTableDto } from "../dtos/execution-table-dto";
 
-const baseAPIURL: string = `${import.meta.env.VITE_WORC_API_PATH}/flow-execution-log`;
+const baseAPIURL: string = `${import.meta.env.VITE_WORKSPACE_API_PATH}/flow-execution-log`;
 
 /**
  * Retrieves list of Executions.

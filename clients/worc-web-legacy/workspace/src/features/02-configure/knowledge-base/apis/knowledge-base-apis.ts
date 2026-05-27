@@ -9,7 +9,7 @@ import {
 
 import { KnowledgeBaseTableDto } from "../dtos/knowledge-base-table-dto";
 
-export const baseAPIURL: string = `${import.meta.env.VITE_WORC_API_PATH}/knowledge-base`;
+export const baseAPIURL: string = `${import.meta.env.VITE_WORKSPACE_API_PATH}/knowledge-base`;
 
 /**
  * Retrieves list of knowledge bases created by the current user.

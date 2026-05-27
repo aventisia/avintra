@@ -1,11 +1,13 @@
-import { IHttpResponse } from "@aventisia/ui/dtos";
 import { axiosInstance } from "@/react-toolkit/lib/axios-instance";
+
+import { IHttpResponse } from "@aventisia/ui/dtos";
+import { toast } from "@aventisia/ui/sonner";
+
 import { FlowSilentUpdateDto } from "../dtos/flow-silent-update-dto";
 import { LoadFlowDto } from "../dtos/load-flow-dto";
-import { toast } from "@aventisia/ui/sonner";
 import { PublishFlowDto } from "../dtos/publish-flow";
 
-const baseAPIURL: string = `${import.meta.env.VITE_WORC_API_PATH}/flow`;
+const baseAPIURL: string = `${import.meta.env.VITE_WORKSPACE_API_PATH}/flow`;
 
 /**
  * Gets flow record to load when user opens it in studio

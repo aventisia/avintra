@@ -2,7 +2,6 @@ import { NodeSelector } from "@/features/action-selector/components";
 import AddInputsOutputsDialog from "@/features/add-input-output/components/AddInputsOutputsDialog";
 import { DCPDialog } from "@/features/dynamic-config-panel";
 import { FlowBlockCrudDialog } from "@/features/flow-block/components/flow-block-crud-dialog";
-import ExecutionLogDialog from "@/features/flow-execution-log/components";
 import { FlowSettings } from "@/features/flow-settings/components";
 import ImportFlow from "@/features/import-flow/components/ImportFlow";
 import ShortcutsDialog from "@/features/keyboard-shortcuts/KeyboardShortcutsDialog";
@@ -16,7 +15,6 @@ export const ReactFlowDialogWrapper = memo(() => {
   return (
     <>
       <NodeSelector />
-      <ExecutionLogDialog />
       <SearchCommandDialog />
       <ShareAccessDialog />
       <AddInputsOutputsDialog />

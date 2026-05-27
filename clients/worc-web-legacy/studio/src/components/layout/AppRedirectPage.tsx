@@ -7,7 +7,7 @@ export const AppRedirectPage = () => {
     <RedirectPage
       appLogo={
         <LogoLink>
-          <LogoImage src="logo.svg" />
+          <LogoImage className="h-7" src="logo.svg" />
         </LogoLink>
       }
       minimalFooter={<AppMinimalFooter />}

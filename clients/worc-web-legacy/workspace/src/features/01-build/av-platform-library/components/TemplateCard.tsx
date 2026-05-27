@@ -12,18 +12,18 @@ import {
 } from "@aventisia/ui/cards";
 import { Copy, Tag } from "lucide-react";
 
-import { WorcTemplatesDto } from "../dtos/worc-templates-dtos";
+import { AvPlatformTemplatesDto } from "../dtos/av-platform-templates-dtos";
 import { useViewTemplate } from "../hooks/useViewTemplate";
 import { transformTemplateType } from "../utils/transform-template-type";
 
 type TemplateCardProps = {
-  template: WorcTemplatesDto;
+  template: AvPlatformTemplatesDto;
 };
 
 /**
  * TemplateCard
  *
- * Reusable component to visually display a Worc template.
+ * Reusable component to visually display a av-platform template.
  * Shows name, description, icons, usage count, and creator info.
  */
 export const TemplateCard = ({ template }: TemplateCardProps) => {
@@ -32,7 +32,7 @@ export const TemplateCard = ({ template }: TemplateCardProps) => {
   const templateIcons = template?.icons?.filter(
     (icon) => icon !== "/function.png",
   );
-  const basePath = import.meta.env.VITE_WORC_PATH;
+  const basePath = import.meta.env.VITE_WORKSPACE_PATH;
 
   return (
     <Card

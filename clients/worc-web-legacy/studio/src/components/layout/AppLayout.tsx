@@ -14,7 +14,7 @@ import AppBanner from "./AppBanner";
 import AppHeader from "./AppHeader";
 import { AppRedirectPage } from "./AppRedirectPage";
 import { canWeRenderNodeOrCategory } from "@/features/action-selector/utils/action-visibilty";
-import { deploymentType } from "@/react-toolkit/types/user-session-types";
+import { DeploymentType } from "@aventisia/ui/types";
 import { useCurrentFlowStore } from "@/stores/current-flow-store";
 import { usePreventClose } from "@/hooks/usePreventClose";
 import useTauriUserMetadata from "@/hooks/useTauriUserMetadata";
@@ -72,7 +72,7 @@ export const AppLayout = () => {
   useEffect(() => {
     getActionSelectorData().then((data) => {
       // deploymentType (Commercial / Enterprise)
-      const deploymentType = userSession?.deploymentType as deploymentType;
+      const deploymentType = userSession?.deploymentType as DeploymentType;
 
       const filtered = data.map((primary) => ({
         ...primary,

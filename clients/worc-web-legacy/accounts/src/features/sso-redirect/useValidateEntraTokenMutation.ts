@@ -25,8 +25,8 @@ export const useValidateEntraTokenMutation = () => {
         // Set authenticated user locally
         setUserSessionLocally(data);
 
-        // Redirect to worc app
-        window.location.assign(import.meta.env.VITE_WORC_PATH);
+        // Redirect to workspace app
+        window.location.assign(import.meta.env.VITE_WORKSPACE_PATH);
       }
     },
     onError: () => {

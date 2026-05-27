@@ -1,8 +1,10 @@
-import { IHttpResponse } from "@aventisia/ui/dtos";
 import { axiosInstance } from "@/react-toolkit/lib/axios-instance";
+
+import { IHttpResponse } from "@aventisia/ui/dtos";
+
 import { FlowBlockDto } from "../dtos/flow-block-dtos";
 
-const baseAPIURL: string = `${import.meta.env.VITE_WORC_API_PATH}/block`;
+const baseAPIURL: string = `${import.meta.env.VITE_WORKSPACE_API_PATH}/block`;
 
 /**
  * Gets single flow Block to edit the Block

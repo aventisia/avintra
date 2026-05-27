@@ -2,7 +2,7 @@ import { alphaNumericError, maxLenError, reqError } from "@aventisia/ui/utils";
 import { alphaNumericRegex } from "@aventisia/ui/utils";
 import { z } from "zod";
 
-/* Note: Its a copy of flows-table feature of worc app. 
+/* Note: Its a copy of flows-table feature of workspace app. 
   Any change to the this file is going to affect both the files/features. 
   So, we just need to replace the file's content in future.
 */

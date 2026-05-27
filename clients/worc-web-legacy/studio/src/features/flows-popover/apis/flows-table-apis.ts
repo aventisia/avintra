@@ -1,17 +1,19 @@
+import { axiosInstance } from "@/react-toolkit/lib/axios-instance";
+
 import { IHttpResponse } from "@aventisia/ui/dtos";
 import { IOptimisticMutation } from "@aventisia/ui/dtos";
 import { CheckAvailabilityDto } from "@aventisia/ui/dtos";
 import { TrueFalseResultDto } from "@aventisia/ui/dtos";
-import { axiosInstance } from "@/react-toolkit/lib/axios-instance";
+
 import { FlowsTableDto } from "../dtos/flows-table-dto";
 
 /* Note: File name is flows-table-apis.ts instead of flows-popover-apis.ts because 
-  its a copy of flows-table feature of worc app and both will be using the 
+  its a copy of flows-table feature of workspace app and both will be using the 
   same api endpoints so any change to the apis is going to affect both the files. 
   So, we just need to replace the file in future.
 */
 
-const baseAPIURL: string = `${import.meta.env.VITE_WORC_API_PATH}/flow`;
+const baseAPIURL: string = `${import.meta.env.VITE_WORKSPACE_API_PATH}/flow`;
 
 /**
  * Retrieves all flows created by the user

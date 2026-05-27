@@ -2,7 +2,7 @@ import { MARKER_ARROW_PREFIX } from "@/constants";
 
 interface ChevronMarkerEndProps {
   edgeId: string;
-  stroke: string;
+  stroke?: string;
 }
 
 export const ChevronMarkerEnd = ({ stroke, edgeId }: ChevronMarkerEndProps) => {

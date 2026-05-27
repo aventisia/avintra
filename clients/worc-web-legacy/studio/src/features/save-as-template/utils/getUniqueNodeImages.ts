@@ -7,7 +7,7 @@ const TRIGGER_ICON = "ManualTriggerIcon";
 /**
  * Returns a list of unique image paths used in the flow.
  *
- * - Picks `icon` first (added Icon in assets of worc ).
+ * - Picks `icon` first (added Icon in assets of workspace ).
  * - Falls back to `img` if no icon is set.
  * - Skips the default `/function.png` image.
  */

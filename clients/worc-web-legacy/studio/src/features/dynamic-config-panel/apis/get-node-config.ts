@@ -1,7 +1,8 @@
-import { axiosInstance } from "@/react-toolkit/lib/axios-instance";
-import { DCPFieldSchemaType } from "..";
 import { IS_TAURI } from "@/constants";
+import { axiosInstance } from "@/react-toolkit/lib/axios-instance";
 import { loadJsonFromTauriResources } from "@/utils/tauri-resource-loader";
+
+import { DCPFieldSchemaType } from "..";
 
 const modules = {
   ...import.meta.glob("../constants/config-json/*.json"),
@@ -51,7 +52,7 @@ export const getNodeConfig = async (
     try {
       const connectorConfig = await axiosInstance
         .get(
-          `${import.meta.env.VITE_WORC_API_PATH}/cloud-connector/config-file/${nodeUniqueName}.json`,
+          `${import.meta.env.VITE_WORKSPACE_API_PATH}/cloud-connector/config-file/${nodeUniqueName}.json`,
         )
         .then((res) => res.data);
       if (connectorConfig) {

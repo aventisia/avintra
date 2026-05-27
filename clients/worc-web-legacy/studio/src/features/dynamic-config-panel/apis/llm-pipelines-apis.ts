@@ -17,7 +17,7 @@ const generateLLMResponse = (obj: LLMRequestDto) => {
 const getProviderModels = (provider: string, credentialId: string) => {
   return axiosInstance
     .get<IHttpResponse<ISelectOption[]>>(
-      `${import.meta.env.VITE_WORC_API_PATH}/llm-provider/models/select-option?providerType=${provider}&credentialId=
+      `${import.meta.env.VITE_WORKSPACE_API_PATH}/llm-provider/models/select-option?providerType=${provider}&credentialId=
 ${credentialId}`,
     )
     .then((res) => res.data);

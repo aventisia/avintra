@@ -1,11 +1,13 @@
-import { IHttpResponse } from "@aventisia/ui/dtos";
 import { axiosInstance } from "@/react-toolkit/lib/axios-instance";
+
+import { IHttpResponse } from "@aventisia/ui/dtos";
+
+import { GenerateInstructionRequestDto } from "../dto/genereate-instruction-request-dto";
 import { SaveAsTemplateDto } from "../dto/save-as-template";
 import { ValidateTemplateDto } from "../dto/validate-template-dto";
-import { GenerateInstructionRequestDto } from "../dto/genereate-instruction-request-dto";
 
 // Base API URL for all project-template related endpoints
-const baseAPIURL = `${import.meta.env.VITE_WORC_API_PATH}/project-template`;
+const baseAPIURL = `${import.meta.env.VITE_WORKSPACE_API_PATH}/project-template`;
 
 /**
  * Save and publish a new template.

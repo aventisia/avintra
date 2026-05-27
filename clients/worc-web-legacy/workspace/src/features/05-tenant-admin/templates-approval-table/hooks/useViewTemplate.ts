@@ -8,7 +8,7 @@
 export const useViewTemplate = () => {
   // Function to open the template
   const handleViewTemplate = (id: string) => {
-    const url = `${import.meta.env.VITE_WORC_PATH}library?t=${id}`;
+    const url = `${import.meta.env.VITE_WORKSPACE_PATH}library?t=${id}`;
     window.open(url, "_blank");
   };
 

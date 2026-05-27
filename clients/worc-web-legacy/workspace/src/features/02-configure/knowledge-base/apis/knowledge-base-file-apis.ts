@@ -81,7 +81,7 @@ interface KBUpdateFileStatusDto {
   errorMessage?: string;
 }
 
-export const baseAPIURL: string = `${import.meta.env.VITE_WORC_API_PATH}/knowledge-base`;
+export const baseAPIURL: string = `${import.meta.env.VITE_WORKSPACE_API_PATH}/knowledge-base`;
 const vectorStoreApiBaseUrl: string = `${import.meta.env.VITE_LLMPIPELINE_API_PATH}/vector-store`;
 
 export const getKnowledgeBaseFiles = (knowledgeBaseId: string) => {

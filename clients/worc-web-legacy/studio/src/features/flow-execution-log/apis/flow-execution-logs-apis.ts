@@ -1,10 +1,12 @@
-import { IHttpResponse } from "@aventisia/ui/dtos";
 import { axiosInstance } from "@/react-toolkit/lib/axios-instance";
+
+import { IHttpResponse } from "@aventisia/ui/dtos";
 import { toast } from "@aventisia/ui/sonner";
+
 import { FlowExecutionLogsDTO } from "../dtos/flow-execution-log-dto";
 
 // Base URL for the flow execution log API
-const baseAPIURL: string = `${import.meta.env.VITE_WORC_API_PATH}/execution-log`;
+const baseAPIURL: string = `${import.meta.env.VITE_WORKSPACE_API_PATH}/execution-log`;
 
 /**
  * Fetches the execution log of a specific flow based on the provided flow ID

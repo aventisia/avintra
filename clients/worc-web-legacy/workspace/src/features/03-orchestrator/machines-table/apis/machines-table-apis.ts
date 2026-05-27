@@ -1,3 +1,5 @@
+import { axiosInstance } from "@/react-toolkit/lib/axios-instance";
+
 import {
   CheckAvailabilityDto,
   IHttpResponse,
@@ -5,14 +7,12 @@ import {
   TrueFalseResultDto,
 } from "@aventisia/ui/dtos";
 
-import { axiosInstance } from "@/react-toolkit/lib/axios-instance";
-
 import { AssignMachineDto } from "../../agents-table/dtos/assign-machine-dto";
 import type { AssignAgentDto } from "../dtos/assign-agent-dto";
 import { MachinesTableDto } from "../dtos/machines-table-dto";
 import type { SelectAgentTableDto } from "../dtos/select-agent-table-dto";
 
-const baseAPIURL: string = `${import.meta.env.VITE_WORC_API_PATH}/machine`;
+const baseAPIURL: string = `${import.meta.env.VITE_WORKSPACE_API_PATH}/machine`;
 
 /**
  * Retrieves list of machines.
@@ -59,7 +59,7 @@ export const getNewMachineAgents = () => {
   return axiosInstance
     .get<
       IHttpResponse<SelectAgentTableDto[]>
-    >(`${import.meta.env.VITE_WORC_API_PATH}/agent/publish-flows`)
+    >(`${import.meta.env.VITE_WORKSPACE_API_PATH}/agent/publish-flows`)
     .then((res) => res.data);
 };
 

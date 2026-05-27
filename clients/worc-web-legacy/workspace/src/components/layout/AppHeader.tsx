@@ -40,7 +40,7 @@ const AppHeader: React.FC = () => {
         </div>
         {import.meta.env.MODE !== "production" ? <SearchBox /> : null}
         <div className="ml-4 flex items-center gap-4">
-          {import.meta.env.VITE_WORC_API_PATH?.includes(
+          {import.meta.env.VITE_WORKSPACE_API_PATH?.includes(
             "https://localhost",
           ) && <TrustLocalhostSSLButton />}
           {userSession?.deploymentType == "Commercial" ? (

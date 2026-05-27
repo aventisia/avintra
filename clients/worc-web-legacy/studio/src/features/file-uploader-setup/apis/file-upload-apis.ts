@@ -6,7 +6,7 @@ export interface UploadResponse {
   data: FileUploadDto;
   controller: AbortController;
 }
-const baseAPIURL = `${import.meta.env.VITE_WORC_API_PATH}/file`;
+const baseAPIURL = `${import.meta.env.VITE_WORKSPACE_API_PATH}/file`;
 
 export const uploadFile = async (
   file: File,

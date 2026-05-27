@@ -15,7 +15,7 @@ export interface FileUploadDto {
   extension: string;
 }
 
-const baseAPIURL = `${import.meta.env.VITE_WORC_API_PATH}/file`;
+const baseAPIURL = `${import.meta.env.VITE_WORKSPACE_API_PATH}/file`;
 
 /**
  * Uploads a single file to the server using multipart/form-data.

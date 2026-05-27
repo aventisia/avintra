@@ -30,7 +30,7 @@ const AvailableIntegrationsDialog = ({ children }: React.PropsWithChildren) => {
     })),
   );
 
-  const basePath = import.meta.env.VITE_WORC_PATH.replace(/\/$/, "");
+  const basePath = import.meta.env.VITE_WORKSPACE_PATH.replace(/\/$/, "");
 
   const { showDefaultAlertDialog } = useShowAlertHandler();
 

@@ -42,7 +42,7 @@ const AppHeader: React.FC = () => {
   const isExecutionLog = useIsExecutionLogsRoute();
 
   const goBack = () => {
-    window.location.href = `${import.meta.env.VITE_WORC_PATH}`;
+    window.location.href = `${import.meta.env.VITE_WORKSPACE_PATH}`;
   };
   const isViewTenant = userSession?.access_mode == "read_only";
   return (
@@ -50,7 +50,7 @@ const AppHeader: React.FC = () => {
       <Header className="grid p-0 grid-cols-[1fr_auto_1fr]">
         <div className="flex items-center gap-3 min-w-0 text-white">
           {/* Back Button */}
-          <Tooltip content="Back to Worc">
+          <Tooltip content="Back to Avintra">
             <Button
               size="icon8"
               variant="ghost"
@@ -68,11 +68,11 @@ const AppHeader: React.FC = () => {
           <span className="rotate-12 text-white/50">/</span>
 
           {/* Agent name */}
-          <AgentName className={isViewTenant ?"max-w-56":""}/>
+          <AgentName className={isViewTenant ? "max-w-56" : ""} />
 
           {/* Version selector */}
           <FlowVersions />
-          {isViewTenant  && <TenantSwitchBadge />}
+          {isViewTenant && <TenantSwitchBadge />}
         </div>
         <div className="flex items-center justify-center ">
           {userSession?.deploymentType == "Commercial" ? (
