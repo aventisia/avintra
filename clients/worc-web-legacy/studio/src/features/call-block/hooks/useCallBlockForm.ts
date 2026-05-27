@@ -4,13 +4,15 @@ import {
   getDefaultValuesForForm,
   useDynamicConfigPanelStore,
 } from "@/features/dynamic-config-panel";
+import { getFlowToLoad } from "@/features/react-flow/apis/react-flow-apis";
+
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useEffect, useState } from "react";
 import { useForm } from "react-hook-form";
-import { z, ZodTypeAny } from "zod";
+import { ZodTypeAny, z } from "zod";
 import { useShallow } from "zustand/react/shallow";
+
 import { useGetSelectedBlockData } from "./useGetSelectedBlockData";
-import { getFlowToLoad } from "@/features/react-flow/apis/react-flow-apis";
 
 export const useCallBlockForm = () => {
   // Local state for node config and zod schema
@@ -104,7 +106,6 @@ export const useCallBlockForm = () => {
       });
       setIsFormReady(true); // Set form ready to true after resetting the form
     }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [nodeConfig]);
 
   // Destructor form values and methods

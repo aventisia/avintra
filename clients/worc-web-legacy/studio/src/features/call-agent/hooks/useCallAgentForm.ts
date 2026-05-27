@@ -5,11 +5,13 @@ import {
   useDynamicConfigPanelStore,
 } from "@/features/dynamic-config-panel";
 import { getFlowToLoad } from "@/features/react-flow/apis/react-flow-apis";
+
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useEffect, useState } from "react";
 import { useForm } from "react-hook-form";
-import { z, ZodTypeAny } from "zod";
+import { ZodTypeAny, z } from "zod";
 import { useShallow } from "zustand/react/shallow";
+
 import { useGetNodeSelectedAgent } from "./useGetNodeSelectedAgent";
 
 export const useCallAgentForm = () => {
@@ -104,7 +106,6 @@ export const useCallAgentForm = () => {
       });
       setIsFormReady(true); // Set form ready to true after resetting the form
     }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [nodeConfig]);
 
   // Destructor form values and methods

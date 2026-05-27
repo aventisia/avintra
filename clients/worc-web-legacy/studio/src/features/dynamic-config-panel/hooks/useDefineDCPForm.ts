@@ -89,7 +89,6 @@ export const useDefineDCPForm = () => {
       .finally(() => {
         setIsLoading(false);
       });
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [nodeUniqueName, nodeId]);
 
   // Get input and output keys (required at the time of form submission)
@@ -130,8 +129,6 @@ export const useDefineDCPForm = () => {
 
     setTabKeys(uniqueTabKeys);
     setSelectedTab(uniqueTabKeys[0]);
-
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [nodeConfig]);
 
   // Destructor form values and methods

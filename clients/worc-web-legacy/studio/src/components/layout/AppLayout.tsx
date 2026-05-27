@@ -1,25 +1,27 @@
 import { getActionSelectorData } from "@/apis/get-action-selector-data";
 import { useNodeSelectorStore } from "@/features/action-selector/stores/action-selector-store";
+import { canWeRenderNodeOrCategory } from "@/features/action-selector/utils/action-visibilty";
+import { usePreventClose } from "@/hooks/usePreventClose";
+import useTauriUserMetadata from "@/hooks/useTauriUserMetadata";
 // import {
 //   useCheckForUpdate,
 //   useRedirectOnRelaunch,
 // } from "@/features/tauri-updater";
 import { useValidateUserSession } from "@/react-toolkit/hooks/useValidateUserSession";
+import { useAppLoaderStore } from "@/stores/app-loader-store";
+import { useCurrentFlowStore } from "@/stores/current-flow-store";
+
 import { cn } from "@aventisia/ui/lib";
 import { useBaseLayoutStore } from "@aventisia/ui/stores";
+import { DeploymentType } from "@aventisia/ui/types";
 import { useEffect, useState } from "react";
 import { Outlet } from "react-router-dom";
 import { useShallow } from "zustand/react/shallow";
+
 import AppBanner from "./AppBanner";
 import AppHeader from "./AppHeader";
-import { AppRedirectPage } from "./AppRedirectPage";
-import { canWeRenderNodeOrCategory } from "@/features/action-selector/utils/action-visibilty";
-import { DeploymentType } from "@aventisia/ui/types";
-import { useCurrentFlowStore } from "@/stores/current-flow-store";
-import { usePreventClose } from "@/hooks/usePreventClose";
-import useTauriUserMetadata from "@/hooks/useTauriUserMetadata";
-import { useAppLoaderStore } from "@/stores/app-loader-store";
 import { AppLoader } from "./AppLoader";
+import { AppRedirectPage } from "./AppRedirectPage";
 
 export const AppLayout = () => {
   const [loading, setLoading] = useState(true);
@@ -102,7 +104,6 @@ export const AppLayout = () => {
       setActionSelectorData(filtered);
     });
 
-    // eslint-disable-next-line react-hooks/set-state-in-effect
     setLoading(false);
   }, [setActionSelectorData, userSession?.deploymentType]);
 
