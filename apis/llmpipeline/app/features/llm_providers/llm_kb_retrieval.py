@@ -45,7 +45,7 @@ async def _resolve_kb_embedding_configs(kb_names: list[str], tenant_id: str) -> 
 
     unique_kb_names = list(dict.fromkeys(normalized_kb_names))  # Preserve order and ensure uniqueness
 
-    async with get_db_session_context(settings.POSTGRESQL_WORC_DB_NAME) as session:
+    async with get_db_session_context(settings.POSTGRESQL_WORKSPACE_DB_NAME) as session:
         query_sql = text(
             """
             SELECT
@@ -115,7 +115,7 @@ async def retrieve_and_inject_kb_context(llm_request: LLMRequest, user: User) ->
 
         all_chunks = []
 
-        async with get_db_session_context(settings.POSTGRESQL_WORC_DB_NAME) as session:
+        async with get_db_session_context(settings.POSTGRESQL_WORKSPACE_DB_NAME) as session:
             session.info["tenant_id"] = user.tenant_id
             db = TenantDB(session=session, tenant_id=user.tenant_id)
             

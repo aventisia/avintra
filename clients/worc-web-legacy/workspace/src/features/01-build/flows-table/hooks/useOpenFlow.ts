@@ -7,7 +7,7 @@ export const useOpenFlow = () => {
   // Handle open flow action
   const handleOpenFlowAction = (rowId: string) => {
     // Open flow in studio
-    window.location.href = `${import.meta.env.VITE_AGENTBUILDER_PATH}agent?f=${rowId}`;
+    window.location.href = `${import.meta.env.VITE_STUDIO_PATH}agent?f=${rowId}`;
   };
 
   // Return the handle open flow action function

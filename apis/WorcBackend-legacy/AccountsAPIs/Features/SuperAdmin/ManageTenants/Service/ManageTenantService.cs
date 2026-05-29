@@ -150,7 +150,7 @@ public class ManageTenantService : IManageTenantService
 
         try
         {
-            var worcApiUrl = $"{_environmentConfig.WorcApiBaseUrl}/api/sa/tenant";
+            var workspaceApiUrl = $"{_environmentConfig.WorkspaceApiBaseUrl}/api/sa/tenant";
 
             // Create a new HttpClient instance for making API requests
             using var httpClient = new HttpClient();
@@ -198,12 +198,12 @@ public class ManageTenantService : IManageTenantService
                 return true;
             }
 
-            // Call Workspace (Worc) API for deletion
-            var worcResult = await CallExternalDeleteApi(worcApiUrl, tenant.Id, tenant.Name);
-            if (!worcResult)
+            // Call Workspace API for deletion
+            var workspaceResult = await CallExternalDeleteApi(workspaceApiUrl, tenant.Id, tenant.Name);
+            if (!workspaceResult)
             {
                 // Log failure and return early if Workspace API call failed
-                _logger.LogError("Workspace (Worc) API call failed for tenant {TenantId}", tenant.Id);
+                _logger.LogError("Workspace API call failed for tenant {TenantId}", tenant.Id);
                 return false;
             }
 
@@ -238,7 +238,7 @@ public class ManageTenantService : IManageTenantService
                 return false;
 
             // Delete SpaceUser - DeleteBehavior.Cascade set with Space
-            
+
             // Delete Space
             if (!await DeleteEntitiesAsync(_unitOfWork.SpaceRepo, w => w.TenantId == tenant.Id, nameof(Space), tenant.Id))
                 return false;
@@ -267,9 +267,9 @@ public class ManageTenantService : IManageTenantService
                 return false;
 
             // Delete RolePermission (No TenantId, only RoleId) - DeleteBehavior.Cascade set with AccountRole
-            
+
             // Delete AccountUserRole (No TenantId, only UserId) - DeleteBehavior.Cascade set with AccountUser
-            
+
             // Delete AccountRole
             if (!await DeleteEntitiesAsync(_unitOfWork.AccountRoleRepo, w => w.TenantId == tenant.Id, nameof(AccountRole), tenant.Id))
                 return false;

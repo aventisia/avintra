@@ -10,7 +10,7 @@ export const FallbackImageIcon = ({
   src,
   ...props
 }: FallbackImageIconProps) => {
-  const basePath = import.meta.env.VITE_AGENTBUILDER_PATH.replace(/\/$/, "");
+  const basePath = import.meta.env.VITE_STUDIO_PATH.replace(/\/$/, "");
 
   return (
     <div className="flex h-7 w-7 items-center justify-center overflow-hidden">

@@ -1,6 +1,7 @@
 import { useMutation } from "@tanstack/react-query";
-import { FlowVersionHistoryDetailDto } from "../dtos/agent-history-details-dto";
+
 import { cloneHistoryToVersion } from "../apis/agents-history-apis";
+import { FlowVersionHistoryDetailDto } from "../dtos/agent-history-details-dto";
 
 export const useCloneToVersionMutation = () => {
   return useMutation({
@@ -8,7 +9,7 @@ export const useCloneToVersionMutation = () => {
       return cloneHistoryToVersion({ ...detail });
     },
     onSuccess: (data) => {
-      window.location.href = `${import.meta.env.VITE_AGENTBUILDER_PATH}agent?f=${data.data.flowId}&v=${data.data.flowVersionId}`;
+      window.location.href = `${import.meta.env.VITE_STUDIO_PATH}agent?f=${data.data.flowId}&v=${data.data.flowVersionId}`;
     },
   });
 };

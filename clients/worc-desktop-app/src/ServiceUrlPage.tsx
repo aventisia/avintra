@@ -20,9 +20,9 @@ export default function ServiceUrlPage() {
         return "Please enter a valid HTTPS service URL.";
       }
 
-      //TODO: Add global admni api check to validate domain
+      //TODO: Add global admin api check to validate domain
       // if (!url.hostname.includes("aventisia")) {
-      //   return "Please enter a URL for a valid WORC instance..";
+      //   return "Please enter a URL for a valid Avintra instance..";
       // }
       return null;
     } catch {
@@ -63,7 +63,7 @@ export default function ServiceUrlPage() {
           <img src="/logo.svg" alt="Aventisia" />
         </div>
         <div className="service-url-title">
-          <h2>Connect to Worc</h2>
+          <h2>Connect to Avintra</h2>
           <p>Enter the Service URL to continue.</p>
         </div>
 
@@ -76,7 +76,7 @@ export default function ServiceUrlPage() {
               className={`ui-input `}
               value={serviceUrl}
               disabled={isLoading}
-              placeholder="https://worc.aventisia.com"
+              placeholder="https://avintra.aventisia.com"
               onChange={(e) => {
                 setServiceUrl(e.target.value);
                 setError(null);

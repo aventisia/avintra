@@ -1,297 +1,1021 @@
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
-<html xmlns="http://www.w3.org/1999/xhtml" xmlns:v="urn:schemas-microsoft-com:vml" xmlns:o="urn:schemas-microsoft-com:office:office" lang="en">
-<head>
-  <meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/>
-  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <meta name="x-apple-disable-message-reformatting"/>
-  <meta http-equiv="X-UA-Compatible" content="IE=edge"/>
-  <!--[if !mso]><!-->
-  <meta name="color-scheme" content="light dark"/>
-  <meta name="supported-color-schemes" content="light dark"/>
-  <!--<![endif]-->
-  <title>Payment Failed – Aventisia</title>
+<html
+  xmlns="http://www.w3.org/1999/xhtml"
+  xmlns:v="urn:schemas-microsoft-com:vml"
+  xmlns:o="urn:schemas-microsoft-com:office:office"
+  lang="en"
+>
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="x-apple-disable-message-reformatting" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <!--[if !mso]><!-->
+    <meta name="color-scheme" content="light dark" />
+    <meta name="supported-color-schemes" content="light dark" />
+    <!--<![endif]-->
+    <title>Payment Failed – Aventisia</title>
 
-  <!--[if gte mso 9]>
-  <xml>
-    <o:OfficeDocumentSettings>
-      <o:AllowPNG/>
-      <o:PixelsPerInch>96</o:PixelsPerInch>
-    </o:OfficeDocumentSettings>
-  </xml>
-  <![endif]-->
+    <!--[if gte mso 9]>
+      <xml>
+        <o:OfficeDocumentSettings>
+          <o:AllowPNG />
+          <o:PixelsPerInch>96</o:PixelsPerInch>
+        </o:OfficeDocumentSettings>
+      </xml>
+    <![endif]-->
 
-  <style type="text/css">
-    /* ===== RESET ===== */
-    body, table, td, a { -webkit-text-size-adjust:100%; -ms-text-size-adjust:100%; }
-    table, td { mso-table-lspace:0pt; mso-table-rspace:0pt; }
-    img { -ms-interpolation-mode:bicubic; border:0; outline:none; text-decoration:none; display:block; }
-    body { margin:0 !important; padding:0 !important; width:100% !important; }
+    <style type="text/css">
+      /* ===== RESET ===== */
+      body,
+      table,
+      td,
+      a {
+        -webkit-text-size-adjust: 100%;
+        -ms-text-size-adjust: 100%;
+      }
+      table,
+      td {
+        mso-table-lspace: 0pt;
+        mso-table-rspace: 0pt;
+      }
+      img {
+        -ms-interpolation-mode: bicubic;
+        border: 0;
+        outline: none;
+        text-decoration: none;
+        display: block;
+      }
+      body {
+        margin: 0 !important;
+        padding: 0 !important;
+        width: 100% !important;
+      }
 
-    /* ===== BASE ===== */
-    .email-bg       { background-color:#eef2ff; }
-    .container      { max-width:720px; margin:0 auto; }
-    .container-bg   { background-color:#ffffff; border-radius:12px; overflow:hidden; }
+      /* ===== BASE ===== */
+      .email-bg {
+        background-color: #eef2ff;
+      }
+      .container {
+        max-width: 720px;
+        margin: 0 auto;
+      }
+      .container-bg {
+        background-color: #ffffff;
+        border-radius: 12px;
+        overflow: hidden;
+      }
 
-    /* ===== HEADER ===== */
-    .header-bg      { background-color:#0f0e2a; padding:16px 28px 0 28px; }
-    .logo-text      { font-family:Arial,sans-serif; font-size:18px; font-weight:bold; color:#ffffff; text-decoration:none; vertical-align:middle; }
-    .header-btn     { font-family:Arial,sans-serif; font-size:13px; font-weight:bold; color:#ffffff; text-decoration:none; background-color:#4f46e5; padding:6px 14px; border-radius:20px; display:inline-block; }
-    .h-sep          { height:1px; background-color:#2e2b5f; font-size:0; line-height:0; }
+      /* ===== HEADER ===== */
+      .header-bg {
+        background-color: #0f0e2a;
+        padding: 16px 28px 0 28px;
+      }
+      .logo-text {
+        font-family: Arial, sans-serif;
+        font-size: 18px;
+        font-weight: bold;
+        color: #ffffff;
+        text-decoration: none;
+        vertical-align: middle;
+      }
+      .header-btn {
+        font-family: Arial, sans-serif;
+        font-size: 13px;
+        font-weight: bold;
+        color: #ffffff;
+        text-decoration: none;
+        background-color: #4f46e5;
+        padding: 6px 14px;
+        border-radius: 20px;
+        display: inline-block;
+      }
+      .h-sep {
+        height: 1px;
+        background-color: #2e2b5f;
+        font-size: 0;
+        line-height: 0;
+      }
 
-    /* ===== HERO ===== */
-    .hero-bg        { background-color:#dc2626; padding:40px 28px; text-align:center; }
-    .hero-icon-wrap { width:60px; height:60px; border-radius:30px; background-color:rgba(255,255,255,0.2); margin:0 auto 16px auto; }
-    .status-badge   { display:inline-block; background-color:rgba(255,255,255,0.2); border:1px solid rgba(255,255,255,0.35); color:#ffffff; font-family:Arial,sans-serif; font-size:10px; font-weight:bold; letter-spacing:2px; text-transform:uppercase; padding:4px 12px; border-radius:20px; margin-bottom:12px; }
-    .hero-h1        { margin:0 0 8px 0; font-family:Arial,sans-serif; font-size:26px; font-weight:800; color:#ffffff; }
-    .hero-p         { margin:0; font-family:Arial,sans-serif; font-size:14px; color:rgba(255,255,255,0.85); line-height:1.6; }
+      /* ===== HERO ===== */
+      .hero-bg {
+        background-color: #dc2626;
+        padding: 40px 28px;
+        text-align: center;
+      }
+      .hero-icon-wrap {
+        width: 60px;
+        height: 60px;
+        border-radius: 30px;
+        background-color: rgba(255, 255, 255, 0.2);
+        margin: 0 auto 16px auto;
+      }
+      .status-badge {
+        display: inline-block;
+        background-color: rgba(255, 255, 255, 0.2);
+        border: 1px solid rgba(255, 255, 255, 0.35);
+        color: #ffffff;
+        font-family: Arial, sans-serif;
+        font-size: 10px;
+        font-weight: bold;
+        letter-spacing: 2px;
+        text-transform: uppercase;
+        padding: 4px 12px;
+        border-radius: 20px;
+        margin-bottom: 12px;
+      }
+      .hero-h1 {
+        margin: 0 0 8px 0;
+        font-family: Arial, sans-serif;
+        font-size: 26px;
+        font-weight: 800;
+        color: #ffffff;
+      }
+      .hero-p {
+        margin: 0;
+        font-family: Arial, sans-serif;
+        font-size: 14px;
+        color: rgba(255, 255, 255, 0.85);
+        line-height: 1.6;
+      }
 
-    /* ===== BODY ===== */
-    .body-pad       { padding:28px; }
-    .greeting       { font-family:Arial,sans-serif; font-size:14px; color:#374151; line-height:1.8; margin:0 0 24px 0; }
-    .section-label  { font-family:Arial,sans-serif; font-size:10px; font-weight:bold; letter-spacing:2px; text-transform:uppercase; color:#818cf8; margin:0 0 10px 0; }
+      /* ===== BODY ===== */
+      .body-pad {
+        padding: 28px;
+      }
+      .greeting {
+        font-family: Arial, sans-serif;
+        font-size: 14px;
+        color: #374151;
+        line-height: 1.8;
+        margin: 0 0 24px 0;
+      }
+      .section-label {
+        font-family: Arial, sans-serif;
+        font-size: 10px;
+        font-weight: bold;
+        letter-spacing: 2px;
+        text-transform: uppercase;
+        color: #818cf8;
+        margin: 0 0 10px 0;
+      }
 
-    /* ===== TXN TABLE ===== */
-    .txn-table      { width:100%; border-collapse:collapse; border:1px solid #e0e7ff; border-radius:10px; overflow:hidden; margin-bottom:20px; font-size:13px; }
-    .txn-row        { border-bottom:1px solid #eef2ff; }
-    .txn-label      { font-family:Arial,sans-serif; font-size:13px; color:#6b7280; font-weight:500; padding:11px 16px; width:45%; }
-    .txn-value      { font-family:Arial,sans-serif; font-size:13px; color:#1f2937; font-weight:bold; padding:11px 16px; text-align:right; }
-    .txn-value-amt  { font-family:Arial,sans-serif; font-size:15px; color:#1f2937; font-weight:bold; padding:11px 16px; text-align:right; }
-    .pill-fail      { display:inline-block; background-color:#fef2f2; border:1px solid #fecaca; color:#dc2626; font-family:Arial,sans-serif; font-size:11px; font-weight:bold; padding:3px 10px; border-radius:20px; }
+      /* ===== TXN TABLE ===== */
+      .txn-table {
+        width: 100%;
+        border-collapse: collapse;
+        border: 1px solid #e0e7ff;
+        border-radius: 10px;
+        overflow: hidden;
+        margin-bottom: 20px;
+        font-size: 13px;
+      }
+      .txn-row {
+        border-bottom: 1px solid #eef2ff;
+      }
+      .txn-label {
+        font-family: Arial, sans-serif;
+        font-size: 13px;
+        color: #6b7280;
+        font-weight: 500;
+        padding: 11px 16px;
+        width: 45%;
+      }
+      .txn-value {
+        font-family: Arial, sans-serif;
+        font-size: 13px;
+        color: #1f2937;
+        font-weight: bold;
+        padding: 11px 16px;
+        text-align: right;
+      }
+      .txn-value-amt {
+        font-family: Arial, sans-serif;
+        font-size: 15px;
+        color: #1f2937;
+        font-weight: bold;
+        padding: 11px 16px;
+        text-align: right;
+      }
+      .pill-fail {
+        display: inline-block;
+        background-color: #fef2f2;
+        border: 1px solid #fecaca;
+        color: #dc2626;
+        font-family: Arial, sans-serif;
+        font-size: 11px;
+        font-weight: bold;
+        padding: 3px 10px;
+        border-radius: 20px;
+      }
 
-    /* ===== WARN BOX ===== */
-    .warn-box       { background-color:#fffbeb; border:1px solid #fde68a; border-left:4px solid #f59e0b; border-radius:8px; padding:14px 16px; margin-bottom:24px; }
-    .warn-label     { font-family:Arial,sans-serif; font-size:10px; font-weight:bold; letter-spacing:2px; text-transform:uppercase; color:#92400e; margin:0 0 5px 0; }
-    .warn-text      { font-family:Arial,sans-serif; font-size:13px; color:#78350f; margin:0; line-height:1.6; }
+      /* ===== WARN BOX ===== */
+      .warn-box {
+        background-color: #fffbeb;
+        border: 1px solid #fde68a;
+        border-left: 4px solid #f59e0b;
+        border-radius: 8px;
+        padding: 14px 16px;
+        margin-bottom: 24px;
+      }
+      .warn-label {
+        font-family: Arial, sans-serif;
+        font-size: 10px;
+        font-weight: bold;
+        letter-spacing: 2px;
+        text-transform: uppercase;
+        color: #92400e;
+        margin: 0 0 5px 0;
+      }
+      .warn-text {
+        font-family: Arial, sans-serif;
+        font-size: 13px;
+        color: #78350f;
+        margin: 0;
+        line-height: 1.6;
+      }
 
-    /* ===== DIVIDER ===== */
-    .divider        { border:none; border-top:1px solid #f1f5f9; margin:0 0 24px 0; }
+      /* ===== DIVIDER ===== */
+      .divider {
+        border: none;
+        border-top: 1px solid #f1f5f9;
+        margin: 0 0 24px 0;
+      }
 
-    /* ===== HELP / SIG ===== */
-    .help           { font-family:Arial,sans-serif; font-size:13px; color:#6b7280; line-height:1.75; text-align:center; margin:0 0 28px 0; }
-    .help a         { color:#4f46e5; font-weight:bold; text-decoration:none; }
-    .sig            { font-family:Arial,sans-serif; font-size:13px; color:#374151; text-align:center; margin:0; }
-    .sig strong     { color:#4f46e5; }
+      /* ===== HELP / SIG ===== */
+      .help {
+        font-family: Arial, sans-serif;
+        font-size: 13px;
+        color: #6b7280;
+        line-height: 1.75;
+        text-align: center;
+        margin: 0 0 28px 0;
+      }
+      .help a {
+        color: #4f46e5;
+        font-weight: bold;
+        text-decoration: none;
+      }
+      .sig {
+        font-family: Arial, sans-serif;
+        font-size: 13px;
+        color: #374151;
+        text-align: center;
+        margin: 0;
+      }
+      .sig strong {
+        color: #4f46e5;
+      }
 
-    /* ===== FOOTER ===== */
-    .footer-bg      { background-color:#f8fafc; border-top:1px solid #e2e8f0; padding:16px 28px; text-align:center; }
-    .footer-text    { font-family:Arial,sans-serif; font-size:11px; color:#9ca3af; line-height:1.8; margin:0; }
-    .footer-text a  { color:#a5b4fc; text-decoration:none; }
+      /* ===== FOOTER ===== */
+      .footer-bg {
+        background-color: #f8fafc;
+        border-top: 1px solid #e2e8f0;
+        padding: 16px 28px;
+        text-align: center;
+      }
+      .footer-text {
+        font-family: Arial, sans-serif;
+        font-size: 11px;
+        color: #9ca3af;
+        line-height: 1.8;
+        margin: 0;
+      }
+      .footer-text a {
+        color: #a5b4fc;
+        text-decoration: none;
+      }
 
-    /* ===== DARK MODE ===== */
-    @media (prefers-color-scheme: dark) {
-      .email-bg     { background-color:#13112b !important; }
-      .container-bg { background-color:#1a1737 !important; }
-      .greeting     { color:#cbd5e1 !important; }
-      .txn-label    { color:#94a3b8 !important; }
-      .txn-value, .txn-value-amt { color:#f1f5f9 !important; }
-      .txn-table    { border-color:#2e2b5f !important; }
-      .txn-row      { border-bottom-color:#2e2b5f !important; }
-      .pill-fail    { background-color:#3b0d0d !important; border-color:#7f1d1d !important; color:#f87171 !important; }
-      .warn-box     { background-color:#1c1505 !important; border-color:#92400e !important; }
-      .warn-label   { color:#fde68a !important; }
-      .warn-text    { color:#fcd34d !important; }
-      .divider      { border-top-color:#2e2b5f !important; }
-      .help         { color:#94a3b8 !important; }
-      .help a       { color:#818cf8 !important; }
-      .sig          { color:#cbd5e1 !important; }
-      .sig strong   { color:#818cf8 !important; }
-      .footer-bg    { background-color:#13112b !important; border-top-color:#2e2b5f !important; }
-      .footer-text  { color:#64748b !important; }
-      .footer-text a{ color:#6366f1 !important; }
-      .logo-on-dark { display:block !important; }
-      .logo-on-light{ display:none !important; }
-    }
+      /* ===== DARK MODE ===== */
+      @media (prefers-color-scheme: dark) {
+        .email-bg {
+          background-color: #13112b !important;
+        }
+        .container-bg {
+          background-color: #1a1737 !important;
+        }
+        .greeting {
+          color: #cbd5e1 !important;
+        }
+        .txn-label {
+          color: #94a3b8 !important;
+        }
+        .txn-value,
+        .txn-value-amt {
+          color: #f1f5f9 !important;
+        }
+        .txn-table {
+          border-color: #2e2b5f !important;
+        }
+        .txn-row {
+          border-bottom-color: #2e2b5f !important;
+        }
+        .pill-fail {
+          background-color: #3b0d0d !important;
+          border-color: #7f1d1d !important;
+          color: #f87171 !important;
+        }
+        .warn-box {
+          background-color: #1c1505 !important;
+          border-color: #92400e !important;
+        }
+        .warn-label {
+          color: #fde68a !important;
+        }
+        .warn-text {
+          color: #fcd34d !important;
+        }
+        .divider {
+          border-top-color: #2e2b5f !important;
+        }
+        .help {
+          color: #94a3b8 !important;
+        }
+        .help a {
+          color: #818cf8 !important;
+        }
+        .sig {
+          color: #cbd5e1 !important;
+        }
+        .sig strong {
+          color: #818cf8 !important;
+        }
+        .footer-bg {
+          background-color: #13112b !important;
+          border-top-color: #2e2b5f !important;
+        }
+        .footer-text {
+          color: #64748b !important;
+        }
+        .footer-text a {
+          color: #6366f1 !important;
+        }
+        .logo-on-dark {
+          display: block !important;
+        }
+        .logo-on-light {
+          display: none !important;
+        }
+      }
 
-    /* ===== MOBILE ===== */
-    @media only screen and (max-width:620px) {
-      .container    { width:100% !important; }
-      .body-pad     { padding:20px 16px !important; }
-      .header-bg    { padding:14px 16px 0 16px !important; }
-      .hero-h1      { font-size:22px !important; }
-      .txn-label, .txn-value, .txn-value-amt { font-size:12px !important; padding:9px 12px !important; }
-    }
-  </style>
-</head>
+      /* ===== MOBILE ===== */
+      @media only screen and (max-width: 620px) {
+        .container {
+          width: 100% !important;
+        }
+        .body-pad {
+          padding: 20px 16px !important;
+        }
+        .header-bg {
+          padding: 14px 16px 0 16px !important;
+        }
+        .hero-h1 {
+          font-size: 22px !important;
+        }
+        .txn-label,
+        .txn-value,
+        .txn-value-amt {
+          font-size: 12px !important;
+          padding: 9px 12px !important;
+        }
+      }
+    </style>
+  </head>
 
-<body class="email-bg" style="margin:0;padding:0;background-color:#eef2ff;">
-
-<!--[if mso | IE]>
+  <body
+    class="email-bg"
+    style="margin: 0; padding: 0; background-color: #eef2ff"
+  >
+    <!--[if mso | IE]>
 <table role="presentation" border="0" cellpadding="0" cellspacing="0" width="100%" style="background-color:#eef2ff;">
 <tr><td>
 <![endif]-->
 
-<table role="presentation" border="0" cellpadding="0" cellspacing="0" width="100%" class="email-bg" style="background-color:#eef2ff;">
-<tr><td align="center" style="padding:32px 12px;">
-
-  <!-- OUTER CONTAINER -->
-  <!--[if mso | IE]>
+    <table
+      role="presentation"
+      border="0"
+      cellpadding="0"
+      cellspacing="0"
+      width="100%"
+      class="email-bg"
+      style="background-color: #eef2ff"
+    >
+      <tr>
+        <td align="center" style="padding: 32px 12px">
+          <!-- OUTER CONTAINER -->
+          <!--[if mso | IE]>
   <table role="presentation" border="0" cellpadding="0" cellspacing="0" width="600" style="background-color:#ffffff;border-radius:12px;">
   <tr><td>
   <![endif]-->
 
-  <table role="presentation" border="0" cellpadding="0" cellspacing="0" width="100%" class="container container-bg" style="max-width:720px;background-color:#ffffff;border-radius:12px;overflow:hidden;">
-
-    <!-- ========== HEADER ========== -->
-    <tr>
-      <td class="header-bg" style="background-color:#0f0e2a;padding:16px 28px 0 28px;">
-        <table role="presentation" border="0" cellpadding="0" cellspacing="0" width="100%">
-          <tr>
-            <!-- LOGO -->
-            <td valign="middle">
-              <a href="http://www.aventisia.com" target="_blank" style="text-decoration:none;display:inline-block;">
-                <table role="presentation" border="0" cellpadding="0" cellspacing="6">
+          <table
+            role="presentation"
+            border="0"
+            cellpadding="0"
+            cellspacing="0"
+            width="100%"
+            class="container container-bg"
+            style="
+              max-width: 720px;
+              background-color: #ffffff;
+              border-radius: 12px;
+              overflow: hidden;
+            "
+          >
+            <!-- ========== HEADER ========== -->
+            <tr>
+              <td
+                class="header-bg"
+                style="background-color: #0f0e2a; padding: 16px 28px 0 28px"
+              >
+                <table
+                  role="presentation"
+                  border="0"
+                  cellpadding="0"
+                  cellspacing="0"
+                  width="100%"
+                >
                   <tr>
+                    <!-- LOGO -->
                     <td valign="middle">
-                      <!--[if !mso]><!-->
-                      <img class="logo-on-light" src="https://worc.aventisia.com/worc/favicon.svg" height="28" alt="Aventisia" style="display:block;height:28px;border:0;"/>
-                      <img class="logo-on-dark"  src="https://worc.aventisia.com/worc/favicon.svg" height="28" alt="Aventisia" style="display:none;height:28px;border:0;"/>
-                      <!--<![endif]-->
-                      <!--[if mso]>
-                      <img src="https://example.com/logo-light.png" height="28" alt="Aventisia" style="height:28px;border:0;"/>
-                      <![endif]-->
+                      <a
+                        href="http://www.aventisia.com"
+                        target="_blank"
+                        style="text-decoration: none; display: inline-block"
+                      >
+                        <table
+                          role="presentation"
+                          border="0"
+                          cellpadding="0"
+                          cellspacing="6"
+                        >
+                          <tr>
+                            <td valign="middle">
+                              <!--[if !mso]><!-->
+                              <img
+                                class="logo-on-light"
+                                src="https://avintra.aventisia.com/workspace/favicon.svg"
+                                height="28"
+                                alt="Aventisia"
+                                style="display: block; height: 28px; border: 0"
+                              />
+                              <img
+                                class="logo-on-dark"
+                                src="https://avintra.aventisia.com/workspace/favicon.svg"
+                                height="28"
+                                alt="Aventisia"
+                                style="display: none; height: 28px; border: 0"
+                              />
+                              <!--<![endif]-->
+                              <!--[if mso]>
+                                <img
+                                  src="https://example.com/logo-light.png"
+                                  height="28"
+                                  alt="Aventisia"
+                                  style="height: 28px; border: 0"
+                                />
+                              <![endif]-->
+                            </td>
+                            <td valign="middle" style="padding-left: 6px">
+                              <span
+                                class="logo-text"
+                                style="
+                                  font-family: Arial, sans-serif;
+                                  font-size: 18px;
+                                  font-weight: bold;
+                                  color: #ffffff;
+                                  text-decoration: none;
+                                "
+                                >Aventisia</span
+                              >
+                            </td>
+                          </tr>
+                        </table>
+                      </a>
                     </td>
-                    <td valign="middle" style="padding-left:6px;">
-                      <span class="logo-text" style="font-family:Arial,sans-serif;font-size:18px;font-weight:bold;color:#ffffff;text-decoration:none;">Aventisia</span>
+                    <!-- NAV BUTTON -->
+                    <td align="right" valign="middle">
+                      <a
+                        href="http://www.aventisia.com"
+                        target="_blank"
+                        class="header-btn"
+                        style="
+                          font-family: Arial, sans-serif;
+                          font-size: 13px;
+                          font-weight: bold;
+                          color: #ffffff;
+                          text-decoration: none;
+                          background-color: #4f46e5;
+                          padding: 6px 14px;
+                          border-radius: 20px;
+                          display: inline-block;
+                        "
+                      >
+                        aventisia.com
+                      </a>
                     </td>
                   </tr>
                 </table>
-              </a>
-            </td>
-            <!-- NAV BUTTON -->
-            <td align="right" valign="middle">
-              <a href="http://www.aventisia.com" target="_blank" class="header-btn" style="font-family:Arial,sans-serif;font-size:13px;font-weight:bold;color:#ffffff;text-decoration:none;background-color:#4f46e5;padding:6px 14px;border-radius:20px;display:inline-block;">
-                aventisia.com
-              </a>
-            </td>
-          </tr>
-        </table>
-        <!-- separator -->
-        <div class="h-sep" style="height:1px;background-color:#2e2b5f;font-size:0;line-height:0;margin-top:14px;">&nbsp;</div>
-      </td>
-    </tr>
+                <!-- separator -->
+                <div
+                  class="h-sep"
+                  style="
+                    height: 1px;
+                    background-color: #2e2b5f;
+                    font-size: 0;
+                    line-height: 0;
+                    margin-top: 14px;
+                  "
+                >
+                  &nbsp;
+                </div>
+              </td>
+            </tr>
 
-    <!-- ========== HERO ========== -->
-    <tr>
-      <td align="center" class="hero-bg" style="background-color:#dc2626;padding:40px 28px;text-align:center;">
-        <!-- Icon circle using VML for Outlook -->
-        <!--[if gte mso 9]>
-        <v:roundrect xmlns:v="urn:schemas-microsoft-com:vml" xmlns:w="urn:schemas-microsoft-com:office:word"
-          style="height:60px;width:60px;v-text-anchor:middle;" arcsize="50%" fillcolor="#ffffff33" stroked="f">
-          <w:anchorlock/>
-          <center style="color:#ffffff;font-family:Arial,sans-serif;font-size:24px;font-weight:bold;">✕</center>
-        </v:roundrect>
-        <![endif]-->
-        <!--[if !mso]><!-->
-        <table role="presentation" border="0" cellpadding="0" cellspacing="0" align="center" style="margin:0 auto 16px auto;">
-          <tr>
-            <td align="center" valign="middle" width="60" height="60" style="width:60px;height:60px;background-color:rgba(255,255,255,0.2);border-radius:30px;">
-              <img src="https://img.icons8.com/ios/50/ffffff/error--v1.png" width="28" height="28" alt="!" style="display:block;border:0;"/>
-            </td>
-          </tr>
-        </table>
-        <!--<![endif]-->
+            <!-- ========== HERO ========== -->
+            <tr>
+              <td
+                align="center"
+                class="hero-bg"
+                style="
+                  background-color: #dc2626;
+                  padding: 40px 28px;
+                  text-align: center;
+                "
+              >
+                <!-- Icon circle using VML for Outlook -->
+                <!--[if gte mso 9]>
+                  <v:roundrect
+                    xmlns:v="urn:schemas-microsoft-com:vml"
+                    xmlns:w="urn:schemas-microsoft-com:office:word"
+                    style="height: 60px; width: 60px; v-text-anchor: middle"
+                    arcsize="50%"
+                    fillcolor="#ffffff33"
+                    stroked="f"
+                  >
+                    <w:anchorlock />
+                    <center
+                      style="
+                        color: #ffffff;
+                        font-family: Arial, sans-serif;
+                        font-size: 24px;
+                        font-weight: bold;
+                      "
+                    >
+                      ✕
+                    </center>
+                  </v:roundrect>
+                <![endif]-->
+                <!--[if !mso]><!-->
+                <table
+                  role="presentation"
+                  border="0"
+                  cellpadding="0"
+                  cellspacing="0"
+                  align="center"
+                  style="margin: 0 auto 16px auto"
+                >
+                  <tr>
+                    <td
+                      align="center"
+                      valign="middle"
+                      width="60"
+                      height="60"
+                      style="
+                        width: 60px;
+                        height: 60px;
+                        background-color: rgba(255, 255, 255, 0.2);
+                        border-radius: 30px;
+                      "
+                    >
+                      <img
+                        src="https://img.icons8.com/ios/50/ffffff/error--v1.png"
+                        width="28"
+                        height="28"
+                        alt="!"
+                        style="display: block; border: 0"
+                      />
+                    </td>
+                  </tr>
+                </table>
+                <!--<![endif]-->
 
-        <div class="status-badge" style="display:inline-block;background-color:rgba(255,255,255,0.2);border:1px solid rgba(255,255,255,0.35);color:#ffffff;font-family:Arial,sans-serif;font-size:10px;font-weight:bold;letter-spacing:2px;text-transform:uppercase;padding:4px 12px;border-radius:20px;margin-bottom:12px;">● PAYMENT STATUS</div>
-        <h1 class="hero-h1" style="margin:0 0 8px 0;font-family:Arial,sans-serif;font-size:26px;font-weight:800;color:#ffffff;">Payment Failed</h1>
-        <p class="hero-p" style="margin:0;font-family:Arial,sans-serif;font-size:14px;color:rgba(255,255,255,0.85);line-height:1.6;">Your credit top-up could not be processed.<br/>Don't worry &mdash; you have <strong style="color:#ffffff;">not been charged</strong>.</p>
-      </td>
-    </tr>
+                <div
+                  class="status-badge"
+                  style="
+                    display: inline-block;
+                    background-color: rgba(255, 255, 255, 0.2);
+                    border: 1px solid rgba(255, 255, 255, 0.35);
+                    color: #ffffff;
+                    font-family: Arial, sans-serif;
+                    font-size: 10px;
+                    font-weight: bold;
+                    letter-spacing: 2px;
+                    text-transform: uppercase;
+                    padding: 4px 12px;
+                    border-radius: 20px;
+                    margin-bottom: 12px;
+                  "
+                >
+                  ● PAYMENT STATUS
+                </div>
+                <h1
+                  class="hero-h1"
+                  style="
+                    margin: 0 0 8px 0;
+                    font-family: Arial, sans-serif;
+                    font-size: 26px;
+                    font-weight: 800;
+                    color: #ffffff;
+                  "
+                >
+                  Payment Failed
+                </h1>
+                <p
+                  class="hero-p"
+                  style="
+                    margin: 0;
+                    font-family: Arial, sans-serif;
+                    font-size: 14px;
+                    color: rgba(255, 255, 255, 0.85);
+                    line-height: 1.6;
+                  "
+                >
+                  Your credit top-up could not be processed.<br />Don't worry
+                  &mdash; you have
+                  <strong style="color: #ffffff">not been charged</strong>.
+                </p>
+              </td>
+            </tr>
 
-    <!-- ========== BODY ========== -->
-    <tr>
-      <td class="body-pad" style="padding:28px;">
+            <!-- ========== BODY ========== -->
+            <tr>
+              <td class="body-pad" style="padding: 28px">
+                <!-- Greeting -->
+                <p
+                  class="greeting"
+                  style="
+                    font-family: Arial, sans-serif;
+                    font-size: 14px;
+                    color: #374151;
+                    line-height: 1.8;
+                    margin: 0 0 24px 0;
+                  "
+                >
+                  Hi <strong>{{UserName}}</strong>,<br /><br />
+                  A recent payment on your account could not be completed. This
+                  is typically a temporary issue and
+                  <strong>no amount has been deducted</strong>. Please review
+                  the transaction details below and try again at your
+                  convenience.
+                </p>
 
-        <!-- Greeting -->
-        <p class="greeting" style="font-family:Arial,sans-serif;font-size:14px;color:#374151;line-height:1.8;margin:0 0 24px 0;">
-          Hi <strong>{{UserName}}</strong>,<br/><br/>
-          A recent payment on your account could not be completed. This is typically a temporary issue and
-          <strong>no amount has been deducted</strong>. Please review the transaction details below and try again at your convenience.
-        </p>
+                <!-- Section Label -->
+                <p
+                  class="section-label"
+                  style="
+                    font-family: Arial, sans-serif;
+                    font-size: 10px;
+                    font-weight: bold;
+                    letter-spacing: 2px;
+                    text-transform: uppercase;
+                    color: #818cf8;
+                    margin: 0 0 10px 0;
+                  "
+                >
+                  Transaction Details
+                </p>
 
-        <!-- Section Label -->
-        <p class="section-label" style="font-family:Arial,sans-serif;font-size:10px;font-weight:bold;letter-spacing:2px;text-transform:uppercase;color:#818cf8;margin:0 0 10px 0;">Transaction Details</p>
+                <!-- Transaction Table -->
+                <table
+                  role="presentation"
+                  class="txn-table"
+                  border="0"
+                  cellpadding="0"
+                  cellspacing="0"
+                  width="100%"
+                  style="
+                    border-collapse: collapse;
+                    border: 1px solid #e0e7ff;
+                    border-radius: 10px;
+                    overflow: hidden;
+                    margin-bottom: 20px;
+                  "
+                >
+                  <tr class="txn-row" style="border-bottom: 1px solid #eef2ff">
+                    <td
+                      class="txn-label"
+                      style="
+                        font-family: Arial, sans-serif;
+                        font-size: 13px;
+                        color: #6b7280;
+                        font-weight: 500;
+                        padding: 11px 16px;
+                        width: 45%;
+                      "
+                    >
+                      Status
+                    </td>
+                    <td
+                      class="txn-value"
+                      style="
+                        font-family: Arial, sans-serif;
+                        font-size: 13px;
+                        color: #1f2937;
+                        font-weight: bold;
+                        padding: 11px 16px;
+                        text-align: right;
+                      "
+                    >
+                      <span
+                        class="pill-fail"
+                        style="
+                          display: inline-block;
+                          background-color: #fef2f2;
+                          border: 1px solid #fecaca;
+                          color: #dc2626;
+                          font-family: Arial, sans-serif;
+                          font-size: 11px;
+                          font-weight: bold;
+                          padding: 3px 10px;
+                          border-radius: 20px;
+                        "
+                        >● Failed</span
+                      >
+                    </td>
+                  </tr>
+                  <tr class="txn-row" style="border-bottom: 1px solid #eef2ff">
+                    <td
+                      class="txn-label"
+                      style="
+                        font-family: Arial, sans-serif;
+                        font-size: 13px;
+                        color: #6b7280;
+                        font-weight: 500;
+                        padding: 11px 16px;
+                      "
+                    >
+                      Payment ID
+                    </td>
+                    <td
+                      class="txn-value"
+                      style="
+                        font-family: Arial, sans-serif;
+                        font-size: 13px;
+                        color: #1f2937;
+                        font-weight: bold;
+                        padding: 11px 16px;
+                        text-align: right;
+                      "
+                    >
+                      {{PaymentId}}
+                    </td>
+                  </tr>
+                  <tr class="txn-row" style="border-bottom: 1px solid #eef2ff">
+                    <td
+                      class="txn-label"
+                      style="
+                        font-family: Arial, sans-serif;
+                        font-size: 13px;
+                        color: #6b7280;
+                        font-weight: 500;
+                        padding: 11px 16px;
+                      "
+                    >
+                      Date &amp; Time
+                    </td>
+                    <td
+                      class="txn-value"
+                      style="
+                        font-family: Arial, sans-serif;
+                        font-size: 13px;
+                        color: #1f2937;
+                        font-weight: bold;
+                        padding: 11px 16px;
+                        text-align: right;
+                      "
+                    >
+                      {{DateTime}}
+                    </td>
+                  </tr>
+                  <tr class="txn-row" style="border-bottom: 1px solid #eef2ff">
+                    <td
+                      class="txn-label"
+                      style="
+                        font-family: Arial, sans-serif;
+                        font-size: 13px;
+                        color: #6b7280;
+                        font-weight: 500;
+                        padding: 11px 16px;
+                      "
+                    >
+                      Payment Method
+                    </td>
+                    <td
+                      class="txn-value"
+                      style="
+                        font-family: Arial, sans-serif;
+                        font-size: 13px;
+                        color: #1f2937;
+                        font-weight: bold;
+                        padding: 11px 16px;
+                        text-align: right;
+                      "
+                    >
+                      {{PaymentMethod}}
+                    </td>
+                  </tr>
+                  <tr>
+                    <td
+                      class="txn-label"
+                      style="
+                        font-family: Arial, sans-serif;
+                        font-size: 13px;
+                        color: #6b7280;
+                        font-weight: 500;
+                        padding: 11px 16px;
+                      "
+                    >
+                      Amount
+                    </td>
+                    <td
+                      class="txn-value-amt"
+                      style="
+                        font-family: Arial, sans-serif;
+                        font-size: 15px;
+                        color: #1f2937;
+                        font-weight: bold;
+                        padding: 11px 16px;
+                        text-align: right;
+                      "
+                    >
+                      {{Amount}}
+                    </td>
+                  </tr>
+                </table>
 
-        <!-- Transaction Table -->
-        <table role="presentation" class="txn-table" border="0" cellpadding="0" cellspacing="0" width="100%" style="border-collapse:collapse;border:1px solid #e0e7ff;border-radius:10px;overflow:hidden;margin-bottom:20px;">
-          <tr class="txn-row" style="border-bottom:1px solid #eef2ff;">
-            <td class="txn-label" style="font-family:Arial,sans-serif;font-size:13px;color:#6b7280;font-weight:500;padding:11px 16px;width:45%;">Status</td>
-            <td class="txn-value" style="font-family:Arial,sans-serif;font-size:13px;color:#1f2937;font-weight:bold;padding:11px 16px;text-align:right;">
-              <span class="pill-fail" style="display:inline-block;background-color:#fef2f2;border:1px solid #fecaca;color:#dc2626;font-family:Arial,sans-serif;font-size:11px;font-weight:bold;padding:3px 10px;border-radius:20px;">● Failed</span>
-            </td>
-          </tr>
-          <tr class="txn-row" style="border-bottom:1px solid #eef2ff;">
-            <td class="txn-label" style="font-family:Arial,sans-serif;font-size:13px;color:#6b7280;font-weight:500;padding:11px 16px;">Payment ID</td>
-            <td class="txn-value" style="font-family:Arial,sans-serif;font-size:13px;color:#1f2937;font-weight:bold;padding:11px 16px;text-align:right;">{{PaymentId}}</td>
-          </tr>
-          <tr class="txn-row" style="border-bottom:1px solid #eef2ff;">
-            <td class="txn-label" style="font-family:Arial,sans-serif;font-size:13px;color:#6b7280;font-weight:500;padding:11px 16px;">Date &amp; Time</td>
-            <td class="txn-value" style="font-family:Arial,sans-serif;font-size:13px;color:#1f2937;font-weight:bold;padding:11px 16px;text-align:right;">{{DateTime}}</td>
-          </tr>
-          <tr class="txn-row" style="border-bottom:1px solid #eef2ff;">
-            <td class="txn-label" style="font-family:Arial,sans-serif;font-size:13px;color:#6b7280;font-weight:500;padding:11px 16px;">Payment Method</td>
-            <td class="txn-value" style="font-family:Arial,sans-serif;font-size:13px;color:#1f2937;font-weight:bold;padding:11px 16px;text-align:right;">{{PaymentMethod}}</td>
-          </tr>
-          <tr>
-            <td class="txn-label" style="font-family:Arial,sans-serif;font-size:13px;color:#6b7280;font-weight:500;padding:11px 16px;">Amount</td>
-            <td class="txn-value-amt" style="font-family:Arial,sans-serif;font-size:15px;color:#1f2937;font-weight:bold;padding:11px 16px;text-align:right;">{{Amount}}</td>
-          </tr>
-        </table>
-
-        <!-- Warning Box -->
-        <!--[if gte mso 9]>
+                <!-- Warning Box -->
+                <!--[if gte mso 9]>
         <table role="presentation" border="0" cellpadding="0" cellspacing="0" width="100%" style="background-color:#fffbeb;border:1px solid #fde68a;border-radius:8px;margin-bottom:24px;">
         <tr><td style="padding:14px 16px;border-left:4px solid #f59e0b;">
         <![endif]-->
-        <div class="warn-box" style="background-color:#fffbeb;border:1px solid #fde68a;border-left:4px solid #f59e0b;border-radius:8px;padding:14px 16px;margin-bottom:24px;">
-          <p class="warn-label" style="font-family:Arial,sans-serif;font-size:10px;font-weight:bold;letter-spacing:2px;text-transform:uppercase;color:#92400e;margin:0 0 5px 0;">&#9888; Reason for Failure</p>
-          <p class="warn-text" style="font-family:Arial,sans-serif;font-size:13px;color:#78350f;margin:0;line-height:1.6;">{{FailureReason}}</p>
-        </div>
-        <!--[if gte mso 9]>
+                <div
+                  class="warn-box"
+                  style="
+                    background-color: #fffbeb;
+                    border: 1px solid #fde68a;
+                    border-left: 4px solid #f59e0b;
+                    border-radius: 8px;
+                    padding: 14px 16px;
+                    margin-bottom: 24px;
+                  "
+                >
+                  <p
+                    class="warn-label"
+                    style="
+                      font-family: Arial, sans-serif;
+                      font-size: 10px;
+                      font-weight: bold;
+                      letter-spacing: 2px;
+                      text-transform: uppercase;
+                      color: #92400e;
+                      margin: 0 0 5px 0;
+                    "
+                  >
+                    &#9888; Reason for Failure
+                  </p>
+                  <p
+                    class="warn-text"
+                    style="
+                      font-family: Arial, sans-serif;
+                      font-size: 13px;
+                      color: #78350f;
+                      margin: 0;
+                      line-height: 1.6;
+                    "
+                  >
+                    {{FailureReason}}
+                  </p>
+                </div>
+                <!--[if gte mso 9]>
         </td></tr></table>
         <![endif]-->
 
-        <!-- Divider -->
-        <table role="presentation" border="0" cellpadding="0" cellspacing="0" width="100%" style="margin-bottom:24px;">
-          <tr><td style="border-top:1px solid #f1f5f9;font-size:0;line-height:0;">&nbsp;</td></tr>
-        </table>
+                <!-- Divider -->
+                <table
+                  role="presentation"
+                  border="0"
+                  cellpadding="0"
+                  cellspacing="0"
+                  width="100%"
+                  style="margin-bottom: 24px"
+                >
+                  <tr>
+                    <td
+                      style="
+                        border-top: 1px solid #f1f5f9;
+                        font-size: 0;
+                        line-height: 0;
+                      "
+                    >
+                      &nbsp;
+                    </td>
+                  </tr>
+                </table>
 
-        <!-- Help -->
-        <p class="help" style="font-family:Arial,sans-serif;font-size:13px;color:#6b7280;line-height:1.75;text-align:center;margin:0 0 28px 0;">
-          Still having trouble? We&rsquo;re happy to help.<br/>
-          Reach out at <a href="mailto:support@aventisia.com" style="color:#4f46e5;font-weight:bold;text-decoration:none;">support@aventisia.com</a> and our team will get back to you shortly.
-        </p>
-        <p class="sig" style="font-family:Arial,sans-serif;font-size:13px;color:#374151;text-align:center;margin:0;">
-          Warm regards,<br/><strong style="color:#4f46e5;">The Aventisia Team</strong>
-        </p>
+                <!-- Help -->
+                <p
+                  class="help"
+                  style="
+                    font-family: Arial, sans-serif;
+                    font-size: 13px;
+                    color: #6b7280;
+                    line-height: 1.75;
+                    text-align: center;
+                    margin: 0 0 28px 0;
+                  "
+                >
+                  Still having trouble? We&rsquo;re happy to help.<br />
+                  Reach out at
+                  <a
+                    href="mailto:support@aventisia.com"
+                    style="
+                      color: #4f46e5;
+                      font-weight: bold;
+                      text-decoration: none;
+                    "
+                    >support@aventisia.com</a
+                  >
+                  and our team will get back to you shortly.
+                </p>
+                <p
+                  class="sig"
+                  style="
+                    font-family: Arial, sans-serif;
+                    font-size: 13px;
+                    color: #374151;
+                    text-align: center;
+                    margin: 0;
+                  "
+                >
+                  Warm regards,<br /><strong style="color: #4f46e5"
+                    >The Aventisia Team</strong
+                  >
+                </p>
+              </td>
+            </tr>
 
-      </td>
-    </tr>
+            <!-- ========== FOOTER ========== -->
+            <tr>
+              <td
+                class="footer-bg"
+                style="
+                  background-color: #f8fafc;
+                  border-top: 1px solid #e2e8f0;
+                  padding: 16px 28px;
+                  text-align: center;
+                "
+              >
+                <p
+                  class="footer-text"
+                  style="
+                    font-family: Arial, sans-serif;
+                    font-size: 11px;
+                    color: #9ca3af;
+                    line-height: 1.8;
+                    margin: 0;
+                  "
+                >
+                  &copy; 2026 Aventisia Technologies Pvt. Ltd. &middot; All
+                  rights reserved<br />
+                  You received this email because a payment was attempted on
+                  your account.<br />
+                  <a
+                    href="https://aventisia.com/privacy-policy"
+                    style="color: #a5b4fc; text-decoration: none"
+                    >Privacy Policy</a
+                  >
+                  &nbsp;&middot;&nbsp;
+                  <a
+                    href="https://aventisia.com/terms-of-service"
+                    style="color: #a5b4fc; text-decoration: none"
+                    >Terms of Service</a
+                  >
+                </p>
+              </td>
+            </tr>
+          </table>
+          <!-- END OUTER CONTAINER -->
 
-    <!-- ========== FOOTER ========== -->
-    <tr>
-      <td class="footer-bg" style="background-color:#f8fafc;border-top:1px solid #e2e8f0;padding:16px 28px;text-align:center;">
-        <p class="footer-text" style="font-family:Arial,sans-serif;font-size:11px;color:#9ca3af;line-height:1.8;margin:0;">
-          &copy; 2026 Aventisia Technologies Pvt. Ltd. &middot; All rights reserved<br/>
-          You received this email because a payment was attempted on your account.<br/>
-          <a href="https://aventisia.com/privacy-policy" style="color:#a5b4fc;text-decoration:none;">Privacy Policy</a> &nbsp;&middot;&nbsp;
-          <a href="https://aventisia.com/terms-of-service" style="color:#a5b4fc;text-decoration:none;">Terms of Service</a>
-        </p>
-      </td>
-    </tr>
-
-  </table>
-  <!-- END OUTER CONTAINER -->
-
-  <!--[if mso | IE]>
+          <!--[if mso | IE]>
   </td></tr></table>
   <![endif]-->
+        </td>
+      </tr>
+    </table>
 
-</td></tr>
-</table>
-
-<!--[if mso | IE]>
+    <!--[if mso | IE]>
 </td></tr></table>
 <![endif]-->
-
-</body>
+  </body>
 </html>

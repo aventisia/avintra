@@ -26,7 +26,7 @@ const ChatAssistant = ({ className }: ChatAssistantProps) => {
       >
         <iframe
           className="h-[35rem]  w-[25rem]"
-          src={`${window.location.origin}/worc/external/chats`}
+          src={`${window.location.origin}/workspace/external/chats`}
         />
       </PopoverContent>
     </Popover>

@@ -52,7 +52,7 @@ public class InstanceService : IInstanceService
                 // Fetch metrics from the external API
                 HttpResponseMessage httpResponse = await RequestExternalAPIUtil.RequestExternalAPI(
                     CrudTypesEnum.Read,
-                    $"{_environmentConfig.WorcApiBaseUrl}/api/project/usage",
+                    $"{_environmentConfig.WorkspaceApiBaseUrl}/api/project/usage",
                     null);
 
                 // Handle unsuccessful API response

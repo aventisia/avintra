@@ -5,7 +5,7 @@ interface NodeImageProps extends React.HTMLAttributes<HTMLImageElement> {
 }
 
 export const NodeImage = ({ className, src, ...props }: NodeImageProps) => {
-  const basePath = import.meta.env.VITE_AGENTBUILDER_PATH.replace(/\/$/, "");
+  const basePath = import.meta.env.VITE_STUDIO_PATH.replace(/\/$/, "");
 
   return (
     <img

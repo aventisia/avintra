@@ -3,7 +3,7 @@
   "mainBinaryName": "AvintraDesktopApp",
   "productName": "AvintraDesktopApp",
   "version": "0.1.65",
-  "identifier": "com.aventisia.worc",
+  "identifier": "com.aventisia.avintra",
   "build": {
     "frontendDist": "../dist",
     "devUrl": "http://localhost:2999",

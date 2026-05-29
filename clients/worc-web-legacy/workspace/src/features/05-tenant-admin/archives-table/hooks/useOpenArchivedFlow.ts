@@ -7,7 +7,7 @@ export const useOpenArchivedFlow = () => {
   // Handle open archived flow action
   const handleOpenArchivedFlowAction = (rowId: string, versionId: string) => {
     // Open archived flow in studio
-    window.location.href = `${import.meta.env.VITE_AGENTBUILDER_PATH}agent?f=${rowId}&v=${versionId}`;
+    window.location.href = `${import.meta.env.VITE_STUDIO_PATH}agent?f=${rowId}&v=${versionId}`;
   };
 
   // Return the handle open Archived flow action function

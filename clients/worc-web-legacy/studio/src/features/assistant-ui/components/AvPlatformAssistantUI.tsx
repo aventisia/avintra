@@ -125,7 +125,7 @@ const getAgentConfigFromFlowNodes = (nodes: Node[]): Partial<LLMRequestDto> => {
 };
 
 /**
- * AV Platform Assistant UI test surface for ChatAgent flows.
+ * av-platform Assistant UI test surface for ChatAgent flows.
  *
  * Responsibilities:
  * 1. Reads active flow metadata from store.

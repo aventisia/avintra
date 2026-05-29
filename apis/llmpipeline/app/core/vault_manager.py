@@ -6,7 +6,7 @@ from app.core.config import settings
 
 class VaultManager:
     # Constructor: To initialize API URL and key (if any)
-    def __init__(self, api_url: str =  f"https://{settings.APP_BASE_URL}/worc/api/app-secret"):
+    def __init__(self, api_url: str =  f"https://{settings.APP_BASE_URL}/workspace/api/app-secret"):
         self.api_url = api_url
 
     def get_vault_secret_by_id(self, vault_secret_id: str, jwt: str = None) -> Dict[str, Any]:

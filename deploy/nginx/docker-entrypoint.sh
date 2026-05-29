@@ -4,7 +4,7 @@ set -e
 # Check if APP_BASE_URL is provided
 if [ -z "$APP_BASE_URL" ]; then
     echo "ERROR: APP_BASE_URL environment variable is required"
-    echo "Usage example: docker run -e APP_BASE_URL=worc.your-domain.com ..."
+    echo "Usage example: docker run -e APP_BASE_URL=avintra.your-domain.com ..."
     exit 1
 fi
 
@@ -24,7 +24,7 @@ else
 fi
 
 # Replace placeholders in config files
-sed -i "s|\${APP_BASE_URL}|$APP_BASE_URL|g" /etc/nginx/conf.d/aventisia.worc.conf
+sed -i "s|\${APP_BASE_URL}|$APP_BASE_URL|g" /etc/nginx/conf.d/aventisia.avplatform.conf
 sed -i "s|\${APP_BASE_URL}|$APP_BASE_URL|g" /etc/nginx/conf.d/common_headers.conf
 sed -i "s|\${CSP_SCRIPT_SRC}|$CSP_SCRIPT_SRC|g" /etc/nginx/conf.d/common_headers.conf
 sed -i "s|\${CSP_FRAME_SRC}|$CSP_FRAME_SRC|g" /etc/nginx/conf.d/common_headers.conf

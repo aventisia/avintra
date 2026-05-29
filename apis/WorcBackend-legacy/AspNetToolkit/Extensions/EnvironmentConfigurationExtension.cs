@@ -72,7 +72,7 @@ public static class EnvironmentConfigurationExtension
 
         // Internal service URLs environment variables
         var ACCOUNTS_API_BASE_URL = Environment.GetEnvironmentVariable("ACCOUNTS_API_BASE_URL") ?? config["EnvironmentConfig:AccountsApiBaseUrl"] ?? "http://accounts-apis:4000";
-        var WORC_API_BASE_URL = Environment.GetEnvironmentVariable("WORC_API_BASE_URL") ?? config["EnvironmentConfig:WorcApiBaseUrl"] ?? "http://worc-apis:4001";
+        var WORKSPACE_API_BASE_URL = Environment.GetEnvironmentVariable("WORKSPACE_API_BASE_URL") ?? config["EnvironmentConfig:WorkspaceApiBaseUrl"] ?? "http://workspace-apis:4001";
         var LLMPIPELINE_API_BASE_URL = Environment.GetEnvironmentVariable("LLMPIPELINE_API_BASE_URL") ?? config["EnvironmentConfig:LlmPipelineApiBaseUrl"] ?? "http://llmpipeline-apis:4003";
 
         // Sales and support emails environment variable
@@ -183,7 +183,7 @@ public static class EnvironmentConfigurationExtension
                     { "EnvironmentConfig:CUSTOM_API_KEY", CUSTOM_API_KEY },
 
                     { "EnvironmentConfig:AccountsApiBaseUrl", ACCOUNTS_API_BASE_URL.TrimEnd('/') },
-                    { "EnvironmentConfig:WorcApiBaseUrl", WORC_API_BASE_URL.TrimEnd('/') },
+                    { "EnvironmentConfig:WorkspaceApiBaseUrl", WORKSPACE_API_BASE_URL.TrimEnd('/') },
                     { "EnvironmentConfig:LlmPipelineApiBaseUrl", LLMPIPELINE_API_BASE_URL.TrimEnd('/') },
 
                     { "EnvironmentConfig:SalesEmails", SALES_EMAILS },

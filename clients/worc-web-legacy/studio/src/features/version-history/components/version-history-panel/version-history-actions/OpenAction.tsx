@@ -1,7 +1,8 @@
-import { ExternalLink } from "lucide-react";
-import { SimpleDDMenuItem } from "@aventisia/ui/dropdown-menu";
-import { useGetVersionHistoryItemData } from "@/features/version-history/hooks/useGetVersionHistoryItemData";
 import { IS_TAURI } from "@/constants";
+import { useGetVersionHistoryItemData } from "@/features/version-history/hooks/useGetVersionHistoryItemData";
+
+import { SimpleDDMenuItem } from "@aventisia/ui/dropdown-menu";
+import { ExternalLink } from "lucide-react";
 
 export default function OpenAction({ id }: { id: string }) {
   const { agentData } = useGetVersionHistoryItemData(id);
@@ -15,7 +16,7 @@ export default function OpenAction({ id }: { id: string }) {
       content="Open in new tab"
       onClick={() => {
         window.open(
-          `${import.meta.env.VITE_AGENTBUILDER_PATH}agent-history?f=${agentData.flowId}&v=${agentData.flowVersionId}&h=${agentData.id}`,
+          `${import.meta.env.VITE_STUDIO_PATH}agent-history?f=${agentData.flowId}&v=${agentData.flowVersionId}&h=${agentData.id}`,
           "_blank",
         );
       }}

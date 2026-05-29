@@ -13,7 +13,7 @@ namespace NodeExecutor
         {
             base.OnStartup(e);
 
-            string appBaseUrl = e.Args.Length > 0 ? e.Args[0] : "https://worc.aventisia.com";
+            string appBaseUrl = e.Args.Length > 0 ? e.Args[0] : "https://avintra.aventisia.com";
             string wsPort = e.Args.Length > 1 ? e.Args[1] : "9001";
             string agentId = e.Args.Length > 2 ? e.Args[2] : Guid.Empty.ToString();
             string agentName = e.Args.Length > 3 ? e.Args[3] : "Agent Name";

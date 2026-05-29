@@ -17,7 +17,7 @@ export const FlowsTableCellLink = ({
   // Return the component
   return (
     <NavLink
-      to={`${window.location.origin}${import.meta.env.VITE_AGENTBUILDER_PATH}agent?f=${rowId}`}
+      to={`${window.location.origin}${import.meta.env.VITE_STUDIO_PATH}agent?f=${rowId}`}
       className={cn(
         buttonVariants({ variant: "link" }),
         "h-auto w-auto cursor-pointer truncate inline-block  font-medium text-foreground hover:text-primary",

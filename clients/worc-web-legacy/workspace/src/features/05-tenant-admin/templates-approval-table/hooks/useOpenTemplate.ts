@@ -14,7 +14,7 @@ export const useOpenTemplate = () => {
   const handleOpenTemplate = (path: string) => {
     const url =
       window.location.origin +
-      `${import.meta.env.VITE_AGENTBUILDER_PATH}${stripLeadingSlash(path)}`;
+      `${import.meta.env.VITE_STUDIO_PATH}${stripLeadingSlash(path)}`;
     window.open(url, "_blank");
   };
 

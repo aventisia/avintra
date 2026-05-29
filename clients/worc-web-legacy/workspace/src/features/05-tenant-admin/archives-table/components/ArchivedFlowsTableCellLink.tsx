@@ -21,7 +21,7 @@ export const ArchivedFlowsTableCellLink = ({
   // Return the component
   return (
     <NavLink
-      to={`${window.location.origin}${import.meta.env.VITE_AGENTBUILDER_PATH}agent?f=${refId}&v=${rowId}`}
+      to={`${window.location.origin}${import.meta.env.VITE_STUDIO_PATH}agent?f=${refId}&v=${rowId}`}
       className={cn(
         buttonVariants({ variant: "link" }),
         "!h-8 w-auto cursor-pointer truncate font-medium text-foreground hover:text-primary",

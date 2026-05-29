@@ -67,7 +67,7 @@ pipeline {
                         // Deploy to each target server
                         targetServers.each { server ->
                             echo "Deploying to ${server}..."
-                            sh "rsync -avz --delete ${WORKSPACE}/dist/* admin@${server}:/var/www/aventisia.com/clients/agentbuilder/"
+                            sh "rsync -avz --delete ${WORKSPACE}/dist/* admin@${server}:/var/www/aventisia.com/clients/studio/"
                             echo "Successfully deployed to ${server}"
                         }
                     }

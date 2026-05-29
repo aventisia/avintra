@@ -10,7 +10,7 @@ import DynamicForm from "./dynamic-form/DynamicForm";
 export default function ToolsCall({ data }: { data?: LLMToolsOutputDto[] }) {
   if (!data?.length) return;
 
-  const basePath = import.meta.env.VITE_AGENTBUILDER_PATH.replace(/\/$/, "");
+  const basePath = import.meta.env.VITE_STUDIO_PATH.replace(/\/$/, "");
 
   const formConfig = createPayloadFields(data);
 

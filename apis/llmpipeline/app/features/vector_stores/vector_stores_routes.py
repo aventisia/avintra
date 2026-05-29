@@ -32,7 +32,7 @@ async def ingest_document_route(
 
         # PgVector
         if ingest_doc_request.vector_store == "pgvector":
-            async with get_db_session_context(settings.POSTGRESQL_WORC_DB_NAME) as session:
+            async with get_db_session_context(settings.POSTGRESQL_WORKSPACE_DB_NAME) as session:
                 session.info["tenant_id"] = _user.tenant_id
                 db = TenantDB(session=session, tenant_id=_user.tenant_id)
                 vector_store = get_vector_store(ingest_doc_request.vector_store, db)
@@ -70,7 +70,7 @@ async def query_document_route(
 
         # PgVector
         if query_doc_request.vector_store == "pgvector":
-            async with get_db_session_context(settings.POSTGRESQL_WORC_DB_NAME) as session:
+            async with get_db_session_context(settings.POSTGRESQL_WORKSPACE_DB_NAME) as session:
                 session.info["tenant_id"] = _user.tenant_id
                 db = TenantDB(session=session, tenant_id=_user.tenant_id)
                 vector_store = get_vector_store(query_doc_request.vector_store, db)
@@ -107,7 +107,7 @@ async def delete_document_route(
 
         # PgVector
         if delete_doc_request.vector_store == "pgvector":
-            async with get_db_session_context(settings.POSTGRESQL_WORC_DB_NAME) as session:
+            async with get_db_session_context(settings.POSTGRESQL_WORKSPACE_DB_NAME) as session:
                 session.info["tenant_id"] = _user.tenant_id
                 db = TenantDB(session=session, tenant_id=_user.tenant_id)
                 vector_store = get_vector_store(delete_doc_request.vector_store, db)

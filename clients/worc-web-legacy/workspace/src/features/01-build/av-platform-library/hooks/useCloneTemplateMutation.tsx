@@ -39,7 +39,7 @@ export const useCloneTemplateMutation = () => {
         data?.data?.type == FlowTypesEnum.ChatAgent ||
         data?.data?.type == FlowTypesEnum.Block
       ) {
-        window.location.href = `${import.meta.env.VITE_AGENTBUILDER_PATH}${stripLeadingSlash(data.data.accessPath)}`;
+        window.location.href = `${import.meta.env.VITE_STUDIO_PATH}${stripLeadingSlash(data.data.accessPath)}`;
       }
     },
   });

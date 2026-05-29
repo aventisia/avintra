@@ -1009,7 +1009,7 @@ public class MessageTriggerService : IMessageTriggerService
                         baseUrl = "https://" + baseUrl;
 
                     // Endpoint to receive Graph change notifications
-                    var notificationUrl = $"{baseUrl}/worc/api/message-trigger/notify/{triggerId}";
+                    var notificationUrl = $"{baseUrl}/workspace/api/message-trigger/notify/{triggerId}";
 
                     // Check if subscription has expired and adjust actions accordingly
                     if (messageTriggerModel.ExpiryDateTime <= DateTimeOffset.UtcNow)

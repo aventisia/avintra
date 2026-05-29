@@ -214,7 +214,7 @@ export function ToolsConfigField({ name }: ToolsConfigFieldProps) {
     github: "/brand-img/github.svg",
   };
 
-  const basePath = import.meta.env.VITE_AGENTBUILDER_PATH.replace(/\/$/, "");
+  const basePath = import.meta.env.VITE_STUDIO_PATH.replace(/\/$/, "");
 
   return (
     <GroupedFieldsWrapper groupName="Configure Tools">

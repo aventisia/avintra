@@ -129,7 +129,7 @@ public class TenantCreditAllocationJob : IJob
                         baseUrl = "https://" + baseUrl;
                     }
 
-                    var billingUrl = $"{baseUrl}/worc/tenant";
+                    var billingUrl = $"{baseUrl}/workspace/tenant";
 
                     // Initialize placeholders for the email template. These will be replaced in the email body dynamically
                     var placeholderValues = new Dictionary<string, string>
