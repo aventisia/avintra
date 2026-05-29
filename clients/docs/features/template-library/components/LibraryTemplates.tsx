@@ -8,7 +8,7 @@ import { TemplateCardSkeleton } from "./TemplateCardSkelton";
 import { useFetch } from "../hooks/useFetch";
 import { getAgentTemplates } from "../apis/wroc-templates-apis";
 
-const WorcLibraryTemplates = ({
+const LibraryTemplates = ({
   selectedCategory,
   searchQuery,
 }: {
@@ -125,4 +125,4 @@ const WorcLibraryTemplates = ({
     </div>
   );
 };
-export default WorcLibraryTemplates;
+export default LibraryTemplates;

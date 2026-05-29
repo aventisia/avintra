@@ -2,7 +2,7 @@
 /**
  * Custom hook to Clone a template.
  *
- * The template is displayed at the `/worc/library` route of Worc.
+ * The template is displayed at the `/workspace/library` route of avplatform.
  *
  * @returns A function that takes a template ID and opens the template in a new tab.
  */

@@ -10,17 +10,17 @@ import {
 } from "@/app/_components/ui/cards";
 import { BotIcon, Copy, FileBoxIcon, Tag } from "lucide-react";
 
-import { WorcTemplatesDto } from "../dtos/worc-templates-dtos";
+import { LibraryTemplatesDto } from "../dtos/library-templates-dtos";
 import { useViewTemplate } from "../hooks/useViewTemplate";
 
 type TemplateCardProps = {
-  template: WorcTemplatesDto;
+  template: LibraryTemplatesDto;
 };
 
 /**
  * TemplateCard
  *
- * Reusable component to visually display a Worc template.
+ * Reusable component to visually display a avplatform template.
  * Shows name, description, icons, usage count, and creator info.
  */
 export const TemplateCard = ({ template }: TemplateCardProps) => {

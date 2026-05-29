@@ -1,7 +1,7 @@
 "use client";
 import { SearchIcon } from "lucide-react";
 import { useState } from "react";
-import WorcLibraryTemplates from "./WorcLibraryTemplates";
+import LibraryTemplates from "./LibraryTemplates";
 import { Input } from "@/app/_components/ui";
 import { Button } from "@/app/_components/ui/buttons";
 import { cn } from "@/lib";
@@ -9,7 +9,7 @@ import { useSearchParams } from "next/navigation";
 import { TemplateDetail } from "./template-details/TemplateDetails";
 import { useDebounce } from "../hooks/useDebounce";
 
-const WorcLibrary = () => {
+const TemplateLibrary = () => {
   const searchParams = useSearchParams();
   const id = searchParams.get("t");
   const [searchQuery, setSearchQuery] = useState("");
@@ -39,10 +39,10 @@ const WorcLibrary = () => {
         <div className="mx-auto max-w-7xl px-4 sm:px-6 py-6 sm:py-8">
           <div className="mx-auto mb-4 sm:mb-6 max-w-3xl text-center">
             <h1 className="text-3xl sm:text-4xl md:text-5xl lg:!text-6xl font-semibold tracking-wide mb-2 sm:mb-3">
-              Worc <span className="text-primary">Library</span>
+              Avintra <span className="text-primary">Library</span>
             </h1>
             <p className="text-sm sm:text-base text-muted-foreground px-2 sm:px-0">
-              The Library of Worc brings together a rich catalog of ready-to-use
+              The Library of Avintra brings together a rich catalog of ready-to-use
               automations and AI blueprints, empowering teams to build faster,
               smarter, and at scale no need to start from scratch.
             </p>
@@ -87,11 +87,11 @@ const WorcLibrary = () => {
       </div>
 
       {/* Displays templates filtered by the selected category */}
-      <WorcLibraryTemplates
+      <LibraryTemplates
         selectedCategory={selectedCategory}
         searchQuery={debouncedSearch}
       />
     </div>
   );
 };
-export default WorcLibrary;
+export default TemplateLibrary;

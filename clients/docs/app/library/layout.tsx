@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
 import { DotPattern } from "../_components/ui/DotPattern";
 
-import "@/features/worc-library/styles/library.css";
+import "@/features/template-library/styles/library.css";
 import { cn } from "@/lib";
 
 export const metadata: Metadata = {

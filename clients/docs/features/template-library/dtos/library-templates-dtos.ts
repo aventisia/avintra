@@ -1,10 +1,8 @@
 /**
- * WorcTemplatesDto
- *
- * Data Transfer Object representing a single Worc Template.
+ * Data Transfer Object representing a single avplatform Template.
  * Used for displaying, filtering, or selecting templates in the UI.
  */
-export interface WorcTemplatesDto {
+export interface LibraryTemplatesDto {
   /** Unique identifier for the template */
   id: string;
 
