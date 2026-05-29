@@ -12,32 +12,18 @@ public class AgentTableController : BaseApiController
         _agentTableService = agentTableService;
     }
 
-    // Retrieves a list of personal published flow versions for a specific flow identified by its flowId.
+    // Retrieves a list of published flow versions for a specific flow identified by its flowId.
     [HttpGet("published")]
-    public async Task<ActionResult<ServiceResponse<IEnumerable<AgentTableDto>>>> GetPersonalPublishFlowVersionsAsync(Guid? flowId)
+    public async Task<ActionResult<ServiceResponse<IEnumerable<AgentTableDto>>>> GetPublishFlowVersionsAsync(Guid? flowId)
     {
-        return ResultHelper(await _agentTableService.GetPublishFlowVersionsAsync(flowId, true));
+        return ResultHelper(await _agentTableService.GetPublishFlowVersionsAsync(flowId));
     }
 
-    // Retrieves a list of shared published flow versions for a specific flow identified by its flowId.
-    [HttpGet("published/shared")]
-    public async Task<ActionResult<ServiceResponse<IEnumerable<AgentTableDto>>>> GetSharedPublishFlowVersionsAsync(Guid? flowId)
-    {
-        return ResultHelper(await _agentTableService.GetPublishFlowVersionsAsync(flowId, false));
-    }
-
-    // Retrieves a list of personal archived flow versions for a specific flow identified by its flowId.
+    // Retrieves a list of archived flow versions for a specific flow identified by its flowId.
     [HttpGet("archived")]
-    public async Task<ActionResult<ServiceResponse<IEnumerable<AgentTableDto>>>> GetPersonalArchiveFlowVersionsAsync(Guid? flowId)
+    public async Task<ActionResult<ServiceResponse<IEnumerable<AgentTableDto>>>> GetArchiveFlowVersionsAsync(Guid? flowId)
     {
-        return ResultHelper(await _agentTableService.GetArchiveFlowVersionsAsync(flowId, true));
-    }
-
-    // Retrieves a list of shared archived flow versions for a specific flow identified by its flowId.
-    [HttpGet("archived/shared")]
-    public async Task<ActionResult<ServiceResponse<IEnumerable<AgentTableDto>>>> GetSharedArchiveFlowVersionsAsync(Guid? flowId)
-    {
-        return ResultHelper(await _agentTableService.GetArchiveFlowVersionsAsync(flowId, false));
+        return ResultHelper(await _agentTableService.GetArchiveFlowVersionsAsync(flowId));
     }
 
     // Retrieves a list of archived flow versions for a specific flow identified by its flowId.
@@ -77,9 +63,9 @@ public class AgentTableController : BaseApiController
 
     // Searches for published flow versions that match the specified search keyword.
     [HttpGet("search/{seachKey}")]
-    public async Task<ActionResult<ServiceResponse<IEnumerable<AssignMachineDto>>>> SearchPublishFlowVersions(string seachKey, [FromQuery] bool isPersonal)
+    public async Task<ActionResult<ServiceResponse<IEnumerable<AssignMachineDto>>>> SearchPublishFlowVersions(string seachKey)
     {
-        return ResultHelper(await _agentTableService.SearchPublishFlowVersionsAsync(seachKey, isPersonal));
+        return ResultHelper(await _agentTableService.SearchPublishFlowVersionsAsync(seachKey));
     }
 
     // Disables multiple flow versions based on the provided list of IDs.
