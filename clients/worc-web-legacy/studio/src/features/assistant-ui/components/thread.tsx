@@ -35,7 +35,6 @@ import {
   UserMessageAttachments,
 } from "./attachment";
 import { MarkdownText } from "./markdown-text";
-import { ToolFallback } from "./tool-fallback";
 import { TooltipIconButton } from "./tooltip-icon-button";
 
 export const Thread: FC = () => {
@@ -224,12 +223,17 @@ const AssistantMessage: FC = () => {
       <div className="aui-assistant-message-content wrap-break-word px-2 text-foreground leading-relaxed">
         <MessagePrimitive.Parts>
           {({ part }) => {
-            //TODO: add relevant type to handle tools
-            if (part.type === "text" && Array.isArray(part.text))
-              return <ToolsCall data={part.text} />;
+            if (part.type === "tool-call") {
+              return (
+                <div className="mb-2 w-full">
+                  {/* Fallback pattern for dynamically rendered tool UIs */}
+                  {part.toolUI ?? <ToolsCall {...part} />}
+                </div>
+              );
+            }
+
             if (part.type === "text") return <MarkdownText />;
-            if (part.type === "tool-call")
-              return part.toolUI ?? <ToolFallback {...part} />;
+
             return null;
           }}
         </MessagePrimitive.Parts>

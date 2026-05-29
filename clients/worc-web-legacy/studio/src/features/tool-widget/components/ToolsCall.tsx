@@ -1,54 +1,138 @@
-import { LLMToolsOutputDto } from "@/features/assistant-ui/dtos/llm-response.dto";
+/* eslint-disable @typescript-eslint/no-explicit-any */
+import {
+  ToolCallMessagePartComponent,
+  ToolCallMessagePartStatus,
+} from "@assistant-ui/react";
+import { Button } from "@aventisia/ui/buttons";
+import { useShowAlertHandler } from "@aventisia/ui/hooks";
+import { cn } from "@aventisia/ui/lib";
+import { PlayIcon } from "lucide-react";
+import { useMemo, useState } from "react";
 
-import { ToolProvider } from "../constants/tools-provider-enum";
-import { useToolExecutionMutation } from "../hooks/useToolsExecutionMutation";
-import { createPayloadFields } from "../utils/create-dcp-json";
-import { toolIconMapper } from "../utils/tools-provider-config";
-import { ToolCallAccordion } from "./ToolCallAccordion";
-import DynamicForm from "./dynamic-form/DynamicForm";
+import {
+  ToolFallbackArgs,
+  ToolFallbackContent,
+  ToolFallbackError,
+  ToolFallbackResult,
+  ToolFallbackRoot,
+  ToolFallbackTrigger,
+} from "../components/tools-fallback";
+import { useToolCallManager } from "../hooks/useToolCallManager";
 
-export default function ToolsCall({ data }: { data?: LLMToolsOutputDto[] }) {
-  if (!data?.length) return;
-
-  const basePath = import.meta.env.VITE_STUDIO_PATH.replace(/\/$/, "");
-
-  const formConfig = createPayloadFields(data);
-
-  const { output } = data[0];
-
-  const provider = output?.provider?.toLowerCase() as ToolProvider;
+export const ToolsCall: ToolCallMessagePartComponent = (props) => {
+  const { showCustomAlertDialog } = useShowAlertHandler();
 
   const {
-    mutate: executeMutation,
-    cancel,
-    isPending,
-  } = useToolExecutionMutation({
+    status,
     provider,
+    isStreaming,
+    isExecuting,
+    isAwaitingUser,
+    output,
+    displayResult,
+    executeTool,
+    cancelTool,
+  } = useToolCallManager({
+    toolName: props.toolName,
+    argsText: props.argsText,
+    args: props.args as any,
+    result: props.result,
+    addResult: props.addResult,
+    partStatus: props.status,
   });
 
-  const onSubmit = (data: Record<string, unknown>) => {
-    executeMutation({
-      agentId: output?.agentId ?? "",
-      agentName: output?.agentName ?? "",
-      provider: output?.provider ?? "",
-      action: output?.action ?? "",
-      credentialId: output?.credentialId ?? "",
-      payload: data,
-    });
+  // Track raw user edits as a string from the JsonEditor inside ToolFallbackArgs
+  const [userEditedPayloadStr, setUserEditedPayloadStr] = useState<
+    string | null
+  >(null);
+
+  // The payload string to display in the editor.
+  // It actively syncs with the LLM stream until the user types something.
+  const displayArgsStr = useMemo(() => {
+    if (userEditedPayloadStr !== null) return userEditedPayloadStr;
+    return JSON.stringify(output?.payload || {}, null, 2);
+  }, [userEditedPayloadStr, output?.payload]);
+
+  const handleExecute = () => {
+    let parsedPayload: Record<string, unknown> = {};
+    try {
+      parsedPayload = JSON.parse(displayArgsStr);
+    } catch {
+      showCustomAlertDialog({
+        title: "Invalid JSON",
+        description:
+          "Please fix the JSON syntax in the arguments editor before executing.",
+        confirmBtnText: "Got it",
+        confirmActionFn: () => {},
+        isDestructive: false,
+      });
+      return;
+    }
+    executeTool(parsedPayload);
   };
 
+  const uiStatus: ToolCallMessagePartStatus = useMemo(() => {
+    if (isStreaming || isExecuting) return { type: "running" };
+    if (status === "cancelled")
+      return { type: "incomplete", reason: "cancelled" };
+    if (status === "failed")
+      return {
+        type: "incomplete",
+        reason: "error",
+        error: displayResult?.details || "Execution failed",
+      };
+
+    if (status === "pending")
+      return { type: "requires-action", reason: "interrupt" };
+
+    return { type: "complete" };
+  }, [status, isStreaming, isExecuting, displayResult]);
+
+  const isCancelled = status === "cancelled";
+  const toolLabel = `${provider}_${props.toolName}`;
+
   return (
-    <ToolCallAccordion
-      toolName={output?.action ?? ""}
-      status="idle"
-      iconSrc={provider ? basePath + toolIconMapper[provider] : ""}
+    <ToolFallbackRoot
+      defaultOpen={status === "pending" || isStreaming || isExecuting}
+      className="shadow-sm "
     >
-      <DynamicForm
-        config={formConfig}
-        onSubmit={onSubmit}
-        onCancel={isPending ? cancel : () => {}}
-        isPending={isPending}
+      <ToolFallbackTrigger
+        toolName={toolLabel}
+        status={uiStatus}
+        className={cn("rounded-lg")}
       />
-    </ToolCallAccordion>
+
+      <ToolFallbackContent>
+        <ToolFallbackError status={uiStatus} />
+
+        <ToolFallbackArgs
+          argsText={displayArgsStr}
+          onArgsChange={setUserEditedPayloadStr}
+          disabled={!isAwaitingUser}
+          isEdited={userEditedPayloadStr !== null && !isCancelled}
+          className={cn(isCancelled && "opacity-60")}
+        />
+
+        {isAwaitingUser && (
+          <div className="flex items-center justify-end gap-2 px-4 pb-3 pt-2">
+            <Button variant="outline" size="xs" onClick={cancelTool}>
+              Cancel
+            </Button>
+            <Button variant="default" size="xs" onClick={handleExecute}>
+              <PlayIcon className="mr-1.5 size-3 fill-current" />
+              Execute
+            </Button>
+          </div>
+        )}
+
+        {status === "success" && displayResult && (
+          <ToolFallbackResult
+            result={displayResult?.details || displayResult}
+          />
+        )}
+      </ToolFallbackContent>
+    </ToolFallbackRoot>
   );
-}
+};
+
+export default ToolsCall;
