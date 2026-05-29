@@ -2,13 +2,13 @@ import type { MetaRecord } from "nextra";
 
 const meta: MetaRecord = {
   index: {
-    title: "Introduction to Worc",
+    title: "Introduction to Avintra",
   },
   "signing-in": {
     title: "Sign In",
   },
-  worc: {
-    title: "Worc",
+  workspace: {
+    title: "Avintra",
     display: "hidden",
   },
   "agent-builder": {
