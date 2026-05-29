@@ -5,9 +5,8 @@ public interface IAgentTableService
     /// Fetch the list of published versions for a specific flow.
     /// </summary>
     /// <param name="flowId">Flow Id</param>
-    /// <param name="isPersonal"> If <c>true</c>, returns only personal agents. If <c>false</c>, returns only shared agents. </param>
     /// <returns>A list of published flow versions</returns>
-    Task<ServiceResponse<IEnumerable<AgentTableDto>>> GetPublishFlowVersionsAsync(Guid? flowId, bool isPersonal);
+    Task<ServiceResponse<IEnumerable<AgentTableDto>>> GetPublishFlowVersionsAsync(Guid? flowId);
 
     /// <summary>
     /// Updates the details of a specific flow version.
@@ -20,9 +19,8 @@ public interface IAgentTableService
     /// Fetch the list of archived versions for a specific flow.
     /// </summary>
     /// <param name="flowId">Flow Id</param>
-    /// <param name="isPersonal"> If <c>true</c>, returns only personal agents. If <c>false</c>, returns only shared agents. </param>
     /// <returns>A list of archived flow versions</returns>
-    Task<ServiceResponse<IEnumerable<AgentTableDto>>> GetArchiveFlowVersionsAsync(Guid? flowId, bool isPersonal);
+    Task<ServiceResponse<IEnumerable<AgentTableDto>>> GetArchiveFlowVersionsAsync(Guid? flowId);
 
     /// <summary>
     /// Fetch the list of executable versions for a specific flow.
@@ -58,11 +56,10 @@ public interface IAgentTableService
     /// Search and retrieve all published flow versions where the flow name contains the specified search keyword.
     /// </summary>
     /// <param name="searchKey">The keyword used to search flow names.</param>
-    /// <param name="isPersonal"> If <c>true</c>, returns only personal agents. If <c>false</c>, returns only shared agents. </param>
     /// <returns>
     /// A <see cref="ServiceResponse{T}"/> containing a list of <see cref="AgentTableDto"/> objects representing the published flow versions matching the search criteria.
     /// </returns>
-    Task<ServiceResponse<IEnumerable<AgentTableDto>>> SearchPublishFlowVersionsAsync(string searchKey, bool isPersonal);
+    Task<ServiceResponse<IEnumerable<AgentTableDto>>> SearchPublishFlowVersionsAsync(string searchKey);
 
     /// <summary>
     /// Disables multiple flow versions based on the provided list of flow version IDs.
