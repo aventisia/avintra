@@ -21,6 +21,10 @@ var isEnvironmentLocalhost = builder.Environment.IsEnvironment("Localhost");
 // Load environment variables into configuration
 config = config.LoadEnvironmentConfiguration(isEnvironmentLocalhost);
 
+// Merge env-enriched config into builder.Configuration so ASP.NET Core middleware
+// (e.g. Host Filtering, CORS) actually reads the computed values like AllowedHosts.
+builder.Configuration.AddConfiguration(config);
+
 /*---------Serilog Configuration---------*/
 
 Log.Logger = new LoggerConfiguration()
