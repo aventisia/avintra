@@ -302,7 +302,7 @@ public class AuthHelperService : IAuthHelperService
         };
 
         // Create or Update user in WorkspaceDb database
-        HttpResponseMessage response = await RequestExternalAPIUtil.RequestExternalAPI(crudType, $"{_environmentConfig.WorcApiBaseUrl}/api/user", jwt, user);
+        HttpResponseMessage response = await RequestExternalAPIUtil.RequestExternalAPI(crudType, $"{_environmentConfig.WorkspaceApiBaseUrl}/api/user", jwt, user);
 
         // Failed to Create or Update user in Workspace database
         if (!response.IsSuccessStatusCode)
@@ -319,7 +319,7 @@ public class AuthHelperService : IAuthHelperService
     public async Task<bool> DeleteUserInOtherDbsAsync(Guid userId, string jwt)
     {
         // Delete user in WorkspaceDb database
-        HttpResponseMessage response = await RequestExternalAPIUtil.RequestExternalAPI(CrudTypesEnum.Delete, $"{_environmentConfig.WorcApiBaseUrl}/api/user/{userId}", jwt);
+        HttpResponseMessage response = await RequestExternalAPIUtil.RequestExternalAPI(CrudTypesEnum.Delete, $"{_environmentConfig.WorkspaceApiBaseUrl}/api/user/{userId}", jwt);
         // Failed to Delete user in Workspace database
         if (!response.IsSuccessStatusCode)
         {

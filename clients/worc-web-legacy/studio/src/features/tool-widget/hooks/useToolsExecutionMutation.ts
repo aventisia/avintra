@@ -21,7 +21,7 @@ type Props = {
 export function useToolExecutionMutation({ provider }: Props) {
   const abortControllerRef = useRef<AbortController | null>(null);
 
-  const baseAPIURL = `${import.meta.env.VITE_WORC_API_PATH}/cloud-connector`;
+  const baseAPIURL = `${import.meta.env.VITE_WORKSPACE_API_PATH}/cloud-connector`;
 
   const mutation = useMutation({
     mutationFn: async (data: ExecuteToolPayload) => {

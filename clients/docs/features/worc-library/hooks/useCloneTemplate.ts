@@ -11,9 +11,9 @@ export const useCloneTemplate = () => {
     // Get current hostname
     const hostname = window.location.hostname;
     // Decide base URL depending on environment
-    let baseUrl = "https://worc.aventisia.com/worc/library"; // default prod
+    let baseUrl = "https://avintra.aventisia.com/workspace/library"; // default prod
     if (hostname.includes("uat") || hostname == "localhost") {
-      baseUrl = "https://uat-worc.aventisia.com/worc/library";
+      baseUrl = "https://uat-avintra.aventisia.com/workspace/library";
     }
 
     // Open the new URL

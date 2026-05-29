@@ -95,7 +95,7 @@ public class TenantsTableService : ITenantsTableService
             var tenantSummaries = new Dictionary<Guid, TenantTableSummaryDto>();
 
             // Build query string with dynamic date filters
-            var url = $"{_environmentConfig.WorcApiBaseUrl}/sa/tenant/summary" +
+            var url = $"{_environmentConfig.WorkspaceApiBaseUrl}/sa/tenant/summary" +
                 $"?startDate={tenantFilterQuery.StartDate.Value.UtcDateTime:O}" +
                 $"&endDate={tenantFilterQuery.EndDate.Value.UtcDateTime:O}";
 

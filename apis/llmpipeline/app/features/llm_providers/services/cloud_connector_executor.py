@@ -47,7 +47,7 @@ async def execute_agent(
 
         async with httpx.AsyncClient(
             timeout=timeout,
-            base_url=f"https://{settings.APP_BASE_URL}/worc/api"
+            base_url=f"https://{settings.APP_BASE_URL}/workspace/api"
         ) as client:
             
             method_upper = method.upper()

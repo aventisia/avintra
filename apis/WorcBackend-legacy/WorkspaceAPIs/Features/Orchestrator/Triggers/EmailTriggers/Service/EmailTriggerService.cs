@@ -1020,7 +1020,7 @@ public class EmailTriggerService : IEmailTriggerService
                         baseUrl = "https://" + baseUrl;
 
                     // Endpoint that will receive Graph change notifications
-                    var notificationUrl = $"{baseUrl}/worc/api/email-trigger/notify/{triggerId}";
+                    var notificationUrl = $"{baseUrl}/workspace/api/email-trigger/notify/{triggerId}";
 
                     // Build resource path targeting mailbox or specific folder
                     var resourcePath = !string.IsNullOrEmpty(emailTriggerModel.Folder)

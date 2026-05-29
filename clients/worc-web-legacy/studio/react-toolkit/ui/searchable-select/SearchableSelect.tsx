@@ -60,7 +60,7 @@ export const SearchableSelect = ({
 
   const selectedItemRef = React.useRef<HTMLDivElement>(null);
 
-  const basePath = import.meta.env.VITE_AGENTBUILDER_PATH.replace(/\/$/, "");
+  const basePath = import.meta.env.VITE_STUDIO_PATH.replace(/\/$/, "");
 
   // Scroll to selected item when popover opens
   React.useEffect(() => {

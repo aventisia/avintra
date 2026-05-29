@@ -1,10 +1,10 @@
-# WorcAPIs
+# WorkspaceAPIs
 
-This directory contains the WorcAPIs .NET service, including Dockerfile and configuration for containerized deployment.
+This directory contains the WorkspaceAPIs .NET service, including Dockerfile and configuration for containerized deployment.
 
 ## Files
 
-- `WorkspaceAPIs.csproj`: Project file for the WorcAPIs service
+- `WorkspaceAPIs.csproj`: Project file for the WorkspaceAPIs service
 - `Dockerfile`: Multi-stage build for .NET 8.0
 - `appsettings.json`, `appsettings.Development.json`: Application configuration
 - `AspNetToolkit/`: Project dependency (ensure not excluded in Docker build)
@@ -15,19 +15,19 @@ This directory contains the WorcAPIs .NET service, including Dockerfile and conf
 
 ```sh
 # Build
-sudo docker build -f apis/WorcBackend-legacy/WorkspaceAPIs/Dockerfile -t hub.aventisia.com/worc/worc-apis:0.1.0 .
+sudo docker build -f apis/WorcBackend-legacy/WorkspaceAPIs/Dockerfile -t hub.aventisia.com/avplatform/workspace-apis:0.1.0 .
 
 # Test run locally (assumeing postgresql is running on localhost)
-sudo docker run -d --name worc-apis --network host -p 4001:4001 -e ASPNETCORE_ENVIRONMENT=Localhost hub.aventisia.com/worc/worc-apis:0.1.0
+sudo docker run -d --name workspace-apis --network host -p 4001:4001 -e ASPNETCORE_ENVIRONMENT=Localhost hub.aventisia.com/avplatform/workspace-apis:0.1.0
 
 # Check logs
-sudo docker logs -f worc-apis
+sudo docker logs -f workspace-apis
 
 # Stop and remove test container
-sudo docker stop worc-apis && sudo docker rm worc-apis
+sudo docker stop workspace-apis && sudo docker rm workspace-apis
 
 # Push to private registry
-sudo docker push hub.aventisia.com/worc/worc-apis:0.1.0
+sudo docker push hub.aventisia.com/avplatform/workspace-apis:0.1.0
 
 ```
 
@@ -39,9 +39,9 @@ sudo docker push hub.aventisia.com/worc/worc-apis:0.1.0
 Override these at runtime as needed:
 
 ```sh
-sudo docker run -d --name worc-apis -p 4001:4001 \
+sudo docker run -d --name workspace-apis -p 4001:4001 \
 	-e ASPNETCORE_ENVIRONMENT=Production \
-	worc/worc-apis:latest
+	avplatform/workspace-apis:latest
 ```
 
 ### 4. Development notes

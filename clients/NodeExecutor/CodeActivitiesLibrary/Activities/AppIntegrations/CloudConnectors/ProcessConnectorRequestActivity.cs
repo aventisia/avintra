@@ -49,7 +49,7 @@ namespace CodeActivitiesLibrary.AppIntegrations.CloudConnectorsActivities
             var accessToken = AccessToken.Get(context);
 
             // Get api url from config
-            var apiUrl = $"{ConfigurationManager.AppSettings["APP_BASE_URL"]}/worc/api/cloud-connector/{connectorProvider.ToLower()}/invoke";
+            var apiUrl = $"{ConfigurationManager.AppSettings["APP_BASE_URL"]}/workspace/api/cloud-connector/{connectorProvider.ToLower()}/invoke";
 
             // Declare task completion source
             var taskCompletionSource = new TaskCompletionSource<string>(state);

@@ -44,9 +44,9 @@ server
     	try_files $uri $uri.html $uri/ /index.html =404;
 	}
 
-	# ----------------- /agentbuilder -----------------
-	location /agentbuilder/ {
-		alias /usr/share/nginx/html/agentbuilder/;
+	# ----------------- /studio -----------------
+	location /studio/ {
+		alias /usr/share/nginx/html/studio/;
 		try_files $uri $uri.html $uri/ /index.html =404;
 	}
 
@@ -56,21 +56,21 @@ server
 		include /etc/nginx/conf.d/common_api_config.conf;
 	}
 
-	# ----------------- /worc -----------------
-	location ~ ^/worc/api/(app-secret) {
+	# ----------------- /workspace -----------------
+	location ~ ^/workspace/api/(app-secret) {
         gzip off;
-		rewrite ^/worc/api/(.*)$ /api/$1 break; # Strip /worc/ from the start of the URI
-		proxy_pass http://worc-apis:4001;
+		rewrite ^/workspace/api/(.*)$ /api/$1 break; # Strip /workspace/ from the start of the URI
+		proxy_pass http://workspace-apis:4001;
 		include /etc/nginx/conf.d/common_api_config.conf;
     }
 
-	location /worc/api/ {
-		proxy_pass http://worc-apis:4001/api/;
+	location /workspace/api/ {
+		proxy_pass http://workspace-apis:4001/api/;
 		include /etc/nginx/conf.d/common_api_config.conf;
 	}
 
-	location /worc/ {
-		alias /usr/share/nginx/html/worc/;
+	location /workspace/ {
+		alias /usr/share/nginx/html/workspace/;
 		try_files $uri $uri.html $uri/ /index.html =404;
 	}
 

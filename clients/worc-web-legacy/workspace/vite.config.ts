@@ -6,7 +6,7 @@ import eslint from "vite-plugin-eslint2";
 
 // https://vitejs.dev/config/
 export default defineConfig({
-  base: "/worc/",
+  base: "/workspace/",
   plugins: [
     react(),
     eslint({

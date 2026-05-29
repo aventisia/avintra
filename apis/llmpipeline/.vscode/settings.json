@@ -19,15 +19,15 @@
       "testFilesPath": "../assets"
     },
     "dev": {
-      "host": "https://dev-worc.aventisia.com/llmpipeline/api",
+      "host": "https://dev-avintra.aventisia.com/llmpipeline/api",
       "testFilesPath": "https://gitea.aventisia.com/aventisia-public/assets/raw/branch/main/test-files"
     },
     "uat": {
-      "host": "https://uat-worc.aventisia.com/llmpipeline/api",
+      "host": "https://uat-avintra.aventisia.com/llmpipeline/api",
       "testFilesPath": "https://gitea.aventisia.com/aventisia-public/assets/raw/branch/main/test-files"
     },
     "prod": {
-      "host": "https://worc.aventisia.com/llmpipeline/api",
+      "host": "https://avintra.aventisia.com/llmpipeline/api",
       "testFilesPath": "https://gitea.aventisia.com/aventisia-public/assets/raw/branch/main/test-files"
     }
   }

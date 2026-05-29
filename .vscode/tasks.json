@@ -11,7 +11,7 @@
       "isBackground": true
     },
     {
-      "label": "worc",
+      "label": "workspace",
       "type": "shell",
       "command": "npm run dev",
       "options": {
@@ -20,7 +20,7 @@
       "isBackground": true
     },
     {
-      "label": "agentbuilder",
+      "label": "studio",
       "type": "shell",
       "command": "npm run dev",
       "options": {
@@ -38,7 +38,7 @@
       "isBackground": true
     },
     {
-      "label": "worc_apis",
+      "label": "workspace_apis",
       "type": "shell",
       "command": "dotnet run",
       "options": {
@@ -55,13 +55,13 @@
     },
     {
       "label": "Run Frontends",
-      "dependsOn": ["accounts", "worc", "agentbuilder"]
+      "dependsOn": ["accounts", "workspace", "studio"]
     },
     {
       "label": "Run Backends",
       "dependsOn": [
         "accounts_apis",
-        "worc_apis",
+        "workspace_apis",
         "llmpipeline_apis"
       ]
     },

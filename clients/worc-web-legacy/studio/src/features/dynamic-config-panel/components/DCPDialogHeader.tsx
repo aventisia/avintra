@@ -1,3 +1,6 @@
+import { useIsVersionHistoryRoute } from "@/features/version-history/hooks/useIsVersionHistoryRoute";
+
+import { Input } from "@aventisia/ui";
 import { buttonVariants } from "@aventisia/ui/buttons";
 import {
   DialogClose,
@@ -6,11 +9,10 @@ import {
 } from "@aventisia/ui/dialog";
 import { cn } from "@aventisia/ui/lib";
 import { PencilIcon, SquareArrowOutUpRightIcon, X } from "lucide-react";
-import { Input } from "@aventisia/ui";
-import { useDynamicConfigPanelStore } from "../stores/dcp-store";
-import { useShallow } from "zustand/react/shallow";
 import { useState } from "react";
-import { useIsVersionHistoryRoute } from "@/features/version-history/hooks/useIsVersionHistoryRoute";
+import { useShallow } from "zustand/react/shallow";
+
+import { useDynamicConfigPanelStore } from "../stores/dcp-store";
 
 const DCPDialogHeader = () => {
   const [editing, setEditing] = useState(false);
@@ -40,7 +42,7 @@ const DCPDialogHeader = () => {
     switch (nodeData.type) {
       case "callAgentNode":
         if (nodeData?.selectedAgent) {
-          href = `${import.meta.env.VITE_AGENTBUILDER_PATH}agent?f=${nodeData.selectedAgent?.flowId}&v=${nodeData.selectedAgent?.id}`;
+          href = `${import.meta.env.VITE_STUDIO_PATH}agent?f=${nodeData.selectedAgent?.flowId}&v=${nodeData.selectedAgent?.id}`;
           label = "Open Agent";
         } else {
           return null; // Don't render anything if there's no agent

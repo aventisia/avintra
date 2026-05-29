@@ -25,7 +25,7 @@ export const TableCellLink = ({
   // Return the component
   return (
     <NavLink
-      to={`${window.location.origin}${import.meta.env.VITE_AGENTBUILDER_PATH}agent?f=${rowId}&v=${versionId}`}
+      to={`${window.location.origin}${import.meta.env.VITE_STUDIO_PATH}agent?f=${rowId}&v=${versionId}`}
       target="_blank"
       className={cn(
         buttonVariants({ variant: "link" }),

@@ -35,8 +35,8 @@ public class InstanceUsageStartupService : IHostedService
                 // Check if data is retrieved successfully
                 if (serviceResponse.Data == null || serviceResponse.StatusCode != 200)
                 {
-                    _logger.LogError("Failed to retrieve data from the worc apis. Status Code: {StatusCode}, Message: {Message}, Data: {Data}", serviceResponse.StatusCode, serviceResponse.Message, serviceResponse.Data);
-                    errorMessage = $"worc apis is not responding or not running. Please contact the support team.";
+                    _logger.LogError("Failed to retrieve data from the Workspace apis. Status Code: {StatusCode}, Message: {Message}, Data: {Data}", serviceResponse.StatusCode, serviceResponse.Message, serviceResponse.Data);
+                    errorMessage = $"Workspace apis are not responding or not running. Please contact the support team.";
                     throw new InvalidOperationException(errorMessage);
                 }
 

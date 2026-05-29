@@ -1,10 +1,11 @@
+import { Button, buttonVariants } from "@aventisia/ui/buttons";
+import { cn } from "@aventisia/ui/lib";
+import { toast } from "@aventisia/ui/sonner";
 import { Tooltip } from "@aventisia/ui/tooltip";
 import { HistoryIcon } from "lucide-react";
-import { Button, buttonVariants } from "@aventisia/ui/buttons";
-import { useCarryParams } from "../../hooks/useForwardQueryParams";
-import { cn } from "@aventisia/ui/lib";
+
 import { useFetchVersionHistoryList } from "../../hooks/useFetchVersionHistoryList";
-import { toast } from "@aventisia/ui/sonner";
+import { useCarryParams } from "../../hooks/useForwardQueryParams";
 
 export const VersionHistoryTrigger = () => {
   const withQueryParams = useCarryParams(["f", "v"]);
@@ -22,7 +23,7 @@ export const VersionHistoryTrigger = () => {
               }),
             )}
             href={
-              import.meta.env.VITE_AGENTBUILDER_PATH +
+              import.meta.env.VITE_STUDIO_PATH +
               withQueryParams("agent-history")
             }
           >

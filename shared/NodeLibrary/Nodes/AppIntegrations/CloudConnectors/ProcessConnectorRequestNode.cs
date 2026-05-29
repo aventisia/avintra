@@ -34,7 +34,7 @@ public class ProcessConnectorRequestNode : BaseNode
             var callerContext = CallerContext.Get(context) ?? throw new InvalidOperationException("Caller context is required");
             
             var baseUrl = AppConfigHelper.ResolveAppBaseUrl();
-            var apiUrl = $"https://{baseUrl}/worc/api/cloud-connector/{provider?.ToLower()}/invoke";
+            var apiUrl = $"https://{baseUrl}/workspace/api/cloud-connector/{provider?.ToLower()}/invoke";
 
             var requestObj = new
             {

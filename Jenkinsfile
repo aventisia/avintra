@@ -42,7 +42,7 @@ def hasChangesInPath(path) {
 pipeline {
     agent any
     parameters {
-        string(name: 'REPOS_TO_BUILD', defaultValue: '', description: 'Comma-separated list of repo names to build on manual build (e.g., accounts_api,worc_api,llmpipeline_api,docs,accounts,worc,agentbuilder,aspnet_toolkit)')
+        string(name: 'REPOS_TO_BUILD', defaultValue: '', description: 'Comma-separated list of repo names to build on manual build (e.g., accounts_api,workspace_api,llmpipeline_api,docs,accounts,workspace,studio,aspnet_toolkit)')
     }
     stages {
         stage('Detect Changes') {
@@ -57,12 +57,12 @@ pipeline {
                         echo 'Manual build detected - using REPOS_TO_BUILD parameter'
                         def reposToBuild = params.REPOS_TO_BUILD.tokenize(',').collect { it.trim().toLowerCase() }
                         env.BUILD_ACCOUNTS_API = reposToBuild.contains('accounts_api') ? 'true' : 'false'
-                        env.BUILD_WORC_API = reposToBuild.contains('worc_api') ? 'true' : 'false'
+                        env.BUILD_WORKSPACE_API = reposToBuild.contains('workspace_api') ? 'true' : 'false'
                         env.BUILD_LLMPIPELINE_API = reposToBuild.contains('llmpipeline_api') ? 'true' : 'false'
                         env.BUILD_DOCS_CLIENT = reposToBuild.contains('docs') ? 'true' : 'false'
                         env.BUILD_ACCOUNTS_CLIENT = reposToBuild.contains('accounts') ? 'true' : 'false'
-                        env.BUILD_WORC_CLIENT = reposToBuild.contains('worc') ? 'true' : 'false'
-                        env.BUILD_AGENTBUILDER_CLIENT = reposToBuild.contains('agentbuilder') ? 'true' : 'false'
+                        env.BUILD_WORKSPACE_CLIENT = reposToBuild.contains('workspace') ? 'true' : 'false'
+                        env.BUILD_STUDIO_CLIENT = reposToBuild.contains('studio') ? 'true' : 'false'
                         env.BUILD_ASPNET_TOOLKIT = reposToBuild.contains('aspnet_toolkit') ? 'true' : 'false'
                     } else {
                         echo 'Automatic build - detecting changes...'
@@ -72,12 +72,12 @@ pipeline {
                         
                         // If AspNetToolkit changed, all .NET APIs need to be rebuilt
                         env.BUILD_ACCOUNTS_API = (hasChangesInPath('apis/WorcBackend-legacy/AccountsAPIs') || aspnetToolkitChanged) ? 'true' : 'false'
-                        env.BUILD_WORC_API = (hasChangesInPath('apis/WorcBackend-legacy/WorkspaceAPIs') || aspnetToolkitChanged) ? 'true' : 'false'
+                        env.BUILD_WORKSPACE_API = (hasChangesInPath('apis/WorcBackend-legacy/WorkspaceAPIs') || aspnetToolkitChanged) ? 'true' : 'false'
                         env.BUILD_LLMPIPELINE_API = hasChangesInPath('apis/llmpipeline') ? 'true' : 'false'
                         env.BUILD_DOCS_CLIENT = hasChangesInPath('clients/docs') ? 'true' : 'false'
                         env.BUILD_ACCOUNTS_CLIENT = hasChangesInPath('clients/worc-web-legacy/accounts') ? 'true' : 'false'
-                        env.BUILD_WORC_CLIENT = hasChangesInPath('clients/worc-web-legacy/workspace') ? 'true' : 'false'
-                        env.BUILD_AGENTBUILDER_CLIENT = hasChangesInPath('clients/worc-web-legacy/studio') ? 'true' : 'false'
+                        env.BUILD_WORKSPACE_CLIENT = hasChangesInPath('clients/worc-web-legacy/workspace') ? 'true' : 'false'
+                        env.BUILD_STUDIO_CLIENT = hasChangesInPath('clients/worc-web-legacy/studio') ? 'true' : 'false'
                         env.BUILD_ASPNET_TOOLKIT = aspnetToolkitChanged ? 'true' : 'false'
                     }
                     
@@ -85,12 +85,12 @@ pipeline {
                     Changed components:
                     - AspNetToolkit: ${env.BUILD_ASPNET_TOOLKIT}
                     - Accounts API: ${env.BUILD_ACCOUNTS_API}
-                    - Worc API: ${env.BUILD_WORC_API}
+                    - Workspace API: ${env.BUILD_WORKSPACE_API}
                     - LLM Pipeline API: ${env.BUILD_LLMPIPELINE_API}
                     - Docs Client: ${env.BUILD_DOCS_CLIENT}
                     - Accounts Client: ${env.BUILD_ACCOUNTS_CLIENT}
-                    - Worc Client: ${env.BUILD_WORC_CLIENT}
-                    - Agent Builder Client: ${env.BUILD_AGENTBUILDER_CLIENT}
+                    - Workspace Client: ${env.BUILD_WORKSPACE_CLIENT}
+                    - Agent Builder Client: ${env.BUILD_STUDIO_CLIENT}
                     """.stripIndent()
                 }
             }
@@ -150,46 +150,46 @@ pipeline {
                     }
                 }
                 
-                stage('Worc API') {
+                stage('Workspace API') {
                     when {
-                        expression { env.BUILD_WORC_API == 'true' }
+                        expression { env.BUILD_WORKSPACE_API == 'true' }
                     }
                     stages {
-                        stage('Restore - Worc API') {
+                        stage('Restore - Workspace API') {
                             steps {
                                 dir('apis/WorcBackend-legacy/WorkspaceAPIs') {
-                                    echo 'Restoring Worc API packages...'
+                                    echo 'Restoring Workspace API packages...'
                                     sh 'dotnet restore'
                                 }
                             }
                         }
-                        stage('Build - Worc API') {
+                        stage('Build - Workspace API') {
                             steps {
                                 dir('apis/WorcBackend-legacy/WorkspaceAPIs') {
-                                    echo 'Building Worc API...'
+                                    echo 'Building Workspace API...'
                                     sh 'dotnet build --configuration Release'
                                 }
                             }
                         }
-                        stage('Publish - Worc API') {
+                        stage('Publish - Workspace API') {
                             steps {
                                 dir('apis/WorcBackend-legacy/WorkspaceAPIs') {
-                                    echo 'Publishing Worc API...'
+                                    echo 'Publishing Workspace API...'
                                     sh 'dotnet publish -c Release --property:PublishDir=./Published'
                                 }
                             }
                         }
-                        stage('Deploy - Worc API') {
+                        stage('Deploy - Workspace API') {
                             steps {
                                 script {
                                     sshagent(credentials: ['aventisia_vps_ssh']) {
                                         def targetServers = getTargetServers(env.BRANCH_NAME)
-                                        echo "Deploying Worc API to ${targetServers.size()} server(s)..."
+                                        echo "Deploying Workspace API to ${targetServers.size()} server(s)..."
                                         
                                         targetServers.each { server ->
-                                            sh "rsync -avz --delete ${WORKSPACE}/apis/WorcBackend-legacy/WorkspaceAPIs/Published/* admin@${server}:/var/www/aventisia.com/apis/worc/"
-                                            sh "ssh admin@${server} 'sudo systemctl restart worc_apis.service'"
-                                            echo "Successfully deployed Worc API to ${server}"
+                                            sh "rsync -avz --delete ${WORKSPACE}/apis/WorcBackend-legacy/WorkspaceAPIs/Published/* admin@${server}:/var/www/aventisia.com/apis/workspace/"
+                                            sh "ssh admin@${server} 'sudo systemctl restart workspace_apis.service'"
+                                            echo "Successfully deployed Workspace API to ${server}"
                                         }
                                     }
                                 }
@@ -327,41 +327,41 @@ pipeline {
                     }
                 }
                 
-                stage('Worc Client') {
+                stage('Workspace Client') {
                     when {
-                        expression { env.BUILD_WORC_CLIENT == 'true' }
+                        expression { env.BUILD_WORKSPACE_CLIENT == 'true' }
                     }
                     agent any
                     tools {
                         nodejs 'NodeJS 20.18.1'
                     }
                     stages {
-                        stage('Install - Worc Client') {
+                        stage('Install - Workspace Client') {
                             steps {
                                 dir('clients/worc-web-legacy/workspace') {
-                                    echo 'Installing Worc Client dependencies...'
+                                    echo 'Installing Workspace Client dependencies...'
                                     sh 'npm ci'
                                 }
                             }
                         }
-                        stage('Build - Worc Client') {
+                        stage('Build - Workspace Client') {
                             steps {
                                 dir('clients/worc-web-legacy/workspace') {
-                                    echo 'Building Worc Client...'
+                                    echo 'Building Workspace Client...'
                                     sh "npm run build -- --mode=${getBuildMode(env.BRANCH_NAME)}"
                                 }
                             }
                         }
-                        stage('Deploy - Worc Client') {
+                        stage('Deploy - Workspace Client') {
                             steps {
                                 script {
                                     sshagent(credentials: ['aventisia_vps_ssh']) {
                                         def targetServers = getTargetServers(env.BRANCH_NAME)
-                                        echo "Deploying Worc Client to ${targetServers.size()} server(s)..."
+                                        echo "Deploying Workspace Client to ${targetServers.size()} server(s)..."
                                         
                                         targetServers.each { server ->
-                                            sh "rsync -avz --delete ${WORKSPACE}/clients/worc-web-legacy/workspace/dist/* admin@${server}:/var/www/aventisia.com/clients/worc/"
-                                            echo "Successfully deployed Worc Client to ${server}"
+                                            sh "rsync -avz --delete ${WORKSPACE}/clients/worc-web-legacy/workspace/dist/* admin@${server}:/var/www/aventisia.com/clients/workspace/"
+                                            echo "Successfully deployed Workspace Client to ${server}"
                                         }
                                     }
                                 }
@@ -372,7 +372,7 @@ pipeline {
                 
                 stage('Agent Builder Client') {
                     when {
-                        expression { env.BUILD_AGENTBUILDER_CLIENT == 'true' }
+                        expression { env.BUILD_STUDIO_CLIENT == 'true' }
                     }
                     agent any
                     tools {
@@ -403,7 +403,7 @@ pipeline {
                                         echo "Deploying Agent Builder Client to ${targetServers.size()} server(s)..."
                                         
                                         targetServers.each { server ->
-                                            sh "rsync -avz --delete ${WORKSPACE}/clients/worc-web-legacy/studio/dist/* admin@${server}:/var/www/aventisia.com/clients/agentbuilder/"
+                                            sh "rsync -avz --delete ${WORKSPACE}/clients/worc-web-legacy/studio/dist/* admin@${server}:/var/www/aventisia.com/clients/studio/"
                                             echo "Successfully deployed Agent Builder Client to ${server}"
                                         }
                                     }
