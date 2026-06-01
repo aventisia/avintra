@@ -1,6 +1,5 @@
 "use client";
 
-import { JsonEditor } from "@/components/json-editor/JsonEditor";
 import {
   Collapsible,
   CollapsibleContent,
@@ -199,43 +198,23 @@ function ToolFallbackContent({
 
 function ToolFallbackArgs({
   argsText,
-  onArgsChange,
-  isEdited,
-  disabled,
   className,
   ...props
 }: React.ComponentProps<"div"> & {
   argsText?: string;
-  onArgsChange?: (value: string) => void;
-  isEdited?: boolean;
-  disabled?: boolean;
 }) {
   if (!argsText) return null;
 
   return (
     <div
       data-slot="tool-fallback-args"
-      className={cn("aui-tool-fallback-args px-4 pb-2", className)}
+      className={cn("aui-tool-fallback-args px-4", className)}
       {...props}
     >
-      <div className="mb-2 flex items-center gap-1.5 font-medium text-foreground">
-        Arguments:
-        {isEdited && (
-          <span className="ml-2 text-[10px] italic text-muted-foreground">
-            (Edited)
-          </span>
-        )}
-      </div>
-
-      <JsonEditor
-        value={argsText}
-        onChange={onArgsChange}
-        disabled={disabled}
-        className={cn(
-          !disabled && "opacity-100",
-          disabled && "bg-muted/30 opacity-80",
-        )}
-      />
+      <div className="mb-2 font-medium text-foreground">Arguments:</div>
+      <pre className="aui-tool-fallback-args-value whitespace-pre-wrap font-mono text-xs text-muted-foreground bg-muted/30 p-2 rounded-md border border-border/50">
+        {argsText}
+      </pre>
     </div>
   );
 }
@@ -261,14 +240,12 @@ function ToolFallbackResult({
       )}
       {...props}
     >
-      <div className="mb-2 flex items-center gap-1.5 font-medium text-foreground">
+      <p className="aui-tool-fallback-result-header mb-2 font-medium text-foreground">
         Result:
-      </div>
-      <JsonEditor
-        value={resultText}
-        disabled={true}
-        className="bg-muted/30 opacity-80"
-      />
+      </p>
+      <pre className="aui-tool-fallback-result-content whitespace-pre-wrap font-mono text-xs text-muted-foreground bg-muted/30 p-2 rounded-md border border-border/50">
+        {resultText}
+      </pre>
     </div>
   );
 }
@@ -300,10 +277,10 @@ function ToolFallbackError({
       className={cn("aui-tool-fallback-error px-4", className)}
       {...props}
     >
-      <p className="aui-tool-fallback-error-header text-muted-foreground font-semibold">
+      <p className="aui-tool-fallback-error-header text-destructive font-medium">
         {headerText}
       </p>
-      <p className="aui-tool-fallback-error-reason text-muted-foreground">
+      <p className="aui-tool-fallback-error-reason text-destructive">
         {errorText}
       </p>
     </div>
@@ -356,6 +333,7 @@ ToolFallback.Result = ToolFallbackResult;
 ToolFallback.Error = ToolFallbackError;
 
 export {
+  ToolFallback,
   ToolFallbackRoot,
   ToolFallbackTrigger,
   ToolFallbackContent,

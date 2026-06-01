@@ -1,4 +1,6 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
+import { JsonEditor } from "@/components/json-editor/JsonEditor";
+
 import {
   ToolCallMessagePartComponent,
   ToolCallMessagePartStatus,
@@ -6,7 +8,7 @@ import {
 import { Button } from "@aventisia/ui/buttons";
 import { useShowAlertHandler } from "@aventisia/ui/hooks";
 import { cn } from "@aventisia/ui/lib";
-import { PlayIcon } from "lucide-react";
+import { PencilIcon, PlayIcon, XIcon } from "lucide-react";
 import { useMemo, useState } from "react";
 
 import {
@@ -42,17 +44,47 @@ export const ToolsCall: ToolCallMessagePartComponent = (props) => {
     partStatus: props.status,
   });
 
-  // Track raw user edits as a string from the JsonEditor inside ToolFallbackArgs
+  // UI state for toggling inline JsonEditor
+  const [isEditing, setIsEditing] = useState(false);
+
+  // Track the raw JSON string the user actually saved
   const [userEditedPayloadStr, setUserEditedPayloadStr] = useState<
     string | null
   >(null);
 
-  // The payload string to display in the editor.
-  // Actively syncs with the LLM stream until the user types something.
+  // The payload currently active (LLM generated vs User edited)
   const displayArgsStr = useMemo(() => {
     if (userEditedPayloadStr !== null) return userEditedPayloadStr;
     return JSON.stringify(output?.payload || {}, null, 2);
   }, [userEditedPayloadStr, output?.payload]);
+
+  // Draft state while actively typing in JsonEditor
+  const [draftEditStr, setDraftEditStr] = useState<string>(displayArgsStr);
+
+  const handleStartEdit = () => {
+    setDraftEditStr(displayArgsStr);
+    setIsEditing(true);
+  };
+
+  const handleCancelEdit = () => {
+    setIsEditing(false);
+  };
+
+  const handleSaveEdit = () => {
+    try {
+      JSON.parse(draftEditStr); // Validate JSON format
+      setUserEditedPayloadStr(draftEditStr);
+      setIsEditing(false);
+    } catch {
+      showCustomAlertDialog({
+        title: "Invalid JSON",
+        description: "Please fix the JSON syntax before saving.",
+        confirmBtnText: "Got it",
+        confirmActionFn: () => {},
+        isDestructive: false,
+      });
+    }
+  };
 
   const handleExecute = () => {
     let parsedPayload: Record<string, unknown> = {};
@@ -62,7 +94,7 @@ export const ToolsCall: ToolCallMessagePartComponent = (props) => {
       showCustomAlertDialog({
         title: "Invalid JSON",
         description:
-          "Please fix the JSON syntax in the arguments editor before executing.",
+          "Please ensure the arguments are valid JSON before executing.",
         confirmBtnText: "Got it",
         confirmActionFn: () => {},
         isDestructive: false,
@@ -95,7 +127,7 @@ export const ToolsCall: ToolCallMessagePartComponent = (props) => {
   return (
     <ToolFallbackRoot
       defaultOpen={status === "pending" || isStreaming || isExecuting}
-      className="shadow-sm"
+      className="shadow-sm mb-2"
     >
       <ToolFallbackTrigger
         toolName={toolLabel}
@@ -106,24 +138,54 @@ export const ToolsCall: ToolCallMessagePartComponent = (props) => {
       <ToolFallbackContent>
         <ToolFallbackError status={uiStatus} />
 
-        <ToolFallbackArgs
-          argsText={displayArgsStr}
-          onArgsChange={setUserEditedPayloadStr}
-          disabled={!isAwaitingUser}
-          isEdited={userEditedPayloadStr !== null && !isCancelled}
-          className={cn(isCancelled && "opacity-60")}
-        />
-
-        {isAwaitingUser && (
-          <div className="flex items-center justify-end gap-2 px-4 pb-3 pt-2">
-            <Button variant="outline" size="xs" onClick={cancelTool}>
-              Cancel
-            </Button>
-            <Button variant="default" size="xs" onClick={handleExecute}>
-              <PlayIcon className="mr-1.5 size-3 fill-current" />
-              Execute
-            </Button>
+        {isEditing ? (
+          /* EDITED MODE: Show the interactive JsonEditor */
+          <div className="px-4 pb-2">
+            <div className="mb-2 flex items-center gap-1.5 font-medium text-foreground">
+              Editing Arguments:
+            </div>
+            <JsonEditor
+              value={draftEditStr}
+              onChange={setDraftEditStr}
+              disabled={false}
+            />
+            <div className="mt-3 flex items-center justify-end gap-2">
+              <Button variant="outline" size="xs" onClick={handleCancelEdit}>
+                Cancel Edit
+              </Button>
+              <Button variant="default" size="xs" onClick={handleSaveEdit}>
+                Save
+              </Button>
+            </div>
           </div>
+        ) : (
+          /* VIEW MODE: Standard assistant-ui ToolFallbackArgs */
+          <>
+            <div className="relative">
+              <ToolFallbackArgs
+                argsText={displayArgsStr}
+                className={cn(isCancelled && "opacity-60")}
+              />
+            </div>
+
+            {/* Render action buttons if waiting for user confirmation */}
+            {isAwaitingUser && (
+              <div className="flex items-center justify-end gap-2 px-4 pb-3 pt-2">
+                <Button variant="outline" size="xs" onClick={cancelTool}>
+                  <XIcon className="mr-1.5 size-3.5" />
+                  Cancel
+                </Button>
+                <Button variant="outline" size="xs" onClick={handleStartEdit}>
+                  <PencilIcon className="mr-1.5 size-3" />
+                  Edit
+                </Button>
+                <Button variant="default" size="xs" onClick={handleExecute}>
+                  <PlayIcon className="mr-1.5 size-3 fill-current" />
+                  Execute
+                </Button>
+              </div>
+            )}
+          </>
         )}
 
         {status === "success" && displayResult && (
