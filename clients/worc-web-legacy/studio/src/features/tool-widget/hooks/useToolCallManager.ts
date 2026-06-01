@@ -1,13 +1,15 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import { ToolCallMessagePartStatus } from "@assistant-ui/react";
-import { useCallback, useEffect, useMemo, useState } from "react";
+import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 
 import { ToolProvider } from "../constants/tools-provider-enum";
+import { useToolCallCoordinatorStore } from "../store/tool-call-store";
 import { useToolExecutionMutation } from "./useToolsExecutionMutation";
 
 export type ToolCallStatus = "pending" | "success" | "failed" | "cancelled";
 
 export interface UseToolCallManagerProps {
+  toolCallId?: string;
   toolName: string;
   argsText?: string;
   args?: any;
@@ -27,7 +29,8 @@ const TOOL_CALL_RESULT_MESSAGES = {
 } as const;
 
 export function useToolCallManager({
-  // toolName,
+  toolCallId,
+  toolName,
   argsText,
   args,
   result,
@@ -56,12 +59,9 @@ export function useToolCallManager({
 
   /**
    * Status resolution order:
-   *  1. "cancelled" — user intent always wins, regardless of any server reply.
+   *  1. "cancelled" — user intent always wins.
    *  2. Server / local result status — respects actual execution outcome.
-   *  3. "pending" — nothing has happened yet.
-   *
-   * Deliberately does NOT let an arbitrary localStatus short-circuit a
-   * server-reported "failed", so real failures are never silently masked.
+   *  3. "pending"   — nothing has happened yet.
    */
   const status: ToolCallStatus = useMemo(() => {
     if (localStatus === "cancelled") return "cancelled";
@@ -87,6 +87,8 @@ export function useToolCallManager({
       setLocalStatus(outcomeStatus);
       const payload = { status: outcomeStatus, details: data };
       setLocalResult(payload);
+      // This call is the key: addResult tells assistant-ui the tool is done,
+      // which triggers a new run() with the tool result baked into the messages.
       addResult?.(payload);
     },
     [addResult],
@@ -158,6 +160,59 @@ export function useToolCallManager({
       TOOL_CALL_RESULT_MESSAGES.USER_CANCELLED,
     );
   }, [handleExecutionOutcome]);
+
+  // Coordinator registration
+  //
+  // Register with the ToolCallCoordinator while the tool is pending
+  // (= delivered by LLM but not yet resolved by the user/execution).
+  // This allows the Composer to block new messages until the tool resolves.
+  //
+  // We use a ref for cancelTool so that the registered entry always calls the
+  // latest version of cancelTool without re-registering on every render.
+
+  const registerToolCall = useToolCallCoordinatorStore(
+    (state) => state.register,
+  );
+
+  const unregisterToolCall = useToolCallCoordinatorStore(
+    (state) => state.unregister,
+  );
+
+  const cancelToolRef = useRef(cancelTool);
+
+  useEffect(() => {
+    cancelToolRef.current = cancelTool;
+  }, [cancelTool]);
+
+  // Stable coordinator ID — prefer runtime-assigned toolCallId
+  const coordId = toolCallId ?? toolName;
+
+  // "Active" = tool payload delivered but result not yet submitted.
+  // Covers both isAwaitingUser and isExecuting sub-states.
+  const isActiveInCoordinator = status === "pending" && !isStreaming;
+
+  useEffect(() => {
+    if (!isActiveInCoordinator) return;
+
+    registerToolCall({
+      toolCallId: coordId,
+      toolName,
+
+      // Always uses latest cancelTool via ref
+      // prevents stale closure issues
+      cancel: () => cancelToolRef.current(),
+    });
+
+    return () => {
+      unregisterToolCall(coordId);
+    };
+  }, [
+    isActiveInCoordinator,
+    coordId,
+    toolName,
+    registerToolCall,
+    unregisterToolCall,
+  ]);
 
   return {
     status,

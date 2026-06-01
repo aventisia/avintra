@@ -1,3 +1,5 @@
+import { useHasPendingToolCalls } from "@/features/tool-widget/store/tool-call-store";
+
 import {
   AttachmentPrimitive,
   ComposerPrimitive,
@@ -197,8 +199,9 @@ export const ComposerAttachments: FC = () => {
 };
 
 export const ComposerAddAttachment: FC = () => {
+  const hasPending = useHasPendingToolCalls();
   return (
-    <ComposerPrimitive.AddAttachment asChild>
+    <ComposerPrimitive.AddAttachment asChild disabled={hasPending}>
       <TooltipIconButton
         tooltip="Add Attachment"
         side="bottom"
