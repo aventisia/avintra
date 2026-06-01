@@ -6,7 +6,7 @@ import { TemplateCard } from "./TemplateCard";
 import { TemplatePagination } from "./TemplatePagination";
 import { TemplateCardSkeleton } from "./TemplateCardSkelton";
 import { useFetch } from "../hooks/useFetch";
-import { getAgentTemplates } from "../apis/wroc-templates-apis";
+import { getAgentTemplates } from "../apis/templates-library-apis";
 
 const LibraryTemplates = ({
   selectedCategory,

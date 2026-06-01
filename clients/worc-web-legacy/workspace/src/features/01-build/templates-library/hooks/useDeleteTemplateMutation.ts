@@ -2,7 +2,7 @@ import { toast } from "@aventisia/ui/sonner";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { useNavigate } from "react-router-dom";
 
-import { deleteTemplate } from "../apis/av-platform-templates-apis";
+import { deleteTemplate } from "../apis/avplatform-templates-apis";
 
 /**
  * useDeleteTemplateMutation

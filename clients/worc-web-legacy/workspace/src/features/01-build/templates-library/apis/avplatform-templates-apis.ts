@@ -2,7 +2,7 @@ import { axiosInstance } from "@/react-toolkit/lib/axios-instance";
 
 import { IHttpResponse } from "@aventisia/ui/dtos";
 
-import { AvPlatformTemplatesDto } from "../dtos/av-platform-templates-dtos";
+import { AvPlatformTemplatesDto } from "../dtos/avplatform-templates-dtos";
 import { UseTemplateDTO } from "../dtos/use-template-dto";
 
 const baseAPIURL_WORKSPACE: string = `${import.meta.env.VITE_WORKSPACE_API_PATH}/project-template`;
@@ -12,7 +12,9 @@ const baseAPIURL_WORKSPACE: string = `${import.meta.env.VITE_WORKSPACE_API_PATH}
  */
 const getAgentTemplates = () => {
   return axiosInstance
-    .get<IHttpResponse<AvPlatformTemplatesDto[]>>(`${baseAPIURL_WORKSPACE}/trending`)
+    .get<
+      IHttpResponse<AvPlatformTemplatesDto[]>
+    >(`${baseAPIURL_WORKSPACE}/trending`)
     .then((res) => res.data);
 };
 

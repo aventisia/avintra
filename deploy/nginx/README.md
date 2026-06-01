@@ -1,4 +1,4 @@
-# Nginx Docker Setup for Aventisia av-platform
+# Nginx Docker Setup for Aventisia avplatform
 
 This directory contains the Nginx configuration and Dockerfile for containerized deployment.
 

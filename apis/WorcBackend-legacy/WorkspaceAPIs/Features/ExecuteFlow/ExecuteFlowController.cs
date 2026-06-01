@@ -13,7 +13,7 @@ public class ExecuteFlowController : BaseApiController
     }
 
     /// <summary>
-    /// Endpoint to execute the flow on web from anywhere on our av-platform.
+    /// Endpoint to execute the flow on web from anywhere on our avplatform.
     /// Flow graph validations will be applied based on the flow version published status
     /// </summary>
     [HttpPost("execute")]

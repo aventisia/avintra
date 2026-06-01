@@ -4,7 +4,7 @@ import { stripLeadingSlash } from "@/utils/strip-leading-slash";
 import { toast } from "@aventisia/ui/sonner";
 import { useMutation } from "@tanstack/react-query";
 
-import { applyAgentTemplate } from "../apis/av-platform-templates-apis";
+import { applyAgentTemplate } from "../apis/avplatform-templates-apis";
 import { UseTemplateDTO } from "../dtos/use-template-dto";
 
 /**
