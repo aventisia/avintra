@@ -1,7 +1,7 @@
 import { useQuery } from "@tanstack/react-query";
 import { useSearchParams } from "react-router-dom";
 
-import { getTemplateById } from "../apis/av-platform-templates-apis";
+import { getTemplateById } from "../apis/avplatform-templates-apis";
 
 /**
  * Custom hook to fetch template details using react query.

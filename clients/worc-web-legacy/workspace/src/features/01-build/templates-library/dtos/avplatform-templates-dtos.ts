@@ -1,5 +1,5 @@
 /**
- * Data Transfer Object representing a single av-platform Template.
+ * Data Transfer Object representing a single avplatform Template.
  * Used for displaying, filtering, or selecting templates in the UI.
  */
 export interface AvPlatformTemplatesDto {

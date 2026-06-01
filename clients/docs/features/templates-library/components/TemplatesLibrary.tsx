@@ -9,7 +9,7 @@ import { useSearchParams } from "next/navigation";
 import { TemplateDetail } from "./template-details/TemplateDetails";
 import { useDebounce } from "../hooks/useDebounce";
 
-const TemplateLibrary = () => {
+const TemplatesLibrary = () => {
   const searchParams = useSearchParams();
   const id = searchParams.get("t");
   const [searchQuery, setSearchQuery] = useState("");
@@ -94,4 +94,4 @@ const TemplateLibrary = () => {
     </div>
   );
 };
-export default TemplateLibrary;
+export default TemplatesLibrary;

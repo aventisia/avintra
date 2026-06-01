@@ -1,6 +1,6 @@
 import { useMutation } from "@tanstack/react-query";
 
-import { downloadTemplateResource } from "../apis/av-platform-templates-apis";
+import { downloadTemplateResource } from "../apis/avplatform-templates-apis";
 import { FileResource } from "../dtos/use-template-dto";
 
 export const useDownloadFile = (isPublic?: boolean) => {

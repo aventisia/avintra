@@ -1,4 +1,4 @@
-import TemplateLibrary from "@/features/template-library/components";
+import TemplateLibrary from "@/features/templates-library/components/TemplatesLibrary";
 
 export default function LibraryPage() {
 

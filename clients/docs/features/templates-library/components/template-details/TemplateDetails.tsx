@@ -1,14 +1,13 @@
-"use client"
+"use client";
 import { LoadingSpinner } from "@/app/_components/ui";
 
 import { TemplateHeader } from "./TemplateHeader";
 import TemplateMarkdown from "./TemplateMarkdown";
 import { TemplateMetaAside } from "./TemplateMetaAside";
 import { useFetch } from "../../hooks/useFetch";
-import { getAgentTemplateById } from "../../apis/wroc-templates-apis";
+import { getAgentTemplateById } from "../../apis/templates-library-apis";
 
 export function TemplateDetail({ id }: { id: string }) {
-
   const { data, loading } = useFetch(() => getAgentTemplateById(id));
 
   return (

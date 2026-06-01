@@ -1,8 +1,8 @@
-av-platform monorepo
+avplatform monorepo
 
 ## Overview
 
-This repository contains the source code and deployment configurations for the av-platform, a comprehensive solution for managing various services and applications.
+This repository contains the source code and deployment configurations for the avplatform, a comprehensive solution for managing various services and applications.
 
 # Login to private registry (if needed)
 

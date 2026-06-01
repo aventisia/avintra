@@ -2,7 +2,7 @@ import { toast } from "@aventisia/ui/sonner";
 import { useQuery } from "@tanstack/react-query";
 import { useEffect } from "react";
 
-import { getAgentTemplates } from "../apis/av-platform-templates-apis";
+import { getAgentTemplates } from "../apis/avplatform-templates-apis";
 
 /**
  * Custom hook to fetch templates using react query.

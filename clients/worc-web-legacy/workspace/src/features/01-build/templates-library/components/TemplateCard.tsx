@@ -12,7 +12,7 @@ import {
 } from "@aventisia/ui/cards";
 import { Copy, Tag } from "lucide-react";
 
-import { AvPlatformTemplatesDto } from "../dtos/av-platform-templates-dtos";
+import { AvPlatformTemplatesDto } from "../dtos/avplatform-templates-dtos";
 import { useViewTemplate } from "../hooks/useViewTemplate";
 import { transformTemplateType } from "../utils/transform-template-type";
 
@@ -23,7 +23,7 @@ type TemplateCardProps = {
 /**
  * TemplateCard
  *
- * Reusable component to visually display a av-platform template.
+ * Reusable component to visually display a avplatform template.
  * Shows name, description, icons, usage count, and creator info.
  */
 export const TemplateCard = ({ template }: TemplateCardProps) => {
