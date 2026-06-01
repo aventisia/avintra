@@ -33,6 +33,7 @@ export const ToolsCall: ToolCallMessagePartComponent = (props) => {
     executeTool,
     cancelTool,
   } = useToolCallManager({
+    toolCallId: props.toolCallId, // pass through so coordinator uses the runtime's stable ID
     toolName: props.toolName,
     argsText: props.argsText,
     args: props.args as any,
@@ -47,7 +48,7 @@ export const ToolsCall: ToolCallMessagePartComponent = (props) => {
   >(null);
 
   // The payload string to display in the editor.
-  // It actively syncs with the LLM stream until the user types something.
+  // Actively syncs with the LLM stream until the user types something.
   const displayArgsStr = useMemo(() => {
     if (userEditedPayloadStr !== null) return userEditedPayloadStr;
     return JSON.stringify(output?.payload || {}, null, 2);
@@ -94,7 +95,7 @@ export const ToolsCall: ToolCallMessagePartComponent = (props) => {
   return (
     <ToolFallbackRoot
       defaultOpen={status === "pending" || isStreaming || isExecuting}
-      className="shadow-sm "
+      className="shadow-sm"
     >
       <ToolFallbackTrigger
         toolName={toolLabel}

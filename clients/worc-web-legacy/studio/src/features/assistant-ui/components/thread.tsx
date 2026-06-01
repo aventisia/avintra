@@ -1,4 +1,8 @@
 import ToolsCall from "@/features/tool-widget/components/ToolsCall";
+import {
+  useHasPendingToolCalls,
+  useToolCallCoordinatorStore,
+} from "@/features/tool-widget/store/tool-call-store";
 
 import {
   ActionBarMorePrimitive,
@@ -28,6 +32,7 @@ import {
   SquareIcon,
 } from "lucide-react";
 import type { FC } from "react";
+import { useShallow } from "zustand/react/shallow";
 
 import {
   ComposerAddAttachment,
@@ -135,6 +140,8 @@ const ThreadSuggestionItem: FC = () => {
 };
 
 const Composer: FC = () => {
+  const hasPending = useHasPendingToolCalls();
+
   return (
     <ComposerPrimitive.Root className="aui-composer-root relative flex w-full flex-col">
       <ComposerPrimitive.AttachmentDropzone asChild>
@@ -147,7 +154,8 @@ const Composer: FC = () => {
             placeholder="Send a message..."
             className="aui-composer-input max-h-32 min-h-10 w-full resize-none bg-transparent px-2 py-1 text-sm outline-none placeholder:text-muted-foreground/80"
             rows={1}
-            autoFocus
+            disabled={hasPending}
+            autoFocus={!hasPending}
             aria-label="Message input"
           />
           <ComposerAction />
@@ -158,10 +166,17 @@ const Composer: FC = () => {
 };
 
 const ComposerAction: FC = () => {
+  const hasPending = useHasPendingToolCalls();
+
+  const cancelAll = useToolCallCoordinatorStore(
+    useShallow((state) => state.cancelAll),
+  );
+
   return (
     <div className="aui-composer-action-wrapper relative flex items-center justify-between">
       <ComposerAddAttachment />
-      <AuiIf condition={(s) => !s.thread.isRunning}>
+
+      <AuiIf condition={(s) => !s.thread.isRunning && !hasPending}>
         <ComposerPrimitive.Send asChild>
           <TooltipIconButton
             tooltip="Send message"
@@ -176,7 +191,8 @@ const ComposerAction: FC = () => {
           </TooltipIconButton>
         </ComposerPrimitive.Send>
       </AuiIf>
-      <AuiIf condition={(s) => s.thread.isRunning}>
+
+      <AuiIf condition={(s) => s.thread.isRunning || hasPending}>
         <ComposerPrimitive.Cancel asChild>
           <Button
             type="button"
@@ -184,6 +200,11 @@ const ComposerAction: FC = () => {
             size="icon6"
             className="aui-composer-cancel size-8 rounded-full"
             aria-label="Stop generating"
+            onClick={() => {
+              if (hasPending) {
+                cancelAll();
+              }
+            }}
           >
             <SquareIcon className="aui-composer-cancel-icon size-3 fill-current" />
           </Button>
