@@ -3,7 +3,7 @@ import { Suspense, lazy } from "react";
 // Lazy load the FlowsTable component.
 const AvPlatformLibrary = lazy(() =>
   import(
-    "@/features/01-build/avplatform-library/components/AvPlatformLibrary"
+    "@/features/01-build/templates-library/components/TemplatesLibrary"
   ).then((module) => ({
     default: module.default,
   })),

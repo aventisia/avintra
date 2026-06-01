@@ -73,7 +73,7 @@ export const useFetchPaymentStatus = () => {
 
             setTimeout(() => {
               window.location.assign(
-                import.meta.env.VITE_WORKSPACE_PATH + "tenant",
+                import.meta.env.VITE_WORKSPACE_PATH + "tenant/overview",
               );
             }, 500); // Delay for a smooth transition
           }
