@@ -97,7 +97,10 @@ const ModelConfigField = ({ name }: ModelConfigFieldProps) => {
   });
 
   const enableModelSetup = useMemo(
-    () => name.includes("__ModelConfig__Inferencing"),
+    () =>
+      ["__ModelConfig__Inferencing", "__ModelConfig__Conversation"].includes(
+        name,
+      ),
     [name],
   );
 

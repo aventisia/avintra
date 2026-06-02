@@ -2,9 +2,10 @@ import { useCurrentFlowStore } from "@/stores/current-flow-store";
 import { useReactFlowExtStore } from "@/stores/react-flow-ext-store";
 
 import { AssistantRuntimeProvider, useLocalRuntime } from "@assistant-ui/react";
+import { toast } from "@aventisia/ui/sonner";
 import { useQueryClient } from "@tanstack/react-query";
 import { Node } from "@xyflow/react";
-import { useMemo } from "react";
+import { useEffect, useMemo } from "react";
 import { useShallow } from "zustand/react/shallow";
 
 import {
@@ -20,7 +21,7 @@ type AvPlatformAssistantUIProps = {
   model?: string;
 };
 
-const TARGET_NODE_NAME = "CreateInferencingAIAgent";
+const TARGET_NODE_NAME = "CreateConversationAIAgent";
 
 const INPUT_KEYS = {
   PROMPT: "__Prompt__",
@@ -130,7 +131,9 @@ export const AvPlatformAssistantUI = ({
 
   // Access current flow details for model adapter metadata.
   const { currentFlow } = useCurrentFlowStore(
-    useShallow((state) => ({ currentFlow: state.currentFlow })),
+    useShallow((state) => ({
+      currentFlow: state.currentFlow,
+    })),
   );
 
   const { nodes } = useReactFlowExtStore(
@@ -167,6 +170,18 @@ export const AvPlatformAssistantUI = ({
       ],
     ),
   );
+
+  useEffect(() => {
+    if (nodes && nodes.length > 0) {
+      const hasChatAiNode = nodes?.find(
+        (node) => node?.data?.name == "CreateConversationAIAgent",
+      );
+      if (!hasChatAiNode) {
+        toast.error("Atleast one Chat AI node is required");
+        return;
+      }
+    }
+  }, [nodes]);
 
   return (
     <AssistantRuntimeProvider runtime={runtime}>
