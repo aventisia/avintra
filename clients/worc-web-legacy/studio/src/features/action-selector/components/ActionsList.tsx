@@ -62,6 +62,9 @@ const ActionsList = ({
           (isChatAgent &&
             action.supportedPlatforms?.length === 1 &&
             action.supportedPlatforms?.includes("windows"));
+
+        const isChatAiNode = action.name == "CreateConversationAIAgent";
+
         return (
           <button
             key={action.name}
@@ -71,7 +74,7 @@ const ActionsList = ({
             }}
             role="option"
             aria-selected={isFocused}
-            disabled={isDisabled}
+            disabled={isDisabled || (isChatAiNode && !isChatAgent)}
             tabIndex={isFocused ? 0 : -1}
             onClick={() => {
               nodeSelectionHandler(action);
@@ -83,7 +86,8 @@ const ActionsList = ({
               isFocused
                 ? "bg-accent text-accent-foreground"
                 : "hover:bg-accent hover:text-accent-foreground",
-              isDisabled && "cursor-not-allowed opacity-50",
+              (isDisabled || (isChatAiNode && !isChatAgent)) &&
+                "cursor-not-allowed opacity-50",
             )}
           >
             <ActionToSelect data={action} />
