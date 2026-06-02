@@ -28,7 +28,7 @@
         "model": "gpt-4o-mini",
         "temperature": 1,
         "top_p": 1,
-        "is_json_output": true,
+        "is_json_output": false,
         "max_output_tokens": null
       },
       "required": false,
