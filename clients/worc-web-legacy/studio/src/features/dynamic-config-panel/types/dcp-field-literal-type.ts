@@ -55,4 +55,6 @@ export type DCPControlType =
   | "json-editor"
   | "queue-select"
   | "queue-conditional-group"
-  | "queue-priority-group";
+  | "queue-priority-group"
+  | "string-array"
+  | "suggestions";

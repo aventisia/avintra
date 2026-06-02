@@ -192,7 +192,42 @@ function getToolsConfigSchema(field: DCPFieldSchemaType): ZodTypeAny {
   return schema;
 }
 
-export function getVoiceConfigSchema(field: DCPFieldSchemaType): ZodTypeAny {
+function getStringArraySchema(field: DCPFieldSchemaType): ZodTypeAny {
+  let schema: ZodTypeAny = z.array(z.string());
+
+  if (field?.defaultValue && Array.isArray(field.defaultValue)) {
+    schema = schema.default(field.defaultValue);
+  } else {
+    schema = schema.default([]);
+  }
+
+  return schema;
+}
+
+function getSuggestionsSchema(field: DCPFieldSchemaType): ZodTypeAny {
+  let defaultActionsSchema: ZodTypeAny = z.array(z.string());
+  let enableDynamicActionsSchema: ZodTypeAny = z.boolean();
+
+  if (field.defaultValue && typeof field.defaultValue === "object") {
+    if ("List" in field.defaultValue) {
+      defaultActionsSchema = z
+        .array(z.string())
+        .default(field.defaultValue.List as string[]);
+    }
+
+    if ("EnableDynamicActions" in field.defaultValue) {
+      enableDynamicActionsSchema = z
+        .boolean()
+        .default(field.defaultValue.EnableDynamicActions as boolean);
+    }
+  }
+
+  return z.object({
+    List: defaultActionsSchema,
+    EnableDynamicActions: enableDynamicActionsSchema,
+  });
+}
+function getVoiceConfigSchema(field: DCPFieldSchemaType): ZodTypeAny {
   // 1. Explicitly type variables as ZodTypeAny so they can accept the ZodDefault wrapper later
   let languageSchema: ZodTypeAny = z.string();
   let voiceSchema: ZodTypeAny = z.string();
@@ -392,6 +427,10 @@ function getZodType(field: DCPFieldSchemaType): ZodTypeAny {
       return getQueueConditionalGroupSchema(field);
     case "tools-config-select":
       return getToolsConfigSchema(field);
+    case "string-array":
+      return getStringArraySchema(field);
+    case "suggestions":
+      return getSuggestionsSchema(field);
     default:
       return applyFieldOptions(z.string(), field); // Fallback to string
   }

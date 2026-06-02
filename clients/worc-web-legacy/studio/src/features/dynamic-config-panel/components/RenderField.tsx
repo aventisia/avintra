@@ -20,6 +20,8 @@ import { KnowledgeBaseConfigField } from "./fields-for-form/KnowledgeBaseConfigF
 import { MemoryConfigField } from "./fields-for-form/MemoryConfigField";
 import { ModelConfigField } from "./fields-for-form/ModelConfigField";
 import { QueueSelectorField } from "./fields-for-form/QueueSelectorField";
+import { StringArrayField } from "./fields-for-form/StringArrayField";
+import { SuggestionsField } from "./fields-for-form/SuggestionsField";
 import { ToolsConfigField } from "./fields-for-form/ToolsConfigField";
 import { VoiceConfigField } from "./fields-for-form/VoiceConfigField";
 import { PromptConfigField } from "./fields-for-form/prompt-field/PromptField";
@@ -112,6 +114,10 @@ export const RenderField = (field: DCPFieldSchemaType) => {
       return <QueueConditionGroupsField {...field} />;
     case "queue-priority-group":
       return <QueuePriorityGroupsField {...field} />;
+    case "string-array":
+      return <StringArrayField {...field} size="sm" />;
+    case "suggestions":
+      return <SuggestionsField {...field} size="sm" />;
     default:
       return null;
   }
