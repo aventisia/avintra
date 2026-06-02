@@ -33,6 +33,17 @@
           },
           {
             "type": "aiNode",
+            "name": "CreateVoiceAIAgent",
+            "label": "Voice AI",
+            "description": "Performs high-speed reasoning and logic checks on incoming data to provide instant predictions or route tasks.",
+            "docsLink": null,
+            "disabled": true,
+            "icon": "",
+            "img": "/assets/InferencingModel.svg",
+            "supportedPlatforms": ["cloud", "windows"]
+          },
+          {
+            "type": "aiNode",
             "name": "CreateConversationAIAgent",
             "label": "Chat AI",
             "description": "Manages multi-turn interactions with human-like understanding and memory to guide users through complex tasks.",
