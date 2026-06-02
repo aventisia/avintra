@@ -51,13 +51,13 @@ namespace WorkspaceAPIs.Services
                 // Fetch project templates filtered by tenant and user, ordered by usage count, including related data
                 var projectTemplates = await _unitOfWork.ProjectTemplateRepo
                     .GetByConditionAsync(w =>
-                        w.CreatedByUserId == _userId &&
+                        w.Status == ProjectTemplateStatusesEnum.Approved &&
                         (!type.HasValue || w.Type == type.Value)
                     )
-                    .AsNoTracking()
                     .Include(i => i.CreatedByUser)
                     .Include(i => i.LastModifiedByUser)
                     .Include(i => i.TemplateResources)
+                    .AsNoTracking()
                     .OrderByDescending(o => o.UsageCount)
                     .ToListAsync();
 
@@ -1103,7 +1103,7 @@ namespace WorkspaceAPIs.Services
 
                     _logger.LogInformation("Flow version saved successfully. Flow ID: {FlowId}, Version: 1", flowEntity.Id);
                 }
-                
+
                 // Increment usage count and update the template
                 projectTemplate.UsageCount++;
                 _unitOfWork.ProjectTemplateRepo.Update(projectTemplate);
