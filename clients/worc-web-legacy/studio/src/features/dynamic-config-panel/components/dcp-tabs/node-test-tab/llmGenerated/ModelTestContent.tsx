@@ -24,7 +24,7 @@ import STTInputStep, { STTInputValue } from "./STTInputStep";
 //  Provider type detection
 //
 // Detected from formData key naming convention (set by ModelConfigField):
-//   __ModelConfig__Inferencing  → "llm"
+//   __ModelConfig__Inferencing ,__ModelConfig__Conversation → "llm"
 //   __ModelConfig__SpeechToText → "stt"
 //   __ModelConfig__TextToSpeech → "tts"
 

@@ -27,18 +27,19 @@ export default function ViewerButton() {
     };
   }, []);
 
+  const isAllowedModel = [
+    "CreateInferencingAIAgent",
+    "CreateConversationAIAgent",
+  ].includes(nodeData?.name ?? "");
+
   // Open viewer upon file upload
   useEffect(() => {
-    if (
-      files.length > 0 &&
-      !showViewer &&
-      nodeData?.name == "CreateInferencingAIAgent"
-    ) {
+    if (files.length > 0 && !showViewer && isAllowedModel) {
       setShowViewer(true);
     }
   }, [files]);
 
-  if (nodeData?.name !== "CreateInferencingAIAgent") return <></>;
+  if (!isAllowedModel) return <></>;
 
   return (
     <div className="flex gap-2 items-center">
