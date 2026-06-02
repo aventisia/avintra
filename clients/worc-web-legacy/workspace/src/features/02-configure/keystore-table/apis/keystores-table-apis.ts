@@ -14,10 +14,9 @@ export const baseAPIURL: string = `${import.meta.env.VITE_WORKSPACE_API_PATH}/ke
 /**
  * Retrieves list of keystores.
  */
-export const getKeystore = ({ isPersonal = true }: { isPersonal: boolean }) => {
-  const path = isPersonal ? `list` : `list/shared`;
+export const getKeystore = () => {
   return axiosInstance
-    .get<IHttpResponse<KeystoresTableDto[]>>(`${baseAPIURL}/${path}`)
+    .get<IHttpResponse<KeystoresTableDto[]>>(`${baseAPIURL}/list`)
     .then((res) => res.data);
 };
 
