@@ -85,7 +85,7 @@ const ModelTestContent = ({
   const ttsMutation = useExecuteTTSMutation();
   // Derived once per render — formData keys are stable for a given node type
   const providerType = detectProviderType(formData);
-  const [useCurrentFileOnly, setUseCurrentFileOnly] = useState(false);
+  const [useCurrentFileOnly, setUseCurrentFileOnly] = useState(true);
 
   // LLM: Local Store Integration
   const { files: storedLlmFiles, activeFileId } = useLocalFileStore(
