@@ -258,11 +258,11 @@ public class MachineService : IMachineService
             var machines = await _unitOfWork.MachineRepo
                 .GetAllAsync()
                 .OrderByDescending(o => o.CreatedOn)
-                .Include(a => a.CreatedByUser)
-                .Include(a => a.LastModifiedByUser)
-                .Include(a => a.MachineFlows)
-                    .ThenInclude(fv => fv.FlowVersion)
-                    .ThenInclude(f => f.Flow)
+                .Include(i => i.CreatedByUser)
+                .Include(i => i.LastModifiedByUser)
+                .Include(i => i.MachineFlows.Where(w => !w.FlowVersion.IsArchived))
+                    .ThenInclude(i2 => i2.FlowVersion)
+                        .ThenInclude(i3 => i3.Flow)
                 .AsNoTracking()
                 .ToListAsync();
 
@@ -599,11 +599,11 @@ public class MachineService : IMachineService
 
         try
         {
-            // Check if the machine exists and belongs to the current user
+            // Retrieve machine by os id
             var machine = await _unitOfWork.MachineRepo
-                                            .GetByConditionAsync(w => w.OSId.ToLower() == osId.ToLower())
-                                            .Include(i => i.MachineFlows)
-                                            .FirstOrDefaultAsync();
+                    .GetByConditionAsync(w => w.OSId.ToLower() == osId.ToLower())
+                    .Include(i => i.MachineFlows)
+                    .FirstOrDefaultAsync();
 
             // Return an error if the machine doesn't exist
             if (machine == null)
@@ -613,13 +613,17 @@ public class MachineService : IMachineService
                 return serviceResponse;
             }
 
-            // Retrieve all agents for the current user
+            // Retrieve all agents
             var agents = await _unitOfWork.MachineFlowRepo
-                                            .GetByConditionAsync(w => w.MachineId == machine.Id)
-                                            .Include(i => i.FlowVersion)
-                                                .ThenInclude(i2 => i2.Flow)
-                                            .ProjectToType<AssignAgentDto>()
-                                            .ToListAsync();
+                    .GetByConditionAsync(w =>
+                        w.MachineId == machine.Id &&
+                        w.FlowVersion.IsPublished &&
+                        !w.FlowVersion.IsArchived
+                    )
+                    .Include(i => i.FlowVersion)
+                        .ThenInclude(i2 => i2.Flow)
+                    .ProjectToType<AssignAgentDto>()
+                    .ToListAsync();
 
             var clientDataStores = await _clientStatusStore.GetMachineStatusesAsync(_currentTenantService.CurrentTenantId);
 
