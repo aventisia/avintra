@@ -3,17 +3,20 @@ import { useQuery } from "@tanstack/react-query";
 import { useEffect } from "react";
 
 import { getKeystore } from "../apis/keystores-table-apis";
-import { DATA_QUERY_KEY } from "../constants";
+import { useTableTab } from "./useTableTab";
 
 /**
  * Custom hook to fetch keystores using react query.
  * @returns An object containing the fetched data, isFetching flag, and isLoading flag.
  */
 export const useFetchKeystores = () => {
+  // Use this in place DATA_QUERY_KEY to handle Personal/Shared tabs list
+  const { isPersonal, queryKey } = useTableTab();
+
   // Get keystores using react query
   const { data, isFetching, isLoading, isError, error } = useQuery({
-    queryKey: DATA_QUERY_KEY,
-    queryFn: () => getKeystore(),
+    queryKey: queryKey,
+    queryFn: () => getKeystore({ isPersonal }),
   });
 
   // Show toast on fetch error

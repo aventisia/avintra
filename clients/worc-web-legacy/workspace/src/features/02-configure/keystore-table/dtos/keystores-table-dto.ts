@@ -1,4 +1,4 @@
-import type { AccessLevelTypesEnum } from "@/react-toolkit/enums/access-level-types-enum";
+import { ResourceAccessTypeEnum } from "@/features/resource-share/enums/resource-access-type-enum";
 import type { KeyStoreTypesEnum } from "@/react-toolkit/enums/key-store-types-enum";
 
 /**
@@ -8,76 +8,85 @@ export interface KeystoresTableDto {
   /**
    * Gets or sets the primary key of the keystore record.
    *
-   * Not making it required because same DTO is used for insert and update.
+   * Optional because same DTO is reused for create/update.
    */
   id?: string;
 
   /**
-   * Gets or sets the tenant id.
+   * Tenant ID associated with the configuration item.
+   *
+   * Optional because same DTO is reused for create/update.
    */
   tenantId?: string;
 
   /**
-   * Gets or sets the name of the keystore. Max-255
+   * Unique name for the configuration item.
+   *
+   * Max length: 256 characters.
    */
   name: string;
 
   /**
-   * Gets or sets the type of the keystore.
+   * Description of the key store.
+   *
+   * Max length: 500 characters.
+   */
+  description?: string;
+
+  /**
+   * Type of the configuration item.
    */
   type: KeyStoreTypesEnum;
 
   /**
-   * Gets or sets the value of the keystore.
+   * Value of the configuration item.
    */
   value: string;
 
   /**
-   * Gets or sets the encryption state of the keystore.
+   * Access level of the configuration item.
    */
-  isEncrypted: boolean;
+  accessLevel: ResourceAccessTypeEnum;
 
   /**
-   * Gets or sets the Access Level state of the keystore.
+   * Indicates whether the vault is accessible
+   * to all users within the tenant.
    */
-  accessLevel: AccessLevelTypesEnum;
+  isTenantWideAccess: boolean;
 
   /**
-   * Gets or sets the description of the key.
-   */
-  description: string;
-
-  /**
-   * Gets or sets the tags of the key.
-   */
-  tags: string;
-
-  /**
-   * Gets or sets a flag indicating whether the keystore record is disabled.
+   * Indicates whether the record is disabled.
    *
-   * Not making it required because same DTO is used for insert and update.
-   *
-   * Its important to have this property nullable because we need to differentiate between true, false and null.
    */
   isDisabled?: boolean;
 
   /**
-   * Gets or sets the username of the user who created the keystore record. Max-254
+   * Username of the record creator.
+   *
+   * Response only.
    */
   createdBy?: string;
 
   /**
-   * Gets or sets the date and time when the keystore record was created.
+   * Timestamp when the record was created.
+   *
+   * Response only.
+   * ISO string from backend DateTimeOffset.
    */
-  createdOn?: Date;
+  createdOn?: Date | string;
 
   /**
-   * Gets or sets the username of the user who last modified the keystore record. Max-254
+   * Username of the last modifier.
+   *
+   * Response only.
    */
   lastModifiedBy?: string;
 
   /**
-   * Gets or sets the date and time when the keystore record was last modified.
+   * Timestamp when the record was last modified.
+   *
+   * Response only.
+   * ISO string from backend DateTimeOffset.
    */
-  lastModifiedOn?: Date;
+  lastModifiedOn?: Date | string;
 }

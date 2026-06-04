@@ -1,14 +1,13 @@
+import { KeyStoreTypesEnum } from "@/react-toolkit/enums/key-store-types-enum";
+
 import { Checkbox } from "@aventisia/ui";
 import { DTColumnHeader } from "@aventisia/ui/data-table";
 import { dateFormatter, getEnumValueByKey } from "@aventisia/ui/utils";
 import { ColumnDef } from "@tanstack/react-table";
 
-import { KeyStoreTypesEnum } from "@/react-toolkit/enums/key-store-types-enum";
-
 import { TABLE_KEY } from "../constants";
 import { getColumnName } from "../constants/column-display-names";
 import { KeystoresTableDto } from "../dtos/keystores-table-dto";
-
 import { KeystoreRowActions } from "./keystore-row-actions/KeystoreRowActions";
 
 /**
@@ -102,7 +101,11 @@ export const keystoresTableColumns: ColumnDef<KeystoresTableDto>[] = [
     id: "actions",
     cell: ({ row }) => (
       // Render the keystores row actions component
-      <KeystoreRowActions rowId={row.original.id || "rowId"} />
+      <KeystoreRowActions
+        rowId={row.original.id || "rowId"}
+        accessLevel={row.original.accessLevel}
+        isTenantWideAccess={row.original.isTenantWideAccess || false}
+      />
     ),
   },
 ];

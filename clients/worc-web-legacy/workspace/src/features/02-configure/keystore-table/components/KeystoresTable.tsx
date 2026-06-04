@@ -1,23 +1,33 @@
+import { QueryTabs } from "@/components/QueryTab";
+import ResourceShareDialog from "@/features/resource-share/components/ResourceShareDialog";
+
 import {
-  DataTable,
-  DataTableSkeleton,
   DTCreateButton,
   DTHeading,
   DTPagination,
   DTSearchBox,
   DTViewOptions,
+  DataTable,
+  DataTableSkeleton,
   getDataTablePreferences,
 } from "@aventisia/ui/data-table";
 import { useDataTable, useDocumentTitle } from "@aventisia/ui/hooks";
 
-import { SEARCH_COLUMN, TABLE_HEADING, TABLE_KEY } from "../constants";
+import { updateKeystore } from "../apis/keystores-table-apis";
+import {
+  SEARCH_COLUMN,
+  TABLE_HEADING,
+  TABLE_KEY,
+  TABLE_TAB_QUERY_PARAM,
+  TABLE_VIEW_TABS,
+} from "../constants";
 import { columnDisplayNames } from "../constants/column-display-names";
 import { columnVisibilityState } from "../constants/column-visibility-state";
 import { useFetchKeystores } from "../hooks/useFetchKeystores";
-
+import { useTableTab } from "../hooks/useTableTab";
+import { keystoresTableColumns } from "./KeystoresTableColumns";
 import { KeystoreCrudDialog } from "./keystore-crud-dialog/KeystoreCrudDialog";
 import { KeystoresBulkActions } from "./keystore-row-actions/KeystoresBulkActions";
-import { keystoresTableColumns } from "./KeystoresTableColumns";
 
 /**
  * Renders a table of keystores.
@@ -34,7 +44,11 @@ export const KeystoresTable = () => {
     columnVisibilityState,
   );
 
+  // Use this in place DATA_QUERY_KEY to handle Personal/Shared tabs list
+  const { isPersonal, queryKey } = useTableTab();
+
   // Fetch keystores data
+  // Uses currentTab to dictate which API hook is called
   const { data } = useFetchKeystores();
 
   // Create a React table for keystores data
@@ -55,8 +69,10 @@ export const KeystoresTable = () => {
           <KeystoreCrudDialog>
             {/* Table toolbar */}
             <div className="flex items-center justify-between">
-              <DTHeading heading={TABLE_HEADING} />
-
+              <div className="flex items-center gap-2">
+                <DTHeading heading={TABLE_HEADING} />
+                <QueryTabs tabs={TABLE_VIEW_TABS} key={TABLE_TAB_QUERY_PARAM} />
+              </div>
               <div className="flex items-center gap-2">
                 <DTSearchBox
                   table={table}
@@ -66,7 +82,7 @@ export const KeystoresTable = () => {
                 <DTViewOptions
                   {...{ table, columnDisplayNames, tableKey: TABLE_KEY }}
                 />
-                <DTCreateButton />
+                {isPersonal && <DTCreateButton />}
               </div>
             </div>
 
@@ -79,7 +95,10 @@ export const KeystoresTable = () => {
 
           {/* Data table Pagination component */}
           <DTPagination table={table} />
-
+          <ResourceShareDialog
+            queryKey={queryKey}
+            updateApiFn={updateKeystore}
+          />
           {/* Bulk actions for data table */}
           <KeystoresBulkActions table={table} />
         </div>
