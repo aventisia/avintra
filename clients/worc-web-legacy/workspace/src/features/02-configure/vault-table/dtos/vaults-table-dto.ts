@@ -46,7 +46,7 @@ export interface VaultsTableDto {
   /**
    * Gets or sets the permission level granted to the user.
    */
-  accessLevel: ResourceAccessTypeEnum;
+  accessLevel?: ResourceAccessTypeEnum;
 
   /**
    * Gets or sets a value indicating whether
