@@ -63,7 +63,7 @@ export const useDefineFlowForm = () => {
     },
   });
 
-  // Use this in place DATA_QUERY_KEY to handle Personal/Shared tabs list
+  // Use this in place FLOWS_QUERY_KEY to handle Personal/Shared tabs list
   const { queryKey } = useTableTab();
 
   // Destructor form values and methods

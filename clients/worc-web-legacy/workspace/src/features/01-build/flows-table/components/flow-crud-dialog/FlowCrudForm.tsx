@@ -41,7 +41,7 @@ export const FlowCrudForm = () => {
     refineFormData,
   } = useDefineFlowForm();
 
-  // Use this in place DATA_QUERY_KEY to handle Personal/Shared tabs list
+  // Use this in place FLOWS_QUERY_KEY to handle Personal/Shared tabs list
   const { queryKey } = useTableTab();
 
   // Define optimistic mutation to crete or update the flow

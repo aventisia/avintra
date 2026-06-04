@@ -45,7 +45,7 @@ export const FlowsTable = () => {
     columnVisibilityState,
   );
 
-  // Use this in place DATA_QUERY_KEY to handle Personal/Shared tabs list
+  // Use this in place FLOWS_QUERY_KEY to handle Personal/Shared tabs list
   const { isPersonal, queryKey, currentTab } = useTableTab();
 
   // Fetch flows data
@@ -91,14 +91,12 @@ export const FlowsTable = () => {
             {/* Data table to render data */}
             <DataTable table={table} columnsLength={flowsTableColumns.length} />
           </FlowCrudDialog>
-
           {/* Data table Pagination component */}
           <DTPagination table={table} />
-
           {/* Resource Share Dialog */}
           <ResourceShareDialog queryKey={queryKey} updateApiFn={updateFlow} />
           {/* Bulk actions for data table */}
-          <FlowsBulkActions table={table} />
+          {isPersonal && <FlowsBulkActions table={table} />}{" "}
         </div>
       ) : (
         // Show data table skeleton while fetching the flows data

@@ -12,7 +12,7 @@ import { DATA_QUERY_KEY, TABLE_TAB_QUERY_PARAM } from "../constants";
 export const useTableTab = () => {
   const [searchParams] = useSearchParams();
 
-  const currentTab = searchParams.get(TABLE_TAB_QUERY_PARAM);
+  const currentTab = searchParams.get(TABLE_TAB_QUERY_PARAM) ?? "personal";
 
   const isPersonal = currentTab === "personal";
 
