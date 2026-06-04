@@ -4,15 +4,18 @@ public class ResourceShareService : IResourceShareService
 {
     private readonly ILogger<ResourceShareService> _logger;
     private readonly IUnitOfWork _unitOfWork;
+    private readonly ICurrentTenantService _currentTenantService;
     private readonly Guid _userId;
 
     public ResourceShareService(
         ILogger<ResourceShareService> logger,
         IUnitOfWork unitOfWork,
-        IHttpContextAccessor httpContextAccessor)
+        IHttpContextAccessor httpContextAccessor,
+        ICurrentTenantService currentTenantService)
     {
         _logger = logger;
         _unitOfWork = unitOfWork;
+        _currentTenantService = currentTenantService;
 
         _userId = Guid.Parse(httpContextAccessor.HttpContext?.User?.FindFirstValue("uid") ?? Guid.Empty.ToString());
     }
@@ -179,6 +182,7 @@ public class ResourceShareService : IResourceShareService
 
             // Map DTO to entity for database insertion.
             var resourceShare = resourceShareDto.Adapt<ResourceShare>();
+            resourceShare.TenantId = _currentTenantService.CurrentTenantId;
 
             // Insert the new resource share record.
             await _unitOfWork.ResourceShareRepo.InsertAsync(resourceShare);
@@ -256,7 +260,8 @@ public class ResourceShareService : IResourceShareService
                     ResourceId = createResourceShareDto.ResourceId,
                     ResourceType = createResourceShareDto.ResourceType,
                     UserId = s.UserId,
-                    AccessLevel = s.AccessLevel
+                    AccessLevel = s.AccessLevel,
+                    TenantId = _currentTenantService.CurrentTenantId
                 })
                 .ToList();
 
