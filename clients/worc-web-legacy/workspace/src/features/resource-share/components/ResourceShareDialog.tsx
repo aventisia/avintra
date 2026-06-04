@@ -45,9 +45,9 @@ function ResourceShareDialog({
 
   return (
     <Dialog open={showDialog} onOpenChange={setShowDialog}>
-      <DialogContent className="h-[65vh] min-w-[40rem]">
+      <DialogContent className="h-[75vh] min-w-[40rem]">
         <DialogDefaultHeader heading="Share Access" />
-        <ScrollArea className="h-[calc(65vh-4rem)]">
+        <ScrollArea className="h-[calc(75vh-4rem)]">
           <div className="p-4 pb-0">
             <CustomCheckbox
               checked={assignAllDraft}

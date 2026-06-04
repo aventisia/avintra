@@ -7,7 +7,7 @@ import {
   CommandList,
 } from "@aventisia/ui/command";
 import { cn } from "@aventisia/ui/lib";
-import { BotIcon } from "lucide-react";
+import { User2Icon } from "lucide-react";
 import { useShallow } from "zustand/react/shallow";
 
 import { useFetchResourceShare } from "../hooks/useFetchResourceShare";
@@ -27,7 +27,7 @@ const UsersList = () => {
   return (
     <Command>
       <CommandEmpty>
-        <NoContentMessage Icon={BotIcon} primaryMessage="No User found" />
+        <NoContentMessage Icon={User2Icon} primaryMessage="No User found" />
       </CommandEmpty>
       {/* <ScrollArea> */}
       <CommandList>
