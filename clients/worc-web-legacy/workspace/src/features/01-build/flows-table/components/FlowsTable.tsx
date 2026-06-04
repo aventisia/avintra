@@ -1,23 +1,34 @@
+import { QueryTabs } from "@/components/QueryTab";
+import { ArchivedFlowsTable } from "@/features/05-tenant-admin/archives-table/components/ArchivedFlowsTable";
+import ResourceShareDialog from "@/features/resource-share/components/ResourceShareDialog";
+
 import {
-  DataTable,
-  DataTableSkeleton,
   DTCreateButton,
   DTHeading,
   DTPagination,
   DTSearchBox,
   DTViewOptions,
+  DataTable,
+  DataTableSkeleton,
   getDataTablePreferences,
 } from "@aventisia/ui/data-table";
 import { useDataTable, useDocumentTitle } from "@aventisia/ui/hooks";
 
-import { SEARCH_COLUMN, TABLE_HEADING, TABLE_KEY } from "../constants";
+import { updateFlow } from "../apis/flows-table-apis";
+import {
+  SEARCH_COLUMN,
+  TABLE_HEADING,
+  TABLE_KEY,
+  TABLE_TAB_QUERY_PARAM,
+  TABLE_VIEW_TABS,
+} from "../constants";
 import { columnDisplayNames } from "../constants/column-display-names";
 import { columnVisibilityState } from "../constants/column-visibility-state";
 import { useFetchFlows } from "../hooks/useFetchFlows";
-
-import { FlowCrudDialog } from "./flow-crud-dialog/FlowCrudDialog";
+import { useTableTab } from "../hooks/useTableTab";
 import { FlowsBulkActions } from "./FlowsBulkActions";
 import { flowsTableColumns } from "./FlowsTableColumns";
+import { FlowCrudDialog } from "./flow-crud-dialog/FlowCrudDialog";
 
 /**
  * Renders a table of flows.
@@ -34,6 +45,9 @@ export const FlowsTable = () => {
     columnVisibilityState,
   );
 
+  // Use this in place DATA_QUERY_KEY to handle Personal/Shared tabs list
+  const { isPersonal, queryKey, currentTab } = useTableTab();
+
   // Fetch flows data
   const { data } = useFetchFlows();
 
@@ -46,6 +60,8 @@ export const FlowsTable = () => {
     true,
   );
 
+  if (currentTab == "archived") return <ArchivedFlowsTable isFlowTable />;
+
   // Return the rendered DataTable component.
   return (
     <>
@@ -55,8 +71,10 @@ export const FlowsTable = () => {
           <FlowCrudDialog>
             {/* Table toolbar */}
             <div className="flex items-center justify-between">
-              <DTHeading heading={TABLE_HEADING} />
-
+              <div className="flex items-center gap-2">
+                <DTHeading heading={TABLE_HEADING} />
+                <QueryTabs tabs={TABLE_VIEW_TABS} key={TABLE_TAB_QUERY_PARAM} />
+              </div>
               <div className="flex items-center gap-2">
                 <DTSearchBox
                   table={table}
@@ -66,7 +84,7 @@ export const FlowsTable = () => {
                 <DTViewOptions
                   {...{ table, columnDisplayNames, tableKey: TABLE_KEY }}
                 />
-                <DTCreateButton buttonText="Create Agent" />
+                {isPersonal && <DTCreateButton />}{" "}
               </div>
             </div>
 
@@ -77,6 +95,8 @@ export const FlowsTable = () => {
           {/* Data table Pagination component */}
           <DTPagination table={table} />
 
+          {/* Resource Share Dialog */}
+          <ResourceShareDialog queryKey={queryKey} updateApiFn={updateFlow} />
           {/* Bulk actions for data table */}
           <FlowsBulkActions table={table} />
         </div>

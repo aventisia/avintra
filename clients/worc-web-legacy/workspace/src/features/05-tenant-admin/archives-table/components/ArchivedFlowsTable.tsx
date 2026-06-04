@@ -1,19 +1,26 @@
+import { QueryTabs } from "@/components/QueryTab";
+
 import {
-  DataTable,
-  DataTableSkeleton,
   DTHeading,
   DTPagination,
   DTSearchBox,
   DTViewOptions,
+  DataTable,
+  DataTableSkeleton,
   getDataTablePreferences,
 } from "@aventisia/ui/data-table";
 import { useDataTable, useDocumentTitle } from "@aventisia/ui/hooks";
 
-import { SEARCH_COLUMN, TABLE_HEADING, TABLE_KEY } from "../constants";
+import {
+  SEARCH_COLUMN,
+  TABLE_HEADING,
+  TABLE_KEY,
+  TABLE_TAB_QUERY_PARAM,
+  TABLE_VIEW_TABS,
+} from "../constants";
 import { columnDisplayNames } from "../constants/column-display-names";
 import { columnVisibilityState } from "../constants/column-visibility-state";
 import { useFetchArchivedFlows } from "../hooks/useFetchArchivedFlows";
-
 import { archivedFlowsTableColumns } from "./ArchivedFlowsTableColumns";
 
 /**
@@ -21,9 +28,13 @@ import { archivedFlowsTableColumns } from "./ArchivedFlowsTableColumns";
  *
  * @returns The rendered ArchivedFlowsTable component.
  */
-export const ArchivedFlowsTable = () => {
+export const ArchivedFlowsTable = ({
+  isFlowTable = false,
+}: {
+  isFlowTable?: boolean;
+}) => {
   // Set the document title
-  useDocumentTitle(TABLE_HEADING);
+  useDocumentTitle(isFlowTable ? "Agents" : TABLE_HEADING);
 
   // Get data-table preferences from local storage
   const { columnVisibility, sortState } = getDataTablePreferences(
@@ -50,8 +61,12 @@ export const ArchivedFlowsTable = () => {
         <div className="space-y-4 pb-4 pt-[17px]">
           {/* Table toolbar */}
           <div className="flex items-center justify-between">
-            <DTHeading heading={TABLE_HEADING} />
-
+            <div className="flex items-center gap-2">
+              <DTHeading heading={isFlowTable ? "Agents" : TABLE_HEADING} />
+              {isFlowTable && (
+                <QueryTabs tabs={TABLE_VIEW_TABS} key={TABLE_TAB_QUERY_PARAM} />
+              )}{" "}
+            </div>{" "}
             <div className="flex items-center gap-2">
               <DTSearchBox
                 table={table}

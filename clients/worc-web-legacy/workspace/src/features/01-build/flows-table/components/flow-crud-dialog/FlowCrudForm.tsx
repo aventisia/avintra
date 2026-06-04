@@ -1,3 +1,6 @@
+//Refactored Select to show description in options
+import { SelectField } from "@/components/select-field/SelectField";
+
 import { SubmitButton } from "@aventisia/ui/buttons";
 import {
   AutherCard,
@@ -10,11 +13,7 @@ import { useListOptimisticMutation } from "@aventisia/ui/hooks";
 import { useEffect } from "react";
 import { z } from "zod";
 
-//Refactored Select to show description in options
-import { SelectField } from "@/components/select-field/SelectField";
-
 import { flowOptimisticMutationFn } from "../../apis/flows-table-apis";
-import { FLOWS_QUERY_KEY } from "../../constants";
 import {
   descriptionProps,
   idProps,
@@ -25,6 +24,7 @@ import {
 import { flowZodSchema } from "../../constants/flow-zod-schema";
 import { FlowsTableDto } from "../../dtos/flows-table-dto";
 import { useDefineFlowForm } from "../../hooks/useDefineFlowForm";
+import { useTableTab } from "../../hooks/useTableTab";
 
 export const FlowCrudForm = () => {
   // Define flow form
@@ -41,6 +41,9 @@ export const FlowCrudForm = () => {
     refineFormData,
   } = useDefineFlowForm();
 
+  // Use this in place DATA_QUERY_KEY to handle Personal/Shared tabs list
+  const { queryKey } = useTableTab();
+
   // Define optimistic mutation to crete or update the flow
   const {
     mutate: mutateFlow,
@@ -50,7 +53,7 @@ export const FlowCrudForm = () => {
     FlowsTableDto,
     FlowsTableDto | boolean,
     FlowsTableDto
-  >([rowId], flowOptimisticMutationFn, FLOWS_QUERY_KEY);
+  >([rowId], flowOptimisticMutationFn, queryKey);
 
   // Define submit handler
   const onSubmit = (formData: z.infer<typeof flowZodSchema>) => {
