@@ -205,33 +205,64 @@ public class M365OutlookConnectorsService : IM365OutlookConnectorsService
             //         },
             //         accessToken);
 
-            // case M365OutlookActionsEnum.ReplyAllToEmail:
-            //     return await HttpClientHelper.PostAsync(
-            //         $"{baseUrl}/messages/{GetValue("messageId")}/replyAll",
-            //         new
-            //         {
-            //             message = new
-            //             {
-            //                 body = new { contentType = "HTML", content = GetValue("body") }
-            //             }
-            //         },
-            //         accessToken);
+            case M365OutlookActionsEnum.ReplyEmail:
+                {
+                    // Determine whether to send a Reply or Reply All action.
+                    var endpoint = CloudConnectionPayloadUtil.GetValue(payload, "replyType") == "ReplyAll"
+                        ? "replyAll"
+                        : "reply";
 
-            // case M365OutlookActionsEnum.ForwardEmail:
-            //     return await HttpClientHelper.PostAsync(
-            //         $"{baseUrl}/messages/{GetValue("messageId")}/forward",
-            //         new
-            //         {
-            //             message = new
-            //             {
-            //                 body = new { contentType = "HTML", content = GetValue("body") },
-            //                 toRecipients = new[]
-            //                 {
-            //             new { emailAddress = new { address = GetValue("to") } }
-            //                 }
-            //             }
-            //         },
-            //         accessToken);
+                    // Retrieve common input values.
+                    var replyMessageId = CloudConnectionPayloadUtil.GetValue(payload, "messageId");
+                    var replyComment = CloudConnectionPayloadUtil.GetValue(payload, "comment") ?? string.Empty;
+
+                    // Reply All automatically sends the response to the original sender and all recipients from the original email.
+                    if (endpoint == "replyAll")
+                    {
+                        return await HttpClientHelper.PostAsync(
+                            $"{baseUrl}/messages/{replyMessageId}/replyAll",
+                            new { replyComment },
+                            accessToken);
+                    }
+
+                    // Reply sends the response only to the original sender.
+                    // Microsoft Graph supports an optional 'message' object for overrides, but this connector uses the simpler comment-based reply.
+                    return await HttpClientHelper.PostAsync(
+                        $"{baseUrl}/messages/{replyMessageId}/reply",
+                        new { replyComment },
+                        accessToken);
+                }
+
+            case M365OutlookActionsEnum.ForwardEmail:
+                {
+                    // Message to forward.
+                    var forwardMessageId = CloudConnectionPayloadUtil.GetValue(payload, "messageId");
+
+                    // Optional comment that appears above the forwarded message.
+                    var forwardComment = CloudConnectionPayloadUtil.GetValue(payload, "comment") ?? string.Empty;
+
+                    // Build recipient collection from a semicolon-separated list.
+                    var recipients = CloudConnectionPayloadUtil.GetValue(payload, "toRecipients")
+                        .Split(';', StringSplitOptions.RemoveEmptyEntries)
+                        .Select(email => new
+                        {
+                            emailAddress = new
+                            {
+                                address = email.Trim()
+                            }
+                        })
+                        .ToArray();
+
+                    // Forward the email to the specified recipients.
+                    return await HttpClientHelper.PostAsync(
+                        $"{baseUrl}/messages/{forwardMessageId}/forward",
+                        new
+                        {
+                            forwardComment,
+                            toRecipients = recipients
+                        },
+                        accessToken);
+                }
 
             // case M365OutlookActionsEnum.DeleteEmail:
             //     return await HttpClientHelper.DeleteAsync($"{baseUrl}/messages/{GetValue("messageId")}", accessToken);

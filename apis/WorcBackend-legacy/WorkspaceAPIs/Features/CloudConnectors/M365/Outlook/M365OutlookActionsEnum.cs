@@ -16,9 +16,9 @@ public enum M365OutlookActionsEnum
     GetUnreadEmails,
 
     // Email Management
-    ReplyToEmail,
-    ReplyAllToEmail,
+    ReplyEmail,
     ForwardEmail,
+
     DeleteEmail,
     MoveEmailToFolder,
     UpdateAllEmailProperties,
