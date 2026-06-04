@@ -14,9 +14,11 @@ const baseAPIURL: string = `${import.meta.env.VITE_WORKSPACE_API_PATH}/app-secre
 /**
  * Retrieves list of configs.
  */
-export const getVaults = () => {
+export const getVaults = ({ isPersonal = true }: { isPersonal: boolean }) => {
+  const path = isPersonal ? `list` : `list/shared`;
+
   return axiosInstance
-    .get<IHttpResponse<VaultsTableDto[]>>(`${baseAPIURL}/list`)
+    .get<IHttpResponse<VaultsTableDto[]>>(`${baseAPIURL}/${path}`)
     .then((res) => res.data);
 };
 

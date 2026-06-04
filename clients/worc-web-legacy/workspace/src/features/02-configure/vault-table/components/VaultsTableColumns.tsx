@@ -6,7 +6,6 @@ import { ColumnDef } from "@tanstack/react-table";
 import { TABLE_KEY } from "../constants";
 import { getColumnName } from "../constants/column-display-names";
 import { VaultsTableDto } from "../dtos/vaults-table-dto";
-
 import { VaultRowActions } from "./vault-row-actions/VaultRowActions";
 
 /**
@@ -98,7 +97,11 @@ export const vaultsTableColumns: ColumnDef<VaultsTableDto>[] = [
     id: "actions",
     cell: ({ row }) => (
       // Render the configs row actions component
-      <VaultRowActions rowId={row.original.id || "rowId"} />
+      <VaultRowActions
+        rowId={row.original.id || "rowId"}
+        accessLevel={row.original.accessLevel}
+        isTenantWideAccess={row.original.isTenantWideAccess || false}
+      />
     ),
   },
 ];
