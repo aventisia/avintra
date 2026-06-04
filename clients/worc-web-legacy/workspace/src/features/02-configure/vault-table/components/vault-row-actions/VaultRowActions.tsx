@@ -18,13 +18,13 @@ import { VaultRowDeleteAction } from "./VaultRowDeleteAction";
 
 interface VaultRowActionsProps {
   rowId: string;
-  accessLevel: ResourceAccessTypeEnum;
+  accessLevel?: ResourceAccessTypeEnum;
   isTenantWideAccess: boolean;
 }
 
 export const VaultRowActions = ({
   rowId,
-  accessLevel,
+  accessLevel = ResourceAccessTypeEnum.View,
   isTenantWideAccess,
 }: VaultRowActionsProps) => {
   const { setRowId, setAction, setShowDialog } = useVaultDialogStore(
