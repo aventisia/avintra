@@ -31,7 +31,7 @@ public class TrendingTemplateDto
     public string? Purpose { get; set; }
 
     /// <summary>
-    /// Gets or sets the structural category of the template (e.g., Block, Agent, Inferencing, Conversation, Generative).
+    /// Gets or sets the structural category of the template (e.g., Block, Agent, prompt etc).
     /// </summary>
     public string? Type { get; set; }
 

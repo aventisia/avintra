@@ -1,23 +1,14 @@
 import type { MetaRecord } from "nextra";
 
 const meta: MetaRecord = {
-  "attach-ai-model": {
-    title: "Attach AI Model",
+  "text-ai": {
+    title: "Text AI",
   },
-  "olm-ocr": {
-    title: "Olm OCR",
+  "speech-to-text": {
+    title: "Speech to Text",
   },
-  "vision-model": {
-    title: "Vision Model",
-  },
-  "inferencing-model": {
-    title: "Inferencing Model",
-  },
-  "speech-to-text-model": {
-    title: "Speech to Text Model",
-  },
-  "text-to-speech-model": {
-    title: "Text to Speech Model",
+  "text-to-speech": {
+    title: "Text to Speech",
   },
 };
 

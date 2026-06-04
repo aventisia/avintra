@@ -20,12 +20,6 @@ const LibraryTemplates = ({
 
   const { data: agentData = [], loading } = useFetch(() => getAgentTemplates());
 
-  const AI_MODEL_TYPES = [
-    "AIProject",
-    "Inferencing",
-    "Conversation",
-    "Generative",
-  ];
   // Combine and filter templates based on selected category
   const items = useMemo(() => {
     const templates = agentData ?? [];
@@ -33,10 +27,6 @@ const LibraryTemplates = ({
 
     const matchesCategory = (type: string) => {
       if (selectedCategory === "All templates") return true;
-
-      if (selectedCategory === "AI Model") {
-        return AI_MODEL_TYPES.includes(type);
-      }
 
       return type.includes(selectedCategory);
     };

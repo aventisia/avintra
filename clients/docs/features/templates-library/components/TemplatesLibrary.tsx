@@ -23,9 +23,6 @@ const TemplatesLibrary = () => {
     "All templates",
     "AI Model",
     "Agent",
-    // "Inferencing",
-    // "Conversation",
-    // "Generative",
     "Block",
   ];
 
