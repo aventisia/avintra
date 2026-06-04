@@ -3,10 +3,13 @@ import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { useShallow } from "zustand/react/shallow";
 
 import { insertVault } from "../../apis/vaults-table-apis";
-import { DATA_QUERY_KEY } from "../../constants";
+import { useTableTab } from "../../hooks/useTableTab";
 import { useVaultDialogStore } from "../../stores/vault-dialog-store";
 
 export const useAddCredMutation = () => {
+  // Use this in place DATA_QUERY_KEY to handle Personal/Shared tabs list
+  const { queryKey } = useTableTab();
+
   // // Get the query client for cache management
   const queryClient = useQueryClient();
   const { setShowDialog } = useVaultDialogStore(
@@ -29,7 +32,7 @@ export const useAddCredMutation = () => {
       });
       setShowDialog(false);
       queryClient.invalidateQueries({
-        queryKey: DATA_QUERY_KEY,
+        queryKey: queryKey,
       });
     },
   });

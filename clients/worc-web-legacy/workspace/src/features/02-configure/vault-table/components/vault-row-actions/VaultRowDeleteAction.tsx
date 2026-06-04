@@ -5,8 +5,8 @@ import {
 } from "@aventisia/ui/hooks";
 
 import { vaultOptimisticMutationFn } from "../../apis/vaults-table-apis";
-import { DATA_QUERY_KEY } from "../../constants";
 import { VaultsTableDto } from "../../dtos/vaults-table-dto";
+import { useTableTab } from "../../hooks/useTableTab";
 
 interface VaultRowDeleteActionProps {
   rowId: string;
@@ -15,13 +15,15 @@ interface VaultRowDeleteActionProps {
 export const VaultRowDeleteAction = ({ rowId }: VaultRowDeleteActionProps) => {
   // Get showAlert handler
   const { showCustomAlertDialog } = useShowAlertHandler();
+  // Use this in place DATA_QUERY_KEY to handle Personal/Shared tabs list
+  const { queryKey } = useTableTab();
 
   // Get mutation function to delete the config
   const { mutate: deleteConfig } = useListOptimisticMutation<
     string,
     VaultsTableDto | boolean,
     VaultsTableDto
-  >([rowId], vaultOptimisticMutationFn, DATA_QUERY_KEY);
+  >([rowId], vaultOptimisticMutationFn, queryKey);
 
   // Return Delete alert dialog trigger
   return (

@@ -1,12 +1,3 @@
-import { useCheckAvailability } from "@aventisia/ui/hooks";
-import { reqError } from "@aventisia/ui/utils";
-import { zodResolver } from "@hookform/resolvers/zod";
-import { useQueryClient } from "@tanstack/react-query";
-import { useEffect, useState } from "react";
-import { useForm } from "react-hook-form";
-import { z, ZodTypeAny } from "zod";
-import { useShallow } from "zustand/react/shallow";
-
 import {
   DCPFieldSchemaType,
   generateZodSchema,
@@ -15,11 +6,20 @@ import {
 } from "@/features/dynamic-config-panel";
 import { NodeInputType } from "@/features/dynamic-config-panel/types/input-output-types";
 
+import { useCheckAvailability } from "@aventisia/ui/hooks";
+import { reqError } from "@aventisia/ui/utils";
+import { zodResolver } from "@hookform/resolvers/zod";
+import { useQueryClient } from "@tanstack/react-query";
+import { useEffect, useState } from "react";
+import { useForm } from "react-hook-form";
+import { ZodTypeAny, z } from "zod";
+import { useShallow } from "zustand/react/shallow";
+
 import { isVaultNameAvailable } from "../../apis/vaults-table-apis";
-import { DATA_QUERY_KEY } from "../../constants";
 import { vaultNameSchema } from "../../constants/vault-zod-schema";
 import { VaultsTableDto } from "../../dtos/vaults-table-dto";
 import { VaultAppsEnum } from "../../enums/vault-apps-enum";
+import { useTableTab } from "../../hooks/useTableTab";
 import { useVaultDialogStore } from "../../stores/vault-dialog-store";
 import { appToCredentialNameMapper } from "../constants/app-to-credential-name-mapper";
 import { vaultAppsSelectOptions } from "../constants/vault-app-select-options";
@@ -51,14 +51,15 @@ export const useVaultDynamicForm = () => {
         setType: state.setType,
       })),
     );
-
+  // Use this in place DATA_QUERY_KEY to handle Personal/Shared tabs list
+  const { queryKey } = useTableTab();
   // Get query client
   const queryClient = useQueryClient();
 
   // Get vaults data from query client
   const vaultsData = queryClient.getQueryData<{
     data: VaultsTableDto[];
-  }>(DATA_QUERY_KEY);
+  }>(queryKey);
 
   // Get vault data by id
   const vaultData = vaultsData?.data.find((item) => item.id === rowId);

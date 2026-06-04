@@ -1,3 +1,6 @@
+import { ResourceAccessTypeEnum } from "@/features/resource-share/enums/resource-access-type-enum";
+import { getResourceAccessActions } from "@/features/resource-share/utils/resource-access-actions";
+
 import { DataTableRowActions } from "@aventisia/ui/data-table";
 import {
   DropdownMenuSeparator,
@@ -10,14 +13,20 @@ import {
 import { useShallow } from "zustand/react/shallow";
 
 import { useVaultDialogStore } from "../../stores/vault-dialog-store";
-
+import { ResourceShareRowAction } from "./ResourceShareRowAction";
 import { VaultRowDeleteAction } from "./VaultRowDeleteAction";
 
 interface VaultRowActionsProps {
   rowId: string;
+  accessLevel: ResourceAccessTypeEnum;
+  isTenantWideAccess: boolean;
 }
 
-export const VaultRowActions = ({ rowId }: VaultRowActionsProps) => {
+export const VaultRowActions = ({
+  rowId,
+  accessLevel,
+  isTenantWideAccess,
+}: VaultRowActionsProps) => {
   const { setRowId, setAction, setShowDialog } = useVaultDialogStore(
     useShallow((state) => ({
       setRowId: state.setRowId,
@@ -26,33 +35,49 @@ export const VaultRowActions = ({ rowId }: VaultRowActionsProps) => {
     })),
   );
 
+  const actions = getResourceAccessActions(accessLevel);
+
+  const showDivider = actions?.share || actions?.delete;
+
   return (
     // Dropdown menu for config table row action */}
-    <DataTableRowActions>
-      <SimpleDDMenuItem
-        Icon={ArrowUpRightIcon}
-        onClick={() => {
-          setShowDialog(true);
-          setRowId(rowId);
-          setAction("read");
-        }}
-        content="View"
-      />
-      <SimpleDDMenuItem
-        Icon={PencilSquareIcon}
-        onClick={() => {
-          setShowDialog(true);
-          setRowId(rowId);
-          setAction("update");
-        }}
-        content="Edit"
-      />
+    <DataTableRowActions className="w-36 min-w-36">
+      {actions?.read && (
+        <SimpleDDMenuItem
+          Icon={ArrowUpRightIcon}
+          onClick={() => {
+            setShowDialog(true);
+            setRowId(rowId);
+            setAction("read");
+          }}
+          content="View"
+        />
+      )}
+      {actions?.update && (
+        <SimpleDDMenuItem
+          Icon={PencilSquareIcon}
+          onClick={() => {
+            setShowDialog(true);
+            setRowId(rowId);
+            setAction("update");
+          }}
+          content="Edit"
+        />
+      )}
+
+      {/* Share Access */}
+      {actions?.share && (
+        <ResourceShareRowAction
+          rowId={rowId}
+          isTenantWideAccess={isTenantWideAccess}
+        />
+      )}
 
       {/* DropdownMenuSeparator component */}
-      <DropdownMenuSeparator />
+      {showDivider && <DropdownMenuSeparator />}
 
       {/* Triggers Config delete alert dialog  */}
-      <VaultRowDeleteAction rowId={rowId} />
+      {actions?.delete && <VaultRowDeleteAction rowId={rowId} />}
     </DataTableRowActions>
   );
 };

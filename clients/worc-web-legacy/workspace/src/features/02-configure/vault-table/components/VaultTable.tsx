@@ -1,3 +1,6 @@
+import { QueryTabs } from "@/components/QueryTab";
+import ResourceShareDialog from "@/features/resource-share/components/ResourceShareDialog";
+
 import { DotSeparator } from "@aventisia/ui";
 import { Button } from "@aventisia/ui/buttons";
 import {
@@ -11,10 +14,18 @@ import { dateFormatter } from "@aventisia/ui/utils";
 import { PlusIcon } from "@heroicons/react/24/outline";
 import { useShallow } from "zustand/react/shallow";
 
-import { SEARCH_COLUMN, TABLE_HEADING, TABLE_KEY } from "../constants";
+import { updateVault } from "../apis/vaults-table-apis";
+import {
+  SEARCH_COLUMN,
+  TABLE_HEADING,
+  TABLE_KEY,
+  TABLE_TAB_QUERY_PARAM,
+  TABLE_VIEW_TABS,
+} from "../constants";
 import { columnVisibilityState } from "../constants/column-visibility-state";
 import { VaultAppsEnum } from "../enums/vault-apps-enum";
 import { useFetchVaults } from "../hooks/useFetchVaults";
+import { useTableTab } from "../hooks/useTableTab";
 import { useVaultDialogStore } from "../stores/vault-dialog-store";
 import { vaultAppIconMapper } from "../vault-config/constants/vault-app-icon-mapper";
 import { VaultTableSkeleton } from "./VaultTableSkeleton";
@@ -46,8 +57,11 @@ export const VaultTable = () => {
       setRowId: state.setRowId,
     })),
   );
+  // Use this in place DATA_QUERY_KEY to handle Personal/Shared tabs list
+  const { isPersonal, queryKey } = useTableTab();
 
-  // Fetch configs data
+  // Fetch keystores data
+  // Use currentTab to dictate which API hook is called
   const { data } = useFetchVaults();
 
   // Create a React table for configs data
@@ -68,7 +82,10 @@ export const VaultTable = () => {
         <div className="space-y-4 pb-4 pt-[17px]">
           {/* Table toolbar */}
           <div className="flex items-center justify-between">
-            <DTHeading heading={TABLE_HEADING} />
+            <div className="flex items-center gap-2">
+              <DTHeading heading={TABLE_HEADING} />
+              <QueryTabs tabs={TABLE_VIEW_TABS} key={TABLE_TAB_QUERY_PARAM} />
+            </div>
 
             <div className="flex items-center gap-2">
               <DTSearchBox
@@ -76,19 +93,21 @@ export const VaultTable = () => {
                 searchColumn={SEARCH_COLUMN}
                 placeholder="Search..."
               />
-              <Button
-                size={"xs"}
-                className="gap-2 text-sm tracking-wide"
-                onClick={() => {
-                  setShowDialog(true);
-                  setAction("create");
-                  setRowId("");
-                  setType("");
-                }}
-              >
-                <PlusIcon className="h-4 w-4" />
-                Add Credential
-              </Button>{" "}
+              {isPersonal && (
+                <Button
+                  size={"xs"}
+                  className="gap-2 text-sm tracking-wide"
+                  onClick={() => {
+                    setShowDialog(true);
+                    setAction("create");
+                    setRowId("");
+                    setType("");
+                  }}
+                >
+                  <PlusIcon className="h-4 w-4" />
+                  Add Credential
+                </Button>
+              )}
             </div>
           </div>
           {/* DT with only rows and custom design */}
@@ -139,7 +158,13 @@ export const VaultTable = () => {
                   </div>
 
                   {/* Action trigger */}
-                  <VaultRowActions rowId={row.original.id || "rowId"} />
+                  <VaultRowActions
+                    rowId={row.original.id || "rowId"}
+                    accessLevel={row.original.accessLevel}
+                    isTenantWideAccess={
+                      row.original.isTenantWideAccess || false
+                    }
+                  />
                 </div>
               ))}
             </div>
@@ -156,6 +181,9 @@ export const VaultTable = () => {
             singularLabel="credential"
             pluralLabel="credentials"
           />
+
+          {/* Resource Share Dialog component */}
+          <ResourceShareDialog queryKey={queryKey} updateApiFn={updateVault} />
 
           {/* Bulk actions for data table */}
           <VaultsBulkActions table={table} />

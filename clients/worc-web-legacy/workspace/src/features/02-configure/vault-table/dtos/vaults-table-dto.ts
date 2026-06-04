@@ -1,63 +1,81 @@
+import { ResourceAccessTypeEnum } from "@/features/resource-share/enums/resource-access-type-enum";
+
 import { VaultAppsEnum } from "../enums/vault-apps-enum";
 
 /**
- * Represents a data transfer object (DTO) for a credentials.
+ * Represents a data transfer object (DTO) for an app secret.
  */
 export interface VaultsTableDto {
   /**
-   * Gets or sets the primary key of the credentials record.
+   * Gets or sets the unique identifier of the app secret.
    *
-   * Not making it required because same DTO is used for insert and update.
+   * Optional because same DTO is used for insert and update.
    */
   id?: string;
 
   /**
-   * Gets or sets the name of the credentials. Max-255
+   * Gets or sets the name of the secret.
    */
   name: string;
 
   /**
-   * Gets or sets the type of the credentials. Max-255
+   * Gets or sets the type of the secret.
+   * Used to determine the structure of the data field.
    */
   type: VaultAppsEnum;
+  // If backend sends arbitrary string values, use:
+  // type: string;
 
   /**
-   * Gets or sets dynamic input fields as key-value pairs.
-   * Values must be scalar types (string, number, boolean, or null).
+   * Gets or sets the secret data.
+   * Structure depends on the type.
    */
-  data?: { [key: string]: string | number | boolean | null };
+  data: Record<string, unknown>;
 
   /**
-   * Gets or sets the description of the credentials. Max-255
+   * Gets or sets an optional description of the secret.
    */
   description?: string;
 
   /**
-   * Gets or sets a flag indicating whether the credentials record is disabled.
-   *
-   * Not making it required because same DTO is used for insert and update.
-   *
-   * Its important to have this property nullable because we need to differentiate between true, false and null.
+   * Gets or sets a value indicating whether
+   * the app secret is accessible tenant-wide.
    */
-  isDisabled?: boolean;
+  isTenantWideAccess?: boolean;
 
   /**
-   * Gets or sets the username of the user who created the credentials record. Max-254
+   * Gets or sets the permission level granted to the user.
+   */
+  accessLevel: ResourceAccessTypeEnum;
+
+  /**
+   * Gets or sets a value indicating whether
+   * the app secret is disabled.
+   *
+   * Nullable to differentiate between
+   * true, false, and undefined.
+   */
+  isDisabled?: boolean | null;
+
+  /**
+   * Gets or sets the username of the user
+   * who created the record.
    */
   createdBy?: string;
 
   /**
-   * Gets or sets the date and time when the credentials record was created.
+   * Gets or sets the creation date and time.
    */
-  createdOn?: Date;
+  createdOn?: Date | string;
 
   /**
-   * Gets or sets the username of the user who last modified the credentials record. Max-254
+   * Gets or sets the username of the user
+   * who last modified the record.
    */
   lastModifiedBy?: string;
 
   /**
-   * Gets or sets the date and time when the credentials record was last modified.
+   * Gets or sets the last modified date and time.
    */
-  lastModifiedOn?: Date;
+  lastModifiedOn?: Date | string;
 }
