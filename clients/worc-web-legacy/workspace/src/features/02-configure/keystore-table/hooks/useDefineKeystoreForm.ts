@@ -1,3 +1,5 @@
+import { useUserSessionStore } from "@/react-toolkit/stores/user-session-store";
+
 import { useCheckAvailability } from "@aventisia/ui/hooks";
 import { useDTCrudDialogStore } from "@aventisia/ui/stores";
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -7,15 +9,13 @@ import { useForm } from "react-hook-form";
 import { z } from "zod";
 import { useShallow } from "zustand/react/shallow";
 
-import { useUserSessionStore } from "@/react-toolkit/stores/user-session-store";
-
 import { isKeystoreNameAvailable } from "../apis/keystores-table-apis";
-import { DATA_QUERY_KEY } from "../constants";
 import {
   keystoreNameSchema,
   keystoreZodSchema,
 } from "../constants/keystore-zod-schema";
 import { KeystoresTableDto } from "../dtos/keystores-table-dto";
+import { useTableTab } from "./useTableTab";
 
 /**
  * Custom hook for defining a keystore form.
@@ -72,12 +72,15 @@ export const useDefineKeystoreForm = () => {
     formState: { isDirty },
   } = form;
 
+  // Use this in place DATA_QUERY_KEY to handle Personal/Shared tabs list
+  const { queryKey } = useTableTab();
+
   // Fetch keystore data when rowId changes
   useEffect(() => {
     // Get keystores data from query client
     const keystoresData = queryClient.getQueryData<{
       data: KeystoresTableDto[];
-    }>(DATA_QUERY_KEY);
+    }>(queryKey);
 
     // Get keystore data by id
     const keystoreData = keystoresData?.data.find((item) => item.id === rowId);
@@ -92,9 +95,6 @@ export const useDefineKeystoreForm = () => {
       name: keystoreData?.name ?? "",
       value: keystoreData?.value ?? "",
       description: keystoreData?.description ?? "",
-      tags: keystoreData?.tags ?? "",
-      isEncrypted: keystoreData?.isEncrypted,
-
       isDisabled: keystoreData?.isDisabled,
       // Read (view) only fields
       createdBy:

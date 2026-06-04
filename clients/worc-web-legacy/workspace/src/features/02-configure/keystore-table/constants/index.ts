@@ -1,3 +1,5 @@
+import { QueryTabItem } from "@/components/QueryTab";
+
 import { CrudActionType } from "@aventisia/ui/types";
 
 /**
@@ -11,6 +13,19 @@ const DATA_QUERY_KEY = ["keystore"];
 const TABLE_HEADING = "Key Store";
 
 const TABLE_KEY = "key-store";
+
+/**
+ * Key used for the query param in tables tab
+ */
+const TABLE_TAB_QUERY_PARAM = "tab";
+
+/**
+ * Tabs to be used in tables tab
+ */
+const TABLE_VIEW_TABS = [
+  { label: "Personal", value: "personal" },
+  { label: "Shared", value: "shared" },
+] as QueryTabItem[];
 
 /**
  * The column used for searching in the keystores.
@@ -36,4 +51,6 @@ export {
   SEARCH_COLUMN,
   TABLE_HEADING,
   TABLE_KEY,
+  TABLE_TAB_QUERY_PARAM,
+  TABLE_VIEW_TABS,
 };

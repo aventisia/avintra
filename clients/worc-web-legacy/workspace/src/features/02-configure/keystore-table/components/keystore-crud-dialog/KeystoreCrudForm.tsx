@@ -1,3 +1,5 @@
+import { JsonEditorField } from "@/components/json-editor/JsonEditorField";
+
 import { Button } from "@aventisia/ui/buttons";
 import {
   Form,
@@ -9,10 +11,7 @@ import {
 import { useListOptimisticMutation } from "@aventisia/ui/hooks";
 import { z } from "zod";
 
-import { JsonEditorField } from "@/components/json-editor/JsonEditorField";
-
 import { keystoreOptimisticMutationFn } from "../../apis/keystores-table-apis";
-import { DATA_QUERY_KEY } from "../../constants";
 import {
   descriptionProps,
   idProps,
@@ -25,6 +24,7 @@ import {
 import { keystoreZodSchema } from "../../constants/keystore-zod-schema";
 import { KeystoresTableDto } from "../../dtos/keystores-table-dto";
 import { useDefineKeystoreForm } from "../../hooks/useDefineKeystoreForm";
+import { useTableTab } from "../../hooks/useTableTab";
 
 export const KeystoreCrudForm = () => {
   // Define keystore form
@@ -42,12 +42,15 @@ export const KeystoreCrudForm = () => {
     refineFormData,
   } = useDefineKeystoreForm();
 
+  // Use this in place DATA_QUERY_KEY to handle Personal/Shared tabs list
+  const { queryKey } = useTableTab();
+
   // Define optimistic mutation to crete or update the keystore
   const { mutate: mutateKeystore } = useListOptimisticMutation<
     KeystoresTableDto,
     KeystoresTableDto | boolean,
     KeystoresTableDto
-  >([rowId], keystoreOptimisticMutationFn, DATA_QUERY_KEY);
+  >([rowId], keystoreOptimisticMutationFn, queryKey);
 
   // Define submit handler
   const onSubmit = (formData: z.infer<typeof keystoreZodSchema>) => {
