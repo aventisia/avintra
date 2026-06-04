@@ -33,7 +33,8 @@ public class WebhookTriggerService : IWebhookTriggerService
 
         try
         {
-            List<Trigger> triggers;
+            List<Trigger> triggers = new();
+            Dictionary<Guid, ResourceAccessTypeEnum> resourceAccess = new();
 
             if (isPersonal)
             {
@@ -53,8 +54,8 @@ public class WebhookTriggerService : IWebhookTriggerService
             }
             else
             {
-                // Retrieve accessible trigger IDs
-                var accessibleTriggerIds = await _resourceShareService.GetAccessibleResourceIdsAsync(
+                // Retrieve accessible trigger IDs with permissions
+                resourceAccess = await _resourceShareService.GetAccessibleResourcesWithAccessAsync(
                     _userId,
                     ResourceTypeEnum.Trigger,
                     new[]
@@ -63,33 +64,38 @@ public class WebhookTriggerService : IWebhookTriggerService
                         ResourceAccessTypeEnum.FullAccess,
                         ResourceAccessTypeEnum.View,
                         ResourceAccessTypeEnum.Edit,
-                        ResourceAccessTypeEnum.Delete,
+                        ResourceAccessTypeEnum.Delete
                     }
                 );
 
-                // Retrieve accessible webhook triggers
+                // Retrieve tenant-wide or explicitly shared webhook triggers
                 triggers = await _unitOfWork.TriggerRepo
                     .GetByConditionAsync(w =>
                         w.TriggerType == TriggerTypesEnum.WebhookTrigger &&
-                        w.IsTenantWideAccess &&
-                        accessibleTriggerIds.Contains(w.Id))
-                    .OrderByDescending(o => o.CreatedOn)
+                        (w.IsTenantWideAccess || resourceAccess.Keys.Contains(w.Id)))
                     .Include(i => i.CreatedByUser)
                     .Include(i => i.LastModifiedByUser)
                     .Include(i => i.TriggerFlowVersions)
                         .ThenInclude(i2 => i2.FlowVersion)
                             .ThenInclude(i3 => i3.Flow)
+                    .OrderByDescending(o => o.CreatedOn)
                     .AsNoTracking()
                     .ToListAsync();
             }
 
-            var dtos = triggers.Adapt<IEnumerable<WebhookTriggerDto>>();
+            // Map to DTOs
+            var webhookTriggerDtoList = triggers.Adapt<List<WebhookTriggerDto>>();
 
-            // Stamp the webhook URL on each DTO
-            foreach (var dto in dtos)
-                dto.WebhookUrl = BuildWebhookUrl(dto.Id);
+            // Assign access levels and generate webhook URLs
+            webhookTriggerDtoList.ForEach(fe =>
+            {
+                fe.AccessLevel = isPersonal
+                    ? ResourceAccessTypeEnum.Owner
+                    : resourceAccess.GetValueOrDefault(fe.Id, ResourceAccessTypeEnum.View);
 
-            serviceResponse.Data = dtos;
+                fe.WebhookUrl = BuildWebhookUrl(fe.Id);
+            });
+            serviceResponse.Data = webhookTriggerDtoList;
             serviceResponse.StatusCode = 200;
             serviceResponse.Message = "Webhook triggers retrieved successfully";
         }

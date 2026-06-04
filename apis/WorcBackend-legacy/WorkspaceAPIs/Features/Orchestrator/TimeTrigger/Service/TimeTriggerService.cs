@@ -474,7 +474,8 @@ public class TimeTriggerService(
         try
         {
             // Retrieve time triggers based on ownership / shared access
-            List<TimeTrigger> timeTriggers;
+            List<TimeTrigger> timeTriggers = new();
+            Dictionary<Guid, ResourceAccessTypeEnum> resourceAccess = new();
 
             // Personal mode → only current user's triggers
             if (isPersonal)
@@ -492,8 +493,8 @@ public class TimeTriggerService(
             }
             else
             {
-                // Retrieve all trigger resource IDs that the current user can access
-                var triggerIds = await _resourceShareService.GetAccessibleResourceIdsAsync(
+                // Retrieve accessible trigger IDs for the current user
+                resourceAccess = await _resourceShareService.GetAccessibleResourcesWithAccessAsync(
                     _userId,
                     ResourceTypeEnum.Trigger,
                     new[]
@@ -502,39 +503,41 @@ public class TimeTriggerService(
                         ResourceAccessTypeEnum.FullAccess,
                         ResourceAccessTypeEnum.View,
                         ResourceAccessTypeEnum.Edit,
-                        ResourceAccessTypeEnum.Delete,
+                        ResourceAccessTypeEnum.Delete
                     }
                 );
 
-                // Retrieve shared and owned email triggers
+                // Retrieve tenant-wide or explicitly shared triggers
                 timeTriggers = await _unitOfWork.TimeTriggerRepo
                     .GetByConditionAsync(w =>
-                        w.IsTenantWideAccess || triggerIds.Contains(w.Id)
+                        w.IsTenantWideAccess ||
+                        resourceAccess.Keys.Contains(w.Id)
                     )
-                     .OrderByDescending(o => o.CreatedOn)
                     .Include(i => i.CreatedByUser)
                     .Include(i => i.LastModifiedByUser)
                     .Include(i => i.TimeTriggerFlowVersions)
                         .ThenInclude(i2 => i2.FlowVersion)
                             .ThenInclude(i3 => i3.Flow)
+                    .OrderByDescending(o => o.CreatedOn)
                     .AsNoTracking()
                     .ToListAsync();
             }
 
-            // // Try to get time triggers
-            // var timeTriggers = await _unitOfWork.TimeTriggerRepo
-            //     .GetAllAsync()
-            //     .OrderByDescending(o => o.CreatedOn)
-            //     .Include(i => i.CreatedByUser)
-            //     .Include(i => i.LastModifiedByUser)
-            //     .Include(i => i.TimeTriggerFlowVersions)
-            //         .ThenInclude(i2 => i2.FlowVersion)
-            //             .ThenInclude(i3 => i3.Flow)
-            //     .AsNoTracking()
-            //     .ToListAsync();
+            // Map to DTOs
+            var timeTriggerDtoList = timeTriggers.Adapt<List<TimeTriggerDto>>();
+
+            // Assign access levels:
+            // - Personal triggers are always owned by the current user.
+            // - Shared/tenant-wide triggers use granted permissions, defaulting to View.
+            timeTriggerDtoList.ForEach(fe =>
+            {
+                fe.AccessLevel = isPersonal
+                    ? ResourceAccessTypeEnum.Owner
+                    : resourceAccess.GetValueOrDefault(fe.Id, ResourceAccessTypeEnum.View);
+            });
 
             // Task successful
-            serviceResponse.Data = timeTriggers.Adapt<IEnumerable<TimeTriggerDto>>();
+            serviceResponse.Data = timeTriggerDtoList;
             serviceResponse.StatusCode = 200;
             serviceResponse.Message = "Time triggers retrieved successfully";
             _logger.LogInformation("Time triggers retrieved successfully");

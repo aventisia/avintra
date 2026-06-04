@@ -83,7 +83,8 @@ public class KeyStoreService : IKeyStoreService
 
         try
         {
-            List<KeyStore> keyStores;
+            List<KeyStore> keyStores = new();
+            Dictionary<Guid, ResourceAccessTypeEnum> resourceAccess = new();
 
             if (isPersonal)
             {
@@ -91,30 +92,52 @@ public class KeyStoreService : IKeyStoreService
                 keyStores = await _unitOfWork.KeyStoreRepo
                     .GetByConditionAsync(w => w.CreatedByUserId == _userId)
                     .OrderByDescending(w => w.CreatedOn)
+                    .Include(i => i.CreatedByUser)
+                    .Include(i => i.LastModifiedByUser)
                     .ToListAsync();
             }
             else
             {
-                // Retrieve accessible key store ids
-                var accessibleIds =
-                    await _resourceShareService
-                        .GetAccessibleResourceIdsAsync(
-                            _userId,
-                            ResourceTypeEnum.KeyStore,
-                            ResourceAccessTypeEnum.Owner,
-                            ResourceAccessTypeEnum.View,
-                            ResourceAccessTypeEnum.FullAccess);
+                // Retrieve key store resources the user can access along with their permissions
+                resourceAccess = await _resourceShareService.GetAccessibleResourcesWithAccessAsync(
+                    _userId,
+                    ResourceTypeEnum.KeyStore,
+                    new[]
+                    {
+                        ResourceAccessTypeEnum.FullAccess,
+                        ResourceAccessTypeEnum.Owner,
+                        ResourceAccessTypeEnum.View,
+                        ResourceAccessTypeEnum.Edit,
+                        ResourceAccessTypeEnum.Delete
+                    }
+                );
 
                 // Retrieve accessible key stores
                 keyStores = await _unitOfWork.KeyStoreRepo
                     .GetByConditionAsync(w =>
                         w.IsTenantWideAccess ||
-                        accessibleIds.Contains(w.Id))
+                        resourceAccess.Keys.Contains(w.Id))
                     .OrderByDescending(w => w.CreatedOn)
+                    .Include(i => i.CreatedByUser)
+                    .Include(i => i.LastModifiedByUser)
                     .ToListAsync();
             }
 
-            serviceResponse.Data = keyStores.Adapt<IEnumerable<KeyStoreDto>>(); ;
+            // Map key store entities to DTOs
+            var keyStoreDtoList = keyStores.Adapt<List<KeyStoreDto>>();
+
+            // Assign access levels:
+            // - Personal key stores are always owned by the current user.
+            // - Shared key stores use the user's granted permission.
+            // - Tenant-wide key stores default to View access when no explicit permission exists.
+            keyStoreDtoList.ForEach(fe =>
+            {
+                fe.AccessLevel = isPersonal
+                    ? ResourceAccessTypeEnum.Owner
+                    : resourceAccess.GetValueOrDefault(fe.Id, ResourceAccessTypeEnum.View);
+            });
+
+            serviceResponse.Data = keyStoreDtoList;
             serviceResponse.StatusCode = 200;
             serviceResponse.Message = "Key stores retrieved successfully.";
         }

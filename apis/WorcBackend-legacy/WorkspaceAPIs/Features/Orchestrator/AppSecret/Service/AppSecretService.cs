@@ -35,7 +35,7 @@ public class AppSecretService : IAppSecretService
 
         try
         {
-            List<AppSecret>? appSecrets;
+            List<AppSecret> appSecrets = new();
             Dictionary<Guid, ResourceAccessTypeEnum>? resourceAccess = new();
 
             if (isPersonal)
@@ -45,6 +45,7 @@ public class AppSecretService : IAppSecretService
                     .GetByConditionAsync(w => w.CreatedByUserId == _userId)
                     .OrderByDescending(w => w.CreatedOn)
                     .Include(i => i.CreatedByUser)
+                    .Include(i => i.LastModifiedByUser)
                     .ToListAsync();
             }
             else
@@ -70,16 +71,22 @@ public class AppSecretService : IAppSecretService
                         resourceAccess.Keys.Contains(w.Id))
                     .OrderByDescending(w => w.CreatedOn)
                     .Include(i => i.CreatedByUser)
+                    .Include(i => i.LastModifiedByUser)
                     .ToListAsync();
             }
 
+            // Map the app secret entities to DTOs
             var appSecretData = appSecrets.Adapt<IEnumerable<AppSecretDto>>().ToList();
-            appSecretData.ForEach(appSecret =>
+
+            // Set the access level for each app secret:
+            // - Personal app secrets are always owned by the current user.
+            // - Shared app secrets use the access level from the resource access map,
+            //   defaulting to View when no explicit permission is found.
+            appSecretData.ForEach(fe =>
             {
-                if (isPersonal)
-                    appSecret.AccessLevel = ResourceAccessTypeEnum.Owner;
-                else
-                    appSecret.AccessLevel = resourceAccess.GetValueOrDefault(appSecret.Id, ResourceAccessTypeEnum.View);
+                fe.AccessLevel = isPersonal
+                    ? ResourceAccessTypeEnum.Owner
+                    : resourceAccess.GetValueOrDefault(fe.Id, ResourceAccessTypeEnum.View);
             });
 
             // Adapt the data to the DTO format and assign to service response

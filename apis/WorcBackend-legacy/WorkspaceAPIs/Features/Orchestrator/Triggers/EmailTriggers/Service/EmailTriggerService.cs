@@ -49,7 +49,8 @@ public class EmailTriggerService : IEmailTriggerService
         try
         {
             // Retrieve email triggers based on ownership / shared access
-            List<Trigger> emailTriggers;
+            List<Trigger> emailTriggers = new();
+            Dictionary<Guid, ResourceAccessTypeEnum> resourceAccess = new();
 
             // Personal mode → only current user's triggers
             if (isPersonal)
@@ -69,8 +70,8 @@ public class EmailTriggerService : IEmailTriggerService
             }
             else
             {
-                // Retrieve all trigger resource IDs that the current user can access
-                var triggerIds = await _resourceShareService.GetAccessibleResourceIdsAsync(
+                // Retrieve accessible trigger IDs with permissions
+                resourceAccess = await _resourceShareService.GetAccessibleResourcesWithAccessAsync(
                     _userId,
                     ResourceTypeEnum.Trigger,
                     new[]
@@ -79,30 +80,39 @@ public class EmailTriggerService : IEmailTriggerService
                         ResourceAccessTypeEnum.FullAccess,
                         ResourceAccessTypeEnum.View,
                         ResourceAccessTypeEnum.Edit,
-                        ResourceAccessTypeEnum.Delete,
+                        ResourceAccessTypeEnum.Delete
                     }
                 );
 
-                // Retrieve shared and owned email triggers
+                // Retrieve tenant-wide or explicitly shared email triggers
                 emailTriggers = await _unitOfWork.TriggerRepo
                     .GetByConditionAsync(w =>
                         w.TriggerType == TriggerTypesEnum.EmailTrigger &&
-                        (
-                            w.IsTenantWideAccess || triggerIds.Contains(w.Id)
-                        )
-                    )
-                    .OrderByDescending(o => o.CreatedOn)
+                        (w.IsTenantWideAccess || resourceAccess.Keys.Contains(w.Id)))
                     .Include(i => i.CreatedByUser)
                     .Include(i => i.LastModifiedByUser)
                     .Include(i => i.TriggerFlowVersions)
                         .ThenInclude(i2 => i2.FlowVersion)
                             .ThenInclude(i3 => i3.Flow)
+                    .OrderByDescending(o => o.CreatedOn)
                     .AsNoTracking()
                     .ToListAsync();
             }
 
-            // Map entities to DTOs for client response
-            serviceResponse.Data = emailTriggers.Adapt<IEnumerable<EmailTriggerDto>>();
+            // Map to DTOs
+            var emailTriggerDtoList = emailTriggers.Adapt<List<EmailTriggerDto>>();
+
+            // Assign access levels:
+            // - Personal triggers are always owned by the current user.
+            // - Shared/tenant-wide triggers use granted permissions, defaulting to View.
+            emailTriggerDtoList.ForEach(fe =>
+            {
+                fe.AccessLevel = isPersonal
+                    ? ResourceAccessTypeEnum.Owner
+                    : resourceAccess.GetValueOrDefault(fe.Id, ResourceAccessTypeEnum.View);
+            });
+
+            serviceResponse.Data = emailTriggerDtoList;
             serviceResponse.StatusCode = 200;
             serviceResponse.Message = "Email triggers retrieved successfully";
         }

@@ -94,6 +94,16 @@ public class TimeTriggerDto
     public List<AgentInfoDto>? Agents { get; set; }
 
     /// <summary>
+    /// Gets or sets a value indicating whether the time trigger is accessible to all users within the tenant.
+    /// </summary>
+    public bool IsTenantWideAccess { get; set; }
+
+    /// <summary>
+    /// Gets or sets the permission level granted to the user.
+    /// </summary>
+    public ResourceAccessTypeEnum AccessLevel { get; set; }
+
+    /// <summary>
     /// Gets or sets a flag indicating whether the time trigger is disabled.
     /// </summary>
     /// <remarks>

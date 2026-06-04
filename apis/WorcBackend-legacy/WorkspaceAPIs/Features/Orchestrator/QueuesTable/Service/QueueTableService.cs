@@ -77,22 +77,23 @@ public class QueueTableService : IQueueTableService
         try
         {
             // Retrieve queues based on ownership or access permissions
-            List<Queue> queues;
+            List<Queue> queues = new();
+            Dictionary<Guid, ResourceAccessTypeEnum> resourceAccess = new();
 
             if (isPersonal)
             {
                 // Return only queues created by current user
                 queues = await _unitOfWork.QueueRepo
                     .GetByConditionAsync(w => w.CreatedByUserId == _userId)
+                    .OrderByDescending(o => o.CreatedOn)
                     .Include(i => i.QueueTransactions)
                     .Include(i => i.CreatedByUser)
-                    .OrderByDescending(o => o.CreatedOn)
                     .ToListAsync();
             }
             else
             {
-                // Retrieve queue IDs accessible by current user
-                var accessibleQueueIds = await _resourceShareService.GetAccessibleResourceIdsAsync(
+                // Get accessible queue IDs with their access levels
+                resourceAccess = await _resourceShareService.GetAccessibleResourcesWithAccessAsync(
                     _userId,
                     ResourceTypeEnum.Queue,
                     new[]
@@ -101,24 +102,35 @@ public class QueueTableService : IQueueTableService
                         ResourceAccessTypeEnum.FullAccess,
                         ResourceAccessTypeEnum.View,
                         ResourceAccessTypeEnum.Edit,
-                        ResourceAccessTypeEnum.Delete,
+                        ResourceAccessTypeEnum.Delete
                     }
                 );
 
                 // Retrieve all accessible queues
                 queues = await _unitOfWork.QueueRepo
                     .GetByConditionAsync(w =>
-                        w.CreatedByUserId == _userId ||
                         w.IsTenantWideAccess ||
-                        accessibleQueueIds.Contains(w.Id))
+                        resourceAccess.Keys.Contains(w.Id))
                     .Include(i => i.QueueTransactions)
                     .Include(i => i.CreatedByUser)
                     .OrderByDescending(o => o.CreatedOn)
                     .ToListAsync();
             }
 
-            // Task successful
-            serviceResponse.Data = queues.Adapt<IEnumerable<QueuesTableDto>>();
+            // Map to DTOs
+            var queueDtoList = queues.Adapt<List<QueuesTableDto>>();
+
+            // Assign access levels:
+            // - Personal queues are always owned by the current user.
+            // - Shared/tenant-wide queues use the granted permissions, defaulting to View.
+            queueDtoList.ForEach(fe =>
+            {
+                fe.AccessLevel = isPersonal
+                    ? ResourceAccessTypeEnum.Owner
+                    : resourceAccess.GetValueOrDefault(fe.Id, ResourceAccessTypeEnum.View);
+            });
+
+            serviceResponse.Data = queueDtoList;
             serviceResponse.StatusCode = 200;
             serviceResponse.Message = "Queues retrieved successfully";
         }
