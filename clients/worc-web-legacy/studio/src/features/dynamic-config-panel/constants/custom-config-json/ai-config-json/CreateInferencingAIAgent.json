@@ -55,26 +55,9 @@
         "numberOfChunks": 5
       },
       "required": false,
-      "category": "Memory"
+      "category": "Context"
     },
-    {
-      "direction": "Input",
-      "type": "memory-config",
-      "name": "__MemoryConfig__Inferencing",
-      "defaultValue": {
-        "memoryProvider": "Memory Provider 1",
-        "maxDataStored": 4
-      },
-      "required": false,
-      "category": "Memory"
-    },
-    {
-      "direction": "Input",
-      "type": "tools-config-select",
-      "name": "__ToolsConfig__Inferencing",
-      "defaultValue": [],
-      "category": "Tools"
-    },
+
     {
       "direction": "Input",
       "type": "switch",
