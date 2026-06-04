@@ -76,7 +76,8 @@ public class VaultService : IVaultService
 
         try
         {
-            List<Vault> vaults;
+            List<Vault> vaults = new();
+            Dictionary<Guid, ResourceAccessTypeEnum> resourceAccess = new();
 
             // Return only vaults owned by current user
             if (isPersonal)
@@ -89,8 +90,8 @@ public class VaultService : IVaultService
             }
             else
             {
-                // Retrieve vault IDs user is allowed to access
-                var accessibleVaultIds = await _resourceShareService.GetAccessibleResourceIdsAsync(
+                // Retrieve accessible vault IDs with their permissions
+                resourceAccess = await _resourceShareService.GetAccessibleResourcesWithAccessAsync(
                     _userId,
                     ResourceTypeEnum.Vault,
                     new[]
@@ -99,21 +100,35 @@ public class VaultService : IVaultService
                         ResourceAccessTypeEnum.FullAccess,
                         ResourceAccessTypeEnum.View,
                         ResourceAccessTypeEnum.Edit,
-                        ResourceAccessTypeEnum.Delete,
+                        ResourceAccessTypeEnum.Delete
                     }
                 );
 
-                // Retrieve vaults available for current user
+                // Retrieve tenant-wide or explicitly shared vaults
                 vaults = await _unitOfWork.VaultRepo
                     .GetByConditionAsync(w =>
                         w.IsTenantWideAccess ||
-                        accessibleVaultIds.Contains(w.Id))
-                    .OrderByDescending(w => w.CreatedOn)
+                        resourceAccess.Keys.Contains(w.Id))
+                    .Include(i => i.CreatedByUser)
+                    .Include(i => i.LastModifiedByUser)
+                    .OrderByDescending(o => o.CreatedOn)
                     .ToListAsync();
             }
 
-            // Convert entities into DTO objects
-            serviceResponse.Data = vaults.Adapt<IEnumerable<VaultDto>>();
+            // Map to DTOs
+            var vaultDtoList = vaults.Adapt<List<VaultDto>>();
+
+            // Assign access levels:
+            // - Personal vaults are always owned by the current user.
+            // - Shared/tenant-wide vaults use granted permissions, defaulting to View.
+            vaultDtoList.ForEach(fe =>
+            {
+                fe.AccessLevel = isPersonal
+                    ? ResourceAccessTypeEnum.Owner
+                    : resourceAccess.GetValueOrDefault(fe.Id, ResourceAccessTypeEnum.View);
+            });
+
+            serviceResponse.Data = vaultDtoList;
             serviceResponse.StatusCode = 200;
             serviceResponse.Message = "Vaults retrieved successfully.";
         }

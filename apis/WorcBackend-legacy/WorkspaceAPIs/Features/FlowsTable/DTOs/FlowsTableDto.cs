@@ -47,9 +47,14 @@ public class FlowsTableDto
     public int VersionNumber { get; set; }
 
     /// <summary>
-    /// Gets or sets the access type of the user within the flow.
+    /// Gets or sets a value indicating whether the flow is accessible to all users within the tenant.
     /// </summary>
-    public ProjectUserAccessEnum AccessType { get; set; }
+    public bool IsTenantWideAccess { get; set; }
+
+    /// <summary>
+    /// Gets or sets the permission level granted to the user.
+    /// </summary>
+    public ResourceAccessTypeEnum AccessLevel { get; set; }
 
     /// <summary>
     /// Gets or sets a flag indicating whether the user record is disabled.

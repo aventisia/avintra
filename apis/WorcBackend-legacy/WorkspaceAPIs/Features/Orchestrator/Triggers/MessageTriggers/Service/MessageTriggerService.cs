@@ -46,7 +46,8 @@ public class MessageTriggerService : IMessageTriggerService
 
         try
         {
-            List<Trigger> messageTriggers;
+            List<Trigger> messageTriggers = new();
+            Dictionary<Guid, ResourceAccessTypeEnum> resourceAccess = new();
 
             if (isPersonal)
             {
@@ -66,8 +67,8 @@ public class MessageTriggerService : IMessageTriggerService
             }
             else
             {
-                // Retrieve accessible trigger ids
-                var triggerIds = await _resourceShareService.GetAccessibleResourceIdsAsync(
+                // Retrieve accessible trigger IDs with permissions
+                resourceAccess = await _resourceShareService.GetAccessibleResourcesWithAccessAsync(
                     _userId,
                     ResourceTypeEnum.Trigger,
                     new[]
@@ -76,29 +77,39 @@ public class MessageTriggerService : IMessageTriggerService
                         ResourceAccessTypeEnum.FullAccess,
                         ResourceAccessTypeEnum.View,
                         ResourceAccessTypeEnum.Edit,
-                        ResourceAccessTypeEnum.Delete,
+                        ResourceAccessTypeEnum.Delete
                     }
                 );
 
+                // Retrieve tenant-wide or explicitly shared message triggers
                 messageTriggers = await _unitOfWork.TriggerRepo
                     .GetByConditionAsync(w =>
                         w.TriggerType == TriggerTypesEnum.MessageTrigger &&
-                        (
-                            w.IsTenantWideAccess || triggerIds.Contains(w.Id)
-                        )
-                    )
-                    .OrderByDescending(o => o.CreatedOn)
+                        (w.IsTenantWideAccess || resourceAccess.Keys.Contains(w.Id)))
                     .Include(i => i.CreatedByUser)
                     .Include(i => i.LastModifiedByUser)
                     .Include(i => i.TriggerFlowVersions)
                         .ThenInclude(i2 => i2.FlowVersion)
                             .ThenInclude(i3 => i3.Flow)
+                    .OrderByDescending(o => o.CreatedOn)
                     .AsNoTracking()
                     .ToListAsync();
             }
 
-            // Map entities to DTOs for client response
-            serviceResponse.Data = messageTriggers.Adapt<IEnumerable<MessageTriggerDto>>();
+            // Map to DTOs
+            var messageTriggerDtoList = messageTriggers.Adapt<List<MessageTriggerDto>>();
+
+            // Assign access levels:
+            // - Personal triggers are always owned by the current user.
+            // - Shared/tenant-wide triggers use granted permissions, defaulting to View.
+            messageTriggerDtoList.ForEach(fe =>
+            {
+                fe.AccessLevel = isPersonal
+                    ? ResourceAccessTypeEnum.Owner
+                    : resourceAccess.GetValueOrDefault(fe.Id, ResourceAccessTypeEnum.View);
+            });
+
+            serviceResponse.Data = messageTriggerDtoList;
             serviceResponse.StatusCode = 200;
             serviceResponse.Message = "Message triggers retrieved successfully";
         }

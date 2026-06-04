@@ -41,7 +41,8 @@ public class KnowledgeBaseService : IKnowledgeBaseService
 
         try
         {
-            List<KnowledgeBase> knowledgeBases;
+            List<KnowledgeBase> knowledgeBases = new();
+            Dictionary<Guid, ResourceAccessTypeEnum> resourceAccess = new();
 
             // Return only knowledge bases created by current user
             if (isPersonal)
@@ -56,38 +57,47 @@ public class KnowledgeBaseService : IKnowledgeBaseService
             }
             else
             {
-                // Retrieve knowledge base IDs accessible to current user
-                var accessibleKnowledgeBaseIds = await _resourceShareService
-                    .GetAccessibleResourceIdsAsync(
-                        _userId,
-                        ResourceTypeEnum.KnowledgeBase,
-                        new[]
-                        {
-                            ResourceAccessTypeEnum.Owner,
-                            ResourceAccessTypeEnum.FullAccess,
-                            ResourceAccessTypeEnum.View,
-                            ResourceAccessTypeEnum.Edit,
-                            ResourceAccessTypeEnum.Delete,
-                        }
-                    );
+                // Retrieve accessible knowledge base IDs with permissions
+                resourceAccess = await _resourceShareService.GetAccessibleResourcesWithAccessAsync(
+                    _userId,
+                    ResourceTypeEnum.KnowledgeBase,
+                    new[]
+                    {
+                        ResourceAccessTypeEnum.Owner,
+                        ResourceAccessTypeEnum.FullAccess,
+                        ResourceAccessTypeEnum.View,
+                        ResourceAccessTypeEnum.Edit,
+                        ResourceAccessTypeEnum.Delete
+                    }
+                );
 
-                // Retrieve all accessible knowledge bases
+                // Retrieve tenant-wide or explicitly shared knowledge bases
                 knowledgeBases = await _unitOfWork.KnowledgeBaseRepo
                     .GetByConditionAsync(w =>
                         w.IsTenantWideAccess ||
-                        accessibleKnowledgeBaseIds.Contains(w.Id)
-                    )
-                    .OrderByDescending(kb => kb.CreatedOn)
-                    .Include(kb => kb.CreatedByUser)
-                    .Include(kb => kb.LastModifiedByUser)
-                    .Include(kb => kb.Files)
+                        resourceAccess.Keys.Contains(w.Id))
+                    .OrderByDescending(o => o.CreatedOn)
+                    .Include(i => i.CreatedByUser)
+                    .Include(i => i.LastModifiedByUser)
+                    .Include(i => i.Files)
                     .ToListAsync();
             }
 
-            // Map entities to DTOs
-            var kbDtoList = knowledgeBases.Adapt<List<KnowledgeBaseDto>>();
+            // Map to DTOs
+            var knowledgeBaseDtoList = knowledgeBases.Adapt<List<KnowledgeBaseDto>>();
 
-            serviceResponse.Data = kbDtoList;
+            // Assign access levels:
+            // - Personal knowledge bases are always owned by the current user.
+            // - Shared/tenant-wide knowledge bases use granted permissions,
+            //   defaulting to View when no explicit permission exists..
+            knowledgeBaseDtoList.ForEach(fe =>
+            {
+                fe.AccessLevel = isPersonal
+                    ? ResourceAccessTypeEnum.Owner
+                    : resourceAccess.GetValueOrDefault(fe.Id, ResourceAccessTypeEnum.View);
+            });
+
+            serviceResponse.Data = knowledgeBaseDtoList;
             serviceResponse.StatusCode = 200;
             serviceResponse.Message = "Knowledge bases retrieved successfully";
         }
@@ -316,7 +326,7 @@ public class KnowledgeBaseService : IKnowledgeBaseService
             knowledgeBaseDto = TrimDtoStringPropsUtil.TrimDtoStringProps(knowledgeBaseDto);
 
             // Validate input
-            if (!knowledgeBaseDto.Id.HasValue || knowledgeBaseDto.Id == Guid.Empty)
+            if (knowledgeBaseDto.Id == Guid.Empty)
             {
                 serviceResponse.Message = "Knowledge base ID is required";
                 return serviceResponse;
@@ -342,7 +352,7 @@ public class KnowledgeBaseService : IKnowledgeBaseService
 
             // Get existing knowledge base
             var existingKB = await _unitOfWork.KnowledgeBaseRepo
-                .GetByConditionAsync(kb => kb.Id == knowledgeBaseDto.Id.Value)
+                .GetByConditionAsync(kb => kb.Id == knowledgeBaseDto.Id)
                 .FirstOrDefaultAsync();
 
             if (existingKB == null)
@@ -355,7 +365,7 @@ public class KnowledgeBaseService : IKnowledgeBaseService
             // Check if new name already exists for this user (exclude current KB)
             var duplicateName = await _unitOfWork.KnowledgeBaseRepo
                 .GetByConditionAsync(kb =>
-                    kb.Id != knowledgeBaseDto.Id.Value &&
+                    kb.Id != knowledgeBaseDto.Id &&
                     kb.Name.ToLower() == knowledgeBaseDto.Name.ToLower())
                 .FirstOrDefaultAsync();
 

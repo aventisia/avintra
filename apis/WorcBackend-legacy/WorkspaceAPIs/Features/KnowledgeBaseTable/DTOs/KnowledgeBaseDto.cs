@@ -9,7 +9,7 @@ public class KnowledgeBaseDto
     /// Gets or sets the primary key of the Knowledge Base record.
     /// Note: Not required for insert operations, only populated in responses.
     /// </summary>
-    public Guid? Id { get; set; }
+    public Guid Id { get; set; }
 
     /// <summary>
     /// Gets or sets the name of the Knowledge Base. Max-255 characters.
@@ -64,6 +64,11 @@ public class KnowledgeBaseDto
     /// Gets or sets a value indicating whether the knowledge base is accessible to all users within the tenant.
     /// </summary>
     public bool IsTenantWideAccess { get; set; }
+
+    /// <summary>
+    /// Gets or sets the permission level granted to the user.
+    /// </summary>
+    public ResourceAccessTypeEnum AccessLevel { get; set; }
 
     /// <summary>
     /// Gets or sets a flag indicating whether the Knowledge Base record is disabled.

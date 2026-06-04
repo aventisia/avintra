@@ -40,7 +40,8 @@ public class FlowsTableService : IFlowsTableService
         try
         {
             // Retrieve flows based on ownership or shared access
-            List<Flow> flows;
+            List<Flow> flows = new();
+            Dictionary<Guid, ResourceAccessTypeEnum>? resourceAccess = new();
 
             if (isPersonal)
             {
@@ -55,27 +56,25 @@ public class FlowsTableService : IFlowsTableService
             }
             else
             {
-                // Retrieve IDs of flows user can access
-                var accessibleFlowIds =
-                    await _resourceShareService
-                        .GetAccessibleResourceIdsAsync(
-                            _userId,
-                            ResourceTypeEnum.Flow,
-                            new[]
-                            {
-                                ResourceAccessTypeEnum.Owner,
-                                ResourceAccessTypeEnum.FullAccess,
-                                ResourceAccessTypeEnum.View,
-                                ResourceAccessTypeEnum.Edit,
-                                ResourceAccessTypeEnum.Delete,
-                            }
-                        );
+                // Retrieve accessible resource ids with access levels
+                resourceAccess = await _resourceShareService.GetAccessibleResourcesWithAccessAsync(
+                    _userId,
+                    ResourceTypeEnum.Flow,
+                    new[]
+                    {
+                        ResourceAccessTypeEnum.FullAccess,
+                        ResourceAccessTypeEnum.Owner,
+                        ResourceAccessTypeEnum.View,
+                        ResourceAccessTypeEnum.Edit,
+                        ResourceAccessTypeEnum.Delete
+                    }
+                );
 
                 // Retrieve shared flows
                 flows = await _unitOfWork.FlowRepo
                     .GetByConditionAsync(w =>
                         w.IsTenantWideAccess ||
-                        accessibleFlowIds.Contains(w.Id))
+                        resourceAccess.Keys.Contains(w.Id))
                     .OrderByDescending(w => w.CreatedOn)
                     .Include(i => i.FlowComments)
                     .Include(i => i.FlowVersions)
@@ -83,42 +82,19 @@ public class FlowsTableService : IFlowsTableService
                     .ToListAsync();
             }
 
-            // Get flows
-            // var flows = await _unitOfWork.FlowRepo
-            // .GetByConditionAsync(w =>
-            //         w.CreatedByUserId == _userId ||
-            //         (
-            //             w.FlowUsers != null && w.FlowUsers.Any(a => a.UserId == _userId)
-            //         )
-            //     ) // TODO: Update condition
-            //     .OrderByDescending(w => w.CreatedOn)
-            //     .Include(i => i.FlowUsers)
-            //     .Include(i => i.FlowComments)
-            //     .Include(i => i.FlowVersions)
-            //     .Include(i => i.CreatedByUser)
-            //     .ToListAsync();
-
-            // Map the list of flows to a list of FlowsTableDto using the Adapt method
+            // Map the flow entities to DTOs
             var flowDtoList = flows.Adapt<List<FlowsTableDto>>();
-            foreach (var flowDto in flowDtoList)
-            {
-                // Try to find the original flow by matching ID
-                var originalFlow = flows.FirstOrDefault(f => f.Id == flowDto.Id);
-                if (originalFlow is null)
-                    continue;
 
-                // Assign 'Owner' if the current user is the creator
-                if (originalFlow.CreatedByUserId == _userId)
-                {
-                    flowDto.AccessType = ProjectUserAccessEnum.Owner;
-                }
-                else
-                {
-                    // Otherwise, find the user's access type in FlowUsers, defaulting to 'View'
-                    var userAccess = originalFlow.FlowUsers?.FirstOrDefault(fu => fu.UserId == _userId);
-                    flowDto.AccessType = userAccess?.Type ?? ProjectUserAccessEnum.View;
-                }
-            }
+            // Set the access level for each flow:
+            // - Personal flows are always owned by the current user.
+            // - Shared flows use the access level from the resource access map,
+            //   defaulting to View when no explicit permission is found.
+            flowDtoList.ForEach(fe =>
+            {
+                fe.AccessLevel = isPersonal
+                    ? ResourceAccessTypeEnum.Owner
+                    : resourceAccess.GetValueOrDefault(fe.Id, ResourceAccessTypeEnum.View);
+            });
 
             // Task successful
             serviceResponse.Data = flowDtoList;

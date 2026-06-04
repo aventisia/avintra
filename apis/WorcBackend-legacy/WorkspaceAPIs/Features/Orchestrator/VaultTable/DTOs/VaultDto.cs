@@ -50,6 +50,11 @@ public class VaultDto
     public bool IsTenantWideAccess { get; set; }
 
     /// <summary>
+    /// Gets or sets the permission level granted to the user.
+    /// </summary>
+    public ResourceAccessTypeEnum AccessLevel { get; set; }
+
+    /// <summary>
     /// Flag indicating if the record is disabled (nullable to distinguish true/false/null).
     /// </summary>
     public bool? IsDisabled { get; set; }

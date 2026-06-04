@@ -96,6 +96,11 @@ public class QueuesTableDto
     public bool IsTenantWideAccess { get; set; }
 
     /// <summary>
+    /// Gets or sets the permission level granted to the user.
+    /// </summary>
+    public ResourceAccessTypeEnum AccessLevel { get; set; }
+
+    /// <summary>
     /// Gets or sets a flag indicating whether the user record is disabled.
     /// </summary>
     /// <remarks>

@@ -36,6 +36,11 @@ public class WebhookTriggerDto : WebhookTriggerModel
     public bool IsTenantWideAccess { get; set; }
 
     /// <summary>
+    /// Gets or sets the permission level granted to the user.
+    /// </summary>
+    public ResourceAccessTypeEnum AccessLevel { get; set; }
+
+    /// <summary>
     /// Gets or sets the full name of the user who created the webhook trigger.
     /// </summary>
     public string? CreatedBy { get; set; }

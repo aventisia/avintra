@@ -41,15 +41,14 @@ public class KeyStoreDto
     public required string Value { get; set; }
 
     /// <summary>
-    /// Access level of the configuration item (Public or Private).
-    /// </summary>
-    [Required]
-    public AccessLevelTypesEnum AccessLevel { get; set; }
-
-    /// <summary>
-    /// Gets or sets a value indicating whether the vault is accessible to all users within the tenant.
+    /// Gets or sets a value indicating whether the key store is accessible to all users within the tenant.
     /// </summary>
     public bool IsTenantWideAccess { get; set; }
+
+    /// <summary>
+    /// Gets or sets the permission level granted to the user.
+    /// </summary>
+    public ResourceAccessTypeEnum AccessLevel { get; set; }
 
     /// <summary>
     /// Flag indicating if the record is disabled (nullable to distinguish true/false/null).
