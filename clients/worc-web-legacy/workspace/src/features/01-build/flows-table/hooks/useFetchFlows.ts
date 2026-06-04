@@ -10,7 +10,7 @@ import { useTableTab } from "./useTableTab";
  * @returns An object containing the fetched data, isFetching flag, and isLoading flag.
  */
 export const useFetchFlows = () => {
-  // Use this in place DATA_QUERY_KEY to handle Personal/Shared tabs list
+  // Use this in place FLOWS_QUERY_KEY to handle Personal/Shared tabs list
   const { isPersonal, queryKey } = useTableTab();
 
   // Get flows using react query

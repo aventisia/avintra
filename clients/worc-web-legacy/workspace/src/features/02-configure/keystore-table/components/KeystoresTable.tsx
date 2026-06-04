@@ -92,7 +92,6 @@ export const KeystoresTable = () => {
               columnsLength={keystoresTableColumns.length}
             />
           </KeystoreCrudDialog>
-
           {/* Data table Pagination component */}
           <DTPagination table={table} />
           <ResourceShareDialog
@@ -100,7 +99,7 @@ export const KeystoresTable = () => {
             updateApiFn={updateKeystore}
           />
           {/* Bulk actions for data table */}
-          <KeystoresBulkActions table={table} />
+          {isPersonal && <KeystoresBulkActions table={table} />}{" "}
         </div>
       ) : (
         // Show data table skeleton while fetching the keystores data
