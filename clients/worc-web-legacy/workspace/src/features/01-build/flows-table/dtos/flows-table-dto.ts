@@ -1,3 +1,4 @@
+import { ResourceAccessTypeEnum } from "@/features/resource-share/enums/resource-access-type-enum";
 import { FlowTypesEnum } from "@/react-toolkit/enums/flow-types-enum";
 
 import { AccessTypeEnum } from "../constants/access-type-enum";
@@ -52,6 +53,17 @@ export interface FlowsTableDto {
   isDisabled?: boolean;
 
   accessType: AccessTypeEnum;
+
+  /**
+   * Access level of the configuration item.
+   */
+  accessLevel: ResourceAccessTypeEnum;
+
+  /**
+   * Indicates whether the flow is accessible
+   * to all users within the tenant.
+   */
+  isTenantWideAccess: boolean;
 
   /**
    * Gets or sets the username of the user who created the flow record. Max-254

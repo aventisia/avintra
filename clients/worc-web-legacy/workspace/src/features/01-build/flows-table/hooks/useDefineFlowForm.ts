@@ -1,3 +1,5 @@
+import { useUserSessionStore } from "@/react-toolkit/stores/user-session-store";
+
 import { useCheckAvailability } from "@aventisia/ui/hooks";
 import { useDTCrudDialogStore } from "@aventisia/ui/stores";
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -7,12 +9,10 @@ import { useForm } from "react-hook-form";
 import { z } from "zod";
 import { useShallow } from "zustand/react/shallow";
 
-import { useUserSessionStore } from "@/react-toolkit/stores/user-session-store";
-
 import { isFlowNameAvailable } from "../apis/flows-table-apis";
-import { FLOWS_QUERY_KEY } from "../constants";
 import { flowNameSchema, flowZodSchema } from "../constants/flow-zod-schema";
 import { FlowsTableDto } from "../dtos/flows-table-dto";
+import { useTableTab } from "./useTableTab";
 
 /**
  * Custom hook for defining a flow form.
@@ -63,6 +63,9 @@ export const useDefineFlowForm = () => {
     },
   });
 
+  // Use this in place DATA_QUERY_KEY to handle Personal/Shared tabs list
+  const { queryKey } = useTableTab();
+
   // Destructor form values and methods
   const {
     formState: { isDirty },
@@ -73,7 +76,7 @@ export const useDefineFlowForm = () => {
     // Get flows data from query client
     const flowsData = queryClient.getQueryData<{
       data: FlowsTableDto[];
-    }>(FLOWS_QUERY_KEY);
+    }>(queryKey);
 
     // Get flow data by id
     const flowData = flowsData?.data.find((item) => item.id === rowId);

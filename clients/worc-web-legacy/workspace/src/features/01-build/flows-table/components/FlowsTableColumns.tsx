@@ -134,6 +134,8 @@ export const flowsTableColumns: ColumnDef<FlowsTableDto>[] = [
       <FlowRowActions
         rowId={row.original.id || "rowId"}
         accessType={row.original.accessType}
+        accessLevel={row.original.accessLevel}
+        isTenantWideAccess={row.original.isTenantWideAccess || false}
       />
     ),
   },

@@ -14,9 +14,10 @@ const baseAPIURL: string = `${import.meta.env.VITE_WORKSPACE_API_PATH}/flow`;
 /**
  * Retrieves all flows created by user
  */
-const getFlows = () => {
+const getFlows = ({ isPersonal = true }: { isPersonal: boolean }) => {
+  const path = isPersonal ? `list` : `list/shared`;
   return axiosInstance
-    .get<IHttpResponse<FlowsTableDto[]>>(`${baseAPIURL}/list`)
+    .get<IHttpResponse<FlowsTableDto[]>>(`${baseAPIURL}/${path}`)
     .then((res) => res.data);
 };
 
