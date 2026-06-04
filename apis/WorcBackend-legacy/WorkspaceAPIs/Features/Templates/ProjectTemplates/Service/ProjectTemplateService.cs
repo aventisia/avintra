@@ -731,7 +731,7 @@ namespace WorkspaceAPIs.Services
             return serviceResponse;
         }
 
-        // Publishes a project template based on the specified type (Agent, ChatAgent, Block, Inferencing, Conversation, and Generative).
+        // Publishes a project template based on the specified type (Agent, ChatAgent, Block, Prompt).
         public async Task<ServiceResponse<ProjectTemplateDto>> PublishProjectTemplateAsync(PublishProjectTemplateDto publishProjectTemplateDto)
         {
             // Initialize default response with failure message

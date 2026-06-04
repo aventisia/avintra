@@ -13,16 +13,6 @@
         "actions": [
           {
             "type": "aiNode",
-            "name": "CreateVisionAIAgent",
-            "label": "Vision Model",
-            "description": "Analyzes visual data to extract structured information, such as identifying objects, reading text, or detecting anomalies.",
-            "docsLink": null,
-            "icon": "",
-            "img": "/assets/VisionModel.svg",
-            "supportedPlatforms": ["cloud", "windows"]
-          },
-          {
-            "type": "aiNode",
             "name": "CreateInferencingAIAgent",
             "label": "Text AI",
             "description": "Performs high-speed reasoning and logic checks on incoming data to provide instant predictions or route tasks.",
@@ -71,39 +61,6 @@
             "docsLink": null,
             "icon": "",
             "img": "/assets/TextToSpeechModel.svg",
-            "supportedPlatforms": ["cloud", "windows"]
-          },
-          {
-            "type": "aiNode",
-            "name": "CreateImageAIAgent",
-            "label": "Image Model",
-            "description": "Generates new visual assets or modifies existing images based on precise descriptive text instructions.",
-            "docsLink": null,
-            "doNotRenderIf": ["production"],
-            "icon": "",
-            "img": "/assets/ImageModel.svg",
-            "supportedPlatforms": ["cloud", "windows"]
-          },
-          {
-            "type": "aiNode",
-            "name": "CreateVideoAIAgent",
-            "label": "Video Model",
-            "description": "Creates high-fidelity video footage or applies cinematic edits to existing clips for dynamic content pipelines.",
-            "docsLink": null,
-            "doNotRenderIf": ["production"],
-            "icon": "",
-            "img": "/assets/VideoModel.svg",
-            "supportedPlatforms": ["cloud", "windows"]
-          },
-          {
-            "type": "aiNode",
-            "name": "CreateDeepResearchAIAgent",
-            "label": "Deep Research Model",
-            "description": "An autonomous agent that plans and executes multi-step web searches to synthesize cited, evidence-based reports.",
-            "docsLink": null,
-            "doNotRenderIf": ["production"],
-            "icon": "",
-            "img": "/assets/DeepSearchModel.svg",
             "supportedPlatforms": ["cloud", "windows"]
           }
         ]
