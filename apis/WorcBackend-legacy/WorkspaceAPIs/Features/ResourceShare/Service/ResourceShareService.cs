@@ -525,6 +525,64 @@ public class ResourceShareService : IResourceShareService
         return serviceResponse;
     }
 
+    // Revokes the current user's access to the specified resource.
+    public async Task<ServiceResponse<bool>> RevokeMyAccessAsync(Guid resourceId)
+    {
+        // Initialize response with default failure state.
+        var serviceResponse = new ServiceResponse<bool>
+        {
+            Data = false,
+            Message = "Failed to revoke resource access. Please try again."
+        };
+
+        try
+        {
+
+            // Retrieve the user's resource share for the specified resource.
+            var resourceShare = await _unitOfWork.ResourceShareRepo
+                .GetByConditionAsync(x =>
+                    x.ResourceId == resourceId &&
+                    x.UserId == _userId)
+                .FirstOrDefaultAsync();
+
+            // Validate that the resource share exists.
+            if (resourceShare == null)
+            {
+                serviceResponse.Message = "Access record not found.";
+                return serviceResponse;
+            }
+
+            // Remove the user's access record.
+            _unitOfWork.ResourceShareRepo.Delete(resourceShare);
+
+            // Persist changes.
+            if (!await _unitOfWork.SaveAsync())
+            {
+                _logger.LogError(
+                    "[RevokeMyAccessAsync] Failed to revoke access for UserId {UserId} and ResourceId {ResourceId}",
+                    _userId,
+                    resourceId);
+
+                return serviceResponse;
+            }
+
+            // Set success response.
+            serviceResponse.Data = true;
+            serviceResponse.StatusCode = 200;
+            serviceResponse.Message = "Access revoked successfully.";
+        }
+        catch (Exception ex)
+        {
+            // Log unexpected exceptions.
+            _logger.LogError(
+                ex,
+                "[RevokeMyAccessAsync] Exception occurred while revoking access for ResourceId {ResourceId}",
+                resourceId);
+        }
+
+        return serviceResponse;
+    }
+
     // Deletes a single resource share by its unique identifier.
     public async Task<ServiceResponse<bool>> DeleteResourceShareAsync(Guid resourceShareId)
     {
