@@ -12,16 +12,16 @@
     "preview": "vite preview"
   },
   "dependencies": {
-    "@worc/ui": "*"
+    "@avplatform/ui": "*"
   },
   "devDependencies": {
     "@types/react": "^19.1.10",
     "@types/react-dom": "^19.1.7",
     "@vitejs/plugin-react-swc": "^4.0.0",
-    "@worc/eslint-config": "*",
-    "@worc/tailwind-config": "*",
-    "@worc/typescript-config": "*",
-    "@worc/vite-config": "*",
+    "@avplatform/eslint-config": "*",
+    "@avplatform/tailwind-config": "*",
+    "@avplatform/typescript-config": "*",
+    "@avplatform/vite-config": "*",
     "globals": "^16.3.0",
     "typescript": "~5.8.3",
     "vite": "^7.1.2"
