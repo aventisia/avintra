@@ -27,7 +27,7 @@ const RESOURCE_ACCESS_ACTIONS: Record<
     read: true,
     update: true,
     delete: true,
-    share: true,
+    share: false,
   },
 
   [ResourceAccessTypeEnum.View]: {

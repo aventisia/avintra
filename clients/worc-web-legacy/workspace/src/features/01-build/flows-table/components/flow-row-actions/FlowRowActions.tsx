@@ -1,29 +1,33 @@
+import { RemoveResourceRowAction } from "@/features/resource-share/components/common-row-actions/RemoveResourceRowAction";
+import { ResourceShareRowAction } from "@/features/resource-share/components/common-row-actions/ResourceShareRowAction";
 import { ResourceAccessTypeEnum } from "@/features/resource-share/enums/resource-access-type-enum";
+import { ResourceTypeEnum } from "@/features/resource-share/enums/resource-type-enum";
 import { getResourceAccessActions } from "@/features/resource-share/utils/resource-access-actions";
 
 import { DTRowAction, DataTableRowActions } from "@aventisia/ui/data-table";
 import { DropdownMenuSeparator } from "@aventisia/ui/dropdown-menu";
 
-import { AccessTypeEnum } from "../../constants/access-type-enum";
+import { useTableTab } from "../../hooks/useTableTab";
 import { FlowRowDeleteAction } from "./FlowRowDeleteAction";
 import { FlowRowOpenAction } from "./FlowRowOpenAction";
-import { FlowRowRemoveAction } from "./FlowRowRemoveAction";
-import { ResourceShareRowAction } from "./ResourceShareRowAction";
 
 interface FlowRowActionsProps {
   rowId: string;
-  accessType: AccessTypeEnum;
+  name: string;
   accessLevel: ResourceAccessTypeEnum;
   isTenantWideAccess: boolean;
 }
 
 export const FlowRowActions = ({
   rowId,
-  accessType,
+  name,
   accessLevel,
   isTenantWideAccess,
 }: FlowRowActionsProps) => {
   const actions = getResourceAccessActions(accessLevel);
+
+  // Use this in place DATA_QUERY_KEY to handle Personal/Shared tabs list
+  const { isShared, queryKey } = useTableTab();
 
   const showDivider = actions?.share || actions?.delete;
 
@@ -44,6 +48,8 @@ export const FlowRowActions = ({
         <ResourceShareRowAction
           rowId={rowId}
           isTenantWideAccess={isTenantWideAccess}
+          resourceType={ResourceTypeEnum.Flow}
+          resourceName={name}
         />
       )}
 
@@ -52,12 +58,10 @@ export const FlowRowActions = ({
 
       {/* Triggers Flow delete/remove alert dialog  */}
 
-      {accessType !== "Owner" ? (
-        actions?.delete ? (
-          <FlowRowDeleteAction rowId={rowId} />
-        ) : null
-      ) : (
-        <FlowRowRemoveAction rowId={rowId} />
+      {actions?.delete && <FlowRowDeleteAction rowId={rowId} />}
+
+      {isShared && (
+        <RemoveResourceRowAction queryKey={queryKey} rowId={rowId} />
       )}
     </DataTableRowActions>
   );

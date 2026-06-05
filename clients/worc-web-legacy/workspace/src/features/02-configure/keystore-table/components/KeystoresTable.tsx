@@ -13,7 +13,6 @@ import {
 } from "@aventisia/ui/data-table";
 import { useDataTable, useDocumentTitle } from "@aventisia/ui/hooks";
 
-import { updateKeystore } from "../apis/keystores-table-apis";
 import {
   SEARCH_COLUMN,
   TABLE_HEADING,
@@ -94,10 +93,8 @@ export const KeystoresTable = () => {
           </KeystoreCrudDialog>
           {/* Data table Pagination component */}
           <DTPagination table={table} />
-          <ResourceShareDialog
-            queryKey={queryKey}
-            updateApiFn={updateKeystore}
-          />
+          {/* Resource Share Dialog component */}
+          <ResourceShareDialog queryKey={queryKey} />
           {/* Bulk actions for data table */}
           {isPersonal && <KeystoresBulkActions table={table} />}{" "}
         </div>

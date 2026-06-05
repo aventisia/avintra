@@ -4,11 +4,13 @@ import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { useEffect, useState } from "react";
 import { useShallow } from "zustand/react/shallow";
 
+import { updateTenantWideAccess } from "../apis/resource-share-apis";
+import { TenantAccessResourceShareDto } from "../dtos/resource-share-dto";
+import { ResourceTypeEnum } from "../enums/resource-type-enum";
 import { useResourceShareStore } from "../stores/resource-share-store";
 
 interface UseTenantAccessProps {
   queryKey: unknown[];
-  updateApiFn: (updatedDto: any) => Promise<any>;
 }
 
 /**
@@ -18,7 +20,6 @@ interface UseTenantAccessProps {
  */
 export const useResourceShareTenantAccess = ({
   queryKey,
-  updateApiFn,
 }: UseTenantAccessProps) => {
   const queryClient = useQueryClient();
 
@@ -26,12 +27,14 @@ export const useResourceShareTenantAccess = ({
     showDialog,
     isTenantWideAccess: initialAccessState,
     resourceId,
+    resourceType,
   } = useResourceShareStore(
     useShallow((state) => ({
       showDialog: state.showDialog,
       setShowDialog: state.setShowDialog,
       isTenantWideAccess: state.isTenantWideAccess,
       resourceId: state.resourceId,
+      resourceType: state.resourceType,
     })),
   );
 
@@ -49,7 +52,7 @@ export const useResourceShareTenantAccess = ({
   }, [initialAccessState, showDialog]);
 
   const updateMutation = useMutation({
-    mutationFn: updateApiFn,
+    mutationFn: updateTenantWideAccess,
     onSuccess: (res) => {
       if (res?.message) toast.success(res?.message);
       queryClient.invalidateQueries({ queryKey });
@@ -77,13 +80,14 @@ export const useResourceShareTenantAccess = ({
       return;
     }
 
-    const finalDto = {
-      ...activeRowDto,
+    const tenantAccessDto: TenantAccessResourceShareDto = {
+      resourceId,
+      resourceType: resourceType as ResourceTypeEnum,
       isTenantWideAccess: assignAllDraft,
     };
 
     try {
-      await updateMutation.mutateAsync(finalDto);
+      await updateMutation.mutateAsync(tenantAccessDto);
       setAssignAllSaved(assignAllDraft);
     } catch (error) {
       console.error("Failed to update tenant access:", error);
