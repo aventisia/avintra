@@ -66,4 +66,11 @@ public class ResourceShareController : BaseApiController
     {
         return ResultHelper(await _resourceShareService.DeleteResourceSharesAsync(resourceShareIds));
     }
+
+    // Enables or disables tenant-wide access for a specific resource
+    [HttpPut("tenant-access")]
+    public async Task<ActionResult<ServiceResponse<bool>>> UpdateTenantWideAccessAsync([FromBody] UpdateTenantWideAccessDto updateTenantWideAccessDto)
+    {
+        return ResultHelper(await _resourceShareService.UpdateTenantWideAccessAsync(updateTenantWideAccessDto));
+    }
 }

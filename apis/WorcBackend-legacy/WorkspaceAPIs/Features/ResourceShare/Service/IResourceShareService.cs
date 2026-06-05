@@ -48,6 +48,13 @@ public interface IResourceShareService
     Task<ServiceResponse<ResourceShareDto>> UpdateResourceShareAsync(ResourceShareDto resourceShareDto);
 
     /// <summary>
+    /// Enables or disables tenant-wide access for a resource.
+    /// </summary>
+    /// <param name="updateTenantWideAccessDto"> Contains the resource type, resource identifier, and whether tenant-wide access should be enabled. </param>
+    /// <returns> A service response indicating whether the tenant-wide access setting was updated successfully.  </returns>
+    Task<ServiceResponse<bool>> UpdateTenantWideAccessAsync(UpdateTenantWideAccessDto updateTenantWideAccessDto);
+
+    /// <summary>
     /// Deletes a resource share by its unique identifier.
     /// </summary>
     /// <param name="resourceShareId"> The unique identifier of the resource share. </param>
