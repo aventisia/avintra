@@ -1,3 +1,9 @@
+import { RemoveResourceRowAction } from "@/features/resource-share/components/common-row-actions/RemoveResourceRowAction";
+import { ResourceShareRowAction } from "@/features/resource-share/components/common-row-actions/ResourceShareRowAction";
+import { ResourceAccessTypeEnum } from "@/features/resource-share/enums/resource-access-type-enum";
+import { ResourceTypeEnum } from "@/features/resource-share/enums/resource-type-enum";
+import { getResourceAccessActions } from "@/features/resource-share/utils/resource-access-actions";
+
 import { DTRowAction, DataTableRowActions } from "@aventisia/ui/data-table";
 import {
   DropdownMenuSeparator,
@@ -6,34 +12,66 @@ import {
 import { ArrowTopRightOnSquareIcon } from "@heroicons/react/24/outline";
 import { useNavigate } from "react-router-dom";
 
+import { TABLE_TAB_QUERY_PARAM } from "../../constants";
+import { useTableTab } from "../../hooks/useTableTab";
 import { KBRowDeleteAction } from "./KBRowDeleteAction";
 
 interface KBRowActionsProps {
   rowId: string;
+  name: string;
+  accessLevel: ResourceAccessTypeEnum;
+  isTenantWideAccess: boolean;
 }
 
-export const KBRowActions = ({ rowId }: KBRowActionsProps) => {
+export const KBRowActions = ({
+  rowId,
+  name,
+  accessLevel,
+  isTenantWideAccess,
+}: KBRowActionsProps) => {
   const navigate = useNavigate();
 
+  // Use to handle Personal/Shared tabs list
+  const { currentTab } = useTableTab();
+
+  const actions = getResourceAccessActions(accessLevel);
+
+  // Use this in place DATA_QUERY_KEY to handle Personal/Shared tabs list
+  const { isShared, queryKey } = useTableTab();
+
+  const showDivider = actions?.share || actions?.delete;
   return (
-    // Dropdown menu for config table row action */}
-    <DataTableRowActions>
-      <SimpleDDMenuItem
-        Icon={ArrowTopRightOnSquareIcon}
-        onClick={() => {
-          navigate(rowId);
-        }}
-        content="Open"
-      />
-
+    // Dropdown menu for config table row action
+    <DataTableRowActions className="w-36 min-w-36">
+      {actions?.read && (
+        <SimpleDDMenuItem
+          Icon={ArrowTopRightOnSquareIcon}
+          onClick={() => {
+            navigate(
+              `/configure/knowledge-base/${rowId}?kb=${name}&${TABLE_TAB_QUERY_PARAM}=${currentTab}`,
+            );
+          }}
+          content="Open"
+        />
+      )}
       {/* Edit KB details */}
-      <DTRowAction rowId={rowId} crudAction="update" />
-
+      {actions?.update && <DTRowAction rowId={rowId} crudAction="update" />}
+      {/* Share Access */}
+      {actions?.share && (
+        <ResourceShareRowAction
+          rowId={rowId}
+          isTenantWideAccess={isTenantWideAccess}
+          resourceType={ResourceTypeEnum.KnowledgeBase}
+          resourceName={name}
+        />
+      )}
       {/* DropdownMenuSeparator component */}
-      <DropdownMenuSeparator />
-
+      {showDivider && <DropdownMenuSeparator />}
       {/* Triggers Config delete alert dialog  */}
-      <KBRowDeleteAction rowId={rowId} />
+      {actions?.delete && <KBRowDeleteAction rowId={rowId} />}{" "}
+      {isShared && (
+        <RemoveResourceRowAction queryKey={queryKey} rowId={rowId} />
+      )}
     </DataTableRowActions>
   );
 };

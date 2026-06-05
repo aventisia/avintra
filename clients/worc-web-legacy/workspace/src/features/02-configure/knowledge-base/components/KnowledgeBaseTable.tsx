@@ -1,3 +1,6 @@
+import { QueryTabs } from "@/components/QueryTab";
+import ResourceShareDialog from "@/features/resource-share/components/ResourceShareDialog";
+
 import {
   DTCreateButton,
   DTHeading,
@@ -9,9 +12,16 @@ import { useDataTable, useDocumentTitle } from "@aventisia/ui/hooks";
 import { dateFormatter } from "@aventisia/ui/utils";
 import { NavLink } from "react-router-dom";
 
-import { SEARCH_COLUMN, TABLE_HEADING, TABLE_KEY } from "../constants";
+import {
+  SEARCH_COLUMN,
+  TABLE_HEADING,
+  TABLE_KEY,
+  TABLE_TAB_QUERY_PARAM,
+  TABLE_VIEW_TABS,
+} from "../constants";
 import { columnVisibilityState } from "../constants/column-visibility-state";
 import { useFetchKnowledgeBase } from "../hooks/useFetchKnowledgeBase";
+import { useTableTab } from "../hooks/useTableTab";
 import { KBTableColumns } from "./KBTableColumns";
 import { KBTableSkeleton } from "./KBTableSkeleton";
 import { KBCrudDialog } from "./kb-crud-dialog/KBCrudDialog";
@@ -29,6 +39,9 @@ export const KnowledgeBaseTable = () => {
     TABLE_KEY,
     columnVisibilityState,
   );
+
+  // Use this in place DATA_QUERY_KEY to handle Personal/Shared tabs list
+  const { isPersonal, queryKey, currentTab } = useTableTab();
 
   // Fetch configs data
   const { data } = useFetchKnowledgeBase();
@@ -50,15 +63,17 @@ export const KnowledgeBaseTable = () => {
           <KBCrudDialog>
             {/* Table toolbar */}
             <div className="flex items-center justify-between">
-              <DTHeading heading={TABLE_HEADING} />
-
+              <div className="flex items-center gap-2">
+                <DTHeading heading={TABLE_HEADING} />
+                <QueryTabs tabs={TABLE_VIEW_TABS} key={TABLE_TAB_QUERY_PARAM} />
+              </div>
               <div className="flex items-center gap-2">
                 <DTSearchBox
                   table={table}
                   searchColumn={SEARCH_COLUMN}
                   placeholder="Search..."
                 />
-                <DTCreateButton buttonText="Add" />
+                {isPersonal && <DTCreateButton buttonText="Add" />}
               </div>
             </div>
             {/* DT with only rows and custom design */}
@@ -67,7 +82,7 @@ export const KnowledgeBaseTable = () => {
                 {table.getRowModel().rows.map((row) => (
                   <NavLink
                     key={row.id}
-                    to={`/configure/knowledge-base/${row.original.id}?kb=${row.getValue("name")}`}
+                    to={`/configure/knowledge-base/${row.original.id}?kb=${row.getValue("name")}&${TABLE_TAB_QUERY_PARAM}=${currentTab}`}
                   >
                     <div className="flex flex-col cursor-pointer h-36  justify-between rounded-lg border bg-background p-2.5 shadow-sm transition-shadow hover:border-primary-200 hover:ring-1 hover:ring-primary-200">
                       <div className="flex flex-1 flex-col">
@@ -76,7 +91,14 @@ export const KnowledgeBaseTable = () => {
                             {row.getValue("name")}
                           </span>
                           {/* Action trigger */}
-                          <KBRowActions rowId={row.original.id || ""} />
+                          <KBRowActions
+                            rowId={row.original.id || ""}
+                            accessLevel={row.original.accessLevel}
+                            isTenantWideAccess={
+                              row.original.isTenantWideAccess || false
+                            }
+                            name={row.original.name}
+                          />
                         </div>
                         <span className="text-xs text-muted-foreground line-clamp-3">
                           {row.getValue("description") as string}
@@ -100,11 +122,10 @@ export const KnowledgeBaseTable = () => {
             )}
           </KBCrudDialog>
           {/* Data table Pagination component */}
-          <DTPagination
-            table={table}
-            singularLabel="KB"
-            pluralLabel="KBs"
-          />
+          <DTPagination table={table} singularLabel="KB" pluralLabel="KBs" />
+
+          {/* Resource Share Dialog component */}
+          <ResourceShareDialog queryKey={queryKey} />
         </div>
       ) : (
         // Show data table skeleton while fetching the configs data

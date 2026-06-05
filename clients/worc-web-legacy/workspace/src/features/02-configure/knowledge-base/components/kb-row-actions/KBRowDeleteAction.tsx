@@ -5,8 +5,8 @@ import {
 } from "@aventisia/ui/hooks";
 
 import { knowledgeBaseOptimisticMutationFn } from "../../apis/knowledge-base-apis";
-import { DATA_QUERY_KEY } from "../../constants";
 import { KnowledgeBaseTableDto } from "../../dtos/knowledge-base-table-dto";
+import { useTableTab } from "../../hooks/useTableTab";
 
 interface KBRowDeleteActionProps {
   rowId: string;
@@ -16,12 +16,15 @@ export const KBRowDeleteAction = ({ rowId }: KBRowDeleteActionProps) => {
   // Get showAlert handler
   const { showCustomAlertDialog } = useShowAlertHandler();
 
+  // Use this in place DATA_QUERY_KEY to handle Personal/Shared tabs list
+  const { queryKey } = useTableTab();
+
   // Get mutation function to delete the config
   const { mutate: deleteKnowledgeBase } = useListOptimisticMutation<
     string,
     KnowledgeBaseTableDto | boolean,
     KnowledgeBaseTableDto
-  >([rowId], knowledgeBaseOptimisticMutationFn, DATA_QUERY_KEY);
+  >([rowId], knowledgeBaseOptimisticMutationFn, queryKey);
 
   // Return Delete alert dialog trigger
   return (

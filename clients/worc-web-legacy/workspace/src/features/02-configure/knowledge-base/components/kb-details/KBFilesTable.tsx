@@ -1,4 +1,3 @@
-// import { FileUploader } from "@/components/file-uploader/components";
 import {
   DTPagination,
   DTSearchBox,
@@ -51,11 +50,20 @@ export const KBFilesTable = () => {
     () => getKBFilesTableColumns(knowledgeBaseId, knowledgeBase),
     [knowledgeBaseId, knowledgeBase],
   );
-  // const data = { data: [] };
 
-  // Create a React table for KBFilesFiles data
+  const hasOnlyReadAccess = useMemo(() => {
+    return knowledgeBase?.accessLevel == "View";
+  }, [knowledgeBase?.accessLevel]);
+
+  const filteredColumns = useMemo(() => {
+    if (!hasOnlyReadAccess) return columns;
+
+    return columns.filter((column) => column.id !== "actions");
+  }, [columns, hasOnlyReadAccess]);
+
+  // Create a React table for KBFiles data
   const table = useDataTable(
-    columns,
+    filteredColumns,
     data?.data || [],
     columnVisibility,
     sortState,
@@ -78,7 +86,7 @@ export const KBFilesTable = () => {
                 searchColumn={"fileName"}
                 placeholder="Search..."
               />
-              <AddFileDD />
+              {!hasOnlyReadAccess && <AddFileDD />}
             </div>
           </div>
           <div className="grid grid-cols-9 h-[calc(100vh-2.7*var(--header-height))] gap-3">
