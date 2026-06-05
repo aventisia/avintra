@@ -1,3 +1,6 @@
+import { useUserSessionStore } from "@/react-toolkit/stores/user-session-store";
+import { CrudActionTypeConverter } from "@/react-toolkit/utils";
+
 import { useCheckAvailability } from "@aventisia/ui/hooks";
 import { useDTCrudDialogStore } from "@aventisia/ui/stores";
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -7,13 +10,10 @@ import { useForm } from "react-hook-form";
 import { z } from "zod";
 import { useShallow } from "zustand/react/shallow";
 
-import { useUserSessionStore } from "@/react-toolkit/stores/user-session-store";
-import { CrudActionTypeConverter } from "@/react-toolkit/utils";
-
 import { isNameAvailable } from "../apis/queues-table-apis";
-import { DATA_QUERY_KEY } from "../constants";
 import { queueNameSchema, queueZodSchema } from "../constants/queue-zod-schema";
 import { QueuesTableDto } from "../dtos/queues-table-dto";
+import { useTableTab } from "./useTableTab";
 
 /**
  * Custom hook for defining a queue form.
@@ -42,33 +42,32 @@ export const useDefineQueueForm = () => {
     })),
   );
 
-  const defaultSchema=[
-  {
-    "name": "userId",
-    "description": "Unique identifier for the user",
-    "label": "User ID",
-    "type": "string",
-    "isRequired": true,
-    "isUsedForUniqueIdentifier": true
-  },
-  {
-    "name": "age",
-    "description": "Age of the user",
-    "label": "Age",
-    "type": "int",
-    "isRequired": false,
-    "isUsedForUniqueIdentifier": false
-  },
-  {
-    "name": "createdAt",
-    "description": "Account creation date",
-    "label": "Created At",
-    "type": "Date",
-    "isRequired": false,
-    "isUsedForUniqueIdentifier": false
-  }
-]
-
+  const defaultSchema = [
+    {
+      name: "userId",
+      description: "Unique identifier for the user",
+      label: "User ID",
+      type: "string",
+      isRequired: true,
+      isUsedForUniqueIdentifier: true,
+    },
+    {
+      name: "age",
+      description: "Age of the user",
+      label: "Age",
+      type: "int",
+      isRequired: false,
+      isUsedForUniqueIdentifier: false,
+    },
+    {
+      name: "createdAt",
+      description: "Account creation date",
+      label: "Created At",
+      type: "Date",
+      isRequired: false,
+      isUsedForUniqueIdentifier: false,
+    },
+  ];
 
   // Get query client
   const queryClient = useQueryClient();
@@ -105,12 +104,15 @@ export const useDefineQueueForm = () => {
     formState: { isDirty },
   } = form;
 
+  // Use this in place DATA_QUERY_KEY to handle Personal/Shared tabs list
+  const { queryKey } = useTableTab();
+
   // Fetch queue data when rowId changes
   useEffect(() => {
     // Get queues data from query client
     const queuesData = queryClient.getQueryData<{
       data: QueuesTableDto[];
-    }>(DATA_QUERY_KEY);
+    }>(queryKey);
 
     // Get queue data by id
     const queueData = queuesData?.data.find((item) => item.id === rowId);
@@ -131,7 +133,9 @@ export const useDefineQueueForm = () => {
       // shouldRetryFailedItems: queueData?.shouldRetryFailedItems,
       // shouldRetryAbandonedItems: queueData?.shouldRetryAbandonedItems,
       // maximumRetryAttempts: queueData?.maximumRetryAttempts,
-      inputSchema: JSON.stringify(queueData?.inputSchema, null, 2) ?? JSON.stringify(defaultSchema),
+      inputSchema:
+        JSON.stringify(queueData?.inputSchema, null, 2) ??
+        JSON.stringify(defaultSchema),
       // outputDataSchemaFile: undefined,
 
       isDisabled: queueData?.isDisabled,

@@ -1,7 +1,7 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import { Checkbox } from "@aventisia/ui";
 import { Button } from "@aventisia/ui/buttons";
-import { DataTableSkeleton, DTColumnHeader } from "@aventisia/ui/data-table";
+import { DTColumnHeader, DataTableSkeleton } from "@aventisia/ui/data-table";
 import { Tooltip } from "@aventisia/ui/tooltip";
 import { useQueryClient } from "@tanstack/react-query";
 import { ColumnDef } from "@tanstack/react-table";
@@ -9,13 +9,12 @@ import { CircleCheckIcon, CircleXIcon, Trash2Icon } from "lucide-react";
 import { useEffect, useMemo, useState } from "react";
 import { useShallow } from "zustand/react/shallow";
 
-import { DATA_QUERY_KEY } from "../../../constants";
 import {
   InputSchemaField,
   QueuesTableDto,
 } from "../../../dtos/queues-table-dto";
+import { useTableTab } from "../../../hooks/useTableTab";
 import { useQueueUploadItemsStore } from "../../../stores/queues-upload-item-store";
-
 import UploadedItemsDT from "./UploadedItemsDT";
 
 export function UploadedItemsTable({
@@ -38,16 +37,19 @@ export function UploadedItemsTable({
 
   const [colData, setColData] = useState<InputSchemaField[]>([]);
 
+  // Use this in place DATA_QUERY_KEY to handle Personal/Shared tabs list
+  const { queryKey } = useTableTab();
+
   useEffect(() => {
     // Get queues data from query client
     const queuesData = queryClient.getQueryData<{
       data: QueuesTableDto[];
-    }>(DATA_QUERY_KEY);
+    }>(queryKey);
 
     // Get queue data by id
     const queueData = queuesData?.data.find((item) => item.id === rowId);
     if (queueData?.inputSchema) setColData(queueData?.inputSchema);
-  }, [queryClient, rowId]);
+  }, [queryClient, queryKey, rowId]);
 
   const columns = useMemo(() => {
     const baseColumns: ColumnDef<any>[] = [

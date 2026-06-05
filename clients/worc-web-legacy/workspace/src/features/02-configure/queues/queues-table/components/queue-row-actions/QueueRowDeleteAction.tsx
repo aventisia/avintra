@@ -5,8 +5,8 @@ import {
 } from "@aventisia/ui/hooks";
 
 import { queueOptimisticMutationFn } from "../../apis/queues-table-apis";
-import { DATA_QUERY_KEY } from "../../constants";
 import { QueuesTableDto } from "../../dtos/queues-table-dto";
+import { useTableTab } from "../../hooks/useTableTab";
 
 interface QueueRowDeleteActionProps {
   rowId: string;
@@ -16,12 +16,15 @@ export const QueueRowDeleteAction = ({ rowId }: QueueRowDeleteActionProps) => {
   // Get showAlert handler
   const { showDefaultAlertDialog } = useShowAlertHandler();
 
+  // Use this in place DATA_QUERY_KEY to handle Personal/Shared tabs list
+  const { queryKey } = useTableTab();
+
   // Get mutation function to delete the queue
   const { mutate: deleteQueue } = useListOptimisticMutation<
     string,
     boolean | QueuesTableDto,
     QueuesTableDto
-  >([rowId], queueOptimisticMutationFn, DATA_QUERY_KEY);
+  >([rowId], queueOptimisticMutationFn, queryKey);
 
   // Return Delete alert dialog trigger
   return (

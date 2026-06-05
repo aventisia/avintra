@@ -3,12 +3,16 @@ import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { useShallow } from "zustand/react/shallow";
 
 import { uploadWorkItem } from "../apis/queues-table-apis";
-import { DATA_QUERY_KEY } from "../constants";
 import { useQueueUploadItemsStore } from "../stores/queues-upload-item-store";
+import { useTableTab } from "./useTableTab";
 
 export const useUploadItemMutation = () => {
   // // Get the query client for cache management
   const queryClient = useQueryClient();
+
+  // Use this in place DATA_QUERY_KEY to handle Personal/Shared tabs list
+  const { queryKey } = useTableTab();
+
   const { setUploadedItems } = useQueueUploadItemsStore(
     useShallow((state) => ({
       setUploadedItems: state.setUploadedItems,
@@ -23,7 +27,7 @@ export const useUploadItemMutation = () => {
       toast.success(httpResponse?.message, {
         className: "sonner-toaster-sm",
       });
-      queryClient.invalidateQueries({ queryKey: DATA_QUERY_KEY });
+      queryClient.invalidateQueries({ queryKey: queryKey });
       // queryClient.invalidateQueries({ queryKey: ["archive-flows"] });
       setUploadedItems(JSON.parse(httpResponse.data.payloadData || "[]"));
     },

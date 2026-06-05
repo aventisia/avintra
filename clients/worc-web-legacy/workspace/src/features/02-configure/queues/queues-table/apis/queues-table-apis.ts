@@ -15,9 +15,10 @@ const baseAPIURL: string = `${import.meta.env.VITE_WORKSPACE_API_PATH}/queue`;
 /**
  * Retrieves list of queues.
  */
-export const getQueues = () => {
+export const getQueues = ({ isPersonal = true }: { isPersonal: boolean }) => {
+  const path = isPersonal ? `list` : `list/shared`;
   return axiosInstance
-    .get<IHttpResponse<QueuesTableDto[]>>(`${baseAPIURL}/list`)
+    .get<IHttpResponse<QueuesTableDto[]>>(`${baseAPIURL}/${path}`)
     .then((res) => res.data);
 };
 

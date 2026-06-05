@@ -1,26 +1,35 @@
+import { QueryTabs } from "@/components/QueryTab";
+import ResourceShareDialog from "@/features/resource-share/components/ResourceShareDialog";
+
 import {
-  DataTable,
-  DataTableSkeleton,
   DTCreateButton,
   DTHeading,
   DTPagination,
   DTSearchBox,
   DTViewOptions,
+  DataTable,
+  DataTableSkeleton,
   getDataTablePreferences,
 } from "@aventisia/ui/data-table";
 import { useDataTable, useDocumentTitle } from "@aventisia/ui/hooks";
 
-import { SEARCH_COLUMN, TABLE_HEADING, TABLE_KEY } from "../constants";
+import {
+  SEARCH_COLUMN,
+  TABLE_HEADING,
+  TABLE_KEY,
+  TABLE_TAB_QUERY_PARAM,
+  TABLE_VIEW_TABS,
+} from "../constants";
 import { columnDisplayNames } from "../constants/column-display-names";
 import { columnVisibilityState } from "../constants/column-visibility-state";
 import { useFetchQueues } from "../hooks/useFetchQueues";
-
+import { useTableTab } from "../hooks/useTableTab";
+import { queuesTableColumns } from "./QueuesTableColumns";
 import AssignAgentsDialog from "./assign-agents/AssignAgentsDialog";
 import AssignUsersDialog from "./assign-users/AssignUsersDialog";
 import { QueueCrudDialog } from "./queue-crud-dialog/QueueCrudDialog";
 import { QueueBulkActions } from "./queue-row-actions/QueueBulkActions";
 import UploadItemsDialog from "./queue-upload-items/UploadItemsDialog";
-import { queuesTableColumns } from "./QueuesTableColumns";
 
 /**
  * Renders a table of queues.
@@ -36,6 +45,9 @@ export const QueuesTable = () => {
     TABLE_KEY,
     columnVisibilityState,
   );
+
+  // Use this in place DATA_QUERY_KEY to handle Personal/Shared tabs list
+  const { isPersonal, queryKey } = useTableTab();
 
   // Fetch queues data
   const { data } = useFetchQueues();
@@ -59,8 +71,10 @@ export const QueuesTable = () => {
           <QueueCrudDialog>
             {/* Table toolbar */}
             <div className="flex items-center justify-between">
-              <DTHeading heading={TABLE_HEADING} />
-
+              <div className="flex items-center gap-2">
+                <DTHeading heading={TABLE_HEADING} />
+                <QueryTabs tabs={TABLE_VIEW_TABS} key={TABLE_TAB_QUERY_PARAM} />
+              </div>
               <div className="flex items-center gap-2">
                 <DTSearchBox
                   table={table}
@@ -70,7 +84,7 @@ export const QueuesTable = () => {
                 <DTViewOptions
                   {...{ table, columnDisplayNames, tableKey: TABLE_KEY }}
                 />
-                <DTCreateButton />
+                {isPersonal && <DTCreateButton />}
               </div>
             </div>
 
@@ -84,6 +98,8 @@ export const QueuesTable = () => {
           {/* Data table Pagination component */}
           <DTPagination table={table} />
 
+          {/* Resource Share Dialog component */}
+          <ResourceShareDialog queryKey={queryKey} />
           {/* Bulk actions for data table */}
           <QueueBulkActions table={table} />
         </div>
