@@ -1,3 +1,5 @@
+import { QueryTabItem } from "@/components/QueryTab";
+
 import { CrudActionType } from "@aventisia/ui/types";
 
 /**
@@ -13,6 +15,19 @@ const TABLE_HEADING = "Knowledge Bases";
 
 const TABLE_KEY = "knowledge-base";
 const DETAIL_TABLE_KEY = "knowledge-base-details";
+
+/**
+ * Key used for the query param in tables tab
+ */
+const TABLE_TAB_QUERY_PARAM = "tab";
+
+/**
+ * Tabs to be used in tables tab
+ */
+const TABLE_VIEW_TABS = [
+  { label: "Personal", value: "personal" },
+  { label: "Shared", value: "shared" },
+] as QueryTabItem[];
 
 /**
  * The column used for searching in the knowledgeBase.
@@ -40,4 +55,6 @@ export {
   TABLE_HEADING,
   TABLE_KEY,
   DETAIL_TABLE_KEY,
+  TABLE_TAB_QUERY_PARAM,
+  TABLE_VIEW_TABS,
 };

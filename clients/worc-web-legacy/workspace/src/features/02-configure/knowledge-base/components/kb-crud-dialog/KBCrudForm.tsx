@@ -11,7 +11,6 @@ import { useEffect } from "react";
 import { z } from "zod";
 
 import { knowledgeBaseOptimisticMutationFn } from "../../apis/knowledge-base-apis";
-import { DATA_QUERY_KEY } from "../../constants";
 import {
   descriptionProps,
   idProps,
@@ -22,6 +21,7 @@ import {
 import { knowledgeBaseZodSchema } from "../../constants/knowledge-base-zod-schema";
 import { KnowledgeBaseTableDto } from "../../dtos/knowledge-base-table-dto";
 import { useDefineKnowledgeBaseForm } from "../../hooks/useDefineKnowledgeBaseForm";
+import { useTableTab } from "../../hooks/useTableTab";
 import { EmbeddingConfigField } from "./EmbeddingConfigField";
 
 export const KBCrudForm = () => {
@@ -40,6 +40,9 @@ export const KBCrudForm = () => {
     refineFormData,
   } = useDefineKnowledgeBaseForm();
 
+  // Use this in place DATA_QUERY_KEY to handle Personal/Shared tabs list
+  const { queryKey } = useTableTab();
+
   // Define optimistic mutation to create or update the knowledge base
   const {
     mutate: mutateKnowledgeBase,
@@ -49,7 +52,7 @@ export const KBCrudForm = () => {
     KnowledgeBaseTableDto,
     KnowledgeBaseTableDto | boolean,
     KnowledgeBaseTableDto
-  >([rowId], knowledgeBaseOptimisticMutationFn, DATA_QUERY_KEY);
+  >([rowId], knowledgeBaseOptimisticMutationFn, queryKey);
 
   // Define submit handler
   const onSubmit = (formData: z.infer<typeof knowledgeBaseZodSchema>) => {

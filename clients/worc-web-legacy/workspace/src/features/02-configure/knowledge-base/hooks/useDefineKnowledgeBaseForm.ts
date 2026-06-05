@@ -10,13 +10,13 @@ import { z } from "zod";
 import { useShallow } from "zustand/react/shallow";
 
 import { isKnowledgeBaseNameAvailable } from "../apis/knowledge-base-apis";
-import { DATA_QUERY_KEY } from "../constants";
 import {
   knowledgeBaseNameSchema,
   knowledgeBaseZodSchema,
 } from "../constants/knowledge-base-zod-schema";
 import { KnowledgeBaseTableDto } from "../dtos/knowledge-base-table-dto";
 import { VectorStoreEnum } from "../enums/vector-store-enum";
+import { useTableTab } from "./useTableTab";
 
 /**
  * Custom hook for defining a knowledge base form.
@@ -76,12 +76,15 @@ export const useDefineKnowledgeBaseForm = () => {
     formState: { isDirty },
   } = form;
 
+  // Use this in place DATA_QUERY_KEY to handle Personal/Shared tabs list
+  const { queryKey } = useTableTab();
+
   // Fetch knowledge base data when rowId changes
   useEffect(() => {
     // Get knowledgeBase data from query client
     const knowledgeBaseDataList = queryClient.getQueryData<{
       data: KnowledgeBaseTableDto[];
-    }>(DATA_QUERY_KEY);
+    }>(queryKey);
 
     // Get knowledge base data by id
     const knowledgeBaseData = knowledgeBaseDataList?.data?.find(
@@ -137,9 +140,7 @@ export const useDefineKnowledgeBaseForm = () => {
   );
 
   // Refine form data based on crud action
-  const refineFormData = (
-    formData: z.infer<typeof knowledgeBaseZodSchema>,
-  ): KnowledgeBaseTableDto => {
+  const refineFormData = (formData: z.infer<typeof knowledgeBaseZodSchema>) => {
     return {
       id: formData.id || undefined,
       name: formData.name,

@@ -114,7 +114,12 @@ export const KBTableColumns: ColumnDef<KnowledgeBaseTableDto>[] = [
     id: "actions",
     cell: ({ row }) => (
       // Render the configs row actions component
-      <KBRowActions rowId={row.original.id || "rowId"} />
+      <KBRowActions
+        rowId={row.original.id || "rowId"}
+        name={row.original.name}
+        accessLevel={row.original.accessLevel}
+        isTenantWideAccess={row.original.isTenantWideAccess || false}
+      />
     ),
   },
 ];

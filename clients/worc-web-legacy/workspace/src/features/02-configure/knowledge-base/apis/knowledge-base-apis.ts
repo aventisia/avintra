@@ -14,9 +14,14 @@ export const baseAPIURL: string = `${import.meta.env.VITE_WORKSPACE_API_PATH}/kn
 /**
  * Retrieves list of knowledge bases created by the current user.
  */
-export const getKnowledgeBases = () => {
+export const getKnowledgeBases = ({
+  isPersonal = true,
+}: {
+  isPersonal: boolean;
+}) => {
+  const path = isPersonal ? `list` : `list/shared`;
   return axiosInstance
-    .get<IHttpResponse<KnowledgeBaseTableDto[]>>(`${baseAPIURL}/list`)
+    .get<IHttpResponse<KnowledgeBaseTableDto[]>>(`${baseAPIURL}/${path}`)
     .then((res) => res.data);
 };
 

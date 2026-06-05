@@ -1,3 +1,5 @@
+import { ResourceAccessTypeEnum } from "@/features/resource-share/enums/resource-access-type-enum";
+
 import { VectorStoreEnum } from "../enums/vector-store-enum";
 
 /**
@@ -51,6 +53,17 @@ export interface KnowledgeBaseTableDto {
    * Dynamic JSON configuration for the external vector store.
    */
   vectorStoreConfig?: string;
+
+  /**
+   * Access level of the configuration item.
+   */
+  accessLevel: ResourceAccessTypeEnum;
+
+  /**
+   * Indicates whether the kb is accessible
+   * to all users within the tenant.
+   */
+  isTenantWideAccess: boolean;
 
   /**
    * Flag indicating whether the Knowledge Base record is disabled.
