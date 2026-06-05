@@ -233,7 +233,12 @@ export const triggersTableColumns: ColumnDef<MessageTriggerDto>[] = [
     id: "actions",
     cell: ({ row }) => (
       // Render the triggers row actions component
-      <TriggerRowActions rowId={row.original.id ?? "rowId"} />
+      <TriggerRowActions
+        rowId={row.original.id ?? "rowId"}
+        name={row.original.name}
+        accessLevel={row.original.accessLevel}
+        isTenantWideAccess={row.original.isTenantWideAccess || false}
+      />
     ),
   },
 ];

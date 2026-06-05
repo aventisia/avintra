@@ -16,9 +16,10 @@ const baseAPIURL: string = `${import.meta.env.VITE_WORKSPACE_API_PATH}/email-tri
 /**
  * Retrieves list of triggers.
  */
-export const getTriggers = () => {
+export const getTriggers = ({ isPersonal = true }: { isPersonal: boolean }) => {
+  const path = isPersonal ? `list` : `list/shared`;
   return axiosInstance
-    .get<IHttpResponse<EmailTriggerDto[]>>(`${baseAPIURL}/list`)
+    .get<IHttpResponse<EmailTriggerDto[]>>(`${baseAPIURL}/${path}`)
     .then((res) => res.data);
 };
 

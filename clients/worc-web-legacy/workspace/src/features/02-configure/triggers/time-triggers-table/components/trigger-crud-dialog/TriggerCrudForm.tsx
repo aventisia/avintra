@@ -20,7 +20,6 @@ import { useEffect } from "react";
 import { z } from "zod";
 
 import { triggerOptimisticMutationFn } from "../../apis/triggers-table-apis";
-import { DATA_QUERY_KEY } from "../../constants";
 import { timezoneOptions } from "../../constants/form-utils";
 import {
   effectiveDateProps,
@@ -35,6 +34,7 @@ import {
 import { triggerZodSchema } from "../../constants/trigger-zod-schema";
 import { TimeTriggerDto } from "../../dtos/time-trigger-dto";
 import { useDefineTriggerForm } from "../../hooks/useDefineTriggerForm";
+import { useTableTab } from "../../hooks/useTableTab";
 import { AgentsSelector } from "./AgentsSelector";
 import { TimezoneSelector } from "./TimezoneSelector";
 import { TriggerTimeScheduleInputs } from "./TriggerTimeScheduleInputs";
@@ -54,6 +54,9 @@ export const TriggerCrudForm = () => {
     refineFormData,
   } = useDefineTriggerForm();
 
+  // Use this in place DATA_QUERY_KEY to handle Personal/Shared tabs list
+  const { queryKey } = useTableTab();
+
   // Define optimistic mutation to crete or update the trigger
   const {
     mutate: mutateTrigger,
@@ -63,7 +66,7 @@ export const TriggerCrudForm = () => {
     TimeTriggerDto,
     TimeTriggerDto | boolean,
     TimeTriggerDto
-  >([rowId], triggerOptimisticMutationFn, DATA_QUERY_KEY);
+  >([rowId], triggerOptimisticMutationFn, queryKey);
 
   const frequency = form.watch("frequency");
 
