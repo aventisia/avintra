@@ -6,8 +6,8 @@ import {
   DataTableSkeleton,
 } from "@aventisia/ui/data-table";
 import { useDataTable } from "@aventisia/ui/hooks";
-import { useMemo } from "react";
-import { useParams } from "react-router-dom";
+import { useEffect, useMemo } from "react";
+import { useNavigate, useParams } from "react-router-dom";
 
 import { useFetchQueues } from "../../queues-table/hooks/useFetchQueues";
 import { TABLE_KEY } from "../constants";
@@ -25,20 +25,27 @@ export const WorkItemsTable = () => {
   const { qid: queueId = "" } = useParams();
   // Set the document title
   // useDocumentTitle(TABLE_HEADING);
+  const navigate = useNavigate();
 
   // Fetch WorkItems data
   const { data } = useFetchQueuesWorkItems();
 
-  const { data: queuesData } = useFetchQueues();
+  const { data: queuesData, isLoading } = useFetchQueues();
 
   const queue = useMemo(
     () => queuesData?.data?.find((item) => item.id === queueId),
     [queuesData?.data, queueId],
   );
 
+  // if the KB does not exist in Queue list/shared revert user back to Queues page
+  useEffect(() => {
+    if (!isLoading && !queue) navigate("/configure/queues");
+  }, [isLoading, queue]);
+
   const hasOnlyReadAccess = useMemo(() => {
+    if (!queue) return true;
     return queue?.accessLevel == "View";
-  }, [queue?.accessLevel]);
+  }, [queue]);
 
   const filteredColumns = useMemo(() => {
     if (!hasOnlyReadAccess) return workItemsTableColumns;

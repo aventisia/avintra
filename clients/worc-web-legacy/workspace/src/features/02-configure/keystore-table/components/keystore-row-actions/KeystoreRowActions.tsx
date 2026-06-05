@@ -28,8 +28,6 @@ export const KeystoreRowActions = ({
   // Use this in place DATA_QUERY_KEY to handle Personal/Shared tabs list
   const { queryKey, isShared } = useTableTab();
 
-  const showDivider = actions?.share || actions?.delete;
-
   return (
     // Dropdown menu for keystore table row action */}
     <DataTableRowActions className="w-36 min-w-36">
@@ -50,7 +48,7 @@ export const KeystoreRowActions = ({
       )}
 
       {/* DropdownMenuSeparator component */}
-      {showDivider && <DropdownMenuSeparator />}
+      <DropdownMenuSeparator />
 
       {/* Triggers Keystore delete alert dialog  */}
       {actions?.delete && <KeystoreRowDeleteAction rowId={rowId} />}

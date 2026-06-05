@@ -35,36 +35,37 @@ export const QueueRowActions = ({
   // Use this in place DATA_QUERY_KEY to handle Personal/Shared tabs list
   const { isShared, queryKey } = useTableTab();
 
-  const showDivider = actions?.share || actions?.delete;
   return (
     // Dropdown menu for Queue table row action */}
     <DataTableRowActions className="w-36 min-w-36">
       {/* View the Queue details */}
-      {actions.read && <OpenQueueRowAction rowId={rowId} />}{" "}
+      {actions?.read && <OpenQueueRowAction rowId={rowId} />}{" "}
       {/* Edit Queue details */}
-      {actions.update && <DTRowAction rowId={rowId} crudAction="update" />}{" "}
-      {actions.update ? (
+      {actions?.update && (
+        <DTRowAction rowId={rowId} crudAction="update" />
+      )}{" "}
+      {actions?.update ? (
         type == "User" ? (
           <AssignUsersRowAction rowId={rowId} queueName={queueName} />
         ) : (
           <AssignAgentsRowAction rowId={rowId} queueName={queueName} />
         )
       ) : null}
-      {actions.update && <AddTriggerRowAction rowId={rowId} />}
-      {actions.update && <UploadItemsRowAction rowId={rowId} />}
+      {actions?.update && <AddTriggerRowAction rowId={rowId} />}
+      {actions?.update && <UploadItemsRowAction rowId={rowId} />}
       {/* Share Access */}
       {actions?.share && (
         <ResourceShareRowAction
           rowId={rowId}
           isTenantWideAccess={isTenantWideAccess}
-          resourceType={ResourceTypeEnum.KnowledgeBase}
+          resourceType={ResourceTypeEnum.Queue}
           resourceName={queueName}
         />
       )}
       {/* DropdownMenuSeparator component */}
-      {showDivider && <DropdownMenuSeparator />}
+      <DropdownMenuSeparator />
       {/* Triggers Queue delete alert dialog  */}
-      {actions.delete && <QueueRowDeleteAction rowId={rowId} />}
+      {actions?.delete && <QueueRowDeleteAction rowId={rowId} />}
       {isShared && (
         <RemoveResourceRowAction queryKey={queryKey} rowId={rowId} />
       )}

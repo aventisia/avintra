@@ -48,9 +48,16 @@ export const queuesTableColumns: ColumnDef<QueuesTableDto>[] = [
       />
     ),
     cell: ({ row }) => (
-      <QueuesTableCellLink rowId={row.original.id}>
-        {row.getValue<string>("name")}
-      </QueuesTableCellLink>
+      <div className="flex  items-center max-w-80 gap-3 ">
+        <QueuesTableCellLink rowId={row.original.id}>
+          {row.getValue<string>("name")}
+        </QueuesTableCellLink>
+        {row.original.accessLevel !== "Owner" && (
+          <p className="bg-muted border text-nowrap p-1  text-2xs leading-none  text-primary rounded-full">
+            {row.original.accessLevel?.replace(/([A-Z])/g, " $1")}
+          </p>
+        )}
+      </div>
     ),
   },
   {

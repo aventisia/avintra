@@ -27,7 +27,7 @@ export const OpenQueueRowAction: React.FC<OpenQueueRowActionProps> = ({
       Icon={ArrowTopRightOnSquareIcon}
       onClick={() => {
         navigate(
-          `/orchestrator/queues/work-items/${rowId}?${TABLE_TAB_QUERY_PARAM}=${currentTab}`,
+          `/configure/queues/work-items/${rowId}?${TABLE_TAB_QUERY_PARAM}=${currentTab}`,
         );
       }}
     />

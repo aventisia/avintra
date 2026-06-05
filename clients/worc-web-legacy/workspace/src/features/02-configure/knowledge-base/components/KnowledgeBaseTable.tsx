@@ -87,9 +87,19 @@ export const KnowledgeBaseTable = () => {
                     <div className="flex flex-col cursor-pointer h-36  justify-between rounded-lg border bg-background p-2.5 shadow-sm transition-shadow hover:border-primary-200 hover:ring-1 hover:ring-primary-200">
                       <div className="flex flex-1 flex-col">
                         <div className="flex justify-between items-center">
-                          <span className="text-sm font-medium">
-                            {row.getValue("name")}
-                          </span>
+                          <div className="flex max-w-80 items-center gap-3 ">
+                            <div className="w-auto truncate text-sm font-medium">
+                              {row.getValue("name")}
+                            </div>
+                            {row.original.accessLevel !== "Owner" && (
+                              <span className="bg-muted border px-1 text-2xs leading-none h-[1.4rem]  flex items-center justify-center  text-primary    rounded-full">
+                                {row.original.accessLevel?.replace(
+                                  /([A-Z])/g,
+                                  " $1",
+                                )}
+                              </span>
+                            )}
+                          </div>
                           {/* Action trigger */}
                           <KBRowActions
                             rowId={row.original.id || ""}

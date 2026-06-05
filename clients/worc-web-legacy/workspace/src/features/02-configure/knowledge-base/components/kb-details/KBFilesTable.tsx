@@ -6,8 +6,8 @@ import {
   getDataTablePreferences,
 } from "@aventisia/ui/data-table";
 import { useDataTable } from "@aventisia/ui/hooks";
-import { useMemo } from "react";
-import { useParams, useSearchParams } from "react-router-dom";
+import { useEffect, useMemo } from "react";
+import { useNavigate, useParams, useSearchParams } from "react-router-dom";
 
 import { DETAIL_TABLE_KEY } from "../../constants";
 import { columnVisibilityState } from "../../constants/kb-files-column-visibility-state";
@@ -29,6 +29,7 @@ import { TableHeading } from "./TableHeading";
 export const KBFilesTable = () => {
   const { id: knowledgeBaseId = "" } = useParams();
   const [searchParams] = useSearchParams();
+  const navigate = useNavigate();
   const kbName = searchParams.get("kb") ?? "KB not found";
 
   // Get data-table preferences from local storage
@@ -38,7 +39,7 @@ export const KBFilesTable = () => {
   );
 
   // Fetch KBFilesFiles data
-  const { data } = useFetchKBFiles(knowledgeBaseId);
+  const { data, isLoading } = useFetchKBFiles(knowledgeBaseId);
   const { data: kbData } = useFetchKnowledgeBase();
 
   const knowledgeBase = useMemo(
@@ -51,9 +52,15 @@ export const KBFilesTable = () => {
     [knowledgeBaseId, knowledgeBase],
   );
 
+  // if the KB does not exist in KB list/shared revert user back to kb
+  useEffect(() => {
+    if (!isLoading && !knowledgeBase) navigate("/configure/knowledge-base");
+  }, [isLoading, knowledgeBase]);
+
   const hasOnlyReadAccess = useMemo(() => {
+    if (!knowledgeBase) return true;
     return knowledgeBase?.accessLevel == "View";
-  }, [knowledgeBase?.accessLevel]);
+  }, [knowledgeBase]);
 
   const filteredColumns = useMemo(() => {
     if (!hasOnlyReadAccess) return columns;

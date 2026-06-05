@@ -1,12 +1,17 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import CustomCheckbox from "@/components/CustomCheckbox";
 
+import { buttonVariants } from "@aventisia/ui/buttons";
 import {
   Dialog,
+  DialogClose,
   DialogContent,
-  DialogDefaultHeader,
+  // DialogDefaultHeader,
+  DialogTitle,
 } from "@aventisia/ui/dialog";
 import { ScrollArea } from "@aventisia/ui/scroll";
+import { Tooltip } from "@aventisia/ui/tooltip";
+import { X } from "lucide-react";
 import { useShallow } from "zustand/react/shallow";
 
 import { useResourceShareTenantAccess } from "../hooks/useResourceShareTenantAccess";
@@ -43,9 +48,36 @@ function ResourceShareDialog({ queryKey }: ResourceShareDialogProps) {
   return (
     <Dialog open={showDialog} onOpenChange={setShowDialog}>
       <DialogContent className="h-[75vh] min-w-[40rem]">
-        <DialogDefaultHeader
+        <div
+          className={
+            "relative flex items-center justify-between border-b p-3.5 text-lg tracking-wide"
+          }
+        >
+          {/* Left side - Dialog Heading and description */}
+          <div className="ml-2 flex flex-col">
+            <DialogTitle className="flex items-center font-semibold  text-foreground">
+              <span className="truncate w-[35rem]">
+                {`Share - ${resourceName ?? "Resource"}`}
+              </span>
+            </DialogTitle>
+          </div>
+          {/* Right side - Dialog action buttons */}
+          <div className="flex items-center">
+            {/* Close Dialog */}
+            <Tooltip content={"Close"} shortcut="Esc">
+              <DialogClose
+                className={buttonVariants({ variant: "ghost", size: "icon8" })}
+              >
+                <X className="h-5 w-5 text-[--icon-color]" />
+                <span className="sr-only">Close</span>
+              </DialogClose>
+            </Tooltip>
+          </div>
+        </div>
+        {/* <DialogDefaultHeader
           heading={`Share - ${resourceName ?? "Resource"}`}
-        />
+
+        /> */}
         <ScrollArea className="h-[calc(75vh-4rem)]">
           <div className="p-4 pb-0">
             <CustomCheckbox

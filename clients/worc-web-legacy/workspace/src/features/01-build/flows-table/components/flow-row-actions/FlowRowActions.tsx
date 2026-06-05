@@ -29,8 +29,6 @@ export const FlowRowActions = ({
   // Use this in place DATA_QUERY_KEY to handle Personal/Shared tabs list
   const { isShared, queryKey } = useTableTab();
 
-  const showDivider = actions?.share || actions?.delete;
-
   return (
     // Dropdown menu for flow table row action */}
     <DataTableRowActions className="w-36 min-w-36">
@@ -54,7 +52,7 @@ export const FlowRowActions = ({
       )}
 
       {/* DropdownMenuSeparator component */}
-      {showDivider && <DropdownMenuSeparator />}
+      <DropdownMenuSeparator />
 
       {/* Triggers Flow delete/remove alert dialog  */}
 

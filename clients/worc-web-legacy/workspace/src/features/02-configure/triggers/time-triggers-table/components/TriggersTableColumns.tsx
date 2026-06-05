@@ -49,11 +49,19 @@ export const triggersTableColumns: ColumnDef<TimeTriggerDto>[] = [
       />
     ),
     cell: ({ row }) => (
-      <div
-        title={row.getValue("name")}
-        className="w-auto truncate max-w-80 font-medium"
-      >
-        {row.getValue("name")}
+      <div className="flex max-w-80 items-center gap-3 ">
+        <div
+          title={row.getValue("name")}
+          className="w-auto truncate max-w-80 font-medium"
+        >
+          {row.getValue("name")}
+        </div>
+
+        {row.original.accessLevel !== "Owner" && (
+          <p className="bg-muted border text-nowrap p-1  text-2xs leading-none  text-primary rounded-full">
+            {row.original.accessLevel?.replace(/([A-Z])/g, " $1")}
+          </p>
+        )}
       </div>
     ),
   },

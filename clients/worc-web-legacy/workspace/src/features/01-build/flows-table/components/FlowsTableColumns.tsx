@@ -60,6 +60,11 @@ export const flowsTableColumns: ColumnDef<FlowsTableDto>[] = [
         <span className="bg-muted border text-2xs leading-none h-[1.4rem] w-[1.4rem] flex items-center justify-center  text-primary    rounded-full">
           v{row.original.versionNumber ?? 0}
         </span>
+        {row.original.accessLevel !== "Owner" && (
+          <p className="bg-muted border text-nowrap p-1  text-2xs leading-none  text-primary rounded-full">
+            {row.original.accessLevel?.replace(/([A-Z])/g, " $1")}
+          </p>
+        )}
       </div>
     ),
   },
