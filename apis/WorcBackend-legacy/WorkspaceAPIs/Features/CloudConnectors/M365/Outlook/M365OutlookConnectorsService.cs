@@ -174,7 +174,7 @@ public class M365OutlookConnectorsService : IM365OutlookConnectorsService
             case M365OutlookActionsEnum.UpdateAllEmailProperties:
                 {
                     // Retrieve the message ID and all the properties to update from the payload
-                    var messageId = CloudConnectionPayloadUtil.GetValue(payload, ",messageId");
+                    var messageId = CloudConnectionPayloadUtil.GetValue(payload, "messageId");
                     var isRead = CloudConnectionPayloadUtil.GetBool(payload, "isRead", false);
                     var flagStatus = CloudConnectionPayloadUtil.GetValue(payload, "flagStatus");
                     var categories = CloudConnectionPayloadUtil.GetList<string>(payload, "categories");
@@ -220,7 +220,7 @@ public class M365OutlookConnectorsService : IM365OutlookConnectorsService
                     if (endpoint == "replyAll")
                     {
                         return await HttpClientHelper.PostAsync(
-                            $"{baseUrl}/messages/{replyMessageId}/replyAll",
+                            $"{messagesApiUrl}/messages/{replyMessageId}/replyAll",
                             new { replyComment },
                             accessToken);
                     }
@@ -228,7 +228,7 @@ public class M365OutlookConnectorsService : IM365OutlookConnectorsService
                     // Reply sends the response only to the original sender.
                     // Microsoft Graph supports an optional 'message' object for overrides, but this connector uses the simpler comment-based reply.
                     return await HttpClientHelper.PostAsync(
-                        $"{baseUrl}/messages/{replyMessageId}/reply",
+                        $"{messagesApiUrl}/messages/{replyMessageId}/reply",
                         new { replyComment },
                         accessToken);
                 }
@@ -255,7 +255,7 @@ public class M365OutlookConnectorsService : IM365OutlookConnectorsService
 
                     // Forward the email to the specified recipients.
                     return await HttpClientHelper.PostAsync(
-                        $"{baseUrl}/messages/{forwardMessageId}/forward",
+                        $"{messagesApiUrl}/messages/{forwardMessageId}/forward",
                         new
                         {
                             forwardComment,
