@@ -152,6 +152,7 @@ public class M365OutlookConnectorsService : IM365OutlookConnectorsService
 
                     return JsonDocument.Parse(System.Text.Json.JsonSerializer.Serialize(structured, camelCaseOptions));
                 }
+
             case M365OutlookActionsEnum.GetEmails:
                 return await GetEmailsAsync(messagesApiUrl, accessToken, payload);
 
@@ -190,7 +191,7 @@ public class M365OutlookConnectorsService : IM365OutlookConnectorsService
                     };
 
                     // Send a PATCH request to update the email properties
-                    return await HttpClientHelper.PatchAsync($"{messagesApiUrl}/{messageId}", requestBody, accessToken);
+                    return await HttpClientHelper.PatchAsync($"{messagesApiUrl}/messages/{messageId}", requestBody, accessToken);
                 }
 
             // case M365OutlookActionsEnum.ReplyToEmail:
