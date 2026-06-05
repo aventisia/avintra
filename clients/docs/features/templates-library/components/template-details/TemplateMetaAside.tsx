@@ -6,7 +6,7 @@ import {
   CardHeader,
   CardTitle,
 } from "@/app/_components/ui/cards";
-import { BotIcon, Calendar, FileBoxIcon } from "lucide-react";
+import { BotIcon, Calendar } from "lucide-react";
 
 import { UseTemplateDTO } from "../../dtos/use-template-dto";
 
@@ -24,7 +24,7 @@ export function TemplateMetaAside({ template }: { template: UseTemplateDTO }) {
           <div className="grid grid-cols-3 gap-2 sm:gap-3">
             <span className="text-muted-foreground">Type</span>
             <span className="col-span-2 break-words">
-              {template?.type?.replace("AIProject", "AI Model")}
+              {template?.type}
             </span>
           </div>
           <div className="grid grid-cols-3 gap-2 sm:gap-3">
@@ -72,11 +72,7 @@ export function TemplateMetaAside({ template }: { template: UseTemplateDTO }) {
             ) : (
               // Fallback icon
               <div className="rounded-lg bg-accent p-1.5 sm:p-2">
-                {template.type == "AIProject" ? (
-                  <FileBoxIcon className="h-5 w-5 sm:h-6 sm:w-6" />
-                ) : (
-                  <BotIcon className="h-5 w-5 sm:h-6 sm:w-6" />
-                )}{" "}
+                <BotIcon className="h-5 w-5 sm:h-6 sm:w-6" />
               </div>
             )}
           </div>

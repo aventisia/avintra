@@ -1,3 +1,5 @@
+import { MultiSelectField } from "@/components/multi-select/MultiSelectField";
+
 import { LoadingSpinner, Separator } from "@aventisia/ui";
 import { Button } from "@aventisia/ui/buttons";
 import { DatePickerField, Form } from "@aventisia/ui/form";
@@ -5,8 +7,6 @@ import { Label } from "@aventisia/ui/label";
 import { ScrollArea } from "@aventisia/ui/scroll";
 import React from "react";
 import { FormProvider } from "react-hook-form";
-
-import { MultiSelectField } from "@/components/multi-select/MultiSelectField";
 
 import {
   endDateProps,
@@ -17,8 +17,7 @@ import { useAgentSearchMultiSelect } from "../../hooks/agents/useAgentSearchMult
 import { useExportChartForm } from "../../hooks/useExportChartForm";
 import { useSearchMultiSelect } from "../../hooks/users/useSearchMultiSelect";
 import { useExportDialogStore } from "../../store/export-dialog-store";
-
-import { AgentsModelsMultiSelector } from "./AgentsModelsMultiSelector";
+import { AgentsMultiSelector } from "./AgentsMultiSelector";
 import { UsersMultiSelector } from "./UsersMultiSelector";
 
 const ExportDialogForm = () => {
@@ -99,7 +98,7 @@ const ExportDialogForm = () => {
                 Agents
                 {/* <span className="text-destructive">*</span> */}
               </Label>
-              <AgentsModelsMultiSelector
+              <AgentsMultiSelector
                 searchResults={agentSearchData?.data || []}
                 selectedItems={agentSelectedItems}
                 onItemSelect={agentHandleItemSelect}

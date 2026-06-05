@@ -58,7 +58,7 @@ export function TemplateHeader({ template }: { template: UseTemplateDTO }) {
             <div className="flex flex-row flex-wrap items-center gap-1.5 sm:gap-2">
               {/* Type Badge */}
               <Badge className="flex text-2xs sm:text-xs items-center gap-1 capitalize">
-                {template?.type?.replace("AIProject", "AI Model")}
+                {template?.type}
               </Badge>
 
               {/* Tags */}

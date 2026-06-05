@@ -71,18 +71,4 @@ public enum CreditServiceTypesEnum
     // Other services
     ElevenLabsSTT,
     ElevenLabsTTS,
-
-    // TODO (Remove ai-studio task): Deprecated services (to be removed after data migration)
-    AIModelExecutionTime,
-    OnPremGpuText,
-    OlmOcrInput,
-    OlmOcrOutput,
-    OnPremSTT,
-    OnPremTTS,
-    OpenAIEmbedding3Large,
-    GeminiEmbeddingV1,
-    GeminiEmbeddingV2Preview,
-    OpenRouterQwenEmbedding06B,
-    OpenRouterQwenEmbedding4B,
-    OpenRouterQwenEmbedding8B,
 }

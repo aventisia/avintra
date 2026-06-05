@@ -1,4 +1,4 @@
-import { AIModelNode } from "@/components/nodes/AIModelNode";
+import { AINode } from "@/components/nodes/AINode";
 import { ActivityNode } from "@/components/nodes/ActivityNode";
 import { BlockNode } from "@/components/nodes/BlockNode";
 import { BranchEndNode } from "@/components/nodes/BranchEndNode";
@@ -41,7 +41,7 @@ export const CustomNodeTypeObj = {
   cloudConnectorNode: CloudConnectorNode,
 
   //AI Node
-  aiNode: AIModelNode,
+  aiNode: AINode,
   blockNode: BlockNode,
   callAgentNode: CallAgentNode,
   modelNode: ModelNode,
