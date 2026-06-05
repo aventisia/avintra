@@ -55,6 +55,13 @@ public interface IResourceShareService
     Task<ServiceResponse<bool>> UpdateTenantWideAccessAsync(UpdateTenantWideAccessDto updateTenantWideAccessDto);
 
     /// <summary>
+    /// Revokes the current user's access to the specified resource.
+    /// </summary>
+    /// <param name="resourceId"> The unique identifier of the resource. </param>
+    /// <returns> A service response indicating whether the user's access was successfully revoked. </returns>
+    Task<ServiceResponse<bool>> RevokeMyAccessAsync(Guid resourceId);
+
+    /// <summary>
     /// Deletes a resource share by its unique identifier.
     /// </summary>
     /// <param name="resourceShareId"> The unique identifier of the resource share. </param>

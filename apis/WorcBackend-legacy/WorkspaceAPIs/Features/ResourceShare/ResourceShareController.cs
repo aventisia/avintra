@@ -53,6 +53,13 @@ public class ResourceShareController : BaseApiController
         return ResultHelper(await _resourceShareService.UpdateResourceShareAsync(resourceShareDto));
     }
 
+    // Removes the current user's access to the specified resource.
+    [HttpDelete("{resourceId}/my-access")]
+    public async Task<ActionResult<ServiceResponse<bool>>> RevokeMyAccessAsync(Guid resourceId)
+    {
+        return ResultHelper(await _resourceShareService.RevokeMyAccessAsync(resourceId));
+    }
+
     //  Deletes a single resource share by ID.
     [HttpDelete("{resourceShareId}")]
     public async Task<ActionResult<ServiceResponse<bool>>> DeleteResourceShareAsync(Guid resourceShareId)
