@@ -5,18 +5,14 @@ import { FlowComments } from "@/features/flow-comments/components/FlowComments";
 import { SettingsTrigger } from "@/features/flow-settings/components/SettingsTrigger";
 import { FlowVersions } from "@/features/flow-versions/components";
 import SaveFlow from "@/features/react-flow/components/save-flow/SaveFlow";
-import { FlowParticipantsFacePile } from "@/features/share-access/components/share-avatars/FlowParticipantsFacePile";
 import { StudioPreferences } from "@/features/studio-preferences/components";
 import { VersionHistoryCloseButton } from "@/features/version-history/components/version-history-panel/VersionHistoryCloseButton";
 import { VersionHistoryTrigger } from "@/features/version-history/components/version-history-panel/VersionHistoryTrigger";
 import { useIsVersionHistoryRoute } from "@/features/version-history/hooks/useIsVersionHistoryRoute";
-import { DefaultTenantsEnum } from "@/react-toolkit/enums/default-tenants-enum";
 import { useUserSessionStore } from "@/react-toolkit/stores/user-session-store";
 
-import { Avatar, AvatarFallback } from "@aventisia/ui/avatar";
 import { Button } from "@aventisia/ui/buttons";
 import { Header, HeaderContainer } from "@aventisia/ui/layout";
-import { cn } from "@aventisia/ui/lib";
 import { Tooltip } from "@aventisia/ui/tooltip";
 import { ArrowLeftIcon } from "@heroicons/react/24/outline";
 import { useShallow } from "zustand/react/shallow";
@@ -35,8 +31,8 @@ const AppHeader: React.FC = () => {
     })),
   );
 
-  const isIndividualUser =
-    userSession?.tenantName === DefaultTenantsEnum.IndividualUsers;
+  // const isIndividualUser =
+  //   userSession?.tenantName === DefaultTenantsEnum.IndividualUsers;
 
   const isAgentHistory = useIsVersionHistoryRoute();
   const isExecutionLog = useIsExecutionLogsRoute();
@@ -81,7 +77,7 @@ const AppHeader: React.FC = () => {
         </div>
         {!isAgentHistory && !isExecutionLog ? (
           <div className="flex items-center  justify-end">
-            <div>
+            {/* <div>
               {isIndividualUser ? (
                 <Avatar className={cn("flex h-7 w-7")}>
                   <AvatarFallback className="bg-[#aba7e7] text-xs font-bold capitalize tracking-wider text-secondary">
@@ -89,10 +85,8 @@ const AppHeader: React.FC = () => {
                   </AvatarFallback>
                 </Avatar>
               ) : null}
-            </div>
+            </div> */}
             <div className="mx-4 flex items-center gap-1 text-white">
-              {!isIndividualUser ? <FlowParticipantsFacePile /> : null}
-
               <ExecuteFlow />
 
               <SearchCommandTrigger />
