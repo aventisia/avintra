@@ -173,7 +173,7 @@
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <PropertyGroup>
-    <PostBuildEvent>xcopy "$(TargetDir)*.*" "$(ProjectDir)..\..\worc-desktop-app\src-tauri\binaries\node-executor" /E /Y /I
+    <PostBuildEvent>xcopy "$(TargetDir)*.*" "$(ProjectDir)..\..\desktop-app\src-tauri\binaries\node-executor" /E /Y /I
 xcopy "$(TargetDir)*.*" "%LOCALAPPDATA%\AvintraDesktopApp\binaries\node-executor" /E /Y /I</PostBuildEvent>
   </PropertyGroup>
 </Project>

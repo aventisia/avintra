@@ -22,7 +22,7 @@ COPY --from=build /Publish .
 RUN mkdir -p /var/www/aventisia.com/files/binaries
 
 # Copy NSIS bundle files to binaries directory
-COPY clients/worc-desktop-app/src-tauri/target/release/bundle/nsis/ /var/www/aventisia.com/files/binaries/
+COPY clients/desktop-app/src-tauri/target/release/bundle/nsis/ /var/www/aventisia.com/files/binaries/
 
 # Set port environment variable
 ENV ASPNETCORE_URLS=http://+:4000

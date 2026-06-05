@@ -187,8 +187,8 @@ namespace CodeActivityToJSON.Utils
                             var localAppDataFileName = Path.Combine(localAppDatadesktopNodesOutputDir, activity.Name + ".json");
                             File.WriteAllText(localAppDataFileName, jsonWithUnixLineEndings);
 
-                            // Create the file in worc-desktop-app\config-files\desktop-nodes (for form generation)
-                            var winRepofileDir = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "..", "..", "..", "..", "worc-desktop-app", "src-tauri", "config-files", "desktop-nodes");
+                            // Create the file in desktop-app\config-files\desktop-nodes (for form generation)
+                            var winRepofileDir = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "..", "..", "..", "..", "desktop-app", "src-tauri", "config-files", "desktop-nodes");
                             Directory.CreateDirectory(winRepofileDir);
                             var winRepofileName = Path.Combine(winRepofileDir, activity.Name + ".json");
                             File.WriteAllText(winRepofileName, jsonWithUnixLineEndings);
@@ -238,8 +238,8 @@ namespace CodeActivityToJSON.Utils
                 Console.WriteLine($"Activities mapping JSON saved to local app data");
             }
 
-            // Save the primary categories JSON file to worc-desktop-app\config-files\action-selector
-            var winRepoActionSelectorOutputDir = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "..", "..", "..", "..", "worc-desktop-app", "src-tauri", "config-files", "action-selector");
+            // Save the primary categories JSON file to desktop-app\config-files\action-selector
+            var winRepoActionSelectorOutputDir = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "..", "..", "..", "..", "desktop-app", "src-tauri", "config-files", "action-selector");
             Directory.CreateDirectory(winRepoActionSelectorOutputDir);
             var winRepoActionSelectorOutputFilePath = Path.Combine(winRepoActionSelectorOutputDir, "_ActionSelectorData.json");
             using (var writer = new StreamWriter(winRepoActionSelectorOutputFilePath))
@@ -249,7 +249,7 @@ namespace CodeActivityToJSON.Utils
                 var json = JsonConvert.SerializeObject(primaryCategories, Formatting.Indented, settings);
                 var jsonWithUnixLineEndings = json.Replace("\r\n", "\n");
                 writer.Write(jsonWithUnixLineEndings);
-                Console.WriteLine($"Activities mapping JSON saved to worc-desktop-app");
+                Console.WriteLine($"Activities mapping JSON saved to desktop-app");
             }
         }
     }
