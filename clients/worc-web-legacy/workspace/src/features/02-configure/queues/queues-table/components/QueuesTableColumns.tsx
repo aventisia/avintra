@@ -7,9 +7,8 @@ import { format } from "date-fns";
 import { TABLE_KEY } from "../constants";
 import { getColumnName } from "../constants/column-display-names";
 import { QueuesTableDto } from "../dtos/queues-table-dto";
-
-import { QueueRowActions } from "./queue-row-actions/QueueRowActions";
 import { QueuesTableCellLink } from "./QueuesTableCellLink";
+import { QueueRowActions } from "./queue-row-actions/QueueRowActions";
 
 /**
  * Array of table columns for the queues table.
@@ -201,6 +200,8 @@ export const queuesTableColumns: ColumnDef<QueuesTableDto>[] = [
         rowId={row.original.id ?? "rowId"}
         queueName={row.original.name ?? ""}
         type={row.original.type ?? ""}
+        accessLevel={row.original.accessLevel}
+        isTenantWideAccess={row.original.isTenantWideAccess || false}
       />
     ),
   },

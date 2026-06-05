@@ -1,3 +1,5 @@
+import { JsonEditorField } from "@/components/json-editor/JsonEditorField";
+
 import { Input } from "@aventisia/ui";
 import { Button, SubmitButton } from "@aventisia/ui/buttons";
 import {
@@ -13,10 +15,7 @@ import { useListOptimisticMutation } from "@aventisia/ui/hooks";
 import { useEffect, useRef } from "react";
 import { z } from "zod";
 
-import { JsonEditorField } from "@/components/json-editor/JsonEditorField";
-
 import { queueOptimisticMutationFn } from "../../apis/queues-table-apis";
-import { DATA_QUERY_KEY } from "../../constants";
 import {
   descriptionProps,
   idProps,
@@ -27,6 +26,7 @@ import {
 import { queueZodSchema } from "../../constants/queue-zod-schema";
 import { QueuesTableDto } from "../../dtos/queues-table-dto";
 import { useDefineQueueForm } from "../../hooks/useDefineQueueForm";
+import { useTableTab } from "../../hooks/useTableTab";
 
 export const QueueCrudForm = () => {
   const fileInputRef = useRef<HTMLInputElement>(null);
@@ -87,6 +87,9 @@ export const QueueCrudForm = () => {
     reader.readAsText(file);
   };
 
+  // Use this in place DATA_QUERY_KEY to handle Personal/Shared tabs list
+  const { queryKey } = useTableTab();
+
   // Define optimistic mutation to crete or update the queue
   const {
     mutate: mutatequeue,
@@ -96,7 +99,7 @@ export const QueueCrudForm = () => {
     QueuesTableDto,
     QueuesTableDto | boolean,
     QueuesTableDto
-  >([rowId], queueOptimisticMutationFn, DATA_QUERY_KEY);
+  >([rowId], queueOptimisticMutationFn, queryKey);
 
   // Define submit handler
   const onSubmit = (formData: z.infer<typeof queueZodSchema>) => {

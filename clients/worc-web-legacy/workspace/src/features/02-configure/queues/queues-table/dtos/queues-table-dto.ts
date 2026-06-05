@@ -1,3 +1,5 @@
+import { ResourceAccessTypeEnum } from "@/features/resource-share/enums/resource-access-type-enum";
+
 /**
  * Represents a data transfer object (DTO) for a queue.
  */
@@ -45,6 +47,17 @@ export interface QueuesTableDto {
    * Maximum number of retry attempts for a work item.
    */
   maximumRetryAttempts: number;
+
+  /**
+   * Access level of the configuration item.
+   */
+  accessLevel: ResourceAccessTypeEnum;
+
+  /**
+   * Indicates whether the kb is accessible
+   * to all users within the tenant.
+   */
+  isTenantWideAccess: boolean;
 
   /**
    * Whether the queue is disabled.

@@ -3,6 +3,9 @@ import { ArrowTopRightOnSquareIcon } from "@heroicons/react/24/outline";
 import React from "react";
 import { useNavigate } from "react-router-dom";
 
+import { TABLE_TAB_QUERY_PARAM } from "../../constants";
+import { useTableTab } from "../../hooks/useTableTab";
+
 interface OpenQueueRowActionProps {
   rowId: string;
   size?: "sm" | "md";
@@ -13,13 +16,19 @@ export const OpenQueueRowAction: React.FC<OpenQueueRowActionProps> = ({
   size = "md",
 }) => {
   const navigate = useNavigate();
+
+  // Use to handle Personal/Shared tabs list
+  const { currentTab } = useTableTab();
+
   return (
     <SimpleDDMenuItem
       size={size}
       content="Open"
       Icon={ArrowTopRightOnSquareIcon}
       onClick={() => {
-        navigate(`/orchestrator/queues/work-items/${rowId}`);
+        navigate(
+          `/orchestrator/queues/work-items/${rowId}?${TABLE_TAB_QUERY_PARAM}=${currentTab}`,
+        );
       }}
     />
   );
