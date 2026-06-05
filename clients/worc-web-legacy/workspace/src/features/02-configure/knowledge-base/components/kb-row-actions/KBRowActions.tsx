@@ -31,15 +31,11 @@ export const KBRowActions = ({
 }: KBRowActionsProps) => {
   const navigate = useNavigate();
 
-  // Use to handle Personal/Shared tabs list
-  const { currentTab } = useTableTab();
-
   const actions = getResourceAccessActions(accessLevel);
 
   // Use this in place DATA_QUERY_KEY to handle Personal/Shared tabs list
-  const { isShared, queryKey } = useTableTab();
+  const { isShared, queryKey, currentTab } = useTableTab();
 
-  const showDivider = actions?.share || actions?.delete;
   return (
     // Dropdown menu for config table row action
     <DataTableRowActions className="w-36 min-w-36">
@@ -66,7 +62,7 @@ export const KBRowActions = ({
         />
       )}
       {/* DropdownMenuSeparator component */}
-      {showDivider && <DropdownMenuSeparator />}
+      <DropdownMenuSeparator />
       {/* Triggers Config delete alert dialog  */}
       {actions?.delete && <KBRowDeleteAction rowId={rowId} />}{" "}
       {isShared && (

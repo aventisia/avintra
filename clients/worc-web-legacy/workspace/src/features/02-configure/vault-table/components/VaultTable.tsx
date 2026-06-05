@@ -141,9 +141,23 @@ export const VaultTable = () => {
 
                     {/* Name, type, description in flex col */}
                     <div className="flex flex-col">
-                      <span className="text-sm font-medium">
-                        {row.getValue("name")}
-                      </span>
+                      <div className="flex items-center gap-3 ">
+                        <div
+                          title={row.getValue("name")}
+                          className="w-auto truncate text-sm font-medium"
+                        >
+                          {row.getValue("name")}
+                        </div>
+
+                        {row.original.accessLevel !== "Owner" && (
+                          <span className="bg-muted border px-1 text-2xs leading-none h-[1.4rem]  flex items-center justify-center  text-primary  rounded-full">
+                            {row.original.accessLevel?.replace(
+                              /([A-Z])/g,
+                              " $1",
+                            )}
+                          </span>
+                        )}
+                      </div>{" "}
                       <div className="flex items-center">
                         <span className="text-2xs text-muted-foreground">
                           {row.getValue("type") as string}

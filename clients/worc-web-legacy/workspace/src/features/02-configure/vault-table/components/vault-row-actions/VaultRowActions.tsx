@@ -45,8 +45,6 @@ export const VaultRowActions = ({
 
   const actions = getResourceAccessActions(accessLevel);
 
-  const showDivider = actions?.share || actions?.delete;
-
   return (
     // Dropdown menu for config table row action */}
     <DataTableRowActions className="w-36 min-w-36">
@@ -84,7 +82,7 @@ export const VaultRowActions = ({
       )}
 
       {/* DropdownMenuSeparator component */}
-      {showDivider && <DropdownMenuSeparator />}
+      <DropdownMenuSeparator />
 
       {/* Triggers Config delete alert dialog  */}
       {actions?.delete && <VaultRowDeleteAction rowId={rowId} />}

@@ -28,28 +28,26 @@ export const TriggerRowActions = ({
   // Use this in place DATA_QUERY_KEY to handle Personal/Shared tabs list
   const { isShared, queryKey } = useTableTab();
 
-  const showDivider = actions?.share || actions?.delete;
-
   return (
     // Dropdown menu for Trigger table row action */}
     <DataTableRowActions className="w-36 min-w-36">
       {/* View the Trigger details */}
-      {actions.read && <DTRowAction rowId={rowId} crudAction="read" />}
+      {actions?.read && <DTRowAction rowId={rowId} crudAction="read" />}
       {/* Edit Trigger details */}
-      {actions.update && <DTRowAction rowId={rowId} crudAction="update" />}
+      {actions?.update && <DTRowAction rowId={rowId} crudAction="update" />}
       {/* Share Access */}
       {actions?.share && (
         <ResourceShareRowAction
           rowId={rowId}
           isTenantWideAccess={isTenantWideAccess}
-          resourceType={ResourceTypeEnum.KnowledgeBase}
+          resourceType={ResourceTypeEnum.Trigger}
           resourceName={name}
         />
       )}
       {/* DropdownMenuSeparator component */}
-      {showDivider && <DropdownMenuSeparator />}
+      <DropdownMenuSeparator />
       {/* Triggers Trigger delete alert dialog  */}
-      {actions.delete && <TriggerRowDeleteAction rowId={rowId} />}{" "}
+      {actions?.delete && <TriggerRowDeleteAction rowId={rowId} />}{" "}
       {isShared && (
         <RemoveResourceRowAction queryKey={queryKey} rowId={rowId} />
       )}
