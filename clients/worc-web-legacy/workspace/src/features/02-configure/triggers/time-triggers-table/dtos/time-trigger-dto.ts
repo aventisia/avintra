@@ -1,4 +1,5 @@
 import { TriggerFrequencyTypesEnum } from "@/enums/trigger-frequency-types-enum";
+import { ResourceAccessTypeEnum } from "@/features/resource-share/enums/resource-access-type-enum";
 
 /**
  * Represents a data transfer object (DTO) for a time trigger configuration.
@@ -93,6 +94,17 @@ export interface TimeTriggerDto {
    * Gets or sets the list of specific dates when the time trigger should be excluded.
    */
   exceptionDates?: string[]; // Dates in ISO 8601 format
+
+  /**
+   * Access level of the configuration item.
+   */
+  accessLevel: ResourceAccessTypeEnum;
+
+  /**
+   * Indicates whether the kb is accessible
+   * to all users within the tenant.
+   */
+  isTenantWideAccess: boolean;
 
   /**
    * Gets or sets a flag indicating whether the time trigger is disabled.

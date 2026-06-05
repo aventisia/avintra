@@ -1,3 +1,6 @@
+import { QueryTabs } from "@/components/QueryTab";
+import ResourceShareDialog from "@/features/resource-share/components/ResourceShareDialog";
+
 import {
   DTCreateButton,
   DTHeading,
@@ -10,11 +13,17 @@ import {
 } from "@aventisia/ui/data-table";
 import { useDataTable, useDocumentTitle } from "@aventisia/ui/hooks";
 
-import { SEARCH_COLUMN, TABLE_HEADING, TABLE_KEY } from "../constants";
+import {
+  SEARCH_COLUMN,
+  TABLE_HEADING,
+  TABLE_KEY,
+  TABLE_TAB_QUERY_PARAM,
+  TABLE_VIEW_TABS,
+} from "../constants";
 import { columnDisplayNames } from "../constants/column-display-names";
 import { columnVisibilityState } from "../constants/column-visibility-state";
 import { useFetchTriggers } from "../hooks/useFetchTriggers";
-import { TriggerTabs } from "./TriggerTabs";
+import { useTableTab } from "../hooks/useTableTab";
 import { triggersTableColumns } from "./TriggersTableColumns";
 // import { TriggerBulkActions } from "./table-actions/TriggerBulkActions";
 import { TriggerCrudDialog } from "./trigger-crud-dialog/TriggerCrudDialog";
@@ -26,13 +35,16 @@ import { TriggerCrudDialog } from "./trigger-crud-dialog/TriggerCrudDialog";
  */
 export const EmailTriggersTable = () => {
   // Set the document title
-  useDocumentTitle(`Email - ${TABLE_HEADING}`);
+  useDocumentTitle(`${TABLE_HEADING}`);
 
   // Get data-table preferences from local storage
   const { columnVisibility, sortState } = getDataTablePreferences(
     TABLE_KEY,
     columnVisibilityState,
   );
+
+  // Use this in place DATA_QUERY_KEY to handle Personal/Shared tabs list
+  const { isPersonal, queryKey } = useTableTab();
 
   // Fetch triggers data
   const { isLoading, data } = useFetchTriggers();
@@ -57,7 +69,7 @@ export const EmailTriggersTable = () => {
             <div className="flex items-center justify-between">
               <div className="flex items-center gap-2">
                 <DTHeading heading={TABLE_HEADING} />
-                <TriggerTabs />
+                <QueryTabs tabs={TABLE_VIEW_TABS} key={TABLE_TAB_QUERY_PARAM} />
               </div>
               <div className="flex items-center gap-2">
                 <DTSearchBox
@@ -68,7 +80,7 @@ export const EmailTriggersTable = () => {
                 <DTViewOptions
                   {...{ table, columnDisplayNames, tableKey: TABLE_KEY }}
                 />
-                <DTCreateButton />
+                {isPersonal && <DTCreateButton />}
               </div>
             </div>
 
@@ -81,6 +93,9 @@ export const EmailTriggersTable = () => {
 
           {/* Data table Pagination component */}
           <DTPagination table={table} />
+
+          {/* Resource Share Dialog component */}
+          <ResourceShareDialog queryKey={queryKey} />
 
           {/* Bulk actions for data table */}
           {/* <TriggerBulkActions table={table} /> */}

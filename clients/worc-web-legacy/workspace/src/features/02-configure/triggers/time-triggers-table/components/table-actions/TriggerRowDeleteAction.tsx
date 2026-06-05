@@ -5,8 +5,8 @@ import {
 } from "@aventisia/ui/hooks";
 
 import { triggerOptimisticMutationFn } from "../../apis/triggers-table-apis";
-import { DATA_QUERY_KEY } from "../../constants";
 import { TimeTriggerDto } from "../../dtos/time-trigger-dto";
+import { useTableTab } from "../../hooks/useTableTab";
 
 interface TriggerRowDeleteActionProps {
   rowId: string;
@@ -18,12 +18,15 @@ export const TriggerRowDeleteAction = ({
   // Get showAlert handler
   const { showDefaultAlertDialog } = useShowAlertHandler();
 
+  // Use this in place DATA_QUERY_KEY to handle Personal/Shared tabs list
+  const { queryKey } = useTableTab();
+
   // Get mutation function to delete the trigger
   const { mutate: deleteTrigger } = useListOptimisticMutation<
     string,
     TimeTriggerDto | boolean,
     TimeTriggerDto
-  >([rowId], triggerOptimisticMutationFn, DATA_QUERY_KEY);
+  >([rowId], triggerOptimisticMutationFn, queryKey);
 
   // Return Delete alert dialog trigger
   return (

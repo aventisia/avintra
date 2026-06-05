@@ -1,3 +1,5 @@
+import { ResourceAccessTypeEnum } from "@/features/resource-share/enums/resource-access-type-enum";
+
 /**
  * Represents a data transfer object (DTO) for an email trigger configuration.
  */
@@ -34,6 +36,17 @@ export interface EmailTriggerDto {
     name: string;
     versionNumber: number;
   }[];
+
+  /**
+   * Access level of the configuration item.
+   */
+  accessLevel: ResourceAccessTypeEnum;
+
+  /**
+   * Indicates whether the kb is accessible
+   * to all users within the tenant.
+   */
+  isTenantWideAccess: boolean;
 
   /**
    * Gets or sets a value indicating whether the email trigger is disabled.

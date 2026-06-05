@@ -10,7 +10,6 @@ import { z } from "zod";
 import { useShallow } from "zustand/react/shallow";
 
 // import { isNameAvailable } from "../apis/triggers-table-apis";
-import { DATA_QUERY_KEY } from "../constants";
 import {
   getTimeFromDate,
   numbersToWeekdays,
@@ -22,6 +21,7 @@ import {
   triggerZodSchema,
 } from "../constants/trigger-zod-schema";
 import { TimeTriggerDto } from "../dtos/time-trigger-dto";
+import { useTableTab } from "./useTableTab";
 
 /**
  * Custom hook for defining a trigger form.
@@ -82,12 +82,15 @@ export const useDefineTriggerForm = () => {
     formState: { isDirty },
   } = form;
 
+  // Use this in place DATA_QUERY_KEY to handle Personal/Shared tabs list
+  const { queryKey } = useTableTab();
+
   // Fetch trigger data when rowId changes
   useEffect(() => {
     // Get triggers data from query client
     const triggersData = queryClient.getQueryData<{
       data: TimeTriggerDto[];
-    }>(DATA_QUERY_KEY);
+    }>(queryKey);
 
     // Find the trigger by rowId
     const triggerData = triggersData?.data.find((item) => item.id === rowId);

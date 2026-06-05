@@ -27,7 +27,6 @@ import { getCredSelectOptions } from "../../apis/app-secret-apis.ts";
 import { triggerOptimisticMutationFn } from "../../apis/triggers-table-apis.ts";
 import { resourceRequiresReference } from "../../constants/form-utils.ts";
 import { getTimeFromDate } from "../../constants/form-utils.ts";
-import { DATA_QUERY_KEY } from "../../constants/index.ts";
 import {
   expiryDateTimeProps,
   idProps,
@@ -42,6 +41,7 @@ import {
 import { triggerZodSchema } from "../../constants/trigger-zod-schema.ts";
 import { MessageTriggerDto } from "../../dtos/message-trigger-dto.ts";
 import { useDefineTriggerForm } from "../../hooks/useDefineTriggerForm.ts";
+import { useTableTab } from "../../hooks/useTableTab.ts";
 import { AgentsSelector } from "./AgentsSelector.tsx";
 import { TimezoneSelector } from "./TimezoneSelector.tsx";
 
@@ -60,6 +60,9 @@ export const TriggerCrudForm = () => {
     refineFormData,
   } = useDefineTriggerForm();
 
+  // Use this in place DATA_QUERY_KEY to handle Personal/Shared tabs list
+  const { queryKey } = useTableTab();
+
   // Define optimistic mutation to crete or update the trigger
   const {
     mutate: mutateTrigger,
@@ -69,7 +72,7 @@ export const TriggerCrudForm = () => {
     MessageTriggerDto,
     MessageTriggerDto | boolean,
     MessageTriggerDto
-  >([rowId], triggerOptimisticMutationFn, DATA_QUERY_KEY);
+  >([rowId], triggerOptimisticMutationFn, queryKey);
 
   // const resubscribeEnabled = form.watch("resubscribeEnabled");
   const resubscribeFrequency = form.watch("resubscribeFrequency");

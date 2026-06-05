@@ -16,9 +16,10 @@ const baseAPIURL: string = `${import.meta.env.VITE_WORKSPACE_API_PATH}/time-trig
 /**
  * Retrieves list of triggers.
  */
-export const getTriggers = () => {
+export const getTriggers = ({ isPersonal = true }: { isPersonal: boolean }) => {
+  const path = isPersonal ? `list` : `list/shared`;
   return axiosInstance
-    .get<IHttpResponse<TimeTriggerDto[]>>(`${baseAPIURL}/list`)
+    .get<IHttpResponse<TimeTriggerDto[]>>(`${baseAPIURL}/${path}`)
     .then((res) => res.data);
 };
 

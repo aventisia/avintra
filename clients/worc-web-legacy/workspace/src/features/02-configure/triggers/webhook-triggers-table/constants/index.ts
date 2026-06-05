@@ -1,3 +1,5 @@
+import { QueryTabItem } from "@/components/QueryTab";
+
 import { CrudActionType } from "@aventisia/ui/types";
 
 /**
@@ -8,9 +10,22 @@ const DATA_QUERY_KEY = ["webhook-triggers"];
 /**
  * The heading for the triggers table.
  */
-const TABLE_HEADING = "Triggers";
+const TABLE_HEADING = "Webhook Triggers";
 
 const TABLE_KEY = "webhook-triggers";
+
+/**
+ * Key used for the query param in tables tab
+ */
+const TABLE_TAB_QUERY_PARAM = "tab";
+
+/**
+ * Tabs to be used in tables tab
+ */
+const TABLE_VIEW_TABS = [
+  { label: "Personal", value: "personal" },
+  { label: "Shared", value: "shared" },
+] as QueryTabItem[];
 
 /**
  * The column used for searching in the triggers.
@@ -36,4 +51,6 @@ export {
   SEARCH_COLUMN,
   TABLE_HEADING,
   TABLE_KEY,
+  TABLE_TAB_QUERY_PARAM,
+  TABLE_VIEW_TABS,
 };

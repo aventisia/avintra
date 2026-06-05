@@ -17,7 +17,6 @@ import { Controller } from "react-hook-form";
 import { z } from "zod";
 
 import { triggerOptimisticMutationFn } from "../../apis/triggers-table-apis.ts";
-import { DATA_QUERY_KEY } from "../../constants/index.ts";
 import {
   callbackUrlProps,
   idProps,
@@ -28,6 +27,7 @@ import {
 import { triggerZodSchema } from "../../constants/trigger-zod-schema.ts";
 import { WebhookTriggerDto } from "../../dtos/webhook-trigger-dto.ts";
 import { useDefineTriggerForm } from "../../hooks/useDefineTriggerForm.ts";
+import { useTableTab } from "../../hooks/useTableTab.ts";
 import APIKeyField from "./APIKeyField.tsx";
 import { AgentsSelector } from "./AgentsSelector.tsx";
 import InputWithCopy from "./InputWithCopy.tsx";
@@ -50,6 +50,10 @@ export const TriggerCrudForm = () => {
     queryClient,
     objectToArray,
   } = useDefineTriggerForm();
+
+  // Use this in place DATA_QUERY_KEY to handle Personal/Shared tabs list
+  const { queryKey } = useTableTab();
+
   // Define optimistic mutation to crete or update the trigger
   const {
     mutate: mutateTrigger,
@@ -59,7 +63,7 @@ export const TriggerCrudForm = () => {
     WebhookTriggerDto,
     WebhookTriggerDto | boolean,
     WebhookTriggerDto
-  >([rowId], triggerOptimisticMutationFn, DATA_QUERY_KEY);
+  >([rowId], triggerOptimisticMutationFn, queryKey);
 
   // Define submit handler
   const onSubmit = (formData: z.infer<typeof triggerZodSchema>) => {
@@ -87,7 +91,7 @@ export const TriggerCrudForm = () => {
     // Get triggers data from query client
     const triggersData = queryClient.getQueryData<{
       data: WebhookTriggerDto[];
-    }>(DATA_QUERY_KEY);
+    }>(queryKey);
 
     // Find the trigger by rowId
     const triggerData = triggersData?.data[0];
