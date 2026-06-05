@@ -360,6 +360,171 @@ public class ResourceShareService : IResourceShareService
         return serviceResponse;
     }
 
+    // Enables or disables tenant-wide access for a specific resource.
+    public async Task<ServiceResponse<bool>> UpdateTenantWideAccessAsync(UpdateTenantWideAccessDto updateTenantWideAccessDto)
+    {
+        // Initialize response with default failure state.
+        var serviceResponse = new ServiceResponse<bool>
+        {
+            Data = false,
+            Message = "Resource not found. Please try again."
+        };
+
+        try
+        {
+            // Update tenant-wide access based on the resource type.
+            switch (updateTenantWideAccessDto.ResourceType)
+            {
+                case ResourceTypeEnum.Queue:
+                    {
+                        // Retrieve the Queue resource.
+                        var queue = await _unitOfWork.QueueRepo
+                            .GetByConditionAsync(x => x.Id == updateTenantWideAccessDto.ResourceId)
+                            .SingleOrDefaultAsync();
+
+                        if (queue == null)
+                            return serviceResponse;
+
+                        // Update tenant-wide access.
+                        queue.IsTenantWideAccess = updateTenantWideAccessDto.IsTenantWideAccess;
+                        _unitOfWork.QueueRepo.Update(queue);
+                        break;
+                    }
+
+                case ResourceTypeEnum.Trigger:
+                    {
+                        // Retrieve the Trigger resource.
+                        var trigger = await _unitOfWork.TriggerRepo
+                            .GetByConditionAsync(x => x.Id == updateTenantWideAccessDto.ResourceId)
+                            .SingleOrDefaultAsync();
+
+                        if (trigger == null)
+                            return serviceResponse;
+
+                        trigger.IsTenantWideAccess = updateTenantWideAccessDto.IsTenantWideAccess;
+                        _unitOfWork.TriggerRepo.Update(trigger);
+                        break;
+                    }
+
+                case ResourceTypeEnum.KeyStore:
+                    {
+                        // Retrieve the KeyStore resource.
+                        var keyStore = await _unitOfWork.KeyStoreRepo
+                            .GetByConditionAsync(x => x.Id == updateTenantWideAccessDto.ResourceId)
+                            .SingleOrDefaultAsync();
+
+                        if (keyStore == null)
+                            return serviceResponse;
+
+                        keyStore.IsTenantWideAccess = updateTenantWideAccessDto.IsTenantWideAccess;
+                        _unitOfWork.KeyStoreRepo.Update(keyStore);
+                        break;
+                    }
+
+                case ResourceTypeEnum.Vault:
+                    {
+                        // Retrieve the Vault resource.
+                        var vault = await _unitOfWork.VaultRepo
+                            .GetByConditionAsync(x => x.Id == updateTenantWideAccessDto.ResourceId)
+                            .SingleOrDefaultAsync();
+
+                        if (vault == null)
+                            return serviceResponse;
+
+                        vault.IsTenantWideAccess = updateTenantWideAccessDto.IsTenantWideAccess;
+                        _unitOfWork.VaultRepo.Update(vault);
+                        break;
+                    }
+
+                case ResourceTypeEnum.AppSecret:
+                    {
+                        // Retrieve the AppSecret resource.
+                        var appSecret = await _unitOfWork.AppSecretRepo
+                            .GetByConditionAsync(x => x.Id == updateTenantWideAccessDto.ResourceId)
+                            .SingleOrDefaultAsync();
+
+                        if (appSecret == null)
+                            return serviceResponse;
+
+                        appSecret.IsTenantWideAccess = updateTenantWideAccessDto.IsTenantWideAccess;
+                        _unitOfWork.AppSecretRepo.Update(appSecret);
+                        break;
+                    }
+
+                case ResourceTypeEnum.KnowledgeBase:
+                    {
+                        // Retrieve the KnowledgeBase resource.
+                        var knowledgeBase = await _unitOfWork.KnowledgeBaseRepo
+                            .GetByConditionAsync(x => x.Id == updateTenantWideAccessDto.ResourceId)
+                            .SingleOrDefaultAsync();
+
+                        if (knowledgeBase == null)
+                            return serviceResponse;
+
+                        knowledgeBase.IsTenantWideAccess = updateTenantWideAccessDto.IsTenantWideAccess;
+                        _unitOfWork.KnowledgeBaseRepo.Update(knowledgeBase);
+                        break;
+                    }
+
+                case ResourceTypeEnum.Flow:
+                    {
+                        // Retrieve the Flow resource.
+                        var flow = await _unitOfWork.FlowRepo
+                            .GetByConditionAsync(x => x.Id == updateTenantWideAccessDto.ResourceId)
+                            .SingleOrDefaultAsync();
+
+                        if (flow == null)
+                            return serviceResponse;
+
+                        flow.IsTenantWideAccess = updateTenantWideAccessDto.IsTenantWideAccess;
+                        _unitOfWork.FlowRepo.Update(flow);
+                        break;
+                    }
+
+                case ResourceTypeEnum.FlowVersion:
+                    {
+                        // Retrieve the FlowVersion resource.
+                        var flowVersion = await _unitOfWork.FlowVersionRepo
+                            .GetByConditionAsync(x => x.Id == updateTenantWideAccessDto.ResourceId)
+                            .SingleOrDefaultAsync();
+
+                        if (flowVersion == null)
+                            return serviceResponse;
+
+                        flowVersion.IsTenantWideAccess = updateTenantWideAccessDto.IsTenantWideAccess;
+                        _unitOfWork.FlowVersionRepo.Update(flowVersion);
+                        break;
+                    }
+
+                default:
+                    return serviceResponse;
+            }
+
+            // Persist all pending changes.
+            if (!await _unitOfWork.SaveAsync())
+            {
+                serviceResponse.Message = "Failed to update tenant-wide access changes.";
+                return serviceResponse;
+            }
+
+            // Success
+            serviceResponse.Data = true;
+            serviceResponse.StatusCode = 200;
+            serviceResponse.Message = "Tenant-wide access updated successfully.";
+        }
+        catch (Exception ex)
+        {
+            // Log unexpected errors.
+            _logger.LogError(
+                ex,
+                "[UpdateTenantWideAccessAsync] Unexpected error while updating tenant-wide access for Type {Type} and Id {Id}",
+                updateTenantWideAccessDto.ResourceType,
+                updateTenantWideAccessDto.ResourceId);
+        }
+
+        return serviceResponse;
+    }
+
     // Deletes a single resource share by its unique identifier.
     public async Task<ServiceResponse<bool>> DeleteResourceShareAsync(Guid resourceShareId)
     {

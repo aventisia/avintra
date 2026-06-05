@@ -1,0 +1,32 @@
+meta {
+  name: Bulk insert resource shares
+  type: http
+  seq: 10
+}
+
+post {
+  url: {{WORKSPACE_APIS_BASE_URL}}/resource-share/bulk
+  body: json
+  auth: none
+}
+
+body:json {
+  {
+    "resourceType": "AppSecret",
+    "resourceId": "{{APP_SECRET_ID}}",
+    "users": [
+      {
+        "accessLevel": "View",
+        "userId": "{{USER_ID}}"   
+      }
+    ]
+  }
+}
+
+script:post-response {
+  if(res.getStatus() == 200){
+      bru.setGlobalEnvVar(
+          "RESOURCE_SHARE_ID", res.getBody().data.id
+      );
+  }
+}
