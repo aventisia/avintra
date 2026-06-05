@@ -1,4 +1,4 @@
-import { Button } from "@worc/ui/buttons";
+import { Button } from "@avplatform/ui/buttons";
 import { useState } from "react";
 
 function App() {

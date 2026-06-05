@@ -1,5 +1,5 @@
 {
-  "name": "worc-reactjs-clients",
+  "name": "avplatform-web",
   "private": true,
   "workspaces": [
     "apps/*",

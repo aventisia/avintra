@@ -1,4 +1,4 @@
-import baseConfig from "@worc/tailwind-config/tailwind.config";
+import baseConfig from "@avplatform/tailwind-config/tailwind.config";
 
 export default {
   ...baseConfig,

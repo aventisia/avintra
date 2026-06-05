@@ -16,11 +16,11 @@ This Turborepo includes the following packages and apps:
 
 ### Apps and Packages
 
-- `@worc/ui`: a stub component & utility library shared with all applications
-- `@worc/eslint-config`: shared `eslint` configurations
-- `@worc/typescript-config`: `tsconfig.json`s used throughout the monorepo
-- `@worc/vite-config`: `vite.config.ts` files used throughout the monorepo
-- `@worc/tailwind-config`: `tailwind.config.ts` files used throughout the monorepo
+- `@avplatform/ui`: a stub component & utility library shared with all applications
+- `@avplatform/eslint-config`: shared `eslint` configurations
+- `@avplatform/typescript-config`: `tsconfig.json`s used throughout the monorepo
+- `@avplatform/vite-config`: `vite.config.ts` files used throughout the monorepo
+- `@avplatform/tailwind-config`: `tailwind.config.ts` files used throughout the monorepo
 
 Each package and app is 100% [TypeScript](https://www.typescriptlang.org/).
 
