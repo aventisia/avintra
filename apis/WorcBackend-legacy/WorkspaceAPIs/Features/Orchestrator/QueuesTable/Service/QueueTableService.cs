@@ -321,13 +321,13 @@ public class QueueTableService : IQueueTableService
                 return serviceResponse;
             }
 
-            // Assign creator ownership
-            if (!await _resourceShareService.AssignOwnerAsync(_userId, newQueue.Id, ResourceTypeEnum.Queue))
-            {
-                _logger.LogWarning("Failed assigning queue ownership. Queue {QueueId}", newQueue.Id);
-                serviceResponse.Message = "Failed assigning ownership.";
-                return serviceResponse;
-            }
+            // // Assign creator ownership
+            // if (!await _resourceShareService.AssignOwnerAsync(_userId, newQueue.Id, ResourceTypeEnum.Queue))
+            // {
+            //     _logger.LogWarning("Failed assigning queue ownership. Queue {QueueId}", newQueue.Id);
+            //     serviceResponse.Message = "Failed assigning ownership.";
+            //     return serviceResponse;
+            // }
 
             // If the queue type is 'User', create an associated QueueUser entry
             if (newQueue.Type == QueueTypesEnum.User)

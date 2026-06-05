@@ -226,12 +226,12 @@ public class WebhookTriggerService : IWebhookTriggerService
                 return serviceResponse;
             }
 
-            // Assign ownership
-            if (!await _resourceShareService.AssignOwnerAsync(_userId, newTrigger.Id, ResourceTypeEnum.Trigger))
-            {
-                serviceResponse.Message = "Failed assigning ownership.";
-                return serviceResponse;
-            }
+            // // Assign ownership
+            // if (!await _resourceShareService.AssignOwnerAsync(_userId, newTrigger.Id, ResourceTypeEnum.Trigger))
+            // {
+            //     serviceResponse.Message = "Failed assigning ownership.";
+            //     return serviceResponse;
+            // }
 
             // Extract agent ID from the incoming DTO
             var agentId = dto.Agent?.Id;

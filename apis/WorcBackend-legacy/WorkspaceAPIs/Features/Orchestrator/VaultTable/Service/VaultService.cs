@@ -253,15 +253,15 @@ public class VaultService : IVaultService
                 return serviceResponse;
             }
 
-            // Assign creator owner access
-            if (!await _resourceShareService.AssignOwnerAsync(
-                _userId,
-                newVault.Id,
-                ResourceTypeEnum.Vault))
-            {
-                serviceResponse.Message = "Failed assigning ownership.";
-                return serviceResponse;
-            }
+            // // Assign creator owner access
+            // if (!await _resourceShareService.AssignOwnerAsync(
+            //     _userId,
+            //     newVault.Id,
+            //     ResourceTypeEnum.Vault))
+            // {
+            //     serviceResponse.Message = "Failed assigning ownership.";
+            //     return serviceResponse;
+            // }
 
             // Return the created vault in the response
             serviceResponse.Data = newVault.Adapt<VaultDto>();
