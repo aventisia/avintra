@@ -104,6 +104,7 @@ export const keystoresTableColumns: ColumnDef<KeystoresTableDto>[] = [
       <KeystoreRowActions
         rowId={row.original.id || "rowId"}
         accessLevel={row.original.accessLevel}
+        name={row.original.name}
         isTenantWideAccess={row.original.isTenantWideAccess || false}
       />
     ),

@@ -14,7 +14,6 @@ import { dateFormatter } from "@aventisia/ui/utils";
 import { PlusIcon } from "@heroicons/react/24/outline";
 import { useShallow } from "zustand/react/shallow";
 
-import { updateVault } from "../apis/vaults-table-apis";
 import {
   SEARCH_COLUMN,
   TABLE_HEADING,
@@ -161,6 +160,7 @@ export const VaultTable = () => {
                   <VaultRowActions
                     rowId={row.original.id || "rowId"}
                     accessLevel={row.original.accessLevel}
+                    name={row.original.name}
                     isTenantWideAccess={
                       row.original.isTenantWideAccess || false
                     }
@@ -183,7 +183,7 @@ export const VaultTable = () => {
           />
 
           {/* Resource Share Dialog component */}
-          <ResourceShareDialog queryKey={queryKey} updateApiFn={updateVault} />
+          <ResourceShareDialog queryKey={queryKey} />
 
           {/* Bulk actions for data table */}
           <VaultsBulkActions table={table} />

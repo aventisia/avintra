@@ -133,7 +133,7 @@ export const flowsTableColumns: ColumnDef<FlowsTableDto>[] = [
       // Render the flows row actions component
       <FlowRowActions
         rowId={row.original.id || "rowId"}
-        accessType={row.original.accessType}
+        name={row.original.name}
         accessLevel={row.original.accessLevel}
         isTenantWideAccess={row.original.isTenantWideAccess || false}
       />

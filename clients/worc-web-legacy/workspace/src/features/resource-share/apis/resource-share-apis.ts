@@ -5,6 +5,7 @@ import { IHttpResponse } from "@aventisia/ui/dtos";
 import {
   CreateResourceShareDto,
   ResourceShareDto,
+  TenantAccessResourceShareDto,
 } from "../dtos/resource-share-dto";
 import { WorkspaceUserDto } from "../dtos/workspace-user-dto";
 
@@ -14,7 +15,7 @@ const workspaceUserApiUrl: string = `${import.meta.env.VITE_WORKSPACE_API_PATH}/
 /**
  * Retrieves all Workspace users.
  */
-const getSearchUser = (value?: string, includeCurrentUser: boolean = true) => {
+const getSearchUser = (value?: string, includeCurrentUser: boolean = false) => {
   return axiosInstance
     .get<
       IHttpResponse<WorkspaceUserDto[]>
@@ -50,12 +51,35 @@ const insertResourceShare = (payload: CreateResourceShareDto) => {
     .post<IHttpResponse<boolean>>(`${resourceShareApiUrl}/bulk`, payload)
     .then((res) => res.data);
 };
+
 /**
  * Updates an existing ResourceShare.
  */
 const updateResourceShare = (payload: ResourceShareDto) => {
   return axiosInstance
     .put<IHttpResponse<ResourceShareDto>>(`${resourceShareApiUrl}`, payload)
+    .then((res) => res.data);
+};
+
+/**
+ * Updates Tenant access of an existing ResourceShare.
+ */
+const updateTenantWideAccess = (payload: TenantAccessResourceShareDto) => {
+  return axiosInstance
+    .put<
+      IHttpResponse<ResourceShareDto>
+    >(`${resourceShareApiUrl}/tenant-access`, payload)
+    .then((res) => res.data);
+};
+
+/**
+ * Remove ResourceShare.
+ */
+const removeResourceShare = (resourceId: string) => {
+  return axiosInstance
+    .delete<
+      IHttpResponse<boolean>
+    >(`${resourceShareApiUrl}/${resourceId}/my-access`)
     .then((res) => res.data);
 };
 
@@ -74,5 +98,7 @@ export {
   getResourceShareById,
   insertResourceShare,
   updateResourceShare,
+  updateTenantWideAccess,
   deleteResourceShare,
+  removeResourceShare,
 };

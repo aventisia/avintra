@@ -57,7 +57,7 @@ const AssignUsersDialog = () => {
             <CustomCheckbox
               checked={assignAll}
               label="Assign to all team members"
-              description="All users in this workspace will be assigned automatically"
+              description="All users in this tenant will be assigned automatically"
               onCheckedChange={setAssignAll}
             />
           </div>

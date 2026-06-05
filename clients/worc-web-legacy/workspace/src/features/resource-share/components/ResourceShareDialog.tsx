@@ -16,20 +16,17 @@ import UsersList from "./UsersList";
 
 interface ResourceShareDialogProps {
   queryKey: unknown[];
-  updateApiFn: (updatedDto: any) => Promise<any>;
 }
 
 /**
  * Dialog component orchestrating resource sharing.
  * Integrates tenant-wide access toggling and specific user assignment workflows.
  */
-function ResourceShareDialog({
-  queryKey,
-  updateApiFn,
-}: ResourceShareDialogProps) {
-  const { showDialog, setShowDialog } = useResourceShareStore(
+function ResourceShareDialog({ queryKey }: ResourceShareDialogProps) {
+  const { showDialog, resourceName, setShowDialog } = useResourceShareStore(
     useShallow((state) => ({
       showDialog: state.showDialog,
+      resourceName: state.resourceName,
       setShowDialog: state.setShowDialog,
     })),
   );
@@ -41,18 +38,20 @@ function ResourceShareDialog({
     assignAllSaved,
     isMutating,
     handleCommitTenantAccess,
-  } = useResourceShareTenantAccess({ queryKey, updateApiFn });
+  } = useResourceShareTenantAccess({ queryKey });
 
   return (
     <Dialog open={showDialog} onOpenChange={setShowDialog}>
       <DialogContent className="h-[75vh] min-w-[40rem]">
-        <DialogDefaultHeader heading="Share Access" />
+        <DialogDefaultHeader
+          heading={`Share - ${resourceName ?? "Resource"}`}
+        />
         <ScrollArea className="h-[calc(75vh-4rem)]">
           <div className="p-4 pb-0">
             <CustomCheckbox
               checked={assignAllDraft}
-              label="Assign to all team members"
-              description="All users in this workspace will be assigned automatically"
+              label="Share to all team members"
+              description="All users in this tenant will be assigned automatically"
               onCheckedChange={setAssignAllDraft}
             />
           </div>

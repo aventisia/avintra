@@ -14,7 +14,6 @@ import {
 } from "@aventisia/ui/data-table";
 import { useDataTable, useDocumentTitle } from "@aventisia/ui/hooks";
 
-import { updateFlow } from "../apis/flows-table-apis";
 import {
   SEARCH_COLUMN,
   TABLE_HEADING,
@@ -94,7 +93,7 @@ export const FlowsTable = () => {
           {/* Data table Pagination component */}
           <DTPagination table={table} />
           {/* Resource Share Dialog */}
-          <ResourceShareDialog queryKey={queryKey} updateApiFn={updateFlow} />
+          <ResourceShareDialog queryKey={queryKey} />
           {/* Bulk actions for data table */}
           {isPersonal && <FlowsBulkActions table={table} />}{" "}
         </div>

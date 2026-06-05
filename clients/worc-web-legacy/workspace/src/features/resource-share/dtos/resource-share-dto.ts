@@ -12,6 +12,12 @@ export interface CreateResourceShareDto {
   users: ResourceShareRecipientDto[];
 }
 
+export interface TenantAccessResourceShareDto {
+  resourceType: ResourceTypeEnum;
+  resourceId: string;
+  isTenantWideAccess: boolean;
+}
+
 export interface ResourceShareDto {
   id: string;
   tenantId: string;
