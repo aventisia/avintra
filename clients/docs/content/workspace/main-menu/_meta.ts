@@ -7,9 +7,6 @@ const meta: MetaRecord = {
   agents: {
     title: "Agents",
   },
-  "ai-models": {
-    title: "AI Models",
-  },
   support: {
     title: "Support",
   },

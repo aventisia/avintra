@@ -36,21 +36,21 @@ export const createAINode = (
     modelNode.id,
     newNode.id,
     sourceNode.parentId,
-    "model-node", // This matches the ID in the AIModelNode
+    "model-node", // This matches the ID in the AINode
   );
 
   // const memoryEdge = createSimpleEdgeObj(
   //   memoryNode.id,
   //   newNode.id,
   //   sourceNode.parentId,
-  //   "memory-input", // This matches the ID in the AIModelNode
+  //   "memory-input", // This matches the ID in the AINode
   //   "Memory"
   // );
   // const toolsEdge = createSimpleEdgeObj(
   //   toolsNode.id,
   //   newNode.id,
   //   sourceNode.parentId,
-  //   "tools-input", // This matches the ID in the AIModelNode
+  //   "tools-input", // This matches the ID in the AINode
   //   "Tools"
   // );
 

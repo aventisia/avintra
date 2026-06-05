@@ -37,7 +37,7 @@ const LibraryTemplates = ({
       const searchText = [
         template.name,
         template.tags?.join(" "),
-        template.type === "AIProject" ? "AIProject AIModel" : template.type,
+        template.type,
       ]
         .join(" ")
         .toLowerCase();

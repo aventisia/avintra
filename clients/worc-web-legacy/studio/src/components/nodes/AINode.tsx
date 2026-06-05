@@ -25,16 +25,16 @@ import OpenNodeLog from "../node-container/OpenNodeLog";
 import { NodeImage } from "../node-container/node-header/NodeImage";
 import { OpenNodeConfig } from "../node-container/node-header/OpenNodeConfig";
 
-type AIModelNode = Node<NodeDataType, "aiNode">;
+type AINode = Node<NodeDataType, "aiNode">;
 
-export const AIModelNode = memo(
+export const AINode = memo(
   ({
     data,
     selected,
     sourcePosition,
     targetPosition,
     id,
-  }: NodeProps<AIModelNode>) => {
+  }: NodeProps<AINode>) => {
     const { toggleGroupExpand } = useGroupToggle();
     const { isHovered, onMouseEnter, onMouseLeave } = useNodeHover();
 
@@ -42,10 +42,6 @@ export const AIModelNode = memo(
 
     useEffect(() => {
       if (data.type !== "aiNode") return;
-      // TODO (AISTUDIO): Need to validate before we remove this
-      const isNewMod = ["Attach AI Model", "Create AI Model"].includes(
-        data.label,
-      );
       if (data.inputs) {
         const modelNode = getNodes().find(
           (n) => n.type == "modelNode" && n?.parentId == id,
@@ -53,10 +49,8 @@ export const AIModelNode = memo(
         if (modelNode) updateNode(modelNode.id, { hidden: false });
       }
 
-      if (data?.selectedModel || isNewMod) {
-        const newLabel = data?.selectedModel
-          ? data?.selectedModel?.name
-          : "AI Model";
+      if (data?.selectedModel) {
+        const newLabel = data?.selectedModel ?? data?.selectedModel?.name;
         if (newLabel) {
           //  node by id and update its label
           updateNodeData(id, {
@@ -194,4 +188,4 @@ export const AIModelNode = memo(
   },
 );
 
-AIModelNode.displayName = "AIModelNode";
+AINode.displayName = "AINode";

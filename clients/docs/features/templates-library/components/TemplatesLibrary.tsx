@@ -21,7 +21,6 @@ const TemplatesLibrary = () => {
   // List of available template categories for filtering
   const categories = [
     "All templates",
-    "AI Model",
     "Agent",
     "Block",
   ];

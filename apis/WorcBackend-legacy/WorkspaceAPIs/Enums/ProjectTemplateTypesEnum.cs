@@ -17,8 +17,6 @@ public enum ProjectTemplateTypesEnum
     /// </summary>
     Block,
 
-    AIProject, // TODO (Remove ai-studio task): Remove it after database data migration is done, as this type is no longer used.
-
     /// <summary>
     /// A template type used for prompts or keyword-based templates.
     /// </summary>

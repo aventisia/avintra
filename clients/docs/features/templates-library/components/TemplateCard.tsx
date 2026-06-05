@@ -8,7 +8,7 @@ import {
   CardHeader,
   CardTitle,
 } from "@/app/_components/ui/cards";
-import { BotIcon, Copy, FileBoxIcon, Tag } from "lucide-react";
+import { BotIcon, Copy, Tag } from "lucide-react";
 
 import { LibraryTemplatesDto } from "../dtos/library-templates-dtos";
 import { useViewTemplate } from "../hooks/useViewTemplate";
@@ -73,11 +73,7 @@ export const TemplateCard = ({ template }: TemplateCardProps) => {
           ) : (
             // Fallback icon
             <div className="rounded-lg bg-accent p-1.5 sm:p-2">
-              {template.type == "AIProject" ? (
-                <FileBoxIcon className="h-5 w-5 sm:h-6 sm:w-6" />
-              ) : (
-                <BotIcon className="h-5 w-5 sm:h-6 sm:w-6" />
-              )}
+              <BotIcon className="h-5 w-5 sm:h-6 sm:w-6" />
             </div>
           )}
         </div>
@@ -96,7 +92,7 @@ export const TemplateCard = ({ template }: TemplateCardProps) => {
             className="mt-2 flex w-fit border-border text-xs items-center gap-1 bg-slate-100 dark:bg-background py-0.5 sm:py-1 px-2">
             <Tag className="h-2.5 w-2.5 sm:h-3 sm:w-3" />
             <span className="leading-3">
-              {template.type?.replace("AIProject", "AI Model")}
+              {template.type}
             </span>
           </Badge>
         </CardContent>

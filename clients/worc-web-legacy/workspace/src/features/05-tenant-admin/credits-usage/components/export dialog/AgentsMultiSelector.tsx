@@ -4,8 +4,8 @@ import { Badge } from "@aventisia/ui/badge";
 import { Button } from "@aventisia/ui/buttons";
 import { cn } from "@aventisia/ui/lib";
 import { ScrollArea } from "@aventisia/ui/scroll";
-import { X, ChevronDown, ChevronUp } from "lucide-react";
-import { useState, useRef, useEffect } from "react";
+import { ChevronDown, ChevronUp, X } from "lucide-react";
+import { useEffect, useRef, useState } from "react";
 
 import { AgentModelDTO } from "../../dtos/agents-models-dto";
 
@@ -22,7 +22,7 @@ interface AgentsMultiSelectorProps {
   maxHeight?: string;
 }
 
-export const AgentsModelsMultiSelector: React.FC<AgentsMultiSelectorProps> = ({
+export const AgentsMultiSelector: React.FC<AgentsMultiSelectorProps> = ({
   searchResults,
   selectedItems,
   onItemSelect,
