@@ -99,6 +99,7 @@ export const vaultsTableColumns: ColumnDef<VaultsTableDto>[] = [
       // Render the configs row actions component
       <VaultRowActions
         rowId={row.original.id || "rowId"}
+        name={row.original.name}
         accessLevel={row.original.accessLevel}
         isTenantWideAccess={row.original.isTenantWideAccess || false}
       />

@@ -68,6 +68,28 @@ const sidebarMenuSections: SidebarMenuSectionType[] = [
         name: "triggers",
         route: "/configure/triggers",
         type: ["Commercial", "Enterprise"],
+        subMenuItems: [
+          {
+            name: "time",
+            route: "/configure/triggers/time",
+            permissions: ["OM"],
+          },
+          {
+            name: "email",
+            route: "/configure/triggers/email",
+            permissions: ["OM"],
+          },
+          {
+            name: "message",
+            route: "/configure/triggers/message",
+            permissions: ["OM"],
+          },
+          {
+            name: "webhook",
+            route: "/configure/triggers/webhook",
+            permissions: ["OM"],
+          },
+        ],
       },
       {
         permissions: ["OM"],
