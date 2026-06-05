@@ -274,12 +274,12 @@ public class MessageTriggerService : IMessageTriggerService
                 return serviceResponse;
             }
 
-            // Assign ownership
-            if (!await _resourceShareService.AssignOwnerAsync(_userId, newMessageTrigger.Id, ResourceTypeEnum.Trigger))
-            {
-                serviceResponse.Message = "Failed assigning ownership.";
-                return serviceResponse;
-            }
+            // // Assign ownership
+            // if (!await _resourceShareService.AssignOwnerAsync(_userId, newMessageTrigger.Id, ResourceTypeEnum.Trigger))
+            // {
+            //     serviceResponse.Message = "Failed assigning ownership.";
+            //     return serviceResponse;
+            // }
 
             // Retrieve all agents from the database that are linked to the provided email trigger DTO.
             // Only include agents whose IDs are in emailTriggerDto.Agents and are marked as published.

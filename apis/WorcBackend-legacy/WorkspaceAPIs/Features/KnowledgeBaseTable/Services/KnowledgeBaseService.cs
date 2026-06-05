@@ -282,13 +282,12 @@ public class KnowledgeBaseService : IKnowledgeBaseService
             await _unitOfWork.KnowledgeBaseRepo.InsertAsync(newKB);
             await _unitOfWork.SaveAsync();
 
-            // Assign creator as resource owner. Ensures creator receives full management permissions
-            if (!await _resourceShareService.AssignOwnerAsync(_userId, newKB.Id, ResourceTypeEnum.KnowledgeBase))
-            {
-                _logger.LogWarning("Failed assigning owner access for KnowledgeBase {KnowledgeBaseId}", newKB.Id);
-                serviceResponse.Message = "Failed assigning ownership.";
-                return serviceResponse;
-            }
+            // // Assign creator as resource owner. Ensures creator receives full management permissions
+            // if (!await _resourceShareService.AssignOwnerAsync(_userId, newKB.Id, ResourceTypeEnum.KnowledgeBase))
+            // {
+            //     _logger.LogWarning("Failed assigning owner access for KnowledgeBase {KnowledgeBaseId}", newKB.Id);
+            //     return serviceResponse;
+            // }
 
             // Map back to DTO for response
             var resultDto = newKB.Adapt<KnowledgeBaseDto>();

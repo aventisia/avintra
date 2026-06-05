@@ -281,13 +281,13 @@ public class EmailTriggerService : IEmailTriggerService
                 return serviceResponse;
             }
 
-            // Assign ownership of the newly created trigger to current user
-            if (!await _resourceShareService.AssignOwnerAsync(_userId, newEmailTrigger.Id, ResourceTypeEnum.Trigger))
-            {
-                _logger.LogError("Failed assigning owner permissions for email trigger {TriggerId}.", newEmailTrigger.Id);
-                serviceResponse.Message = "Failed assigning ownership.";
-                return serviceResponse;
-            }
+            // // Assign ownership of the newly created trigger to current user
+            // if (!await _resourceShareService.AssignOwnerAsync(_userId, newEmailTrigger.Id, ResourceTypeEnum.Trigger))
+            // {
+            //     _logger.LogError("Failed assigning owner permissions for email trigger {TriggerId}.", newEmailTrigger.Id);
+            //     serviceResponse.Message = "Failed assigning ownership.";
+            //     return serviceResponse;
+            // }
 
             // Retrieve all agents from the database that are linked to the provided email trigger DTO.
             // Only include agents whose IDs are in emailTriggerDto.Agents and are marked as published.

@@ -198,12 +198,12 @@ public class FlowsTableService : IFlowsTableService
                 return serviceResponse;
             }
 
-            // Assign creator ownership
-            if (!await _resourceShareService.AssignOwnerAsync(_userId, newFlow.Id, ResourceTypeEnum.Flow))
-            {
-                serviceResponse.Message = "Failed assigning ownership.";
-                return serviceResponse;
-            }
+            // // Assign creator ownership
+            // if (!await _resourceShareService.AssignOwnerAsync(_userId, newFlow.Id, ResourceTypeEnum.Flow))
+            // {
+            //     serviceResponse.Message = "Failed assigning ownership.";
+            //     return serviceResponse;
+            // }
 
             // Create a new FlowUserDto to associate the user with the flow
             var flowUserDto = new FlowUserDto()

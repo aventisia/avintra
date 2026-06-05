@@ -351,13 +351,13 @@ public class AppSecretService : IAppSecretService
                 return serviceResponse;
             }
 
-            // Assign ownership
-            if (!await _resourceShareService.AssignOwnerAsync(_userId, newAppSecret.Id, ResourceTypeEnum.AppSecret))
-            {
-                serviceResponse.Message = "Failed assigning ownership.";
-                _logger.LogError("Failed to assign owner access for Credential ID: {AppSecretId}", appSecretDto.Id);
-                return serviceResponse;
-            }
+            // // Assign ownership
+            // if (!await _resourceShareService.AssignOwnerAsync(_userId, newAppSecret.Id, ResourceTypeEnum.AppSecret))
+            // {
+            //     serviceResponse.Message = "Failed assigning ownership.";
+            //     _logger.LogError("Failed to assign owner access for Credential ID: {AppSecretId}", appSecretDto.Id);
+            //     return serviceResponse;
+            // }
 
             // Adapt the entity to DTO and return success response
             serviceResponse.Data = newAppSecret.Adapt<AppSecretDto>();

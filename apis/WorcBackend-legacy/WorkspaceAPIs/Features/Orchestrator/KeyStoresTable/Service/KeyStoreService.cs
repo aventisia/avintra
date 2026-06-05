@@ -263,12 +263,12 @@ public class KeyStoreService : IKeyStoreService
                 return serviceResponse;
             }
 
-            // Assign ownership
-            if (!await _resourceShareService.AssignOwnerAsync(_userId, newKeyStore.Id, ResourceTypeEnum.KeyStore))
-            {
-                serviceResponse.Message = "Failed assigning ownership.";
-                return serviceResponse;
-            }
+            // // Assign ownership
+            // if (!await _resourceShareService.AssignOwnerAsync(_userId, newKeyStore.Id, ResourceTypeEnum.KeyStore))
+            // {
+            //     serviceResponse.Message = "Failed assigning ownership.";
+            //     return serviceResponse;
+            // }
 
             // Return the created key store in the response
             serviceResponse.Data = newKeyStore.Adapt<KeyStoreDto>();
