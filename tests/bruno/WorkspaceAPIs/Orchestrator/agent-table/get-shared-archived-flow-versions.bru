@@ -1,0 +1,11 @@
+meta {
+  name: Get shared archived flow versions
+  type: http
+  seq: 15
+}
+
+get {
+  url: {{WORKSPACE_APIS_BASE_URL}}/agent/archived/list
+  body: none
+  auth: none
+}

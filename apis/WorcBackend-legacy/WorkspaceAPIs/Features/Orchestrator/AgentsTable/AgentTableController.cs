@@ -81,4 +81,18 @@ public class AgentTableController : BaseApiController
     {
         return ResultHelper(await _agentTableService.GetTotalPublishedFlowVersionsAsync());
     }
+
+    // Retrieves all archived flow versions.
+    [HttpGet("archived/list")]
+    public async Task<ActionResult<ServiceResponse<IEnumerable<AgentTableDto>>>> GetArchivedFlowVersions()
+    {
+        return ResultHelper(await _agentTableService.GetArchivedFlowVersionsAsync(true));
+    }
+
+    // Retrieves all archived shared flow versions.
+    [HttpGet("archived/list/shared")]
+    public async Task<ActionResult<ServiceResponse<IEnumerable<AgentTableDto>>>> GetArchivedSharedFlowVersions()
+    {
+        return ResultHelper(await _agentTableService.GetArchivedFlowVersionsAsync(false));
+    }
 }

@@ -9,6 +9,13 @@ public interface IAgentTableService
     Task<ServiceResponse<IEnumerable<AgentTableDto>>> GetPublishFlowVersionsAsync(Guid? flowId);
 
     /// <summary>
+    /// Retrieves all archived flow versions created by the user.
+    /// </summary>
+    /// <param name="isPersonal"> If <c>true</c>, returns only archived personal flow versions. If <c>false</c>, returns only archived shared flow versions. </param>
+    /// <returns> The task result contains the service response with the list of archived flow version details. </returns>
+    Task<ServiceResponse<IEnumerable<AgentTableDto>>> GetArchivedFlowVersionsAsync(bool isPersonal);
+
+    /// <summary>
     /// Updates the details of a specific flow version.
     /// </summary>
     /// <param name="agentTableDto">The DTO containing updated flow version details.</param>

@@ -6,6 +6,7 @@ public class AgentTableService : IAgentTableService
     private readonly IUnitOfWork _unitOfWork;
     private readonly IClientStatusStore _clientStatusStore;
     private readonly ICurrentTenantService _currentTenantService;
+    private readonly IResourceShareService _resourceShareService;
     private readonly Guid _userId;
 
     public AgentTableService(
@@ -13,7 +14,8 @@ public class AgentTableService : IAgentTableService
         IUnitOfWork unitOfWork,
         IHttpContextAccessor httpContextAccessor,
         IClientStatusStore clientStatusStore,
-        ICurrentTenantService currentTenantService)
+        ICurrentTenantService currentTenantService,
+        IResourceShareService resourceShareService)
     {
         // Extract the user ID from the HTTP context and assign it to _userId.
         _userId = Guid.Parse(httpContextAccessor.HttpContext?.User?.FindFirstValue("uid") ?? Guid.Empty.ToString());
@@ -22,6 +24,7 @@ public class AgentTableService : IAgentTableService
         _unitOfWork = unitOfWork;
         _clientStatusStore = clientStatusStore;
         _currentTenantService = currentTenantService;
+        _resourceShareService = resourceShareService;
     }
 
     // Retrieves a list of published flow versions for a specific flow by its identifier.
@@ -63,6 +66,94 @@ public class AgentTableService : IAgentTableService
         }
 
         // Return the service response.
+        return serviceResponse;
+    }
+
+    // Retrieves all archived flow versions accessible to the current user.
+    public async Task<ServiceResponse<IEnumerable<AgentTableDto>>> GetArchivedFlowVersionsAsync(bool isPersonal)
+    {
+        // Initialize ServiceResponse with failed response
+        var serviceResponse = new ServiceResponse<IEnumerable<AgentTableDto>>
+        {
+            Data = null,
+            Message = "Failed to retrieve archived flow versions. Please try again."
+        };
+
+        try
+        {
+            // Store retrieved flow versions and access permissions
+            List<FlowVersion> flowVersions = new();
+            Dictionary<Guid, ResourceAccessTypeEnum>? resourceAccess = new();
+
+            if (isPersonal)
+            {
+                // Retrieve archived flow versions created by the current user
+                flowVersions = await _unitOfWork.FlowVersionRepo
+                    .GetByConditionAsync(w =>
+                        w.IsArchived &&
+                        w.CreatedByUserId == _userId
+                    )
+                    .OrderByDescending(w => w.CreatedOn)
+                    .Include(i => i.Flow)
+                    .Include(i => i.MachineFlows)
+                    .Include(i => i.CreatedByUser)
+                    .OrderBy(o => o.VersionNumber)
+                    .ToListAsync();
+            }
+            else
+            {
+                // Retrieve all flow version resources the current user has access to
+                resourceAccess = await _resourceShareService.GetAccessibleResourcesWithAccessAsync(
+                    _userId,
+                    ResourceTypeEnum.FlowVersion,
+                    new[]
+                    {
+                        ResourceAccessTypeEnum.FullAccess,
+                        ResourceAccessTypeEnum.Owner,
+                        ResourceAccessTypeEnum.View,
+                        ResourceAccessTypeEnum.Edit,
+                        ResourceAccessTypeEnum.Delete
+                    });
+
+                // Retrieve archived shared flow versions that are either:
+                // - Tenant-wide accessible, or
+                // - Explicitly shared with the current user
+                flowVersions = await _unitOfWork.FlowVersionRepo
+                    .GetByConditionAsync(w =>
+                        w.IsArchived &&
+                        (w.IsTenantWideAccess || resourceAccess.Keys.Contains(w.Id))
+                    )
+                    .OrderByDescending(w => w.CreatedOn)
+                    .Include(i => i.Flow)
+                    .Include(i => i.MachineFlows)
+                    .Include(i => i.CreatedByUser)
+                    .OrderBy(o => o.VersionNumber)
+                    .ToListAsync();
+            }
+
+            // Map flow version entities to DTOs
+            var flowVersionDtoList = flowVersions.Adapt<List<AgentTableDto>>();
+
+            // Set access level for each flow version
+            flowVersionDtoList.ForEach(fv =>
+            {
+                fv.AccessLevel = isPersonal
+                    ? ResourceAccessTypeEnum.Owner
+                    : resourceAccess?.GetValueOrDefault(fv.Id, ResourceAccessTypeEnum.View)
+                        ?? ResourceAccessTypeEnum.View;
+            });
+
+            // Task successful
+            serviceResponse.Data = flowVersionDtoList;
+            serviceResponse.StatusCode = 200;
+            serviceResponse.Message = "Archived flow versions retrieved successfully";
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex.ToString());
+            return serviceResponse;
+        }
+
         return serviceResponse;
     }
 

@@ -60,6 +60,16 @@ public class AgentTableDto
     public string? SupportedPlatform { get; set; }
 
     /// <summary>
+    /// Gets or sets a value indicating whether the flow is accessible to all users within the tenant.
+    /// </summary>
+    public bool IsTenantWideAccess { get; set; }
+
+    /// <summary>
+    /// Gets or sets the permission level granted to the user.
+    /// </summary>
+    public ResourceAccessTypeEnum AccessLevel { get; set; }
+
+    /// <summary>
     /// Gets or sets a value indicating whether the record is disabled. Use this to mark a record as disabled if it's outdated or no longer required when deletion is not possible.
     /// </summary>
     public bool IsDisabled { get; set; } = false;
