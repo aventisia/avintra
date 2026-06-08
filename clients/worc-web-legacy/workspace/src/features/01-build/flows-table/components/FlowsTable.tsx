@@ -45,7 +45,7 @@ export const FlowsTable = () => {
   );
 
   // Use this in place FLOWS_QUERY_KEY to handle Personal/Shared tabs list
-  const { isPersonal, queryKey, currentTab } = useTableTab();
+  const { isPersonal, isArchived, queryKey } = useTableTab();
 
   // Fetch flows data
   const { data } = useFetchFlows();
@@ -59,7 +59,7 @@ export const FlowsTable = () => {
     true,
   );
 
-  if (currentTab == "archived") return <ArchivedFlowsTable isFlowTable />;
+  if (isArchived) return <ArchivedFlowsTable isPersonal />;
 
   // Return the rendered DataTable component.
   return (

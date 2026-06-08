@@ -11,12 +11,13 @@ import { useTableTab } from "./useTableTab";
  */
 export const useFetchFlows = () => {
   // Use this in place FLOWS_QUERY_KEY to handle Personal/Shared tabs list
-  const { isPersonal, queryKey } = useTableTab();
+  const { isPersonal, isArchived, queryKey } = useTableTab();
 
   // Get flows using react query
   const { data, isFetching, isLoading, isError, error } = useQuery({
     queryKey: queryKey,
     queryFn: () => getFlows({ isPersonal }),
+    enabled: !isArchived,
   });
 
   // Show toast on fetch error

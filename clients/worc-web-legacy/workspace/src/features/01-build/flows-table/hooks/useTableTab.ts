@@ -18,6 +18,8 @@ export const useTableTab = () => {
 
   const isShared = currentTab === "shared";
 
+  const isArchived = currentTab === "archived";
+
   const queryKey = useMemo(
     () => (isPersonal ? [...FLOWS_QUERY_KEY] : [...FLOWS_QUERY_KEY, "SHARED"]),
     [isPersonal],
@@ -27,6 +29,7 @@ export const useTableTab = () => {
     currentTab,
     isPersonal,
     isShared,
+    isArchived,
     queryKey,
   };
 };

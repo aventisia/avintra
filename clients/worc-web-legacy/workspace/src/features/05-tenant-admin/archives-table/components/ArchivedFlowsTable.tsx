@@ -29,12 +29,12 @@ import { archivedFlowsTableColumns } from "./ArchivedFlowsTableColumns";
  * @returns The rendered ArchivedFlowsTable component.
  */
 export const ArchivedFlowsTable = ({
-  isFlowTable = false,
+  isPersonal = false,
 }: {
-  isFlowTable?: boolean;
+  isPersonal?: boolean;
 }) => {
   // Set the document title
-  useDocumentTitle(isFlowTable ? "Agents" : TABLE_HEADING);
+  useDocumentTitle(isPersonal ? "Agents" : TABLE_HEADING);
 
   // Get data-table preferences from local storage
   const { columnVisibility, sortState } = getDataTablePreferences(
@@ -43,7 +43,7 @@ export const ArchivedFlowsTable = ({
   );
 
   // Fetch Archived flows data
-  const { data } = useFetchArchivedFlows();
+  const { data } = useFetchArchivedFlows({ isPersonal });
 
   // Create a React table for Archived flows data
   const table = useDataTable(
@@ -62,8 +62,8 @@ export const ArchivedFlowsTable = ({
           {/* Table toolbar */}
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-2">
-              <DTHeading heading={isFlowTable ? "Agents" : TABLE_HEADING} />
-              {isFlowTable && (
+              <DTHeading heading={isPersonal ? "Agents" : TABLE_HEADING} />
+              {isPersonal && (
                 <QueryTabs tabs={TABLE_VIEW_TABS} key={TABLE_TAB_QUERY_PARAM} />
               )}{" "}
             </div>{" "}
