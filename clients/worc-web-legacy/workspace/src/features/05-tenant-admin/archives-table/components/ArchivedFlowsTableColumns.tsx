@@ -6,7 +6,6 @@ import { ColumnDef } from "@tanstack/react-table";
 import { TABLE_KEY } from "../constants";
 import { getColumnName } from "../constants/column-display-names";
 import { ArchivedFlowsTableDto } from "../dtos/archived-flows-table-dto";
-
 import { ArchivedFlowRowActions } from "./ArchivedFlowRowActions";
 import { ArchivedFlowsTableCellLink } from "./ArchivedFlowsTableCellLink";
 
@@ -48,11 +47,16 @@ export const archivedFlowsTableColumns: ColumnDef<ArchivedFlowsTableDto>[] = [
       />
     ),
     cell: ({ row }) => (
-      <ArchivedFlowsTableCellLink
-        rowId={row.original.id}
-        refId={row.original.refId}
-        cellValue={row.getValue("name")}
-      />
+      <div className="flex max-w-80 items-center gap-3 ">
+        <ArchivedFlowsTableCellLink
+          rowId={row.original.id}
+          refId={row.original.refId}
+          cellValue={row.getValue("name")}
+        />
+        <p className="bg-muted border text-nowrap py-1 px-1.5  text-2xs leading-none  text-primary rounded-full">
+          v{row.original.versionNumber ?? 0}
+        </p>
+      </div>
     ),
   },
   {
@@ -69,21 +73,6 @@ export const archivedFlowsTableColumns: ColumnDef<ArchivedFlowsTableDto>[] = [
     ),
   },
   {
-    accessorKey: "versionNumber",
-    header: ({ column }) => (
-      <DTColumnHeader
-        tableKey={TABLE_KEY}
-        column={column}
-        title={getColumnName("versionNumber")}
-      />
-    ),
-    cell: ({ row }) => (
-      <div className="w-auto truncate font-medium">
-        {row.getValue("versionNumber")}
-      </div>
-    ),
-  },
-  {
     accessorKey: "lastModifiedBy",
     header: ({ column }) => (
       <DTColumnHeader
@@ -94,7 +83,7 @@ export const archivedFlowsTableColumns: ColumnDef<ArchivedFlowsTableDto>[] = [
     ),
     cell: ({ row }) => (
       <div className="w-auto truncate font-medium">
-        {row.getValue("lastModifiedBy")}
+        {row.getValue("lastModifiedBy") ?? row.original.createdBy}
       </div>
     ),
   },

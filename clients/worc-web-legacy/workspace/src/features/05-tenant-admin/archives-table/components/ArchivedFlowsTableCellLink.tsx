@@ -24,7 +24,7 @@ export const ArchivedFlowsTableCellLink = ({
       to={`${window.location.origin}${import.meta.env.VITE_STUDIO_PATH}agent?f=${refId}&v=${rowId}`}
       className={cn(
         buttonVariants({ variant: "link" }),
-        "!h-8 w-auto cursor-pointer truncate font-medium text-foreground hover:text-primary",
+        "h-auto w-auto cursor-pointer truncate inline-block  font-medium text-foreground hover:text-primary",
       )}
     >
       {cellValue}
