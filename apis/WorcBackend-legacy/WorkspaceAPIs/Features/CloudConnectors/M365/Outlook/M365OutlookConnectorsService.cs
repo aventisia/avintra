@@ -222,7 +222,7 @@ public class M365OutlookConnectorsService : IM365OutlookConnectorsService
                     {
                         return await HttpClientHelper.PostAsync(
                             $"{messagesApiUrl}/messages/{replyMessageId}/replyAll",
-                            new { replyComment },
+                            new { comment = replyComment },
                             accessToken);
                     }
 
@@ -230,7 +230,7 @@ public class M365OutlookConnectorsService : IM365OutlookConnectorsService
                     // Microsoft Graph supports an optional 'message' object for overrides, but this connector uses the simpler comment-based reply.
                     return await HttpClientHelper.PostAsync(
                         $"{messagesApiUrl}/messages/{replyMessageId}/reply",
-                        new { replyComment },
+                        new { comment = replyComment },
                         accessToken);
                 }
 
@@ -259,7 +259,7 @@ public class M365OutlookConnectorsService : IM365OutlookConnectorsService
                         $"{messagesApiUrl}/messages/{forwardMessageId}/forward",
                         new
                         {
-                            forwardComment,
+                            comment = forwardComment,
                             toRecipients = recipients
                         },
                         accessToken);
