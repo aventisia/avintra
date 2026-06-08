@@ -10,8 +10,8 @@
   "fields": [
     {
       "direction": "Input",
-      "type": "text",
-      "name": "ScriptCode",
+      "type": "code-editor",
+      "name": "ScriptCode_javascript",
       "label": "JavaScript Code",
       "description": "The JavaScript code to execute.",
       "defaultValue": "",

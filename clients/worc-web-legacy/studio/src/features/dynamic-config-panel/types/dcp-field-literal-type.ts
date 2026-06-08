@@ -57,4 +57,5 @@ export type DCPControlType =
   | "queue-conditional-group"
   | "queue-priority-group"
   | "string-array"
-  | "suggestions";
+  | "suggestions"
+  | "code-editor";

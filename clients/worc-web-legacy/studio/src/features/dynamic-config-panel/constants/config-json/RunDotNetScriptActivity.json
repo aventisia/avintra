@@ -10,8 +10,8 @@
   "fields": [
     {
       "direction": "Input",
-      "type": "text",
-      "name": "ScriptCode",
+      "type": "code-editor",
+      "name": "ScriptCode_csharp",
       "label": ".NET Script Code",
       "description": "The .NET script code to execute.",
       "defaultValue": "",

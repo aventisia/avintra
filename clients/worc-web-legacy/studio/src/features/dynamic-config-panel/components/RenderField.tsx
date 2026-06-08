@@ -1,4 +1,5 @@
 import { SliderField } from "@/components/Slider/SliderField";
+import { CodeEditorField } from "@/components/code-editor/CodeEditorField";
 import { JsonEditorField } from "@/components/json-editor/JsonEditorField";
 
 import {
@@ -118,6 +119,8 @@ export const RenderField = (field: DCPFieldSchemaType) => {
       return <StringArrayField {...field} size="sm" />;
     case "suggestions":
       return <SuggestionsField {...field} size="sm" />;
+    case "code-editor":
+      return <CodeEditorField {...field} className={field.className} />;
     default:
       return null;
   }

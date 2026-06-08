@@ -10,8 +10,8 @@
   "fields": [
     {
       "direction": "Input",
-      "type": "text",
-      "name": "ScriptCode",
+      "type": "code-editor",
+      "name": "ScriptCode_powershell",
       "label": "PowerShell Script Code",
       "description": "The PowerShell script code to execute.",
       "defaultValue": "",
