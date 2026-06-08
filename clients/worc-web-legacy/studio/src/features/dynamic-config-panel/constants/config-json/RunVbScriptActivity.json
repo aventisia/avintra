@@ -10,8 +10,8 @@
   "fields": [
     {
       "direction": "Input",
-      "type": "text",
-      "name": "ScriptCode",
+      "type": "code-editor",
+      "name": "ScriptCode_vb",
       "label": "VBScript Code",
       "description": "The VBScript code to execute.",
       "defaultValue": "",

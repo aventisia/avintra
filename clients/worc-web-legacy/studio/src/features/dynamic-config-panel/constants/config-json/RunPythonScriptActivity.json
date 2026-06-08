@@ -10,8 +10,8 @@
   "fields": [
     {
       "direction": "Input",
-      "type": "text",
-      "name": "ScriptCode",
+      "type": "code-editor",
+      "name": "ScriptCode_python",
       "label": "Python Script Code",
       "description": "The Python script code to execute.",
       "defaultValue": "",
