@@ -42,9 +42,9 @@ export const conversationsTableColumns: ColumnDef<AdminConversationDto>[] = [
         <div className="max-w-48  truncate font-medium">
           {`${row.getValue("flowName")} `}
         </div>
-        <span className="bg-muted border text-2xs leading-none h-[1.4rem] w-[1.4rem] flex items-center justify-center  text-primary    rounded-full">
+        <p className="bg-muted border text-nowrap py-1 px-1.5  text-2xs leading-none  text-primary rounded-full">
           v{row.original.versionNumber ?? 0}
-        </span>
+        </p>
       </div>
     ),
   },
