@@ -87,6 +87,13 @@
   max-width: 34rem;
   text-wrap: wrap;
 }
+
+/* Wrap line to avoid overflow in DCP code editor */
+.dcp-code-editor .cm-line {
+  max-width: 28rem;
+  text-wrap: wrap;
+}
+
 @layer base {
   *,
   *::after,

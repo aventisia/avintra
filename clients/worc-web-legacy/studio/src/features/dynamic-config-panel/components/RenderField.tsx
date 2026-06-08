@@ -8,6 +8,7 @@ import {
   SelectField,
   SwitchField,
 } from "@aventisia/ui/form";
+import { cn } from "@aventisia/ui/lib";
 
 import {
   ConditionGroupsField,
@@ -120,7 +121,12 @@ export const RenderField = (field: DCPFieldSchemaType) => {
     case "suggestions":
       return <SuggestionsField {...field} size="sm" />;
     case "code-editor":
-      return <CodeEditorField {...field} className={field.className} />;
+      return (
+        <CodeEditorField
+          {...field}
+          className={cn("dcp-code-editor", field.className)}
+        />
+      );
     default:
       return null;
   }
