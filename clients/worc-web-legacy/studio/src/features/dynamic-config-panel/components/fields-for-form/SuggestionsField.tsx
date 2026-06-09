@@ -25,7 +25,7 @@ export function SuggestionsField({
   const fieldNames = useMemo(
     () =>
       ({
-        defaultActions: `${name}.List`,
+        defaultActions: `${name}.DefaultActions`,
         enableDynamicActions: `${name}.EnableDynamicActions`,
       }) as const,
     [name],
@@ -46,7 +46,7 @@ export function SuggestionsField({
       <SwitchField
         name={fieldNames.enableDynamicActions}
         label="Enable Dynamic Actions"
-        description=""
+        description="Enable dynamically generated suggestions during conversations."
         disabled={disabled}
         size={size}
       />
