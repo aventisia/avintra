@@ -214,86 +214,43 @@ public class ProcessLLMRequestNode : BaseNode
         return null;
     }
 
-    private static List<object>? FormatFilesList(List<string>? filesList)
+    // Normalizes a list of file references into a string-only format.
+    private List<string> FormatFilesList(List<string>? filesList)
     {
+        var result = new List<string>();
+
+        // Return null when no file references are provided.
         if (filesList == null || filesList.Count == 0)
-            return null;
+            return result;
 
-        if (filesList.All(f => f.StartsWith("http://", StringComparison.OrdinalIgnoreCase)
-                            || f.StartsWith("https://", StringComparison.OrdinalIgnoreCase)))
-            return filesList.Cast<object>().ToList();
-
-        var result = new List<object>();
-        foreach (var filePathOrBase64 in filesList)
+        foreach (var file in filesList)
         {
-            if (IsBase64String(filePathOrBase64))
+            // Ignore empty or whitespace-only entries.
+            if (string.IsNullOrWhiteSpace(file))
+                continue;
+
+            var value = file.Trim();
+
+            // Preserve supported file reference formats:
+            // - Remote URLs (http/https)
+            // - Data URIs (base64-encoded content)
+            // - Local file URIs (file://)
+            if (value.StartsWith("http://", StringComparison.OrdinalIgnoreCase) ||
+                value.StartsWith("https://", StringComparison.OrdinalIgnoreCase) ||
+                value.StartsWith("data:", StringComparison.OrdinalIgnoreCase) ||
+                value.StartsWith("file://", StringComparison.OrdinalIgnoreCase))
             {
-                result.Add(filePathOrBase64);
+                result.Add(value);
                 continue;
             }
 
-            var sanitizedPath = filePathOrBase64.Trim('[').Trim(']').Trim('"').Trim();
-            if (!File.Exists(sanitizedPath))
-                continue;
-
-            var fileBytes = File.ReadAllBytes(sanitizedPath);
-            result.Add(new
-            {
-                mime_type = GetMimeType(Path.GetExtension(sanitizedPath)),
-                encoded_content = Convert.ToBase64String(fileBytes)
-            });
+            // Preserve any other value and allow downstream validation
+            // or processing to determine whether it is a valid file reference.
+            result.Add(value);
         }
+
         return result;
     }
-
-    private static bool IsBase64String(string str)
-    {
-        if (string.IsNullOrWhiteSpace(str))
-            return false;
-
-        str = str.Trim();
-
-        if (str.Length % 4 != 0)
-            return false;
-
-        try
-        {
-            Convert.FromBase64String(str);
-            return true;
-        }
-        catch
-        {
-            return false;
-        }
-    }
-
-    private static string GetMimeType(string fileExtension) => fileExtension.ToLowerInvariant() switch
-    {
-        ".txt" => "text/plain",
-        ".pdf" => "application/pdf",
-        ".doc" => "application/msword",
-        ".docx" => "application/vnd.openxmlformats-officedocument.wordprocessingml.document",
-        ".xls" => "application/vnd.ms-excel",
-        ".xlsx" => "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
-        ".ppt" => "application/vnd.ms-powerpoint",
-        ".pptx" => "application/vnd.openxmlformats-officedocument.presentationml.presentation",
-        ".png" => "image/png",
-        ".jpg" or ".jpeg" => "image/jpeg",
-        ".gif" => "image/gif",
-        ".bmp" => "image/bmp",
-        ".tiff" or ".tif" => "image/tiff",
-        ".mp4" => "video/mp4",
-        ".webm" => "video/webm",
-        ".mp3" => "audio/mpeg",
-        ".wav" => "audio/wav",
-        ".ogg" => "audio/ogg",
-        ".zip" => "application/zip",
-        ".rar" => "application/x-rar-compressed",
-        ".csv" => "text/csv",
-        ".json" => "application/json",
-        ".xml" => "application/xml",
-        _ => "application/octet-stream"
-    };
 
     /// <summary>
     /// Builds the input payload for the LLM request.
