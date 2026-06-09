@@ -10,12 +10,18 @@ public class FlowsTableMappingProfile : IRegister
                 src => src.FlowComments != null
                     ? src.FlowComments.Count
                     : 0)
-             .Map(dest => dest.VersionNumber,
+            .Map(dest => dest.VersionNumber,
                 src => src.FlowVersions != null && src.FlowVersions.Any()
                     ? src.FlowVersions
                         .OrderByDescending(w => w.VersionNumber)
                         .First().VersionNumber
                     : 0)
+            .Map(dest => dest.SupportedPlatform,
+                src => src.FlowVersions != null && src.FlowVersions.Any()
+                    ? src.FlowVersions
+                        .OrderByDescending(w => w.CreatedOn)
+                        .FirstOrDefault().SupportedPlatform
+                    : null)
             .Map(dest => dest.CreatedBy,
                 src => src.CreatedByUser != null
                     ? src.CreatedByUser.FirstName + " " + src.CreatedByUser.LastName
