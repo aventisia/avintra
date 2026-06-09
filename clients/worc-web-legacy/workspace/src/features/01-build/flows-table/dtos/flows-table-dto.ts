@@ -54,6 +54,8 @@ export interface FlowsTableDto {
 
   accessType: AccessTypeEnum;
 
+  supportedPlatform?: string;
+
   /**
    * Access level of the configuration item.
    */
