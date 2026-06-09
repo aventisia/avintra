@@ -47,6 +47,11 @@ public class FlowsTableDto
     public int VersionNumber { get; set; }
 
     /// <summary>
+    /// Gets or sets the supported platforms for the last flow version as a comma-separated string.
+    /// </summary>
+    public string? SupportedPlatform { get; set; }
+
+    /// <summary>
     /// Gets or sets a value indicating whether the flow is accessible to all users within the tenant.
     /// </summary>
     public bool IsTenantWideAccess { get; set; }
