@@ -9,7 +9,7 @@ import httpx
 from datetime import datetime, timezone
 from app.core.config import settings
 from app.core.logger import log_exception, logger
-from app.features.llm_providers.llm_providers_schemas import EmbeddingRequest, EmbeddingResponse, LLMChunkResponse, LLMRequest, LLMResponse
+from app.features.llm_providers.llm_providers_schemas import ChatAgentResponse, EmbeddingRequest, EmbeddingResponse, LLMChunkResponse, LLMRequest, LLMResponse
 from app.features.llm_providers.llm_providers_utils import extract_json_from_llm_response
 from .llm_providers_base import BaseLLMProvider
 from app.features.llm_providers.llm_job_manager import active_llm_jobs
@@ -414,7 +414,15 @@ class OpenAIProvider(BaseLLMProvider):
         incomplete_details = response_data.get("incomplete_details") or {}
         
         # Update llm_response with actual values
-        llm_response.output = output
+        if llm_request.is_chat_agent:
+            llm_response.output = ChatAgentResponse(
+                text=output if isinstance(output, str) else "",
+                tools=output if llm_request.tool_config else [],
+                recommended_actions=[]
+            )
+        else:
+            llm_response.output = output
+            
         llm_response.status = response_data.get("status")
         llm_response.finish_reason = incomplete_details.get("reason", None)
         llm_response.created_on = datetime.fromtimestamp(response_data.get("created_at"), tz=timezone.utc)
