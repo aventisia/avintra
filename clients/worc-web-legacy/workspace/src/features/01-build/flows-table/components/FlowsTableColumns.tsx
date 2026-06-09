@@ -1,4 +1,5 @@
 import { Checkbox } from "@aventisia/ui";
+import { Badge } from "@aventisia/ui/badge";
 import { DTColumnHeader } from "@aventisia/ui/data-table";
 import { dateFormatter } from "@aventisia/ui/utils";
 import { ColumnDef } from "@tanstack/react-table";
@@ -82,6 +83,30 @@ export const flowsTableColumns: ColumnDef<FlowsTableDto>[] = [
       return (
         <div className="w-auto truncate font-medium">
           {flowTypeLabelOverrides[typeValue] || typeValue}
+        </div>
+      );
+    },
+  },
+  {
+    accessorKey: "supportedPlatform",
+    header: ({ column }) => (
+      <DTColumnHeader
+        tableKey={TABLE_KEY}
+        column={column}
+        title={getColumnName("supportedPlatform")}
+      />
+    ),
+    cell: ({ row }) => {
+      const supportedPlatform = row.original?.supportedPlatform;
+      let platform = "Cloud & Windows";
+      if (supportedPlatform == "windows") {
+        platform = "Windows";
+      }
+      return (
+        <div className="w-auto truncate font-medium">
+          <Badge className="" variant={"outline"}>
+            {platform}
+          </Badge>
         </div>
       );
     },
