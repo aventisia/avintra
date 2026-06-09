@@ -38,6 +38,7 @@ class LLMRequest(BaseModel):
     temperature: Optional[float] = 1.0
     top_p: Optional[float] = 1.0
     stream: Optional[bool] = False,
+    is_chat_agent: Optional[bool] = False  # Whether the request originates from a chat agent
     ref_type: str # Type of the reference (e.g., "Agent", "Workflow")
     ref_id: str # Identifier to link back to Agent/Workflow
     ref_name: str # Name of the reference (e.g., name of the Agent/Workflow)
@@ -47,17 +48,23 @@ class LLMRequest(BaseModel):
     kb_names: Optional[List[str]] = None  # Knowledge base names used to scope KB chunk retrieval
     top_k: Optional[int] = Field(default=5, ge=1, le=100)  # Number of top chunks to retrieve from the knowledge base
 
+# Chat agent response schema
+class ChatAgentResponse(BaseModel):
+    text: str    # Message to display
+    tools: Optional[List[dict]] = []    # Tool actions
+    recommended_actions: Optional[List[dict]] = []  # User action suggestions
+
 # Chunk response schema for streaming LLM response
 class LLMChunkResponse(BaseModel):
     provider: ProviderLiteral
     model: str
-    output: Union[str, dict, list]  # String for text/markdown, dict/list for JSON responses
-    
+    output: Union[str, dict, list, ChatAgentResponse]  # Text, JSON, or structured chat-agent response
+
 # Response schema for LLM full response or last chunk in streaming
 class LLMResponse(BaseModel):
     provider: ProviderLiteral
     model: str
-    output: Union[str, dict, list]  # String for text/markdown, dict/list for JSON responses
+    output: Union[str, dict, list, ChatAgentResponse]  # Text, JSON, or structured chat-agent response
     status: Optional[Literal['completed', 'failed', 'in_progress', 'cancelled', 'queued', 'incomplete']] = None
     finish_reason: Optional[str] = None
     created_on: datetime = datetime.now(timezone.utc)
