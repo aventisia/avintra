@@ -11,10 +11,10 @@ namespace CodeActivitiesLibrary.AppIntegrations.FtpActivities
 {
     [DisplayName("Download File(s) from FTP")]
     [Description("Downloads one or more files from an FTP server.")]
-    [ActivityMetaData(nodeImg:"/assets/FTP.svg")]
+    [ActivityMetaData(nodeImg: "/assets/FTP.svg")]
 
     public class DownloadFilesFromFtpActivity : BaseCodeActivity
-    {   
+    {
         [RequiredArgument]
         [DisplayName("FTP Connection")]
         [Description("The FTP connection object.")]
@@ -49,7 +49,7 @@ namespace CodeActivitiesLibrary.AppIntegrations.FtpActivities
         [Description("The operation to perform if the file already exists locally.")]
         [DefaultValue(FileExistsOperation.Overwrite)]
         public InArgument<FileExistsOperation> IfFileExists { get; set; } = FileExistsOperation.Overwrite;
- 
+
         [DisplayName("Downloaded Files Count")]
         [Description("Returns the number of files successfully downloaded.")]
         public OutArgument<int> DownloadedFilesCount { get; set; }
@@ -133,17 +133,22 @@ namespace CodeActivitiesLibrary.AppIntegrations.FtpActivities
             FileExistsOperation ifFileExists)
         {
             var localFilePath = Path.Combine(localDirectory, fileName);
+            var localFolder = Path.GetDirectoryName(localFilePath);
+            if (!string.IsNullOrEmpty(localFolder))
+            {
+                Directory.CreateDirectory(localFolder);
+            }
 
             switch (ifFileExists)
             {
                 case FileExistsOperation.Overwrite:
-                    connection.DownloadFile(fileName, localFilePath);
+                    connection.DownloadFile(localFilePath, fileName);
                     break;
 
                 case FileExistsOperation.DontDownload:
                     if (File.Exists(localFilePath))
                         return;
-                    connection.DownloadFile(fileName, localFilePath);
+                    connection.DownloadFile(localFilePath, fileName);
                     break;
 
                 case FileExistsOperation.DownloadWithUniqueName:
@@ -157,7 +162,7 @@ namespace CodeActivitiesLibrary.AppIntegrations.FtpActivities
                         i++;
                     }
 
-                    connection.DownloadFile(fileName, localFilePath);
+                    connection.DownloadFile(localFilePath, fileName);
                     break;
                 default:
                     throw new ArgumentOutOfRangeException();
