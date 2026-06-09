@@ -231,8 +231,14 @@ public static class EnvironmentConfigurationExtension
             httpClient.DefaultRequestHeaders.Add("X-OnPrem-Tenant-Id", $"{ON_PREM_TENANT_ID}");
             httpClient.DefaultRequestHeaders.Add("X-OnPrem-Instance-Key", $"{ON_PREM_INSTANCE_KEY}");
 
+            var request = new HttpRequestMessage(HttpMethod.Get, $"{globalAdminApiBaseUrl}/api/onprem/instance/metadata")
+            {
+                Version = HttpVersion.Version20,
+                VersionPolicy = HttpVersionPolicy.RequestVersionExact
+            };
+
             // Get tenant metadata
-            var response = await httpClient.GetAsync($"{globalAdminApiBaseUrl}/api/onprem/instance/metadata");
+            var response = await httpClient.SendAsync(request);
 
             // Check if the response was successful
             if (!response.IsSuccessStatusCode)
