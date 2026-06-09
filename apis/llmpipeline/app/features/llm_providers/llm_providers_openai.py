@@ -310,8 +310,9 @@ class OpenAIProvider(BaseLLMProvider):
             request_payload["tools"] = (
                 ToolSchemaGeneratorService.generate_tools(
                     llm_request.tool_config
-                )              
+                )  
             )
+            request_payload["tool_choice"] = "auto"
             
         request_headers = {
             "Content-Type": "application/json",
