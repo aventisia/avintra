@@ -16,8 +16,8 @@ namespace CodeActivitiesLibrary.UiInterfaceAutomations.ScriptingActivities
         [RequiredArgument]
         [DisplayName("PowerShell Script Code")]
         [Description("The PowerShell script code to execute.")]
-
-        public InArgument<string> ScriptCode { get; set; }
+        [FieldType(FieldType.CodeEditor)]
+        public InArgument<string> ScriptCode_powershell { get; set; }
 
         [DisplayName("Script Output")]
         [Description("Returns the output of the script.")]
@@ -26,7 +26,7 @@ namespace CodeActivitiesLibrary.UiInterfaceAutomations.ScriptingActivities
 
         protected override void Execute(CodeActivityContext context)
         {
-            var scriptCode = ScriptCode.Get(context);
+            var scriptCode = ScriptCode_powershell.Get(context);
             var output = "";
 
             try

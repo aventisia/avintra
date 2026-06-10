@@ -7,14 +7,15 @@ namespace NodeLibrary.ScriptingNodes;
 public class RunPowerShellScriptNode : BaseNode
 {
     [DisplayName("PowerShell Script Code"), Description("The PowerShell script code to execute.")]
-    public required InArgument<string> ScriptCode { get; set; }
+    [NodeFieldType(NodeFieldTypeEnum.CodeEditor)]
+    public required InArgument<string> ScriptCode_powershell { get; set; }
 
     [DisplayName("Script Output"), Description("Returns the output of the script.")]
     public OutArgument<string> ScriptOutput { get; set; } = new OutArgument<string>();
 
     protected override void Execute(INodeContext context)
     {
-        var scriptCode = ScriptCode.Get(context);
+        var scriptCode = ScriptCode_powershell.Get(context);
         var status = "PowerShell script executed successfully.";
         string tempFilePath = string.Empty;
 

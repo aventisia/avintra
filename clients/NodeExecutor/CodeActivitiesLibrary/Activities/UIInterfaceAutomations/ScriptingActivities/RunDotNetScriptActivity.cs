@@ -1,4 +1,5 @@
 ﻿using CodeActivitiesLibrary.Extensions;
+using CodeActivitiesLibrary.UiInterfaceAutomations.ScriptingActivities.Helpers;
 using Microsoft.CodeAnalysis.CSharp.Scripting;
 using Microsoft.CodeAnalysis.Scripting;
 using System;
@@ -16,8 +17,9 @@ namespace CodeActivitiesLibrary.UiInterfaceAutomations.ScriptingActivities
     {
         [RequiredArgument]
         [DisplayName(".NET Script Code")]
-        [Description("The .NET script code to execute. Can be inline code, a file path, a URL, or a Base64 data URI..")]
-        public InArgument<string> ScriptCode { get; set; }
+        [Description("The .NET script code to execute. Can be inline code, a file path, a URL, or a Base64 data URI.")]
+        [FieldType(FieldType.CodeEditor)]
+        public InArgument<string> ScriptCode_csharp { get; set; }
 
         [DisplayName("Script Output")]
         [Description("Returns the output of the script.")]
@@ -25,7 +27,7 @@ namespace CodeActivitiesLibrary.UiInterfaceAutomations.ScriptingActivities
 
         protected override void Execute(CodeActivityContext context)
         {
-            var source = ScriptCode.Get(context);
+            var source = ScriptCode_csharp.Get(context);
             string output = string.Empty;
             string resolvedFilePath = null;
             bool isTemporary = false;

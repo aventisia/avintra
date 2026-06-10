@@ -8,7 +8,8 @@ namespace NodeLibrary.ScriptingNodes;
 public class RunPythonScriptNode : BaseNode
 {
     [DisplayName("Python Script Code"), Description("The Python script source. Can be inline code, a file path, a URL, or a Base64 data URI.")]
-    public required InArgument<string> ScriptCode { get; set; }
+    [NodeFieldType(NodeFieldTypeEnum.CodeEditor)]
+    public required InArgument<string> ScriptCode_python { get; set; }
 
     [DisplayName("Script Output"), Description("Returns the output of the script.")]
     public OutArgument<string> ScriptOutput { get; set; } = new OutArgument<string>();
@@ -17,10 +18,11 @@ public class RunPythonScriptNode : BaseNode
     {
         string? resolvedFilePath = null;
         bool isTemporaryFile = false;
+        string tempFilePath = string.Empty;
 
         try
         {
-            var source = ScriptCode.Get(context)?.Trim();
+            var source = ScriptCode_python.Get(context)?.Trim();
 
             if (string.IsNullOrWhiteSpace(source))
                 throw new ArgumentException("Source cannot be empty.");

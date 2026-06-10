@@ -166,6 +166,7 @@ namespace CodeActivityToJSON.Utils
                         { FieldType.CredentialsSelect, "credentials-select" },
                         { FieldType.QueueSelect, "queue-select" },
                         { FieldType.JsonEditor, "json-editor" },
+                        { FieldType.CodeEditor, "code-editor" },
                         { FieldType.ConfigPanelModelOutput, "config-panel-model-output" }
                     };
 

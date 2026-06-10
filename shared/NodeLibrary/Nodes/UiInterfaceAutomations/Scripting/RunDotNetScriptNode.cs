@@ -12,14 +12,15 @@ public class RunDotNetScriptNode : BaseNode
     private static readonly object ConsoleOutLock = new();
 
     [DisplayName(".NET Script Code"), Description("The .NET script code to execute. Can be inline code, a file path, a URL, or a Base64 data URI.")]
-    public required InArgument<string> ScriptCode { get; set; }
+    [NodeFieldType(NodeFieldTypeEnum.CodeEditor)]
+    public required InArgument<string> ScriptCode_csharp { get; set; }
 
     [DisplayName("Script Output"), Description("Returns the output of the script.")]
     public OutArgument<string> ScriptOutput { get; set; } = new OutArgument<string>();
 
     protected override void Execute(INodeContext context)
     {
-        var source = ScriptCode.Get(context);
+        var source = ScriptCode_csharp.Get(context)?.Trim();
         string output = string.Empty;
         string? resolvedFilePath = null;
         bool isTemporary = false;

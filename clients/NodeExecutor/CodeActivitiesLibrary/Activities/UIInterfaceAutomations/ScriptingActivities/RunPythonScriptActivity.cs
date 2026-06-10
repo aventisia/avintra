@@ -1,8 +1,12 @@
 ﻿using CodeActivitiesLibrary.Extensions;
+using CodeActivitiesLibrary.UiInterfaceAutomations.ScriptingActivities.Helpers;
 using System;
 using System.Activities;
 using System.ComponentModel;
 using System.Diagnostics;
+using System.IO;
+using System.Net.Http;
+using System.Text;
 
 namespace CodeActivitiesLibrary.UiInterfaceAutomations.ScriptingActivities
 {
@@ -14,7 +18,8 @@ namespace CodeActivitiesLibrary.UiInterfaceAutomations.ScriptingActivities
         [RequiredArgument]
         [DisplayName("Python Script Code")]
         [Description("The Python script source. Can be inline code, a file path, a URL, or a Base64 data URI.")]
-        public InArgument<string> ScriptCode { get; set; }
+        [FieldType(FieldType.CodeEditor)]
+        public InArgument<string> ScriptCode_python { get; set; }
 
         [DisplayName("Script Output")]
         [Description("Returns the output of the script.")]
@@ -28,10 +33,10 @@ namespace CodeActivitiesLibrary.UiInterfaceAutomations.ScriptingActivities
 
             try
             {
-                var source = ScriptCode.Get(context)?.Trim();
+                var source = ScriptCode_python.Get(context)?.Trim();
 
                 if (string.IsNullOrWhiteSpace(source))
-                    throw new ArgumentException("Source cannot be empty.");
+                    throw new ArgumentException("Python script source cannot be empty.");
 
                 resolvedFilePath = ScriptSourceResolverHelper.Resolve(source, ".py", out isTemporaryFile);
 

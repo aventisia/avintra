@@ -8,14 +8,15 @@ namespace NodeLibrary.ScriptingNodes;
 public class RunVbScriptNode : BaseNode
 {
     [DisplayName("VBScript Code"), Description("The VBScript code to execute. Can be inline code, a file path, a URL, or a Base64 data URI.")]
-    public required InArgument<string> ScriptCode { get; set; }
+    [NodeFieldType(NodeFieldTypeEnum.CodeEditor)]
+    public required InArgument<string> ScriptCode_vb { get; set; }
 
     [DisplayName("Script Output"), Description("Returns the output of the script.")]
     public OutArgument<string> ScriptOutput { get; set; } = new OutArgument<string>();
 
     protected override void Execute(INodeContext context)
     {
-        string source = ScriptCode.Get(context) ?? string.Empty;
+        string source = ScriptCode_vb.Get(context) ?? string.Empty;
         string output = string.Empty;
         string resolvedFilePath = string.Empty;
         bool isTemporary = false;
