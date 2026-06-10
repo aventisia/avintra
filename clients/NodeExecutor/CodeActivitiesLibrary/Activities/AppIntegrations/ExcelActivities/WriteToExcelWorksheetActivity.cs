@@ -32,11 +32,6 @@ namespace CodeActivitiesLibrary.AppIntegrations.ExcelActivities
         [DefaultValue(ExcelCellWriteModeEnum.OnSpecifiedCell)]
         public InArgument<ExcelCellWriteModeEnum> WriteMode { get; set; }
 
-        [DisplayName("Column")]
-        [Description("The column letter (e.g., 'A', 'B') where the data should be written.")]
-        [RenderIfCondition(nameof(WriteMode), ExcelCellWriteModeEnum.OnSpecifiedCell)]
-        public InArgument<string> Column { get; set; }
-
         [DisplayName("Column Index")]
         [Description("The index of the column (1 for 'A'). Takes precedence if greater than 0.")]
         [RenderIfCondition(nameof(WriteMode), ExcelCellWriteModeEnum.OnSpecifiedCell)]
@@ -80,18 +75,14 @@ namespace CodeActivitiesLibrary.AppIntegrations.ExcelActivities
                     case ExcelCellWriteModeEnum.OnSpecifiedCell:
                         {
                             int rowNumber = Row.Get(context);
-                            int colIndex = ColumnIndex.Get(context);
-                            string colLetter = Column.Get(context);
+                            int startColIndex = ColumnIndex.Get(context);
 
-                            if (colIndex <= 0)
-                            {
-                                if (string.IsNullOrWhiteSpace(colLetter))
-                                    throw new ArgumentException("Either 'Column Index' or 'Column' must be provided.");
-                                colIndex = GetColumnIndex(colLetter);
-                            }
+                            if (startColIndex <= 0)
+                                throw new ArgumentException("Column Index must be provided and greater than zero.");
 
                             if (rowNumber <= 0)
                                 throw new ArgumentException("Row number must be greater than zero.");
+
 
                             Excel.Range targetCell = worksheet.Cells[rowNumber, colIndex];
                             if (targetCell == null)
@@ -176,7 +167,7 @@ namespace CodeActivitiesLibrary.AppIntegrations.ExcelActivities
             }
         }
 
-         private void WriteValueToRange(Excel.Range range, object value)
+        private void WriteValueToRange(Excel.Range range, object value)
         {
             if (value is DataTable dataTable)
             {

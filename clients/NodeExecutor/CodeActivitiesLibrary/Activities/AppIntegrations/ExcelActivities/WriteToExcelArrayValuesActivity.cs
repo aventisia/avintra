@@ -37,11 +37,6 @@ namespace CodeActivitiesLibrary.AppIntegrations.ExcelActivities
         public InArgument<ExcelCellWriteModeEnum> WriteMode { get; set; }
 
         // --- Specified Cell Mode ---
-        [DisplayName("Column")]
-        [Description("Starting column letter (e.g., 'A'). Used if ColumnIndex not provided.")]
-        [RenderIfCondition(nameof(WriteMode), ExcelCellWriteModeEnum.OnSpecifiedCell)]
-        public InArgument<string> Column { get; set; }
-
         [DisplayName("Column Index")]
         [Description("Starting column index (1 = A). Takes precedence if > 0.")]
         [RenderIfCondition(nameof(WriteMode), ExcelCellWriteModeEnum.OnSpecifiedCell)]
@@ -89,14 +84,13 @@ namespace CodeActivitiesLibrary.AppIntegrations.ExcelActivities
                         {
                             int rowNumber = Row.Get(context);
                             int startColIndex = ColumnIndex.Get(context);
-                            string colLetter = Column.Get(context);
 
                             if (startColIndex <= 0)
-                            {
-                                if (string.IsNullOrWhiteSpace(colLetter))
-                                    throw new ArgumentException("Either 'Column Index' or 'Column' must be provided.");
-                                startColIndex = GetColumnIndex(colLetter);
-                            }
+                                throw new ArgumentException("Column Index must be provided and greater than zero.");
+
+                            if (rowNumber <= 0)
+                                throw new ArgumentException("Row number must be greater than zero.");
+
 
                             if (rowNumber <= 0)
                                 throw new ArgumentException("Row number must be greater than zero.");
@@ -104,7 +98,7 @@ namespace CodeActivitiesLibrary.AppIntegrations.ExcelActivities
                             // Handle single value or array/list
                             var valuesToWrite = ExtractValuesAsArray(rawValue);
 
-                             // Write each value to adjacent columns
+                            // Write each value to adjacent columns
                             for (int i = 0; i < valuesToWrite.Length; i++)
                             {
                                 Excel.Range cell = worksheet.Cells[rowNumber, startColIndex + i];
@@ -195,7 +189,7 @@ namespace CodeActivitiesLibrary.AppIntegrations.ExcelActivities
             }
         }
 
- private object[] ExtractValuesAsArray(object value)
+        private object[] ExtractValuesAsArray(object value)
         {
             if (value == null) return new object[] { null };
 
@@ -236,8 +230,8 @@ namespace CodeActivitiesLibrary.AppIntegrations.ExcelActivities
         // --- Keep your existing helpers ---
         private void WriteDataTableToRange(Excel.Range startCell, DataTable dataTable, bool populateEntireRange)
         {
-            if (dataTable.Rows.Count == 0 || dataTable.Columns.Count == 0) 
-            return;
+            if (dataTable.Rows.Count == 0 || dataTable.Columns.Count == 0)
+                return;
 
             int rowCount = dataTable.Rows.Count;
             int colCount = dataTable.Columns.Count;
@@ -258,7 +252,7 @@ namespace CodeActivitiesLibrary.AppIntegrations.ExcelActivities
         {
             if (string.IsNullOrWhiteSpace(columnName))
                 throw new ArgumentException("Column name c4o    annot be empty.", nameof(columnName));
-           
+
             columnName = columnName.ToUpperInvariant();
             return columnName.Aggregate(0, (current, c) => current * 26 + (c - 'A') + 1);
         }
