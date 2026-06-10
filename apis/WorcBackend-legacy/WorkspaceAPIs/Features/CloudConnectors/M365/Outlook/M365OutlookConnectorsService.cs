@@ -181,16 +181,18 @@ public class M365OutlookConnectorsService : IM365OutlookConnectorsService
                     var categories = CloudConnectionPayloadUtil.GetList<string>(payload, "categories");
                     var importance = CloudConnectionPayloadUtil.GetValue(payload, "importance");
 
-                    // Build the request body dynamically based on the available properties
-                    var requestBody = new
-                    {
-                        isRead = isRead,
-                        flag = flagStatus != null ? new { flagStatus = flagStatus } : null,
-                        categories = categories ?? null,
-                        importance = importance ?? null
-                    };
+                    var requestBody = new Dictionary<string, object?>();
 
-                    // Send a PATCH request to update the email properties
+                    // Only add if non-null / non-empty
+                    requestBody["isRead"] = isRead;
+                    if (!string.IsNullOrWhiteSpace(flagStatus))
+                        requestBody["flag"] = new { flagStatus };
+                    if (categories != null && categories.Any())
+                        requestBody["categories"] = categories;
+                    if (!string.IsNullOrWhiteSpace(importance))
+                        requestBody["importance"] = importance;
+
+                    // Then send PATCH with this dictionary
                     return await HttpClientHelper.PatchAsync($"{messagesApiUrl}/messages/{messageId}", requestBody, accessToken);
                 }
 
@@ -579,28 +581,68 @@ public class M365OutlookConnectorsService : IM365OutlookConnectorsService
 
         return attachments.ToArray();
     }
-    public async Task<JsonDocument?> GetEmailsAsync(
-        string messagesApiUrl,
-        string accessToken,
-        Dictionary<string, object> payload)
+
+    public async Task<JsonDocument?> GetEmailsAsync(string messagesApiUrl, string accessToken, Dictionary<string, object> payload)
     {
         var requesturl = $"{messagesApiUrl}/messages";
 
+        // Get folder name if provided
+        var folderName = CloudConnectionPayloadUtil.GetValue(payload, "folderName");
+
+        if (!string.IsNullOrWhiteSpace(folderName))
+        {
+            // Resolve folder ID from folder name
+            var folderId = await GetFolderIdByNameAsync(
+                messagesApiUrl,
+                accessToken,
+                folderName);
+
+            if (!string.IsNullOrWhiteSpace(folderId))
+            {
+                requesturl = $"{messagesApiUrl}/mailFolders/{folderId}/messages";
+            }
+        }
+
         // Extract values from the payload
-        var mailbox = CloudConnectionPayloadUtil.GetValue(payload, "mailboxAddress");
-        var folder = CloudConnectionPayloadUtil.GetBool(payload, "folderName");
         var unreadOnly = CloudConnectionPayloadUtil.GetBool(payload, "unreadOnly", false);
         var onlyWithAttachments = CloudConnectionPayloadUtil.GetBool(payload, "onlyWithAttachments", false);
         var includeAttachments = CloudConnectionPayloadUtil.GetBool(payload, "includeAttachments", false);
         var count = CloudConnectionPayloadUtil.GetBool(payload, "count", false);
 
-        // Add '$count=true' to the query string if 'count' is true
-        if (count)
-            requesturl = CloudConnectionPayloadUtil.AppendQueryParameter(requesturl, "count", "$count={true}");
+        // Build filter conditions
+        var filters = new List<string>();
+
         if (onlyWithAttachments)
-            requesturl = CloudConnectionPayloadUtil.AppendQueryParameter(requesturl, "$filter", "hasAttachments eq true");
+            filters.Add("hasAttachments eq true");
+
         if (unreadOnly)
-            requesturl = CloudConnectionPayloadUtil.AppendQueryParameter(requesturl, "$filter", "isRead eq false");
+            filters.Add("isRead eq false");
+
+        if (filters.Any())
+        {
+            requesturl = CloudConnectionPayloadUtil.AppendQueryParameter(
+                requesturl,
+                "$filter",
+                string.Join(" and ", filters));
+        }
+
+        // Add count parameter
+        if (count)
+        {
+            requesturl = CloudConnectionPayloadUtil.AppendQueryParameter(
+                requesturl,
+                "$count",
+                "true");
+        }
+
+        // Include attachments if requested
+        if (includeAttachments)
+        {
+            requesturl = CloudConnectionPayloadUtil.AppendQueryParameter(
+                requesturl,
+                "$expand",
+                "attachments");
+        }
 
         // Add pagination parameters if provided
         requesturl = BuildPaginatedUrl(requesturl, payload);
@@ -611,8 +653,10 @@ public class M365OutlookConnectorsService : IM365OutlookConnectorsService
             { "Prefer", "outlook.body-content-type=\"text\"" }
         };
 
-        // Return the result from the API call
-        return await HttpClientHelper.GetAsync(requesturl, accessToken, headers);
+        return await HttpClientHelper.GetAsync(
+            requesturl,
+            accessToken,
+            headers);
     }
 
     // Retrieves the folder ID for a given folder name by calling the Microsoft Graph API to list mail folders and matching by display name.
