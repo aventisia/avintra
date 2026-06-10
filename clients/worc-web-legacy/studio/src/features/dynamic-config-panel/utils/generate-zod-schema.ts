@@ -209,10 +209,10 @@ function getSuggestionsSchema(field: DCPFieldSchemaType): ZodTypeAny {
   let enableDynamicActionsSchema: ZodTypeAny = z.boolean();
 
   if (field.defaultValue && typeof field.defaultValue === "object") {
-    if ("List" in field.defaultValue) {
+    if ("DefaultActions" in field.defaultValue) {
       defaultActionsSchema = z
         .array(z.string())
-        .default(field.defaultValue.List as string[]);
+        .default(field.defaultValue.DefaultActions as string[]);
     }
 
     if ("EnableDynamicActions" in field.defaultValue) {
@@ -223,7 +223,7 @@ function getSuggestionsSchema(field: DCPFieldSchemaType): ZodTypeAny {
   }
 
   return z.object({
-    List: defaultActionsSchema,
+    DefaultActions: defaultActionsSchema,
     EnableDynamicActions: enableDynamicActionsSchema,
   });
 }
