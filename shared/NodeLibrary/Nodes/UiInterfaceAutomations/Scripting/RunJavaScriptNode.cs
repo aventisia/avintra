@@ -1,4 +1,5 @@
 using System.Diagnostics;
+using NodeLibrary.ScriptingNodes.Helpers;
 
 namespace NodeLibrary.ScriptingNodes;
 
@@ -6,7 +7,7 @@ namespace NodeLibrary.ScriptingNodes;
 [NodeMetadata(icon: "/assets/Scripting.svg")]
 public class RunJavaScriptNode : BaseNode
 {
-    [DisplayName("JavaScript Code"), Description("The JavaScript code to execute.")]
+    [DisplayName("JavaScript Code"), Description("The JavaScript code to execute. Can be inline code, a file path, a URL, or a Base64 data URI.")]
     public required InArgument<string> ScriptCode { get; set; }
 
     [DisplayName("Script Output"), Description("Returns the output of the script.")]
@@ -14,56 +15,89 @@ public class RunJavaScriptNode : BaseNode
 
     protected override void Execute(INodeContext context)
     {
-        var scriptCode = ScriptCode.Get(context);
-        var status = "JavaScript executed successfully.";
+        string? resolvedFilePath = null;
+        bool isTemporaryFile = false;
 
         try
         {
-            if (string.IsNullOrWhiteSpace(scriptCode))
-                throw new ArgumentException("JavaScript code cannot be null or empty.");
+            var source = ScriptCode.Get(context)?.Trim();
 
-            if (scriptCode.TrimStart().StartsWith("{") && scriptCode.Contains("JavaScript Code"))
-                throw new FormatException("Input appears to be wrapped in JSON. Please provide raw JavaScript code only.");
+            if (string.IsNullOrWhiteSpace(source))
+                throw new ArgumentException("JavaScript source cannot be empty.");
 
-            string tempJsFile = Path.Combine(Path.GetTempPath(), Guid.NewGuid() + ".js");
-            File.WriteAllText(tempJsFile, scriptCode, Encoding.UTF8);
-
-            string output;
-            string error;
-            int exitCode;
-            using (var process = new Process())
+            // Keep existing JSON-wrapper guard for backwards-compatibility
+            if (source.TrimStart().StartsWith("{") && source.Contains("JavaScript Code"))
             {
-                process.StartInfo.FileName = "cscript.exe";
-                process.StartInfo.Arguments = $"/nologo \"{tempJsFile}\"";
-                process.StartInfo.UseShellExecute = false;
-                process.StartInfo.RedirectStandardOutput = true;
-                process.StartInfo.RedirectStandardError = true;
-                process.StartInfo.CreateNoWindow = true;
-                process.StartInfo.StandardOutputEncoding = Encoding.UTF8;
-                process.StartInfo.StandardErrorEncoding = Encoding.UTF8;
-
-                process.Start();
-                output = process.StandardOutput.ReadToEnd();
-                error = process.StandardError.ReadToEnd();
-                process.WaitForExit();
-                exitCode = process.ExitCode;
-
-                if (exitCode != 0)
-                    throw new Exception($"JavaScript exited with code {exitCode}. {error}".Trim());
-
-                output = output.Trim();
+                throw new FormatException("Input appears to be wrapped in JSON. Please provide raw JavaScript code only.");
             }
 
-            if (File.Exists(tempJsFile)) File.Delete(tempJsFile);
+            // Resolve local file, http/https URL, data: URI or inline script into a file path (.js)
+            resolvedFilePath = ScriptSourceResolverHelper.Resolve(source, ".js", out isTemporaryFile);
 
-            ScriptOutput.Set(context, output);
-            IsSuccess.Set(context, true);
-            StatusMessage.Set(context, status);
+            var (output, error, exitCode) = ExecuteJavaScriptFile(resolvedFilePath);
+
+            // Normalize outputs
+            output = output ?? string.Empty;
+            error = error ?? string.Empty;
+
+            ScriptOutput.Set(context, string.IsNullOrWhiteSpace(error) ? output : error);
+            IsSuccess.Set(context, exitCode == 0);
+
+            // Improved status messaging: concise success or actionable failure reason
+            if (exitCode == 0)
+            {
+                StatusMessage.Set(context, "JavaScript executed successfully.");
+            }
+            else
+            {
+                var reason = !string.IsNullOrWhiteSpace(error) ? error.Trim() : $"Exit code {exitCode}";
+                StatusMessage.Set(context, $"JavaScript execution failed: {reason}");
+            }
         }
         catch (Exception ex)
         {
+            var msg = ex.Message ?? "Unknown error";
+            ScriptOutput.Set(context, $"Error: {msg}");
+            StatusMessage.Set(context, $"JavaScript execution failed: {msg}");
             IsSuccess.Set(context, false);
-            StatusMessage.Set(context, $"Error executing JavaScript: {ex.Message}");
+        }
+        finally
+        {
+            if (isTemporaryFile && !string.IsNullOrWhiteSpace(resolvedFilePath))
+            {
+                try
+                {
+                    if (File.Exists(resolvedFilePath))
+                        File.Delete(resolvedFilePath);
+                }
+                catch
+                {
+                    // Ignore cleanup failures.
+                }
+            }
+        }
+    }
+
+    // Executes the JavaScript file via cscript.exe and captures output, error and exit code.
+    private (string output, string error, int exitCode) ExecuteJavaScriptFile(string filePath)
+    {
+        using (var process = new Process())
+        {
+            process.StartInfo.FileName = "cscript.exe";
+            process.StartInfo.Arguments = $"/nologo \"{filePath}\"";
+            process.StartInfo.UseShellExecute = false;
+            process.StartInfo.CreateNoWindow = true;
+            process.StartInfo.RedirectStandardOutput = true;
+            process.StartInfo.RedirectStandardError = true;
+
+            process.Start();
+
+            var output = process.StandardOutput.ReadToEnd();
+            var error = process.StandardError.ReadToEnd();
+
+            process.WaitForExit();
+
+            return (output.Trim(), error, process.ExitCode);
         }
     }
 }

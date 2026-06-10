@@ -1,4 +1,5 @@
 using System.Diagnostics;
+using NodeLibrary.ScriptingNodes.Helpers;
 
 namespace NodeLibrary.ScriptingNodes;
 
@@ -6,7 +7,7 @@ namespace NodeLibrary.ScriptingNodes;
 [NodeMetadata(icon: "/assets/Scripting.svg", supportedPlatforms: "windows")]
 public class RunVbScriptNode : BaseNode
 {
-    [DisplayName("VBScript Code"), Description("The VBScript code to execute.")]
+    [DisplayName("VBScript Code"), Description("The VBScript code to execute. Can be inline code, a file path, a URL, or a Base64 data URI.")]
     public required InArgument<string> ScriptCode { get; set; }
 
     [DisplayName("Script Output"), Description("Returns the output of the script.")]
@@ -14,58 +15,61 @@ public class RunVbScriptNode : BaseNode
 
     protected override void Execute(INodeContext context)
     {
-        var scriptCode = ScriptCode.Get(context);
-        var status = "VBScript executed successfully.";
-        string tempFilePath = string.Empty;
+        string source = ScriptCode.Get(context) ?? string.Empty;
+        string output = string.Empty;
+        string resolvedFilePath = string.Empty;
+        bool isTemporary = false;
 
         try
         {
-            if (string.IsNullOrWhiteSpace(scriptCode))
+            if (string.IsNullOrWhiteSpace(source))
                 throw new ArgumentException("VBScript code cannot be null or empty.");
 
-            tempFilePath = Path.Combine(Path.GetTempPath(), Guid.NewGuid().ToString() + ".vbs");
-            File.WriteAllText(tempFilePath, scriptCode, Encoding.UTF8);
+            // Resolve local file, http/https URL, data: URI or inline script into a file path
+            resolvedFilePath = ScriptSourceResolverHelper.Resolve(source, ".vbs", out isTemporary);
 
-            string output;
-            string error;
-            int exitCode;
-            using (var process = new Process())
+            // Run the script using cscript
+            using (Process process = new Process())
             {
                 process.StartInfo.FileName = "cscript.exe";
-                process.StartInfo.Arguments = $"/nologo \"{tempFilePath}\"";
+                process.StartInfo.Arguments = $"/nologo \"{resolvedFilePath}\"";
                 process.StartInfo.UseShellExecute = false;
                 process.StartInfo.RedirectStandardOutput = true;
                 process.StartInfo.RedirectStandardError = true;
                 process.StartInfo.CreateNoWindow = true;
-                process.StartInfo.StandardOutputEncoding = Encoding.UTF8;
-                process.StartInfo.StandardErrorEncoding = Encoding.UTF8;
 
                 process.Start();
-                output = process.StandardOutput.ReadToEnd();
-                error = process.StandardError.ReadToEnd();
-                process.WaitForExit();
-                exitCode = process.ExitCode;
 
-                if (exitCode != 0)
-                    throw new Exception($"VBScript exited with code {exitCode}. {error}".Trim());
+                output = process.StandardOutput.ReadToEnd();
+                string error = process.StandardError.ReadToEnd();
+
+                process.WaitForExit();
+
+                if (!string.IsNullOrWhiteSpace(error))
+                    throw new Exception(error.Trim());
 
                 output = output.Trim();
             }
 
             ScriptOutput.Set(context, output);
+            // concise success confirmation
+            StatusMessage.Set(context, "VBScript executed successfully.");
             IsSuccess.Set(context, true);
-            StatusMessage.Set(context, status);
         }
         catch (Exception ex)
         {
+            // Provide the error message both in ScriptOutput and StatusMessage for clarity
+            var msg = ex.Message ?? "Unknown error";
+            ScriptOutput.Set(context, $"Error: {msg}");
+            StatusMessage.Set(context, $"VBScript execution failed: {msg}");
             IsSuccess.Set(context, false);
-            StatusMessage.Set(context, $"Error executing VBScript: {ex.Message}");
         }
         finally
         {
-            if (!string.IsNullOrEmpty(tempFilePath) && File.Exists(tempFilePath))
+            // Clean up temp script file only if resolver created one
+            if (isTemporary && !string.IsNullOrEmpty(resolvedFilePath) && File.Exists(resolvedFilePath))
             {
-                try { File.Delete(tempFilePath); } catch { }
+                try { File.Delete(resolvedFilePath); } catch { }
             }
         }
     }

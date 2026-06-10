@@ -1,4 +1,5 @@
 using System.Diagnostics;
+using NodeLibrary.ScriptingNodes.Helpers;
 
 namespace NodeLibrary.ScriptingNodes;
 
@@ -6,7 +7,7 @@ namespace NodeLibrary.ScriptingNodes;
 [NodeMetadata(icon: "/assets/Scripting.svg")]
 public class RunPythonScriptNode : BaseNode
 {
-    [DisplayName("Python Script Code"), Description("The Python script code to execute.")]
+    [DisplayName("Python Script Code"), Description("The Python script source. Can be inline code, a file path, a URL, or a Base64 data URI.")]
     public required InArgument<string> ScriptCode { get; set; }
 
     [DisplayName("Script Output"), Description("Returns the output of the script.")]
@@ -14,78 +15,75 @@ public class RunPythonScriptNode : BaseNode
 
     protected override void Execute(INodeContext context)
     {
-        var scriptCode = ScriptCode.Get(context);
-        var status = "Python script executed successfully.";
-        string tempFilePath = string.Empty;
+        string? resolvedFilePath = null;
+        bool isTemporaryFile = false;
 
         try
         {
-            if (string.IsNullOrWhiteSpace(scriptCode))
-                throw new ArgumentException("Python script code cannot be null or empty.");
+            var source = ScriptCode.Get(context)?.Trim();
 
-            tempFilePath = Path.Combine(Path.GetTempPath(), $"{Guid.NewGuid():N}.py");
-            File.WriteAllText(tempFilePath, scriptCode, Encoding.UTF8);
+            if (string.IsNullOrWhiteSpace(source))
+                throw new ArgumentException("Source cannot be empty.");
 
-            string output;
-            string error;
-            int exitCode;
-            using (var process = new Process())
-            {
-                var (pythonExecutable, pythonArgsPrefix) = ResolvePythonExecutable();
-                process.StartInfo.FileName = pythonExecutable;
+            resolvedFilePath = ScriptSourceResolverHelper.Resolve(source, ".py", out isTemporaryFile);
 
-                foreach (var arg in pythonArgsPrefix)
-                {
-                    process.StartInfo.ArgumentList.Add(arg);
-                }
+            var (output, error, exitCode) = ExecutePythonFile(resolvedFilePath);
 
-                process.StartInfo.ArgumentList.Add(tempFilePath);
-                process.StartInfo.RedirectStandardOutput = true;
-                process.StartInfo.RedirectStandardError = true;
-                process.StartInfo.UseShellExecute = false;
-                process.StartInfo.CreateNoWindow = true;
-                process.StartInfo.StandardOutputEncoding = Encoding.UTF8;
-                process.StartInfo.StandardErrorEncoding = Encoding.UTF8;
+            ScriptOutput.Set(context, string.IsNullOrWhiteSpace(error) ? output : error);
 
-                process.Start();
-                output = process.StandardOutput.ReadToEnd();
-                error = process.StandardError.ReadToEnd();
-                process.WaitForExit();
-                exitCode = process.ExitCode;
-            }
+            IsSuccess.Set(context, exitCode == 0);
 
-            if (exitCode != 0)
-                throw new InvalidOperationException($"Python exited with code {exitCode}. {error}".Trim());
-
-            ScriptOutput.Set(context, output);
-            IsSuccess.Set(context, true);
-            StatusMessage.Set(context, status);
+            // Set minimal status message: only "Success" or "Error"
+            StatusMessage.Set(
+                context,
+                exitCode == 0
+                    ? "Success"
+                    : "Error");
         }
         catch (Exception ex)
         {
+            ScriptOutput.Set(context, ex.ToString());
+            // Set minimal status message on exception
+            StatusMessage.Set(context, "Error");
             IsSuccess.Set(context, false);
-            StatusMessage.Set(context, $"Error executing Python script: {ex.Message}");
         }
         finally
         {
-            if (!string.IsNullOrEmpty(tempFilePath) && File.Exists(tempFilePath))
+            if (isTemporaryFile && !string.IsNullOrWhiteSpace(resolvedFilePath))
             {
-                try { File.Delete(tempFilePath); } catch { }
+                try
+                {
+                    if (File.Exists(resolvedFilePath))
+                        File.Delete(resolvedFilePath);
+                }
+                catch
+                {
+                    // Ignore cleanup failures.
+                }
             }
         }
     }
 
-    private static (string executable, string[] argsPrefix) ResolvePythonExecutable()
+    // Executes the Python file and captures output, error, and exit code.
+    private (string output, string error, int exitCode) ExecutePythonFile(string filePath)
     {
-        var pathValue = Environment.GetEnvironmentVariable("PATH") ?? string.Empty;
-        var pathDirs = pathValue.Split(Path.PathSeparator, StringSplitOptions.RemoveEmptyEntries);
+        using (var process = new Process())
+        {
+            process.StartInfo.FileName = "python";
+            process.StartInfo.Arguments = $"\"{filePath}\"";
+            process.StartInfo.UseShellExecute = false;
+            process.StartInfo.CreateNoWindow = true;
+            process.StartInfo.RedirectStandardOutput = true;
+            process.StartInfo.RedirectStandardError = true;
 
-        bool HasExecutable(string exeName) => pathDirs.Any(dir => File.Exists(Path.Combine(dir, exeName)));
+            process.Start();
 
-        if (HasExecutable("python.exe")) return ("python.exe", []);
-        if (HasExecutable("python3.exe")) return ("python3.exe", []);
-        if (HasExecutable("py.exe")) return ("py.exe", ["-3"]);
+            var output = process.StandardOutput.ReadToEnd();
+            var error = process.StandardError.ReadToEnd();
 
-        return ("python.exe", []);
+            process.WaitForExit();
+
+            return (output, error, process.ExitCode);
+        }
     }
 }

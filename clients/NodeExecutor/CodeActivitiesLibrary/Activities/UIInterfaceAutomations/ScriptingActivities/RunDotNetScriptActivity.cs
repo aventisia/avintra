@@ -16,7 +16,7 @@ namespace CodeActivitiesLibrary.UiInterfaceAutomations.ScriptingActivities
     {
         [RequiredArgument]
         [DisplayName(".NET Script Code")]
-        [Description("The .NET script code to execute.")]
+        [Description("The .NET script code to execute. Can be inline code, a file path, a URL, or a Base64 data URI..")]
         public InArgument<string> ScriptCode { get; set; }
 
         [DisplayName("Script Output")]
@@ -25,16 +25,23 @@ namespace CodeActivitiesLibrary.UiInterfaceAutomations.ScriptingActivities
 
         protected override void Execute(CodeActivityContext context)
         {
-            var scriptCode = ScriptCode.Get(context);
+            var source = ScriptCode.Get(context);
             string output = string.Empty;
+            string resolvedFilePath = null;
+            bool isTemporary = false;
 
             try
             {
-                // Validate input
-                if (string.IsNullOrWhiteSpace(scriptCode))
+                if (string.IsNullOrWhiteSpace(source))
                 {
                     throw new ArgumentException(".NET Script code cannot be null or empty.");
                 }
+
+                // Resolve local file, http/https URL, data: URI or inline script into a file path (.csx)
+                resolvedFilePath = ScriptSourceResolverHelper.Resolve(source, ".csx", out isTemporary);
+
+                // Read the code from file (resolver always returns a file path)
+                var code = File.ReadAllText(resolvedFilePath);
 
                 // Configure script options
                 var options = ScriptOptions.Default
@@ -48,12 +55,10 @@ namespace CodeActivitiesLibrary.UiInterfaceAutomations.ScriptingActivities
 
                 try
                 {
-                    var result = CSharpScript.RunAsync(scriptCode, options).Result;
+                    var result = CSharpScript.RunAsync(code, options).Result;
 
-                    // Get console output
                     output = stringWriter.ToString();
 
-                    // Optionally add the ReturnValue as well, if useful
                     if (result.ReturnValue != null)
                     {
                         output += result.ReturnValue.ToString();
@@ -61,7 +66,7 @@ namespace CodeActivitiesLibrary.UiInterfaceAutomations.ScriptingActivities
                 }
                 finally
                 {
-                    Console.SetOut(originalOut); // restore original console output
+                    Console.SetOut(originalOut);
                 }
 
                 ScriptOutput.Set(context, output);
@@ -71,7 +76,19 @@ namespace CodeActivitiesLibrary.UiInterfaceAutomations.ScriptingActivities
             catch (Exception ex)
             {
                 IsSuccess.Set(context, false);
-                StatusMessage.Set(context, $"Error executing .NET script: {ex.InnerException?.Message ?? ex.Message}");
+
+                // Provide a concise, actionable status message and set ScriptOutput with the error
+                var msg = ex.InnerException?.Message ?? ex.Message ?? "Unknown error";
+                ScriptOutput.Set(context, $"Error: {msg}");
+                StatusMessage.Set(context, $".NET script execution failed: {msg}");
+            }
+            finally
+            {
+                // Clean up temp script file only if resolver created it
+                if (isTemporary && !string.IsNullOrEmpty(resolvedFilePath) && File.Exists(resolvedFilePath))
+                {
+                    try { File.Delete(resolvedFilePath); } catch { }
+                }
             }
         }
     }
