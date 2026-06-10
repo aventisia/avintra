@@ -10,13 +10,13 @@ namespace CodeActivitiesLibrary.UiInterfaceAutomations.ScriptingActivities
     [DisplayName("Run VBScript")]
     [Description("Executes custom VBScript code and retrieves its output.")]
     [ActivityMetaData(
-        nodeImg: "/assets/Scripting.svg", 
+        nodeImg: "/assets/Scripting.svg",
         supportedPlatforms: "windows")]
     public class RunVbScriptActivity : BaseCodeActivity
     {
         [RequiredArgument]
         [DisplayName("VBScript Code")]
-        [Description("The VBScript code to execute.")]
+        [Description("The VBScript code to execute. Can be inline code, a file path, a URL, or a Base64 data URI.")]
         public InArgument<string> ScriptCode { get; set; }
 
         [DisplayName("Script Output")]
@@ -25,64 +25,61 @@ namespace CodeActivitiesLibrary.UiInterfaceAutomations.ScriptingActivities
 
         protected override void Execute(CodeActivityContext context)
         {
-            string scriptCode = ScriptCode.Get(context);
+            string source = ScriptCode.Get(context);
             string output = string.Empty;
-            string tempFilePath = string.Empty;
+            string resolvedFilePath = string.Empty;
+            bool isTemporary = false;
 
             try
             {
-                if (string.IsNullOrWhiteSpace(scriptCode))
+                if (string.IsNullOrWhiteSpace(source))
                     throw new ArgumentException("VBScript code cannot be null or empty.");
 
-                // 1. Write the script to a temporary file
-                tempFilePath = Path.Combine(Path.GetTempPath(), Guid.NewGuid().ToString() + ".vbs");
-                File.WriteAllText(tempFilePath, scriptCode);
+                // Resolve local file, http/https URL, data: URI or inline script into a file path
+                resolvedFilePath = ScriptSourceResolverHelper.Resolve(source, ".vbs", out isTemporary);
 
-                // 2. Run the script using cscript
+                // Run the script using cscript
                 using (Process process = new Process())
                 {
                     process.StartInfo.FileName = "cscript.exe";
-                    process.StartInfo.Arguments = $"/nologo \"{tempFilePath}\"";
+                    process.StartInfo.Arguments = $"/nologo \"{resolvedFilePath}\"";
                     process.StartInfo.UseShellExecute = false;
                     process.StartInfo.RedirectStandardOutput = true;
                     process.StartInfo.RedirectStandardError = true;
                     process.StartInfo.CreateNoWindow = true;
 
-                    // Start the process
                     process.Start();
 
-                    // Read the output and error streams
                     output = process.StandardOutput.ReadToEnd();
                     string error = process.StandardError.ReadToEnd();
 
-                    // Wait for exit
                     process.WaitForExit();
 
-                    // If there's an error, throw it
                     if (!string.IsNullOrWhiteSpace(error))
-                        throw new Exception($"VBScript error: {error}");
+                        throw new Exception(error.Trim());
 
-                    // Trim and clean the output
                     output = output.Trim();
                 }
 
-                // Set output and success status
                 ScriptOutput.Set(context, output);
+                // Improved status message: concise success confirmation
                 StatusMessage.Set(context, "VBScript executed successfully.");
                 IsSuccess.Set(context, true);
             }
             catch (Exception ex)
             {
-                ScriptOutput.Set(context, $"Error: {ex.Message}");
-                StatusMessage.Set(context, "Failed to execute VBScript.");
+                // Provide the error message both in ScriptOutput and StatusMessage for clarity
+                var msg = ex.Message ?? "Unknown error";
+                ScriptOutput.Set(context, $"Error: {msg}");
+                StatusMessage.Set(context, $"VBScript execution failed: {msg}");
                 IsSuccess.Set(context, false);
             }
             finally
             {
-                // Clean up temp script file
-                if (!string.IsNullOrEmpty(tempFilePath) && File.Exists(tempFilePath))
+                // Clean up temp script file only if resolver created one
+                if (isTemporary && !string.IsNullOrEmpty(resolvedFilePath) && File.Exists(resolvedFilePath))
                 {
-                    try { File.Delete(tempFilePath); } catch { }
+                    try { File.Delete(resolvedFilePath); } catch { }
                 }
             }
         }

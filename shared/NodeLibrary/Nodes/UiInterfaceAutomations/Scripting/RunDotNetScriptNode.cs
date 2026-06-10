@@ -1,5 +1,7 @@
+using System.Diagnostics;
 using Microsoft.CodeAnalysis.CSharp.Scripting;
 using Microsoft.CodeAnalysis.Scripting;
+using NodeLibrary.ScriptingNodes.Helpers;
 
 namespace NodeLibrary.ScriptingNodes;
 
@@ -9,7 +11,7 @@ public class RunDotNetScriptNode : BaseNode
 {
     private static readonly object ConsoleOutLock = new();
 
-    [DisplayName(".NET Script Code"), Description("The .NET script code to execute.")]
+    [DisplayName(".NET Script Code"), Description("The .NET script code to execute. Can be inline code, a file path, a URL, or a Base64 data URI.")]
     public required InArgument<string> ScriptCode { get; set; }
 
     [DisplayName("Script Output"), Description("Returns the output of the script.")]
@@ -17,49 +19,70 @@ public class RunDotNetScriptNode : BaseNode
 
     protected override void Execute(INodeContext context)
     {
-        var scriptCode = ScriptCode.Get(context);
-        var status = "Script executed successfully.";
+        var source = ScriptCode.Get(context);
+        string output = string.Empty;
+        string? resolvedFilePath = null;
+        bool isTemporary = false;
 
         try
         {
-            if (string.IsNullOrWhiteSpace(scriptCode))
-                throw new ArgumentException(".NET Script code cannot be null or empty.");
-
-            var options = ScriptOptions.Default
-                .AddReferences(typeof(object).Assembly, typeof(Console).Assembly)
-                .AddImports("System");
-
-            string output;
-            lock (ConsoleOutLock)
+            if (string.IsNullOrWhiteSpace(source))
             {
-                var stringWriter = new StringWriter(new StringBuilder());
-                var originalOut = Console.Out;
-                Console.SetOut(stringWriter);
+                throw new ArgumentException(".NET Script code cannot be null or empty.");
+            }
 
-                try
-                {
-                    var result = CSharpScript.RunAsync(scriptCode, options).GetAwaiter().GetResult();
-                    output = stringWriter.ToString();
+            // Resolve local file, http/https URL, data: URI or inline script into a file path (.csx)
+            resolvedFilePath = ScriptSourceResolverHelper.Resolve(source, ".csx", out isTemporary);
 
-                    if (result.ReturnValue != null)
-                    {
-                        output += result.ReturnValue.ToString();
-                    }
-                }
-                finally
+            // Read the code from file (resolver always returns a file path)
+            var code = File.ReadAllText(resolvedFilePath);
+
+            // Configure script options
+            var options = ScriptOptions.Default
+                    .AddReferences(typeof(object).Assembly, typeof(Console).Assembly)
+                    .AddImports("System");
+
+            // Redirect console output
+            var stringWriter = new StringWriter();
+            var originalOut = Console.Out;
+            Console.SetOut(stringWriter);
+
+            try
+            {
+                var result = CSharpScript.RunAsync(code, options).Result;
+
+                output = stringWriter.ToString();
+
+                if (result.ReturnValue != null)
                 {
-                    Console.SetOut(originalOut);
+                    output += result.ReturnValue.ToString();
                 }
+            }
+            finally
+            {
+                Console.SetOut(originalOut);
             }
 
             ScriptOutput.Set(context, output);
+            StatusMessage.Set(context, "Script executed successfully.");
             IsSuccess.Set(context, true);
-            StatusMessage.Set(context, status);
         }
         catch (Exception ex)
         {
             IsSuccess.Set(context, false);
-            StatusMessage.Set(context, $"Error executing .NET script: {ex.InnerException?.Message ?? ex.Message}");
+
+            // Provide a concise, actionable status message and set ScriptOutput with the error
+            var msg = ex.InnerException?.Message ?? ex.Message ?? "Unknown error";
+            ScriptOutput.Set(context, $"Error: {msg}");
+            StatusMessage.Set(context, $".NET script execution failed: {msg}");
+        }
+        finally
+        {
+            // Clean up temp script file only if resolver created it
+            if (isTemporary && !string.IsNullOrEmpty(resolvedFilePath) && File.Exists(resolvedFilePath))
+            {
+                try { File.Delete(resolvedFilePath); } catch { }
+            }
         }
     }
 }

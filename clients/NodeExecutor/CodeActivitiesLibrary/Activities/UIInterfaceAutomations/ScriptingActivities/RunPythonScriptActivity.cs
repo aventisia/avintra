@@ -13,7 +13,7 @@ namespace CodeActivitiesLibrary.UiInterfaceAutomations.ScriptingActivities
     {
         [RequiredArgument]
         [DisplayName("Python Script Code")]
-        [Description("The Python script code to execute.")]
+        [Description("The Python script source. Can be inline code, a file path, a URL, or a Base64 data URI.")]
         public InArgument<string> ScriptCode { get; set; }
 
         [DisplayName("Script Output")]
@@ -23,32 +23,75 @@ namespace CodeActivitiesLibrary.UiInterfaceAutomations.ScriptingActivities
 
         protected override void Execute(CodeActivityContext context)
         {
-            var scriptCode = ScriptCode.Get(context);
-            var output = "";
+            string resolvedFilePath = null;
+            bool isTemporaryFile = false;
 
             try
             {
-                using (var process = new Process())
-                {
-                    process.StartInfo.FileName = "python.exe";
-                    process.StartInfo.Arguments = $"-c \"{scriptCode}\"";
-                    process.StartInfo.RedirectStandardOutput = true;
-                    process.StartInfo.UseShellExecute = false;
-                    process.StartInfo.CreateNoWindow = true;
+                var source = ScriptCode.Get(context)?.Trim();
 
-                    process.Start();
-                    output = process.StandardOutput.ReadToEnd();
-                    process.WaitForExit();
-                }
+                if (string.IsNullOrWhiteSpace(source))
+                    throw new ArgumentException("Source cannot be empty.");
 
-                ScriptOutput.Set(context, output);
-                StatusMessage.Set(context, "Python script executed successfully.");
-                IsSuccess.Set(context, true);
+                resolvedFilePath = ScriptSourceResolverHelper.Resolve(source, ".py", out isTemporaryFile);
+
+                var (output, error, exitCode) = ExecutePythonFile(resolvedFilePath);
+
+                ScriptOutput.Set(context, string.IsNullOrWhiteSpace(error) ? output : error);
+
+                IsSuccess.Set(context, exitCode == 0);
+
+                // Set minimal status message: only "Success" or "Error"
+                StatusMessage.Set(
+                    context,
+                    exitCode == 0
+                        ? "Success"
+                        : "Error");
             }
             catch (Exception ex)
             {
-                StatusMessage.Set(context, $"Error executing Python script: {ex.Message}");
+                ScriptOutput.Set(context, ex.ToString());
+                // Set minimal status message on exception
+                StatusMessage.Set(context, "Error");
                 IsSuccess.Set(context, false);
+            }
+            finally
+            {
+                if (isTemporaryFile && !string.IsNullOrWhiteSpace(resolvedFilePath))
+                {
+                    try
+                    {
+                        if (File.Exists(resolvedFilePath))
+                            File.Delete(resolvedFilePath);
+                    }
+                    catch
+                    {
+                        // Ignore cleanup failures.
+                    }
+                }
+            }
+        }
+
+        // Executes the Python file and captures output, error, and exit code.
+        private (string output, string error, int exitCode) ExecutePythonFile(string filePath)
+        {
+            using (var process = new Process())
+            {
+                process.StartInfo.FileName = "python";
+                process.StartInfo.Arguments = $"\"{filePath}\"";
+                process.StartInfo.UseShellExecute = false;
+                process.StartInfo.CreateNoWindow = true;
+                process.StartInfo.RedirectStandardOutput = true;
+                process.StartInfo.RedirectStandardError = true;
+
+                process.Start();
+
+                var output = process.StandardOutput.ReadToEnd();
+                var error = process.StandardError.ReadToEnd();
+
+                process.WaitForExit();
+
+                return (output, error, process.ExitCode);
             }
         }
     }
