@@ -33,37 +33,63 @@ namespace CodeActivitiesLibrary.AppIntegrations.PdfActivities
                 var sourcePdfPath = SourcePdfPath.Get(context);
                 var targetFolder = TargetFolder.Get(context);
 
+                // Validate source PDF file exists
                 if (!File.Exists(sourcePdfPath))
                     throw new FileNotFoundException("Source PDF file not found.", sourcePdfPath);
 
+                // Validate target folder exists
+                if (!Directory.Exists(targetFolder))
+                    throw new DirectoryNotFoundException($"Target folder not found: {targetFolder}");
+
+                // Create target folder if it does not already exist
                 if (!Directory.Exists(targetFolder))
                     Directory.CreateDirectory(targetFolder);
 
+                // Open the PDF document
                 using (var document = PdfDocument.Open(sourcePdfPath))
                 {
+                    // Process each page in the PDF
                     foreach (var page in document.GetPages())
                     {
+                        // Process each image found on the page
                         foreach (var image in page.GetImages())
                         {
                             detectedImageCount++;
 
-                            // Try to convert image to PNG
+                            string imageName;
+                            string imagePath;
+
+                            // Attempt to extract the image as PNG
                             if (!image.TryGetPng(out var pngBytes))
                             {
-                                // Image detected but NOT extractable as PNG
-                                continue;
+                                // PdfPig could not convert the image to PNG. For images using filters such as DCTDecode (JPEG), save the original raw image stream instead.
+                                var rawBytes = image.RawBytes.ToArray();
+
+                                imageName = $"image_{savedImageCount}_{Guid.NewGuid()}.jpg";
+                                imagePath = Path.Combine(targetFolder, imageName);
+
+                                File.WriteAllBytes(imagePath, rawBytes);
+                            }
+                            else
+                            {
+                                // PNG extraction succeeded
+                                imageName = $"image_{savedImageCount}_{Guid.NewGuid()}.png";
+                                imagePath = Path.Combine(targetFolder, imageName);
+
+                                File.WriteAllBytes(imagePath, pngBytes);
                             }
 
-                            var imageName = $"image_{savedImageCount}_{Guid.NewGuid()}.png";
-                            var imagePath = Path.Combine(targetFolder, imageName);
-
-                            File.WriteAllBytes(imagePath, pngBytes);
                             savedImageCount++;
                         }
                     }
                 }
+
+                // Set activity output status
                 IsSuccess.Set(context, true);
-                StatusMessage.Set(context, $"Successfully Saved {savedImageCount} images to '{targetFolder}'.");
+
+                StatusMessage.Set(
+                    context,
+                    $"Detected {detectedImageCount} images and successfully saved {savedImageCount} images to '{targetFolder}'.");
             }
             catch (Exception ex)
             {
@@ -71,7 +97,5 @@ namespace CodeActivitiesLibrary.AppIntegrations.PdfActivities
                 StatusMessage.Set(context, $"Error extracting images: {ex.Message}");
             }
         }
-
-
     }
 }
