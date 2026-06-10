@@ -1,4 +1,5 @@
 ﻿using CodeActivitiesLibrary.Extensions;
+using CodeActivitiesLibrary.UiInterfaceAutomations.ScriptingActivities.Helpers;
 using System;
 using System.Activities;
 using System.ComponentModel;
@@ -16,8 +17,9 @@ namespace CodeActivitiesLibrary.UiInterfaceAutomations.ScriptingActivities
     {
         [RequiredArgument]
         [DisplayName("VBScript Code")]
-        [Description("The VBScript code to execute. Can be inline code, a file path, a URL, or a Base64 data URI.")]
-        public InArgument<string> ScriptCode { get; set; }
+        [Description("The VBScript code to execute.")]
+        [FieldType(FieldType.CodeEditor)]
+        public InArgument<string> ScriptCode_vb { get; set; }
 
         [DisplayName("Script Output")]
         [Description("Returns the output of the script.")]
@@ -25,7 +27,7 @@ namespace CodeActivitiesLibrary.UiInterfaceAutomations.ScriptingActivities
 
         protected override void Execute(CodeActivityContext context)
         {
-            string source = ScriptCode.Get(context);
+            string source = ScriptCode_vb.Get(context);
             string output = string.Empty;
             string resolvedFilePath = string.Empty;
             bool isTemporary = false;

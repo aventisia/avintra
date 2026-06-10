@@ -191,6 +191,10 @@ internal class Program
             WriteJsonToFile(nodeSelectorJsonFilePath, nodeMappingObject, jsonSerializerOptions, "Node selector mapping JSON saved to AppData/Local/AvintraDesktopApp");
         }
 
+        // Temporary: Copy cloud connector config files from WorkspaceAPIs to LocalAppData and desktop-app release folder to bundle with the app until we move the cloud connectors from WorkspaceAPIs to NodeLibrary project.
+        // TODO: If we keep this code, then refactor or optimize the file copying logic to support linux and windows os
+        NodeToJsonHelper.CopyCloudConnectorConfigFiles();
+
         Console.WriteLine("Task complete");
         Console.ReadLine();
     }

@@ -36,6 +36,9 @@ namespace CodeActivityToJSON
             // Create the activities mapping JSON file
             CreateActivitiesMappingJsonUtil.CreateActivitiesMappingJson(categoryMetadataTypes, activities);
 
+            // Copy the cloud connectors CloudConnectorActionSelectorMappingFile mapping JSON file
+            CloudConnectorConfigFilesUtil.CopyConfigFiles();
+
             // Create the activities CSV file
             ExportActivitiesToCsvUtil.ExportActivitiesToCsv(activities);
 

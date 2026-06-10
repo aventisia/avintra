@@ -638,6 +638,7 @@
     <Compile Include="Activities\UIInterfaceAutomations\MouseAndKeyboardActivities\WaitForMouseActivity.cs" />
     <Compile Include="Activities\UIInterfaceAutomations\MouseAndKeyboardActivities\WaitForShortcutKeyActivity.cs" />
     <Compile Include="Activities\UIInterfaceAutomations\MouseAndKeyboardActivities\_MouseAndKeyboardCategoryMetaData.cs" />
+    <Compile Include="Activities\UIInterfaceAutomations\ScriptingActivities\Helpers\ScriptSourceResolverHelper.cs" />
     <Compile Include="Activities\UIInterfaceAutomations\ScriptingActivities\RunDosCommandActivity.cs" />
     <Compile Include="Activities\UIInterfaceAutomations\ScriptingActivities\RunDotNetScriptActivity.cs" />
     <Compile Include="Activities\UIInterfaceAutomations\ScriptingActivities\RunJavaScriptActivity.cs" />

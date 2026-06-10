@@ -1,8 +1,10 @@
 ﻿using CodeActivitiesLibrary.Extensions;
+using CodeActivitiesLibrary.UiInterfaceAutomations.ScriptingActivities.Helpers;
 using System;
 using System.Activities;
 using System.ComponentModel;
 using System.Diagnostics;
+using System.IO;
 
 namespace CodeActivitiesLibrary.UiInterfaceAutomations.ScriptingActivities
 {
@@ -14,7 +16,8 @@ namespace CodeActivitiesLibrary.UiInterfaceAutomations.ScriptingActivities
         [RequiredArgument]
         [DisplayName("JavaScript Code")]
         [Description("The JavaScript code to execute. Can be inline code, a file path, a URL, or a Base64 data URI.")]
-        public InArgument<string> ScriptCode { get; set; }
+        [FieldType(FieldType.CodeEditor)]
+        public InArgument<string> ScriptCode_javascript { get; set; }
 
         [DisplayName("Script Output")]
         [Description("Returns the output of the script.")]
@@ -24,10 +27,10 @@ namespace CodeActivitiesLibrary.UiInterfaceAutomations.ScriptingActivities
         {
             string resolvedFilePath = null;
             bool isTemporaryFile = false;
-
+            
             try
             {
-                var source = ScriptCode.Get(context)?.Trim();
+                var source = ScriptCode_javascript.Get(context)?.Trim();
 
                 if (string.IsNullOrWhiteSpace(source))
                     throw new ArgumentException("JavaScript source cannot be empty.");

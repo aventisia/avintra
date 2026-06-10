@@ -21,5 +21,6 @@ public enum NodeFieldTypeEnum
     CredentialsSelect,
     QueueSelect,
     JsonEditor,
+    CodeEditor,
     ConfigPanelModelOutput
 }

@@ -13,7 +13,7 @@
       "type": "code-editor",
       "name": "ScriptCode_python",
       "label": "Python Script Code",
-      "description": "The Python script code to execute.",
+      "description": "The Python script source. Can be inline code, a file path, a URL, or a Base64 data URI.",
       "defaultValue": "",
       "required": true
     },

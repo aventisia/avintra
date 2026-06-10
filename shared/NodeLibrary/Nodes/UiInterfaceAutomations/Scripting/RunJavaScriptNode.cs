@@ -8,7 +8,8 @@ namespace NodeLibrary.ScriptingNodes;
 public class RunJavaScriptNode : BaseNode
 {
     [DisplayName("JavaScript Code"), Description("The JavaScript code to execute. Can be inline code, a file path, a URL, or a Base64 data URI.")]
-    public required InArgument<string> ScriptCode { get; set; }
+    [NodeFieldType(NodeFieldTypeEnum.CodeEditor)]
+    public required InArgument<string> ScriptCode_javascript { get; set; }
 
     [DisplayName("Script Output"), Description("Returns the output of the script.")]
     public OutArgument<string> ScriptOutput { get; set; } = new OutArgument<string>();
@@ -20,7 +21,7 @@ public class RunJavaScriptNode : BaseNode
 
         try
         {
-            var source = ScriptCode.Get(context)?.Trim();
+            var source = ScriptCode_javascript.Get(context)?.Trim();
 
             if (string.IsNullOrWhiteSpace(source))
                 throw new ArgumentException("JavaScript source cannot be empty.");
