@@ -17,10 +17,6 @@ public class WriteToExcelWorksheetNode : BaseNode
     [DisplayName("Write Mode"), Description("Specifies how to determine the target cell(s) for writing.")]
     public required InArgument<ExcelCellWriteModeEnum> WriteMode { get; set; }
 
-    [DisplayName("Column"), Description("The column letter (e.g., 'A', 'B') where the data should be written.")]
-    [RenderIfCondition(nameof(WriteMode), ExcelCellWriteModeEnum.OnSpecifiedCell)]
-    public InArgument<string> Column { get; set; } = new InArgument<string>();
-
     [DisplayName("Column Index"), Description("The index of the column (1 for 'A'). Takes precedence if greater than 0.")]
     [RenderIfCondition(nameof(WriteMode), ExcelCellWriteModeEnum.OnSpecifiedCell)]
     public InArgument<int> ColumnIndex { get; set; } = new InArgument<int>();
@@ -63,14 +59,9 @@ public class WriteToExcelWorksheetNode : BaseNode
                     {
                         int rowNumber = Row.Get(context);
                         int colIndex = ColumnIndex.Get(context);
-                        string colLetter = Column.Get(context);
 
                         if (colIndex <= 0)
-                        {
-                            if (string.IsNullOrWhiteSpace(colLetter))
-                                throw new ArgumentException("Either 'Column Index' or 'Column' must be provided.");
-                            colIndex = GetColumnIndex(colLetter);
-                        }
+                            throw new ArgumentException("Either 'Column Index' or 'Column' must be provided.");
 
                         if (rowNumber <= 0)
                             throw new ArgumentException("Row number must be greater than zero.");
