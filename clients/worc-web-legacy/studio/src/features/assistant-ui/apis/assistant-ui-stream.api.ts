@@ -1,5 +1,7 @@
 import { LLMRequestDto } from "@/features/dynamic-config-panel/dtos/llm-providers-dto";
 
+import { LLMOutputDto } from "../dtos/llm-response.dto";
+
 /**
  * Parameters for initiating a streamed LLM (Large Language Model) generation request.
  *
@@ -46,28 +48,28 @@ const resolveErrorMessage = async (response: Response): Promise<string> => {
 
 /**
  * Parses one streamed line from the backend response.
- *
- * Accepts both raw JSON lines and SSE-formatted lines (`data: {...}`).
- * Returns:
- * - `string` for model output chunk
- * - `null` for control/no-op lines (empty, `[DONE]`, invalid JSON)
+ * Returns LLMOutputDto to support both string chunks and the new structured JSON object.
  */
-const parseChunkLine = (line: string): string | null => {
+const parseChunkLine = (line: string): LLMOutputDto | null => {
   const normalized = line.startsWith("data:") ? line.slice(5).trim() : line;
 
   if (!normalized || normalized === "[DONE]") return null;
-
+  console.log(normalized)
   try {
     const payload = JSON.parse(normalized) as {
-      output?: string;
+      output?: LLMOutputDto;
       error?: string;
     };
 
     if (payload.error) throw new Error(payload.error);
 
-    return payload.output ?? "";
+    return payload.output ?? null;
   } catch {
-    return null;
+    return {
+      text: "Something went wrong! Please try again.",
+      recommended_actions: [],
+      tools: [],
+    };
   }
 };
 
@@ -91,7 +93,7 @@ const parseChunkLine = (line: string): string | null => {
 export async function* streamLLMGenerate({
   request,
   signal,
-}: StreamLLMGenerateParams): AsyncGenerator<string, void, unknown> {
+}: StreamLLMGenerateParams): AsyncGenerator<LLMOutputDto, void, unknown> {
   // Set content type for JSON payload; credentials included for auth cookies.
   const headers: Record<string, string> = {
     "Content-Type": "application/json",
@@ -129,19 +131,19 @@ export async function* streamLLMGenerate({
 
     // Decode incremental bytes and append to pending buffer.
     buffer += decoder.decode(value, { stream: true });
-    
+
     // Split complete lines; keep last fragment in `buffer`.
     const lines = buffer.split(/\r?\n/);
     buffer = lines.pop() ?? "";
 
     for (const line of lines) {
-      const chunkText = parseChunkLine(line.trim());
+      const chunkData = parseChunkLine(line.trim());
       // Yield only non-empty model output fragments.
-      if (chunkText) yield chunkText;
+      if (chunkData) yield chunkData;
     }
   }
 
   // Flush any remaining fragment after stream completion.
-  const finalChunkText = parseChunkLine(buffer.trim());
-  if (finalChunkText) yield finalChunkText;
+  const finalChunkData = parseChunkLine(buffer.trim());
+  if (finalChunkData) yield finalChunkData;
 }

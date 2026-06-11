@@ -138,7 +138,7 @@ export function StringArrayField({
               <span className="text-xs text-muted-foreground w-4 tabular-nums shrink-0">
                 {index + 1}
               </span>
-              <span className="flex-1 text-sm truncate">{item}</span>
+              <span className="flex-1 text-sm text-wrap">{item}</span>
               <Button
                 type="button"
                 onClick={() => removeItem(index)}

@@ -36,10 +36,11 @@ export interface LLMToolsOutputDto {
 /**
  * Supported output types from LLM.
  */
-export type LLMOutputDto =
-  | string
-  | LLMToolsOutputDto[]
-  | Record<string, unknown>;
+export type LLMOutputDto = {
+  text?: string;
+  tools?: LLMToolsOutputDto[];
+  recommended_actions: string[];
+};
 
 /**
  * Represents a full or final response from the LLM.

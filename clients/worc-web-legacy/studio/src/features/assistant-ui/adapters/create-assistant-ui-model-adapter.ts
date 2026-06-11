@@ -5,7 +5,7 @@ import { ChatModelAdapter, ThreadMessage } from "@assistant-ui/react";
 
 import { LLMMessageType, LLMProviderType, LLMRequestDto } from "..";
 import { streamLLMGenerate } from "../apis/assistant-ui-stream.api";
-import { LLMToolsOutputDto } from "../dtos/llm-response.dto";
+import { LLMOutputDto, LLMToolsOutputDto } from "../dtos/llm-response.dto";
 
 /**
  * Inputs required to construct the Assistant UI chat model adapter.
@@ -19,6 +19,8 @@ type CreateAssistantUIModelAdapterParams = {
   agentConfig?: Partial<LLMRequestDto>;
   policyContext?: string;
   onRequestComplete?: () => void;
+  // Callback to get recommended actions back to suggestions adaptor
+  onSuggestionsUpdate: (actions: string[]) => void;
 };
 
 /**
@@ -96,6 +98,7 @@ export const createAssistantUIModelAdapter = ({
   agentConfig,
   policyContext,
   onRequestComplete,
+  onSuggestionsUpdate,
 }: CreateAssistantUIModelAdapterParams): ChatModelAdapter => {
   return {
     /**
@@ -140,6 +143,7 @@ export const createAssistantUIModelAdapter = ({
         ref_id: flowVersionId || "chat-agent-flow",
         ref_name: flowName || "Chat Agent",
         action: "AgentExecution",
+        is_chat_agent: true, // Enable for chat agent
       } as LLMRequestDto;
 
       /**
@@ -169,6 +173,42 @@ export const createAssistantUIModelAdapter = ({
           }
         }
 
+        // Handle LLMOutputDto chat agent format
+        if (
+          typeof parsed === "object" &&
+          parsed !== null &&
+          !Array.isArray(parsed)
+        ) {
+          const chatOutput = parsed as LLMOutputDto;
+          const contentParts: any[] = [];
+
+          if (chatOutput.text) {
+            contentParts.push({ type: "text", text: chatOutput.text });
+          }
+
+          if (Array.isArray(chatOutput.tools) && chatOutput.tools.length > 0) {
+            const toolParts = chatOutput.tools.map((tool: any) => ({
+              type: "tool-call",
+              toolCallId: tool.call_id,
+              toolName: tool.output?.action || tool.type,
+              argsText: JSON.stringify(tool.output || {}),
+              args: tool.output || {},
+            }));
+            contentParts.push(...toolParts);
+          }
+
+          if (chatOutput?.recommended_actions?.length > 0) {
+            onSuggestionsUpdate(chatOutput.recommended_actions);
+          }
+
+          if (contentParts.length > 0) {
+            yield { content: contentParts };
+            onRequestComplete?.();
+            return;
+          }
+        }
+
+        // Fallback: array of tools
         if (isToolCallResponse(parsed)) {
           const toolParts = parsed.map((tool) => ({
             type: "tool-call" as const,
@@ -194,19 +234,83 @@ export const createAssistantUIModelAdapter = ({
        */
       let accumulatedText = "";
 
-      for await (const chunkText of streamLLMGenerate({
+      for await (const chunk of streamLLMGenerate({
         request,
         signal: options.abortSignal,
       })) {
-        // Each chunk is either the full accumulated text so far (replace) or an
-        // incremental addition (append). Detect which case we're in by checking
-        // whether the new chunk begins with what we already have.
-        accumulatedText =
-          typeof chunkText === "string" && chunkText.startsWith(accumulatedText)
-            ? chunkText
-            : accumulatedText + (chunkText ?? "");
+        // If the backend sends the fully parsed object directly in the chunk
+        if (typeof chunk === "object" && chunk !== null) {
+          const chatOutput = chunk as any;
+          const contentParts: any[] = [];
 
-        yield { content: [{ type: "text", text: accumulatedText }] };
+          if (chatOutput.text) {
+            accumulatedText = chatOutput.text;
+            contentParts.push({ type: "text", text: accumulatedText });
+          }
+
+          if (Array.isArray(chatOutput.tools) && chatOutput.tools.length > 0) {
+            chatOutput.tools.forEach((t: any) => {
+              contentParts.push({
+                type: "tool-call",
+                toolCallId: t.call_id,
+                toolName: t.output?.action || t.type,
+                argsText: JSON.stringify(t.output || {}),
+                args: t.output || {},
+              });
+            });
+          }
+
+          if (chatOutput.recommended_actions) {
+            onSuggestionsUpdate(chatOutput.recommended_actions);
+          }
+
+          if (contentParts.length > 0) {
+            yield { content: contentParts };
+          }
+        } else {
+          // If the backend streams strings (which might be raw text or stringified JSON)
+          accumulatedText =
+            typeof chunk === "string" &&
+            (chunk as string)?.startsWith(accumulatedText)
+              ? chunk
+              : accumulatedText + (chunk ?? "");
+
+          try {
+            // Attempt to parse stringified JSON on the fly
+            const parsed = JSON.parse(accumulatedText);
+            const contentParts: any[] = [];
+
+            if (parsed.text) {
+              contentParts.push({ type: "text", text: parsed.text });
+            }
+
+            if (Array.isArray(parsed.tools) && parsed.tools.length > 0) {
+              parsed.tools.forEach((t: any) => {
+                contentParts.push({
+                  type: "tool-call",
+                  toolCallId: t.call_id,
+                  toolName: t.output?.action || t.type,
+                  argsText: JSON.stringify(t.output || {}),
+                  args: t.output || {},
+                });
+              });
+            }
+
+            if (parsed.recommended_actions) {
+              onSuggestionsUpdate(parsed.recommended_actions);
+            }
+
+            yield {
+              content:
+                contentParts.length > 0
+                  ? contentParts
+                  : [{ type: "text", text: accumulatedText }],
+            };
+          } catch {
+            // Plain text stream fallback
+            yield { content: [{ type: "text", text: accumulatedText }] };
+          }
+        }
       }
 
       onRequestComplete?.();
