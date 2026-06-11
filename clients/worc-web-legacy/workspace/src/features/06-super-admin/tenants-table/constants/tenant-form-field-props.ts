@@ -1,3 +1,7 @@
+import { DatabaseOptionsEnum } from "@/react-toolkit/enums/database-options-enum";
+import { DeploymentTypeEnum } from "@/react-toolkit/enums/deployment-types-enum";
+
+import { CurrenciesEnum } from "@aventisia/ui/enums";
 import {
   DatePickerFieldProps,
   InputFieldProps,
@@ -7,12 +11,6 @@ import {
   TextareaFieldProps,
 } from "@aventisia/ui/form";
 import { enumToArray } from "@aventisia/ui/utils";
-
-import { DatabaseOptionsEnum } from "@/react-toolkit/enums/database-options-enum";
-import { DeploymentTypeEnum } from "@/react-toolkit/enums/deployment-types-enum";
-import { AsyncSelectFieldProps } from "@/react-toolkit/ui/form/fields/AsyncSelectField";
-
-import { getCurrenciesToSelect } from "../apis/tenants-table-apis";
 
 // Tenant Id
 export const idProps: InputFieldProps = {
@@ -35,14 +33,12 @@ export const typeProps: SelectFieldProps = {
   isRequired: true,
 };
 
-export const currencyProps: AsyncSelectFieldProps = {
+export const currencyProps: SelectFieldProps = {
   name: "currency",
   label: "Currency",
-  size: "base",
   placeholder: "Currency",
   isRequired: true,
-  selectOptions: async () =>
-    await getCurrenciesToSelect().then((data) => data?.data),
+  selectOptions: enumToArray(CurrenciesEnum),
 };
 
 export const effectiveOnProps: DatePickerFieldProps = {

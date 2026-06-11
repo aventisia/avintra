@@ -1,3 +1,5 @@
+import { DatabaseOptionsEnum } from "@/react-toolkit/enums/database-options-enum";
+
 import { Button } from "@aventisia/ui/buttons";
 import {
   AutherCard,
@@ -12,9 +14,6 @@ import {
 import { useListOptimisticMutation } from "@aventisia/ui/hooks";
 import { z } from "zod";
 
-import { DatabaseOptionsEnum } from "@/react-toolkit/enums/database-options-enum";
-import { AsyncSelectField } from "@/react-toolkit/ui/form/fields/AsyncSelectField";
-
 import { tenantOptimisticMutationFn } from "../../apis/tenants-table-apis";
 import { DATA_QUERY_KEY } from "../../constants";
 import {
@@ -27,8 +26,8 @@ import {
   dbPwdProps,
   dbUserIdProps,
   effectiveOnProps,
-  idleSessionTimeoutMinutesProps,
   idProps,
+  idleSessionTimeoutMinutesProps,
   isDisabledProps,
   isIdleSessionTimeoutEnabledProps,
   isPwdEnabledProps,
@@ -122,29 +121,7 @@ export const TenantCrudForm = () => {
       ) : null}
 
       {/* Currency */}
-      <AsyncSelectField
-        {...currencyProps}
-        triggerClassName="w-full"
-        className="w-[37.5rem]"
-        getOptionValue={(option) => option.value.toLowerCase()}
-        renderOption={(option) => (
-          <div className="flex items-center gap-2">
-            <div className="flex flex-col">
-              <div className="font-medium">{option.value}</div>
-              <div className="text-xs text-muted-foreground">
-                {option.description}
-              </div>
-            </div>
-          </div>
-        )}
-        getDisplayValue={(option) => (
-          <div className="flex items-center gap-2 text-left">
-            <div className="flex flex-col leading-tight">
-              <div className="font-medium">{option.label}</div>
-            </div>
-          </div>
-        )}
-      />
+      <SelectField {...currencyProps} />
 
       {/* Effective date */}
       <DatePickerField {...effectiveOnProps} />
