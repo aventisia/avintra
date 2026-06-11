@@ -12,7 +12,7 @@ import {
 import { toast } from "@aventisia/ui/sonner";
 import { useQueryClient } from "@tanstack/react-query";
 import { Node } from "@xyflow/react";
-import { useCallback, useEffect, useMemo, useRef, useState } from "react";
+import { useCallback, useEffect, useMemo, useRef } from "react";
 import { useShallow } from "zustand/react/shallow";
 
 import {
@@ -162,41 +162,35 @@ export const AvPlatformAssistantUI = ({
     useShallow((state) => ({ nodes: state.nodes })),
   );
 
+  const hasChatAiNode = useMemo(
+    () => nodes?.some((n) => n?.data?.name === TARGET_NODE_NAME),
+    [nodes],
+  );
+
   const agentConfig = useMemo(
     () => getAgentConfigFromFlowNodes(nodes),
     [nodes],
   );
 
-  const [dynamicSuggestions, setDynamicSuggestions] = useState<string[]>([]);
-
-  const dynamicSuggestionsRef = useRef(dynamicSuggestions);
+  const dynamicSuggestionsRef = useRef<string[]>([]);
 
   const handleSuggestionsUpdate = useCallback((actions: string[]) => {
-    const extracted: string[] = [];
-
-    Object.values(actions).forEach((val) => {
-      if (typeof val === "string") {
-        extracted.push(val);
-      }
-    });
-
-    // update ref immediately
-    dynamicSuggestionsRef.current = extracted;
-
-    // trigger re-render
-    setDynamicSuggestions(extracted);
+    dynamicSuggestionsRef.current = Array.isArray(actions) ? actions : [];
   }, []);
 
   const suggestionAdapter: SuggestionAdapter = useMemo(
     () => ({
       async generate() {
-        return dynamicSuggestionsRef?.current.map((prompt) => ({
+        const items = dynamicSuggestionsRef.current ?? [];
+        const suggestions: ThreadSuggestion[] = items.map((prompt) => ({
           prompt,
-        })) as ThreadSuggestion[];
+        }));
+        return suggestions;
       },
     }),
     [],
   );
+
   // Create a memoized Assistant UI runtime adapter for the specified model and flow context.
   const runtime = useLocalRuntime(
     useMemo(
@@ -226,21 +220,18 @@ export const AvPlatformAssistantUI = ({
     { adapters: { suggestion: suggestionAdapter } },
   );
 
-  useEffect(() => {
-    if (nodes && nodes.length > 0) {
-      const hasChatAiNode = nodes?.find(
-        (node) => node?.data?.name == "CreateConversationAIAgent",
-      );
-      if (!hasChatAiNode) {
-        toast.error("Atleast one Chat AI node is required");
-        return;
-      }
-    }
-  }, [nodes]);
-
   const aui = useAui({
+    // initial/static suggestions
     suggestions: Suggestions(agentConfig.actions?.DefaultActions ?? []),
   });
+
+  useEffect(() => {
+    if (nodes?.length && !hasChatAiNode) {
+      toast.error("At least one Chat AI node is required");
+    }
+  }, [nodes, hasChatAiNode]);
+
+  if (!hasChatAiNode) return null;
 
   return (
     <AssistantRuntimeProvider aui={aui} runtime={runtime}>

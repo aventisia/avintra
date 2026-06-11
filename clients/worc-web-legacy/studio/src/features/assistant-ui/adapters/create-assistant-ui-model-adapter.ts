@@ -197,7 +197,7 @@ export const createAssistantUIModelAdapter = ({
             contentParts.push(...toolParts);
           }
 
-          if (chatOutput?.recommended_actions?.length > 0) {
+          if (chatOutput?.recommended_actions) {
             onSuggestionsUpdate(chatOutput.recommended_actions);
           }
 
