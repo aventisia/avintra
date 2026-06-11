@@ -40,17 +40,20 @@ public class FlowVersionController : BaseApiController
         return ResultHelper(await _flowVersionService.DeleteFlowVersionAsync(id));
     }
 
-    // Retrieves a list of published flow versions, with an option to include unpublished versions.
-    [HttpGet("published")]
-    public async Task<ActionResult<ServiceResponse<IEnumerable<FlowAgentTableDto>>>> GetPublishedFlowVersions(bool includeUnpublished = false)
+    // Searches flow versions by flow name/version, with filtering by publish state and flow type.
+    [HttpGet("search")]
+    public async Task<ActionResult<ServiceResponse<IEnumerable<SearchFlowVersionResDto>>>> SearchFlowVersion(
+        [FromQuery] string query,
+        [FromQuery] FlowTypesEnum type = FlowTypesEnum.Agent,
+        [FromQuery] bool includePublishedOnly = true)
     {
-        return ResultHelper(await _flowVersionService.GetPublishedFlowVersionsAsync(includeUnpublished));
-    }
+        var request = new SearchFlowVersionReqDto
+        {
+            SearchKey = query,
+            Type = type,
+            IncludePublishedOnly = includePublishedOnly
+        };
 
-    // Searches flow versions by flow name, with an option to include unpublished versions.
-    [HttpGet("published/{searchKey}")]
-    public async Task<ActionResult<ServiceResponse<IEnumerable<FlowAgentTableDto>>>> SearchFlowVersions(string searchKey, bool includeUnpublished = false)
-    {
-        return ResultHelper(await _flowVersionService.SearchFlowVersionsAsync(searchKey, includeUnpublished));
+        return ResultHelper(await _flowVersionService.SearchFlowVersionsAsync(request));
     }
 }

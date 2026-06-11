@@ -340,84 +340,46 @@ public class FlowVersionService : IFlowVersionService
         return serviceResponse;
     }
 
-    // Retrieves a list of published flow versions for a specific flow by its identifier.
-    public async Task<ServiceResponse<IEnumerable<FlowAgentTableDto>>> GetPublishedFlowVersionsAsync(bool includeUnpublished = false)
+    // Searches flow versions by flow name and version, with an options to include unpublished versions and based on flow types.
+    public async Task<ServiceResponse<IEnumerable<SearchFlowVersionResDto>>> SearchFlowVersionsAsync(SearchFlowVersionReqDto searchFlowVersionReqDto)
     {
         // Initialize ServiceResponse to indicate failure by default.
-        var serviceResponse = new ServiceResponse<IEnumerable<FlowAgentTableDto>>
+        var serviceResponse = new ServiceResponse<IEnumerable<SearchFlowVersionResDto>>
         {
             Data = null,
-            Message = "Failed to retrieve published flow version. Please try again"
+            Message = "Failed to search. Please try again"
         };
 
         try
         {
-            // Try to retrieve the flow versions from the repository.
+            // Validate the search request
+            if (searchFlowVersionReqDto == null)
+            {
+                serviceResponse.Message = "Search request is required";
+                return serviceResponse;
+            }
+
+            // Trim the search key and check if it can be parsed as an integer for version number filtering
+            var searchKey = searchFlowVersionReqDto.SearchKey?.Trim() ?? string.Empty;
+
+            // Try to retrieve the flow versions
             var flowVersions = await _unitOfWork.FlowVersionRepo
                        .GetByConditionAsync(w =>
-                           (includeUnpublished || w.IsPublished) &&
-                           (
-                                w.CreatedByUserId == _userId ||
-                               (
-                                   w.Flow.FlowUsers != null && w.Flow.FlowUsers.Any(a => a.UserId == _userId)
-                               )
-                           )
+                            (string.IsNullOrWhiteSpace(searchKey) || EF.Functions.ILike(w.Flow.Name, $"%{searchKey}%")) &&
+                            w.Flow.Type == searchFlowVersionReqDto.Type &&
+                            (w.CreatedByUserId == _userId || (w.Flow.FlowUsers != null && w.Flow.FlowUsers.Any(a => a.UserId == _userId)))
                        )
+                       .AsNoTracking()
                        .Include(i => i.Flow)
-                       .ThenInclude(i2 => i2.FlowUsers)
                        .Include(c => c.CreatedByUser)
+                       .Include(c => c.LastModifiedByUser)
                        .OrderByDescending(o => o.VersionNumber)
                        .ToListAsync();
 
-            // If successful, map the retrieved flow versions to FlowAgentTableDto and set the response.
-            serviceResponse.Data = flowVersions.Adapt<IEnumerable<FlowAgentTableDto>>();
+            // If successful, map the retrieved flow versions to SearchFlowVersionResDto and set the response.
+            serviceResponse.Data = flowVersions.Adapt<IEnumerable<SearchFlowVersionResDto>>();
             serviceResponse.StatusCode = 200;
-            serviceResponse.Message = "Flow versions retrieved successfully";
-        }
-        catch (Exception ex)
-        {
-            // Log any exception and return the default service response.
-            _logger.LogError(ex.ToString());
-        }
-
-        // Return the service response.
-        return serviceResponse;
-    }
-
-    // Searches flow versions by flow name, with an option to include unpublished versions.
-    public async Task<ServiceResponse<IEnumerable<FlowAgentTableDto>>> SearchFlowVersionsAsync(string searchKey, bool includeUnpublished = false)
-    {
-        // Initialize ServiceResponse to indicate failure by default.
-        var serviceResponse = new ServiceResponse<IEnumerable<FlowAgentTableDto>>
-        {
-            Data = null,
-            Message = "Failed to search flow versions. Please try again"
-        };
-
-        try
-        {
-            // Try to retrieve the flow versions from the repository.
-            var flowVersions = await _unitOfWork.FlowVersionRepo
-                       .GetByConditionAsync(w =>
-                       w.Flow.Name.ToLower().Contains(searchKey.ToLower()) &&
-                           (includeUnpublished || w.IsPublished) &&
-                           (
-                                w.CreatedByUserId == _userId ||
-                               (
-                                   w.Flow.FlowUsers != null && w.Flow.FlowUsers.Any(a => a.UserId == _userId)
-                               )
-                           )
-                       )
-                       .Include(i => i.Flow)
-                       .ThenInclude(i2 => i2.FlowUsers)
-                       .Include(c => c.CreatedByUser)
-                       .OrderByDescending(o => o.VersionNumber)
-                       .ToListAsync();
-
-            // If successful, map the retrieved flow versions to FlowAgentTableDto and set the response.
-            serviceResponse.Data = flowVersions.Adapt<IEnumerable<FlowAgentTableDto>>();
-            serviceResponse.StatusCode = 200;
-            serviceResponse.Message = "Flow versions retrieved successfully";
+            serviceResponse.Message = "Retrieved successfully";
         }
         catch (Exception ex)
         {

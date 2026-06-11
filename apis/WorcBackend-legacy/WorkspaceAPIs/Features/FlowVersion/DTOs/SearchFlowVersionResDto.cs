@@ -1,6 +1,6 @@
 namespace WorkspaceAPIs.DTOs;
 
-public class FlowAgentTableDto
+public class SearchFlowVersionResDto
 {
     /// <summary>
     /// Gets or sets the ID of the flow this version is associated with.

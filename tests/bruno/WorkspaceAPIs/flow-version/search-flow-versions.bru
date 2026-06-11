@@ -1,0 +1,17 @@
+meta {
+  name: Search flow versions
+  type: http
+  seq: 8
+}
+
+get {
+  url: {{WORKSPACE_APIS_BASE_URL}}/flow-version/search?query=test&type=Agent&includePublishedOnly=true
+  body: none
+  auth: none
+}
+
+params:query {
+  query: test
+  type: Agent
+  includePublishedOnly: true
+}

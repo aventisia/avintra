@@ -1,4 +1,5 @@
 namespace WorkspaceAPIs.Services;
+
 public interface IFlowVersionService
 {
     /// <summary>
@@ -30,20 +31,14 @@ public interface IFlowVersionService
     Task<ServiceResponse<bool>> DeleteFlowVersionAsync(Guid id);
 
     /// <summary>
-    /// Retrieves a list of publish flow versions, optionally including unpublished agents.
+    /// Searches and retrieves a list of flow versions based on the search key, flow type, and publication status.
+    /// The search key is used to filter the flows by name and version. If the searchKey is null or empty, all flows will be considered.
+    /// The flow type is used to filter the flows by their type (e.g., Agent, Workflow, etc.). If not specified, it defaults to Agent type flows.
+    /// The includeUnpublished flag indicates whether to include unpublished flow versions in the result. It defaults to true, meaning only published flow versions will be included unless specified otherwise.
     /// </summary>
-    /// <param name="includeUnpublished"> A flag indicating whether to include unpublished agents in the result. Defaults to <c>false</c>. </param>
-    /// <returns> A <see cref="Task"/> representing the asynchronous operation, with a result of a <see cref="ServiceResponse{T}"/> containing a list of publish flow versions.
-    /// </returns>
-    Task<ServiceResponse<IEnumerable<FlowAgentTableDto>>> GetPublishedFlowVersionsAsync(bool includeUnpublished = false);
-
-    /// <summary>
-    /// Searches and retrieves a list of flow versions based on the search key, optionally including unpublished flow versions.
-    /// </summary>
-    /// <param name="searchKey"> A string used to filter the flows by name. If the searchKey is null or empty, all flows will be considered.</param>
-    /// <param name="includeUnpublished"> A flag indicating whether to include unpublished flow versions in the result. Defaults to <c>false</c>. </param>
+    /// <param name="searchFlowVersionReqDto"> A DTO containing the search criteria for flow versions. </param>
     /// <returns>
-    /// A <see cref="Task"/> representing the asynchronous operation, with a result of a <see cref="ServiceResponse{T}"/> containing a list of flow versions (published or unpublished) that match the search criteria.
+    /// A <see cref="Task"/> representing the asynchronous operation, with a result of a <see cref="ServiceResponse{T}"/> containing a list of flow versions that match the search criteria.
     /// </returns>
-    Task<ServiceResponse<IEnumerable<FlowAgentTableDto>>> SearchFlowVersionsAsync(string searchKey, bool includeUnpublished = false);
+    Task<ServiceResponse<IEnumerable<SearchFlowVersionResDto>>> SearchFlowVersionsAsync(SearchFlowVersionReqDto searchFlowVersionReqDto);
 }
