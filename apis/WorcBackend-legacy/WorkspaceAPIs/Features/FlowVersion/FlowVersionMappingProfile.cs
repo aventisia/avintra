@@ -17,8 +17,8 @@ public class FlowVersionMappingProfile : IRegister
             ? GetUserInitialsUtil.GetUserInitials(src.CreatedByUser.FirstName, src.CreatedByUser.LastName)
             : null);
 
-        // Mapping of DTO to get list of versions to show on the UI.
-        config.NewConfig<FlowVersion, FlowAgentTableDto>()
+        // Mapping of DTO to get list of versions based on search criteria
+        config.NewConfig<FlowVersion, SearchFlowVersionResDto>()
             .Map(dest => dest.Name, src => src.Flow != null ? src.Flow.Name : null)
             .Map(dest => dest.CreatedBy, src => src.CreatedByUser != null ? $"{src.CreatedByUser.FirstName} {src.CreatedByUser.LastName}" : null)
             .Map(dest => dest.CreatedByUsername, src => src.CreatedByUser != null ? src.CreatedByUser.UserName : null)
@@ -35,6 +35,5 @@ public class FlowVersionMappingProfile : IRegister
             .Ignore(dest => dest.LastModifiedOn)
             .Ignore(dest => dest.VersionNumber)
             .IgnoreNullValues(true);
-
     }
 }

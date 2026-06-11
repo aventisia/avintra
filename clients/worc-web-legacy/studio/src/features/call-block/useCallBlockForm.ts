@@ -12,9 +12,9 @@ import { useForm } from "react-hook-form";
 import { ZodTypeAny, z } from "zod";
 import { useShallow } from "zustand/react/shallow";
 
-import { useGetNodeSelectedAgent } from "./useGetNodeSelectedAgent";
+import { useGetSelectedBlockData } from "./useGetSelectedBlockData";
 
-export const useCallAgentForm = () => {
+export const useCallBlockForm = () => {
   // Local state for node config and zod schema
   const [nodeConfig, setNodeConfig] = useState<DCPFieldSchemaType[]>([]);
 
@@ -37,54 +37,79 @@ export const useCallAgentForm = () => {
       })),
     );
 
-  const { getNodeSelectedAgent } = useGetNodeSelectedAgent();
+  const { getSelectedBlockData } = useGetSelectedBlockData();
 
-  const initialSelectedAgent = getNodeSelectedAgent(nodeId || "");
+  const initialSelectedBlock = getSelectedBlockData(nodeId || "");
   // Define form with zod schema
   const form = useForm<z.infer<typeof nodeConfigZodSchema>>({
     resolver: zodResolver(nodeConfigZodSchema),
     defaultValues: {
-      selectAgent: initialSelectedAgent ?? "", // to avoid uncontrolled warning
+      selectBlock: initialSelectedBlock ?? null,
     },
   });
 
-  // 👀 Watch the selected value from the form
-  const selectedAgent = form.watch("selectAgent") ?? initialSelectedAgent;
+  // Watch the selected value from the form
+  const selectedBlock = form.watch("selectBlock");
 
   // Extract stable primitive values for effect dependencies
-  const selectedAgentId = selectedAgent?.id;
-  const selectedAgentFlowId = selectedAgent?.flowId;
+  const selectedBlockId = selectedBlock?.id;
+  const selectedBlockFlowId = selectedBlock?.flowId;
 
   // Get name (activityName), inputs and outputs from nodeData
-  const nodeUniqueName = nodeData?.name ?? "CallAgentActivity";
+  const nodeUniqueName = nodeData?.name ?? "CallBlockActivity";
 
   const inputs = nodeData?.inputs ?? [];
   const outputs = nodeData?.outputs ?? [];
 
   // Fetch config on mount or when nodeData changes
   useEffect(() => {
-    if (!selectedAgentId || !selectedAgentFlowId) return;
+    if (!selectedBlockId || !selectedBlockFlowId) {
+      setNodeConfig([]);
+      setNodeConfigZodSchema(z.object({}));
+      setIsLoading(false);
+      setIsFormReady(true);
+      return;
+    }
+
+    let isCancelled = false;
 
     setIsLoading(true);
+    setIsFormReady(false);
 
-    getFlowToLoad(selectedAgentFlowId, selectedAgentId)
+    getFlowToLoad(selectedBlockFlowId, selectedBlockId)
       .then((config) => {
+        if (isCancelled) return;
+
         if (config?.data?.inputOutputObject) {
           const IOObj = JSON.parse(config?.data.inputOutputObject || "{}");
 
           setNodeConfig(IOObj);
           setNodeConfigZodSchema(
             z.object({
-              selectAgent: z.any(),
+              selectBlock: z.any().nullable().optional(),
               ...generateZodSchema(IOObj).shape,
             }),
           );
+          return;
         }
+
+        setNodeConfig([]);
+        setNodeConfigZodSchema(
+          z.object({
+            selectBlock: z.any().nullable().optional(),
+          }),
+        );
       })
       .finally(() => {
-        setIsLoading(false);
+        if (!isCancelled) {
+          setIsLoading(false);
+        }
       });
-  }, [selectedAgentId, selectedAgentFlowId]); // ✅ Only primitive deps
+
+    return () => {
+      isCancelled = true;
+    };
+  }, [selectedBlockId, selectedBlockFlowId]); // ✅ Only primitive deps
 
   // Get input and output keys (required at the time of form submission)
   const inputKeys: string[] = nodeConfig
@@ -100,9 +125,11 @@ export const useCallAgentForm = () => {
       nodeConfig.length > 0 &&
       Object.keys(nodeConfigZodSchema.shape).length > 0
     ) {
+      const currentSelectedBlock = form.getValues("selectBlock") ?? null;
+
       form.reset({
-        selectAgent: selectedAgent ?? "", // preserve the selected agent
         ...getDefaultValuesForForm(nodeConfig, inputs, outputs),
+        selectBlock: currentSelectedBlock,
       });
       setIsFormReady(true); // Set form ready to true after resetting the form
     }

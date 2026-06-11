@@ -1,5 +1,5 @@
-import CallAgentConfigForm from "@/features/call-agent/components/CallAgentConfigForm";
-import CallBlockConfigForm from "@/features/call-block/components/CallBlockConfigForm";
+import CallAgentConfigForm from "@/features/call-agent/CallAgentConfigForm";
+import CallBlockConfigForm from "@/features/call-block/CallBlockConfigForm";
 import FileViewer from "@/features/file-viewer/components/FileViewer";
 import { useLocalFileStore } from "@/features/file-viewer/stores/file-list-store";
 

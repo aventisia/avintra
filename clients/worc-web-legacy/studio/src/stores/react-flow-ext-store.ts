@@ -131,7 +131,7 @@ export const useReactFlowExtStore = create<State & Actions>()(
     flowVariablesObject: [],
     configVariables: [],
     inputOutputObject: [],
-    panOnDrag: false,
+    panOnDrag: true,
     isSavePending: false,
     contextMenuOrigin: null,
     isPublished: false,

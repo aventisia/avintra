@@ -1,7 +1,7 @@
 /**
- * Represents a data transfer object (DTO) for a Search Agent.
+ * Represents a data transfer object (DTO) for a Search Flow Version.
  */
-export interface SearchAgentsDto {
+export interface SearchFlowVersionResDto {
   /**
    * Primary key of the flow version record.
    */
