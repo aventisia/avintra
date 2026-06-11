@@ -55,23 +55,6 @@
     {
       "direction": "Input",
       "type": "text",
-      "name": "Column",
-      "label": "Column",
-      "description": "Starting column letter (e.g., \u0027A\u0027). Used if ColumnIndex not provided.",
-      "defaultValue": "",
-      "required": false,
-      "renderIf": {
-        "conditions": [
-          {
-            "field": "WriteMode",
-            "equals": "OnSpecifiedCell"
-          }
-        ]
-      }
-    },
-    {
-      "direction": "Input",
-      "type": "text",
       "name": "ColumnIndex",
       "label": "Column Index",
       "description": "Starting column index (1 = A). Takes precedence if \u003E 0.",

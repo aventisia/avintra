@@ -19,7 +19,7 @@ namespace CodeActivitiesLibrary.AppIntegrations.WordActivities
         [DisplayName("Word Instance")]
         [Description("The specific Word instance to read from.")]
 
-        public InArgument<Word.Application> WordInstance { get; set; }
+        public InArgument<Microsoft.Office.Interop.Word.Application> WordInstance { get; set; }
 
         [DisplayName("Retrieve")]
         [Description("Specifies the portion of the document to retrieve.")]
@@ -187,7 +187,7 @@ namespace CodeActivitiesLibrary.AppIntegrations.WordActivities
             object page = pageNumber;
 
             // Get the range for the start of the specified page
-            Word.Range startRange = document.GoTo(
+            Microsoft.Office.Interop.Word.Range startRange = document.GoTo(
                 ref what,
                 ref which,
                 ref page);
@@ -203,7 +203,7 @@ namespace CodeActivitiesLibrary.AppIntegrations.WordActivities
                 object nextPage = pageNumber + 1;
 
                 // Get the range for the start of the next page
-                Word.Range nextRange = document.GoTo(
+                Microsoft.Office.Interop.Word.Range nextRange = document.GoTo(
                     ref what,
                     ref which,
                     ref nextPage);
@@ -218,7 +218,7 @@ namespace CodeActivitiesLibrary.AppIntegrations.WordActivities
             }
 
             // Create a range for the specified page using the determined start and end positions
-            Word.Range pageRange = document.Range(start, end);
+            Microsoft.Office.Interop.Word.Range pageRange = document.Range(start, end);
 
             // Return the text content of the page, trimming any leading or trailing whitespace. If the text is null, return an empty string.
             return pageRange.Text?.Trim() ?? string.Empty;

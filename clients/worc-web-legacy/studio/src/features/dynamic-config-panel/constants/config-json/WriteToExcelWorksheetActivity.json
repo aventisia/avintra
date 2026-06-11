@@ -55,23 +55,6 @@
     {
       "direction": "Input",
       "type": "text",
-      "name": "Column",
-      "label": "Column",
-      "description": "The column letter (e.g., \u0027A\u0027, \u0027B\u0027) where the data should be written.",
-      "defaultValue": "",
-      "required": false,
-      "renderIf": {
-        "conditions": [
-          {
-            "field": "WriteMode",
-            "equals": "OnSpecifiedCell"
-          }
-        ]
-      }
-    },
-    {
-      "direction": "Input",
-      "type": "text",
       "name": "ColumnIndex",
       "label": "Column Index",
       "description": "The index of the column (1 for \u0027A\u0027). Takes precedence if greater than 0.",

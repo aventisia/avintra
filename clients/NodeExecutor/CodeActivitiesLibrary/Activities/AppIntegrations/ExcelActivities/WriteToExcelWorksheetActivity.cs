@@ -84,9 +84,9 @@ namespace CodeActivitiesLibrary.AppIntegrations.ExcelActivities
                                 throw new ArgumentException("Row number must be greater than zero.");
 
 
-                            Excel.Range targetCell = worksheet.Cells[rowNumber, colIndex];
+                            Excel.Range targetCell = worksheet.Cells[rowNumber, startColIndex];
                             if (targetCell == null)
-                                throw new ArgumentException($"Invalid cell reference at row {rowNumber} and column index {colIndex}.");
+                                throw new ArgumentException($"Invalid cell reference at row {rowNumber} and column index {startColIndex}.");
 
                             WriteValueToRange(targetCell, rawValue);
                             break;
