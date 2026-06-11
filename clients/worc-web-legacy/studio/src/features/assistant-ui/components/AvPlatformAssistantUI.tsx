@@ -1,11 +1,18 @@
 import { useCurrentFlowStore } from "@/stores/current-flow-store";
 import { useReactFlowExtStore } from "@/stores/react-flow-ext-store";
 
-import { AssistantRuntimeProvider, useLocalRuntime } from "@assistant-ui/react";
+import {
+  AssistantRuntimeProvider,
+  SuggestionAdapter,
+  Suggestions,
+  ThreadSuggestion,
+  useAui,
+  useLocalRuntime,
+} from "@assistant-ui/react";
 import { toast } from "@aventisia/ui/sonner";
 import { useQueryClient } from "@tanstack/react-query";
 import { Node } from "@xyflow/react";
-import { useEffect, useMemo } from "react";
+import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { useShallow } from "zustand/react/shallow";
 
 import {
@@ -28,7 +35,13 @@ const INPUT_KEYS = {
   MODEL_CONFIG: "__ModelConfig__",
   TOOLS_CONFIG: "__ToolsConfig__",
   KB_CONFIG: "__KbConfig__",
+  RecommendActions: "RecommendActions",
 } as const;
+
+type RecommendActions = {
+  DefaultActions: string[];
+  EnableDynamicActions: boolean;
+};
 
 type NodeInputLike = {
   key?: string;
@@ -60,7 +73,9 @@ const getInputValue = <T,>(
   return match?.value as T | undefined;
 };
 
-const getAgentConfigFromFlowNodes = (nodes: Node[]): Partial<LLMRequestDto> => {
+const getAgentConfigFromFlowNodes = (
+  nodes: Node[],
+): { payload?: Partial<LLMRequestDto>; actions?: RecommendActions } => {
   const inferencingNode = nodes.find(
     (node) =>
       node.data &&
@@ -97,21 +112,28 @@ const getAgentConfigFromFlowNodes = (nodes: Node[]): Partial<LLMRequestDto> => {
     nodeInputs,
     INPUT_KEYS.KB_CONFIG,
   );
+  const actionsConfig = getInputValue<RecommendActions>(
+    nodeInputs,
+    INPUT_KEYS.RecommendActions,
+  );
 
   return {
-    provider: modelConfig?.provider,
-    model: modelConfig?.model,
-    credential_id: modelConfig?.credential_id ?? null,
-    is_byok_enabled: modelConfig?.is_byok_enabled ?? false,
-    temperature: modelConfig?.temperature ?? 1,
-    top_p: modelConfig?.top_p ?? 1,
-    is_json_output: modelConfig?.is_json_output ?? false,
-    max_output_tokens: modelConfig?.max_output_tokens ?? null,
-    tool_config: tools ?? [],
-    kb_names: kbConfig?.knowledgeBase ?? [],
-    top_k: kbConfig?.numberOfChunks ?? 5,
-    agent_name: TARGET_NODE_NAME,
-    input: typeof prompt === "string" ? prompt.trim() : "",
+    payload: {
+      provider: modelConfig?.provider,
+      model: modelConfig?.model,
+      credential_id: modelConfig?.credential_id ?? null,
+      is_byok_enabled: modelConfig?.is_byok_enabled ?? false,
+      temperature: modelConfig?.temperature ?? 1,
+      top_p: modelConfig?.top_p ?? 1,
+      is_json_output: modelConfig?.is_json_output ?? false,
+      max_output_tokens: modelConfig?.max_output_tokens ?? null,
+      tool_config: tools ?? [],
+      kb_names: kbConfig?.knowledgeBase ?? [],
+      top_k: kbConfig?.numberOfChunks ?? 5,
+      agent_name: TARGET_NODE_NAME,
+      input: typeof prompt === "string" ? prompt.trim() : "",
+    },
+    actions: actionsConfig,
   };
 };
 
@@ -145,6 +167,36 @@ export const AvPlatformAssistantUI = ({
     [nodes],
   );
 
+  const [dynamicSuggestions, setDynamicSuggestions] = useState<string[]>([]);
+
+  const dynamicSuggestionsRef = useRef(dynamicSuggestions);
+
+  const handleSuggestionsUpdate = useCallback((actions: string[]) => {
+    const extracted: string[] = [];
+
+    Object.values(actions).forEach((val) => {
+      if (typeof val === "string") {
+        extracted.push(val);
+      }
+    });
+
+    // update ref immediately
+    dynamicSuggestionsRef.current = extracted;
+
+    // trigger re-render
+    setDynamicSuggestions(extracted);
+  }, []);
+
+  const suggestionAdapter: SuggestionAdapter = useMemo(
+    () => ({
+      async generate() {
+        return dynamicSuggestionsRef?.current.map((prompt) => ({
+          prompt,
+        })) as ThreadSuggestion[];
+      },
+    }),
+    [],
+  );
   // Create a memoized Assistant UI runtime adapter for the specified model and flow context.
   const runtime = useLocalRuntime(
     useMemo(
@@ -155,10 +207,11 @@ export const AvPlatformAssistantUI = ({
           model,
           flowVersionId: currentFlow.versionId,
           flowName: currentFlow.name,
-          agentConfig,
+          agentConfig: agentConfig?.payload,
           onRequestComplete: () => {
             queryClient.invalidateQueries({ queryKey: AC_QUERY_KEY });
           },
+          onSuggestionsUpdate: handleSuggestionsUpdate,
         }),
       [
         provider,
@@ -167,8 +220,10 @@ export const AvPlatformAssistantUI = ({
         currentFlow.name,
         agentConfig,
         queryClient,
+        handleSuggestionsUpdate,
       ],
     ),
+    { adapters: { suggestion: suggestionAdapter } },
   );
 
   useEffect(() => {
@@ -183,10 +238,13 @@ export const AvPlatformAssistantUI = ({
     }
   }, [nodes]);
 
+  const aui = useAui({
+    suggestions: Suggestions(agentConfig.actions?.DefaultActions ?? []),
+  });
+
   return (
-    <AssistantRuntimeProvider runtime={runtime}>
+    <AssistantRuntimeProvider aui={aui} runtime={runtime}>
       <div className="flex h-full flex-col bg-background">
-        {/* <ThreadList /> */}
         <Thread />
       </div>
     </AssistantRuntimeProvider>

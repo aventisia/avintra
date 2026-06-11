@@ -87,6 +87,11 @@ export interface LLMRequestDto {
   is_byok_enabled?: boolean;
 
   /**
+   * Enables for chat agent to get response in desired format.
+   */
+  is_chat_agent?: boolean;
+
+  /**
    * Optional credential ID for BYOK.
    */
   credential_id?: string | null;

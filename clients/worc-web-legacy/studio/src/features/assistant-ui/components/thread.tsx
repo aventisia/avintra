@@ -42,6 +42,30 @@ import {
 import { MarkdownText } from "./markdown-text";
 import { TooltipIconButton } from "./tooltip-icon-button";
 
+function FollowUps() {
+  const suggestions = useAuiState((s) => s.thread.suggestions);
+
+  // Return null if there are no suggestions,
+  if (!suggestions || suggestions.length === 0) return null;
+
+  return (
+    <AuiIf condition={(s) => !s.thread.isEmpty && !s.thread.isRunning}>
+      <div className="flex gap-2 pb-4">
+        {suggestions.map((s, i) => (
+          <ThreadPrimitive.Suggestion key={i} prompt={s.prompt} send asChild>
+            <Button
+              variant="outline"
+              className=" h-auto  flex-wrap items-start justify-start gap-1 rounded-full italic border bg-background px-3.5 py-2 text-left text-sm transition-colors hover:bg-muted "
+            >
+              {s.prompt}
+            </Button>
+          </ThreadPrimitive.Suggestion>
+        ))}
+      </div>
+    </AuiIf>
+  );
+}
+
 export const Thread: FC = () => {
   return (
     <ThreadPrimitive.Root
@@ -63,6 +87,8 @@ export const Thread: FC = () => {
         <ThreadPrimitive.Messages>
           {() => <ThreadMessage />}
         </ThreadPrimitive.Messages>
+
+        <FollowUps />
 
         <ThreadPrimitive.ViewportFooter className="aui-thread-viewport-footer sticky bottom-0 mx-auto mt-auto flex w-full max-w-[var(--thread-max-width)] flex-col gap-4 overflow-visible rounded-t-[var(--composer-radius)] bg-background pb-4 md:pb-6">
           <ThreadScrollToBottom />
@@ -115,7 +141,7 @@ const ThreadWelcome: FC = () => {
 
 const ThreadSuggestions: FC = () => {
   return (
-    <div className="aui-thread-welcome-suggestions grid w-full gap-2 pb-4 md:grid-cols-2">
+    <div className="aui-thread-welcome-suggestions flex gap-2 pb-4 w-full flex-wrap">
       <ThreadPrimitive.Suggestions>
         {() => <ThreadSuggestionItem />}
       </ThreadPrimitive.Suggestions>
@@ -128,10 +154,10 @@ const ThreadSuggestionItem: FC = () => {
     <div className="aui-thread-welcome-suggestion-display fade-in slide-in-from-bottom-2 animate-in fill-mode-both duration-200 [&:nth-child(n+3)]:hidden md:[&:nth-child(n+3)]:block">
       <SuggestionPrimitive.Trigger send asChild>
         <Button
-          variant="ghost"
-          className="aui-thread-welcome-suggestion h-auto w-full flex-wrap items-start justify-start gap-1 rounded-3xl border bg-background px-4 py-3 text-left text-sm transition-colors hover:bg-muted md:flex-col"
+          variant="outline"
+          className="aui-thread-welcome-suggestion h-auto  flex-wrap items-start justify-start gap-1 rounded-full border bg-background px-3.5 py-2 text-left text-sm transition-colors hover:bg-muted md:flex-col"
         >
-          <SuggestionPrimitive.Title className="aui-thread-welcome-suggestion-text-1 font-medium" />
+          <SuggestionPrimitive.Title className="aui-thread-welcome-suggestion-text-1 italic leading-tight  text-wrap font-medium" />
           <SuggestionPrimitive.Description className="aui-thread-welcome-suggestion-text-2 text-muted-foreground empty:hidden" />
         </Button>
       </SuggestionPrimitive.Trigger>
@@ -232,13 +258,16 @@ const AssistantMessage: FC = () => {
       if (part.type === "text" || part.type === "reasoning") {
         return part.text.trim().length > 0;
       }
+      if (part.type === "tool-call") {
+        return true;
+      }
       return false;
     });
   });
 
   return (
     <MessagePrimitive.Root
-      className="aui-assistant-message-root text-sm fade-in slide-in-from-bottom-1 relative mx-auto w-full max-w-[var(--thread-max-width)] animate-in py-3 duration-150"
+      className="aui-assistant-message-root text-sm fade-in slide-in-from-bottom-1 relative mx-auto w-full max-w-[var(--thread-max-width)] animate-in py-3 duration-150 !min-h-fit !h-fit"
       data-role="assistant"
     >
       <div className="aui-assistant-message-content wrap-break-word px-2 text-foreground leading-relaxed">
@@ -246,14 +275,20 @@ const AssistantMessage: FC = () => {
           {({ part }) => {
             if (part.type === "tool-call") {
               return (
-                <div className="mb-2 w-full">
+                <div className="my-2 w-full">
                   {/* Fallback pattern for dynamically rendered tool UIs */}
                   {part.toolUI ?? <ToolsCall {...part} />}
                 </div>
               );
             }
 
-            if (part.type === "text") return <MarkdownText />;
+            if (part.type === "text") {
+              if (!part.text || part.text.trim() === "") {
+                return null;
+              }
+              // Render Markdown if there is text.
+              return <MarkdownText />;
+            }
 
             return null;
           }}
