@@ -90,7 +90,7 @@ pipeline {
                     - Docs Client: ${env.BUILD_DOCS_CLIENT}
                     - Accounts Client: ${env.BUILD_ACCOUNTS_CLIENT}
                     - Workspace Client: ${env.BUILD_WORKSPACE_CLIENT}
-                    - Agent Builder Client: ${env.BUILD_STUDIO_CLIENT}
+                    - Studio Client: ${env.BUILD_STUDIO_CLIENT}
                     """.stripIndent()
                 }
             }
@@ -370,7 +370,7 @@ pipeline {
                     }
                 }
                 
-                stage('Agent Builder Client') {
+                stage('Studio Client') {
                     when {
                         expression { env.BUILD_STUDIO_CLIENT == 'true' }
                     }
@@ -379,32 +379,32 @@ pipeline {
                         nodejs 'NodeJS 20.18.1'
                     }
                     stages {
-                        stage('Install - Agent Builder Client') {
+                        stage('Install - Studio Client') {
                             steps {
                                 dir('clients/worc-web-legacy/studio') {
-                                    echo 'Installing Agent Builder Client dependencies...'
+                                    echo 'Installing Studio Client dependencies...'
                                     sh 'npm ci'
                                 }
                             }
                         }
-                        stage('Build - Agent Builder Client') {
+                        stage('Build - Studio Client') {
                             steps {
                                 dir('clients/worc-web-legacy/studio') {
-                                    echo 'Building Agent Builder Client...'
+                                    echo 'Building Studio Client...'
                                     sh "npm run build -- --mode=${getBuildMode(env.BRANCH_NAME)}"
                                 }
                             }
                         }
-                        stage('Deploy - Agent Builder Client') {
+                        stage('Deploy - Studio Client') {
                             steps {
                                 script {
                                     sshagent(credentials: ['aventisia_vps_ssh']) {
                                         def targetServers = getTargetServers(env.BRANCH_NAME)
-                                        echo "Deploying Agent Builder Client to ${targetServers.size()} server(s)..."
+                                        echo "Deploying Studio Client to ${targetServers.size()} server(s)..."
                                         
                                         targetServers.each { server ->
                                             sh "rsync -avz --delete ${WORKSPACE}/clients/worc-web-legacy/studio/dist/* admin@${server}:/var/www/aventisia.com/clients/studio/"
-                                            echo "Successfully deployed Agent Builder Client to ${server}"
+                                            echo "Successfully deployed Studio Client to ${server}"
                                         }
                                     }
                                 }
