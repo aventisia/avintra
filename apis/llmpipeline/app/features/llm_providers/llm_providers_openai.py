@@ -416,10 +416,21 @@ class OpenAIProvider(BaseLLMProvider):
         
         # Update llm_response with actual values
         if llm_request.is_chat_agent:
+            text = ""
+            tools = []
+
+            if isinstance(output, str):
+                text = output
+            elif isinstance(output, list):
+                if all(isinstance(item, str) for item in output):
+                    text = "\n".join(output)
+                elif llm_request.tool_config:
+                    tools = output
+
             llm_response.output = ChatAgentResponse(
-                text=output if isinstance(output, str) else "",
-                tools=output if llm_request.tool_config else [],
-                recommended_actions=[]
+                text=text,
+                tools=tools,
+                recommended_actions=[],
             )
         else:
             llm_response.output = output
