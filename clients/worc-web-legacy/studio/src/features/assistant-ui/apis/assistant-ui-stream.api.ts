@@ -54,7 +54,7 @@ const parseChunkLine = (line: string): LLMOutputDto | null => {
   const normalized = line.startsWith("data:") ? line.slice(5).trim() : line;
 
   if (!normalized || normalized === "[DONE]") return null;
-  console.log(normalized)
+
   try {
     const payload = JSON.parse(normalized) as {
       output?: LLMOutputDto;
