@@ -94,6 +94,10 @@ public class M365OutlookConnectorsService : IM365OutlookConnectorsService
         // Retrieve important values from the payload
         var mailboxAddress = CloudConnectionPayloadUtil.GetValue(payload, "mailboxAddress");
 
+        // If mailboxAddress is null or empty, use "from" instead
+        if (string.IsNullOrEmpty(mailboxAddress))
+            mailboxAddress = CloudConnectionPayloadUtil.GetValue(payload, "from");
+
         // Function to determine the correct path based on mailbox address
         string GetMailboxPath(string mailbox)
         {
