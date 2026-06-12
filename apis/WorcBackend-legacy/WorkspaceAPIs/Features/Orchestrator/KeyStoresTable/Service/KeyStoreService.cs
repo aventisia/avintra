@@ -115,6 +115,7 @@ public class KeyStoreService : IKeyStoreService
                 // Retrieve accessible key stores
                 keyStores = await _unitOfWork.KeyStoreRepo
                     .GetByConditionAsync(w =>
+                        w.CreatedByUserId != _userId &&
                         w.IsTenantWideAccess ||
                         resourceAccess.Keys.Contains(w.Id))
                     .OrderByDescending(w => w.CreatedOn)
@@ -175,7 +176,7 @@ public class KeyStoreService : IKeyStoreService
             }
 
             // Validate view access
-            var canView = await _resourceShareService.HasAccessAsync(
+            var (canView, accessLevel) = await _resourceShareService.GetResourceAccessAsync(
                     _userId,
                     keyStore.Id,
                     ResourceTypeEnum.KeyStore,
@@ -263,12 +264,12 @@ public class KeyStoreService : IKeyStoreService
                 return serviceResponse;
             }
 
-            // // Assign ownership
-            // if (!await _resourceShareService.AssignOwnerAsync(_userId, newKeyStore.Id, ResourceTypeEnum.KeyStore))
-            // {
-            //     serviceResponse.Message = "Failed assigning ownership.";
-            //     return serviceResponse;
-            // }
+            // Assign ownership
+            if (!await _resourceShareService.AssignOwnerAsync(_userId, newKeyStore.Id, ResourceTypeEnum.KeyStore))
+            {
+                serviceResponse.Message = "Failed assigning ownership.";
+                return serviceResponse;
+            }
 
             // Return the created key store in the response
             serviceResponse.Data = newKeyStore.Adapt<KeyStoreDto>();
@@ -317,7 +318,7 @@ public class KeyStoreService : IKeyStoreService
             }
 
             // Validate update access
-            var canEdit = await _resourceShareService.HasAccessAsync(
+            var (canEdit, accessLevel) = await _resourceShareService.GetResourceAccessAsync(
                 _userId,
                 keyStore.Id,
                 ResourceTypeEnum.KeyStore,
@@ -411,7 +412,7 @@ public class KeyStoreService : IKeyStoreService
             }
 
             // Validate delete permission
-            var canDelete = await _resourceShareService.HasAccessAsync(
+            var (canDelete, accessLevel) = await _resourceShareService.GetResourceAccessAsync(
                 _userId,
                 keyStore.Id,
                 ResourceTypeEnum.KeyStore,
@@ -484,7 +485,7 @@ public class KeyStoreService : IKeyStoreService
 
             foreach (var keyStore in keyStores)
             {
-                var allowed = await _resourceShareService.HasAccessAsync(
+                var (canDelete, accessLevel) = await _resourceShareService.GetResourceAccessAsync(
                     _userId,
                     keyStore.Id,
                     ResourceTypeEnum.KeyStore,
@@ -498,7 +499,7 @@ public class KeyStoreService : IKeyStoreService
                     }
                 );
 
-                if (!allowed)
+                if (!canDelete)
                 {
                     serviceResponse.Message = "You do not have access to delete one or more key stores.";
                     return serviceResponse;
@@ -557,7 +558,7 @@ public class KeyStoreService : IKeyStoreService
             }
 
             // Validate decrypt/view access
-            var canView = await _resourceShareService.HasAccessAsync(
+            var (canView, accessLevel) = await _resourceShareService.GetResourceAccessAsync(
                 _userId,
                 keyStore.Id,
                 ResourceTypeEnum.KeyStore,

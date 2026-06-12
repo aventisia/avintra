@@ -74,8 +74,10 @@ public class KnowledgeBaseService : IKnowledgeBaseService
                 // Retrieve tenant-wide or explicitly shared knowledge bases
                 knowledgeBases = await _unitOfWork.KnowledgeBaseRepo
                     .GetByConditionAsync(w =>
+                        w.CreatedByUserId != _userId &&
                         w.IsTenantWideAccess ||
-                        resourceAccess.Keys.Contains(w.Id))
+                        resourceAccess.Keys.Contains(w.Id)
+                    )
                     .OrderByDescending(o => o.CreatedOn)
                     .Include(i => i.CreatedByUser)
                     .Include(i => i.LastModifiedByUser)
@@ -282,12 +284,12 @@ public class KnowledgeBaseService : IKnowledgeBaseService
             await _unitOfWork.KnowledgeBaseRepo.InsertAsync(newKB);
             await _unitOfWork.SaveAsync();
 
-            // // Assign creator as resource owner. Ensures creator receives full management permissions
-            // if (!await _resourceShareService.AssignOwnerAsync(_userId, newKB.Id, ResourceTypeEnum.KnowledgeBase))
-            // {
-            //     _logger.LogWarning("Failed assigning owner access for KnowledgeBase {KnowledgeBaseId}", newKB.Id);
-            //     return serviceResponse;
-            // }
+            // Assign creator as resource owner. Ensures creator receives full management permissions
+            if (!await _resourceShareService.AssignOwnerAsync(_userId, newKB.Id, ResourceTypeEnum.KnowledgeBase))
+            {
+                _logger.LogWarning("Failed assigning owner access for KnowledgeBase {KnowledgeBaseId}", newKB.Id);
+                return serviceResponse;
+            }
 
             // Map back to DTO for response
             var resultDto = newKB.Adapt<KnowledgeBaseDto>();
@@ -375,7 +377,7 @@ public class KnowledgeBaseService : IKnowledgeBaseService
             }
 
             // Validate update permission
-            var canEdit = await _resourceShareService.HasAccessAsync(
+            var (canEdit, accessLevel) = await _resourceShareService.GetResourceAccessAsync(
                 _userId,
                 existingKB.Id,
                 ResourceTypeEnum.KnowledgeBase,
@@ -460,7 +462,7 @@ public class KnowledgeBaseService : IKnowledgeBaseService
             }
 
             // Validate delete permission
-            var canDelete = await _resourceShareService.HasAccessAsync(
+            var (canDelete, accessLevel) = await _resourceShareService.GetResourceAccessAsync(
                 _userId,
                 kb.Id,
                 ResourceTypeEnum.KnowledgeBase,
@@ -559,7 +561,7 @@ public class KnowledgeBaseService : IKnowledgeBaseService
             // Validate delete permission for each knowledge base
             foreach (var kb in kbs)
             {
-                var allowed = await _resourceShareService.HasAccessAsync(
+                var (canDelete, accessLevel) = await _resourceShareService.GetResourceAccessAsync(
                     _userId,
                     kb.Id,
                     ResourceTypeEnum.KnowledgeBase,
@@ -574,7 +576,7 @@ public class KnowledgeBaseService : IKnowledgeBaseService
                 );
 
                 // Stop operation if at least one KB is unauthorized
-                if (!allowed)
+                if (!canDelete)
                 {
                     _logger.LogWarning("Unauthorized bulk KnowledgeBase deletion. User {UserId}", _userId);
                     serviceResponse.Message = "You do not have access to delete one or more knowledge bases.";

@@ -107,6 +107,7 @@ public class VaultService : IVaultService
                 // Retrieve tenant-wide or explicitly shared vaults
                 vaults = await _unitOfWork.VaultRepo
                     .GetByConditionAsync(w =>
+                        w.CreatedByUserId != _userId &&
                         w.IsTenantWideAccess ||
                         resourceAccess.Keys.Contains(w.Id))
                     .Include(i => i.CreatedByUser)
@@ -166,7 +167,7 @@ public class VaultService : IVaultService
             }
 
             // Validate access permission
-            var canView = await _resourceShareService.HasAccessAsync(
+            var (canView, accessLevel) = await _resourceShareService.GetResourceAccessAsync(
                 _userId,
                 vault.Id,
                 ResourceTypeEnum.Vault,
@@ -253,15 +254,15 @@ public class VaultService : IVaultService
                 return serviceResponse;
             }
 
-            // // Assign creator owner access
-            // if (!await _resourceShareService.AssignOwnerAsync(
-            //     _userId,
-            //     newVault.Id,
-            //     ResourceTypeEnum.Vault))
-            // {
-            //     serviceResponse.Message = "Failed assigning ownership.";
-            //     return serviceResponse;
-            // }
+            // Assign creator owner access
+            if (!await _resourceShareService.AssignOwnerAsync(
+                _userId,
+                newVault.Id,
+                ResourceTypeEnum.Vault))
+            {
+                serviceResponse.Message = "Failed assigning ownership.";
+                return serviceResponse;
+            }
 
             // Return the created vault in the response
             serviceResponse.Data = newVault.Adapt<VaultDto>();
@@ -302,7 +303,7 @@ public class VaultService : IVaultService
             }
 
             // Validate update access
-            var canEdit = await _resourceShareService.HasAccessAsync(
+            var (canEdit, accessLevel) = await _resourceShareService.GetResourceAccessAsync(
                 _userId,
                 vault.Id,
                 ResourceTypeEnum.Vault,
@@ -401,8 +402,7 @@ public class VaultService : IVaultService
             }
 
             // Validate delete permission
-            var canDelete = await _resourceShareService
-                .HasAccessAsync(
+            var (canDelete, accessLevel) = await _resourceShareService.GetResourceAccessAsync(
                     _userId,
                     vault.Id,
                     ResourceTypeEnum.Vault,
@@ -478,7 +478,7 @@ public class VaultService : IVaultService
             // Validate permissions
             foreach (var vault in vaults)
             {
-                var allowed = await _resourceShareService.HasAccessAsync(
+                var (canDelete, accessLevel) = await _resourceShareService.GetResourceAccessAsync(
                     _userId,
                     vault.Id,
                     ResourceTypeEnum.Vault,
@@ -492,7 +492,7 @@ public class VaultService : IVaultService
                     }
                 );
 
-                if (!allowed)
+                if (!canDelete)
                 {
                     serviceResponse.Message = "You do not have access to delete one or more vaults.";
                     return serviceResponse;
@@ -555,7 +555,7 @@ public class VaultService : IVaultService
 
 
             // Validate access permission
-            var canView = await _resourceShareService.HasAccessAsync(
+            var (canView, accessLevel) = await _resourceShareService.GetResourceAccessAsync(
                     _userId,
                     vault.Id,
                     ResourceTypeEnum.Vault,

@@ -109,6 +109,7 @@ public class QueueTableService : IQueueTableService
                 // Retrieve all accessible queues
                 queues = await _unitOfWork.QueueRepo
                     .GetByConditionAsync(w =>
+                        w.CreatedByUserId != _userId &&
                         w.IsTenantWideAccess ||
                         resourceAccess.Keys.Contains(w.Id))
                     .Include(i => i.QueueTransactions)
@@ -242,7 +243,7 @@ public class QueueTableService : IQueueTableService
             }
 
             // Validate view permission
-            var canView = await _resourceShareService.HasAccessAsync(
+            var (canView, accessLevel) = await _resourceShareService.GetResourceAccessAsync(
                 _userId,
                 queue.Id,
                 ResourceTypeEnum.Queue,
@@ -321,13 +322,13 @@ public class QueueTableService : IQueueTableService
                 return serviceResponse;
             }
 
-            // // Assign creator ownership
-            // if (!await _resourceShareService.AssignOwnerAsync(_userId, newQueue.Id, ResourceTypeEnum.Queue))
-            // {
-            //     _logger.LogWarning("Failed assigning queue ownership. Queue {QueueId}", newQueue.Id);
-            //     serviceResponse.Message = "Failed assigning ownership.";
-            //     return serviceResponse;
-            // }
+            // Assign creator ownership
+            if (!await _resourceShareService.AssignOwnerAsync(_userId, newQueue.Id, ResourceTypeEnum.Queue))
+            {
+                _logger.LogWarning("Failed assigning queue ownership. Queue {QueueId}", newQueue.Id);
+                serviceResponse.Message = "Failed assigning ownership.";
+                return serviceResponse;
+            }
 
             // If the queue type is 'User', create an associated QueueUser entry
             if (newQueue.Type == QueueTypesEnum.User)
@@ -391,7 +392,7 @@ public class QueueTableService : IQueueTableService
             }
 
             // Validate edit permission
-            var canEdit = await _resourceShareService.HasAccessAsync(
+            var (canEdit, accessLevel) = await _resourceShareService.GetResourceAccessAsync(
                 _userId,
                 queue.Id,
                 ResourceTypeEnum.Queue,
@@ -485,7 +486,7 @@ public class QueueTableService : IQueueTableService
             }
 
             // Validate delete permission
-            var canDelete = await _resourceShareService.HasAccessAsync(
+            var (canDelete, accessLevel) = await _resourceShareService.GetResourceAccessAsync(
                 _userId,
                 queue.Id,
                 ResourceTypeEnum.Queue,
@@ -562,7 +563,7 @@ public class QueueTableService : IQueueTableService
             // Validate delete permission for all queues
             foreach (var queue in queues)
             {
-                var allowed = await _resourceShareService.HasAccessAsync(
+                var (canDelete, accessLevel) = await _resourceShareService.GetResourceAccessAsync(
                     _userId,
                     queue.Id,
                     ResourceTypeEnum.Queue,
@@ -576,7 +577,7 @@ public class QueueTableService : IQueueTableService
                     }
                 );
 
-                if (!allowed)
+                if (!canDelete)
                 {
                     serviceResponse.Message =
                         "You do not have access to delete one or more queues.";

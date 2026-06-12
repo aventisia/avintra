@@ -87,6 +87,7 @@ public class EmailTriggerService : IEmailTriggerService
                 // Retrieve tenant-wide or explicitly shared email triggers
                 emailTriggers = await _unitOfWork.TriggerRepo
                     .GetByConditionAsync(w =>
+                        w.CreatedByUserId != _userId &&
                         w.TriggerType == TriggerTypesEnum.EmailTrigger &&
                         (w.IsTenantWideAccess || resourceAccess.Keys.Contains(w.Id)))
                     .Include(i => i.CreatedByUser)
@@ -157,7 +158,7 @@ public class EmailTriggerService : IEmailTriggerService
             }
 
             // Verify current user has permission to view this trigger
-            var canView = await _resourceShareService.HasAccessAsync(
+            var (canView, accessLevel) = await _resourceShareService.GetResourceAccessAsync(
                 _userId,
                 emailTrigger.Id,
                 ResourceTypeEnum.Trigger,
@@ -281,13 +282,13 @@ public class EmailTriggerService : IEmailTriggerService
                 return serviceResponse;
             }
 
-            // // Assign ownership of the newly created trigger to current user
-            // if (!await _resourceShareService.AssignOwnerAsync(_userId, newEmailTrigger.Id, ResourceTypeEnum.Trigger))
-            // {
-            //     _logger.LogError("Failed assigning owner permissions for email trigger {TriggerId}.", newEmailTrigger.Id);
-            //     serviceResponse.Message = "Failed assigning ownership.";
-            //     return serviceResponse;
-            // }
+            // Assign ownership of the newly created trigger to current user
+            if (!await _resourceShareService.AssignOwnerAsync(_userId, newEmailTrigger.Id, ResourceTypeEnum.Trigger))
+            {
+                _logger.LogError("Failed assigning owner permissions for email trigger {TriggerId}.", newEmailTrigger.Id);
+                serviceResponse.Message = "Failed assigning ownership.";
+                return serviceResponse;
+            }
 
             // Retrieve all agents from the database that are linked to the provided email trigger DTO.
             // Only include agents whose IDs are in emailTriggerDto.Agents and are marked as published.
@@ -374,7 +375,7 @@ public class EmailTriggerService : IEmailTriggerService
             }
 
             // Validate current user has permission to update this trigger
-            var canEdit = await _resourceShareService.HasAccessAsync(
+            var (canEdit, accessLevel) = await _resourceShareService.GetResourceAccessAsync(
                 _userId,
                 emailTrigger.Id,
                 ResourceTypeEnum.Trigger,
@@ -653,7 +654,7 @@ public class EmailTriggerService : IEmailTriggerService
             }
 
             // Validate current user has permission to delete this trigger
-            var canDelete = await _resourceShareService.HasAccessAsync(
+            var (canDelete, accessLevel) = await _resourceShareService.GetResourceAccessAsync(
                 _userId,
                 emailTrigger.Id,
                 ResourceTypeEnum.Trigger,
@@ -758,7 +759,7 @@ public class EmailTriggerService : IEmailTriggerService
             // Validate delete access for all triggers
             foreach (var trigger in emailTriggers)
             {
-                var allowed = await _resourceShareService.HasAccessAsync(
+                var (canDelete, accessLevel) = await _resourceShareService.GetResourceAccessAsync(
                     _userId,
                     trigger.Id,
                     ResourceTypeEnum.Trigger,
@@ -772,7 +773,7 @@ public class EmailTriggerService : IEmailTriggerService
                     }
                 );
 
-                if (!allowed)
+                if (!canDelete)
                 {
                     _logger.LogInformation("User {UserId} attempted unauthorized bulk deletion.", _userId);
                     serviceResponse.Message = "You do not have access to delete one or more email triggers.";
