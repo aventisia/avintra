@@ -40,22 +40,10 @@ const PromptConfigField = ({
   const templateOptions = useMemo(() => {
     return (
       templatesData?.data?.map((template) => {
-        let promptDescription = "";
-
-        try {
-          const parsedSchema = JSON.parse(
-            template.schema ?? "{}",
-          ) as PromptTemplateSchema;
-
-          promptDescription = parsedSchema.prompt ?? "";
-        } catch {
-          promptDescription = "";
-        }
-
         return {
           label: template.name,
           value: template.id ?? "",
-          description: promptDescription,
+          description: template.description ?? "",
         };
       }) ?? []
     );

@@ -128,26 +128,26 @@ export const PromptSelect = ({
                     }}
                     className={cn(value === option.value && "bg-accent")}
                   >
-                    <Tooltip content={option.description}>
-                      <div>
-                        <div className="flex w-full items-center justify-between">
-                          <p>
-                            {option.label}
+                    <div>
+                      <div className="flex w-full items-center justify-between">
+                        <p>
+                          {option.label}
+                          <Tooltip content={option.description}>
                             <span className="text-muted-foreground line-clamp-1 text-2xs">
                               {option.description}
                             </span>
-                          </p>
-                          <Check
-                            className={cn(
-                              "h-3.5 w-3.5 shrink-0",
-                              value === option.value
-                                ? "opacity-100"
-                                : "opacity-0",
-                            )}
-                          />
-                        </div>
+                          </Tooltip>
+                        </p>
+                        <Check
+                          className={cn(
+                            "h-3.5 w-3.5 shrink-0",
+                            value === option.value
+                              ? "opacity-100"
+                              : "opacity-0",
+                          )}
+                        />
                       </div>
-                    </Tooltip>
+                    </div>
                   </CommandItem>
                 ))}
               </ScrollArea>
