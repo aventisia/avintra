@@ -44,18 +44,33 @@ import { TooltipIconButton } from "./tooltip-icon-button";
 
 function FollowUps() {
   const suggestions = useAuiState((s) => s.thread.suggestions);
+  const hasPending = useHasPendingToolCalls();
+
+  const cancelAll = useToolCallCoordinatorStore(
+    useShallow((state) => state.cancelAll),
+  );
 
   // Return null if there are no suggestions,
   if (!suggestions || suggestions.length === 0) return null;
 
   return (
     <AuiIf condition={(s) => !s.thread.isEmpty && !s.thread.isRunning}>
-      <div className="flex gap-2 pb-4">
+      <div className="flex flex-wrap gap-2 pb-4">
         {suggestions.map((s, i) => (
-          <ThreadPrimitive.Suggestion key={i} prompt={s.prompt} send asChild>
+          <ThreadPrimitive.Suggestion
+            key={i}
+            prompt={s.prompt}
+            send
+            asChild
+            onClick={() => {
+              if (hasPending) {
+                cancelAll();
+              }
+            }}
+          >
             <Button
               variant="outline"
-              className=" h-auto  flex-wrap items-start justify-start gap-1 rounded-full italic border bg-background px-3.5 py-2 text-left text-sm transition-colors hover:bg-muted "
+              className=" h-auto  text-wrap items-start justify-start gap-1 rounded-full italic border bg-background px-3.5 py-2 text-left text-sm transition-colors hover:bg-muted "
             >
               {s.prompt}
             </Button>
