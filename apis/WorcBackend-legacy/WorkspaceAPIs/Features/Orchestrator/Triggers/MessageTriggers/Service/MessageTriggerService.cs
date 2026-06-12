@@ -84,6 +84,7 @@ public class MessageTriggerService : IMessageTriggerService
                 // Retrieve tenant-wide or explicitly shared message triggers
                 messageTriggers = await _unitOfWork.TriggerRepo
                     .GetByConditionAsync(w =>
+                        w.CreatedByUserId != _userId &&
                         w.TriggerType == TriggerTypesEnum.MessageTrigger &&
                         (w.IsTenantWideAccess || resourceAccess.Keys.Contains(w.Id)))
                     .Include(i => i.CreatedByUser)
@@ -153,7 +154,7 @@ public class MessageTriggerService : IMessageTriggerService
                 return serviceResponse; // Return early if not found
             }
 
-            var canView = await _resourceShareService.HasAccessAsync(
+            var (canView, accessLevel) = await _resourceShareService.GetResourceAccessAsync(
                 _userId,
                 messageTrigger.Id,
                 ResourceTypeEnum.Trigger,
@@ -274,12 +275,12 @@ public class MessageTriggerService : IMessageTriggerService
                 return serviceResponse;
             }
 
-            // // Assign ownership
-            // if (!await _resourceShareService.AssignOwnerAsync(_userId, newMessageTrigger.Id, ResourceTypeEnum.Trigger))
-            // {
-            //     serviceResponse.Message = "Failed assigning ownership.";
-            //     return serviceResponse;
-            // }
+            // Assign ownership
+            if (!await _resourceShareService.AssignOwnerAsync(_userId, newMessageTrigger.Id, ResourceTypeEnum.Trigger))
+            {
+                serviceResponse.Message = "Failed assigning ownership.";
+                return serviceResponse;
+            }
 
             // Retrieve all agents from the database that are linked to the provided email trigger DTO.
             // Only include agents whose IDs are in emailTriggerDto.Agents and are marked as published.
@@ -365,7 +366,7 @@ public class MessageTriggerService : IMessageTriggerService
                 return serviceResponse; // Early return
             }
 
-            var canEdit = await _resourceShareService.HasAccessAsync(
+            var (canEdit, accessLevel) = await _resourceShareService.GetResourceAccessAsync(
                 _userId,
                 messageTrigger.Id,
                 ResourceTypeEnum.Trigger,
@@ -615,7 +616,7 @@ public class MessageTriggerService : IMessageTriggerService
                 return serviceResponse;
             }
 
-            var canDelete = await _resourceShareService.HasAccessAsync(
+            var (canDelete, accessLevel) = await _resourceShareService.GetResourceAccessAsync(
                 _userId,
                 messageTrigger.Id,
                 ResourceTypeEnum.Trigger,
@@ -742,7 +743,7 @@ public class MessageTriggerService : IMessageTriggerService
 
             foreach (var trigger in messageTriggers)
             {
-                var allowed = await _resourceShareService.HasAccessAsync(
+                var (canDelete, accessLevel) = await _resourceShareService.GetResourceAccessAsync(
                     _userId,
                     trigger.Id,
                     ResourceTypeEnum.Trigger,
@@ -756,7 +757,7 @@ public class MessageTriggerService : IMessageTriggerService
                     }
                 );
 
-                if (!allowed)
+                if (!canDelete)
                 {
                     serviceResponse.Message = "You do not have access to delete one or more message triggers.";
                     return serviceResponse;

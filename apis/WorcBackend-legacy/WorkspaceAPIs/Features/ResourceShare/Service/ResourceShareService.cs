@@ -700,7 +700,7 @@ public class ResourceShareService : IResourceShareService
 
 
     // Validate whether current user has permission to perform an operation on a resource
-    public async Task<bool> HasAccessAsync(
+    public async Task<(bool HasAccess, ResourceAccessTypeEnum? AccessLevel)> GetResourceAccessAsync(
         Guid userId,
         Guid resourceId,
         ResourceTypeEnum resourceType,
@@ -710,31 +710,30 @@ public class ResourceShareService : IResourceShareService
     {
         try
         {
-            // Allow access when user is resource creator
+            // Resource owner has full access
             if (createdByUserId == userId)
             {
-                return true;
+                return (true, ResourceAccessTypeEnum.Owner);
             }
 
-            // Allow access when resource is shared across the tenant
+            // Tenant-wide resources are accessible to all users
             if (isTenantWideAccess)
             {
-                return true;
+                return (true, ResourceAccessTypeEnum.View);
             }
 
-            // Retrieve user's access level for requested resource
+            // Retrieve user's access level for the resource
             var access = await _unitOfWork.ResourceShareRepo
                 .GetByConditionAsync(w =>
                     w.UserId == userId &&
                     w.ResourceId == resourceId &&
                     w.ResourceType == resourceType)
-                .Select(s => s.AccessLevel)
+                .Select(s => (ResourceAccessTypeEnum?)s.AccessLevel)
                 .FirstOrDefaultAsync();
 
-            // Verify user access level matches allowed operation permissions
-            var allowed = accessLevels.Contains(access);
+            // Check whether the access level is sufficient
+            var allowed = access.HasValue && accessLevels.Contains(access.Value);
 
-            // Log unauthorized attempts
             if (!allowed)
             {
                 _logger.LogWarning(
@@ -744,21 +743,19 @@ public class ResourceShareService : IResourceShareService
                     resourceType);
             }
 
-            return allowed;
+            return (allowed, access);
         }
         catch (Exception ex)
         {
-            // Log unexpected validation failures
             _logger.LogError(
                 ex,
                 "Error validating access for User {UserId}, Resource {ResourceId}",
                 userId,
                 resourceId);
 
-            return false;
+            return (false, null);
         }
     }
-
 
     // Retrieve resource identifiers accessible to current user for specific access levels
     public async Task<List<Guid>> GetAccessibleResourceIdsAsync(

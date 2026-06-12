@@ -67,6 +67,7 @@ public class AppSecretService : IAppSecretService
                 // Retrieve tenant-wide and shared app secrets
                 appSecrets = await _unitOfWork.AppSecretRepo
                     .GetByConditionAsync(w =>
+                        w.CreatedByUserId != _userId &&
                         w.IsTenantWideAccess ||
                         resourceAccess.Keys.Contains(w.Id))
                     .OrderByDescending(w => w.CreatedOn)
@@ -235,7 +236,7 @@ public class AppSecretService : IAppSecretService
 
 
             // Validate decrypt/view access
-            var canView = await _resourceShareService.HasAccessAsync(
+            var (canView, accessLevel) = await _resourceShareService.GetResourceAccessAsync(
                 _userId,
                 appSecret.Id,
                 ResourceTypeEnum.KeyStore,
@@ -351,13 +352,13 @@ public class AppSecretService : IAppSecretService
                 return serviceResponse;
             }
 
-            // // Assign ownership
-            // if (!await _resourceShareService.AssignOwnerAsync(_userId, newAppSecret.Id, ResourceTypeEnum.AppSecret))
-            // {
-            //     serviceResponse.Message = "Failed assigning ownership.";
-            //     _logger.LogError("Failed to assign owner access for Credential ID: {AppSecretId}", appSecretDto.Id);
-            //     return serviceResponse;
-            // }
+            // Assign ownership
+            if (!await _resourceShareService.AssignOwnerAsync(_userId, newAppSecret.Id, ResourceTypeEnum.AppSecret))
+            {
+                serviceResponse.Message = "Failed assigning ownership.";
+                _logger.LogError("Failed to assign owner access for Credential ID: {AppSecretId}", appSecretDto.Id);
+                return serviceResponse;
+            }
 
             // Adapt the entity to DTO and return success response
             serviceResponse.Data = newAppSecret.Adapt<AppSecretDto>();
@@ -404,7 +405,7 @@ public class AppSecretService : IAppSecretService
             }
 
             // Validate update access
-            var canEdit = await _resourceShareService.HasAccessAsync(
+            var (canEdit, accessLevel) = await _resourceShareService.GetResourceAccessAsync(
                 _userId,
                 existingAppSecret.Id,
                 ResourceTypeEnum.KeyStore,
@@ -581,7 +582,7 @@ public class AppSecretService : IAppSecretService
             }
 
             // Validate update access
-            var canDelete = await _resourceShareService.HasAccessAsync(
+            var (canDelete, accessLevel) = await _resourceShareService.GetResourceAccessAsync(
                 _userId,
                 appSecret.Id,
                 ResourceTypeEnum.AppSecret,
@@ -658,7 +659,7 @@ public class AppSecretService : IAppSecretService
             }
             foreach (var appSecret in appSecrets)
             {
-                var allowed = await _resourceShareService.HasAccessAsync(
+                var (canDelete, accessLevel) = await _resourceShareService.GetResourceAccessAsync(
                     _userId,
                     appSecret.Id,
                     ResourceTypeEnum.KeyStore,
@@ -672,7 +673,7 @@ public class AppSecretService : IAppSecretService
                     }
                 );
 
-                if (!allowed)
+                if (!canDelete)
                 {
                     serviceResponse.Message = "You do not have access to delete one or more selected credentials.";
                     return serviceResponse;
@@ -735,7 +736,7 @@ public class AppSecretService : IAppSecretService
             }
 
             // Validate view access
-            var canView = await _resourceShareService.HasAccessAsync(
+            var (canView, accessLevel) = await _resourceShareService.GetResourceAccessAsync(
                 _userId,
                 appSecret.Id,
                 ResourceTypeEnum.KeyStore,

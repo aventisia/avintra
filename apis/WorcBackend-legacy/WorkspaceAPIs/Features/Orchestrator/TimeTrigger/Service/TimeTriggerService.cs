@@ -123,13 +123,13 @@ public class TimeTriggerService(
                 return serviceResponse;
             }
 
-            // // Assign ownership of the newly created trigger to current user
-            // if (!await _resourceShareService.AssignOwnerAsync(_userId, newTimeTrigger.Id, ResourceTypeEnum.Trigger))
-            // {
-            //     _logger.LogError("Failed assigning owner permissions for email trigger {TriggerId}.", newTimeTrigger.Id);
-            //     serviceResponse.Message = "Failed assigning ownership.";
-            //     return serviceResponse;
-            // }
+            // Assign ownership of the newly created trigger to current user
+            if (!await _resourceShareService.AssignOwnerAsync(_userId, newTimeTrigger.Id, ResourceTypeEnum.Trigger))
+            {
+                _logger.LogError("Failed assigning owner permissions for email trigger {TriggerId}.", newTimeTrigger.Id);
+                serviceResponse.Message = "Failed assigning ownership.";
+                return serviceResponse;
+            }
 
             // Retrieve all agents from the database that are linked to the provided email trigger DTO.
             // Only include agents whose IDs are in emailTriggerDto.Agents and are marked as published.
@@ -231,7 +231,7 @@ public class TimeTriggerService(
 
 
             // Validate current user has permission to update this trigger
-            var canEdit = await _resourceShareService.HasAccessAsync(
+            var (canEdit, accessLevel) = await _resourceShareService.GetResourceAccessAsync(
                 _userId,
                 trigger.Id,
                 ResourceTypeEnum.Trigger,
@@ -409,7 +409,7 @@ public class TimeTriggerService(
             }
 
             // Validate current user has permission to delete this trigger
-            var canDelete = await _resourceShareService.HasAccessAsync(
+            var (canDelete, accessLevel) = await _resourceShareService.GetResourceAccessAsync(
                 _userId,
                 trigger.Id,
                 ResourceTypeEnum.Trigger,
@@ -510,6 +510,7 @@ public class TimeTriggerService(
                 // Retrieve tenant-wide or explicitly shared triggers
                 timeTriggers = await _unitOfWork.TimeTriggerRepo
                     .GetByConditionAsync(w =>
+                        w.CreatedByUserId != _userId &&
                         w.IsTenantWideAccess ||
                         resourceAccess.Keys.Contains(w.Id)
                     )
@@ -582,7 +583,7 @@ public class TimeTriggerService(
             }
 
             // Verify current user has permission to view this trigger
-            var canView = await _resourceShareService.HasAccessAsync(
+            var (canView, accessLevel) = await _resourceShareService.GetResourceAccessAsync(
                 _userId,
                 timeTrigger.Id,
                 ResourceTypeEnum.Trigger,
@@ -650,7 +651,7 @@ public class TimeTriggerService(
             // Validate delete access for all triggers
             foreach (var trigger in timeTriggers)
             {
-                var allowed = await _resourceShareService.HasAccessAsync(
+                var (canDelete, accessLevel) = await _resourceShareService.GetResourceAccessAsync(
                     _userId,
                     trigger.Id,
                     ResourceTypeEnum.Trigger,
@@ -664,7 +665,7 @@ public class TimeTriggerService(
                     }
                 );
 
-                if (!allowed)
+                if (!canDelete)
                 {
                     _logger.LogInformation("User {UserId} attempted unauthorized bulk deletion.", _userId);
                     serviceResponse.Message = "You do not have access to delete one or more time triggers.";
@@ -730,7 +731,7 @@ public class TimeTriggerService(
             }
 
             // Verify current user has permission to view this trigger
-            var canView = await _resourceShareService.HasAccessAsync(
+            var (canView, accessLevel) = await _resourceShareService.GetResourceAccessAsync(
                 _userId,
                 trigger.Id,
                 ResourceTypeEnum.Trigger,

@@ -76,17 +76,20 @@ public interface IResourceShareService
     Task<ServiceResponse<bool>> DeleteResourceSharesAsync(IEnumerable<Guid> resourceShareIds);
 
     /// <summary>
-    /// Validates whether a user has permission to perform an operation on a resource.
-    /// Grants access automatically when the user is the creator or the resource is configured as tenant-wide access.
+    /// Evaluates a user's access to a resource and returns both the authorization result and the user's effective access level.
+    /// Access is automatically granted when the user is the resource creator or the resource is configured for tenant-wide access.
     /// </summary>
     /// <param name="userId">The user requesting access.</param>
     /// <param name="resourceId">The unique identifier of the resource.</param>
     /// <param name="resourceType">The type of resource being accessed.</param>
     /// <param name="createdByUserId">The identifier of the resource creator.</param>
-    /// <param name="isTenantWideAccess"> Indicates whether the resource is accessible to all users in the tenant. </param>
-    /// <param name="accessLevels"> Allowed access levels required for the operation. </param>
-    /// <returns> <c>true</c> if access is granted; otherwise <c>false</c>. </returns>
-    Task<bool> HasAccessAsync(
+    /// <param name="isTenantWideAccess"> Indicates whether the resource is accessible to all users within the tenant. </param>
+    /// <param name="accessLevels"> The access levels permitted for the requested operation. </param>
+    /// <returns> A tuple containing:
+    /// <para>  <c>HasAccess</c> - Indicates whether the user is authorized to access the resource. </para>
+    /// <para> <c>AccessLevel</c> - The user's effective access level, or <c>null</c> if no explicit access level exists. </para>
+    /// </returns>
+    Task<(bool HasAccess, ResourceAccessTypeEnum? AccessLevel)> GetResourceAccessAsync(
         Guid userId,
         Guid resourceId,
         ResourceTypeEnum resourceType,

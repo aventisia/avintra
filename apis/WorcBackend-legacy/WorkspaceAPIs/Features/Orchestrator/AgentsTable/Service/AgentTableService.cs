@@ -120,6 +120,7 @@ public class AgentTableService : IAgentTableService
                 // - Explicitly shared with the current user
                 flowVersions = await _unitOfWork.FlowVersionRepo
                     .GetByConditionAsync(w =>
+                        w.CreatedByUserId != _userId &&
                         w.IsArchived &&
                         (w.IsTenantWideAccess || resourceAccess.Keys.Contains(w.Id))
                     )

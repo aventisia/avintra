@@ -71,6 +71,7 @@ public class WebhookTriggerService : IWebhookTriggerService
                 // Retrieve tenant-wide or explicitly shared webhook triggers
                 triggers = await _unitOfWork.TriggerRepo
                     .GetByConditionAsync(w =>
+                        w.CreatedByUserId != _userId &&
                         w.TriggerType == TriggerTypesEnum.WebhookTrigger &&
                         (w.IsTenantWideAccess || resourceAccess.Keys.Contains(w.Id)))
                     .Include(i => i.CreatedByUser)
@@ -135,7 +136,7 @@ public class WebhookTriggerService : IWebhookTriggerService
             }
 
             // Validate view permission
-            var canView = await _resourceShareService.HasAccessAsync(
+            var (canView, accessLevel) = await _resourceShareService.GetResourceAccessAsync(
                     _userId,
                     trigger.Id,
                     ResourceTypeEnum.Trigger,
@@ -226,12 +227,12 @@ public class WebhookTriggerService : IWebhookTriggerService
                 return serviceResponse;
             }
 
-            // // Assign ownership
-            // if (!await _resourceShareService.AssignOwnerAsync(_userId, newTrigger.Id, ResourceTypeEnum.Trigger))
-            // {
-            //     serviceResponse.Message = "Failed assigning ownership.";
-            //     return serviceResponse;
-            // }
+            // Assign ownership
+            if (!await _resourceShareService.AssignOwnerAsync(_userId, newTrigger.Id, ResourceTypeEnum.Trigger))
+            {
+                serviceResponse.Message = "Failed assigning ownership.";
+                return serviceResponse;
+            }
 
             // Extract agent ID from the incoming DTO
             var agentId = dto.Agent?.Id;
@@ -316,7 +317,7 @@ public class WebhookTriggerService : IWebhookTriggerService
             }
 
             // Validate edit permission
-            var canEdit = await _resourceShareService.HasAccessAsync(
+            var (canEdit, accessLevel) = await _resourceShareService.GetResourceAccessAsync(
                 _userId,
                 trigger.Id,
                 ResourceTypeEnum.Trigger,
@@ -497,7 +498,7 @@ public class WebhookTriggerService : IWebhookTriggerService
             }
 
             // Validate delete permission
-            var canDelete = await _resourceShareService.HasAccessAsync(
+            var (canDelete, accessLevel) = await _resourceShareService.GetResourceAccessAsync(
                 _userId,
                 trigger.Id,
                 ResourceTypeEnum.Trigger,
@@ -565,7 +566,7 @@ public class WebhookTriggerService : IWebhookTriggerService
 
             foreach (var trigger in triggers)
             {
-                var allowed = await _resourceShareService.HasAccessAsync(
+                var (canDelete, accessLevel) = await _resourceShareService.GetResourceAccessAsync(
                     _userId,
                     trigger.Id,
                     ResourceTypeEnum.Trigger,
@@ -579,7 +580,7 @@ public class WebhookTriggerService : IWebhookTriggerService
                     }
                 );
 
-                if (!allowed)
+                if (!canDelete)
                 {
                     serviceResponse.Message = "You do not have access to delete one or more webhook triggers.";
                     return serviceResponse;
@@ -667,7 +668,7 @@ public class WebhookTriggerService : IWebhookTriggerService
             }
 
             // Validate edit permission
-            var canEdit = await _resourceShareService.HasAccessAsync(
+            var (canEdit, accessLevel) = await _resourceShareService.GetResourceAccessAsync(
                 _userId,
                 trigger.Id,
                 ResourceTypeEnum.Trigger,

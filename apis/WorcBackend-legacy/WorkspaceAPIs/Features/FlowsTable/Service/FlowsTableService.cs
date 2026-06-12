@@ -73,6 +73,7 @@ public class FlowsTableService : IFlowsTableService
                 // Retrieve shared flows
                 flows = await _unitOfWork.FlowRepo
                     .GetByConditionAsync(w =>
+                        w.CreatedByUserId != _userId &&
                         w.IsTenantWideAccess ||
                         resourceAccess.Keys.Contains(w.Id))
                     .OrderByDescending(w => w.CreatedOn)
@@ -198,12 +199,12 @@ public class FlowsTableService : IFlowsTableService
                 return serviceResponse;
             }
 
-            // // Assign creator ownership
-            // if (!await _resourceShareService.AssignOwnerAsync(_userId, newFlow.Id, ResourceTypeEnum.Flow))
-            // {
-            //     serviceResponse.Message = "Failed assigning ownership.";
-            //     return serviceResponse;
-            // }
+            // Assign creator ownership
+            if (!await _resourceShareService.AssignOwnerAsync(_userId, newFlow.Id, ResourceTypeEnum.Flow))
+            {
+                serviceResponse.Message = "Failed assigning ownership.";
+                return serviceResponse;
+            }
 
             // Create a new FlowUserDto to associate the user with the flow
             var flowUserDto = new FlowUserDto()
@@ -288,7 +289,7 @@ public class FlowsTableService : IFlowsTableService
             }
 
             // Validate update permission
-            var canEdit = await _resourceShareService.HasAccessAsync(
+            var (canEdit, accessLevel) = await _resourceShareService.GetResourceAccessAsync(
                 _userId,
                 flow.Id,
                 ResourceTypeEnum.Flow,
@@ -440,7 +441,7 @@ public class FlowsTableService : IFlowsTableService
                 return serviceResponse;
             }
 
-            var canDelete = await _resourceShareService.HasAccessAsync(
+            var (canDelete, accessLevel) = await _resourceShareService.GetResourceAccessAsync(
                 _userId,
                 flow.Id,
                 ResourceTypeEnum.Flow,
@@ -526,7 +527,7 @@ public class FlowsTableService : IFlowsTableService
             // Check if the user is the creator or has required access (Owner/Edit)
             foreach (var flow in flows)
             {
-                var allowed = await _resourceShareService.HasAccessAsync(
+                var (canDelete, accessLevel) = await _resourceShareService.GetResourceAccessAsync(
                     _userId,
                     flow.Id,
                     ResourceTypeEnum.Flow,
@@ -540,7 +541,7 @@ public class FlowsTableService : IFlowsTableService
                     }
                 );
 
-                if (!allowed)
+                if (!canDelete)
                 {
                     serviceResponse.Message = "You do not have access to delete one or more flows.";
                     return serviceResponse;
