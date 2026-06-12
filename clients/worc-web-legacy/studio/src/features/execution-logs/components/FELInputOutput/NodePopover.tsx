@@ -24,7 +24,7 @@ export const NodePopover = () => {
 
   const left = canOpenRight
     ? anchorRect.right + GAP // right side
-    : anchorRect.left - POPOVER_WIDTH - GAP; // left side
+    : anchorRect.left - POPOVER_WIDTH + GAP; // left side
 
   // Keep aligned to trigger, but inside viewport
   const top = Math.max(
