@@ -72,9 +72,9 @@ public class LoadFlowDto
     public string? Description { get; set; }
 
     /// <summary>
-    /// Gets or sets the access type of the user within the flow.
+    /// Gets or sets the permission level granted to the user.
     /// </summary>
-    public ProjectUserAccessEnum? AccessType { get; set; }
+    public ResourceAccessTypeEnum? AccessLevel { get; set; }
 
     /// <summary>
     /// Gets or sets the supported platforms for the flow version as a comma-separated string.

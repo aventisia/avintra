@@ -9,6 +9,7 @@ public class FlowBuilderService : IFlowBuilderService
     private readonly IUnitOfWork _unitOfWork;
     private readonly IUserManagementGuardService _userManagementGuardService;
     private readonly IFlowVersionHistoryService _flowVersionHistoryService;
+    private readonly IResourceShareService _resourceShareService;
     private readonly Guid _userId;
 
     public FlowBuilderService(
@@ -16,7 +17,8 @@ public class FlowBuilderService : IFlowBuilderService
         IUnitOfWork unitOfWork,
         IHttpContextAccessor httpContextAccessor,
         IUserManagementGuardService userManagementGuardService,
-        IFlowVersionHistoryService flowVersionHistoryService)
+        IFlowVersionHistoryService flowVersionHistoryService,
+        IResourceShareService resourceShareService)
     {
         // Set _userId
         _userId = Guid.Parse(httpContextAccessor.HttpContext?.User?.FindFirstValue("uid") ?? Guid.Empty.ToString());
@@ -25,6 +27,7 @@ public class FlowBuilderService : IFlowBuilderService
         _unitOfWork = unitOfWork;
         _userManagementGuardService = userManagementGuardService;
         _flowVersionHistoryService = flowVersionHistoryService;
+        _resourceShareService = resourceShareService;
     }
 
     // Retrieves the flow version record to load when the user opens it in the studio.
@@ -39,27 +42,56 @@ public class FlowBuilderService : IFlowBuilderService
 
         try
         {
+            // Retrieve the flow and ensure it exists
+            var flow = await _unitOfWork.FlowRepo
+                .GetByConditionAsync(w => w.Id == flowId)
+                .SingleOrDefaultAsync();
+
+            if (flow == null)
+            {
+                serviceResponse.Message = "Flow not found.";
+                return serviceResponse;
+            }
+
+            // Validate user's access permissions for viewing the key store
+            var (canView, accessLevel) = await _resourceShareService.GetResourceAccessAsync(
+                _userId,
+                flow.Id,
+                ResourceTypeEnum.Flow,
+                flow.CreatedByUserId,
+                flow.IsTenantWideAccess,
+                new[]
+                {
+                    ResourceAccessTypeEnum.Owner,
+                    ResourceAccessTypeEnum.FullAccess,
+                    ResourceAccessTypeEnum.View,
+                    ResourceAccessTypeEnum.Edit,
+                    ResourceAccessTypeEnum.Delete,
+                });
+
+            if (!canView)
+            {
+                serviceResponse.Message = "You do not have access to view this key store.";
+                return serviceResponse;
+            }
+
             // Attempt to retrieve the latest flow version based on provided conditions
             var flowVersion = await _unitOfWork.FlowVersionRepo
                 .GetByConditionAsync(w =>
                     (!versionId.HasValue || w.Id == versionId) &&
+                    canView &&
                     w.FlowId == flowId &&
                     (
-                        w.CreatedByUserId == _userId ||
-                        (w.Flow.FlowUsers != null && w.Flow.FlowUsers.Any(a => a.UserId == _userId)) ||
+                        w.IsPublished &&
                         (
-                            w.IsPublished &&
-                            (
-                                _userManagementGuardService.HasRole(CustomRolesEnum.OM.ToString()) ||
-                                _userManagementGuardService.HasRole(CustomRolesEnum.TU.ToString())
-                            )
+                            _userManagementGuardService.HasRole(CustomRolesEnum.OM.ToString()) ||
+                            _userManagementGuardService.HasRole(CustomRolesEnum.TU.ToString())
                         )
                     )
                 )
-                .Include(u => u.CreatedByUser)
-                .Include(lm => lm.LastModifiedByUser)
-                .Include(f => f.Flow)
-                    .ThenInclude(i2 => i2.FlowUsers)
+                .Include(i => i.CreatedByUser)
+                .Include(i => i.LastModifiedByUser)
+                .Include(i => i.Flow)
                 .OrderByDescending(o => o.CreatedOn) // Ensure the latest version is retrieved
                 .FirstOrDefaultAsync();
 
@@ -74,16 +106,12 @@ public class FlowBuilderService : IFlowBuilderService
             // Convert the flow version to a LoadFlowDto instance using the Adapt method
             var loadFlowDto = flowVersion.Adapt<LoadFlowDto>();
 
-            // Retrieve the user's access information for the flow, if available
-            var userAccess = flowVersion.Flow?.FlowUsers?.FirstOrDefault(u => u.UserId == _userId);
-
             // Set the user's access type in the LoadFlowDto
             // If the user is the creator of the flow, assign 'Owner' access
             // Otherwise, use the access type from FlowUsers or default to null if not found
-            loadFlowDto.AccessType = flowVersion.Flow.CreatedByUserId == _userId ? ProjectUserAccessEnum.Owner : userAccess?.Type;
+            loadFlowDto.AccessLevel = flow.CreatedByUserId == _userId ? ResourceAccessTypeEnum.Owner : accessLevel;
 
             // Successfully retrieved the flow version, log and return response
-            _logger.LogInformation($"Successfully retrieved flow version for FlowId {flowId}. VersionId: {flowVersion.Id}.");
             serviceResponse.Data = loadFlowDto;
             serviceResponse.StatusCode = 200;
             serviceResponse.Message = "Flow version retrieved successfully.";
@@ -150,7 +178,7 @@ public class FlowBuilderService : IFlowBuilderService
             // Validate: Flow version is already published
             if (flowVersion.IsPublished == true)
                 return serviceResponse.Update(400, "Flow is already published.");
-                
+
             // Validate flow graph for unpublished flow versions
             if (flowVersion.IsPublished == false)
             {
@@ -240,18 +268,46 @@ public class FlowBuilderService : IFlowBuilderService
 
         try
         {
+            // Retrieve the flow and ensure it exists
+            var flow = await _unitOfWork.FlowRepo
+                .GetByConditionAsync(w => w.Id == flowSilentUpdateDto.Id)
+                .SingleOrDefaultAsync();
+
+            if (flow == null)
+            {
+                serviceResponse.Message = "Flow not found.";
+                return serviceResponse;
+            }
+
+            // Validate user's access permissions for update the flow
+            var (canEidt, accessLevel) = await _resourceShareService.GetResourceAccessAsync(
+                _userId,
+                flow.Id,
+                ResourceTypeEnum.Flow,
+                flow.CreatedByUserId,
+                flow.IsTenantWideAccess,
+                new[]
+                {
+                    ResourceAccessTypeEnum.Owner,
+                    ResourceAccessTypeEnum.FullAccess,
+                    ResourceAccessTypeEnum.View,
+                    ResourceAccessTypeEnum.Edit,
+                    ResourceAccessTypeEnum.Delete,
+                });
+
+            if (!canEidt)
+            {
+                serviceResponse.Message = "You do not have access to view this key store.";
+                return serviceResponse;
+            }
+
             // Validate that the flow version exists and is owned by the current user
             var flowVersion = await _unitOfWork.FlowVersionRepo
                 .GetByConditionAsync(w =>
                     w.Id == flowSilentUpdateDto.VersionId &&
-                    w.FlowId == flowSilentUpdateDto.Id &&
-                    (
-                        w.CreatedByUserId == _userId ||
-                        (w.Flow.FlowUsers != null && w.Flow.FlowUsers.Any(a => a.UserId == _userId))
-                    )
+                    w.FlowId == flowSilentUpdateDto.Id
                 )
                 .Include(i => i.Flow)
-                .ThenInclude(i2 => i2.FlowUsers)
                 .OrderByDescending(a => a.CreatedOn)
                 .SingleOrDefaultAsync();
 
@@ -263,20 +319,6 @@ public class FlowBuilderService : IFlowBuilderService
                 return serviceResponse;
             }
 
-            // Check if the user is the creator or has the required access (Owner/Edit)
-            var flowUserAccess = flowVersion.Flow.FlowUsers?.FirstOrDefault(w =>
-                w.FlowId == flowVersion.Flow.Id &&
-                w.UserId == _userId &&
-                (w.Type == ProjectUserAccessEnum.Owner || w.Type == ProjectUserAccessEnum.Edit)
-            );
-
-            // Allow access if the user is the creator, else check if they have access (Owner/Edit)
-            if (flowVersion.Flow.CreatedByUserId != _userId && flowUserAccess == null)
-            {
-                _logger.LogWarning($"User {_userId} is not authorized to modify this flow.");
-                serviceResponse.Message = "You don't have access to modify this flow.";
-                return serviceResponse;
-            }
             flowSilentUpdateDto.VersionId = flowVersion.Id;
 
 
