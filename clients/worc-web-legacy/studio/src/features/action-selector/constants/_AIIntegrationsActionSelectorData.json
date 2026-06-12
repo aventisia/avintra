@@ -38,7 +38,6 @@
             "label": "Chat AI",
             "description": "Manages multi-turn interactions with human-like understanding and memory to guide users through complex tasks.",
             "docsLink": null,
-            "doNotRenderIf": ["production"],
             "icon": "",
             "img": "/assets/ConversationModel.svg",
             "supportedPlatforms": ["cloud", "windows"]
