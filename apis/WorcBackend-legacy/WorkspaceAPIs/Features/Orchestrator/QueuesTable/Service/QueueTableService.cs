@@ -110,8 +110,11 @@ public class QueueTableService : IQueueTableService
                 queues = await _unitOfWork.QueueRepo
                     .GetByConditionAsync(w =>
                         w.CreatedByUserId != _userId &&
-                        w.IsTenantWideAccess ||
-                        resourceAccess.Keys.Contains(w.Id))
+                        (
+                            w.IsTenantWideAccess ||
+                            resourceAccess.Keys.Contains(w.Id)
+                        )
+                    )
                     .Include(i => i.QueueTransactions)
                     .Include(i => i.CreatedByUser)
                     .OrderByDescending(o => o.CreatedOn)

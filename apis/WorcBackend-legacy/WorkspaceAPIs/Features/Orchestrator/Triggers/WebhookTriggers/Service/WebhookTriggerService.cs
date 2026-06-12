@@ -72,8 +72,11 @@ public class WebhookTriggerService : IWebhookTriggerService
                 triggers = await _unitOfWork.TriggerRepo
                     .GetByConditionAsync(w =>
                         w.CreatedByUserId != _userId &&
-                        w.TriggerType == TriggerTypesEnum.WebhookTrigger &&
-                        (w.IsTenantWideAccess || resourceAccess.Keys.Contains(w.Id)))
+                        (
+                            w.IsTenantWideAccess ||
+                            resourceAccess.Keys.Contains(w.Id)
+                        )
+                    )
                     .Include(i => i.CreatedByUser)
                     .Include(i => i.LastModifiedByUser)
                     .Include(i => i.TriggerFlowVersions)

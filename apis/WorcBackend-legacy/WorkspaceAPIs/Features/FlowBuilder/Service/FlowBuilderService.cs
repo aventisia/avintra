@@ -79,10 +79,9 @@ public class FlowBuilderService : IFlowBuilderService
             var flowVersion = await _unitOfWork.FlowVersionRepo
                 .GetByConditionAsync(w =>
                     (!versionId.HasValue || w.Id == versionId) &&
-                    canView &&
                     w.FlowId == flowId &&
                     (
-                        w.IsPublished &&
+                        !w.IsPublished ||
                         (
                             _userManagementGuardService.HasRole(CustomRolesEnum.OM.ToString()) ||
                             _userManagementGuardService.HasRole(CustomRolesEnum.TU.ToString())
