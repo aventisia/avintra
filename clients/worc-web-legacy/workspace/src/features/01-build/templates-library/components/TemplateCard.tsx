@@ -120,10 +120,10 @@ export const TemplateCard = ({ template }: TemplateCardProps) => {
           </div>
 
           {/* Usage count with clipboard copy button */}
-          <div className="flex items-center gap-2 text-sm text-muted-foreground">
+        {template.type!=="Prompt" &&  <div className="flex items-center gap-2 text-sm text-muted-foreground">
             <Copy className="h-4 w-4" />
             <p>{template.usagesCount}</p>
-          </div>
+          </div>}
         </CardFooter>
       </div>
     </Card>
