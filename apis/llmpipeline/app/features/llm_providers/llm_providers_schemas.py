@@ -39,7 +39,7 @@ class LLMRequest(BaseModel):
     top_p: Optional[float] = 1.0
     stream: Optional[bool] = False,
     is_chat_agent: Optional[bool] = False   # Whether the request originates from a chat agent
-    is_dynamic_action: Optional[bool] = False   # Indicates that the request was triggered by a dynamic action/workflow.
+    generate_dynamic_actions: Optional[bool] = False  # Indicates whether the request originated from a dynamic action or workflow.
     ref_type: str # Type of the reference (e.g., "Agent", "Workflow")
     ref_id: str # Identifier to link back to Agent/Workflow
     ref_name: str # Name of the reference (e.g., name of the Agent/Workflow)
@@ -52,7 +52,7 @@ class LLMRequest(BaseModel):
 class ChatAgentResponse(BaseModel):
     text: str    # Message to display
     tools: Optional[List[dict]] = []    # Tool actions
-    recommended_actions: Optional[List[dict]] = []  # User action suggestions
+    recommended_actions: Optional[List[str]] = []  # User action suggestions
 
 # Chunk response schema for streaming LLM response
 class LLMChunkResponse(BaseModel):
