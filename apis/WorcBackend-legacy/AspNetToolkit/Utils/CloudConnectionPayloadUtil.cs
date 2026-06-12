@@ -2,66 +2,121 @@ namespace AspNetToolkit.Utils;
 
 public static class CloudConnectionPayloadUtil
 {
-    /// <summary>
-    /// Safely retrieves a string value from the payload dictionary.
-    /// Returns empty string if the key doesn't exist or value is null.
-    /// </summary>
-    public static string GetValue(Dictionary<string, object> payload, string key)
+    // Retrieves a value from the payload using a case-insensitive key lookup.
+    private static object? GetPayloadValue(
+        Dictionary<string, object>? payload,
+        string key)
     {
-        if (payload == null) return string.Empty;
-        return payload.ContainsKey(key) ? payload[key]?.ToString()?.Trim() ?? string.Empty : string.Empty;
+        // Validate input before attempting any lookup.
+        if (payload == null || string.IsNullOrWhiteSpace(key))
+            return null;
+
+        // Fast path: works when the dictionary was created using
+        // StringComparer.OrdinalIgnoreCase.
+        if (payload.TryGetValue(key, out var value))
+            return value;
+
+        // Fallback: perform a case-insensitive search for dictionaries
+        // that were created with the default case-sensitive comparer.
+        var match = payload.FirstOrDefault(
+            f => string.Equals(
+                f.Key,
+                key,
+                StringComparison.CurrentCultureIgnoreCase));
+
+        // Return the matched value when found; otherwise null.
+        return string.IsNullOrEmpty(match.Key)
+            ? null
+            : match.Value;
     }
 
-    /// <summary>
-    /// Safely retrieves a boolean value from the payload dictionary.
-    /// Returns the default value if the key doesn't exist or parsing fails.
-    /// </summary>
-    public static bool GetBool(Dictionary<string, object> payload, string key, bool defaultValue = false)
+    // Retrieves a string value from the payload using a case-insensitive key lookup.
+    public static string GetValue(
+        Dictionary<string, object>? payload,
+        string key)
     {
-        if (payload == null) return defaultValue;
-        return payload.ContainsKey(key) && bool.TryParse(payload[key]?.ToString(), out var b) ? b : defaultValue;
+        // Convert the value to a string and remove leading/trailing spaces.
+        // Return an empty string if the value is missing or null.
+        return GetPayloadValue(payload, key)?
+            .ToString()?
+            .Trim() ?? string.Empty;
     }
 
-    /// <summary>
-    /// Safely retrieves an integer value from the payload dictionary.
-    /// Returns the default value if the key doesn't exist or parsing fails.
-    /// </summary>
-    public static int GetInt(Dictionary<string, object> payload, string key, int defaultValue = 0)
+    // Retrieves a boolean value from the payload using a case-insensitive key lookup.
+    public static bool GetBool(
+        Dictionary<string, object>? payload,
+        string key,
+        bool defaultValue = false)
     {
-        if (payload == null) return defaultValue;
-        return payload.ContainsKey(key) && int.TryParse(payload[key]?.ToString(), out var i) ? i : defaultValue;
+        // Attempt to parse the value as a boolean. If parsing fails, return the supplied default.
+        return bool.TryParse(
+            GetPayloadValue(payload, key)?.ToString(),
+            out var value)
+            ? value
+            : defaultValue;
     }
 
-    /// <summary>
-    /// Appends a query parameter to a URL, ensuring proper formatting.
-    /// </summary>
-    /// <param name="url">The base URL.</param>
-    /// <param name="key">The key of the query parameter.</param>
-    /// <param name="value">The value of the query parameter.</param>
-    /// <returns>The URL with the appended query parameter.</returns>
-    public static string AppendQueryParameter(string url, string key, string value)
+    // Retrieves an integer value from the payload using a case-insensitive key lookup.
+    public static int GetInt(
+        Dictionary<string, object>? payload,
+        string key,
+        int defaultValue = 0)
     {
-        var queryParam = $"{Uri.EscapeDataString(key)}={Uri.EscapeDataString(value)}";
+        // Attempt to parse the value as an integer. If parsing fails, return the supplied default.
+        return int.TryParse(
+            GetPayloadValue(payload, key)?.ToString(),
+            out var value)
+            ? value
+            : defaultValue;
+    }
 
-        return url.Contains("?")
+    // Retrieves a long value from the payload using a case-insensitive key lookup.
+    public static long GetLong(
+        Dictionary<string, object>? payload,
+        string key,
+        long defaultValue = 0)
+    {
+        // Attempt to parse the value as a long integer.
+        // If parsing fails, return the supplied default.
+        return long.TryParse(
+            GetPayloadValue(payload, key)?.ToString(),
+            out var value)
+            ? value
+            : defaultValue;
+    }
+
+    // Retrieves a strongly typed list from the payload using a case-insensitive key lookup.
+    public static List<T> GetList<T>(
+        Dictionary<string, object>? payload,
+        string key)
+    {
+        // Retrieve the raw payload value.
+        var value = GetPayloadValue(payload, key);
+
+        // Convert to a strongly typed list when possible.
+        // Otherwise return an empty collection.
+        return value is IEnumerable<T> items
+            ? items.ToList()
+            : new List<T>();
+    }
+
+    // Appends a query string parameter to the specified URL while preserving any existing query string parameters.
+    public static string AppendQueryParameter(
+        string url,
+        string key,
+        string value)
+    {
+        // Ensure required arguments are provided.
+        ArgumentException.ThrowIfNullOrWhiteSpace(url);
+        ArgumentException.ThrowIfNullOrWhiteSpace(key);
+
+        // URL-encode both the parameter name and value to ensure special characters are handled correctly.
+        var queryParam =
+            $"{Uri.EscapeDataString(key)}={Uri.EscapeDataString(value ?? string.Empty)}";
+
+        // Preserve existing query parameters if present.
+        return url.Contains('?', StringComparison.Ordinal)
             ? $"{url}&{queryParam}"
             : $"{url}?{queryParam}";
-    }
-
-    /// <summary>
-    /// Safely retrieves a list of values from the payload dictionary.
-    /// Returns an empty list if the key doesn't exist or if the value is not a valid list.
-    /// </summary>
-    public static List<T> GetList<T>(Dictionary<string, object> payload, string key)
-    {
-        if (payload == null || !payload.ContainsKey(key)) return new List<T>();
-
-        // Try to cast the value to a list of type T, return empty list if not successful
-        if (payload[key] is List<object> listObj)
-        {
-            return listObj.Cast<T>().ToList();
-        }
-
-        return new List<T>();
     }
 }
