@@ -121,8 +121,10 @@ public class AgentTableService : IAgentTableService
                 flowVersions = await _unitOfWork.FlowVersionRepo
                     .GetByConditionAsync(w =>
                         w.CreatedByUserId != _userId &&
-                        w.IsArchived &&
-                        (w.IsTenantWideAccess || resourceAccess.Keys.Contains(w.Id))
+                        (
+                            w.IsTenantWideAccess ||
+                            resourceAccess.Keys.Contains(w.Id)
+                        )
                     )
                     .OrderByDescending(w => w.CreatedOn)
                     .Include(i => i.Flow)

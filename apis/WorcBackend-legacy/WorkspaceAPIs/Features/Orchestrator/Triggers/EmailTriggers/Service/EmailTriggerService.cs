@@ -88,8 +88,11 @@ public class EmailTriggerService : IEmailTriggerService
                 emailTriggers = await _unitOfWork.TriggerRepo
                     .GetByConditionAsync(w =>
                         w.CreatedByUserId != _userId &&
-                        w.TriggerType == TriggerTypesEnum.EmailTrigger &&
-                        (w.IsTenantWideAccess || resourceAccess.Keys.Contains(w.Id)))
+                        (
+                            w.IsTenantWideAccess ||
+                            resourceAccess.Keys.Contains(w.Id)
+                        )
+                    )
                     .Include(i => i.CreatedByUser)
                     .Include(i => i.LastModifiedByUser)
                     .Include(i => i.TriggerFlowVersions)

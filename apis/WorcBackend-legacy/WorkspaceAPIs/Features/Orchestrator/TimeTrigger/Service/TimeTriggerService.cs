@@ -511,8 +511,10 @@ public class TimeTriggerService(
                 timeTriggers = await _unitOfWork.TimeTriggerRepo
                     .GetByConditionAsync(w =>
                         w.CreatedByUserId != _userId &&
-                        w.IsTenantWideAccess ||
-                        resourceAccess.Keys.Contains(w.Id)
+                        (
+                            w.IsTenantWideAccess ||
+                            resourceAccess.Keys.Contains(w.Id)
+                        )
                     )
                     .Include(i => i.CreatedByUser)
                     .Include(i => i.LastModifiedByUser)

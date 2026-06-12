@@ -75,8 +75,10 @@ public class KnowledgeBaseService : IKnowledgeBaseService
                 knowledgeBases = await _unitOfWork.KnowledgeBaseRepo
                     .GetByConditionAsync(w =>
                         w.CreatedByUserId != _userId &&
-                        w.IsTenantWideAccess ||
-                        resourceAccess.Keys.Contains(w.Id)
+                        (
+                            w.IsTenantWideAccess ||
+                            resourceAccess.Keys.Contains(w.Id)
+                        )
                     )
                     .OrderByDescending(o => o.CreatedOn)
                     .Include(i => i.CreatedByUser)

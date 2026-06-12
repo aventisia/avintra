@@ -74,8 +74,11 @@ public class FlowsTableService : IFlowsTableService
                 flows = await _unitOfWork.FlowRepo
                     .GetByConditionAsync(w =>
                         w.CreatedByUserId != _userId &&
-                        w.IsTenantWideAccess ||
-                        resourceAccess.Keys.Contains(w.Id))
+                        (
+                            w.IsTenantWideAccess ||
+                            resourceAccess.Keys.Contains(w.Id)
+                        )
+                    )
                     .OrderByDescending(w => w.CreatedOn)
                     .Include(i => i.FlowComments)
                     .Include(i => i.FlowVersions)

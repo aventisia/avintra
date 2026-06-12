@@ -68,8 +68,11 @@ public class AppSecretService : IAppSecretService
                 appSecrets = await _unitOfWork.AppSecretRepo
                     .GetByConditionAsync(w =>
                         w.CreatedByUserId != _userId &&
-                        w.IsTenantWideAccess ||
-                        resourceAccess.Keys.Contains(w.Id))
+                        (
+                            w.IsTenantWideAccess ||
+                            resourceAccess.Keys.Contains(w.Id)
+                        )
+                    )
                     .OrderByDescending(w => w.CreatedOn)
                     .Include(i => i.CreatedByUser)
                     .Include(i => i.LastModifiedByUser)
