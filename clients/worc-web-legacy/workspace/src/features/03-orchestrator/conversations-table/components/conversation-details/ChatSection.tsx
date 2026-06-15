@@ -1,5 +1,5 @@
-import { AvPlatformAssistantUI } from "@/features/04-assist/my-chats/assistant-ui";
 import { AgentIcon } from "@/features/04-assist/my-chats/components/chat-agents-list/AgentIcon";
+import { AvPlatformAssistantUI } from "@/react-toolkit/features/av-platform-assistant-ui/components/AvPlatformAssistantUI";
 
 import { ThreadMessageLike } from "@assistant-ui/react";
 import { Badge } from "@aventisia/ui/badge";
@@ -33,7 +33,11 @@ export default function ChatSection({ data }: { data: AdminConversationDto }) {
       </div>
 
       <div className="h-[calc(100%-4rem)] w-full">
-        <AvPlatformAssistantUI readOnly initialMessages={messages} />
+        <AvPlatformAssistantUI
+          flowVersionId=""
+          readOnly={true}
+          initialMessages={messages}
+        />
       </div>
     </div>
   );

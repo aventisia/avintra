@@ -89,14 +89,14 @@ export function ChatAgentListItem({
 
           <div className="flex-1 min-w-0">
             <div className="flex items-center gap-2">
-              <span
+              <p
                 className={cn(
-                  "text-sm font-semibold",
+                  "text-sm font-semibold truncate ",
                   isSelected ? "text-primary" : "text-gray-800", // Text color reacts to isSelected
                 )}
               >
                 {agent.name}
-              </span>
+              </p>
               <Badge className="px-2 py-0 rounded-full text-2xs bg-slate-200 text-secondary font-medium">
                 v{agent.versionNumber}
               </Badge>
