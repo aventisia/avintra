@@ -156,60 +156,84 @@ namespace CodeActivitiesLibrary.AppIntegrations.CloudConnectorsActivities
             }
         }
 
-        private List<object> FormatFilesList(List<string> filesList)
+        /// <summary>
+        /// Formats a list of file references into a normalized list of strings.
+        /// Supported inputs:
+        /// - Data URLs (returned as-is)
+        /// - HTTP/HTTPS URLs (returned as-is)
+        /// - Raw Base64 strings (converted to Data URLs)
+        /// - Local file paths (read and converted to Data URLs)
+        /// </summary>
+        private List<string> FormatFilesList(List<string> filesList)
         {
-            // If no files provided, return null
+            // Return empty list if no files were provided
             if (filesList == null || filesList.Count == 0)
-                return null;
+                return new List<string>();
 
-            // If file is remote file with http/https, return as is
-            if (filesList.All(f => f.StartsWith("http://") || f.StartsWith("https://")))
-                return filesList.Cast<object>().ToList();
+            var result = new List<string>();
 
-            var base64Files = new List<object>();
-            foreach (var filePathOrBase64 in filesList)
+            foreach (var item in filesList)
             {
-                // If string is already base64, use it directly
-                if (IsBase64String(filePathOrBase64))
+                // Skip null or empty values
+                if (string.IsNullOrWhiteSpace(item))
+                    continue;
+
+                // Remove wrapping brackets/quotes if present
+                var value = item.Trim().Trim('[', ']', '"');
+
+                // Already a Data URL, no processing required
+                if (value.StartsWith("data:", StringComparison.OrdinalIgnoreCase))
                 {
-                    base64Files.Add(filePathOrBase64);
+                    result.Add(value);
                     continue;
                 }
 
-                // Otherwise, treat as file path - validate file existence
-                var sanitizedPath = filePathOrBase64.Trim('[').Trim(']').Trim('"').Trim();
-                if (!File.Exists(sanitizedPath))
+                // Public HTTP/HTTPS URL, return as-is
+                if (Uri.TryCreate(value, UriKind.Absolute, out var uri) &&
+                    (uri.Scheme == Uri.UriSchemeHttp || uri.Scheme == Uri.UriSchemeHttps))
+                {
+                    result.Add(value);
+                    continue;
+                }
+
+                // Raw Base64 content, convert to a generic Data URL
+                if (IsBase64String(value))
+                {
+                    result.Add($"data:application/octet-stream;base64,{value}");
+                    continue;
+                }
+
+                // Skip invalid file paths
+                if (!File.Exists(value))
                     continue;
 
-                // Read file and convert to base64
-                var fileBytes = File.ReadAllBytes(sanitizedPath);
+                // Read local file and convert to Base64 Data URL
+                var mimeType = GetMimeType(Path.GetExtension(value));
+                var fileBytes = File.ReadAllBytes(value);
                 var fileBase64 = Convert.ToBase64String(fileBytes);
 
-                // Add to list
-                base64Files.Add(new
-                {
-                    mime_type = GetMimeType(Path.GetExtension(sanitizedPath)),
-                    encoded_content = fileBase64
-                });
+                result.Add($"data:{mimeType};base64,{fileBase64}");
             }
-            return base64Files;
+
+            return result;
         }
 
+        /// <summary>
+        /// Determines whether the supplied string is a valid Base64 string.
+        /// </summary>
         private static bool IsBase64String(string str)
         {
             if (string.IsNullOrWhiteSpace(str))
                 return false;
 
-            // Remove whitespace
             str = str.Trim();
 
-            // Base64 string length must be a multiple of 4
+            // Base64 length must be divisible by 4
             if (str.Length % 4 != 0)
                 return false;
 
             try
             {
-                // Try to convert from base64
                 Convert.FromBase64String(str);
                 return true;
             }
@@ -219,9 +243,12 @@ namespace CodeActivitiesLibrary.AppIntegrations.CloudConnectorsActivities
             }
         }
 
+        /// <summary>
+        /// Returns the MIME type for a file extension. Falls back to application/octet-stream for unknown types.
+        /// </summary>
         private static string GetMimeType(string fileExtension)
         {
-            switch (fileExtension.ToLower())
+            switch (fileExtension.ToLowerInvariant())
             {
                 case ".txt": return "text/plain";
                 case ".pdf": return "application/pdf";
@@ -231,23 +258,29 @@ namespace CodeActivitiesLibrary.AppIntegrations.CloudConnectorsActivities
                 case ".xlsx": return "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet";
                 case ".ppt": return "application/vnd.ms-powerpoint";
                 case ".pptx": return "application/vnd.openxmlformats-officedocument.presentationml.presentation";
+
                 case ".png": return "image/png";
                 case ".jpg":
                 case ".jpeg": return "image/jpeg";
                 case ".gif": return "image/gif";
                 case ".bmp": return "image/bmp";
-                case ".tiff":
-                case ".tif": return "image/tiff";
+                case ".tif":
+                case ".tiff": return "image/tiff";
+
                 case ".mp4": return "video/mp4";
                 case ".webm": return "video/webm";
+
                 case ".mp3": return "audio/mpeg";
                 case ".wav": return "audio/wav";
                 case ".ogg": return "audio/ogg";
+
                 case ".zip": return "application/zip";
                 case ".rar": return "application/x-rar-compressed";
+
                 case ".csv": return "text/csv";
                 case ".json": return "application/json";
                 case ".xml": return "application/xml";
+
                 default: return "application/octet-stream";
             }
         }
