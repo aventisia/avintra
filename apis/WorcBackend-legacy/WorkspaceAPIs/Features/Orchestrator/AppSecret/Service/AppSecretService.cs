@@ -242,7 +242,7 @@ public class AppSecretService : IAppSecretService
             var (canView, accessLevel) = await _resourceShareService.GetResourceAccessAsync(
                 _userId,
                 appSecret.Id,
-                ResourceTypeEnum.KeyStore,
+                ResourceTypeEnum.AppSecret,
                 appSecret.CreatedByUserId,
                 appSecret.IsTenantWideAccess,
                 new[]
@@ -411,7 +411,7 @@ public class AppSecretService : IAppSecretService
             var (canEdit, accessLevel) = await _resourceShareService.GetResourceAccessAsync(
                 _userId,
                 existingAppSecret.Id,
-                ResourceTypeEnum.KeyStore,
+                ResourceTypeEnum.AppSecret,
                 existingAppSecret.CreatedByUserId,
                 false,
                 new[]
@@ -665,7 +665,7 @@ public class AppSecretService : IAppSecretService
                 var (canDelete, accessLevel) = await _resourceShareService.GetResourceAccessAsync(
                     _userId,
                     appSecret.Id,
-                    ResourceTypeEnum.KeyStore,
+                    ResourceTypeEnum.AppSecret,
                     appSecret.CreatedByUserId,
                     false,
                     new[]
@@ -742,7 +742,7 @@ public class AppSecretService : IAppSecretService
             var (canView, accessLevel) = await _resourceShareService.GetResourceAccessAsync(
                 _userId,
                 appSecret.Id,
-                ResourceTypeEnum.KeyStore,
+                ResourceTypeEnum.AppSecret,
                 appSecret.CreatedByUserId,
                 appSecret.IsTenantWideAccess,
                 new[]
