@@ -1,4 +1,4 @@
-import { LLMToolsOutputDto } from "../../assistant-ui/dtos/llm-response.dto";
+import { LLMToolsOutputDto } from "../../av-platform-assistant-ui/dtos/execute-flow-response-dto";
 
 type FieldType = "text" | "number" | "switch";
 
@@ -31,9 +31,7 @@ function getFieldType(value: unknown): FieldType {
   }
 }
 
-export function createPayloadFields(
-  data: LLMToolsOutputDto[],
-): PayloadField[] {
+export function createPayloadFields(data: LLMToolsOutputDto[]): PayloadField[] {
   return data.flatMap((item) => {
     const payload = item.output?.payload;
 

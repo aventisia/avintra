@@ -1,17 +1,18 @@
 import { CustomEdgeTypeObj } from "@/constants/custom-edge-type-obj";
 import { CustomNodeTypeObj } from "@/constants/custom-node-type-obj";
 import { defaultEdgeOptions } from "@/constants/default-edge-options";
-import { AvPlatformAssistantUI } from "@/features/assistant-ui";
 import { useHistoryTracker } from "@/hooks/useHistoryTracker";
 import { useTrackSelection } from "@/hooks/useTrackSelection";
 import { useUndoRedoShortcuts } from "@/hooks/useUndoRedoShortcuts";
 import { FlowTypesEnum } from "@/react-toolkit/enums/flow-types-enum";
+import { AvPlatformAssistantUI } from "@/react-toolkit/features/av-platform-assistant-ui/components/AvPlatformAssistantUI";
 import {
   ResizableHandle,
   ResizablePanel,
   ResizablePanelGroup,
 } from "@/react-toolkit/ui/resizable";
 import { useContextMenuActionsStore } from "@/stores/context-menu-actions-store";
+import { useCurrentFlowStore } from "@/stores/current-flow-store";
 import { useReactFlowExtStore } from "@/stores/react-flow-ext-store";
 
 import { LoadingSpinner } from "@aventisia/ui";
@@ -69,6 +70,13 @@ export const ReactFlowExt = () => {
       setViewport: state.setViewport,
       flowType: state.flowType,
       isTestChatOpen: state.isTestChatOpen,
+    })),
+  );
+
+  // Get global store state and actions
+  const { currentFlow } = useCurrentFlowStore(
+    useShallow((state) => ({
+      currentFlow: state.currentFlow,
     })),
   );
 
@@ -243,7 +251,10 @@ export const ReactFlowExt = () => {
         <>
           <ResizableHandle withHandle className="bg-slate-300" />
           <ResizablePanel minSize={"30%"} defaultSize="35%">
-            <AvPlatformAssistantUI />
+            <AvPlatformAssistantUI
+              flowVersionId={currentFlow.versionId}
+              mode="temporary"
+            />
           </ResizablePanel>
         </>
       )}

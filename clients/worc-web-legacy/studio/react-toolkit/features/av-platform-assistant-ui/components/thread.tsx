@@ -1,9 +1,3 @@
-import ToolsCall from "@/features/tool-widget/components/ToolsCall";
-import {
-  useHasPendingToolCalls,
-  useToolCallCoordinatorStore,
-} from "@/features/tool-widget/store/tool-call-store";
-
 import {
   ActionBarMorePrimitive,
   ActionBarPrimitive,
@@ -34,6 +28,13 @@ import {
 import type { FC } from "react";
 import { useShallow } from "zustand/react/shallow";
 
+import ToolsCall from "../../tool-widget/components/ToolsCall";
+import {
+  useHasPendingToolCalls,
+  useToolCallCoordinatorStore,
+} from "../../tool-widget/store/tool-call-store";
+import { useThreadConfigStore } from "../stores/assitant-ui-store";
+import Archived from "./Archived";
 import {
   ComposerAddAttachment,
   ComposerAttachments,
@@ -81,23 +82,37 @@ function FollowUps() {
   );
 }
 
-export const Thread: FC = () => {
+export const Thread = ({
+  title,
+  description,
+}: {
+  title?: string;
+  description?: string;
+}) => {
+  const { readOnly, archived } = useThreadConfigStore();
+  const isDisabled = readOnly || archived;
+
   return (
     <ThreadPrimitive.Root
       className="aui-root aui-thread-root flex h-full flex-col bg-background"
       style={{
-        ["--thread-max-width" as string]: "44rem",
-        ["--composer-radius" as string]: "24px",
+        ["--thread-max-width" as string]: "60rem",
+        ["--composer-radius" as string]: "0.5rem",
         ["--composer-padding" as string]: "10px",
       }}
     >
       <ThreadPrimitive.Viewport
         turnAnchor="top"
+        scrollToBottomOnRunStart
+        scrollToBottomOnThreadSwitch
+        scrollToBottomOnInitialize
         className="aui-thread-viewport relative flex flex-1 flex-col overflow-x-auto overflow-y-scroll scroll-smooth px-4 pt-4"
       >
-        <AuiIf condition={(s) => s.thread.isEmpty}>
-          <ThreadWelcome />
-        </AuiIf>
+        {!isDisabled && (
+          <AuiIf condition={(s) => s.thread.isEmpty}>
+            <ThreadWelcome title={title} description={description} />
+          </AuiIf>
+        )}
 
         <ThreadPrimitive.Messages>
           {() => <ThreadMessage />}
@@ -107,17 +122,34 @@ export const Thread: FC = () => {
 
         <ThreadPrimitive.ViewportFooter className="aui-thread-viewport-footer sticky bottom-0 mx-auto mt-auto flex w-full max-w-[var(--thread-max-width)] flex-col gap-4 overflow-visible rounded-t-[var(--composer-radius)] bg-background pb-4 md:pb-6">
           <ThreadScrollToBottom />
-          <Composer />
+          {isDisabled ? (
+            readOnly ? (
+              <ReadOnlyBanner />
+            ) : (
+              <Archived />
+            )
+          ) : (
+            <Composer />
+          )}
         </ThreadPrimitive.ViewportFooter>
       </ThreadPrimitive.Viewport>
     </ThreadPrimitive.Root>
   );
 };
 
+const ReadOnlyBanner: FC = () => (
+  <div className="flex w-full items-center justify-center rounded-lg border  bg-muted px-4 py-3 text-muted-foreground text-sm">
+    This conversation is in read-only mode.
+  </div>
+);
+
 const ThreadMessage: FC = () => {
+  const { readOnly, archived } = useThreadConfigStore();
+  const isDisabled = readOnly || archived;
   const role = useAuiState((s) => s.message.role);
   const isEditing = useAuiState((s) => s.message.composer.isEditing);
-  if (isEditing) return <EditComposer />;
+
+  if (isEditing && !isDisabled) return <EditComposer />;
   if (role === "user") return <UserMessage />;
   return <AssistantMessage />;
 };
@@ -136,16 +168,22 @@ const ThreadScrollToBottom: FC = () => {
   );
 };
 
-const ThreadWelcome: FC = () => {
+const ThreadWelcome = ({
+  title,
+  description,
+}: {
+  title?: string;
+  description?: string;
+}) => {
   return (
     <div className="aui-thread-welcome-root mx-auto my-auto flex w-full max-w-[var(--thread-max-width)] grow flex-col">
       <div className="aui-thread-welcome-center flex w-full grow flex-col items-center justify-center">
-        <div className="aui-thread-welcome-message gap-1 flex size-full flex-col justify-center px-4">
-          <h1 className="aui-thread-welcome-message-inner fade-in slide-in-from-bottom-1 animate-in fill-mode-both font-semibold text-xl duration-200">
-            Test agent
+        <div className="aui-thread-welcome-message gap-1 flex size-full flex-col justify-center items-center px-4">
+          <h1 className="aui-thread-welcome-message-inner fade-in slide-in-from-bottom-1 animate-in fill-mode-both font-semibold text-xl duration-200 capitalize">
+            {title ?? "Hello"}
           </h1>
           <p className="aui-thread-welcome-message-inner fade-in slide-in-from-bottom-1 animate-in fill-mode-both text-muted-foreground text-base delay-75 duration-200">
-            Send a message to test your agent.
+            {description ?? "Send a message to start the conversation"}
           </p>
         </div>
       </div>
@@ -266,9 +304,10 @@ const MessageError: FC = () => {
 };
 
 const AssistantMessage: FC = () => {
+  const { readOnly, archived } = useThreadConfigStore();
+  const isDisabled = readOnly || archived;
   const showPendingIndicator = useAuiState((s) => {
     if (s.message.status?.type !== "running") return false;
-
     return !s.message.content.some((part) => {
       if (part.type === "text" || part.type === "reasoning") {
         return part.text.trim().length > 0;
@@ -322,13 +361,13 @@ const AssistantMessage: FC = () => {
 
       <div className="aui-assistant-message-footer mt-1 ml-2 flex min-h-6 items-center">
         <BranchPicker />
-        <AssistantActionBar />
+        <AssistantActionBar readOnly={isDisabled} />
       </div>
     </MessagePrimitive.Root>
   );
 };
 
-const AssistantActionBar: FC = () => {
+const AssistantActionBar: FC<{ readOnly: boolean }> = ({ readOnly }) => {
   return (
     <ActionBarPrimitive.Root
       hideWhenRunning
@@ -345,11 +384,16 @@ const AssistantActionBar: FC = () => {
           </AuiIf>
         </TooltipIconButton>
       </ActionBarPrimitive.Copy>
-      <ActionBarPrimitive.Reload asChild>
-        <TooltipIconButton tooltip="Refresh">
-          <RefreshCwIcon />
-        </TooltipIconButton>
-      </ActionBarPrimitive.Reload>
+
+      {/* Regenerate hidden in read-only */}
+      {!readOnly && (
+        <ActionBarPrimitive.Reload asChild>
+          <TooltipIconButton tooltip="Refresh">
+            <RefreshCwIcon />
+          </TooltipIconButton>
+        </ActionBarPrimitive.Reload>
+      )}
+
       <ActionBarMorePrimitive.Root>
         <ActionBarMorePrimitive.Trigger asChild>
           <TooltipIconButton
@@ -377,6 +421,8 @@ const AssistantActionBar: FC = () => {
 };
 
 const UserMessage: FC = () => {
+  const { readOnly, archived } = useThreadConfigStore();
+  const isDisabled = readOnly || archived;
   return (
     <MessagePrimitive.Root
       className="aui-user-message-root text-sm fade-in slide-in-from-bottom-1 mx-auto grid w-full max-w-[var(--thread-max-width)] animate-in auto-rows-auto grid-cols-[minmax(72px,1fr)_auto] content-start gap-y-2 px-2 py-3 duration-150 [&:where(>*)]:col-start-2"
@@ -388,9 +434,12 @@ const UserMessage: FC = () => {
         <div className="aui-user-message-content wrap-break-word peer rounded-2xl bg-muted px-4 py-2.5 text-foreground empty:hidden">
           <MessagePrimitive.Parts />
         </div>
-        <div className="aui-user-action-bar-wrapper absolute top-1/2 left-0 -translate-x-full -translate-y-1/2 pr-2 peer-empty:hidden">
-          <UserActionBar />
-        </div>
+        {/* Edit button hidden in read-only */}
+        {!isDisabled && (
+          <div className="aui-user-action-bar-wrapper absolute top-1/2 left-0 -translate-x-full -translate-y-1/2 pr-2 peer-empty:hidden">
+            <UserActionBar />
+          </div>
+        )}
       </div>
 
       <BranchPicker className="aui-user-branch-picker col-span-full col-start-1 row-start-3 -mr-1 justify-end" />
