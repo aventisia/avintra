@@ -1,4 +1,5 @@
 import { useIsMobile } from "@/hooks/useIsMobile";
+import { AvPlatformAssistantUI } from "@/react-toolkit/features/av-platform-assistant-ui/components/AvPlatformAssistantUI";
 import { useUserSessionStore } from "@/react-toolkit/stores/user-session-store";
 
 import { Separator } from "@aventisia/ui";
@@ -11,7 +12,6 @@ import { useEffect, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import { useShallow } from "zustand/react/shallow";
 
-import { AvPlatformAssistantUI } from "../assistant-ui";
 import { AssistChatDto } from "../dtos/assist-chat-dto";
 import { useArchiveConversationMutation } from "../hooks/useArchiveConversationMutation";
 // import { useInsertConversationMutation } from "../hooks/useInsertConversationMutation";
@@ -75,6 +75,11 @@ export default function ChatSection({ mode = "page" }: { mode?: LayoutMode }) {
       setUserSession: state.setUserSession,
     })),
   );
+
+  // Handle the callback when the component allocates a new session in the DB
+  const handleAllocation = (newId: string) => {
+    navigate(`/assist/chats/${flowVersionId}/${newId}`, { replace: true });
+  };
 
   return (
     <div className="flex flex-col h-full w-full">
@@ -143,6 +148,10 @@ export default function ChatSection({ mode = "page" }: { mode?: LayoutMode }) {
         <AvPlatformAssistantUI
           title={`Hello${userSession?.firstName ? ", " + userSession?.firstName : ""}`}
           archived={isArchived}
+          flowVersionId={flowVersionId || ""}
+          conversationId={conversationId}
+          mode="production"
+          onConversationAllocated={handleAllocation}
         />
       </div>
     </div>

@@ -44,7 +44,7 @@ export function ConversationListItem({
           >
             <p
               className={cn(
-                "text-xs font-semibold leading-snug",
+                "text-xs font-semibold leading-snug truncate max-w-64",
                 isActive && "text-primary",
               )}
             >
