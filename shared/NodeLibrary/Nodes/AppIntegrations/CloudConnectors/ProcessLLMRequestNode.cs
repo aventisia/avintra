@@ -44,7 +44,7 @@ public class ProcessLLMRequestNode : BaseNode
             var threadMessages = ThreadMessages.Get(context);
             var userInput = UserInput.Get(context);
 
-            var formattedFilesList = FormatFilesList(filesList);
+            var formattedFilesList = FormatFilesList(filesList!);
 
             if (filesList != null && formattedFilesList?.Count != filesList.Count)
                 throw new FileNotFoundException("One or more files in the provided Files List were not found.");
@@ -214,44 +214,6 @@ public class ProcessLLMRequestNode : BaseNode
         return null;
     }
 
-    // Normalizes a list of file references into a string-only format.
-    private List<string> FormatFilesList(List<string>? filesList)
-    {
-        var result = new List<string>();
-
-        // Return null when no file references are provided.
-        if (filesList == null || filesList.Count == 0)
-            return result;
-
-        foreach (var file in filesList)
-        {
-            // Ignore empty or whitespace-only entries.
-            if (string.IsNullOrWhiteSpace(file))
-                continue;
-
-            var value = file.Trim();
-
-            // Preserve supported file reference formats:
-            // - Remote URLs (http/https)
-            // - Data URIs (base64-encoded content)
-            // - Local file URIs (file://)
-            if (value.StartsWith("http://", StringComparison.OrdinalIgnoreCase) ||
-                value.StartsWith("https://", StringComparison.OrdinalIgnoreCase) ||
-                value.StartsWith("data:", StringComparison.OrdinalIgnoreCase) ||
-                value.StartsWith("file://", StringComparison.OrdinalIgnoreCase))
-            {
-                result.Add(value);
-                continue;
-            }
-
-            // Preserve any other value and allow downstream validation
-            // or processing to determine whether it is a valid file reference.
-            result.Add(value);
-        }
-
-        return result;
-    }
-
     /// <summary>
     /// Builds the input payload for the LLM request.
     /// Chat mode: when ThreadMessages is provided, builds a list of {role, content} messages with the current UserInput appended.
@@ -306,5 +268,134 @@ public class ProcessLLMRequestNode : BaseNode
 
         // Prompt mode: return the prompt string directly
         return prompt ?? string.Empty;
+    }
+
+    /// <summary>
+    /// Formats a list of file references into a normalized list of strings.
+    /// Supported inputs:
+    /// - Data URLs (returned as-is)
+    /// - HTTP/HTTPS URLs (returned as-is)
+    /// - Raw Base64 strings (converted to Data URLs)
+    /// - Local file paths (read and converted to Data URLs)
+    /// </summary>
+    private List<string> FormatFilesList(List<string> filesList)
+    {
+        // Return empty list if no files were provided
+        if (filesList == null || filesList.Count == 0)
+            return new List<string>();
+
+        var result = new List<string>();
+
+        foreach (var item in filesList)
+        {
+            // Skip null or empty values
+            if (string.IsNullOrWhiteSpace(item))
+                continue;
+
+            // Remove wrapping brackets/quotes if present
+            var value = item.Trim().Trim('[', ']', '"');
+
+            // Already a Data URL, no processing required
+            if (value.StartsWith("data:", StringComparison.OrdinalIgnoreCase))
+            {
+                result.Add(value);
+                continue;
+            }
+
+            // Public HTTP/HTTPS URL, return as-is
+            if (Uri.TryCreate(value, UriKind.Absolute, out var uri) &&
+                (uri.Scheme == Uri.UriSchemeHttp || uri.Scheme == Uri.UriSchemeHttps))
+            {
+                result.Add(value);
+                continue;
+            }
+
+            // Raw Base64 content, convert to a generic Data URL
+            if (IsBase64String(value))
+            {
+                result.Add($"data:application/octet-stream;base64,{value}");
+                continue;
+            }
+
+            // Skip invalid file paths
+            if (!File.Exists(value))
+                continue;
+
+            // Read local file and convert to Base64 Data URL
+            var mimeType = GetMimeType(Path.GetExtension(value));
+            var fileBytes = File.ReadAllBytes(value);
+            var fileBase64 = Convert.ToBase64String(fileBytes);
+
+            result.Add($"data:{mimeType};base64,{fileBase64}");
+        }
+
+        return result;
+    }
+
+    /// <summary>
+    /// Determines whether the supplied string is a valid Base64 string.
+    /// </summary>
+    private static bool IsBase64String(string str)
+    {
+        if (string.IsNullOrWhiteSpace(str))
+            return false;
+
+        str = str.Trim();
+
+        // Base64 length must be divisible by 4
+        if (str.Length % 4 != 0)
+            return false;
+
+        try
+        {
+            Convert.FromBase64String(str);
+            return true;
+        }
+        catch
+        {
+            return false;
+        }
+    }
+
+    /// <summary>
+    /// Returns the MIME type for a file extension. Falls back to application/octet-stream for unknown types.
+    /// </summary>
+    private static string GetMimeType(string fileExtension)
+    {
+        switch (fileExtension.ToLowerInvariant())
+        {
+            case ".txt": return "text/plain";
+            case ".pdf": return "application/pdf";
+            case ".doc": return "application/msword";
+            case ".docx": return "application/vnd.openxmlformats-officedocument.wordprocessingml.document";
+            case ".xls": return "application/vnd.ms-excel";
+            case ".xlsx": return "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet";
+            case ".ppt": return "application/vnd.ms-powerpoint";
+            case ".pptx": return "application/vnd.openxmlformats-officedocument.presentationml.presentation";
+
+            case ".png": return "image/png";
+            case ".jpg":
+            case ".jpeg": return "image/jpeg";
+            case ".gif": return "image/gif";
+            case ".bmp": return "image/bmp";
+            case ".tif":
+            case ".tiff": return "image/tiff";
+
+            case ".mp4": return "video/mp4";
+            case ".webm": return "video/webm";
+
+            case ".mp3": return "audio/mpeg";
+            case ".wav": return "audio/wav";
+            case ".ogg": return "audio/ogg";
+
+            case ".zip": return "application/zip";
+            case ".rar": return "application/x-rar-compressed";
+
+            case ".csv": return "text/csv";
+            case ".json": return "application/json";
+            case ".xml": return "application/xml";
+
+            default: return "application/octet-stream";
+        }
     }
 }
