@@ -83,7 +83,10 @@ const ExecuteFlow = () => {
       // Handle job completion notification
       console.log("Job completed:", notification);
 
-      if (notification.status === "Completed") {
+      if (
+        notification.status === "Completed" &&
+        flowType !== FlowTypesEnum.ChatAgent
+      ) {
         toast.success(
           notification.message || "Flow execution completed successfully!",
         );

@@ -30,6 +30,7 @@ import { useShallow } from "zustand/react/shallow";
 
 import { useConfirmDelete } from "../hooks/useConfirmDelete";
 import { useCopyPasteShortcuts } from "../hooks/useCopyPasteShortcuts";
+import { useDefaultActions } from "../hooks/useDefaultActions";
 import { useFetchConfigVariables } from "../hooks/useFetchConfigVariables";
 import { useFetchFlowToLoad } from "../hooks/useFetchFlowToLoad";
 import { useOnNodeDelete } from "../hooks/useOnNodeDelete";
@@ -109,6 +110,8 @@ export const ReactFlowExt = () => {
   const reactFlowWrapper = useRef<HTMLDivElement>(null);
 
   const { fitView } = useReactFlow();
+
+  const recommendActions = useDefaultActions();
 
   // Re-fit view when the right chat panel opens/closes so the canvas re-centers
   // inside the newly sized container instead of staying offset.
@@ -254,6 +257,11 @@ export const ReactFlowExt = () => {
             <AvPlatformAssistantUI
               flowVersionId={currentFlow.versionId}
               mode="temporary"
+              defaultActions={
+                recommendActions?.defaultActions
+                  ? recommendActions?.defaultActions
+                  : []
+              }
             />
           </ResizablePanel>
         </>
