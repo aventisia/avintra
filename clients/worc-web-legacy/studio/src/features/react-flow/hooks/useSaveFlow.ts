@@ -1,3 +1,4 @@
+import { FlowTypesEnum } from "@/react-toolkit/enums/flow-types-enum";
 import { useCurrentFlowStore } from "@/stores/current-flow-store";
 import { useReactFlowExtStore } from "@/stores/react-flow-ext-store";
 import { NodeDataType } from "@/types/node-data-type";
@@ -11,6 +12,14 @@ import { useShallow } from "zustand/react/shallow";
 import { updateFlowSilently } from "../apis/react-flow-apis";
 import { LoadFlowDto } from "../dtos/load-flow-dto";
 import { doesFlowContainAnyDesktopOnlyNode } from "../utils/has-desktop-nodes";
+
+const TARGET_NODE_NAME = "CreateConversationAIAgent";
+const INPUT_KEY = "__RecommendedActionsConfig__Conversation";
+
+type RecommendActions = {
+  defaultActions: string[];
+  enableDynamicActions: boolean;
+};
 
 export const useSaveFlow = () => {
   // Get global store state & actions
@@ -32,6 +41,7 @@ export const useSaveFlow = () => {
     inputOutputObject,
     isPublished,
     viewport,
+    flowType,
     setSavedSnapshot,
   } = useReactFlowExtStore(
     useShallow((state) => ({
@@ -42,6 +52,7 @@ export const useSaveFlow = () => {
       isSavePending: state.isSavePending,
       isPublished: state.isPublished,
       viewport: state.viewport,
+      flowType: state.flowType,
       setSavedSnapshot: state.setSavedSnapshot,
     })),
   );
@@ -107,11 +118,25 @@ export const useSaveFlow = () => {
     // Check if save is pending
     if (!isSavePending || isPublished) return true;
 
+    const defaultActions =
+      (
+        (
+          nodes.find((node) => node.data?.name === TARGET_NODE_NAME)?.data as
+            | NodeDataType
+            | undefined
+        )?.inputs?.find((input) => input.key === INPUT_KEY)?.value as
+          | RecommendActions
+          | undefined
+      )?.defaultActions ?? [];
+
     // Create react flow object
     const reactFlowObject = {
       nodes,
       edges,
       viewport,
+      ...(flowType === FlowTypesEnum.ChatAgent && {
+        defaultActions,
+      }),
     };
 
     const hasDesktopOnlyNode = doesFlowContainAnyDesktopOnlyNode(
