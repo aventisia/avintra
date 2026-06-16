@@ -209,22 +209,22 @@ function getSuggestionsSchema(field: DCPFieldSchemaType): ZodTypeAny {
   let enableDynamicActionsSchema: ZodTypeAny = z.boolean();
 
   if (field.defaultValue && typeof field.defaultValue === "object") {
-    if ("DefaultActions" in field.defaultValue) {
+    if ("defaultActions" in field.defaultValue) {
       defaultActionsSchema = z
         .array(z.string())
-        .default(field.defaultValue.DefaultActions as string[]);
+        .default(field.defaultValue.defaultActions as string[]);
     }
 
-    if ("EnableDynamicActions" in field.defaultValue) {
+    if ("enableDynamicActions" in field.defaultValue) {
       enableDynamicActionsSchema = z
         .boolean()
-        .default(field.defaultValue.EnableDynamicActions as boolean);
+        .default(field.defaultValue.enableDynamicActions as boolean);
     }
   }
 
   return z.object({
-    DefaultActions: defaultActionsSchema,
-    EnableDynamicActions: enableDynamicActionsSchema,
+    defaultActions: defaultActionsSchema,
+    enableDynamicActions: enableDynamicActionsSchema,
   });
 }
 function getVoiceConfigSchema(field: DCPFieldSchemaType): ZodTypeAny {
