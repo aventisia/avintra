@@ -5,13 +5,15 @@ public class FlowVersionService : IFlowVersionService
     private readonly ILogger<FlowVersionService> _logger;
     private readonly IUnitOfWork _unitOfWork;
     private readonly IUserManagementGuardService _userManagementGuardService;
+    private readonly IResourceShareService _resourceShareService;
     private readonly Guid _userId;
 
     public FlowVersionService(
         ILogger<FlowVersionService> logger,
         IUnitOfWork unitOfWork,
         IHttpContextAccessor httpContextAccessor,
-        IUserManagementGuardService userManagementGuardService)
+        IUserManagementGuardService userManagementGuardService,
+        IResourceShareService resourceShareService)
     {
         // Set _userId
         _userId = Guid.Parse(httpContextAccessor.HttpContext?.User?.FindFirstValue("uid") ?? Guid.Empty.ToString());
@@ -19,6 +21,7 @@ public class FlowVersionService : IFlowVersionService
         _logger = logger;
         _unitOfWork = unitOfWork;
         _userManagementGuardService = userManagementGuardService;
+        _resourceShareService = resourceShareService;
     }
 
     // Get a list of flow versions of a single flow using flow identifier
@@ -33,25 +36,54 @@ public class FlowVersionService : IFlowVersionService
 
         try
         {
+            // Retrieve the flow and ensure it exists
+            var flow = await _unitOfWork.FlowRepo
+                .GetByConditionAsync(w => w.Id == flowId)
+                .SingleOrDefaultAsync();
+
+            if (flow == null)
+            {
+                serviceResponse.Message = "Flow not found.";
+                return serviceResponse;
+            }
+
+            // Validate user's access permissions for viewing the flow
+            var (canView, accessLevel) = await _resourceShareService.GetResourceAccessAsync(
+                _userId,
+                flow.Id,
+                ResourceTypeEnum.Flow,
+                flow.CreatedByUserId,
+                flow.IsTenantWideAccess,
+                new[]
+                {
+                    ResourceAccessTypeEnum.Owner,
+                    ResourceAccessTypeEnum.FullAccess,
+                    ResourceAccessTypeEnum.View,
+                    ResourceAccessTypeEnum.Edit,
+                    ResourceAccessTypeEnum.Delete,
+                });
+
+            if (!canView)
+            {
+                serviceResponse.Message = "You do not have access to view this flow versions.";
+                return serviceResponse;
+            }
+
+
             //Try to get flow versions
             var flowVersions = await _unitOfWork.FlowVersionRepo
             .GetByConditionAsync(w =>
                 w.FlowId == flowId &&
                 (
-                    w.CreatedByUserId == _userId ||
-                    (w.Flow.FlowUsers != null && w.Flow.FlowUsers.Any(a => a.UserId == _userId)) ||
+                    !w.IsPublished ||
                     (
-                        w.IsPublished &&
-                        (
-                            _userManagementGuardService.HasRole(CustomRolesEnum.OM.ToString()) ||
-                            _userManagementGuardService.HasRole(CustomRolesEnum.TU.ToString())
-                        )
+                        _userManagementGuardService.HasRole(CustomRolesEnum.OM.ToString()) ||
+                        _userManagementGuardService.HasRole(CustomRolesEnum.TU.ToString())
                     )
                 )
             )
             .Include(i => i.Flow)
-            .ThenInclude(i2 => i2.FlowUsers)
-            .Include(c => c.CreatedByUser)
+            .Include(i => i.CreatedByUser)
             .OrderByDescending(o => o.VersionNumber)
             .ToListAsync();
 
