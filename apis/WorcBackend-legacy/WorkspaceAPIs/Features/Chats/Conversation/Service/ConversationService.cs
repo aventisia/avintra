@@ -4,18 +4,21 @@ public class ConversationService : IConversationService
 {
     private readonly ILogger<ConversationService> _logger;
     private readonly IUnitOfWork _unitOfWork;
+    private readonly IResourceShareService _resourceShareService;
     private readonly Guid _userId;
 
     public ConversationService(
         ILogger<ConversationService> logger,
         IUnitOfWork unitOfWork,
-        IHttpContextAccessor httpContextAccessor)
+        IHttpContextAccessor httpContextAccessor,
+        IResourceShareService resourceShareService)
     {
         // Extract current user id from http context (Fallback to empty guid if not available)
         _userId = Guid.Parse(httpContextAccessor.HttpContext?.User?.FindFirstValue("uid") ?? Guid.Empty.ToString());
 
         _logger = logger;
         _unitOfWork = unitOfWork;
+        _resourceShareService = resourceShareService;
     }
 
     // Retrieves active conversations for a specific flow version.
@@ -173,19 +176,28 @@ public class ConversationService : IConversationService
                 return serviceResponse;
             }
 
-            // Validate user access (must exist in FlowVersionUsers)
-            var flowVersionUser = flowVersion.FlowVersionUsers?
-                .FirstOrDefault(u => u.UserId == _userId);
 
-            // Check access condition
-            if (flowVersionUser == null)
+            // Validate user's access permissions for modifying the flow version
+            var (canEdit, accessLevel) = await _resourceShareService.GetResourceAccessAsync(
+                _userId,
+                flowVersion.Id,
+                ResourceTypeEnum.FlowVersion,
+                flowVersion.CreatedByUserId,
+                flowVersion.IsTenantWideAccess,
+                new[]
+                {
+                    ResourceAccessTypeEnum.Owner,
+                    ResourceAccessTypeEnum.FullAccess,
+                    ResourceAccessTypeEnum.Edit,
+                });
+
+            if (!canEdit)
             {
                 _logger.LogWarning(
                     "[CreateConversation] Unauthorized access attempt. FlowVersionId: {FlowVersionId}, UserId: {UserId}",
                     conversationDto.FlowVersionId,
                     _userId);
-
-                serviceResponse.Message = "You do not have access to this agent.";
+                serviceResponse.Message = "You do not have permission to save flow version conversations.";
                 return serviceResponse;
             }
 
