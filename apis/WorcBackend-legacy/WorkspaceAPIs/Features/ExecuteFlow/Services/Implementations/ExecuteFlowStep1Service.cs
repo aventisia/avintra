@@ -12,6 +12,7 @@ public class ExecuteFlowStep1Service : IExecuteFlowStep1Service
     private readonly ICurrentTenantService _currentTenantService;
     private readonly INotificationHelperService _notificationHelperService;
     private readonly IExecuteFlowStep2Service _executeFlowStep2Service;
+    private readonly IResourceShareService _resourceShareService;
     private readonly Guid _userId;
     private readonly string _accessToken;
 
@@ -21,7 +22,8 @@ public class ExecuteFlowStep1Service : IExecuteFlowStep1Service
         ICurrentTenantService currentTenantService,
         INotificationHelperService notificationHelperService,
         IExecuteFlowStep2Service executeFlowStep2Service,
-        IHttpContextAccessor httpContextAccessor)
+        IHttpContextAccessor httpContextAccessor,
+        IResourceShareService resourceShareService)
     {
         _logger = logger;
         _unitOfWork = unitOfWork;
@@ -32,6 +34,7 @@ public class ExecuteFlowStep1Service : IExecuteFlowStep1Service
             ? userId
             : Guid.Empty;
         _accessToken = GetJwtOfRequestUtil.GetJwtOfRequest(httpContextAccessor.HttpContext) ?? string.Empty;
+        _resourceShareService = resourceShareService;
     }
 
     public async Task<ServiceResponse<ExecuteFlowResponseDto>> ExecuteFlowAsync(ExecuteFlowRequestDto requestDto, TriggerTypesEnum triggerType)
@@ -203,12 +206,22 @@ public class ExecuteFlowStep1Service : IExecuteFlowStep1Service
         // Flow not found
         if (flow == null) return false;
 
-        // User is the creator of the flow
-        if (flow.CreatedByUserId == _userId) return true;
-
-        // Flow has been shared with the user
-        return await _unitOfWork.FlowUserRepo
-            .GetByConditionAsync(w => w.FlowId == flowId && w.UserId == _userId)
-            .AnyAsync();
+        // Validate view permission
+        var (canView, accessLevel) = await _resourceShareService.GetResourceAccessAsync(
+            _userId,
+            flow.Id,
+            ResourceTypeEnum.Flow,
+            flow.CreatedByUserId,
+            false,
+            new[]
+            {
+                    ResourceAccessTypeEnum.Owner,
+                    ResourceAccessTypeEnum.FullAccess,
+                    ResourceAccessTypeEnum.View,
+                    ResourceAccessTypeEnum.Delete,
+                    ResourceAccessTypeEnum.Edit
+            }
+        );
+        return canView;
     }
 }
