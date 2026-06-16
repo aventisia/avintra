@@ -164,6 +164,13 @@ namespace NodeExecutor.Services
                             input.Value = JToken.Parse(input.Value.ToString());
                         }
 
+                        // RecommendedActionsConfig
+                        if (input.Key.Contains("__RecommendedActionsConfig__"))
+                        {
+                            input.Key = "RecommendedActionsConfig";
+                            input.Value = JToken.Parse(input.Value.ToString());
+                        }
+
                         // Resolve template if input is string and contains {{ }}
                         object inputValue = input.Value;
                         if (input.Value is string strVal && strVal.Contains("{{") && strVal.Contains("}}"))
