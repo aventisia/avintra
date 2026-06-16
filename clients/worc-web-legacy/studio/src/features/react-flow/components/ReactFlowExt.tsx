@@ -177,6 +177,8 @@ export const ReactFlowExt = () => {
       setSelectedEdge(edge);
       setSelectedNode(null);
       setMenu(position);
+
+      if (import.meta.env.MODE !== "production") console.log("EDGE:", edge);
     },
     [setSelectedNode, setSelectedEdge, setMenu],
   );
