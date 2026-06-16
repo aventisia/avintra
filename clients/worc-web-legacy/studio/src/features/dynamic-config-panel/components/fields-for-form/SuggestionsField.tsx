@@ -25,8 +25,8 @@ export function SuggestionsField({
   const fieldNames = useMemo(
     () =>
       ({
-        defaultActions: `${name}.DefaultActions`,
-        enableDynamicActions: `${name}.EnableDynamicActions`,
+        defaultActions: `${name}.defaultActions`,
+        enableDynamicActions: `${name}.enableDynamicActions`,
       }) as const,
     [name],
   );
