@@ -308,12 +308,12 @@ public class ExecuteFlowStep2Service : IExecuteFlowStep2Service
 
                     // output is an object (e.g., {"raw_text": "...", "error": "..."} when is_json_output is true
                     // but LLM didn't return valid JSON) — extract raw_text
-                    if (outputProp.ValueKind == System.Text.Json.JsonValueKind.Object &&
-                        outputProp.TryGetProperty("raw_text", out var rawTextProp) &&
-                        rawTextProp.ValueKind == System.Text.Json.JsonValueKind.String)
-                    {
-                        return rawTextProp.GetString() ?? string.Empty;
-                    }
+                    // if (outputProp.ValueKind == System.Text.Json.JsonValueKind.Object &&
+                    //     outputProp.TryGetProperty("raw_text", out var rawTextProp) &&
+                    //     rawTextProp.ValueKind == System.Text.Json.JsonValueKind.String)
+                    // {
+                    //     return rawTextProp.GetString() ?? string.Empty;
+                    // }
 
                     // Fallback for other output types (array, etc.)
                     return outputProp.GetRawText();
