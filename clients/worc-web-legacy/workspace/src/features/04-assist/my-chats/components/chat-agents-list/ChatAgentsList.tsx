@@ -63,7 +63,12 @@ export default function ChatAgentsList({
   };
 
   useEffect(() => {
-    if (!agents.length) return;
+    if (!agents.length) {
+      navigate(`${mode === "popover" ? "/external" : "/assist"}/chats`, {
+        replace: true,
+      });
+      return;
+    }
 
     // If a chat is already selected in the URL, do nothing
     if (flowVersionId) return;
