@@ -78,9 +78,9 @@
     {
       "direction": "Input",
       "type": "suggestions",
-      "name": "RecommendActions",
+      "name": "__RecommendedActionsConfig__Conversation",
       "description": "Add suggestions for the initial chat start",
-      "defaultValue": { "DefaultActions": [], "EnableDynamicActions": false },
+      "defaultValue": { "defaultActions": [], "enableDynamicActions": false },
       "required": false,
       "category": "Other"
     },

@@ -365,7 +365,7 @@ public class NodeProcessor : INodeProcessor
                 var k when k.Contains("__KbConfig__") => "KbConfig",
                 var k when k.Contains("__MemoryConfig__") => "MemoryConfig",
                 var k when k.Contains("__ToolsConfig__") => "ToolsConfig",
-                var k when k.Contains("__Files__") => "Files",
+                var k when k.Contains("__RecommendedActionsConfig__") => "RecommendedActionsConfig",
                 _ => input.Key,
             };
 
