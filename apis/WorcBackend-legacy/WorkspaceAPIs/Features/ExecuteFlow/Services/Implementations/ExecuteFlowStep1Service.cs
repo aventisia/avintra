@@ -212,14 +212,14 @@ public class ExecuteFlowStep1Service : IExecuteFlowStep1Service
             flow.Id,
             ResourceTypeEnum.Flow,
             flow.CreatedByUserId,
-            false,
+            flow.IsTenantWideAccess,
             new[]
             {
-                    ResourceAccessTypeEnum.Owner,
-                    ResourceAccessTypeEnum.FullAccess,
-                    ResourceAccessTypeEnum.View,
-                    ResourceAccessTypeEnum.Delete,
-                    ResourceAccessTypeEnum.Edit
+                ResourceAccessTypeEnum.Owner,
+                ResourceAccessTypeEnum.FullAccess,
+                ResourceAccessTypeEnum.View,
+                ResourceAccessTypeEnum.Edit,
+                ResourceAccessTypeEnum.Delete,
             }
         );
         return canView;
