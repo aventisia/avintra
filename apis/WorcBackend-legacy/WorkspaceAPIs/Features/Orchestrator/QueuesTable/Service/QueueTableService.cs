@@ -342,7 +342,8 @@ public class QueueTableService : IQueueTableService
                     QueueId = newQueue.Id,
                     AccessType = QueueWorkItemAccessTypesEnum.FullAccess,
                     CreatedByUserId = _userId,
-                    LastModifiedByUserId = _userId
+                    LastModifiedByUserId = _userId,
+                    TenantId = _tenantId
                 };
 
                 // Insert the new QueueUser into the database
@@ -866,7 +867,8 @@ public class QueueTableService : IQueueTableService
                 QueueId = queueId,
                 UserId = userId,
                 CreatedByUserId = _userId,
-                LastModifiedByUserId = _userId
+                LastModifiedByUserId = _userId,
+                TenantId = _tenantId
             }).ToList();
 
             // Identify existing QueueUser entries for users to be removed.

@@ -4,21 +4,18 @@ public class AssistChatService : IAssistChatService
 {
     private readonly ILogger<AssistChatService> _logger;
     private readonly IUnitOfWork _unitOfWork;
-    private readonly IResourceShareService _resourceShareService;
     private readonly Guid _userId;
 
     public AssistChatService(
         ILogger<AssistChatService> logger,
         IUnitOfWork unitOfWork,
-        IHttpContextAccessor httpContextAccessor,
-        IResourceShareService resourceShareService)
+        IHttpContextAccessor httpContextAccessor)
     {
         // Extract and initialize current userId from JWT claims
         _userId = Guid.Parse(httpContextAccessor.HttpContext?.User?.FindFirstValue("uid") ?? Guid.Empty.ToString());
 
         _logger = logger;
         _unitOfWork = unitOfWork;
-        _resourceShareService = resourceShareService;
     }
 
     // Retrieves all assigned (published) flow versions.
@@ -33,20 +30,6 @@ public class AssistChatService : IAssistChatService
 
         try
         {
-            // Retrieve accessible resource ids with access levels
-            Dictionary<Guid, ResourceAccessTypeEnum>? resourceAccess = await _resourceShareService.GetAccessibleResourcesWithAccessAsync(
-                _userId,
-                ResourceTypeEnum.FlowVersion,
-                new[]
-                {
-                    ResourceAccessTypeEnum.FullAccess,
-                    ResourceAccessTypeEnum.Owner,
-                    ResourceAccessTypeEnum.View,
-                    ResourceAccessTypeEnum.Edit,
-                    ResourceAccessTypeEnum.Delete
-                }
-            );
-
             // Fetch flow versions based on the following criteria:
             // - Flow type must be ChatAgent
             // - Only published and non-archived flow versions are included
@@ -56,7 +39,7 @@ public class AssistChatService : IAssistChatService
                     w.Flow.Type == FlowTypesEnum.ChatAgent &&
                     w.IsPublished &&
                     !w.IsArchived &&
-                    (w.IsTenantWideAccess || resourceAccess.Keys.Contains(w.Id))
+                     (w.IsTenantWideAccess || w.FlowVersionUsers!.Any(a => a.UserId == _userId))
                 )
                 .Select(s => new AssistChatDto
                 {
@@ -152,21 +135,6 @@ public class AssistChatService : IAssistChatService
 
         try
         {
-
-            // Retrieve accessible resource ids with access levels
-            Dictionary<Guid, ResourceAccessTypeEnum>? resourceAccess = await _resourceShareService.GetAccessibleResourcesWithAccessAsync(
-                _userId,
-                ResourceTypeEnum.FlowVersion,
-                new[]
-                {
-                    ResourceAccessTypeEnum.FullAccess,
-                    ResourceAccessTypeEnum.Owner,
-                    ResourceAccessTypeEnum.View,
-                    ResourceAccessTypeEnum.Edit,
-                    ResourceAccessTypeEnum.Delete
-                }
-            );
-
             // Fetch flow versions based on the following criteria:
             // - Flow must be of type ChatAgent
             // - Flow version must be published and not archived
@@ -179,7 +147,7 @@ public class AssistChatService : IAssistChatService
                     w.Flow.Type == FlowTypesEnum.ChatAgent &&
                     w.IsPublished &&
                     !w.IsArchived &&
-                    (w.IsTenantWideAccess || resourceAccess.Keys.Contains(w.Id)) &&
+                    (w.IsTenantWideAccess || w.FlowVersionUsers!.Any(a => a.UserId == _userId)) &&
                     w.Conversations.Any(a =>
                         a.Status == ConversationStatusEnum.Archived &&
                         a.UserId == _userId &&

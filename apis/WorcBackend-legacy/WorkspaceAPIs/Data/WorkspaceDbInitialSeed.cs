@@ -32,11 +32,11 @@ public static class WorkspaceDbInitialSeed
             // Migrate legacy FlowUser records to ResourceShare records.
             await MigrateFlowUsersToResourceSharesAsync(workspaceDbContext);
 
-            // Migrate legacy FlowVersionUser records to ResourceShare records.
-            await MigrateFlowVersionUsersToResourceSharesAsync(workspaceDbContext);
+            // Migrate ResourceShare records back to FlowVersionUser records.
+            await MigrateResourceSharesToFlowVersionUsersAsync(workspaceDbContext);
 
-            // Migrate legacy QueueUser records to ResourceShare records.
-            await MigrateQueueUsersToResourceSharesAsync(workspaceDbContext);
+            // Migrate ResourceShare records back to QueueUser records.
+            await MigrateResourceSharesToQueueUsersAsync(workspaceDbContext);
         }
         catch (Exception ex)
         {
@@ -85,79 +85,82 @@ public static class WorkspaceDbInitialSeed
         Console.WriteLine("Info: Successfully migrated FlowUsers to ResourceShares and removed old FlowUser records.");
     }
 
-    // Temporary data migration that converts legacy FlowVersionUser records into ResourceShare records and removes the old FlowVersionUser entries.
+    // Temporary data migration that converts ResourceShare records for FlowVersions  back into FlowVersionUser records and removes the ResourceShare entries.
     // Remove this method after all environments have been migrated.
-    private static async Task MigrateFlowVersionUsersToResourceSharesAsync(WorkspaceDbContext workspaceDbContext)
+    private static async Task MigrateResourceSharesToFlowVersionUsersAsync(WorkspaceDbContext workspaceDbContext)
     {
-        // Fetch all existing FlowVersionUser records that need to be migrated.
-        var flowVersionUsers = await workspaceDbContext.FlowVersionUsers.ToListAsync();
+        // Fetch ResourceShare records that represent FlowVersion shares.
+        var resourceShares = await workspaceDbContext.ResourceShares
+            .Where(w => w.ResourceType == ResourceTypeEnum.FlowVersion)
+            .ToListAsync();
 
         // Nothing to migrate.
-        if (!flowVersionUsers.Any())
+        if (!resourceShares.Any())
         {
             return;
         }
 
-        Console.WriteLine($"Info: Migrating {flowVersionUsers.Count} FlowVersionUsers to ResourceShares...");
+        Console.WriteLine($"Info: Migrating {resourceShares.Count} ResourceShares to FlowVersionUsers...");
 
-        // Convert FlowVersionUser records into ResourceShare records.
-        var resourceShares = flowVersionUsers.Select(s => new ResourceShare
+        // Convert ResourceShare records into FlowVersionUser records.
+        var flowVersionUsers = resourceShares.Select(s => new FlowVersionUser
         {
             UserId = s.UserId,
-            ResourceId = s.FlowVersionId,
-            ResourceType = ResourceTypeEnum.FlowVersion,
-            AccessLevel = ResourceAccessTypeEnum.View,
+            FlowVersionId = s.ResourceId,
             TenantId = s.TenantId
         }).ToList();
 
-        // Insert the new ResourceShare records.
-        await workspaceDbContext.ResourceShares.AddRangeAsync(resourceShares);
+        // Insert the new FlowVersionUser records.
+        await workspaceDbContext.FlowVersionUsers.AddRangeAsync(flowVersionUsers);
         await workspaceDbContext.SaveChangesAsync();
 
-        // Remove the legacy FlowVersionUser records after successful migration.
-        workspaceDbContext.FlowVersionUsers.RemoveRange(flowVersionUsers);
+        // Remove the ResourceShare records after successful migration.
+        workspaceDbContext.ResourceShares.RemoveRange(resourceShares);
         await workspaceDbContext.SaveChangesAsync();
 
-        Console.WriteLine("Info: Successfully migrated FlowVersionUsers to ResourceShares and removed old FlowVersionUser records.");
+        Console.WriteLine("Info: Successfully migrated ResourceShares to FlowVersionUsers and removed old ResourceShare records.");
     }
 
-    // Temporary data migration that converts legacy QueueUser records into ResourceShare records and removes the old QueueUser entries.
+    // Temporary data migration that converts ResourceShare records back into QueueUser records and removes the ResourceShare entries.
     // Remove this method after all environments have been migrated.
-    private static async Task MigrateQueueUsersToResourceSharesAsync(WorkspaceDbContext workspaceDbContext)
+    private static async Task MigrateResourceSharesToQueueUsersAsync(WorkspaceDbContext workspaceDbContext)
     {
-        // Fetch all existing QueueUser records that need to be migrated.
-        var queueUsers = await workspaceDbContext.QueueUsers.ToListAsync();
+        // Fetch ResourceShare records that represent Queue shares.
+        var resourceShares = await workspaceDbContext.ResourceShares
+            .Where(rs => rs.ResourceType == ResourceTypeEnum.Queue)
+            .ToListAsync();
 
         // Nothing to migrate.
-        if (!queueUsers.Any())
+        if (!resourceShares.Any())
         {
             return;
         }
 
-        Console.WriteLine($"Info: Migrating {queueUsers.Count} QueueUsers to ResourceShares...");
+        Console.WriteLine($"Info: Migrating {resourceShares.Count} ResourceShares to QueueUsers...");
 
-        // Convert QueueUser records into ResourceShare records.
-        var resourceShares = queueUsers.Select(s => new ResourceShare
+        // Convert ResourceShare records into QueueUser records.
+        var queueUsers = resourceShares.Select(s => new QueueUser
         {
             UserId = s.UserId,
-            ResourceId = s.QueueId,
-            ResourceType = ResourceTypeEnum.Queue,
-            AccessLevel = Enum.TryParse<ResourceAccessTypeEnum>(
-                s.AccessType.ToString(),
-                out var accessLevel)
-                ? accessLevel
-                : ResourceAccessTypeEnum.View,
-            TenantId = s.TenantId
+            QueueId = s.ResourceId,
+            AccessType = Enum.TryParse<QueueWorkItemAccessTypesEnum>(
+                s.AccessLevel.ToString(),
+                out var accessType)
+                ? accessType
+                : QueueWorkItemAccessTypesEnum.View,
+            TenantId = s.TenantId,
+            CreatedByUserId = s.UserId,
+            LastModifiedByUserId = s.UserId
         }).ToList();
 
-        // Insert the new ResourceShare records.
-        await workspaceDbContext.ResourceShares.AddRangeAsync(resourceShares);
+        // Insert the new QueueUser records.
+        await workspaceDbContext.QueueUsers.AddRangeAsync(queueUsers);
         await workspaceDbContext.SaveChangesAsync();
 
-        // Remove the legacy QueueUser records after successful migration.
-        workspaceDbContext.QueueUsers.RemoveRange(queueUsers);
+        // Remove the ResourceShare records after successful migration.
+        workspaceDbContext.ResourceShares.RemoveRange(resourceShares);
         await workspaceDbContext.SaveChangesAsync();
 
-        Console.WriteLine("Info: Successfully migrated QueueUsers to ResourceShares and removed old QueueUser records.");
+        Console.WriteLine("Info: Successfully migrated ResourceShares to QueueUsers and removed old ResourceShare records.");
     }
 }
