@@ -94,6 +94,7 @@ export function ChatAgentListItem({
                   "text-sm font-semibold truncate ",
                   isSelected ? "text-primary" : "text-gray-800", // Text color reacts to isSelected
                 )}
+                title={agent.name}
               >
                 {agent.name}
               </p>
@@ -113,7 +114,7 @@ export function ChatAgentListItem({
             <Button
               variant="ghost"
               size="icon7"
-              className="w-8 h-8  flex-shrink-0 text-gray-400 hover:text-gray-700 hover:bg-black/5"
+              className="w-8 h-8  ml-1 flex-shrink-0 text-gray-400 hover:text-gray-700 hover:bg-black/5"
               onClick={(e) => e.stopPropagation()}
             >
               <ChevronDown

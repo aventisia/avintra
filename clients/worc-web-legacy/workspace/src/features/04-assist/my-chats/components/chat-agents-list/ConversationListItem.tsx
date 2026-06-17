@@ -17,7 +17,7 @@ export function ConversationListItem({
 }) {
   const navigate = useNavigate();
   return (
-    <div className="relative ml-9 mt-1 last:mb-0.5">
+    <div className="relative pl-9 mt-1 w-full last:mb-0.5">
       {isActive && (
         <div className="pointer-events-none absolute -left-[1px] top-1 h-[calc(100%-0.5rem)] w-1 rounded-full bg-[#1e1b6e]" />
       )}
@@ -34,7 +34,7 @@ export function ConversationListItem({
       >
         <p
           className={cn(
-            "text-xs font-semibold leading-snug truncate max-w-56",
+            "text-xs font-semibold leading-snug line-clamp-1 ",
             isActive && "text-primary",
           )}
         >

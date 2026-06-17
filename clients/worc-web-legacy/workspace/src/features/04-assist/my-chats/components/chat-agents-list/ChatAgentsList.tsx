@@ -114,7 +114,10 @@ export default function ChatAgentsList({
           />
         </div>
       )}
-      <ScrollArea className="flex-1 p-2" ref={listRef}>
+      <ScrollArea
+        className="flex-1 p-2 [&_[data-radix-scroll-area-viewport]>div]:!block [&_[data-radix-scroll-area-viewport]>div]:!w-full"
+        ref={listRef}
+      >
         <div className="space-y-1 h-full">
           {agents?.map((agent, index) => (
             <ChatAgentListItem
