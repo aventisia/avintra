@@ -28,6 +28,11 @@ public class AssistChatDto
     public int VersionNumber { get; set; }
 
     /// <summary>
+    /// Gets or sets the list of default actions available for the chat agent.
+    /// </summary>
+    public List<string> DefaultActions { get; set; } = [];
+
+    /// <summary>
     /// Gets or sets the timestamp of the conversation (e.g., last activity time).
     /// </summary>
     public DateTimeOffset Timestamp { get; set; }

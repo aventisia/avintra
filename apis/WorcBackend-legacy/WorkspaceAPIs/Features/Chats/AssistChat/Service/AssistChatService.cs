@@ -50,6 +50,11 @@ public class AssistChatService : IAssistChatService
                     Description = s.Flow != null ? s.Flow.Description : null,
                     VersionNumber = s.VersionNumber,
                     IsArchived = s.IsArchived,
+                    DefaultActions = FlowDefinitionUtil.GetDefaultActions(
+                        s.FlowVersionHistories
+                            .OrderByDescending(h => h.CreatedOn)
+                            .Select(h => h.ReactFlowObject)
+                            .FirstOrDefault() ?? string.Empty),
 
                     // Last modification details
                     LastModifiedByUsername = s.LastModifiedByUser != null
@@ -160,7 +165,11 @@ public class AssistChatService : IAssistChatService
                     Description = s.Flow != null ? s.Flow.Description : null,
                     VersionNumber = s.VersionNumber,
                     IsArchived = s.IsArchived,
-
+                    DefaultActions = FlowDefinitionUtil.GetDefaultActions(
+                        s.FlowVersionHistories
+                            .OrderByDescending(h => h.CreatedOn)
+                            .Select(h => h.ReactFlowObject)
+                            .FirstOrDefault() ?? string.Empty),
                     LastModifiedByUsername = s.LastModifiedByUser != null
                         ? s.LastModifiedByUser.UserName
                         : null,
