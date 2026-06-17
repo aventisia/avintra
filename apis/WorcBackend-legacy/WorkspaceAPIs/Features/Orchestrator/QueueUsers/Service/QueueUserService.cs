@@ -5,6 +5,7 @@ public class QueueUserService : IQueueUserService
     private readonly ILogger<QueueUserService> _logger;
     private readonly IUnitOfWork _unitOfWork;
     private readonly Guid _userId;
+    private readonly Guid _tenantId;
 
     public QueueUserService(
         ILogger<QueueUserService> logger,
@@ -13,6 +14,7 @@ public class QueueUserService : IQueueUserService
     {
         // Extract the user ID from the HTTP context. Default to Guid.Empty if the user is not found.
         _userId = Guid.Parse(httpContextAccessor.HttpContext?.User?.FindFirstValue("uid") ?? Guid.Empty.ToString());
+        _tenantId = Guid.Parse(httpContextAccessor.HttpContext?.User?.FindFirstValue("tntid") ?? Guid.Empty.ToString());
 
         _logger = logger;
         _unitOfWork = unitOfWork;
@@ -166,6 +168,7 @@ public class QueueUserService : IQueueUserService
 
             // Map the DTO to a QueueUser entity and set user-related properties
             var newQueueUser = queueUserDto.Adapt<QueueUser>();
+            newQueueUser.TenantId = _tenantId;
             newQueueUser.CreatedByUserId = _userId;
             newQueueUser.LastModifiedByUserId = _userId;
 

@@ -4,7 +4,7 @@ namespace WorkspaceAPIs.Entities;
 /// Represents a Queue User, linking a user to a specific Queue in the context of a tenant.
 /// </summary>
 [Table("worc_QueueUsers")]
-public class QueueUser : BaseEntity, IMustHaveTenant
+public class QueueUser : BaseEntity
 {
     /// <summary>
     /// Gets or sets the tenant ID associated with this queue user.
