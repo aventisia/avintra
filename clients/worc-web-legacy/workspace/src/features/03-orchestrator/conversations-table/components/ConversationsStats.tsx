@@ -23,7 +23,7 @@ export const ConversationsStats = ({ data }: StatsProps) => {
 
     const conversations = data.length;
 
-    const uniqueAgents = new Set(data.map((x) => x.firstName).filter(Boolean));
+    const uniqueAgents = new Set(data.map((x) => x.flowVersionId).filter(Boolean));
 
     const totalExchanges = data.reduce(
       (acc, x) => acc + (x.totalExchange ?? 0),
