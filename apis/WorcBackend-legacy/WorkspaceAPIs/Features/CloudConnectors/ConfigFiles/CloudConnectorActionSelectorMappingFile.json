@@ -379,6 +379,54 @@
           },
           {
             "type": "cloudConnectorNode",
+            "name": "M365/Outlook/CreateDraftEmailConnector",
+            "label": "Create Draft Email",
+            "description": "Create a draft email message in a Microsoft 365 Outlook mailbox using Microsoft Graph API.",
+            "docsLink": "https://docs.aventisia.com",
+            "img": "/assets/M365.svg",
+            "supportedPlatforms": [
+              "cloud",
+              "windows"
+            ]
+          },
+          {
+            "type": "cloudConnectorNode",
+            "name": "M365/Outlook/UpdateDraftEmailConnector",
+            "label": "Update Draft Email",
+            "description": "Update an existing draft email in a Microsoft 365 Outlook mailbox using Microsoft Graph API.",
+            "docsLink": "https://docs.aventisia.com",
+            "img": "/assets/M365.svg",
+            "supportedPlatforms": [
+              "cloud",
+              "windows"
+            ]
+          },
+          {
+            "type": "cloudConnectorNode",
+            "name": "M365/Outlook/DeleteDraftEmailConnector",
+            "label": "Delete Draft Email",
+            "description": "Delete an existing draft email from a Microsoft 365 Outlook mailbox using Microsoft Graph API.",
+            "docsLink": "https://docs.aventisia.com",
+            "img": "/assets/M365.svg",
+            "supportedPlatforms": [
+              "cloud",
+              "windows"
+            ]
+          },
+          {
+            "type": "cloudConnectorNode",
+            "name": "M365/Outlook/SendDraftEmailConnector",
+            "label": "Send Draft Email",
+            "description": "Send an existing draft email from a Microsoft 365 Outlook mailbox using Microsoft Graph API.",
+            "docsLink": "https://docs.aventisia.com",
+            "img": "/assets/M365.svg",
+            "supportedPlatforms": [
+              "cloud",
+              "windows"
+            ]
+          },
+          {
+            "type": "cloudConnectorNode",
             "name": "M365/Outlook/GetEmailsConnector",
             "label": "List Emails",
             "description": "Retrieve a list of email messages from a mailbox with optional filtering, sorting, or pagination.",
