@@ -429,4 +429,53 @@ public class TenantAccountService : ITenantAccountService
             return false;
         }
     }
+
+    // Searches account users whose first name, last name, or username matches the provided search term.
+    public async Task<ServiceResponse<IEnumerable<AppUserBaseDto>>> SearchAccountUserAsync(string searchKey, bool includeCurrentUser)
+    {
+        // Initialize the response with a default failure message.
+        var serviceResponse = new ServiceResponse<IEnumerable<AppUserBaseDto>>
+        {
+            Data = null,
+            Message = "Unable to complete the user search. Please try again."
+        };
+
+        try
+        {
+            // Validate the search term before proceeding.
+            if (string.IsNullOrWhiteSpace(searchKey))
+            {
+                _logger.LogWarning("Account user search failed because the search key was null or empty.");
+                serviceResponse.Message = "Search key cannot be empty.";
+                return serviceResponse;
+            }
+
+            // Retrieve users whose first name, last name, or username contains the search term.
+            var accountUsers = await _unitOfWork.AccountUserRepo
+                .GetByConditionAsync(w =>
+                    w.TenantId == _tenantId &&
+                    !w.IsDefault &&
+                    (includeCurrentUser || w.Id != _userId) &&
+                    (
+                        w.FirstName.ToLower().Contains(searchKey.ToLower()) ||
+                        w.LastName.ToLower().Contains(searchKey.ToLower()) ||
+                        w.UserName.ToLower().Contains(searchKey.ToLower())
+                    )
+                )
+                .ProjectToType<AppUserBaseDto>()
+                .ToListAsync();
+
+            // Populate the response with the search results.
+            serviceResponse.Data = accountUsers;
+            serviceResponse.StatusCode = 200;
+            serviceResponse.Message = $"Search completed successfully. {accountUsers.Count} user(s) found.";
+        }
+        catch (Exception ex)
+        {
+            // Log unexpected exceptions and return the default error response.
+            _logger.LogError(ex, "An error occurred while searching account users with key '{SearchKey}'", searchKey);
+        }
+
+        return serviceResponse;
+    }
 }

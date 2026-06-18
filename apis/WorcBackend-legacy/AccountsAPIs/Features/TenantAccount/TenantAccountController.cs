@@ -45,4 +45,11 @@ public class TenantAccountController : BaseApiController
     {
         return ResultHelper(await _tenantAccountService.UpdateTenantPreferencesAsync(tenantPreferenceDto));
     }
+
+    // Searches for account users matching the specified key.
+    [HttpGet("search/{searchKey}")]
+    public async Task<ActionResult<ServiceResponse<IEnumerable<AppUserBaseDto>>>> SearchWorkspaceUser(string searchKey, [FromQuery] bool includeCurrentUser = false)
+    {
+        return ResultHelper(await _tenantAccountService.SearchAccountUserAsync(searchKey, includeCurrentUser));
+    }
 }
