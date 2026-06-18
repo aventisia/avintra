@@ -21,7 +21,6 @@ import { cn } from "@aventisia/ui/lib";
 import { toast } from "@aventisia/ui/sonner";
 import { InfoIcon } from "lucide-react";
 import { useMemo, useState } from "react";
-import { Controller } from "react-hook-form";
 import { z } from "zod";
 
 import { useCallAgentForm } from "./useCallAgentForm";
@@ -38,7 +37,6 @@ const CallAgentConfigForm = () => {
     nodeConfigZodSchema,
     isLoading,
     watch,
-    control,
     nodeLabel,
     nodeId,
     nodeUniqueName,
@@ -126,44 +124,31 @@ const CallAgentConfigForm = () => {
         >
           <DCPTabsContent tabValue={"Inputs"}>
             <div className="space-y-3.5">
-              <Controller
+              <AsyncSingleSelectField<
+                SearchFlowVersionResDto,
+                {
+                  type: string;
+                  includePublishedOnly: boolean;
+                }
+              >
                 name="selectAgent"
-                control={control}
-                render={({ field }) => (
-                  <AsyncSingleSelectField<
-                    SearchFlowVersionResDto,
-                    {
-                      type: string;
-                      includePublishedOnly: boolean;
-                    }
-                  >
-                    label="Select Agent"
-                    description="Select an agent"
-                    placeholder="Search agent"
-                    queryKeyBase={["call-agent-search-flow-versions"]}
-                    fetcher={(query, filters) =>
-                      searchFlowVersions(
-                        query,
-                        filters.type,
-                        filters.includePublishedOnly,
-                      ).then((res) => res.data || [])
-                    }
-                    filters={{ type: "Agent", includePublishedOnly: false }}
-                    selectedItem={field.value || null}
-                    onSelect={(item) => {
-                      field.onChange(item);
-                      form.setValue("selectAgent", item, {
-                        shouldDirty: true,
-                        shouldTouch: true,
-                        shouldValidate: false,
-                      });
-                    }}
-                    getItemId={(item) => item.id}
-                    getItemLabel={(item) =>
-                      `${item.name} - v${item.versionNumber ?? "-"}`
-                    }
-                  />
-                )}
+                size="sm"
+                label="Select Agent"
+                description="Select an agent"
+                placeholder="Search agent"
+                queryKeyBase={["call-agent-search-flow-versions"]}
+                fetcher={(query, filters) =>
+                  searchFlowVersions(
+                    query,
+                    filters.type,
+                    filters.includePublishedOnly,
+                  ).then((res) => res.data || [])
+                }
+                filters={{ type: "Agent", includePublishedOnly: false }}
+                getItemId={(item) => item.id}
+                getItemLabel={(item) =>
+                  `${item.name} - v${item.versionNumber ?? "-"}`
+                }
               />
 
               {isLoading ? (
