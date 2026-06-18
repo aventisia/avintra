@@ -274,34 +274,176 @@ public class M365OutlookConnectorsService : IM365OutlookConnectorsService
             // case M365OutlookActionsEnum.DeleteEmail:
             //     return await HttpClientHelper.DeleteAsync($"{baseUrl}/messages/{GetValue("messageId")}", accessToken);
 
-            // case M365OutlookActionsEnum.SendDraftEmail:
-            //     return await HttpClientHelper.PostAsync($"{baseUrl}/messages/{GetValue("messageId")}/send", null, accessToken);
+            case M365OutlookActionsEnum.CreateDraftEmail:
+                {
+                    // Extract draft email details.
+                    var to = CloudConnectionPayloadUtil.GetValue(payload, "to");
+                    var cc = CloudConnectionPayloadUtil.GetValue(payload, "cc");
+                    var bcc = CloudConnectionPayloadUtil.GetValue(payload, "bcc");
+                    var subject = CloudConnectionPayloadUtil.GetValue(payload, "subject");
+                    var content = CloudConnectionPayloadUtil.GetValue(payload, "content");
 
-            // case M365OutlookActionsEnum.CreateDraftEmail:
-            //     return await HttpClientHelper.PostAsync($"{baseUrl}/messages",
-            //         new
-            //         {
-            //             subject = GetValue("subject"),
-            //             body = new { contentType = "HTML", content = GetValue("body") },
-            //             toRecipients = new[]
-            //             {
-            //         new { emailAddress = new { address = GetValue("to") } }
-            //             }
-            //         },
-            //         accessToken);
+                    // Apply default values for optional properties.
+                    var contentType = string.IsNullOrWhiteSpace(CloudConnectionPayloadUtil.GetValue(payload, "contentType"))
+                        ? "Text"
+                        : CloudConnectionPayloadUtil.GetValue(payload, "contentType");
 
-            // case M365OutlookActionsEnum.UpdateDraftEmail:
-            //     return await HttpClientHelper.PatchAsync($"{baseUrl}/messages/{GetValue("messageId")}",
-            //         new
-            //         {
-            //             subject = GetValue("subject"),
-            //             body = new { contentType = "HTML", content = GetValue("body") }
-            //         },
-            //         accessToken);
+                    var importance = string.IsNullOrWhiteSpace(CloudConnectionPayloadUtil.GetValue(payload, "importance"))
+                        ? "Normal"
+                        : CloudConnectionPayloadUtil.GetValue(payload, "importance");
 
-            // case M365OutlookActionsEnum.DeleteDraftEmail:
-            //     return await HttpClientHelper.DeleteAsync($"{baseUrl}/messages/{GetValue("messageId")}", accessToken);
+                    // Convert attachments to Microsoft Graph format.
+                    object[] attachments = Array.Empty<object>();
+                    if (payload.ContainsKey("attachments") && payload["attachments"] is IEnumerable<object> attList)
+                    {
+                        attachments = ConvertPayloadAttachmentsToGraph(attList);
+                    }
 
+                    // Create recipient collections from semicolon-separated email addresses.
+                    object[] BuildRecipients(string addresses) =>
+                        string.IsNullOrWhiteSpace(addresses)
+                            ? Array.Empty<object>()
+                            : addresses.Split(';', StringSplitOptions.RemoveEmptyEntries)
+                                .Select(email => new
+                                {
+                                    emailAddress = new
+                                    {
+                                        address = email.Trim()
+                                    }
+                                })
+                                .ToArray();
+
+                    var draftPayload = new
+                    {
+                        subject = subject,
+                        importance = importance,
+                        body = new
+                        {
+                            contentType = contentType,
+                            content = content
+                        },
+                        toRecipients = BuildRecipients(to),
+                        ccRecipients = BuildRecipients(cc),
+                        bccRecipients = BuildRecipients(bcc),
+                        attachments = attachments
+                    };
+
+                    return await HttpClientHelper.PostAsync(
+                        $"{messagesApiUrl}/messages",
+                        draftPayload,
+                        accessToken);
+                }
+
+            case M365OutlookActionsEnum.UpdateDraftEmail:
+                {
+                    // Extract draft email details.
+                    var draftId = CloudConnectionPayloadUtil.GetValue(payload, "draftId");
+                    var to = CloudConnectionPayloadUtil.GetValue(payload, "to");
+                    var cc = CloudConnectionPayloadUtil.GetValue(payload, "cc");
+                    var bcc = CloudConnectionPayloadUtil.GetValue(payload, "bcc");
+                    var subject = CloudConnectionPayloadUtil.GetValue(payload, "subject");
+                    var content = CloudConnectionPayloadUtil.GetValue(payload, "content");
+
+                    // Apply default values for optional properties.
+                    var contentType = string.IsNullOrWhiteSpace(CloudConnectionPayloadUtil.GetValue(payload, "contentType"))
+                        ? "Text"
+                        : CloudConnectionPayloadUtil.GetValue(payload, "contentType");
+
+                    var importance = string.IsNullOrWhiteSpace(CloudConnectionPayloadUtil.GetValue(payload, "importance"))
+                        ? "Normal"
+                        : CloudConnectionPayloadUtil.GetValue(payload, "importance");
+
+                    // Convert attachments to Microsoft Graph format.
+                    object[] attachments = Array.Empty<object>();
+                    if (payload.ContainsKey("attachments") && payload["attachments"] is IEnumerable<object> attList)
+                    {
+                        attachments = ConvertPayloadAttachmentsToGraph(attList);
+                    }
+
+                    // Create recipient collections from semicolon-separated email addresses.
+                    object[] BuildRecipients(string addresses) =>
+                        string.IsNullOrWhiteSpace(addresses)
+                            ? Array.Empty<object>()
+                            : addresses.Split(';', StringSplitOptions.RemoveEmptyEntries)
+                                .Select(email => new
+                                {
+                                    emailAddress = new
+                                    {
+                                        address = email.Trim()
+                                    }
+                                })
+                                .ToArray();
+
+                    // Build a PATCH payload containing only the fields that need to be updated.
+                    // Microsoft Graph will leave omitted properties unchanged.
+                    var updatePayload = new Dictionary<string, object>();
+
+                    // Update the email subject if provided.
+                    if (!string.IsNullOrEmpty(subject))
+                    {
+                        updatePayload["subject"] = subject;
+                    }
+
+                    // Update the email importance if provided.
+                    if (!string.IsNullOrEmpty(importance))
+                    {
+                        updatePayload["importance"] = importance;
+                    }
+
+                    // Update the email body if content is provided.
+                    if (!string.IsNullOrEmpty(content))
+                    {
+                        updatePayload["body"] = new
+                        {
+                            contentType = contentType,
+                            content = content
+                        };
+                    }
+
+                    // Add To recipients when one or more email addresses are supplied.
+                    var toRecipients = BuildRecipients(to);
+                    if (toRecipients.Any())
+                        updatePayload["toRecipients"] = toRecipients;
+
+                    // Add CC recipients when one or more email addresses are supplied.
+                    var ccRecipients = BuildRecipients(cc);
+                    if (ccRecipients.Any())
+                        updatePayload["ccRecipients"] = ccRecipients;
+
+                    // Add BCC recipients when one or more email addresses are supplied.
+                    var bccRecipients = BuildRecipients(bcc);
+                    if (bccRecipients.Any())
+                        updatePayload["bccRecipients"] = bccRecipients;
+
+                    // Add attachments when one or more attachments are supplied.
+                    if (attachments.Any())
+                        updatePayload["attachments"] = attachments;
+
+                    // Send the PATCH request to update the existing draft email.
+                    return await HttpClientHelper.PatchAsync(
+                        $"{messagesApiUrl}/messages/{draftId}",
+                        updatePayload,
+                        accessToken);
+                }
+
+            case M365OutlookActionsEnum.DeleteDraftEmail:
+                {
+                    var draftId = CloudConnectionPayloadUtil.GetValue(payload, "draftId");
+
+                    return await HttpClientHelper.DeleteAsync(
+                        $"{messagesApiUrl}/messages/{draftId}",
+                        accessToken);
+                }
+
+            case M365OutlookActionsEnum.SendDraftEmail:
+                {
+                    var draftId = CloudConnectionPayloadUtil.GetValue(payload, "draftId");
+
+                    return await HttpClientHelper.PostAsync(
+                        $"{messagesApiUrl}/messages/{draftId}/send",
+                        new object(),
+                        accessToken);
+                }
             // case M365OutlookActionsEnum.GetAttachmentsFromEmail:
             //     return await HttpClientHelper.GetAsync($"{baseUrl}/messages/{GetValue("messageId")}/attachments", accessToken);
 

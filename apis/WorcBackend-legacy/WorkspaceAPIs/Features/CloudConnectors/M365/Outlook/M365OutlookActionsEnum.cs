@@ -5,7 +5,6 @@ public enum M365OutlookActionsEnum
     // Email Sending
     SendEmail,
     SendEmailWithAttachments,
-    SendDraftEmail,
 
     // Read / Get Emails
     GetEmails,
@@ -27,6 +26,7 @@ public enum M365OutlookActionsEnum
     CreateDraftEmail,
     UpdateDraftEmail,
     DeleteDraftEmail,
+    SendDraftEmail,
 
     // Attachments
     GetAttachmentsFromEmail,

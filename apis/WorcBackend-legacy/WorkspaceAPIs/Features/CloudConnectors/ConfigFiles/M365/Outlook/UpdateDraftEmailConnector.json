@@ -1,0 +1,126 @@
+{
+  "name": "UpdateDraftEmail",
+  "description": "Updates an existing email draft in a specified Microsoft 365 mailbox using Microsoft Graph, with support for recipients, content, priority, and sensitivity.",
+  "version": "1.0.0",
+  "author": "@rahmat",
+  "supportedPlatforms": [
+    "cloud",
+    "windows"
+  ],
+  "errorHandling": "standard",
+  "testScreenType": "standard",
+  "fields": [
+    {
+      "direction": "Input",
+      "type": "credentials-select",
+      "name": "__CredentialId__M365",
+      "label": "M365 Credential",
+      "description": "Select Microsoft 365 credentials used to authenticate the request."
+    },
+    {
+      "direction": "Input",
+      "type": "text",
+      "name": "MailboxAddress",
+      "label": "Mailbox Address",
+      "description": "The email address of the mailbox containing the draft email."
+    },
+    {
+      "direction": "Input",
+      "type": "text",
+      "name": "DraftId",
+      "label": "Draft ID",
+      "description": "The unique identifier of the draft email to update."
+    },
+    {
+      "direction": "Input",
+      "type": "text",
+      "name": "To",
+      "label": "To",
+      "description": "Primary recipient email address(es). Separate multiple addresses with semicolons (;)."
+    },
+    {
+      "direction": "Input",
+      "type": "text",
+      "name": "CC",
+      "label": "CC",
+      "description": "Carbon copy recipient email address(es). Separate multiple addresses with semicolons (;)."
+    },
+    {
+      "direction": "Input",
+      "type": "text",
+      "name": "BCC",
+      "label": "BCC",
+      "description": "Blind carbon copy recipient email address(es). Separate multiple addresses with semicolons (;)."
+    },
+    {
+      "direction": "Input",
+      "type": "text",
+      "name": "Subject",
+      "label": "Subject",
+      "description": "Updated subject line of the draft email."
+    },
+    {
+      "direction": "Input",
+      "type": "select",
+      "name": "ContentType",
+      "label": "Content Type",
+      "description": "Format of the email body content.",
+      "defaultValue": "HTML",
+      "selectOptions": [
+        {
+          "label": "Plain Text",
+          "value": "Text",
+          "description": "Plain text format"
+        },
+        {
+          "label": "HTML",
+          "value": "HTML",
+          "description": "HTML format"
+        }
+      ]
+    },
+    {
+      "direction": "Input",
+      "type": "text",
+      "name": "Content",
+      "label": "Body",
+      "description": "Updated content of the draft email. The format should match the selected Content Type."
+    },
+    {
+      "direction": "Input",
+      "type": "select",
+      "name": "Importance",
+      "label": "Importance",
+      "description": "Specifies the importance level of the draft email.",
+      "defaultValue": "Normal",
+      "selectOptions": [
+        {
+          "label": "Low",
+          "value": "Low",
+          "description": "Low priority"
+        },
+        {
+          "label": "Normal",
+          "value": "Normal",
+          "description": "Normal priority"
+        },
+        {
+          "label": "High",
+          "value": "High",
+          "description": "High priority"
+        }
+      ]
+    },
+    {
+      "direction": "Output",
+      "type": "config-panel-output",
+      "name": "Result",
+      "label": "Result",
+      "description": "The updated draft email returned by Microsoft Graph, including its ID and metadata.",
+      "defaultValue": {
+        "value": "Result",
+        "enabled": true
+      }
+    }
+  ]
+}
