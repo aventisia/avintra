@@ -21,7 +21,6 @@ import { cn } from "@aventisia/ui/lib";
 import { toast } from "@aventisia/ui/sonner";
 import { InfoIcon } from "lucide-react";
 import { useMemo, useState } from "react";
-import { Controller } from "react-hook-form";
 import { z } from "zod";
 
 import { useCallBlockForm } from "./useCallBlockForm";
@@ -38,7 +37,6 @@ const CallBlockConfigForm = () => {
     nodeConfigZodSchema,
     isLoading,
     watch,
-    control,
     nodeLabel,
     nodeId,
     nodeUniqueName,
@@ -127,44 +125,31 @@ const CallBlockConfigForm = () => {
         >
           <DCPTabsContent tabValue={"Inputs"}>
             <div className="space-y-3.5">
-              <Controller
+              <AsyncSingleSelectField<
+                SearchFlowVersionResDto,
+                {
+                  type: string;
+                  includePublishedOnly: boolean;
+                }
+              >
                 name="selectBlock"
-                control={control}
-                render={({ field }) => (
-                  <AsyncSingleSelectField<
-                    SearchFlowVersionResDto,
-                    {
-                      type: string;
-                      includePublishedOnly: boolean;
-                    }
-                  >
-                    label="Select Block"
-                    description="Select a block"
-                    placeholder="Search block"
-                    queryKeyBase={["call-block-search-flow-versions"]}
-                    fetcher={(query, filters) =>
-                      searchFlowVersions(
-                        query,
-                        filters.type,
-                        filters.includePublishedOnly,
-                      ).then((res) => res.data || [])
-                    }
-                    filters={{ type: "Block", includePublishedOnly: false }}
-                    selectedItem={field.value || null}
-                    onSelect={(item) => {
-                      field.onChange(item);
-                      form.setValue("selectBlock", item, {
-                        shouldDirty: true,
-                        shouldTouch: true,
-                        shouldValidate: false,
-                      });
-                    }}
-                    getItemId={(item) => item.id}
-                    getItemLabel={(item) =>
-                      `${item.name} - v${item.versionNumber ?? "-"}`
-                    }
-                  />
-                )}
+                size="sm"
+                label="Select Block"
+                description="Select a block"
+                placeholder="Search block"
+                queryKeyBase={["call-block-search-flow-versions"]}
+                fetcher={(query, filters) =>
+                  searchFlowVersions(
+                    query,
+                    filters.type,
+                    filters.includePublishedOnly,
+                  ).then((res) => res.data || [])
+                }
+                filters={{ type: "Block", includePublishedOnly: false }}
+                getItemId={(item) => item.id}
+                getItemLabel={(item) =>
+                  `${item.name} - v${item.versionNumber ?? "-"}`
+                }
               />
 
               {isLoading ? (
