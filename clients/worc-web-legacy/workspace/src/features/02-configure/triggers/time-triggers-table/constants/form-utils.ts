@@ -15,50 +15,61 @@ const weekdays = [
 
 const numbers = [1, 2, 3, 4, 5, 6, 7];
 
-// Function to convert weekdays to numbers
+/**
+ * Maps an array of weekday strings to their corresponding numeric values (1-7).
+ */
 function weekdaysToNumbers(weekdaysArray: string[] | undefined): number[] {
-  if (!weekdaysArray) return [];
+  if (!weekdaysArray || weekdaysArray.length === 0) return [];
   return weekdaysArray.map((day) => {
     const index = weekdays.indexOf(day);
-    if (index !== -1) {
-      return numbers[index];
-    }
-    throw new Error(`Invalid weekday: ${day}`);
+    if (index === -1)
+      throw new Error(`Invalid weekday string provided: ${day}`);
+    return numbers[index];
   });
 }
 
-// Function to convert numbers to weekdays
+/**
+ * Maps an array of numeric weekdays (1-7) back to their string representations.
+ */
 function numbersToWeekdays(numbersArray: number[] | undefined): string[] {
-  if (!numbersArray) return [];
+  if (!numbersArray || numbersArray.length === 0) return [];
   return numbersArray.map((num) => {
     const index = numbers.indexOf(num);
-    if (index !== -1) {
-      return weekdays[index];
-    }
-    throw new Error(`Invalid number: ${num}`);
+    if (index === -1)
+      throw new Error(`Invalid weekday number provided: ${num}`);
+    return weekdays[index];
   });
 }
 
-// Generate options for each frequency
-const generateMinutesOptions = () =>
+/**
+ * Generates dropdown options for minute intervals (1 to 59).
+ */
+const generateMinutesOptions = (): ISelectOption[] =>
   Array.from({ length: 59 }, (_, i) => ({
     label: `${i + 1} minute${i === 0 ? "" : "s"}`,
     value: (i + 1).toString(),
-  })) as unknown as ISelectOption[];
+  }));
 
-const generateHourMinutesOptions = () =>
-  Array.from({ length: 59 }, (_, i) => ({
-    label: `${i} minute${i === 0 ? "" : "s"}`,
+/**
+ * Generates options representing specific minutes past an hour.
+ * Uses '00:MM' format to trick standard time inputs into passing just the minute data.
+ */
+const generateHourMinutesOptions = (): ISelectOption[] =>
+  Array.from({ length: 60 }, (_, i) => ({
+    label: `${i} minute${i === 1 ? "" : "s"}`,
     value: `00:${String(i).padStart(2, "0")}`,
-  })) as unknown as ISelectOption[];
+  }));
 
-const generateMonthOptions = () =>
+/**
+ * Generates dropdown options for month intervals (1 to 12).
+ */
+const generateMonthOptions = (): ISelectOption[] =>
   Array.from({ length: 12 }, (_, i) => ({
     label: `${i + 1} month${i === 0 ? "" : "s"}`,
     value: (i + 1).toString(),
-  })) as unknown as ISelectOption[];
+  }));
 
-const generateDayOfWeekOptions = () => [
+const generateDayOfWeekOptions = (): ISelectOption[] => [
   { label: "Monday", value: "Monday" },
   { label: "Tuesday", value: "Tuesday" },
   { label: "Wednesday", value: "Wednesday" },
@@ -68,41 +79,45 @@ const generateDayOfWeekOptions = () => [
   { label: "Sunday", value: "Sunday" },
 ];
 
-const generateDayOfMonthOptions = () =>
+/**
+ * Generates dropdown options for days of the month (1 to 31).
+ */
+const generateDayOfMonthOptions = (): ISelectOption[] =>
   Array.from({ length: 31 }, (_, i) => ({
-    label: `Day ${i + 1}`,
+    label: `${i + 1} day${i === 0 ? "" : "s"}`,
     value: (i + 1).toString(),
-  })) as unknown as ISelectOption[];
+  }));
 
-const generateHourlyOptions = () =>
-  Array.from({ length: 23 }, (_, i) => {
-    const hour = i + 1;
+/**
+ * Generates dropdown options for hour intervals (1 to 23).
+ */
+const generateHourlyOptions = (): ISelectOption[] =>
+  Array.from({ length: 23 }, (_, i) => ({
+    label: `${i + 1} hour${i === 0 ? "" : "s"}`,
+    value: (i + 1).toString(),
+  }));
 
-    const displayHour = hour % 12 === 0 ? 12 : hour % 12;
-    const period = hour < 12 ? "AM" : "PM";
-
-    return {
-      label: `${displayHour} ${period}`,
-      value: hour.toString(),
-    };
-  }) as unknown as ISelectOption[];
-
-const formatHour = (h: number) => {
+/**
+ * Formats a 24-hour integer into a 12-hour AM/PM string.
+ */
+const formatHour = (h: number): string => {
   const hour = h % 12 === 0 ? 12 : h % 12;
   const period = h < 12 || h === 24 ? "AM" : "PM";
   return `${hour} ${period}`;
 };
 
-const generateHourlyWithRangeOptions = () =>
-  Array.from({ length: 23 }, (_, i) => {
-    const start = i + 1;
+/**
+ * Generates options mapping specific hour ranges for exception configurations.
+ */
+const generateHourlyWithRangeOptions = (): ISelectOption[] =>
+  Array.from({ length: 24 }, (_, i) => {
+    const start = i; // Adjusted to allow 12 AM (0) as a start
     const end = start + 1;
-
     return {
-      label: `${formatHour(start)} to ${formatHour(end)}`,
+      label: `${formatHour(start || 24)} to ${formatHour(end)}`,
       value: start.toString(),
     };
-  }) as unknown as ISelectOption[];
+  });
 
 const timezoneOptions = Enumerable.from(timezones)
   .select<ISelectOption>((t) => ({
@@ -111,21 +126,22 @@ const timezoneOptions = Enumerable.from(timezones)
   }))
   .toArray();
 
-//   Extracts time in "HH:mm" format from a Date object
+/**
+ * Extracts time in strictly "HH:mm" format from a JavaScript Date object.
+ */
 function getTimeFromDate(date: Date): string {
   const hours = date.getHours().toString().padStart(2, "0");
   const minutes = date.getMinutes().toString().padStart(2, "0");
   return `${hours}:${minutes}`;
 }
 
-// Updates a Date object with a new time from "HH:mm" string
+/**
+ * Clones a Date object and applies a new time derived from an "HH:mm" string.
+ */
 function setTimeToDate(date: Date, time: string): Date {
   const [hours, minutes] = time.split(":").map(Number);
-
-  // Create a new Date object to avoid mutating the original
   const newDate = new Date(date);
   newDate.setHours(hours, minutes, 0, 0);
-
   return newDate;
 }
 export {

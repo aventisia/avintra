@@ -56,7 +56,7 @@ export const TriggerTimeScheduleInputs = ({
           <SelectField
             name="interval"
             isRequired
-            label={"Repeat Every (Days of Month)"}
+            label={"Repeat Every (Day of Month)"}
             description="Choose the day of the month for repeating the trigger."
             selectOptions={generateDayOfMonthOptions()}
           />

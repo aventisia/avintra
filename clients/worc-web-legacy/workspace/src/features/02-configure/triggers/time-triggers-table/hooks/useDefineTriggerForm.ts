@@ -63,7 +63,7 @@ export const useDefineTriggerForm = () => {
       timezone: "",
       effectiveDate: new Date(), // Default to current date
       effectiveTime: null,
-      frequency: "OneTime", // Default frequency to "OneTime"
+      frequency: "MinuteByMinute", // Default frequency to "MinuteByMinute"
       atTime: "00:00",
       interval: "1",
       weekdays: [],
