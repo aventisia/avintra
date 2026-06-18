@@ -109,7 +109,7 @@ namespace CodeActivitiesLibrary.AppIntegrations.CloudConnectorsActivities
                         top_k = topK,
                         tool_config = toolsConfig != null ? toolsConfig.ToObject<object>() : null,
                         is_chat_agent = enableDynamicActions == null ? false : true,
-                        enable_dynamic_actions = enableDynamicActions ?? false,
+                        generate_dynamic_actions = enableDynamicActions ?? false,
                     };
 
                     // Convert request object to JSON

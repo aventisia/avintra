@@ -94,7 +94,7 @@ public class ProcessLLMRequestNode : BaseNode
                 top_k = topK,
                 tool_config = toolsConfig.ValueKind == JsonValueKind.Object ? toolsConfig.Deserialize<Dictionary<string, object>>() : null,
                 is_chat_agent = enableDynamicActions == null ? false : true,
-                enable_dynamic_actions = enableDynamicActions ?? false,
+                generate_dynamic_actions = enableDynamicActions ?? false,
             };
 
             var requestJson = JsonSerializer.Serialize(requestObj);
