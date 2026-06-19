@@ -6,7 +6,7 @@ CHAT_AGENT_RESPONSE_SCHEMA = {
         },
         "recommended_actions": {
             "type": "array",
-            "description": "List of up to 5 user-friendly suggested next actions. Use natural language text, not internal action IDs or snake_case values.",
+            "description": "List of user-facing action suggestions written as complete natural-language phrases. Do not use IDs, codes, snake_case, or internal action names.",
             "items": {
                 "type": "string"
             },

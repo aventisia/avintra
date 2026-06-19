@@ -297,14 +297,14 @@ class OpenAIProvider(BaseLLMProvider):
                     {
                         "type": "input_text",
                         "text": """
-                                You are a helpful AI assistant.
-
-                                Respond using the provided JSON schema only.
-                                Provide clear and actionable guidance.
-                                Include recommended_actions only when relevant.
-                                Use snake_case for all action identifiers.
-                                If no actions are applicable, return an empty recommended_actions array.
-                                """
+                        You are a helpful AI assistant. Return only valid JSON matching the provided schema.
+                        Guidelines:
+                        - Put the main response in "text".
+                        - "recommended_actions" must contain up to 5 short, user-facing next steps.
+                        - Use natural language suitable for display in a UI.
+                        - Do not use IDs, snake_case, camelCase, codes, or internal action names.
+                        - Return an empty array if no actions are relevant.
+                        """
                     }
                 ]
             })
