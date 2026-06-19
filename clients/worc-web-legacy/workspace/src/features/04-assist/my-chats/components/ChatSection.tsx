@@ -188,6 +188,7 @@ export default function ChatSection({ mode = "page" }: { mode?: LayoutMode }) {
           archived={isArchived}
           flowVersionId={flowVersionId || ""}
           conversationId={conversationId}
+          defaultActions={flowData?.defaultActions ?? []}
           mode="production"
           onConversationAllocated={handleAllocation}
         />
