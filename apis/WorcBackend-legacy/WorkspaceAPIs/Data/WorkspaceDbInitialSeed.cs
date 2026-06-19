@@ -29,6 +29,9 @@ public static class WorkspaceDbInitialSeed
             // (FlowUser, FlowVersionUser, and QueueUser) has been successfully migrated
             // to ResourceShare in all environments.
 
+            // Remove duplicate records from all configured entities
+            await RemoveDuplicateRecordsAsync(workspaceDbContext);
+
             // Migrate legacy FlowUser records to ResourceShare records.
             await MigrateFlowUsersToResourceSharesAsync(workspaceDbContext);
 
@@ -42,6 +45,82 @@ public static class WorkspaceDbInitialSeed
         {
             Console.WriteLine($"Error: An error occurred while applying database migrations: {ex.Message}");
             throw;
+        }
+    }
+
+    private static async Task RemoveDuplicateRecordsAsync(WorkspaceDbContext workspaceDbContext)
+    {
+        // STEP 1: Identify duplicates using ROW_NUMBER logic
+        // Keep only the first record per (UserId, ResourceId)
+        var duplicateResourceShareIds = (await workspaceDbContext.ResourceShares
+            .ToListAsync())
+            .GroupBy(x => new { x.UserId, x.ResourceId })
+            .SelectMany(g => g.OrderBy(x => x.Id).Skip(1))
+            .Select(x => x.Id)
+            .ToList();
+
+        if (duplicateResourceShareIds.Any())
+        {
+            Console.WriteLine($"Info: Deleting {duplicateResourceShareIds.Count} duplicate ResourceShares...");
+
+            // STEP 2: Delete only by IDs
+            var duplicates = workspaceDbContext.ResourceShares
+                .Where(w => duplicateResourceShareIds.Contains(w.Id));
+
+            workspaceDbContext.ResourceShares.RemoveRange(duplicates);
+            await workspaceDbContext.SaveChangesAsync();
+
+            Console.WriteLine("Info: Duplicate ResourceShares removed.");
+        }
+
+        // STEP 1: Identify duplicates using ROW_NUMBER logic
+        // Keep only the first record per (UserId, QueueId)
+        var duplicateQueueUserIds = (await workspaceDbContext.QueueUsers
+            .ToListAsync())
+            .GroupBy(g => new { g.UserId, g.QueueId })
+            .SelectMany(sm => sm
+                .OrderBy(o => o.Id)
+                .Skip(1))
+            .Select(s => s.Id)
+            .ToList();
+
+        if (duplicateQueueUserIds.Any())
+        {
+            Console.WriteLine($"Info: Deleting {duplicateQueueUserIds.Count} duplicate QueueUsers...");
+
+            // STEP 2: Delete only by IDs
+            var duplicateQueueUsers = workspaceDbContext.QueueUsers
+                .Where(w => duplicateQueueUserIds.Contains(w.Id));
+
+            workspaceDbContext.QueueUsers.RemoveRange(duplicateQueueUsers);
+            await workspaceDbContext.SaveChangesAsync();
+
+            Console.WriteLine("Info: Duplicate QueueUsers removed.");
+        }
+
+        // STEP 1: Identify duplicates using ROW_NUMBER logic
+        // Keep only the first record per (UserId, FlowVersionId)
+        var duplicateFlowVersionIds = (await workspaceDbContext.FlowVersionUsers
+            .ToListAsync())
+            .GroupBy(g => new { g.UserId, g.FlowVersionId })
+            .SelectMany(sm => sm
+                .OrderBy(o => o.Id)
+                .Skip(1))
+            .Select(s => s.Id)
+            .ToList();
+
+        if (duplicateFlowVersionIds.Any())
+        {
+            Console.WriteLine($"Info: Deleting {duplicateFlowVersionIds.Count} duplicate FlowVersionUsers...");
+
+            // STEP 2: Delete only by IDs
+            var duplicateFlowVersions = workspaceDbContext.FlowVersionUsers
+                .Where(w => duplicateFlowVersionIds.Contains(w.Id));
+
+            workspaceDbContext.FlowVersionUsers.RemoveRange(duplicateFlowVersions);
+            await workspaceDbContext.SaveChangesAsync();
+
+            Console.WriteLine("Info: Duplicate FlowVersionUsers removed.");
         }
     }
 
@@ -60,8 +139,17 @@ public static class WorkspaceDbInitialSeed
 
         Console.WriteLine($"Info: Migrating {flowUsers.Count} FlowUsers to ResourceShares...");
 
+        var existingKeys = (await workspaceDbContext.ResourceShares
+            .Where(w => w.ResourceType == ResourceTypeEnum.Flow)
+            .Select(s => new { s.UserId, s.ResourceId })
+            .ToListAsync())
+            .Select(s => $"{s.UserId}:{s.ResourceId}")
+            .ToHashSet();
+
         // Convert FlowUser records into ResourceShare records.
-        var resourceShares = flowUsers.Select(s => new ResourceShare
+        var resourceShares = flowUsers
+        .Where(w => !existingKeys.Contains($"{w.UserId}:{w.FlowId}"))
+        .Select(s => new ResourceShare
         {
             UserId = s.UserId,
             ResourceId = s.FlowId,
