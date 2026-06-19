@@ -1,13 +1,13 @@
-import { InputField, SelectField } from "@aventisia/ui/form";
-
 import { MultiSelectField } from "@/components/multi-select/MultiSelectField";
 import { TriggerFrequencyTypesEnum } from "@/enums/trigger-frequency-types-enum";
+
+import { InputField, SelectField } from "@aventisia/ui/form";
 
 import {
   generateDayOfMonthOptions,
   generateDayOfWeekOptions,
-  generateHourlyOptions,
   generateHourMinutesOptions,
+  generateHourlyOptions,
   generateMinutesOptions,
   generateMonthOptions,
 } from "../../constants/form-utils";
@@ -56,7 +56,7 @@ export const TriggerTimeScheduleInputs = ({
           <SelectField
             name="interval"
             isRequired
-            label={"Repeat Every (Day of Month)"}
+            label={"Repeat Every (N Day)"}
             description="Choose the day of the month for repeating the trigger."
             selectOptions={generateDayOfMonthOptions()}
           />
