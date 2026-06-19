@@ -37,7 +37,7 @@ const QueueSelectorField = ({
     queues: QueuesTableDto[],
   ): ISelectOption[] => {
     return queues.map((queue) => ({
-      value: queue.id,
+      value: queue.name,
       label: queue.name,
     }));
   };
