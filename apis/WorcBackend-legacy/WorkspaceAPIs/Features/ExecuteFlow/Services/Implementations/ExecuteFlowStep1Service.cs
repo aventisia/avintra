@@ -70,7 +70,7 @@ public class ExecuteFlowStep1Service : IExecuteFlowStep1Service
                 return serviceResponse.Update(401, "You must be logged in to execute this flow.");
 
             // Validate: User don't have access to the parent flow
-            if (await HasUserAccessToFlowAsync(flowVersion.FlowId) == false)
+            if (await HasUserAccessToFlowAsync(flowVersion) == false)
                 return serviceResponse.Update(403, "You do not have permission to execute this flow.");
 
             // Get the parsed ReactFlowObject
@@ -194,34 +194,60 @@ public class ExecuteFlowStep1Service : IExecuteFlowStep1Service
         return serviceResponse;
     }
 
-    // Helper: Check if the user has access to the flow 
-    private async Task<bool> HasUserAccessToFlowAsync(Guid flowId)
+    // Helper: Determines whether the current user has access to a specific flow version
+    private async Task<bool> HasUserAccessToFlowAsync(FlowVersion flowVersion)
     {
-        // Get the flow first
-        var flow = await _unitOfWork.FlowRepo
-            .GetByConditionAsync(w => w.Id == flowId)
-            .AsNoTracking()
-            .SingleOrDefaultAsync();
+        // STEP 1: Draft / Unpublished versions
+        // These versions do not maintain their own access rules and inherit permissions entirely from the parent Flow.
+        if (!flowVersion.IsPublished)
+        {
+            var flow = await _unitOfWork.FlowRepo
+                .GetByConditionAsync(w => w.Id == flowVersion.FlowId)
+                .AsNoTracking()
+                .SingleOrDefaultAsync();
 
-        // Flow not found
-        if (flow == null) return false;
+            // If the parent flow cannot be found, access is denied
+            if (flow == null)
+                return false;
 
-        // Validate view permission
-        var (canView, accessLevel) = await _resourceShareService.GetResourceAccessAsync(
-            _userId,
-            flow.Id,
-            ResourceTypeEnum.Flow,
-            flow.CreatedByUserId,
-            flow.IsTenantWideAccess,
-            new[]
-            {
-                ResourceAccessTypeEnum.Owner,
-                ResourceAccessTypeEnum.FullAccess,
-                ResourceAccessTypeEnum.View,
-                ResourceAccessTypeEnum.Edit,
-                ResourceAccessTypeEnum.Delete,
-            }
-        );
-        return canView;
+            // Global override: tenant-wide access at Flow level
+            if (flow.IsTenantWideAccess)
+                return true;
+
+            var (canView, _) = await _resourceShareService.GetResourceAccessAsync(
+                _userId,
+                flow.Id,
+                ResourceTypeEnum.Flow,
+                flow.CreatedByUserId,
+                flow.IsTenantWideAccess,
+                new[]
+                {
+                    ResourceAccessTypeEnum.Owner,
+                    ResourceAccessTypeEnum.FullAccess,
+                    ResourceAccessTypeEnum.View,
+                    ResourceAccessTypeEnum.Edit,
+                    ResourceAccessTypeEnum.Delete
+                }
+            );
+
+            // Draft versions require at least view-level access on the parent Flow
+            return canView;
+        }
+
+        // --------------------------------------------------------------------
+        // STEP 2: Published versions
+        // These versions have explicit access control independent of the Flow.
+        // --------------------------------------------------------------------
+
+        // Global override: tenant-wide access at version level
+        if (flowVersion.IsTenantWideAccess)
+            return true;
+
+        // Final check: explicit user assignment on the published version
+        return await _unitOfWork.FlowVersionUserRepo
+            .DoesDependentEntitiesExistAsync(x =>
+                x.FlowVersionId == flowVersion.Id &&
+                x.UserId == _userId
+            );
     }
 }
