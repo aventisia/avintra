@@ -11,14 +11,13 @@ import { IS_TAURI } from "@/constants/constants";
 import { getAvailableCredits } from "@/features/available-credits/available-credits-apis";
 import { getMySession } from "@/react-toolkit/apis/accounts-me-apis";
 import { useUserSessionStore } from "@/react-toolkit/stores/user-session-store";
-import { NodeDataType } from "@/types/node-data-type";
 
-import { clearNodeExecutionLog, CURRENT_VERSION_ID_KEY } from "..";
+import { CURRENT_VERSION_ID_KEY, clearNodeExecutionLog } from "..";
 import { getFlowToLoad } from "../apis/react-flow-apis";
 import useWebSocket from "../hooks/useWebSocket";
 import { useCurrentFlowStore } from "../stores/current-flow-store";
-import { extractUniqueConfigKeys } from "../utils/config-key-utils";
 import { deepParse } from "../utils/deepParse";
+import { extractInputsFromInputOutputObject } from "../utils/extract-inputs-from-inputoutputobject";
 
 const ExecuteFlow = ({
   agentId,
@@ -69,6 +68,7 @@ const ExecuteFlow = ({
       id: currFlowData?.data.id,
       versionId: currFlowData?.data.versionId,
       name: currFlowData?.data.name,
+      inputOutputObject: currFlowData?.data.inputOutputObject || "",
       jobId: "",
       machineId: "",
     });
@@ -87,17 +87,18 @@ const ExecuteFlow = ({
       // Get the access token from the session
       const accessToken = userSession.data?.accessToken;
 
-      console.log(
-        "ConfigKeys:",
-        extractUniqueConfigKeys(nodes as Node<NodeDataType>[]),
-      );
-
       // Open the desktop executor if the app is running in Tauri
       if (IS_TAURI) {
         localStorage.removeItem("flowExecutionStack"); //  Clear any previous subflow stack
         localStorage.setItem("conditionalExecutionGroup", JSON.stringify([]));
         localStorage.setItem("loopExecutionGroup", JSON.stringify([]));
-        openDesktopExecutor(accessToken, nodes, edges, currFlowData.data.name);
+        openDesktopExecutor(
+          accessToken,
+          nodes,
+          edges,
+          currFlowData.data.name,
+          currFlowData.data.inputOutputObject,
+        );
       } else {
         toast.info(
           "Please use our desktop app. Execution in browser is not supported.",
@@ -114,8 +115,29 @@ const ExecuteFlow = ({
     nodes: Node[],
     edges: Edge[],
     agentName: string,
+    inputOutputObject?: string,
   ) => {
     try {
+      // Add input variables to triggerNode so they are set in execution context before remaining nodes run.
+      const inputVariables = extractInputsFromInputOutputObject(
+        inputOutputObject || "",
+      );
+
+      // TODO: Extract configKeys
+
+      const updatedNodes = nodes.map((node) =>
+        node.type === "triggerNode"
+          ? {
+              ...node,
+              data: {
+                ...node.data,
+                label: "Setting up execution context...",
+                inputs: inputVariables,
+              },
+            }
+          : node,
+      );
+
       // Get websocket port
       const wsPort = await invoke("get_websocket_port");
 
@@ -125,7 +147,7 @@ const ExecuteFlow = ({
         wsPort,
         agentId: versionId,
         agentName: agentName,
-        inputArgumentsJson: JSON.stringify({}), // For manuall trigger we can send empty input arguments. 
+        inputArgumentsJson: JSON.stringify({}), // For manuall trigger we can send empty input arguments.
         accessToken,
       });
       console.log("Executor launched successfully:", res);
@@ -133,7 +155,7 @@ const ExecuteFlow = ({
       // Set versionId, nodes and edges in local storage for executor
       localStorage.setItem(CURRENT_VERSION_ID_KEY, versionId || "");
       clearNodeExecutionLog();
-      localStorage.setItem("nodes", JSON.stringify(nodes));
+      localStorage.setItem("nodes", JSON.stringify(updatedNodes));
       localStorage.setItem("edges", JSON.stringify(edges));
     } catch (error) {
       // Inform the user about the failure

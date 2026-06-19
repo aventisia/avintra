@@ -52,7 +52,7 @@ namespace NodeExecutor
             AddAgentMetadataToContext(_agentId, _agentName);
             AddArgumentsToContext("_accessToken", _accessToken);
             AddInputArgumentsToContext(inputArgumentsJson);
-            
+
             // Start the WebSocket and timer
             InitServices();
         }
@@ -167,6 +167,9 @@ namespace NodeExecutor
                     case "error":
                         DoAbort();
                         break;
+                    case "setup-execution-context":
+                        SetupExecutionContextAsync(data);
+                        break;
                     case "process-node":
                         ExecuteNodeAsync(data);
                         break;
@@ -242,6 +245,55 @@ namespace NodeExecutor
 
             // Close the application
             Application.Current.Shutdown();
+        }
+
+        private async void SetupExecutionContextAsync(string data)
+        {
+            // Set the start time for the node execution
+            var startTime = DateTime.UtcNow;
+
+            // Deserialize the node data
+            var nodeData = ActivityExecutorService.ConvertNodeData(_agentId, _agentName, _accessToken, data, _executionContext, _interpreter);
+
+            if (nodeData == null)
+            {
+                MessageBox.Show("Invalid node data received.");
+                return;
+            }
+
+            // Set the node name
+            Dispatcher.Invoke(() =>
+            {
+                lbl_NodeName.Text = nodeData.NodeName.Length > 0 ? nodeData.NodeName : "Setting up execution context...";
+            });
+
+            // Run node execution in a background task
+            await Task.Run(async () =>
+            {
+                // Execute single node
+                var (isSuccess, nodeExecutionLog) = ActivityExecutorService.SetupExecutionContext(nodeData, _executionContext, _interpreter, startTime);
+
+                // Send the execution log back to the server (must be awaited on UI thread)
+                await Dispatcher.InvokeAsync(async () =>
+                {
+
+                    await _webSocket.SendCommandAsync("save-execution-log", JsonConvert.SerializeObject(nodeExecutionLog, new JsonSerializerSettings
+                    {
+                        ContractResolver = new CamelCasePropertyNamesContractResolver()
+                    }));
+
+                    // Check if the node execution was successful
+                    if (!isSuccess)
+                    {
+                        await _webSocket.SendCommandAsync("error");
+                        DoAbort();
+                        return;
+                    }
+
+                    // Send next node command to the server
+                    await _webSocket.SendCommandAsync("next-node", nodeData.NextNodeId);
+                });
+            });
         }
 
         private async void ExecuteConditionAsync(string data)

@@ -1,6 +1,7 @@
 ﻿using CodeActivitiesLibrary.AppIntegrations.CloudConnectorsActivities;
-using CodeActivitiesLibrary.Utils;
 using CodeActivitiesLibrary.Models;
+using CodeActivitiesLibrary.Utils;
+using DocumentFormat.OpenXml.Wordprocessing;
 using DynamicExpresso;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
@@ -239,6 +240,66 @@ namespace NodeExecutor.Services
                 Console.WriteLine($"Error in finding CodeActivity {codeActivityName}: {ex.Message}");
                 throw;
             }
+        }
+
+        public static (bool, NodeExecutionLog) SetupExecutionContext(ActivityNodeData nodeData, ExecutionContext executionContext, Interpreter interpreter, DateTime startTime)
+        {
+            // Initiaze the return object
+            var nodeExecutionlog = new NodeExecutionLog
+            {
+                NodeId = nodeData.Id,
+                NodeName = nodeData.NodeName,
+                NodeUniqueName = nodeData.CodeActivityName,
+                IsSuccess = false,
+                Duration = 0,
+                Inputs = new List<NodeLogKeyValue>(),
+                Outputs = new List<NodeLogKeyValue>()
+            };
+
+            // Initialize input and output dictionaries
+            var inputValues = new Dictionary<string, object>();
+            var outputValues = new Dictionary<string, object>();
+
+            // Execute the node
+            try
+            {
+                // Process node inputs
+                foreach (var input in nodeData.NodeInputs)
+                {
+                    // If input is null or empty, skip
+                    if (string.IsNullOrEmpty(input.Value?.ToString())) continue;
+
+                    // Resolve template if input is string and contains {{ }}
+                    object inputValue = input.Value;
+                    if (input.Value is string strVal && strVal.Contains("{{") && strVal.Contains("}}"))
+                    {
+                        inputValue = ResolveTemplate(strVal, executionContext, interpreter);
+                    }
+
+                    // Add to inputValues for logging
+                    inputValues[input.Key] = inputValue;
+
+                    // Set the input argument in the execution context
+                    executionContext.Set(input.Key, inputValue);
+                    interpreter.SetVariable(input.Key, inputValue);
+                }
+
+                // Set inputValues to nodeExecutionLog object
+                nodeExecutionlog.Inputs = inputValues.Select(kv => new NodeLogKeyValue { Key = kv.Key, Value = ConvertValueForLoggingUtil.ConvertValueForLogging(kv.Key, kv.Value, "Input", false) }).ToList();
+
+                // Set isSuccess status
+                nodeExecutionlog.IsSuccess = true; // SetupExecutionContext is always successful if it reaches this point
+            }
+            catch
+            {
+                nodeExecutionlog.IsSuccess = false;
+            }
+
+            // Update duration
+            nodeExecutionlog.Duration = (DateTime.UtcNow - startTime).TotalSeconds;
+
+            // Return
+            return (nodeExecutionlog.IsSuccess, nodeExecutionlog);
         }
 
         public static (bool, NodeExecutionLog) ExecuteNode(ActivityNodeData nodeData, ExecutionContext executionContext, Interpreter interpreter, DateTime startTime)

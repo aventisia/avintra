@@ -1,13 +1,3 @@
-import { IS_TAURI } from "@/constants";
-import { getAvailableCredits } from "@/features/available-credits/available-credits-apis";
-import { useSaveFlow } from "@/features/react-flow/hooks/useSaveFlow";
-import { getMySession } from "@/react-toolkit/apis/accounts-me-apis";
-import { FlowTypesEnum } from "@/react-toolkit/enums/flow-types-enum";
-import { useUserSessionStore } from "@/react-toolkit/stores/user-session-store";
-import { useCurrentFlowStore } from "@/stores/current-flow-store";
-import { useReactFlowExtStore } from "@/stores/react-flow-ext-store";
-import { NodeDataType } from "@/types/node-data-type";
-
 import { Button } from "@aventisia/ui/buttons";
 import { toast } from "@aventisia/ui/sonner";
 import { Tooltip } from "@aventisia/ui/tooltip";
@@ -17,6 +7,16 @@ import { invoke } from "@tauri-apps/api/core";
 import { Node } from "@xyflow/react";
 import { Loader2 } from "lucide-react";
 import { useShallow } from "zustand/react/shallow";
+
+import { IS_TAURI } from "@/constants";
+import { getAvailableCredits } from "@/features/available-credits/available-credits-apis";
+import { useSaveFlow } from "@/features/react-flow/hooks/useSaveFlow";
+import { getMySession } from "@/react-toolkit/apis/accounts-me-apis";
+import { FlowTypesEnum } from "@/react-toolkit/enums/flow-types-enum";
+import { useUserSessionStore } from "@/react-toolkit/stores/user-session-store";
+import { useCurrentFlowStore } from "@/stores/current-flow-store";
+import { useReactFlowExtStore } from "@/stores/react-flow-ext-store";
+import { NodeDataType } from "@/types/node-data-type";
 
 import {
   CURRENT_VERSION_ID_KEY,
@@ -30,7 +30,7 @@ import {
 } from "..";
 import useWebSocket from "../hooks/useWebSocket";
 import { useJobDataStore } from "../stores/job-data-store";
-import { extractUniqueConfigKeys } from "../utils/config-key-utils";
+import { extractInputsFromInputOutputObject } from "../utils/extract-inputs-from-inputoutputobject";
 
 const ExecuteFlow = () => {
   const queryClient = useQueryClient();
@@ -200,12 +200,6 @@ const ExecuteFlow = () => {
       // Get the access token from the session
       const accessToken = userSession.data?.accessToken;
 
-      // TODO: Need to confirm whether we want to keep this log or not.
-      console.log(
-        "ConfigKeys:",
-        extractUniqueConfigKeys(nodes as Node<NodeDataType>[]),
-      );
-
       if (isDesktopOnlyFlow) {
         localStorage.removeItem("flowExecutionStack"); //  Clear any previous subflow stack
         localStorage.setItem("conditionalExecutionGroup", JSON.stringify([]));
@@ -246,12 +240,39 @@ const ExecuteFlow = () => {
       //Set start time for the execution
       updateField("startTime", new Date());
 
+      // Add a input variables to triggerNode. This is required to set the input variables in the execution context before other node's execution starts.
+      // It is immportant to set these inputs to trigger node dynamically because when we'll be
+      // calling the agent/block in other master flow, at that time agent/block trigger inputs will come
+      // from the caller flow's react flow object and not from the agent/block's own react flow object
+
+      // Step 1: Extract inputs from inputOutputObject
+      const inputVariables = extractInputsFromInputOutputObject(
+        currentFlow.inputOutputObject || "",
+      );
+
+      // TODO: Step 2: Extract configKeys
+      //const configKeys = extractUniqueConfigKeys(nodes as Node<NodeDataType>[]);
+
+      // Step 2: Update trigger node inputs while creating the updated node list
+      const updatedNodes = nodes.map((node) =>
+        node.type === "triggerNode"
+          ? {
+              ...node,
+              data: {
+                ...node.data,
+                label: "Setting up execution context...",
+                inputs: inputVariables,
+              },
+            }
+          : node,
+      );
+
       // Set versionId, nodes and edges in local storage for executor
       localStorage.setItem(CURRENT_VERSION_ID_KEY, currentFlow.versionId || "");
       // clearNodeExecutionLog();
       // Removing the full execution log to prevent Error: QuotaExceededError: Failed to execute 'setltem' on 'Storage': Setting the value of 'nodes' exceeded the quota.
       localStorage.removeItem(EXECUTION_LOG_KEY);
-      localStorage.setItem("nodes", JSON.stringify(nodes));
+      localStorage.setItem("nodes", JSON.stringify(updatedNodes));
       localStorage.setItem("edges", JSON.stringify(edges));
     } catch (error) {
       // Inform the user about the failure

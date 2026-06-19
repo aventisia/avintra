@@ -1,6 +1,7 @@
 export type WebSocketCommandType =
   | "check-condition"
   | "check-loop-condition"
+  | "setup-execution-context"
   | "process-node"
   | "next-node"
   | "save-execution-log"
