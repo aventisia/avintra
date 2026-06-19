@@ -1,3 +1,9 @@
+import { useQuery } from "@tanstack/react-query";
+import { Edge, Node, Viewport, useReactFlow } from "@xyflow/react";
+import { useEffect, useRef } from "react";
+import { useSearchParams } from "react-router-dom";
+import { useShallow } from "zustand/react/shallow";
+
 import { ZOOM_ANIMATION_DURATION } from "@/constants";
 import { useImportStore } from "@/features/import-flow/stores/import-flow-store";
 import { useDagreAutoLayout } from "@/hooks/useDagreAutoLayout";
@@ -5,12 +11,6 @@ import { FlowTypesEnum } from "@/react-toolkit/enums/flow-types-enum";
 import { useCurrentFlowStore } from "@/stores/current-flow-store";
 import { useReactFlowExtStore } from "@/stores/react-flow-ext-store";
 import { FlowVariablesObjectType } from "@/types/flow-variables-object-type";
-
-import { useQuery } from "@tanstack/react-query";
-import { Edge, Node, Viewport, useReactFlow } from "@xyflow/react";
-import { useEffect, useRef } from "react";
-import { useSearchParams } from "react-router-dom";
-import { useShallow } from "zustand/react/shallow";
 
 import { getFlowToLoad } from "../apis/react-flow-apis";
 import { deepParse } from "../utils/deepParse";
@@ -95,6 +95,7 @@ export const useFetchFlowToLoad = () => {
       type: flowData.type,
       description: flowData.description || "",
       accessType: flowData.accessType,
+      inputOutputObject: flowData.inputOutputObject || "",
     });
 
     setIsPublished(flowData.isPublished || false);

@@ -1,14 +1,14 @@
-import { getFlowToLoad } from "@/features/react-flow/apis/react-flow-apis";
-import { deepParse } from "@/features/react-flow/utils/deepParse";
-import { FlowTypesEnum } from "@/react-toolkit/enums/flow-types-enum";
-import { useCurrentFlowStore } from "@/stores/current-flow-store";
-import { useReactFlowExtStore } from "@/stores/react-flow-ext-store";
-
 import { toast } from "@aventisia/ui/sonner";
 import { useMutation } from "@tanstack/react-query";
 import { Edge, Node, Viewport } from "@xyflow/react";
 import { useState } from "react";
 import { useShallow } from "zustand/react/shallow";
+
+import { getFlowToLoad } from "@/features/react-flow/apis/react-flow-apis";
+import { deepParse } from "@/features/react-flow/utils/deepParse";
+import { FlowTypesEnum } from "@/react-toolkit/enums/flow-types-enum";
+import { useCurrentFlowStore } from "@/stores/current-flow-store";
+import { useReactFlowExtStore } from "@/stores/react-flow-ext-store";
 
 export const useFetchFlowToExecute = () => {
   const [isFlowReady, setIsFlowReady] = useState(false);
@@ -54,6 +54,7 @@ export const useFetchFlowToExecute = () => {
         type: data.data.type,
         description: data.data.description || "",
         accessType: data.data.accessType,
+        inputOutputObject: data.data.inputOutputObject || "",
       });
       setIsPublished(data?.data?.isPublished || false);
       setFlowType(data?.data?.type || FlowTypesEnum.Agent);

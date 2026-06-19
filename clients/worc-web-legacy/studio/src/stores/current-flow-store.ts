@@ -1,8 +1,8 @@
+import { create } from "zustand";
+
 import { ExecutionStateType } from "@/features/execute-flow/types/execution-state-type";
 import { UserType } from "@/features/share-access/dtos/flow-user-dto";
 import { FlowTypesEnum } from "@/react-toolkit/enums/flow-types-enum";
-
-import { create } from "zustand";
 
 interface ICurrentFlowDetails {
   id: string;
@@ -16,6 +16,7 @@ interface ICurrentFlowDetails {
   type: FlowTypesEnum;
   description?: string;
   accessType?: UserType;
+  inputOutputObject?: string;
 }
 
 interface ConditionalExecutionGroup {
@@ -86,6 +87,7 @@ export const useCurrentFlowStore = create<State & Actions>((set) => ({
     isArchived: false,
     type: FlowTypesEnum.Agent, // Default to Agent, but it will be set correctly when a flow is loaded
     description: "",
+    inputOutputObject: "",
   },
 
   isChatAgent: false,

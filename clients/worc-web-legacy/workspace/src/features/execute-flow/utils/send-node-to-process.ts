@@ -50,15 +50,20 @@ const sendNextNodeToProcess = (
   currentNodeId?: string,
 ) => {
   // TODO: need to change triggerNode to flowStartNode (FE and BE)
-  // Decide on previous node id or find the start node id
-  const nodeId =
-    currentNodeId ||
-    getNodesFromLS().find((node) => node.type === "triggerNode")?.id;
+  // If currentNodeId is not provided, execution has just started, so process trigger node first.
+  if (!currentNodeId) {
+    const triggerNode = getNodesFromLS().find(
+      (node) => node.type === "triggerNode",
+    );
+
+    sendNodeToProcess(triggerNode?.id || "nodeId", sendCommand);
+    return;
+  }
 
   // Find node edge -> then get target node id
   const targetNodeId = getEdgesFromLS().find(
     (edge) =>
-      edge.source === nodeId &&
+      edge.source === currentNodeId &&
       (edge.sourceHandle === undefined ||
         edge.sourceHandle !== "branch-return") &&
       edge.type != "loopBack",
@@ -270,9 +275,26 @@ async function executeSubflow(
 
   try {
     const data = await getFlowToLoad(subFlowObj?.flowId, subFlowObj?.id);
-    const { nodes: subNodes, edges: subEdges } = deepParse(
+    const { nodes: subFlowNodes, edges: subFlowEdges } = deepParse(
       data?.data.reactFlowObject ?? "{}",
     ) as unknown as { nodes: Node[]; edges: Edge[] };
+
+    // TODO: Extract configKeys
+
+    // Replace subflow trigger inputs with the caller node inputs.
+    const updatedSubFlowNodes = subFlowNodes.map((blockNode) => {
+      if (blockNode.type === "triggerNode") {
+        return {
+          ...blockNode,
+          data: {
+            ...blockNode.data,
+            label: `Starting ${node.data?.label || "Block"}...`,
+            inputs: node.data?.inputs || [],
+          },
+        };
+      }
+      return blockNode;
+    });
 
     // Push current execution context to stack
     const executionStack = JSON.parse(
@@ -290,8 +312,8 @@ async function executeSubflow(
     localStorage.setItem("flowExecutionStack", JSON.stringify(executionStack));
 
     // Load subflow context
-    localStorage.setItem("nodes", JSON.stringify(subNodes));
-    localStorage.setItem("edges", JSON.stringify(subEdges));
+    localStorage.setItem("nodes", JSON.stringify(updatedSubFlowNodes));
+    localStorage.setItem("edges", JSON.stringify(subFlowEdges));
     localStorage.setItem("conditionalExecutionGroup", JSON.stringify([]));
     localStorage.setItem("loopExecutionGroup", JSON.stringify([]));
 
@@ -325,6 +347,23 @@ async function executeBlock(
       data?.data.reactFlowObject ?? "{}",
     ) as unknown as { nodes: Node[]; edges: Edge[] };
 
+    // TODO: Extract configKeys
+
+    // Replace block trigger inputs with the block node inputs.
+    const updatedBlockNodes = blockNodes.map((blockNode) => {
+      if (blockNode.type === "triggerNode") {
+        return {
+          ...blockNode,
+          data: {
+            ...blockNode.data,
+            label: `Starting ${node.data?.label || "Block"}...`,
+            inputs: node.data?.inputs || [],
+          },
+        };
+      }
+      return blockNode;
+    });
+
     //  Push current flow to execution stack
     const executionStack = JSON.parse(
       localStorage.getItem("flowExecutionStack") || "[]",
@@ -341,7 +380,7 @@ async function executeBlock(
     localStorage.setItem("flowExecutionStack", JSON.stringify(executionStack));
 
     //  Set block as current flow
-    localStorage.setItem("nodes", JSON.stringify(blockNodes));
+    localStorage.setItem("nodes", JSON.stringify(updatedBlockNodes));
     localStorage.setItem("edges", JSON.stringify(blockEdges));
     localStorage.setItem("conditionalExecutionGroup", JSON.stringify([]));
     localStorage.setItem("loopExecutionGroup", JSON.stringify([]));
@@ -388,7 +427,18 @@ const sendNodeToProcess = (
 
   // Check the type of the target node and handle accordingly
   switch (nodeToProcess.type) {
-    // case "triggerNode": - this will be processed by the "start" command and being handleed in useWebSocket hook
+    case "triggerNode":
+      console.log(
+        "Trigger node found. Setting up execution context...",
+        nodeToProcess,
+      );
+      sendCommand(
+        "setup-execution-context",
+        JSON.stringify(
+          getActivityNodeData(nodeToProcess as Node<NodeDataType>, nextNodeId),
+        ),
+      );
+      return;
     case "plusNode": // Empty node, go to next node
     case "mergeBranchesNode": // Conditional or loop ends, go to next node
     case "branchStartNode": // Placeholder node, go to next node. We can remove this node later

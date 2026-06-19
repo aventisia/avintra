@@ -1,8 +1,12 @@
+import { toast } from "@aventisia/ui/sonner";
+import { Edge, Node } from "@xyflow/react";
+
+import { getFlowToLoad } from "@/features/react-flow/apis/react-flow-apis";
+import { deepParse } from "@/features/react-flow/utils/deepParse";
 import { ConditionalNodeDataType } from "@/types/conditional-node-data-type";
 import { LoopNodeDataType } from "@/types/loop-node-data-type";
 import { NodeDataType } from "@/types/node-data-type";
-import { toast } from "@aventisia/ui/sonner";
-import { Edge, Node } from "@xyflow/react";
+
 import {
   ConditionalNodeData,
   LoopNodeData,
@@ -14,8 +18,6 @@ import {
   getLoopNodeData,
   getWpfLoopNodeData,
 } from "..";
-import { getFlowToLoad } from "@/features/react-flow/apis/react-flow-apis";
-import { deepParse } from "@/features/react-flow/utils/deepParse";
 
 // Get nodes from local storage
 const getNodesFromLS = () => {
@@ -47,15 +49,25 @@ const sendNextNodeToProcess = (
   currentNodeId?: string,
 ) => {
   // TODO: need to change triggerNode to flowStartNode (FE and BE)
-  // Decide on previous node id or find the start node id
-  const nodeId =
-    currentNodeId ||
-    getNodesFromLS().find((node) => node.type === "triggerNode")?.id;
+
+  // If currentNodeId is not provided, then execution has just started, then send the trigger node to process
+  if (!currentNodeId) {
+    const triggerNode = getNodesFromLS().find(
+      (node) => node.type === "triggerNode",
+    );
+
+    // Send node to process
+    sendNodeToProcess(triggerNode?.id || "nodeId", sendCommand);
+
+    // Initial execution should only dispatch the trigger node.
+    // The next node is dispatched after executor sends "next-node".
+    return;
+  }
 
   // Find node edge -> then get target node id
   const targetNodeId = getEdgesFromLS().find(
     (edge) =>
-      edge.source === nodeId &&
+      edge.source === currentNodeId &&
       (edge.sourceHandle === undefined ||
         edge.sourceHandle !== "branch-return") &&
       edge.type != "loopBack",
@@ -267,9 +279,26 @@ async function executeSubflow(
 
   try {
     const data = await getFlowToLoad(subFlowObj?.flowId, subFlowObj?.id);
-    const { nodes: subNodes, edges: subEdges } = deepParse(
+    const { nodes: subFlowNodes, edges: subFlowEdges } = deepParse(
       data?.data.reactFlowObject ?? "{}",
     ) as unknown as { nodes: Node[]; edges: Edge[] };
+
+    // TODO: Extract configKeys
+
+    // Replace the sub agent trigger inputs with the inputs from the sub agent node
+    const updatedSubFlowNodes = subFlowNodes.map((blockNode) => {
+      if (blockNode.type === "triggerNode") {
+        return {
+          ...blockNode,
+          data: {
+            ...blockNode.data,
+            label: `Starting ${node.data?.label || "Block"}...`,
+            inputs: node.data?.inputs || [],
+          },
+        };
+      }
+      return blockNode;
+    });
 
     // Push current execution context to stack
     const executionStack = JSON.parse(
@@ -287,8 +316,8 @@ async function executeSubflow(
     localStorage.setItem("flowExecutionStack", JSON.stringify(executionStack));
 
     // Load subflow context
-    localStorage.setItem("nodes", JSON.stringify(subNodes));
-    localStorage.setItem("edges", JSON.stringify(subEdges));
+    localStorage.setItem("nodes", JSON.stringify(updatedSubFlowNodes));
+    localStorage.setItem("edges", JSON.stringify(subFlowEdges));
     localStorage.setItem("conditionalExecutionGroup", JSON.stringify([]));
     localStorage.setItem("loopExecutionGroup", JSON.stringify([]));
 
@@ -322,6 +351,23 @@ async function executeBlock(
       data?.data.reactFlowObject ?? "{}",
     ) as unknown as { nodes: Node[]; edges: Edge[] };
 
+    // TODO: Extract configKeys
+
+    // Replace the block trigger inputs with the inputs from the block node
+    const updatedBlockNodes = blockNodes.map((blockNode) => {
+      if (blockNode.type === "triggerNode") {
+        return {
+          ...blockNode,
+          data: {
+            ...blockNode.data,
+            label: `Starting ${node.data?.label || "Block"}...`,
+            inputs: node.data?.inputs || [],
+          },
+        };
+      }
+      return blockNode;
+    });
+
     //  Push current flow to execution stack
     const executionStack = JSON.parse(
       localStorage.getItem("flowExecutionStack") || "[]",
@@ -338,7 +384,7 @@ async function executeBlock(
     localStorage.setItem("flowExecutionStack", JSON.stringify(executionStack));
 
     //  Set block as current flow
-    localStorage.setItem("nodes", JSON.stringify(blockNodes));
+    localStorage.setItem("nodes", JSON.stringify(updatedBlockNodes));
     localStorage.setItem("edges", JSON.stringify(blockEdges));
     localStorage.setItem("conditionalExecutionGroup", JSON.stringify([]));
     localStorage.setItem("loopExecutionGroup", JSON.stringify([]));
@@ -385,7 +431,14 @@ const sendNodeToProcess = (
 
   // Check the type of the target node and handle accordingly
   switch (nodeToProcess.type) {
-    // case "triggerNode": - this will be processed by the "start" command and being handleed in useWebSocket hook
+    case "triggerNode":
+      sendCommand(
+        "setup-execution-context",
+        JSON.stringify(
+          getActivityNodeData(nodeToProcess as Node<NodeDataType>, nextNodeId),
+        ),
+      );
+      return;
     case "plusNode": // Empty node, go to next node
     case "mergeBranchesNode": // Conditional or loop ends, go to next node
     case "branchStartNode": // Placeholder node, go to next node. We can remove this node later
@@ -405,7 +458,10 @@ const sendNodeToProcess = (
       sendCommand(
         "process-node",
         JSON.stringify(
-          getCloudConnectorNodeData(nodeToProcess as Node<NodeDataType>, nextNodeId),
+          getCloudConnectorNodeData(
+            nodeToProcess as Node<NodeDataType>,
+            nextNodeId,
+          ),
         ),
       );
       return;
