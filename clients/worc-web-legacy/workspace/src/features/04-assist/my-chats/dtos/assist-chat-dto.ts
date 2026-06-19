@@ -16,6 +16,8 @@ export interface AssistChatDto {
   /** Version number of the flow version */
   versionNumber: number;
 
+  defaultActions?: string[];
+
   /** List of conversations (ordered by most recent first) */
   conversations: ConversationSummaryDto[];
 
