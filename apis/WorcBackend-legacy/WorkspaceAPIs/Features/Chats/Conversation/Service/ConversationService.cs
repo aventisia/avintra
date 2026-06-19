@@ -173,20 +173,24 @@ public class ConversationService : IConversationService
                 return serviceResponse;
             }
 
-            // Validate user access (must exist in FlowVersionUsers)
-            var flowVersionUser = flowVersion.FlowVersionUsers?
-                .FirstOrDefault(u => u.UserId == _userId);
-
-            // Check access condition
-            if (flowVersionUser == null)
+            // If the flow version is not tenant-wide, validate that the current user has been explicitly granted access through FlowVersionUsers.
+            if (!flowVersion.IsTenantWideAccess)
             {
-                _logger.LogWarning(
-                    "[CreateConversation] Unauthorized access attempt. FlowVersionId: {FlowVersionId}, UserId: {UserId}",
-                    conversationDto.FlowVersionId,
-                    _userId);
+                // Look up the current user's access record for this flow version.
+                var flowVersionUser = flowVersion.FlowVersionUsers?
+                    .FirstOrDefault(u => u.UserId == _userId);
 
-                serviceResponse.Message = "You do not have access to this agent.";
-                return serviceResponse;
+                // Deny access when no matching user record exists.
+                if (flowVersionUser == null)
+                {
+                    _logger.LogWarning(
+                        "[CreateConversation] Unauthorized access attempt. FlowVersionId: {FlowVersionId}, UserId: {UserId}",
+                        conversationDto.FlowVersionId,
+                        _userId);
+
+                    serviceResponse.Message = "You do not have access to this agent.";
+                    return serviceResponse;
+                }
             }
 
             // Trim dto' string props
