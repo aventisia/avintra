@@ -35,8 +35,7 @@ export default function ChatSection({ mode = "page" }: { mode?: LayoutMode }) {
 
   /**
    * Subscribe to query cache updates.
-   * This component will rerender whenever these
-   * queries are invalidated/refetched anywhere.
+   * This component will rerender whenever these queries are invalidated/refetched.
    */
   const { data: activeAgents } = useQuery<ChatAgentsResponse>({
     queryKey: ["chat-agents", "active"],
@@ -49,7 +48,7 @@ export default function ChatSection({ mode = "page" }: { mode?: LayoutMode }) {
   });
 
   /**
-   * Find current flow data from either list
+   * Find the current flow data from either agent list.
    */
   const flowData = useMemo(() => {
     return (
@@ -59,7 +58,7 @@ export default function ChatSection({ mode = "page" }: { mode?: LayoutMode }) {
   }, [activeAgents, archivedAgents, flowVersionId]);
 
   /**
-   * Check if current conversation is archived
+   * Check whether the current conversation is archived.
    */
   const isArchived = useMemo(() => {
     if (!flowVersionId || !conversationId) {
@@ -75,7 +74,7 @@ export default function ChatSection({ mode = "page" }: { mode?: LayoutMode }) {
   }, [archivedAgents, flowVersionId, conversationId]);
 
   /**
-   * Derived agent meta
+   * Derived agent metadata for display.
    */
   const agentMeta = useMemo(
     () => ({
@@ -93,7 +92,22 @@ export default function ChatSection({ mode = "page" }: { mode?: LayoutMode }) {
   );
 
   /**
-   * Handle newly allocated conversation
+   * Navigate to a fresh conversation thread.
+   * Removing the conversation ID must also reset the assistant runtime.
+   */
+  const handleNewConversation = () => {
+    if (!flowVersionId) return;
+
+    navigate(
+      `${mode === "popover" ? "/external" : "/assist"}/chats/${flowVersionId}`,
+      {
+        replace: true,
+      },
+    );
+  };
+
+  /**
+   * Handle a newly allocated conversation.
    */
   const handleAllocation = (newId: string) => {
     navigate(`/assist/chats/${flowVersionId}/${newId}`, {
@@ -143,18 +157,7 @@ export default function ChatSection({ mode = "page" }: { mode?: LayoutMode }) {
               <Button
                 variant="ghost"
                 size="icon7"
-                onClick={() => {
-                  if (flowVersionId) {
-                    navigate(
-                      `${
-                        mode === "popover" ? "/external" : "/assist"
-                      }/chats/${flowVersionId}`,
-                      {
-                        replace: true,
-                      },
-                    );
-                  }
-                }}
+                onClick={handleNewConversation}
               >
                 <SquarePenIcon className="h-4 w-4" />
               </Button>
@@ -182,9 +185,7 @@ export default function ChatSection({ mode = "page" }: { mode?: LayoutMode }) {
       {/* CHAT */}
       <div className="h-[calc(100%-4rem)] w-full">
         <AvPlatformAssistantUI
-          title={`Hello${
-            userSession?.firstName ? `, ${userSession.firstName}` : ""
-          }`}
+          title={`Hello${userSession?.firstName ? `, ${userSession.firstName}` : ""}`}
           archived={isArchived}
           flowVersionId={flowVersionId || ""}
           conversationId={conversationId}

@@ -77,17 +77,20 @@ export const AvPlatformAssistantUI = ({
   const [activeConversationId, setActiveConversationId] = useState<
     string | undefined
   >(conversationId);
-  // Session key prevents the RuntimeWrapper from remounting when we lazily generate an ID internally,
-  // but forces a remount if the user explicitly switches chats from the outside (e.g. via a sidebar).
+
+  // 1. Append a unique key to ensure the initial empty session is uniquely keyed
   const [sessionKey, setSessionKey] = useState<string>(
-    conversationId || "new-session",
+    conversationId || `new-session-${window.crypto.randomUUID()}`,
   );
 
   // Sync internal state if the parent swaps the ID via props (chat switching)
   useEffect(() => {
     if (conversationId !== activeConversationId) {
       setActiveConversationId(conversationId);
-      setSessionKey(conversationId || "new-session");
+      // 2. Generate a fresh key whenever navigating to an empty conversation state
+      setSessionKey(
+        conversationId || `new-session-${window.crypto.randomUUID()}`,
+      );
     }
   }, [conversationId, activeConversationId]);
 
