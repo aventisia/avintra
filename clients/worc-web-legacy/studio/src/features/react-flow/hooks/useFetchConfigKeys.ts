@@ -1,20 +1,21 @@
 import { toast } from "@aventisia/ui/sonner";
 import { useQuery } from "@tanstack/react-query";
 import { useEffect } from "react";
-
-import { getConfigVariables } from "../apis/config-variables-apis";
-import { useReactFlowExtStore } from "@/stores/react-flow-ext-store";
 import { useShallow } from "zustand/react/shallow";
+
+import { useReactFlowExtStore } from "@/stores/react-flow-ext-store";
+
+import { fetchConfigKeyValuePairs } from "../apis/config-store-apis";
 
 /**
  * Custom hook to fetch keystores using react query.
  * @returns An object containing the fetched data, isFetching flag, and isLoading flag.
  */
-export const useFetchConfigVariables = () => {
+export const useFetchConfigKeys = () => {
   // Get keystores using react query
   const { data, isFetching, isLoading, isError, error } = useQuery({
     queryKey: ["KEYSTORE"],
-    queryFn: () => getConfigVariables(),
+    queryFn: () => fetchConfigKeyValuePairs(),
   });
 
   // Get ReactFlowExt store state & actions
@@ -26,7 +27,7 @@ export const useFetchConfigVariables = () => {
 
   useEffect(() => {
     if (data?.data.length) {
-      const variables = data.data.map((v) => v.name);
+      const variables = data.data.map((v) => v.key);
 
       setConfigVariables(variables);
     }

@@ -33,6 +33,13 @@ public class KeyStoreController : BaseApiController
         return ResultHelper(await _keyStoreService.GetKeyStoresAsync(false));
     }
 
+    // Fetch config key-value pairs for a list of keys (full list if no keys provided)
+    [HttpPost("fetch")]
+    public async Task<ActionResult<ServiceResponse<IEnumerable<ConfigKeyValueDto>>>> FetchConfigKeyValuePairs([FromBody] IEnumerable<string>? keys)
+    {
+        return ResultHelper(await _keyStoreService.FetchConfigKeyValuePairsAsync(keys));
+    }
+
     // Get a specific key store by ID
     [HttpGet("{keyStoreId}")]
     public async Task<ActionResult<ServiceResponse<KeyStoreDto>>> GetKeyStoreAsync(Guid keyStoreId)

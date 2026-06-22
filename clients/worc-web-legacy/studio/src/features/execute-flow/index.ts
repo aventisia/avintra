@@ -41,6 +41,7 @@ export * from "./apis/execute-flow-apis";
 export * from "./hooks/useWebSocket";
 export * from "./hooks/useExecuteFlowMutation";
 export * from "./hooks/useJobNotifications";
+export * from "./hooks/useConfigKeyValuePairsInputs";
 
 // Components
 export * from "./components/ExecuteFlow";

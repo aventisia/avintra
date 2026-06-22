@@ -123,8 +123,6 @@ const ExecuteFlow = ({
         inputOutputObject || "",
       );
 
-      // TODO: Extract configKeys
-
       const updatedNodes = nodes.map((node) =>
         node.type === "triggerNode"
           ? {

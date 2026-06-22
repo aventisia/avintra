@@ -1,0 +1,22 @@
+meta {
+  name: Fetch config key-value pairs
+  type: http
+  seq: 6
+}
+
+post {
+  url: {{WORKSPACE_APIS_BASE_URL}}/key-store/fetch
+  body: json
+  auth: none
+}
+
+body:json {
+  [
+    "personal_key_name",
+    "shared_key_name",
+  ]
+}
+
+docs {
+  To fetch all accessible config keys, leave the request body empty. The endpoint will return all accessible key-value pairs
+}

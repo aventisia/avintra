@@ -1,17 +1,19 @@
 import { Button, SubmitButton } from "@aventisia/ui/buttons";
-import { useInputsOutputsForm } from "../hooks/useInputsOutputsForm";
 import { Form } from "@aventisia/ui/form";
-import { Plus } from "lucide-react";
-import { InputsOutputsFieldsFormType } from "../constants/inputs-outputs-zod-schema";
-import OutputFields from "./OutputFields";
-import InputFields from "./InputFields";
-import { useInputOutputsStore } from "../stores/inputs-outputs-store";
-import { useShallow } from "zustand/react/shallow";
-import { formDataToDCPJson } from "../utils/formdataToJson";
-import { useUpdateInputOutput } from "../hooks/useUpdateInputOutput";
-import { useCurrentFlowStore } from "@/stores/current-flow-store";
 import { useViewport } from "@xyflow/react";
+import { Plus } from "lucide-react";
+import { useShallow } from "zustand/react/shallow";
+
+import { useCurrentFlowStore } from "@/stores/current-flow-store";
 import { useReactFlowExtStore } from "@/stores/react-flow-ext-store";
+
+import { InputsOutputsFieldsFormType } from "../constants/inputs-outputs-zod-schema";
+import { useInputsOutputsForm } from "../hooks/useInputsOutputsForm";
+import { useUpdateInputOutput } from "../hooks/useUpdateInputOutput";
+import { useInputOutputsStore } from "../stores/inputs-outputs-store";
+import { formDataToDCPJson } from "../utils/formdataToJson";
+import InputFields from "./InputFields";
+import OutputFields from "./OutputFields";
 
 const AddInputsOutputsForm = () => {
   const {
@@ -28,9 +30,10 @@ const AddInputsOutputsForm = () => {
   } = useInputsOutputsForm();
 
   // Get global store state & actions
-  const { currentFlow } = useCurrentFlowStore(
+  const { currentFlow, setCurrentFlow } = useCurrentFlowStore(
     useShallow((state) => ({
       currentFlow: state.currentFlow,
+      setCurrentFlow: state.setCurrentFlow,
     })),
   );
 
@@ -70,6 +73,11 @@ const AddInputsOutputsForm = () => {
       id: currentFlow.id,
       reactFlowObject: JSON.stringify(reactFlowObject),
       versionId: currentFlow.versionId,
+      inputOutputObject: JSON.stringify(refinedData),
+    });
+
+    setCurrentFlow({
+      ...currentFlow,
       inputOutputObject: JSON.stringify(refinedData),
     });
 

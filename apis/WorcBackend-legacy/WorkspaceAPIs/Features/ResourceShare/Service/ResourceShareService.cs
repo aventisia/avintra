@@ -765,12 +765,17 @@ public class ResourceShareService : IResourceShareService
     {
         try
         {
+            // Convert access levels to a list for query
+            var accessLevelsList = accessLevels is { Length: > 0 }
+                ? accessLevels.ToList()
+                : Enum.GetValues<ResourceAccessTypeEnum>().ToList();
+
             // Retrieve resource share mappings matching requested access levels
             var resourceShareIds = await _unitOfWork.ResourceShareRepo
                 .GetByConditionAsync(w =>
                     w.UserId == userId &&
                     w.ResourceType == resourceType &&
-                    accessLevels.Contains(w.AccessLevel))
+                    accessLevelsList.Contains(w.AccessLevel))
                 .Select(s => s.ResourceId)
                 .ToListAsync();
 
@@ -797,15 +802,18 @@ public class ResourceShareService : IResourceShareService
     {
         try
         {
+            // Convert access levels to a list for query
+            var accessLevelsList = accessLevels is { Length: > 0 }
+                ? accessLevels.ToList()
+                : Enum.GetValues<ResourceAccessTypeEnum>().ToList();
+
             // Query resource share mappings for the user and requested access levels
             var accessibleResources = await _unitOfWork.ResourceShareRepo
                 .GetByConditionAsync(w =>
                     w.UserId == userId &&
                     w.ResourceType == resourceType &&
-                    accessLevels.Contains(w.AccessLevel))
-
-                // Convert results into ResourceId → AccessLevel pairs
-                .ToDictionaryAsync(td => td.ResourceId, td => td.AccessLevel);
+                    accessLevelsList.Contains(w.AccessLevel))
+                .ToDictionaryAsync(td => td.ResourceId, td => td.AccessLevel); // Convert results into ResourceId → AccessLevel pairs
 
             // Return accessible resources with their access levels
             return accessibleResources;
