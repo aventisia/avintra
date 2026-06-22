@@ -214,6 +214,49 @@ public class KeyStoreService : IKeyStoreService
         return serviceResponse;
     }
 
+    // Fetch config key-value pairs for a list of keys (full list if no keys provided)
+    public async Task<ServiceResponse<IEnumerable<ConfigKeyValueDto>>> FetchConfigKeyValuePairsAsync(IEnumerable<string>? keys)
+    {
+        var serviceResponse = new ServiceResponse<IEnumerable<ConfigKeyValueDto>>
+        {
+            Data = null,
+            Message = "Failed to fetch config keys values. Please try again."
+        };
+
+        try
+        {
+            // Fetch the ConfigStore ResourceIds for the current user
+            var accessibleResourceIds = await _resourceShareService.GetAccessibleResourceIdsAsync(_userId, ResourceTypeEnum.KeyStore);
+
+            var normalizedKeys = keys?
+                .Where(w => !string.IsNullOrWhiteSpace(w))
+                .Select(s => s.Trim())
+                .Distinct(StringComparer.OrdinalIgnoreCase)
+                .ToList() ?? new List<string>();
+
+            var fetchAllAccessibleKeys = !normalizedKeys.Any();
+
+            // Fetch the key store values based on the provided keys
+            var keyValuePairs = await _unitOfWork.KeyStoreRepo
+                .GetByConditionAsync(w =>
+                    (fetchAllAccessibleKeys || normalizedKeys.Contains(w.Name))
+                    && (w.IsTenantWideAccess || w.CreatedByUserId == _userId || accessibleResourceIds.Contains(w.Id)))
+                .Select(w => new ConfigKeyValueDto { Key = w.Name, Value = w.Value })
+                .ToListAsync();
+
+            serviceResponse.Data = keyValuePairs;
+            serviceResponse.StatusCode = 200;
+            serviceResponse.Message = keyValuePairs.Count > 0 ? "Config key-value pairs fetched successfully." : "No config keys found.";
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex.ToString());
+            return serviceResponse;
+        }
+
+        return serviceResponse;
+    }
+
     // Method to insert a new key store for the current user
     public async Task<ServiceResponse<KeyStoreDto>> InsertKeyStoreAsync(KeyStoreDto keyStoreDto)
     {

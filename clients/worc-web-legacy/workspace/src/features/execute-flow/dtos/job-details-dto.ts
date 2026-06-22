@@ -34,6 +34,9 @@ export interface JobDetailsDto {
   /** Output Variables object, i..e the Flow Variables */
   flowVariablesObject?: string;
 
+  /** InputOutputObject, which is a JSON string that defines the input and output data for the flow. */
+  inputOutputObject?: string;
+
   /** Job's input arguments from the trigger, in JSON string format */
   inputArgumentsJson?: string;
 

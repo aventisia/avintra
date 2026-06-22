@@ -25,6 +25,7 @@ import {
   doesFlowContainAnyDesktopOnlyNode,
   isEmptyFlow,
   isValidFlowGraph,
+  useConfigKeyValuePairsInputs,
   useExecuteFlowMutation,
   useJobNotifications,
 } from "..";
@@ -109,6 +110,8 @@ const ExecuteFlow = () => {
   );
 
   const minCredits = 10;
+
+  const { getConfigKeyValuePairsInputs } = useConfigKeyValuePairsInputs();
 
   const isCommercial = userSession?.deploymentType == "Commercial";
   const isEnterprise = userSession?.deploymentType == "Enterprise";
@@ -250,10 +253,15 @@ const ExecuteFlow = () => {
         currentFlow.inputOutputObject || "",
       );
 
-      // TODO: Step 2: Extract configKeys
-      //const configKeys = extractUniqueConfigKeys(nodes as Node<NodeDataType>[]);
+      // Step 2: Resolve config key placeholders into trigger inputs
+      const configInputs = await getConfigKeyValuePairsInputs(
+        nodes as Node<NodeDataType>[],
+      );
 
-      // Step 2: Update trigger node inputs while creating the updated node list
+      // Step 3: Merge and deduplicate by key while preserving order
+      const mergedInputs = [...inputVariables, ...configInputs];
+
+      // Step 4: Update trigger node inputs while creating the updated node list
       const updatedNodes = nodes.map((node) =>
         node.type === "triggerNode"
           ? {
@@ -261,7 +269,7 @@ const ExecuteFlow = () => {
               data: {
                 ...node.data,
                 label: "Setting up execution context...",
-                inputs: inputVariables,
+                inputs: mergedInputs,
               },
             }
           : node,

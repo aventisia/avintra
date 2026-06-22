@@ -20,6 +20,13 @@ public interface IKeyStoreService
     Task<ServiceResponse<IEnumerable<KeyStoreDto>>> GetKeyStoresAsync(bool isPersonal);
 
     /// <summary>
+    /// Fetch config key-value pairs for a list of keys (full list if no keys provided)
+    /// </summary>
+    /// <param name="keys">The list of keys for which to fetch values.</param>
+    /// <returns>A task representing the service response containing a list of key-value pairs.</returns>
+    Task<ServiceResponse<IEnumerable<ConfigKeyValueDto>>> FetchConfigKeyValuePairsAsync(IEnumerable<string>? keys);
+
+    /// <summary>
     /// Fetches a configuration item by its unique identifier.
     /// </summary>
     /// <param name="keyStoreId">The identifier of the configuration item to retrieve.</param>

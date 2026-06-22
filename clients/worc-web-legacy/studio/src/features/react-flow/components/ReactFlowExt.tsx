@@ -1,3 +1,16 @@
+import { LoadingSpinner } from "@aventisia/ui";
+import {
+  Edge,
+  Node,
+  OnSelectionChangeParams,
+  ReactFlow,
+  useOnViewportChange,
+  useReactFlow,
+} from "@xyflow/react";
+import "@xyflow/react/dist/style.css";
+import { useCallback, useEffect, useMemo, useRef } from "react";
+import { useShallow } from "zustand/react/shallow";
+
 import { CustomEdgeTypeObj } from "@/constants/custom-edge-type-obj";
 import { CustomNodeTypeObj } from "@/constants/custom-node-type-obj";
 import { defaultEdgeOptions } from "@/constants/default-edge-options";
@@ -15,23 +28,10 @@ import { useContextMenuActionsStore } from "@/stores/context-menu-actions-store"
 import { useCurrentFlowStore } from "@/stores/current-flow-store";
 import { useReactFlowExtStore } from "@/stores/react-flow-ext-store";
 
-import { LoadingSpinner } from "@aventisia/ui";
-import {
-  Edge,
-  Node,
-  OnSelectionChangeParams,
-  ReactFlow,
-  useOnViewportChange,
-  useReactFlow,
-} from "@xyflow/react";
-import "@xyflow/react/dist/style.css";
-import { useCallback, useEffect, useMemo, useRef } from "react";
-import { useShallow } from "zustand/react/shallow";
-
 import { useConfirmDelete } from "../hooks/useConfirmDelete";
 import { useCopyPasteShortcuts } from "../hooks/useCopyPasteShortcuts";
 import { useDefaultActions } from "../hooks/useDefaultActions";
-import { useFetchConfigVariables } from "../hooks/useFetchConfigVariables";
+import { useFetchConfigKeys } from "../hooks/useFetchConfigKeys";
 import { useFetchFlowToLoad } from "../hooks/useFetchFlowToLoad";
 import { useOnNodeDelete } from "../hooks/useOnNodeDelete";
 import "../styles/override-edge-style.css";
@@ -95,7 +95,7 @@ export const ReactFlowExt = () => {
   // Fetch flow details and set document title
   const { isLoading } = useFetchFlowToLoad();
 
-  useFetchConfigVariables();
+  useFetchConfigKeys();
 
   // Confirm delete handler
   const { onBeforeDelete } = useConfirmDelete();

@@ -29,6 +29,7 @@ export * from "./utils/send-node-to-process";
 
 // Hooks
 export * from "./hooks/useWebSocket";
+export * from "./hooks/useConfigKeyValuePairsInputs";
 
 // Components
 export * from "./components/ExecuteFlow";

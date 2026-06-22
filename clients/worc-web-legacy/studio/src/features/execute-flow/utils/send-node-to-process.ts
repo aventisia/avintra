@@ -283,8 +283,6 @@ async function executeSubflow(
       data?.data.reactFlowObject ?? "{}",
     ) as unknown as { nodes: Node[]; edges: Edge[] };
 
-    // TODO: Extract configKeys
-
     // Replace the sub agent trigger inputs with the inputs from the sub agent node
     const updatedSubFlowNodes = subFlowNodes.map((blockNode) => {
       if (blockNode.type === "triggerNode") {
@@ -350,8 +348,6 @@ async function executeBlock(
     const { nodes: blockNodes, edges: blockEdges } = deepParse(
       data?.data.reactFlowObject ?? "{}",
     ) as unknown as { nodes: Node[]; edges: Edge[] };
-
-    // TODO: Extract configKeys
 
     // Replace the block trigger inputs with the inputs from the block node
     const updatedBlockNodes = blockNodes.map((blockNode) => {
