@@ -19,7 +19,7 @@ const getSearchUser = (value?: string, includeCurrentUser: boolean = false) => {
   return axiosInstance
     .get<
       IHttpResponse<WorkspaceUserDto[]>
-    >(`${workspaceUserApiUrl}/search/${value}?includeCurrentUser=${includeCurrentUser}`)
+    >(`${workspaceUserApiUrl}/users/search/${value}?includeCurrentUser=${includeCurrentUser}`)
     .then((res) => res.data);
 };
 
