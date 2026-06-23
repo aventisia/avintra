@@ -10,7 +10,7 @@ import {
 import { WorkspaceUserDto } from "../dtos/workspace-user-dto";
 
 const resourceShareApiUrl: string = `${import.meta.env.VITE_WORKSPACE_API_PATH}/resource-share`;
-const workspaceUserApiUrl: string = `${import.meta.env.VITE_WORKSPACE_API_PATH}/user`;
+const workspaceUserApiUrl: string = `${import.meta.env.VITE_ACCOUNTS_API_PATH}/tenant-account`;
 
 /**
  * Retrieves all Workspace users.

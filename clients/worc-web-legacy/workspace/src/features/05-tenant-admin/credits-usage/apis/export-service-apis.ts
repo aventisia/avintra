@@ -6,7 +6,7 @@ import { AgentModelDTO } from "../dtos/agents-models-dto";
 import { ExportChartDTO } from "../dtos/export-chart-dto";
 import { WorkspaceUserDto } from "../dtos/workspace-user-dto";
 
-const workspaceUserApiUrl: string = `${import.meta.env.VITE_WORKSPACE_API_PATH}`;
+const workspaceUserApiUrl: string = `${import.meta.env.VITE_ACCOUNTS_API_PATH}/tenant-account`;
 const accountAPIURL: string = `${import.meta.env.VITE_ACCOUNTS_API_PATH}/credit-usage`;
 
 /**
@@ -16,7 +16,7 @@ const getSearchUser = (value?: string) => {
   return axiosInstance
     .get<
       IHttpResponse<WorkspaceUserDto[]>
-    >(`${workspaceUserApiUrl}/user/search/${value}`)
+    >(`${workspaceUserApiUrl}/search/${value}`)
     .then((res) => res.data);
 };
 
