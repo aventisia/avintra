@@ -1,3 +1,5 @@
+import { get, set, update } from "idb-keyval";
+
 import {
   AgentExecutionLogType,
   CURRENT_VERSION_ID_KEY,
@@ -5,51 +7,53 @@ import {
   NodeExecutionLogType,
 } from "..";
 
-export function saveNodeExecutionLog(nodeLog: string): void {
-  // parse the node log string to an object
-  const nodeLogParsed = JSON.parse(nodeLog) as NodeExecutionLogType;
+export async function saveNodeExecutionLog(nodeLog: string): Promise<void> {
+  let nodeLogParsed: NodeExecutionLogType;
 
-  // Get existing logs from localStorage
-  const logsJson = localStorage.getItem(EXECUTION_LOG_KEY);
+  try {
+    nodeLogParsed = JSON.parse(nodeLog) as NodeExecutionLogType;
+  } catch {
+    console.error("Invalid node execution log payload.");
+    return;
+  }
 
-  // Get versionId from localStorage
   const versionId =
     localStorage.getItem(CURRENT_VERSION_ID_KEY) || "versionId-unknown";
 
-  // Parse the logs or initialize an empty array if not found
-  const logs: AgentExecutionLogType[] = logsJson ? JSON.parse(logsJson) : [];
+  // Use update to avoid lost writes when multiple node logs arrive close together.
+  await update(EXECUTION_LOG_KEY, (value) => {
+    const logs = Array.isArray(value)
+      ? [...(value as AgentExecutionLogType[])]
+      : [];
+    const index = logs.findIndex((log) => log.versionId === versionId);
 
-  // Find the log for the given versionId
-  const versionLog = logs.find((log) => log.versionId === versionId);
+    if (index >= 0) {
+      logs[index] = {
+        ...logs[index],
+        versionLog: [...logs[index].versionLog, nodeLogParsed],
+      };
+    } else {
+      logs.push({
+        versionId,
+        versionLog: [nodeLogParsed],
+      });
+    }
 
-  // If the version log exists, push the new node log; otherwise, create a new entry
-  if (versionLog) {
-    versionLog.versionLog.push(nodeLogParsed);
-  } else {
-    logs.push({
-      versionId,
-      versionLog: [nodeLogParsed],
-    });
-  }
-
-  // Save back to localStorage
-  localStorage.setItem(EXECUTION_LOG_KEY, JSON.stringify(logs));
+    return logs;
+  });
 }
 
-export function clearNodeExecutionLog(): void {
-  // Get existing logs from localStorage
-  const logsJson = localStorage.getItem(EXECUTION_LOG_KEY);
-
+export async function clearNodeExecutionLog(): Promise<void> {
   // Get current versionId from localStorage
   const currentVersionId =
     localStorage.getItem(CURRENT_VERSION_ID_KEY) || "versionId-unknown";
 
-  // Parse the logs or initialize an empty array if not found
-  const logs: AgentExecutionLogType[] = logsJson ? JSON.parse(logsJson) : [];
+  // Retrieve existing logs from IndexedDB
+  const logs = (await get<AgentExecutionLogType[]>(EXECUTION_LOG_KEY)) || [];
 
   // Filter out the log for the given versionId
   const updatedLogs = logs.filter((log) => log.versionId !== currentVersionId);
 
-  // Save back to localStorage
-  localStorage.setItem(EXECUTION_LOG_KEY, JSON.stringify(updatedLogs));
+  // Save back to IndexedDB
+  await set(EXECUTION_LOG_KEY, updatedLogs);
 }

@@ -448,15 +448,19 @@ namespace NodeExecutor
                 // Send the execution log back to the server (must be awaited on UI thread)
                 await Dispatcher.InvokeAsync(async () =>
                 {
-                    await _webSocket.SendCommandAsync("save-execution-log", JsonConvert.SerializeObject(nodeExecutionLog, new JsonSerializerSettings
+                    // Serialize the nodeExecutionLog to JSON with camelCase property names
+                    var serializedExecutionLog = JsonConvert.SerializeObject(nodeExecutionLog, new JsonSerializerSettings
                     {
                         ContractResolver = new CamelCasePropertyNamesContractResolver()
-                    }));
+                    });
+
+                    // Save the log to the server
+                    await _webSocket.SendCommandAsync("save-execution-log", serializedExecutionLog);
 
                     // Check if the node execution was successful
                     if (!isSuccess)
                     {
-                        await _webSocket.SendCommandAsync("error");
+                        await _webSocket.SendCommandAsync("error", serializedExecutionLog);
                         DoAbort();
                         return;
                     }

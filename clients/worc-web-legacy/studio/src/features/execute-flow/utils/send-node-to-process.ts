@@ -81,6 +81,7 @@ const sendNextNodeToProcess = (
 const sendExecutionComplete = (
   command: WebSocketCommandType,
   sendCommand: (command: WebSocketCommandType, data?: string) => void,
+  data?: string,
 ) => {
   // Remove the items from local storage
   if (command === "complete" || command === "error" || command === "abort") {
@@ -89,7 +90,7 @@ const sendExecutionComplete = (
     //localStorage.removeItem("edges");
     //localStorage.removeItem("conditionalExecutionGroup");
     //localStorage.removeItem("loopExecutionGroup");
-    sendCommand(command);
+    sendCommand(command, data);
   }
 
   // Show a message to the user
@@ -105,6 +106,12 @@ const sendExecutionComplete = (
       toast.error(
         "Execution failed. Please check the execution logs for details.",
       );
+      try {
+        const parsedData = data ? JSON.parse(data) : {};
+        console.error("Execution failed", parsedData);
+      } catch {
+        console.error("Execution failed", data);
+      }
       break;
     case "abort":
       toast.warning("Execution has been aborted");
@@ -403,7 +410,12 @@ const sendNodeToProcess = (
 
   // If target node is not found, show an error message
   if (!nodeToProcess || !nodeToProcess.type) {
-    sendExecutionComplete("error", sendCommand);
+    console.error("Node not found or invalid node type", nodeId, nodeToProcess);
+    sendExecutionComplete(
+      "error",
+      sendCommand,
+      "Node not found or invalid node type",
+    );
     return;
   }
 
@@ -540,7 +552,11 @@ const sendNodeToProcess = (
       toast.error(
         `Unknown node type: ${nodeToProcess.type}. Please check the flow.`,
       );
-      sendExecutionComplete("error", sendCommand);
+      sendExecutionComplete(
+        "error",
+        sendCommand,
+        `Unknown node type: ${nodeToProcess.type}`,
+      );
       return;
   }
 };

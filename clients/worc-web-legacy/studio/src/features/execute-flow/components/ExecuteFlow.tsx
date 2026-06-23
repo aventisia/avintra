@@ -21,7 +21,7 @@ import { NodeDataType } from "@/types/node-data-type";
 import {
   CURRENT_VERSION_ID_KEY,
   EXECUTION_LOG_KEY,
-  // clearNodeExecutionLog,
+  clearNodeExecutionLog,
   doesFlowContainAnyDesktopOnlyNode,
   isEmptyFlow,
   isValidFlowGraph,
@@ -277,8 +277,11 @@ const ExecuteFlow = () => {
 
       // Set versionId, nodes and edges in local storage for executor
       localStorage.setItem(CURRENT_VERSION_ID_KEY, currentFlow.versionId || "");
-      // clearNodeExecutionLog();
-      // Removing the full execution log to prevent Error: QuotaExceededError: Failed to execute 'setltem' on 'Storage': Setting the value of 'nodes' exceeded the quota.
+
+      // Remove previous logs for this version before starting a fresh execution.
+      await clearNodeExecutionLog();
+
+      // One-time cleanup for legacy localStorage logs from before IndexedDB migration.
       localStorage.removeItem(EXECUTION_LOG_KEY);
       localStorage.setItem("nodes", JSON.stringify(updatedNodes));
       localStorage.setItem("edges", JSON.stringify(edges));
