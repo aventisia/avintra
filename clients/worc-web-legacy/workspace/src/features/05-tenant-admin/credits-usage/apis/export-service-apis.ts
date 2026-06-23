@@ -16,7 +16,7 @@ const getSearchUser = (value?: string) => {
   return axiosInstance
     .get<
       IHttpResponse<WorkspaceUserDto[]>
-    >(`${workspaceUserApiUrl}/search/${value}`)
+    >(`${workspaceUserApiUrl}/users/search/${value}`)
     .then((res) => res.data);
 };
 
