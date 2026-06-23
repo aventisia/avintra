@@ -41,6 +41,15 @@ public interface IQueueWorkItemService
     Task<ServiceResponse<QueueWorkItemDto>> UpdateWorkItemAsync(QueueWorkItemDto queueWorkItemDto);
 
     /// <summary>
+    /// Moves a work item from its current queue to the specified destination queue.
+    /// </summary>
+    /// <param name="moveQueueWorkItemRequestDto"> Contains the work item identifier and the destination queue information. </param>
+    /// <returns>
+    /// A response indicating whether the work item was successfully moved.
+    /// </returns>
+    Task<ServiceResponse<bool>> MoveWorkItemAsync(MoveQueueWorkItemRequestDto moveQueueWorkItemRequestDto);
+
+    /// <summary>
     /// Delete a work item from the queue.
     /// </summary>
     /// <param name="workItemId">The unique identifier of the work item to be deleted</param>

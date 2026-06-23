@@ -1,0 +1,18 @@
+meta {
+  name: Move queue workitem
+  type: http
+  seq: 13
+}
+
+put {
+  url: {{WORKSPACE_APIS_BASE_URL}}/queue/workitem/move
+  body: json
+  auth: none
+}
+
+body:json {
+  {
+    "id": "{{QUEUE_WORKITEM_ID}}",
+    "queueName": "{{QUEUE_NAME}}"
+  }
+}

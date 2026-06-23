@@ -49,7 +49,6 @@ public class QueueWorkItemService : IQueueWorkItemService
             serviceResponse.Data = queueWorkitems.Adapt<IEnumerable<QueueWorkItemDto>>();
             serviceResponse.StatusCode = 200;
             serviceResponse.Message = "Successfully retrieved queue workitems.";
-            _logger.LogInformation($"Successfully retrieved {queueWorkitems.Count} workitems for queue {queueId}.");
         }
         catch (Exception ex)
         {
@@ -104,8 +103,6 @@ public class QueueWorkItemService : IQueueWorkItemService
             // Apply dynamic filters in memory
             if (queueFilterRequestDto.Conditions.Any())
             {
-                _logger.LogInformation("Applying {Count} filter conditions...", queueFilterRequestDto.Conditions.Count);
-
                 items = items.Where(item =>
                 {
                     foreach (var condition in queueFilterRequestDto.Conditions)
@@ -158,8 +155,6 @@ public class QueueWorkItemService : IQueueWorkItemService
             // Apply dynamic sorting
             if (queueFilterRequestDto.QueuePriority.Any())
             {
-                _logger.LogInformation("Applying sorting priorities...");
-
                 foreach (var sort in queueFilterRequestDto.QueuePriority)
                 {
                     sorted = sort.OrderBy.Equals("Ascending", StringComparison.OrdinalIgnoreCase)
@@ -167,6 +162,7 @@ public class QueueWorkItemService : IQueueWorkItemService
                         : sorted.OrderByDescending(o => o.Payload[sort.Field]?.ToString());
                 }
             }
+
             // Configure JSON serialization options
             var options = new JsonSerializerOptions
             {
@@ -190,8 +186,6 @@ public class QueueWorkItemService : IQueueWorkItemService
             serviceResponse.Data = result.Adapt<List<QueueWorkItemDto>>();
             serviceResponse.StatusCode = 200;
             serviceResponse.Message = "Successfully retrieved queue workitems.";
-
-            _logger.LogInformation("Completed successfully. Returning {Count} workitems for Queue ID: {QueueId}", result.Count, queue.Id);
         }
         catch (Exception ex)
         {
@@ -236,8 +230,6 @@ public class QueueWorkItemService : IQueueWorkItemService
             serviceResponse.Data = queueWorkitem.Adapt<QueueWorkItemDto>();
             serviceResponse.StatusCode = 200;
             serviceResponse.Message = "Queue workitems retrieved successfully.";
-
-            _logger.LogInformation("Queue workitems with ID {QueueWorkitemId} retrieved successfully.", queueWorkitemId);
         }
         catch (Exception ex)
         {
@@ -259,11 +251,7 @@ public class QueueWorkItemService : IQueueWorkItemService
 
         try
         {
-            _logger.LogInformation("Starting workitems insertion process...");
-
             // Retrieve the target queue (by ID or name)
-            _logger.LogInformation("Retrieving queue information for processing...");
-
             var queue = await _unitOfWork.QueueRepo
                 .GetByConditionAsync(w =>
                     string.IsNullOrEmpty(queueWorkItemDto.QueueName)
@@ -280,21 +268,16 @@ public class QueueWorkItemService : IQueueWorkItemService
                 return serviceResponse;
             }
 
-            _logger.LogInformation("Queue found (ID: {QueueId}). Proceeding with validation and insertion...", queue.Id);
-
             // Deserialize input schema from the queue definition
-            _logger.LogInformation("Deserializing queue input schema...");
             var inputSchema = System.Text.Json.JsonSerializer.Deserialize<List<QueueSchemaDefinitionDto>>(
                 queue.InputSchema ?? "[]",
                 new JsonSerializerOptions { PropertyNameCaseInsensitive = true }
             ) ?? new List<QueueSchemaDefinitionDto>();
-            _logger.LogInformation("Schema contains {Count} field definitions.", inputSchema.Count);
 
             // Collect existing unique keys for duplicate detection
             var existingUniqueKeys = new HashSet<string>();
             if (queue.QueueTransactions != null)
             {
-                _logger.LogInformation("Collecting existing unique keys for duplicate validation...");
                 foreach (var workitem in queue.QueueTransactions)
                 {
                     var payload = workitem.PayloadData;
@@ -318,7 +301,6 @@ public class QueueWorkItemService : IQueueWorkItemService
                     var uniqueKey = string.Join("|", keyParts);
                     existingUniqueKeys.Add(uniqueKey);
                 }
-                _logger.LogInformation("Collected {Count} existing unique keys.", existingUniqueKeys.Count);
             }
 
             // Check if WorkItemData is a valid JSON array or object
@@ -333,14 +315,12 @@ public class QueueWorkItemService : IQueueWorkItemService
             if (queueWorkItemDto.WorkItemData.TrimStart().StartsWith("["))
             {
                 // It's an array, parse it
-                _logger.LogInformation("Parsing incoming payload data as an array...");
                 dataArray = JArray.Parse(queueWorkItemDto.WorkItemData ?? "[]");
                 _logger.LogInformation("Found {Count} workitem(s) in the payload array.", dataArray.Count);
             }
             else if (queueWorkItemDto.WorkItemData.TrimStart().StartsWith("{"))
             {
                 // It's a single item, wrap it in an array
-                _logger.LogInformation("Parsing incoming payload data as a single item...");
                 dataArray = new JArray { JObject.Parse(queueWorkItemDto.WorkItemData ?? "{}") };
                 _logger.LogInformation("Found 1 workitem in the payload.");
             }
@@ -458,8 +438,6 @@ public class QueueWorkItemService : IQueueWorkItemService
                 serviceResponse.StatusCode = 409;
                 serviceResponse.Data = queueWorkItemDto;
                 serviceResponse.Message = "Some workitem failed validation. Check 'Status' and 'Remark' fields for details.";
-                _logger.LogWarning("Transaction processing completed with validation errors. Returning enriched payload with remarks.");
-
                 return serviceResponse;
             }
 
@@ -479,8 +457,7 @@ public class QueueWorkItemService : IQueueWorkItemService
             // Set response status code and attach updated DTO to response
             serviceResponse.StatusCode = 200;
             serviceResponse.Data = newWorkItems.FirstOrDefault().Adapt<QueueWorkItemDto>();
-            serviceResponse.Message = "Transaction validated and added successfully.";
-            _logger.LogInformation("Transaction processing completed successfully. All workitems inserted into queue {QueueId}.", queueWorkItemDto.QueueId);
+            serviceResponse.Message = "Work item validated and added successfully.";
         }
         catch (Exception ex)
         {
@@ -502,8 +479,6 @@ public class QueueWorkItemService : IQueueWorkItemService
 
         try
         {
-            _logger.LogInformation("Initiating update for workitem ID {QueueWorkitemId}.", queueWorkItemDto.Id);
-
             // Check if WorkItemData is null or starts with '{'
             if (!string.IsNullOrEmpty(queueWorkItemDto.WorkItemData) && !queueWorkItemDto.WorkItemData.TrimStart().StartsWith("{"))
             {
@@ -696,7 +671,6 @@ public class QueueWorkItemService : IQueueWorkItemService
             // Return successful response
             serviceResponse.Data = queueWorkItem.Adapt<QueueWorkItemDto>();
             serviceResponse.StatusCode = 200;
-            _logger.LogInformation("Queue workitem ID {QueueWorkitemId} successfully updated. New status: {Status}.", queueWorkItemDto.Id, queueWorkItemDto.Status);
         }
         catch (Exception ex)
         {
@@ -705,6 +679,212 @@ public class QueueWorkItemService : IQueueWorkItemService
 
         return serviceResponse;
     }
+
+    // 
+    public async Task<ServiceResponse<bool>> MoveWorkItemAsync(MoveQueueWorkItemRequestDto moveQueueWorkItemRequestDto)
+    {
+        //
+        var serviceResponse = new ServiceResponse<bool>
+        {
+            Data = false,
+            Message = "Failed to move the work item. Please try again."
+        };
+
+        try
+        {
+            // Retrieve the work item to be moved, including its source queue information
+            var workItem = await _unitOfWork.QueueTransactionRepo
+                .GetByConditionAsync(w => w.Id == moveQueueWorkItemRequestDto.Id)
+                .Include(i => i.Queue)
+                .SingleOrDefaultAsync();
+
+            if (workItem == null)
+            {
+                _logger.LogWarning("Work item {WorkItemId} was not found.", moveQueueWorkItemRequestDto.Id);
+                serviceResponse.Message = "Work item not found.";
+                return serviceResponse;
+            }
+
+            // Retrieve the destination queue and its existing transactions
+            var destinationQueue = await _unitOfWork.QueueRepo
+                .GetByConditionAsync(w =>
+                    w.Name.ToLower() == moveQueueWorkItemRequestDto.QueueName.ToLower())
+                .Include(i => i.QueueTransactions)
+                .FirstOrDefaultAsync();
+
+            if (destinationQueue == null)
+            {
+                _logger.LogWarning("Destination queue '{QueueName}' was not found.", moveQueueWorkItemRequestDto.QueueName);
+                serviceResponse.Message = "Destination queue not found.";
+                return serviceResponse;
+            }
+
+            // Load the destination queue schema used for validation
+            var inputSchema = System.Text.Json.JsonSerializer.Deserialize<List<QueueSchemaDefinitionDto>>(
+                destinationQueue.InputSchema ?? "[]",
+                new JsonSerializerOptions { PropertyNameCaseInsensitive = true }
+            ) ?? new List<QueueSchemaDefinitionDto>();
+
+            // Build a collection of unique identifiers already present in the destination queue
+            var existingUniqueKeys = new HashSet<string>(StringComparer.InvariantCultureIgnoreCase);
+
+            foreach (var queueTransaction in destinationQueue.QueueTransactions ?? [])
+            {
+                var payload = queueTransaction.PayloadData ?? string.Empty;
+
+                if (destinationQueue.IsStoredEncrypted)
+                {
+                    payload = _stringEncryptionService.DecryptString(payload);
+                }
+
+                var obj = JObject.Parse(payload);
+
+                var key = string.Join("|",
+                    inputSchema
+                        .Where(w => w.IsUsedForUniqueIdentifier)
+                        .Select(s => obj[s.Name]?.ToString() ?? string.Empty));
+
+                existingUniqueKeys.Add(key);
+            }
+
+            // Ensure the work item contains payload data
+            if (string.IsNullOrWhiteSpace(workItem.PayloadData))
+            {
+                serviceResponse.Message = "Work item payload is empty.";
+                return serviceResponse;
+            }
+
+            // Parse the work item payload for validation against the destination schema
+            var array = workItem.PayloadData.TrimStart().StartsWith("[")
+                ? JArray.Parse(workItem.PayloadData)
+                : new JArray { JObject.Parse(workItem.PayloadData) };
+
+            var movedItems = new List<QueueTransaction>();
+            var hasErrors = false;
+
+            // Validate and transform the payload
+            foreach (var item in array)
+            {
+                var obj = item as JObject;
+
+                if (obj == null)
+                {
+                    continue;
+                }
+
+                var errors = new List<string>();
+                dynamic dynamicObject = CreateDynamicObjectFromSchema(inputSchema);
+
+                var uniqueParts = new List<string>();
+
+                foreach (var field in inputSchema)
+                {
+                    var value = obj[field.Name];
+
+                    // Validate required fields
+                    if (field.IsRequired &&
+                        (value == null || string.IsNullOrWhiteSpace(value.ToString())))
+                    {
+                        errors.Add($"Missing required field: {field.Name}");
+                        hasErrors = true;
+                        _logger.LogWarning("Validation failed for work item {WorkItemId}. Missing required field '{FieldName}'.", workItem.Id, field.Name);
+                    }
+
+                    // Collect unique identifier values for duplicate detection
+                    if (field.IsUsedForUniqueIdentifier &&
+                        destinationQueue.IsUniqueReferencesEnforced)
+                    {
+                        uniqueParts.Add(value?.ToString() ?? string.Empty);
+                    }
+
+                    ((IDictionary<string, object>)dynamicObject)[field.Name] = value!;
+                }
+
+                // Verify the work item does not already exist in the destination queue
+                if (destinationQueue.IsUniqueReferencesEnforced)
+                {
+                    var key = string.Join("|", uniqueParts);
+
+                    if (existingUniqueKeys.Contains(key))
+                    {
+                        hasErrors = true;
+                        _logger.LogWarning("Duplicate work item detected while moving work item {WorkItemId}. Unique key: {UniqueKey}", workItem.Id, key);
+                    }
+
+                    existingUniqueKeys.Add(key);
+                }
+
+                if (!errors.Any())
+                {
+                    var serializedPayload = JsonConvert.SerializeObject(dynamicObject);
+
+                    if (destinationQueue.IsStoredEncrypted)
+                    {
+                        serializedPayload = _stringEncryptionService.EncryptString(serializedPayload);
+                    }
+
+                    var newWorkItem = new QueueTransaction
+                    {
+                        QueueId = destinationQueue.Id,
+                        PayloadData = serializedPayload,
+                        Status = QueueTransactionStatusTypesEnum.Pending,
+                        Description = workItem.Description,
+                        CreatedBy = string.IsNullOrWhiteSpace(workItem.CreatedBy)
+                            ? _username
+                            : workItem.CreatedBy
+                    };
+
+                    movedItems.Add(newWorkItem);
+                }
+            }
+
+            // Stop processing if validation fails
+            if (hasErrors)
+            {
+                serviceResponse.StatusCode = 409;
+                serviceResponse.Message = "Work item validation failed. The work item was not moved.";
+
+                return serviceResponse;
+            }
+
+            // Insert the validated work item into the destination queue
+            if (movedItems.Any())
+            {
+                await _unitOfWork.QueueTransactionRepo.InsertAsync(movedItems);
+            }
+
+            // Remove the work item from the source queue to complete the move operation
+            _unitOfWork.QueueTransactionRepo.Delete(workItem);
+
+
+            if (!await _unitOfWork.SaveAsync())
+            {
+                _logger.LogError(
+                    "Failed to save changes while moving work item {WorkItemId} to queue '{DestinationQueue}'.",
+                    workItem.Id,
+                    destinationQueue.Name);
+                serviceResponse.Data = false;
+                return serviceResponse;
+            }
+
+            serviceResponse.StatusCode = 200;
+            serviceResponse.Data = true;
+            serviceResponse.Message = "Work item moved successfully.";
+
+            return serviceResponse;
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(
+                ex,
+                "An error occurred while moving work item {WorkItemId} to queue '{DestinationQueue}'.",
+                moveQueueWorkItemRequestDto.Id,
+                moveQueueWorkItemRequestDto.QueueName);
+        }
+
+        return serviceResponse;
+    }
+
 
     // Delete a workitem from the queue
     public async Task<ServiceResponse<bool>> RemoveWorkItemAsync(Guid workitemId)
@@ -718,8 +898,6 @@ public class QueueWorkItemService : IQueueWorkItemService
 
         try
         {
-            _logger.LogInformation("Attempting to remove a workitem from the queue.");
-
             // Retrieve the workitem to be deleted
             var queueWorkItem = await _unitOfWork.QueueTransactionRepo
                 .GetByConditionAsync(w => w.Id == workitemId)
@@ -747,7 +925,6 @@ public class QueueWorkItemService : IQueueWorkItemService
             serviceResponse.Data = true;
             serviceResponse.StatusCode = 200;
             serviceResponse.Message = "Queue workitem removed successfully.";
-            _logger.LogInformation("Successfully removed workitem {QueueWorkitemId} from queue.", workitemId);
         }
         catch (Exception ex)
         {

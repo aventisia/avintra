@@ -35,6 +35,15 @@ public interface IQueueTableService
     Task<ServiceResponse<QueuesTableDto>> GetQueueByIdAsync(Guid id);
 
     /// <summary>
+    /// Retrieves the details of a specific queue by its name.
+    /// </summary>
+    /// <param name="queueName">The name of the queue to fetch.</param>
+    /// <returns>
+    /// The task result containing the service response with the details of the requested queue.
+    /// </returns>
+    Task<ServiceResponse<QueuesTableDto>> GetQueueByNameAsync(string queueName);
+
+    /// <summary>
     /// Creates a new queue with the specified details.
     /// </summary>
     /// <param name="queuesTableDto">The data used to create the new queue.</param>

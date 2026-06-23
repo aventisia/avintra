@@ -1,0 +1,11 @@
+meta {
+  name: Get queue by name
+  type: http
+  seq: 14
+}
+
+get {
+  url: {{WORKSPACE_APIS_BASE_URL}}/queue/by-name/{{QUEUE_NAME}}
+  body: none
+  auth: none
+}
