@@ -56,6 +56,13 @@ public class QueueWorkItemController : BaseApiController
         return ResultHelper(await _queueWorkItemService.UpdateWorkItemAsync(queueWorkItemDto));
     }
 
+    // Move an existing workitem from its current queue to a destination queue
+    [HttpPut("move")]
+    public async Task<ActionResult<ServiceResponse<bool>>> MoveWorkItem([FromBody] MoveQueueWorkItemRequestDto moveQueueWorkItemRequestDto)
+    {
+        return ResultHelper(await _queueWorkItemService.MoveWorkItemAsync(moveQueueWorkItemRequestDto));
+    }
+
     // Remove a specific work item from the queue
     [HttpDelete("{workItemId}")]
     public async Task<ActionResult<ServiceResponse<bool>>> DeleteWorkItem(Guid workItemId)

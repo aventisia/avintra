@@ -42,6 +42,13 @@ public class QueueTableController : BaseApiController
         return ResultHelper(await _queueTableService.GetQueueByIdAsync(queueId));
     }
 
+    // Retrieves a specific queue by its name.
+    [HttpGet("by-name/{queueName}")]
+    public async Task<ActionResult<ServiceResponse<QueuesTableDto>>> GetQueueByNameAsync(string queueName)
+    {
+        return ResultHelper(await _queueTableService.GetQueueByNameAsync(queueName));
+    }
+
     // Checks the availability of a queue name.
     [HttpPost("is-available")]
     public async Task<ActionResult<ServiceResponse<TrueFalseResultDto>>> IsQueueNameAvailable([FromBody] CheckAvailabilityDto checkAvailabilityDto)

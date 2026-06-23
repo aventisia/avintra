@@ -283,6 +283,73 @@ public class QueueTableService : IQueueTableService
         return serviceResponse;
     }
 
+    // Retrieves a queue by its name.
+    public async Task<ServiceResponse<QueuesTableDto>> GetQueueByNameAsync(string queueName)
+    {
+        // Initialize the default failure response.
+        var serviceResponse = new ServiceResponse<QueuesTableDto>
+        {
+            Data = null,
+            Message = "Failed to retrieve the queue. Please try again."
+        };
+
+        try
+        {
+            // Retrieve the queue matching the specified name for the current user.
+            var queue = await _unitOfWork.QueueRepo
+                .GetByConditionAsync(w =>
+                    w.Name.ToLower() == queueName.ToLower() &&
+                    w.CreatedByUserId == _userId)
+                .FirstOrDefaultAsync();
+
+            // Verify that the queue exists.
+            if (queue == null)
+            {
+                serviceResponse.Message = $"Queue '{queueName}' was not found.";
+                return serviceResponse;
+            }
+
+            // Verify that the user has permission to view the queue.
+            var (canView, accessLevel) = await _resourceShareService.GetResourceAccessAsync(
+                _userId,
+                queue.Id,
+                ResourceTypeEnum.Queue,
+                queue.CreatedByUserId,
+                queue.IsTenantWideAccess,
+                new[]
+                {
+                    ResourceAccessTypeEnum.Owner,
+                    ResourceAccessTypeEnum.FullAccess,
+                    ResourceAccessTypeEnum.View,
+                    ResourceAccessTypeEnum.Edit,
+                    ResourceAccessTypeEnum.Delete,
+                }
+            );
+
+            if (!canView)
+            {
+                _logger.LogWarning(
+                    "Unauthorized queue access. User {UserId}, Queue {QueueName}",
+                    _userId,
+                    queueName);
+
+                serviceResponse.Message = "You do not have permission to access this queue.";
+                return serviceResponse;
+            }
+
+            // Populate the successful response.
+            serviceResponse.Data = queue.Adapt<QueuesTableDto>();
+            serviceResponse.StatusCode = 200;
+            serviceResponse.Message = "Queue retrieved successfully.";
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex, "Error retrieving queue by name {QueueName}", queueName);
+        }
+
+        return serviceResponse;
+    }
+
     // Creates a new queue
     public async Task<ServiceResponse<QueuesTableDto>> InsertQueueAsync(QueuesTableDto queuesTableDto)
     {
