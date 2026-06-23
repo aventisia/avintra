@@ -1,13 +1,13 @@
+import { get } from "idb-keyval";
+
 import { AgentExecutionLogType } from "@/features/execute-flow/types/execution-log-types";
 
+import { EXECUTION_LOG_KEY } from "..";
 import { Execution, ExecutionNode } from "../types/execution-types";
 
 export const getLocalExecutionLog = async (versionId: string) => {
   try {
-    const logsJson = localStorage.getItem("executionLog");
-    if (!logsJson) return null;
-
-    const logs: AgentExecutionLogType[] = logsJson ? JSON.parse(logsJson) : [];
+    const logs = (await get<AgentExecutionLogType[]>(EXECUTION_LOG_KEY)) || [];
 
     const versionLog = logs.find((log) => log.versionId === versionId);
 

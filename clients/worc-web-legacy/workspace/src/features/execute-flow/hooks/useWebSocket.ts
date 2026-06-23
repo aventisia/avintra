@@ -1,10 +1,10 @@
-import { IS_TAURI } from "@/constants/constants";
-import { JobStatusTypesEnum } from "@/features/03-orchestrator/jobs-table/enums/job-status-type-enum";
-import { ExecutionNode } from "@/types/execution-types";
-
 import { invoke } from "@tauri-apps/api/core";
 import { useCallback, useEffect, useRef, useState } from "react";
 import { useShallow } from "zustand/react/shallow";
+
+import { IS_TAURI } from "@/constants/constants";
+import { JobStatusTypesEnum } from "@/features/03-orchestrator/jobs-table/enums/job-status-type-enum";
+import { ExecutionNode } from "@/types/execution-types";
 
 import {
   WebSocketCommandType,
@@ -22,6 +22,7 @@ import { CreditServiceTypesEnum } from "../constants/credit-service-type-enum";
 import { UsageSourceTypesEnum } from "../constants/usage-source-types-enum";
 import { useCurrentFlowStore } from "../stores/current-flow-store";
 import { useJobDataStore } from "../stores/job-data-store";
+
 import { usePostCreditConsumptionMutation } from "./usePostCreditConsumptionMutation";
 
 export default function useWebSocket() {
@@ -121,7 +122,7 @@ export default function useWebSocket() {
       };
 
       // On webSocket message received
-      socket.onmessage = (event: MessageEvent) => {
+      socket.onmessage = async (event: MessageEvent) => {
         try {
           // Parse the incoming message
           const msg = JSON.parse(event.data) as WebSocketMessageType;
@@ -138,14 +139,13 @@ export default function useWebSocket() {
             case "abort":
             case "error":
             case "complete":
-              sendExecutionComplete(msg.command, sendCommand);
+              sendExecutionComplete(msg.command, sendCommand, msg.data || "{}");
               break;
             case "start":
-              console.log("Received start command");
               sendNextNodeToProcess(sendCommand);
               break;
             case "save-execution-log":
-              saveNodeExecutionLog(msg.data || "{}");
+              await saveNodeExecutionLog(msg.data || "{}");
               break;
             default:
               console.log("Unknown command:", msg.data);

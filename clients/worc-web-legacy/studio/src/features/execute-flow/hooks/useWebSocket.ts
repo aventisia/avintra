@@ -1,13 +1,13 @@
+import { invoke } from "@tauri-apps/api/core";
+import { useCallback, useEffect, useRef, useState } from "react";
+import { useShallow } from "zustand/react/shallow";
+
 import { IS_TAURI } from "@/constants";
 import { ActionTypesEnum } from "@/features/credits-management/constants/action-types-enum";
 import { CreditServiceTypesEnum } from "@/features/credits-management/constants/credit-service-type-enum";
 import { UsageSourceTypesEnum } from "@/features/credits-management/constants/usage-source-types-enum";
 import { usePostCreditConsumptionMutation } from "@/features/credits-management/hooks/usePostCreditConsumptionMutation";
 import { useCurrentFlowStore } from "@/stores/current-flow-store";
-
-import { invoke } from "@tauri-apps/api/core";
-import { useCallback, useEffect, useRef, useState } from "react";
-import { useShallow } from "zustand/react/shallow";
 
 import {
   WebSocketCommandType,
@@ -113,7 +113,7 @@ export default function useWebSocket() {
       };
 
       // On webSocket message received
-      socket.onmessage = (event: MessageEvent) => {
+      socket.onmessage = async (event: MessageEvent) => {
         try {
           // Parse the incoming message
           const msg = JSON.parse(event.data) as WebSocketMessageType;
@@ -130,13 +130,13 @@ export default function useWebSocket() {
             case "abort":
             case "error":
             case "complete":
-              sendExecutionComplete(msg.command, sendCommand);
+              sendExecutionComplete(msg.command, sendCommand, msg.data || "{}");
               break;
             case "start":
               sendNextNodeToProcess(sendCommand);
               break;
             case "save-execution-log":
-              saveNodeExecutionLog(msg.data || "{}");
+              await saveNodeExecutionLog(msg.data || "{}");
               break;
             default:
               console.log("Unknown command:", msg.data);

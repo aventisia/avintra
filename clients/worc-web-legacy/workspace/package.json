@@ -53,6 +53,7 @@
     "easy-currencies": "^1.8.3",
     "embla-carousel-react": "^8.1.6",
     "html-react-parser": "^5.1.15",
+    "idb-keyval": "^6.2.5",
     "jwt-decode": "^4.0.0",
     "linq": "^3.2.4",
     "lowlight": "^3.1.0",
