@@ -1,6 +1,6 @@
 using CodeActivitiesLibrary.Extensions;
 
-namespace CodeActivitiesLibrary.WorkflowLogics.QueueManagementActivities
+namespace CodeActivitiesLibrary.WorkflowLogics.QueueManagement
 {
     [ActivityCategoryMetadata(
         primaryCategory: "Workflow Logics",

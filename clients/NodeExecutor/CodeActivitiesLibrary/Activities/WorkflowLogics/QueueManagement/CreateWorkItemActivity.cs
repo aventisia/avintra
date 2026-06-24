@@ -1,8 +1,12 @@
 ﻿using CodeActivitiesLibrary.Extensions;
+using CodeActivitiesLibrary.WorkflowLogics.QueueManagement.Helpers;
+using System;
 using System.Activities;
+using System.Collections;
 using System.ComponentModel;
+using System.Net.Http;
 
-namespace CodeActivitiesLibrary.WorkflowLogics.QueueManagementActivities
+namespace CodeActivitiesLibrary.WorkflowLogics.QueueManagement
 {
     [DisplayName("Create Work Item")]
     [Description("Creates a new work item in the specified queue.")]
@@ -11,29 +15,79 @@ namespace CodeActivitiesLibrary.WorkflowLogics.QueueManagementActivities
     {
         [RequiredArgument]
         [DisplayName("Select Queue")]
-        [Description("Choose the queue where the new work item will be created.")]
+        [Description("Choose the queue in which to create the work item.")]
         [FieldType(FieldType.QueueSelect)]
-        public InArgument<string> QueueId { get; set; }
+        public InArgument<string> QueueName { get; set; }
 
         [RequiredArgument]
         [DisplayName("Work Item Data")]
-        [Description("Provide the data payload for the work item in JSON format. This data will be stored with the work item.")]
+        [Description("Provide the data for the work item in JSON format.")]
         [FieldType(FieldType.JsonEditor)]
         public InArgument<string> WorkItemData { get; set; }
 
-
         [DisplayName("Remark")]
-        [Description("Enter the remark for the work item.")]
+        [Description("Optional remark for the work item.")]
         [DefaultValue("")]
         public InArgument<string> Remark { get; set; }
-        
-        [DisplayName("CreatedWorkItem")]
-        [Description("Returns the newly created work item.")]
-        public OutArgument<object> CreatedWorkItem { get; set; }
+
+        [DisplayName("Result")]
+        [Description("Returns the created work item.")]
+        public OutArgument<object> Result { get; set; }
 
         protected override void Execute(CodeActivityContext context)
         {
-            
+            try
+            {
+                // Retrieve input arguments
+                var queueName = QueueName.Get(context);
+                var workItemData = WorkItemData.Get(context);
+                var remark = Remark.Get(context);
+                var accessToken = AccessToken.Get(context);
+
+                // Validate that queueName is not null or empty
+                if (string.IsNullOrEmpty(queueName))
+                {
+                    throw new ArgumentException("Queue Name cannot be null or empty.");
+                }
+
+                // Validate that workItemData is a valid JSON string
+                if (string.IsNullOrEmpty(workItemData))
+                {
+                    throw new ArgumentException("Work Item Data cannot be null or empty.");
+                }
+
+                // Validate that accessToken is not null or empty
+                if (string.IsNullOrEmpty(accessToken))
+                {
+                    throw new ArgumentException("Access Token cannot be null or empty.");
+                }
+
+                // Prepare the payload for the API request
+                var payload = new
+                {
+                    queueName = queueName,
+                    workItemData = workItemData,
+                    remark = remark
+                };
+
+                // Execute the API request to create the work item
+                var endpointUrl = "workspace/api/queue/workitem";
+
+                // Execute the API request to create the work item
+                var createdWorkItem = QueueApiExecutor.Execute(endpointUrl, HttpMethod.Post, accessToken, payload).Result;
+
+                // Set the output arguments
+                Result.Set(context, createdWorkItem);
+                IsSuccess.Set(context, true);
+                StatusMessage.Set(context, "Work item created successfully.");
+            }
+            catch (Exception ex)
+            {
+                // Handle exceptions and set the output arguments accordingly
+                IsSuccess.Set(context, false);
+                StatusMessage.Set(context, $"Error creating work item: {ex.Message}");
+                throw;
+            }
         }
     }
 }
