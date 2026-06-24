@@ -139,7 +139,6 @@ export default function useWebSocket() {
               await saveNodeExecutionLog(msg.data || "{}");
               break;
             default:
-              console.log("Unknown command:", msg.data);
               sendNodeToProcess(msg.data || "nodeId", sendCommand);
               break;
           }

@@ -28,20 +28,20 @@ const getSubflowReference = (
 ): SubflowReference | null => {
   if (node.type === "blockNode") {
     const selectedBlock = node.data?.selectedBlock;
-    if (selectedBlock?.flowId || selectedBlock?.id) {
+    if (selectedBlock?.flowId && selectedBlock?.id) {
       return {
-        flowId: selectedBlock.flowId ?? selectedBlock.id,
-        versionId: selectedBlock.flowId ? selectedBlock.id : undefined,
+        flowId: selectedBlock.flowId,
+        versionId: selectedBlock.id,
       };
     }
   }
 
   if (node.type === "callAgentNode") {
     const selectedAgent = node.data?.selectedAgent;
-    if (selectedAgent?.flowId || selectedAgent?.id) {
+    if (selectedAgent?.flowId && selectedAgent?.id) {
       return {
-        flowId: selectedAgent.flowId ?? selectedAgent.id,
-        versionId: selectedAgent.flowId ? selectedAgent.id : undefined,
+        flowId: selectedAgent.flowId,
+        versionId: selectedAgent.id,
       };
     }
   }

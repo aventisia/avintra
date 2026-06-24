@@ -27,4 +27,11 @@ public interface IFlowBuilderService
     /// <param name="publishFlowVersionDto">The data required to publish the flow version silently.</param>
     /// <returns>A task that returns a service response indicating whether the publish operation was successful.</returns>
     Task<ServiceResponse<bool>> PublishFlowVersionAsync(PublishFlowVersionDto publishFlowVersionDto);
+
+    /// <summary>
+    /// Fetch the reactFlowObject of given list of flow version ids
+    /// </summary>
+    /// <param name="subFlowIds">The list of flow version ids for which to fetch the reactFlowObject.</param>
+    /// <returns>A task representing the service response containing the reactFlowObject for the specified flow version ids.</returns>
+    Task<ServiceResponse<IEnumerable<FetchSubFlowDto>>> FetchSubFlowsAsync(IEnumerable<Guid> subFlowIds);
 }

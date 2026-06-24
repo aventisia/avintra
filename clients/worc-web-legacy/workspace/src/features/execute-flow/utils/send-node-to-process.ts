@@ -1,5 +1,6 @@
 import { toast } from "@aventisia/ui/sonner";
 import { Edge, Node } from "@xyflow/react";
+import { get } from "idb-keyval";
 
 import { ConditionalNodeDataType } from "@/types/conditional-node-data-type";
 import { LoopNodeDataType } from "@/types/loop-node-data-type";
@@ -16,9 +17,8 @@ import {
   getLoopNodeData,
   getWpfLoopNodeData,
 } from "..";
-import { getFlowToLoad } from "../apis/react-flow-apis";
-
-import { deepParse } from "./deepParse";
+import { SUB_FLOW_GRAPH_DB_KEY } from "../constants/constants";
+import { SubFlowGraph } from "../types/sub-flow-graph";
 
 // Get nodes from local storage
 const getNodesFromLS = () => {
@@ -268,8 +268,11 @@ const processLoopNode = (
 async function executeSubflow(
   node: Node,
   sendCommand: (command: WebSocketCommandType, data?: string) => void,
+  isBlock: boolean = false,
 ) {
-  const subFlowObj = node.data?.selectedAgent as { [key: string]: string };
+  const subFlowObj = (
+    isBlock ? node.data?.selectedBlock : node.data?.selectedAgent
+  ) as { [key: string]: string };
 
   if (!subFlowObj?.flowId || !subFlowObj?.id) {
     toast.error("Subflow data is missing.");
@@ -281,24 +284,33 @@ async function executeSubflow(
   )?.target;
 
   try {
-    const data = await getFlowToLoad(subFlowObj?.flowId, subFlowObj?.id);
-    const { nodes: subFlowNodes, edges: subFlowEdges } = deepParse(
-      data?.data.reactFlowObject ?? "{}",
-    ) as unknown as { nodes: Node[]; edges: Edge[] };
+    const subFlowGraphs =
+      (await get<SubFlowGraph[]>(SUB_FLOW_GRAPH_DB_KEY)) || [];
+    const subFlowGraph = subFlowGraphs.find(
+      (item) => item.subFlowId === subFlowObj.id,
+    );
 
-    // Replace subflow trigger inputs with the caller node inputs.
-    const updatedSubFlowNodes = subFlowNodes.map((blockNode) => {
-      if (blockNode.type === "triggerNode") {
+    if (!subFlowGraph) {
+      toast.error("Subflow data not found in local cache.");
+      return sendCommand("error");
+    }
+
+    const subFlowNodes = subFlowGraph.nodes;
+    const subFlowEdges = subFlowGraph.edges;
+
+    // Replace the sub flow trigger inputs with the inputs from the sub flow node
+    const updatedSubFlowNodes = subFlowNodes.map((subFlowNode) => {
+      if (subFlowNode.type === "triggerNode") {
         return {
-          ...blockNode,
+          ...subFlowNode,
           data: {
-            ...blockNode.data,
-            label: `Starting ${node.data?.label || "Block"}...`,
+            ...subFlowNode.data,
+            label: `Starting ${node.data?.label || "Subflow"}...`,
             inputs: node.data?.inputs || [],
           },
         };
       }
-      return blockNode;
+      return subFlowNode;
     });
 
     // Push current execution context to stack
@@ -325,73 +337,7 @@ async function executeSubflow(
     // Start subflow
     sendNextNodeToProcess(sendCommand);
   } catch (error) {
-    toast.error("Failed to execute subflow: " + error);
-    sendCommand("error");
-  }
-}
-
-async function executeBlock(
-  node: Node,
-  sendCommand: (command: WebSocketCommandType, data?: string) => void,
-) {
-  const selectedBlock = node.data?.selectedBlock as { [key: string]: string };
-
-  if (!selectedBlock?.id) {
-    toast.error("Block data is missing.");
-    return sendCommand("error");
-  }
-
-  // The node we should resume after block finishes
-  const returnNodeId = getEdgesFromLS().find(
-    (e) => e.source === node.id && e.type != "loopBack",
-  )?.target;
-
-  try {
-    const data = await getFlowToLoad(selectedBlock?.flowId, selectedBlock?.id);
-    const { nodes: blockNodes, edges: blockEdges } = deepParse(
-      data?.data.reactFlowObject ?? "{}",
-    ) as unknown as { nodes: Node[]; edges: Edge[] };
-
-    // Replace block trigger inputs with the block node inputs.
-    const updatedBlockNodes = blockNodes.map((blockNode) => {
-      if (blockNode.type === "triggerNode") {
-        return {
-          ...blockNode,
-          data: {
-            ...blockNode.data,
-            label: `Starting ${node.data?.label || "Block"}...`,
-            inputs: node.data?.inputs || [],
-          },
-        };
-      }
-      return blockNode;
-    });
-
-    //  Push current flow to execution stack
-    const executionStack = JSON.parse(
-      localStorage.getItem("flowExecutionStack") || "[]",
-    );
-
-    executionStack.push({
-      nodes: getNodesFromLS(),
-      edges: getEdgesFromLS(),
-      conditionalExecutionGroup: getConditionalExecutionGroupFromLS(),
-      loopExecutionGroup: getLoopExecutionGroupFromLS(),
-      returnNodeId: returnNodeId ?? "",
-    });
-
-    localStorage.setItem("flowExecutionStack", JSON.stringify(executionStack));
-
-    //  Set block as current flow
-    localStorage.setItem("nodes", JSON.stringify(updatedBlockNodes));
-    localStorage.setItem("edges", JSON.stringify(blockEdges));
-    localStorage.setItem("conditionalExecutionGroup", JSON.stringify([]));
-    localStorage.setItem("loopExecutionGroup", JSON.stringify([]));
-
-    //  Start execution at block triggerNode (your normal flow handles this)
-    sendNextNodeToProcess(sendCommand);
-  } catch (error) {
-    toast.error("Failed to execute block: " + error);
+    toast.error("Failed to execute sub-flow: " + error);
     sendCommand("error");
   }
 }
@@ -436,10 +382,6 @@ const sendNodeToProcess = (
   // Check the type of the target node and handle accordingly
   switch (nodeToProcess.type) {
     case "triggerNode":
-      console.log(
-        "Trigger node found. Setting up execution context...",
-        nodeToProcess,
-      );
       sendCommand(
         "setup-execution-context",
         JSON.stringify(
@@ -545,7 +487,7 @@ const sendNodeToProcess = (
     }
 
     case "blockNode": {
-      executeBlock(nodeToProcess, sendCommand);
+      executeSubflow(nodeToProcess, sendCommand, true);
       return;
     }
     default: // If unknown node type, show an error message

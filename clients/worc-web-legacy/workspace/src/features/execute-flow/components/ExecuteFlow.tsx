@@ -11,9 +11,11 @@ import { IS_TAURI } from "@/constants/constants";
 import { getAvailableCredits } from "@/features/available-credits/available-credits-apis";
 import { getMySession } from "@/react-toolkit/apis/accounts-me-apis";
 import { useUserSessionStore } from "@/react-toolkit/stores/user-session-store";
+import { NodeDataType } from "@/types/node-data-type";
 
 import { CURRENT_VERSION_ID_KEY, clearNodeExecutionLog } from "..";
 import { getFlowToLoad } from "../apis/react-flow-apis";
+import { useFetchSubFlows } from "../hooks/useFetchSubFlows";
 import useWebSocket from "../hooks/useWebSocket";
 import { useCurrentFlowStore } from "../stores/current-flow-store";
 import { deepParse } from "../utils/deepParse";
@@ -46,6 +48,7 @@ const ExecuteFlow = ({
   );
 
   const isCommercial = userSession?.deploymentType == "Commercial";
+  const { fetchAndStoreSubFlows } = useFetchSubFlows();
 
   const minCredits = 10;
 
@@ -75,6 +78,12 @@ const ExecuteFlow = ({
     const { nodes, edges } = deepParse(
       currFlowData?.data.reactFlowObject ?? "{}",
     ) as unknown as { nodes: Node[]; edges: Edge[] };
+
+    try {
+      await fetchAndStoreSubFlows(nodes as Node<NodeDataType>[]);
+    } catch {
+      return;
+    }
 
     // Set the execution state to launching executor
     setExecutionState("launching-executor");
