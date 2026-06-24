@@ -97,10 +97,8 @@ public class VaultService : IVaultService
                     new[]
                     {
                         ResourceAccessTypeEnum.Owner,
-                        ResourceAccessTypeEnum.FullAccess,
                         ResourceAccessTypeEnum.View,
                         ResourceAccessTypeEnum.Edit,
-                        ResourceAccessTypeEnum.Delete
                     }
                 );
 
@@ -179,10 +177,8 @@ public class VaultService : IVaultService
                 new[]
                 {
                     ResourceAccessTypeEnum.Owner,
-                    ResourceAccessTypeEnum.FullAccess,
                     ResourceAccessTypeEnum.View,
                     ResourceAccessTypeEnum.Edit,
-                    ResourceAccessTypeEnum.Delete,
                 }
             );
 
@@ -315,7 +311,6 @@ public class VaultService : IVaultService
                 new[]
                 {
                     ResourceAccessTypeEnum.Owner,
-                    ResourceAccessTypeEnum.FullAccess,
                     ResourceAccessTypeEnum.Edit,
                 }
             );
@@ -414,8 +409,6 @@ public class VaultService : IVaultService
                     new[]
                     {
                         ResourceAccessTypeEnum.Owner,
-                        ResourceAccessTypeEnum.FullAccess,
-                        ResourceAccessTypeEnum.Delete,
                     }
                 );
 
@@ -490,8 +483,6 @@ public class VaultService : IVaultService
                     new[]
                     {
                         ResourceAccessTypeEnum.Owner,
-                        ResourceAccessTypeEnum.FullAccess,
-                        ResourceAccessTypeEnum.Delete,
                     }
                 );
 
@@ -567,10 +558,8 @@ public class VaultService : IVaultService
                     new[]
                     {
                         ResourceAccessTypeEnum.Owner,
-                        ResourceAccessTypeEnum.FullAccess,
                         ResourceAccessTypeEnum.View,
                         ResourceAccessTypeEnum.Edit,
-                        ResourceAccessTypeEnum.Delete,
                     }
                 );
 

@@ -47,6 +47,40 @@ public static class WorkspaceDbInitialSeed
             throw;
         }
     }
+    private static async Task UpdateResourceShareAccessLevelsAsync(
+        WorkspaceDbContext workspaceDbContext)
+    {
+        // Load all ResourceShare records.
+        // Access levels "Delete" and "FullAccess" are being deprecated and must be migrated.
+        var resourceShares = await workspaceDbContext.ResourceShares
+            .ToListAsync();
+
+        var updatedCount = 0;
+
+        foreach (var resourceShare in resourceShares)
+        {
+            // Replace deprecated "Delete" access with "View".
+            if (resourceShare.AccessLevel == ResourceAccessTypeEnum.Delete)
+            {
+                resourceShare.AccessLevel = ResourceAccessTypeEnum.View;
+                updatedCount++;
+            }
+            // Replace deprecated "FullAccess" access with "Owner".
+            else if (resourceShare.AccessLevel == ResourceAccessTypeEnum.FullAccess)
+            {
+                resourceShare.AccessLevel = ResourceAccessTypeEnum.Owner;
+                updatedCount++;
+            }
+        }
+
+        // Persist changes only when records have been updated.
+        if (updatedCount > 0)
+        {
+            Console.WriteLine($"Info: Updating {updatedCount} ResourceShare records to the new access model...");
+            await workspaceDbContext.SaveChangesAsync();
+            Console.WriteLine("Info: ResourceShare access level migration completed successfully.");
+        }
+    }
 
     private static async Task RemoveDuplicateRecordsAsync(WorkspaceDbContext workspaceDbContext)
     {

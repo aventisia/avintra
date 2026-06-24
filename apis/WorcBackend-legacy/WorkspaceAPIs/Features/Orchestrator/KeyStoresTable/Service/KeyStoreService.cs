@@ -104,11 +104,9 @@ public class KeyStoreService : IKeyStoreService
                     ResourceTypeEnum.KeyStore,
                     new[]
                     {
-                        ResourceAccessTypeEnum.FullAccess,
                         ResourceAccessTypeEnum.Owner,
                         ResourceAccessTypeEnum.View,
                         ResourceAccessTypeEnum.Edit,
-                        ResourceAccessTypeEnum.Delete
                     }
                 );
 
@@ -188,10 +186,8 @@ public class KeyStoreService : IKeyStoreService
                     new[]
                     {
                         ResourceAccessTypeEnum.Owner,
-                        ResourceAccessTypeEnum.FullAccess,
                         ResourceAccessTypeEnum.View,
                         ResourceAccessTypeEnum.Edit,
-                        ResourceAccessTypeEnum.Delete,
                     }
                 );
 
@@ -373,7 +369,6 @@ public class KeyStoreService : IKeyStoreService
                 new[]
                 {
                     ResourceAccessTypeEnum.Owner,
-                    ResourceAccessTypeEnum.FullAccess,
                     ResourceAccessTypeEnum.Edit,
                 }
             );
@@ -467,8 +462,6 @@ public class KeyStoreService : IKeyStoreService
                 new[]
                 {
                     ResourceAccessTypeEnum.Owner,
-                    ResourceAccessTypeEnum.FullAccess,
-                    ResourceAccessTypeEnum.Delete,
                 }
             );
 
@@ -540,8 +533,6 @@ public class KeyStoreService : IKeyStoreService
                     new[]
                     {
                         ResourceAccessTypeEnum.Owner,
-                        ResourceAccessTypeEnum.FullAccess,
-                        ResourceAccessTypeEnum.Delete,
                     }
                 );
 
@@ -613,10 +604,8 @@ public class KeyStoreService : IKeyStoreService
                 new[]
                 {
                     ResourceAccessTypeEnum.Owner,
-                    ResourceAccessTypeEnum.FullAccess,
                     ResourceAccessTypeEnum.View,
                     ResourceAccessTypeEnum.Edit,
-                    ResourceAccessTypeEnum.Delete,
                 }
             );
 

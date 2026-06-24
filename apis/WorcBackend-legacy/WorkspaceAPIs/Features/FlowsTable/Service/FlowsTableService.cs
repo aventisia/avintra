@@ -62,11 +62,9 @@ public class FlowsTableService : IFlowsTableService
                     ResourceTypeEnum.Flow,
                     new[]
                     {
-                        ResourceAccessTypeEnum.FullAccess,
                         ResourceAccessTypeEnum.Owner,
                         ResourceAccessTypeEnum.View,
                         ResourceAccessTypeEnum.Edit,
-                        ResourceAccessTypeEnum.Delete
                     }
                 );
 
@@ -301,7 +299,6 @@ public class FlowsTableService : IFlowsTableService
                 new[]
                 {
                     ResourceAccessTypeEnum.Owner,
-                    ResourceAccessTypeEnum.FullAccess,
                     ResourceAccessTypeEnum.Edit,
                 }
             );
@@ -453,8 +450,6 @@ public class FlowsTableService : IFlowsTableService
                 new[]
                 {
                     ResourceAccessTypeEnum.Owner,
-                    ResourceAccessTypeEnum.FullAccess,
-                    ResourceAccessTypeEnum.Delete,
                 }
             );
 
@@ -539,8 +534,6 @@ public class FlowsTableService : IFlowsTableService
                     new[]
                     {
                         ResourceAccessTypeEnum.Owner,
-                        ResourceAccessTypeEnum.FullAccess,
-                        ResourceAccessTypeEnum.Delete,
                     }
                 );
 

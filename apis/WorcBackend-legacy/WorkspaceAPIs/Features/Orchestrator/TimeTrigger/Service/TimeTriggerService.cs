@@ -240,7 +240,6 @@ public class TimeTriggerService(
                 new[]
                 {
                     ResourceAccessTypeEnum.Owner,
-                    ResourceAccessTypeEnum.FullAccess,
                     ResourceAccessTypeEnum.Edit,
                 }
             );
@@ -418,8 +417,6 @@ public class TimeTriggerService(
                 new[]
                 {
                     ResourceAccessTypeEnum.Owner,
-                    ResourceAccessTypeEnum.FullAccess,
-                    ResourceAccessTypeEnum.Delete,
                 }
             );
 
@@ -500,10 +497,8 @@ public class TimeTriggerService(
                     new[]
                     {
                         ResourceAccessTypeEnum.Owner,
-                        ResourceAccessTypeEnum.FullAccess,
                         ResourceAccessTypeEnum.View,
                         ResourceAccessTypeEnum.Edit,
-                        ResourceAccessTypeEnum.Delete
                     }
                 );
 
@@ -594,10 +589,8 @@ public class TimeTriggerService(
                 new[]
                 {
                     ResourceAccessTypeEnum.Owner,
-                    ResourceAccessTypeEnum.FullAccess,
                     ResourceAccessTypeEnum.View,
                     ResourceAccessTypeEnum.Edit,
-                    ResourceAccessTypeEnum.Delete,
                 }
             );
 
@@ -662,8 +655,6 @@ public class TimeTriggerService(
                     new[]
                     {
                         ResourceAccessTypeEnum.Owner,
-                        ResourceAccessTypeEnum.FullAccess,
-                        ResourceAccessTypeEnum.Delete,
                     }
                 );
 
@@ -742,10 +733,8 @@ public class TimeTriggerService(
                 new[]
                 {
                     ResourceAccessTypeEnum.Owner,
-                    ResourceAccessTypeEnum.FullAccess,
                     ResourceAccessTypeEnum.View,
                     ResourceAccessTypeEnum.Edit,
-                    ResourceAccessTypeEnum.Delete,
                 }
             );
 
