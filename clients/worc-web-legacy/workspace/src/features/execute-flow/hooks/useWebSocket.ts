@@ -15,14 +15,13 @@ import {
   sendNextNodeToProcess,
   sendNodeToProcess,
 } from "..";
-import { getLocalExecutionLog } from "../apis/get-version-execution-log";
 import { updateJobData } from "../apis/job-trigger-apis";
 import { ActionTypesEnum } from "../constants/action-types-enum";
 import { CreditServiceTypesEnum } from "../constants/credit-service-type-enum";
 import { UsageSourceTypesEnum } from "../constants/usage-source-types-enum";
 import { useCurrentFlowStore } from "../stores/current-flow-store";
 import { useJobDataStore } from "../stores/job-data-store";
-
+import { getLocalExecutionLog } from "../utils/get-version-execution-log";
 import { usePostCreditConsumptionMutation } from "./usePostCreditConsumptionMutation";
 
 export default function useWebSocket() {

@@ -30,6 +30,54 @@ public class FlowBuilderService : IFlowBuilderService
         _resourceShareService = resourceShareService;
     }
 
+    // Fetch the parent flow details of given parent flow version id
+    public async Task<ServiceResponse<FetchParentFlowDto>> FetchParentFlowAsync(Guid parentFlowVersionId)
+    {
+        var serviceResponse = new ServiceResponse<FetchParentFlowDto>
+        {
+            Data = null,
+            Message = "Failed to fetch parent flow. Please try again.",
+        };
+
+        try
+        {
+            // TODO: Implement access control logic to ensure the user has permission to access the specified subFlowIds.
+            
+            // Fetch the parent flow version details based on the provided parentFlowVersionId
+            var parentFlowVersion = await _unitOfWork.FlowVersionRepo
+                .GetByConditionAsync(w => w.Id == parentFlowVersionId)
+                .Include(i => i.Flow)
+                .SingleOrDefaultAsync();
+
+            if (parentFlowVersion == null)
+            {
+                serviceResponse.Message = "Parent flow not found.";
+                return serviceResponse;
+            }
+
+            // Create a FetchParentFlowDto instance with the retrieved details
+            var fetchParentFlowDto = new FetchParentFlowDto
+            {
+                FlowId = parentFlowVersion.FlowId,
+                VersionId = parentFlowVersion.Id,
+                FlowName = parentFlowVersion.Flow.Name,
+                ReactFlowObject = parentFlowVersion.ReactFlowObject,
+                InputOutputObject = parentFlowVersion.InputOutputObject
+            };
+
+            serviceResponse.Data = fetchParentFlowDto;
+            serviceResponse.StatusCode = 200;
+            serviceResponse.Message = "Parent flow fetched successfully.";
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex.ToString());
+            return serviceResponse;
+        }
+
+        return serviceResponse;
+    }
+
     // Fetch the reactFlowObject of given list of flow version ids
     public async Task<ServiceResponse<IEnumerable<FetchSubFlowDto>>> FetchSubFlowsAsync(IEnumerable<Guid> subFlowIds)
     {
@@ -42,19 +90,31 @@ public class FlowBuilderService : IFlowBuilderService
 
         try
         {
-            // Fetch the ConfigStore ResourceIds for the current user
-            var accessibleResourceIds = await _resourceShareService.GetAccessibleResourceIdsAsync(_userId, ResourceTypeEnum.FlowVersion);
-            var accessToPublishedFlowVersionIds = await _unitOfWork.FlowVersionUserRepo
-                .GetByConditionAsync(w => w.UserId == _userId)
-                .Select(s => s.FlowVersionId)
-                .ToListAsync();
+            // TODO: Implement access control logic to ensure the user has permission to access the specified subFlowIds.
+            // -----------------------------
+            // // Fetch the ConfigStore ResourceIds for the current user
+            // var accessibleResourceIds = await _resourceShareService.GetAccessibleResourceIdsAsync(_userId, ResourceTypeEnum.FlowVersion);
+            // var accessToPublishedFlowVersionIds = await _unitOfWork.FlowVersionUserRepo
+            //     .GetByConditionAsync(w => w.UserId == _userId)
+            //     .Select(s => s.FlowVersionId)
+            //     .ToListAsync();
 
-            // Merge the accessible resource IDs with the published flow version IDs
-            accessibleResourceIds.AddRange(accessToPublishedFlowVersionIds);
+            // // Merge the accessible resource IDs with the published flow version IDs
+            // accessibleResourceIds.AddRange(accessToPublishedFlowVersionIds);
 
-            // Fetch the reactFlowObject for the specified subFlowIds that the user has access to
+            // // Fetch the reactFlowObject for the specified subFlowIds that the user has access to
+            // var subFlows = await _unitOfWork.FlowVersionRepo
+            //     .GetByConditionAsync(w => subFlowIds.Contains(w.Id) && (w.IsTenantWideAccess || w.CreatedByUserId == _userId || accessibleResourceIds.Contains(w.Id)))
+            //     .Select(s => new FetchSubFlowDto
+            //     {
+            //         FlowVersionId = s.Id,
+            //         ReactFlowObject = s.ReactFlowObject
+            //     })
+            //     .ToListAsync();
+
+            // Fetch the reactFlowObject for the specified subFlowIds (TODO: without checking the user access for now)
             var subFlows = await _unitOfWork.FlowVersionRepo
-                .GetByConditionAsync(w => subFlowIds.Contains(w.Id) && (w.IsTenantWideAccess || w.CreatedByUserId == _userId || accessibleResourceIds.Contains(w.Id)))
+                .GetByConditionAsync(w => subFlowIds.Contains(w.Id))
                 .Select(s => new FetchSubFlowDto
                 {
                     FlowVersionId = s.Id,
@@ -98,7 +158,7 @@ public class FlowBuilderService : IFlowBuilderService
                 return serviceResponse;
             }
 
-            // Validate user's access permissions for viewing the key store
+            // Validate user's access permissions for viewing the flow
             var (canView, accessLevel) = await _resourceShareService.GetResourceAccessAsync(
                 _userId,
                 flow.Id,
@@ -114,7 +174,7 @@ public class FlowBuilderService : IFlowBuilderService
 
             if (!canView)
             {
-                serviceResponse.Message = "You do not have access to view this key store.";
+                serviceResponse.Message = "You do not have access to view this flow.";
                 return serviceResponse;
             }
 

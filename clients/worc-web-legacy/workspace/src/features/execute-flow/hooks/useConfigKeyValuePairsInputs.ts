@@ -7,7 +7,7 @@ import { fetchConfigKeyValuePairs } from "@/features/execute-flow/apis/config-st
 import { ConfigKeyValueDto } from "@/features/execute-flow/dtos/config-key-value-dto";
 import { NodeDataType } from "@/types/node-data-type";
 
-import { getFlowToLoad } from "../apis/react-flow-apis";
+import { fetchParentFlow } from "../apis/flow-builder-apis";
 import { NodeInputType } from "../types/node-input-type";
 import { extractUniqueConfigKeys } from "../utils/config-key-utils";
 import { deepParse } from "../utils/deepParse";
@@ -103,10 +103,7 @@ export const useConfigKeyValuePairsInputs = () => {
               subflowReference.versionId ?? "latest",
             ],
             queryFn: () =>
-              getFlowToLoad(
-                subflowReference.flowId,
-                subflowReference.versionId,
-              ),
+              fetchParentFlow(subflowReference.versionId ?? "latest"),
           });
 
           const subflowNodes = toFlowNodes(flowResponse?.data?.reactFlowObject);
