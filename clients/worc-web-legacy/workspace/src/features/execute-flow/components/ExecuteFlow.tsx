@@ -14,20 +14,14 @@ import { useUserSessionStore } from "@/react-toolkit/stores/user-session-store";
 import { NodeDataType } from "@/types/node-data-type";
 
 import { CURRENT_VERSION_ID_KEY, clearNodeExecutionLog } from "..";
-import { getFlowToLoad } from "../apis/react-flow-apis";
+import { fetchParentFlow } from "../apis/flow-builder-apis";
 import { useFetchSubFlows } from "../hooks/useFetchSubFlows";
 import useWebSocket from "../hooks/useWebSocket";
 import { useCurrentFlowStore } from "../stores/current-flow-store";
 import { deepParse } from "../utils/deepParse";
 import { extractInputsFromInputOutputObject } from "../utils/extract-inputs-from-inputoutputobject";
 
-const ExecuteFlow = ({
-  agentId,
-  versionId,
-}: {
-  versionId: string;
-  agentId: string;
-}) => {
+const ExecuteFlow = ({ versionId }: { versionId: string; agentId: string }) => {
   // Connect to websocket server and get sendCommand function
   const { sendCommand } = useWebSocket();
 
@@ -75,13 +69,13 @@ const ExecuteFlow = ({
       }
     }
 
-    const currFlowData = await getFlowToLoad(agentId, versionId);
+    const currFlowData = await fetchParentFlow(versionId);
     if (!currFlowData?.data) return;
 
     setCurrentFlow({
-      id: currFlowData?.data.id,
+      id: currFlowData?.data.flowId,
       versionId: currFlowData?.data.versionId,
-      name: currFlowData?.data.name,
+      name: currFlowData?.data.flowName,
       inputOutputObject: currFlowData?.data.inputOutputObject || "",
       jobId: "",
       machineId: "",
@@ -116,7 +110,7 @@ const ExecuteFlow = ({
           accessToken,
           nodes,
           edges,
-          currFlowData.data.name,
+          currFlowData.data.flowName,
           currFlowData.data.inputOutputObject,
         );
       } else {

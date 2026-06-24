@@ -29,6 +29,13 @@ public interface IFlowBuilderService
     Task<ServiceResponse<bool>> PublishFlowVersionAsync(PublishFlowVersionDto publishFlowVersionDto);
 
     /// <summary>
+    /// Fetches the parent flow details of a given parent flow version ID.
+    /// </summary>
+    /// <param name="parentFlowVersionId">The unique identifier of the parent flow version.</param>
+    /// <returns>A task representing the service response containing the parent flow details.</returns>
+    Task<ServiceResponse<FetchParentFlowDto>> FetchParentFlowAsync(Guid parentFlowVersionId);
+
+    /// <summary>
     /// Fetch the reactFlowObject of given list of flow version ids
     /// </summary>
     /// <param name="subFlowIds">The list of flow version ids for which to fetch the reactFlowObject.</param>
