@@ -18,6 +18,7 @@ import { extractInputsFromInputOutputObject } from "../utils/extract-inputs-from
 import { clearNodeExecutionLog } from "../utils/save-node-execution-log";
 
 import { useConfigKeyValuePairsInputs } from "./useConfigKeyValuePairsInputs";
+import { useFetchSubFlows } from "./useFetchSubFlows";
 import useWebSocket from "./useWebSocket";
 
 export default function useExecuteFlow() {
@@ -47,6 +48,7 @@ export default function useExecuteFlow() {
   const { sendCommand } = useWebSocket();
 
   const { getConfigKeyValuePairsInputs } = useConfigKeyValuePairsInputs();
+  const { fetchAndStoreSubFlows } = useFetchSubFlows();
 
   const minCredits = 10;
 
@@ -83,6 +85,12 @@ export default function useExecuteFlow() {
     const { nodes, edges } = deepParse(
       data.reactFlowObject ?? "{}",
     ) as unknown as { nodes: Node[]; edges: Edge[] };
+
+    try {
+      await fetchAndStoreSubFlows(nodes as Node<NodeDataType>[]);
+    } catch {
+      return;
+    }
 
     // Set the execution state to launching executor
     setExecutionState("launching-executor");

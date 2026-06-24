@@ -6,6 +6,7 @@ import { useQueryClient } from "@tanstack/react-query";
 import { invoke } from "@tauri-apps/api/core";
 import { Node } from "@xyflow/react";
 import { Loader2 } from "lucide-react";
+import { useState } from "react";
 import { useShallow } from "zustand/react/shallow";
 
 import { IS_TAURI } from "@/constants";
@@ -27,6 +28,7 @@ import {
   isValidFlowGraph,
   useConfigKeyValuePairsInputs,
   useExecuteFlowMutation,
+  useFetchSubFlows,
   useJobNotifications,
 } from "..";
 import useWebSocket from "../hooks/useWebSocket";
@@ -34,6 +36,7 @@ import { useJobDataStore } from "../stores/job-data-store";
 import { extractInputsFromInputOutputObject } from "../utils/extract-inputs-from-inputoutputobject";
 
 const ExecuteFlow = () => {
+  const [isStarting, setIsStarting] = useState<boolean>(false);
   const queryClient = useQueryClient();
 
   // Get user session state and actions
@@ -78,6 +81,9 @@ const ExecuteFlow = () => {
   // Get execute flow on web mutation
   const { executeFlowOnWebMutationAsync } = useExecuteFlowMutation();
 
+  // Fetch and cache sub-flow graphs recursively in IndexedDB
+  const { fetchAndStoreSubFlows } = useFetchSubFlows();
+
   // Connect to SignalR job notification hub to receive real-time job updates
   useJobNotifications(
     (notification) => {
@@ -119,107 +125,124 @@ const ExecuteFlow = () => {
 
   // Start execution
   const startExecution = async () => {
-    // Validate: Archived flow version cannot be executed
-    if (currentFlow?.isArchived) {
-      toast.info("Archived flows cannot be executed.");
-      return;
-    }
-
-    // Validate: published flow version can only be executed via orchestrator
-    if (currentFlow?.isPublished) {
-      toast.info("Published agents can only be executed via the Orchestrator.");
-      return;
-    }
-
-    // Save flow before execution and wait until complete
-    if (isSavePending) {
-      const saved = await saveData();
-
-      if (!saved) {
+    setIsStarting(true);
+    try {
+      // Validate: Archived flow version cannot be executed
+      if (currentFlow?.isArchived) {
+        toast.info("Archived flows cannot be executed.");
         return;
       }
-    }
 
-    // Validate: Reject flow execution if it contains only support/placeholder nodes
-    if (isEmptyFlow(nodes as Node<NodeDataType>[])) {
-      toast.error("Flow is empty and cannot be executed.");
-      return;
-    }
-
-    // Get flag indicating whether flow can only be executed in desktop executor
-    let isDesktopOnlyFlow = doesFlowContainAnyDesktopOnlyNode(
-      nodes as Node<NodeDataType>[],
-    );
-
-    // Temporary fix to run all flows in desktop executor if app is running in Tauri until our web executor is bugs free and supports all nodes
-    if (IS_TAURI) isDesktopOnlyFlow = true;
-
-    // Validate: Flow contains one or more executable nodes that are desktop-only and app is not running in Tauri
-    if (!IS_TAURI && isDesktopOnlyFlow) {
-      toast.error(
-        "Flow contains desktop nodes which cannot be executed via web. Please remove desktop nodes from the flow and try again.",
-      );
-      return;
-    }
-
-    // Validate: Invalid react flow object or flow graph
-    const flowGraphError = isValidFlowGraph(
-      nodes as Node<NodeDataType>[],
-      edges,
-    );
-    if (flowGraphError) {
-      toast.error(`Flow graph is invalid: ${flowGraphError}`);
-      return;
-    }
-
-    // Validate: Check credits for commercial deployment
-    if (isCommercial) {
-      const creditsData = await getAvailableCredits();
-
-      if (creditsData?.data && creditsData.data.availableCredits < minCredits) {
-        // Show toast notification for insufficient credits
-        toast.error("Insufficient credits. Please top up to continue.");
+      // Validate: published flow version can only be executed via orchestrator
+      if (currentFlow?.isPublished) {
+        toast.info(
+          "Published agents can only be executed via the Orchestrator.",
+        );
         return;
       }
-    }
 
-    // Validate: Check for active plan in enterprise deployment
-    if (isEnterprise && !hasActivePlan) {
-      // Show toast notification for inactive plan
-      toast.error(
-        "This action is currently unavailable. Please contact your administrator or support.",
-      );
-      return;
-    }
+      // Save flow before execution and wait until complete
+      if (isSavePending) {
+        const saved = await saveData();
 
-    // Set the execution state to launching executor
-    setExecutionState("launching-executor");
-
-    // Get the jwt by calling the getMySession API
-    const userSession = await getMySession();
-
-    // If session is valid, proceed to execute the flow
-    if (userSession) {
-      // Get the access token from the session
-      const accessToken = userSession.data?.accessToken;
-
-      if (isDesktopOnlyFlow) {
-        localStorage.removeItem("flowExecutionStack"); //  Clear any previous subflow stack
-        localStorage.setItem("conditionalExecutionGroup", JSON.stringify([]));
-        localStorage.setItem("loopExecutionGroup", JSON.stringify([]));
-        openDesktopExecutor(accessToken);
-      } else {
-        try {
-          // Call the execute endpoint to create a job and flow execution
-          await executeFlowOnWebMutationAsync({
-            flowVersionId: currentFlow.versionId,
-          });
-        } catch {
-          // Reset the execution state on API failure
-          setExecutionState("stopped");
+        if (!saved) {
           return;
         }
       }
+
+      // Validate: Reject flow execution if it contains only support/placeholder nodes
+      if (isEmptyFlow(nodes as Node<NodeDataType>[])) {
+        toast.error("Flow is empty and cannot be executed.");
+        return;
+      }
+
+      // Get flag indicating whether flow can only be executed in desktop executor
+      let isDesktopOnlyFlow = doesFlowContainAnyDesktopOnlyNode(
+        nodes as Node<NodeDataType>[],
+      );
+
+      // Temporary fix to run all flows in desktop executor if app is running in Tauri until our web executor is bugs free and supports all nodes
+      if (IS_TAURI) isDesktopOnlyFlow = true;
+
+      // Validate: Flow contains one or more executable nodes that are desktop-only and app is not running in Tauri
+      if (!IS_TAURI && isDesktopOnlyFlow) {
+        toast.error(
+          "Flow contains desktop nodes which cannot be executed via web. Please remove desktop nodes from the flow and try again.",
+        );
+        return;
+      }
+
+      // Validate: Invalid react flow object or flow graph
+      const flowGraphError = isValidFlowGraph(
+        nodes as Node<NodeDataType>[],
+        edges,
+      );
+      if (flowGraphError) {
+        toast.error(`Flow graph is invalid: ${flowGraphError}`);
+        return;
+      }
+
+      // Validate: Check credits for commercial deployment
+      if (isCommercial) {
+        const creditsData = await getAvailableCredits();
+
+        if (
+          creditsData?.data &&
+          creditsData.data.availableCredits < minCredits
+        ) {
+          // Show toast notification for insufficient credits
+          toast.error("Insufficient credits. Please top up to continue.");
+          return;
+        }
+      }
+
+      // Validate: Check for active plan in enterprise deployment
+      if (isEnterprise && !hasActivePlan) {
+        // Show toast notification for inactive plan
+        toast.error(
+          "This action is currently unavailable. Please contact your administrator or support.",
+        );
+        return;
+      }
+
+      // Fetch and store sub-flow graphs recursively in IndexedDB before execution
+      try {
+        await fetchAndStoreSubFlows(nodes as Node<NodeDataType>[]);
+      } catch {
+        return;
+      }
+
+      // Set the execution state to launching executor
+      setExecutionState("launching-executor");
+
+      // Get the jwt by calling the getMySession API
+      const userSession = await getMySession();
+
+      // If session is valid, proceed to execute the flow
+      if (userSession) {
+        // Get the access token from the session
+        const accessToken = userSession.data?.accessToken;
+
+        if (isDesktopOnlyFlow) {
+          localStorage.removeItem("flowExecutionStack"); //  Clear any previous subflow stack
+          localStorage.setItem("conditionalExecutionGroup", JSON.stringify([]));
+          localStorage.setItem("loopExecutionGroup", JSON.stringify([]));
+          openDesktopExecutor(accessToken);
+        } else {
+          try {
+            // Call the execute endpoint to create a job and flow execution
+            await executeFlowOnWebMutationAsync({
+              flowVersionId: currentFlow.versionId,
+            });
+          } catch {
+            // Reset the execution state on API failure
+            setExecutionState("stopped");
+            return;
+          }
+        }
+      }
+    } finally {
+      setIsStarting(false);
     }
   };
 
@@ -357,7 +380,7 @@ const ExecuteFlow = () => {
             }}
             disabled={isSaving}
           >
-            {executionState === "launching-executor" ? (
+            {isStarting || executionState === "launching-executor" ? (
               <Loader2 className="h-[1.1rem] w-[1.1rem] animate-spin text-white/80" />
             ) : (
               <>

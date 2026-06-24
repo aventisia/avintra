@@ -32,4 +32,11 @@ public class FlowBuilderController : BaseApiController
     {
         return ResultHelper(await _flowBuilderService.PublishFlowVersionAsync(publishFlowVersionDto));
     }
+
+    // Fetch the reactFlowObject of given list of flow version ids
+    [HttpPost("fetch-sub-flows")]
+    public async Task<ActionResult<ServiceResponse<IEnumerable<FetchSubFlowDto>>>> FetchSubFlows([FromBody] IEnumerable<Guid> subFlowIds)
+    {
+        return ResultHelper(await _flowBuilderService.FetchSubFlowsAsync(subFlowIds));
+    }
 }

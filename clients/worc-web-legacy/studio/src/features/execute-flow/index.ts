@@ -42,6 +42,7 @@ export * from "./hooks/useWebSocket";
 export * from "./hooks/useExecuteFlowMutation";
 export * from "./hooks/useJobNotifications";
 export * from "./hooks/useConfigKeyValuePairsInputs";
+export * from "./hooks/useFetchSubFlows";
 
 // Components
 export * from "./components/ExecuteFlow";

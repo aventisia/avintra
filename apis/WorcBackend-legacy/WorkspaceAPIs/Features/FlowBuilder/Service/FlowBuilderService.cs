@@ -30,6 +30,51 @@ public class FlowBuilderService : IFlowBuilderService
         _resourceShareService = resourceShareService;
     }
 
+    // Fetch the reactFlowObject of given list of flow version ids
+    public async Task<ServiceResponse<IEnumerable<FetchSubFlowDto>>> FetchSubFlowsAsync(IEnumerable<Guid> subFlowIds)
+    {
+        // Initialize ServiceResponse with failed response
+        var serviceResponse = new ServiceResponse<IEnumerable<FetchSubFlowDto>>
+        {
+            Data = null,
+            Message = "Failed to fetch sub-flows. Please try again.",
+        };
+
+        try
+        {
+            // Fetch the ConfigStore ResourceIds for the current user
+            var accessibleResourceIds = await _resourceShareService.GetAccessibleResourceIdsAsync(_userId, ResourceTypeEnum.FlowVersion);
+            var accessToPublishedFlowVersionIds = await _unitOfWork.FlowVersionUserRepo
+                .GetByConditionAsync(w => w.UserId == _userId)
+                .Select(s => s.FlowVersionId)
+                .ToListAsync();
+
+            // Merge the accessible resource IDs with the published flow version IDs
+            accessibleResourceIds.AddRange(accessToPublishedFlowVersionIds);
+
+            // Fetch the reactFlowObject for the specified subFlowIds that the user has access to
+            var subFlows = await _unitOfWork.FlowVersionRepo
+                .GetByConditionAsync(w => subFlowIds.Contains(w.Id) && (w.IsTenantWideAccess || w.CreatedByUserId == _userId || accessibleResourceIds.Contains(w.Id)))
+                .Select(s => new FetchSubFlowDto
+                {
+                    FlowVersionId = s.Id,
+                    ReactFlowObject = s.ReactFlowObject
+                })
+                .ToListAsync();
+
+            serviceResponse.Data = subFlows;
+            serviceResponse.StatusCode = 200;
+            serviceResponse.Message = subFlows.Count > 0 ? "Sub-flows fetched successfully." : "No sub-flows found.";
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex.ToString());
+            return serviceResponse;
+        }
+
+        return serviceResponse;
+    }
+
     // Retrieves the flow version record to load when the user opens it in the studio.
     public async Task<ServiceResponse<LoadFlowDto>> GetFlowToLoadAsync(Guid flowId, Guid? versionId)
     {

@@ -15,6 +15,7 @@ export * from "./types/node-output-type";
 export * from "./types/wpf-loop-node-data";
 export * from "./types/ws-command-types";
 export * from "./types/ws-messsage-type";
+export * from "./types/sub-flow-graph";
 
 // Utils
 export * from "./utils/get-activity-node-data";
@@ -30,6 +31,7 @@ export * from "./utils/send-node-to-process";
 // Hooks
 export * from "./hooks/useWebSocket";
 export * from "./hooks/useConfigKeyValuePairsInputs";
+export * from "./hooks/useFetchSubFlows";
 
 // Components
 export * from "./components/ExecuteFlow";
