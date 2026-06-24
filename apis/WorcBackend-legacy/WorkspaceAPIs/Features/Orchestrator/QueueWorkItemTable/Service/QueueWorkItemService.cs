@@ -420,6 +420,7 @@ public class QueueWorkItemService : IQueueWorkItemService
                     // Map DTO to entity and populate fields
                     var newWorkItem = queueWorkItemDto.Adapt<QueueTransaction>();
                     newWorkItem.PayloadData = serializedPayload;
+                    newWorkItem.QueueId = queue.Id;
                     newWorkItem.Status = QueueTransactionStatusTypesEnum.Pending;
                     newWorkItem.Description = queueWorkItemDto.Description;
 
@@ -680,10 +681,10 @@ public class QueueWorkItemService : IQueueWorkItemService
         return serviceResponse;
     }
 
-    // 
+    // Moves a work item from its current queue to the specified destination queue.
     public async Task<ServiceResponse<bool>> MoveWorkItemAsync(MoveQueueWorkItemRequestDto moveQueueWorkItemRequestDto)
     {
-        //
+        // Initialize the service response with a failure status.
         var serviceResponse = new ServiceResponse<bool>
         {
             Data = false,
@@ -884,7 +885,6 @@ public class QueueWorkItemService : IQueueWorkItemService
 
         return serviceResponse;
     }
-
 
     // Delete a workitem from the queue
     public async Task<ServiceResponse<bool>> RemoveWorkItemAsync(Guid workitemId)
