@@ -108,10 +108,8 @@ public class FlowBuilderService : IFlowBuilderService
                 new[]
                 {
                     ResourceAccessTypeEnum.Owner,
-                    ResourceAccessTypeEnum.FullAccess,
                     ResourceAccessTypeEnum.View,
                     ResourceAccessTypeEnum.Edit,
-                    ResourceAccessTypeEnum.Delete,
                 });
 
             if (!canView)
@@ -334,10 +332,8 @@ public class FlowBuilderService : IFlowBuilderService
                 new[]
                 {
                     ResourceAccessTypeEnum.Owner,
-                    ResourceAccessTypeEnum.FullAccess,
                     ResourceAccessTypeEnum.View,
                     ResourceAccessTypeEnum.Edit,
-                    ResourceAccessTypeEnum.Delete,
                 });
 
             if (!canEidt)

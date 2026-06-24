@@ -108,11 +108,9 @@ public class AgentTableService : IAgentTableService
                     ResourceTypeEnum.FlowVersion,
                     new[]
                     {
-                        ResourceAccessTypeEnum.FullAccess,
                         ResourceAccessTypeEnum.Owner,
                         ResourceAccessTypeEnum.View,
                         ResourceAccessTypeEnum.Edit,
-                        ResourceAccessTypeEnum.Delete
                     });
 
                 // Retrieve archived shared flow versions that are either:

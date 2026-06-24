@@ -57,10 +57,8 @@ public class FlowVersionService : IFlowVersionService
                 new[]
                 {
                     ResourceAccessTypeEnum.Owner,
-                    ResourceAccessTypeEnum.FullAccess,
                     ResourceAccessTypeEnum.View,
                     ResourceAccessTypeEnum.Edit,
-                    ResourceAccessTypeEnum.Delete,
                 });
 
             if (!canView)

@@ -64,10 +64,8 @@ public class KnowledgeBaseService : IKnowledgeBaseService
                     new[]
                     {
                         ResourceAccessTypeEnum.Owner,
-                        ResourceAccessTypeEnum.FullAccess,
                         ResourceAccessTypeEnum.View,
                         ResourceAccessTypeEnum.Edit,
-                        ResourceAccessTypeEnum.Delete
                     }
                 );
 
@@ -136,10 +134,8 @@ public class KnowledgeBaseService : IKnowledgeBaseService
                     new[]
                     {
                         ResourceAccessTypeEnum.Owner,
-                        ResourceAccessTypeEnum.FullAccess,
                         ResourceAccessTypeEnum.View,
                         ResourceAccessTypeEnum.Edit,
-                        ResourceAccessTypeEnum.Delete,
                     }
                 );
 
@@ -388,7 +384,6 @@ public class KnowledgeBaseService : IKnowledgeBaseService
                 new[]
                 {
                     ResourceAccessTypeEnum.Owner,
-                    ResourceAccessTypeEnum.FullAccess,
                     ResourceAccessTypeEnum.Edit,
                 }
             );
@@ -473,8 +468,6 @@ public class KnowledgeBaseService : IKnowledgeBaseService
                 new[]
                 {
                     ResourceAccessTypeEnum.Owner,
-                    ResourceAccessTypeEnum.FullAccess,
-                    ResourceAccessTypeEnum.Delete,
                 }
             );
 
@@ -572,8 +565,6 @@ public class KnowledgeBaseService : IKnowledgeBaseService
                     new[]
                     {
                         ResourceAccessTypeEnum.Owner,
-                        ResourceAccessTypeEnum.FullAccess,
-                        ResourceAccessTypeEnum.Delete,
                     }
                 );
 

@@ -223,10 +223,8 @@ public class ExecuteFlowStep1Service : IExecuteFlowStep1Service
                 new[]
                 {
                     ResourceAccessTypeEnum.Owner,
-                    ResourceAccessTypeEnum.FullAccess,
                     ResourceAccessTypeEnum.View,
                     ResourceAccessTypeEnum.Edit,
-                    ResourceAccessTypeEnum.Delete
                 }
             );
 
