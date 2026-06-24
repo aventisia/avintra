@@ -737,9 +737,11 @@ public class M365OutlookConnectorsService : IM365OutlookConnectorsService
 
         if (!string.IsNullOrWhiteSpace(folderName))
         {
+            var mailFoldersApiUrl = $"{messagesApiUrl}/mailFolders";
+
             // Resolve folder ID from folder name
             var folderId = await GetFolderIdByNameAsync(
-                messagesApiUrl,
+                mailFoldersApiUrl,
                 accessToken,
                 folderName);
 
