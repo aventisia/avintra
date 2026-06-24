@@ -125,6 +125,17 @@ const ExecuteFlow = () => {
 
   // Start execution
   const startExecution = async () => {
+    // Skip this run if an execution is already in progress
+    if (
+      executionState === "executing" ||
+      executionState === "launching-executor"
+    ) {
+      console.log(
+        "Skipping new execution run: previous execution still in progress",
+      );
+      return;
+    }
+
     setIsStarting(true);
     try {
       // Validate: Archived flow version cannot be executed
@@ -249,23 +260,6 @@ const ExecuteFlow = () => {
   // Tauri API to open desktop executor
   const openDesktopExecutor = async (accessToken: string) => {
     try {
-      // Get websocket port
-      const wsPort = await invoke("get_websocket_port");
-
-      // Call the Tauri command to launch the desktop executor
-      const res = await invoke("launch_desktop_executor", {
-        appBaseUrl: window.location.origin,
-        wsPort,
-        agentId: currentFlow.versionId,
-        agentName: currentFlow.name,
-        inputArgumentsJson: JSON.stringify({}), // For manual trigger we can send empty input arguments.
-        accessToken,
-      });
-      console.log("Executor launched successfully:", res);
-
-      //Set start time for the execution
-      updateField("startTime", new Date());
-
       // Add a input variables to triggerNode. This is required to set the input variables in the execution context before other node's execution starts.
       // It is immportant to set these inputs to trigger node dynamically because when we'll be
       // calling the agent/block in other master flow, at that time agent/block trigger inputs will come
@@ -298,7 +292,8 @@ const ExecuteFlow = () => {
           : node,
       );
 
-      // Set versionId, nodes and edges in local storage for executor
+      // Set versionId, nodes and edges in local storage BEFORE launching executor
+      // to prevent race condition where executor sends "start" before localStorage is ready
       localStorage.setItem(CURRENT_VERSION_ID_KEY, currentFlow.versionId || "");
 
       // Remove previous logs for this version before starting a fresh execution.
@@ -308,6 +303,23 @@ const ExecuteFlow = () => {
       localStorage.removeItem(EXECUTION_LOG_KEY);
       localStorage.setItem("nodes", JSON.stringify(updatedNodes));
       localStorage.setItem("edges", JSON.stringify(edges));
+
+      // Get websocket port
+      const wsPort = await invoke("get_websocket_port");
+
+      // Call the Tauri command to launch the desktop executor
+      const res = await invoke("launch_desktop_executor", {
+        appBaseUrl: window.location.origin,
+        wsPort,
+        agentId: currentFlow.versionId,
+        agentName: currentFlow.name,
+        inputArgumentsJson: JSON.stringify({}), // For manual trigger we can send empty input arguments.
+        accessToken,
+      });
+      console.log("Executor launched successfully:", res);
+
+      //Set start time for the execution
+      updateField("startTime", new Date());
     } catch (error) {
       // Inform the user about the failure
       toast.error(

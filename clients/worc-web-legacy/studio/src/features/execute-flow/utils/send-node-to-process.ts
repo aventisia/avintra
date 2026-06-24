@@ -85,11 +85,10 @@ const sendExecutionComplete = (
 ) => {
   // Remove the items from local storage
   if (command === "complete" || command === "error" || command === "abort") {
-    // TODO: For now we are not removing the items from local storage so that we can debug the execution flow by running NodeExecuter in debug mode
-    //localStorage.removeItem("nodes");
-    //localStorage.removeItem("edges");
-    //localStorage.removeItem("conditionalExecutionGroup");
-    //localStorage.removeItem("loopExecutionGroup");
+    // Clean up execution state to prevent stale data from affecting the next run
+    localStorage.removeItem("flowExecutionStack");
+    localStorage.removeItem("conditionalExecutionGroup");
+    localStorage.removeItem("loopExecutionGroup");
     sendCommand(command, data);
   }
 
@@ -347,7 +346,7 @@ async function executeSubflow(
 }
 
 // Function to find the node and send its data
-const sendNodeToProcess = (
+const sendNodeToProcess = async (
   nodeId: string,
   sendCommand: (command: WebSocketCommandType, data?: string) => void,
 ) => {
@@ -356,11 +355,17 @@ const sendNodeToProcess = (
 
   // If target node is not found, show an error message
   if (!nodeToProcess || !nodeToProcess.type) {
-    console.error("Node not found or invalid node type", nodeId, nodeToProcess);
+    console.error(
+      "Node not found or invalid node type",
+      nodeId,
+      nodeToProcess,
+      "Current nodes in localStorage:",
+      getNodesFromLS().map((n) => ({ id: n.id, type: n.type })),
+    );
     sendExecutionComplete(
       "error",
       sendCommand,
-      "Node not found or invalid node type",
+      `Node not found or invalid node type ${nodeId} ${nodeToProcess?.type}`,
     );
     return;
   }
@@ -372,7 +377,7 @@ const sendNodeToProcess = (
     )?.target;
 
     if (nextNodeId) {
-      sendNodeToProcess(nextNodeId, sendCommand); // Recursively call to process the next node
+      await sendNodeToProcess(nextNodeId, sendCommand); // Recursively call to process the next node
     }
     return; //this stops the *current* function frame from continuing
   }
@@ -486,12 +491,12 @@ const sendNodeToProcess = (
     }
 
     case "callAgentNode": {
-      executeSubflow(nodeToProcess, sendCommand);
+      await executeSubflow(nodeToProcess, sendCommand);
       return;
     }
 
     case "blockNode": {
-      executeSubflow(nodeToProcess, sendCommand, true);
+      await executeSubflow(nodeToProcess, sendCommand, true);
       return;
     }
     default: // If unknown node type, show an error message

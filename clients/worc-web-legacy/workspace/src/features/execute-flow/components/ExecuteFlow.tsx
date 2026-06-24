@@ -54,6 +54,17 @@ const ExecuteFlow = ({
 
   // Start execution
   const startExecution = async () => {
+    // Skip this run if an execution is already in progress
+    if (
+      executionState === "executing" ||
+      executionState === "launching-executor"
+    ) {
+      console.log(
+        "Skipping new execution run: previous execution still in progress",
+      );
+      return;
+    }
+
     if (isCommercial) {
       const creditsData = await getAvailableCredits();
 
@@ -145,6 +156,13 @@ const ExecuteFlow = ({
           : node,
       );
 
+      // Set versionId, nodes and edges in local storage BEFORE launching executor
+      // to prevent race condition where executor sends "start" before localStorage is ready
+      localStorage.setItem(CURRENT_VERSION_ID_KEY, versionId || "");
+      clearNodeExecutionLog();
+      localStorage.setItem("nodes", JSON.stringify(updatedNodes));
+      localStorage.setItem("edges", JSON.stringify(edges));
+
       // Get websocket port
       const wsPort = await invoke("get_websocket_port");
 
@@ -158,12 +176,6 @@ const ExecuteFlow = ({
         accessToken,
       });
       console.log("Executor launched successfully:", res);
-
-      // Set versionId, nodes and edges in local storage for executor
-      localStorage.setItem(CURRENT_VERSION_ID_KEY, versionId || "");
-      clearNodeExecutionLog();
-      localStorage.setItem("nodes", JSON.stringify(updatedNodes));
-      localStorage.setItem("edges", JSON.stringify(edges));
     } catch (error) {
       // Inform the user about the failure
       toast.error(

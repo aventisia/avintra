@@ -16,20 +16,20 @@ import { useJobDataStore } from "../stores/job-data-store";
 import { deepParse } from "../utils/deepParse";
 import { extractInputsFromInputOutputObject } from "../utils/extract-inputs-from-inputoutputobject";
 import { clearNodeExecutionLog } from "../utils/save-node-execution-log";
-
 import { useConfigKeyValuePairsInputs } from "./useConfigKeyValuePairsInputs";
 import { useFetchSubFlows } from "./useFetchSubFlows";
 import useWebSocket from "./useWebSocket";
 
 export default function useExecuteFlow() {
   // Get current flow and execution state from current
-  const { setExecutionState, setCurrentFlow } = useCurrentFlowStore(
-    useShallow((state) => ({
-      executionState: state.executionState,
-      setExecutionState: state.setExecutionState,
-      setCurrentFlow: state.setCurrentFlow,
-    })),
-  );
+  const { executionState, setExecutionState, setCurrentFlow } =
+    useCurrentFlowStore(
+      useShallow((state) => ({
+        executionState: state.executionState,
+        setExecutionState: state.setExecutionState,
+        setCurrentFlow: state.setCurrentFlow,
+      })),
+    );
   const { updateField } = useJobDataStore(
     useShallow((state) => ({
       updateField: state.updateField,
@@ -54,6 +54,17 @@ export default function useExecuteFlow() {
 
   // Start execution
   const startExecution = async (data: JobDetailsDto) => {
+    // Skip this run if an execution is already in progress
+    if (
+      executionState === "executing" ||
+      executionState === "launching-executor"
+    ) {
+      console.log(
+        "Skipping new execution run: previous execution still in progress",
+      );
+      return;
+    }
+
     if (isCommercial) {
       const creditsData = await getAvailableCredits();
 
@@ -150,19 +161,6 @@ export default function useExecuteFlow() {
       // Get websocket port
       const wsPort = await invoke("get_websocket_port");
 
-      // Call the Tauri command to launch the desktop executor
-      const res = await invoke("launch_desktop_executor", {
-        appBaseUrl: window.location.origin,
-        wsPort,
-        agentId: versionId,
-        agentName: agentName,
-        inputArgumentsJson: inputArgumentsJson,
-        accessToken,
-      });
-      console.log("Executor launched successfully:", res);
-
-      updateField("startTime", new Date());
-
       // Add a input variables to triggerNode. This is required to set the input variables in the execution context before other node's execution starts.
       // It is immportant to set these inputs to trigger node dynamically because when we'll be
       // calling the agent/block in other master flow, at that time agent/block trigger inputs will come
@@ -195,11 +193,25 @@ export default function useExecuteFlow() {
           : node,
       );
 
-      // Set versionId, nodes and edges in local storage for executor
+      // Set versionId, nodes and edges in local storage BEFORE launching executor
+      // to prevent race condition where executor sends "start" before localStorage is ready
       localStorage.setItem(CURRENT_VERSION_ID_KEY, versionId || "");
       clearNodeExecutionLog();
       localStorage.setItem("nodes", JSON.stringify(updatedNodes));
       localStorage.setItem("edges", JSON.stringify(edges));
+
+      // Call the Tauri command to launch the desktop executor
+      const res = await invoke("launch_desktop_executor", {
+        appBaseUrl: window.location.origin,
+        wsPort,
+        agentId: versionId,
+        agentName: agentName,
+        inputArgumentsJson: inputArgumentsJson,
+        accessToken,
+      });
+      console.log("Executor launched successfully:", res);
+
+      updateField("startTime", new Date());
     } catch (error) {
       // Inform the user about the failure
       toast.error(

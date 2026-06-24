@@ -139,7 +139,7 @@ export default function useWebSocket() {
               await saveNodeExecutionLog(msg.data || "{}");
               break;
             default:
-              sendNodeToProcess(msg.data || "nodeId", sendCommand);
+              await sendNodeToProcess(msg.data || "nodeId", sendCommand);
               break;
           }
         } catch (err) {
