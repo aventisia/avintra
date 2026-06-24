@@ -203,16 +203,6 @@ public class TimeTriggerService(
 
         try
         {
-            // Convert the effective date to UTC based on the given timezone
-            var triggerEffectiveUtc = CronScheduleUtil.ConvertLocalTimeToUtc(triggerDto.Timezone, triggerDto.EffectiveDate);
-
-            // Check if the effective date has already passed
-            if (DateTimeOffset.UtcNow > triggerEffectiveUtc)
-            {
-                serviceResponse.Message = "The effective date has already passed. Please provide a future date.";
-                return serviceResponse;
-            }
-
             // Validate trigger existence
             var trigger = await _unitOfWork.TimeTriggerRepo
                 .GetByConditionAsync(m =>
@@ -229,6 +219,13 @@ public class TimeTriggerService(
                 return serviceResponse;
             }
 
+
+            // Check if the effective date has already passed
+            if (trigger.EffectiveDate != triggerDto.EffectiveDate && DateTimeOffset.UtcNow > triggerDto.EffectiveDate)
+            {
+                serviceResponse.Message = "The effective date has already passed. Please provide a future date.";
+                return serviceResponse;
+            }
 
             // Validate current user has permission to update this trigger
             var (canEdit, accessLevel) = await _resourceShareService.GetResourceAccessAsync(
@@ -254,25 +251,73 @@ public class TimeTriggerService(
             // Trim dto's string properties
             triggerDto = TrimDtoStringPropsUtil.TrimDtoStringProps(triggerDto);
 
-            // Default mapping 
-            triggerDto.Adapt(trigger);
+            // Update Timezone if it has changed
+            if (trigger.Timezone != triggerDto.Timezone)
+                trigger.Timezone = triggerDto.Timezone;
+
+            // Update Frequency if scheduling type has changed (e.g., Daily → Weekly)
+            if (trigger.Frequency != triggerDto.Frequency)
+                trigger.Frequency = triggerDto.Frequency;
+
+            // Update Interval if execution frequency spacing has changed
+            if (trigger.Interval != triggerDto.Interval)
+                trigger.Interval = triggerDto.Interval;
+
+            // Update AtTime if scheduled execution time of day has changed
+            if (trigger.AtTime != triggerDto.AtTime)
+                trigger.AtTime = triggerDto.AtTime;
+
+            // Update Weekdays if the selected execution days of week have changed
+            if (!Enumerable.SequenceEqual(trigger.Weekdays ?? new(), triggerDto.Weekdays ?? new()))
+                trigger.Weekdays = triggerDto.Weekdays;
+
+            // Update MonthDays if specific calendar days for execution have changed
+            if (!Enumerable.SequenceEqual(trigger.MonthDays ?? new(), triggerDto.MonthDays ?? new()))
+                trigger.MonthDays = triggerDto.MonthDays;
+
+            // Update ExceptionHours if restricted execution hours have changed
+            if (!Enumerable.SequenceEqual(trigger.ExceptionHours ?? new(), triggerDto.ExceptionHours ?? new()))
+                trigger.ExceptionHours = triggerDto.ExceptionHours;
+
+            // Update ExceptionWeekdays if excluded weekdays have changed
+            if (!Enumerable.SequenceEqual(trigger.ExceptionWeekdays ?? new(), triggerDto.ExceptionWeekdays ?? new()))
+                trigger.ExceptionWeekdays = triggerDto.ExceptionWeekdays;
+
+            // Update ExceptionDates if specific excluded calendar dates have changed
+            if (!Enumerable.SequenceEqual(trigger.ExceptionDates ?? new(), triggerDto.ExceptionDates ?? new()))
+                trigger.ExceptionDates = triggerDto.ExceptionDates;
+
+            // Update EffectiveDate if trigger activation start time has changed
+            if (trigger.EffectiveDate != triggerDto.EffectiveDate)
+            {
+                trigger.EffectiveDate = triggerDto.EffectiveDate;
+
+                // Rebuild cron expression because scheduling parameters may be affected
+                trigger.CronExpression = CronScheduleUtil.BuildCronExpression(
+                    trigger.Frequency,
+                    trigger.Interval,
+                    trigger.Timezone,
+                    trigger.AtTime,
+                    trigger.Weekdays,
+                    trigger.MonthDays
+                );
+
+                // Recalculate next execution time based on updated scheduling configuration
+                trigger.NextTriggerTime = CronScheduleUtil.ComputeNextTriggerUtc(
+                    trigger.CronExpression,
+                    trigger.EffectiveDate,
+                    trigger.ExceptionHours,
+                    trigger.ExceptionWeekdays,
+                    trigger.ExceptionDates
+                );
+            }
+
+            // Update IsDisabled if trigger activation start time has changed
+            if (triggerDto.IsDisabled != null && triggerDto.IsDisabled != trigger.IsDisabled)
+                trigger.IsDisabled = triggerDto.IsDisabled.Value;
+
             trigger.LastModifiedByUserId = _userId;
             trigger.LastTriggeredTime = DateTimeOffset.UtcNow;
-            trigger.CronExpression = CronScheduleUtil.BuildCronExpression(
-                trigger.Frequency,
-                trigger.Interval,
-                trigger.Timezone,
-                trigger.AtTime,
-                trigger.Weekdays,
-                trigger.MonthDays
-            );
-            trigger.NextTriggerTime = CronScheduleUtil.ComputeNextTriggerUtc(
-                trigger.CronExpression,
-                trigger.EffectiveDate,
-                trigger.ExceptionHours,
-                trigger.ExceptionWeekdays,
-                trigger.ExceptionDates
-            );
 
             // Update trigger
             _unitOfWork.TimeTriggerRepo.Update(trigger);
