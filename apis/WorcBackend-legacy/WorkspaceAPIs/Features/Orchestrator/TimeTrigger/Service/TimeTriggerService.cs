@@ -74,6 +74,17 @@ public class TimeTriggerService(
                 return serviceResponse;
             }
 
+            if (triggerDto.EndDate.HasValue && triggerDto.EndDate.Value < triggerDto.EffectiveDate)
+            {
+                _logger.LogWarning(
+                    "Invalid trigger date range. EndDate {EndDate} is less than EffectiveDate {EffectiveDate}",
+                    triggerDto.EndDate,
+                    triggerDto.EffectiveDate);
+
+                serviceResponse.Message = "End date must be greater than effective date.";
+                return serviceResponse;
+            }
+
             // Validate trigger name uniqueness
             var triggerAlreadyExists = await _unitOfWork.TriggerRepo
                 .GetByConditionAsync(w => w.Name.ToLower() == triggerDto.Name.ToLower())
@@ -203,6 +214,17 @@ public class TimeTriggerService(
 
         try
         {
+            if (triggerDto.EndDate.HasValue && triggerDto.EndDate.Value < triggerDto.EffectiveDate)
+            {
+                _logger.LogWarning(
+                    "Invalid trigger date range. EndDate {EndDate} is less than EffectiveDate {EffectiveDate}",
+                    triggerDto.EndDate,
+                    triggerDto.EffectiveDate);
+
+                serviceResponse.Message = "End date must be greater than effective date.";
+                return serviceResponse;
+            }
+
             // Validate trigger existence
             var trigger = await _unitOfWork.TimeTriggerRepo
                 .GetByConditionAsync(m =>
