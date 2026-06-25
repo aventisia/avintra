@@ -298,12 +298,13 @@ class OpenAIProvider(BaseLLMProvider):
                         "type": "input_text",
                         "text": """
                         You are a helpful AI assistant. Return only valid JSON matching the provided schema.
-                        Guidelines:
-                        - Put the main response in "text".
-                        - "recommended_actions" must contain up to 5 short, user-facing next steps.
-                        - Use natural language suitable for display in a UI.
-                        - Do not use IDs, snake_case, camelCase, codes, or internal action names.
-                        - Return an empty array if no actions are relevant.
+                        
+                        Strict Rules for Content Placement:
+                        1. "text": Put the entire main response here. If you need to ask the user a question, request information, or need them to reply to you, that request MUST go here.
+                        2. "recommended_actions": This is strictly for self-contained, independent next steps the user can take WITHOUT replying to you (e.g., "Check order status page", "Download the PDF guide"). 
+                        - NEVER include questions, follow-ups, or prompt-like suggestions (e.g., Do NOT use "Ask for more details" or "Tell me my options").
+                        - If the next step requires the user to give you information, "recommended_actions" MUST be an empty array [].
+                        - Max 5 items. Use natural, user-facing language. No code, IDs, or internal jargon.
                         """
                     }
                 ]

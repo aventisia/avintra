@@ -3,21 +3,18 @@ CHAT_AGENT_RESPONSE_SCHEMA = {
     "properties": {
         "text": {
             "type": "string",
-            "description": (
-                "Main response. Include all answers, questions, clarifications, requests for information, and follow-ups."
-            )
+            "description": "Main response. Put all text, explanations, and questions for the user here."
         },
         "recommended_actions": {
             "type": "array",
             "description": (
-                "Optional next steps the user can take independently. Never use for questions or requests to the user. If user input is needed, leave empty."
-                "Do not use IDs, codes, snake_case, or internal action names."
+                "Independent next steps the user can take WITHOUT replying to the AI (e.g., 'View dashboard'). "
+                "Forbidden: No questions, no conversational replies, and no prompt shortcuts (e.g., do NOT include 'Ask about pricing'). "
+                "Leave empty [] if the user needs to reply or provide information next."
             ),
             "items": {
                 "type": "string",
-                "description": (
-                    "A concise actionable suggestion, not a question or request."
-                )
+                "description": "Short action phrase starting with a verb (e.g., 'Download form')."
             },
             "maxItems": 5
         }
