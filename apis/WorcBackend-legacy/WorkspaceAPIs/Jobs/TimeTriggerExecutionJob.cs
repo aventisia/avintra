@@ -49,6 +49,7 @@ public class TimeTriggerExecutionJob : IJob
                 .Where(trigger =>
                     trigger.NextTriggerTime >= startOfCurrentMinute && trigger.NextTriggerTime < endOfCurrentMinute &&
                     trigger.EffectiveDate <= currentUtcTime &&
+                    !trigger.IsDisabled &&
                     (trigger.EndDate == null || trigger.EndDate >= currentUtcTime)
                 )
                 .Include(i => i.TimeTriggerFlowVersions)
