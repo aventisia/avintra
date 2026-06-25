@@ -1,9 +1,14 @@
-﻿using CodeActivitiesLibrary.Extensions;
-using CodeActivitiesLibrary.WorkflowLogics.QueueManagement.Helpers;
-using System;
+﻿using System;
 using System.Activities;
+using System.Collections.Generic;
 using System.ComponentModel;
 using System.Net.Http;
+using CodeActivitiesLibrary.Activities.WorkflowLogics.Q.Enums;
+using CodeActivitiesLibrary.Enums;
+using CodeActivitiesLibrary.Extensions;
+using CodeActivitiesLibrary.Models;
+using CodeActivitiesLibrary.WorkflowLogics.QueueManagement.Helpers;
+using MailKit.Search;
 
 namespace CodeActivitiesLibrary.WorkflowLogics.QueueManagement
 {
@@ -18,6 +23,57 @@ namespace CodeActivitiesLibrary.WorkflowLogics.QueueManagement
         [FieldType(FieldType.QueueSelect)]
         public InArgument<string> QueueName { get; set; }
 
+        [DisplayName("Status")]
+        [Description("Select the new status to assign to the work item.")]
+        public InArgument<WorkItemStatusEnum> Status { get; set; }
+
+        [DisplayName("Enable Sorting")]
+        [Description("Indicates whether the retrieved work items should be sorted.")]
+        [DefaultValue(false)]
+        public InArgument<bool> EnableSorting { get; set; }
+
+        [DisplayName("Sort Field")]
+        [Description("Specifies the field name to sort the retrieved work items by.")]
+        [RenderIfCondition(nameof(EnableSorting), true)]
+        public InArgument<string> SortField { get; set; }
+
+        [DisplayName("Sort Order")]
+        [Description("Specifies the sort order for the retrieved work items.")]
+        [DefaultValue(FieldSortOrder.Ascending)]
+        [RenderIfCondition(nameof(EnableSorting), true)]
+        public InArgument<FieldSortOrder> SortOrder { get; set; }
+
+        [DisplayName("Enable Filtering")]
+        [Description("Indicates whether a filter should be applied when retrieving work items.")]
+        [DefaultValue(false)]
+        public InArgument<bool> EnableFiltering { get; set; }
+
+        [DisplayName("Filter Field")]
+        [Description("Specifies the field name to filter the retrieved work items by.")]
+        [RenderIfCondition(nameof(EnableFiltering), true)]
+        public InArgument<string> FilterField { get; set; }
+
+        [DisplayName("Comparison Operator")]
+        [Description("Specifies the comparison operator to use when filtering work items.")]
+        [DefaultValue(FilterComparisonOperator.EqualTo)]
+        [RenderIfCondition(nameof(EnableFiltering), true)]
+        public InArgument<FilterComparisonOperator> ComparisonOperator { get; set; }
+
+        [DisplayName("Filter Value")]
+        [Description("Specifies the value to compare against the selected field.")]
+        [RenderIfCondition(nameof(EnableFiltering), true)]
+        public InArgument<string> FilterValue { get; set; }
+
+        [DisplayName("Top")]
+        [Description("Specifies the maximum number of work items to retrieve.")]
+        [DefaultValue(10)]
+        public InArgument<int> Top { get; set; }
+
+        [DisplayName("Skip")]
+        [Description("Specifies the number of work items to skip before retrieving results.")]
+        [DefaultValue(0)]
+        public InArgument<int> Skip { get; set; }
+
         [DisplayName("Result")]
         [Description("Returns the retrieved work items.")]
         public OutArgument<object> Result { get; set; }
@@ -30,36 +86,78 @@ namespace CodeActivitiesLibrary.WorkflowLogics.QueueManagement
                 var queueName = QueueName.Get(context);
                 var accessToken = AccessToken.Get(context);
 
-                // Validate input arguments
-                if (string.IsNullOrEmpty(queueName))
+                var status = Status.Get(context);
+                var top = Top.Get(context);
+                var skip = Skip.Get(context);
+
+                var enableSorting = EnableSorting.Get(context);
+                var sortField = SortField.Get(context);
+                var sortOrder = SortOrder.Get(context);
+
+                var enableFiltering = EnableFiltering.Get(context);
+                var filterField = FilterField.Get(context);
+                var comparisonOperator = ComparisonOperator.Get(context);
+                var filterValue = FilterValue.Get(context);
+
+                object queuePriority = null;
+
+                if (enableSorting)
                 {
-                    throw new ArgumentException("Queue Name cannot be null or empty.");
-                }
-
-                // Construct the API endpoint URL to retrieve the queue details
-                var queueEndpoint = $"workspace/api/queue/by-name/{queueName}";
-
-                // Execute the API call to retrieve the queue details
-                var retrieveQueue = QueueApiExecutor.Execute(queueEndpoint, HttpMethod.Get, accessToken);
-
-                // Check if the retrieved queue is null or does not contain an 'id' field
-                string queueId = string.Empty;
-
-                // get id from retrievedWorkItems and check if it is null or not
-                if (retrieveQueue != null)
-                {
-                    queueId = retrieveQueue.Result["id"]?.ToString();
-                    if (string.IsNullOrEmpty(queueId))
+                    if (string.IsNullOrWhiteSpace(sortField))
                     {
-                        throw new Exception("Retrieved work item does not contain a valid 'id' field.");
+                        throw new ArgumentException("Sort Field is required when sorting is enabled.");
                     }
+
+                    queuePriority = new[]
+                    {
+                        new
+                        {
+                            field = sortField,
+                            orderBy = sortOrder.ToString()
+                        }
+                    };
                 }
+
+                object conditions = null;
+
+                if (enableFiltering)
+                {
+                    if (string.IsNullOrWhiteSpace(filterField))
+                    {
+                        throw new ArgumentException("Filter Field is required when filtering is enabled.");
+                    }
+
+                    if (string.IsNullOrWhiteSpace(filterValue))
+                    {
+                        throw new ArgumentException("Filter Value is required when filtering is enabled.");
+                    }
+
+                    conditions = new[]
+                    {
+                        new
+                        {
+                            field = filterField,
+                            comparisonOperator = comparisonOperator.ToString(),
+                            value = filterValue
+                        }
+                    };
+                }
+
+                var payload = new
+                {
+                    queueName = queueName,
+                    status = status,
+                    queuePriority = queuePriority,
+                    comparisonOperator = comparisonOperator,
+                    top = Top,
+                    skip = Skip,
+                };
 
                 // Construct the API endpoint URL to retrieve the work items from the queue
-                var queueWorkItemsEndpoint = $"workspace/api/queue/workitem/{queueId}/list";
+                var queueWorkItemsEndpoint = $"workspace/api/queue/workitem/list";
 
                 // Execute the API call to retrieve the work items from the queue
-                var retrievedWorkItems = QueueApiExecutor.Execute(queueWorkItemsEndpoint, HttpMethod.Get, accessToken).Result;
+                var retrievedWorkItems = QueueApiExecutor.Execute(queueWorkItemsEndpoint, HttpMethod.Post, accessToken, payload).Result;
 
                 // Set the output arguments
                 Result.Set(context, retrievedWorkItems);

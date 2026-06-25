@@ -11,6 +11,11 @@ public class QueueFilterRequestDto
     public Guid QueueId { get; set; }
 
     /// <summary>
+    /// Gets or sets the unique identifier of the selected queue.
+    /// </summary>
+    public string? QueueName { get; set; }
+
+    /// <summary>
     /// Gets or sets the list of queue priorities for sorting the filter results.
     /// </summary>
     public List<QueueSortOrder> QueuePriority { get; set; } = new();
@@ -19,6 +24,22 @@ public class QueueFilterRequestDto
     /// Gets or sets the list of conditions that define how to filter the queues.
     /// </summary>
     public List<QueueFilterCondition> Conditions { get; set; } = new();
+
+    /// <summary>
+    /// Gets or sets the maximum number of work items to return.
+    /// </summary>
+    public int Top { get; set; } = 0;
+
+    /// <summary>
+    /// Gets or sets the number of work items to skip before returning results.
+    /// </summary>
+    public int Skip { get; set; } = 0;
+
+    /// <summary>
+    /// Gets or sets the status of the work items to filter by.
+    /// If null, work items of all statuses are considered.
+    /// </summary>
+    public QueueTransactionStatusTypesEnum? Status { get; set; }
 }
 
 /// <summary>
