@@ -3,12 +3,13 @@ using System.Activities;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Net.Http;
-using CodeActivitiesLibrary.Activities.WorkflowLogics.Q.Enums;
+using CodeActivitiesLibrary.Activities.WorkflowLogics.QueueManagement.Enums;
 using CodeActivitiesLibrary.Enums;
 using CodeActivitiesLibrary.Extensions;
 using CodeActivitiesLibrary.Models;
 using CodeActivitiesLibrary.WorkflowLogics.QueueManagement.Helpers;
 using MailKit.Search;
+using Newtonsoft.Json;
 
 namespace CodeActivitiesLibrary.WorkflowLogics.QueueManagement
 {
@@ -82,90 +83,85 @@ namespace CodeActivitiesLibrary.WorkflowLogics.QueueManagement
         {
             try
             {
-                // Retrieve input arguments
+                // Retrieve required input arguments from the activity context
                 var queueName = QueueName.Get(context);
                 var accessToken = AccessToken.Get(context);
 
+                // Retrieve optional inputs: status and pagination
                 var status = Status.Get(context);
                 var top = Top.Get(context);
                 var skip = Skip.Get(context);
 
+                // Retrieve sorting inputs
                 var enableSorting = EnableSorting.Get(context);
                 var sortField = SortField.Get(context);
                 var sortOrder = SortOrder.Get(context);
 
+                // Retrieve filtering inputs
                 var enableFiltering = EnableFiltering.Get(context);
                 var filterField = FilterField.Get(context);
                 var comparisonOperator = ComparisonOperator.Get(context);
                 var filterValue = FilterValue.Get(context);
 
-                object queuePriority = null;
+                // Prepare collections used in the request payload
+                List<object> queuePriority = new List<object>();
+                List<object> conditions = new List<object>();
 
+                // If sorting is enabled, validate sort field and add sorting info
                 if (enableSorting)
                 {
                     if (string.IsNullOrWhiteSpace(sortField))
-                    {
                         throw new ArgumentException("Sort Field is required when sorting is enabled.");
-                    }
 
-                    queuePriority = new[]
+                    queuePriority.Add(new
                     {
-                        new
-                        {
-                            field = sortField,
-                            orderBy = sortOrder.ToString()
-                        }
-                    };
+                        field = sortField,
+                        orderBy = sortOrder.ToString()
+                    });
                 }
 
-                object conditions = null;
-
+                // If filtering is enabled, validate filter inputs and add condition
                 if (enableFiltering)
                 {
                     if (string.IsNullOrWhiteSpace(filterField))
-                    {
                         throw new ArgumentException("Filter Field is required when filtering is enabled.");
-                    }
 
                     if (string.IsNullOrWhiteSpace(filterValue))
-                    {
                         throw new ArgumentException("Filter Value is required when filtering is enabled.");
-                    }
 
-                    conditions = new[]
+                    conditions.Add(new
                     {
-                        new
-                        {
-                            field = filterField,
-                            comparisonOperator = comparisonOperator.ToString(),
-                            value = filterValue
-                        }
-                    };
+                        field = filterField,
+                        comparisonOperator = comparisonOperator.ToString(),
+                        value = filterValue
+                    });
                 }
 
+                // Build the request payload for the queue API
                 var payload = new
                 {
                     queueName = queueName,
-                    status = status,
+                    status = status.ToString(),
                     queuePriority = queuePriority,
-                    comparisonOperator = comparisonOperator,
-                    top = Top,
-                    skip = Skip,
+                    conditions = conditions,
+                    top = top,
+                    skip = skip,
                 };
 
-                // Construct the API endpoint URL to retrieve the work items from the queue
+                // API endpoint to retrieve work items from the queue
                 var queueWorkItemsEndpoint = $"workspace/api/queue/workitem/list";
 
-                // Execute the API call to retrieve the work items from the queue
+                // Execute the API call and wait for the result
                 var retrievedWorkItems = QueueApiExecutor.Execute(queueWorkItemsEndpoint, HttpMethod.Post, accessToken, payload).Result;
 
-                // Set the output arguments
+                // Set outputs for the activity: result, success flag and status message    
                 Result.Set(context, retrievedWorkItems);
                 IsSuccess.Set(context, true);
                 StatusMessage.Set(context, "Work item retrieved successfully.");
             }
             catch (Exception ex)
             {
+                // On error, set failure outputs and rethrow so the workflow runtime handles the exception
                 IsSuccess.Set(context, false);
                 StatusMessage.Set(context, $"Error retrieving work item: {ex.Message}");
                 throw;
