@@ -70,8 +70,12 @@ public class QueueWorkItemService : IQueueWorkItemService
 
         try
         {
+
             var queue = await _unitOfWork.QueueRepo
-                .GetByConditionAsync(w => w.Id == queueFilterRequestDto.QueueId)
+                .GetByConditionAsync(q =>
+                    !string.IsNullOrEmpty(queueFilterRequestDto.QueueName)
+                        ? q.Name.ToLower() == queueFilterRequestDto.QueueName.ToLower()
+                        : q.Id == queueFilterRequestDto.QueueId)
                 .FirstOrDefaultAsync();
 
             if (queue == null)
@@ -85,7 +89,10 @@ public class QueueWorkItemService : IQueueWorkItemService
             await _semaphore.WaitAsync();
 
             var workitems = await _unitOfWork.QueueTransactionRepo
-                .GetByConditionAsync(w => w.QueueId == queue.Id)
+                .GetByConditionAsync(w =>
+                    w.QueueId == queue.Id &&
+                    (queueFilterRequestDto.Status == null || w.Status == queueFilterRequestDto.Status)
+                )
                 .Include(i => i.Queue)
                 .AsNoTracking()
                 .ToListAsync();
@@ -150,17 +157,59 @@ public class QueueWorkItemService : IQueueWorkItemService
                 }).ToList();
             }
 
-            IEnumerable<dynamic> sorted = items;
+            IOrderedEnumerable<dynamic>? ordered = null;
 
-            // Apply dynamic sorting
-            if (queueFilterRequestDto.QueuePriority.Any())
+            foreach (var sort in queueFilterRequestDto.QueuePriority)
             {
-                foreach (var sort in queueFilterRequestDto.QueuePriority)
+                // Func<dynamic, object?> keySelector = x => x.Payload[sort.Field]?.ToString();
+                Func<dynamic, object?> keySelector = x =>
                 {
-                    sorted = sort.OrderBy.Equals("Ascending", StringComparison.OrdinalIgnoreCase)
-                        ? sorted.OrderBy(o => o.Payload[sort.Field]?.ToString())
-                        : sorted.OrderByDescending(o => o.Payload[sort.Field]?.ToString());
+                    var token = x.Payload?[sort.Field] as JToken;
+
+                    if (token == null || token.Type == JTokenType.Null || token.Type == JTokenType.Undefined)
+                        return null;
+
+                    return token.Type switch
+                    {
+                        JTokenType.Integer => token.Value<long>(),
+                        JTokenType.Float => token.Value<double>(),
+                        JTokenType.Boolean => token.Value<bool>() ? 1 : 0,
+                        JTokenType.Date => token.Value<DateTime>(),
+                        JTokenType.String => token.Value<string>(),
+                        JTokenType.Guid => token.Value<Guid>(),
+                        JTokenType.Bytes => token.Value<byte[]>(),
+                        JTokenType.Array => ((JArray)token).Count,
+                        JTokenType.Object => token.ToString(Newtonsoft.Json.Formatting.None),
+                        _ => token.ToString()
+                    };
+                };
+
+                if (ordered == null)
+                {
+                    ordered = sort.OrderBy.Equals("Ascending", StringComparison.OrdinalIgnoreCase)
+                        ? items.OrderBy(keySelector)
+                        : items.OrderByDescending(keySelector);
                 }
+                else
+                {
+                    ordered = sort.OrderBy.Equals("Ascending", StringComparison.OrdinalIgnoreCase)
+                        ? ordered.ThenBy(keySelector)
+                        : ordered.ThenByDescending(keySelector);
+                }
+            }
+
+            var sorted = ordered ?? items.Cast<dynamic>();
+
+            // Apply Skip
+            if (queueFilterRequestDto.Skip > 0)
+            {
+                sorted = sorted.Skip(queueFilterRequestDto.Skip);
+            }
+
+            // Apply Top
+            if (queueFilterRequestDto.Top > 0)
+            {
+                sorted = sorted.Take(queueFilterRequestDto.Top);
             }
 
             // Configure JSON serialization options
@@ -169,6 +218,7 @@ public class QueueWorkItemService : IQueueWorkItemService
                 ReferenceHandler = System.Text.Json.Serialization.ReferenceHandler.Preserve,
                 WriteIndented = false
             };
+
 
             // Serialize only the Transaction property from the sorted collection into JSON
             var json = System.Text.Json.JsonSerializer.Serialize(

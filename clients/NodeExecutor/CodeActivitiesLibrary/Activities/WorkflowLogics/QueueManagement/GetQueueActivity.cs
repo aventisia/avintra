@@ -8,18 +8,18 @@ using System.Net.Http;
 namespace CodeActivitiesLibrary.WorkflowLogics.QueueManagement
 {
     [DisplayName("Get Queue")]
-    [Description("Retrieves a queue from the specified queue using its identifier.")]
+    [Description("Retrieves the details and configuration of a specified queue by its name.")]
     [ActivityMetaData(nodeImg: "/assets/Queue.svg")]
     public class GetQueueActivity : BaseCodeActivity
     {
         [RequiredArgument]
-        [DisplayName("Select Queue")]
-        [Description("Choose the queue to retrieve.")]
+        [DisplayName("Queue Name")]
+        [Description("Specifies the name of the queue to retrieve.")]
         [FieldType(FieldType.QueueSelect)]
         public InArgument<string> QueueName { get; set; }
 
-        [DisplayName("Result")]
-        [Description("Returns the retrieved queue.")]
+        [DisplayName("Queue Details")]
+        [Description("Returns the complete queue information, including its configuration, schema, statistics, and metadata.")]
         public OutArgument<object> Result { get; set; }
 
         protected override void Execute(CodeActivityContext context)

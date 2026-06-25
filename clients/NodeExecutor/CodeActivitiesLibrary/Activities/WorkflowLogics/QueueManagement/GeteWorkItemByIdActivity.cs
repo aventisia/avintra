@@ -7,19 +7,19 @@ using System.Net.Http;
 
 namespace CodeActivitiesLibrary.WorkflowLogics.QueueManagement
 {
-    [DisplayName("Get Work Item")]
-    [Description("Retrieve work item from the specified workitem identifier.")]
+    [DisplayName("Get Work Item By ID")]
+    [Description("Retrieves the details of a work item by its unique identifier.")]
     [ActivityMetaData(nodeImg: "/assets/Queue.svg")]
-    public class GetQueueWorkItemActivity : BaseCodeActivity
+    public class GeteWorkItemByIdActivity : BaseCodeActivity
     {
         [RequiredArgument]
-        [DisplayName("WorkItem ID")]
-        [Description("Enter the unique identifier of the work item you want to retrieve.")]
+        [DisplayName("Work Item ID")]
+        [Description("Specifies the unique identifier of the work item to retrieve.")]
         [DefaultValue("")]
         public InArgument<string> WorkItemId { get; set; }
 
-        [DisplayName("Result")]
-        [Description("Returns the retrieved work items.")]
+        [DisplayName("Work Item")]
+        [Description("Returns the complete details of the retrieved work item.")]
         public OutArgument<object> Result { get; set; }
 
         protected override void Execute(CodeActivityContext context)

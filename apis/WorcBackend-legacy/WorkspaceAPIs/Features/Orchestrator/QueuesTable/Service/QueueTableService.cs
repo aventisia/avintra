@@ -292,8 +292,8 @@ public class QueueTableService : IQueueTableService
             // Retrieve the queue matching the specified name for the current user.
             var queue = await _unitOfWork.QueueRepo
                 .GetByConditionAsync(w =>
-                    w.Name.ToLower() == queueName.ToLower() &&
-                    w.CreatedByUserId == _userId)
+                    w.Name.ToLower() == queueName.ToLower()
+                )
                 .FirstOrDefaultAsync();
 
             // Verify that the queue exists.

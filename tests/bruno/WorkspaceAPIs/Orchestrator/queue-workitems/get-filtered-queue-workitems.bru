@@ -12,21 +12,21 @@ post {
 
 body:json {
   {
-    "queueId": "{{QUEUE_ID}}",
-    "queuePriority": [{
-      "field": "Name",
-      "OrderBy": "Ascending"
-    }],
+    "queueId": "82abab2e-79ca-41ae-af70-9312327b9867",
+    "status": "Pending",
+    "top": 1,
+    "skip": 0,
+    "queuePriority": [
+      {
+        "field": "Location",
+        "OrderBy": "Descending"
+      }
+    ],
     "conditions": [
       {
         "field": "Id",
         "comparisonOperator": "GreaterThan",
-        "value": "5"
-      },
-      {
-        "field": "Location",
-        "comparisonOperator": "EqualTo",
-        "value": "Washington"
+        "value": "0"
       }
     ]
   }
