@@ -1,5 +1,3 @@
-import { TriggerFrequencyTypesEnum } from "@/enums/trigger-frequency-types-enum";
-
 import {
   flexibleNameError,
   flexibleNameRegex,
@@ -7,6 +5,8 @@ import {
   reqError,
 } from "@aventisia/ui/utils";
 import { z } from "zod";
+
+import { TriggerFrequencyTypesEnum } from "@/enums/trigger-frequency-types-enum";
 
 const today = new Date();
 // Set today's time to midnight to ignore the time part in comparison
@@ -80,12 +80,45 @@ export const triggerZodSchema = z
     isDisabled: z.boolean().nullable().optional(),
   })
   .refine(
-    (data) =>
-      data.endDate == null
-        ? true
-        : data.endDate !== undefined && data.endDate > data?.effectiveDate,
+    (data) => {
+      if (!data.endDate) return true;
+
+      // Daily/Weekly/Monthly
+      if (["Daily", "Weekly", "MonthlyDayOfMonth"].includes(data?.frequency)) {
+        return data?.endDate > data?.effectiveDate;
+      }
+
+      // Hourly/MinuteByMinute
+      if (["Hourly", "MinuteByMinute"].includes(data?.frequency)) {
+        const start = new Date(data?.effectiveDate);
+        const end = new Date(data?.endDate);
+
+        const applyTime = (date: Date, time?: string | null) => {
+          if (!time) return;
+          const [hours, minutes] = time.split(":").map(Number);
+          date.setHours(hours, minutes, 0, 0);
+        };
+
+        applyTime(start, data?.effectiveTime);
+        applyTime(end, data?.endTime);
+
+        const interval = Number(data?.interval) || 1;
+
+        const minimumEnd = new Date(start);
+
+        if (data?.frequency === "Hourly") {
+          minimumEnd.setHours(minimumEnd.getHours() + interval);
+        } else {
+          minimumEnd.setMinutes(minimumEnd.getMinutes() + interval);
+        }
+
+        return end >= minimumEnd;
+      }
+
+      return true;
+    },
     {
-      message: "End date must be after start date",
+      message: "End date/time must be after the start date/time.",
       path: ["endDate"],
     },
   )
