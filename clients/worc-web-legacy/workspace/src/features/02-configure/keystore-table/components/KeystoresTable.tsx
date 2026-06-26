@@ -1,6 +1,3 @@
-import { QueryTabs } from "@/components/QueryTab";
-import ResourceShareDialog from "@/features/resource-share/components/ResourceShareDialog";
-
 import {
   DTCreateButton,
   DTHeading,
@@ -12,6 +9,9 @@ import {
   getDataTablePreferences,
 } from "@aventisia/ui/data-table";
 import { useDataTable, useDocumentTitle } from "@aventisia/ui/hooks";
+
+import { QueryTabs } from "@/components/QueryTab";
+import ResourceShareDialog from "@/features/resource-share/components/ResourceShareDialog";
 
 import {
   SEARCH_COLUMN,
@@ -44,15 +44,17 @@ export const KeystoresTable = () => {
   );
 
   // Use this in place DATA_QUERY_KEY to handle Personal/Shared tabs list
-  const { isPersonal, queryKey } = useTableTab();
+  const { isPersonal, queryKey, isShared } = useTableTab();
 
   // Fetch keystores data
   // Uses currentTab to dictate which API hook is called
   const { data } = useFetchKeystores();
 
+  const keystoresTableColumnsArray = keystoresTableColumns(isShared);
+
   // Create a React table for keystores data
   const table = useDataTable(
-    keystoresTableColumns,
+    keystoresTableColumnsArray,
     data?.data || [],
     columnVisibility,
     sortState,
@@ -88,7 +90,7 @@ export const KeystoresTable = () => {
             {/* Data table to render data */}
             <DataTable
               table={table}
-              columnsLength={keystoresTableColumns.length}
+              columnsLength={keystoresTableColumnsArray.length}
             />
           </KeystoreCrudDialog>
           {/* Data table Pagination component */}

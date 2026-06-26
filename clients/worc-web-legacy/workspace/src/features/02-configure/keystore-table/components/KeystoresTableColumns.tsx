@@ -1,9 +1,9 @@
-import { KeyStoreTypesEnum } from "@/react-toolkit/enums/key-store-types-enum";
-
 import { Checkbox } from "@aventisia/ui";
 import { DTColumnHeader } from "@aventisia/ui/data-table";
 import { dateFormatter, getEnumValueByKey } from "@aventisia/ui/utils";
 import { ColumnDef } from "@tanstack/react-table";
+
+import { KeyStoreTypesEnum } from "@/react-toolkit/enums/key-store-types-enum";
 
 import { TABLE_KEY } from "../constants";
 import { getColumnName } from "../constants/column-display-names";
@@ -14,7 +14,9 @@ import { KeystoreRowActions } from "./keystore-row-actions/KeystoreRowActions";
  * Array of table columns for the keystores table.
  * Each column object contains an accessorKey, header component, and cell component.
  */
-export const keystoresTableColumns: ColumnDef<KeystoresTableDto>[] = [
+export const keystoresTableColumns = (
+  isSharedTab: boolean,
+): ColumnDef<KeystoresTableDto>[] => [
   {
     accessorKey: "id",
     header: ({ table }) => (
@@ -52,7 +54,7 @@ export const keystoresTableColumns: ColumnDef<KeystoresTableDto>[] = [
         <div className="w-auto truncate font-medium">
           {row.getValue("name")}
         </div>
-        {row.original.accessLevel !== "Owner" && (
+        {isSharedTab && (
           <p className="bg-muted border text-nowrap p-1  text-2xs leading-none  text-primary rounded-full">
             {row.original.accessLevel?.replace(/([A-Z])/g, " $1")}
           </p>

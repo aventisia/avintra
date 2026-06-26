@@ -1,6 +1,3 @@
-import { QueryTabs } from "@/components/QueryTab";
-import ResourceShareDialog from "@/features/resource-share/components/ResourceShareDialog";
-
 import { DotSeparator } from "@aventisia/ui";
 import { Button } from "@aventisia/ui/buttons";
 import {
@@ -13,6 +10,9 @@ import { useDataTable, useDocumentTitle } from "@aventisia/ui/hooks";
 import { dateFormatter } from "@aventisia/ui/utils";
 import { PlusIcon } from "@heroicons/react/24/outline";
 import { useShallow } from "zustand/react/shallow";
+
+import { QueryTabs } from "@/components/QueryTab";
+import ResourceShareDialog from "@/features/resource-share/components/ResourceShareDialog";
 
 import {
   SEARCH_COLUMN,
@@ -57,15 +57,17 @@ export const VaultTable = () => {
     })),
   );
   // Use this in place DATA_QUERY_KEY to handle Personal/Shared tabs list
-  const { isPersonal, queryKey } = useTableTab();
+  const { isPersonal, queryKey, isShared } = useTableTab();
 
   // Fetch keystores data
   // Use currentTab to dictate which API hook is called
   const { data } = useFetchVaults();
 
+  const vaultsTableColumnsArray = vaultsTableColumns(isShared);
+
   // Create a React table for configs data
   const table = useDataTable(
-    vaultsTableColumns,
+    vaultsTableColumnsArray,
     data?.data || [],
     columnVisibility,
     sortState,
@@ -149,7 +151,7 @@ export const VaultTable = () => {
                           {row.getValue("name")}
                         </div>
 
-                        {row.original.accessLevel !== "Owner" && (
+                        {isShared && (
                           <span className="bg-muted border px-1 text-2xs leading-none h-[1.4rem]  flex items-center justify-center  text-primary  rounded-full">
                             {row.original.accessLevel?.replace(
                               /([A-Z])/g,

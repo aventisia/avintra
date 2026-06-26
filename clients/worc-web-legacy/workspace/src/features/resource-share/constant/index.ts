@@ -10,13 +10,13 @@ const resourceAccessOptions: {
   {
     label: "Owner",
     value: ResourceAccessTypeEnum.Owner,
-    description: "Full ownership and management access",
+    description: "Can view, edit, delete, and share",
   },
-  {
-    label: "Full Access",
-    value: ResourceAccessTypeEnum.FullAccess,
-    description: "Can perform all available actions",
-  },
+  // {
+  //   label: "Full Access",
+  //   value: ResourceAccessTypeEnum.FullAccess,
+  //   description: "Can perform all available actions",
+  // },
   {
     label: "Can View",
     value: ResourceAccessTypeEnum.View,
@@ -32,10 +32,10 @@ const resourceAccessOptions: {
     value: ResourceAccessTypeEnum.Edit,
     description: "Can modify existing content",
   },
-  {
-    label: "Can Delete",
-    value: ResourceAccessTypeEnum.Delete,
-    description: "Can remove content",
-  },
+  // {
+  //   label: "Can Delete",
+  //   value: ResourceAccessTypeEnum.Delete,
+  //   description: "Can remove content",
+  // },
 ];
 export { RESOURCE_USER_KEY, resourceAccessOptions };

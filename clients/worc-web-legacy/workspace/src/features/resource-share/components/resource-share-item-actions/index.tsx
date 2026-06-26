@@ -5,10 +5,10 @@ import {
 } from "@aventisia/ui/dropdown-menu";
 
 import { ResourceShareDto } from "../../dtos/resource-share-dto";
-import { CanDeleteAction } from "./CanDeleteAction";
+// import { CanDeleteAction } from "./CanDeleteAction";
 import { CanEditAction } from "./CanEditAction";
 import { CanViewAction } from "./CanViewAction";
-import { FullAccessAction } from "./FullAccessAction";
+// import { FullAccessAction } from "./FullAccessAction";
 import { MarkAsOwnerAction } from "./MarkAsOwnerAction";
 import { RemoveUserAction } from "./RemoveUserAction";
 import { ResourceShareActionsTrigger } from "./ResourceShareActionsTrigger";
@@ -38,11 +38,11 @@ export const ResourceShareItemActions = ({
           <MarkAsOwnerAction item={item} />
         ) : null}
 
-        {item.accessLevel !== "FullAccess" ? (
+        {/* {item.accessLevel !== "FullAccess" ? (
           <FullAccessAction item={item} />
-        ) : null}
+        ) : null} */}
 
-        {item.accessLevel !== "Delete" ? <CanDeleteAction item={item} /> : null}
+        {/* {item.accessLevel !== "Delete" ? <CanDeleteAction item={item} /> : null} */}
 
         <DropdownMenuSeparator />
 

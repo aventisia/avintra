@@ -12,7 +12,9 @@ import { VaultRowActions } from "./vault-row-actions/VaultRowActions";
  * Array of table columns for the configs table.
  * Each column object contains an accessorKey, header component, and cell component.
  */
-export const vaultsTableColumns: ColumnDef<VaultsTableDto>[] = [
+export const vaultsTableColumns = (
+  isSharedTab: boolean,
+): ColumnDef<VaultsTableDto>[] => [
   {
     accessorKey: "id",
     header: ({ table }) => (
@@ -54,7 +56,7 @@ export const vaultsTableColumns: ColumnDef<VaultsTableDto>[] = [
           {row.getValue("name")}
         </div>
 
-        {row.original.accessLevel !== "Owner" && (
+        {isSharedTab && (
           <p className="bg-muted border text-nowrap p-1  text-2xs leading-none  text-primary rounded-full">
             {row.original.accessLevel?.replace(/([A-Z])/g, " $1")}
           </p>

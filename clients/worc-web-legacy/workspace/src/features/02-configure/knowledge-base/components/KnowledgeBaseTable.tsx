@@ -1,6 +1,3 @@
-import { QueryTabs } from "@/components/QueryTab";
-import ResourceShareDialog from "@/features/resource-share/components/ResourceShareDialog";
-
 import {
   DTCreateButton,
   DTHeading,
@@ -11,6 +8,9 @@ import {
 import { useDataTable, useDocumentTitle } from "@aventisia/ui/hooks";
 import { dateFormatter } from "@aventisia/ui/utils";
 import { NavLink } from "react-router-dom";
+
+import { QueryTabs } from "@/components/QueryTab";
+import ResourceShareDialog from "@/features/resource-share/components/ResourceShareDialog";
 
 import {
   SEARCH_COLUMN,
@@ -41,14 +41,16 @@ export const KnowledgeBaseTable = () => {
   );
 
   // Use this in place DATA_QUERY_KEY to handle Personal/Shared tabs list
-  const { isPersonal, queryKey, currentTab } = useTableTab();
+  const { isPersonal, queryKey, currentTab, isShared } = useTableTab();
 
   // Fetch configs data
   const { data } = useFetchKnowledgeBase();
 
+  const KBTableColumnsArray = KBTableColumns(isShared);
+
   // Create a React table for configs data
   const table = useDataTable(
-    KBTableColumns,
+    KBTableColumnsArray,
     data?.data || [],
     columnVisibility,
     sortState,
@@ -91,7 +93,7 @@ export const KnowledgeBaseTable = () => {
                             <div className="w-auto truncate text-sm font-medium">
                               {row.getValue("name")}
                             </div>
-                            {row.original.accessLevel !== "Owner" && (
+                            {isShared && (
                               <span className="bg-muted border px-1 text-2xs leading-none h-[1.4rem]  flex items-center justify-center  text-primary    rounded-full">
                                 {row.original.accessLevel?.replace(
                                   /([A-Z])/g,
