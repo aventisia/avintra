@@ -543,6 +543,7 @@ public class CreditUsageService : ICreditUsageService
             // Initialize base query and include related user information
             var creditUsageQuery = _unitOfWork.CreditUsageRepo
                 .GetByConditionAsync(w =>
+                        w.TenantId == _tenantId &&
                         w.UsedAt.Date >= exportCreditUsageRequestDto.StartDate && w.UsedAt.Date <= exportCreditUsageRequestDto.EndDate
                 )
                 .Include(i => i.UsedByUser)
