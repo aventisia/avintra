@@ -43,11 +43,6 @@ export const ReactFlowViewOnly = () => {
 
   useEffect(() => {
     openPanel(PANEL_ID, "left");
-    // initLogs(failInit,nodes);
-    // initLogs(initLogsData,nodes);
-    // if (nodes.length > 50) {
-    //   initLogs(IndiaLog, nodes, edges);
-    // } else initLogs(loopLog, nodes, edges);
     return () => {
       closePanel(PANEL_ID);
     };
