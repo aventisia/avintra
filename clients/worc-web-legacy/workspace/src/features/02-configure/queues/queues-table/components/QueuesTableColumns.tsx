@@ -14,7 +14,9 @@ import { QueueRowActions } from "./queue-row-actions/QueueRowActions";
  * Array of table columns for the queues table.
  * Each column object contains an accessorKey, header component, and cell component.
  */
-export const queuesTableColumns: ColumnDef<QueuesTableDto>[] = [
+export const queuesTableColumns = (
+  isSharedTab: boolean,
+): ColumnDef<QueuesTableDto>[] => [
   {
     accessorKey: "id",
     header: ({ table }) => (
@@ -52,7 +54,7 @@ export const queuesTableColumns: ColumnDef<QueuesTableDto>[] = [
         <QueuesTableCellLink rowId={row.original.id}>
           {row.getValue<string>("name")}
         </QueuesTableCellLink>
-        {row.original.accessLevel !== "Owner" && (
+        {isSharedTab && (
           <p className="bg-muted border text-nowrap p-1  text-2xs leading-none  text-primary rounded-full">
             {row.original.accessLevel?.replace(/([A-Z])/g, " $1")}
           </p>

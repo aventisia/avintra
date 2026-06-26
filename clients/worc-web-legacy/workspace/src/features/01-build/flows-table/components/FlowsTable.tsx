@@ -1,7 +1,3 @@
-import { QueryTabs } from "@/components/QueryTab";
-import { ArchivedFlowsTable } from "@/features/05-tenant-admin/archives-table/components/ArchivedFlowsTable";
-import ResourceShareDialog from "@/features/resource-share/components/ResourceShareDialog";
-
 import {
   DTCreateButton,
   DTHeading,
@@ -13,6 +9,10 @@ import {
   getDataTablePreferences,
 } from "@aventisia/ui/data-table";
 import { useDataTable, useDocumentTitle } from "@aventisia/ui/hooks";
+
+import { QueryTabs } from "@/components/QueryTab";
+import { ArchivedFlowsTable } from "@/features/05-tenant-admin/archives-table/components/ArchivedFlowsTable";
+import ResourceShareDialog from "@/features/resource-share/components/ResourceShareDialog";
 
 import {
   SEARCH_COLUMN,
@@ -45,14 +45,16 @@ export const FlowsTable = () => {
   );
 
   // Use this in place FLOWS_QUERY_KEY to handle Personal/Shared tabs list
-  const { isPersonal, isArchived, queryKey } = useTableTab();
+  const { isPersonal, isArchived, isShared, queryKey } = useTableTab();
 
   // Fetch flows data
   const { data } = useFetchFlows();
 
+  const flowsTableColumnsArray = flowsTableColumns(isShared);
+
   // Create a React table for flows data
   const table = useDataTable(
-    flowsTableColumns,
+    flowsTableColumnsArray,
     data?.data || [],
     columnVisibility,
     sortState,
@@ -88,7 +90,10 @@ export const FlowsTable = () => {
             </div>
 
             {/* Data table to render data */}
-            <DataTable table={table} columnsLength={flowsTableColumns.length} />
+            <DataTable
+              table={table}
+              columnsLength={flowsTableColumnsArray.length}
+            />
           </FlowCrudDialog>
           {/* Data table Pagination component */}
           <DTPagination table={table} />

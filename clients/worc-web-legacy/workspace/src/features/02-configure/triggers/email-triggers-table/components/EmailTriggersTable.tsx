@@ -1,6 +1,3 @@
-import { QueryTabs } from "@/components/QueryTab";
-import ResourceShareDialog from "@/features/resource-share/components/ResourceShareDialog";
-
 import {
   DTCreateButton,
   DTHeading,
@@ -12,6 +9,9 @@ import {
   getDataTablePreferences,
 } from "@aventisia/ui/data-table";
 import { useDataTable, useDocumentTitle } from "@aventisia/ui/hooks";
+
+import { QueryTabs } from "@/components/QueryTab";
+import ResourceShareDialog from "@/features/resource-share/components/ResourceShareDialog";
 
 import {
   SEARCH_COLUMN,
@@ -44,14 +44,16 @@ export const EmailTriggersTable = () => {
   );
 
   // Use this in place DATA_QUERY_KEY to handle Personal/Shared tabs list
-  const { isPersonal, queryKey } = useTableTab();
+  const { isPersonal, queryKey, isShared } = useTableTab();
 
   // Fetch triggers data
   const { isLoading, data } = useFetchTriggers();
 
+  const triggersTableColumnsArray = triggersTableColumns(isShared);
+
   // Create a React table for triggers data
   const table = useDataTable(
-    triggersTableColumns,
+    triggersTableColumnsArray,
     data?.data || [],
     columnVisibility,
     sortState,
@@ -87,7 +89,7 @@ export const EmailTriggersTable = () => {
             {/* Data table to render data */}
             <DataTable
               table={table}
-              columnsLength={triggersTableColumns.length}
+              columnsLength={triggersTableColumnsArray.length}
             />
           </TriggerCrudDialog>
 

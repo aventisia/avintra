@@ -19,7 +19,9 @@ const flowTypeLabelOverrides: Record<string, string> = {
  * Array of table columns for the flows table.
  * Each column object contains an accessorKey, header component, and cell component.
  */
-export const flowsTableColumns: ColumnDef<FlowsTableDto>[] = [
+export const flowsTableColumns = (
+  isSharedTab: boolean,
+): ColumnDef<FlowsTableDto>[] => [
   {
     accessorKey: "id",
     header: ({ table }) => (
@@ -61,7 +63,7 @@ export const flowsTableColumns: ColumnDef<FlowsTableDto>[] = [
         <p className="bg-muted border text-nowrap py-1 px-1.5  text-2xs leading-none  text-primary rounded-full">
           v{row.original.versionNumber ?? 0}
         </p>
-        {row.original.accessLevel !== "Owner" && (
+        {isSharedTab && (
           <p className="bg-muted border text-nowrap py-1 px-1.5  text-2xs leading-none  text-primary rounded-full">
             {row.original.accessLevel?.replace(/([A-Z])/g, " $1")}
           </p>

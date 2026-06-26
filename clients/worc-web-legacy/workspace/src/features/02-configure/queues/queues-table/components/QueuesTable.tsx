@@ -1,6 +1,3 @@
-import { QueryTabs } from "@/components/QueryTab";
-import ResourceShareDialog from "@/features/resource-share/components/ResourceShareDialog";
-
 import {
   DTCreateButton,
   DTHeading,
@@ -12,6 +9,9 @@ import {
   getDataTablePreferences,
 } from "@aventisia/ui/data-table";
 import { useDataTable, useDocumentTitle } from "@aventisia/ui/hooks";
+
+import { QueryTabs } from "@/components/QueryTab";
+import ResourceShareDialog from "@/features/resource-share/components/ResourceShareDialog";
 
 import {
   SEARCH_COLUMN,
@@ -47,14 +47,16 @@ export const QueuesTable = () => {
   );
 
   // Use this in place DATA_QUERY_KEY to handle Personal/Shared tabs list
-  const { isPersonal, queryKey } = useTableTab();
+  const { isPersonal, queryKey, isShared } = useTableTab();
 
   // Fetch queues data
   const { data } = useFetchQueues();
 
+  const queuesTableColumnsArray = queuesTableColumns(isShared);
+
   // Create a React table for queues data
   const table = useDataTable(
-    queuesTableColumns,
+    queuesTableColumnsArray,
     data?.data || [],
     columnVisibility,
     sortState,
@@ -91,7 +93,7 @@ export const QueuesTable = () => {
             {/* Data table to render data */}
             <DataTable
               table={table}
-              columnsLength={queuesTableColumns.length}
+              columnsLength={queuesTableColumnsArray.length}
             />
           </QueueCrudDialog>
           <UploadItemsDialog />
