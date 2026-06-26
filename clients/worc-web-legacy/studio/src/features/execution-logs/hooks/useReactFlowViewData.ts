@@ -1,16 +1,17 @@
-import { ZOOM_ANIMATION_DURATION } from "@/constants";
-import { deepParse } from "@/features/react-flow/utils/deepParse";
-
 import { useQuery } from "@tanstack/react-query";
 import { Edge, Node, Viewport, useReactFlow } from "@xyflow/react";
 import { useEffect } from "react";
 import { useSearchParams } from "react-router-dom";
 import { useShallow } from "zustand/react/shallow";
 
+import { ZOOM_ANIMATION_DURATION } from "@/constants";
+import { deepParse } from "@/features/react-flow/utils/deepParse";
+
 import { getAgentsExecutionLogsById } from "../apis/job-execution-log-apis";
 import { useExecutionStore } from "../stores/execution-log-store";
 import { useReactFlowViewStore } from "../stores/react-flow-view-store";
 import { NodeExecutionLogType } from "../types/execution-log-types";
+import { expandAllGroups } from "../utils/expandAllGroups";
 
 export const useReactFlowViewData = () => {
   const [searchParams, setSearchParams] = useSearchParams();
@@ -86,15 +87,18 @@ export const useReactFlowViewData = () => {
 
     if (flow) {
       // Set nodes and edges
-      setNodes(flow.nodes);
-      setEdges(flow.edges);
+      const expandedFlow = expandAllGroups(flow?.nodes, flow?.edges);
+
+      setNodes(expandedFlow?.nodes);
+      setEdges(expandedFlow?.edges);
+
       if (data.nodeExecutionLogs) {
         initLogs(
           deepParse(
             data.nodeExecutionLogs,
           ) as unknown as NodeExecutionLogType[],
-          flow.nodes,
-          flow.edges,
+          expandedFlow?.nodes,
+          expandedFlow?.edges,
         );
       }
       setFlowVariablesObject(flowVarObjs || []);
