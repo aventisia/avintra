@@ -94,6 +94,11 @@ public class Job
     public bool IsPublished { get; set; }
 
     /// <summary>
+    /// Gets or sets the identifier or name of the username/machine that executed the job.
+    /// </summary>
+    public string? ExecutedBy { get; set; }
+
+    /// <summary>
     /// Gets or sets the FlowVersionHistoryId associated with this job.
     /// </summary>
     public Guid? FlowVersionHistoryId { get; set; }
