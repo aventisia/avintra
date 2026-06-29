@@ -9,6 +9,7 @@ public class JobTableService : IJobTableService
     private readonly IWebhookCallbackService _webhookCallbackService;
     private readonly EnvironmentConfig _environmentConfig;
     private readonly Guid _userId;
+    private readonly string? _username;
 
     public JobTableService(
         ILogger<JobTableService> logger,
@@ -21,6 +22,7 @@ public class JobTableService : IJobTableService
     {
         // Set the user ID from the HTTP context
         _userId = Guid.Parse(httpContextAccessor.HttpContext?.User?.FindFirstValue("uid") ?? Guid.Empty.ToString());
+        _username = httpContextAccessor.HttpContext?.User?.FindFirstValue("uname") ?? string.Empty;
 
         _logger = logger;
         _unitOfWork = unitOfWork;
@@ -177,9 +179,11 @@ public class JobTableService : IJobTableService
             // Attempt to fetch the job details from the repository
             var job = await _unitOfWork.JobRepo
                 .GetByConditionAsync(w => w.Id == jobId)
+                .Include(i => i.FlowVersion)
+                    .ThenInclude(i2 => i2.Flow)
                 .OrderByDescending(w => w.CreatedOn)
                 .ProjectToType<JobDetailDto>()
-                .FirstOrDefaultAsync();
+                .SingleOrDefaultAsync();
 
             // If job not found, log and return a "not found" response
             if (job == null)
@@ -348,6 +352,7 @@ public class JobTableService : IJobTableService
                                             w.Id == jobTableDto.Id &&
                                             w.FlowVersionId == jobTableDto.FlowVersionId
                                         )
+                                        .Include(i => i.Machine)
                                         .SingleOrDefaultAsync();
 
             // If the job does not exist, return error message
@@ -381,6 +386,19 @@ public class JobTableService : IJobTableService
             // Map the updated values from DTO to the job entity
             jobTableDto.Adapt(job);
             job.IsPublished = flowVersion.IsPublished;
+
+            // Set "ExecutedBy" only if it has not already been populated.
+            // Priority logic:
+            // 1. Manual trigger → use the current username.
+            // 2. Non-manual triggers → use machine name if available.
+            // TODO: Handle additional TriggerTypesEnum cases (e.g., API, Event, Scheduler) to ensure proper attribution for all execution sources.
+            if (string.IsNullOrEmpty(job.ExecutedBy))
+            {
+                if (job.TriggerType == TriggerTypesEnum.ManualTrigger)
+                    job.ExecutedBy = _username;
+                else
+                    job.ExecutedBy = job.Machine != null ? job.Machine.Name : null;
+            }
 
             // If the job status is "Running", set the StartTime to the current UTC time.
             if (job.Status == JobStatusTypesEnum.Running)

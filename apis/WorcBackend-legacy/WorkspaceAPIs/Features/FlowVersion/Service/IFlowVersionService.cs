@@ -24,6 +24,14 @@ public interface IFlowVersionService
     Task<ServiceResponse<FlowVersionDto>> UpdateFlowVersionAsync(FlowVersionDto flowVersionDto);
 
     /// <summary>
+    /// Updates the execution settings for the specified flow version.
+    /// </summary>
+    /// <param name="flowVersionId">The unique identifier of the flow version.</param>
+    /// <param name="executionSettings">The execution settings to apply.</param>
+    /// <returns>The updated flow version.</returns>
+    Task<ServiceResponse<bool>> UpdateFlowVersionSettingsAsync(Guid flowVersionId, [FromBody] ExecutionSettings executionSettings);
+
+    /// <summary>
     /// Deletes a flow version
     /// </summary>
     /// <param name="id">Version Id</param>

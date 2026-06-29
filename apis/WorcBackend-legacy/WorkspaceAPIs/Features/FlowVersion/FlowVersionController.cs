@@ -33,6 +33,13 @@ public class FlowVersionController : BaseApiController
         return ResultHelper(await _flowVersionService.UpdateFlowVersionAsync(flowVersionDto));
     }
 
+    // Updates the execution settings for the specified flow version.
+    [HttpPut("{flowVersionId}/settings")]
+    public async Task<ActionResult<ServiceResponse<bool>>> UpdateFlowVersionSettings(Guid flowVersionId, [FromBody] ExecutionSettings executionSettings)
+    {
+        return ResultHelper(await _flowVersionService.UpdateFlowVersionSettingsAsync(flowVersionId, executionSettings));
+    }
+
     // Deletes flow version permanently
     [HttpDelete("delete/{id}")]
     public async Task<ActionResult<ServiceResponse<bool>>> DeleteFlowVersion(Guid id)
