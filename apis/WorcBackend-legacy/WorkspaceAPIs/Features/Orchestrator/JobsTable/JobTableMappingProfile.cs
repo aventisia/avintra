@@ -6,6 +6,7 @@ public class JobTableMappingProfile : IRegister
     {
         // Mapping for job record or records.
         config.NewConfig<Job, JobTableDto>()
+            .Map(dest => dest.VersionNumber, src => src.FlowVersion != null ? src.FlowVersion.VersionNumber : 0)
             .Map(dest => dest.Name, src => src.FlowVersion != null ? src.FlowVersion.Flow.Name : null);
 
         config.NewConfig<Job, JobDetailDto>()
