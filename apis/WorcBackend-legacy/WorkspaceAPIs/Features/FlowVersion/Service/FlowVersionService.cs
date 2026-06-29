@@ -281,6 +281,66 @@ public class FlowVersionService : IFlowVersionService
         return serviceResponse;
     }
 
+    // Updates the execution settings for the specified flow version.
+    public async Task<ServiceResponse<bool>> UpdateFlowVersionSettingsAsync(Guid flowVersionId, ExecutionSettings executionSettings)
+    {
+        // Initialize ServiceResponse with a failed response by default.
+        var serviceResponse = new ServiceResponse<bool>
+        {
+            Data = false,
+            Message = "Failed to update floe version settings. Please try again."
+        };
+
+        try
+        {
+            // Validate that the flow version exists and the user has access to it.
+            var existingFlowVersion = await _unitOfWork.FlowVersionRepo
+                .GetByConditionAsync(w => w.Id == flowVersionId)
+                .Include(i => i.Flow)
+                .SingleOrDefaultAsync();
+
+            // Flow version does not exist.
+            if (existingFlowVersion == null)
+            {
+                _logger.LogInformation("Flow version {FlowVersionId} does not exist.", flowVersionId);
+
+                serviceResponse.Message = "Flow version does not exist.";
+                return serviceResponse;
+            }
+
+            // Serialize and store the execution settings as a JSON object.
+            existingFlowVersion.Settings = System.Text.Json.JsonSerializer.SerializeToDocument(executionSettings);
+
+            // Update audit information.
+            existingFlowVersion.LastModifiedByUserId = _userId;
+            existingFlowVersion.LastModifiedOn = DateTimeOffset.UtcNow;
+
+            // Mark the entity as modified.
+            _unitOfWork.FlowVersionRepo.Update(existingFlowVersion);
+
+            // Persist changes.
+            if (!await _unitOfWork.SaveAsync())
+            {
+                _logger.LogInformation("Context SaveChanges failed while updating execution settings for flow version {FlowVersionId}.", flowVersionId);
+                return serviceResponse;
+            }
+
+            // Operation completed successfully.
+            serviceResponse.Data = true;
+            serviceResponse.StatusCode = 200;
+            serviceResponse.Message = "Execution settings updated successfully.";
+        }
+        catch (Exception exception)
+        {
+            _logger.LogError(
+                exception,
+                "An error occurred while updating execution settings for flow version {FlowVersionId}.",
+                flowVersionId);
+        }
+
+        return serviceResponse;
+    }
+
     //Deletes a flow version
     public async Task<ServiceResponse<bool>> DeleteFlowVersionAsync(Guid id)
     {
