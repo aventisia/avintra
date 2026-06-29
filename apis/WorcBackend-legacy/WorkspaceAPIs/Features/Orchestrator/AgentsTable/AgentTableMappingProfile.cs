@@ -9,6 +9,14 @@ namespace WorkspaceAPIs.MappingProfiles
                 .Map(dest => dest.RefId, src => src.FlowId)
                 .Map(dest => dest.MachineCount, src => src.MachineFlows != null ? src.MachineFlows.Count() : 0)
                 .Map(dest => dest.Name, src => src.Flow != null ? src.Flow.Name : null)
+                .Map(dest => dest.Settings, src => src.Settings == null
+                    ? null
+                    : System.Text.Json.JsonSerializer.Deserialize<ExecutionSettings>(
+                        src.Settings.RootElement.GetRawText(),
+                        new JsonSerializerOptions
+                        {
+                            PropertyNameCaseInsensitive = true
+                        }))
                 .Map(dest => dest.Type, src => src.Flow != null ? src.Flow.Type.ToString() : FlowTypesEnum.Agent.ToString()) // Preserve actual flow type (Agent/ChatAgent), fallback to Agent when flow is unavailable.
                 .Map(dest => dest.IsAssignedToAllUsers, src => src.IsTenantWideAccess)
                 .Map(dest => dest.CreatedBy, src => src.CreatedByUser != null ? $"{src.CreatedByUser.FirstName} {src.CreatedByUser.LastName}" : null)
