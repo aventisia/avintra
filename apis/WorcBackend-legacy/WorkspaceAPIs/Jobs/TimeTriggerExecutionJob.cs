@@ -55,81 +55,108 @@ public class TimeTriggerExecutionJob : IJob
                 .Include(i => i.TimeTriggerFlowVersions)
                 .ToListAsync();
 
-            // Log the number of triggers found
-            _logger.LogInformation($"Found {triggersToExecute.Count} triggers for execution at {currentUtcTime:O}");
-
-            var createdJobs = new List<Job>();
-
-            // Process each trigger
-            foreach (var trigger in triggersToExecute)
+            if (triggersToExecute.Any())
             {
-                // Log trigger execution start
-                _logger.LogInformation($"Executing Trigger: {trigger.Name} (ID: {trigger.Id})");
+                // Get all FlowVersionIds
+                var flowVersionIds = triggersToExecute
+                    .SelectMany(t => t.TimeTriggerFlowVersions)
+                    .Select(f => f.FlowVersionId)
+                    .Distinct()
+                    .ToList();
 
-                foreach (var timeTriggerflowVersion in trigger.TimeTriggerFlowVersions)
-                {
-                    var jobToCreate = new Job()
+                // Get latest FlowVersionHistory per FlowVersionId
+                var latestFlowVersionHistoryDict = await _workspaceInternalDbContext.FlowVersionHistories
+                    .Where(w => flowVersionIds.Contains(w.FlowVersionId))
+                    .GroupBy(g => g.FlowVersionId)
+                    .Select(s => new
                     {
-                        Id = Guid.NewGuid(),
-                        TenantId = timeTriggerflowVersion.TenantId,
-                        FlowVersionId = timeTriggerflowVersion.FlowVersionId,
-                        TriggerType = TriggerTypesEnum.TimeTrigger,
-                        RefId = timeTriggerflowVersion.TriggerId,
-                        Priority = JobPriorityTypesEnum.Normal,
-                        Status = JobStatusTypesEnum.Created,
-                        CreatedOn = currentUtcTime,
-                    };
+                        FlowVersionId = s.Key,
+                        FlowVersionHistoryId = s
+                            .OrderByDescending(o => o.CreatedOn)
+                            .Select(s1 => (Guid?)s1.Id)
+                            .FirstOrDefault()
+                    })
+                    .ToDictionaryAsync(x => x.FlowVersionId, x => x.FlowVersionHistoryId);
 
-                    createdJobs.Add(jobToCreate);
+                // Log the number of triggers found
+                _logger.LogInformation($"Found {triggersToExecute.Count} triggers for execution at {currentUtcTime:O}");
 
-                    // Log job creation
-                    _logger.LogInformation($"Job created for FlowVersionId: {timeTriggerflowVersion.FlowVersionId} and TenantId: {timeTriggerflowVersion.TenantId}");
+                var createdJobs = new List<Job>();
+
+                // Process each trigger
+                foreach (var trigger in triggersToExecute)
+                {
+                    // Log trigger execution start
+                    _logger.LogInformation($"Executing Trigger: {trigger.Name} (ID: {trigger.Id})");
+
+                    foreach (var timeTriggerflowVersion in trigger.TimeTriggerFlowVersions)
+                    {
+                        latestFlowVersionHistoryDict.TryGetValue(timeTriggerflowVersion.FlowVersionId, out Guid? latestFlowVersionHistoryId);
+
+                        var jobToCreate = new Job()
+                        {
+                            Id = Guid.NewGuid(),
+                            TenantId = timeTriggerflowVersion.TenantId,
+                            FlowVersionId = timeTriggerflowVersion.FlowVersionId,
+                            FlowVersionHistoryId = latestFlowVersionHistoryId,
+                            TriggerType = TriggerTypesEnum.TimeTrigger,
+                            RefId = timeTriggerflowVersion.TriggerId,
+                            Priority = JobPriorityTypesEnum.Normal,
+                            Status = JobStatusTypesEnum.Created,
+                            CreatedOn = currentUtcTime,
+                        };
+
+                        createdJobs.Add(jobToCreate);
+
+                        // Log job creation
+                        _logger.LogInformation($"Job created for FlowVersionId: {timeTriggerflowVersion.FlowVersionId} and TenantId: {timeTriggerflowVersion.TenantId}");
+                    }
+
+                    // Update the trigger's last executed time and calculate the next trigger time
+                    trigger.LastTriggeredTime = DateTimeOffset.UtcNow;
+                    trigger.NextTriggerTime = CronScheduleUtil.ComputeNextTriggerUtc(
+                        trigger.CronExpression,
+                        trigger.EffectiveDate,
+                        trigger.ExceptionHours,
+                        trigger.ExceptionWeekdays,
+                        trigger.ExceptionDates);
+
+                    // Log the next scheduled trigger time
+                    _logger.LogInformation($"Next Trigger Time for {trigger.Name}: {trigger.NextTriggerTime:O}");
+
+                    // Update the trigger record in the database
+                    _workspaceInternalDbContext.TimeTriggers.Update(trigger);
                 }
 
-                // Update the trigger's last executed time and calculate the next trigger time
-                trigger.LastTriggeredTime = DateTimeOffset.UtcNow;
-                trigger.NextTriggerTime = CronScheduleUtil.ComputeNextTriggerUtc(
-                    trigger.CronExpression,
-                    trigger.EffectiveDate,
-                    trigger.ExceptionHours,
-                    trigger.ExceptionWeekdays,
-                    trigger.ExceptionDates);
+                // Check if there are any jobs created
+                if (createdJobs.Any())
+                {
+                    // Insert the created jobs into the database asynchronously using the repository's InsertAsync method.
+                    await _workspaceInternalDbContext.Jobs.AddRangeAsync(createdJobs);
 
-                // Log the next scheduled trigger time
-                _logger.LogInformation($"Next Trigger Time for {trigger.Name}: {trigger.NextTriggerTime:O}");
+                    // Save changes to the database
+                    await _workspaceInternalDbContext.SaveChangesAsync();
+                }
 
-                // Update the trigger record in the database
-                _workspaceInternalDbContext.TimeTriggers.Update(trigger);
-            }
+                // Check if there are any triggers that need to be executed
+                if (triggersToExecute.Count != 0)
+                {
+                    // Save changes to the database
+                    await _workspaceInternalDbContext.SaveChangesAsync();
+                }
 
-            // Check if there are any jobs created
-            if (createdJobs.Any())
-            {
-                // Insert the created jobs into the database asynchronously using the repository's InsertAsync method.
-                await _workspaceInternalDbContext.Jobs.AddRangeAsync(createdJobs);
+                _logger.LogInformation($"Job completed successfully at {currentUtcTime:O}");
 
-                // Save changes to the database
-                await _workspaceInternalDbContext.SaveChangesAsync();
-            }
+                // Now execute the jobs based on their IDs
+                // Execute job commands for all created jobs
+                if (createdJobs.Any())
+                {
+                    var jobIds = createdJobs.Select(s => s.Id).ToList();
 
-            // Check if there are any triggers that need to be executed
-            if (triggersToExecute.Count != 0)
-            {
-                // Save changes to the database
-                await _workspaceInternalDbContext.SaveChangesAsync();
-            }
-
-            _logger.LogInformation($"Job completed successfully at {currentUtcTime:O}");
-
-            // Now execute the jobs based on their IDs
-            // Execute job commands for all created jobs
-            if (createdJobs.Any())
-            {
-                var jobIds = createdJobs.Select(s => s.Id).ToList();
-
-                // Log the job IDs
-                if (jobIds.Count != 0)
-                    await _jobsExecutorService.ExecuteCommanByIdsdAsync(jobIds);
+                    // Log the job IDs
+                    if (jobIds.Count != 0)
+                        await _jobsExecutorService.ExecuteCommanByIdsdAsync(jobIds);
+                }
             }
         }
         catch (Exception ex)
