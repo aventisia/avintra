@@ -38,6 +38,7 @@ namespace WorkspaceAPIs.Data
 
         public DbSet<Flow> Flows { get; set; }
         public DbSet<FlowVersion> FlowVersions { get; set; }
+        public DbSet<FlowVersionHistory> FlowVersionHistories { get; set; }
         public DbSet<Machine> Machine { get; set; }
         public DbSet<MachineFlow> MachineFlow { get; set; }
         public DbSet<Job> Jobs { get; set; }

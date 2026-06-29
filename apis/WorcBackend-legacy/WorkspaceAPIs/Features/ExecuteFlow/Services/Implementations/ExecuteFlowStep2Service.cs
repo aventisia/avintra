@@ -10,13 +10,17 @@ public class ExecuteFlowStep2Service : IExecuteFlowStep2Service
 {
     private readonly IServiceScopeFactory _scopeFactory;
     private readonly ILogger<ExecuteFlowStep2Service> _logger;
+    private readonly string? _username;
 
     public ExecuteFlowStep2Service(
         IServiceScopeFactory scopeFactory,
-        ILogger<ExecuteFlowStep2Service> logger)
+        ILogger<ExecuteFlowStep2Service> logger,
+        IHttpContextAccessor httpContextAccessor)
     {
         _scopeFactory = scopeFactory;
         _logger = logger;
+
+        _username = httpContextAccessor.HttpContext?.User?.FindFirstValue("uname") ?? string.Empty;
     }
 
     // Note: This method is intentionally not async and does not await the background execution task. 
@@ -53,6 +57,19 @@ public class ExecuteFlowStep2Service : IExecuteFlowStep2Service
             {
                 _logger.LogWarning("Background flow execution skipped because job was not found. JobId: {JobId}", flowExecutionArgs.JobId);
                 return;
+            }
+
+            // Set "ExecutedBy" only if it has not already been populated.
+            // Priority logic:
+            // 1. Manual trigger → use the current username.
+            // 2. Non-manual triggers → use machine name if available.
+            // TODO: Handle additional TriggerTypesEnum cases (e.g., API, Event, Scheduler) to ensure proper attribution for all execution sources.
+            if (string.IsNullOrEmpty(job.ExecutedBy))
+            {
+                if (job.TriggerType == TriggerTypesEnum.ManualTrigger)
+                    job.ExecutedBy = _username;
+                else
+                    job.ExecutedBy = job.Machine != null ? job.Machine.Name : null;
             }
 
             // Update job's metadata before starting execution
