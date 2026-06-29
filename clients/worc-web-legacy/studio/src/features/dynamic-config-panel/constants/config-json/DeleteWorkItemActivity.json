@@ -12,19 +12,19 @@
       "direction": "Input",
       "type": "text",
       "name": "WorkItemId",
-      "label": "WorkItem ID",
-      "description": "Enter the unique identifier of the work item you want to permanently delete.",
+      "label": "Work Item Id",
+      "description": "Provide the identifier of the work item to be deleted.",
       "defaultValue": "",
       "required": true
     },
     {
       "direction": "Output",
       "type": "config-panel-output",
-      "name": "WorkItemDeleted",
-      "label": "WorkItemDeleted",
-      "description": "Returns true if work item deleted successfully.",
+      "name": "Result",
+      "label": "Result",
+      "description": "Returns true if the work item was deleted successfully, otherwise false.",
       "defaultValue": {
-        "value": "WorkItemDeleted",
+        "value": "Result",
         "enabled": true
       },
       "required": false

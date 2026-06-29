@@ -53,7 +53,7 @@
       "type": "text",
       "name": "Remark",
       "label": "Remark",
-      "description": "Enter the remark for the work item.",
+      "description": "Optional remark for the work item.",
       "defaultValue": "",
       "required": false
     },
@@ -61,8 +61,8 @@
       "direction": "Input",
       "type": "switch",
       "name": "ShouldUpdateWorkItemData",
-      "label": "Update WorkItem Data",
-      "description": "Enable this option if you also want to update the data payload of the work item.",
+      "label": "Should Update Work Item Data",
+      "description": "Indicates whether the work item data should be updated. If true, the Work Item Data field must be provided.",
       "defaultValue": false,
       "required": false
     },
@@ -71,9 +71,9 @@
       "type": "json-editor",
       "name": "WorkItemData",
       "label": "Work Item Data",
-      "description": "Provide the updated work item data in JSON format. This will replace the existing data stored with the work item.",
+      "description": "Provide the updated data for the work item in JSON format. This field is required if \u0027Should Update Work Item Data\u0027 is set to true.",
       "defaultValue": "",
-      "required": true,
+      "required": false,
       "renderIf": {
         "conditions": [
           {
@@ -86,11 +86,11 @@
     {
       "direction": "Output",
       "type": "config-panel-output",
-      "name": "UpdatedWorkItem",
-      "label": "UpdatedWorkItem",
-      "description": "Returns the updated work item.",
+      "name": "Result",
+      "label": "Result",
+      "description": "Returns the result of the update operation.",
       "defaultValue": {
-        "value": "UpdatedWorkItem",
+        "value": "Result",
         "enabled": true
       },
       "required": false

@@ -20,38 +20,29 @@
     {
       "direction": "Input",
       "type": "queue-select",
-      "name": "QueueId",
+      "name": "QueueName",
       "label": "Select Queue",
-      "description": "Choose the destination queue where the work item will be moved.",
-      "defaultValue": "",
-      "required": true
-    },
-    {
-      "direction": "Input",
-      "type": "json-editor",
-      "name": "WorkItemData",
-      "label": "Work Item Data",
-      "description": "Provide the data payload for the work item in JSON format. This data will be stored with the work item.",
+      "description": "Choose the queue to which the work item will be moved.",
       "defaultValue": "",
       "required": true
     },
     {
       "direction": "Input",
       "type": "text",
-      "name": "WorkItemRemark",
+      "name": "Remark",
       "label": "Remark",
-      "description": "Enter the remark for the work item.",
+      "description": "Optional remark for the work item.",
       "defaultValue": "",
       "required": false
     },
     {
       "direction": "Output",
       "type": "config-panel-output",
-      "name": "MovedWorkItem",
-      "label": "MovedWorkItem",
-      "description": "Returns true if work item moved successfully.",
+      "name": "Result",
+      "label": "Result",
+      "description": "Returns the result of the move operation.",
       "defaultValue": {
-        "value": "MovedWorkItem",
+        "value": "Result",
         "enabled": true
       },
       "required": false
