@@ -1,8 +1,11 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 namespace NodeExecutor.Services
 {
     public class NodeExecutionLog
     {
+        public string NodeExecutionId { get; set; }
+        public int RetryAttempt { get; set; } = 0;
         public string NodeId { get; set; }
         public string NodeName { get; set; }
         public string NodeUniqueName { get; set; }

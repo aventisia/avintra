@@ -8,6 +8,10 @@ export const mapLogsToFlow = (
   flowEdges: Edge[],
 ) => {
   const executionMap: Record<string, Record<string, NodeExecutionLogType>> = {};
+  const executionHistoryMap: Record<
+    string,
+    Record<string, NodeExecutionLogType[]>
+  > = {};
   const branchStats: Record<string, number> = {};
   const loopRegistry: Record<string, { total: number }> = {};
   const nodeToParentStack: Record<string, string[]> = {};
@@ -101,6 +105,11 @@ export const mapLogsToFlow = (
         : "global";
 
     if (!executionMap[nodeId]) executionMap[nodeId] = {};
+    if (!executionHistoryMap[nodeId]) executionHistoryMap[nodeId] = {};
+    if (!executionHistoryMap[nodeId][pathKey])
+      executionHistoryMap[nodeId][pathKey] = [];
+
+    executionHistoryMap[nodeId][pathKey].push(entry);
     executionMap[nodeId][pathKey] = entry;
 
     if (parentLoops.length > 0) {
@@ -131,6 +140,7 @@ export const mapLogsToFlow = (
 
   return {
     executionMap,
+    executionHistoryMap,
     branchStats,
     loopRegistry,
     nodeToParentStack,

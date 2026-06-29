@@ -6,6 +6,7 @@ using NodeExecutor.Models;
 using NodeExecutor.Services;
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Input;
@@ -171,7 +172,7 @@ namespace NodeExecutor
                         SetupExecutionContextAsync(data);
                         break;
                     case "process-node":
-                        ExecuteNodeAsync(data);
+                        ProcessNodeWithRetryAsync(data);
                         break;
                     case "check-condition":
                         ExecuteConditionAsync(data);
@@ -419,10 +420,67 @@ namespace NodeExecutor
             });
         }
 
-        private async void ExecuteNodeAsync(string data)
+        private async Task<(bool, string)> ExecuteNodeAsync(Guid nodeExecutionId, int retryAttempt, List<NodeLogKeyValue> retryInputs, string customNodeName, ActivityNodeData nodeData)
         {
             // Set the start time for the node execution
             var startTime = DateTime.UtcNow;
+
+            // Initiaze the node execution log with default values
+            var initialNodeExecutionLog = new NodeExecutionLog
+            {
+                NodeExecutionId = nodeExecutionId.ToString(),
+                RetryAttempt = retryAttempt,
+                NodeId = nodeData.Id,
+                NodeName = nodeData.NodeName,
+                NodeUniqueName = nodeData.CodeActivityName,
+                IsSuccess = false,
+                Duration = 0,
+                Inputs = new List<NodeLogKeyValue>(),
+                Outputs = new List<NodeLogKeyValue>()
+            };
+
+            // Set the node name
+            Dispatcher.Invoke(() =>
+            {
+                lbl_NodeName.Text = string.IsNullOrWhiteSpace(customNodeName) ? "Node name not found" : customNodeName;
+            });
+
+            // Run node execution in a background task
+            var (isSuccess, finalNodeExecutionLog) = await Task.Run(() =>
+            {
+                // Execute single node
+                var result = ActivityExecutorService.ExecuteNode(initialNodeExecutionLog, nodeData, _executionContext, _interpreter);
+                var updatedNodeExecutionLog = result.Item2;
+
+                // Update duration
+                updatedNodeExecutionLog.Duration = (DateTime.UtcNow - startTime).TotalSeconds;
+
+                // Add the retry inputs to the node execution log inputs (if provided). Need to add them after the other inputs are added
+                if (retryInputs != null && retryInputs.Count > 0)
+                    updatedNodeExecutionLog.Inputs.AddRange(retryInputs);
+
+                return (result.Item1, updatedNodeExecutionLog);
+            });
+
+            // Serialize the nodeExecutionLog to JSON with camelCase property names
+            var serializedNodeExecutionLog = JsonConvert.SerializeObject(finalNodeExecutionLog, new JsonSerializerSettings
+            {
+                ContractResolver = new CamelCasePropertyNamesContractResolver()
+            });
+
+            // Send the execution log back to the server on UI thread
+            await Dispatcher.InvokeAsync(async () =>
+            {
+                await _webSocket.SendCommandAsync("save-execution-log", serializedNodeExecutionLog);
+            });
+
+            return (isSuccess, serializedNodeExecutionLog);
+        }
+
+        private async void ProcessNodeWithRetryAsync(string data)
+        {
+            // Set nodeExecutionId for the current node execution
+            var nodeExecutionId = Guid.NewGuid();
 
             // Deserialize the node data
             var nodeData = ActivityExecutorService.ConvertNodeData(_agentId, _agentName, _accessToken, data, _executionContext, _interpreter);
@@ -433,42 +491,85 @@ namespace NodeExecutor
                 return;
             }
 
-            // Set the node name
-            Dispatcher.Invoke(() =>
-            {
-                lbl_NodeName.Text = nodeData.NodeName.Length > 0 ? nodeData.NodeName : "Node name not found";
-            });
+            // Get OnError properties and set hasFailed variable
+            bool enableAutoRetry = bool.TryParse(nodeData.NodeInputs.FirstOrDefault(w => w.Key.Equals("__OnError__EnableAutoRetry"))?.Value?.ToString(), out var parsedEnableAutoRetry) && parsedEnableAutoRetry;
+            int retryLimit = int.TryParse(nodeData.NodeInputs.FirstOrDefault(w => w.Key.Equals("__OnError__RetryLimit"))?.Value?.ToString(), out var parsedRetryLimit) ? parsedRetryLimit : 3;
+            int waitTimeBeforeRetryMs = int.TryParse(nodeData.NodeInputs.FirstOrDefault(w => w.Key.Equals("__OnError__WaitTimeBeforeRetryMs"))?.Value?.ToString(), out var parsedWaitTimeBeforeRetryMs) ? parsedWaitTimeBeforeRetryMs : 3000;
+            string fallbackBehavior = (string)(nodeData.NodeInputs.FirstOrDefault(w => w.Key.Equals("__OnError__FallbackBehavior"))?.Value ?? "abort");
 
-            // Run node execution in a background task
-            await Task.Run(async () =>
+            // Create a list to hold retry inputs for logging purposes
+            var autoRetryInputs = new List<NodeLogKeyValue>();
+            if (enableAutoRetry)
             {
-                // Execute single node
-                var (isSuccess, nodeExecutionLog) = ActivityExecutorService.ExecuteNode(nodeData, _executionContext, _interpreter, startTime);
+                autoRetryInputs.Add(new NodeLogKeyValue { Key = "Enable Auto Retry", Value = enableAutoRetry.ToString() });
+                autoRetryInputs.Add(new NodeLogKeyValue { Key = "Retry Limit", Value = retryLimit.ToString() });
+                autoRetryInputs.Add(new NodeLogKeyValue { Key = "Wait Time Before Retry (ms)", Value = waitTimeBeforeRetryMs.ToString() });
+                autoRetryInputs.Add(new NodeLogKeyValue { Key = "Fallback Behavior", Value = fallbackBehavior });
+            }
 
-                // Send the execution log back to the server (must be awaited on UI thread)
-                await Dispatcher.InvokeAsync(async () =>
+            // Execute node with default try
+            var (isSuccess, serializedNodeExecutionLog) = await ExecuteNodeAsync(nodeExecutionId, 0, autoRetryInputs, nodeData.NodeName, nodeData);
+
+            // Return if successful, otherwise handle auto-retry logic if enabled
+            if (isSuccess)
+            {
+                // Send next-node command to the server
+                await _webSocket.SendCommandAsync("next-node", nodeData.NextNodeId);
+                return;
+            }
+
+            // Handle auto-retry logic if enabled and node execution failed
+            if (enableAutoRetry && retryLimit > 0)
+            {
+                int attempt = 1;
+                while (attempt <= retryLimit)
                 {
-                    // Serialize the nodeExecutionLog to JSON with camelCase property names
-                    var serializedExecutionLog = JsonConvert.SerializeObject(nodeExecutionLog, new JsonSerializerSettings
+                    try
                     {
-                        ContractResolver = new CamelCasePropertyNamesContractResolver()
-                    });
+                        // Update the node name to indicate the retry attempt
+                        string nodeName = $"Retry Attempt {attempt}/{retryLimit}: {nodeData.NodeName}";
 
-                    // Save the log to the server
-                    await _webSocket.SendCommandAsync("save-execution-log", serializedExecutionLog);
+                        // Execute the node with retry logic
+                        (isSuccess, serializedNodeExecutionLog) = await ExecuteNodeAsync(nodeExecutionId, attempt, autoRetryInputs, nodeName, nodeData);
 
-                    // Check if the node execution was successful
-                    if (!isSuccess)
+                        // Exit retry loop on success
+                        if (isSuccess)
+                        {
+                            // Send next-node command to the server
+                            await _webSocket.SendCommandAsync("next-node", nodeData.NextNodeId);
+                            return;
+                        }
+                    }
+                    catch (Exception ex)
                     {
-                        await _webSocket.SendCommandAsync("error", serializedExecutionLog);
-                        DoAbort();
-                        return;
+                        // Keep retrying on transient exceptions, but emit diagnostics for troubleshooting.
+                        System.Diagnostics.Debug.WriteLine($"Retry attempt {attempt} failed: {ex}");
                     }
 
-                    // Send next node command to the server
+                    // Wait before next retry if not the last attempt
+                    if (attempt < retryLimit)
+                    {
+                        await Task.Delay(Math.Max(0, waitTimeBeforeRetryMs));
+                    }
+
+                    attempt++;
+                }
+            }
+
+            // If reached here means node execution failed even after all retries
+            switch (fallbackBehavior)
+            {
+                case "abort":
+                    await _webSocket.SendCommandAsync("error", serializedNodeExecutionLog);
+                    DoAbort();
+                    break;
+                case "next-node":
                     await _webSocket.SendCommandAsync("next-node", nodeData.NextNodeId);
-                });
-            });
+                    break;
+                default:
+                    await _webSocket.SendCommandAsync("next-node", nodeData.NextNodeId);
+                    break;
+            }
         }
     }
 }

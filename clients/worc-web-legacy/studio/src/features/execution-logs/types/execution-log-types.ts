@@ -1,6 +1,8 @@
 import { Edge, Node } from "@xyflow/react";
 
 export type NodeExecutionLogType = {
+  nodeExecutionId: string;
+  retryAttempt: number;
   nodeId: string;
   nodeName: string;
   isSuccess: boolean;
@@ -10,6 +12,7 @@ export type NodeExecutionLogType = {
 
 export interface ExecutionState {
   executionMap: Record<string, Record<string, NodeExecutionLogType>>; // nodeId -> pathKey -> Log
+  executionHistoryMap: Record<string, Record<string, NodeExecutionLogType[]>>; // nodeId -> pathKey -> All attempts
   branchStats: Record<string, number>; // Total success counts for badges
   loopRegistry: Record<string, { total: number }>;
   nodeToParentStack: Record<string, string[]>; // IDs of loops wrapping a node

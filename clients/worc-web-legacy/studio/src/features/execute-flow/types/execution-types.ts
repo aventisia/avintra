@@ -1,4 +1,6 @@
 export interface ExecutionNode {
+  nodeExecutionId: string;
+  retryAttempt: number;
   nodeId: string;
   nodeName: string;
   nodeUniqueName: string;

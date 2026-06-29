@@ -247,6 +247,8 @@ namespace NodeExecutor.Services
             // Initiaze the return object
             var nodeExecutionlog = new NodeExecutionLog
             {
+                NodeExecutionId = Guid.NewGuid().ToString(),
+                RetryAttempt = 0,
                 NodeId = nodeData.Id,
                 NodeName = nodeData.NodeName,
                 NodeUniqueName = nodeData.CodeActivityName,
@@ -302,20 +304,8 @@ namespace NodeExecutor.Services
             return (nodeExecutionlog.IsSuccess, nodeExecutionlog);
         }
 
-        public static (bool, NodeExecutionLog) ExecuteNode(ActivityNodeData nodeData, ExecutionContext executionContext, Interpreter interpreter, DateTime startTime)
+        public static (bool, NodeExecutionLog) ExecuteNode(NodeExecutionLog nodeExecutionlog, ActivityNodeData nodeData, ExecutionContext executionContext, Interpreter interpreter)
         {
-            // Initiaze the return object
-            var nodeExecutionlog = new NodeExecutionLog
-            {
-                NodeId = nodeData.Id,
-                NodeName = nodeData.NodeName,
-                NodeUniqueName = nodeData.CodeActivityName,
-                IsSuccess = false,
-                Duration = 0,
-                Inputs = new List<NodeLogKeyValue>(),
-                Outputs = new List<NodeLogKeyValue>()
-            };
-
             // Initialize input and output dictionaries
             var inputValues = new Dictionary<string, object>();
             var outputValues = new Dictionary<string, object>();
@@ -394,7 +384,7 @@ namespace NodeExecutor.Services
                 }
 
                 // Set inputValues to nodeExecutionLog object
-                nodeExecutionlog.Inputs = inputValues.Select(kv => new NodeLogKeyValue { Key = kv.Key, Value = ConvertValueForLoggingUtil.ConvertValueForLogging(kv.Key, kv.Value, "Input", false) }).ToList();
+                nodeExecutionlog.Inputs.AddRange(inputValues.Select(kv => new NodeLogKeyValue { Key = kv.Key, Value = ConvertValueForLoggingUtil.ConvertValueForLogging(kv.Key, kv.Value, "Input", false) }).ToList());
 
                 // Execute the activity
                 var outputs = WorkflowInvoker.Invoke((Activity)activityInstance);
@@ -435,8 +425,7 @@ namespace NodeExecutor.Services
                 outputValues["Status"] = $"Node execution has failed: {ex.Message}";
             }
 
-            // Update duration and outputValues
-            nodeExecutionlog.Duration = (DateTime.UtcNow - startTime).TotalSeconds;
+            // Update outputValues
             nodeExecutionlog.Outputs = outputValues.Select(kv => new NodeLogKeyValue { Key = kv.Key, Value = ConvertValueForLoggingUtil.ConvertValueForLogging(kv.Key, kv.Value, "Output", false) }).ToList();
 
             // Return
@@ -448,6 +437,8 @@ namespace NodeExecutor.Services
             // Initialize the return object
             var nodeExecutionlog = new NodeExecutionLog
             {
+                NodeExecutionId = Guid.NewGuid().ToString(),
+                RetryAttempt = 0,
                 NodeId = nodeId,
                 NodeName = nodeName,
                 NodeUniqueName = "ConditionalBranchActivity",
@@ -568,6 +559,8 @@ namespace NodeExecutor.Services
             // Initialize the return object
             var nodeExecutionlog = new NodeExecutionLog
             {
+                NodeExecutionId = Guid.NewGuid().ToString(),
+                RetryAttempt = 0,
                 NodeId = nodeId,
                 NodeName = nodeName,
                 NodeUniqueName = "LoopActivity",
