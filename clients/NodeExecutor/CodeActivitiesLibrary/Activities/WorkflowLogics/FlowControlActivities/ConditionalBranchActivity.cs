@@ -206,28 +206,23 @@ namespace CodeActivitiesLibrary.WorkflowLogics.FlowControlActivities
             if (second == null)
                 return (false, "Second value is null.");
 
-            // If first is not text, return false            
-            if (!(first is string))
-                return (false, "First value is not text.");
-
-            // If second is not text, return false
-            if (!(second is string))
-                return (false, "Second value is not text.");
+            string text1 = first.ToString();
+            string text2 = second.ToString();
 
             switch (op)
             {
                 case ComparisonOperatorEnum.TextStartsWith:
-                    return first.ToString().StartsWith(second.ToString()) ? (true, "First value starts with the second value.") : (false, "First value does not start with the second value.");
+                    return text1.StartsWith(text2) ? (true, "First value starts with the second value.") : (false, "First value does not start with the second value.");
                 case ComparisonOperatorEnum.TextDoesNotStartWith:
-                    return !first.ToString().StartsWith(second.ToString()) ? (true, "First value does not start with the second value.") : (false, "First value starts with the second value.");
+                    return !text1.StartsWith(text2) ? (true, "First value does not start with the second value.") : (false, "First value starts with the second value.");
                 case ComparisonOperatorEnum.TextEndsWith:
-                    return first.ToString().EndsWith(second.ToString()) ? (true, "First value ends with the second value.") : (false, "First value does not end with the second value.");
+                    return text1.EndsWith(text2) ? (true, "First value ends with the second value.") : (false, "First value does not end with the second value.");
                 case ComparisonOperatorEnum.TextDoesNotEndWith:
-                    return !first.ToString().EndsWith(second.ToString()) ? (true, "First value does not end with the second value.") : (false, "First value ends with the second value.");
+                    return !text1.EndsWith(text2) ? (true, "First value does not end with the second value.") : (false, "First value ends with the second value.");
                 case ComparisonOperatorEnum.TextContains:
-                    return first.ToString().Contains(second.ToString()) ? (true, "First value contains the second value.") : (false, "First value does not contain the second value.");
+                    return text1.Contains(text2) ? (true, "First value contains the second value.") : (false, "First value does not contain the second value.");
                 case ComparisonOperatorEnum.TextDoesNotContain:
-                    return !first.ToString().Contains(second.ToString()) ? (true, "First value does not contain the second value.") : (false, "First value contains the second value.");
+                    return !text1.Contains(text2) ? (true, "First value does not contain the second value.") : (false, "First value contains the second value.");
                 default:
                     return (false, "Invalid text comparison operator.");
             }
