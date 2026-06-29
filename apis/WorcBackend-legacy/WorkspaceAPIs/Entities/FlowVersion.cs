@@ -44,6 +44,11 @@ public class FlowVersion : BaseEntity, IMustHaveTenant
     public string? InputOutputObject { get; set; }
 
     /// <summary>
+    /// Gets or sets the execution configuration for the flow version as a JSON string.
+    /// </summary>
+    public JsonDocument? Settings { get; set; }
+
+    /// <summary>
     /// Gets or sets the ID of the flow to which the flow version belongs.
     /// </summary>
     public required Guid FlowId { get; set; }

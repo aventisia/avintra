@@ -443,6 +443,9 @@ namespace WorkspaceAPIs.Data.Migrations
                     b.Property<string>("ReactFlowObject")
                         .HasColumnType("text");
 
+                    b.Property<JsonDocument>("Settings")
+                        .HasColumnType("jsonb");
+
                     b.Property<string>("SupportedPlatform")
                         .HasColumnType("text");
 
@@ -557,6 +560,9 @@ namespace WorkspaceAPIs.Data.Migrations
 
                     b.Property<DateTimeOffset?>("EndTime")
                         .HasColumnType("timestamp with time zone");
+
+                    b.Property<string>("ExecutedBy")
+                        .HasColumnType("text");
 
                     b.Property<Guid?>("FlowVersionHistoryId")
                         .HasColumnType("uuid");
@@ -1540,6 +1546,9 @@ namespace WorkspaceAPIs.Data.Migrations
                     b.HasKey("Id");
 
                     b.HasIndex("UserId");
+
+                    b.HasIndex("ResourceId", "UserId")
+                        .IsUnique();
 
                     b.ToTable("worc_ResourceShares");
                 });
