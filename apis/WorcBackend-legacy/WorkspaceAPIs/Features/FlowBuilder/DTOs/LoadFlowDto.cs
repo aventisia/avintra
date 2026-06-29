@@ -80,4 +80,9 @@ public class LoadFlowDto
     /// Gets or sets the supported platforms for the flow version as a comma-separated string.
     /// </summary>
     public string? SupportedPlatform { get; set; }
+
+    /// <summary>
+    /// Gets or sets the execution configuration for the flow version as a JSON string.
+    /// </summary>
+    public ExecutionSettings? Settings { get; set; }
 }

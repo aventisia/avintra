@@ -8,6 +8,14 @@ public class FlowBuilderMappingProfile : IRegister
         config.NewConfig<FlowVersion, LoadFlowDto>()
             .Map(dest => dest.Id, src => src.FlowId)
             .Map(dest => dest.VersionId, src => src.Id)
+            .Map(dest => dest.Settings, src => src.Settings == null
+                ? null
+                : System.Text.Json.JsonSerializer.Deserialize<ExecutionSettings>(
+                    src.Settings.RootElement.GetRawText(),
+                    new JsonSerializerOptions
+                    {
+                        PropertyNameCaseInsensitive = true
+                    }))
             .Map(dest => dest.Name, src => src.Flow != null ? src.Flow.Name : null)
             .Map(dest => dest.Description, src => src.Flow != null ? src.Flow.Description : null)
             .Map(dest => dest.Type, src => src.Flow != null ? src.Flow.Type.ToString() : null);
@@ -18,7 +26,7 @@ public class FlowBuilderMappingProfile : IRegister
             .Map(dest => dest.FlowId, src => src.Id)
             .IgnoreNullValues(true);
 
-         // To Update flow's node, edges etc silently in the background
+        // To Update flow's node, edges etc silently in the background
         config.NewConfig<PublishFlowVersionDto, FlowVersion>()
             .IgnoreNullValues(true);
     }

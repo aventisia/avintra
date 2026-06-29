@@ -70,6 +70,11 @@ public class AgentTableDto
     public ResourceAccessTypeEnum AccessLevel { get; set; }
 
     /// <summary>
+    /// Gets or sets the execution configuration for the flow version as a JSON string.
+    /// </summary>
+    public JsonDocument? Settings { get; set; }
+
+    /// <summary>
     /// Gets or sets a value indicating whether the record is disabled. Use this to mark a record as disabled if it's outdated or no longer required when deletion is not possible.
     /// </summary>
     public bool IsDisabled { get; set; } = false;
