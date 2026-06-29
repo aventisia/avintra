@@ -1,11 +1,11 @@
+import { cn } from "@aventisia/ui/lib";
+import { CheckCircle2Icon, CircleXIcon } from "lucide-react";
+import React, { useRef } from "react";
+
 import { useIsExecutionLogsRoute } from "@/features/execution-logs/hooks/useIsExecutionLogsRoute";
 import { useExecutionStore } from "@/features/execution-logs/stores/execution-log-store";
 import { useNodePopoverStore } from "@/features/execution-logs/stores/node-popover-store";
 import { NodeDataType } from "@/types/node-data-type";
-
-import { cn } from "@aventisia/ui/lib";
-import { CheckCircle2Icon, CircleXIcon } from "lucide-react";
-import React, { useRef } from "react";
 
 interface OpenNodeLogProps {
   nodeId: string;
@@ -20,8 +20,12 @@ export default function OpenNodeLog({
   className,
   showIcon = true,
 }: OpenNodeLogProps) {
-  const { executionMap, nodeToParentStack, activeIteration } =
-    useExecutionStore();
+  const {
+    executionMap,
+    executionHistoryMap,
+    nodeToParentStack,
+    activeIteration,
+  } = useExecutionStore();
 
   const parents = nodeToParentStack[nodeId] || [];
   const pathKey =
@@ -29,6 +33,7 @@ export default function OpenNodeLog({
 
   const history = executionMap[nodeId] || {};
   const log = history[pathKey];
+  const pathHistory = executionHistoryMap[nodeId]?.[pathKey] || [];
 
   const isSuccess = log?.isSuccess === true;
   const isError = log?.isSuccess === false;
@@ -36,13 +41,44 @@ export default function OpenNodeLog({
   const isExecutionLog = useIsExecutionLogsRoute();
   const { openPopover, closePopover } = useNodePopoverStore();
 
-  const hoverTimeout = useRef<NodeJS.Timeout | null>(null);
+  const hoverTimeout = useRef<ReturnType<typeof setTimeout> | null>(null);
+
+  const getAttemptLabel = (retryAttempt: number) => {
+    return retryAttempt <= 0
+      ? "Default Attempt"
+      : `Auto-Retry Attempt ${retryAttempt}`;
+  };
+
+  const getPopoverNodeData = () => {
+    if (!log) return null;
+
+    const attemptsForSameExecution = pathHistory
+      .filter((entry) => entry.nodeExecutionId === log.nodeExecutionId)
+      .sort((a, b) => a.retryAttempt - b.retryAttempt);
+
+    const outputByAttempt =
+      attemptsForSameExecution.length > 1
+        ? Object.fromEntries(
+            attemptsForSameExecution.map((entry) => [
+              getAttemptLabel(entry.retryAttempt),
+              entry.outputs,
+            ]),
+          )
+        : log.outputs;
+
+    return {
+      ...log,
+      outputs: outputByAttempt,
+    } as unknown as NodeDataType;
+  };
 
   const handleMouseEnter = (e: React.MouseEvent<HTMLDivElement>) => {
     if (!isExecutionLog) return;
     const rect = e.currentTarget.getBoundingClientRect();
     hoverTimeout.current = setTimeout(() => {
-      openPopover(nodeId, log as unknown as NodeDataType, rect);
+      const popoverNodeData = getPopoverNodeData();
+      if (!popoverNodeData) return;
+      openPopover(nodeId, popoverNodeData, rect);
     }, 200);
   };
 

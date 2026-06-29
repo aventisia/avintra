@@ -6,6 +6,7 @@ import { mapLogsToFlow } from "../utils/execution-log-parser";
 export const useExecutionStore = create<ExecutionState & ExecutionActions>(
   (set) => ({
     executionMap: {},
+    executionHistoryMap: {},
     branchStats: {},
     loopRegistry: {},
     nodeToParentStack: {},

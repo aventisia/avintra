@@ -22,12 +22,16 @@ export const getLocalExecutionLog = async (versionId: string) => {
         duration: 0,
         nodes: versionLog.versionLog.map(
           (nodeLog): ExecutionNode => ({
+            nodeExecutionId: nodeLog.nodeExecutionId,
+            retryAttempt: nodeLog.retryAttempt,
             nodeId: nodeLog.nodeId,
             nodeName: nodeLog.nodeName,
             isSuccess: nodeLog.isSuccess,
             duration: nodeLog.duration,
             nodeUniqueName: nodeLog.nodeUniqueName,
             // Assign a unique ID to distinguish repeated instances of the same node (when used inside a loop)
+            // TODO: this may not be required anymore since we have added nodeExecutionId and retryAttempt to the ExecutionNode type
+            // which together forms unique identifier for a node execution. We can remove this in future if we don't need it.
             uniqueNodeId: window.crypto.randomUUID(),
 
             inputs: Object.fromEntries(

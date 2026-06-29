@@ -4,74 +4,71 @@ export const onErrorFieldsJson: DCPFieldSchemaType[] = [
   {
     direction: "Input",
     type: "switch",
-    name: "RetryOnFail",
-    label: "Retry On Fail",
-    description: "",
+    name: "__OnError__EnableAutoRetry",
+    label: "Enable Auto-Retry",
+    description:
+      "Automatically attempts to run the node again upon failure to bypass temporary network or service issues.",
     defaultValue: false,
-    required: false,
     category: "OnError",
   },
 
   {
     direction: "Input",
     type: "text",
-    name: "MaxTries",
-    label: "Maximum Tries",
-    description: "The number of to try of node fails.",
-    defaultValue: "",
-    required: false,
+    name: "__OnError__RetryLimit",
+    label: "Retry Limit",
+    description:
+      "The total number of times the system will attempt to run this node again after the initial failure. Once this limit is reached, the system will execute the rule defined in 'Fallback Behavior'",
+    defaultValue: 3,
+    category: "OnError",
     renderIf: {
       conditions: [
         {
-          field: "RetryOnFail",
+          field: "__OnError__EnableAutoRetry",
           equals: true,
         },
       ],
     },
-
-    category: "OnError",
   },
   {
     direction: "Input",
     type: "text",
-    name: "WaitBetweenTires",
-    label: "Wait Between Tires",
-    description: "The waiting time between two tries.",
-    defaultValue: "",
-    required: false,
+    name: "__OnError__WaitTimeBeforeRetryMs",
+    label: "Wait Time Before Retry (ms)",
+    description:
+      "The delay, in milliseconds, before the system attempts the retry (e.g., 3000 = 3 seconds).",
+    defaultValue: 3000,
+    category: "OnError",
     renderIf: {
       conditions: [
         {
-          field: "RetryOnFail",
+          field: "__OnError__EnableAutoRetry",
           equals: true,
         },
       ],
     },
-
-    category: "OnError",
   },
-
   {
     direction: "Input",
     type: "select",
-    name: "On Error",
-    label: "On Error",
-    description: "Action to take if node fails.",
-    defaultValue: "StopExecution",
-    required: false,
+    name: "__OnError__FallbackBehavior",
+    label: "Fallback Behavior",
+    description:
+      "Determines the routing behavior of the overall flow when this node completely fails and all retry (if auto-retry is enabled) attempts have been exhausted.",
+    defaultValue: "abort",
+    category: "OnError",
     selectOptions: [
       {
-        label: "Stop Execution",
-        value: "StopExecution",
-        description: "Halt execution and mark fail.",
+        label: "Abort Execution",
+        value: "abort",
+        description: "Stops the entire flow immediately and marks it as failed",
       },
       {
-        label: "Continue",
-        value: "Continue",
-        description: "Pass error message as item in regular output.",
+        label: "Continue to Next Node",
+        value: "next-node",
+        description:
+          "Moves forward despite the failure. Ensure subsequent steps do not strictly require this node's successful output.",
       },
     ],
-
-    category: "OnError",
   },
 ];
