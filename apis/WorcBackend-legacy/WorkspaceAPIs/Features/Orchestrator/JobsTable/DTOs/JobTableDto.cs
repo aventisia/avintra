@@ -105,4 +105,14 @@ public class JobTableDto
     /// Gets or sets a value that indicates whether the flow version is published or unpublished.
     /// </summary>
     public bool IsPublished { get; set; }
+
+    /// <summary>
+    /// Gets or sets the version number of a flow version record
+    /// </summary>
+    public int VersionNumber { get; set; }
+
+    /// <summary>
+    /// Gets or sets the identifier or name of the user/system that executed the job.
+    /// </summary>
+    public string? ExecutedBy { get; set; }
 }
