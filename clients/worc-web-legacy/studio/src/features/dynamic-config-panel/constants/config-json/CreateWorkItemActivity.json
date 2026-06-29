@@ -11,9 +11,9 @@
     {
       "direction": "Input",
       "type": "queue-select",
-      "name": "QueueId",
+      "name": "QueueName",
       "label": "Select Queue",
-      "description": "Choose the queue where the new work item will be created.",
+      "description": "Choose the queue in which to create the work item.",
       "defaultValue": "",
       "required": true
     },
@@ -22,7 +22,7 @@
       "type": "json-editor",
       "name": "WorkItemData",
       "label": "Work Item Data",
-      "description": "Provide the data payload for the work item in JSON format. This data will be stored with the work item.",
+      "description": "Provide the data for the work item in JSON format.",
       "defaultValue": "",
       "required": true
     },
@@ -31,18 +31,18 @@
       "type": "text",
       "name": "Remark",
       "label": "Remark",
-      "description": "Enter the remark for the work item.",
+      "description": "Optional remark for the work item.",
       "defaultValue": "",
       "required": false
     },
     {
       "direction": "Output",
       "type": "config-panel-output",
-      "name": "CreatedWorkItem",
-      "label": "CreatedWorkItem",
-      "description": "Returns the newly created work item.",
+      "name": "Result",
+      "label": "Result",
+      "description": "Returns the created work item.",
       "defaultValue": {
-        "value": "CreatedWorkItem",
+        "value": "Result",
         "enabled": true
       },
       "required": false

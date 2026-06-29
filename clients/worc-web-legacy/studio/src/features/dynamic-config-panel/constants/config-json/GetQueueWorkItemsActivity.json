@@ -1,0 +1,279 @@
+{
+  "name": "GetQueueWorkItems",
+  "label": "Get Work Items",
+  "description": "Retrieves work items from the specified queue using its identifier.",
+  "version": "1.0.0",
+  "auther": "@aventisia",
+  "supportedPlatforms": ["cloud", "windows"],
+  "errorHandling": "standard",
+  "testScreenType": "standard",
+  "fields": [
+    {
+      "direction": "Input",
+      "type": "queue-select",
+      "name": "QueueName",
+      "label": "Select Queue",
+      "description": "Choose the queue from which to retrieve work items.",
+      "defaultValue": "",
+      "required": true
+    },
+    {
+      "direction": "Input",
+      "type": "select",
+      "name": "Status",
+      "label": "Status",
+      "description": "Select the new status to assign to the work item.",
+      "defaultValue": "",
+      "required": false,
+      "selectOptions": [
+        {
+          "label": "Pending",
+          "value": "Pending",
+          "description": "Work item is pending and not yet started."
+        },
+        {
+          "label": "In Progress",
+          "value": "InProgress",
+          "description": "Work item is currently being processed."
+        },
+        {
+          "label": "Completed",
+          "value": "Completed",
+          "description": "Work item has been completed successfully."
+        },
+        {
+          "label": "Failed",
+          "value": "Failed",
+          "description": "Work item processing has failed."
+        }
+      ]
+    },
+    {
+      "direction": "Input",
+      "type": "switch",
+      "name": "EnableSorting",
+      "label": "Enable Sorting",
+      "description": "Indicates whether the retrieved work items should be sorted.",
+      "defaultValue": false,
+      "required": false
+    },
+    {
+      "direction": "Input",
+      "type": "text",
+      "name": "SortField",
+      "label": "Sort Field",
+      "description": "Specifies the field name to sort the retrieved work items by.",
+      "defaultValue": "",
+      "required": false,
+      "renderIf": {
+        "conditions": [
+          {
+            "field": "EnableSorting",
+            "equals": true
+          }
+        ]
+      }
+    },
+    {
+      "direction": "Input",
+      "type": "select",
+      "name": "SortOrder",
+      "label": "Sort Order",
+      "description": "Specifies the sort order for the retrieved work items.",
+      "defaultValue": "Ascending",
+      "required": false,
+      "selectOptions": [
+        {
+          "label": "Ascending",
+          "value": "Ascending",
+          "description": ""
+        },
+        {
+          "label": "Descending",
+          "value": "Descending",
+          "description": ""
+        }
+      ],
+      "renderIf": {
+        "conditions": [
+          {
+            "field": "EnableSorting",
+            "equals": true
+          }
+        ]
+      }
+    },
+    {
+      "direction": "Input",
+      "type": "switch",
+      "name": "EnableFiltering",
+      "label": "Enable Filtering",
+      "description": "Indicates whether a filter should be applied when retrieving work items.",
+      "defaultValue": false,
+      "required": false
+    },
+    {
+      "direction": "Input",
+      "type": "text",
+      "name": "FilterField",
+      "label": "Filter Field",
+      "description": "Specifies the field name to filter the retrieved work items by.",
+      "defaultValue": "",
+      "required": false,
+      "renderIf": {
+        "conditions": [
+          {
+            "field": "EnableFiltering",
+            "equals": true
+          }
+        ]
+      }
+    },
+    {
+      "direction": "Input",
+      "type": "select",
+      "name": "ComparisonOperator",
+      "label": "Comparison Operator",
+      "description": "Specifies the comparison operator to use when filtering work items.",
+      "defaultValue": "EqualTo",
+      "required": false,
+      "selectOptions": [
+        {
+          "label": "EqualTo",
+          "value": "EqualTo",
+          "description": ""
+        },
+        {
+          "label": "NotEqualTo",
+          "value": "NotEqualTo",
+          "description": ""
+        },
+        {
+          "label": "Contains",
+          "value": "Contains",
+          "description": ""
+        },
+        {
+          "label": "DoesNotContain",
+          "value": "DoesNotContain",
+          "description": ""
+        },
+        {
+          "label": "StartsWith",
+          "value": "StartsWith",
+          "description": ""
+        },
+        {
+          "label": "EndsWith",
+          "value": "EndsWith",
+          "description": ""
+        },
+        {
+          "label": "GreaterThan",
+          "value": "GreaterThan",
+          "description": ""
+        },
+        {
+          "label": "LessThan",
+          "value": "LessThan",
+          "description": ""
+        },
+        {
+          "label": "GreaterThanOrEqual",
+          "value": "GreaterThanOrEqual",
+          "description": ""
+        },
+        {
+          "label": "LessThanOrEqual",
+          "value": "LessThanOrEqual",
+          "description": ""
+        },
+        {
+          "label": "DateAfter",
+          "value": "DateAfter",
+          "description": ""
+        },
+        {
+          "label": "DateBefore",
+          "value": "DateBefore",
+          "description": ""
+        },
+        {
+          "label": "DateOnOrAfter",
+          "value": "DateOnOrAfter",
+          "description": ""
+        },
+        {
+          "label": "DateOnOrBefore",
+          "value": "DateOnOrBefore",
+          "description": ""
+        },
+        {
+          "label": "IsNull",
+          "value": "IsNull",
+          "description": ""
+        },
+        {
+          "label": "IsNotNull",
+          "value": "IsNotNull",
+          "description": ""
+        }
+      ],
+      "renderIf": {
+        "conditions": [
+          {
+            "field": "EnableFiltering",
+            "equals": true
+          }
+        ]
+      }
+    },
+    {
+      "direction": "Input",
+      "type": "text",
+      "name": "FilterValue",
+      "label": "Filter Value",
+      "description": "Specifies the value to compare against the selected field.",
+      "defaultValue": "",
+      "required": false,
+      "renderIf": {
+        "conditions": [
+          {
+            "field": "EnableFiltering",
+            "equals": true
+          }
+        ]
+      }
+    },
+    {
+      "direction": "Input",
+      "type": "text",
+      "name": "Top",
+      "label": "Top",
+      "description": "Specifies the maximum number of work items to retrieve.",
+      "defaultValue": 10,
+      "required": false
+    },
+    {
+      "direction": "Input",
+      "type": "text",
+      "name": "Skip",
+      "label": "Skip",
+      "description": "Specifies the number of work items to skip before retrieving results.",
+      "defaultValue": 0,
+      "required": false
+    },
+    {
+      "direction": "Output",
+      "type": "config-panel-output",
+      "name": "Result",
+      "label": "Result",
+      "description": "Returns the retrieved work items.",
+      "defaultValue": {
+        "value": "Result",
+        "enabled": true
+      },
+      "required": false
+    }
+  ]
+}

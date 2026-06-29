@@ -31,18 +31,36 @@
           },
           {
             "type": "activityNode",
-            "name": "UpdateWorkItemActivity",
-            "label": "Update Work Item",
-            "description": "Updates the fields or status of an existing work item.",
+            "name": "GeteWorkItemByIdActivity",
+            "label": "Get Work Item By ID",
+            "description": "Retrieves the details of a work item by its unique identifier.",
             "docsLink": "https://docs.aventisia.com",
             "img": "/assets/Queue.svg",
             "supportedPlatforms": ["cloud", "windows"]
           },
           {
             "type": "activityNode",
-            "name": "GetWorkItemActivity",
-            "label": "Get Work Item",
-            "description": "Retrieves a work item from the specified queue using its identifier.",
+            "name": "GetQueueActivity",
+            "label": "Get Queue",
+            "description": "Retrieves the details and configuration of a specified queue by its name.",
+            "docsLink": "https://docs.aventisia.com",
+            "img": "/assets/Queue.svg",
+            "supportedPlatforms": ["cloud", "windows"]
+          },
+          {
+            "type": "activityNode",
+            "name": "GetQueueWorkItemsActivity",
+            "label": "Get Work Items",
+            "description": "Retrieves work items from the specified queue using its identifier.",
+            "docsLink": "https://docs.aventisia.com",
+            "img": "/assets/Queue.svg",
+            "supportedPlatforms": ["cloud", "windows"]
+          },
+          {
+            "type": "activityNode",
+            "name": "UpdateWorkItemActivity",
+            "label": "Update Work Item",
+            "description": "Updates the fields or status of an existing work item.",
             "docsLink": "https://docs.aventisia.com",
             "img": "/assets/Queue.svg",
             "supportedPlatforms": ["cloud", "windows"]
