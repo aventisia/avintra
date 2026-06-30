@@ -1,33 +1,44 @@
-import { Form } from "@aventisia/ui/form";
+import { SubmitButton } from "@aventisia/ui/buttons";
+import { Form, InputField } from "@aventisia/ui/form";
 import { useCallback } from "react";
 import { z } from "zod";
-import { useDefineSettingsForm } from "../hooks/useDefineSettingsForm";
+import { useShallow } from "zustand/react/shallow";
+
+// import { usePanelStore } from "@/components/panel/stores/panel-store";
+import { useCurrentFlowStore } from "@/stores/current-flow-store";
+
+// import { PANEL_ID } from "../constants";
 import { settingsZodSchema } from "../constants/settings-zod-schema";
-import { setSettingsLocally } from "../utils/set-settings-locally";
-import { runDelayProps } from "../constants/settings-form-field-props";
-import { SubmitButton } from "@aventisia/ui/buttons";
-import { usePanelStore } from "@/components/panel/stores/panel-store";
-import { Controller } from "react-hook-form";
-import { Input } from "@aventisia/ui";
-import { PANEL_ID } from "../constants";
+import { useDefineSettingsForm } from "../hooks/useDefineSettingsForm";
+import { useUpdateFlowVersionSetting } from "../hooks/useUpdateFlowVersionSetting";
 
 export const SettingsForm = () => {
-  const { closePanel } = usePanelStore();
+  // const { closePanel } = usePanelStore();
+
   // Define form
-  const { form, setSettings, isDirty, isSubmitting } = useDefineSettingsForm();
+  const { form, isDirty, setSettings, isSubmitting } = useDefineSettingsForm();
+
+  const { currentFlow } = useCurrentFlowStore(
+    useShallow((state) => ({
+      currentFlow: state.currentFlow,
+    })),
+  );
+
+  const { updateFlowSettings, isPending } = useUpdateFlowVersionSetting();
 
   // Define submit handler
   const onSubmit = useCallback(
     (formData: z.infer<typeof settingsZodSchema>) => {
       // Set the settings in store
+      updateFlowSettings({
+        versionId: currentFlow.versionId,
+        payload: formData,
+      });
+
       setSettings(formData);
-
-      // Set the settings in local storage
-      setSettingsLocally(formData);
-
-      closePanel(PANEL_ID);
+      // closePanel(PANEL_ID);
     },
-    [closePanel, setSettings],
+    [],
   );
 
   // Return the form
@@ -35,28 +46,23 @@ export const SettingsForm = () => {
     <Form
       methods={form}
       onSubmit={form.handleSubmit(onSubmit)}
-      className="space-y-[1rem]"
       checkDirtyForm={false}
+      disabled={isPending}
     >
-      <Controller
-        control={form.control}
-        name="runDelay"
-        render={({ field }) => (
-          <Input
-            {...runDelayProps}
-            {...field}
-            value={field.value ?? ""}
-            onChange={(e) => field.onChange(Number(e.target.value))}
-          />
-        )}
+      <InputField
+        name="maxExecutionTimeInMinutes"
+        label="Max Execution Time (in minutes)"
+        description="The maximum time an agent is expected to run before it can be safely terminated."
+        type="number"
       />
 
       <div className="flex w-full items-center justify-end pb-4">
         <SubmitButton
-          size="xs"
+          size="sm"
           disabled={!isDirty}
-          isPending={isSubmitting}
+          isPending={isSubmitting || isPending}
           primaryText="Save"
+          secondaryText="Saving"
         />
       </div>
     </Form>

@@ -12,14 +12,14 @@ export const FlowSettings = () => {
   return (
     <Panel
       id={PANEL_ID}
-      width="w-80"
+      width="w-96"
       //  closeOnEscape={false}
     >
       <PanelHeader>
         <PanelTitle>Settings</PanelTitle>
         <PanelClose />
       </PanelHeader>
-      <PanelContent>
+      <PanelContent className="p-2.5">
         <SettingsForm />
       </PanelContent>
     </Panel>
