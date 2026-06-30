@@ -33,22 +33,6 @@
     },
     {
       "direction": "Input",
-      "type": "switch",
-      "name": "appendSubject",
-      "label": "Append to Existing Subject",
-      "description": "If enabled, the provided subject is appended to the original email subject. Otherwise, it replaces the existing subject.",
-      "defaultValue": true
-    },
-    {
-      "direction": "Input",
-      "type": "text",
-      "name": "subject",
-      "label": "Subject",
-      "description": "Optional. Specify a new subject or text to append to the existing subject.",
-      "defaultValue": ""
-    },
-    {
-      "direction": "Input",
       "type": "text",
       "name": "comment",
       "label": "Comment",
@@ -58,24 +42,63 @@
     {
       "direction": "Input",
       "type": "text",
-      "name": "toRecipients",
-      "label": "To Recipients",
-      "description": "One or more recipient email addresses separated by semicolons (;)."
-    },
-    {
-      "direction": "Input",
-      "type": "text",
-      "name": "cc",
-      "label": "CC",
-      "description": "One or more CC recipient email addresses, separated by semicolons (;).",
+      "name": "To",
+      "label": "To",
+      "description": "Primary recipient email address(es). Separate multiple addresses with semicolons (;).",
       "defaultValue": ""
     },
     {
       "direction": "Input",
       "type": "text",
-      "name": "bcc",
+      "name": "CC",
+      "label": "CC",
+      "description": "Carbon copy recipient email address(es). Separate multiple addresses with semicolons (;).",
+      "defaultValue": ""
+    },
+    {
+      "direction": "Input",
+      "type": "text",
+      "name": "BCC",
       "label": "BCC",
-      "description": "One or more BCC recipient email addresses, separated by semicolons (;).",
+      "description": "Blind carbon copy recipient email address(es). Separate multiple addresses with semicolons (;).",
+      "defaultValue": ""
+    },
+    {
+      "direction": "Input",
+      "type": "select",
+      "name": "SubjectMode",
+      "label": "Forward Subject Mode",
+      "description": "Defines how the email subject should be constructed when forwarding.",
+      "defaultValue": "KeepOriginal",
+      "selectOptions": [
+        {
+          "label": "Keep Original",
+          "value": "KeepOriginal",
+          "description": "Forward using the original subject unchanged"
+        },
+        {
+          "label": "Custom Prefix",
+          "value": "PrefixCustom",
+          "description": "Adds user-defined text before the original subject"
+        },
+        {
+          "label": "Custom Suffix",
+          "value": "SuffixCustom",
+          "description": "Adds user-defined text after the original subject"
+        },
+        {
+          "label": "Replace Entire Subject",
+          "value": "Replace",
+          "description": "Completely replaces the original subject with a new one"
+        }
+      ]
+    },
+    {
+      "direction": "Input",
+      "type": "text",
+      "name": "Subject",
+      "label": "Subject",
+      "description": "Custom text or template used for subject transformation (depends on selected mode).",
       "defaultValue": ""
     },
     {
