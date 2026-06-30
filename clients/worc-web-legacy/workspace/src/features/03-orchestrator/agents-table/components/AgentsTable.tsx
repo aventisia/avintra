@@ -8,9 +8,8 @@ import {
   getDataTablePreferences,
 } from "@aventisia/ui/data-table";
 import { useDataTable, useDocumentTitle } from "@aventisia/ui/hooks";
-import { ScrollArea, ScrollBar } from "@aventisia/ui/scroll";
-import { useBaseLayoutStore } from "@aventisia/ui/stores";
-import { useShallow } from "zustand/react/shallow";
+
+import { HorizontalScrollWrapper } from "@/react-toolkit/ui/HorizontalScrollWrapper";
 
 import { SEARCH_COLUMN, TABLE_KEY } from "../constants";
 import { columnDisplayNames } from "../constants/column-display-names";
@@ -36,12 +35,6 @@ export const AgentsTable = () => {
   const { columnVisibility, sortState } = getDataTablePreferences(
     TABLE_KEY,
     columnVisibilityState,
-  );
-  // Get the state and actions from the base layout store
-  const { sidebarExpand } = useBaseLayoutStore(
-    useShallow((state) => ({
-      sidebarExpand: state.sidebarExpand,
-    })),
   );
 
   // Fetch agents data
@@ -81,19 +74,12 @@ export const AgentsTable = () => {
           {/* Data table to render data */}
           <div className="flex flex-col gap-2">
             <AgentStats data={data?.data} />
-            <ScrollArea
-              className={
-                sidebarExpand
-                  ? "md:w-[calc(100vw-var(--sidebar-max-width)-3.5rem)]"
-                  : "md:w-[calc(100vw-var(--sidebar-min-width)-3.5rem)]"
-              }
-            >
+            <HorizontalScrollWrapper>
               <DataTable
                 table={table}
                 columnsLength={agentsTableColumns.length}
               />
-              <ScrollBar orientation="horizontal" />
-            </ScrollArea>
+            </HorizontalScrollWrapper>
           </div>
 
           {/* Data table Pagination component */}

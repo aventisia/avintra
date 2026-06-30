@@ -7,24 +7,22 @@ import {
   BreadcrumbSeparator,
 } from "@aventisia/ui/breadcrumb";
 import {
-  DataTable,
-  DataTableSkeleton,
   DTPagination,
   DTViewOptions,
+  DataTable,
+  DataTableSkeleton,
   getDataTablePreferences,
 } from "@aventisia/ui/data-table";
 import { useDataTable, useDocumentTitle } from "@aventisia/ui/hooks";
-import { ScrollArea, ScrollBar } from "@aventisia/ui/scroll";
-import { useBaseLayoutStore } from "@aventisia/ui/stores";
 import { NavLink } from "react-router-dom";
-import { useShallow } from "zustand/react/shallow";
+
+import { HorizontalScrollWrapper } from "@/react-toolkit/ui/HorizontalScrollWrapper";
 
 import { useTenantRoute } from "../../on-prem-tenant-instance/hooks/useTenantRoute";
 import { TABLE_HEADING, TABLE_KEY } from "../constants";
 import { columnDisplayNames } from "../constants/column-display-names";
 import { columnVisibilityState } from "../constants/column-visibility-state";
 import { useFetchTenantInstancesData } from "../hooks/useFetchTenantInstancesData";
-
 import { DateRangeFilter } from "./DateRangeFilter";
 import { instanceDataTableColumns } from "./InstanceDataTableColumns";
 import { TenantInstanceStats } from "./TenantInstanceStats";
@@ -43,13 +41,6 @@ export const TenantInstanceDataTable = () => {
   const { columnVisibility, sortState } = getDataTablePreferences(
     TABLE_KEY,
     columnVisibilityState,
-  );
-
-  // Get the state and actions from the base layout store
-  const { sidebarExpand } = useBaseLayoutStore(
-    useShallow((state) => ({
-      sidebarExpand: state.sidebarExpand,
-    })),
   );
 
   // Fetch on-prem tenants data
@@ -107,13 +98,7 @@ export const TenantInstanceDataTable = () => {
           <div className="flex flex-col gap-2">
             <TenantInstanceStats />
 
-            <ScrollArea
-              className={
-                sidebarExpand
-                  ? "md:w-[calc(100vw-var(--sidebar-max-width)-3.5rem)]"
-                  : "md:w-[calc(100vw-var(--sidebar-min-width)-3.5rem)]"
-              }
-            >
+            <HorizontalScrollWrapper>
               <div className="pr-0.5">
                 {/* Data table to render data */}
                 <DataTable
@@ -121,8 +106,7 @@ export const TenantInstanceDataTable = () => {
                   columnsLength={instanceDataTableColumns.length}
                 />
               </div>
-              <ScrollBar orientation="horizontal" />
-            </ScrollArea>
+            </HorizontalScrollWrapper>
           </div>
 
           {/* Data table Pagination component */}

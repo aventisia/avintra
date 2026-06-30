@@ -9,6 +9,8 @@ import { useDataTable } from "@aventisia/ui/hooks";
 import { useEffect, useMemo } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 
+import { HorizontalScrollWrapper } from "@/react-toolkit/ui/HorizontalScrollWrapper";
+
 import { useFetchQueues } from "../../queues-table/hooks/useFetchQueues";
 import { TABLE_KEY } from "../constants";
 import { columnDisplayNames } from "../constants/column-display-names";
@@ -75,9 +77,10 @@ export const WorkItemsTable = () => {
               />
             </div>
           </div>
-
-          {/* Data table to render data */}
-          <DataTable table={table} columnsLength={filteredColumns.length} />
+          <HorizontalScrollWrapper>
+            {/* Data table to render data */}
+            <DataTable table={table} columnsLength={filteredColumns.length} />
+          </HorizontalScrollWrapper>
 
           {/* Data table Pagination component */}
           <DTPagination table={table} />

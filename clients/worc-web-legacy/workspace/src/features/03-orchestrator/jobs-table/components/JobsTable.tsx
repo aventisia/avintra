@@ -1,11 +1,11 @@
 import {
-  DataTable,
-  DataTableSkeleton,
   DTExportButton,
   DTHeading,
   DTPagination,
   DTSearchBox,
   DTViewOptions,
+  DataTable,
+  DataTableSkeleton,
   getDataTablePreferences,
 } from "@aventisia/ui/data-table";
 import { useDataTable, useDocumentTitle } from "@aventisia/ui/hooks";
@@ -13,12 +13,13 @@ import { Tabs, TabsList, TabsTrigger } from "@aventisia/ui/tabs";
 import { useCallback, useEffect, useMemo, useState } from "react";
 import { useSearchParams } from "react-router-dom";
 
+import { HorizontalScrollWrapper } from "@/react-toolkit/ui/HorizontalScrollWrapper";
+
 import { SEARCH_COLUMN, TABLE_HEADING, TABLE_KEY } from "../constants";
 import { columnDisplayNames } from "../constants/column-display-names";
 import { columnVisibilityState } from "../constants/column-visibility-state";
 import { JobStatusTypesEnum } from "../enums/job-status-type-enum";
 import { useFetchJobsList } from "../hooks/useFetchJobsList";
-
 import { DateRangeFilter } from "./DateRangeFilter";
 import { JobsStats } from "./JobsStats";
 import { jobsTableColumns } from "./JobsTableColumns";
@@ -166,7 +167,13 @@ export const JobsTable = () => {
                 )}
               />
             )}
-            <DataTable table={table} columnsLength={jobsTableColumns.length} />
+
+            <HorizontalScrollWrapper>
+              <DataTable
+                table={table}
+                columnsLength={jobsTableColumns.length}
+              />
+            </HorizontalScrollWrapper>
           </div>
 
           {/* Data table Pagination component */}

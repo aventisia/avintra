@@ -1,5 +1,3 @@
-import { QueryTabs } from "@/components/QueryTab";
-
 import {
   DTHeading,
   DTPagination,
@@ -10,6 +8,9 @@ import {
   getDataTablePreferences,
 } from "@aventisia/ui/data-table";
 import { useDataTable, useDocumentTitle } from "@aventisia/ui/hooks";
+
+import { QueryTabs } from "@/components/QueryTab";
+import { HorizontalScrollWrapper } from "@/react-toolkit/ui/HorizontalScrollWrapper";
 
 import {
   SEARCH_COLUMN,
@@ -78,12 +79,13 @@ export const ArchivedFlowsTable = ({
               />
             </div>
           </div>
-
-          {/* Data table to render data */}
-          <DataTable
-            table={table}
-            columnsLength={archivedFlowsTableColumns.length}
-          />
+          <HorizontalScrollWrapper>
+            {/* Data table to render data */}
+            <DataTable
+              table={table}
+              columnsLength={archivedFlowsTableColumns.length}
+            />
+          </HorizontalScrollWrapper>
 
           {/* Data table Pagination component */}
           <DTPagination table={table} />

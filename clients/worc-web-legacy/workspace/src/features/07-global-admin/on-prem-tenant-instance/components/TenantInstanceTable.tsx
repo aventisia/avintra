@@ -7,30 +7,28 @@ import {
   BreadcrumbSeparator,
 } from "@aventisia/ui/breadcrumb";
 import {
-  DataTable,
-  DataTableSkeleton,
   DTCreateButton,
   DTPagination,
   DTSearchBox,
   DTViewOptions,
+  DataTable,
+  DataTableSkeleton,
   getDataTablePreferences,
 } from "@aventisia/ui/data-table";
 import { useDataTable, useDocumentTitle } from "@aventisia/ui/hooks";
-import { ScrollArea, ScrollBar } from "@aventisia/ui/scroll";
-import { useBaseLayoutStore } from "@aventisia/ui/stores";
 import { NavLink } from "react-router-dom";
-import { useShallow } from "zustand/react/shallow";
+
+import { HorizontalScrollWrapper } from "@/react-toolkit/ui/HorizontalScrollWrapper";
 
 import { SEARCH_COLUMN, TABLE_HEADING, TABLE_KEY } from "../constants";
 import { columnDisplayNames } from "../constants/column-display-names";
 import { columnVisibilityState } from "../constants/column-visibility-state";
 import { useFetchTenantInstances } from "../hooks/useFetchTenantInstances";
 import { useTenantRoute } from "../hooks/useTenantRoute";
-
-import { TenantInstanceCrudDialog } from "./tenant-instance-crud-dialog/TenantInstanceCrudDialog";
 import { TenantInstanceBulkActions } from "./TenantInstanceBulkActions";
 import { tenantInstanceTableColumns } from "./TenantInstanceTableColumns";
 import { TenantStats } from "./TenantStats";
+import { TenantInstanceCrudDialog } from "./tenant-instance-crud-dialog/TenantInstanceCrudDialog";
 
 /**
  * Renders a table of on-prem tenants.
@@ -46,13 +44,6 @@ export const TenantInstanceTable = () => {
   const { columnVisibility, sortState } = getDataTablePreferences(
     TABLE_KEY,
     columnVisibilityState,
-  );
-
-  // Get the state and actions from the base layout store
-  const { sidebarExpand } = useBaseLayoutStore(
-    useShallow((state) => ({
-      sidebarExpand: state.sidebarExpand,
-    })),
   );
 
   // Fetch on-prem tenants data
@@ -109,13 +100,7 @@ export const TenantInstanceTable = () => {
             <div className="flex flex-col gap-2">
               <TenantStats />
 
-              <ScrollArea
-                className={
-                  sidebarExpand
-                    ? "md:w-[calc(100vw-var(--sidebar-max-width)-3.5rem)]"
-                    : "md:w-[calc(100vw-var(--sidebar-min-width)-3.5rem)]"
-                }
-              >
+              <HorizontalScrollWrapper>
                 <div className="pr-0.5">
                   {/* Data table to render data */}
                   <DataTable
@@ -123,8 +108,7 @@ export const TenantInstanceTable = () => {
                     columnsLength={tenantInstanceTableColumns.length}
                   />
                 </div>
-                <ScrollBar orientation="horizontal" />
-              </ScrollArea>
+              </HorizontalScrollWrapper>
             </div>
           </TenantInstanceCrudDialog>
 

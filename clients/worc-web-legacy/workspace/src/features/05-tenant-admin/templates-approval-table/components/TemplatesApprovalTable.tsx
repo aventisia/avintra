@@ -1,19 +1,20 @@
 import {
-  DataTable,
-  DataTableSkeleton,
   DTHeading,
   DTPagination,
   DTSearchBox,
   DTViewOptions,
+  DataTable,
+  DataTableSkeleton,
   getDataTablePreferences,
 } from "@aventisia/ui/data-table";
 import { useDataTable, useDocumentTitle } from "@aventisia/ui/hooks";
+
+import { HorizontalScrollWrapper } from "@/react-toolkit/ui/HorizontalScrollWrapper";
 
 import { SEARCH_COLUMN, TABLE_HEADING, TABLE_KEY } from "../constants";
 import { columnDisplayNames } from "../constants/column-display-names";
 import { columnVisibilityState } from "../constants/column-visibility-state";
 import { useFetchPendingTemplates } from "../hooks/useFetchPendingTemplates";
-
 import RejectWithRemarkDialog from "./RejectWithRemarkDialog";
 import { templatesApprovalTable } from "./TemplatesApprovalTableColumns";
 
@@ -74,11 +75,13 @@ export const TemplatesApprovalTable = ({
             </div>
           </div>
 
-          {/* Main data table */}
-          <DataTable
-            table={table}
-            columnsLength={templatesApprovalTable.length}
-          />
+          <HorizontalScrollWrapper>
+            {/* Main data table */}
+            <DataTable
+              table={table}
+              columnsLength={templatesApprovalTable.length}
+            />
+          </HorizontalScrollWrapper>
 
           {/* Dialog used when rejecting a template with remarks */}
           <RejectWithRemarkDialog />

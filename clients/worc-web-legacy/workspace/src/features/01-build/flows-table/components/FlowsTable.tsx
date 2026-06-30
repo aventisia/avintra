@@ -13,6 +13,7 @@ import { useDataTable, useDocumentTitle } from "@aventisia/ui/hooks";
 import { QueryTabs } from "@/components/QueryTab";
 import { ArchivedFlowsTable } from "@/features/05-tenant-admin/archives-table/components/ArchivedFlowsTable";
 import ResourceShareDialog from "@/features/resource-share/components/ResourceShareDialog";
+import { HorizontalScrollWrapper } from "@/react-toolkit/ui/HorizontalScrollWrapper";
 
 import {
   SEARCH_COLUMN,
@@ -88,12 +89,13 @@ export const FlowsTable = () => {
                 {isPersonal && <DTCreateButton />}{" "}
               </div>
             </div>
-
-            {/* Data table to render data */}
-            <DataTable
-              table={table}
-              columnsLength={flowsTableColumnsArray.length}
-            />
+            <HorizontalScrollWrapper>
+              {/* Data table to render data */}
+              <DataTable
+                table={table}
+                columnsLength={flowsTableColumnsArray.length}
+              />
+            </HorizontalScrollWrapper>
           </FlowCrudDialog>
           {/* Data table Pagination component */}
           <DTPagination table={table} />

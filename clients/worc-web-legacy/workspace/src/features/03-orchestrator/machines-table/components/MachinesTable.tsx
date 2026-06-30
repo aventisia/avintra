@@ -1,28 +1,28 @@
 import {
-  DataTable,
-  DataTableSkeleton,
   DTCreateButton,
+  DTExportButton,
   DTHeading,
   DTPagination,
   DTSearchBox,
-  DTExportButton,
   DTViewOptions,
+  DataTable,
+  DataTableSkeleton,
   getDataTablePreferences,
 } from "@aventisia/ui/data-table";
 import { useDataTable, useDocumentTitle } from "@aventisia/ui/hooks";
 
 import { useDtCrudQueryAction } from "@/react-toolkit/hooks/useDtCrudQueryAction";
+import { HorizontalScrollWrapper } from "@/react-toolkit/ui/HorizontalScrollWrapper";
 
 import { SEARCH_COLUMN, TABLE_HEADING, TABLE_KEY } from "../constants";
 import { columnDisplayNames } from "../constants/column-display-names";
 import { columnVisibilityState } from "../constants/column-visibility-state";
 import { useFetchMachines } from "../hooks/useFetchMachines";
-
+import { MachineStats } from "./MachineStats";
+import { machinesTableColumns } from "./MachinesTableColumns";
 import AssignAgentsDialog from "./assign-agents/AssignAgentsDialog";
 import { MachineCrudDialog } from "./machine-crud-dialog/MachineCrudDialog";
 import { MachinesBulkActions } from "./machine-row-actions/MachinesBulkActions";
-import { machinesTableColumns } from "./MachinesTableColumns";
-import { MachineStats } from "./MachineStats";
 
 /**
  * Renders a table of machines.
@@ -81,10 +81,12 @@ export const MachinesTable = () => {
             {/* Data table to render data */}
             <div className="flex flex-col gap-2">
               <MachineStats data={data?.data} />
-              <DataTable
-                table={table}
-                columnsLength={machinesTableColumns.length}
-              />
+              <HorizontalScrollWrapper>
+                <DataTable
+                  table={table}
+                  columnsLength={machinesTableColumns.length}
+                />
+              </HorizontalScrollWrapper>
             </div>
           </MachineCrudDialog>
 

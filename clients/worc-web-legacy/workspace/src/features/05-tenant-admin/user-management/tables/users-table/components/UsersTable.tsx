@@ -1,23 +1,24 @@
 import {
-  DataTable,
-  DataTableSkeleton,
   DTCreateButton,
   DTHeading,
   DTPagination,
   DTSearchBox,
   DTViewOptions,
+  DataTable,
+  DataTableSkeleton,
   getDataTablePreferences,
 } from "@aventisia/ui/data-table";
 import { useDataTable, useDocumentTitle } from "@aventisia/ui/hooks";
+
+import { HorizontalScrollWrapper } from "@/react-toolkit/ui/HorizontalScrollWrapper";
 
 import { SEARCH_COLUMN, TABLE_HEADING, TABLE_KEY } from "../constants";
 import { columnDisplayNames } from "../constants/column-display-names";
 import { columnVisibilityState } from "../constants/column-visibility-state";
 import { useFetchUsers } from "../hooks/useFetchUsers";
-
+import { usersTableColumns } from "./UsersTableColumns";
 import { UserCrudDialog } from "./user-crud-dialog/UserCrudDialog";
 import { UsersBulkActions } from "./user-row-actions/UsersBulkActions";
-import { usersTableColumns } from "./UsersTableColumns";
 
 /**
  * Renders a table of users.
@@ -70,8 +71,13 @@ export const UsersTable = () => {
               </div>
             </div>
 
-            {/* Data table to render data */}
-            <DataTable table={table} columnsLength={usersTableColumns.length} />
+            <HorizontalScrollWrapper>
+              {/* Data table to render data */}
+              <DataTable
+                table={table}
+                columnsLength={usersTableColumns.length}
+              />
+            </HorizontalScrollWrapper>
           </UserCrudDialog>
 
           {/* Data table Pagination component */}

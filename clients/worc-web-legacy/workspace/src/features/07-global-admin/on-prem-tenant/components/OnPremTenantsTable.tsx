@@ -1,26 +1,24 @@
 import {
-  DataTable,
-  DataTableSkeleton,
   DTCreateButton,
   DTHeading,
   DTPagination,
   DTSearchBox,
   DTViewOptions,
+  DataTable,
+  DataTableSkeleton,
   getDataTablePreferences,
 } from "@aventisia/ui/data-table";
 import { useDataTable, useDocumentTitle } from "@aventisia/ui/hooks";
-import { ScrollArea, ScrollBar } from "@aventisia/ui/scroll";
-import { useBaseLayoutStore } from "@aventisia/ui/stores";
-import { useShallow } from "zustand/react/shallow";
+
+import { HorizontalScrollWrapper } from "@/react-toolkit/ui/HorizontalScrollWrapper";
 
 import { SEARCH_COLUMN, TABLE_HEADING, TABLE_KEY } from "../constants";
 import { columnDisplayNames } from "../constants/column-display-names";
 import { columnVisibilityState } from "../constants/column-visibility-state";
 import { useFetchOnPremTenants } from "../hooks/useFetchOnPremTenants";
-
-import { OnPremTenantCrudDialog } from "./on-prem-tenant-crud-dialog/OnPremTenantCrudDialog";
 import { OnPremTenantsBulkActions } from "./OnPremTenantsBulkActions";
 import { onPremTenantsTableColumns } from "./OnPremTenantsTableColumns";
+import { OnPremTenantCrudDialog } from "./on-prem-tenant-crud-dialog/OnPremTenantCrudDialog";
 
 /**
  * Renders a table of on-prem tenants.
@@ -35,13 +33,6 @@ export const OnPremTenantsTable = () => {
   const { columnVisibility, sortState } = getDataTablePreferences(
     TABLE_KEY,
     columnVisibilityState,
-  );
-
-  // Get the state and actions from the base layout store
-  const { sidebarExpand } = useBaseLayoutStore(
-    useShallow((state) => ({
-      sidebarExpand: state.sidebarExpand,
-    })),
   );
 
   // Fetch on-prem tenants data
@@ -79,13 +70,8 @@ export const OnPremTenantsTable = () => {
                 <DTCreateButton buttonText="Create" />
               </div>
             </div>
-            <ScrollArea
-              className={
-                sidebarExpand
-                  ? "md:w-[calc(100vw-var(--sidebar-max-width)-3.5rem)]"
-                  : "md:w-[calc(100vw-var(--sidebar-min-width)-3.5rem)]"
-              }
-            >
+
+            <HorizontalScrollWrapper>
               <div className="pr-0.5">
                 {/* Data table to render data */}
                 <DataTable
@@ -93,8 +79,7 @@ export const OnPremTenantsTable = () => {
                   columnsLength={onPremTenantsTableColumns.length}
                 />
               </div>
-              <ScrollBar orientation="horizontal" />
-            </ScrollArea>
+            </HorizontalScrollWrapper>
           </OnPremTenantCrudDialog>
 
           {/* Data table Pagination component */}

@@ -9,6 +9,8 @@ import {
 } from "@aventisia/ui/data-table";
 import { useDataTable, useDocumentTitle } from "@aventisia/ui/hooks";
 
+import { HorizontalScrollWrapper } from "@/react-toolkit/ui/HorizontalScrollWrapper";
+
 import { SEARCH_COLUMN, TABLE_HEADING, TABLE_KEY } from "../constants";
 import { columnDisplayNames } from "../constants/column-display-names";
 import { columnVisibilityState } from "../constants/column-visibility-state";
@@ -70,10 +72,12 @@ export const ConversationsTable = () => {
           {/* Data table to render data */}
           <div className="flex flex-col gap-2">
             <ConversationsStats data={data?.data} />
-            <DataTable
-              table={table}
-              columnsLength={conversationsTableColumns.length}
-            />
+            <HorizontalScrollWrapper>
+              <DataTable
+                table={table}
+                columnsLength={conversationsTableColumns.length}
+              />
+            </HorizontalScrollWrapper>
           </div>
 
           {/* Data table Pagination component */}
