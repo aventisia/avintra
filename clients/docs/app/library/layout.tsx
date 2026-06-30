@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
 import { DotPattern } from "../_components/ui/DotPattern";
 
-import "@/features/template-library/styles/templates-library.css";
+import "@/features/templates-library/styles/templates-library.css";
 import { cn } from "@/lib";
 
 export const metadata: Metadata = {
@@ -23,7 +23,7 @@ export default function LibraryLayout({
         <DotPattern
           className={cn(
             " mt-2   w-screen  h-screen opacity-60",
-            "[mask-image:linear-gradient(to_bottom_left,white,transparent,transparent)]"
+            "[mask-image:linear-gradient(to_bottom_left,white,transparent,transparent)]",
           )}
         />
         <div className="max-w-[90rem] p-6 mx-auto">{children}</div>
