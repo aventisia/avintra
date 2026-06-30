@@ -10,11 +10,11 @@ import {
 } from "@/app/_components/ui/cards";
 import { BotIcon, Copy, Tag } from "lucide-react";
 
-import { LibraryTemplatesDto } from "../dtos/library-templates-dtos";
 import { useViewTemplate } from "../hooks/useViewTemplate";
+import { AvPlatformTemplatesDto } from "../dtos/avplatform-templates-dtos";
 
 type TemplateCardProps = {
-  template: LibraryTemplatesDto;
+  template: AvPlatformTemplatesDto;
 };
 
 /**
@@ -27,14 +27,15 @@ export const TemplateCard = ({ template }: TemplateCardProps) => {
   const handleViewTemplate = useViewTemplate();
 
   const filteredIcons = template.icons?.filter(
-    (icon) => icon !== "/function.png"
+    (icon) => icon !== "/function.png",
   );
 
   return (
     <Card
       key={template.id}
       className="cursor-pointer rounded-2xl border-primary-50 shadow-none transition-all hover:border-primary-200 dark:hover:border-primary-700 w-full flex flex-col justify-between"
-      onClick={() => handleViewTemplate(template.id)}>
+      onClick={() => handleViewTemplate(template.id)}
+    >
       <CardHeader className="pb-3 sm:pb-4">
         {/* Icon area */}
         <div className="flex items-center gap-2 sm:gap-4 flex-wrap">
@@ -43,7 +44,8 @@ export const TemplateCard = ({ template }: TemplateCardProps) => {
               {filteredIcons?.slice(0, 4)?.map((icon, idx) => (
                 <div
                   key={icon || idx}
-                  className=" rounded-lg bg-accent p-1.5 sm:p-2">
+                  className=" rounded-lg bg-accent p-1.5 sm:p-2"
+                >
                   <img
                     src={icon}
                     alt="icon"
@@ -83,17 +85,17 @@ export const TemplateCard = ({ template }: TemplateCardProps) => {
           {/* Template title */}
           <CardTitle
             title={template.name}
-            className="truncate text-sm sm:text-[0.9rem] font-semibold capitalize">
+            className="truncate text-sm sm:text-[0.9rem] font-semibold capitalize"
+          >
             {template.name}
           </CardTitle>
           {/* Type badge */}
           <Badge
             variant="outline"
-            className="mt-2 flex w-fit border-border text-xs items-center gap-1 bg-slate-100 dark:bg-background py-0.5 sm:py-1 px-2">
+            className="mt-2 flex w-fit border-border text-xs items-center gap-1 bg-slate-100 dark:bg-background py-0.5 sm:py-1 px-2"
+          >
             <Tag className="h-2.5 w-2.5 sm:h-3 sm:w-3" />
-            <span className="leading-3">
-              {template.type}
-            </span>
+            <span className="leading-3">{template.type}</span>
           </Badge>
         </CardContent>
 
@@ -106,9 +108,9 @@ export const TemplateCard = ({ template }: TemplateCardProps) => {
               <AvatarFallback className="flex items-center justify-center border border-primary-100 bg-accent text-xs  font-medium">
                 {template?.createdBy
                   ? template?.createdBy
-                    ?.split(" ")
-                    .map((word) => word[0])
-                    .join("")
+                      ?.split(" ")
+                      .map((word) => word[0])
+                      .join("")
                   : "--"}
               </AvatarFallback>
             </Avatar>
