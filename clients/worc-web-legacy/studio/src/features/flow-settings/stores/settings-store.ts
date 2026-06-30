@@ -1,17 +1,18 @@
 import { create } from "zustand";
-import { SettingType } from "../types/setting-types";
+
+import { ExecutionSettings } from "../types/setting-types";
 
 type State = {
-  settings: SettingType;
+  settings: ExecutionSettings;
 };
 
 type Actions = {
-  setSettings: (settings: SettingType) => void;
+  setSettings: (settings: ExecutionSettings) => void;
 };
 
 export const useSettingsStore = create<State & Actions>((set) => ({
   settings: {
-    runDelay: 100,
+    maxExecutionTimeInMinutes: 10,
   },
 
   setSettings: (settings) =>

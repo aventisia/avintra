@@ -1,5 +1,9 @@
 import { z } from "zod";
 
 export const settingsZodSchema = z.object({
-  runDelay: z.number().default(100),
+  maxExecutionTimeInMinutes: z.coerce
+    .number({
+      invalid_type_error: "Must be a number",
+    })
+    .min(1, { message: "Minimum time must be 1 " }),
 });

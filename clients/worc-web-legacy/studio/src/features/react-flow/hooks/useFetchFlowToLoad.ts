@@ -5,6 +5,7 @@ import { useSearchParams } from "react-router-dom";
 import { useShallow } from "zustand/react/shallow";
 
 import { ZOOM_ANIMATION_DURATION } from "@/constants";
+import { useSettingsStore } from "@/features/flow-settings/stores/settings-store";
 import { useImportStore } from "@/features/import-flow/stores/import-flow-store";
 import { useDagreAutoLayout } from "@/hooks/useDagreAutoLayout";
 import { FlowTypesEnum } from "@/react-toolkit/enums/flow-types-enum";
@@ -27,6 +28,13 @@ export const useFetchFlowToLoad = () => {
     useShallow((state) => ({
       setCurrentFlow: state.setCurrentFlow,
       setIsFlowLoading: state.setIsFlowLoading,
+    })),
+  );
+
+  // Get  store state and actions of flow settings
+  const { setSettings } = useSettingsStore(
+    useShallow((state) => ({
+      setSettings: state.setSettings,
     })),
   );
 
@@ -94,12 +102,16 @@ export const useFetchFlowToLoad = () => {
       isArchived: flowData.isArchived || false,
       type: flowData.type,
       description: flowData.description || "",
-      accessType: flowData.accessType,
+      accessType: flowData.accessLevel,
       inputOutputObject: flowData.inputOutputObject || "",
     });
 
     setIsPublished(flowData.isPublished || false);
     setFlowType(flowData.type || FlowTypesEnum.Agent);
+
+    if (data?.data.settings) {
+      setSettings(data?.data.settings);
+    }
 
     // Ensure versionId is present in URL
     if (!searchParams.has("v")) {

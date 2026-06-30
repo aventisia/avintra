@@ -1,3 +1,3 @@
-export type SettingType = {
-  runDelay: number;
-};
+export interface ExecutionSettings {
+  maxExecutionTimeInMinutes: number;
+}
