@@ -3,7 +3,10 @@
   "description": "Sends an email from a specified mailbox using Microsoft Graph, with support for recipients, content, priority, and sensitivity.",
   "version": "1.0.3",
   "author": "@rahmat",
-  "supportedPlatforms": ["cloud", "windows"],
+  "supportedPlatforms": [
+    "cloud",
+    "windows"
+  ],
   "errorHandling": "standard",
   "testScreenType": "standard",
   "fields": [
@@ -23,7 +26,6 @@
       "description": "The email address of the mailbox to send the email from.",
       "defaultValue": ""
     },
-
     {
       "direction": "Input",
       "type": "text",
@@ -48,7 +50,6 @@
       "description": "Blind carbon copy recipient email address(es). Separate multiple addresses with semicolons (;).",
       "defaultValue": ""
     },
-
     {
       "direction": "Input",
       "type": "text",
@@ -85,7 +86,6 @@
       "description": "The main content of the email message. The format of the content should match the selected Content Type (e.g., plain text or HTML).",
       "defaultValue": ""
     },
-
     {
       "direction": "Input",
       "type": "select",
@@ -149,7 +149,6 @@
       "description": "Indicates whether to save a copy of the sent email in the Sent Items folder. Set to 'true' to save the email in Sent Items, or 'false' to not save it.",
       "defaultValue": true
     },
-
     {
       "direction": "Output",
       "type": "config-panel-output",

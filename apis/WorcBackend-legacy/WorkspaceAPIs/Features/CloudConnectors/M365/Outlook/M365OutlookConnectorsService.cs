@@ -242,21 +242,18 @@ public class M365OutlookConnectorsService : IM365OutlookConnectorsService
 
             case M365OutlookActionsEnum.ForwardEmail:
                 {
-                    // Original message ID
+                    // Original message ID to be forwarded
                     var forwardMessageId = CloudConnectionPayloadUtil.GetValue(payload, "messageId");
 
-                    // Optional comment
+                    // Optional message inserted above forwarded content
                     var forwardComment = CloudConnectionPayloadUtil.GetValue(payload, "comment") ?? string.Empty;
 
-                    // Subject provided by user
-                    var subject = CloudConnectionPayloadUtil.GetValue(payload, "subject");
+                    // Subject customization inputs (mode + value)
+                    var subjectMode = CloudConnectionPayloadUtil.GetValue(payload, "SubjectMode") ?? "KeepOriginal";
+                    var subjectValue = CloudConnectionPayloadUtil.GetValue(payload, "Subject") ?? string.Empty;
 
-                    // Append or replace subject
-                    var appendSubject = bool.TryParse(
-                        CloudConnectionPayloadUtil.GetValue(payload, "appendSubject"),
-                        out var append) && append;
-
-                    // Helper method to build recipient collection
+                    // Recipient builder
+                    // Converts semicolon-separated emails into Graph-recipient objects
                     object[] BuildRecipients(string recipientList)
                     {
                         if (string.IsNullOrWhiteSpace(recipientList))
@@ -276,16 +273,12 @@ public class M365OutlookConnectorsService : IM365OutlookConnectorsService
                             .ToArray();
                     }
 
-                    var toRecipients = BuildRecipients(
-                        CloudConnectionPayloadUtil.GetValue(payload, "toRecipients"));
+                    // Parse recipients for TO / CC / BCC
+                    var toRecipients = BuildRecipients(CloudConnectionPayloadUtil.GetValue(payload, "to"));
+                    var ccRecipients = BuildRecipients(CloudConnectionPayloadUtil.GetValue(payload, "cc"));
+                    var bccRecipients = BuildRecipients(CloudConnectionPayloadUtil.GetValue(payload, "bcc"));
 
-                    var ccRecipients = BuildRecipients(
-                        CloudConnectionPayloadUtil.GetValue(payload, "ccc"));
-
-                    var bccRecipients = BuildRecipients(
-                        CloudConnectionPayloadUtil.GetValue(payload, "bcc"));
-
-                    // Create forward draft
+                    // Creates a forward draft in Outlook (Graph API)
                     var draft = await HttpClientHelper.PostAsync(
                         $"{messagesApiUrl}/messages/{forwardMessageId}/createForward",
                         new
@@ -294,42 +287,62 @@ public class M365OutlookConnectorsService : IM365OutlookConnectorsService
                         },
                         accessToken);
 
+                    // Extract draft message ID for further updates
                     string draftId = draft.RootElement.GetProperty("id").GetString() ?? string.Empty;
 
-                    // Determine final subject
+                    // Subject resolution logic
                     string? finalSubject = null;
 
-                    if (!string.IsNullOrEmpty(subject))
+                    // Only process subject if user provided a value
+                    if (!string.IsNullOrWhiteSpace(subjectValue))
                     {
-                        if (appendSubject)
+                        string originalSubject = string.Empty;
+
+                        // Fetch original subject only when required by mode
+                        if (subjectMode is "PrefixCustom" or "SuffixCustom" or "Replace")
                         {
                             var originalMessage = await HttpClientHelper.GetAsync(
                                 $"{messagesApiUrl}/messages/{forwardMessageId}?$select=subject",
                                 accessToken);
 
-                            var originalSubject = originalMessage.RootElement.GetProperty("subject").ToString() ?? string.Empty;
+                            originalSubject = originalMessage.RootElement.GetProperty("subject").ToString() ?? string.Empty;
+                        }
 
-                            finalSubject = $"{originalSubject} {subject}".Trim();
-                        }
-                        else
+                        // Apply subject transformation based on selected mode
+                        finalSubject = subjectMode switch
                         {
-                            finalSubject = subject;
-                        }
+                            "KeepOriginal" => originalSubject,
+                            "Replace" => subjectValue,
+                            "PrefixCustom" => $"{subjectValue} {originalSubject}".Trim(),
+                            "SuffixCustom" => $"{originalSubject} {subjectValue}".Trim(),
+
+                            // Safe fallback (preserve original behavior)
+                            _ => originalSubject
+                        };
                     }
 
-                    // Update draft
+                    // Update draft message
+                    // Build patch payload dynamically (avoid sending null subject)
+                    var patchBody = new Dictionary<string, object?>
+                    {
+                        ["toRecipients"] = toRecipients,
+                        ["ccRecipients"] = ccRecipients,
+                        ["bccRecipients"] = bccRecipients
+                    };
+
+                    // Only include subject if explicitly set
+                    if (!string.IsNullOrWhiteSpace(finalSubject))
+                    {
+                        patchBody["subject"] = finalSubject;
+                    }
+
+                    // Update draft message
                     await HttpClientHelper.PatchAsync(
                         $"{messagesApiUrl}/messages/{draftId}",
-                        new
-                        {
-                            subject = finalSubject,
-                            toRecipients = toRecipients,
-                            ccRecipients = ccRecipients,
-                            bccRecipients = bccRecipients
-                        },
+                        patchBody,
                         accessToken);
 
-                    // Send the forwarded email
+                    // Send forwarded email
                     return await HttpClientHelper.PostAsync(
                         $"{messagesApiUrl}/messages/{draftId}/send",
                         new { },

@@ -116,34 +116,35 @@ public class QueueWorkItemService : IQueueWorkItemService
                     {
                         var fieldValue = item.Payload[condition.Field]?.ToString();
                         var compareValue = condition.Value;
+                        var comparisonOperator = condition.ComparisonOperator?.Trim().ToLowerInvariant();
 
                         if (string.IsNullOrWhiteSpace(fieldValue))
                             return false;
 
-                        bool match = condition.ComparisonOperator switch
+                        bool match = comparisonOperator switch
                         {
                             // -------- STRING OPERATORS --------
-                            "EqualTo" => fieldValue == compareValue,
-                            "NotEqualTo" => fieldValue != compareValue,
-                            "Contains" => fieldValue.Contains(compareValue, StringComparison.OrdinalIgnoreCase),
-                            "DoesNotContain" => !fieldValue.Contains(compareValue, StringComparison.OrdinalIgnoreCase),
-                            "StartsWith" => fieldValue.StartsWith(compareValue, StringComparison.OrdinalIgnoreCase),
-                            "EndsWith" => fieldValue.EndsWith(compareValue, StringComparison.OrdinalIgnoreCase),
+                            "equalto" => string.Equals(fieldValue, compareValue, StringComparison.OrdinalIgnoreCase),
+                            "notequalto" => !string.Equals(fieldValue, compareValue, StringComparison.OrdinalIgnoreCase),
+                            "contains" => fieldValue.Contains(compareValue, StringComparison.OrdinalIgnoreCase),
+                            "doesnotcontain" => !fieldValue.Contains(compareValue, StringComparison.OrdinalIgnoreCase),
+                            "startswith" => fieldValue.StartsWith(compareValue, StringComparison.OrdinalIgnoreCase),
+                            "endswith" => fieldValue.EndsWith(compareValue, StringComparison.OrdinalIgnoreCase),
 
                             // -------- NUMERIC OPERATORS --------
-                            "GreaterThan" => decimal.TryParse(fieldValue, out var number1) && decimal.TryParse(compareValue, out var number2) && number1 > number2,
-                            "LessThan" => decimal.TryParse(fieldValue, out var number1) && decimal.TryParse(compareValue, out var number2) && number1 < number2,
-                            "GreaterThanOrEqual" => decimal.TryParse(fieldValue, out var number1) && decimal.TryParse(compareValue, out var number2) && number1 >= number2,
-                            "LessThanOrEqual" => decimal.TryParse(fieldValue, out var number1) && decimal.TryParse(compareValue, out var number2) && number1 <= number2,
+                            "greaterthan" => decimal.TryParse(fieldValue, out var number1) && decimal.TryParse(compareValue, out var number2) && number1 > number2,
+                            "lessthan" => decimal.TryParse(fieldValue, out var number1) && decimal.TryParse(compareValue, out var number2) && number1 < number2,
+                            "greaterthanorequal" => decimal.TryParse(fieldValue, out var number1) && decimal.TryParse(compareValue, out var number2) && number1 >= number2,
+                            "lessthanorequal" => decimal.TryParse(fieldValue, out var number1) && decimal.TryParse(compareValue, out var number2) && number1 <= number2,
 
                             // -------- DATE OPERATORS --------
-                            "DateAfter" => DateTimeOffset.TryParse(fieldValue, out var date1) && DateTimeOffset.TryParse(compareValue, out var date2) && date1 > date2,
-                            "DateBefore" => DateTimeOffset.TryParse(fieldValue, out var date1) && DateTimeOffset.TryParse(compareValue, out var date2) && date1 < date2,
-                            "DateOnOrAfter" => DateTimeOffset.TryParse(fieldValue, out var date1) && DateTimeOffset.TryParse(compareValue, out var date2) && date1 >= date2,
-                            "DateOnOrBefore" => DateTimeOffset.TryParse(fieldValue, out var date1) && DateTimeOffset.TryParse(compareValue, out var date2) && date1 <= date2,
+                            "dateafter" => DateTimeOffset.TryParse(fieldValue, out var date1) && DateTimeOffset.TryParse(compareValue, out var date2) && date1 > date2,
+                            "datebefore" => DateTimeOffset.TryParse(fieldValue, out var date1) && DateTimeOffset.TryParse(compareValue, out var date2) && date1 < date2,
+                            "dateonorafter" => DateTimeOffset.TryParse(fieldValue, out var date1) && DateTimeOffset.TryParse(compareValue, out var date2) && date1 >= date2,
+                            "dateonorbefore" => DateTimeOffset.TryParse(fieldValue, out var date1) && DateTimeOffset.TryParse(compareValue, out var date2) && date1 <= date2,
 
-                            "IsNull" => string.IsNullOrWhiteSpace(fieldValue),
-                            "IsNotNull" => !string.IsNullOrWhiteSpace(fieldValue),
+                            "isnull" => string.IsNullOrWhiteSpace(fieldValue),
+                            "isnotnull" => !string.IsNullOrWhiteSpace(fieldValue),
                             _ => true
                         };
 
@@ -164,7 +165,13 @@ public class QueueWorkItemService : IQueueWorkItemService
                 // Func<dynamic, object?> keySelector = x => x.Payload[sort.Field]?.ToString();
                 Func<dynamic, object?> keySelector = x =>
                 {
-                    var token = x.Payload?[sort.Field] as JToken;
+                    var payloadObj = x.Payload as JObject;
+
+                    var token = payloadObj?
+                        .Properties()
+                        .FirstOrDefault(p =>
+                            string.Equals(p.Name, sort.Field, StringComparison.OrdinalIgnoreCase))
+                        ?.Value;
 
                     if (token == null || token.Type == JTokenType.Null || token.Type == JTokenType.Undefined)
                         return null;
@@ -175,12 +182,12 @@ public class QueueWorkItemService : IQueueWorkItemService
                         JTokenType.Float => token.Value<double>(),
                         JTokenType.Boolean => token.Value<bool>() ? 1 : 0,
                         JTokenType.Date => token.Value<DateTime>(),
-                        JTokenType.String => token.Value<string>(),
+                        JTokenType.String => token.Value<string>()?.ToLowerInvariant(),
                         JTokenType.Guid => token.Value<Guid>(),
                         JTokenType.Bytes => token.Value<byte[]>(),
                         JTokenType.Array => ((JArray)token).Count,
-                        JTokenType.Object => token.ToString(Newtonsoft.Json.Formatting.None),
-                        _ => token.ToString()
+                        JTokenType.Object => token.ToString(Newtonsoft.Json.Formatting.None).ToLowerInvariant(),
+                        _ => token.ToString()?.ToLowerInvariant()
                     };
                 };
 
