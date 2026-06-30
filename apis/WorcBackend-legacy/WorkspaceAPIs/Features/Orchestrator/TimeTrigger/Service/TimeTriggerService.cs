@@ -289,6 +289,10 @@ public class TimeTriggerService(
             if (trigger.AtTime != triggerDto.AtTime)
                 trigger.AtTime = triggerDto.AtTime;
 
+            // Update EndDate if scheduled execution time of day has changed
+            if (trigger.EndDate != triggerDto.EndDate)
+                trigger.EndDate = triggerDto.EndDate;
+
             // Update Weekdays if the selected execution days of week have changed
             if (!Enumerable.SequenceEqual(trigger.Weekdays ?? new(), triggerDto.Weekdays ?? new()))
                 trigger.Weekdays = triggerDto.Weekdays;
@@ -332,6 +336,17 @@ public class TimeTriggerService(
                     trigger.ExceptionWeekdays,
                     trigger.ExceptionDates
                 );
+            }
+
+            if (triggerDto.EndDate.HasValue && triggerDto.EndDate.Value < trigger.NextTriggerTime)
+            {
+                _logger.LogWarning(
+                    "Invalid trigger date range. EndDate {EndDate} is earlier than the next trigger time {NextTriggerTime}.",
+                    triggerDto.EndDate,
+                    trigger.NextTriggerTime);
+
+                serviceResponse.Message = "End date cannot be less than the next trigger time.";
+                return serviceResponse;
             }
 
             // Update IsDisabled if trigger activation start time has changed
