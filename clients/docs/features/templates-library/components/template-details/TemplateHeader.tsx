@@ -64,13 +64,14 @@ export function TemplateHeader({ template }: { template: UseTemplateDTO }) {
               {/* Tags */}
               {template?.tags
                 ?.filter(
-                  (tag) => tag.toLowerCase() !== template?.type?.toLowerCase()
+                  (tag) => tag.toLowerCase() !== template?.type?.toLowerCase(),
                 ) //Filter tags that are similar to project type?
                 .map((tag) => (
                   <Badge
                     key={tag}
                     variant="outline"
-                    className="flex text-2xs sm:text-xs border-border capitalize items-center gap-1 bg-slate-100 dark:bg-background">
+                    className="flex text-2xs sm:text-xs border-border capitalize items-center gap-1 bg-slate-100 dark:bg-background"
+                  >
                     <Tag className="h-2.5 w-2.5 sm:h-3 sm:w-3" />
                     {tag}
                   </Badge>
@@ -79,12 +80,15 @@ export function TemplateHeader({ template }: { template: UseTemplateDTO }) {
           </div>
 
           {/* Right side: Button */}
-          <Button
-            id="get-started"
-            className="flex items-center gap-2 w-full sm:w-auto text-sm sm:text-base whitespace-nowrap flex-shrink-0"
-            onClick={() => handleCloneTemplate(template.id)}>
-            Clone this template
-          </Button>
+          {template.type !== "Prompt" && (
+            <Button
+              id="get-started"
+              className="flex items-center gap-2 w-full sm:w-auto text-sm sm:text-base whitespace-nowrap flex-shrink-0"
+              onClick={() => handleCloneTemplate(template.id)}
+            >
+              Clone this template
+            </Button>
+          )}
         </div>
 
         {/* Separator */}

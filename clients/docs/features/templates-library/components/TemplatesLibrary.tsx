@@ -19,11 +19,7 @@ const TemplatesLibrary = () => {
   const [selectedCategory, setSelectedCategory] = useState("All templates");
 
   // List of available template categories for filtering
-  const categories = [
-    "All templates",
-    "Agent",
-    "Block",
-  ];
+  const categories = ["All templates", "Agent", "Block", "Prompt"];
 
   if (id) return <TemplateDetail id={id} />;
 
@@ -38,9 +34,9 @@ const TemplatesLibrary = () => {
               Avintra <span className="text-primary">Library</span>
             </h1>
             <p className="text-sm sm:text-base text-muted-foreground px-2 sm:px-0">
-              The Library of Avintra brings together a rich catalog of ready-to-use
-              automations and AI blueprints, empowering teams to build faster,
-              smarter, and at scale no need to start from scratch.
+              The Library of Avintra brings together a rich catalog of
+              ready-to-use automations and AI blueprints, empowering teams to
+              build faster, smarter, and at scale no need to start from scratch.
             </p>
           </div>
 
@@ -58,7 +54,8 @@ const TemplatesLibrary = () => {
               variant="ghost"
               size="icon10"
               className="absolute inset-y-0 end-1  sm:end-0 rounded-none rounded-e-lg focus-visible:ring-[3px]"
-              aria-label="Search">
+              aria-label="Search"
+            >
               <SearchIcon size={18} aria-hidden="true" />
             </Button>
           </div>
@@ -74,7 +71,8 @@ const TemplatesLibrary = () => {
                 className={cn("rounded-full ring-white whitespace-nowrap", {
                   "border-primary text-primary ring-primary":
                     selectedCategory === category,
-                })}>
+                })}
+              >
                 {category}
               </Button>
             ))}

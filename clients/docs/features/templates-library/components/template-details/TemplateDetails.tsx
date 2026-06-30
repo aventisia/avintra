@@ -6,6 +6,7 @@ import TemplateMarkdown from "./TemplateMarkdown";
 import { TemplateMetaAside } from "./TemplateMetaAside";
 import { useFetch } from "../../hooks/useFetch";
 import { getAgentTemplateById } from "../../apis/templates-library-apis";
+import { PromptTemplateContent } from "./PromptTemplateContent";
 
 export function TemplateDetail({ id }: { id: string }) {
   const { data, loading } = useFetch(() => getAgentTemplateById(id));
@@ -23,7 +24,11 @@ export function TemplateDetail({ id }: { id: string }) {
 
             <div className="grid grid-cols-1 gap-4 sm:gap-6 lg:gap-8  lg:grid-cols-12">
               <div className="min-w-0 lg:col-span-8  mt-5 sm:mt-0">
-                <TemplateMarkdown content={data?.data?.instruction} />
+                {data.data.type == "Prompt" ? (
+                  <PromptTemplateContent template={data.data} />
+                ) : (
+                  <TemplateMarkdown content={data?.data?.instruction || ""} />
+                )}{" "}
               </div>
               <div className="lg:col-span-4 ">
                 <TemplateMetaAside template={data?.data} />

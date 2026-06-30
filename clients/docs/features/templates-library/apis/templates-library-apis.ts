@@ -1,14 +1,14 @@
 "use client";
 import { toast } from "sonner";
 import { UseTemplateDTO } from "../dtos/use-template-dto";
-import { LibraryTemplatesDto } from "../dtos/library-templates-dtos";
+import { AvPlatformTemplatesDto } from "../dtos/avplatform-templates-dtos";
 
 /**
  * Retrieves list of templates.
  */
-const getAgentTemplates = async (): Promise<LibraryTemplatesDto[]> => {
+const getAgentTemplates = async (): Promise<AvPlatformTemplatesDto[]> => {
   const response = await fetch(
-    process.env.NEXT_PUBLIC_WORKSPACE_API_URL + "/template/trending"
+    process.env.NEXT_PUBLIC_WORKSPACE_API_URL + "/template/trending",
   );
   if (!response.ok) {
     toast.error("Failed to fetch posts");
@@ -18,10 +18,10 @@ const getAgentTemplates = async (): Promise<LibraryTemplatesDto[]> => {
 };
 
 const getAgentTemplateById = async (
-  id: string
+  id: string,
 ): Promise<{ data: UseTemplateDTO }> => {
   const response = await fetch(
-    process.env.NEXT_PUBLIC_WORKSPACE_API_URL + "/template?ptid=" + id
+    process.env.NEXT_PUBLIC_WORKSPACE_API_URL + "/template?ptid=" + id,
   );
 
   if (!response.ok) {

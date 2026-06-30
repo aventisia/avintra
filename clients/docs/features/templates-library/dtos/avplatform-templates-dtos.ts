@@ -2,7 +2,7 @@
  * Data Transfer Object representing a single avplatform Template.
  * Used for displaying, filtering, or selecting templates in the UI.
  */
-export interface LibraryTemplatesDto {
+export interface AvPlatformTemplatesDto {
   /** Unique identifier for the template */
   id: string;
 
