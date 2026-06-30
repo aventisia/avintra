@@ -25,6 +25,8 @@ export interface JobsTableDto {
    */
   flowVersionId?: string;
 
+  versionNumber?: number;
+
   /**
    * Gets or sets the name of the execution. Max-255
    */

@@ -27,11 +27,16 @@ export const jobsTableColumns: ColumnDef<JobsTableDto>[] = [
       );
       if (isHistoryTab)
         return (
-          <JobsTableCellLink
-            rowId={row.original.id ?? ""}
-            versionId={row.original.flowVersionId ?? ""}
-            cellValue={row.getValue("name")}
-          />
+          <div className="flex max-w-80 items-center gap-3 ">
+            <JobsTableCellLink
+              rowId={row.original.id ?? ""}
+              versionId={row.original.flowVersionId ?? ""}
+              cellValue={row.getValue("name")}
+            />
+            <p className="bg-muted border text-nowrap py-1 px-1.5  text-2xs leading-none  text-primary rounded-full">
+              v{row.original.versionNumber ?? 0}
+            </p>
+          </div>
         );
       else
         return (
@@ -40,21 +45,6 @@ export const jobsTableColumns: ColumnDef<JobsTableDto>[] = [
           </div>
         );
     },
-  },
-  {
-    accessorKey: "versionNumber",
-    header: ({ column }) => (
-      <DTColumnHeader
-        tableKey={TABLE_KEY}
-        column={column}
-        title={getColumnName("versionNumber") ?? 0}
-      />
-    ),
-    cell: ({ row }) => (
-      <div className="w-auto truncate font-medium">
-        {`v${row.getValue("versionNumber") ?? 0}`}
-      </div>
-    ),
   },
   {
     accessorKey: "status",
@@ -191,24 +181,6 @@ export const jobsTableColumns: ColumnDef<JobsTableDto>[] = [
     cell: ({ row }) => (
       <div className="w-auto truncate font-medium">
         {row.getValue("executedBy") ? row.getValue("executedBy") : "NA"}
-      </div>
-    ),
-  },
-  {
-    accessorKey: "executedOn",
-    header: ({ column }) => (
-      <DTColumnHeader
-        tableKey={TABLE_KEY}
-        className="w-[7rem]"
-        column={column}
-        title={getColumnName("executedOn")}
-      />
-    ),
-    cell: ({ row }) => (
-      <div className="w-auto truncate font-medium">
-        {row.getValue("executedOn")
-          ? format(row.getValue("executedOn"), "dd MMM yyyy h:mm:ss a")
-          : "NA"}
       </div>
     ),
   },
