@@ -10,6 +10,6 @@ export const columnVisibilityState = {
   retryCount: false,
   versionNumber: false,
   executedBy: true,
-  executedOn: false,
+  executedOn: true,
   createdOn: false,
 };

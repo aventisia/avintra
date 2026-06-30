@@ -109,9 +109,9 @@ export interface JobsTableDto {
   executedBy?: string;
 
   /**
-   * Gets or sets the date and time when the execution was executed.
+   * Gets or sets the where the flow was executed.
    */
-  executedOn?: Date;
+  executedOn?: string;
 
   /**
    * Gets or sets the type of execution (e.g., Scheduler).

@@ -184,6 +184,21 @@ export const jobsTableColumns: ColumnDef<JobsTableDto>[] = [
       </div>
     ),
   },
+    {
+    accessorKey: "executedOn",
+    header: ({ column }) => (
+      <DTColumnHeader
+        tableKey={TABLE_KEY}
+        column={column}
+        title={getColumnName("executedOn")}
+      />
+    ),
+    cell: ({ row }) => (
+      <div className="w-auto truncate font-medium">
+        {row.getValue("executedOn") ? row.getValue("executedOn") : "NA"}
+      </div>
+    ),
+  },
   {
     accessorKey: "createdOn",
     header: ({ column }) => (
