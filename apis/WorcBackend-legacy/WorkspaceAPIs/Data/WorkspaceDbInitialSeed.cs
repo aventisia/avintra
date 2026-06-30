@@ -25,6 +25,9 @@ public static class WorkspaceDbInitialSeed
             await workspaceDbContext.Database.MigrateAsync();
             Console.WriteLine("Info: Database migrations applied successfully.");
 
+            // Migrate existing Job records to populate FlowVersionHistoryId using the latest FlowVersionHistory for each FlowVersion.
+            await UpdateJobFlowVersionHistoryAsync(workspaceDbContext);
+
             // TODO: Remove this temporary migration code after all legacy user mapping data
             // (FlowUser, FlowVersionUser, and QueueUser) has been successfully migrated
             // to ResourceShare in all environments.
@@ -47,6 +50,58 @@ public static class WorkspaceDbInitialSeed
             throw;
         }
     }
+
+    private static async Task UpdateJobFlowVersionHistoryAsync(WorkspaceDbContext workspaceDbContext)
+    {
+        // Load jobs that do not have a FlowVersionHistoryId assigned.
+        var jobs = await workspaceDbContext.Jobs
+            .Where(w => w.FlowVersionHistoryId == null)
+            .ToListAsync();
+
+        if (!jobs.Any())
+            return;
+
+        // Get the FlowVersionIds that require history lookup.
+        var flowVersionIds = jobs
+            .Select(s => s.FlowVersionId)
+            .Distinct()
+            .ToList();
+
+        // Get the latest FlowVersionHistoryId for each FlowVersion.
+        var latestHistoryLookup = await workspaceDbContext.FlowVersionHistories
+            .Where(w => flowVersionIds.Contains(w.FlowVersionId))
+            .GroupBy(g => g.FlowVersionId)
+            .Select(s => new
+            {
+                FlowVersionId = s.Key,
+                FlowVersionHistoryId = s
+                    .OrderByDescending(o => o.CreatedOn)
+                    .Select(s1 => (Guid?)s1.Id)
+                    .FirstOrDefault()
+            })
+            .ToDictionaryAsync(x => x.FlowVersionId, x => x.FlowVersionHistoryId);
+
+        var updatedCount = 0;
+
+        // Assign the latest FlowVersionHistoryId to each job.
+        foreach (var job in jobs)
+        {
+            if (latestHistoryLookup.TryGetValue(job.FlowVersionId, out Guid? historyId))
+            {
+                job.FlowVersionHistoryId = historyId;
+                updatedCount++;
+            }
+        }
+
+        // Persist changes only when records have been updated.
+        if (updatedCount > 0)
+        {
+            Console.WriteLine($"Info: Updating {updatedCount} Job records with the latest FlowVersionHistoryId...");
+            await workspaceDbContext.SaveChangesAsync();
+            Console.WriteLine("Info: Job FlowVersionHistory migration completed successfully.");
+        }
+    }
+
     private static async Task UpdateResourceShareAccessLevelsAsync(
         WorkspaceDbContext workspaceDbContext)
     {

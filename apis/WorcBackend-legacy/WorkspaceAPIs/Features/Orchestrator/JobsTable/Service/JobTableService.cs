@@ -387,17 +387,55 @@ public class JobTableService : IJobTableService
             jobTableDto.Adapt(job);
             job.IsPublished = flowVersion.IsPublished;
 
-            // Set "ExecutedBy" only if it has not already been populated.
-            // Priority logic:
-            // 1. Manual trigger → use the current username.
-            // 2. Non-manual triggers → use machine name if available.
-            // TODO: Handle additional TriggerTypesEnum cases (e.g., API, Event, Scheduler) to ensure proper attribution for all execution sources.
-            if (string.IsNullOrEmpty(job.ExecutedBy))
+            // Populate "ExecutedBy" only if it hasn't already been set.
+            //
+            // Attribution rules:
+            // 1. ManualTrigger  → current authenticated username.
+            // 2. API, Email, Event, Message, Queue, Time, Webhook → trigger name.
+            // 3. All other trigger types → machine name (if available).
+            //
+            // TODO: Review and update this mapping whenever new TriggerTypesEnum values are introduced.
+            if (string.IsNullOrWhiteSpace(job.ExecutedBy))
             {
+                var trigger = await _unitOfWork.TriggerRepo
+                    .GetByConditionAsync(w => w.Id == job.RefId)
+                    .FirstOrDefaultAsync();
+
                 if (job.TriggerType == TriggerTypesEnum.ManualTrigger)
+                {
                     job.ExecutedBy = _username;
+                }
+                else if (
+                    job.TriggerType == TriggerTypesEnum.APITrigger ||
+                    job.TriggerType == TriggerTypesEnum.EmailTrigger ||
+                    job.TriggerType == TriggerTypesEnum.EventTrigger ||
+                    job.TriggerType == TriggerTypesEnum.MessageTrigger ||
+                    job.TriggerType == TriggerTypesEnum.QueueTrigger ||
+                    job.TriggerType == TriggerTypesEnum.TimeTrigger ||
+                    job.TriggerType == TriggerTypesEnum.WebhookTrigger)
+                {
+                    job.ExecutedBy = trigger?.Name;
+                }
                 else
-                    job.ExecutedBy = job.Machine != null ? job.Machine.Name : null;
+                {
+                    job.ExecutedBy = job.Machine?.Name;
+                }
+            }
+
+            // Set the execution location if it has not already been specified.
+            // Use the machine name for desktop execution; otherwise, default to "Web Server".
+            if (string.IsNullOrWhiteSpace(job.ExecutedOn))
+            {
+                if (job.Machine != null)
+                {
+                    // Desktop execution: use the local machine name.
+                    job.ExecutedOn = job.Machine.Name;
+                }
+                else
+                {
+                    // Server execution: indicate that the job was executed on the web server.
+                    job.ExecutedOn = "Web Server";
+                }
             }
 
             // If the job status is "Running", set the StartTime to the current UTC time.

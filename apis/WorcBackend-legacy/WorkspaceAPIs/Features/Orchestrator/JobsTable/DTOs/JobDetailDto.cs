@@ -81,4 +81,15 @@ public class JobDetailDto
     /// Gets or sets the type of the flow (e.g., regular, conditional, batch).
     /// </summary>
     public FlowTypesEnum Type { get; set; }
+
+    /// <summary>
+    /// Gets or sets the identifier or name of the user/system that executed the job.
+    /// </summary>
+    public string? ExecutedBy { get; set; }
+
+    // <summary>
+    /// Gets or sets the machine or environment where the job was executed.
+    /// Contains the local machine name for desktop execution, or "Web Server" for web server execution.
+    /// </summary>
+    public string? ExecutedOn { get; set; }
 }

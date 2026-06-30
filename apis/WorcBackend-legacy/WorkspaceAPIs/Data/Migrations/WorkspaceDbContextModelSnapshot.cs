@@ -564,6 +564,9 @@ namespace WorkspaceAPIs.Data.Migrations
                     b.Property<string>("ExecutedBy")
                         .HasColumnType("text");
 
+                    b.Property<string>("ExecutedOn")
+                        .HasColumnType("text");
+
                     b.Property<Guid?>("FlowVersionHistoryId")
                         .HasColumnType("uuid");
 
