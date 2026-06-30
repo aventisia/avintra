@@ -9,7 +9,6 @@ public class JobTableService : IJobTableService
     private readonly IWebhookCallbackService _webhookCallbackService;
     private readonly EnvironmentConfig _environmentConfig;
     private readonly Guid _userId;
-    private readonly string? _username;
 
     public JobTableService(
         ILogger<JobTableService> logger,
@@ -22,7 +21,6 @@ public class JobTableService : IJobTableService
     {
         // Set the user ID from the HTTP context
         _userId = Guid.Parse(httpContextAccessor.HttpContext?.User?.FindFirstValue("uid") ?? Guid.Empty.ToString());
-        _username = httpContextAccessor.HttpContext?.User?.FindFirstValue("uname") ?? string.Empty;
 
         _logger = logger;
         _unitOfWork = unitOfWork;
@@ -406,7 +404,13 @@ public class JobTableService : IJobTableService
             {
                 if (job.TriggerType == TriggerTypesEnum.ManualTrigger)
                 {
-                    job.ExecutedBy = _username;
+                    var user = await _unitOfWork.WorkspaceUserRepo
+                        .GetByConditionAsync(w => w.Id == _userId)
+                        .SingleOrDefaultAsync();
+
+                    job.ExecutedBy = user != null
+                        ? $"{user.FirstName} {user.LastName}"
+                        : "NA";
                 }
                 else if (
                     job.TriggerType == TriggerTypesEnum.APITrigger ||

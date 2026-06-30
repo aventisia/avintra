@@ -10,7 +10,7 @@ public class ExecuteFlowStep2Service : IExecuteFlowStep2Service
 {
     private readonly IServiceScopeFactory _scopeFactory;
     private readonly ILogger<ExecuteFlowStep2Service> _logger;
-    private readonly string? _username;
+    private readonly Guid? _userId;
 
     public ExecuteFlowStep2Service(
         IServiceScopeFactory scopeFactory,
@@ -20,7 +20,7 @@ public class ExecuteFlowStep2Service : IExecuteFlowStep2Service
         _scopeFactory = scopeFactory;
         _logger = logger;
 
-        _username = httpContextAccessor.HttpContext?.User?.FindFirstValue("uname") ?? string.Empty;
+        _userId = Guid.Parse(httpContextAccessor.HttpContext?.User?.FindFirstValue("uid") ?? Guid.Empty.ToString());
     }
 
     // Note: This method is intentionally not async and does not await the background execution task. 
@@ -62,7 +62,7 @@ public class ExecuteFlowStep2Service : IExecuteFlowStep2Service
             // Populate "ExecutedBy" only if it hasn't already been set.
             //
             // Attribution rules:
-            // 1. ManualTrigger  → current authenticated username.
+            // 1. ManualTrigger  → current authenticated user name.
             // 2. API, Email, Event, Message, Queue, Time, Webhook → trigger name.
             // 3. All other trigger types → machine name (if available).
             //
@@ -71,7 +71,13 @@ public class ExecuteFlowStep2Service : IExecuteFlowStep2Service
             {
                 if (job.TriggerType == TriggerTypesEnum.ManualTrigger)
                 {
-                    job.ExecutedBy = _username;
+                    var user = await unitOfWork.WorkspaceUserRepo
+                        .GetByConditionAsync(w => w.Id == _userId)
+                        .SingleOrDefaultAsync();
+
+                    job.ExecutedBy = user != null
+                        ? $"{user.FirstName} {user.LastName}"
+                        : "NA";
                 }
                 else if (
                     job.TriggerType == TriggerTypesEnum.APITrigger ||
