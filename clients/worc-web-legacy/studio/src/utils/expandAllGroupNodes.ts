@@ -2,7 +2,7 @@ import { Edge, Node } from "@xyflow/react";
 
 import { syncModelNodeVisibility } from "@/features/react-flow/hooks/useGroupToggle";
 
-export function expandAllGroups(
+export function expandAllGroupNodes(
   nodes: Node[],
   edges: Edge[],
 ): {

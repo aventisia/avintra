@@ -1,3 +1,9 @@
+import { Button } from "@aventisia/ui/buttons";
+import { Header, HeaderContainer } from "@aventisia/ui/layout";
+import { Tooltip } from "@aventisia/ui/tooltip";
+import { ArrowLeftIcon } from "@heroicons/react/24/outline";
+import { useShallow } from "zustand/react/shallow";
+
 import { AvailableCredits } from "@/features/available-credits/AvailableCredits";
 import { ExecuteFlow } from "@/features/execute-flow";
 import { useIsExecutionLogsRoute } from "@/features/execution-logs/hooks/useIsExecutionLogsRoute";
@@ -11,16 +17,11 @@ import { VersionHistoryTrigger } from "@/features/version-history/components/ver
 import { useIsVersionHistoryRoute } from "@/features/version-history/hooks/useIsVersionHistoryRoute";
 import { useUserSessionStore } from "@/react-toolkit/stores/user-session-store";
 
-import { Button } from "@aventisia/ui/buttons";
-import { Header, HeaderContainer } from "@aventisia/ui/layout";
-import { Tooltip } from "@aventisia/ui/tooltip";
-import { ArrowLeftIcon } from "@heroicons/react/24/outline";
-import { useShallow } from "zustand/react/shallow";
-
 import AgentName from "./AgentName";
 import { AppLogo } from "./AppLogo";
 import SearchCommandTrigger from "./Search";
 import { TenantSwitchBadge } from "./TenantSwitchBadge";
+import ViewOnlyVersionSelector from "./ViewOnlyVersionSelector";
 import { HeaderActionMenu } from "./header-menu-actions";
 
 const AppHeader: React.FC = () => {
@@ -67,7 +68,11 @@ const AppHeader: React.FC = () => {
           <AgentName className={isViewTenant ? "max-w-56" : ""} />
 
           {/* Version selector */}
-          <FlowVersions />
+          {!isAgentHistory && !isExecutionLog ? (
+            <FlowVersions />
+          ) : (
+            <ViewOnlyVersionSelector />
+          )}
           {isViewTenant && <TenantSwitchBadge />}
         </div>
         <div className="flex items-center justify-center ">

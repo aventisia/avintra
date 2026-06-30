@@ -1,17 +1,17 @@
-import { usePanelStore } from "@/components/panel/stores/panel-store";
-import { ReadOnlyEdgeTypeObj } from "@/constants/custom-edge-type-obj";
-import { CustomNodeTypeObj } from "@/constants/custom-node-type-obj";
-import { defaultEdgeOptions } from "@/constants/default-edge-options";
-
 import { LoadingSpinner } from "@aventisia/ui";
 import { ReactFlow } from "@xyflow/react";
 import "@xyflow/react/dist/style.css";
 import { useEffect, useMemo } from "react";
 import { useShallow } from "zustand/react/shallow";
 
+import { usePanelStore } from "@/components/panel/stores/panel-store";
+import { ReadOnlyEdgeTypeObj } from "@/constants/custom-edge-type-obj";
+import { CustomNodeTypeObj } from "@/constants/custom-node-type-obj";
+import { defaultEdgeOptions } from "@/constants/default-edge-options";
+import { useReactFlowViewStore } from "@/stores/react-flow-view-store";
+
 import { PANEL_ID } from "../constants";
 import { useReactFlowViewData } from "../hooks/useReactFlowViewData";
-import { useReactFlowViewStore } from "../stores/react-flow-view-store";
 import "../styles/override-panel-style.css";
 import "../styles/remove-attribution.css";
 import { BackgroundViewOnly } from "./BackgroundViewOnly";

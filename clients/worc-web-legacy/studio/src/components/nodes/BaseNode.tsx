@@ -1,11 +1,3 @@
-import { iconMapper } from "@/components/icon-mapper";
-import { NodeContainer } from "@/components/node-container";
-import { NodeHeading } from "@/components/node-container/node-header/NodeHeading";
-import { NodeImage } from "@/components/node-container/node-header/NodeImage";
-import { useIsExecutionLogsRoute } from "@/features/execution-logs/hooks/useIsExecutionLogsRoute";
-import { useGroupToggle } from "@/features/react-flow/hooks/useGroupToggle";
-import { NodeDataType } from "@/types/node-data-type";
-
 import { Button } from "@aventisia/ui/buttons";
 import { cn } from "@aventisia/ui/lib";
 import { Tooltip } from "@aventisia/ui/tooltip";
@@ -19,6 +11,15 @@ import {
   SplitIcon,
 } from "lucide-react";
 import React from "react";
+
+import { iconMapper } from "@/components/icon-mapper";
+import { NodeContainer } from "@/components/node-container";
+import { NodeHeading } from "@/components/node-container/node-header/NodeHeading";
+import { NodeImage } from "@/components/node-container/node-header/NodeImage";
+import { useIsExecutionLogsRoute } from "@/features/execution-logs/hooks/useIsExecutionLogsRoute";
+import { useGroupToggle } from "@/features/react-flow/hooks/useGroupToggle";
+import { useIsVersionHistoryRoute } from "@/features/version-history/hooks/useIsVersionHistoryRoute";
+import { NodeDataType } from "@/types/node-data-type";
 
 import OpenNodeLog from "../node-container/OpenNodeLog";
 
@@ -36,7 +37,9 @@ const BaseNode: React.FC<BaseNodeProps> = ({
   ...props
 }) => {
   const { toggleGroupExpand } = useGroupToggle();
+
   const isExecutionLog = useIsExecutionLogsRoute();
+  const isAgentHistory = useIsVersionHistoryRoute();
 
   const renderCount = nodeData?.count
     ? nodeData?.count === 2
@@ -99,7 +102,7 @@ const BaseNode: React.FC<BaseNodeProps> = ({
           </>
         )}
 
-        {!isExecutionLog && nodeData?.isGroupHead && (
+        {!isExecutionLog && !isAgentHistory && nodeData?.isGroupHead && (
           <div className="absolute -top-3 left-1/2 -translate-x-1/2">
             <Tooltip content={nodeData?.isExpanded ? "Collapse" : "Expand"}>
               <Button
