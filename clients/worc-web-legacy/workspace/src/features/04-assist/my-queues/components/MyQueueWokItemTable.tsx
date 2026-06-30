@@ -1,21 +1,21 @@
 import {
-  DataTable,
   DTHeading,
   DTPagination,
   DTSearchBox,
+  DataTable,
 } from "@aventisia/ui/data-table";
 import { useDataTable, useDocumentTitle } from "@aventisia/ui/hooks";
 import { Tabs, TabsList, TabsTrigger } from "@aventisia/ui/tabs";
 import { useEffect, useMemo } from "react";
 
 import { SearchableSelect } from "@/components/searchable-select/SearchableSelect";
+import { HorizontalScrollWrapper } from "@/react-toolkit/ui/HorizontalScrollWrapper";
 
 import { TABLE_HEADING } from "../constants";
 import { useMyQueueData } from "../hooks/useMyQueueData";
 import { useMyQueueParams } from "../hooks/useMyQueueParams";
 import { TABS, TabValue } from "../types/my-queue-types";
 import { generateColumnVisibility } from "../utils/my-queue-utils";
-
 import { buildColumns } from "./my-queue-column";
 
 export const MyQueueWokItemTable = () => {
@@ -90,7 +90,9 @@ export const MyQueueWokItemTable = () => {
       </div>
 
       <div className="space-y-3">
-        <DataTable table={table} columnsLength={columns.length} />
+        <HorizontalScrollWrapper>
+          <DataTable table={table} columnsLength={columns.length} />
+        </HorizontalScrollWrapper>
         <DTPagination table={table} />
       </div>
     </div>

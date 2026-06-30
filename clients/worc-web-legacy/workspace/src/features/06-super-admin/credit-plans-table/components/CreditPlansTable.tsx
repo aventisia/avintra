@@ -1,23 +1,24 @@
 import {
-  DataTable,
-  DataTableSkeleton,
   DTCreateButton,
   DTHeading,
   DTPagination,
   DTSearchBox,
   DTViewOptions,
+  DataTable,
+  DataTableSkeleton,
   getDataTablePreferences,
 } from "@aventisia/ui/data-table";
 import { useDataTable, useDocumentTitle } from "@aventisia/ui/hooks";
+
+import { HorizontalScrollWrapper } from "@/react-toolkit/ui/HorizontalScrollWrapper";
 
 import { SEARCH_COLUMN, TABLE_HEADING, TABLE_KEY } from "../constants";
 import { columnDisplayNames } from "../constants/column-display-names";
 import { columnVisibilityState } from "../constants/column-visibility-state";
 import { useFetchCreditPlans } from "../hooks/useFetchCreditPlans";
-
-import { CreditPlansCrudDialog } from "./credit-plans-crud-dialog/CreditPlanCrudDialog";
 import { CreditsBulkActions } from "./CreditBulkActions";
 import { creditPlansTableColumns } from "./CreditPlansTableColumns";
+import { CreditPlansCrudDialog } from "./credit-plans-crud-dialog/CreditPlanCrudDialog";
 
 /**
  * Renders a table of credits.
@@ -69,11 +70,13 @@ export const CreditPlansTable = () => {
               </div>
             </div>
 
-            {/* Data table to render data */}
-            <DataTable
-              table={table}
-              columnsLength={creditPlansTableColumns.length}
-            />
+            <HorizontalScrollWrapper>
+              {/* Data table to render data */}
+              <DataTable
+                table={table}
+                columnsLength={creditPlansTableColumns.length}
+              />
+            </HorizontalScrollWrapper>
           </CreditPlansCrudDialog>
 
           {/* Data table Pagination component */}

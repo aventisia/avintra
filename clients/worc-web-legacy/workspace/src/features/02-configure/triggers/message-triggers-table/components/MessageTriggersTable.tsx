@@ -12,6 +12,7 @@ import { useDataTable, useDocumentTitle } from "@aventisia/ui/hooks";
 
 import { QueryTabs } from "@/components/QueryTab";
 import ResourceShareDialog from "@/features/resource-share/components/ResourceShareDialog";
+import { HorizontalScrollWrapper } from "@/react-toolkit/ui/HorizontalScrollWrapper";
 
 import {
   SEARCH_COLUMN,
@@ -87,12 +88,13 @@ export const MessageTriggersTable = () => {
                 {isPersonal && <DTCreateButton />}
               </div>
             </div>
-
-            {/* Data table to render data */}
-            <DataTable
-              table={table}
-              columnsLength={triggersTableColumnsArray.length}
-            />
+            <HorizontalScrollWrapper>
+              {/* Data table to render data */}
+              <DataTable
+                table={table}
+                columnsLength={triggersTableColumnsArray.length}
+              />
+            </HorizontalScrollWrapper>
           </TriggerCrudDialog>
 
           {/* Data table Pagination component */}
