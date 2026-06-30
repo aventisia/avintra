@@ -69,10 +69,6 @@ public class ExecuteFlowStep2Service : IExecuteFlowStep2Service
             // TODO: Review and update this mapping whenever new TriggerTypesEnum values are introduced.
             if (string.IsNullOrWhiteSpace(job.ExecutedBy))
             {
-                var trigger = await unitOfWork.TriggerRepo
-                    .GetByConditionAsync(w => w.Id == job.RefId)
-                    .FirstOrDefaultAsync();
-
                 if (job.TriggerType == TriggerTypesEnum.ManualTrigger)
                 {
                     job.ExecutedBy = _username;
@@ -86,6 +82,10 @@ public class ExecuteFlowStep2Service : IExecuteFlowStep2Service
                     job.TriggerType == TriggerTypesEnum.TimeTrigger ||
                     job.TriggerType == TriggerTypesEnum.WebhookTrigger)
                 {
+                    var trigger = await unitOfWork.TriggerRepo
+                        .GetByConditionAsync(w => w.Id == job.RefId)
+                        .FirstOrDefaultAsync();
+
                     job.ExecutedBy = trigger?.Name;
                 }
                 else

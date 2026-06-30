@@ -65,7 +65,14 @@ public class JobTableService : IJobTableService
 
             // If the 'includeLogs' flag is false, clear the 'NodeExecutionLogs' for each job
             if (!includeLogs)
-                jobs.ForEach(j => j.NodeExecutionLogs = string.Empty);  // Set NodeExecutionLogs to an empty string for all jobs
+            {
+                jobs.ForEach(fe =>
+                {
+                    fe.NodeExecutionLogs = string.Empty;
+                    fe.InputArgumentsJson = string.Empty;
+                    fe.OutputDataJson = string.Empty;
+                });
+            }
 
             // If jobs are successfully retrieved, update the response.
             serviceResponse.Data = jobs;
@@ -397,10 +404,6 @@ public class JobTableService : IJobTableService
             // TODO: Review and update this mapping whenever new TriggerTypesEnum values are introduced.
             if (string.IsNullOrWhiteSpace(job.ExecutedBy))
             {
-                var trigger = await _unitOfWork.TriggerRepo
-                    .GetByConditionAsync(w => w.Id == job.RefId)
-                    .FirstOrDefaultAsync();
-
                 if (job.TriggerType == TriggerTypesEnum.ManualTrigger)
                 {
                     job.ExecutedBy = _username;
@@ -414,6 +417,11 @@ public class JobTableService : IJobTableService
                     job.TriggerType == TriggerTypesEnum.TimeTrigger ||
                     job.TriggerType == TriggerTypesEnum.WebhookTrigger)
                 {
+
+                    var trigger = await _unitOfWork.TriggerRepo
+                        .GetByConditionAsync(w => w.Id == job.RefId)
+                        .FirstOrDefaultAsync();
+
                     job.ExecutedBy = trigger?.Name;
                 }
                 else
