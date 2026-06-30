@@ -242,32 +242,97 @@ public class M365OutlookConnectorsService : IM365OutlookConnectorsService
 
             case M365OutlookActionsEnum.ForwardEmail:
                 {
-                    // Message to forward.
+                    // Original message ID
                     var forwardMessageId = CloudConnectionPayloadUtil.GetValue(payload, "messageId");
 
-                    // Optional comment that appears above the forwarded message.
+                    // Optional comment
                     var forwardComment = CloudConnectionPayloadUtil.GetValue(payload, "comment") ?? string.Empty;
 
-                    // Build recipient collection from a semicolon-separated list.
-                    var recipients = CloudConnectionPayloadUtil.GetValue(payload, "toRecipients")
-                        .Split(';', StringSplitOptions.RemoveEmptyEntries)
-                        .Select(email => new
-                        {
-                            emailAddress = new
-                            {
-                                address = email.Trim()
-                            }
-                        })
-                        .ToArray();
+                    // Subject provided by user
+                    var subject = CloudConnectionPayloadUtil.GetValue(payload, "subject");
 
-                    // Forward the email to the specified recipients.
-                    return await HttpClientHelper.PostAsync(
-                        $"{messagesApiUrl}/messages/{forwardMessageId}/forward",
+                    // Append or replace subject
+                    var appendSubject = bool.TryParse(
+                        CloudConnectionPayloadUtil.GetValue(payload, "appendSubject"),
+                        out var append) && append;
+
+                    // Helper method to build recipient collection
+                    object[] BuildRecipients(string recipientList)
+                    {
+                        if (string.IsNullOrWhiteSpace(recipientList))
+                        {
+                            return Array.Empty<object>();
+                        }
+
+                        return recipientList
+                            .Split(';', StringSplitOptions.RemoveEmptyEntries)
+                            .Select(email => new
+                            {
+                                emailAddress = new
+                                {
+                                    address = email.Trim()
+                                }
+                            })
+                            .ToArray();
+                    }
+
+                    var toRecipients = BuildRecipients(
+                        CloudConnectionPayloadUtil.GetValue(payload, "toRecipients"));
+
+                    var ccRecipients = BuildRecipients(
+                        CloudConnectionPayloadUtil.GetValue(payload, "ccc"));
+
+                    var bccRecipients = BuildRecipients(
+                        CloudConnectionPayloadUtil.GetValue(payload, "bcc"));
+
+                    // Create forward draft
+                    var draft = await HttpClientHelper.PostAsync(
+                        $"{messagesApiUrl}/messages/{forwardMessageId}/createForward",
                         new
                         {
-                            comment = forwardComment,
-                            toRecipients = recipients
+                            comment = forwardComment
                         },
+                        accessToken);
+
+                    string draftId = draft.RootElement.GetProperty("id").GetString() ?? string.Empty;
+
+                    // Determine final subject
+                    string? finalSubject = null;
+
+                    if (!string.IsNullOrEmpty(subject))
+                    {
+                        if (appendSubject)
+                        {
+                            var originalMessage = await HttpClientHelper.GetAsync(
+                                $"{messagesApiUrl}/messages/{forwardMessageId}?$select=subject",
+                                accessToken);
+
+                            var originalSubject = originalMessage.RootElement.GetProperty("subject").ToString() ?? string.Empty;
+
+                            finalSubject = $"{originalSubject} {subject}".Trim();
+                        }
+                        else
+                        {
+                            finalSubject = subject;
+                        }
+                    }
+
+                    // Update draft
+                    await HttpClientHelper.PatchAsync(
+                        $"{messagesApiUrl}/messages/{draftId}",
+                        new
+                        {
+                            subject = finalSubject,
+                            toRecipients = toRecipients,
+                            ccRecipients = ccRecipients,
+                            bccRecipients = bccRecipients
+                        },
+                        accessToken);
+
+                    // Send the forwarded email
+                    return await HttpClientHelper.PostAsync(
+                        $"{messagesApiUrl}/messages/{draftId}/send",
+                        new { },
                         accessToken);
                 }
 

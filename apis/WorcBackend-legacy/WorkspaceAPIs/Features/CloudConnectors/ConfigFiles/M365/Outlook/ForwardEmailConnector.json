@@ -33,6 +33,22 @@
     },
     {
       "direction": "Input",
+      "type": "switch",
+      "name": "appendSubject",
+      "label": "Append to Existing Subject",
+      "description": "If enabled, the provided subject is appended to the original email subject. Otherwise, it replaces the existing subject.",
+      "defaultValue": true
+    },
+    {
+      "direction": "Input",
+      "type": "text",
+      "name": "subject",
+      "label": "Subject",
+      "description": "Optional. Specify a new subject or text to append to the existing subject.",
+      "defaultValue": ""
+    },
+    {
+      "direction": "Input",
       "type": "text",
       "name": "comment",
       "label": "Comment",
@@ -45,6 +61,22 @@
       "name": "toRecipients",
       "label": "To Recipients",
       "description": "One or more recipient email addresses separated by semicolons (;)."
+    },
+    {
+      "direction": "Input",
+      "type": "text",
+      "name": "cc",
+      "label": "CC",
+      "description": "One or more CC recipient email addresses, separated by semicolons (;).",
+      "defaultValue": ""
+    },
+    {
+      "direction": "Input",
+      "type": "text",
+      "name": "bcc",
+      "label": "BCC",
+      "description": "One or more BCC recipient email addresses, separated by semicolons (;).",
+      "defaultValue": ""
     },
     {
       "direction": "Output",
