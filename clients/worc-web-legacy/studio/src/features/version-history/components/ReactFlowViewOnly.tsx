@@ -1,23 +1,25 @@
-import { CustomEdgeTypeObj } from "@/constants/custom-edge-type-obj";
-import { CustomNodeTypeObj } from "@/constants/custom-node-type-obj";
-import { defaultEdgeOptions } from "@/constants/default-edge-options";
+import { LoadingSpinner } from "@aventisia/ui";
 import { ReactFlow } from "@xyflow/react";
 import "@xyflow/react/dist/style.css";
 import { useEffect, useMemo } from "react";
-import "../styles/override-node-style.css";
+import { useShallow } from "zustand/react/shallow";
+
+import { usePanelStore } from "@/components/panel/stores/panel-store";
+import { CustomEdgeTypeObj } from "@/constants/custom-edge-type-obj";
+import { CustomNodeTypeObj } from "@/constants/custom-node-type-obj";
+import { defaultEdgeOptions } from "@/constants/default-edge-options";
+import { DCPDialog } from "@/features/dynamic-config-panel";
+import { useReactFlowViewStore } from "@/stores/react-flow-view-store";
+
+import { PANEL_ID } from "../constants";
+import { useReactFlowViewData } from "../hooks/useReactFlowViewData";
 import "../styles/override-edge-style.css";
+import "../styles/override-node-style.css";
 import "../styles/override-panel-style.css";
 import "../styles/remove-attribution.css";
 import { BackgroundViewOnly } from "./BackgroundViewOnly";
-import { ViewControls } from "./view-controls";
-import { usePanelStore } from "@/components/panel/stores/panel-store";
-import { useShallow } from "zustand/react/shallow";
-import { PANEL_ID } from "../constants";
 import { VersionHistoryPanel } from "./version-history-panel/VersionHistoryPanel";
-import { DCPDialog } from "@/features/dynamic-config-panel";
-import { useReactFlowViewStore } from "../stores/react-flow-view-store";
-import { useReactFlowViewData } from "../hooks/useReactFlowViewData";
-import { LoadingSpinner } from "@aventisia/ui";
+import { ViewControls } from "./view-controls";
 
 /**
  * A read-only version of ReactFlow for viewing flows

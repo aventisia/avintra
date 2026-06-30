@@ -1,6 +1,7 @@
-import { FlowVariablesObjectType } from "@/types/flow-variables-object-type";
 import { Edge, Node, Viewport } from "@xyflow/react";
 import { create } from "zustand";
+
+import { FlowVariablesObjectType } from "@/types/flow-variables-object-type";
 
 type State = {
   /** Nodes of currently opened flow */
@@ -16,6 +17,7 @@ type State = {
   viewport: Viewport;
 
   name: string;
+  versionNumber: number;
 };
 
 type Actions = {
@@ -31,20 +33,29 @@ type Actions = {
   /** Set viewport */
   setViewport: (viewport: Viewport) => void;
 
-  setName: (name: string) => void;
+  setVersionMeta: ({
+    name,
+    versionNumber,
+  }: {
+    name: string;
+    versionNumber: number;
+  }) => void;
 };
 
+// Used for Change(Version)-History and Execution-Log Page
 export const useReactFlowViewStore = create<State & Actions>((set) => ({
   nodes: [],
   edges: [],
   flowVariablesObject: [],
   viewport: { x: 0, y: 0, zoom: 1 },
   name: "",
+  versionNumber: 0,
 
   setNodes: (nodes: Node[]) => set({ nodes }),
   setEdges: (edges: Edge[]) => set({ edges }),
   setFlowVariablesObject: (variables: FlowVariablesObjectType[]) =>
     set({ flowVariablesObject: variables }),
   setViewport: (viewport) => set({ viewport }),
-  setName: (name) => set({ name }),
+  setVersionMeta: (data) =>
+    set({ name: data.name, versionNumber: data.versionNumber }),
 }));

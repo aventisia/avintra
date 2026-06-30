@@ -1,11 +1,14 @@
-import { ZOOM_ANIMATION_DURATION } from "@/constants";
-import { Edge, Node, useReactFlow, Viewport } from "@xyflow/react";
+import { useQuery } from "@tanstack/react-query";
+import { Edge, Node, Viewport, useReactFlow } from "@xyflow/react";
 import { useEffect } from "react";
 import { useSearchParams } from "react-router-dom";
 import { useShallow } from "zustand/react/shallow";
-import { useReactFlowViewStore } from "../stores/react-flow-view-store";
+
+import { ZOOM_ANIMATION_DURATION } from "@/constants";
 import { deepParse } from "@/features/react-flow/utils/deepParse";
-import { useQuery } from "@tanstack/react-query";
+import { useReactFlowViewStore } from "@/stores/react-flow-view-store";
+import { expandAllGroupNodes } from "@/utils/expandAllGroupNodes";
+
 import { getAgentsHistoryById } from "../apis/agents-history-apis";
 
 export const useReactFlowViewData = () => {
@@ -19,14 +22,14 @@ export const useReactFlowViewData = () => {
     setEdges,
     setFlowVariablesObject,
     setViewport: setViewportState,
-    setName,
+    setVersionMeta,
   } = useReactFlowViewStore(
     useShallow((state) => ({
       setNodes: state.setNodes,
       setEdges: state.setEdges,
       setFlowVariablesObject: state.setFlowVariablesObject,
       setViewport: state.setViewport,
-      setName: state.setName,
+      setVersionMeta: state.setVersionMeta,
     })),
   );
 
@@ -44,7 +47,10 @@ export const useReactFlowViewData = () => {
   useEffect(() => {
     if (!data) return;
 
-    setName(data.flowName ?? "");
+    setVersionMeta({
+      name: data.flowName ?? "",
+      versionNumber: data.versionNumber ?? 0,
+    });
     // Parse react flow object
     const flow = deepParse(
       data?.reactFlowObject ?? JSON.stringify([]),
@@ -61,8 +67,12 @@ export const useReactFlowViewData = () => {
 
     if (flow) {
       // Set nodes and edges
-      setNodes(flow.nodes);
-      setEdges(flow.edges);
+      const expandedFlow = expandAllGroupNodes(flow?.nodes, flow?.edges);
+
+      // Set nodes and edges
+      setNodes(expandedFlow?.nodes);
+      setEdges(expandedFlow?.edges);
+
       setFlowVariablesObject(flowVarObjs || []);
       //set viewport state for react flow oject ext(only for reference its not for ReactFLow)
       setViewportState(flow.viewport);
@@ -70,6 +80,10 @@ export const useReactFlowViewData = () => {
       setTimeout(() => {
         fitView({ duration: ZOOM_ANIMATION_DURATION });
       }, ZOOM_ANIMATION_DURATION);
+    } else {
+      setNodes([]);
+      setEdges([]);
+      setFlowVariablesObject([]);
     }
   }, [data]);
 

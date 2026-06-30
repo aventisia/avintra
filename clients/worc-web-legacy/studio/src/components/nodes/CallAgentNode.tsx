@@ -1,10 +1,3 @@
-import { InputHandle } from "@/components/handles/InputHandle";
-import { OutputHandle } from "@/components/handles/OutputHandle";
-import { useIsExecutionLogsRoute } from "@/features/execution-logs/hooks/useIsExecutionLogsRoute";
-import { useGroupToggle } from "@/features/react-flow/hooks/useGroupToggle";
-import { useNodeHover } from "@/hooks/useNodeHover";
-import { NodeDataType } from "@/types/node-data-type";
-
 import { Button } from "@aventisia/ui/buttons";
 import { cn } from "@aventisia/ui/lib";
 import { Tooltip } from "@aventisia/ui/tooltip";
@@ -18,6 +11,14 @@ import {
 } from "@xyflow/react";
 import { ExpandIcon, ShrinkIcon } from "lucide-react";
 import { memo, useEffect } from "react";
+
+import { InputHandle } from "@/components/handles/InputHandle";
+import { OutputHandle } from "@/components/handles/OutputHandle";
+import { useIsExecutionLogsRoute } from "@/features/execution-logs/hooks/useIsExecutionLogsRoute";
+import { useGroupToggle } from "@/features/react-flow/hooks/useGroupToggle";
+import { useIsVersionHistoryRoute } from "@/features/version-history/hooks/useIsVersionHistoryRoute";
+import { useNodeHover } from "@/hooks/useNodeHover";
+import { NodeDataType } from "@/types/node-data-type";
 
 import OpenNodeLog from "../node-container/OpenNodeLog";
 import { NodeHeading } from "../node-container/node-header/NodeHeading";
@@ -36,7 +37,9 @@ export const CallAgentNode = memo(
   }: NodeProps<CallAgentNode>) => {
     const { toggleGroupExpand } = useGroupToggle();
     const { isHovered, onMouseEnter, onMouseLeave } = useNodeHover();
+
     const isExecutionLog = useIsExecutionLogsRoute();
+    const isAgentHistory = useIsVersionHistoryRoute();
 
     const { updateNodeData } = useReactFlow();
     useEffect(() => {
@@ -81,7 +84,7 @@ export const CallAgentNode = memo(
             </OpenNodeConfig>
           </OpenNodeLog>
           <NodeToolbar offset={5} isVisible={isHovered} position={Position.Top}>
-            {data?.isGroupHead && (
+            {!isExecutionLog && !isAgentHistory && data?.isGroupHead && (
               <Tooltip content={data?.isExpanded ? "Collapse" : "Expand"}>
                 <Button
                   variant={"outline"}

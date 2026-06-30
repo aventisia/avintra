@@ -6,12 +6,12 @@ import { useShallow } from "zustand/react/shallow";
 
 import { ZOOM_ANIMATION_DURATION } from "@/constants";
 import { deepParse } from "@/features/react-flow/utils/deepParse";
+import { useReactFlowViewStore } from "@/stores/react-flow-view-store";
+import { expandAllGroupNodes } from "@/utils/expandAllGroupNodes";
 
 import { getAgentsExecutionLogsById } from "../apis/job-execution-log-apis";
 import { useExecutionStore } from "../stores/execution-log-store";
-import { useReactFlowViewStore } from "../stores/react-flow-view-store";
 import { NodeExecutionLogType } from "../types/execution-log-types";
-import { expandAllGroups } from "../utils/expandAllGroups";
 
 export const useReactFlowViewData = () => {
   const [searchParams, setSearchParams] = useSearchParams();
@@ -31,14 +31,14 @@ export const useReactFlowViewData = () => {
     setEdges,
     setFlowVariablesObject,
     setViewport: setViewportState,
-    setName,
+    setVersionMeta,
   } = useReactFlowViewStore(
     useShallow((state) => ({
       setNodes: state.setNodes,
       setEdges: state.setEdges,
       setFlowVariablesObject: state.setFlowVariablesObject,
       setViewport: state.setViewport,
-      setName: state.setName,
+      setVersionMeta: state.setVersionMeta,
     })),
   );
   const { initLogs } = useExecutionStore();
@@ -70,7 +70,10 @@ export const useReactFlowViewData = () => {
       setFlowId(data.flowId);
     }
 
-    setName(data.name ?? "");
+    setVersionMeta({
+      name: data.name ?? "",
+      versionNumber: data.versionNumber ?? 0,
+    });
     // Parse react flow object
     const flow = deepParse(
       data?.reactFlowObject ?? JSON.stringify([]),
@@ -87,7 +90,7 @@ export const useReactFlowViewData = () => {
 
     if (flow) {
       // Set nodes and edges
-      const expandedFlow = expandAllGroups(flow?.nodes, flow?.edges);
+      const expandedFlow = expandAllGroupNodes(flow?.nodes, flow?.edges);
 
       setNodes(expandedFlow?.nodes);
       setEdges(expandedFlow?.edges);
@@ -108,6 +111,10 @@ export const useReactFlowViewData = () => {
       setTimeout(() => {
         fitView({ duration: ZOOM_ANIMATION_DURATION });
       }, ZOOM_ANIMATION_DURATION);
+    } else {
+      setNodes([]);
+      setEdges([]);
+      setFlowVariablesObject([]);
     }
   }, [data]);
 
