@@ -44,22 +44,35 @@ public class TimeTriggerExecutionJob : IJob
 
             var endOfCurrentMinute = startOfCurrentMinute.AddMinutes(1);
 
-            // Retrieve triggers that should fire during this minute
-            var triggersToExecute = await _workspaceInternalDbContext.TimeTriggers
-                .Where(trigger =>
-                    trigger.NextTriggerTime >= startOfCurrentMinute && trigger.NextTriggerTime < endOfCurrentMinute &&
-                    trigger.EffectiveDate <= currentUtcTime &&
-                    !trigger.IsDisabled &&
-                    (trigger.EndDate == null || trigger.EndDate >= currentUtcTime)
-                )
-                .Include(i => i.TimeTriggerFlowVersions)
+            // Fetch only the active TimeTriggers from the DB
+            var triggersQuery = await _workspaceInternalDbContext.Triggers
+                .Where(w => w.TriggerType == TriggerTypesEnum.TimeTrigger && !w.IsDisabled)
+                .Include(i => i.TriggerFlowVersions)
                 .ToListAsync();
+
+            // Filter the JSON metadata in memory (C# can read JsonDocument perfectly here)
+            var triggersToExecute = triggersQuery
+                .Where(w =>
+                {
+                    var root = w.Metadata.RootElement;
+                    // Safely extract values from JSON
+                    var nextTriggerTime = root.TryGetProperty("NextTriggerTime", out var ntt) ? ntt.GetDateTimeOffset() : DateTimeOffset.MinValue;
+                    var effectiveDate = root.TryGetProperty("EffectiveDate", out var ed) ? ed.GetDateTimeOffset() : DateTimeOffset.MinValue;
+                    var hasEndDate = root.TryGetProperty("EndDate", out var edProp) && edProp.ValueKind != System.Text.Json.JsonValueKind.Null;
+                    var endDate = hasEndDate ? edProp.GetDateTimeOffset() : (DateTimeOffset?)null;
+
+                    return nextTriggerTime >= startOfCurrentMinute &&
+                           nextTriggerTime < endOfCurrentMinute &&
+                           effectiveDate <= currentUtcTime &&
+                           (endDate == null || endDate >= currentUtcTime);
+                })
+                .ToList();
 
             if (triggersToExecute.Any())
             {
                 // Get all FlowVersionIds
                 var flowVersionIds = triggersToExecute
-                    .SelectMany(t => t.TimeTriggerFlowVersions)
+                    .SelectMany(t => t.TriggerFlowVersions)
                     .Select(f => f.FlowVersionId)
                     .Distinct()
                     .ToList();
@@ -86,10 +99,24 @@ public class TimeTriggerExecutionJob : IJob
                 // Process each trigger
                 foreach (var trigger in triggersToExecute)
                 {
+                    // JSON serializer configuration
+                    var jsonOptions = new JsonSerializerOptions
+                    {
+                        PropertyNameCaseInsensitive = true,
+                        DefaultIgnoreCondition = JsonIgnoreCondition.WhenWritingNull
+                    };
+
+                    jsonOptions.Converters.Add(new JsonStringEnumConverter());
+
+                    // Deserialize existing metadata into model
+                    var triggerModel = System.Text.Json.JsonSerializer.Deserialize<TimeTriggerModel>(
+                        trigger.Metadata.RootElement.GetRawText(),
+                        jsonOptions);
+
                     // Log trigger execution start
                     _logger.LogInformation($"Executing Trigger: {trigger.Name} (ID: {trigger.Id})");
 
-                    foreach (var timeTriggerflowVersion in trigger.TimeTriggerFlowVersions)
+                    foreach (var timeTriggerflowVersion in trigger.TriggerFlowVersions)
                     {
                         latestFlowVersionHistoryDict.TryGetValue(timeTriggerflowVersion.FlowVersionId, out Guid? latestFlowVersionHistoryId);
 
@@ -113,19 +140,19 @@ public class TimeTriggerExecutionJob : IJob
                     }
 
                     // Update the trigger's last executed time and calculate the next trigger time
-                    trigger.LastTriggeredTime = DateTimeOffset.UtcNow;
-                    trigger.NextTriggerTime = CronScheduleUtil.ComputeNextTriggerUtc(
-                        trigger.CronExpression,
-                        trigger.EffectiveDate,
-                        trigger.ExceptionHours,
-                        trigger.ExceptionWeekdays,
-                        trigger.ExceptionDates);
+                    triggerModel.LastTriggeredTime = DateTimeOffset.UtcNow;
+                    triggerModel.NextTriggerTime = CronScheduleUtil.ComputeNextTriggerUtc(
+                        triggerModel.CronExpression,
+                        triggerModel.EffectiveDate,
+                        triggerModel.ExceptionHours,
+                        triggerModel.ExceptionWeekdays,
+                        triggerModel.ExceptionDates);
 
-                    // Log the next scheduled trigger time
-                    _logger.LogInformation($"Next Trigger Time for {trigger.Name}: {trigger.NextTriggerTime:O}");
+                    // Update metadata with latest subscription data
+                    trigger.Metadata = JsonDocument.Parse(System.Text.Json.JsonSerializer.Serialize(triggerModel, jsonOptions));
 
                     // Update the trigger record in the database
-                    _workspaceInternalDbContext.TimeTriggers.Update(trigger);
+                    _workspaceInternalDbContext.Triggers.Update(trigger);
                 }
 
                 // Check if there are any jobs created

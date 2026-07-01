@@ -82,10 +82,10 @@ public class MessageTriggerService : IMessageTriggerService
                 // Retrieve tenant-wide or explicitly shared message triggers
                 messageTriggers = await _unitOfWork.TriggerRepo
                     .GetByConditionAsync(w =>
+                        w.TriggerType == TriggerTypesEnum.MessageTrigger &&
                         w.CreatedByUserId != _userId &&
                         (
-                            w.IsTenantWideAccess ||
-                            resourceAccess.Keys.Contains(w.Id)
+                            w.IsTenantWideAccess || resourceAccess.Keys.Contains(w.Id)
                         )
                     )
                     .Include(i => i.CreatedByUser)
@@ -603,7 +603,7 @@ public class MessageTriggerService : IMessageTriggerService
         {
             // Retrieve the message trigger
             var messageTrigger = await _unitOfWork.TriggerRepo
-                .GetByConditionAsync(w => w.Id == messageTriggerId)
+                .GetByConditionAsync(w => w.Id == messageTriggerId && w.TriggerType == TriggerTypesEnum.MessageTrigger)
                 .SingleOrDefaultAsync();
 
             // Check existence
@@ -696,7 +696,7 @@ public class MessageTriggerService : IMessageTriggerService
         {
             // Retrieve triggers that match provided IDs
             var messageTriggers = await _unitOfWork.TriggerRepo
-                .GetByConditionAsync(t => messageTriggerIds.Contains(t.Id))
+                .GetByConditionAsync(w => messageTriggerIds.Contains(w.Id) && w.TriggerType == TriggerTypesEnum.MessageTrigger)
                 .ToListAsync();
 
             // Check if any triggers were found
@@ -796,7 +796,7 @@ public class MessageTriggerService : IMessageTriggerService
         {
             // Check repository for existing trigger with the same name
             var triggerExists = await _unitOfWork.TriggerRepo
-                .GetByConditionAsync(w => w.Name.ToLower() == checkAvailabilityDto.UserInput.Trim().ToLower())
+                .GetByConditionAsync(w => w.TriggerType == TriggerTypesEnum.MessageTrigger && w.Name.ToLower() == checkAvailabilityDto.UserInput.Trim().ToLower())
                 .FirstOrDefaultAsync();
 
             if (triggerExists != null)

@@ -79,20 +79,13 @@ public class ExecuteFlowStep2Service : IExecuteFlowStep2Service
                         ? $"{user.FirstName} {user.LastName}"
                         : "NA";
                 }
-                else if (job.TriggerType == TriggerTypesEnum.TimeTrigger)
-                {
-                    var timeTrigger = await unitOfWork.TimeTriggerRepo
-                        .GetByConditionAsync(w => w.Id == job.RefId)
-                        .FirstOrDefaultAsync();
-
-                    job.ExecutedBy = timeTrigger?.Name;
-                }
                 else if (
                     job.TriggerType == TriggerTypesEnum.APITrigger ||
                     job.TriggerType == TriggerTypesEnum.EmailTrigger ||
                     job.TriggerType == TriggerTypesEnum.EventTrigger ||
                     job.TriggerType == TriggerTypesEnum.MessageTrigger ||
                     job.TriggerType == TriggerTypesEnum.QueueTrigger ||
+                    job.TriggerType == TriggerTypesEnum.TimeTrigger ||
                     job.TriggerType == TriggerTypesEnum.WebhookTrigger)
                 {
                     var trigger = await unitOfWork.TriggerRepo
