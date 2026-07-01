@@ -17,6 +17,7 @@ import { columnVisibilityState } from "../constants/column-visibility-state";
 import { useFetchAgents } from "../hooks/useFetchAgents";
 import { AgentStats } from "./AgentStats";
 import { agentsTableColumns } from "./AgentsTableColumns";
+import AgentConfigDialog from "./agent-config/AgentConfigDialog";
 import AssignMachinesDialog from "./assign-machines/AssignMachinesDialog";
 import AssignUsersDialog from "./assign-users/AssignUsersDialog";
 import { AgentsBulkActions } from "./table-actions/AgentsBulkActions";
@@ -95,6 +96,7 @@ export const AgentsTable = () => {
       <AssignMachinesDialog />
       <AssignUsersDialog />
       <DisableAgentDialog />
+      <AgentConfigDialog />
     </>
   );
 };

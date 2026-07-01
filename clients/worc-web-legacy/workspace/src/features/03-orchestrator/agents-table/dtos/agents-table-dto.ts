@@ -1,3 +1,5 @@
+import { ExecutionSettings } from "./agent-config-dto";
+
 /**
  * data transfer object for the agents table
  * @export
@@ -128,4 +130,7 @@ export interface AgentsTableDto {
    * Gets the count of the machines using the agent.
    */
   machineCount?: number;
+
+  /** Gets or sets the maximum allowed execution time in minutes. */
+  settings?: ExecutionSettings;
 }
