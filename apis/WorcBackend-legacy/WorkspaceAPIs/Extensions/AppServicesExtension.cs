@@ -210,6 +210,20 @@ public static class AppServicesExtension
                 .StartNow()
                 .WithCronSchedule("0 0 2 * * ? *", x => x.InTimeZone(TimeZoneInfo.Utc)) // Runs daily at 2:00 AM UTC
                 .WithDescription("Trigger for Tenant History Cleanup Job - Runs at 2:00 AM UTC daily"));
+
+            // ExecutionTimeoutMonitorJob configuration
+            var executionTimeoutMonitorJobKey = new JobKey("ExecutionTimeoutMonitorJob");
+
+            quartz.AddJob<ExecutionTimeoutMonitorJob>(opts =>
+                opts.WithIdentity(executionTimeoutMonitorJobKey));
+
+            quartz.AddTrigger(opts => opts
+                .ForJob(executionTimeoutMonitorJobKey)
+                .WithIdentity("ExecutionTimeoutMonitorJob-trigger")
+                .StartNow()
+                .WithSimpleSchedule(x => x
+                    .WithIntervalInMinutes(5)
+                    .RepeatForever()));
         });
 
         // Register Quartz hosted service to ensure jobs run in the background
@@ -218,5 +232,6 @@ public static class AppServicesExtension
         // Register the jobs with the DI container so they can be injected
         services.AddTransient<TimeTriggerExecutionJob>();
         services.AddTransient<TenantHistoryCleanupJob>();
+        services.AddTransient<ExecutionTimeoutMonitorJob>();
     }
 }

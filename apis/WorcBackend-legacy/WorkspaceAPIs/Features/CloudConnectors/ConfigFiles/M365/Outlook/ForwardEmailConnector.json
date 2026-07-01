@@ -34,14 +34,6 @@
     {
       "direction": "Input",
       "type": "text",
-      "name": "comment",
-      "label": "Comment",
-      "description": "Optional message to include above the forwarded email.",
-      "defaultValue": ""
-    },
-    {
-      "direction": "Input",
-      "type": "text",
       "name": "To",
       "label": "To",
       "description": "Primary recipient email address(es). Separate multiple addresses with semicolons (;).",
@@ -99,6 +91,14 @@
       "name": "Subject",
       "label": "Subject",
       "description": "Custom text or template used for subject transformation (depends on selected mode).",
+      "defaultValue": ""
+    },
+    {
+      "direction": "Input",
+      "type": "text",
+      "name": "comment",
+      "label": "Body",
+      "description": "The main content of the email message.",
       "defaultValue": ""
     },
     {

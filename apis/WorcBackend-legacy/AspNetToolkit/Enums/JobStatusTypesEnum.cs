@@ -61,4 +61,10 @@ public enum JobStatusTypesEnum
     /// </summary>
     [Description("Retrying")]
     Retrying,
+
+    /// <summary>
+    /// Indicates that the job was forcefully terminated, typically because it exceeded its maximum execution time or was killed by the execution monitor.
+    /// </summary>
+    [Description("Killed")]
+    Killed
 }
