@@ -8,7 +8,7 @@ import { usePanelStore } from "@/components/panel/stores/panel-store";
 import { ReadOnlyEdgeTypeObj } from "@/constants/custom-edge-type-obj";
 import { CustomNodeTypeObj } from "@/constants/custom-node-type-obj";
 import { defaultEdgeOptions } from "@/constants/default-edge-options";
-import { useReactFlowViewStore } from "@/stores/react-flow-view-store";
+import { useReactFlowExtStore } from "@/stores/react-flow-ext-store";
 
 import { PANEL_ID } from "../constants";
 import { useReactFlowViewData } from "../hooks/useReactFlowViewData";
@@ -28,7 +28,7 @@ export const ReactFlowViewOnly = () => {
   const customNodeTypeObjMemo = useMemo(() => CustomNodeTypeObj, []);
   const customEdgesTypeObjMemo = useMemo(() => ReadOnlyEdgeTypeObj, []);
 
-  const { nodes, edges } = useReactFlowViewStore(
+  const { nodes, edges } = useReactFlowExtStore(
     useShallow((state) => ({ nodes: state.nodes, edges: state.edges })),
   );
 

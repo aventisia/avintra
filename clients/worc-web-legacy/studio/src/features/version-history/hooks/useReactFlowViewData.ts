@@ -6,8 +6,8 @@ import { useShallow } from "zustand/react/shallow";
 
 import { ZOOM_ANIMATION_DURATION } from "@/constants";
 import { deepParse } from "@/features/react-flow/utils/deepParse";
+import { useReactFlowExtStore } from "@/stores/react-flow-ext-store";
 import { useReactFlowViewStore } from "@/stores/react-flow-view-store";
-import { expandAllGroupNodes } from "@/utils/expandAllGroupNodes";
 
 import { getAgentsHistoryById } from "../apis/agents-history-apis";
 
@@ -22,13 +22,18 @@ export const useReactFlowViewData = () => {
     setEdges,
     setFlowVariablesObject,
     setViewport: setViewportState,
-    setVersionMeta,
-  } = useReactFlowViewStore(
+  } = useReactFlowExtStore(
     useShallow((state) => ({
       setNodes: state.setNodes,
       setEdges: state.setEdges,
       setFlowVariablesObject: state.setFlowVariablesObject,
       setViewport: state.setViewport,
+    })),
+  );
+
+  // Get ReactFlowView store state & actions
+  const { setVersionMeta } = useReactFlowViewStore(
+    useShallow((state) => ({
       setVersionMeta: state.setVersionMeta,
     })),
   );
@@ -67,11 +72,8 @@ export const useReactFlowViewData = () => {
 
     if (flow) {
       // Set nodes and edges
-      const expandedFlow = expandAllGroupNodes(flow?.nodes, flow?.edges);
-
-      // Set nodes and edges
-      setNodes(expandedFlow?.nodes);
-      setEdges(expandedFlow?.edges);
+      setNodes(flow?.nodes);
+      setEdges(flow?.edges);
 
       setFlowVariablesObject(flowVarObjs || []);
       //set viewport state for react flow oject ext(only for reference its not for ReactFLow)
