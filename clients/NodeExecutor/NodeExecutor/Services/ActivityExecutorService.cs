@@ -279,7 +279,14 @@ namespace NodeExecutor.Services
                     }
 
                     // Add to inputValues for logging
-                    inputValues[input.Key] = inputValue;
+                    if (!string.IsNullOrEmpty(input.Key) && 
+                        !inputValues.ContainsKey(input.Key) && 
+                        input.Key != "AgentId" &&
+                        input.Key != "AgentName" && 
+                        input.Key != "AccessToken")
+                    {
+                        inputValues[input.Key] = inputValue;
+                    }
 
                     // Set the input argument in the execution context
                     executionContext.Set(input.Key, inputValue);
