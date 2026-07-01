@@ -137,8 +137,10 @@ export const useDefineTriggerForm = () => {
    * Merges independent Date and Time fields into strict ISO date formats.
    */
   const refineFormData = (formData: z.infer<typeof triggerZodSchema>) => {
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
+    const { nextTriggerTime, ...payloadData } = formData;
     return {
-      ...formData,
+      ...payloadData,
       lastModifiedBy: userSession?.email ?? "",
       lastModifiedOn: new Date().toISOString(),
       atTime: formData.atTime ? formData.atTime + ":00" : null, // Append seconds for BE compliance
