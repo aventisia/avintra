@@ -53,7 +53,7 @@ export const useFetchFlowToExecute = () => {
         isArchived: data.data.isArchived || false,
         type: data.data.type,
         description: data.data.description || "",
-        accessType: data.data.accessType,
+        accessType: data.data.accessLevel,
         inputOutputObject: data.data.inputOutputObject || "",
       });
       setIsPublished(data?.data?.isPublished || false);
