@@ -29,8 +29,8 @@ export const AgentConfigForm = () => {
     <Form
       methods={form}
       onSubmit={form.handleSubmit(onSubmit)}
-      checkDirtyForm={false}
       disabled={isPending}
+      className="px-2.5 pb-5"
     >
       <InputField
         name="maxExecutionTimeInMinutes"
@@ -39,13 +39,13 @@ export const AgentConfigForm = () => {
         type="number"
       />
 
-      <div className="flex w-full items-center justify-end pb-4">
+      <div className="!mt-5 flex w-full justify-end">
         <SubmitButton
-          size="sm"
-          disabled={!isDirty}
-          isPending={isSubmitting || isPending}
-          primaryText="Save"
-          secondaryText="Saving"
+          className="min-w-[5rem]"
+          primaryText={"Save"}
+          secondaryText="Saving..."
+          isPending={isPending}
+          disabled={!isDirty || isSubmitting}
         />
       </div>
     </Form>
