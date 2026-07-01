@@ -1,9 +1,3 @@
-import { PromptSelect } from "@/features/dynamic-config-panel/components/fields-for-form/prompt-field/prompt-seletor";
-import { SaveAsTemplateDialog } from "@/features/save-prompt-template/components/SaveAsTemplateDialog";
-import { useFetchTemplateList } from "@/features/save-prompt-template/hooks/useFetchTemplateList";
-import { useSavePromptTemplateStore } from "@/features/save-prompt-template/stores/save-prompt-template-store";
-import { PromptTemplateSchema } from "@/features/save-prompt-template/types/prompt-template-schema-type";
-
 import { Button } from "@aventisia/ui/buttons";
 import { TextareaField } from "@aventisia/ui/form";
 import { useShowAlertHandler } from "@aventisia/ui/hooks";
@@ -12,6 +6,12 @@ import { BookCopyIcon } from "lucide-react";
 import { useMemo, useState } from "react";
 import { useController, useFormContext } from "react-hook-form";
 import { useShallow } from "zustand/react/shallow";
+
+import { PromptSelect } from "@/features/dynamic-config-panel/components/fields-for-form/prompt-field/prompt-seletor";
+import { SaveAsTemplateDialog } from "@/features/save-prompt-template/components/SaveAsTemplateDialog";
+import { useFetchTemplateList } from "@/features/save-prompt-template/hooks/useFetchTemplateList";
+import { useSavePromptTemplateStore } from "@/features/save-prompt-template/stores/save-prompt-template-store";
+import { PromptTemplateSchema } from "@/features/save-prompt-template/types/prompt-template-schema-type";
 
 interface PromptConfigFieldProps {
   name: string;
@@ -76,6 +76,10 @@ const PromptConfigField = ({
         {
           ...formValues[modelConfigKey],
           ...schema.modelConfig,
+          is_json_output:
+            name === "__Prompt__Conversation"
+              ? false
+              : schema.modelConfig.is_json_output,
         },
         {
           shouldDirty: true,
