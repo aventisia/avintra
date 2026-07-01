@@ -7,6 +7,7 @@ import { Clock, Download, Tag, User2 } from "lucide-react";
 import { UseTemplateDTO } from "../../dtos/use-template-dto";
 import { dateFormatter } from "@/utils";
 import { useCloneTemplate } from "../../hooks/useCloneTemplate";
+import { transformTemplateType } from "../../utils/transform-template-type";
 
 export function TemplateHeader({ template }: { template: UseTemplateDTO }) {
   const handleCloneTemplate = useCloneTemplate();
@@ -58,7 +59,7 @@ export function TemplateHeader({ template }: { template: UseTemplateDTO }) {
             <div className="flex flex-row flex-wrap items-center gap-1.5 sm:gap-2">
               {/* Type Badge */}
               <Badge className="flex text-2xs sm:text-xs items-center gap-1 capitalize">
-                {template?.type}
+                {transformTemplateType(template?.type)}
               </Badge>
 
               {/* Tags */}

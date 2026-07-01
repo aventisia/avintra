@@ -19,7 +19,13 @@ const TemplatesLibrary = () => {
   const [selectedCategory, setSelectedCategory] = useState("All templates");
 
   // List of available template categories for filtering
-  const categories = ["All templates", "Agent", "Block", "Prompt"];
+  const categories = [
+    "All templates",
+    "Automation Agent",
+    "Chat Agent",
+    "Block",
+    "Prompt",
+  ];
 
   if (id) return <TemplateDetail id={id} />;
 
@@ -34,9 +40,9 @@ const TemplatesLibrary = () => {
               Avintra <span className="text-primary">Library</span>
             </h1>
             <p className="text-sm sm:text-base text-muted-foreground px-2 sm:px-0">
-              The Library of Avintra brings together a rich catalog of
-              ready-to-use automations and AI blueprints, empowering teams to
-              build faster, smarter, and at scale no need to start from scratch.
+              The Avintra Library brings together a rich catalog of ready-to-use
+              automations and AI blueprints, empowering teams to build faster,
+              work smarter, and scale without starting from scratch.
             </p>
           </div>
 
