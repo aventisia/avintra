@@ -23,46 +23,40 @@ const LibraryTemplates = ({
   // Combine and filter templates based on selected category
   const items = useMemo(() => {
     const templates = agentData ?? [];
-    const normalizedQuery = searchQuery?.trim().toLowerCase();
 
-    const matchesCategory = (type: string) => {
+    const checkCategory = (templateType: string) => {
       if (selectedCategory === "All templates") return true;
-
-      return type.includes(selectedCategory);
-    };
-
-    const matchesSearch = (template: (typeof templates)[number]) => {
-      if (!normalizedQuery) return true;
-
-      const searchText = [
-        template.name,
-        template.tags?.join(" "),
-        template.type,
-      ]
-        .join(" ")
-        .toLowerCase();
-
-      return searchText.includes(normalizedQuery);
+      if (selectedCategory === "Automation Agent")
+        return ["Agent"].includes(templateType);
+      if (selectedCategory === "Chat Agent")
+        return ["ChatAgent"].includes(templateType);
+      return templateType.includes(selectedCategory);
     };
 
     return templates
-      .filter((template) => matchesCategory(template.type))
-      .filter(matchesSearch);
+      .filter((template) => checkCategory(template.type))
+      ?.filter((template) => {
+        const searchText =
+          template.name + template?.tags.toString() + template?.type;
+        return searchQuery?.trim()
+          ? searchText?.toLowerCase().includes(searchQuery.toLowerCase().trim())
+          : true;
+      });
   }, [agentData, searchQuery, selectedCategory]);
 
   // Calculate total pages for pagination
-  const totalPages = Math.ceil(items?.length / itemsPerPage);
+  const totalPages = Math.ceil(items.length / itemsPerPage);
 
   // Get current page items slice
   const currentItems = useMemo(() => {
     const start = (currentPage - 1) * itemsPerPage;
-    return items?.slice(start, start + itemsPerPage);
+    return items.slice(start, start + itemsPerPage);
   }, [currentPage, items, itemsPerPage]);
 
   // Reset to first page on category change
   useEffect(() => {
     setCurrentPage(1);
-  }, [searchQuery, selectedCategory]);
+  }, [selectedCategory]);
 
   // Show skeletons while loading
   if (loading) {

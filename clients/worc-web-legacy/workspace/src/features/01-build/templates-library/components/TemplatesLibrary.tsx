@@ -1,11 +1,11 @@
-import { useDebounce } from "@/react-toolkit/hooks/useDebounce";
-
 import { Input } from "@aventisia/ui";
 import { Button } from "@aventisia/ui/buttons";
 import { cn } from "@aventisia/ui/lib";
 import { SearchIcon } from "lucide-react";
 import { useState } from "react";
 import { useSearchParams } from "react-router-dom";
+
+import { useDebounce } from "@/react-toolkit/hooks/useDebounce";
 
 import LibraryTemplates from "./LibraryTemplates";
 import { TemplateDetail } from "./template-details/TemplateDetails";
@@ -41,9 +41,9 @@ const TemplateLibrary = () => {
                 Avintra <span className="text-primary">Library</span>
               </h2>
               <p className="text-base text-muted-foreground">
-                The Library of Avintra brings together a rich catalog of
+                The Avintra Library brings together a rich catalog of
                 ready-to-use automations and AI blueprints, empowering teams to
-                build faster, smarter, and at scale — no need to start from
+                build faster, work smarter, and scale without starting from
                 scratch.
               </p>
             </div>
