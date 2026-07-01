@@ -16,7 +16,6 @@ import { InputHandle } from "@/components/handles/InputHandle";
 import { OutputHandle } from "@/components/handles/OutputHandle";
 import { useIsExecutionLogsRoute } from "@/features/execution-logs/hooks/useIsExecutionLogsRoute";
 import { useGroupToggle } from "@/features/react-flow/hooks/useGroupToggle";
-import { useIsVersionHistoryRoute } from "@/features/version-history/hooks/useIsVersionHistoryRoute";
 import { useNodeHover } from "@/hooks/useNodeHover";
 import { NodeDataType } from "@/types/node-data-type";
 
@@ -39,7 +38,6 @@ export const CallAgentNode = memo(
     const { isHovered, onMouseEnter, onMouseLeave } = useNodeHover();
 
     const isExecutionLog = useIsExecutionLogsRoute();
-    const isAgentHistory = useIsVersionHistoryRoute();
 
     const { updateNodeData } = useReactFlow();
     useEffect(() => {
@@ -60,7 +58,7 @@ export const CallAgentNode = memo(
     }, [data.label, data?.selectedAgent]);
 
     return (
-      <>
+      <OpenNodeLog nodeId={id}>
         <div
           className={cn(
             "custom-drag-handle relative flex h-16 w-16 rounded-full border-2 border-[#1E1B4B] bg-[#1E1B4B] hover:ring hover:ring-ring",
@@ -72,19 +70,17 @@ export const CallAgentNode = memo(
           onMouseEnter={onMouseEnter}
           onMouseLeave={onMouseLeave}
         >
-          <OpenNodeLog nodeId={id}>
-            <OpenNodeConfig {...{ nodeData: data, nodeId: id }}>
-              <div className="flex h-full w-full items-center justify-center">
-                {/* <NodeHeader> */}
-                <NodeImage src="/assets/NewAgentIcon.svg" />
-                <NodeHeading className="text-2xs">{data.label}</NodeHeading>
-                <InputHandle position={targetPosition} />
-                <OutputHandle position={sourcePosition} />
-              </div>
-            </OpenNodeConfig>
-          </OpenNodeLog>
+          <OpenNodeConfig {...{ nodeData: data, nodeId: id }}>
+            <div className="flex h-full w-full items-center justify-center">
+              {/* <NodeHeader> */}
+              <NodeImage src="/assets/NewAgentIcon.svg" />
+              <NodeHeading className="text-2xs">{data.label}</NodeHeading>
+              <InputHandle position={targetPosition} />
+              <OutputHandle position={sourcePosition} />
+            </div>
+          </OpenNodeConfig>
           <NodeToolbar offset={5} isVisible={isHovered} position={Position.Top}>
-            {!isExecutionLog && !isAgentHistory && data?.isGroupHead && (
+            {data?.isGroupHead && (
               <Tooltip content={data?.isExpanded ? "Collapse" : "Expand"}>
                 <Button
                   variant={"outline"}
@@ -119,7 +115,7 @@ export const CallAgentNode = memo(
             )}
           </NodeToolbar>
         </div>
-      </>
+      </OpenNodeLog>
     );
   },
 );

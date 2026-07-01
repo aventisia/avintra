@@ -16,9 +16,8 @@ import { iconMapper } from "@/components/icon-mapper";
 import { NodeContainer } from "@/components/node-container";
 import { NodeHeading } from "@/components/node-container/node-header/NodeHeading";
 import { NodeImage } from "@/components/node-container/node-header/NodeImage";
-import { useIsExecutionLogsRoute } from "@/features/execution-logs/hooks/useIsExecutionLogsRoute";
 import { useGroupToggle } from "@/features/react-flow/hooks/useGroupToggle";
-import { useIsVersionHistoryRoute } from "@/features/version-history/hooks/useIsVersionHistoryRoute";
+// import { useIsVersionHistoryRoute } from "@/features/version-history/hooks/useIsVersionHistoryRoute";
 import { NodeDataType } from "@/types/node-data-type";
 
 import OpenNodeLog from "../node-container/OpenNodeLog";
@@ -37,9 +36,6 @@ const BaseNode: React.FC<BaseNodeProps> = ({
   ...props
 }) => {
   const { toggleGroupExpand } = useGroupToggle();
-
-  const isExecutionLog = useIsExecutionLogsRoute();
-  const isAgentHistory = useIsVersionHistoryRoute();
 
   const renderCount = nodeData?.count
     ? nodeData?.count === 2
@@ -94,15 +90,11 @@ const BaseNode: React.FC<BaseNodeProps> = ({
               <NodeImage src={nodeData.img} />
             )}
 
-            <NodeHeading
-              className={cn(nodeData.type === "blockNode" && "text-[#1E1B4B]")}
-            >
-              {nodeData.label}
-            </NodeHeading>
+            <NodeHeading>{nodeData.label}</NodeHeading>
           </>
         )}
 
-        {!isExecutionLog && !isAgentHistory && nodeData?.isGroupHead && (
+        {nodeData?.isGroupHead && (
           <div className="absolute -top-3 left-1/2 -translate-x-1/2">
             <Tooltip content={nodeData?.isExpanded ? "Collapse" : "Expand"}>
               <Button
