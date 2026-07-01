@@ -412,13 +412,20 @@ public class JobTableService : IJobTableService
                         ? $"{user.FirstName} {user.LastName}"
                         : "NA";
                 }
+                else if (job.TriggerType == TriggerTypesEnum.TimeTrigger)
+                {
+                    var timeTrigger = await _unitOfWork.TimeTriggerRepo
+                        .GetByConditionAsync(w => w.Id == job.RefId)
+                        .FirstOrDefaultAsync();
+
+                    job.ExecutedBy = timeTrigger?.Name;
+                }
                 else if (
                     job.TriggerType == TriggerTypesEnum.APITrigger ||
                     job.TriggerType == TriggerTypesEnum.EmailTrigger ||
                     job.TriggerType == TriggerTypesEnum.EventTrigger ||
                     job.TriggerType == TriggerTypesEnum.MessageTrigger ||
                     job.TriggerType == TriggerTypesEnum.QueueTrigger ||
-                    job.TriggerType == TriggerTypesEnum.TimeTrigger ||
                     job.TriggerType == TriggerTypesEnum.WebhookTrigger)
                 {
 
