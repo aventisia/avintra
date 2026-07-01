@@ -1,3 +1,8 @@
+import { Textarea } from "@aventisia/ui";
+import { AlertCircle } from "lucide-react";
+import { useEffect, useState } from "react";
+import { useShallow } from "zustand/react/shallow";
+
 import CustomCheckbox from "@/components/CustomCheckbox";
 import { JsonViewer } from "@/components/json-viewer/JsonViewer";
 import JsonViewerSkeleton from "@/components/json-viewer/JsonViewerSkeleton";
@@ -10,11 +15,6 @@ import { useExecuteSTTMutation } from "@/features/dynamic-config-panel/hooks/use
 import { useExecuteTTSMutation } from "@/features/dynamic-config-panel/hooks/useExecuteTTSMutation";
 import { useDynamicConfigPanelStore } from "@/features/dynamic-config-panel/stores/dcp-store";
 import { useLocalFileStore } from "@/features/file-viewer/stores/file-list-store";
-
-import { Textarea } from "@aventisia/ui";
-import { AlertCircle } from "lucide-react";
-import { useEffect, useState } from "react";
-import { useShallow } from "zustand/react/shallow";
 
 import AudioPlayer from "./AudioPlayer";
 import ExecuteButton from "./ExecuteButton";
@@ -285,7 +285,7 @@ const ModelTestContent = ({
         <JsonViewer
           jsonData={JSON.stringify(llmData?.output ?? {})}
           className="h-[calc(64vh)]"
-          enableCopy
+          enableClipboard
         />
       );
     }
@@ -294,7 +294,7 @@ const ModelTestContent = ({
       <JsonViewer
         jsonData={llmData?.output ?? JSON.stringify(formData, null, 2)}
         className="h-[calc(64vh)]"
-        enableCopy
+        enableClipboard
       />
     );
   };

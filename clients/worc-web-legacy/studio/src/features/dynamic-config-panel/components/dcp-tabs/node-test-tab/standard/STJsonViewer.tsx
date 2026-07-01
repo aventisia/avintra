@@ -1,5 +1,6 @@
-import { JsonViewer } from "@/components/json-viewer/JsonViewer";
 import { cn } from "@aventisia/ui/lib";
+
+import { JsonViewer } from "@/components/json-viewer/JsonViewer";
 
 interface STJsonViewerProps {
   jsonData: string;
@@ -17,7 +18,7 @@ const STJsonViewer = ({ label, jsonData, className }: STJsonViewerProps) => {
       </div>
 
       {/* JsonViewer */}
-      <JsonViewer jsonData={jsonData} enableCopy className="h-[34vh]" />
+      <JsonViewer jsonData={jsonData} enableClipboard className="h-[34vh]" />
     </div>
   );
 };

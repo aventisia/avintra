@@ -7,13 +7,17 @@ import { CopyIcon } from "lucide-react";
 
 interface JsonViewerProps {
   jsonData: string;
+  /** Add a copy button to copy complete json */
   enableCopy?: boolean;
+  /** The user can copy objects and arrays to clipboard by clicking on the clipboard icon. */
+  enableClipboard?: boolean;
   className?: string;
 }
 
 export const JsonViewer = ({
   jsonData = "{}",
   enableCopy,
+  enableClipboard = false,
   className,
 }: JsonViewerProps) => {
   const handleCopy = () => {
@@ -24,7 +28,7 @@ export const JsonViewer = ({
   const safeParse = (str: string, fallback = {}) => {
     try {
       const parsedJson = JSON.parse(str);
-
+      // Additionally parse any stringified JSON within the object
       Object.keys(parsedJson).forEach((key) => {
         if (
           typeof parsedJson[key] === "string" &&
@@ -34,17 +38,17 @@ export const JsonViewer = ({
           try {
             parsedJson[key] = JSON.parse(parsedJson[key]);
           } catch {
-            /* noop */
+            // leave as string if not valid JSON
           }
         }
       });
-
       return parsedJson;
     } catch {
       return fallback;
     }
   };
 
+  // Usage
   const parsed = safeParse(jsonData);
 
   return (
@@ -71,7 +75,7 @@ export const JsonViewer = ({
           fontSize: "0.75rem",
           fontFamily: "monospace",
         }}
-        enableClipboard={false}
+        enableClipboard={enableClipboard}
         displayDataTypes={false}
         indentWidth={18}
         highlightUpdates={false}

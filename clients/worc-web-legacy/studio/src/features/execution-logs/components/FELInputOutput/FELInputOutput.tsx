@@ -15,7 +15,7 @@ const FELInputOutput = ({ jsonData, title }: FELInputOutputProps) => {
       <JsonViewer
         jsonData={jsonData}
         className="h-[15rem] w-[27rem] p-1"
-        enableCopy
+        enableClipboard
       />
     </div>
   );
