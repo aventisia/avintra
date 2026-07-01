@@ -446,11 +446,10 @@ namespace NodeExecutor
             });
 
             // Run node execution in a background task
-            var (isSuccess, finalNodeExecutionLog) = await Task.Run(() =>
+            var result = await Task.Run(async () =>
             {
                 // Execute single node
-                var result = ActivityExecutorService.ExecuteNode(initialNodeExecutionLog, nodeData, _executionContext, _interpreter);
-                var updatedNodeExecutionLog = result.Item2;
+                var (isSuccess, updatedNodeExecutionLog) = ActivityExecutorService.ExecuteNode(initialNodeExecutionLog, nodeData, _executionContext, _interpreter);
 
                 // Update duration
                 updatedNodeExecutionLog.Duration = (DateTime.UtcNow - startTime).TotalSeconds;
@@ -459,22 +458,22 @@ namespace NodeExecutor
                 if (retryInputs != null && retryInputs.Count > 0)
                     updatedNodeExecutionLog.Inputs.AddRange(retryInputs);
 
-                return (result.Item1, updatedNodeExecutionLog);
+                // Send the execution log back to the server (must be awaited on UI thread)
+                return await Dispatcher.InvokeAsync(async () =>
+                {
+                    // Serialize the nodeExecutionLog to JSON with camelCase property names
+                    var serializedNodeExecutionLog = JsonConvert.SerializeObject(updatedNodeExecutionLog, new JsonSerializerSettings
+                    {
+                        ContractResolver = new CamelCasePropertyNamesContractResolver()
+                    });
+
+                    await _webSocket.SendCommandAsync("save-execution-log", serializedNodeExecutionLog);
+
+                    return (isSuccess, serializedNodeExecutionLog);
+                });
             });
 
-            // Serialize the nodeExecutionLog to JSON with camelCase property names
-            var serializedNodeExecutionLog = JsonConvert.SerializeObject(finalNodeExecutionLog, new JsonSerializerSettings
-            {
-                ContractResolver = new CamelCasePropertyNamesContractResolver()
-            });
-
-            // Send the execution log back to the server on UI thread
-            await Dispatcher.InvokeAsync(async () =>
-            {
-                await _webSocket.SendCommandAsync("save-execution-log", serializedNodeExecutionLog);
-            });
-
-            return (isSuccess, serializedNodeExecutionLog);
+            return await result;
         }
 
         private async void ProcessNodeWithRetryAsync(string data)
