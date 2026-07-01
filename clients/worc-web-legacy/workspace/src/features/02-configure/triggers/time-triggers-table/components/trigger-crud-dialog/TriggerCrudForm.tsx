@@ -1,5 +1,3 @@
-import { MultiSelectField } from "@/components/multi-select/MultiSelectField";
-
 import { TagInput } from "@aventisia/ui";
 import { SubmitButton } from "@aventisia/ui/buttons";
 import {
@@ -18,6 +16,8 @@ import { useListOptimisticMutation } from "@aventisia/ui/hooks";
 import { cn } from "@aventisia/ui/lib";
 import { useEffect } from "react";
 import { z } from "zod";
+
+import { MultiSelectField } from "@/components/multi-select/MultiSelectField";
 
 import { triggerOptimisticMutationFn } from "../../apis/triggers-table-apis";
 import { timezoneOptions } from "../../constants/form-utils";
@@ -46,12 +46,9 @@ export const TriggerCrudForm = () => {
     rowId,
     isDirty,
     crudAction,
-    // isAvailable,
-    // availabilityMessage,
-    // isCheckPending,
-    // handleInputChange,
     setShowDialog,
     refineFormData,
+    isEffectivePassed,
   } = useDefineTriggerForm();
 
   // Use this in place DATA_QUERY_KEY to handle Personal/Shared tabs list
@@ -89,6 +86,9 @@ export const TriggerCrudForm = () => {
 
   // Is form in read mode?
   const isReadMode = crudAction === "read";
+  // Lock the effective date fields if we're purely reading OR if it's an update where the date already passed
+  const disableEffectiveInputs =
+    isReadMode || (crudAction === "update" && isEffectivePassed);
 
   // Return the form
   return (
@@ -102,11 +102,7 @@ export const TriggerCrudForm = () => {
       {isReadMode && <InputField {...idProps} />}
 
       {/* Name */}
-      <InputField
-        {...nameProps}
-        // onChangeCapture={(e) => handleInputChange(e.currentTarget.value)}
-        // nonErrorMessage={availabilityMessage}
-      />
+      <InputField {...nameProps} />
 
       <FormField
         name="timezone"
@@ -170,8 +166,17 @@ export const TriggerCrudForm = () => {
       />
 
       <div className="grid grid-cols-2 gap-2">
-        <DatePickerField {...effectiveDateProps} />
-        <InputField type="time" name="effectiveTime" step={60} label="Time" />
+        <DatePickerField
+          {...effectiveDateProps}
+          disabled={disableEffectiveInputs}
+        />
+        <InputField
+          type="time"
+          name="effectiveTime"
+          step={60}
+          label="Time"
+          disabled={disableEffectiveInputs}
+        />
       </div>
 
       <div className="grid grid-cols-2 gap-2">

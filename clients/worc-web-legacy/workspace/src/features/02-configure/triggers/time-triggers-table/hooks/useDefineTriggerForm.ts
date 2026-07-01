@@ -1,35 +1,28 @@
-import { useUserSessionStore } from "@/react-toolkit/stores/user-session-store";
-
-// import { useCheckAvailability } from "@aventisia/ui/hooks";
 import { useDTCrudDialogStore } from "@aventisia/ui/stores";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useQueryClient } from "@tanstack/react-query";
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
 import { useShallow } from "zustand/react/shallow";
 
-// import { isNameAvailable } from "../apis/triggers-table-apis";
+import { useUserSessionStore } from "@/react-toolkit/stores/user-session-store";
+
 import {
   getTimeFromDate,
   numbersToWeekdays,
   setTimeToDate,
   weekdaysToNumbers,
 } from "../constants/form-utils";
-import {
-  // triggerNameSchema,
-  triggerZodSchema,
-} from "../constants/trigger-zod-schema";
+import { triggerZodSchema } from "../constants/trigger-zod-schema";
 import { TimeTriggerDto } from "../dtos/time-trigger-dto";
 import { useTableTab } from "./useTableTab";
 
 /**
- * Custom hook for defining a trigger form.
+ * Manages the state, validation, and data transformations for the Time Trigger form.
+ * Handles synchronizing Data Table selections with the form inputs and preparing payloads.
  */
 export const useDefineTriggerForm = () => {
-  // Trigger name state for availability check
-  // const [triggerName, setTriggerName] = useState("");
-
   // Get user session
   const { userSession } = useUserSessionStore(
     useShallow((state) => ({
@@ -53,6 +46,12 @@ export const useDefineTriggerForm = () => {
   // Get query client
   const queryClient = useQueryClient();
 
+  // Use this in place DATA_QUERY_KEY to handle Personal/Shared tabs list
+  const { queryKey } = useTableTab();
+
+  // Tracks if the trigger has already started, used to lock schedule inputs in the UI
+  const [isEffectivePassed, setIsEffectivePassed] = useState(false);
+
   // Define form with Zod schema
   const form = useForm<z.infer<typeof triggerZodSchema>>({
     resolver: zodResolver(triggerZodSchema),
@@ -74,6 +73,7 @@ export const useDefineTriggerForm = () => {
       exceptionWeekdays: [],
       exceptionDates: [],
       isDisabled: false,
+      nextTriggerTime: null,
     },
   });
 
@@ -82,23 +82,25 @@ export const useDefineTriggerForm = () => {
     formState: { isDirty },
   } = form;
 
-  // Use this in place DATA_QUERY_KEY to handle Personal/Shared tabs list
-  const { queryKey } = useTableTab();
-
-  // Fetch trigger data when rowId changes
+  /**
+   * Data Hydration Effect:
+   * Triggers whenever the selected rowId changes. Fetches the existing trigger data
+   * from the query cache and populates the form, mapping backend formats to UI structures.
+   */
   useEffect(() => {
-    // Get triggers data from query client
-    const triggersData = queryClient.getQueryData<{
-      data: TimeTriggerDto[];
-    }>(queryKey);
-
-    // Find the trigger by rowId
+    const triggersData = queryClient.getQueryData<{ data: TimeTriggerDto[] }>(
+      queryKey,
+    );
     const triggerData = triggersData?.data.find((item) => item.id === rowId);
 
-    // Set trigger name for availability check
-    // setTriggerName(triggerData?.name ?? "");
+    // Evaluate the historical start date against current time to lock UI fields if necessary
+    if (triggerData?.effectiveDate) {
+      const originalEffective = new Date(triggerData.effectiveDate);
+      setIsEffectivePassed(originalEffective < new Date());
+    } else {
+      setIsEffectivePassed(false);
+    }
 
-    // Reset form with fetched trigger data
     form.reset({
       id: rowId,
       name: triggerData?.name ?? "",
@@ -107,12 +109,13 @@ export const useDefineTriggerForm = () => {
       effectiveDate: triggerData?.effectiveDate
         ? new Date(triggerData.effectiveDate)
         : new Date(),
+      // Default new triggers to 15 minutes ahead to prevent immediate past-date validation errors
       effectiveTime: triggerData?.effectiveDate
         ? getTimeFromDate(new Date(triggerData.effectiveDate))
-        : getTimeFromDate(new Date(new Date().getTime() + 15 * 60000)), //15min ahead
+        : getTimeFromDate(new Date(new Date().getTime() + 15 * 60000)),
       interval: triggerData?.interval?.toString() ?? "1",
       frequency: triggerData?.frequency ?? "Daily",
-      atTime: triggerData?.atTime?.slice(0, 5) ?? "00:00", // Slice the string from index 0 to 5 (excluding the seconds part)
+      atTime: triggerData?.atTime?.slice(0, 5) ?? "00:00",
       weekdays: numbersToWeekdays(triggerData?.weekdays) ?? [],
       monthDays: triggerData?.monthDays?.map((v) => v.toString()) ?? [],
       endDate: triggerData?.endDate ? new Date(triggerData.endDate) : null,
@@ -125,35 +128,26 @@ export const useDefineTriggerForm = () => {
         numbersToWeekdays(triggerData?.exceptionWeekdays) ?? [],
       exceptionDates: triggerData?.exceptionDates ?? [],
       isDisabled: triggerData?.isDisabled ?? false,
+      nextTriggerTime: triggerData?.nextTriggerTime ?? null,
     });
-  }, [rowId, form, queryClient, userSession]);
+  }, [rowId, form, queryClient, userSession, queryKey]);
 
-  // Get check availability state and methods
-  // const {
-  //   isAvailable,
-  //   isCheckPending,
-  //   handleInputChange,
-  //   availabilityMessage,
-  //   setAvailabilityMessage,
-  // } = useCheckAvailability<z.infer<typeof triggerZodSchema>, z.ZodString>({
-  //   defaultInputValue: triggerName,
-  //   fieldName: "name",
-  //   form,
-  //   fieldSchema: triggerNameSchema,
-  //   checkAvailabilityAPIFn: isNameAvailable,
-  // });
-
-  // Refine form data before submission
+  /**
+   * Transforms form state back into the required DTO format for the backend API.
+   * Merges independent Date and Time fields into strict ISO date formats.
+   */
   const refineFormData = (formData: z.infer<typeof triggerZodSchema>) => {
     return {
       ...formData,
       lastModifiedBy: userSession?.email ?? "",
       lastModifiedOn: new Date().toISOString(),
-      atTime: formData.atTime + ":00", //add seconds to match BE time format(HH:MM:SS)
-      weekdays: weekdaysToNumbers(formData.weekdays), //convert weekdays to equ numbers
-      monthDays: formData.monthDays?.map((v) => Number(v)), //convert string input to number to match DTO
-      exceptionHours: formData.exceptionHours?.map((v) => Number(v)), //convert string input to number to match DTO
-      exceptionWeekdays: weekdaysToNumbers(formData.exceptionWeekdays), //convert weekdays to equ numbers
+      atTime: formData.atTime ? formData.atTime + ":00" : null, // Append seconds for BE compliance
+      weekdays: weekdaysToNumbers(formData.weekdays),
+      monthDays: formData.monthDays?.map((v) => Number(v)),
+      exceptionHours: formData.exceptionHours?.map((v) => Number(v)),
+      exceptionWeekdays: weekdaysToNumbers(formData.exceptionWeekdays),
+
+      // Combine Date and Time inputs into single Date objects
       effectiveDate: formData.effectiveTime
         ? setTimeToDate(formData.effectiveDate, formData.effectiveTime)
         : formData.effectiveDate,
@@ -165,22 +159,20 @@ export const useDefineTriggerForm = () => {
     };
   };
 
-  // Save the form dirty state
+  // Syncs the internal React Hook Form dirty state with the global global store
   useEffect(() => {
     toggleFormDirty(isDirty);
   }, [isDirty, toggleFormDirty]);
 
-  // Reset availability message and invalidate agents list when dialog closes
+  // Clean up and invalidate related queries when the dialog is closed
   useEffect(() => {
     if (!showDialog) {
-      // setAvailabilityMessage(null);
       queryClient.invalidateQueries({
         queryKey: ["select-trigger-agent", rowId],
       });
     }
   }, [queryClient, rowId, showDialog]);
 
-  // Return form, validation state, and methods
   return {
     form,
     isDirty,
@@ -188,9 +180,6 @@ export const useDefineTriggerForm = () => {
     crudAction,
     setShowDialog,
     refineFormData,
-    // isAvailable,
-    // availabilityMessage,
-    // isCheckPending,
-    // handleInputChange,
+    isEffectivePassed,
   };
 };
