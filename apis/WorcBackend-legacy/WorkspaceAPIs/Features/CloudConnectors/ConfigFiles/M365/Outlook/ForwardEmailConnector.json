@@ -67,29 +67,29 @@
       "direction": "Input",
       "type": "select",
       "name": "SubjectMode",
-      "label": "Forward Subject Mode",
-      "description": "Defines how the email subject should be constructed when forwarding.",
+      "label": "Subject Action",
+      "description": "Choose how the subject of the forwarded email should be handled.",
       "defaultValue": "KeepOriginal",
       "selectOptions": [
         {
           "label": "Keep Original",
           "value": "KeepOriginal",
-          "description": "Forward using the original subject unchanged"
+          "description": "Use the original email subject without any changes."
         },
         {
-          "label": "Custom Prefix",
+          "label": "Add Prefix",
           "value": "PrefixCustom",
-          "description": "Adds user-defined text before the original subject"
+          "description": "Add the specified subject text before the original email subject."
         },
         {
-          "label": "Custom Suffix",
+          "label": "Add Suffix",
           "value": "SuffixCustom",
-          "description": "Adds user-defined text after the original subject"
+          "description": "Add the specified subject text after the original email subject."
         },
         {
-          "label": "Replace Entire Subject",
+          "label": "Replace Subject",
           "value": "Replace",
-          "description": "Completely replaces the original subject with a new one"
+          "description": "Replace the original email subject with the specified subject text."
         }
       ]
     },

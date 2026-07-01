@@ -2,7 +2,9 @@
 using System.Activities;
 using System.Collections.Generic;
 using System.ComponentModel;
+using System.Linq;
 using System.Net.Http;
+using System.Text.RegularExpressions;
 using CodeActivitiesLibrary.Activities.WorkflowLogics.QueueManagement.Enums;
 using CodeActivitiesLibrary.Enums;
 using CodeActivitiesLibrary.Extensions;
@@ -25,45 +27,16 @@ namespace CodeActivitiesLibrary.WorkflowLogics.QueueManagement
         public InArgument<string> QueueName { get; set; }
 
         [DisplayName("Status")]
-        [Description("Select the new status to assign to the work item.")]
+        [Description("Select the status of the work items to retrieve.")]
         public InArgument<WorkItemStatusEnum> Status { get; set; }
 
-        [DisplayName("Enable Sorting")]
-        [Description("Indicates whether the retrieved work items should be sorted.")]
-        [DefaultValue(false)]
-        public InArgument<bool> EnableSorting { get; set; }
+        [DisplayName("Sort By")]
+        [Description("Specifies how work items are sorted. Enter one or more sort expressions in the format '<Field> [ASC|DESC]', separated by commas. If no sort direction is specified, DESC is used by default. Examples: 'CreatedOn DESC', 'Priority ASC', 'CreatedOn DESC, Name ASC', or 'DueDate'.")]
+        public InArgument<string> SortBy { get; set; }
 
-        [DisplayName("Sort Field")]
-        [Description("Specifies the field name to sort the retrieved work items by.")]
-        [RenderIfCondition(nameof(EnableSorting), true)]
-        public InArgument<string> SortField { get; set; }
-
-        [DisplayName("Sort Order")]
-        [Description("Specifies the sort order for the retrieved work items.")]
-        [DefaultValue(FieldSortOrder.Ascending)]
-        [RenderIfCondition(nameof(EnableSorting), true)]
-        public InArgument<FieldSortOrder> SortOrder { get; set; }
-
-        [DisplayName("Enable Filtering")]
-        [Description("Indicates whether a filter should be applied when retrieving work items.")]
-        [DefaultValue(false)]
-        public InArgument<bool> EnableFiltering { get; set; }
-
-        [DisplayName("Filter Field")]
-        [Description("Specifies the field name to filter the retrieved work items by.")]
-        [RenderIfCondition(nameof(EnableFiltering), true)]
-        public InArgument<string> FilterField { get; set; }
-
-        [DisplayName("Comparison Operator")]
-        [Description("Specifies the comparison operator to use when filtering work items.")]
-        [DefaultValue(FilterComparisonOperator.EqualTo)]
-        [RenderIfCondition(nameof(EnableFiltering), true)]
-        public InArgument<FilterComparisonOperator> ComparisonOperator { get; set; }
-
-        [DisplayName("Filter Value")]
-        [Description("Specifies the value to compare against the selected field.")]
-        [RenderIfCondition(nameof(EnableFiltering), true)]
-        public InArgument<string> FilterValue { get; set; }
+        [DisplayName("Filter By")]
+        [Description("Specifies the criteria for filtering work items. Enter one or more filter expressions in the format '<Field> <Operator> <Value>', separated by logical operators (AND/OR). Supported operators: =, !=, >, >=, <, <=, contains, notcontains, startswith, endswith, dateafter, datebefore, dateonorafter, dateonorbefore, isnull, and isnotnull. Examples: 'Priority = High', 'Amount >= 1000', 'Name contains John', 'Email isnotnull', or 'Priority = High AND Amount >= 1000'.")]
+        public InArgument<string> FilterBy { get; set; }
 
         [DisplayName("Top")]
         [Description("Specifies the maximum number of work items to retrieve.")]
@@ -92,54 +65,24 @@ namespace CodeActivitiesLibrary.WorkflowLogics.QueueManagement
                 var top = Top.Get(context);
                 var skip = Skip.Get(context);
 
-                // Retrieve sorting inputs
-                var enableSorting = EnableSorting.Get(context);
-                var sortField = SortField.Get(context);
-                var sortOrder = SortOrder.Get(context);
-
-                // Retrieve filtering inputs
-                var enableFiltering = EnableFiltering.Get(context);
-                var filterField = FilterField.Get(context);
-                var comparisonOperator = ComparisonOperator.Get(context);
-                var filterValue = FilterValue.Get(context);
-
                 // Prepare collections used in the request payload
-                List<object> queuePriority = new List<object>();
-                List<object> conditions = new List<object>();
+                var sortBy = SortBy.Get(context);
+                var filterBy = FilterBy.Get(context);
 
-                // If sorting is enabled, validate sort field and add sorting info
-                if (enableSorting)
-                {
-                    if (string.IsNullOrWhiteSpace(sortField))
-                        throw new ArgumentException("Sort Field is required when sorting is enabled.");
+                // Parse Sort By JSON
+                List<object> queuePriority = string.IsNullOrWhiteSpace(sortBy)
+                    ? new List<object>()
+                    : ParseSort(sortBy);
 
-                    queuePriority.Add(new
-                    {
-                        field = sortField,
-                        orderBy = sortOrder.ToString()
-                    });
-                }
-
-                // If filtering is enabled, validate filter inputs and add condition
-                if (enableFiltering)
-                {
-                    if (string.IsNullOrWhiteSpace(filterField))
-                        throw new ArgumentException("Filter Field is required when filtering is enabled.");
-
-                    if (string.IsNullOrWhiteSpace(filterValue))
-                        throw new ArgumentException("Filter Value is required when filtering is enabled.");
-
-                    conditions.Add(new
-                    {
-                        field = filterField,
-                        comparisonOperator = comparisonOperator.ToString(),
-                        value = filterValue
-                    });
-                }
+                // Parse Filter By JSON
+                List<object> conditions = string.IsNullOrWhiteSpace(filterBy)
+                    ? new List<object>()
+                    : ParseFilter(filterBy);
 
                 // Build the request payload for the queue API
                 var payload = new
                 {
+                    // queueId = queueId,
                     queueName = queueName,
                     status = status.ToString(),
                     queuePriority = queuePriority,
@@ -166,6 +109,181 @@ namespace CodeActivitiesLibrary.WorkflowLogics.QueueManagement
                 StatusMessage.Set(context, $"Error retrieving work item: {ex.Message}");
                 throw;
             }
+        }
+
+        // Parses a comma-separated sort expression into the queue API sort format.
+        // Example: "CreatedOn DESC, Name ASC, Priority"
+        private static List<object> ParseSort(string sortBy)
+        {
+            var queuePriority = new List<object>();
+
+            // Return an empty collection when no sort expression is provided.
+            if (string.IsNullOrWhiteSpace(sortBy))
+                return queuePriority;
+
+            // Split the input into individual sort expressions.
+            var sortExpressions = sortBy.Split(new[] { ',' }, StringSplitOptions.RemoveEmptyEntries);
+
+            foreach (var sortExpression in sortExpressions)
+            {
+                var tokens = sortExpression.Trim()
+                                           .Split(new[] { ' ' }, StringSplitOptions.RemoveEmptyEntries);
+                if (tokens.Length == 0)
+                    continue;
+
+                if (tokens.Length > 2)
+                {
+                    throw new ArgumentException(
+                        $"Invalid sort expression '{sortExpression}'. Expected format: '<Field> [ASC|DESC]'.");
+                }
+
+                var field = tokens[0];
+
+                // Default to Descending when no sort direction is specified.
+                var orderBy = "Descending";
+
+                if (tokens.Length == 2)
+                {
+                    var sortDirection = tokens[1].ToUpperInvariant();
+
+                    switch (sortDirection)
+                    {
+                        case "ASC":
+                            orderBy = "Ascending";
+                            break;
+
+                        case "DESC":
+                            orderBy = "Descending";
+                            break;
+
+                        default:
+                            throw new ArgumentException(
+                                $"Invalid sort direction '{tokens[1]}' for field '{field}'. Supported values are ASC and DESC.");
+                    }
+                }
+
+                queuePriority.Add(new
+                {
+                    field,
+                    orderBy
+                });
+            }
+
+            return queuePriority;
+        }
+
+        // Maps supported filter operators to the corresponding queue API comparison operators.
+        private static readonly Dictionary<string, string> OperatorMap = new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase)
+        {
+            // Equality
+            { "!=", "NotEqualTo" },
+            { "=", "EqualTo" },
+
+            // Numeric comparison
+            { ">=", "GreaterThanOrEqual" },
+            { "<=", "LessThanOrEqual" },
+            { ">", "GreaterThan" },
+            { "<", "LessThan" },
+
+            // String operators
+            { "contains", "Contains" },
+            { "notcontains", "DoesNotContain" },
+            { "startswith", "StartsWith" },
+            { "endswith", "EndsWith" },
+
+            // Date operators
+            { "dateafter", "DateAfter" },
+            { "datebefore", "DateBefore" },
+            { "dateonorafter", "DateOnOrAfter" },
+            { "dateonorbefore", "DateOnOrBefore" },
+
+            // Null operators
+            { "isnull", "IsNull" },
+            { "isnotnull", "IsNotNull" }
+        };
+
+        // Parses a comma-separated filter expression into the queue API filter format.
+        //
+        // Supported examples:
+        // "Priority = High"
+        // "Amount >= 1000"
+        // "Name contains John"
+        // "Email is not null"
+        // "Priority = High, Amount >= 1000"
+        private static List<object> ParseFilter(string filterBy)
+        {
+            var conditions = new List<object>();
+
+            // Return an empty collection when no filter expression is provided.
+            if (string.IsNullOrWhiteSpace(filterBy))
+                return conditions;
+
+            // Split the input into individual filter expressions.
+            // Filters can be separated by logical operators (AND, OR, &&, ||, &, |).
+            var filterExpressions = Regex.Split(
+                filterBy,
+                @"\s*(?:AND|and|OR|or|&&|\|\||&|\|)\s*",
+                RegexOptions.IgnoreCase)
+                .Where(expression => !string.IsNullOrWhiteSpace(expression));
+
+            foreach (var filterExpression in filterExpressions)
+            {
+                var expression = filterExpression.Trim();
+                var isMatched = false;
+
+                // Match the longest operator first to avoid partial matches
+                // (e.g. ">=" before ">", "is not null" before "isnull").
+                foreach (var op in OperatorMap.Keys.OrderByDescending(x => x.Length))
+                {
+                    var index = expression.IndexOf(op, StringComparison.OrdinalIgnoreCase);
+
+                    if (index < 0)
+                        continue;
+
+                    // Extract the field name and comparison value.
+                    var field = expression.Substring(0, index).Trim();
+                    var value = expression.Substring(index + op.Length).Trim();
+                    var comparisonOperator = OperatorMap[op];
+
+                    // Validate that a field name is specified.
+                    if (string.IsNullOrWhiteSpace(field))
+                    {
+                        throw new ArgumentException(
+                            $"Missing field name in filter expression '{expression}'.");
+                    }
+
+                    // Validate the comparison value unless the operator does not require one.
+                    if (comparisonOperator != "IsNull" &&
+                        comparisonOperator != "IsNotNull" &&
+                        string.IsNullOrWhiteSpace(value))
+                    {
+                        throw new ArgumentException(
+                            $"Missing filter value in filter expression '{expression}'.");
+                    }
+
+                    // Add the parsed filter condition to the request payload.
+                    conditions.Add(new
+                    {
+                        field,
+                        comparisonOperator,
+                        value = comparisonOperator == "IsNull" || comparisonOperator == "IsNotNull"
+                            ? null
+                            : value
+                    });
+
+                    isMatched = true;
+                    break;
+                }
+
+                // No supported operator was found in the expression.
+                if (!isMatched)
+                {
+                    throw new ArgumentException(
+                        $"Invalid filter expression '{expression}'. Expected format: '<Field> <Operator> <Value>'.");
+                }
+            }
+
+            return conditions;
         }
     }
 }
