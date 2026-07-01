@@ -1,6 +1,7 @@
 import { Separator } from "@aventisia/ui";
 import { DataTableRowActions } from "@aventisia/ui/data-table";
 
+import { AgentConfigRowAction } from "./AgentConfigRowAction";
 import { AgentDisableAction } from "./AgentDisableAction";
 import { AssignMachineRowAction } from "./AssignMachineRowAction";
 import { AssignUserRowAction } from "./AssignUserRowAction";
@@ -24,6 +25,7 @@ export const TableActions = ({
       ) : (
         <AssignMachineRowAction rowId={rowId} isDisabled={isDisabled} />
       )}{" "}
+      <AgentConfigRowAction rowId={rowId} isDisabled={isDisabled} />
       <Separator />
       {isDisabled ? (
         <EnableAgentRowAction rowId={rowId} />
