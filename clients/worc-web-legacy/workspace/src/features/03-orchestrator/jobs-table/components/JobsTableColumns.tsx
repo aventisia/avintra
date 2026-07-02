@@ -1,3 +1,4 @@
+import { Checkbox } from "@aventisia/ui";
 import { Badge } from "@aventisia/ui/badge";
 import { DTColumnHeader } from "@aventisia/ui/data-table";
 import { cn } from "@aventisia/ui/lib";
@@ -12,6 +13,31 @@ import { JobsTableCellLink } from "./JobsTableCellLink";
 import { JobRowActions } from "./jobs-row-actions/JobRowActions";
 
 export const jobsTableColumns: ColumnDef<JobsTableDto>[] = [
+  {
+    id: "id",
+    accessorKey: "id",
+    header: ({ table }) => (
+      <Checkbox
+        checked={
+          table.getIsAllPageRowsSelected() ||
+          (table.getIsSomePageRowsSelected() && "indeterminate")
+        }
+        onCheckedChange={(value) => table.toggleAllPageRowsSelected(!!value)}
+        aria-label="Select all"
+        className="translate-y-[2px]"
+      />
+    ),
+    cell: ({ row }) => (
+      <Checkbox
+        checked={row.getIsSelected()}
+        onCheckedChange={(value) => row.toggleSelected(!!value)}
+        aria-label="Select row"
+        className="translate-y-[2px]"
+      />
+    ),
+    enableSorting: false,
+  },
+
   {
     accessorKey: "name",
     header: ({ column }) => (
@@ -184,7 +210,7 @@ export const jobsTableColumns: ColumnDef<JobsTableDto>[] = [
       </div>
     ),
   },
-    {
+  {
     accessorKey: "executedOn",
     header: ({ column }) => (
       <DTColumnHeader
