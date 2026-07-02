@@ -61,7 +61,7 @@ export default function OpenNodeLog({
 
   // First entry is always the default attempt, not a retry — subtract it from the total
   const retryCount =
-    attemptsForSameExecution.length > 1
+    attemptsForSameExecution.length > 2 // make it `1` if need to show Badge for default attempt 
       ? attemptsForSameExecution.length - 1
       : 0;
 
