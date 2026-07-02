@@ -138,6 +138,13 @@ namespace NodeExecutor.Services
                             input.Value = JToken.Parse(input.Value.ToString());
                         }
 
+                        // VoiceConfig
+                        if (input.Key.Contains("__VoiceConfig__"))
+                        {
+                            input.Key = "VoiceConfig";
+                            input.Value = JToken.Parse(input.Value.ToString());
+                        }
+
                         // Prompt
                         if (input.Key.Contains("__Prompt__"))
                         {
@@ -188,7 +195,17 @@ namespace NodeExecutor.Services
 
                     // Update nodeData
                     nodeData.NodeInputs = newNodeInputs;
-                    nodeData.CodeActivityName = nameof(ProcessLLMRequestActivity);
+
+                    if (nodeData.CodeActivityName == "CreateTTSAIAgent")
+                    {
+                        nodeData.CodeActivityName = nameof(ProcessTTSRequestActivity);
+                    }
+                    else if (nodeData.CodeActivityName == "CreateSTTAIAgent")
+                    {
+                        nodeData.CodeActivityName = nameof(ProcessSTTRequestActivity);
+                    }
+                    else
+                        nodeData.CodeActivityName = nameof(ProcessLLMRequestActivity);
                 }
 
                 // Add agentId, agentName, accessToken as NodeInputs at the beginning
@@ -279,10 +296,10 @@ namespace NodeExecutor.Services
                     }
 
                     // Add to inputValues for logging
-                    if (!string.IsNullOrEmpty(input.Key) && 
-                        !inputValues.ContainsKey(input.Key) && 
+                    if (!string.IsNullOrEmpty(input.Key) &&
+                        !inputValues.ContainsKey(input.Key) &&
                         input.Key != "AgentId" &&
-                        input.Key != "AgentName" && 
+                        input.Key != "AgentName" &&
                         input.Key != "AccessToken")
                     {
                         inputValues[input.Key] = inputValue;
