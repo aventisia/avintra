@@ -21,6 +21,7 @@ import { columnVisibilityState } from "../constants/column-visibility-state";
 import { JobStatusTypesEnum } from "../enums/job-status-type-enum";
 import { useFetchJobsList } from "../hooks/useFetchJobsList";
 import { DateRangeFilter } from "./DateRangeFilter";
+import { JobsBulkActions } from "./JobsBulkActions";
 import { JobsStats } from "./JobsStats";
 import { jobsTableColumns } from "./JobsTableColumns";
 
@@ -85,6 +86,11 @@ export const JobsTable = () => {
       // Show isPublished only for History
       if (col.id === "isPublished") {
         return tabValue === "History";
+      }
+
+      // Show Select Row only for Scheduled
+      if (col.id === "id") {
+        return tabValue === "Scheduled";
       }
 
       return true;
@@ -157,7 +163,6 @@ export const JobsTable = () => {
               ) : null}
             </div>
           </div>
-
           {/* Data table to render data */}
           <div className="flex flex-col gap-2">
             {tabValue === "History" && (
@@ -175,7 +180,7 @@ export const JobsTable = () => {
               />
             </HorizontalScrollWrapper>
           </div>
-
+          {tabValue === "Scheduled" && <JobsBulkActions table={table} />}{" "}
           {/* Data table Pagination component */}
           <DTPagination table={table} />
         </div>

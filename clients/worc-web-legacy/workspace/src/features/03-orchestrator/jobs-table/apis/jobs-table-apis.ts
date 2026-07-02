@@ -1,6 +1,6 @@
-import { axiosInstance } from "@/react-toolkit/lib/axios-instance";
+import { IHttpResponse, IOptimisticMutation } from "@aventisia/ui/dtos";
 
-import { IHttpResponse } from "@aventisia/ui/dtos";
+import { axiosInstance } from "@/react-toolkit/lib/axios-instance";
 
 import { JobDetailsDto } from "../dtos/job-details-dto";
 import { JobsTableDto } from "../dtos/jobs-table-dto";
@@ -34,6 +34,27 @@ export const deleteJob = (id: string) => {
   return axiosInstance
     .delete<IHttpResponse<boolean>>(`${baseAPIURL}/${id}`)
     .then((res) => res.data);
+};
+
+/**
+ * Deletes multiple Jobs(with created Status only) by their IDs.
+ */
+export const deleteJobs = (ids: string[]) => {
+  return axiosInstance
+    .post<IHttpResponse<boolean>>(`${baseAPIURL}/delete-multiple`, ids)
+    .then((res) => res.data);
+};
+
+export const jobOptimisticMutationFn = ({
+  payload,
+  crudAction,
+}: IOptimisticMutation<JobsTableDto | string | string[]>) => {
+  switch (crudAction) {
+    case "delete-multiple":
+      return deleteJobs(payload as string[]);
+    default:
+      throw new Error("Invalid action type");
+  }
 };
 
 /**
