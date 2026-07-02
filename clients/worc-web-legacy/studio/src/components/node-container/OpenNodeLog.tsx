@@ -12,6 +12,7 @@ interface OpenNodeLogProps {
   children: React.ReactNode;
   className?: string;
   showIcon?: boolean;
+  showBorder?: boolean;
 }
 
 export default function OpenNodeLog({
@@ -19,6 +20,7 @@ export default function OpenNodeLog({
   children,
   className,
   showIcon = true,
+  showBorder = true,
 }: OpenNodeLogProps) {
   const {
     executionMap,
@@ -107,8 +109,8 @@ export default function OpenNodeLog({
         <div
           className={cn(
             "relative border rounded-lg",
-            isExecutionLog && isSuccess && "border-green-500",
-            isExecutionLog && isError && "border-red-500",
+            isExecutionLog && isSuccess && showBorder && "border-green-500",
+            isExecutionLog && isError && showBorder && "border-red-500",
             className,
           )}
           onMouseEnter={handleMouseEnter}
