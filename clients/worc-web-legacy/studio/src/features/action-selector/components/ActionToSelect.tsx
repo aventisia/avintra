@@ -1,8 +1,8 @@
-import { iconMapper } from "@/components/icon-mapper";
-import { NodeDataType } from "@/types/node-data-type";
-
 import { Badge } from "@aventisia/ui/badge";
 import { MonitorIcon } from "lucide-react";
+
+import { iconMapper } from "@/components/icon-mapper";
+import { NodeDataType } from "@/types/node-data-type";
 
 import { FallbackImageIcon } from "./FallbackImageIcon";
 
@@ -40,7 +40,9 @@ export const ActionToSelect = ({ data }: ActionToSelectProps) => {
             </Badge>
           )}
         </h2>
-        <p className="text-2xs text-muted-foreground">{data.description}</p>
+        <p className="text-2xs text-muted-foreground line-clamp-2">
+          {data.description}
+        </p>
       </div>
     </div>
   );
