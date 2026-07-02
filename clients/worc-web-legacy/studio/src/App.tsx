@@ -10,7 +10,6 @@ import { AppErrorPage } from "./components/layout/AppErrorPage";
 import { AppLayout } from "./components/layout/AppLayout";
 import { AppRedirectPage } from "./components/layout/AppRedirectPage";
 import { AgentHistoryPage } from "./pages/AgentHistoryPage";
-import { AgentsAssistPage } from "./pages/AgentsAssistPage";
 import { ExecutionLogsPage } from "./pages/ExecutionLogsPage";
 import { FlowPage } from "./pages/FlowPage";
 
@@ -44,10 +43,6 @@ const router = createBrowserRouter(
         {
           path: "/execution-log",
           element: <ExecutionLogsPage />,
-        },
-        {
-          path: "/agents-assist",
-          element: <AgentsAssistPage />,
         },
         {
           path: "/page-not-found",
