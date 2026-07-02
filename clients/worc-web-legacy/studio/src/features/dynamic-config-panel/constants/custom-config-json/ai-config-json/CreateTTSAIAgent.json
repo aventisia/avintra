@@ -4,7 +4,10 @@
   "description": "Convert text into natural-sounding speech using AI.",
   "version": "1.0.0",
   "auther": "@aventisia",
-  "supportedPlatforms": ["cloud", "desktop"],
+  "supportedPlatforms": [
+    "cloud",
+    "desktop"
+  ],
   "errorHandling": "standard",
   "testScreenType": "llmGenerateRequest",
   "fields": [
@@ -38,19 +41,17 @@
       "type": "textarea",
       "name": "InputText",
       "label": "Input Text",
-
       "required": false,
       "category": "Inputs"
     },
-
     {
       "direction": "Output",
       "type": "config-panel-output",
-      "name": "TTSResponse",
-      "label": "Button Clicked Successfully",
-      "description": "TTS Response.",
+      "name": "Result",
+      "label": "Result",
+      "description": "Result.",
       "defaultValue": {
-        "value": "TTSResponse",
+        "value": "Result",
         "enabled": true
       },
       "required": false,

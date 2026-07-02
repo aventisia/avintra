@@ -289,7 +289,7 @@ public class NodeProcessor : INodeProcessor
         return node.Type switch
         {
             "cloudConnectorNode" => PreprocessCloudConnectorNode(rawName, inputs, context),
-            "aiNode" => PreprocessAiNode(inputs, context),
+            "aiNode" => PreprocessAiNode(rawName, inputs, context),
             _ => (rawName, inputs),
         };
     }
@@ -349,7 +349,7 @@ public class NodeProcessor : INodeProcessor
     /// When the flow is triggered by a chat interaction, automatically injects
     /// ChatUserInput and ChatThreadMessages from the flow execution context.
     /// </summary>
-    private static (string, List<ReactFlowNodeInput>) PreprocessAiNode(List<ReactFlowNodeInput> inputs, FlowExecutionContext context)
+    private static (string, List<ReactFlowNodeInput>) PreprocessAiNode(string rawName, List<ReactFlowNodeInput> inputs, FlowExecutionContext context)
     {
         var newInputs = new List<ReactFlowNodeInput>();
 
@@ -361,6 +361,7 @@ public class NodeProcessor : INodeProcessor
             var key = input.Key switch
             {
                 var k when k.Contains("__ModelConfig__") => "ModelConfig",
+                var k when k.Contains("__VoiceConfig__") => "VoiceConfig",
                 var k when k.Contains("__Prompt__") => "Prompt",
                 var k when k.Contains("__KbConfig__") => "KbConfig",
                 var k when k.Contains("__MemoryConfig__") => "MemoryConfig",
@@ -386,8 +387,16 @@ public class NodeProcessor : INodeProcessor
                 newInputs.Add(new ReactFlowNodeInput { Key = "UserInput", Value = userInput });
             }
         }
-
-        return ("ProcessLLMRequestNode", newInputs);
+        if (rawName == "CreateTTSAIAgent")
+        {
+            return ("ProcessTTSRequestNode", newInputs);
+        }
+        else if (rawName == "CreateSTTAIAgent")
+        {
+            return ("ProcessTTSRequestNode", newInputs);
+        }
+        else
+            return ("ProcessLLMRequestNode", newInputs);
     }
 
     private static bool IsSystemInput(string key) =>

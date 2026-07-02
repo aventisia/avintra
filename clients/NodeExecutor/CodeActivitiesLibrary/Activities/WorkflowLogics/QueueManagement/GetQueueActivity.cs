@@ -8,7 +8,7 @@ using System.Net.Http;
 namespace CodeActivitiesLibrary.WorkflowLogics.QueueManagement
 {
     [DisplayName("Get Queue")]
-    [Description("Retrieves the details and configuration of a specified queue by its name.")]
+    [Description("Retrieves the details of the specified queue by name, including its configuration, input and output schemas, processing statistics (pending, in progress, completed, failed, and total items), access settings, retry policies, and metadata such as creation and last modification information.")]
     [ActivityMetaData(nodeImg: "/assets/Queue.svg")]
     public class GetQueueActivity : BaseCodeActivity
     {

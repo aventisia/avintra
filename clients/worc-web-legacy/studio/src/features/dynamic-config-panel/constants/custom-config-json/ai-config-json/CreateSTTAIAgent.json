@@ -4,7 +4,10 @@
   "description": "Convert spoken language into written text using AI.",
   "version": "1.0.0",
   "auther": "@aventisia",
-  "supportedPlatforms": ["cloud", "desktop"],
+  "supportedPlatforms": [
+    "cloud",
+    "desktop"
+  ],
   "errorHandling": "standard",
   "testScreenType": "llmGenerateRequest",
   "fields": [
@@ -29,15 +32,14 @@
       "required": false,
       "category": "Inputs"
     },
-
     {
       "direction": "Output",
       "type": "config-panel-output",
-      "name": "STTResponse",
-      "label": "Button Clicked Successfully",
-      "description": "STT Response.",
+      "name": "Result",
+      "label": "Result",
+      "description": "Result",
       "defaultValue": {
-        "value": "STTResponse",
+        "value": "Result",
         "enabled": true
       },
       "required": false,
