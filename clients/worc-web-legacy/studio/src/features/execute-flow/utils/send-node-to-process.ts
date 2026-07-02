@@ -142,7 +142,7 @@ const processConditionalNode = (
     // Set branch id to process
     branchId = conditionalNodeData.branches[0];
 
-    // Slice the branchId from conndtionalNodeData
+    // Slice the branchId from conditionalNodeData
     conditionalNodeData.branches = conditionalNodeData.branches.slice(1);
 
     // Add conditionalNodeData to execution group
@@ -157,7 +157,7 @@ const processConditionalNode = (
       JSON.stringify(newExecutionGroup),
     );
   } else {
-    // If branch is processed and condtionalMode is SwitchCase, then exit the conditional group processing
+    // If branch is processed and conditionalMode is SwitchCase, then exit the conditional group processing
     if (
       (isBranchProcessed &&
         currentExecutionGroup.conditionalMode === "SwitchCase") ||
@@ -200,9 +200,18 @@ const processConditionalNode = (
   }
 
   // Get branch node
-  const branchNode = getNodesFromLS().find(
-    (node) => node.id === branchId,
-  ) as Node<NodeDataType>;
+  const branchNode = getNodesFromLS().find((node) => node.id === branchId) as
+    | Node<NodeDataType>
+    | undefined; // Added undefined for safety
+
+  // Exclude disabled OR missing branches
+  if (!branchNode || branchNode.data?.isDisabled) {
+    // The current branch has already been popped from the LS queue.
+    // By recursively calling this function, we instantly skip to
+    // the next available branch in the execution group.
+    processConditionalNode(node, isBranchProcessed, sendCommand);
+    return;
+  }
 
   // Get next node id from edges
   const nextNodeId =
@@ -211,7 +220,7 @@ const processConditionalNode = (
     )?.target ?? "nextNodeId";
 
   // If branch is default branch, then send next node to process
-  if (branchNode.data.name === "DefaultBranch") {
+  if (branchNode.data?.name === "DefaultBranch") {
     sendNextNodeToProcess(sendCommand, branchNode.id);
     return;
   }
