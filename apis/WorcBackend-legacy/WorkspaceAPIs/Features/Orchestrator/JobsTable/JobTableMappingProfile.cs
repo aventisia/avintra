@@ -24,6 +24,7 @@ public class JobTableMappingProfile : IRegister
             .Ignore(dest => dest.RetryCount)
             .Ignore(dest => dest.TenantId)
             .Ignore(dest => dest.CreatedOn)
+            .Ignore(dest => dest.TriggerType)
             .IgnoreNullValues(true);
 
         config.NewConfig<Job, ExportJobResponseDto>()

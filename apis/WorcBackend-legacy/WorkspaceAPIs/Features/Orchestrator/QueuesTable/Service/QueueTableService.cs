@@ -294,6 +294,8 @@ public class QueueTableService : IQueueTableService
                 .GetByConditionAsync(w =>
                     w.Name.ToLower() == queueName.ToLower()
                 )
+                .Include(i => i.QueueTransactions)
+                .Include(i => i.CreatedByUser)
                 .FirstOrDefaultAsync();
 
             // Verify that the queue exists.
