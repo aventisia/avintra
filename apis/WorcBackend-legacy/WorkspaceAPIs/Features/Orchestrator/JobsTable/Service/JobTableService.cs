@@ -402,15 +402,17 @@ public class JobTableService : IJobTableService
             // TODO: Review and update this mapping whenever new TriggerTypesEnum values are introduced.
             if (string.IsNullOrWhiteSpace(job.ExecutedBy))
             {
+                // Determine who initiated the job execution.
                 if (job.TriggerType == TriggerTypesEnum.ManualTrigger)
                 {
+                    // Manual execution: display the name of the user who started the job.
                     var user = await _unitOfWork.WorkspaceUserRepo
                         .GetByConditionAsync(w => w.Id == _userId)
                         .SingleOrDefaultAsync();
 
                     job.ExecutedBy = user != null
                         ? $"{user.FirstName} {user.LastName}"
-                        : "NA";
+                        : "Unknown User";
                 }
                 else if (
                     job.TriggerType == TriggerTypesEnum.APITrigger ||
@@ -421,32 +423,32 @@ public class JobTableService : IJobTableService
                     job.TriggerType == TriggerTypesEnum.TimeTrigger ||
                     job.TriggerType == TriggerTypesEnum.WebhookTrigger)
                 {
-
+                    // Trigger-based execution: display the name of the trigger that initiated the job.
                     var trigger = await _unitOfWork.TriggerRepo
                         .GetByConditionAsync(w => w.Id == job.RefId)
                         .FirstOrDefaultAsync();
 
-                    job.ExecutedBy = trigger?.Name;
+                    job.ExecutedBy = trigger?.Name ?? "Unknown Trigger";
                 }
                 else
                 {
-                    job.ExecutedBy = job.Machine?.Name;
+                    // Desktop execution: display the name of the machine that executed the job.
+                    job.ExecutedBy = $"Machine: {job.Machine?.Name ?? "Unknown"}";
                 }
             }
 
-            // Set the execution location if it has not already been specified.
-            // Use the machine name for desktop execution; otherwise, default to "Web Server".
+            // Determine where the job was executed if it has not already been set.
             if (string.IsNullOrWhiteSpace(job.ExecutedOn))
             {
                 if (job.Machine != null)
                 {
-                    // Desktop execution: use the local machine name.
-                    job.ExecutedOn = job.Machine.Name;
+                    // Executed by a desktop agent: show the machine name.
+                    job.ExecutedBy = $"Desktop: {job.Machine?.Name ?? "Unknown"}";
                 }
                 else
                 {
-                    // Server execution: indicate that the job was executed on the web server.
-                    job.ExecutedOn = "Web Server";
+                    // Executed from the web application/server (manual or trigger-based execution).
+                    job.ExecutedOn = "Web Browser";
                 }
             }
 
