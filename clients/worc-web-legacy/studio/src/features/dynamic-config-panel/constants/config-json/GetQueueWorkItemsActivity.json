@@ -22,7 +22,7 @@
       "type": "select",
       "name": "Status",
       "label": "Status",
-      "description": "Select the new status to assign to the work item.",
+      "description": "Select the status of the work items to retrieve.",
       "defaultValue": "",
       "required": false,
       "selectOptions": [
@@ -50,200 +50,21 @@
     },
     {
       "direction": "Input",
-      "type": "switch",
-      "name": "EnableSorting",
-      "label": "Enable Sorting",
-      "description": "Indicates whether the retrieved work items should be sorted.",
-      "defaultValue": false,
+      "type": "text",
+      "name": "SortBy",
+      "label": "Sort By",
+      "description": "Specifies how work items are sorted. Enter one or more sort expressions in the format \u0027\u003CField\u003E [ASC|DESC]\u0027, separated by commas. If no sort direction is specified, DESC is used by default. Examples: \u0027CreatedOn DESC\u0027, \u0027Priority ASC\u0027, \u0027CreatedOn DESC, Name ASC\u0027, or \u0027DueDate\u0027.",
+      "defaultValue": "",
       "required": false
     },
     {
       "direction": "Input",
       "type": "text",
-      "name": "SortField",
-      "label": "Sort Field",
-      "description": "Specifies the field name to sort the retrieved work items by.",
+      "name": "FilterBy",
+      "label": "Filter By",
+      "description": "Specifies the criteria for filtering work items. Enter one or more filter expressions in the format \u0027\u003CField\u003E \u003COperator\u003E \u003CValue\u003E\u0027, separated by logical operators (AND/OR). Supported operators: =, !=, \u003E, \u003E=, \u003C, \u003C=, contains, notcontains, startswith, endswith, dateafter, datebefore, dateonorafter, dateonorbefore, isnull, and isnotnull. Examples: \u0027Priority = High\u0027, \u0027Amount \u003E= 1000\u0027, \u0027Name contains John\u0027, \u0027Email isnotnull\u0027, or \u0027Priority = High AND Amount \u003E= 1000\u0027.",
       "defaultValue": "",
-      "required": false,
-      "renderIf": {
-        "conditions": [
-          {
-            "field": "EnableSorting",
-            "equals": true
-          }
-        ]
-      }
-    },
-    {
-      "direction": "Input",
-      "type": "select",
-      "name": "SortOrder",
-      "label": "Sort Order",
-      "description": "Specifies the sort order for the retrieved work items.",
-      "defaultValue": "Ascending",
-      "required": false,
-      "selectOptions": [
-        {
-          "label": "Ascending",
-          "value": "Ascending",
-          "description": ""
-        },
-        {
-          "label": "Descending",
-          "value": "Descending",
-          "description": ""
-        }
-      ],
-      "renderIf": {
-        "conditions": [
-          {
-            "field": "EnableSorting",
-            "equals": true
-          }
-        ]
-      }
-    },
-    {
-      "direction": "Input",
-      "type": "switch",
-      "name": "EnableFiltering",
-      "label": "Enable Filtering",
-      "description": "Indicates whether a filter should be applied when retrieving work items.",
-      "defaultValue": false,
       "required": false
-    },
-    {
-      "direction": "Input",
-      "type": "text",
-      "name": "FilterField",
-      "label": "Filter Field",
-      "description": "Specifies the field name to filter the retrieved work items by.",
-      "defaultValue": "",
-      "required": false,
-      "renderIf": {
-        "conditions": [
-          {
-            "field": "EnableFiltering",
-            "equals": true
-          }
-        ]
-      }
-    },
-    {
-      "direction": "Input",
-      "type": "select",
-      "name": "ComparisonOperator",
-      "label": "Comparison Operator",
-      "description": "Specifies the comparison operator to use when filtering work items.",
-      "defaultValue": "EqualTo",
-      "required": false,
-      "selectOptions": [
-        {
-          "label": "EqualTo",
-          "value": "EqualTo",
-          "description": ""
-        },
-        {
-          "label": "NotEqualTo",
-          "value": "NotEqualTo",
-          "description": ""
-        },
-        {
-          "label": "Contains",
-          "value": "Contains",
-          "description": ""
-        },
-        {
-          "label": "DoesNotContain",
-          "value": "DoesNotContain",
-          "description": ""
-        },
-        {
-          "label": "StartsWith",
-          "value": "StartsWith",
-          "description": ""
-        },
-        {
-          "label": "EndsWith",
-          "value": "EndsWith",
-          "description": ""
-        },
-        {
-          "label": "GreaterThan",
-          "value": "GreaterThan",
-          "description": ""
-        },
-        {
-          "label": "LessThan",
-          "value": "LessThan",
-          "description": ""
-        },
-        {
-          "label": "GreaterThanOrEqual",
-          "value": "GreaterThanOrEqual",
-          "description": ""
-        },
-        {
-          "label": "LessThanOrEqual",
-          "value": "LessThanOrEqual",
-          "description": ""
-        },
-        {
-          "label": "DateAfter",
-          "value": "DateAfter",
-          "description": ""
-        },
-        {
-          "label": "DateBefore",
-          "value": "DateBefore",
-          "description": ""
-        },
-        {
-          "label": "DateOnOrAfter",
-          "value": "DateOnOrAfter",
-          "description": ""
-        },
-        {
-          "label": "DateOnOrBefore",
-          "value": "DateOnOrBefore",
-          "description": ""
-        },
-        {
-          "label": "IsNull",
-          "value": "IsNull",
-          "description": ""
-        },
-        {
-          "label": "IsNotNull",
-          "value": "IsNotNull",
-          "description": ""
-        }
-      ],
-      "renderIf": {
-        "conditions": [
-          {
-            "field": "EnableFiltering",
-            "equals": true
-          }
-        ]
-      }
-    },
-    {
-      "direction": "Input",
-      "type": "text",
-      "name": "FilterValue",
-      "label": "Filter Value",
-      "description": "Specifies the value to compare against the selected field.",
-      "defaultValue": "",
-      "required": false,
-      "renderIf": {
-        "conditions": [
-          {
-            "field": "EnableFiltering",
-            "equals": true
-          }
-        ]
-      }
     },
     {
       "direction": "Input",
