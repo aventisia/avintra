@@ -79,6 +79,7 @@ export const JsonViewer = ({
         displayDataTypes={false}
         indentWidth={18}
         highlightUpdates={false}
+        shortenTextAfterLength={80}
       />
 
       <ScrollBar orientation="horizontal" />
