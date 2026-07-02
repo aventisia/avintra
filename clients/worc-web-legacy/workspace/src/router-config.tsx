@@ -1,8 +1,8 @@
-import { CrudActionTypeLong } from "@/react-toolkit/constants";
-
 import { NotFoundPage } from "@aventisia/ui/layout";
 import { useDTCrudDialogStore } from "@aventisia/ui/stores";
 import { Navigate, RouteObject, createBrowserRouter } from "react-router-dom";
+
+import { CrudActionTypeLong } from "@/react-toolkit/constants";
 
 import { AppErrorPage } from "./components/layout/AppErrorPage";
 import { AppLayout } from "./components/layout/AppLayout";
@@ -24,7 +24,6 @@ import { EmailTriggerPage } from "./pages/02-configure/triggers/EmailTriggerPage
 import { MessageTriggerPage } from "./pages/02-configure/triggers/MessageTriggerPage";
 import { TimeTriggerPage } from "./pages/02-configure/triggers/TimeTriggerPage";
 import { WebhookTriggerPage } from "./pages/02-configure/triggers/WebhookTriggerPage";
-import { ExecutionLogsPage } from "./pages/03-orchestrator/ExecutionLogsPage";
 import { JobsPage } from "./pages/03-orchestrator/JobsPage";
 import { MachinesPage } from "./pages/03-orchestrator/MachinesPage";
 import { PublishedAgentsPage } from "./pages/03-orchestrator/PublishedAgentsPage";
@@ -153,10 +152,6 @@ const routerConfig: RouteObject[] = [
           {
             path: "jobs",
             element: <JobsPage />,
-          },
-          {
-            path: "jobs/:id",
-            element: <ExecutionLogsPage />,
           },
           {
             path: "conversations",
