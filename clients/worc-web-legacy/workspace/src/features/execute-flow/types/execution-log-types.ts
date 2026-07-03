@@ -4,6 +4,8 @@ type AgentExecutionLogType = {
 };
 
 type NodeExecutionLogType = {
+  nodeExecutionId: string;
+  retryAttempt: number;
   nodeId: string;
   nodeName: string;
   nodeUniqueName: string;

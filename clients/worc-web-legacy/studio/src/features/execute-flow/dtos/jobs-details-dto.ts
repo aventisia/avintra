@@ -39,6 +39,9 @@ export interface JobDetailsDto {
   /** Flow's inputs outputs JSON data in string format */
   inputOutputObject?: string;
 
+  /** Job's input arguments from the trigger, in JSON string format */
+  inputArgumentsJson?: string;
+
   type?: FlowTypesEnum;
 
   startTime?: Date | string;

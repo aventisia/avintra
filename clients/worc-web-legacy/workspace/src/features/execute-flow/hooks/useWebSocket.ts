@@ -27,6 +27,7 @@ import { usePostCreditConsumptionMutation } from "./usePostCreditConsumptionMuta
 export default function useWebSocket() {
   const socketRef = useRef<WebSocket | null>(null);
   const isConnected = useRef(false); // Track connection state
+  const isConnecting = useRef(false);
 
   // Get setExecutionState action from current flow store
   const { currentFlow, setExecutionState } = useCurrentFlowStore(
@@ -101,22 +102,34 @@ export default function useWebSocket() {
     // App is outside of tauri, web socket not available
     if (!IS_TAURI) return;
 
-    let socket: WebSocket | null = null;
+    let isCancelled = false;
 
     const connect = async () => {
-      // If already connected, prevent new connection
-      if (isConnected.current) return;
+      // Prevent duplicate connections from re-renders/StrictMode effect replay.
+      if (isConnected.current || isConnecting.current) return;
+
+      isConnecting.current = true;
 
       // Create WebSocket connection
       const wsPort = await invoke("get_websocket_port");
-      socket = new WebSocket(`ws://127.0.0.1:${wsPort}`);
+
+      if (isCancelled) {
+        isConnecting.current = false;
+        return;
+      }
+
+      const socket = new WebSocket(`ws://127.0.0.1:${wsPort}`);
       socketRef.current = socket;
 
       // Open the connection
       socket.onopen = () => {
-        // Mark as connected
-        isConnected.current = true;
+        if (isCancelled) {
+          socket.close(1000, "Component unmounted");
+          return;
+        }
 
+        isConnected.current = true;
+        isConnecting.current = false;
         console.log("WebSocket connected at port: " + wsPort);
       };
 
@@ -157,13 +170,18 @@ export default function useWebSocket() {
 
       // Handle errors
       socket.onerror = (error) => {
+        isConnecting.current = false;
         console.error("WebSocket error:", error);
       };
 
       // Handle connection close
       socket.onclose = () => {
+        isConnected.current = false;
+        isConnecting.current = false;
+        if (socketRef.current === socket) {
+          socketRef.current = null;
+        }
         console.log("WebSocket disconnected");
-        isConnected.current = false; // Mark as disconnected, can reconnect in the future
       };
     };
 
@@ -171,6 +189,8 @@ export default function useWebSocket() {
 
     // Cleanup function to close the socket when the component unmounts
     return () => {
+      isCancelled = true;
+
       if (
         socketRef.current &&
         (socketRef.current.readyState === WebSocket.OPEN ||
@@ -211,8 +231,10 @@ export default function useWebSocket() {
             status,
             startTime,
             endTime,
+            isPublished: true,
             nodeExecutionLogs: JSON.stringify(executionData),
           });
+
           await postCreditConsumption([
             {
               serviceType:

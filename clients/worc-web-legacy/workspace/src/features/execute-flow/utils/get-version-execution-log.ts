@@ -22,14 +22,13 @@ export const getLocalExecutionLog = async (versionId: string) => {
         duration: 0,
         nodes: versionLog.versionLog.map(
           (nodeLog): ExecutionNode => ({
+            nodeExecutionId: nodeLog.nodeExecutionId,
+            retryAttempt: nodeLog.retryAttempt,
             nodeId: nodeLog.nodeId,
             nodeName: nodeLog.nodeName,
             isSuccess: nodeLog.isSuccess,
             duration: nodeLog.duration,
             nodeUniqueName: nodeLog.nodeUniqueName,
-            // Assign a unique ID to distinguish repeated instances of the same node (when used inside a loop)
-            uniqueNodeId: window.crypto.randomUUID(),
-
             inputs: Object.fromEntries(
               nodeLog.inputs.map((input) => [input.key, input.value]),
             ),

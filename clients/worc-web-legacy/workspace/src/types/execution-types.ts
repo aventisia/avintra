@@ -1,4 +1,6 @@
 export interface ExecutionNode {
+  nodeExecutionId: string;
+  retryAttempt: number;
   nodeId: string;
   nodeName: string;
   nodeUniqueName: string;
@@ -6,7 +8,6 @@ export interface ExecutionNode {
   duration: number;
   inputs: { [key: string]: string };
   outputs: { [key: string]: string };
-  uniqueNodeId: string;
 }
 
 export interface Execution {

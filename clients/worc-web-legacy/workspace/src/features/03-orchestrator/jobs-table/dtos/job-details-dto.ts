@@ -11,6 +11,8 @@ export interface JobDetailsDto {
   /** Agent Id */
   flowId?: string;
 
+  isPublished?: boolean;
+
   /**Agent Version id */
   flowVersionId: string;
 
@@ -33,6 +35,9 @@ export interface JobDetailsDto {
 
   /** Output Variables object, i..e the Flow Variables */
   flowVariablesObject?: string;
+
+  /** Flow's inputs outputs JSON data in string format */
+  inputOutputObject?: string;
 
   /** Job's input arguments from the trigger, in JSON string format */
   inputArgumentsJson?: string;
