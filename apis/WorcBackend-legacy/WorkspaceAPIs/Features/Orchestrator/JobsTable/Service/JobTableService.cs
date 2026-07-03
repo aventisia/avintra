@@ -254,10 +254,11 @@ public class JobTableService : IJobTableService
             // Trim the string properties in the DTO to remove any leading/trailing spaces (if applicable).
             jobTableDto = TrimDtoStringPropsUtil.TrimDtoStringProps(jobTableDto);
 
+            Machine? machine = null;
             // If the OSId is provided, attempt to find a matching machine.
             if (!string.IsNullOrEmpty(jobTableDto.OSId))
             {
-                var machine = await _unitOfWork.MachineRepo
+                machine = await _unitOfWork.MachineRepo
                     .GetByConditionAsync(w =>
                         w.OSId.ToLower() == jobTableDto.OSId.ToLower())
                     .FirstOrDefaultAsync();
@@ -299,6 +300,26 @@ public class JobTableService : IJobTableService
                 newJob.StartTime = jobTableDto.StartTime;
                 newJob.EndTime = jobTableDto.EndTime;
                 newJob.NodeExecutionLogs = jobTableDto.NodeExecutionLogs;
+            }
+
+            if (newJob.StartTime.HasValue && newJob.EndTime.HasValue)
+            {
+                // Attempt to resolve workspace user (applicable for UI-based executions)
+                var user = await _unitOfWork.WorkspaceUserRepo
+                    .GetByConditionAsync(w => w.Id == _userId)
+                    .SingleOrDefaultAsync();
+
+                // Manual execution (Agent Builder / UI)
+                if (newJob.TriggerType == TriggerTypesEnum.ManualTrigger)
+                {
+                    newJob.ExecutedBy = user != null
+                        ? $"{user.FirstName} {user.LastName}"
+                        : "Agent Builder";
+
+                    newJob.ExecutedOn = machine != null
+                        ? machine.Name ?? "Agent Builder (web)"
+                        : "Agent Builder (desktop)";
+                }
             }
 
             // Insert the new job into the repository
@@ -392,28 +413,33 @@ public class JobTableService : IJobTableService
             jobTableDto.Adapt(job);
             job.IsPublished = flowVersion.IsPublished;
 
-            // Populate "ExecutedBy" only if it hasn't already been set.
+            // Populate "ExecutedBy" only if it has not already been set.
             //
             // Attribution rules:
-            // 1. ManualTrigger  → current authenticated username.
-            // 2. API, Email, Event, Message, Queue, Time, Webhook → trigger name.
-            // 3. All other trigger types → machine name (if available).
+            // 1. ManualTrigger (non-published) → current authenticated user name or Agent Builder fallback.
+            // 2. API, Email, Event, Message, Queue, Time, Webhook → trigger name (prefixed for traceability).
+            // 3. All other trigger types → constructed machine identity (OS username + OS ID).
             //
-            // TODO: Review and update this mapping whenever new TriggerTypesEnum values are introduced.
+            // NOTE: This mapping should be reviewed whenever new TriggerTypesEnum values are introduced.
             if (string.IsNullOrWhiteSpace(job.ExecutedBy))
             {
-                // Determine who initiated the job execution.
-                if (job.TriggerType == TriggerTypesEnum.ManualTrigger)
-                {
-                    // Manual execution: display the name of the user who started the job.
-                    var user = await _unitOfWork.WorkspaceUserRepo
-                        .GetByConditionAsync(w => w.Id == _userId)
-                        .SingleOrDefaultAsync();
+                // Attempt to resolve workspace user (applicable for UI-based executions)
+                var user = await _unitOfWork.WorkspaceUserRepo
+                    .GetByConditionAsync(w => w.Id == _userId)
+                    .SingleOrDefaultAsync();
 
+                // Manual execution (Agent Builder / UI)
+                if (job.TriggerType == TriggerTypesEnum.ManualTrigger && !job.IsPublished)
+                {
                     job.ExecutedBy = user != null
                         ? $"{user.FirstName} {user.LastName}"
-                        : "Unknown User";
+                        : "Agent Builder";
+
+                    job.ExecutedOn = job.Machine != null
+                        ? job.Machine.Name ?? "Agent Builder (web)"
+                        : "Agent Builder (desktop)";
                 }
+                // Trigger-based execution
                 else if (
                     job.TriggerType == TriggerTypesEnum.APITrigger ||
                     job.TriggerType == TriggerTypesEnum.EmailTrigger ||
@@ -423,32 +449,32 @@ public class JobTableService : IJobTableService
                     job.TriggerType == TriggerTypesEnum.TimeTrigger ||
                     job.TriggerType == TriggerTypesEnum.WebhookTrigger)
                 {
-                    // Trigger-based execution: display the name of the trigger that initiated the job.
                     var trigger = await _unitOfWork.TriggerRepo
                         .GetByConditionAsync(w => w.Id == job.RefId)
                         .FirstOrDefaultAsync();
 
-                    job.ExecutedBy = trigger?.Name ?? "Unknown Trigger";
-                }
-                else
-                {
-                    // Desktop execution: display the name of the machine that executed the job.
-                    job.ExecutedBy = $"Machine: {job.Machine?.Name ?? "Unknown"}";
-                }
-            }
+                    job.ExecutedBy = trigger != null
+                        ? $"trigger_{trigger.Name}"
+                        : "trigger_Unknown";
 
-            // Determine where the job was executed if it has not already been set.
-            if (string.IsNullOrWhiteSpace(job.ExecutedOn))
-            {
-                if (job.Machine != null)
-                {
-                    // Executed by a desktop agent: show the machine name.
-                    job.ExecutedBy = $"Desktop: {job.Machine?.Name ?? "Unknown"}";
+                    job.ExecutedOn = job.Machine != null
+                        ? $"machine_{job.Machine.Name}"
+                        : "Web Server";
                 }
+                // Machine-based execution (default fallback)
                 else
                 {
-                    // Executed from the web application/server (manual or trigger-based execution).
-                    job.ExecutedOn = "Web Browser";
+                    var safeUser = job.Machine?.Hostname?.Trim().ToLower() ?? "unknown";
+                    var osId = job.Machine?.OSId;
+                    var shortOsId = !string.IsNullOrEmpty(osId) && osId.Length >= 4
+                        ? osId.Substring(0, 4).ToLower()
+                        : "xxxx";
+
+                    var machineIdentity = $"{safeUser}_{shortOsId}";
+                    job.ExecutedOn = $"machine_{safeUser}_{shortOsId}"; ;
+                    job.ExecutedBy = user != null
+                        ? $"{user.FirstName} {user.LastName}"
+                        : job.Machine?.Name ?? "Unknown User";
                 }
             }
 
