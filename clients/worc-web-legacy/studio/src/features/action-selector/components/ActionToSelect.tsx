@@ -40,7 +40,10 @@ export const ActionToSelect = ({ data }: ActionToSelectProps) => {
             </Badge>
           )}
         </h2>
-        <p className="text-2xs text-muted-foreground line-clamp-2">
+        <p
+          className="text-2xs text-muted-foreground line-clamp-2"
+          title={data.description}
+        >
           {data.description}
         </p>
       </div>
