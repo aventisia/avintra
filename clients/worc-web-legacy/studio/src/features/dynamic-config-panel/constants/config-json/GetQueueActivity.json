@@ -1,7 +1,7 @@
 {
   "name": "GetQueue",
   "label": "Get Queue",
-  "description": "Retrieves the details and configuration of a specified queue by its name.",
+  "description": "Retrieves the details of the specified queue by name, including its configuration, input and output schemas, processing statistics (pending, in progress, completed, failed, and total items), access settings, retry policies, and metadata such as creation and last modification information.",
   "version": "1.0.0",
   "auther": "@aventisia",
   "supportedPlatforms": ["cloud", "windows"],
