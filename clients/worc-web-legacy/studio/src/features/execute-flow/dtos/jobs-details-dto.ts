@@ -27,6 +27,8 @@ export interface JobDetailsDto {
 
   machineId?: string;
 
+  osId?: string;
+
   /** Version no */
   versionNumber?: number;
 

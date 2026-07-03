@@ -8,6 +8,7 @@ import { CreditServiceTypesEnum } from "@/features/credits-management/constants/
 import { UsageSourceTypesEnum } from "@/features/credits-management/constants/usage-source-types-enum";
 import { usePostCreditConsumptionMutation } from "@/features/credits-management/hooks/usePostCreditConsumptionMutation";
 import { useCurrentFlowStore } from "@/stores/current-flow-store";
+import { useTuariUserMetadataStore } from "@/stores/tuari-user-metadata-store";
 
 import {
   WebSocketCommandType,
@@ -34,6 +35,12 @@ export default function useWebSocket() {
     useShallow((state) => ({
       currentFlow: state.currentFlow,
       setExecutionState: state.setExecutionState,
+    })),
+  );
+
+  const { osID } = useTuariUserMetadataStore(
+    useShallow((state) => ({
+      osID: state.osID,
     })),
   );
 
@@ -228,6 +235,7 @@ export default function useWebSocket() {
             endTime,
             isPublished: false,
             nodeExecutionLogs: JSON.stringify(executionData),
+            osId: osID,
           });
 
           await postCreditConsumption([
