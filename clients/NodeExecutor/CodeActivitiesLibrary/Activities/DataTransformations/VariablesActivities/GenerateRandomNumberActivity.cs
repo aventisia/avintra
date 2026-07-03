@@ -97,13 +97,14 @@ namespace CodeActivitiesLibrary.DataTransformations.VariablesActivities
                         throw new InvalidOperationException("No valid random numbers could be generated.");
 
                     RandomNumbers.Set(context, new List<int>(results));
-                    IsSuccess.Set(context, true);
-                    StatusMessage.Set(context, $"Successfully generated {results.Count} random number(s): {string.Join(", ", results)}.");
+                    status += $" Successfully generated {results.Count} random number(s): {string.Join(", ", results)}.";
                 }
+
+                IsSuccess.Set(context, true);
+                StatusMessage.Set(context, status);
             }
             catch (Exception ex)
             {
-                RandomNumbers.Set(context, 0);
                 IsSuccess.Set(context, false);
                 StatusMessage.Set(context, $"Error generating random number(s): {ex.Message}");
             }
