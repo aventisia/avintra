@@ -82,9 +82,7 @@ public class ExecuteFlowStep2Service : IExecuteFlowStep2Service
                         ? $"{user.FirstName} {user.LastName}"
                         : "Agent Builder";
 
-                    job.ExecutedOn = job.Machine != null
-                        ? job.Machine.Name ?? "Agent Builder (web)"
-                        : "Agent Builder (desktop)";
+                    job.ExecutedOn = "Agent Builder (web)";
                 }
                 // Trigger-based execution
                 else if (
@@ -121,7 +119,7 @@ public class ExecuteFlowStep2Service : IExecuteFlowStep2Service
                     job.ExecutedOn = $"machine_{safeUser}_{shortOsId}"; ;
                     job.ExecutedBy = user != null
                         ? $"{user.FirstName} {user.LastName}"
-                        : job.Machine?.Name ?? "Unknown User";
+                        : "Unknown User";
                 }
             }
 

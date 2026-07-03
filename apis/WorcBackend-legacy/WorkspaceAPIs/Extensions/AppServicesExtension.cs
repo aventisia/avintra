@@ -93,7 +93,7 @@ public static class AppServicesExtension
         // ExecuteFlow feature services
         services.AddScoped<IExecuteFlowStep1Service, ExecuteFlowStep1Service>();
         services.AddScoped<IExecutionNotificationService, ExecutionNotificationService>();
-        services.AddSingleton<IExecuteFlowStep2Service, ExecuteFlowStep2Service>();
+        services.AddScoped<IExecuteFlowStep2Service, ExecuteFlowStep2Service>();
 
         // Feature Services
         services.AddScoped<IWorkspaceUserService, WorkspaceUserService>();
