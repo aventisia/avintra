@@ -300,10 +300,7 @@ public class JobTableService : IJobTableService
                 newJob.StartTime = jobTableDto.StartTime;
                 newJob.EndTime = jobTableDto.EndTime;
                 newJob.NodeExecutionLogs = jobTableDto.NodeExecutionLogs;
-            }
 
-            if (newJob.StartTime.HasValue && newJob.EndTime.HasValue)
-            {
                 // Attempt to resolve workspace user (applicable for UI-based executions)
                 var user = await _unitOfWork.WorkspaceUserRepo
                     .GetByConditionAsync(w => w.Id == _userId)
@@ -316,9 +313,7 @@ public class JobTableService : IJobTableService
                         ? $"{user.FirstName} {user.LastName}"
                         : "Agent Builder";
 
-                    newJob.ExecutedOn = machine != null
-                        ? machine.Name ?? "Agent Builder (web)"
-                        : "Agent Builder (desktop)";
+                    newJob.ExecutedOn = "Agent Builder (desktop)";
                 }
             }
 
@@ -474,7 +469,7 @@ public class JobTableService : IJobTableService
                     job.ExecutedOn = $"machine_{safeUser}_{shortOsId}"; ;
                     job.ExecutedBy = user != null
                         ? $"{user.FirstName} {user.LastName}"
-                        : job.Machine?.Name ?? "Unknown User";
+                        : "Unknown User";
                 }
             }
 
