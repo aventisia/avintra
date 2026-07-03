@@ -659,6 +659,14 @@ public class QueueWorkItemService : IQueueWorkItemService
                 }
             }
 
+            // If validation errors were found, return early
+            if (errors.Any())
+            {
+                serviceResponse.Message = string.Join("; ", errors);
+                _logger.LogWarning("Queue workitem update validation failed: {Errors}", serviceResponse.Message);
+                return serviceResponse;
+            }
+
             // Update the queue workitem entity with values from the DTO
             queueWorkItem.PayloadData = string.IsNullOrWhiteSpace(queueWorkItemDto.WorkItemData)
                 ? queueWorkItem.PayloadData
@@ -689,44 +697,8 @@ public class QueueWorkItemService : IQueueWorkItemService
                 return serviceResponse;
             }
 
-            // If validation errors were found, return early
-            if (errors.Any())
-            {
-                serviceResponse.Message = string.Join("; ", errors);
-                _logger.LogWarning("Queue workitem update validation failed: {Errors}", serviceResponse.Message);
-                return serviceResponse;
-            }
-            else
-            {
-                serviceResponse.Message = "Queue workitem updated successfully.";
-            }
-
-            // Check if the QueueId has changed, and ensure the new QueueId is not empty
-            if (queueWorkItem.QueueId != queueWorkItemDto.QueueId && queueWorkItemDto.QueueId != Guid.Empty)
-            {
-                // Log the change in QueueId and the creation of a new work item for the new queue
-                _logger.LogInformation("QueueId has changed for workitem ID {QueueWorkitemId}. Creating new work item for new QueueId: {NewQueueId}.",
-                                        queueWorkItemDto.Id, queueWorkItemDto.QueueId);
-
-                // Create a new work item for the new QueueId with initial Pending status
-                var newQueueWorkitem = await InsertWorkItemsAsync(new QueueWorkItemDto()
-                {
-                    QueueId = queueWorkItemDto.QueueId,
-                    WorkItemData = queueWorkItem.PayloadData,
-                    Status = QueueTransactionStatusTypesEnum.Pending,
-                });
-
-                // Check if the creation of the new work item was successful
-                if (newQueueWorkitem.StatusCode != 200)
-                {
-                    // Log failure and set the service response to reflect the error
-                    _logger.LogError("Failed to route new queue work item for QueueId {QueueId}. Error: {ErrorMessage}.", queueWorkItemDto.QueueId, newQueueWorkitem.Message);
-                    serviceResponse.StatusCode = newQueueWorkitem.StatusCode;
-                    serviceResponse.Message = newQueueWorkitem.Message;
-                }
-            }
-
             // Return successful response
+            serviceResponse.Message = "Queue workitem updated successfully.";
             serviceResponse.Data = queueWorkItem.Adapt<QueueWorkItemDto>();
             serviceResponse.StatusCode = 200;
         }
