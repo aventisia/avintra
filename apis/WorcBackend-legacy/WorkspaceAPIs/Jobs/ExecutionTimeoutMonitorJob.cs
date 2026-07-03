@@ -7,13 +7,16 @@ namespace WorkspaceAPIs.Jobs
 
         private readonly WorkspaceInternalDbContext _workspaceInternalDbContext;
         private readonly ILogger<ExecutionTimeoutMonitorJob> _logger;
+        private readonly IJobsExecutorService _jobsExecutorService;
 
         public ExecutionTimeoutMonitorJob(
             WorkspaceInternalDbContext workspaceInternalDbContext,
-            ILogger<ExecutionTimeoutMonitorJob> logger)
+            ILogger<ExecutionTimeoutMonitorJob> logger,
+            IJobsExecutorService jobsExecutorService)
         {
             _workspaceInternalDbContext = workspaceInternalDbContext;
             _logger = logger;
+            _jobsExecutorService = jobsExecutorService;
         }
 
         public async Task Execute(IJobExecutionContext context)
@@ -94,6 +97,10 @@ namespace WorkspaceAPIs.Jobs
                     runningJob.EndTime = currentUtcTime;
 
                     killedJobCount++;
+
+                    await _jobsExecutorService.KillStuckJobAsync(runningJob);
+
+                    _workspaceInternalDbContext.Jobs.Update(runningJob);
 
                     _logger.LogWarning(
                         "Job {JobId} exceeded its execution timeout ({MaximumExecutionTimeInMinutes} minute(s)) and was marked as Killed.",

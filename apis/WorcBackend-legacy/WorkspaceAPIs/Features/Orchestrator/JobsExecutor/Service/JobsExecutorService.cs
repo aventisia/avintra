@@ -369,4 +369,71 @@ public class JobsExecutorService : IJobsExecutorService
             _logger.LogError(ex, "Error executing job command.");
         }
     }
+
+    // Sends a command to the connected machine to terminate a stuck job.
+    public async Task KillStuckJobAsync(Job? job)
+    {
+        try
+        {
+            // Exit early if the job is null.
+            if (job == null)
+            {
+                return;
+            }
+
+            // Find the machine currently executing the job.
+            var clientDataStore = await _clientStatusStore.GetStatusByJobIdAsync(job.Id);
+
+            if (clientDataStore == null)
+            {
+                _logger.LogWarning("No client is associated with job {JobId}.", job.Id);
+                return;
+            }
+
+            // Ensure the machine is currently running the job.
+            if (clientDataStore.Status != MachineStatusTypeEnum.Running)
+            {
+                _logger.LogWarning(
+                    "Machine {MachineId} is not in the Running state for job {JobId}. Current status: {Status}.",
+                    clientDataStore.ClientId,
+                    job.Id,
+                    clientDataStore.Status);
+
+                return;
+            }
+
+            // Ensure the machine is connected.
+            if (string.IsNullOrWhiteSpace(clientDataStore.ConnectionId))
+            {
+                _logger.LogWarning(
+                    "Machine {MachineId} is not connected. Unable to terminate job {JobId}.",
+                    clientDataStore.ClientId,
+                    job.Id);
+
+                return;
+            }
+
+            var executionRequest = new ExecutionCommandDto
+            {
+                JobId = job.Id,
+                AgentId = clientDataStore.AgentId ?? Guid.Empty,
+                MachineId = clientDataStore.ClientId,
+                TenantId = clientDataStore.TenantId,
+                Command = ExecutionCommandTypesEnum.Killed
+            };
+
+            await _hubContext.Clients
+                .Client(clientDataStore.ConnectionId)
+                .SendAsync("trigger_agent", executionRequest);
+
+            _logger.LogInformation(
+                "Sent kill command for stuck job {JobId} to machine {MachineId}.",
+                job.Id,
+                clientDataStore.ClientId);
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex, "An error occurred while sending the kill command for job {JobId}.", job.Id);
+        }
+    }
 }

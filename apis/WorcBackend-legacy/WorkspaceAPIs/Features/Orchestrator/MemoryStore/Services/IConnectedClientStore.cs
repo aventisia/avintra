@@ -65,4 +65,11 @@ public interface IClientStatusStore
     /// </summary>
     /// <param name="clientDataStore">The client status with the updated information to be applied.</param>
     Task UpdateClientStatusAsync(ClientDataStore clientDataStore);
+
+    /// <summary>
+    /// Retrieves the status of a client based on the associated job identifier.
+    /// </summary>
+    /// <param name="jobId">The unique identifier of the job associated with the client.</param>
+    /// <returns> A task representing the asynchronous operation, containing the client's status information, or null if no client is associated with the specified job ID.  </returns>
+    Task<ClientDataStore?> GetStatusByJobIdAsync(Guid jobId);
 }

@@ -32,4 +32,11 @@ public interface IJobsExecutorService
     /// <param name="jobIds">A list of job IDs that should be executed. The method will fetch and execute commands for each job asynchronously.</param>
     /// <returns>A task representing the asynchronous operation. The task completes when all valid jobs have been processed and execution commands have been triggered.</returns>
     Task ExecuteCommanByIdsdAsync(List<Guid> jobIds);
+
+    /// <summary>
+    /// Sends a command to the connected machine to terminate the specified stuck job.
+    /// </summary>
+    /// <param name="job">The job that should be terminated.</param>
+    /// <returns> A task that represents the asynchronous operation. </returns>
+    Task KillStuckJobAsync(Job? job);
 }

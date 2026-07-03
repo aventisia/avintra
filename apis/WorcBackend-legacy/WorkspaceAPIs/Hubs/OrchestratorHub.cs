@@ -75,6 +75,31 @@ public class OrchestratorHub : Hub
                 }
             }
 
+            // Check whether the client is currently executing a job.
+            var existingClientDataStore = await _clientStatusStore.GetClientByIdAsync(clientId);
+
+            if (existingClientDataStore != null && existingClientDataStore.Status == MachineStatusTypeEnum.Running)
+            {
+                // Retrieve the running job associated with the client.
+                var job = await _workspaceInternalDbContext.Jobs
+                    .SingleOrDefaultAsync(w => w.Id == existingClientDataStore.JobId);
+
+                // Exit if the job cannot be found.
+                if (job == null)
+                {
+                    return;
+                }
+
+                // Mark the job as killed and set the end time if it has not already been recorded.
+                job.EndTime ??= DateTimeOffset.UtcNow;
+                job.Status = JobStatusTypesEnum.Killed;
+
+                _workspaceInternalDbContext.Jobs.Update(job);
+
+                // Persist the job status update.
+                await _workspaceInternalDbContext.SaveChangesAsync();
+            }
+
             // Prepare the client status object with initial values
             var connectionId = Context.ConnectionId;
             var clientDataStore = new ClientDataStore

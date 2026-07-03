@@ -121,4 +121,15 @@ public class ClientStatusStore : IClientStatusStore
 
         return Task.CompletedTask;
     }
+
+    // Retrieves the first client associated with the specified job ID.
+    public Task<ClientDataStore?> GetStatusByJobIdAsync(Guid jobId)
+    {
+        // Find the first client whose JobId matches the specified job ID.
+        var client = ClientStore.Values
+            .FirstOrDefault(w => w.JobId == jobId);
+
+        // Return the matching client if found; otherwise, return null.
+        return Task.FromResult<ClientDataStore?>(client);
+    }
 }
