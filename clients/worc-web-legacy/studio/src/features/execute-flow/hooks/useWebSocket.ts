@@ -213,6 +213,7 @@ export default function useWebSocket() {
         if (Array.isArray(localLogs) && localLogs.length > 0) {
           executionData = localLogs[0].nodes ?? [];
         }
+
         // Handle Credit Consumption
         if (currExecCommand) {
           const duration = Math.round(
@@ -243,7 +244,6 @@ export default function useWebSocket() {
               triggeredByAgent: currentFlow.name,
             },
           ]); // Post the consumption data
-          console.log("Credit consumption posted successfully.");
         }
       } catch (error) {
         // Log any errors that occur during the process
