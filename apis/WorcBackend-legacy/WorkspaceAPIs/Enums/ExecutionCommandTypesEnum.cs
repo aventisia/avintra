@@ -13,7 +13,7 @@ public enum ExecutionCommandTypesEnum
     /// </summary>
     [Description("Start the execution of a job, workflow, or script on the agent")]
     Execute,
-    
+
     /// <summary>
     /// Requests a graceful stop, allowing the job to finish its current task.
     /// </summary>
@@ -60,5 +60,11 @@ public enum ExecutionCommandTypesEnum
     /// Instructs the agent to clean up resources associated with a job.
     /// </summary>
     [Description("Clean up job-related resources")]
-    Cleanup
+    Cleanup,
+
+    /// <summary>
+    /// Indicates that the job was forcefully terminated, typically because it exceeded its maximum execution time or was killed by the execution monitor.
+    /// </summary>
+    [Description("Killed")]
+    Killed
 }
