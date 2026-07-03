@@ -103,7 +103,7 @@ const ServiceCharts = () => {
                 <SelectValue placeholder={itemsPerPage} />
               </SelectTrigger>
               <SelectContent side="top" className="min-w-[4rem]">
-                {[10, 20, 30, 40, 50].map((pageSize) => (
+                {[10, 20, 50, 100, 200, 500, 1000].map((pageSize) => (
                   <SelectItem key={pageSize} value={`${pageSize}`}>
                     {pageSize}
                   </SelectItem>
