@@ -47,7 +47,7 @@ public class ProcessTTSRequestNode : BaseNode
                 model = GetStringProperty(modelConfig, "model"),
                 input = inputText,
                 is_byok_enabled = GetBoolProperty(modelConfig, "is_byok_enabled") ?? false,
-                credential_id = GetStringProperty(modelConfig, "credential_id") ?? Guid.Empty.ToString(),
+                credentials_id = GetStringProperty(modelConfig, "credential_id") ?? Guid.Empty.ToString(),
                 stream = false,
 
                 // Voice synthesis settings.
