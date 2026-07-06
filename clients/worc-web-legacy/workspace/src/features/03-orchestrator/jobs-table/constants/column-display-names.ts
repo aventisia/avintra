@@ -35,4 +35,5 @@ export const statusColor: { [key in JobStatusTypesEnum]: string } = {
   [JobStatusTypesEnum.Retrying]: "bg-slate-200 text-slate-600",
   [JobStatusTypesEnum.Created]: "bg-slate-200 text-slate-600",
   [JobStatusTypesEnum.Failed]: "bg-red-200 text-red-600",
+  [JobStatusTypesEnum.Killed]: "bg-orange-200 text-orange-600",
 };

@@ -1,8 +1,8 @@
-import NewAgentIcon from "@/components/NewAgentIcon";
-import { StatsCard } from "@/react-toolkit/ui/card/StatsCard";
-
 import { Clock10Icon, MonitorPlayIcon } from "lucide-react";
 import { useMemo } from "react";
+
+import NewAgentIcon from "@/components/NewAgentIcon";
+import { StatsCard } from "@/react-toolkit/ui/card/StatsCard";
 
 import { JobsTableDto } from "../dtos/jobs-table-dto";
 import { JobStatusTypesEnum } from "../enums/job-status-type-enum";
@@ -22,6 +22,7 @@ export const JobsStats = ({ data }: StatsProps) => {
         completed: 0,
         failed: 0,
         aborted: 0,
+        killed: 0,
         avgLabel: "0 sec",
       };
     }
@@ -42,6 +43,10 @@ export const JobsStats = ({ data }: StatsProps) => {
       (x) => x.status === JobStatusTypesEnum.Abort,
     ).length;
 
+    const killed = data.filter(
+      (x) => x.status === JobStatusTypesEnum.Killed,
+    ).length;
+
     const totalSeconds = data.reduce((acc, x) => acc + (x.duration ?? 0), 0);
 
     const avgSeconds = Math.round(totalSeconds / jobs);
@@ -52,6 +57,7 @@ export const JobsStats = ({ data }: StatsProps) => {
       completed,
       failed,
       aborted,
+      killed,
       totalExecutionLabel: formatSecondsToCompactDuration(totalSeconds),
       avgLabel: formatSecondsToCompactDuration(avgSeconds),
     };
@@ -63,7 +69,7 @@ export const JobsStats = ({ data }: StatsProps) => {
       <StatsCard
         title="Total Jobs"
         mainText={stats.jobs}
-        description={`${stats.completed} Completed, ${stats.failed} Failed, ${stats.aborted} Aborted`}
+        description={`${stats.completed} Completed, ${stats.failed} Failed, ${stats.aborted} Aborted, ${stats.killed} Killed`}
         icon={<MonitorPlayIcon stroke="var(--primary)" className="h-10 w-10" />}
       />
 

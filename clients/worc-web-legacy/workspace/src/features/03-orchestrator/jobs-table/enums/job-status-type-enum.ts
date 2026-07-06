@@ -28,4 +28,7 @@ export enum JobStatusTypesEnum {
 
   // Indicates that the job is in a state where it is being retried after a failure.
   Retrying = "Retrying",
+
+  // Indicates that the job was forcefully terminated, typically because it exceeded its maximum execution time or was killed by the execution monitor.
+  Killed = "Killed",
 }
