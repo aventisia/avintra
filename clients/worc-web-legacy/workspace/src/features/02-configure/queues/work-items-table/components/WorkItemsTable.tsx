@@ -7,7 +7,7 @@ import {
 } from "@aventisia/ui/data-table";
 import { useDataTable } from "@aventisia/ui/hooks";
 import { useEffect, useMemo } from "react";
-import { useNavigate, useParams } from "react-router-dom";
+import { useNavigate, useParams, useSearchParams } from "react-router-dom";
 
 import { HorizontalScrollWrapper } from "@/react-toolkit/ui/HorizontalScrollWrapper";
 
@@ -25,6 +25,9 @@ import { workItemsTableColumns } from "./WorkItemsTableColumns";
  */
 export const WorkItemsTable = () => {
   const { qid: queueId = "" } = useParams();
+  const [searchParams] = useSearchParams();
+
+  const name = searchParams.get("name") ?? "WorkItem";
   // Set the document title
   // useDocumentTitle(TABLE_HEADING);
   const navigate = useNavigate();
@@ -65,7 +68,7 @@ export const WorkItemsTable = () => {
         <div className="space-y-4 pb-4 pt-[17px]">
           {/* Table toolbar */}
           <div className="flex items-center justify-between">
-            <PayloadTableHeading queueName={data?.data[0]?.queueName || ""} />
+            <PayloadTableHeading queueName={data?.data[0]?.queueName || name} />
             <div className="flex items-center gap-2">
               <DTSearchBox
                 table={table}

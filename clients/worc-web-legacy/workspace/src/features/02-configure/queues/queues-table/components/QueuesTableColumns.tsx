@@ -51,7 +51,7 @@ export const queuesTableColumns = (
     ),
     cell: ({ row }) => (
       <div className="flex  items-center max-w-80 gap-3 ">
-        <QueuesTableCellLink rowId={row.original.id}>
+        <QueuesTableCellLink rowId={row.original.id} name={row.original.name}>
           {row.getValue<string>("name")}
         </QueuesTableCellLink>
         {isSharedTab && (
