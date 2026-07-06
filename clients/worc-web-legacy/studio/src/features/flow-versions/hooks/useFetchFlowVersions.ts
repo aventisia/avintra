@@ -1,6 +1,7 @@
+import { toast } from "@aventisia/ui/sonner";
 import { useQuery } from "@tanstack/react-query";
 import { useEffect } from "react";
-import { toast } from "@aventisia/ui/sonner";
+
 import { getFlowVersions } from "../apis/flow-version-apis";
 import { DATA_QUERY_KEY } from "../constants";
 
@@ -11,7 +12,7 @@ import { DATA_QUERY_KEY } from "../constants";
 export const useFetchFlowVersions = (flowId: string) => {
   // Get flow versions using react query
   const { data, isFetching, isLoading, isError, error, refetch } = useQuery({
-    queryKey: DATA_QUERY_KEY,
+    queryKey: [...DATA_QUERY_KEY, flowId],
     queryFn: () => getFlowVersions(flowId),
   });
 

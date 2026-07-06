@@ -1,12 +1,14 @@
 import { toast } from "@aventisia/ui/sonner";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
-import { insertFlowVersion } from "../apis/flow-version-apis";
-import { DATA_QUERY_KEY } from "../constants";
+
+import { useOpenFlow } from "@/features/flows-popover/hooks/useOpenFlow";
 import {
   getFlowToLoad,
   updateFlowSilently,
 } from "@/features/react-flow/apis/react-flow-apis";
-import { useOpenFlow } from "@/features/flows-popover/hooks/useOpenFlow";
+
+import { insertFlowVersion } from "../apis/flow-version-apis";
+import { DATA_QUERY_KEY } from "../constants";
 
 export const useInsertFlowVersionMutation = ({
   flowId,
@@ -24,7 +26,7 @@ export const useInsertFlowVersionMutation = ({
   const { isPending, mutate } = useMutation({
     mutationFn: insertFlowVersion,
     onSuccess: async (httpResponse) => {
-      queryClient.invalidateQueries({ queryKey: DATA_QUERY_KEY });
+      queryClient.invalidateQueries({ queryKey: [...DATA_QUERY_KEY, flowId] });
 
       const flowData = await getFlowToLoad(flowId || "flowId", versionId);
 
