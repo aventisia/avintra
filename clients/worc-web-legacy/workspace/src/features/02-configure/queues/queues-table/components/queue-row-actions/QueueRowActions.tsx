@@ -1,11 +1,11 @@
+import { DTRowAction, DataTableRowActions } from "@aventisia/ui/data-table";
+import { DropdownMenuSeparator } from "@aventisia/ui/dropdown-menu";
+
 import { RemoveResourceRowAction } from "@/features/resource-share/components/common-row-actions/RemoveResourceRowAction";
 import { ResourceShareRowAction } from "@/features/resource-share/components/common-row-actions/ResourceShareRowAction";
 import { ResourceAccessTypeEnum } from "@/features/resource-share/enums/resource-access-type-enum";
 import { ResourceTypeEnum } from "@/features/resource-share/enums/resource-type-enum";
 import { getResourceAccessActions } from "@/features/resource-share/utils/resource-access-actions";
-
-import { DTRowAction, DataTableRowActions } from "@aventisia/ui/data-table";
-import { DropdownMenuSeparator } from "@aventisia/ui/dropdown-menu";
 
 import { useTableTab } from "../../hooks/useTableTab";
 import { AddTriggerRowAction } from "./AddTriggerRowAction";
@@ -39,11 +39,11 @@ export const QueueRowActions = ({
     // Dropdown menu for Queue table row action */}
     <DataTableRowActions className="w-36 min-w-36">
       {/* View the Queue details */}
-      {actions?.read && <OpenQueueRowAction rowId={rowId} />}{" "}
+      {actions?.read && <OpenQueueRowAction rowId={rowId} name={queueName} />}
+
       {/* Edit Queue details */}
-      {actions?.update && (
-        <DTRowAction rowId={rowId} crudAction="update" />
-      )}{" "}
+      {actions?.update && <DTRowAction rowId={rowId} crudAction="update" />}
+
       {actions?.update ? (
         type == "User" ? (
           <AssignUsersRowAction rowId={rowId} queueName={queueName} />
@@ -51,8 +51,11 @@ export const QueueRowActions = ({
           <AssignAgentsRowAction rowId={rowId} queueName={queueName} />
         )
       ) : null}
+
       {actions?.update && <AddTriggerRowAction rowId={rowId} />}
+
       {actions?.update && <UploadItemsRowAction rowId={rowId} />}
+
       {/* Share Access */}
       {actions?.share && (
         <ResourceShareRowAction
@@ -64,8 +67,10 @@ export const QueueRowActions = ({
       )}
       {/* DropdownMenuSeparator component */}
       <DropdownMenuSeparator />
+
       {/* Triggers Queue delete alert dialog  */}
       {actions?.delete && <QueueRowDeleteAction rowId={rowId} />}
+
       {isShared && (
         <RemoveResourceRowAction queryKey={queryKey} rowId={rowId} />
       )}
