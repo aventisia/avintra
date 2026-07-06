@@ -73,7 +73,7 @@ namespace CodeActivitiesLibrary.AppIntegrations.CloudConnectorsActivities
                         input = inputText,
                         model = modelConfig?["model"]?.Value<string>(),
                         is_byok_enabled = modelConfig?["is_byok_enabled"]?.Value<bool?>() ?? false,
-                        credential_id = modelConfig?["credential_id"]?.Value<string>() ?? Guid.Empty.ToString(),
+                        credentials_id = modelConfig?["credential_id"]?.Value<string>() ?? Guid.Empty.ToString(),
                         stream = modelConfig?["stream"]?.Value<bool?>() ?? false,
 
                         // Voice configuration
