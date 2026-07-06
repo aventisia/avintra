@@ -15,7 +15,12 @@ import { useSearchParams } from "react-router-dom";
 
 import { HorizontalScrollWrapper } from "@/react-toolkit/ui/HorizontalScrollWrapper";
 
-import { SEARCH_COLUMN, TABLE_HEADING, TABLE_KEY } from "../constants";
+import {
+  HISTORY_JOB_STATUSES,
+  SEARCH_COLUMN,
+  TABLE_HEADING,
+  TABLE_KEY,
+} from "../constants";
 import { columnDisplayNames } from "../constants/column-display-names";
 import { columnVisibilityState } from "../constants/column-visibility-state";
 import { JobStatusTypesEnum } from "../enums/job-status-type-enum";
@@ -116,12 +121,7 @@ export const JobsTable = () => {
     } else if (tabValue === "Scheduled") {
       statusColumn.setFilterValue(JobStatusTypesEnum.Created);
     } else if (tabValue === "History") {
-      statusColumn.setFilterValue([
-        JobStatusTypesEnum.Completed,
-        JobStatusTypesEnum.Failed,
-        JobStatusTypesEnum.Canceled,
-        JobStatusTypesEnum.Abort,
-      ]);
+      statusColumn.setFilterValue(HISTORY_JOB_STATUSES);
     }
   }, [tabValue, table]);
 
@@ -167,8 +167,8 @@ export const JobsTable = () => {
           <div className="flex flex-col gap-2">
             {tabValue === "History" && (
               <JobsStats
-                data={data?.data.filter(
-                  (job) => !["Created", "Running"].includes(job.status),
+                data={data?.data.filter((job) =>
+                  HISTORY_JOB_STATUSES.includes(job.status),
                 )}
               />
             )}
