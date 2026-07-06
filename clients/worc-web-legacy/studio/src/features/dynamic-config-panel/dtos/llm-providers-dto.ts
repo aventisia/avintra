@@ -58,7 +58,7 @@ export interface LLMRequestDto {
   /**
    * Maximum number of tokens for the output.
    */
-  max_output_tokens?: number |null;
+  max_output_tokens?: number | null;
 
   /**
    * Enables Bring Your Own Key (BYOK) support.
@@ -104,6 +104,8 @@ export interface LLMRequestDto {
    * Gets or sets the action type (e.g.AgentExecution) associated with the usage.
    */
   action: ActionTypesEnum | string;
+
+  kb_names?: string[] | null;
 }
 
 /**

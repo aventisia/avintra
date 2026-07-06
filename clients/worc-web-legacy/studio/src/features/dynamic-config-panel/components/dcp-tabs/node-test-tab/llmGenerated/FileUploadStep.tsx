@@ -1,10 +1,10 @@
-import { useLocalFileStore } from "@/features/file-viewer/stores/file-list-store";
-
-import { Button } from "@aventisia/ui/buttons";
+// import { Button } from "@aventisia/ui/buttons";
 import { cn } from "@aventisia/ui/lib";
-import { CloudUploadIcon } from "lucide-react";
+// import { CloudUploadIcon } from "lucide-react";
 import { useDropzone } from "react-dropzone";
 import { useShallow } from "zustand/react/shallow";
+
+import { useLocalFileStore } from "@/features/file-viewer/stores/file-list-store";
 
 const FileUploadStep = () => {
   const addFiles = useLocalFileStore(useShallow((state) => state.addFiles));
@@ -35,10 +35,10 @@ const FileUploadStep = () => {
     "image/tiff": [".tiff", ".tif"],
   } as const;
 
-  const SUPPORTED_FORMAT_LABEL = Object.values(SUPPORTED_FILE_TYPES)
-    .flat()
-    .map((ext) => ext.replace(".", "").toUpperCase())
-    .join(", ");
+  // const SUPPORTED_FORMAT_LABEL = Object.values(SUPPORTED_FILE_TYPES)
+  //   .flat()
+  //   .map((ext) => ext.replace(".", "").toUpperCase())
+  //   .join(", ");
 
   const { getRootProps, getInputProps, isDragActive } = useDropzone({
     accept: SUPPORTED_FILE_TYPES,
@@ -54,7 +54,7 @@ const FileUploadStep = () => {
       <div
         {...getRootProps()}
         className={cn(
-          "flex items-center h-[10rem] justify-center rounded-lg border-2 border-dashed p-4 cursor-pointer transition-colors",
+          "flex items-center  justify-center rounded-lg border-2 border-dashed p-2 cursor-pointer transition-colors",
           isDragActive
             ? "border-primary bg-primary/5"
             : "border-gray-300 hover:border-primary hover:bg-primary/5",
@@ -66,7 +66,7 @@ const FileUploadStep = () => {
             <span className="text-sm text-primary">Drop files here...</span>
           ) : (
             <>
-              <CloudUploadIcon className="text-muted-foreground size-8 stroke-[1.4] opacity-50" />
+              {/* <CloudUploadIcon className="text-muted-foreground size-8 stroke-[1.4] opacity-50" />
               <span className="block text-sm font-medium text-gray-600">
                 Drag & Drop or{" "}
                 <Button
@@ -81,6 +81,9 @@ const FileUploadStep = () => {
               </span>
               <span className="text-muted-foreground text-2xs">
                 Supported formats: {SUPPORTED_FORMAT_LABEL}
+              </span> */}
+              <span className="text-muted-foreground text-sm">
+                Attach Files
               </span>
             </>
           )}

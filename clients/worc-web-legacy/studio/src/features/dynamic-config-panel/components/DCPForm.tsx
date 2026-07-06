@@ -1,6 +1,3 @@
-import ImproveWithAIButton from "@/features/dynamic-config-panel/components/dcp-tabs/ImproveWithAIButton";
-import { useIsVersionHistoryRoute } from "@/features/version-history/hooks/useIsVersionHistoryRoute";
-
 import { LoadingSpinner } from "@aventisia/ui";
 import { Button } from "@aventisia/ui/buttons";
 import { Form } from "@aventisia/ui/form";
@@ -9,6 +6,9 @@ import { toast } from "@aventisia/ui/sonner";
 import { FlaskConical, InfoIcon, PlayIcon, SearchCodeIcon } from "lucide-react";
 import { useEffect, useState } from "react";
 import { z } from "zod";
+
+import ImproveWithAIButton from "@/features/dynamic-config-panel/components/dcp-tabs/ImproveWithAIButton";
+import { useIsVersionHistoryRoute } from "@/features/version-history/hooks/useIsVersionHistoryRoute";
 
 import {
   RenderField,
@@ -299,6 +299,7 @@ export const DCPForm = () => {
           <TestTabContent
             type={nodeConfig?.testScreenType ?? "standard"}
             formData={form.getValues()}
+            nodeUniqueName={nodeUniqueName}
           />
         </DCPTabsWrapper>
       )}
