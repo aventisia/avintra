@@ -15,3 +15,10 @@ export interface VoiceConfigType {
   speed: number;
   // pitch: number;
 }
+
+export interface KBConfigType {
+  knowledgeBase: string[];
+  retrievalType: string;
+  sourceThreshold: number;
+  numberOfChunks: number;
+}
