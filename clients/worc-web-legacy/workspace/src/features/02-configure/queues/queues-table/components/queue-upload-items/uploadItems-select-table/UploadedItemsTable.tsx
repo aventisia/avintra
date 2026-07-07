@@ -82,7 +82,7 @@ export function UploadedItemsTable({
     ];
 
     // Only add status column if the first row contains it
-    if (uploadedData.length > 0 && "Status" in uploadedData[0]) {
+    if (uploadedData?.length > 0 && "Status" in uploadedData[0]) {
       baseColumns.push({
         id: "status",
         header: ({ column }) => (

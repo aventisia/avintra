@@ -76,6 +76,23 @@ input[type="time"]::-webkit-calendar-picker-indicator {
   text-wrap: wrap;
 }
 
+/* Style for  markdown editor toolbar */
+.md-editor-toolbar button svg {
+  color: hsl(222.2 47.4% 11.2%) !important;
+}
+
+.md-editor-toolbar-warp:not(.md-editor-toolbar-bottom) {
+  background-color: var(--background);
+  border-bottom: 1px solid hsl(214.3 31.8% 91.4%) !important;
+}
+
+/* Wrap line to avoid overflow in Codemirror JSON editor */
+.timeline .cm-line {
+  max-width: 25rem;
+  color: var(--secondary);
+  text-wrap: wrap;
+}
+
 @layer base {
   *,
   *::after,

@@ -19,6 +19,8 @@ export interface QueueWorkItemDto {
 
   status?: QueueWorkItemStatusEnum;
 
+  remarks?: string;
+
   /**
    * Gets or sets the payload data associated with this transaction, which may include relevant details for processing.
    */

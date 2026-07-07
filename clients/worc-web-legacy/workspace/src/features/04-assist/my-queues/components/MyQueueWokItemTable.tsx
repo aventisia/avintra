@@ -21,20 +21,27 @@ import { buildColumns } from "./my-queue-column";
 export const MyQueueWokItemTable = () => {
   useDocumentTitle(TABLE_HEADING);
 
-  const { tabValue, setTabValue, queueId, setQueueId, updateParams } =
-    useMyQueueParams();
+  const {
+    tabValue,
+    setTabValue,
+    queueId,
+    setQueueName,
+    setQueueId,
+    updateParams,
+  } = useMyQueueParams();
 
   const { queues, inputSchema, tableData } = useMyQueueData(queueId, tabValue);
 
   useEffect(() => {
     // If queue not selected yet & queues are available
     if (!queueId && queues.length > 0) {
-      const firstQueueId = queues[0].id;
+      const firstQueue = queues[0];
 
-      setQueueId(firstQueueId);
-      updateParams({ qid: firstQueueId });
+      setQueueId(firstQueue.id);
+      setQueueName(firstQueue.name);
+      updateParams({ qid: firstQueue.id, qn: firstQueue.name });
     }
-  }, [queueId, queues, setQueueId, updateParams]);
+  }, [queueId, queues, setQueueId, setQueueName, updateParams]);
 
   const columns = useMemo(() => buildColumns(inputSchema), [inputSchema]);
 
@@ -58,12 +65,14 @@ export const MyQueueWokItemTable = () => {
           <SearchableSelect
             options={queues.map((q) => ({
               value: q.id,
-              label: q.name,
+              label: `${q.name} (${q.total})`,
             }))}
             value={queueId ?? undefined}
             onValueChange={(value) => {
+              const qn = queues.find((q) => value == q.id)?.name ?? "";
               setQueueId(value);
-              updateParams({ qid: value ?? "" });
+              setQueueName(qn);
+              updateParams({ qid: value ?? "", qn });
             }}
             className="min-w-60"
             size="sm"
@@ -78,9 +87,13 @@ export const MyQueueWokItemTable = () => {
               updateParams({ t: v });
             }}
           >
-            <TabsList className="rounded-lg px-1.5 py-1">
+            <TabsList className="h-fit w-full rounded-lg px-1.5 py-1">
               {TABS.map((tab) => (
-                <TabsTrigger key={tab} value={tab}>
+                <TabsTrigger
+                  key={tab}
+                  value={tab}
+                  className="w-full rounded-lg py-0.5"
+                >
                   {tab}
                 </TabsTrigger>
               ))}
