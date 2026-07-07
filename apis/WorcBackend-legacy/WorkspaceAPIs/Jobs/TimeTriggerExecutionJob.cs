@@ -44,27 +44,45 @@ public class TimeTriggerExecutionJob : IJob
 
             var endOfCurrentMinute = startOfCurrentMinute.AddMinutes(1);
 
-            // Fetch only the active TimeTriggers from the DB
+            // Fetch active TimeTriggers
             var triggersQuery = await _workspaceInternalDbContext.Triggers
                 .Where(w => w.TriggerType == TriggerTypesEnum.TimeTrigger && !w.IsDisabled)
-                .Include(i => i.TriggerFlowVersions)
+                .Include(t => t.TriggerFlowVersions)
                 .ToListAsync();
 
-            // Filter the JSON metadata in memory (C# can read JsonDocument perfectly here)
+            // Filter JSON metadata in memory
             var triggersToExecute = triggersQuery
                 .Where(w =>
                 {
                     var root = w.Metadata.RootElement;
-                    // Safely extract values from JSON
-                    var nextTriggerTime = root.TryGetProperty("NextTriggerTime", out var ntt) ? ntt.GetDateTimeOffset() : DateTimeOffset.MinValue;
-                    var effectiveDate = root.TryGetProperty("EffectiveDate", out var ed) ? ed.GetDateTimeOffset() : DateTimeOffset.MinValue;
-                    var hasEndDate = root.TryGetProperty("EndDate", out var edProp) && edProp.ValueKind != System.Text.Json.JsonValueKind.Null;
-                    var endDate = hasEndDate ? edProp.GetDateTimeOffset() : (DateTimeOffset?)null;
 
-                    return nextTriggerTime >= startOfCurrentMinute &&
-                           nextTriggerTime < endOfCurrentMinute &&
-                           effectiveDate <= currentUtcTime &&
-                           (endDate == null || endDate >= currentUtcTime);
+                    var nextTriggerTime = root.TryGetProperty("NextTriggerTime", out var ntt)
+                        ? ntt.GetDateTimeOffset()
+                        : DateTimeOffset.MinValue;
+
+                    var effectiveDate = root.TryGetProperty("EffectiveDate", out var ed)
+                        ? ed.GetDateTimeOffset()
+                        : DateTimeOffset.MinValue;
+
+                    var hasEndDate = root.TryGetProperty("EndDate", out var endDateProp)
+                        && endDateProp.ValueKind != JsonValueKind.Null;
+
+                    var endDate = hasEndDate
+                        ? endDateProp.GetDateTimeOffset()
+                        : (DateTimeOffset?)null;
+
+                    // Skip if not yet effective
+                    if (effectiveDate > currentUtcTime)
+                        return false;
+
+                    // Skip if schedule has ended
+                    if (endDate != null && endDate < currentUtcTime)
+                        return false;
+
+                    // Execute if:
+                    // 1. Scheduled for current minute, OR
+                    // 2. Missed execution (NextTriggerTime is already past)
+                    return nextTriggerTime < endOfCurrentMinute;
                 })
                 .ToList();
 

@@ -58,6 +58,7 @@ public class WebhookTriggerMappingProfile : IRegister
 
         // Mapping to get agent list
         config.NewConfig<TriggerFlowVersion, AssignAgentTriggerDto>()
+            .Map(dest => dest.Id, src => src.FlowVersion != null ? src.FlowVersion.Id : Guid.Empty)
             .Map(dest => dest.Name, src => src.FlowVersion != null ? src.FlowVersion.Flow.Name : null)
             .Map(dest => dest.VersionNumber, src => src.FlowVersion != null ? src.FlowVersion.VersionNumber : 0)
             .Map(dest => dest.CreatedBy,
