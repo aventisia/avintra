@@ -5,6 +5,7 @@ using System.Activities;
 using System.Collections;
 using System.ComponentModel;
 using System.Net.Http;
+using Newtonsoft.Json;
 
 namespace CodeActivitiesLibrary.WorkflowLogics.QueueManagement
 {
@@ -19,16 +20,20 @@ namespace CodeActivitiesLibrary.WorkflowLogics.QueueManagement
         [FieldType(FieldType.QueueSelect)]
         public InArgument<string> QueueName { get; set; }
 
+        [DisplayName("Description")]
+        [Description("Optional description for the work item.")]
+        [DefaultValue("")]
+        public InArgument<string> Description { get; set; }
+
         [RequiredArgument]
         [DisplayName("Work Item Data")]
         [Description("Provide the data for the work item in JSON format.")]
         [FieldType(FieldType.JsonEditor)]
         public InArgument<string> WorkItemData { get; set; }
 
-        [DisplayName("Remark")]
-        [Description("Optional remark for the work item.")]
-        [DefaultValue("")]
-        public InArgument<string> Remark { get; set; }
+        [DisplayName("File URL")]
+        [Description("Optional URL of a file associated with the work item.")]
+        public InArgument<string> FileUrl { get; set; }
 
         [DisplayName("Result")]
         [Description("Returns the created work item.")]
@@ -41,7 +46,8 @@ namespace CodeActivitiesLibrary.WorkflowLogics.QueueManagement
                 // Retrieve input arguments
                 var queueName = QueueName.Get(context);
                 var workItemData = WorkItemData.Get(context);
-                var remark = Remark.Get(context);
+                var description = Description.Get(context);
+                var fileUrl = FileUrl.Get(context) ?? null;
                 var accessToken = AccessToken.Get(context);
 
                 // Validate that queueName is not null or empty
@@ -56,18 +62,13 @@ namespace CodeActivitiesLibrary.WorkflowLogics.QueueManagement
                     throw new ArgumentException("Work Item Data cannot be null or empty.");
                 }
 
-                // Validate that accessToken is not null or empty
-                if (string.IsNullOrEmpty(accessToken))
-                {
-                    throw new ArgumentException("Access Token cannot be null or empty.");
-                }
-
                 // Prepare the payload for the API request
                 var payload = new
                 {
                     queueName = queueName,
-                    workItemData = workItemData,
-                    remark = remark
+                    workItemData = Newtonsoft.Json.JsonConvert.SerializeObject(workItemData),
+                    description = description,
+                    fileUrl = fileUrl
                 };
 
                 // Execute the API request to create the work item
