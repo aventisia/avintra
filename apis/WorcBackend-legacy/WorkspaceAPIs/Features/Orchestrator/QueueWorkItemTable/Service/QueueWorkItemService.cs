@@ -360,32 +360,48 @@ public class QueueWorkItemService : IQueueWorkItemService
                 }
             }
 
-            // Check if WorkItemData is a valid JSON array or object
-            JArray? dataArray = new JArray();
-
-            if (string.IsNullOrEmpty(queueWorkItemDto.WorkItemData))
+            // Validate input: ensure WorkItemData is not null, empty, or whitespace
+            if (string.IsNullOrWhiteSpace(queueWorkItemDto.WorkItemData))
             {
                 serviceResponse.Message = "Invalid payload format. WorkItemData cannot be null or empty.";
                 return serviceResponse;
             }
 
-            if (queueWorkItemDto.WorkItemData.TrimStart().StartsWith("["))
+            JToken parsedToken;
+
+            try
             {
-                // It's an array, parse it
-                dataArray = JArray.Parse(queueWorkItemDto.WorkItemData ?? "[]");
+                // Attempt to parse the input string as JSON.
+                // This handles both JSON objects ({}) and arrays ([]).
+                parsedToken = JToken.Parse(queueWorkItemDto.WorkItemData);
+            }
+            catch (JsonReaderException ex)
+            {
+                // Log the invalid JSON payload for debugging purposes
+                _logger.LogError(ex, "Invalid JSON in WorkItemData: {Payload}", queueWorkItemDto.WorkItemData);
+
+                serviceResponse.Message = "Invalid JSON format in WorkItemData.";
+                return serviceResponse;
+            }
+
+            JArray dataArray;
+
+            // If JSON is an array, use it directly
+            if (parsedToken is JArray array)
+            {
+                dataArray = array;
                 _logger.LogInformation("Found {Count} workitem(s) in the payload array.", dataArray.Count);
             }
-            else if (queueWorkItemDto.WorkItemData.TrimStart().StartsWith("{"))
+            // If JSON is a single object, wrap it into an array for unified processing
+            else if (parsedToken is JObject obj)
             {
-                // It's a single item, wrap it in an array
-                dataArray = new JArray { JObject.Parse(queueWorkItemDto.WorkItemData ?? "{}") };
+                dataArray = new JArray(obj);
                 _logger.LogInformation("Found 1 workitem in the payload.");
             }
             else
             {
-                // If it doesn't start with either '{' or '['
-                serviceResponse.Message = "Invalid payload format. The data must start with '{' for a JSON object or '[' for a JSON array.";
-                serviceResponse.StatusCode = 400; // Bad Request
+                // If JSON is neither object nor array, reject the request
+                serviceResponse.Message = "Invalid payload structure. Must be a JSON object or array.";
                 return serviceResponse;
             }
 

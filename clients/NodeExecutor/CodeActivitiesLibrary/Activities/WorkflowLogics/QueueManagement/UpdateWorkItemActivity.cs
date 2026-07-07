@@ -24,10 +24,10 @@ namespace CodeActivitiesLibrary.WorkflowLogics.QueueManagement
         [DefaultValue(WorkItemStatusEnum.Pending)]
         public InArgument<WorkItemStatusEnum> Status { get; set; }
 
-        [DisplayName("Remark")]
-        [Description("Optional remark for the work item.")]
+        [DisplayName("Description")]
+        [Description("Optional description for the work item.")]
         [DefaultValue("")]
-        public InArgument<string> Remark { get; set; }
+        public InArgument<string> Description { get; set; }
 
         [DisplayName("Should Update Work Item Data")]
         [Description("Indicates whether the work item data should be updated. If true, the Work Item Data field must be provided.")]
@@ -40,6 +40,10 @@ namespace CodeActivitiesLibrary.WorkflowLogics.QueueManagement
         [RenderIfCondition(nameof(ShouldUpdateWorkItemData), true)]
         public InArgument<string> WorkItemData { get; set; }
 
+        [DisplayName("File URL")]
+        [Description("Optional URL of a file associated with the work item.")]
+        public InArgument<string> FileUrl { get; set; }
+
         [DisplayName("Result")]
         [Description("Returns the result of the update operation.")]
         public OutArgument<object> Result { get; set; }
@@ -50,9 +54,10 @@ namespace CodeActivitiesLibrary.WorkflowLogics.QueueManagement
             {
                 var workItemId = WorkItemId.Get(context);
                 var status = Status.Get(context);
-                var remark = Remark.Get(context);
+                var description = Description.Get(context);
                 var shouldUpdateData = ShouldUpdateWorkItemData.Get(context);
                 var workItemData = shouldUpdateData ? WorkItemData.Get(context) : null;
+                var fileUrl = FileUrl.Get(context) ?? null;
                 var accessToken = AccessToken.Get(context);
 
                 // Validate inputs
@@ -66,12 +71,16 @@ namespace CodeActivitiesLibrary.WorkflowLogics.QueueManagement
                     throw new ArgumentException("Work Item Data cannot be null or empty when 'Should Update Work Item Data' is true.");
                 }
 
+                // remove qoute frim workItemId
+                workItemId = workItemId.Trim('"');
+
                 var payload = new
                 {
                     id = workItemId,
                     status = status.ToString(),
-                    remark = remark,
-                    workItemData = shouldUpdateData ? workItemData : null
+                    workItemData = shouldUpdateData ? Newtonsoft.Json.JsonConvert.SerializeObject(workItemData) : null,
+                    description = description,
+                    fileUrl = fileUrl.Trim()
                 };
 
                 // Call the Queue API to update the work item
