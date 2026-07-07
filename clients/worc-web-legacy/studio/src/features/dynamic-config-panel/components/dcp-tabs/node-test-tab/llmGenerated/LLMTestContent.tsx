@@ -1,5 +1,5 @@
 import { AutosizeTextarea } from "@aventisia/ui";
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { useShallow } from "zustand/react/shallow";
 
 import CustomCheckbox from "@/components/CustomCheckbox";
@@ -14,7 +14,6 @@ import { useLLMExecute } from "@/features/dynamic-config-panel/hooks/node-test-t
 import { useLocalFileStore } from "@/features/file-viewer/stores/file-list-store";
 
 import FileUploadStep from "./FileUploadStep";
-import { SectionLabel } from "./SectionLabel";
 import { TestTabExecuteButton } from "./TestTabExecuteButton";
 
 /** Shared test screen for the Inferencing and Conversation AI agent nodes. */
@@ -71,41 +70,21 @@ const LLMTestContent = ({
     };
   }, [userPrompt, formData, filesToExecute.length, data, isPending]);
 
-  const renderOutput = () => {
-    if (isPending) return <JsonViewerSkeleton />;
+  const responseRef = useRef<HTMLDivElement>(null);
 
-    if (llmData) {
-      return (
-        <JsonViewer
-          jsonData={
-            llmData.is_json_output
-              ? JSON.stringify(llmData.output ?? {})
-              : (llmData.output ?? JSON.stringify(formData, null, 2))
-          }
-          className="h-[calc(64vh)]"
-          enableClipboard
-        />
-      );
-    }
+  const handleExecute = () => {
+    responseRef.current?.scrollIntoView({
+      behavior: "smooth",
+      block: "start",
+    });
 
-    // Pre-execution: show the actual request payload the user is about to send.
-    return (
-      <JsonViewer
-        jsonData={JSON.stringify(previewPayload ?? {}, null, 2)}
-        className="h-[calc(64vh)]"
-        enableClipboard
-      />
-    );
+    execute(userPrompt);
   };
-
   return (
     <DCPTabsContent
       tabValue="Test"
       footer={
-        <TestTabExecuteButton
-          isPending={isPending}
-          onExecute={() => execute(userPrompt)}
-        />
+        <TestTabExecuteButton isPending={isPending} onExecute={handleExecute} />
       }
     >
       <div className="flex flex-col gap-4 p-1">
@@ -129,12 +108,37 @@ const LLMTestContent = ({
           />
         )}
 
-        <div>
-          <SectionLabel>
-            {data || isPending ? "Output" : "Request Payload"}
-          </SectionLabel>
-          <div className="overflow-hidden border border-solid rounded-lg border-dividers">
-            {renderOutput()}
+        <div className="flex flex-col gap-3 w-full">
+          <div className="border-dividers overflow-hidden rounded-lg border border-solid">
+            <div className="border-dividers flex items-center justify-center border-b border-solid">
+              <div className="p-2 flex-grow items-center justify-center">
+                <span className="text-sm ">Request Payload</span>
+              </div>
+            </div>
+            <JsonViewer
+              jsonData={JSON.stringify(previewPayload ?? {}, null, 2)}
+              enableClipboard
+              className="min-h-80 h-auto"
+            />
+          </div>
+          <div
+            ref={responseRef}
+            className="border-dividers overflow-hidden rounded-lg border border-solid"
+          >
+            <div className="border-dividers flex items-center justify-center border-b border-solid">
+              <div className="p-2 flex-grow items-center justify-center">
+                <span className="text-sm">Response</span>
+              </div>
+            </div>
+            {isPending ? (
+              <JsonViewerSkeleton className="h-80" />
+            ) : (
+              <JsonViewer
+                jsonData={llmData ? JSON.stringify(llmData ?? {}) : "{}"}
+                enableClipboard
+                className="min-h-80 h-auto"
+              />
+            )}
           </div>
         </div>
       </div>
