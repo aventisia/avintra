@@ -7,13 +7,15 @@ export const useMyQueueParams = () => {
   const [searchParams, setSearchParams] = useSearchParams();
 
   const tabParam = searchParams.get("t") as TabValue | null;
-  const queueParam = searchParams.get("qid");
+  const queueIdParam = searchParams.get("qid");
+  const queueNameParam = searchParams.get("qn");
   const workItemParam = searchParams.get("wid");
 
   const [tabValue, setTabValue] = useState<TabValue>(
     TABS.includes(tabParam as TabValue) ? tabParam! : "Pending",
   );
-  const [queueId, setQueueId] = useState<string | null>(queueParam);
+  const [queueId, setQueueId] = useState<string | null>(queueIdParam);
+  const [queueName, setQueueName] = useState<string | null>(queueNameParam);
   const [workItemId, setWorkItemId] = useState<string | null>(workItemParam);
 
   const updateParams = useCallback(
@@ -39,8 +41,9 @@ export const useMyQueueParams = () => {
   }, [tabParam, updateParams]);
 
   useEffect(() => {
-    setQueueId(queueParam);
-  }, [queueParam]);
+    setQueueId(queueIdParam);
+    setQueueName(queueNameParam);
+  }, [queueIdParam, queueNameParam]);
 
   useEffect(() => {
     setWorkItemId(workItemParam);
@@ -50,8 +53,10 @@ export const useMyQueueParams = () => {
     tabValue,
     setTabValue,
     queueId,
+    queueName,
     workItemId,
     setQueueId,
+    setQueueName,
     updateParams,
   };
 };

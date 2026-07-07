@@ -2,12 +2,11 @@ import { useMemo } from "react";
 
 import { TabValue, WorkItemRow } from "../types/my-queue-types";
 import { filterByTabStatus } from "../utils/my-queue-utils";
-
 import { useFetchQueues } from "./useFetchQueues";
 import { useFetchQueuesWorkItems } from "./useFetchQueuesWorkItems";
 
 export const useMyQueueData = (queueId: string | null, tabValue: TabValue) => {
-  const { data: queuesRes } = useFetchQueues();
+  const { data: queuesRes } = useFetchQueues({ onlyUserQueues: true });
   const { data: workItemsRes } = useFetchQueuesWorkItems(queueId ?? "");
 
   const inputSchema = useMemo(() => {

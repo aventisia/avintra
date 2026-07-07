@@ -1,5 +1,6 @@
-import { Input } from "@aventisia/ui";
+import { Input, Textarea } from "@aventisia/ui";
 import { Button } from "@aventisia/ui/buttons";
+import { Label } from "@aventisia/ui/label";
 import { cn } from "@aventisia/ui/lib";
 import { useEffect, useState } from "react";
 import { useShallow } from "zustand/react/shallow";
@@ -14,6 +15,7 @@ export const UploadItemsForm = ({
   fileInputRef: React.RefObject<HTMLInputElement>;
 }) => {
   const [uploadedData, setUploadedData] = useState<unknown[]>([]);
+  const [remark, setRemark] = useState<string>();
 
   const { uploadedItems, rowId } = useQueueUploadItemsStore(
     useShallow((state) => ({
@@ -81,6 +83,7 @@ export const UploadItemsForm = ({
     mutateUploadWorkItem({
       queueId: rowId,
       payloadData: JSON.stringify(uploadedData),
+      ...(remark?.trim() && { remarks: remark.trim() }),
     });
   };
 
@@ -122,6 +125,10 @@ export const UploadItemsForm = ({
           uploadedData={uploadedData}
         />
       )}
+      <div className="pt-2">
+        <Label className="ml-1 text-xs">Remark </Label>
+        <Textarea value={remark} onChange={(e) => setRemark(e.target.value)} />
+      </div>
       <div className="!mt-5 flex w-full justify-end">
         <Button
           disabled={isPending}
