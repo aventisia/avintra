@@ -473,13 +473,21 @@ public class JobTableService : IJobTableService
                 }
             }
 
-            // If the job status is "Running", set the StartTime to the current UTC time.
-            if (job.Status == JobStatusTypesEnum.Running)
-                job.StartTime = DateTimeOffset.UtcNow;
+            // Update job execution timestamps only for published flow versions.
+            if (job.IsPublished)
+            {
+                // If the job status is "Running", set the StartTime to the current UTC time.
+                if (job.Status == JobStatusTypesEnum.Running)
+                    job.StartTime = DateTimeOffset.UtcNow;
 
-            // If the job status is "Canceled", "Abort", "Completed", or "Failed", set the EndTime to the current UTC time.
-            if (job.Status == JobStatusTypesEnum.Canceled || job.Status == JobStatusTypesEnum.Abort || job.Status == JobStatusTypesEnum.Completed || job.Status == JobStatusTypesEnum.Failed)
-                job.EndTime = DateTimeOffset.UtcNow;
+                // If the job status is "Canceled", "Abort", "Completed", or "Failed", the EndTime to the current UTC time.
+                if (job.Status == JobStatusTypesEnum.Canceled ||
+                    job.Status == JobStatusTypesEnum.Abort ||
+                    job.Status == JobStatusTypesEnum.Completed ||
+                    job.Status == JobStatusTypesEnum.Failed)
+                    job.EndTime = DateTimeOffset.UtcNow;
+            }
+
             // Update the job in the repository
             _unitOfWork.JobRepo.Update(job);
 
