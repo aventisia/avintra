@@ -1,8 +1,18 @@
 import { Skeleton } from "@aventisia/ui";
+import { cn } from "@aventisia/ui/lib";
 
-export default function JsonViewerSkeleton() {
+export default function JsonViewerSkeleton({
+  className,
+}: {
+  className?: string;
+}) {
   return (
-    <div className="h-[60vh] w-full overflow-hidden rounded-md bg-gray-50 p-2">
+    <div
+      className={cn(
+        "h-[60vh] w-full overflow-hidden rounded-md bg-gray-50 p-2",
+        className,
+      )}
+    >
       <div className="space-y-2">
         {/* Simulating nested JSON structure */}
         <div className="flex items-start gap-2">
