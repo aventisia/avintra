@@ -105,6 +105,11 @@ public class Job
     public string? ExecutedOn { get; set; }
 
     /// <summary>
+    /// Gets or sets additional remarks or execution details related to the job status.
+    /// </summary>
+    public string? Remark { get; set; }
+
+    /// <summary>
     /// Gets or sets the FlowVersionHistoryId associated with this job.
     /// </summary>
     public Guid? FlowVersionHistoryId { get; set; }

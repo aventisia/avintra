@@ -38,6 +38,11 @@ public class QueueTransaction : IMustHaveTenant
     public bool IsUserModified { get; set; }
 
     /// <summary>
+    /// Gets or sets the URL of the file associated with this queue transaction.
+    /// </summary>
+    public string? FileUrl { get; set; }
+
+    /// <summary>
     /// Gets or sets the the user who created the record.
     /// </summary>
     public string? CreatedBy { get; set; }

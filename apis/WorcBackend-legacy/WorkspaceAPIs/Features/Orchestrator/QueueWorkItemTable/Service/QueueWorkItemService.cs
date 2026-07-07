@@ -681,8 +681,9 @@ public class QueueWorkItemService : IQueueWorkItemService
             // Only update IsUserModified if the value has changed or is explicitly provided.
             queueWorkItem.IsUserModified = queueWorkItemDto.IsUserModified;
 
-            // Update description with the value from the DTO.
+            // Update description and fileUrl with the value from the DTO.
             queueWorkItem.Description = queueWorkItemDto.Description;
+            queueWorkItem.FileUrl = queueWorkItemDto.FileUrl;
 
             // Set the last modified timestamp
             queueWorkItem.LastModifiedOn = DateTimeOffset.UtcNow;

@@ -121,4 +121,9 @@ public class JobTableDto
     /// Contains the local machine name for desktop execution, or "Web Server" for web server execution.
     /// </summary>
     public string? ExecutedOn { get; set; }
+
+    /// <summary>
+    /// Gets or sets additional remarks or execution details related to the job status.
+    /// </summary>
+    public string? Remark { get; set; }
 }

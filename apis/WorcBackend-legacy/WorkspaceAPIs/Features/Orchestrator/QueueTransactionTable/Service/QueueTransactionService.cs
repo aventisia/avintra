@@ -636,6 +636,7 @@ public class QueueTransactionService : IQueueTransactionService
 
             // Update the existing queue transaction entity with values from the DTO
             queueTransaction.PayloadData = queueTransactionDto.PayloadData;
+            queueTransaction.FileUrl = queueTransactionDto.FileUrl;
             queueTransaction.LastModifiedOn = DateTimeOffset.UtcNow;
 
             // Mark the transaction as updated

@@ -595,6 +595,9 @@ namespace WorkspaceAPIs.Data.Migrations
                     b.Property<Guid?>("RefId")
                         .HasColumnType("uuid");
 
+                    b.Property<string>("Remark")
+                        .HasColumnType("text");
+
                     b.Property<int>("RetryCount")
                         .HasColumnType("integer");
 
@@ -1435,6 +1438,9 @@ namespace WorkspaceAPIs.Data.Migrations
                         .HasColumnType("timestamp with time zone");
 
                     b.Property<string>("Description")
+                        .HasColumnType("text");
+
+                    b.Property<string>("FileUrl")
                         .HasColumnType("text");
 
                     b.Property<Guid?>("FlowVersionId")
