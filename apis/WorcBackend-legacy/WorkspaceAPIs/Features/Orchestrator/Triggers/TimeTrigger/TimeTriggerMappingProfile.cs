@@ -60,6 +60,8 @@ public class TimeTriggerMappingProfile : IRegister
 
         // Mapping: TriggerFlowVersion → AssignAgentTriggerDto
         config.NewConfig<TriggerFlowVersion, AssignAgentTriggerDto>()
+            .Map(dest => dest.Id,
+                src => src.FlowVersion != null ? src.FlowVersion.Id : Guid.Empty)
             .Map(dest => dest.Name,
                 src => src.FlowVersion != null ? src.FlowVersion.Flow.Name : null)
             .Map(dest => dest.VersionNumber,

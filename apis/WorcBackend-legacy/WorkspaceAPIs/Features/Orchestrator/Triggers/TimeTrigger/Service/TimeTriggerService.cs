@@ -607,8 +607,8 @@ public class TimeTriggerService(
             // Handle updating the associated agents for the time trigger
             var currentAgentIds = timeTriggerDto.Agents?
                 .Select(a => a.Id)
-                .ToList() ?? new List<Guid>();
-            if (currentAgentIds.Any())
+                .ToList() ?? null;
+            if (currentAgentIds != null && currentAgentIds.Any())
             {
                 // Get the list of agent IDs currently linked to the time trigger
                 var existingAgentIds = timeTrigger.TriggerFlowVersions
@@ -677,6 +677,7 @@ public class TimeTriggerService(
                     }
                 }
             }
+
             timeTrigger = await _unitOfWork.TriggerRepo
                 .GetByConditionAsync(w => w.Id == timeTrigger.Id)
                 .Include(i => i.CreatedByUser)
