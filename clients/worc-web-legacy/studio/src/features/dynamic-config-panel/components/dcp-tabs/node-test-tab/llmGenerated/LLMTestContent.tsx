@@ -112,7 +112,7 @@ const LLMTestContent = ({
           <div className="border-dividers overflow-hidden rounded-lg border border-solid">
             <div className="border-dividers flex items-center justify-center border-b border-solid">
               <div className="p-2 flex-grow items-center justify-center">
-                <span className="text-sm ">Request Payload</span>
+                <span className="text-sm ">Input</span>
               </div>
             </div>
             <JsonViewer
@@ -127,7 +127,7 @@ const LLMTestContent = ({
           >
             <div className="border-dividers flex items-center justify-center border-b border-solid">
               <div className="p-2 flex-grow items-center justify-center">
-                <span className="text-sm">Response</span>
+                <span className="text-sm">Output</span>
               </div>
             </div>
             {isPending ? (
