@@ -39,12 +39,12 @@ public class JobDetailDto
     /// <summary>
     /// Gets or sets the priority level of the job (e.g., Normal, High).
     /// </summary>
-    public JobPriorityTypesEnum Priority { get; set; } = JobPriorityTypesEnum.Normal;
+    public JobPriorityEnum Priority { get; set; } = JobPriorityEnum.Normal;
 
     /// <summary>
     /// Gets or sets the current status of the job (e.g., Running, Completed, Failed, Canceled).
     /// </summary>
-    public JobStatusTypesEnum Status { get; set; }
+    public JobStatusEnum Status { get; set; }
 
     /// <summary>
     /// Gets or sets the identifier of the machine on which the job is running.

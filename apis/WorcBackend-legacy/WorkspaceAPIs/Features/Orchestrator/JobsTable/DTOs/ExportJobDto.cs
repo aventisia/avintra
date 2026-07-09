@@ -8,12 +8,12 @@ public class ExportJobRequestDto
     /// <summary>
     /// Gets or sets the priority level of the job (e.g., Normal, High).
     /// </summary>
-    public JobPriorityTypesEnum? Priority { get; set; }
+    public JobPriorityEnum? Priority { get; set; }
 
     /// <summary>
     /// Gets or sets the current status of the job (e.g., Running, Completed, Failed, Canceled).
     /// </summary>
-    public JobStatusTypesEnum? Status { get; set; }
+    public JobStatusEnum? Status { get; set; }
 
     /// <summary>
     /// Gets or sets the list of machine IDs to include in the exported job data.

@@ -110,8 +110,8 @@ public class JobTableService : IJobTableService
             // Fetch job execution logs, excluding 'Created' and 'Running' statuses.
             var jobLogs = await _unitOfWork.JobRepo
                 .GetByConditionAsync(w =>
-                    w.Status != JobStatusTypesEnum.Created &&
-                    w.Status != JobStatusTypesEnum.Running &&
+                    w.Status != JobStatusEnum.Created &&
+                    w.Status != JobStatusEnum.Running &&
                     w.CreatedOn.Date >= startDate.Value && w.CreatedOn.Date <= endDate.Value
                 )
                 .Include(i => i.FlowVersion)
@@ -284,7 +284,7 @@ public class JobTableService : IJobTableService
                 TriggerType = jobTableDto.TriggerType,
                 MachineId = jobTableDto.MachineId,
                 Priority = jobTableDto.Priority,
-                Status = JobStatusTypesEnum.Created,
+                Status = JobStatusEnum.Created,
                 CreatedOn = DateTimeOffset.UtcNow,
                 IsPublished = flowVersion.IsPublished,
                 FlowVersionHistoryId = flowVersion.FlowVersionHistories
@@ -477,14 +477,14 @@ public class JobTableService : IJobTableService
             if (job.IsPublished)
             {
                 // If the job status is "Running", set the StartTime to the current UTC time.
-                if (job.Status == JobStatusTypesEnum.Running)
+                if (job.Status == JobStatusEnum.Running)
                     job.StartTime = DateTimeOffset.UtcNow;
 
                 // If the job status is "Canceled", "Abort", "Completed", or "Failed", the EndTime to the current UTC time.
-                if (job.Status == JobStatusTypesEnum.Canceled ||
-                    job.Status == JobStatusTypesEnum.Abort ||
-                    job.Status == JobStatusTypesEnum.Completed ||
-                    job.Status == JobStatusTypesEnum.Failed)
+                if (job.Status == JobStatusEnum.Canceled ||
+                    job.Status == JobStatusEnum.Abort ||
+                    job.Status == JobStatusEnum.Completed ||
+                    job.Status == JobStatusEnum.Failed)
                     job.EndTime = DateTimeOffset.UtcNow;
             }
 
@@ -513,29 +513,29 @@ public class JobTableService : IJobTableService
                 // Switch statement to set the correct execution command based on the job's current status.
                 switch (job.Status)
                 {
-                    case JobStatusTypesEnum.Completed:
+                    case JobStatusEnum.Completed:
                         executionCommand.Command = ExecutionCommandTypesEnum.Cleanup;
                         break;
 
-                    case JobStatusTypesEnum.Failed:
-                    case JobStatusTypesEnum.Canceled:
+                    case JobStatusEnum.Failed:
+                    case JobStatusEnum.Canceled:
                         executionCommand.Command = ExecutionCommandTypesEnum.Cancel;
                         break;
 
-                    case JobStatusTypesEnum.Abort:
+                    case JobStatusEnum.Abort:
                         executionCommand.Command = ExecutionCommandTypesEnum.Abort;
                         break;
 
-                    case JobStatusTypesEnum.Paused:
+                    case JobStatusEnum.Paused:
                         executionCommand.Command = ExecutionCommandTypesEnum.Pause;
                         break;
 
-                    case JobStatusTypesEnum.Resumed:
+                    case JobStatusEnum.Resumed:
                         executionCommand.Command = ExecutionCommandTypesEnum.Resume;
                         break;
 
-                    case JobStatusTypesEnum.Retrying:
-                    case JobStatusTypesEnum.Running:
+                    case JobStatusEnum.Retrying:
+                    case JobStatusEnum.Running:
                         executionCommand.Command = ExecutionCommandTypesEnum.Execute;
                         break;
 
@@ -550,9 +550,9 @@ public class JobTableService : IJobTableService
 
             // TODO: Populate and send custom response data (e.g., job result, status details, timestamps) to the callback URL            // Fire webhook callback if this is a webhook-triggered job that has reached a terminal state
             if (job.TriggerType == TriggerTypesEnum.WebhookTrigger &&
-                (job.Status == JobStatusTypesEnum.Completed ||
-                 job.Status == JobStatusTypesEnum.Failed ||
-                 job.Status == JobStatusTypesEnum.Canceled))
+                (job.Status == JobStatusEnum.Completed ||
+                 job.Status == JobStatusEnum.Failed ||
+                 job.Status == JobStatusEnum.Canceled))
             {
                 _ = Task.Run(async () =>
                 {
@@ -701,7 +701,7 @@ public class JobTableService : IJobTableService
             }
 
             // // Check if job is already running or completed
-            if (job.Status != JobStatusTypesEnum.Failed)
+            if (job.Status != JobStatusEnum.Failed)
             {
                 _logger.LogInformation($"Job with ID {jobId} cannot be retried because it is not in a failed state.");
                 serviceResponse.Message = "Job cannot be retried because it is not in a failed state.";
@@ -709,7 +709,7 @@ public class JobTableService : IJobTableService
             }
 
             // Reset the job status and set other necessary properties for retry
-            job.Status = JobStatusTypesEnum.Running;
+            job.Status = JobStatusEnum.Running;
             job.RetryCount++;
 
             // Update job in the repository
@@ -761,7 +761,7 @@ public class JobTableService : IJobTableService
             }
 
             // Check if job is already completed or canceled
-            if (job.Status == JobStatusTypesEnum.Completed || job.Status == JobStatusTypesEnum.Canceled)
+            if (job.Status == JobStatusEnum.Completed || job.Status == JobStatusEnum.Canceled)
             {
                 _logger.LogInformation($"Job with ID {jobId} cannot be canceled because it is already completed or canceled.");
                 serviceResponse.Message = "Job cannot be canceled because it is already completed or canceled.";
@@ -769,7 +769,7 @@ public class JobTableService : IJobTableService
             }
 
             // Set job status to canceled
-            job.Status = JobStatusTypesEnum.Canceled;
+            job.Status = JobStatusEnum.Canceled;
             job.EndTime = DateTimeOffset.UtcNow;
 
             // Update job in the repository
@@ -829,7 +829,7 @@ public class JobTableService : IJobTableService
             }
 
             // If the job is not running, log a warning and return failure.
-            if (job.Status != JobStatusTypesEnum.Running)
+            if (job.Status != JobStatusEnum.Running)
             {
                 _logger.LogWarning("Job with ID: {JobId} is not currently running. Current status: {JobStatus}.", jobExecutionDto.Id, job.Status);
                 serviceResponse.Message = "Job is not currently running, cannot abort.";
@@ -837,7 +837,7 @@ public class JobTableService : IJobTableService
             }
 
             // Change the job status to "Abort" to indicate that it's being canceled.
-            job.Status = JobStatusTypesEnum.Abort;
+            job.Status = JobStatusEnum.Abort;
             job.EndTime = DateTimeOffset.UtcNow;
 
             // Update job in the repository
