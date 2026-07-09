@@ -207,6 +207,7 @@ function getStringArraySchema(field: DCPFieldSchemaType): ZodTypeAny {
 function getSuggestionsSchema(field: DCPFieldSchemaType): ZodTypeAny {
   let defaultActionsSchema: ZodTypeAny = z.array(z.string());
   let enableDynamicActionsSchema: ZodTypeAny = z.boolean();
+  let followUpMessagePromptSchema: ZodTypeAny = z.string();
 
   if (field.defaultValue && typeof field.defaultValue === "object") {
     if ("defaultActions" in field.defaultValue) {
@@ -220,11 +221,18 @@ function getSuggestionsSchema(field: DCPFieldSchemaType): ZodTypeAny {
         .boolean()
         .default(field.defaultValue.enableDynamicActions as boolean);
     }
+
+    if ("followUpMessagePrompt" in field.defaultValue) {
+      followUpMessagePromptSchema = z
+        .string()
+        .default(field.defaultValue.followUpMessagePrompt as string);
+    }
   }
 
   return z.object({
     defaultActions: defaultActionsSchema,
     enableDynamicActions: enableDynamicActionsSchema,
+    followUpMessagePrompt: followUpMessagePromptSchema,
   });
 }
 function getVoiceConfigSchema(field: DCPFieldSchemaType): ZodTypeAny {

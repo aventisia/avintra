@@ -19,8 +19,10 @@ import { TestTabExecuteButton } from "./TestTabExecuteButton";
 /** Shared test screen for the Inferencing and Conversation AI agent nodes. */
 const LLMTestContent = ({
   formData,
+  nodeUniqueName,
 }: {
   formData: Record<string, unknown>;
+  nodeUniqueName: string;
 }) => {
   const [useCurrentFileOnly, setUseCurrentFileOnly] = useState(true);
   const [userPrompt, setUserPrompt] = useState("");
@@ -51,6 +53,7 @@ const LLMTestContent = ({
   const { isPending, data, buildPayload, execute } = useLLMExecute(
     formData,
     filesToExecute,
+    nodeUniqueName,
   );
   const llmData = data as unknown as LLMResponseDto | undefined;
 
@@ -68,7 +71,7 @@ const LLMTestContent = ({
     return () => {
       cancelled = true;
     };
-  }, [userPrompt, formData, filesToExecute.length, data, isPending]);
+  }, [userPrompt, formData, filesToExecute.length, data, isPending, nodeUniqueName]);
 
   const responseRef = useRef<HTMLDivElement>(null);
 

@@ -21,6 +21,17 @@ export interface LLMMessageDto {
   content: string;
 }
 
+export interface ToolActionDto {
+  action: string;
+  approval: "auto" | "human";
+}
+
+export interface ToolConfigDto {
+  tool: string;
+  credential_id: string;
+  actions: ToolActionDto[];
+}
+
 /**
  * Represents a request for generating an LLM response.
  */
@@ -86,6 +97,11 @@ export interface LLMRequestDto {
   stream?: boolean;
 
   /**
+   * Optional tool/service configurations for tool-enabled agents.
+   */
+  tool_config?: ToolConfigDto[];
+
+  /**
    * Gets or sets the reference type (e.g.Agent, Platform) associated with the usage.
    */
   ref_type: UsageSourceTypesEnum | string;
@@ -106,6 +122,10 @@ export interface LLMRequestDto {
   action: ActionTypesEnum | string;
 
   kb_names?: string[] | null;
+
+  is_chat_agent?: boolean;
+
+  generate_followup_messages?: boolean;
 }
 
 /**

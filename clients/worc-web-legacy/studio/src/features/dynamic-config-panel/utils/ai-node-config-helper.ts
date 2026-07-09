@@ -4,6 +4,23 @@ import {
   VoiceConfigType,
 } from "@/types/model-config-type";
 
+export interface ToolActionConfig {
+  action: string;
+  approval: "auto" | "human";
+}
+
+export interface ToolsConfigItem {
+  tool: string;
+  credential_id: string;
+  actions: ToolActionConfig[];
+}
+
+export interface SuggestionsConfig {
+  defaultActions: string[];
+  enableDynamicActions: boolean;
+  followUpMessagePrompt: string;
+}
+
 /**
  * Node formData stores provider config under a dynamically-suffixed key,
  * e.g. `__ModelConfig__Inferencing`, `__ModelConfig__SpeechToText`. Pulls out
@@ -37,6 +54,28 @@ export function getKBConfig(
   for (const key in data) {
     if (key.includes("__KbConfig__")) {
       return { config: data[key] as KBConfigType, key };
+    }
+  }
+  return null;
+}
+
+export function getToolsConfig(
+  data: Record<string, unknown>,
+): { config: ToolsConfigItem[]; key: string } | null {
+  for (const key in data) {
+    if (key.includes("__ToolsConfig__")) {
+      return { config: data[key] as ToolsConfigItem[], key };
+    }
+  }
+  return null;
+}
+
+export function getSuggestionsConfig(
+  data: Record<string, unknown>,
+): { config: SuggestionsConfig; key: string } | null {
+  for (const key in data) {
+    if (key.includes("__RecommendedActionsConfig__")) {
+      return { config: data[key] as SuggestionsConfig, key };
     }
   }
   return null;
