@@ -14,7 +14,7 @@ public class JobExecutionDto
     /// <summary>
     /// Gets or sets the current status of the job (e.g., Running, Completed, Failed, Canceled).
     /// </summary>
-    public JobStatusTypesEnum Status { get; set; } = JobStatusTypesEnum.Running;
+    public JobStatusEnum Status { get; set; } = JobStatusEnum.Running;
 
     /// <summary>
     /// Gets or sets the identifier for the flow version associated with this job execution.
