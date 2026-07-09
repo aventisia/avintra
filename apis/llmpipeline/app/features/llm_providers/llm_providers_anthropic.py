@@ -6,7 +6,7 @@ from datetime import datetime, timezone
 from app.core.config import settings
 from app.core.logger import log_exception, logger
 from app.features.llm_providers.llm_providers_schemas import LLMChunkResponse, LLMRequest, LLMResponse
-from app.features.llm_providers.llm_providers_utils import extract_json_from_llm_response
+from app.features.llm_providers.llm_providers_utils import extract_json_from_llm_response, extract_error_message
 from .llm_providers_base import BaseLLMProvider
 from app.features.llm_providers.llm_job_manager import active_llm_jobs
 from fastapi import HTTPException
@@ -85,8 +85,22 @@ class AnthropicProvider(BaseLLMProvider):
                 # Return final llm response
                 return self._create_final_llm_response(llm_request, default_llm_response_obj, start_time, output, user.access_token, response_data)
         except Exception as e:
-            log_exception(logger, e, "Anthropic llm transactional request error: ", response_data.get('error', ''))
-            default_llm_response_obj.error = f"Failed to generate response: {e}"
+            error_context = ""
+            if "response_data" in locals() and isinstance(response_data, dict):
+                error_context = response_data.get("error", "")
+
+            log_exception(
+                logger,
+                e,
+                "Anthropic llm transactional request error: ",
+                error_context,
+            )
+
+            default_llm_response_obj.status = "failed"
+            default_llm_response_obj.finish_reason = "error"
+            default_llm_response_obj.error = extract_error_message(e)
+            default_llm_response_obj.created_on = datetime.now(timezone.utc)
+            default_llm_response_obj.time_taken = round(time.perf_counter() - start_time, 2)
 
             return default_llm_response_obj
 
@@ -289,9 +303,17 @@ class AnthropicProvider(BaseLLMProvider):
                                 exc_info=stream_err
                             )
                             continue
+        except HTTPException:
+            raise
         except Exception as e:
             log_exception(logger, e, "Anthropic provider stream error")
-            yield f"Failed to generate response: {e}"
+            default_llm_response_obj.status = "failed"
+            default_llm_response_obj.finish_reason = "error"
+            default_llm_response_obj.error = extract_error_message(e)
+            default_llm_response_obj.created_on = datetime.now(timezone.utc)
+            default_llm_response_obj.time_taken = round(time.perf_counter() - start_time, 2)
+            
+            yield default_llm_response_obj.model_dump_json() + "\n"
 
     # Helper: Create request payload and headers
     def _create_request_payload_and_headers(self, llm_request: LLMRequest) -> tuple:

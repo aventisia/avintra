@@ -15,7 +15,7 @@ from app.features.llm_providers.llm_providers_schemas import (
     LLMRequest,
     LLMResponse,
 )
-from app.features.llm_providers.llm_providers_utils import extract_json_from_llm_response
+from app.features.llm_providers.llm_providers_utils import extract_json_from_llm_response, extract_error_message
 from app.features.llm_providers.llm_job_manager import active_llm_jobs
 from .llm_providers_base import BaseLLMProvider
 from app.utils.file_converter_utils import file_to_base64
@@ -95,23 +95,23 @@ class GeminiProvider(BaseLLMProvider):
                 # Return standardized LLM response
                 return self._create_final_llm_response(llm_request, default_response, start_time, output, user.access_token, response_data)
 
-        except httpx.HTTPStatusError as e:
-            # Log detailed Gemini validation errors (response body usually includes invalid field info)
-            response_text = ""
-            if e.response is not None:
-                response_text = e.response.text
-            logger.error(
-                f"Gemini request failed with HTTP {e.response.status_code if e.response else 'unknown'}: {response_text}"
-            )
-            default_response.error = str(e)
-            return default_response
-
         except Exception as e:
-            # Log Gemini request failure
-            log_exception(logger, e, "Gemini request failed")
+            error_context = ""
+            if "response_data" in locals() and isinstance(response_data, dict):
+                error_context = response_data.get("error", "")
 
-            # Attach error message to response
-            default_response.error = str(e)
+            log_exception(
+                logger,
+                e,
+                "GoogleGemini llm transactional request error: ",
+                error_context,
+            )
+
+            default_response.status = "failed"
+            default_response.finish_reason = "error"
+            default_response.error = extract_error_message(e)
+            default_response.created_on = datetime.now(timezone.utc)
+            default_response.time_taken = round(time.perf_counter() - start_time, 2)
 
             return default_response
 
@@ -234,11 +234,19 @@ class GeminiProvider(BaseLLMProvider):
 
                     yield final_response.model_dump_json() + "\n"
 
+        except HTTPException:
+            raise
         except Exception as e:
             # Log streaming failure
             log_exception(logger, e, "Gemini streaming failed")
 
-            yield f"Failed to stream response: {e}"
+            default_response.status = "failed"
+            default_response.finish_reason = "error"
+            default_response.error = extract_error_message(e)
+            default_response.created_on = datetime.now(timezone.utc)
+            default_response.time_taken = round(time.perf_counter() - start_time, 2)
+
+            yield default_response.model_dump_json() + "\n"
 
     # Helper: Build Gemini request payload and authentication headers
     def _create_request_payload_and_headers(self, llm_request: LLMRequest):
