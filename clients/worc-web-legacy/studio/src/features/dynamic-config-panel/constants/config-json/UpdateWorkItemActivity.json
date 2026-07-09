@@ -51,9 +51,9 @@
     {
       "direction": "Input",
       "type": "text",
-      "name": "Remark",
-      "label": "Remark",
-      "description": "Optional remark for the work item.",
+      "name": "Description",
+      "label": "Description",
+      "description": "Optional description for the work item.",
       "defaultValue": "",
       "required": false
     },
@@ -82,6 +82,15 @@
           }
         ]
       }
+    },
+    {
+      "direction": "Input",
+      "type": "text",
+      "name": "FileUrl",
+      "label": "File URL",
+      "description": "Optional URL of a file associated with the work item.",
+      "defaultValue": "",
+      "required": false
     },
     {
       "direction": "Output",
