@@ -1,24 +1,29 @@
-import { get, set } from "idb-keyval";
+import { get } from "idb-keyval";
 import { useEffect, useRef } from "react";
-import { useShallow } from "zustand/react/shallow";
 
 import { JobStatusEnum } from "@/features/03-orchestrator/jobs-table/enums/job-status-enum";
 import {
   AgentExecutionLogType,
   EXECUTION_LOG_KEY,
+  markLogAsSynced,
 } from "@/features/execute-flow";
-import { updateJobData } from "@/features/execute-flow/apis/job-trigger-apis";
-import { useTuariUserMetadataStore } from "@/stores/tuari-user-metadata-store";
+import {
+  getJobById,
+  updateJobData,
+} from "@/features/execute-flow/apis/job-trigger-apis";
+import { ActionTypesEnum } from "@/features/execute-flow/constants/action-types-enum";
+import { CreditServiceTypesEnum } from "@/features/execute-flow/constants/credit-service-type-enum";
+import { UsageSourceTypesEnum } from "@/features/execute-flow/constants/usage-source-types-enum";
+import { usePostCreditConsumptionMutation } from "@/features/execute-flow/hooks/usePostCreditConsumptionMutation";
 
-// Run check for pending logs if any and post them to respective job data
+/**
+ * Scans IndexedDB on app boot for unsynced logs from crashed executions,
+ * updates the job state to Failed, and posts the accurately consumed credits.
+ */
 export const useRecoverCrashLogs = (): void => {
   const hasRun = useRef(false);
+  const { postCreditConsumption } = usePostCreditConsumptionMutation();
 
-  const { osID } = useTuariUserMetadataStore(
-    useShallow((state) => ({
-      osID: state.osID,
-    })),
-  );
   useEffect(() => {
     if (hasRun.current) return;
     hasRun.current = true;
@@ -30,55 +35,90 @@ export const useRecoverCrashLogs = (): void => {
 
         // Extract any logs that unexpectedly stopped mid-execution
         const crashedLogs = allLogs.filter(
-          (log) => log.isLogSavePending && log.jobId,
+          (log) =>
+            log.isLogSavePending && log.jobId && log.jobId !== "jobId-unknown",
         );
 
         if (crashedLogs.length === 0) return;
 
-        const updatedLogs = [...allLogs];
-
         for (const log of crashedLogs) {
           console.warn(
-            `Recovery: Found stranded log data for Job ${log.jobId}. Syncing to server...`,
+            `Recovery: Found stranded log data for Job ${log.jobId}. Syncing...`,
           );
 
           try {
-            // Push logs and enforce a Failed state to terminate the open job record cleanly
-            await updateJobData({
-              id: log.jobId,
-              machineId: osID,
-              flowVersionId: log.versionId,
-              status: JobStatusEnum.Failed,
-              nodeExecutionLogs: JSON.stringify(log.versionLog),
-            });
+            // 1. Fetch original job details from server
+            const jobResponse = await getJobById(log.jobId);
+            const jobData = jobResponse?.data;
 
-            // Mark safe locally so we don't pick it up again
-            const logIndex = updatedLogs.findIndex(
-              (l) => l.jobId === log.jobId,
-            );
-            if (logIndex !== -1) {
-              updatedLogs[logIndex] = {
-                ...updatedLogs[logIndex],
-                isLogSavePending: false,
-              };
+            if (!jobData) {
+              console.warn(
+                `Recovery: Could not find job data on server for Job ${log.jobId}`,
+              );
+              continue;
             }
 
-            console.log(`Recovery: Job ${log.jobId} sync successful.`);
+            const startTime = jobData.startTime
+              ? new Date(jobData.startTime)
+              : new Date();
+
+            // 2. Calculate true execution duration by summing up the durations of completed nodes
+            const totalNodeDuration = (log.versionLog || []).reduce(
+              (acc, node) => acc + (node.duration || 0),
+              0,
+            );
+
+            // Ensure a minimum of 1 second duration even if it crashed instantly
+            const duration = Math.max(1, totalNodeDuration);
+
+            const endTime = new Date();
+
+            // 3. Push final logs and update status to Failed
+            await updateJobData({
+              id: log.jobId,
+              flowId: jobData.flowId,
+              flowVersionId: log.versionId,
+              machineId: jobData.machineId,
+              duration,
+              status: JobStatusEnum.Failed,
+              startTime,
+              endTime,
+              nodeExecutionLogs: JSON.stringify(log.versionLog || []),
+            });
+
+            // 4. Post credit consumption for the actual elapsed execution time
+            await postCreditConsumption([
+              {
+                serviceType:
+                  CreditServiceTypesEnum[
+                    CreditServiceTypesEnum.AgentExecutionTime
+                  ],
+                consumedUnit: duration,
+                refType: UsageSourceTypesEnum[UsageSourceTypesEnum.Agent],
+                refId: jobData.flowId || "",
+                refName: jobData.name || "Agent",
+                action: ActionTypesEnum[ActionTypesEnum.AgentExecution],
+                triggeredByAgent: jobData.name || "Agent",
+              },
+            ]);
+
+            // 5. Mark safe locally in IndexedDB so we don't process it again
+            await markLogAsSynced(log.jobId);
+            console.log(
+              `Recovery: Job ${log.jobId} sync & credit update successful (Duration: ${duration}s).`,
+            );
           } catch (apiErr) {
             console.error(
-              `Recovery: Failed to submit payload for job ${log.jobId}:`,
+              `Recovery: Failed to process crash recovery for job ${log.jobId}:`,
               apiErr,
             );
           }
         }
-
-        // Save the cleaned logs back to IDB
-        await set(EXECUTION_LOG_KEY, updatedLogs);
       } catch (err) {
         console.error("Failed to complete IndexedDB crash recovery loop:", err);
       }
     };
 
     scanAndRecoverCrashedLogs();
-  }, []);
+  }, [postCreditConsumption]);
 };
