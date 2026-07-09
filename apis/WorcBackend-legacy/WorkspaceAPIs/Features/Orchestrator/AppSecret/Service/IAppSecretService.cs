@@ -40,6 +40,15 @@ public interface IAppSecretService
     Task<ServiceResponse<AppSecretDto>> GetAppSecretByIdAsync(Guid appSecretId);
 
     /// <summary>
+    /// Retrieves details of a specific app secret by its name.
+    /// </summary>
+    /// <param name="appSecretName">The name of the app secret.</param>
+    /// <returns>
+    /// A task representing the asynchronous operation. The result contains the <see cref="AppSecretDto"/> if found.
+    /// </returns>
+    Task<ServiceResponse<AppSecretDto>> GetAppSecretByNameAsync(string appSecretName);
+
+    /// <summary>
     /// Creates a new app secret with the provided details.
     /// </summary>
     /// <param name="appSecretDto">The data required to create the new app secret.</param>

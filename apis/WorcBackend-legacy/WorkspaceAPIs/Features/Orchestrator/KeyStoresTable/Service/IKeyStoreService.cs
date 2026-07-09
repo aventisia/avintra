@@ -34,6 +34,13 @@ public interface IKeyStoreService
     Task<ServiceResponse<KeyStoreDto>> GetKeyStoreByIdAsync(Guid keyStoreId);
 
     /// <summary>
+    /// Fetches a key store by its name.
+    /// </summary>
+    /// <param name="keyStoreName">The name of the key store to retrieve.</param>
+    /// <returns>A task representing the service response containing the details of the key store.</returns>
+    Task<ServiceResponse<KeyStoreDto>> GetKeyStoreByNameAsync(string keyStoreName);
+
+    /// <summary>
     /// Creates a new configuration item with the provided data.
     /// </summary>
     /// <param name="keyStoreDto">The data needed to create the new configuration item.</param>

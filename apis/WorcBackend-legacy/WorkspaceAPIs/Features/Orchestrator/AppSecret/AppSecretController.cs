@@ -47,6 +47,13 @@ public class AppSecretController : BaseApiController
         return ResultHelper(await _appSecretService.GetAppSecretByIdAsync(appSecretId));
     }
 
+    // Get app secret by name.
+    [HttpGet("name/{appSecretName}")]
+    public async Task<ActionResult<ServiceResponse<AppSecretDto>>> GetAppSecretByNameAsync(string appSecretName)
+    {
+        return ResultHelper(await _appSecretService.GetAppSecretByNameAsync(appSecretName));
+    }
+
     // Create a new app secret.
     [HttpPost]
     public async Task<ActionResult<ServiceResponse<AppSecretDto>>> CreateAppSecret([FromBody] AppSecretDto appSecretDto)

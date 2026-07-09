@@ -19,7 +19,7 @@ public class AppSecretDto
     /// Gets or sets the type of the secret (e.g., "qdrantApi", "openaiApi").
     /// Used to determine the structure of the Data field.
     /// </summary>
-    public required string Type { get; set; }
+    public required AppSecretTypesEnum Type { get; set; }
 
     /// <summary>
     /// Gets or sets an optional description of the secret.

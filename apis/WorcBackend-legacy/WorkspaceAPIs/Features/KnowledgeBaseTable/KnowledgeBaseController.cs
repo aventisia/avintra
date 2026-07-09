@@ -44,6 +44,14 @@ public class KnowledgeBaseController : BaseApiController
         return ResultHelper(await _knowledgeBaseService.IsKnowledgeBaseNameAvailableAsync(checkAvailabilityDto));
     }
 
+    // Gets a knowledge base by name.
+    [Authorize(Roles = "SA,TA,OM")]
+    [HttpGet("{name}")]
+    public async Task<ActionResult<ServiceResponse<KnowledgeBaseDto>>> GetKnowledgeBaseByName(string knowledgeBaseName)
+    {
+        return ResultHelper(await _knowledgeBaseService.GetKnowledgeBaseByNameAsync(knowledgeBaseName));
+    }
+
     // Creates a new knowledge base.
     [Authorize(Roles = "SA,TA,OM")]
     [HttpPost]

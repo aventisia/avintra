@@ -274,6 +274,81 @@ public class AppSecretService : IAppSecretService
         return serviceResponse;
     }
 
+    // Retrieve a specific credential by its name
+    public async Task<ServiceResponse<AppSecretDto>> GetAppSecretByNameAsync(string appSecretName)
+    {
+        // Initialize service response with default failure message
+        var serviceResponse = new ServiceResponse<AppSecretDto>
+        {
+            Data = null,
+            Message = "Failed to retrieve the credential. Please try again later."
+        };
+
+        try
+        {
+            // Attempt to retrieve the credential by its name
+            var appSecret = await _unitOfWork.AppSecretRepo
+                .GetByConditionAsync(w => w.Name == appSecretName)
+                .Include(i => i.CreatedByUser)
+                .SingleOrDefaultAsync();
+
+            // If no credential is found, log and return an appropriate message
+            if (appSecret == null)
+            {
+                _logger.LogWarning("No credential found with name: {AppSecretName}", appSecretName);
+                serviceResponse.Message = "Credential not found.";
+                return serviceResponse;
+            }
+
+            // Validate decrypt/view access
+            var (canView, accessLevel) = await _resourceShareService.GetResourceAccessAsync(
+                _userId,
+                appSecret.Id,
+                ResourceTypeEnum.AppSecret,
+                appSecret.CreatedByUserId,
+                appSecret.IsTenantWideAccess,
+                new[]
+                {
+                    ResourceAccessTypeEnum.Owner,
+                    ResourceAccessTypeEnum.View,
+                    ResourceAccessTypeEnum.Edit,
+                }
+            );
+
+            if (!canView)
+            {
+                _logger.LogWarning(
+                    "User {UserId} is not authorized to view credential name: {AppSecretName}",
+                    _userId,
+                    appSecretName);
+
+                serviceResponse.Message = "You do not have permission to view this credential.";
+                return serviceResponse;
+            }
+
+            // Adapt the entity to a DTO and assign to the service response
+            serviceResponse.Data = appSecret.Adapt<AppSecretDto>();
+            serviceResponse.StatusCode = 200;
+            serviceResponse.Message = "Credential retrieved successfully.";
+
+            // Log successful retrieval of credential by name
+            _logger.LogInformation(
+                "Successfully fetched credential with name: {AppSecretName}",
+                appSecretName);
+        }
+        catch (Exception ex)
+        {
+            // Log any error that occurs during the process
+            _logger.LogError(
+                ex,
+                "An error occurred while fetching credential with name: {AppSecretName}",
+                appSecretName);
+        }
+
+        // Return the service response
+        return serviceResponse;
+    }
+
     // Create a new credential
     public async Task<ServiceResponse<AppSecretDto>> CreateAppSecretAsync(AppSecretDto appSecretDto)
     {
@@ -389,7 +464,11 @@ public class AppSecretService : IAppSecretService
         {
             // Attempt to retrieve the credential by ID
             var existingAppSecret = await _unitOfWork.AppSecretRepo
-                .GetByConditionAsync(w => w.Id == appSecretDto.Id)
+                .GetByConditionAsync(w =>
+                    string.IsNullOrEmpty(appSecretDto.Name)
+                        ? w.Id == appSecretDto.Id
+                        : w.Name.ToLower() == appSecretDto.Name.ToLower()
+                )
                 .Include(i => i.EncryptedKeyValues)
                 .SingleOrDefaultAsync();
 
@@ -439,19 +518,54 @@ public class AppSecretService : IAppSecretService
             // Clean up input DTO (trim strings, remove extra spaces, etc.)
             appSecretDto = TrimDtoStringPropsUtil.TrimDtoStringProps(appSecretDto);
 
-            // Validate the data, Pass the cleaned-up credential data to the validation function
-            var validateData = ValidateData(appSecretDto.Type, appSecretDto.Data);
+            CredentialValidationResult? validateData = null;
 
-            // Check if validation was successful, If the sanitized data is empty or invalid, return the service response with the validation remark
-            if (string.IsNullOrEmpty(validateData.SanitizedDataJson))
+            // Determine whether the secret data has changed.
+            var existingJson = JsonNode.Parse(existingAppSecret.Data);
+            var newJson = System.Text.Json.JsonSerializer.SerializeToNode(appSecretDto.Data);
+            bool isDataChanged = !JsonNode.DeepEquals(existingJson, newJson);
+
+            if (isDataChanged)
             {
-                serviceResponse.Message = validateData.Remark;
-                return serviceResponse;
+                // Validate the updated secret data.
+                validateData = ValidateData(appSecretDto.Type, appSecretDto.Data);
+
+                // Return if validation fails.
+                if (string.IsNullOrEmpty(validateData.SanitizedDataJson))
+                {
+                    serviceResponse.Message = validateData.Remark;
+                    return serviceResponse;
+                }
+
+                // Update the sanitized secret data.
+                existingAppSecret.Data = validateData.SanitizedDataJson;
             }
 
-            // Apply the updated values from DTO to the existing entity
-            appSecretDto.Adapt(existingAppSecret);
-            existingAppSecret.Data = validateData.SanitizedDataJson;
+            // Update the disabled status only if a new value was provided and it has changed.
+            if (appSecretDto.IsDisabled.HasValue && existingAppSecret.IsDisabled != appSecretDto.IsDisabled.Value)
+            {
+                existingAppSecret.IsDisabled = appSecretDto.IsDisabled.Value;
+            }
+
+            // Update the description only if it has changed.
+            if (existingAppSecret.Description != appSecretDto.Description)
+            {
+                existingAppSecret.Description = appSecretDto.Description;
+            }
+
+            // Update the tenant-wide access flag only if it has changed.
+            if (existingAppSecret.IsTenantWideAccess != appSecretDto.IsTenantWideAccess)
+            {
+                existingAppSecret.IsTenantWideAccess = appSecretDto.IsTenantWideAccess;
+            }
+
+            // Update the secret type only if it has changed.
+            if (existingAppSecret.Type != appSecretDto.Type)
+            {
+                existingAppSecret.Type = appSecretDto.Type;
+            }
+
+            // Record the user who last modified the secret.
             existingAppSecret.LastModifiedByUserId = _userId;
 
             // Update the credential in the repository
@@ -464,73 +578,77 @@ public class AppSecretService : IAppSecretService
                 return serviceResponse;
             }
 
-            // Get existing encrypted key-values from the database
-            var existingKeyValues = existingAppSecret.EncryptedKeyValues;
-
-            // Prepare keys from request
-            var incomingKeys = validateData.EncryptedValues;
-
-            var hasChanges = false;
-            var keysToInsert = new List<EncryptedKeyValue>();
-
-            // Update existing entries or collect new ones for insertion
-            foreach (var kv in incomingKeys)
+            // Update encrypted key-values only if the secret data has changed.
+            if (isDataChanged)
             {
-                // Skip if the value is null or empty
-                if (string.IsNullOrEmpty(kv.Value))
-                    continue;
+                // Get existing encrypted key-values from the database
+                var existingKeyValues = existingAppSecret.EncryptedKeyValues;
 
-                // Try to find an existing key-value pair by name
-                var existing = existingKeyValues?.FirstOrDefault(e => e.Name == kv.Key);
-                if (existing != null)
+                // Prepare keys from request
+                var incomingKeys = validateData.EncryptedValues;
+
+                var hasChanges = false;
+                var keysToInsert = new List<EncryptedKeyValue>();
+
+                // Update existing entries or collect new ones for insertion
+                foreach (var kv in incomingKeys)
                 {
-                    // Update only if the value has actually changed
-                    if (existing.Value != kv.Value)
+                    // Skip if the value is null or empty
+                    if (string.IsNullOrEmpty(kv.Value))
+                        continue;
+
+                    // Try to find an existing key-value pair by name
+                    var existing = existingKeyValues?.FirstOrDefault(e => e.Name == kv.Key);
+                    if (existing != null)
                     {
-                        existing.Value = kv.Value;
-                        _unitOfWork.EncryptedKeyValueRepo.Update(existing);
+                        // Update only if the value has actually changed
+                        if (existing.Value != kv.Value)
+                        {
+                            existing.Value = kv.Value;
+                            _unitOfWork.EncryptedKeyValueRepo.Update(existing);
+                            hasChanges = true;
+                        }
+                    }
+                    else
+                    {
+                        // Prepare a new key-value entry for insertion
+                        var newEncryptedValue = new EncryptedKeyValue
+                        {
+                            Name = kv.Key,
+                            Value = kv.Value,
+                            AppSecretId = existingAppSecret.Id
+                        };
+
+                        keysToInsert.Add(newEncryptedValue);
                         hasChanges = true;
                     }
                 }
-                else
-                {
-                    // Prepare a new key-value entry for insertion
-                    var newEncryptedValue = new EncryptedKeyValue
-                    {
-                        Name = kv.Key,
-                        Value = kv.Value,
-                        AppSecretId = existingAppSecret.Id
-                    };
 
-                    keysToInsert.Add(newEncryptedValue);
+                // Insert new entries, if any
+                if (keysToInsert.Any())
+                {
+                    await _unitOfWork.EncryptedKeyValueRepo.InsertAsync(keysToInsert);
+                }
+
+                // Identify keys that exist in DB but not in the incoming request (to be deleted)
+                var keysToDelete = existingKeyValues?
+                    .Where(e => e != null && !incomingKeys.ContainsKey(e.Name))
+                    .ToList() ?? new List<EncryptedKeyValue>();
+
+                if (keysToDelete.Any())
+                {
+                    _unitOfWork.EncryptedKeyValueRepo.Delete(keysToDelete);
                     hasChanges = true;
                 }
-            }
 
-            // Insert new entries, if any
-            if (keysToInsert.Any())
-            {
-                await _unitOfWork.EncryptedKeyValueRepo.InsertAsync(keysToInsert);
-            }
-
-            // Identify keys that exist in DB but not in the incoming request (to be deleted)
-            var keysToDelete = existingKeyValues?
-                .Where(e => e != null && !incomingKeys.ContainsKey(e.Name))
-                .ToList() ?? new List<EncryptedKeyValue>();
-
-            if (keysToDelete.Any())
-            {
-                _unitOfWork.EncryptedKeyValueRepo.Delete(keysToDelete);
-                hasChanges = true;
-            }
-
-            // Save changes if any insert, update, or delete occurred
-            if (hasChanges)
-            {
-                if (!await _unitOfWork.SaveAsync())
+                // Save changes if any insert, update, or delete occurred
+                if (hasChanges)
                 {
-                    _logger.LogError("Failed to update encrypted key-values for credential ID: {AppSecretId}", appSecretDto.Id);
-                    return serviceResponse;
+                    if (!await _unitOfWork.SaveAsync())
+                    {
+                        _logger.LogError("Failed to update encrypted key-values for credential ID: {AppSecretId}", appSecretDto.Id);
+                        return serviceResponse;
+                    }
                 }
             }
 
@@ -777,7 +895,7 @@ public class AppSecretService : IAppSecretService
     }
 
     // Validates and sanitizes credential data, encrypting sensitive information like API keys.
-    private CredentialValidationResult ValidateData(string type, object data)
+    private CredentialValidationResult ValidateData(AppSecretTypesEnum type, object data)
     {
         // Result object to hold encrypted value and sanitized JSON
         var validationResult = new CredentialValidationResult();
@@ -795,7 +913,7 @@ public class AppSecretService : IAppSecretService
         // Switch statement based on the type of credential
         switch (type)
         {
-            case nameof(AppSecretTypesEnum.OpenAI):
+            case AppSecretTypesEnum.OpenAI:
                 {
                     // Deserialize JSON into OpenAICredentialsDto
                     var openAiCredentials = System.Text.Json.JsonSerializer.Deserialize<OpenAICredentialsDto>(rawJson, jsonOptions);
@@ -810,7 +928,7 @@ public class AppSecretService : IAppSecretService
                     break;
                 }
 
-            case nameof(AppSecretTypesEnum.AWS):
+            case AppSecretTypesEnum.AWS:
                 {
                     // Deserialize JSON into AWSCredentialsDto
                     var awsCredentials = System.Text.Json.JsonSerializer.Deserialize<AWSCredentialsDto>(rawJson, jsonOptions);
@@ -839,7 +957,7 @@ public class AppSecretService : IAppSecretService
                     break;
                 }
 
-            case nameof(AppSecretTypesEnum.Twilio):
+            case AppSecretTypesEnum.Twilio:
                 {
                     // Deserialize JSON into TwilioCredentialsDto
                     var twilioCredentials = System.Text.Json.JsonSerializer.Deserialize<TwilioCredentialsDto>(rawJson, jsonOptions);
@@ -866,7 +984,7 @@ public class AppSecretService : IAppSecretService
                     break;
                 }
 
-            case nameof(AppSecretTypesEnum.SendGrid):
+            case AppSecretTypesEnum.SendGrid:
                 {
                     // Deserialize JSON into SendGridCredentialsDto
                     var sendGridCredentials = System.Text.Json.JsonSerializer.Deserialize<SendGridCredentialsDto>(rawJson, jsonOptions);
@@ -879,7 +997,7 @@ public class AppSecretService : IAppSecretService
                     break;
                 }
 
-            case nameof(AppSecretTypesEnum.GitHub):
+            case AppSecretTypesEnum.GitHub:
                 {
                     var gitHubCredentials = System.Text.Json.JsonSerializer.Deserialize<GitHubCredentialsDto>(rawJson, jsonOptions);
                     if (gitHubCredentials != null)
@@ -899,7 +1017,7 @@ public class AppSecretService : IAppSecretService
                     break;
                 }
 
-            case nameof(AppSecretTypesEnum.M365):
+            case AppSecretTypesEnum.M365:
                 {
                     var m365Credentials = System.Text.Json.JsonSerializer.Deserialize<M365CredentialsDto>(rawJson, jsonOptions);
                     if (m365Credentials != null)
@@ -916,7 +1034,7 @@ public class AppSecretService : IAppSecretService
                     break;
                 }
 
-            case nameof(AppSecretTypesEnum.GeneralCredentials):
+            case AppSecretTypesEnum.GeneralCredentials:
                 {
                     var generalCredential = System.Text.Json.JsonSerializer.Deserialize<GeneralCredentialsDto>(rawJson, jsonOptions);
                     if (generalCredential != null)
@@ -935,7 +1053,7 @@ public class AppSecretService : IAppSecretService
                     break;
                 }
 
-            case nameof(AppSecretTypesEnum.Anthropic):
+            case AppSecretTypesEnum.Anthropic:
                 {
                     // Deserialize JSON into AnthropicCredentialsDto
                     var anthropicCredentials = System.Text.Json.JsonSerializer.Deserialize<AnthropicCredentialsDto>(rawJson, jsonOptions);
@@ -952,7 +1070,7 @@ public class AppSecretService : IAppSecretService
                     break;
                 }
 
-            case nameof(AppSecretTypesEnum.GoogleGemini):
+            case AppSecretTypesEnum.GoogleGemini:
                 {
                     // Deserialize JSON into GoogleGeminiCredentialsDto
                     var googleGeminiCredentials = System.Text.Json.JsonSerializer.Deserialize<GoogleGeminiCredentialsDto>(rawJson, jsonOptions);
@@ -970,7 +1088,7 @@ public class AppSecretService : IAppSecretService
                     break;
                 }
 
-            case nameof(AppSecretTypesEnum.GoogleWorkspace):
+            case AppSecretTypesEnum.GoogleWorkspace:
                 {
                     // Deserialize JSON into GoogleWorkspaceCredentialsDto
                     var googleWorkspaceCredentials = System.Text.Json.JsonSerializer.Deserialize<GoogleWorkspaceCredentialsDto>(rawJson, jsonOptions);
@@ -990,7 +1108,7 @@ public class AppSecretService : IAppSecretService
 
                 }
 
-            case nameof(AppSecretTypesEnum.AzureOpenAI):
+            case AppSecretTypesEnum.AzureOpenAI:
                 {
                     //Deserelize JSON Into AzureOpenAiCredentialsDto
                     var azureOpenAiCredentials = System.Text.Json.JsonSerializer.Deserialize<AzureOpenAiCredentialsDto>(rawJson, jsonOptions);
@@ -1006,7 +1124,7 @@ public class AppSecretService : IAppSecretService
                     break;
                 }
 
-            case nameof(AppSecretTypesEnum.ElevenLabs):
+            case AppSecretTypesEnum.ElevenLabs:
                 {
                     // Deserialize JSON into ElevenLabsCredentialsDto
                     var elevenLabsCredentials = System.Text.Json.JsonSerializer.Deserialize<ElevenLabsCredentialsDto>(rawJson, jsonOptions);
@@ -1024,7 +1142,7 @@ public class AppSecretService : IAppSecretService
                     break;
                 }
 
-            case nameof(AppSecretTypesEnum.OpenRouter):
+            case AppSecretTypesEnum.OpenRouter:
                 {
                     // Deserialize JSON into OpenRouterCredentialsDto
                     var openRouterCredentials = System.Text.Json.JsonSerializer.Deserialize<OpenRouterCredentialsDto>(rawJson, jsonOptions);
@@ -1041,7 +1159,7 @@ public class AppSecretService : IAppSecretService
                     break;
                 }
 
-            case nameof(AppSecretTypesEnum.AzureStorage):
+            case AppSecretTypesEnum.AzureStorage:
                 {
                     // Deserialize JSON into AzureStorageCredentialsDto
                     var azureStorageCredentials = System.Text.Json.JsonSerializer.Deserialize<AzureStorageCredentialsDto>(rawJson, jsonOptions);
@@ -1058,7 +1176,7 @@ public class AppSecretService : IAppSecretService
                     break;
                 }
 
-            case nameof(AppSecretTypesEnum.AzureBlobStorage):
+            case AppSecretTypesEnum.AzureBlobStorage:
                 {
                     // Deserialize JSON into AzureBlobStorageCredentialsDto
                     var azureBlobCredentials = System.Text.Json.JsonSerializer.Deserialize<AzureBolbStorageCredentialsDto>(rawJson, jsonOptions);
@@ -1075,7 +1193,7 @@ public class AppSecretService : IAppSecretService
                     break;
                 }
 
-            case nameof(AppSecretTypesEnum.ConnectionString):
+            case AppSecretTypesEnum.ConnectionString:
                 {
                     // Deserialize incoming JSON into PostgreSQL DTO
                     var postgresCredentials = System.Text.Json.JsonSerializer.Deserialize<ConnectionStringCredentialsDto>(rawJson, jsonOptions);
@@ -1091,7 +1209,7 @@ public class AppSecretService : IAppSecretService
                     }
                     break;
                 }
-            case nameof(AppSecretTypesEnum.Qdrant):
+            case AppSecretTypesEnum.Qdrant:
                 {
                     // Deserialize incoming JSON into Qdrant DTO
                     var qdrantCredentials = System.Text.Json.JsonSerializer.Deserialize<QdrantCredentialsDto>(rawJson, jsonOptions);
