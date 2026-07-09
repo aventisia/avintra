@@ -1,6 +1,6 @@
 namespace AspNetToolkit.Enums;
 
-public enum JobStatusTypesEnum
+public enum JobStatusEnum
 {
     /// <summary>
     /// Indicates that the job has been created but has not started running yet.

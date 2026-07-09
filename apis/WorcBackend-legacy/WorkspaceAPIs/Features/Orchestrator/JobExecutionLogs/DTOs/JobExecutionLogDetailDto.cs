@@ -39,12 +39,12 @@ public class JobExecutionLogDetailDto
     /// <summary>
     /// Gets or sets the priority level of the job (e.g., Normal, High).
     /// </summary>
-    public JobPriorityTypesEnum Priority { get; set; } = JobPriorityTypesEnum.Normal;
+    public JobPriorityEnum Priority { get; set; } = JobPriorityEnum.Normal;
 
     /// <summary>
     /// Gets or sets the current status of the job (e.g., Running, Completed, Failed, Canceled).
     /// </summary>
-    public JobStatusTypesEnum Status { get; set; }
+    public JobStatusEnum Status { get; set; }
 
     /// <summary>
     /// Gets or sets the version number of the flow record associated with the job.

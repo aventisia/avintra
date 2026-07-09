@@ -10,7 +10,7 @@ public static class CsvDataExporterUtil
     /// </summary>
     /// <typeparam name="T">The type of the data objects in the collection.</typeparam>
     /// <param name="data">The collection of objects to export.</param>
-    /// <param name="headers">An optional list of column headers. If null, the public property names of T are used.</param>
+    /// <param name="headers">An optional list of column headers. If null, the property's DisplayAttribute or property names will be used as headers.</param>
     /// <returns>A byte array containing the CSV data.</returns>
     public static byte[] ExportToCsvBytes<T>(IEnumerable<T> data, List<string>? headers = null)
     {
@@ -18,14 +18,11 @@ public static class CsvDataExporterUtil
         // Get all public instance properties of type T
         var allProperties = typeof(T).GetProperties(BindingFlags.Public | BindingFlags.Instance);
 
-        // If no header is provided, generate it from the property names
+        // If headers not provided, generate it from the property's DisplayAttribute or fallback to property names
         if (headers == null || !headers.Any())
         {
-            headers = allProperties.Select(p => p.Name).ToList();
+            headers = allProperties.Select(p => p.GetCustomAttribute<DisplayAttribute>()?.Name ?? p.Name).ToList();
         }
-
-        // Create a map of property names to their info for quick lookup
-        var propertyMap = allProperties.ToDictionary(p => p.Name, p => p, StringComparer.OrdinalIgnoreCase);
 
         // Create an ordered array of getters
         var getters = allProperties
@@ -53,6 +50,12 @@ public static class CsvDataExporterUtil
             sb.AppendLine(string.Join(",", values));
         }
         return Encoding.UTF8.GetBytes(sb.ToString());
+    }
+
+    public static MemoryStream ExportToCsvMemoryStream<T>(IEnumerable<T> data, List<string>? headers = null)
+    {
+        var csvBytes = ExportToCsvBytes(data, headers);
+        return new MemoryStream(csvBytes);
     }
 
     /// <summary>

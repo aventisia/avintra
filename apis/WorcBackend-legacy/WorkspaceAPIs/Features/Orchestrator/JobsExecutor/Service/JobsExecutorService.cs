@@ -199,7 +199,7 @@ public class JobsExecutorService : IJobsExecutorService
                 var job = await _unitOfWork.JobRepo
                     .GetByConditionAsync(w =>
                         w.TenantId == executionCommandDto.TenantId &&
-                        w.Status == JobStatusTypesEnum.Created &&
+                        w.Status == JobStatusEnum.Created &&
                         flowVersionIds.Contains(w.FlowVersionId) &&
                         (w.MachineId == null || w.MachineId == executionCommandDto.MachineId)
                     )

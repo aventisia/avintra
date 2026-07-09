@@ -14,7 +14,7 @@ public class JobExecutionLogDto
     /// <summary>
     /// Gets or sets the current status of the job (e.g., Running, Completed, Failed, Canceled).
     /// </summary>
-    public JobStatusTypesEnum Status { get; set; }
+    public JobStatusEnum Status { get; set; }
 
     /// <summary>
     /// Gets or sets the timestamp when the job execution started.

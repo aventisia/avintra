@@ -43,7 +43,7 @@ public class ExecuteFlowStep1Service : IExecuteFlowStep1Service
         // the word "flow" instead of "flow version" to avoid confusion. We will use flow version in the backend 
         // logic, comments, documentation and database since it is more accurate, but the messages shown to end user 
         // on frontend should flow instead of flow version.
-        var serviceResponse = ServiceResponse<ExecuteFlowResponseDto>.Failure(message: "Failed to invoke flow. Please try again.");
+        var serviceResponse = ServiceResponse<ExecuteFlowResponseDto>.Create(message: "Failed to invoke flow. Please try again.");
 
         try
         {
@@ -108,8 +108,8 @@ public class ExecuteFlowStep1Service : IExecuteFlowStep1Service
                 TenantId = _currentTenantService.CurrentTenantId,
                 FlowVersionId = flowVersion.Id,
                 TriggerType = triggerType,
-                Priority = JobPriorityTypesEnum.Normal,
-                Status = JobStatusTypesEnum.Created,
+                Priority = JobPriorityEnum.Normal,
+                Status = JobStatusEnum.Created,
                 StartTime = null,
                 EndTime = null,
                 RetryCount = 0,
@@ -156,7 +156,7 @@ public class ExecuteFlowStep1Service : IExecuteFlowStep1Service
                 {
                     JobId = newJob.Id,
                     FlowVersionId = newJob.FlowVersionId,
-                    JobStatus = updatedJob?.Status ?? JobStatusTypesEnum.Failed,
+                    JobStatus = updatedJob?.Status ?? JobStatusEnum.Failed,
                     OutputDataJson = !string.IsNullOrWhiteSpace(updatedJob?.OutputDataJson)
                         ? JsonValue.Create(updatedJob.OutputDataJson)
                         : null,
