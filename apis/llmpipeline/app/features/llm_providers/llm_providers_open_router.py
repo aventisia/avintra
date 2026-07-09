@@ -8,7 +8,7 @@ from app.core.config import settings
 from app.core.logger import log_exception, logger
 from app.core.vault_manager import VaultManager
 from app.core.credit_manager import CreditManagerService
-from app.features.llm_providers.llm_providers_utils import extract_json_from_llm_response
+from app.features.llm_providers.llm_providers_utils import extract_json_from_llm_response, extract_error_message
 from app.features.llm_providers.llm_providers_schemas import (
     EmbeddingRequest,
     EmbeddingResponse,
@@ -92,10 +92,24 @@ class OpenRouterProvider(BaseLLMProvider):
                 )
 
         except Exception as e:
-            log_exception(logger, e, "OpenRouter request failed")
-            default_response.error = str(e)
-            return default_response
+            error_context = ""
+            if "response_data" in locals() and isinstance(response_data, dict):
+                error_context = response_data.get("error", "")
 
+            log_exception(
+                logger,
+                e,
+                "OpenRouter llm transactional request error: ",
+                error_context,
+            )
+
+            default_response.status = "failed"
+            default_response.finish_reason = "error"
+            default_response.error = extract_error_message(e)
+            default_response.created_on = datetime.now(timezone.utc)
+            default_response.time_taken = round(time.perf_counter() - start_time, 2)
+
+            return default_response
     # Handle streaming OpenRouter requests
     async def stream_llm_response(
         self, llm_request: LLMRequest, job_id: str, user: User
@@ -208,9 +222,18 @@ class OpenRouterProvider(BaseLLMProvider):
                     # Send final response (important for frontend completion state)
                     yield final_response.model_dump_json() + "\n"
 
+        except HTTPException:
+            raise
         except Exception as e:
             log_exception(logger, e, "OpenRouter streaming failed")
-            yield f"Failed to stream response: {e}"
+            
+            default_response.status = "failed"
+            default_response.finish_reason = "error"
+            default_response.error = extract_error_message(e)
+            default_response.created_on = datetime.now(timezone.utc)
+            default_response.time_taken = round(time.perf_counter() - start_time, 2)
+            yield default_response.model_dump_json() + "\n"
+
 
     # Helper: Build OpenRouter request payload and headers
     def _create_request_payload_and_headers(self, llm_request: LLMRequest):
