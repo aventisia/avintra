@@ -51,7 +51,7 @@ namespace CodeActivitiesLibrary.AppIntegrations.CloudConnectorsActivities
 
             // Capture all required values from context at the start
             var modelConfig = ModelConfig.Get(context);
-            var prompt = Prompt.Get(context);
+            var inputPrompt = Prompt.Get(context);
             var filesList = Files.Get(context);
             var kbConfig = KbConfig.Get(context);
             var memoryConfig = MemoryConfig.Get(context);
@@ -77,6 +77,12 @@ namespace CodeActivitiesLibrary.AppIntegrations.CloudConnectorsActivities
 
             // Get chat agent parameters from recommendedActionsConfig
             var enableDynamicActions = recommendedActionsConfig?["enableDynamicActions"]?.Value<bool>();
+            var followUpMessagePrompt = GetStringProperty(recommendedActionsConfig, "followUpMessagePrompt");
+
+            // Build the input payload for the LLM request.
+            // When followUpMessagePrompt are provided, they are added as the first system message.
+            // The agent prompt is added as the next message. If no messages are configured, the original prompt is used as a fallback.
+            var input = BuildInputPayload(inputPrompt, followUpMessagePrompt);
 
             // Declare task completion source
             var taskCompletionSource = new TaskCompletionSource<string>(state);
@@ -90,7 +96,7 @@ namespace CodeActivitiesLibrary.AppIntegrations.CloudConnectorsActivities
                     {
                         provider = modelConfig?["provider"]?.Value<string>(),
                         model = modelConfig?["model"]?.Value<string>(),
-                        input = prompt ?? "",
+                        input = input,
                         files = formattedFilesList,
                         is_json_output = modelConfig?["is_json_output"]?.Value<bool?>() ?? false,
                         json_schema = modelConfig?["json_schema"]?.Value<string>(),
@@ -109,7 +115,7 @@ namespace CodeActivitiesLibrary.AppIntegrations.CloudConnectorsActivities
                         top_k = topK,
                         tool_config = toolsConfig != null ? toolsConfig.ToObject<object>() : null,
                         is_chat_agent = enableDynamicActions == null ? false : true,
-                        generate_dynamic_actions = enableDynamicActions ?? false,
+                        generate_followup_messages = enableDynamicActions ?? false,
                     };
 
                     // Convert request object to JSON
@@ -172,6 +178,41 @@ namespace CodeActivitiesLibrary.AppIntegrations.CloudConnectorsActivities
                 StatusMessage.Set(context, $"Error: {ex.GetBaseException().Message}");
                 IsSuccess.Set(context, false);
             }
+        }
+
+        // Builds the input payload format expected by the LLM API.
+        private static object BuildInputPayload(string? inputPrompt, string? followUpMessagePrompt)
+        {
+            var messages = new List<object>();
+
+            // Add follow-up instructions as the system message to define the expected response behavior.
+            if (!string.IsNullOrWhiteSpace(followUpMessagePrompt))
+            {
+                messages.Add(new
+                {
+                    role = "system",
+                    content = followUpMessagePrompt
+                });
+            }
+
+            // Add the provided input prompt as the user message.
+            if (!string.IsNullOrWhiteSpace(inputPrompt))
+            {
+                messages.Add(new
+                {
+                    role = "user",
+                    content = inputPrompt
+                });
+            }
+
+            // Return chat-style messages when any instructions or prompts are configured.
+            if (messages.Count > 0)
+            {
+                return messages;
+            }
+
+            // Return an empty string when no input is available.
+            return string.Empty;
         }
 
         private List<string> FormatFilesList(List<string> filesList)

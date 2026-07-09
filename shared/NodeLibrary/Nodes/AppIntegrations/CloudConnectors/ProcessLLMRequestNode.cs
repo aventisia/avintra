@@ -42,7 +42,7 @@ public class ProcessLLMRequestNode : BaseNode
         try
         {
             var modelConfig = ModelConfig.Get(context);
-            var prompt = Prompt.Get(context);
+            var inputPrompt = Prompt.Get(context);
             var filesList = Files.Get(context);
             var kbConfig = KbConfig.Get(context);
             var memoryConfig = MemoryConfig.Get(context);
@@ -62,14 +62,17 @@ public class ProcessLLMRequestNode : BaseNode
             var hasKbNames = kbNames is { Count: > 0 };
             var topK = hasKbNames ? (GetIntProperty(kbConfig, "numberOfChunks") ?? 5) : (int?)null;
 
-            // Get chat agent parameters from recommendedActionsConfig
+            // Get agent configuration values for dynamic actions and follow-up message generation.
             var enableDynamicActions = GetBoolProperty(recommendedActionsConfig, "enableDynamicActions");
+            var followUpMessagePrompt = GetStringProperty(recommendedActionsConfig, "followUpMessagePrompt");
 
+            // Build the LLM pipeline API endpoint using the resolved application base URL.
             var baseUrl = AppConfigHelper.ResolveAppBaseUrl();
             var apiUrl = $"https://{baseUrl}/llmpipeline/api/llm/generate";
 
-            // Determine the input format: chat mode (list of messages) or prompt mode (string)
-            object inputPayload = BuildInputPayload(prompt, threadMessages, userInput);
+            // Create the LLM input payload using conversation history when available,
+            // otherwise using the standalone prompt with optional follow-up instructions.
+            object inputPayload = BuildInputPayload(inputPrompt, threadMessages, userInput, followUpMessagePrompt);
 
             var requestObj = new
             {
@@ -94,7 +97,7 @@ public class ProcessLLMRequestNode : BaseNode
                 top_k = topK,
                 tool_config = toolsConfig.ValueKind == JsonValueKind.Object ? toolsConfig.Deserialize<Dictionary<string, object>>() : null,
                 is_chat_agent = enableDynamicActions == null ? false : true,
-                generate_dynamic_actions = enableDynamicActions ?? false,
+                generate_followup_messages = enableDynamicActions ?? false,
             };
 
             var requestJson = JsonSerializer.Serialize(requestObj);
@@ -235,7 +238,13 @@ public class ProcessLLMRequestNode : BaseNode
     /// Chat mode: when ThreadMessages is provided, builds a list of {role, content} messages with the current UserInput appended.
     /// Prompt mode: when only Prompt is provided, returns the prompt string directly.
     /// </summary>
-    private static object BuildInputPayload(string? prompt, string? threadMessages, string? userInput)
+
+    /// <summary>
+    /// Builds the input payload for the LLM request.
+    /// When conversation history is available, creates a chat-style message list containing follow-up instructions, agent instructions, previous messages, and the current user input.
+    /// When no conversation history is provided, returns the input prompt directly as a string.
+    /// </summary>
+    private static object BuildInputPayload(string? inputPrompt, string? threadMessages, string? userInput, string? followUpMessagePrompt)
     {
         // Chat mode: ThreadMessages is a JSON array of {role, content} objects
         if (!string.IsNullOrWhiteSpace(threadMessages))
@@ -254,7 +263,11 @@ public class ProcessLLMRequestNode : BaseNode
 
                         if (!string.IsNullOrWhiteSpace(role) && !string.IsNullOrWhiteSpace(content))
                         {
-                            messages.Add(new { role, content });
+                            messages.Add(new
+                            {
+                                role,
+                                content
+                            });
                         }
                     }
                 }
@@ -264,10 +277,16 @@ public class ProcessLLMRequestNode : BaseNode
                 // If parsing fails, fall through to prompt mode
             }
 
-            // If we have a valid prompt, add it as a system message at the beginning
-            if (!string.IsNullOrWhiteSpace(prompt))
+            // If we have a valid default prompt, add it as a system message at the beginning
+            if (!string.IsNullOrWhiteSpace(followUpMessagePrompt))
             {
-                messages.Insert(0, new { role = "system", content = prompt });
+                messages.Insert(0, new { role = "system", content = followUpMessagePrompt });
+            }
+
+            // If we have a valid prompt, add it as a system message at the beginning
+            if (!string.IsNullOrWhiteSpace(inputPrompt))
+            {
+                messages.Insert(string.IsNullOrWhiteSpace(inputPrompt) ? 0 : 1, new { role = "system", content = inputPrompt });
             }
 
             // Append the current user input as the latest user message
@@ -283,7 +302,7 @@ public class ProcessLLMRequestNode : BaseNode
         }
 
         // Prompt mode: return the prompt string directly
-        return prompt ?? string.Empty;
+        return inputPrompt ?? string.Empty;
     }
 
     /// <summary>
