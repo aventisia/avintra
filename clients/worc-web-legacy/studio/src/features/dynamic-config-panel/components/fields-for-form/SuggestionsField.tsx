@@ -1,8 +1,12 @@
 import { Separator } from "@aventisia/ui";
-import { BaseFieldProps, SwitchField } from "@aventisia/ui/form";
+import {
+  AutosizeTextareaField,
+  BaseFieldProps,
+  SwitchField,
+} from "@aventisia/ui/form";
 import { FormFieldSizeType } from "@aventisia/ui/types";
 import { useMemo } from "react";
-import { FieldPath, FieldValues } from "react-hook-form";
+import { FieldPath, FieldValues, useFormContext } from "react-hook-form";
 
 import { GroupedFieldsWrapper } from "./GroupedFieldsWrapper";
 import { StringArrayField } from "./StringArrayField";
@@ -22,15 +26,19 @@ export function SuggestionsField({
   isRequired,
   size,
 }: SuggestionsFieldProps) {
+  // Connect to the parent form context
+  const { watch } = useFormContext();
+
   const fieldNames = useMemo(
     () =>
       ({
         defaultActions: `${name}.defaultActions`,
         enableDynamicActions: `${name}.enableDynamicActions`,
+        followUpMessagePrompt: `${name}.followUpMessagePrompt`,
       }) as const,
     [name],
   );
-
+  const showPromptField = watch(fieldNames.enableDynamicActions);
   return (
     <GroupedFieldsWrapper groupName="Configure Default Actions">
       <StringArrayField
@@ -45,11 +53,20 @@ export function SuggestionsField({
 
       <SwitchField
         name={fieldNames.enableDynamicActions}
-        label="Enable Dynamic Actions"
-        description="Enable dynamically generated suggestions during conversations."
+        label="Generate Follow-up Messages"
+        description="Enable dynamically generated follow-up messages during conversations."
         disabled={disabled}
         size={size}
       />
+      {showPromptField && (
+        <AutosizeTextareaField
+          minHeight={0}
+          name={fieldNames.followUpMessagePrompt}
+          label="Follow-up Messages Prompt"
+          disabled={disabled}
+          size={size}
+        />
+      )}
     </GroupedFieldsWrapper>
   );
 }

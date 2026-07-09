@@ -47,5 +47,5 @@ export interface LLMToolsOutputDto {
 export type LLMOutputDto = {
   text?: string;
   tools?: LLMToolsOutputDto[];
-  recommended_actions: string[];
+  followup_messages: string[];
 };

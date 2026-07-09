@@ -33,7 +33,12 @@ const TestTabContent = ({
       // Both nodes share an identical test UX (prompt + optional file
       // upload + output viewer); only their payload's `input` source
       // differs, which useLLMExecute already resolves generically.
-      return <LLMTestContent formData={formData} />;
+      return (
+        <LLMTestContent
+          formData={formData}
+          nodeUniqueName={nodeUniqueName}
+        />
+      );
 
     case "CreateSTTAIAgent":
       return <STTTestContent formData={formData} />;

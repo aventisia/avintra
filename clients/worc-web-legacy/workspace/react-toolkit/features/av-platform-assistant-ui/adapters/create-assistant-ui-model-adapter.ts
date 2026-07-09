@@ -143,8 +143,8 @@ export const createAssistantUIModelAdapter = ({
             });
           }
 
-          if (Array.isArray(parsedOutput.recommended_actions)) {
-            onSuggestionsUpdate?.(parsedOutput.recommended_actions);
+          if (Array.isArray(parsedOutput.followup_messages)) {
+            onSuggestionsUpdate?.(parsedOutput.followup_messages);
           }
         } else {
           contentParts.push({

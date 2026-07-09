@@ -4,12 +4,18 @@ import { useShallow } from "zustand/react/shallow";
 import {
   LLMRequestDto,
   ProviderLiteral,
+  ToolConfigDto,
 } from "@/features/dynamic-config-panel/dtos/llm-providers-dto";
 import { useExecuteModelMutation } from "@/features/dynamic-config-panel/hooks/useExecuteModelMutation";
 import { filesToDataUrls } from "@/features/dynamic-config-panel/utils/file-to-data-url";
 import { useCurrentFlowStore } from "@/stores/current-flow-store";
 
-import { getKBConfig, getModelConfig } from "../../utils/ai-node-config-helper";
+import {
+  getKBConfig,
+  getModelConfig,
+  getSuggestionsConfig,
+  getToolsConfig,
+} from "../../utils/ai-node-config-helper";
 import { useResetOnTestTabOpen } from "./useResetOnTestTabOpen";
 
 /**
@@ -27,30 +33,50 @@ import { useResetOnTestTabOpen } from "./useResetOnTestTabOpen";
 export function buildLLMInput(
   systemPrompt: string,
   userPrompt: string,
+  followUpPrompt?: string,
 ): string {
   const trimmedUserPrompt = userPrompt.trim();
 
   if (!trimmedUserPrompt) {
-    return systemPrompt;
+    return mergeSystemPrompt(systemPrompt, followUpPrompt);
   }
 
   const messages = [
-    { role: "system", content: systemPrompt },
+    { role: "system", content: mergeSystemPrompt(systemPrompt, followUpPrompt) },
     { role: "user", content: trimmedUserPrompt },
   ];
 
   return JSON.stringify(messages);
 }
 
+function mergeSystemPrompt(
+  systemPrompt: string,
+  followUpPrompt?: string,
+): string {
+  const segments: string[] = [];
+
+  if (systemPrompt?.trim()) {
+    segments.push(systemPrompt.trim());
+  }
+
+  if (followUpPrompt?.trim()) {
+    segments.push(followUpPrompt.trim());
+  }
+
+  return segments.join("\n\n");
+}
+
 export function useLLMExecute(
   formData: Record<string, unknown>,
   files: File[],
+  nodeUniqueName?: string,
 ) {
   const { currentFlow } = useCurrentFlowStore(
     useShallow((state) => ({ currentFlow: state.currentFlow })),
   );
   const mutation = useExecuteModelMutation();
   useResetOnTestTabOpen(mutation.reset);
+  const isConversationAgent = nodeUniqueName === "CreateConversationAIAgent";
 
   /**
    * Builds the exact payload that would be sent to the LLM request.
@@ -80,10 +106,20 @@ export function useLLMExecute(
     const dataUrlFiles =
       files.length > 0 ? await filesToDataUrls(files) : undefined;
 
-    return {
+    const toolsConfigData = getToolsConfig(formData);
+    const suggestionsConfigData = getSuggestionsConfig(formData);
+    const hasToolConfig = Boolean(toolsConfigData?.config?.length);
+    const dynamicActionsEnabled = Boolean(
+      suggestionsConfigData?.config?.enableDynamicActions,
+    );
+    const followUpPrompt = dynamicActionsEnabled
+      ? suggestionsConfigData?.config?.followUpMessagePrompt
+      : undefined;
+
+    const payload: LLMRequestDto = {
       provider: modelConfig.provider as ProviderLiteral,
       model: modelConfig.model,
-      input: buildLLMInput(systemPrompt, userPrompt),
+      input: buildLLMInput(systemPrompt, userPrompt, followUpPrompt),
       files: dataUrlFiles,
       is_json_output: modelConfig.is_json_output,
       json_schema: formData.useJSONSchema
@@ -101,6 +137,17 @@ export function useLLMExecute(
       ref_type: "Agent",
       action: "AgentExecution",
     };
+
+    if (hasToolConfig) {
+      payload.tool_config = toolsConfigData!.config as ToolConfigDto[];
+    }
+
+    if (isConversationAgent) {
+      payload.is_chat_agent = true;
+      payload.generate_followup_messages = dynamicActionsEnabled;
+    }
+
+    return payload;
   }
 
   async function execute(userPrompt: string) {
