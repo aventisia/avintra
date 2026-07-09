@@ -20,10 +20,11 @@ import {
   sendNodeToProcess,
 } from "..";
 import { getLocalExecutionLog } from "../apis/get-version-execution-log";
-import { insertJob } from "../apis/jobs-table-apis";
+import { updateJobData } from "../apis/jobs-table-apis";
 import { JobStatusEnum } from "../enums/job-status-enum";
 import { useJobDataStore } from "../stores/job-data-store";
 import { ExecutionNode } from "../types/execution-types";
+import { markLogAsSynced } from "../utils/save-node-execution-log.ts";
 
 export default function useWebSocket() {
   const socketRef = useRef<WebSocket | null>(null);
@@ -31,12 +32,14 @@ export default function useWebSocket() {
   const isConnecting = useRef(false);
 
   // Get setExecutionState action from current flow store
-  const { currentFlow, setExecutionState } = useCurrentFlowStore(
-    useShallow((state) => ({
-      currentFlow: state.currentFlow,
-      setExecutionState: state.setExecutionState,
-    })),
-  );
+  const { currentFlow, executionState, setExecutionState } =
+    useCurrentFlowStore(
+      useShallow((state) => ({
+        currentFlow: state.currentFlow,
+        executionState: state.executionState,
+        setExecutionState: state.setExecutionState,
+      })),
+    );
 
   const { osID } = useTuariUserMetadataStore(
     useShallow((state) => ({
@@ -226,7 +229,9 @@ export default function useWebSocket() {
           const duration = Math.round(
             (endTime.getTime() - startTime.getTime()) / 1000,
           );
-          await insertJob({
+
+          await updateJobData({
+            id: currentFlow.jobId,
             flowId: currentFlow.id,
             flowVersionId: currentFlow.versionId,
             duration,
@@ -252,6 +257,8 @@ export default function useWebSocket() {
               triggeredByAgent: currentFlow.name,
             },
           ]); // Post the consumption data
+          // mark the job log pushed to backend
+          await markLogAsSynced(currentFlow.jobId || "jobId-unknown");
         }
       } catch (error) {
         // Log any errors that occur during the process
@@ -269,5 +276,44 @@ export default function useWebSocket() {
     handleExecutionData();
   }, [currExecCommand]);
 
+  useEffect(() => {
+    // Only run the heartbeat if the agent is actively executing and we have a valid job ID
+    if (executionState !== "executing" || !currentFlow.jobId) return;
+
+    const syncExecutionData = async () => {
+      try {
+        const currentDuration = Math.round(
+          (new Date().getTime() - startTime.getTime()) / 1000,
+        );
+
+        // Update job metadata and logs WITHOUT consuming credits
+        await updateJobData({
+          id: currentFlow.jobId,
+          flowId: currentFlow.id,
+          flowVersionId: currentFlow.versionId,
+          osId: osID,
+          duration: currentDuration,
+          status: JobStatusEnum.Running,
+          startTime: startTime,
+          isPublished: false,
+        });
+
+        console.log("Heartbeat: Execution state synced to database.");
+      } catch (err) {
+        console.error("Heartbeat sync failed:", err);
+      }
+    };
+
+    // 120,000 ms = 2 minutes
+    const intervalId = setInterval(syncExecutionData, 120000);
+
+    return () => clearInterval(intervalId);
+  }, [
+    currentFlow.jobId,
+    currentFlow.versionId,
+    startTime,
+    osID,
+    executionState,
+  ]);
   return { sendCommand };
 }

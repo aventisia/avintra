@@ -9,7 +9,10 @@ import { getMySession } from "@/react-toolkit/apis/accounts-me-apis";
 import { useUserSessionStore } from "@/react-toolkit/stores/user-session-store";
 import { NodeDataType } from "@/types/node-data-type";
 
-import { CURRENT_VERSION_ID_KEY } from "../constants/constants";
+import {
+  CURRENT_JOB_ID_KEY,
+  CURRENT_VERSION_ID_KEY,
+} from "../constants/constants";
 import { JobDetailsDto } from "../dtos/job-details-dto";
 import { useCurrentFlowStore } from "../stores/current-flow-store";
 import { useJobDataStore } from "../stores/job-data-store";
@@ -92,6 +95,7 @@ export default function useExecuteFlow() {
       jobId: data.id,
       machineId: data.machineId,
     });
+    localStorage.setItem(CURRENT_JOB_ID_KEY, data.id || "");
 
     const { nodes, edges } = deepParse(
       data.reactFlowObject ?? "{}",

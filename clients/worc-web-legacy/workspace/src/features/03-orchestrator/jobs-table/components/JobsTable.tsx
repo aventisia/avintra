@@ -23,7 +23,7 @@ import {
 } from "../constants";
 import { columnDisplayNames } from "../constants/column-display-names";
 import { columnVisibilityState } from "../constants/column-visibility-state";
-import { JobStatusTypesEnum } from "../enums/job-status-type-enum";
+import { JobStatusEnum } from "../enums/job-status-enum";
 import { useFetchJobsList } from "../hooks/useFetchJobsList";
 import { DateRangeFilter } from "./DateRangeFilter";
 import { JobsBulkActions } from "./JobsBulkActions";
@@ -117,9 +117,9 @@ export const JobsTable = () => {
     if (!statusColumn) return;
 
     if (tabValue === "Current") {
-      statusColumn.setFilterValue(JobStatusTypesEnum.Running);
+      statusColumn.setFilterValue(JobStatusEnum.Running);
     } else if (tabValue === "Scheduled") {
-      statusColumn.setFilterValue(JobStatusTypesEnum.Created);
+      statusColumn.setFilterValue(JobStatusEnum.Created);
     } else if (tabValue === "History") {
       statusColumn.setFilterValue(HISTORY_JOB_STATUSES);
     }

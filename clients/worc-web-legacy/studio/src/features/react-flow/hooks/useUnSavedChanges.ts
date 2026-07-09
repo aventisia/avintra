@@ -1,7 +1,15 @@
+/* eslint-disable react-hooks/rules-of-hooks */
 import { useEffect, useRef } from "react";
 import { useBlocker } from "react-router-dom";
 
-const useUnsavedChanges = ({ isDirty }: { isDirty: boolean }): void => {
+const useUnsavedChanges = ({
+  isDirty,
+  enabled,
+}: {
+  isDirty: boolean;
+  enabled: boolean;
+}): void => {
+  if (!enabled) return;
   // 1. Keep the latest dirty state inside the listeners without re-binding
   const isDirtyRef = useRef(isDirty);
 

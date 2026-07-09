@@ -4,3 +4,10 @@ export type ExecutionStateType =
   | "executing"
   | "paused"
   | "stopped";
+
+export const PROCESSING_STATES: readonly ExecutionStateType[] = [
+  "creating-job",
+  "launching-executor",
+  "executing",
+  "paused",
+];

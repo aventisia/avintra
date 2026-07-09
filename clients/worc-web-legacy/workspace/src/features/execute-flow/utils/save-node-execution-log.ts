@@ -2,6 +2,7 @@ import { get, set, update } from "idb-keyval";
 
 import {
   AgentExecutionLogType,
+  CURRENT_JOB_ID_KEY,
   CURRENT_VERSION_ID_KEY,
   EXECUTION_LOG_KEY,
   NodeExecutionLogType,
@@ -20,6 +21,8 @@ export async function saveNodeExecutionLog(nodeLog: string): Promise<void> {
   const versionId =
     localStorage.getItem(CURRENT_VERSION_ID_KEY) || "versionId-unknown";
 
+  const jobId = localStorage.getItem(CURRENT_JOB_ID_KEY) || "jobId-unknown";
+
   // Use update to avoid lost writes when multiple node logs arrive close together.
   await update(EXECUTION_LOG_KEY, (value) => {
     const logs = Array.isArray(value)
@@ -35,6 +38,8 @@ export async function saveNodeExecutionLog(nodeLog: string): Promise<void> {
     } else {
       logs.push({
         versionId,
+        jobId,
+        isLogSavePending: true,
         versionLog: [nodeLogParsed],
       });
     }
@@ -57,3 +62,21 @@ export async function clearNodeExecutionLog(): Promise<void> {
   // Save back to IndexedDB
   await set(EXECUTION_LOG_KEY, updatedLogs);
 }
+
+/**
+ * Flips the pending status to false once the backend database successfully updates.
+ */
+export const markLogAsSynced = async (jobId: string): Promise<void> => {
+  const logs = (await get<AgentExecutionLogType[]>(EXECUTION_LOG_KEY)) || [];
+
+  const logIndex = logs.findIndex((log) => log.jobId === jobId);
+
+  if (logIndex === -1) return;
+
+  logs[logIndex] = {
+    ...logs[logIndex],
+    isLogSavePending: false,
+  };
+
+  await set(EXECUTION_LOG_KEY, logs);
+};

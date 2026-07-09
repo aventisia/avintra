@@ -1,11 +1,13 @@
-import { IS_TAURI } from "@/constants";
-import { useReactFlowExtStore } from "@/stores/react-flow-ext-store";
 import { getCurrentWindow } from "@tauri-apps/api/window";
 import { useEffect, useRef } from "react";
 import { useShallow } from "zustand/react/shallow";
 
+import { IS_TAURI } from "@/constants";
+import { useReactFlowExtStore } from "@/stores/react-flow-ext-store";
+
 /**
- * Prevent window close while a agent is executing or has unsaved changes.
+ * Intercepts OS-level window close requests in the Tauri app to prevent
+ * data loss during active executions or when changes are unsaved.
  */
 export const usePreventClose = ({
   isProcessing,
@@ -30,7 +32,9 @@ export const usePreventClose = ({
   }, [isProcessing, isSavePending]);
 
   useEffect(() => {
+    // Only apply logic if running within the Tauri environment
     if (!IS_TAURI) return;
+
     const appWindow = getCurrentWindow();
     let unlisten: (() => void) | null = null;
 
@@ -52,7 +56,7 @@ export const usePreventClose = ({
 
           isPromptingRef.current = true;
 
-          // Defer the alert so IPC can tell Rust the close is prevented
+          // Defer alert so IPC can inform Rust that the close was prevented
           setTimeout(() => {
             window.alert(
               "Agent execution in progress. Please stop the execution or wait for it to complete before closing the app.",
@@ -70,8 +74,9 @@ export const usePreventClose = ({
 
           isPromptingRef.current = true;
 
-          // Defer the confirm dialog to free up the thread
+          // Defer dialog to free up the thread
           setTimeout(async () => {
+            // window.confirm acts synchronously here
             const userWantsToExit = window.confirm(
               "Changes you made may not be saved.",
             );
@@ -80,7 +85,7 @@ export const usePreventClose = ({
 
             if (userWantsToExit) {
               forceCloseRef.current = true;
-              // destroy() forces an immediate shutdown, bypassing the close event loop
+              // Bypass the close event loop and force immediate shutdown
               await appWindow.destroy();
             }
           }, 50);
