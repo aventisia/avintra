@@ -244,6 +244,7 @@ class GeminiProvider(BaseLLMProvider):
     def _create_request_payload_and_headers(self, llm_request: LLMRequest):
         # Initialize contents list
         contents = []
+        system_parts = []
         
          # Process input: string or list of messages
         if isinstance(llm_request.input, str):
@@ -253,13 +254,20 @@ class GeminiProvider(BaseLLMProvider):
                 "parts": [{"text": llm_request.input}]
             })
         elif isinstance(llm_request.input, list):
-            # If input is a list of messages, group by role
             for msg in llm_request.input:
-                if hasattr(msg, "role") and hasattr(msg, "content"):
-                    # Gemini accepts 'user' and 'model' roles in contents.
-                    role = "model" if msg.role in {"assistant", "model"} else "user"
+                if not (hasattr(msg, "role") and hasattr(msg, "content")):
+                    continue
+
+                role = msg.role.lower()
+
+                if role == "system":
+                    # Collect all system instructions
+                    system_parts.append({"text": msg.content})
+                else:
+                    # Gemini supports only "user" and "model" roles
+                    gemini_role = "model" if role in {"assistant", "model"} else "user"
                     contents.append({
-                        "role": role,
+                        "role": gemini_role,
                         "parts": [{"text": msg.content}]
                     })
         else:
