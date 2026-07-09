@@ -146,8 +146,8 @@ public class TimeTriggerExecutionJob : IJob
                             FlowVersionHistoryId = latestFlowVersionHistoryId,
                             TriggerType = TriggerTypesEnum.TimeTrigger,
                             RefId = timeTriggerflowVersion.TriggerId,
-                            Priority = JobPriorityTypesEnum.Normal,
-                            Status = JobStatusTypesEnum.Created,
+                            Priority = JobPriorityEnum.Normal,
+                            Status = JobStatusEnum.Created,
                             CreatedOn = currentUtcTime,
                         };
 

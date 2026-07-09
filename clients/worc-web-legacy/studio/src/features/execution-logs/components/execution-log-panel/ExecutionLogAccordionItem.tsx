@@ -3,7 +3,7 @@ import { cn } from "@aventisia/ui/lib";
 import { CheckCircle2, CircleStopIcon, CircleXIcon } from "lucide-react";
 import { useEffect, useRef } from "react";
 
-import { JobStatusTypesEnum } from "../../enums/job-status-type-enum";
+import { JobStatusEnum } from "../../enums/job-status-enum";
 import { LogEntry } from "../../types/log-list-type";
 
 interface Props {
@@ -68,14 +68,14 @@ export default function ExecutionLogAccordionItem({
       >
         <div className="flex items-center gap-0 h-[1.1rem]">
           <div className="flex items-center gap-1.5 h-[1.1rem]">
-            {entry.status == JobStatusTypesEnum["Abort"] && (
+            {entry.status == JobStatusEnum["Abort"] && (
               <CircleStopIcon className="h-3.5 w-3.5 text-orange-500" />
             )}
 
-            {entry.status == JobStatusTypesEnum["Failed"] && (
+            {entry.status == JobStatusEnum["Failed"] && (
               <CircleXIcon className="h-3.5 w-3.5 text-red-500" />
             )}
-            {entry.status == JobStatusTypesEnum["Completed"] && (
+            {entry.status == JobStatusEnum["Completed"] && (
               <CheckCircle2 className="h-3.5 w-3.5 text-green-500" />
             )}
             <span className="text-xs font-medium ">

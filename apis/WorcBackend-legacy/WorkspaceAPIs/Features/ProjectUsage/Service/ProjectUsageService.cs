@@ -43,8 +43,8 @@ public class ProjectUsageService : IProjectUsageService
 
             var completedJobsQuery = _dbContext.Jobs
                 .Where(w =>
-                    w.Status != JobStatusTypesEnum.Created &&
-                    w.Status != JobStatusTypesEnum.Running &&
+                    w.Status != JobStatusEnum.Created &&
+                    w.Status != JobStatusEnum.Running &&
                     w.StartTime != null &&
                     w.EndTime != null &&
                     w.EndTime.Value.Date >= sevenDaysAgo &&

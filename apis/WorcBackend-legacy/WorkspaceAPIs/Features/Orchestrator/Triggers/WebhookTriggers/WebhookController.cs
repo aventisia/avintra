@@ -139,8 +139,8 @@ public class WebhookController : BaseApiController
             FlowVersionId = flowVersionId.Value,
             TriggerType = TriggerTypesEnum.WebhookTrigger,
             RefId = triggerId,
-            Status = JobStatusTypesEnum.Created,
-            Priority = JobPriorityTypesEnum.Normal,
+            Status = JobStatusEnum.Created,
+            Priority = JobPriorityEnum.Normal,
             InputArgumentsJson = request?.Payload.HasValue == true ? request.Payload.Value.GetRawText() : null,
             CreatedOn = DateTimeOffset.UtcNow
         };

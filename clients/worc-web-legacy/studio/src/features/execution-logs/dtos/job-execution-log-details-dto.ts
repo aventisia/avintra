@@ -1,4 +1,4 @@
-import { JobStatusTypesEnum } from "../enums/job-status-type-enum";
+import { JobStatusEnum } from "../enums/job-status-enum";
 
 export interface JobExecutionLogDetailDto {
   id: string;
@@ -11,12 +11,12 @@ export interface JobExecutionLogDetailDto {
   refId: string | null;
 
   priority: string;
-  status: JobStatusTypesEnum;
+  status: JobStatusEnum;
 
   versionNumber: number;
 
   reactFlowObject: string;
-  flowVariablesObject:string;
+  flowVariablesObject: string;
   inputOutputObject: string;
   nodeExecutionLogs: string;
 

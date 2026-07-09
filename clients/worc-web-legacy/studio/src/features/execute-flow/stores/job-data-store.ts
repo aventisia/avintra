@@ -1,8 +1,9 @@
 import { create } from "zustand";
-import { JobStatusTypesEnum } from "../enums/job-status-type-enum";
+
+import { JobStatusEnum } from "../enums/job-status-enum";
 
 type JobState = {
-  status: JobStatusTypesEnum;
+  status: JobStatusEnum;
   endTime: Date;
   startTime: Date;
 };
@@ -14,7 +15,7 @@ type JobActions = {
 };
 
 const defaultJobState: JobState = {
-  status: JobStatusTypesEnum.Created,
+  status: JobStatusEnum.Created,
   endTime: new Date(),
   startTime: new Date(),
 };

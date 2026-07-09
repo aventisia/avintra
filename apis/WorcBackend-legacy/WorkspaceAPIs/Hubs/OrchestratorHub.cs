@@ -92,7 +92,7 @@ public class OrchestratorHub : Hub
 
                 // Mark the job as killed and set the end time if it has not already been recorded.
                 job.EndTime ??= DateTimeOffset.UtcNow;
-                job.Status = JobStatusTypesEnum.Killed;
+                job.Status = JobStatusEnum.Killed;
 
                 _workspaceInternalDbContext.Jobs.Update(job);
 
@@ -151,7 +151,7 @@ public class OrchestratorHub : Hub
                 var job = await _workspaceInternalDbContext.Jobs
                     .Where(w =>
                         w.TenantId == tenantId &&
-                        w.Status == JobStatusTypesEnum.Created &&
+                        w.Status == JobStatusEnum.Created &&
                         flowVersionIds.Contains(w.FlowVersionId) &&
                         (w.MachineId == null || w.MachineId == clientId)
                     )
@@ -329,8 +329,8 @@ public class OrchestratorHub : Hub
                 FlowVersionId = agent.Id,
                 MachineId = machineId,
                 RefId = clientId,
-                Status = JobStatusTypesEnum.Created,
-                Priority = JobPriorityTypesEnum.Normal,
+                Status = JobStatusEnum.Created,
+                Priority = JobPriorityEnum.Normal,
                 TenantId = tenantId,
                 TriggerType = TriggerTypesEnum.ManualTrigger,
                 FlowVersionHistoryId = agent.FlowVersionHistories

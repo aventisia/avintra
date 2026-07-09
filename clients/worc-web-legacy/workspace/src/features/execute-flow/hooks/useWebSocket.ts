@@ -3,7 +3,7 @@ import { useCallback, useEffect, useRef, useState } from "react";
 import { useShallow } from "zustand/react/shallow";
 
 import { IS_TAURI } from "@/constants/constants";
-import { JobStatusTypesEnum } from "@/features/03-orchestrator/jobs-table/enums/job-status-type-enum";
+import { JobStatusEnum } from "@/features/03-orchestrator/jobs-table/enums/job-status-enum";
 import { ExecutionNode } from "@/types/execution-types";
 
 import {
@@ -76,10 +76,10 @@ export default function useWebSocket() {
           const endTime = new Date();
           const status =
             command === "complete"
-              ? JobStatusTypesEnum.Completed
+              ? JobStatusEnum.Completed
               : command === "abort"
-                ? JobStatusTypesEnum.Abort
-                : JobStatusTypesEnum.Failed;
+                ? JobStatusEnum.Abort
+                : JobStatusEnum.Failed;
 
           updateField("endTime", endTime);
           updateField("status", status);

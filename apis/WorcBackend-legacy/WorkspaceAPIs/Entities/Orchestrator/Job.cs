@@ -20,6 +20,7 @@ public class Job
     /// manage job in case of time trigger and we will not have the tenant context in that case, so we will just
     /// have TenantId property here and make sure to set the TenantId whenever we create a new job record. 
     /// This will allow us to filter the job records by tenant when we query the database for job management and monitoring. 
+    /// TODO: If we can use IgnoreQueryFilter attribute then we can add IMustHaveTenant interface to this entity
     /// </remarks>
     public Guid TenantId { get; set; }
 
@@ -41,7 +42,7 @@ public class Job
     /// <summary>
     /// Gets or sets the priority of the job (e.g., Normal, High).
     /// </summary>
-    public JobPriorityTypesEnum Priority { get; set; } = JobPriorityTypesEnum.Normal;
+    public JobPriorityEnum Priority { get; set; } = JobPriorityEnum.Normal;
 
     /// <summary>
     /// Gets or sets the timestamp indicating when the job execution started.
@@ -61,7 +62,7 @@ public class Job
     /// <summary>
     /// Gets or sets the current status of the job (e.g., Running, Completed, Failed, Canceled).
     /// </summary>
-    public JobStatusTypesEnum Status { get; set; }
+    public JobStatusEnum Status { get; set; }
 
     /// <summary>
     /// Gets or sets the unique identifier of the machine where the job is running.

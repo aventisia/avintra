@@ -41,17 +41,23 @@ public class ServiceResponse<T>
     /// <summary>
     /// Creates a successful response instance.
     /// </summary>
-    public static ServiceResponse<T> Success(T? data, string message = "Success", int statusCode = 200)
+    public ServiceResponse<T> Success(T? data, string message = "Success", int statusCode = 200)
     {
-        return Create(data, statusCode, message);
+        StatusCode = statusCode;
+        Message = message;
+        Data = data;
+        return this;
     }
 
     /// <summary>
     /// Creates a failure response instance.
     /// </summary>
-    public static ServiceResponse<T> Failure(string message = "Something went wrong", int statusCode = 400, T? data = default)
+    public ServiceResponse<T> Failure(string message = "Something went wrong", int statusCode = 400, T? data = default)
     {
-        return Create(data, statusCode, message);
+        StatusCode = statusCode;
+        Message = message;
+        Data = data;
+        return this;
     }
 
     /// <summary>

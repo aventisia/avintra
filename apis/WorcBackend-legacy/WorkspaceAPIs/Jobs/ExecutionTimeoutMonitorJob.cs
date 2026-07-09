@@ -31,7 +31,7 @@ namespace WorkspaceAPIs.Jobs
                 // Retrieve all jobs that are currently running.
                 var runningJobs = await _workspaceInternalDbContext.Jobs
                     .Where(job =>
-                        job.Status == JobStatusTypesEnum.Running &&
+                        job.Status == JobStatusEnum.Running &&
                         job.StartTime != null &&
                         job.EndTime == null)
                     .ToListAsync();
@@ -93,7 +93,7 @@ namespace WorkspaceAPIs.Jobs
                     }
 
                     // Mark the timed-out job as killed.
-                    runningJob.Status = JobStatusTypesEnum.Killed;
+                    runningJob.Status = JobStatusEnum.Killed;
                     runningJob.EndTime = currentUtcTime;
 
                     killedJobCount++;

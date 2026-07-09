@@ -10,5 +10,5 @@ public class ExecuteFlowResponseDto
 
     public JsonNode? OutputDataJson { get; set; }
 
-    public JobStatusTypesEnum JobStatus { get; set; } = JobStatusTypesEnum.Created;
+    public JobStatusEnum JobStatus { get; set; } = JobStatusEnum.Created;
 }

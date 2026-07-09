@@ -1,10 +1,10 @@
-import { JobStatusTypesEnum } from "../enums/job-status-type-enum";
+import { JobStatusEnum } from "../enums/job-status-enum";
 
 export interface LogEntry {
   id: string;
   time: string;
   duration: number;
-  status: JobStatusTypesEnum;
+  status: JobStatusEnum;
   user: {
     name: string;
     initials: string;

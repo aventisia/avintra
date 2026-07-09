@@ -1,8 +1,8 @@
-import { JobStatusTypesEnum } from "@/features/03-orchestrator/jobs-table/enums/job-status-type-enum";
-
 import { HubConnection } from "@microsoft/signalr";
 import { useQueryClient } from "@tanstack/react-query";
 import { useEffect } from "react";
+
+import { JobStatusEnum } from "@/features/03-orchestrator/jobs-table/enums/job-status-enum";
 
 import { getJobById, updateJobData } from "../apis/job-trigger-apis";
 import { ExecutionCommandTypesEnum } from "../enums/execution-command-types-enum";
@@ -46,7 +46,7 @@ export default function useCheckJobTrigger(connection: HubConnection | null) {
             flowVersionId: jobDataInitiate.data.flowVersionId,
             id: jobDataInitiate.data.id,
             machineId: jobDataInitiate.data.machineId,
-            status: JobStatusTypesEnum.Running,
+            status: JobStatusEnum.Running,
           });
         } else if (commandValue === "Execute") {
           console.log("Started exe");

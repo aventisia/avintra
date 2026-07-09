@@ -16,7 +16,7 @@ public class ExecutionNotificationService : IExecutionNotificationService
     /// <summary>
     /// Sends a job completion notification to the user who initiated the job.
     /// </summary>
-    public async Task NotifyExecutionCompletedAsync(Guid userId, Guid jobId, JobStatusTypesEnum status, string? message = null)
+    public async Task NotifyExecutionCompletedAsync(Guid userId, Guid jobId, JobStatusEnum status, string? message = null)
     {
         try
         {
@@ -48,7 +48,7 @@ public class ExecutionNotificationService : IExecutionNotificationService
     /// <summary>
     /// Sends a job progress update to the user who initiated the job.
     /// </summary>
-    public async Task NotifyExecutionProgressAsync(Guid userId, Guid jobId, JobStatusTypesEnum status, string? message = null)
+    public async Task NotifyExecutionProgressAsync(Guid userId, Guid jobId, JobStatusEnum status, string? message = null)
     {
         try
         {

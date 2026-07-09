@@ -1,8 +1,8 @@
-import { JobStatusTypesEnum } from "../enums/job-status-type-enum";
+import { JobStatusEnum } from "../enums/job-status-enum";
 
 export interface JobExecutionLogDto {
   id: string;
-  status: JobStatusTypesEnum;
+  status: JobStatusEnum;
 
   startTime: Date | string;
   endTime: Date | string;

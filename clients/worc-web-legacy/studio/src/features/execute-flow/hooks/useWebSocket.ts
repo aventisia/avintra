@@ -21,7 +21,7 @@ import {
 } from "..";
 import { getLocalExecutionLog } from "../apis/get-version-execution-log";
 import { insertJob } from "../apis/jobs-table-apis";
-import { JobStatusTypesEnum } from "../enums/job-status-type-enum";
+import { JobStatusEnum } from "../enums/job-status-enum";
 import { useJobDataStore } from "../stores/job-data-store";
 import { ExecutionNode } from "../types/execution-types";
 
@@ -83,10 +83,10 @@ export default function useWebSocket() {
           const endTime = new Date();
           const status =
             command === "complete"
-              ? JobStatusTypesEnum.Completed
+              ? JobStatusEnum.Completed
               : command === "abort"
-                ? JobStatusTypesEnum.Abort
-                : JobStatusTypesEnum.Failed;
+                ? JobStatusEnum.Abort
+                : JobStatusEnum.Failed;
 
           updateField("endTime", endTime);
           updateField("status", status);

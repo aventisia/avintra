@@ -3,7 +3,7 @@ namespace WorkspaceAPIs.Enums;
 /// <summary>
 /// Enum representing the priority levels for a job.
 /// </summary>
-public enum JobPriorityTypesEnum
+public enum JobPriorityEnum
 {
     /// <summary>
     /// Low priority for jobs.

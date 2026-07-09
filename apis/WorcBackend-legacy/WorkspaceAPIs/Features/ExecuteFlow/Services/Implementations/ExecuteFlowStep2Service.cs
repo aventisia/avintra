@@ -124,7 +124,7 @@ public class ExecuteFlowStep2Service : IExecuteFlowStep2Service
             }
 
             // Update job's metadata before starting execution
-            job.Status = JobStatusTypesEnum.Running;
+            job.Status = JobStatusEnum.Running;
             job.StartTime = DateTimeOffset.UtcNow;
             unitOfWork.JobRepo.Update(job);
 
@@ -220,7 +220,7 @@ public class ExecuteFlowStep2Service : IExecuteFlowStep2Service
             }
 
             // Update job status to Running
-            job.Status = JobStatusTypesEnum.Running;
+            job.Status = JobStatusEnum.Running;
             job.StartTime = DateTimeOffset.UtcNow;
             unitOfWork.JobRepo.Update(job);
 
@@ -420,7 +420,7 @@ public class ExecuteFlowStep2Service : IExecuteFlowStep2Service
                 return;
             }
 
-            job.Status = JobStatusTypesEnum.Failed;
+            job.Status = JobStatusEnum.Failed;
             job.EndTime = DateTimeOffset.UtcNow;
             job.OutputDataJson = System.Text.Json.JsonSerializer.Serialize(new { ErrorMessage = errorMessage });
 
@@ -428,7 +428,7 @@ public class ExecuteFlowStep2Service : IExecuteFlowStep2Service
             if (await unitOfWork.SaveAsync())
             {
                 // Send real-time notification to the user about job failure
-                await executionNotificationService.NotifyExecutionCompletedAsync(userId, jobId, JobStatusTypesEnum.Failed, errorMessage);
+                await executionNotificationService.NotifyExecutionCompletedAsync(userId, jobId, JobStatusEnum.Failed, errorMessage);
             }
         }
         catch (Exception ex)
@@ -465,13 +465,13 @@ public class ExecuteFlowStep2Service : IExecuteFlowStep2Service
     }
 
     // Helper: Maps the flow execution status to the corresponding job status
-    private static JobStatusTypesEnum MapFlowStatusToJobStatus(FlowExecutionStatus status)
+    private static JobStatusEnum MapFlowStatusToJobStatus(FlowExecutionStatus status)
     {
         return status switch
         {
-            FlowExecutionStatus.Completed => JobStatusTypesEnum.Completed,
-            FlowExecutionStatus.Aborted => JobStatusTypesEnum.Abort, // TODO: Consider changing this to Aborted to align with FlowExecutionStatus enum naming
-            _ => JobStatusTypesEnum.Failed,
+            FlowExecutionStatus.Completed => JobStatusEnum.Completed,
+            FlowExecutionStatus.Aborted => JobStatusEnum.Abort, // TODO: Consider changing this to Aborted to align with FlowExecutionStatus enum naming
+            _ => JobStatusEnum.Failed,
         };
     }
 

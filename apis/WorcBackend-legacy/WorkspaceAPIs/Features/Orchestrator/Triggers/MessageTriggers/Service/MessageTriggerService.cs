@@ -925,8 +925,8 @@ public class MessageTriggerService : IMessageTriggerService
                     TriggerType = trigger.TriggerType,
                     InputArgumentsJson = ExtractAndBuildInputJson(payload),
                     MachineId = null,
-                    Priority = JobPriorityTypesEnum.Normal,
-                    Status = JobStatusTypesEnum.Created,
+                    Priority = JobPriorityEnum.Normal,
+                    Status = JobStatusEnum.Created,
                     CreatedOn = DateTimeOffset.UtcNow,
                     IsPublished = triggerFlowVersion.FlowVersion.IsPublished,
                     FlowVersionHistoryId = triggerFlowVersion.FlowVersion.FlowVersionHistories
