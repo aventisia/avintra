@@ -210,6 +210,64 @@ public class KeyStoreService : IKeyStoreService
         return serviceResponse;
     }
 
+    // Method to retrieve a specific key store by its name for the current user
+    public async Task<ServiceResponse<KeyStoreDto>> GetKeyStoreByNameAsync(string keyStoreName)
+    {
+        var serviceResponse = new ServiceResponse<KeyStoreDto>
+        {
+            Data = null,
+            Message = "Failed to retrieve the key store. Please try again."
+        };
+
+        try
+        {
+            // Fetch the key store by its name
+            var keyStore = await _unitOfWork.KeyStoreRepo
+                .GetByConditionAsync(w => w.Name.ToLower() == keyStoreName.ToLower())
+                .FirstOrDefaultAsync();
+
+            // Return if the key store does not exist
+            if (keyStore == null)
+            {
+                serviceResponse.Message = "Key store not found.";
+                return serviceResponse;
+            }
+
+            // Validate whether the current user has permission to view the key store
+            var (canView, accessLevel) = await _resourceShareService.GetResourceAccessAsync(
+                _userId,
+                keyStore.Id,
+                ResourceTypeEnum.KeyStore,
+                keyStore.CreatedByUserId,
+                keyStore.IsTenantWideAccess,
+                new[]
+                {
+                    ResourceAccessTypeEnum.Owner,
+                    ResourceAccessTypeEnum.View,
+                    ResourceAccessTypeEnum.Edit,
+                });
+
+            // Return if the user does not have view access
+            if (!canView)
+            {
+                serviceResponse.Message = "You do not have access to view this key store.";
+                return serviceResponse;
+            }
+
+            // Map the entity to the DTO and populate the successful response
+            serviceResponse.Data = keyStore.Adapt<KeyStoreDto>();
+            serviceResponse.StatusCode = 200;
+            serviceResponse.Message = "Key store retrieved successfully.";
+        }
+        catch (Exception ex)
+        {
+            // Log the exception and return the default failure response
+            _logger.LogError(ex, "Error retrieving key store by name: {KeyStoreName}", keyStoreName);
+        }
+
+        return serviceResponse;
+    }
+
     // Fetch config key-value pairs for a list of keys (full list if no keys provided)
     public async Task<ServiceResponse<IEnumerable<ConfigKeyValueDto>>> FetchConfigKeyValuePairsAsync(IEnumerable<string>? keys)
     {
@@ -397,11 +455,40 @@ public class KeyStoreService : IKeyStoreService
                 return serviceResponse;
             }
 
-            // Trim string properties in the DTO for consistency
+            // Trim all string properties in the DTO to remove leading/trailing whitespace
             keyStoreDto = TrimDtoStringPropsUtil.TrimDtoStringProps(keyStoreDto);
 
-            // Map the properties from the keyStoreDto to the existing keyStore entity
-            keyStoreDto.Adapt(keyStore);
+            // Update the description only if it has changed
+            if (keyStore.Description != keyStoreDto.Description)
+            {
+                keyStore.Description = keyStoreDto.Description;
+            }
+
+            // Update tenant-wide access flag if the value has changed
+            if (keyStore.IsTenantWideAccess != keyStoreDto.IsTenantWideAccess)
+            {
+                keyStore.IsTenantWideAccess = keyStoreDto.IsTenantWideAccess;
+            }
+
+            // Update the key store type if it has changed
+            if (keyStore.Type != keyStoreDto.Type)
+            {
+                keyStore.Type = keyStoreDto.Type;
+            }
+
+            // Update the key store value if it has changed
+            if (keyStore.Value != keyStoreDto.Value)
+            {
+                keyStore.Value = keyStoreDto.Value;
+            }
+
+            // Update the disabled status only when a value is provided and it has changed
+            if (keyStoreDto.IsDisabled.HasValue && keyStore.IsDisabled != keyStoreDto.IsDisabled)
+            {
+                keyStore.IsDisabled = keyStoreDto.IsDisabled.Value;
+            }
+
+            // Record the user who last modified the key store
             keyStore.LastModifiedByUserId = _userId;
 
             // Update the key store in the repository

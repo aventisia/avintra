@@ -26,6 +26,15 @@ public interface IKnowledgeBaseService
     Task<ServiceResponse<TrueFalseResultDto>> IsKnowledgeBaseNameAvailableAsync(CheckAvailabilityDto checkAvailabilityDto);
 
     /// <summary>
+    /// Retrieves a knowledge base by its name.
+    /// </summary>
+    /// <param name="knowledgeBaseName">The name of the knowledge base.</param>
+    /// <returns>
+    /// The task result contains the service response with the knowledge base details.
+    /// </returns>
+    Task<ServiceResponse<KnowledgeBaseDto>> GetKnowledgeBaseByNameAsync(string knowledgeBaseName);
+
+    /// <summary>
     /// Inserts a new knowledge base.
     /// </summary>
     /// <param name="knowledgeBaseDto">The data required to insert the knowledge base.</param>

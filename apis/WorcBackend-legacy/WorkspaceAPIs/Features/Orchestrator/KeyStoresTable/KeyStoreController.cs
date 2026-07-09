@@ -47,6 +47,12 @@ public class KeyStoreController : BaseApiController
         return ResultHelper(await _keyStoreService.GetKeyStoreByIdAsync(keyStoreId));
     }
 
+    [HttpGet("name/{keyStoreName}")]
+    public async Task<ActionResult<ServiceResponse<KeyStoreDto>>> GetKeyStoreByNameAsync(string keyStoreName)
+    {
+        return ResultHelper(await _keyStoreService.GetKeyStoreByNameAsync(keyStoreName));
+    }
+
     // Create a new key store
     [HttpPost]
     public async Task<ActionResult<ServiceResponse<KeyStoreDto>>> CreateKeyStoreAsync([FromBody] KeyStoreDto keyStoreDto)

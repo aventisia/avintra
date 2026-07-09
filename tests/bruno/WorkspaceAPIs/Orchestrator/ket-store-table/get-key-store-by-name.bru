@@ -1,0 +1,11 @@
+meta {
+  name: Get key store by name
+  type: http
+  seq: 6
+}
+
+get {
+  url: {{WORKSPACE_APIS_BASE_URL}}/key-store/name/{{KEY_STORE_NAME}}
+  body: none
+  auth: none
+}

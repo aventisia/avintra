@@ -214,6 +214,87 @@ public class KnowledgeBaseService : IKnowledgeBaseService
     }
 
     /// <summary>
+    /// Retrieves a knowledge base by its name if the current user has access.
+    /// </summary>
+    public async Task<ServiceResponse<KnowledgeBaseDto>> GetKnowledgeBaseByNameAsync(string knowledgeBaseName)
+    {
+        var serviceResponse = new ServiceResponse<KnowledgeBaseDto>
+        {
+            Data = null,
+            StatusCode = 404,
+            Message = "Failed to retrieve knowledge base. Please try again."
+        };
+
+        try
+        {
+            if (string.IsNullOrWhiteSpace(knowledgeBaseName))
+            {
+                serviceResponse.Message = "Knowledge base name is required.";
+                return serviceResponse;
+            }
+
+            // Retrieve the knowledge base by name.
+            var knowledgeBase = await _unitOfWork.KnowledgeBaseRepo
+                .GetByConditionAsync(kb => kb.Name.ToLower() == knowledgeBaseName.ToLower())
+                .Include(kb => kb.CreatedByUser)
+                .Include(kb => kb.LastModifiedByUser)
+                .Include(kb => kb.Files)
+                .FirstOrDefaultAsync();
+
+            // Return if no matching knowledge base exists.
+            if (knowledgeBase == null)
+            {
+                serviceResponse.Message = "Knowledge base not found.";
+                return serviceResponse;
+            }
+
+            // Verify that the current user has permission to view the knowledge base.
+            var (canView, accessLevel) = await _resourceShareService.GetResourceAccessAsync(
+                _userId,
+                knowledgeBase.Id,
+                ResourceTypeEnum.KnowledgeBase,
+                knowledgeBase.CreatedByUserId,
+                knowledgeBase.IsTenantWideAccess,
+                new[]
+                {
+                    ResourceAccessTypeEnum.Owner,
+                    ResourceAccessTypeEnum.Edit,
+                    ResourceAccessTypeEnum.View,
+                });
+
+            // Block users without view access.
+            if (!canView)
+            {
+                _logger.LogWarning(
+                    "User {UserId} attempted to access KnowledgeBase {KnowledgeBaseId} without permission.",
+                    _userId,
+                    knowledgeBase.Id);
+
+                serviceResponse.Message = "You do not have permission to view this knowledge base.";
+                return serviceResponse;
+            }
+
+            // Map entity to DTO and populate the user's access level.
+            var knowledgeBaseDto = knowledgeBase.Adapt<KnowledgeBaseDto>();
+            knowledgeBaseDto.AccessLevel = accessLevel ?? ResourceAccessTypeEnum.View;
+
+            serviceResponse.Data = knowledgeBaseDto;
+            serviceResponse.StatusCode = 200;
+            serviceResponse.Message = "Knowledge base retrieved successfully.";
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(
+                ex,
+                "Error retrieving knowledge base '{KnowledgeBaseName}' for user {UserId}.",
+                knowledgeBaseName,
+                _userId);
+        }
+
+        return serviceResponse;
+    }
+
+    /// <summary>
     /// Inserts a new knowledge base.
     /// </summary>
     public async Task<ServiceResponse<KnowledgeBaseDto>> InsertKnowledgeBaseAsync(KnowledgeBaseDto knowledgeBaseDto)
@@ -351,7 +432,11 @@ public class KnowledgeBaseService : IKnowledgeBaseService
 
             // Get existing knowledge base
             var existingKB = await _unitOfWork.KnowledgeBaseRepo
-                .GetByConditionAsync(kb => kb.Id == knowledgeBaseDto.Id)
+                .GetByConditionAsync(kb =>
+                    string.IsNullOrEmpty(knowledgeBaseDto.Name)
+                        ? kb.Id == knowledgeBaseDto.Id
+                        : kb.Name.ToLower() == knowledgeBaseDto.Name.ToLower()
+                )
                 .FirstOrDefaultAsync();
 
             if (existingKB == null)
@@ -396,17 +481,61 @@ public class KnowledgeBaseService : IKnowledgeBaseService
                 return serviceResponse;
             }
 
-            // Update fields
-            existingKB.Name = knowledgeBaseDto.Name;
-            existingKB.Description = knowledgeBaseDto.Description;
-            existingKB.VectorStore = knowledgeBaseDto.VectorStore;
-            existingKB.EmbeddingProvider = knowledgeBaseDto.EmbeddingProvider;
-            existingKB.EmbeddingModel = knowledgeBaseDto.EmbeddingModel;
-            existingKB.EmbeddingCredentialId = knowledgeBaseDto.EmbeddingCredentialId;
-            existingKB.StoreCredentialId = knowledgeBaseDto.StoreCredentialId;
-            existingKB.CollectionName = knowledgeBaseDto.CollectionName;
-            existingKB.VectorStoreConfig = knowledgeBaseDto.VectorStoreConfig;
-            existingKB.IsDisabled = knowledgeBaseDto.IsDisabled ?? false;
+            // Check and update Description if the value has changed
+            if (existingKB.Description != knowledgeBaseDto.Description)
+            {
+                existingKB.Description = knowledgeBaseDto.Description;
+            }
+
+            // Check and update Vector Store if the value has changed
+            if (existingKB.VectorStore != knowledgeBaseDto.VectorStore)
+            {
+                existingKB.VectorStore = knowledgeBaseDto.VectorStore;
+            }
+
+            // Check and update Embedding Provider if the value has changed
+            if (existingKB.EmbeddingProvider != knowledgeBaseDto.EmbeddingProvider)
+            {
+                existingKB.EmbeddingProvider = knowledgeBaseDto.EmbeddingProvider;
+            }
+
+            // Check and update Embedding Model if the value has changed
+            if (existingKB.EmbeddingModel != knowledgeBaseDto.EmbeddingModel)
+            {
+                existingKB.EmbeddingModel = knowledgeBaseDto.EmbeddingModel;
+            }
+
+            // Check and update Embedding Credential ID if the value has changed
+            if (existingKB.EmbeddingCredentialId != knowledgeBaseDto.EmbeddingCredentialId)
+            {
+                existingKB.EmbeddingCredentialId = knowledgeBaseDto.EmbeddingCredentialId;
+            }
+
+            // Check and update Store Credential ID if the value has changed
+            if (existingKB.StoreCredentialId != knowledgeBaseDto.StoreCredentialId)
+            {
+                existingKB.StoreCredentialId = knowledgeBaseDto.StoreCredentialId;
+            }
+
+            // Check and update Collection Name if the value has changed
+            if (existingKB.CollectionName != knowledgeBaseDto.CollectionName)
+            {
+                existingKB.CollectionName = knowledgeBaseDto.CollectionName;
+            }
+
+            // Check and update Vector Store Configuration if the value has changed
+            if (existingKB.VectorStoreConfig != knowledgeBaseDto.VectorStoreConfig)
+            {
+                existingKB.VectorStoreConfig = knowledgeBaseDto.VectorStoreConfig;
+            }
+
+            // Check and update Disabled status if the value has changed
+            if (knowledgeBaseDto.IsDisabled.HasValue && existingKB.IsDisabled != knowledgeBaseDto.IsDisabled)
+            {
+                existingKB.IsDisabled = knowledgeBaseDto.IsDisabled.Value;
+            }
+
+            // Update audit fields after processing updates
             existingKB.LastModifiedByUserId = _userId;
             existingKB.LastModifiedOn = DateTimeOffset.UtcNow;
 
