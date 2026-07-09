@@ -1,6 +1,8 @@
 type AgentExecutionLogType = {
   versionId: string;
   versionLog: NodeExecutionLogType[];
+  jobId: string;
+  isLogSavePending: boolean;
 };
 
 type NodeExecutionLogType = {

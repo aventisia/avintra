@@ -1,4 +1,4 @@
-import { JobStatusTypesEnum } from "../enums/job-status-type-enum";
+import { JobStatusEnum } from "../enums/job-status-enum";
 
 /**
  * The unique key for the jobs query to be used in the query client. ["jobs"]
@@ -13,10 +13,10 @@ const TABLE_HEADING = "Jobs";
 const TABLE_KEY = "jobs";
 
 const HISTORY_JOB_STATUSES = [
-  JobStatusTypesEnum.Completed,
-  JobStatusTypesEnum.Failed,
-  JobStatusTypesEnum.Abort,
-  JobStatusTypesEnum.Killed,
+  JobStatusEnum.Completed,
+  JobStatusEnum.Failed,
+  JobStatusEnum.Abort,
+  JobStatusEnum.Killed,
 ];
 
 /**

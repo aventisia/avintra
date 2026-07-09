@@ -3,6 +3,7 @@ import { useBaseLayoutStore } from "@aventisia/ui/stores";
 import { Outlet } from "react-router-dom";
 import { useShallow } from "zustand/react/shallow";
 
+import { PROCESSING_STATES } from "@/features/execute-flow";
 import { usePreventClose } from "@/hooks/usePreventClose";
 import useTauriUserMetadata from "@/hooks/useTauriUserMetadata";
 // import {
@@ -39,7 +40,7 @@ export const AppLayout = () => {
 
   // Prevent closing the Tauri app while an execution is in progress
   usePreventClose({
-    isProcessing: executionState === "executing" || executionState === "paused",
+    isProcessing: PROCESSING_STATES.includes(executionState),
   });
 
   useTauriUserMetadata();

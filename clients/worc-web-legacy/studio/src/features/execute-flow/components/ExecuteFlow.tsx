@@ -17,9 +17,11 @@ import { FlowTypesEnum } from "@/react-toolkit/enums/flow-types-enum";
 import { useUserSessionStore } from "@/react-toolkit/stores/user-session-store";
 import { useCurrentFlowStore } from "@/stores/current-flow-store";
 import { useReactFlowExtStore } from "@/stores/react-flow-ext-store";
+import { useTuariUserMetadataStore } from "@/stores/tuari-user-metadata-store";
 import { NodeDataType } from "@/types/node-data-type";
 
 import {
+  CURRENT_JOB_ID_KEY,
   CURRENT_VERSION_ID_KEY,
   EXECUTION_LOG_KEY,
   clearNodeExecutionLog,
@@ -31,6 +33,8 @@ import {
   useFetchSubFlows,
   useJobNotifications,
 } from "..";
+import { insertJob } from "../apis/jobs-table-apis";
+import { JobStatusEnum } from "../enums/job-status-enum";
 import useWebSocket from "../hooks/useWebSocket";
 import { useJobDataStore } from "../stores/job-data-store";
 import { extractInputsFromInputOutputObject } from "../utils/extract-inputs-from-inputoutputobject";
@@ -47,15 +51,27 @@ const ExecuteFlow = () => {
   );
 
   // Get current flow and execution state from current flow store
-  const { currentFlow, isFlowLoading, executionState, setExecutionState } =
-    useCurrentFlowStore(
-      useShallow((state) => ({
-        currentFlow: state.currentFlow,
-        isFlowLoading: state.isFlowLoading,
-        executionState: state.executionState,
-        setExecutionState: state.setExecutionState,
-      })),
-    );
+  const {
+    currentFlow,
+    isFlowLoading,
+    executionState,
+    setCurrentFlow,
+    setExecutionState,
+  } = useCurrentFlowStore(
+    useShallow((state) => ({
+      currentFlow: state.currentFlow,
+      isFlowLoading: state.isFlowLoading,
+      executionState: state.executionState,
+      setCurrentFlow: state.setCurrentFlow,
+      setExecutionState: state.setExecutionState,
+    })),
+  );
+
+  const { osID } = useTuariUserMetadataStore(
+    useShallow((state) => ({
+      osID: state.osID,
+    })),
+  );
 
   const { updateField } = useJobDataStore(
     useShallow((state) => ({
@@ -292,9 +308,27 @@ const ExecuteFlow = () => {
           : node,
       );
 
+      //  Create the job immediately to establish database metadata
+      const executionStartTime = new Date();
+      const jobRes = await insertJob({
+        flowId: currentFlow.id,
+        flowVersionId: currentFlow.versionId,
+        duration: 0,
+        status: JobStatusEnum.Running,
+        startTime: executionStartTime,
+        isPublished: false,
+        nodeExecutionLogs: JSON.stringify([]),
+        osId: osID,
+      });
+
+      //  Save job ID to currentFlow store so WebSocket heartbeat can reference it
+      setCurrentFlow({ ...currentFlow, jobId: jobRes.data.id });
+      updateField("startTime", executionStartTime);
+
       // Set versionId, nodes and edges in local storage BEFORE launching executor
       // to prevent race condition where executor sends "start" before localStorage is ready
       localStorage.setItem(CURRENT_VERSION_ID_KEY, currentFlow.versionId || "");
+      localStorage.setItem(CURRENT_JOB_ID_KEY, jobRes.data.id || "");
 
       // Remove previous logs for this version before starting a fresh execution.
       await clearNodeExecutionLog();

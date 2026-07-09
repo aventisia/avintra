@@ -1,4 +1,4 @@
-export enum JobStatusTypesEnum {
+export enum JobStatusEnum {
   // Indicates that the job has been created but has not started running yet.
   Created = "Created",
 

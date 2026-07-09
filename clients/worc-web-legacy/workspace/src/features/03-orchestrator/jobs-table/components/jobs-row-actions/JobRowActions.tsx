@@ -1,13 +1,13 @@
 import { DataTableRowActions } from "@aventisia/ui/data-table";
 
-import { JobStatusTypesEnum } from "../../enums/job-status-type-enum";
+import { JobStatusEnum } from "../../enums/job-status-enum";
 
 import { JobRowAbortAction } from "./JobRowAbortAction";
 import { JobRowDeleteAction } from "./JobRowDeleteAction";
 
 interface JobRowActionsProps {
   rowId: string;
-  status: JobStatusTypesEnum;
+  status: JobStatusEnum;
 }
 
 export const JobRowActions = ({ rowId, status }: JobRowActionsProps) => {
@@ -15,13 +15,13 @@ export const JobRowActions = ({ rowId, status }: JobRowActionsProps) => {
     // Dropdown menu for JObs table row action */}
     <DataTableRowActions>
       {/* Abort action for any running jobs*/}
-      {status === JobStatusTypesEnum.Running ? (
+      {status === JobStatusEnum.Running ? (
         <JobRowAbortAction rowId={rowId} />
       ) : (
         <></>
       )}
       {/* Delete action for any scheduled jobs*/}
-      {status === JobStatusTypesEnum.Created ? (
+      {status === JobStatusEnum.Created ? (
         <JobRowDeleteAction rowId={rowId} />
       ) : (
         <></>

@@ -1,6 +1,6 @@
 import { KeyValueLookupType } from "@aventisia/ui/types";
 
-import { JobStatusTypesEnum } from "../enums/job-status-type-enum";
+import { JobStatusEnum } from "../enums/job-status-enum";
 
 /** Array of column names and their corresponding display names. */
 export const columnDisplayNames: KeyValueLookupType[] = [
@@ -24,16 +24,16 @@ export const getColumnName = (key: string): string => {
   return column?.value ?? key;
 };
 
-export const statusColor: { [key in JobStatusTypesEnum]: string } = {
-  [JobStatusTypesEnum.Completed]: "bg-green-200 text-green-700",
-  [JobStatusTypesEnum.Running]: "bg-slate-200 text-slate-600",
-  [JobStatusTypesEnum.Abort]: "bg-orange-200 text-orange-600",
-  [JobStatusTypesEnum.Canceled]: "bg-orange-200 text-orange-600",
-  [JobStatusTypesEnum.Cleanup]: "bg-slate-200 text-slate-600",
-  [JobStatusTypesEnum.Paused]: "bg-slate-200 text-slate-600",
-  [JobStatusTypesEnum.Resumed]: "bg-slate-200 text-slate-600",
-  [JobStatusTypesEnum.Retrying]: "bg-slate-200 text-slate-600",
-  [JobStatusTypesEnum.Created]: "bg-slate-200 text-slate-600",
-  [JobStatusTypesEnum.Failed]: "bg-red-200 text-red-600",
-  [JobStatusTypesEnum.Killed]: "bg-orange-200 text-orange-600",
+export const statusColor: { [key in JobStatusEnum]: string } = {
+  [JobStatusEnum.Completed]: "bg-green-200 text-green-700",
+  [JobStatusEnum.Running]: "bg-slate-200 text-slate-600",
+  [JobStatusEnum.Abort]: "bg-orange-200 text-orange-600",
+  [JobStatusEnum.Canceled]: "bg-orange-200 text-orange-600",
+  [JobStatusEnum.Cleanup]: "bg-slate-200 text-slate-600",
+  [JobStatusEnum.Paused]: "bg-slate-200 text-slate-600",
+  [JobStatusEnum.Resumed]: "bg-slate-200 text-slate-600",
+  [JobStatusEnum.Retrying]: "bg-slate-200 text-slate-600",
+  [JobStatusEnum.Created]: "bg-slate-200 text-slate-600",
+  [JobStatusEnum.Failed]: "bg-red-200 text-red-600",
+  [JobStatusEnum.Killed]: "bg-orange-200 text-orange-600",
 };

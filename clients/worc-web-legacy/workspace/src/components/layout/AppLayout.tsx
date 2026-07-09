@@ -1,3 +1,11 @@
+import { Sidebar } from "@aventisia/ui/layout";
+import { cn } from "@aventisia/ui/lib";
+import { ScrollArea } from "@aventisia/ui/scroll";
+import { useBaseLayoutStore } from "@aventisia/ui/stores";
+import { useEffect, useState } from "react";
+import { Outlet, useLocation, useNavigate } from "react-router-dom";
+import { useShallow } from "zustand/react/shallow";
+
 import { DotPattern } from "@/components/layout/DotPattern";
 import { IS_TAURI } from "@/constants/constants";
 import useCheckMachineStatus from "@/features/03-orchestrator/machines-table/hooks/useCheckMachineStatus";
@@ -6,10 +14,13 @@ import useCheckMachineStatus from "@/features/03-orchestrator/machines-table/hoo
 //   useRedirectOnRelaunch,
 // } from "@/features/tauri-updater";
 import { useFetchPaymentStatus } from "@/features/05-tenant-admin/tenant/hooks/useFetchPaymentStatus";
+import { PROCESSING_STATES } from "@/features/execute-flow";
 import useCheckJobTrigger from "@/features/execute-flow/hooks/useCheckJobTrigger";
 import { useCurrentFlowStore } from "@/features/execute-flow/stores/current-flow-store";
 import { AppUpdateToast } from "@/features/tauri-updater/components/AppUpdateToast";
 import { usePreventClose } from "@/hooks/usePreventClose";
+import { usePreventNavigation } from "@/hooks/usePreventNavigation";
+import { useRecoverCrashLogs } from "@/hooks/useRecoverCrashLogs";
 import useTauriUserMetadata from "@/hooks/useTauriUserMetadata";
 import useWebSocket from "@/hooks/useWebSocket";
 import { ChatAssistant } from "@/react-toolkit/features/chat/ChatAssistant";
@@ -18,14 +29,6 @@ import { useAllowedRoutesStore } from "@/stores/allowed-routes-auth-store";
 import { useAppLoaderStore } from "@/stores/app-loader-store";
 import { useTuariUserMetadataStore } from "@/stores/tuari-user-metadata-store";
 import { getWebSocketUrl } from "@/utils/get-websocket-url";
-
-import { Sidebar } from "@aventisia/ui/layout";
-import { cn } from "@aventisia/ui/lib";
-import { ScrollArea } from "@aventisia/ui/scroll";
-import { useBaseLayoutStore } from "@aventisia/ui/stores";
-import { useEffect, useState } from "react";
-import { Outlet, useLocation, useNavigate } from "react-router-dom";
-import { useShallow } from "zustand/react/shallow";
 
 import AppBanner from "./AppBanner";
 import AppHeader from "./AppHeader";
@@ -72,13 +75,26 @@ export const AppLayout = () => {
   const { executionState } = useCurrentFlowStore(
     useShallow((state) => ({
       executionState: state.executionState,
+      setExecutionState: state.setExecutionState,
     })),
   );
 
+  usePreventNavigation({
+    enabled: import.meta.env.MODE !== "production",
+
+    basePath: import.meta.env.VITE_WORKSPACE_PATH,
+    isDirty: false,
+
+    isExecuting: PROCESSING_STATES.includes(executionState),
+  });
+
   // Prevent closing the Tauri app while an execution is in progress
   usePreventClose({
-    isProcessing: executionState === "executing" || executionState === "paused",
+    isProcessing: PROCESSING_STATES.includes(executionState),
   });
+
+  // Run check for pending logs if any and post them to respective job data
+  useRecoverCrashLogs();
 
   // Redirect to relaunch URL if available (if app is inside Tauri)
   // useRedirectOnRelaunch();

@@ -1,4 +1,4 @@
-import { JobStatusTypesEnum } from "../enums/job-status-type-enum";
+import { JobStatusEnum } from "../enums/job-status-enum";
 
 /**
  * Represents a data transfer object (DTO) for a jobs.
@@ -42,7 +42,7 @@ export interface JobsTableDto {
   /**
    * Gets or sets the status of the execution.
    */
-  status: JobStatusTypesEnum;
+  status: JobStatusEnum;
 
   /**
    * Gets or sets the last update time of the execution.

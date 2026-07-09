@@ -5,7 +5,7 @@ import NewAgentIcon from "@/components/NewAgentIcon";
 import { StatsCard } from "@/react-toolkit/ui/card/StatsCard";
 
 import { JobsTableDto } from "../dtos/jobs-table-dto";
-import { JobStatusTypesEnum } from "../enums/job-status-type-enum";
+import { JobStatusEnum } from "../enums/job-status-enum";
 import { formatSecondsToCompactDuration } from "../utils";
 
 interface StatsProps {
@@ -32,19 +32,19 @@ export const JobsStats = ({ data }: StatsProps) => {
     const uniqueAgents = new Set(data.map((x) => x.name).filter(Boolean));
 
     const completed = data.filter(
-      (x) => x.status === JobStatusTypesEnum.Completed,
+      (x) => x.status === JobStatusEnum.Completed,
     ).length;
 
     const failed = data.filter(
-      (x) => x.status === JobStatusTypesEnum.Failed,
+      (x) => x.status === JobStatusEnum.Failed,
     ).length;
 
     const aborted = data.filter(
-      (x) => x.status === JobStatusTypesEnum.Abort,
+      (x) => x.status === JobStatusEnum.Abort,
     ).length;
 
     const killed = data.filter(
-      (x) => x.status === JobStatusTypesEnum.Killed,
+      (x) => x.status === JobStatusEnum.Killed,
     ).length;
 
     const totalSeconds = data.reduce((acc, x) => acc + (x.duration ?? 0), 0);

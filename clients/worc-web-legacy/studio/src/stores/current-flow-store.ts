@@ -16,6 +16,7 @@ interface ICurrentFlowDetails {
   description?: string;
   accessType?: string;
   inputOutputObject?: string;
+  jobId?: string;
 }
 
 interface ConditionalExecutionGroup {
@@ -87,6 +88,7 @@ export const useCurrentFlowStore = create<State & Actions>((set) => ({
     type: FlowTypesEnum.Agent, // Default to Agent, but it will be set correctly when a flow is loaded
     description: "",
     inputOutputObject: "",
+    jobId: "",
   },
 
   isChatAgent: false,
