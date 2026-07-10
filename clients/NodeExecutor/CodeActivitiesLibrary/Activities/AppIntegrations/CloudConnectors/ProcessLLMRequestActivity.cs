@@ -77,7 +77,7 @@ namespace CodeActivitiesLibrary.AppIntegrations.CloudConnectorsActivities
 
             // Get chat agent parameters from recommendedActionsConfig
             var enableDynamicActions = recommendedActionsConfig?["enableDynamicActions"]?.Value<bool>();
-            var followUpMessagePrompt = GetStringProperty(recommendedActionsConfig, "followUpMessagePrompt");
+            var followUpMessagePrompt = recommendedActionsConfig?["followUpMessagePrompt"]?.Value<string>();
 
             // Build the input payload for the LLM request.
             // When followUpMessagePrompt are provided, they are added as the first system message.
