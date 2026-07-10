@@ -181,7 +181,7 @@ namespace CodeActivitiesLibrary.AppIntegrations.CloudConnectorsActivities
         }
 
         // Builds the input payload format expected by the LLM API.
-        private static object BuildInputPayload(string? inputPrompt, string? followUpMessagePrompt)
+        private static object BuildInputPayload(string inputPrompt, string followUpMessagePrompt)
         {
             var messages = new List<object>();
 
