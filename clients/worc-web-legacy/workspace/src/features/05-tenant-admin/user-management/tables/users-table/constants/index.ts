@@ -12,11 +12,6 @@ const TABLE_HEADING = "Users";
 
 const TABLE_KEY = "users";
 
-/**
- * The column used for searching in the users table.
- */
-const SEARCH_COLUMN = "firstName";
-
 const getDialogHeadingDescription = (crudAction: CrudActionType) => {
   switch (crudAction) {
     case "create":
@@ -34,6 +29,5 @@ export {
   DATA_QUERY_KEY,
   TABLE_HEADING,
   TABLE_KEY,
-  SEARCH_COLUMN,
   getDialogHeadingDescription,
 };

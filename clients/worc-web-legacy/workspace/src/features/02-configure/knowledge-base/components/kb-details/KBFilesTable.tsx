@@ -90,7 +90,7 @@ export const KBFilesTable = () => {
             <div className="flex items-center gap-2">
               <DTSearchBox
                 table={table}
-                searchColumn={"fileName"}
+                searchColumns={["fileName"]}
                 placeholder="Search..."
               />
               {!hasOnlyReadAccess && <AddFileDD />}

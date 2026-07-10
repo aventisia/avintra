@@ -18,11 +18,6 @@ const TABLE_HEADING = "Support tickets";
 
 const TABLE_KEY = "support-tickets";
 
-/**
- * The column used for searching in the supportTickets table.
- */
-const SEARCH_COLUMN = "subject";
-
 const getDialogHeadingDescription = (crudAction: CrudActionType) => {
   switch (crudAction) {
     case "create":
@@ -41,6 +36,5 @@ export {
   getTicketQueryKey,
   TABLE_HEADING,
   TABLE_KEY,
-  SEARCH_COLUMN,
   getDialogHeadingDescription,
 };

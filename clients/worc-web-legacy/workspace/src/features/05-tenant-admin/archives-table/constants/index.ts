@@ -20,16 +20,10 @@ const TABLE_VIEW_TABS = [
   { label: "Archived", value: "archived" },
 ] as QueryTabItem[];
 
-/**
- * The column used for searching in the Archived flows.
- */
-const SEARCH_COLUMN = "name";
-
 export {
   ARCHIVED_FLOWS_QUERY_KEY,
   TABLE_HEADING,
   TABLE_KEY,
-  SEARCH_COLUMN,
   TABLE_TAB_QUERY_PARAM,
   TABLE_VIEW_TABS,
 };

@@ -15,7 +15,6 @@ import ResourceShareDialog from "@/features/resource-share/components/ResourceSh
 import { HorizontalScrollWrapper } from "@/react-toolkit/ui/HorizontalScrollWrapper";
 
 import {
-  SEARCH_COLUMN,
   TABLE_HEADING,
   TABLE_KEY,
   TABLE_TAB_QUERY_PARAM,
@@ -77,7 +76,7 @@ export const EmailTriggersTable = () => {
               <div className="flex items-center gap-2">
                 <DTSearchBox
                   table={table}
-                  searchColumn={SEARCH_COLUMN}
+                  searchColumns={["name"]}
                   placeholder="Search triggers..."
                 />
                 <DTViewOptions

@@ -1,10 +1,10 @@
 import { Button } from "@aventisia/ui/buttons";
 import {
-  DataTable,
-  DataTableSkeleton,
   DTHeading,
   DTPagination,
   DTSearchBox,
+  DataTable,
+  DataTableSkeleton,
   getDataTablePreferences,
 } from "@aventisia/ui/data-table";
 import { useDataTable, useDocumentTitle } from "@aventisia/ui/hooks";
@@ -15,17 +15,12 @@ import { useNavigate } from "react-router-dom";
 import { useShallow } from "zustand/react/shallow";
 
 import { columnVisibilityState } from "../constants/column-visibility-state";
-import {
-  SEARCH_COLUMN,
-  TABLE_HEADING,
-  TABLE_KEY,
-} from "../constants/constants";
+import { TABLE_HEADING, TABLE_KEY } from "../constants/constants";
 import { useFetchSupportTickets } from "../hooks/useFetchSupportTickets";
 import { useSupportTicketsTableStore } from "../stores/support-tickets-table-store";
-
 import { StFilterByStatusOptions } from "./StFilterByStatusOptions";
-import { SupportTicketCrudDialog } from "./support-ticket-crud-dialog/SupportTicketCrudDialog";
 import { supportTicketsTableColumns } from "./SupportTicketsTableColumns";
+import { SupportTicketCrudDialog } from "./support-ticket-crud-dialog/SupportTicketCrudDialog";
 
 /**
  * Renders a table of support tickets.
@@ -91,7 +86,7 @@ export const SupportTicketsTable = () => {
                 {/* Search box */}
                 <DTSearchBox
                   table={table}
-                  searchColumn={SEARCH_COLUMN}
+                  searchColumns={["subject"]}
                   placeholder="Search all support tickets..."
                 />
                 {/* Column view filter */}

@@ -6,11 +6,6 @@ const TABLE_HEADING = "Billing History";
 
 const TABLE_KEY = "billing-history";
 
-/**
- * The column used for searching in the models.
- */
-const SEARCH_COLUMN = "invoice";
-
 const getDialogHeadingDescription = (crudAction: CrudActionType) => {
   switch (crudAction) {
     case "create":
@@ -29,5 +24,4 @@ export {
   TABLE_HEADING,
   TABLE_KEY,
   getDialogHeadingDescription,
-  SEARCH_COLUMN,
 };

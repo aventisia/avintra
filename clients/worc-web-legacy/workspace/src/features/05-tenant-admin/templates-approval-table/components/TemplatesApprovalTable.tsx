@@ -11,7 +11,7 @@ import { useDataTable, useDocumentTitle } from "@aventisia/ui/hooks";
 
 import { HorizontalScrollWrapper } from "@/react-toolkit/ui/HorizontalScrollWrapper";
 
-import { SEARCH_COLUMN, TABLE_HEADING, TABLE_KEY } from "../constants";
+import { TABLE_HEADING, TABLE_KEY } from "../constants";
 import { columnDisplayNames } from "../constants/column-display-names";
 import { columnVisibilityState } from "../constants/column-visibility-state";
 import { useFetchPendingTemplates } from "../hooks/useFetchPendingTemplates";
@@ -65,7 +65,7 @@ export const TemplatesApprovalTable = ({
               {/* Search bar for filtering data */}
               <DTSearchBox
                 table={table}
-                searchColumn={SEARCH_COLUMN}
+                searchColumns={["name"]}
                 placeholder="Search..."
               />
               {/* Column visibility and view options */}

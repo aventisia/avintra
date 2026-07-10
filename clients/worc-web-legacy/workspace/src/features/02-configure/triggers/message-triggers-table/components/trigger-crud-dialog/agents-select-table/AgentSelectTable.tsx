@@ -62,7 +62,7 @@ export function AgentSelectTable({
         <div className="flex items-center gap-2">
           <DTSearchBox
             table={table}
-            searchColumn="name"
+            searchColumns={["name"]}
             placeholder="Search agents..."
           />
         </div>

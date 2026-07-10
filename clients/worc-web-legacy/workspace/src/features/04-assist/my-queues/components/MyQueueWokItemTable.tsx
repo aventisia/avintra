@@ -79,7 +79,7 @@ export const MyQueueWokItemTable = () => {
           />
         </div>
         <div className="flex items-center gap-2">
-          <DTSearchBox searchColumn="rowId" table={table} />
+          <DTSearchBox searchColumns={["rowId"]} table={table} />
           <Tabs
             value={tabValue}
             onValueChange={(v) => {

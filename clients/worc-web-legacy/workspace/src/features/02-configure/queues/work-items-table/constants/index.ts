@@ -12,11 +12,6 @@ export const TABLE_HEADING = "Work Items";
 
 export const TABLE_KEY = "work-items";
 
-/**
- * The column used for searching in the queues.
- */
-export const SEARCH_COLUMN = "queueName";
-
 export const getDialogHeadingDescription = (crudAction: CrudActionType) => {
   switch (crudAction) {
     case "create":

@@ -1,23 +1,22 @@
 import {
-  DataTable,
-  DataTableSkeleton,
   DTCreateButton,
   DTHeading,
   DTPagination,
   DTSearchBox,
   DTViewOptions,
+  DataTable,
+  DataTableSkeleton,
   getDataTablePreferences,
 } from "@aventisia/ui/data-table";
 import { useDataTable, useDocumentTitle } from "@aventisia/ui/hooks";
 
-import { SEARCH_COLUMN, TABLE_HEADING, TABLE_KEY } from "../constants";
+import { TABLE_HEADING, TABLE_KEY } from "../constants";
 import { columnDisplayNames } from "../constants/column-display-names";
 import { columnVisibilityState } from "../constants/column-visibility-state";
 import { useFetchOnPremLLMs } from "../hooks/useFetchOnPremLLM";
-
-import { OnPremCrudDialog } from "./on-prem-crud-dialog/OnPremCrudDialog";
 import { OnPremLLMBulkActions } from "./OnPremLLMTableBulkAction";
 import { onPremLLMsTableColumns } from "./OnPremLLMTableColumns";
+import { OnPremCrudDialog } from "./on-prem-crud-dialog/OnPremCrudDialog";
 
 export const OnPremLLMTable = () => {
   // Set the document title
@@ -54,7 +53,7 @@ export const OnPremLLMTable = () => {
               <div className="flex items-center gap-2">
                 <DTSearchBox
                   table={table}
-                  searchColumn={SEARCH_COLUMN}
+                  searchColumns={["llm"]}
                   placeholder="Search Model..."
                 />
                 <DTViewOptions

@@ -1,5 +1,3 @@
-import { columnDisplayNames } from "@/features/01-build/flows-table/constants/column-display-names";
-
 import {
   DTCreateButton,
   DTHeading,
@@ -12,8 +10,10 @@ import {
 } from "@aventisia/ui/data-table";
 import { useDataTable, useDocumentTitle } from "@aventisia/ui/hooks";
 
+import { columnDisplayNames } from "@/features/01-build/flows-table/constants/column-display-names";
+
 import { usersTableColumns } from "../../users-table/components/UsersTableColumns";
-import { SEARCH_COLUMN, TABLE_HEADING, TABLE_KEY } from "../constants";
+import { TABLE_HEADING, TABLE_KEY } from "../constants";
 import { roleTableColumnvisibilityState } from "../constants/column-visibility-state";
 import { useFetchRoles } from "../hooks/useFetchRoles";
 import { RolesTableColumns } from "./RolesTableColumns";
@@ -61,7 +61,7 @@ export const RolesTable = () => {
               <div className="flex items-center gap-2">
                 <DTSearchBox
                   table={table}
-                  searchColumn={SEARCH_COLUMN}
+                  searchColumns={["fullName"]}
                   placeholder="Search users..."
                 />
                 <DTViewOptions

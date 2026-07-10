@@ -1,6 +1,6 @@
-import { QueryTabItem } from "@/components/QueryTab";
-
 import { CrudActionType } from "@aventisia/ui/types";
+
+import { QueryTabItem } from "@/components/QueryTab";
 
 /**
  * The unique key for the knowledgeBase query to be used in the query client. ["knowledgeBase"]
@@ -29,11 +29,6 @@ const TABLE_VIEW_TABS = [
   { label: "Shared", value: "shared" },
 ] as QueryTabItem[];
 
-/**
- * The column used for searching in the knowledgeBase.
- */
-const SEARCH_COLUMN = "name";
-
 const getDialogHeadingDescription = (crudAction: CrudActionType) => {
   switch (crudAction) {
     case "create":
@@ -51,7 +46,6 @@ export {
   DATA_QUERY_KEY,
   DETAIL_DATA_QUERY_KEY,
   getDialogHeadingDescription,
-  SEARCH_COLUMN,
   TABLE_HEADING,
   TABLE_KEY,
   DETAIL_TABLE_KEY,

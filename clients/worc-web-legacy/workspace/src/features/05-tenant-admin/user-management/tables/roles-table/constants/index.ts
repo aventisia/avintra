@@ -1,7 +1,6 @@
 import { CrudActionType } from "@aventisia/ui/types";
 
 export const DATA_QUERY_KEY = ["roles"];
-export const SEARCH_COLUMN = "fullName";
 export const TABLE_HEADING = "Roles";
 export const TABLE_KEY = "roles";
 

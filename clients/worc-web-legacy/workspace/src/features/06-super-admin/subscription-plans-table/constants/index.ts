@@ -6,11 +6,6 @@ const TABLE_HEADING = "Subscription Plans";
 
 const TABLE_KEY = "subscription-plans";
 
-/**
- * The column used for searching in the Subscription Plans.
- */
-const SEARCH_COLUMN = "name";
-
 const getDialogHeadingDescription = (crudAction: CrudActionType) => {
   switch (crudAction) {
     case "create":
@@ -36,7 +31,6 @@ export {
   PLANS_QUERY_KEY,
   TABLE_HEADING,
   TABLE_KEY,
-  SEARCH_COLUMN,
   getDialogHeadingDescription,
   displayValue,
 };

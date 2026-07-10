@@ -1,6 +1,6 @@
-import { QueryTabItem } from "@/components/QueryTab";
-
 import { CrudActionType } from "@aventisia/ui/types";
+
+import { QueryTabItem } from "@/components/QueryTab";
 
 /**
  * The unique key for the queues query to be used in the query client. ["queues"]
@@ -30,11 +30,6 @@ const TABLE_VIEW_TABS = [
   { label: "Shared", value: "shared" },
 ] as QueryTabItem[];
 
-/**
- * The column used for searching in the queues.
- */
-const SEARCH_COLUMN = "name";
-
 const getDialogHeadingDescription = (crudAction: CrudActionType) => {
   switch (crudAction) {
     case "create":
@@ -53,7 +48,6 @@ export {
   QUEUE_AGENT_KEY,
   QUEUE_USER_KEY,
   getDialogHeadingDescription,
-  SEARCH_COLUMN,
   TABLE_HEADING,
   TABLE_KEY,
   TABLE_TAB_QUERY_PARAM,

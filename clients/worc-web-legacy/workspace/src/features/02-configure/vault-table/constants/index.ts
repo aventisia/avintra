@@ -1,6 +1,6 @@
-import { QueryTabItem } from "@/components/QueryTab";
-
 import { CrudActionType } from "@aventisia/ui/types";
+
+import { QueryTabItem } from "@/components/QueryTab";
 
 /**
  * The unique key for the configs query to be used in the query client. ["configs"]
@@ -27,11 +27,6 @@ const TABLE_VIEW_TABS = [
   { label: "Shared", value: "shared" },
 ] as QueryTabItem[];
 
-/**
- * The column used for searching in the configs.
- */
-const SEARCH_COLUMN = "name";
-
 const getDialogHeadingDescription = (action: CrudActionType) => {
   switch (action) {
     case "create":
@@ -48,7 +43,6 @@ const getDialogHeadingDescription = (action: CrudActionType) => {
 export {
   DATA_QUERY_KEY,
   getDialogHeadingDescription,
-  SEARCH_COLUMN,
   TABLE_HEADING,
   TABLE_KEY,
   TABLE_TAB_QUERY_PARAM,
