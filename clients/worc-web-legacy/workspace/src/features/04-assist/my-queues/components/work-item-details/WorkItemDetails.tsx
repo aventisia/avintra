@@ -7,27 +7,39 @@ import {
   BreadcrumbSeparator,
 } from "@aventisia/ui/breadcrumb";
 import { Button } from "@aventisia/ui/buttons";
-import parse from "html-react-parser";
+import { useState } from "react";
 import { NavLink } from "react-router-dom";
 
 import { SearchableSelect } from "@/components/searchable-select/SearchableSelect";
-import { sanitizeHtml } from "@/features/05-tenant-admin/support-tickets-table/utils/htmlSanitizer";
 
-import { useFetchQueues } from "../hooks/useFetchQueues";
-import { useMyQueueParams } from "../hooks/useMyQueueParams";
-import { useQueueBackLink } from "../hooks/useQueueBackLink";
-import AttachmentsSection from "./AttachmentSection";
-import WorkflowTimeline from "./WorkflowTimeline";
+import { useFetchQueues } from "../../hooks/useFetchQueues";
+import { useMyQueueParams } from "../../hooks/useMyQueueParams";
+import { useQueueBackLink } from "../../hooks/useQueueBackLink";
+import { EmailWorkItem } from "./email-type-work-item/EmailWorkItem";
+import FileWorkItem from "./file-type-work-item/FileWorkItem";
+
+type QueueWorkItemType = "Email" | "File";
 
 export const WorkItemDetails = () => {
   const { queueName } = useMyQueueParams();
-
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
+  const [workItemType, setWorkItemtype] = useState<QueueWorkItemType>("File");
   const { data: queues } = useFetchQueues({ onlyUserQueues: false });
   const backToList = useQueueBackLink();
-  const htmlString = `<div style=" padding: 12px; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Arial, sans-serif;"><p style="margin: 0 0 16px 0; font-size: 12px;">Please review, verify or approve the following details:</p><ol style="margin: 0; padding-left: 16px; "><li style="margin-bottom: 8px;"><a href="#contact-persons" style="color: #9b87f5; text-decoration: underline; font-size: 12px;">Contact Persons</a></li><li style="margin-bottom: 8px;"><a href="#documents" style="color: #9b87f5; text-decoration: underline; font-size: 12px;">Documents</a></li><li style="margin-bottom: 8px;"><a href="#trade-partners" style="color: #9b87f5; text-decoration: underline; font-size: 12px;">Trade Partners</a></li></ol></div>`;
 
+  // Function to render  queue workItem component based on type
+  const renderWorkItemComponent = () => {
+    switch (workItemType) {
+      case "Email":
+        return <EmailWorkItem />;
+      case "File":
+        return <FileWorkItem />;
+      default:
+        return <></>;
+    }
+  };
   return (
-    <div className="space-y-4 p-4">
+    <div className="space-y-4 h-full p-4 pb-2">
       {/* Header */}
       <div className="flex items-center justify-between">
         <h2 className="ml-1 flex w-full items-center truncate text-lg font-medium text-foreground">
@@ -64,14 +76,7 @@ export const WorkItemDetails = () => {
           <Button size={"xs"}> Close</Button>
         </div>
       </div>
-      {/* Debug / placeholder content */}
-      <div className="mx-auto max-w-4xl space-y-4">
-        <div className="w-full max-w-4xl rounded-lg border bg-accent p-2 text-sm">
-          {parse(sanitizeHtml(htmlString))}
-        </div>
-        <AttachmentsSection />
-        <WorkflowTimeline />
-      </div>
+      {renderWorkItemComponent()}
     </div>
   );
 };

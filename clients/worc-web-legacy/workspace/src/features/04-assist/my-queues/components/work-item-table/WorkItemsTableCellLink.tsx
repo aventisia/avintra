@@ -2,7 +2,7 @@ import { buttonVariants } from "@aventisia/ui/buttons";
 import { cn } from "@aventisia/ui/lib";
 import { NavLink } from "react-router-dom";
 
-import { useOpenWorkItem } from "../hooks/useOpenWorkItem";
+import { useOpenWorkItem } from "../../hooks/useOpenWorkItem";
 
 interface WorkItemsTableCellLinkProps {
   /** The ID of the work items to open. */

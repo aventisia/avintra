@@ -1,7 +1,6 @@
 import { useMyQueueParams } from "../hooks/useMyQueueParams";
-
-import { MyQueueWokItemTable } from "./MyQueueWokItemTable";
-import { WorkItemDetails } from "./MyQueueWorkItem";
+import { WorkItemDetails } from "./work-item-details/WorkItemDetails";
+import { MyQueueWokItemTable } from "./work-item-table/MyQueueWokItemTable";
 
 export const MyQueue = () => {
   const { workItemId } = useMyQueueParams();

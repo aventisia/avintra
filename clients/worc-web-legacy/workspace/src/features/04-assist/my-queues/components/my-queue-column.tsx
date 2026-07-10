@@ -2,12 +2,11 @@ import { Badge } from "@aventisia/ui/badge";
 import { DTColumnHeader } from "@aventisia/ui/data-table";
 import { ColumnDef } from "@tanstack/react-table";
 
-import { statusColor, TABLE_KEY } from "../constants";
+import { TABLE_KEY, statusColor } from "../constants";
 import { InputSchemaField } from "../dtos/queues-table-dto";
 import { WorkItemRow } from "../types/my-queue-types";
-
-import { WorkItemActions } from "./workitem-row-actions/WorkItemRowActions";
-import { WorkItemsTableCellLink } from "./WorkItemsTableCellLink";
+import { WorkItemsTableCellLink } from "./work-item-table/WorkItemsTableCellLink";
+import { WorkItemActions } from "./work-item-table/work-item-row-actions/WorkItemRowActions";
 
 export const generateDTColumns = (
   fields: InputSchemaField[],

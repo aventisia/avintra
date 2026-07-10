@@ -11,12 +11,12 @@ import { useEffect, useMemo } from "react";
 import { SearchableSelect } from "@/components/searchable-select/SearchableSelect";
 import { HorizontalScrollWrapper } from "@/react-toolkit/ui/HorizontalScrollWrapper";
 
-import { TABLE_HEADING } from "../constants";
-import { useMyQueueData } from "../hooks/useMyQueueData";
-import { useMyQueueParams } from "../hooks/useMyQueueParams";
-import { TABS, TabValue } from "../types/my-queue-types";
-import { generateColumnVisibility } from "../utils/my-queue-utils";
-import { buildColumns } from "./my-queue-column";
+import { TABLE_HEADING } from "../../constants";
+import { useMyQueueData } from "../../hooks/useMyQueueData";
+import { useMyQueueParams } from "../../hooks/useMyQueueParams";
+import { TABS, TabValue } from "../../types/my-queue-types";
+import { generateColumnVisibility } from "../../utils/my-queue-utils";
+import { buildColumns } from "../my-queue-column";
 
 export const MyQueueWokItemTable = () => {
   useDocumentTitle(TABLE_HEADING);
@@ -79,7 +79,7 @@ export const MyQueueWokItemTable = () => {
           />
         </div>
         <div className="flex items-center gap-2">
-          <DTSearchBox searchColumns={["rowId"]} table={table} />
+          <DTSearchBox searchColumn="rowId" table={table} />
           <Tabs
             value={tabValue}
             onValueChange={(v) => {
