@@ -1,10 +1,12 @@
-﻿using CodeActivitiesLibrary.Extensions;
-using CodeActivitiesLibrary.WorkflowLogics.QueueManagement.Helpers;
-using System;
+﻿using System;
 using System.Activities;
 using System.ComponentModel;
 using System.ComponentModel.DataAnnotations;
 using System.Net.Http;
+using System.Text.Json.Nodes;
+using System.Text.RegularExpressions;
+using CodeActivitiesLibrary.Extensions;
+using CodeActivitiesLibrary.WorkflowLogics.QueueManagement.Helpers;
 
 namespace CodeActivitiesLibrary.WorkflowLogics.QueueManagement
 {
@@ -91,7 +93,7 @@ namespace CodeActivitiesLibrary.WorkflowLogics.QueueManagement
                 {
                     id = workItemId,
                     status = status.ToString(),
-                    workItemData = shouldUpdateData ? Newtonsoft.Json.JsonConvert.SerializeObject(workItemData) : null,
+                    workItemData = shouldUpdateData ? workItemData : null,
                     description = description,
                     fileUrl = fileUrl
                 };
