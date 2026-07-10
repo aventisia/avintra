@@ -62,11 +62,23 @@ namespace CodeActivitiesLibrary.WorkflowLogics.QueueManagement
                     throw new ArgumentException("Work Item Data cannot be null or empty.");
                 }
 
+                // Validate that workItemData is a valid JSON string
+                try
+                {
+                    // Attempt to parse the JSON to ensure it's valid
+                    JsonNode.Parse(workItemData);
+                }
+                catch (System.Text.Json.JsonException)
+                {
+                    // Repair the JSON string by escaping backslashes that are not part of valid escape sequences
+                    workItemData = Regex.Replace(workItemData, @"(?<!\\)\\(?![\\""/bfnrtu])", @"\\");
+                }
+
                 // Prepare the payload for the API request
                 var payload = new
                 {
                     queueName = queueName,
-                    workItemData = Newtonsoft.Json.JsonConvert.SerializeObject(workItemData),
+                    workItemData = workItemData,
                     description = description,
                     fileUrl = fileUrl
                 };
