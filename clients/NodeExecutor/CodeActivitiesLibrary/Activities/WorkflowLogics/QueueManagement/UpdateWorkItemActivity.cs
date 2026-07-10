@@ -71,8 +71,21 @@ namespace CodeActivitiesLibrary.WorkflowLogics.QueueManagement
                     throw new ArgumentException("Work Item Data cannot be null or empty when 'Should Update Work Item Data' is true.");
                 }
 
-                // remove qoute frim workItemId
-                workItemId = workItemId.Trim('"');
+                // Validate the JSON format of workItemData if it is provided
+                try
+                {
+                    // Pre-check: Try parsing. If it fails due to bad escaping, fix it.
+                    if (workItemData != null)
+                    {
+                        // Attempt to parse the JSON to check for validity
+                        JsonNode.Parse(workItemData);
+                    }
+                }
+                catch (System.Text.Json.JsonException)
+                {
+                    // Fix the backslashes in the JSON string
+                    workItemData = Regex.Replace(workItemData, @"(?<!\\)\\(?![\\""/bfnrtu])", @"\\");
+                }
 
                 var payload = new
                 {
@@ -80,7 +93,7 @@ namespace CodeActivitiesLibrary.WorkflowLogics.QueueManagement
                     status = status.ToString(),
                     workItemData = shouldUpdateData ? Newtonsoft.Json.JsonConvert.SerializeObject(workItemData) : null,
                     description = description,
-                    fileUrl = fileUrl.Trim()
+                    fileUrl = fileUrl
                 };
 
                 // Call the Queue API to update the work item
