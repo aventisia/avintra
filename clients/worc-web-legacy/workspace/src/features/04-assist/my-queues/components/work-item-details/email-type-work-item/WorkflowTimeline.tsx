@@ -119,7 +119,7 @@ const WorkflowTimeline = () => {
   return (
     <div className="w-full max-w-4xl space-y-2">
       <div className="flex items-center justify-between px-1">
-        <h3 className="text-sm font-semibold">Activity Log</h3>
+        <h3 className="text-xs font-semibold">Activity Log</h3>
       </div>
 
       <div className="rounded-lg border bg-background p-6 shadow-sm">

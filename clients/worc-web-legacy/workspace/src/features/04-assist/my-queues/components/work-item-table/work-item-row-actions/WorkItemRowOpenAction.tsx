@@ -4,7 +4,7 @@ import { useNavigate } from "react-router-dom";
 
 import { QueueWorkItemStatusEnum } from "@/react-toolkit/enums/queue-work-item-status-enum";
 
-import { useOpenWorkItem } from "../../hooks/useOpenWorkItem";
+import { useOpenWorkItem } from "../../../hooks/useOpenWorkItem";
 
 interface WorkItemRowOpenActionProps {
   rowId: string;
