@@ -6,11 +6,6 @@ const TABLE_HEADING = "On-prem Tenants";
 
 const TABLE_KEY = "onPremTenant";
 
-/**
- * The column used for searching in the tenants.
- */
-const SEARCH_COLUMN = "name";
-
 const getDialogHeadingDescription = (crudAction: CrudActionType) => {
   switch (crudAction) {
     case "create":
@@ -28,6 +23,5 @@ export {
   ON_PREM_TENANT_QUERY_KEY,
   TABLE_HEADING,
   TABLE_KEY,
-  SEARCH_COLUMN,
   getDialogHeadingDescription,
 };

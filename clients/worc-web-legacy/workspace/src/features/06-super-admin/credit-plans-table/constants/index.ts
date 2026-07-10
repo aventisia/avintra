@@ -6,11 +6,6 @@ const TABLE_HEADING = "Credit Plans";
 
 const TABLE_KEY = "credit-plans";
 
-/**
- * The column used for searching in the models.
- */
-const SEARCH_COLUMN = "serviceType";
-
 const getDialogHeadingDescription = (crudAction: CrudActionType) => {
   switch (crudAction) {
     case "create":
@@ -29,5 +24,4 @@ export {
   TABLE_HEADING,
   TABLE_KEY,
   getDialogHeadingDescription,
-  SEARCH_COLUMN,
 };

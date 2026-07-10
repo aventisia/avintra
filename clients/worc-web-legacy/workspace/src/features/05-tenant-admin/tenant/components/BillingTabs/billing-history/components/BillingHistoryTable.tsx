@@ -1,19 +1,18 @@
 import {
-  DataTable,
-  DataTableSkeleton,
   DTHeading,
   DTPagination,
   DTSearchBox,
   DTViewOptions,
+  DataTable,
+  DataTableSkeleton,
   getDataTablePreferences,
 } from "@aventisia/ui/data-table";
 import { useDataTable } from "@aventisia/ui/hooks";
 
-import { SEARCH_COLUMN, TABLE_HEADING, TABLE_KEY } from "../constants";
+import { TABLE_HEADING, TABLE_KEY } from "../constants";
 import { columnDisplayNames } from "../constants/column-display-names";
 import { columnVisibilityState } from "../constants/column-visibility-state";
 import { useFetchBillingHistory } from "../hooks/useFetchBillingHistory";
-
 import { billingHistoryTableColumns } from "./BillingHistoryTableColumns";
 
 /**
@@ -56,7 +55,7 @@ export const BillingHistoryTable = () => {
             <div className="flex items-center gap-2">
               <DTSearchBox
                 table={table}
-                searchColumn={SEARCH_COLUMN}
+                searchColumns={["invoice"]}
                 placeholder="Search History..."
               />
               <DTViewOptions

@@ -1,10 +1,5 @@
 import type { CrudActionType } from "@aventisia/ui/types";
 
-/**
- * The column used for searching in the agents.
- */
-export const SEARCH_COLUMN = "name";
-
 export const TABLE_KEY = "agents-table";
 
 export const DATA_QUERY_KEY = ["agents"];

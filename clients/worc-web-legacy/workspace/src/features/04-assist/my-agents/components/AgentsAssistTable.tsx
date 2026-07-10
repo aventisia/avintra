@@ -9,10 +9,9 @@ import { useShallow } from "zustand/react/shallow";
 
 import { useTuariUserMetadataStore } from "@/stores/tuari-user-metadata-store";
 
-import { SEARCH_COLUMN, TABLE_HEADING, TABLE_KEY } from "../constants";
+import { TABLE_HEADING, TABLE_KEY } from "../constants";
 import { columnVisibilityState } from "../constants/column-visibility-state";
 import { useFetchSelectTableAgents } from "../hooks/useFetchSelectAgents";
-
 import { agentsAssistTableColumns } from "./AgentsAssistTableColumns";
 import { AgentsTableSkeleton } from "./AgentsTableSkeleton";
 import { AgentsListItemActions } from "./assign-agent-item-actions";
@@ -62,7 +61,7 @@ export const AgentsAssistTable = () => {
             <div className="flex items-center gap-2">
               <DTSearchBox
                 table={table}
-                searchColumn={SEARCH_COLUMN}
+                searchColumns={["name"]}
                 placeholder="Search..."
               />
             </div>

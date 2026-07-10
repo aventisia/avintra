@@ -72,7 +72,7 @@ export const WorkItemsTable = () => {
             <div className="flex items-center gap-2">
               <DTSearchBox
                 table={table}
-                searchColumn={"id"}
+                searchColumns={["id"]}
                 placeholder="Search..."
               />
               <DTViewOptions

@@ -19,15 +19,4 @@ const HISTORY_JOB_STATUSES = [
   JobStatusEnum.Killed,
 ];
 
-/**
- * The column used for searching in the jobs.
- */
-const SEARCH_COLUMN = "name";
-
-export {
-  DATA_QUERY_KEY,
-  SEARCH_COLUMN,
-  TABLE_HEADING,
-  TABLE_KEY,
-  HISTORY_JOB_STATUSES,
-};
+export { DATA_QUERY_KEY, TABLE_HEADING, TABLE_KEY, HISTORY_JOB_STATUSES };

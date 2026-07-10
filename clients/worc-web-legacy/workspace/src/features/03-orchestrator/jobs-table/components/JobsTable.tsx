@@ -15,12 +15,7 @@ import { useSearchParams } from "react-router-dom";
 
 import { HorizontalScrollWrapper } from "@/react-toolkit/ui/HorizontalScrollWrapper";
 
-import {
-  HISTORY_JOB_STATUSES,
-  SEARCH_COLUMN,
-  TABLE_HEADING,
-  TABLE_KEY,
-} from "../constants";
+import { HISTORY_JOB_STATUSES, TABLE_HEADING, TABLE_KEY } from "../constants";
 import { columnDisplayNames } from "../constants/column-display-names";
 import { columnVisibilityState } from "../constants/column-visibility-state";
 import { JobStatusEnum } from "../enums/job-status-enum";
@@ -151,7 +146,7 @@ export const JobsTable = () => {
             <div className="flex items-center gap-2">
               <DTSearchBox
                 table={table}
-                searchColumn={SEARCH_COLUMN}
+                searchColumns={["name"]}
                 placeholder="Search..."
               />
               <DateRangeFilter />

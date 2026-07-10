@@ -20,7 +20,7 @@ import { NavLink } from "react-router-dom";
 
 import { HorizontalScrollWrapper } from "@/react-toolkit/ui/HorizontalScrollWrapper";
 
-import { SEARCH_COLUMN, TABLE_HEADING, TABLE_KEY } from "../constants";
+import { TABLE_HEADING, TABLE_KEY } from "../constants";
 import { columnDisplayNames } from "../constants/column-display-names";
 import { columnVisibilityState } from "../constants/column-visibility-state";
 import { useFetchTenantInstances } from "../hooks/useFetchTenantInstances";
@@ -88,7 +88,7 @@ export const TenantInstanceTable = () => {
               <div className="flex items-center gap-2">
                 <DTSearchBox
                   table={table}
-                  searchColumn={SEARCH_COLUMN}
+                  searchColumns={["name"]}
                   placeholder="Search..."
                 />
                 <DTViewOptions

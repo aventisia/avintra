@@ -1,6 +1,6 @@
-import { QueryTabItem } from "@/components/QueryTab";
-
 import { CrudActionType } from "@aventisia/ui/types";
+
+import { QueryTabItem } from "@/components/QueryTab";
 
 const FLOWS_QUERY_KEY = ["flows"];
 
@@ -22,11 +22,6 @@ const TABLE_VIEW_TABS = [
   { label: "Archived", value: "archived" },
 ] as QueryTabItem[];
 
-/**
- * The column used for searching in the flows.
- */
-const SEARCH_COLUMN = "name";
-
 const getDialogHeadingDescription = (crudAction: CrudActionType) => {
   switch (crudAction) {
     case "create":
@@ -44,7 +39,6 @@ export {
   FLOWS_QUERY_KEY,
   TABLE_HEADING,
   TABLE_KEY,
-  SEARCH_COLUMN,
   getDialogHeadingDescription,
   TABLE_TAB_QUERY_PARAM,
   TABLE_VIEW_TABS,

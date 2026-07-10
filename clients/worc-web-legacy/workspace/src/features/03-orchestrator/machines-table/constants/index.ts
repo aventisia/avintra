@@ -12,11 +12,6 @@ const TABLE_HEADING = "Machines";
 
 const TABLE_KEY = "machines";
 
-/**
- * The column used for searching in the machines.
- */
-const SEARCH_COLUMN = "name";
-
 const getDialogHeadingDescription = (crudAction: CrudActionType) => {
   switch (crudAction) {
     case "create":
@@ -33,7 +28,6 @@ const getDialogHeadingDescription = (crudAction: CrudActionType) => {
 export {
   DATA_QUERY_KEY,
   getDialogHeadingDescription,
-  SEARCH_COLUMN,
   TABLE_HEADING,
   TABLE_KEY,
 };

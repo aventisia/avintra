@@ -10,9 +10,4 @@ const TABLE_HEADING = "Conversations";
 
 const TABLE_KEY = "Conversations";
 
-/**
- * The column used for searching in the Conversations.
- */
-const SEARCH_COLUMN = "name";
-
-export { DATA_QUERY_KEY, SEARCH_COLUMN, TABLE_HEADING, TABLE_KEY };
+export { DATA_QUERY_KEY, TABLE_HEADING, TABLE_KEY };
