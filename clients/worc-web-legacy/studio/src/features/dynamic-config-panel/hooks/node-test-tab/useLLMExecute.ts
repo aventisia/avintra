@@ -2,6 +2,7 @@ import { toast } from "@aventisia/ui/sonner";
 import { useShallow } from "zustand/react/shallow";
 
 import {
+  LLMMessageDto,
   LLMRequestDto,
   ProviderLiteral,
   ToolConfigDto,
@@ -19,51 +20,58 @@ import {
 import { useResetOnTestTabOpen } from "./useResetOnTestTabOpen";
 
 /**
- * Resolves the `input` field for the LLM request.
+ * Builds the input payload for an LLM request.
  *
- * When the user hasn't typed a user-prompt override, `input` stays a plain
- * string (the node's saved prompt) — unchanged from current behavior.
+ * Returns the base system prompt as a plain string when no follow-up or
+ * user prompt is provided. Otherwise returns an ordered message array:
  *
- * When a user prompt is present, the request switches to a role-based
- * message array (stringified) so the saved prompt acts as the system
- * instruction and the typed text is the user turn. This mirrors the
- * message shape already used by the chat agent runtime, so the backend
- * doesn't need a separate code path to interpret it.
+ * 1. Base system prompt (`system`)
+ * 2. Follow-up prompt (`system`) if provided
+ * 3. User prompt (`user`) if provided
+ *
+ * Message order is important because it influences model behavior,
+ * particularly for follow-up instructions.
+ *
+ * @param baseSystemPrompt Primary system instructions.
+ * @param userPrompt Optional user message.
+ * @param followUpPrompt Optional additional system instructions.
+ *
+ * @returns A plain prompt string or an ordered `LLMMessageDto[]`.
  */
+
 export function buildLLMInput(
-  systemPrompt: string,
+  baseSystemPrompt: string,
   userPrompt: string,
   followUpPrompt?: string,
-): string {
+): string | LLMMessageDto[] {
   const trimmedUserPrompt = userPrompt.trim();
+  const trimmedFollowUpPrompt = followUpPrompt?.trim();
 
-  if (!trimmedUserPrompt) {
-    return mergeSystemPrompt(systemPrompt, followUpPrompt);
-  }
+  if (!trimmedUserPrompt && !trimmedFollowUpPrompt) return baseSystemPrompt;
+
+  /**
+   * Note: Message order affects model behavior.
+   * The base system prompt must appear before the follow-up prompt so that
+   * follow-up instructions extend or refine the original behavior rather than
+   * replacing its context.
+   */
 
   const messages = [
-    { role: "system", content: mergeSystemPrompt(systemPrompt, followUpPrompt) },
-    { role: "user", content: trimmedUserPrompt },
+    {
+      role: "system",
+      content: baseSystemPrompt,
+    },
   ];
 
-  return JSON.stringify(messages);
-}
-
-function mergeSystemPrompt(
-  systemPrompt: string,
-  followUpPrompt?: string,
-): string {
-  const segments: string[] = [];
-
-  if (systemPrompt?.trim()) {
-    segments.push(systemPrompt.trim());
+  if (trimmedFollowUpPrompt) {
+    messages.push({ role: "system", content: trimmedFollowUpPrompt });
   }
 
-  if (followUpPrompt?.trim()) {
-    segments.push(followUpPrompt.trim());
+  if (trimmedUserPrompt) {
+    messages.push({ role: "user", content: trimmedUserPrompt });
   }
 
-  return segments.join("\n\n");
+  return messages as unknown as LLMMessageDto[];
 }
 
 export function useLLMExecute(
