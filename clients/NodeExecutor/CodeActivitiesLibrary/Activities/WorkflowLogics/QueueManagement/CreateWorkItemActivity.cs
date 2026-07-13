@@ -37,9 +37,9 @@ namespace CodeActivitiesLibrary.WorkflowLogics.QueueManagement
         [FieldType(FieldType.JsonEditor)]
         public InArgument<string> WorkItemData { get; set; }
 
-        [DisplayName("File URL")]
-        [Description("Optional URL of a file associated with the work item.")]
-        public InArgument<string> FileUrl { get; set; }
+        [DisplayName("File URLs")]
+        [Description("Optional URLs of files associated with the work item, separated by commas.")]
+        public InArgument<string> FileUrls { get; set; }
 
         [DisplayName("Result")]
         [Description("Returns the created work item.")]
@@ -53,7 +53,7 @@ namespace CodeActivitiesLibrary.WorkflowLogics.QueueManagement
                 var queueName = QueueName.Get(context);
                 var workItemData = WorkItemData.Get(context);
                 var description = Description.Get(context);
-                var fileUrl = FileUrl.Get(context) ?? null;
+                var fileUrls = FileUrls.Get(context) ?? null;
                 var accessToken = AccessToken.Get(context);
 
                 // Validate that queueName is not null or empty
@@ -80,13 +80,16 @@ namespace CodeActivitiesLibrary.WorkflowLogics.QueueManagement
                     workItemData = Regex.Replace(workItemData, @"(?<!\\)\\(?![\\""/bfnrtu])", @"\\");
                 }
 
+                // Split the fileUrls string into an array if it is not null or empty
+                var fileUrlsArray = fileUrls?.Split(new[] { ',' }, StringSplitOptions.RemoveEmptyEntries);
+
                 // Prepare the payload for the API request
                 var payload = new
                 {
                     queueName = queueName,
                     workItemData = workItemData,
                     description = description,
-                    fileUrl = fileUrl
+                    fileUrls = fileUrlsArray
                 };
 
                 // Execute the API request to create the work item

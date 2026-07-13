@@ -9,7 +9,7 @@ public enum QueueTransactionEventEnum
     /// Event when a comment is added to a work item.
     /// </summary>
     [Description("Event when a comment is added to a work item.")]
-    CommentAdded = 1,
+    CommentAdded,
 
     /// <summary>
     /// Event when a comment is removed from a work item.
@@ -54,20 +54,20 @@ public enum QueueTransactionEventEnum
     AssignedUserChanged,
 
     /// <summary>
-    /// Event when a work item is completed.
+    /// Event when a queue transaction is completed.
     /// </summary>
-    [Description("Event when a work item is completed.")]
-    WorkItemCompleted,
+    [Description("Event when a queue transaction is completed.")]
+    QueueTransactionCompleted,
 
     /// <summary>
-    /// Event when a work item is created.
+    /// Event when a queue transaction is created.
     /// </summary>
-    [Description("Event when a work item is created.")]
-    WorkItemCreated,
+    [Description("Event when a queue transaction is created.")]
+    QueueTransactionCreated,
 
     /// <summary>
-    /// Event when a work item is reopened after being completed or closed.
+    /// Event when a queue transaction is reopened after being completed or closed.
     /// </summary>
-    [Description("Event when a work item is reopened after being completed or closed.")]
-    WorkItemReopened
+    [Description("Event when a queue transaction is reopened after being completed or closed.")]
+    QueueTransactionReopened
 }

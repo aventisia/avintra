@@ -520,6 +520,12 @@ public class QueueTableService : IQueueTableService
             {
                 queue.InputSchema = inputSchema;
             }
+
+            if (queuesTableDto.RouteToQueues != null && queue.RouteToQueues != queuesTableDto.RouteToQueues)
+            {
+                queue.RouteToQueues = queuesTableDto.RouteToQueues;
+            }
+
             if (queuesTableDto.IsDisabled.HasValue && queue.IsDisabled != queuesTableDto.IsDisabled.Value)
             {
                 queue.IsDisabled = queuesTableDto.IsDisabled.Value;

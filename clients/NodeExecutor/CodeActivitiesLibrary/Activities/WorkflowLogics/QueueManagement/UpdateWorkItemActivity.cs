@@ -42,9 +42,10 @@ namespace CodeActivitiesLibrary.WorkflowLogics.QueueManagement
         [RenderIfCondition(nameof(ShouldUpdateWorkItemData), true)]
         public InArgument<string> WorkItemData { get; set; }
 
-        [DisplayName("File URL")]
-        [Description("Optional URL of a file associated with the work item.")]
-        public InArgument<string> FileUrl { get; set; }
+        // use comma seprated string for multiple file urls
+        [DisplayName("File URLs")]
+        [Description("Optional URLs of files associated with the work item, separated by commas.")]
+        public InArgument<string> FileUrls { get; set; }
 
         [DisplayName("Result")]
         [Description("Returns the result of the update operation.")]
@@ -59,7 +60,7 @@ namespace CodeActivitiesLibrary.WorkflowLogics.QueueManagement
                 var description = Description.Get(context);
                 var shouldUpdateData = ShouldUpdateWorkItemData.Get(context);
                 var workItemData = shouldUpdateData ? WorkItemData.Get(context) : null;
-                var fileUrl = FileUrl.Get(context) ?? null;
+                var fileUrls = FileUrls.Get(context) ?? null;
                 var accessToken = AccessToken.Get(context);
 
                 // Validate inputs
@@ -89,13 +90,16 @@ namespace CodeActivitiesLibrary.WorkflowLogics.QueueManagement
                     workItemData = Regex.Replace(workItemData, @"(?<!\\)\\(?![\\""/bfnrtu])", @"\\");
                 }
 
+                // Split the fileUrls string into an array if it is not null or empty
+                var fileUrlsArray = fileUrls?.Split(new[] { ',' }, StringSplitOptions.RemoveEmptyEntries);
+
                 var payload = new
                 {
                     id = workItemId,
                     status = status.ToString(),
                     workItemData = shouldUpdateData ? workItemData : null,
                     description = description,
-                    fileUrl = fileUrl
+                    fileUrls = fileUrlsArray
                 };
 
                 // Call the Queue API to update the work item
