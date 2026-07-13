@@ -28,6 +28,11 @@ public class QueuesTableDto
     public QueueViewTypeEnum ViewType { get; set; }
 
     /// <summary>
+    /// Gets or sets the list of destination queues to which items from this queue can be routed.
+    /// </summary>
+    public List<string>? RouteToQueues { get; set; }
+
+    /// <summary>
     /// Gets or sets the description of the queue.
     /// This field is optional and can contain a maximum of 500 characters.
     /// </summary>

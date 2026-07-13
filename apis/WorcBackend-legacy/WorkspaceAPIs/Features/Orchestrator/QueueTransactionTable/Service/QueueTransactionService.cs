@@ -634,9 +634,17 @@ public class QueueTransactionService : IQueueTransactionService
                 queueTransactionDto.PayloadData = _stringEncryptionService.EncryptString(queueTransactionDto.PayloadData ?? string.Empty);
             }
 
-            // Update the existing queue transaction entity with values from the DTO
-            queueTransaction.PayloadData = queueTransactionDto.PayloadData;
-            queueTransaction.FileUrl = queueTransactionDto.FileUrl;
+            // Update queue transaction details only when values are changed
+            if (queueTransaction.PayloadData != queueTransactionDto.PayloadData)
+            {
+                queueTransaction.PayloadData = queueTransactionDto.PayloadData;
+            }
+
+            if (queueTransactionDto.FileUrls.Any() && !queueTransaction.FileUrls.SequenceEqual(queueTransactionDto.FileUrls))
+            {
+                queueTransaction.FileUrls = queueTransactionDto.FileUrls;
+            }
+
             queueTransaction.LastModifiedOn = DateTimeOffset.UtcNow;
 
             // Mark the transaction as updated

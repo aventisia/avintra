@@ -1396,6 +1396,9 @@ namespace WorkspaceAPIs.Data.Migrations
                     b.Property<string>("OutputSchema")
                         .HasColumnType("text");
 
+                    b.Property<List<string>>("RouteToQueues")
+                        .HasColumnType("text[]");
+
                     b.Property<bool>("ShouldRetryAbandonedItems")
                         .HasColumnType("boolean");
 
@@ -1496,8 +1499,8 @@ namespace WorkspaceAPIs.Data.Migrations
                     b.Property<string>("Description")
                         .HasColumnType("text");
 
-                    b.Property<string>("FileUrl")
-                        .HasColumnType("text");
+                    b.Property<List<string>>("FileUrls")
+                        .HasColumnType("text[]");
 
                     b.Property<Guid?>("FlowVersionId")
                         .HasColumnType("uuid");

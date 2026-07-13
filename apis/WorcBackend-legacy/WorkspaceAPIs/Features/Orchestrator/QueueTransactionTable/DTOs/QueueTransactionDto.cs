@@ -30,9 +30,9 @@ public class QueueTransactionDto
     public string? Remarks { get; set; }
 
     /// <summary>
-    /// Gets or sets the URL of the file associated with this queue transaction.
+    /// Gets or sets the URLs of the files associated with this queue transaction.
     /// </summary>
-    public string? FileUrl { get; set; }
+    public List<string>? FileUrls { get; set; }
 
     /// <summary>
     /// Gets or sets the identifier for the queue to which this transaction belongs.
