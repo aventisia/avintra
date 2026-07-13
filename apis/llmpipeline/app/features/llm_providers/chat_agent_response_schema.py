@@ -7,7 +7,7 @@ CHAT_AGENT_RESPONSE_SCHEMA = {
         },
         "followup_messages": {
             "type": "array",
-            "description": "An optional list of up to 5 short, actionable next steps or suggested follow-up queries.",
+            "description": "A list of up to 5 short, actionable next steps or suggested follow-up queries.",
             "items": {
                 "type": "string",
                 "description": "A single, independent follow-up suggestion."

@@ -277,16 +277,16 @@ public class ProcessLLMRequestNode : BaseNode
                 // If parsing fails, fall through to prompt mode
             }
 
-            // If we have a valid default prompt, add it as a system message at the beginning
-            if (!string.IsNullOrWhiteSpace(followUpMessagePrompt))
-            {
-                messages.Insert(0, new { role = "system", content = followUpMessagePrompt });
-            }
-
             // If we have a valid prompt, add it as a system message at the beginning
             if (!string.IsNullOrWhiteSpace(inputPrompt))
             {
-                messages.Insert(string.IsNullOrWhiteSpace(inputPrompt) ? 0 : 1, new { role = "system", content = inputPrompt });
+                messages.Insert(0, new { role = "system", content = inputPrompt });
+            }
+
+            // If we have a valid default prompt, add it as a system message at the beginning
+            if (!string.IsNullOrWhiteSpace(followUpMessagePrompt))
+            {
+                messages.Insert(string.IsNullOrWhiteSpace(inputPrompt) ? 0 : 1, new { role = "system", content = followUpMessagePrompt });
             }
 
             // Append the current user input as the latest user message
