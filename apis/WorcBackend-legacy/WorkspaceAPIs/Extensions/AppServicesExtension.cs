@@ -57,6 +57,7 @@ public static class AppServicesExtension
         config.Apply(new AgentTableMappingProfile());
         config.Apply(new QueueTableMappingProfile());
         config.Apply(new QueueTransactionMappingProfile());
+        config.Apply(new QueueTransactionEventMappingProfile());
         config.Apply(new QueueUserMappingProfile());
         config.Apply(new QueueFlowVersionMappingProfile());
         config.Apply(new JobTableMappingProfile());
@@ -116,6 +117,7 @@ public static class AppServicesExtension
         services.AddScoped<IAgentTableService, AgentTableService>();
         services.AddScoped<IQueueTableService, QueueTableService>();
         services.AddScoped<IQueueTransactionService, QueueTransactionService>();
+        services.AddScoped<IQueueTransactionEventService, QueueTransactionEventService>();
         services.AddScoped<IQueueUserService, QueueUserService>();
         services.AddScoped<IQueueFlowVersionService, QueueFlowVersionService>();
         services.AddScoped<IJobTableService, JobTableService>();

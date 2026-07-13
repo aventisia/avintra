@@ -76,5 +76,5 @@ public class QueueTransaction : IMustHaveTenant
     /// <summary>
     /// Gets or sets the collection of work item events associated with this transaction.
     /// </summary>
-    public virtual ICollection<WorkItemEvent>? WorkItemEvents { get; set; }
+    public virtual ICollection<QueueTransactionEvent>? QueueTransactionEvents { get; set; }
 }

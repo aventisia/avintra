@@ -494,11 +494,83 @@ public class QueueTableService : IQueueTableService
                 return serviceResponse;
             }
 
-            // Trim dto's string properties
+            // Normalize and trim all string properties in the DTO before comparing values.
             queuesTableDto = TrimDtoStringPropsUtil.TrimDtoStringProps(queuesTableDto);
 
-            // Update queue
-            queuesTableDto.Adapt(queue);
+            // Update only the properties whose values have changed to avoid unnecessary modifications.
+
+            if (queue.Description != queuesTableDto.Description)
+            {
+                queue.Description = queuesTableDto.Description;
+            }
+
+            var inputSchema = System.Text.Json.JsonSerializer.Serialize(
+                queuesTableDto.InputSchema,
+                new JsonSerializerOptions
+                {
+                    PropertyNameCaseInsensitive = true
+                }
+            );
+            if (queue.InputSchema != inputSchema)
+            {
+                queue.InputSchema = inputSchema;
+            }
+
+            if (queue.InputSchema != inputSchema)
+            {
+                queue.InputSchema = inputSchema;
+            }
+            if (queuesTableDto.IsDisabled.HasValue && queue.IsDisabled != queuesTableDto.IsDisabled.Value)
+            {
+                queue.IsDisabled = queuesTableDto.IsDisabled.Value;
+            }
+
+            if (queue.IsStoredEncrypted != queuesTableDto.IsStoredEncrypted)
+            {
+                queue.IsStoredEncrypted = queuesTableDto.IsStoredEncrypted;
+            }
+
+            if (queue.IsUniqueReferencesEnforced != queuesTableDto.IsUniqueReferencesEnforced)
+            {
+                queue.IsUniqueReferencesEnforced = queuesTableDto.IsUniqueReferencesEnforced;
+            }
+
+            if (queue.IsTenantWideAccess != queuesTableDto.IsTenantWideAccess)
+            {
+                queue.IsTenantWideAccess = queuesTableDto.IsTenantWideAccess;
+            }
+
+            if (queue.MaximumRetryAttempts != queuesTableDto.MaximumRetryAttempts)
+            {
+                queue.MaximumRetryAttempts = queuesTableDto.MaximumRetryAttempts;
+            }
+
+            if (queue.OutputSchema != queuesTableDto.OutputSchema)
+            {
+                queue.OutputSchema = queuesTableDto.OutputSchema;
+            }
+
+            if (queue.ShouldRetryAbandonedItems != queuesTableDto.ShouldRetryAbandonedItems)
+            {
+                queue.ShouldRetryAbandonedItems = queuesTableDto.ShouldRetryAbandonedItems;
+            }
+
+            if (queue.ShouldRetryFailedItems != queuesTableDto.ShouldRetryFailedItems)
+            {
+                queue.ShouldRetryFailedItems = queuesTableDto.ShouldRetryFailedItems;
+            }
+
+            if (queue.Type != queuesTableDto.Type)
+            {
+                queue.Type = queuesTableDto.Type;
+            }
+
+            if (queue.ViewType != queuesTableDto.ViewType)
+            {
+                queue.ViewType = queuesTableDto.ViewType;
+            }
+
+            // Update audit information for the modified entity.
             queue.LastModifiedByUserId = _userId;
             queue.LastModifiedOn = DateTimeOffset.UtcNow;
 

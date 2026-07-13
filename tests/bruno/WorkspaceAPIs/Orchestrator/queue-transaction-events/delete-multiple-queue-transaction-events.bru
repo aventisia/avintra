@@ -1,0 +1,24 @@
+meta {
+  name: Delete multiple queue transaction events
+  type: http
+  seq: 9
+}
+
+post {
+  url: {{WORKSPACE_APIS_BASE_URL}}/queue/transaction-events/delete-multiple
+  body: json
+  auth: none
+}
+
+body:json {
+  ["{{QUEUE_TRANSACTION_EVENT_ID}}"]
+}
+
+script:post-response {
+  if(res.getStatus() == 200){
+      bru.setGlobalEnvVar(
+        "QUEUE_WORKITEM_ID", 
+        "00000000-0000-0000-0000-000000000000"
+      );
+  }
+}
