@@ -62,6 +62,7 @@ public class ProjectTemplateController : BaseApiController
     }
 
     // Retrieves all project templates that are pending approval
+    [Authorize(Roles = "TA")]
     [HttpGet("pending-approval")]
     public async Task<ActionResult<ServiceResponse<IEnumerable<ProjectTemplateDto>>>> GetAllPendingApprovalTemplatesAsync()
     {
@@ -69,14 +70,15 @@ public class ProjectTemplateController : BaseApiController
     }
 
     // Returns all shared (public) project templates that are awaiting approval.
+    [Authorize(Roles = "SA")]
     [HttpGet("shared/pending-approval")]
     public async Task<ActionResult<ServiceResponse<IEnumerable<ProjectTemplateDto>>>> GetPublicPendingApprovalTemplatesAsync()
     {
         return ResultHelper(await _projectTemplateService.GetPublicPendingApprovalProjectTemplatesAsync());
     }
 
-
     // Approve or reject a project template
+    [Authorize(Roles = "SA, TA")]
     [HttpPut("status")]
     public async Task<ActionResult<ServiceResponse<ProjectTemplateDto>>> UpdateTemplateStatus([FromBody] ProjectTemplateDto projectTemplateDto)
     {

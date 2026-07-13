@@ -1,5 +1,6 @@
 namespace WorkspaceAPIs.Controllers;
 
+[Authorize(Roles = "OM")]
 [ApiController]
 [Route("job")]
 public class JobController : BaseApiController

@@ -2,7 +2,7 @@ namespace WorkspaceAPIs.Controllers;
 
 [Route("admin/conversations")]
 [ApiController]
-[Authorize]
+[Authorize(Roles = "OM")]
 public class AdminConversationController : BaseApiController
 {
     private readonly IAdminConversationService _adminConversationService;

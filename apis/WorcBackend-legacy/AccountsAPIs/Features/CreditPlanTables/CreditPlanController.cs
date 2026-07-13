@@ -12,7 +12,9 @@ public class CreditPlanController : BaseApiController
         _creditPlanService = creditPlanService;
     }
 
+
     // Retrieves all credit plans.
+    [Authorize(Roles = "SA")]
     [HttpGet("list")]
     public async Task<ActionResult<ServiceResponse<IEnumerable<CreditPlanDto>>>> GetAllCreditPlans()
     {
@@ -28,6 +30,7 @@ public class CreditPlanController : BaseApiController
 
     // Retrieves a specific credit plan by its unique identifier.
     [HttpGet("{creditPlanId}")]
+    [Authorize(Roles = "SA")]
     public async Task<ActionResult<ServiceResponse<CreditPlanDto>>> GetCreditPlanById(Guid creditPlanId)
     {
         return ResultHelper(await _creditPlanService.GetCreditPlanByIdAsync(creditPlanId));
@@ -41,6 +44,7 @@ public class CreditPlanController : BaseApiController
     }
 
     // Checks the availability of a credit plan name.
+    [Authorize(Roles = "SA")]
     [HttpPost("is-available")]
     public async Task<ActionResult<ServiceResponse<TrueFalseResultDto>>> IsCreditPlanNameAvailable([FromBody] CheckAvailabilityDto checkAvailabilityDto)
     {
@@ -48,6 +52,7 @@ public class CreditPlanController : BaseApiController
     }
 
     // Updates an existing credit plan.
+    [Authorize(Roles = "SA")]
     [HttpPut]
     public async Task<ActionResult<ServiceResponse<CreditPlanDto>>> UpdateCreditPlan([FromBody] CreditPlanDto creditPlanDto)
     {
@@ -55,6 +60,7 @@ public class CreditPlanController : BaseApiController
     }
 
     // Deletes a specific credit plan by its unique identifier.
+    [Authorize(Roles = "SA")]
     [HttpDelete("{creditPlanId}")]
     public async Task<ActionResult<ServiceResponse<bool>>> DeleteCreditPlan(Guid creditPlanId)
     {
@@ -62,6 +68,7 @@ public class CreditPlanController : BaseApiController
     }
 
     // Deletes multiple credit plans by their IDs.
+    [Authorize(Roles = "SA")]
     [HttpPost("delete-multiple")]
     public async Task<ActionResult<ServiceResponse<bool>>> DeleteCreditPlans([FromBody] List<Guid> creditPlanIds)
     {

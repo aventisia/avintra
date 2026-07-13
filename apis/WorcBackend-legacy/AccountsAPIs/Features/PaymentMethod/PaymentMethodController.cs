@@ -2,7 +2,7 @@ namespace AccountsAPIs.Controllers;
 
 [Route("payment-methods")]
 [ApiController]
-[Authorize]
+[Authorize(Roles = "TA")]
 public class PaymentMethodController : BaseApiController
 {
     private readonly IPaymentMethodService _paymentMethodService;

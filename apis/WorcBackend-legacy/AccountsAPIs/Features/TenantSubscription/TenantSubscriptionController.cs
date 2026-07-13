@@ -2,7 +2,7 @@ namespace AccountsAPIs.Controllers;
 
 [Route("tenant-subscriptions")]
 [ApiController]
-[Authorize]
+[Authorize(Roles = "TA")]
 public class TenantSubscriptionController : BaseApiController
 {
     private readonly ITenantSubscriptionService _tenantSubscriptionService;

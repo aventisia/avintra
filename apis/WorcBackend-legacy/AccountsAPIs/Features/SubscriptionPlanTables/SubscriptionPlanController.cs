@@ -41,6 +41,7 @@ public class SubscriptionPlanController : BaseApiController
     }
 
     // Creates a new subscription plan.
+    [Authorize(Roles = "SA")]
     [HttpPost]
     public async Task<ActionResult<ServiceResponse<SubscriptionPlanDto>>> CreateSubscriptionPlan([FromBody] SubscriptionPlanDto subscriptionPlanDto)
     {
@@ -48,6 +49,7 @@ public class SubscriptionPlanController : BaseApiController
     }
 
     // Checks the availability of a subscription plan.
+    [Authorize(Roles = "SA")]
     [HttpPost("is-available")]
     public async Task<ActionResult<ServiceResponse<TrueFalseResultDto>>> IsSubscriptionPlanNameAvailable([FromBody] CheckAvailabilityDto checkAvailabilityDto)
     {
@@ -55,6 +57,7 @@ public class SubscriptionPlanController : BaseApiController
     }
 
     // Updates an existing subscription plan.
+    [Authorize(Roles = "SA")]
     [HttpPut]
     public async Task<ActionResult<ServiceResponse<SubscriptionPlanDto>>> UpdateSubscriptionPlan([FromBody] SubscriptionPlanDto subscriptionPlanDto)
     {
@@ -62,6 +65,7 @@ public class SubscriptionPlanController : BaseApiController
     }
 
     // Deletes a specific subscription plan by its unique identifier.
+    [Authorize(Roles = "SA")]
     [HttpDelete("{subscriptionPlanId}")]
     public async Task<ActionResult<ServiceResponse<bool>>> DeleteSubscriptionPlan(Guid subscriptionPlanId)
     {
@@ -69,6 +73,7 @@ public class SubscriptionPlanController : BaseApiController
     }
 
     // Deletes multiple subscription plans by their IDs.
+    [Authorize(Roles = "SA")]
     [HttpPost("delete-multiple")]
     public async Task<ActionResult<ServiceResponse<bool>>> DeleteSubscriptionPlans([FromBody] List<Guid> subscriptionPlanIds)
     {

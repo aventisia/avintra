@@ -2,7 +2,7 @@ namespace WorkspaceAPIs.Controllers;
 
 [Route("supportticket")]
 [ApiController]
-[Authorize]
+[Authorize(Roles = "TA")]
 public class SupportTicketsTableController : BaseApiController
 {
     private readonly ISupportTicketsTableService _supportTicketsTableService;

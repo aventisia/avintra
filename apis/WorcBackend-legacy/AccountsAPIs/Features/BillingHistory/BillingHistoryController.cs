@@ -2,7 +2,7 @@ namespace AccountsAPIs.Controllers;
 
 [Route("billing-detail")]
 [ApiController]
-[Authorize]
+[Authorize(Roles = "TA")]
 public class BillingHistoryController : BaseApiController
 {
     private readonly IBillingHistoryService _billingHistoryService;
