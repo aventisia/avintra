@@ -1,5 +1,6 @@
 namespace AccountsAPIs.Controllers;
 
+[Authorize(Roles = "TA")]
 [Route("tenant-account")]
 [ApiController]
 public class TenantAccountController : BaseApiController

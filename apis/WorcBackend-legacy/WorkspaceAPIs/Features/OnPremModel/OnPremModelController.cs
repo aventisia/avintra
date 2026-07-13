@@ -1,5 +1,6 @@
 namespace WorkspaceAPIs.Controllers;
 
+[Authorize(Roles = "TA")]
 [Route("onprem-model")]
 [ApiController]
 public class OnPremModelController : BaseApiController
