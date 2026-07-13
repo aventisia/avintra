@@ -1,0 +1,11 @@
+meta {
+  name: Get queue workitem by queue id
+  type: http
+  seq: 3
+}
+
+get {
+  url: {{WORKSPACE_APIS_BASE_URL}}/queue/transaction-events/{{QUEUE_TRANSACTION_ID}}/list
+  body: none
+  auth: none
+}

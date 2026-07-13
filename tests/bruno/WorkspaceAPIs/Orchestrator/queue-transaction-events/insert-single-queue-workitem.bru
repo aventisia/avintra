@@ -1,0 +1,28 @@
+meta {
+  name: Insert single queue workitem
+  type: http
+  seq: 2
+}
+
+post {
+  url: {{WORKSPACE_APIS_BASE_URL}}/queue/workitem
+  body: json
+  auth: bearer
+}
+
+body:json {
+  {
+    "queueId": "{{QUEUE_ID}}",
+    "queueName": "",
+    "workItemData": "{\n  \"Id\": 22,\n  \"Name\": \"Grace\",\n  \"Location\": \"Boston\",\n  \"Date\": \"2025-08-07\"\n}"
+  }
+}
+
+script:post-response {
+  if(res.getStatus() == 200){
+      bru.setGlobalEnvVar(
+          "QUEUE_TRANSACTION_ID",
+          res.getBody().data.id
+      );
+  }
+}

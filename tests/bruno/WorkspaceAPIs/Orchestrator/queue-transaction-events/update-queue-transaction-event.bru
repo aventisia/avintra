@@ -1,0 +1,20 @@
+meta {
+  name: Update queue transaction event
+  type: http
+  seq: 5
+}
+
+put {
+  url: {{WORKSPACE_APIS_BASE_URL}}/queue/transaction-events
+  body: json
+  auth: none
+}
+
+body:json {
+  {
+    "id": "{{QUEUE_TRANSACTION_EVENT_ID}}",
+    "eventType": "CommentAdded",
+    "data": "This is test comment.",
+    "queueTransactionId": "{{QUEUE_TRANSACTION_ID}}"
+  }
+}

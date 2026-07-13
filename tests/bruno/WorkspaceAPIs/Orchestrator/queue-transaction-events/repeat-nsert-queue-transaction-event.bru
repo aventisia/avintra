@@ -1,0 +1,29 @@
+meta {
+  name: Repeat -Insert queue transaction event
+  type: http
+  seq: 8
+}
+
+post {
+  url: {{WORKSPACE_APIS_BASE_URL}}/queue/transaction-events
+  body: json
+  auth: none
+}
+
+body:json {
+  {
+    "queueTransactionId": "{{QUEUE_TRANSACTION_ID}}",
+    "eventType": "CommentAdded",
+    "data": "This is test comment.."
+  }
+  
+}
+
+script:post-response {
+  if(res.getStatus() == 200){
+      bru.setGlobalEnvVar(
+          "QUEUE_TRANSACTION_EVENT_ID",
+          res.getBody().data.id
+      );
+  }
+}

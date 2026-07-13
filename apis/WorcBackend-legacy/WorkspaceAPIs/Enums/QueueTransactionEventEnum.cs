@@ -3,7 +3,7 @@ namespace WorkspaceAPIs.Enums;
 /// <summary>
 /// Represents the different event types related to work item changes.
 /// </summary>
-public enum WorkItemEventTypesEnum
+public enum QueueTransactionEventEnum
 {
     /// <summary>
     /// Event when a comment is added to a work item.

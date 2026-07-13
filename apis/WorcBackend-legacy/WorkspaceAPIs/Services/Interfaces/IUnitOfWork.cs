@@ -20,6 +20,7 @@ public interface IUnitOfWork
     IQueueRepo QueueRepo { get; }
     IQueueFlowVersionRepo QueueFlowVersionRepo { get; }
     IQueueTransactionRepo QueueTransactionRepo { get; }
+    IQueueTransactionEventRepo QueueTransactionEventRepo { get; }
     IQueueUserRepo QueueUserRepo { get; }
     IJobRepo JobRepo { get; }
     IKeyStoreRepo KeyStoreRepo { get; }

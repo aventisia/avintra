@@ -22,6 +22,12 @@ public class QueuesTableDto
     public QueueTypesEnum Type { get; set; }
 
     /// <summary>
+    /// Gets or sets the view type of the queue.
+    /// This categorizes the queue by its business scenario or UI presentation.
+    /// </summary>
+    public QueueViewTypeEnum ViewType { get; set; }
+
+    /// <summary>
     /// Gets or sets the description of the queue.
     /// This field is optional and can contain a maximum of 500 characters.
     /// </summary>
