@@ -50,6 +50,7 @@ public static class AppServicesExtension
         config.Apply(new CreditPlanMappingProfile());
         config.Apply(new CreditUsageMappingProfile());
         config.Apply(new AITaskMappingProfile());
+        config.Apply(new EmailCampaignMappingProfile());
         services.AddSingleton(config);
     }
 
@@ -94,6 +95,7 @@ public static class AppServicesExtension
         services.AddScoped<IUserRegistrationService, UserRegistrationService>();
         services.AddScoped<IVerificationCodeService, VerificationCodeService>();
         services.AddScoped<IContactUsService, ContactUsService>();
+        services.AddScoped<IEmailCampaignService, EmailCampaignService>();
         services.AddScoped<IResetPwdService, ResetPwdService>();
         services.AddScoped<ILoginWithPwdService, LoginWithPwdService>();
         services.AddScoped<ISingleSignOnService, SingleSignOnService>();

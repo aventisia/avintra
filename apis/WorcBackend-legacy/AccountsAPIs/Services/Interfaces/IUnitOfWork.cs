@@ -16,6 +16,8 @@ public interface IUnitOfWork
 
     IContactUsRepo ContactUsRepo { get; }
 
+    IEmailCampaignRepo EmailCampaignRepo { get; }
+
     IPermissionRepo PermissionRepo { get; }
 
     IAccountRoleRepo AccountRoleRepo { get; }
