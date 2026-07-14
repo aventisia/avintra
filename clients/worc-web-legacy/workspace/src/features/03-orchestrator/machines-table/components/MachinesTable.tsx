@@ -1,6 +1,5 @@
 import {
   DTCreateButton,
-  DTExportButton,
   DTHeading,
   DTPagination,
   DTSearchBox,
@@ -67,13 +66,12 @@ export const MachinesTable = () => {
               <div className="flex items-center gap-2">
                 <DTSearchBox
                   table={table}
-                  searchColumns={["name"]}
-                  placeholder="Search machines..."
+                  searchColumns={["name", "status", "username", "environment", "operatingSystem"]}
+                  placeholder="Search by name, status, username, env, or OS..."
                 />
                 <DTViewOptions
                   {...{ table, columnDisplayNames, tableKey: TABLE_KEY }}
                 />
-                <DTExportButton table={table} fileName={"machine_table"} />
                 <DTCreateButton buttonText="Add Machine" />
               </div>
             </div>

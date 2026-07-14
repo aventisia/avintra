@@ -21,9 +21,9 @@ export const machineNameSchema = z
 
 const ipAddressSchema = z
   .string()
-  .min(1, { message: reqError("IP Address") })
   .refine(
-    (value) => ipv4Regex.test(value) || ipv6Regex.test(value),
+    (value) =>
+      value.length === 0 || ipv4Regex.test(value) || ipv6Regex.test(value),
     "Invalid IP address. Must be a valid IPv4 or IPv6 address.",
   );
 
@@ -32,12 +32,13 @@ const ipAddressSchema = z
  */
 export const machineZodSchema = z.object({
   id: z.string(),
-  name: machineNameSchema,
-  type: z.string().min(1, { message: reqError("Machine OS Type") }),
+  name: machineNameSchema.optional().default(""),
+  operatingSystem: z.string().min(1, { message: reqError("Machine OS Type") }),
   environment: z.string().min(1, { message: reqError("Environment Type") }),
   ipAddress: ipAddressSchema,
-  hostname: z.string().min(1, { message: reqError("Username") }),
-  osId: z.string().min(1, { message: reqError("OS Unique Id") }),
+  hostname: z.string().min(1, { message: reqError("Hostname") }),
+  username: z.string().min(1, { message: reqError("Username") }),
+  osID: z.string().min(1, { message: reqError("OS Unique Id") }),
 
   isDisabled: z.boolean().default(false),
   // Read (view) only fields

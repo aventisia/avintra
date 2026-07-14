@@ -260,7 +260,7 @@ public class JobTableService : IJobTableService
             {
                 machine = await _unitOfWork.MachineRepo
                     .GetByConditionAsync(w =>
-                        w.OSId.ToLower() == jobTableDto.OSId.ToLower())
+                        w.OsID.ToLower() == jobTableDto.OSId.ToLower())
                     .FirstOrDefaultAsync();
 
                 // Log the outcome of the machine search.
@@ -460,7 +460,7 @@ public class JobTableService : IJobTableService
                 else
                 {
                     var safeUser = job.Machine?.Hostname?.Trim().ToLower() ?? "unknown";
-                    var osId = job.Machine?.OSId;
+                    var osId = job.Machine?.OsID;
                     var shortOsId = !string.IsNullOrEmpty(osId) && osId.Length >= 4
                         ? osId.Substring(0, 4).ToLower()
                         : "xxxx";

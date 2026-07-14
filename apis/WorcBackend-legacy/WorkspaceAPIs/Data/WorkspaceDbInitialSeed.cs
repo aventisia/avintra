@@ -25,6 +25,9 @@ public static class WorkspaceDbInitialSeed
             await workspaceDbContext.Database.MigrateAsync();
             Console.WriteLine("Info: Database migrations applied successfully.");
 
+            // TODO: Machine entity: Remove this temporary migration code after all legacy data is migrated
+            //await UpdateMachineTableAsync(workspaceDbContext);
+
             // Migrate existing Job records to populate FlowVersionHistoryId using the latest FlowVersionHistory for each FlowVersion.
             await UpdateJobFlowVersionHistoryAsync(workspaceDbContext);
 
@@ -51,6 +54,29 @@ public static class WorkspaceDbInitialSeed
         }
     }
 
+    private static async Task UpdateMachineTableAsync(WorkspaceDbContext workspaceDbContext)
+    {
+        // Load all machine records
+        var machines = await workspaceDbContext.Machines.IgnoreQueryFilters()
+            .Where(w => true)
+            .ToListAsync();
+
+        foreach (var machine in machines)
+        {
+            // Update the MachineName for each machine record
+            machine.Name = MachineHelpers.BuildMachineName(
+                machine.Environment,
+                machine.OperatingSystem,
+                machine.OsID,
+                machine.Username);
+        }
+
+        await workspaceDbContext.SaveChangesAsync();
+
+
+        // This section seems misplaced and should be removed, as it references 'jobs' which is not defined in this method.
+    }
+
     private static async Task UpdateJobFlowVersionHistoryAsync(WorkspaceDbContext workspaceDbContext)
     {
         // Load jobs that do not have a FlowVersionHistoryId assigned.
@@ -62,7 +88,7 @@ public static class WorkspaceDbInitialSeed
         // Assign the latest FlowVersionHistoryId to each job.
         foreach (var job in jobs)
         {
-           // Fetch the latest FlowVersionHistory for the job's FlowVersionId.
+            // Fetch the latest FlowVersionHistory for the job's FlowVersionId.
             var latestFlowVersionHistory = await workspaceDbContext.FlowVersionHistories.IgnoreQueryFilters()
                 .Where(fvh => fvh.FlowVersionId == job.FlowVersionId)
                 .OrderByDescending(fvh => fvh.CreatedOn)

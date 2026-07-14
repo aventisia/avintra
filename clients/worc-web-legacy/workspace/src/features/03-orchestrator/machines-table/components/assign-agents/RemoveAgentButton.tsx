@@ -4,8 +4,6 @@ import { useQueryClient } from "@tanstack/react-query";
 import { Trash2Icon } from "lucide-react";
 import { useState } from "react";
 
-import { DATA_QUERY_KEY } from "../../constants";
-import { MachinesTableDto } from "../../dtos/machines-table-dto";
 import { SelectAgentTableDto } from "../../dtos/select-agent-table-dto";
 import { useUpdateMachineAgentsMutation } from "../../hooks/useUpdateMachineAgentsMutation";
 import { useAssignAgentsStore } from "../../stores/assign-agents-store";
@@ -24,18 +22,14 @@ export const RemoveAgentButton = ({ agentId }: { agentId: string }) => {
     const agentData = queryClient.getQueryData<{ data: SelectAgentTableDto[] }>(
       ["select-agent", machineId],
     );
-    const currentAgentIds =
+    const currentFlowVersionIds =
       agentData?.data.filter((a) => a.isAssigned).map((a) => a.id) ?? [];
 
-    const updatedAgentIds = currentAgentIds.filter((id) => id !== agentId);
+    const updatedFlowVersionIds = currentFlowVersionIds.filter(
+      (id) => id !== agentId,
+    );
 
-    const machineData = queryClient
-      .getQueryData<{ data: MachinesTableDto[] }>(DATA_QUERY_KEY)
-      ?.data.find((m) => m.id === machineId);
-
-    if (machineData) {
-      updateAgents({ ...machineData, agentIds: updatedAgentIds });
-    }
+    updateAgents({ machineId, flowVersionIds: updatedFlowVersionIds });
   };
 
   return (

@@ -13,11 +13,12 @@ public interface IMachineFlowService
     Task<ServiceResponse<MachineFlowDto>> InsertMachineFlowAsync(MachineFlowDto machineFlowDto);
 
     /// <summary>
-    /// Deletes a machine flow record asynchronously by its ID.
+    /// Deletes a machine flow record asynchronously using its composite key.
     /// </summary>
-    /// <param name="machineFlowId">The ID of the machine flow to be deleted.</param>
+    /// <param name="machineId">The machine ID of the machine flow relation.</param>
+    /// <param name="flowVersionId">The flow version ID of the machine flow relation.</param>
     /// <returns>A service response indicating the success or failure of the delete operation.</returns>
-    Task<ServiceResponse<bool>> DeleteMachineFlowAsync(Guid machineFlowId);
+    Task<ServiceResponse<bool>> DeleteMachineFlowAsync(Guid machineId, Guid flowVersionId);
 
     /// <summary>
     /// Retrieves a collection of machine flows asynchronously for a specific machine.
@@ -27,11 +28,12 @@ public interface IMachineFlowService
     Task<ServiceResponse<IEnumerable<MachineFlowDto>>> GetMachineFlowsAsync(Guid? machineId);
 
     /// <summary>
-    /// Retrieves a specific machine flow record by its ID asynchronously.
+    /// Retrieves a specific machine flow record asynchronously using its composite key.
     /// </summary>
-    /// <param name="machineFlowId">The ID of the machine flow to retrieve.</param>
+    /// <param name="machineId">The machine ID of the machine flow relation.</param>
+    /// <param name="flowVersionId">The flow version ID of the machine flow relation.</param>
     /// <returns>A service response containing the requested machine flow data.</returns>
-    Task<ServiceResponse<MachineFlowDto>> GetMachineFlowAsync(Guid machineFlowId);
+    Task<ServiceResponse<MachineFlowDto>> GetMachineFlowAsync(Guid machineId, Guid flowVersionId);
 
     /// <summary>
     /// Updates an existing machine flow record asynchronously.
@@ -41,9 +43,9 @@ public interface IMachineFlowService
     Task<ServiceResponse<MachineFlowDto>> UpdateMachineAsync(MachineFlowDto machineFlowDto);
 
     /// <summary>
-    /// Deletes multiple machine flow records asynchronously.
+    /// Deletes multiple machine flow records asynchronously using composite keys.
     /// </summary>
-    /// <param name="machineFlowIds">The collection of IDs of machine flows to be deleted.</param>
+    /// <param name="machineFlowKeys">The collection of machine-flow composite keys to be deleted.</param>
     /// <returns>A service response indicating the success or failure of the delete operation.</returns>
-    Task<ServiceResponse<bool>> DeleteMachineFlowsAsync(IEnumerable<Guid> machineFlowIds);
+    Task<ServiceResponse<bool>> DeleteMachineFlowsAsync(IEnumerable<MachineFlowKeyDto> machineFlowKeys);
 }

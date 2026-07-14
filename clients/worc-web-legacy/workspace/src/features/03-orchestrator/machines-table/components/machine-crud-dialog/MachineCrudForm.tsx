@@ -10,14 +10,17 @@ import {
   environmentTypeProps,
   hostnameProps,
   idProps,
+  ipAddressProps,
   isDisabledProps,
-  nameProps,
+  osTypeProps,
   os_unique_idProps,
+  usernameProps,
 } from "../../constants/machine-form-field-props";
 import { machineZodSchema } from "../../constants/machine-zod-schema";
+import type { AddMachineDto } from "../../dtos/add-machine.dto";
 import { MachinesTableDto } from "../../dtos/machines-table-dto";
+import type { UpdateMachineDto } from "../../dtos/update-machine.dto";
 import { useDefineMachineForm } from "../../hooks/useDefineMachineForm";
-
 import { AddedByAutherCard } from "./AddedByAutherCard";
 
 export const MachineCrudForm = () => {
@@ -31,7 +34,7 @@ export const MachineCrudForm = () => {
     isPending,
     isSuccess,
   } = useListOptimisticMutation<
-    MachinesTableDto,
+    AddMachineDto | UpdateMachineDto,
     MachinesTableDto | boolean,
     MachinesTableDto
   >([rowId], machineOptimisticMutationFn, DATA_QUERY_KEY);
@@ -41,13 +44,30 @@ export const MachineCrudForm = () => {
 
   // Define submit handler
   const onSubmit = (formData: z.infer<typeof machineZodSchema>) => {
-    const payload = {
-      ...(refineFormData(formData) as unknown as MachinesTableDto),
+    const refinedFormData = refineFormData(formData);
+
+    const createPayload: AddMachineDto = {
+      environment: refinedFormData.environment,
+      operatingSystem: refinedFormData.operatingSystem,
+      osID: refinedFormData.osID,
+      username: refinedFormData.username,
+      hostname: refinedFormData.hostname,
+      ipAddress: refinedFormData.ipAddress || undefined,
+    };
+
+    const updatePayload: UpdateMachineDto = {
+      id: refinedFormData.id,
+      environment: refinedFormData.environment,
+      operatingSystem: refinedFormData.operatingSystem,
+      osID: refinedFormData.osID,
+      username: refinedFormData.username,
+      hostname: refinedFormData.hostname,
+      ipAddress: refinedFormData.ipAddress || undefined,
     };
 
     // Create or update the machine
     mutateMachine({
-      payload: payload,
+      payload: crudAction === "create" ? createPayload : updatePayload,
       crudAction: crudAction,
     });
 
@@ -74,41 +94,29 @@ export const MachineCrudForm = () => {
       {/* Machine Id */}
       {crudAction === "update" && <InputField {...idProps} disabled />}
 
-      {/* Name */}
-      <InputField
-        {...nameProps}
-        // onChangeCapture={(e) => handleInputChange(e.currentTarget.value)}
-        // nonErrorMessage={availabilityMessage}
-        disabled={isReadMode}
-      />
-
-      {/* <div className="grid grid-cols-2 gap-2">
-        {crudAction === "create" ? (
-          <SelectField {...osTypeProps} disabled={isReadMode} />
-        ) : (
-          form.getValues("type") !== "" && (
-            <SelectField {...osTypeProps} disabled={isReadMode} />
-          )
-        )}
-
+      {/* Operating system and IP address */}
+      <div className="grid grid-cols-2 gap-2">
+        <SelectField {...osTypeProps} disabled={isReadMode} />
         <InputField {...ipAddressProps} disabled={isReadMode} />
-      </div> */}
+      </div>
 
       {/* Host Name */}
       <InputField {...hostnameProps} disabled={isReadMode} />
 
+      {/* Username */}
+      <InputField {...usernameProps} disabled={isReadMode} />
+
       {/* OS Id */}
       <InputField {...os_unique_idProps} disabled={isReadMode} />
 
-      {/* environment */}
-      {form.getValues("environment") !== "" && (
-        <SelectField {...environmentTypeProps} disabled={isReadMode} />
-      )}
+      {/* Environment */}
+      <SelectField {...environmentTypeProps} disabled={isReadMode} />
 
-      {/* Is Disabled */}
-      {crudAction !== "create" && (
-        <SwitchField {...isDisabledProps} disabled={isReadMode} />
-      )}
+      {/* Name is backend-generated and read-only for CRUD payload DTOs */}
+      {isReadMode && <InputField name="name" label="Name" disabled />}
+
+      {/* Is Disabled is response metadata in current DTO contract */}
+      {isReadMode && <SwitchField {...isDisabledProps} disabled={isReadMode} />}
 
       {/* AutherCard */}
       {isReadMode && (

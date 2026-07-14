@@ -4,16 +4,11 @@ public class MachineFlowService : IMachineFlowService
 {
     private readonly ILogger<MachineFlowService> _logger;
     private readonly IUnitOfWork _unitOfWork;
-    private readonly Guid _userId;
 
     public MachineFlowService(
         ILogger<MachineFlowService> logger,
-        IUnitOfWork unitOfWork,
-        IHttpContextAccessor httpContextAccessor)
+        IUnitOfWork unitOfWork)
     {
-        // Set _userId
-        _userId = Guid.Parse(httpContextAccessor.HttpContext?.User?.FindFirstValue("uid") ?? Guid.Empty.ToString());
-
         _logger = logger;
         _unitOfWork = unitOfWork;
     }
@@ -32,7 +27,7 @@ public class MachineFlowService : IMachineFlowService
         {
 
             // Validate machine flow uniqueness
-            var machineFlowAlreadyExists = await _unitOfWork.MachineFlowRepo
+            var machineFlowAlreadyExists = await _unitOfWork.Machine_FlowVersionRepo
                                                     .GetByConditionAsync(w =>
                                                         w.FlowVersionId == machineFlowDto.FlowVersionId &&
                                                         w.MachineId == machineFlowDto.MachineId
@@ -51,12 +46,10 @@ public class MachineFlowService : IMachineFlowService
             machineFlowDto = TrimDtoStringPropsUtil.TrimDtoStringProps(machineFlowDto);
 
             // Default mapping
-            var newMachineFlow = machineFlowDto.Adapt<MachineFlow>();
-            newMachineFlow.CreatedByUserId = _userId;
-            newMachineFlow.LastModifiedByUserId = _userId;
+            var newMachineFlow = machineFlowDto.Adapt<Machine_FlowVersion>();
 
             // Insert machine
-            await _unitOfWork.MachineFlowRepo.InsertAsync(newMachineFlow);
+            await _unitOfWork.Machine_FlowVersionRepo.InsertAsync(newMachineFlow);
 
             // Insert-Job failed
             if (!await _unitOfWork.SaveAsync())
@@ -68,7 +61,10 @@ public class MachineFlowService : IMachineFlowService
             serviceResponse.Data = newMachineFlow.Adapt<MachineFlowDto>();
             serviceResponse.StatusCode = 200;
             serviceResponse.Message = "Machine flow created successfully";
-            _logger.LogInformation("Machine flow created successfully with id {Id}", newMachineFlow.Id);
+            _logger.LogInformation(
+                "Machine flow created successfully for machine {MachineId} and flow version {FlowVersionId}",
+                newMachineFlow.MachineId,
+                newMachineFlow.FlowVersionId);
         }
         catch (Exception ex)
         {
@@ -79,8 +75,8 @@ public class MachineFlowService : IMachineFlowService
         return serviceResponse;
     }
 
-    // Remove an machine flow by its ID
-    public async Task<ServiceResponse<bool>> DeleteMachineFlowAsync(Guid machineFlowId)
+    // Remove a machine flow by its composite key
+    public async Task<ServiceResponse<bool>> DeleteMachineFlowAsync(Guid machineId, Guid flowVersionId)
     {
         // Initialize ServiceResponse with failed response
         var serviceResponse = new ServiceResponse<bool>
@@ -92,8 +88,10 @@ public class MachineFlowService : IMachineFlowService
         try
         {
             // Try to get machine flow
-            var machineFlow = await _unitOfWork.MachineFlowRepo
-                                            .GetByConditionAsync(m => m.Id == machineFlowId)
+            var machineFlow = await _unitOfWork.Machine_FlowVersionRepo
+                                            .GetByConditionAsync(m =>
+                                                m.MachineId == machineId &&
+                                                m.FlowVersionId == flowVersionId)
                                             .FirstOrDefaultAsync();
 
             // Machine flow does not exist
@@ -105,7 +103,7 @@ public class MachineFlowService : IMachineFlowService
             }
 
             // Delete machine flow
-            _unitOfWork.MachineFlowRepo.Delete(machineFlow);
+            _unitOfWork.Machine_FlowVersionRepo.Delete(machineFlow);
 
             // Delete-Job failed
             if (!await _unitOfWork.SaveAsync())
@@ -120,7 +118,10 @@ public class MachineFlowService : IMachineFlowService
             serviceResponse.StatusCode = 200;
             serviceResponse.Message = "Machine flow deleted successfully";
 
-            _logger.LogInformation("Machine flow deleted successfully of Id {Id}", machineFlowId);
+            _logger.LogInformation(
+                "Machine flow deleted successfully for machine {MachineId} and flow version {FlowVersionId}",
+                machineId,
+                flowVersionId);
 
         }
         catch (Exception ex)
@@ -145,16 +146,14 @@ public class MachineFlowService : IMachineFlowService
         try
         {
             // Try to get machine flows
-            var machineFlows = await _unitOfWork.MachineFlowRepo
+            var machineFlows = await _unitOfWork.Machine_FlowVersionRepo
                                             .GetByConditionAsync(m =>
                                                 machineId == null || m.MachineId == machineId
                                             )
                                             .Include(fv => fv.FlowVersion)
                                             .ThenInclude(f => f.Flow)
                                             .Include(m => m.Machine)
-                                            .Include(c => c.CreatedByUser)
-                                            .Include(lm => lm.LastModifiedByUser)
-                                            .OrderByDescending(o => o.CreatedOn)
+                                            .OrderByDescending(o => o.FlowVersion != null ? o.FlowVersion.CreatedOn : DateTimeOffset.MinValue)
                                             .AsNoTracking()
                                             .ToListAsync();
 
@@ -173,8 +172,8 @@ public class MachineFlowService : IMachineFlowService
         return serviceResponse;
     }
 
-    // Retrieve an machine flow by its ID
-    public async Task<ServiceResponse<MachineFlowDto>> GetMachineFlowAsync(Guid machineFlowId)
+    // Retrieve a machine flow by its composite key
+    public async Task<ServiceResponse<MachineFlowDto>> GetMachineFlowAsync(Guid machineId, Guid flowVersionId)
     {
         // Initialize ServiceResponse with failed response
         var serviceResponse = new ServiceResponse<MachineFlowDto>
@@ -186,22 +185,24 @@ public class MachineFlowService : IMachineFlowService
         try
         {
             // Try to get machine flow
-            var machineFlow = await _unitOfWork.MachineFlowRepo
+            var machineFlow = await _unitOfWork.Machine_FlowVersionRepo
                                             .GetByConditionAsync(m =>
-                                                m.Id == machineFlowId
+                                                m.MachineId == machineId &&
+                                                m.FlowVersionId == flowVersionId
                                             )
                                             .Include(fv => fv.FlowVersion)
                                             .ThenInclude(f => f.Flow)
                                             .Include(m => m.Machine)
-                                            .Include(c => c.CreatedByUser)
-                                            .Include(lm => lm.LastModifiedByUser)
                                             .AsNoTracking()
                                             .FirstOrDefaultAsync();
 
             if (machineFlow == null)
             {
                 serviceResponse.Message = "Machine flow does not exist";
-                _logger.LogInformation("There is no machine flow with Id {Id}", machineFlowId);
+                _logger.LogInformation(
+                    "There is no machine flow for machine {MachineId} and flow version {FlowVersionId}",
+                    machineId,
+                    flowVersionId);
                 return serviceResponse;
             }
 
@@ -232,9 +233,10 @@ public class MachineFlowService : IMachineFlowService
         try
         {
             // Validate machine flow existence
-            var machineFlow = await _unitOfWork.MachineFlowRepo
+            var machineFlow = await _unitOfWork.Machine_FlowVersionRepo
                 .GetByConditionAsync(m =>
-                    m.Id == machineFlowDto.Id
+                    m.FlowVersionId == machineFlowDto.FlowVersionId &&
+                    m.MachineId == machineFlowDto.MachineId
                 )
                 .FirstOrDefaultAsync();
 
@@ -246,47 +248,15 @@ public class MachineFlowService : IMachineFlowService
                 return serviceResponse;
             }
 
-            // Validate machine flow uniqueness
-            var machineFlowAlreadyExists = await _unitOfWork.MachineFlowRepo
-                            .GetByConditionAsync(m =>
-                                m.FlowVersionId == machineFlowDto.FlowVersionId &&
-                                m.MachineId == machineFlowDto.MachineId &&
-                                m.Id != machineFlowDto.Id
-                            )
-                            .FirstOrDefaultAsync();
-
-            // Machine flow already exists
-            if (machineFlowAlreadyExists != null)
-            {
-                _logger.LogInformation($"Machine flow already exists");
-                serviceResponse.StatusCode = 409;
-                serviceResponse.Message = "A machine flow with same flow version already exists. Please enter a unique version flow";
-                return serviceResponse;
-            }
-
-            // Trim dto' string props
-            machineFlowDto = TrimDtoStringPropsUtil.TrimDtoStringProps(machineFlowDto);
-
-            // Default mapping 
-            machineFlowDto.Adapt(machineFlow);
-            machineFlow.LastModifiedByUserId = _userId;
-            machineFlow.LastModifiedOn = DateTimeOffset.UtcNow;
-
-            // Update machine flow
-            _unitOfWork.MachineFlowRepo.Update(machineFlow);
-
-            // Update-Job failed
-            if (!await _unitOfWork.SaveAsync())
-            {
-                _logger.LogInformation("Context SaveChanges failed while updating machine flow");
-                return serviceResponse;
-            }
-
-            // Task successful
+            // There are no mutable columns on Machine_FlowVersion beyond the composite key.
+            // Keep endpoint backward-compatible by returning the existing relation as-is.
             serviceResponse.Data = machineFlow.Adapt<MachineFlowDto>();
             serviceResponse.StatusCode = 200;
-            serviceResponse.Message = "Machine flow updated successfully.";
-            _logger.LogInformation("Machine flow updated successfully with Id {Id}", machineFlow.Id);
+            serviceResponse.Message = "Machine flow is already up to date.";
+            _logger.LogInformation(
+                "Machine flow update requested with no mutable columns for machine {MachineId} and flow version {FlowVersionId}",
+                machineFlow.MachineId,
+                machineFlow.FlowVersionId);
         }
         catch (Exception ex)
         {
@@ -297,8 +267,8 @@ public class MachineFlowService : IMachineFlowService
         return serviceResponse;
     }
 
-    // Deletes multiple machine flows by their IDs.
-    public async Task<ServiceResponse<bool>> DeleteMachineFlowsAsync(IEnumerable<Guid> machineFlowIds)
+    // Deletes multiple machine flows by their composite keys.
+    public async Task<ServiceResponse<bool>> DeleteMachineFlowsAsync(IEnumerable<MachineFlowKeyDto> machineFlowKeys)
     {
         // Initialize ServiceResponse with failed response
         var serviceResponse = new ServiceResponse<bool>
@@ -309,11 +279,27 @@ public class MachineFlowService : IMachineFlowService
 
         try
         {
+            var keyList = machineFlowKeys?.DistinctBy(k => new { k.MachineId, k.FlowVersionId }).ToList() ?? new List<MachineFlowKeyDto>();
+
+            if (keyList.Count == 0)
+            {
+                serviceResponse.Message = "No machine flow keys were provided";
+                return serviceResponse;
+            }
+
+            var machineIds = keyList.Select(k => k.MachineId).Distinct().ToList();
+            var flowVersionIds = keyList.Select(k => k.FlowVersionId).Distinct().ToList();
+
             // Validate machine flows existence
-            var machineFlows = await _unitOfWork.MachineFlowRepo
-                                            .GetByConditionAsync(w =>
-                                                machineFlowIds.Contains(w.Id))
-                                            .ToListAsync();
+            var machineFlowCandidates = await _unitOfWork.Machine_FlowVersionRepo
+                                                    .GetByConditionAsync(w =>
+                                                        machineIds.Contains(w.MachineId) &&
+                                                        flowVersionIds.Contains(w.FlowVersionId))
+                                                    .ToListAsync();
+
+            var machineFlows = machineFlowCandidates
+                .Where(w => keyList.Any(k => k.MachineId == w.MachineId && k.FlowVersionId == w.FlowVersionId))
+                .ToList();
 
             // Machine flows do not exist
             if (machineFlows.Count == 0)
@@ -324,7 +310,7 @@ public class MachineFlowService : IMachineFlowService
             }
 
             // Delete machine flows
-            _unitOfWork.MachineFlowRepo.Delete(machineFlows);
+            _unitOfWork.Machine_FlowVersionRepo.Delete(machineFlows);
 
             // Delete-Job failed
             if (!await _unitOfWork.SaveAsync())

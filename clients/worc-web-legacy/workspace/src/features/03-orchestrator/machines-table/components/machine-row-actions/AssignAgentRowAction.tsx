@@ -7,20 +7,20 @@ import { useAssignAgentsStore } from "../../stores/assign-agents-store";
 
 interface DTEditRowActionProps {
   rowId: string;
-  osId: string;
+  osID: string;
   size?: "sm" | "md";
 }
 
 export const AssignAgentRowAction: React.FC<DTEditRowActionProps> = ({
   rowId,
-  osId,
+  osID,
   size = "md",
 }) => {
-  const { setOpen, setMachineId, setOsId } = useAssignAgentsStore(
+  const { setOpen, setMachineId, setOsID } = useAssignAgentsStore(
     useShallow((s) => ({
       setOpen: s.setShowDialog,
       setMachineId: s.setMachineId,
-      setOsId: s.setOsId,
+      setOsID: s.setOsID,
     })),
   );
 
@@ -33,7 +33,7 @@ export const AssignAgentRowAction: React.FC<DTEditRowActionProps> = ({
       Icon={BotIcon}
       onClick={() => {
         setMachineId(rowId);
-        setOsId(osId);
+        setOsID(osID);
         setOpen(true);
       }}
     />

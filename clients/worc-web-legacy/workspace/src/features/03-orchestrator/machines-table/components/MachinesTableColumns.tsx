@@ -7,8 +7,13 @@ import { ColumnDef } from "@tanstack/react-table";
 import { TABLE_KEY } from "../constants";
 import { getColumnName, statusColor } from "../constants/column-display-names";
 import { MachinesTableDto } from "../dtos/machines-table-dto";
-
 import { MachineRowActions } from "./machine-row-actions/MachineRowActions";
+
+const formatDateValue = (value: unknown) => {
+  if (!value) return null;
+  const date = value instanceof Date ? value : new Date(String(value));
+  return Number.isNaN(date.getTime()) ? null : dateFormatter(date);
+};
 
 /**
  * Array of table columns for the machine table.
@@ -48,54 +53,11 @@ export const machinesTableColumns: ColumnDef<MachinesTableDto>[] = [
       />
     ),
     cell: ({ row }) => (
-      <div className="w-auto max-w-60 truncate font-medium">
+      <div title={row.getValue("name")} className="w-auto max-w-60 truncate font-medium">
         {row.getValue("name")}
       </div>
     ),
   },
-
-  {
-    accessorKey: "agentCount",
-    header: ({ column }) => (
-      <DTColumnHeader
-        tableKey={TABLE_KEY}
-        column={column}
-        title={getColumnName("agentCount")}
-      />
-    ),
-    cell: ({ row }) => row.getValue("agentCount"),
-  },
-
-  {
-    accessorKey: "environment",
-    header: ({ column }) => (
-      <DTColumnHeader
-        tableKey={TABLE_KEY}
-        column={column}
-        title={getColumnName("environment")}
-      />
-    ),
-    cell: ({ row }) => (
-      <div className="w-auto truncate font-medium">
-        {row.getValue("environment")}
-      </div>
-    ),
-  },
-
-  // {
-  //   accessorKey: "type",
-  //   header: ({ column }) => (
-  //     <DTColumnHeader
-  //       tableKey={TABLE_KEY}
-  //       column={column}
-  //       title={getColumnName("type")}
-  //     />
-  //   ),
-  //   cell: ({ row }) => (
-  //     <div className="w-auto truncate font-medium">{row.getValue("type")}</div>
-  //   ),
-  // },
-
   {
     accessorKey: "status",
     header: ({ column }) => (
@@ -111,42 +73,87 @@ export const machinesTableColumns: ColumnDef<MachinesTableDto>[] = [
       </Badge>
     ),
   },
-
   {
-    accessorKey: "lastModifiedOn",
+    accessorKey: "flowVersionCount",
+    header: ({ column }) => (
+      <DTColumnHeader
+        tableKey={TABLE_KEY}
+        column={column}
+        title={getColumnName("flowVersionCount")}
+      />
+    ),
+    cell: ({ row }) => row.getValue("flowVersionCount"),
+  },
+  {
+    accessorKey: "lastCheckedIn",
     header: ({ column }) => (
       <DTColumnHeader
         tableKey={TABLE_KEY}
         className="w-[7rem]"
         column={column}
-        title={getColumnName("lastModifiedOn")}
+        title={getColumnName("lastCheckedIn")}
+      />
+    ),
+    cell: ({ row }) => formatDateValue(row.getValue("lastCheckedIn")),
+  },
+  {
+    accessorKey: "environment",
+    header: ({ column }) => (
+      <DTColumnHeader
+        tableKey={TABLE_KEY}
+        column={column}
+        title={getColumnName("environment")}
+      />
+    ),
+    cell: ({ row }) => row.getValue("environment"),
+  },
+  {
+    accessorKey: "operatingSystem",
+    header: ({ column }) => (
+      <DTColumnHeader
+        tableKey={TABLE_KEY}
+        column={column}
+        title={getColumnName("operatingSystem")}
+      />
+    ),
+    cell: ({ row }) => row.getValue("operatingSystem"),
+  },
+  {
+    accessorKey: "osID",
+    header: ({ column }) => (
+      <DTColumnHeader
+        tableKey={TABLE_KEY}
+        column={column}
+        title={getColumnName("osID")}
       />
     ),
     cell: ({ row }) => (
-      <div className="w-auto truncate font-medium">
-        {row.getValue<Date>("lastModifiedOn")
-          ? dateFormatter(row.getValue<Date>("lastModifiedOn"))
-          : null}
+      <div
+        title={row.getValue("osID")}
+        className="w-auto max-w-40 truncate font-medium"
+      >
+        {row.getValue("osID")}
       </div>
     ),
   },
-
-  // {
-  //   accessorKey: "ipAddress",
-  //   header: ({ column }) => (
-  //     <DTColumnHeader
-  //       tableKey={TABLE_KEY}
-  //       column={column}
-  //       title={getColumnName("ipAddress")}
-  //     />
-  //   ),
-  //   cell: ({ row }) => (
-  //     <div className="w-auto truncate font-medium">
-  //       {maskIP(row.getValue("ipAddress"))}
-  //     </div>
-  //   ),
-  // },
-
+  {
+    accessorKey: "username",
+    header: ({ column }) => (
+      <DTColumnHeader
+        tableKey={TABLE_KEY}
+        column={column}
+        title={getColumnName("username")}
+      />
+    ),
+    cell: ({ row }) => (
+      <div
+        title={row.getValue("username")}
+        className="w-auto max-w-40 truncate font-medium"
+      >
+        {row.getValue("username")}
+      </div>
+    ),
+  },
   {
     accessorKey: "hostname",
     header: ({ column }) => (
@@ -157,12 +164,36 @@ export const machinesTableColumns: ColumnDef<MachinesTableDto>[] = [
       />
     ),
     cell: ({ row }) => (
-      <div className="w-auto truncate font-medium">
-        {row.getValue<string>("hostname")}
+      <div
+        title={row.getValue("hostname")}
+        className="w-auto max-w-40 truncate font-medium"
+      >
+        {row.getValue("hostname")}
       </div>
     ),
   },
-
+  {
+    accessorKey: "isDisabled",
+    header: ({ column }) => (
+      <DTColumnHeader
+        tableKey={TABLE_KEY}
+        column={column}
+        title={getColumnName("isDisabled")}
+      />
+    ),
+    cell: ({ row }) => (row.getValue<boolean>("isDisabled") ? "Yes" : "No"),
+  },
+  {
+    accessorKey: "ipAddress",
+    header: ({ column }) => (
+      <DTColumnHeader
+        tableKey={TABLE_KEY}
+        column={column}
+        title={getColumnName("ipAddress")}
+      />
+    ),
+    cell: ({ row }) => row.getValue("ipAddress") || "-",
+  },
   {
     accessorKey: "createdBy",
     header: ({ column }) => (
@@ -173,12 +204,11 @@ export const machinesTableColumns: ColumnDef<MachinesTableDto>[] = [
       />
     ),
     cell: ({ row }) => (
-      <div className="w-auto truncate font-medium">
+      <div title={row.getValue("createdBy")} className="w-auto max-w-40 truncate font-medium">
         {row.getValue("createdBy")}
       </div>
     ),
   },
-
   {
     accessorKey: "createdOn",
     header: ({ column }) => (
@@ -189,18 +219,40 @@ export const machinesTableColumns: ColumnDef<MachinesTableDto>[] = [
         title={getColumnName("createdOn")}
       />
     ),
+    cell: ({ row }) => formatDateValue(row.getValue("createdOn")),
+  },
+  {
+    accessorKey: "lastModifiedBy",
+    header: ({ column }) => (
+      <DTColumnHeader
+        tableKey={TABLE_KEY}
+        column={column}
+        title={getColumnName("lastModifiedBy")}
+      />
+    ),
     cell: ({ row }) => (
-      <div className="w-auto truncate font-medium">
-        {dateFormatter(row.getValue<Date>("createdOn"))}
+      <div title={row.getValue("lastModifiedBy")} className="w-auto max-w-40 truncate font-medium">
+        {row.getValue("lastModifiedBy")}
       </div>
     ),
   },
   {
+    accessorKey: "lastModifiedOn",
+    header: ({ column }) => (
+      <DTColumnHeader
+        tableKey={TABLE_KEY}
+        className="w-[7rem]"
+        column={column}
+        title={getColumnName("lastModifiedOn")}
+      />
+    ),
+    cell: ({ row }) => formatDateValue(row.getValue("lastModifiedOn")),
+  },
+  {
     id: "actions",
     cell: ({ row }) => (
-      // Render the machines row actions component
       <MachineRowActions
-        osId={row.original.osId ?? ""}
+        osID={row.original.osID ?? ""}
         rowId={row.original.id ?? "rowId"}
       />
     ),

@@ -63,7 +63,7 @@ public class JobsExecutorService : IJobsExecutorService
 
                 // Fetch machine statuses for the tenant
                 var machineList = await _clientStatusStore.GetMachineStatusesAsync(job.TenantId);
-                var clientDataStoreDto = machineList.FirstOrDefault(w => w.Status == MachineStatusTypeEnum.Online);
+                var clientDataStoreDto = machineList.FirstOrDefault(w => w.Status == MachineStatusEnum.Online);
 
                 if (clientDataStoreDto == null)
                 {
@@ -125,7 +125,7 @@ public class JobsExecutorService : IJobsExecutorService
 
             // Check machine's status before executing or resuming the job
             if ((executionCommandDto.Command == ExecutionCommandTypesEnum.Initiate || executionCommandDto.Command == ExecutionCommandTypesEnum.Resume) &&
-                clientDataStore.Status != MachineStatusTypeEnum.Online && clientDataStore.Status != MachineStatusTypeEnum.Idle)
+                clientDataStore.Status != MachineStatusEnum.Online && clientDataStore.Status != MachineStatusEnum.Idle)
             {
                 // Log and notify if the machine is not online or idle
                 _logger.LogWarning("Machine {MachineId} is not online or idle. Job execution cannot be triggered.", executionCommandDto.MachineId);
@@ -139,7 +139,7 @@ public class JobsExecutorService : IJobsExecutorService
                  executionCommandDto.Command == ExecutionCommandTypesEnum.Stop ||
                  executionCommandDto.Command == ExecutionCommandTypesEnum.Cancel ||
                  executionCommandDto.Command == ExecutionCommandTypesEnum.Cleanup) &&
-                clientDataStore.Status != MachineStatusTypeEnum.Running)
+                clientDataStore.Status != MachineStatusEnum.Running)
             {
                 // Log and notify if the machine is not running when it should be
                 _logger.LogWarning("Machine {MachineId} is not running. Cannot perform actions like pause, stop, cancel, or cleanup.", executionCommandDto.MachineId);
@@ -161,18 +161,18 @@ public class JobsExecutorService : IJobsExecutorService
                 case ExecutionCommandTypesEnum.Initiate:
                 case ExecutionCommandTypesEnum.Execute:
                 case ExecutionCommandTypesEnum.Resume:
-                    clientDataStore.Status = MachineStatusTypeEnum.Running;
+                    clientDataStore.Status = MachineStatusEnum.Running;
                     break;
 
                 case ExecutionCommandTypesEnum.Pause:
-                    clientDataStore.Status = MachineStatusTypeEnum.Stopped;
+                    clientDataStore.Status = MachineStatusEnum.Stopped;
                     break;
 
                 case ExecutionCommandTypesEnum.Abort:
                 case ExecutionCommandTypesEnum.Stop:
                 case ExecutionCommandTypesEnum.Cancel:
                 case ExecutionCommandTypesEnum.Cleanup:
-                    clientDataStore.Status = MachineStatusTypeEnum.Online;
+                    clientDataStore.Status = MachineStatusEnum.Online;
                     clientDataStore.AgentId = null;
                     clientDataStore.JobId = null;
                     break;
@@ -188,10 +188,10 @@ public class JobsExecutorService : IJobsExecutorService
             _logger.LogInformation("Job {JobId} successfully executed on machine {MachineId}.", executionCommandDto.JobId, executionCommandDto.MachineId);
 
             // Search for an active job associated with the machine if it's idle or online
-            if (clientDataStore.Status == MachineStatusTypeEnum.Online || clientDataStore.Status == MachineStatusTypeEnum.Idle)
+            if (clientDataStore.Status == MachineStatusEnum.Online || clientDataStore.Status == MachineStatusEnum.Idle)
             {
-                // Retrieve all FlowVersionIds associated with the current machine from the MachineFlow table
-                var flowVersionIds = await _unitOfWork.MachineFlowRepo
+                // Retrieve all FlowVersionIds associated with the current machine from the Machine_FlowVersion table
+                var flowVersionIds = await _unitOfWork.Machine_FlowVersionRepo
                     .GetByConditionAsync(w => w.FlowVersionId == executionCommandDto.AgentId && w.TenantId == executionCommandDto.TenantId)
                     .Select(s => s.FlowVersionId)
                     .ToListAsync();
@@ -216,7 +216,7 @@ public class JobsExecutorService : IJobsExecutorService
 
                     // Update the machine's status to 'Running' as it is now processing the job
                     clientDataStore.AgentId = job.FlowVersionId;
-                    clientDataStore.Status = MachineStatusTypeEnum.Running;
+                    clientDataStore.Status = MachineStatusEnum.Running;
                     await _clientStatusStore.AddOrUpdateStatusAsync(clientDataStore);
 
                     _logger.LogInformation("Assigned job {JobId} to machine {MachineId}.", job.Id, executionCommandDto.MachineId);
@@ -235,7 +235,7 @@ public class JobsExecutorService : IJobsExecutorService
                     // If no job is found, update the machine's status to 'Idle' and notify tenant group
                     clientDataStore.AgentId = null;
                     clientDataStore.JobId = null;
-                    clientDataStore.Status = MachineStatusTypeEnum.Idle;
+                    clientDataStore.Status = MachineStatusEnum.Idle;
                     await _clientStatusStore.AddOrUpdateStatusAsync(clientDataStore);
 
                     // Notify tenant group that a machine is idle
@@ -267,7 +267,7 @@ public class JobsExecutorService : IJobsExecutorService
             var jobsGroupedByTenantId = await _workspaceInternalDbContext.Jobs
                 .Where(w => jobIds.Contains(w.Id))
                 .Include(i => i.FlowVersion)
-                    .ThenInclude(i2 => i2.MachineFlows)
+                    .ThenInclude(i2 => i2.FlowVersionMachines)
                 .GroupBy(g => g.TenantId)
                 .ToListAsync();
 
@@ -300,7 +300,7 @@ public class JobsExecutorService : IJobsExecutorService
                         _logger.LogInformation("Machine ID is null for Job ID: {JobId} in Tenant ID: {TenantId}, attempting to find an online machine.", job.Id, tenantId);
 
                         // Ensure machineFlows exists and is not empty
-                        var machineFlows = job.FlowVersion?.MachineFlows?.Where(w => w != null).ToList();
+                        var machineFlows = job.FlowVersion?.FlowVersionMachines?.Where(w => w != null).ToList();
                         if (machineFlows == null || !machineFlows.Any())
                         {
                             _logger.LogWarning("No valid machine flows found for Job ID: {JobId} in Tenant ID: {TenantId}.", job.Id, tenantId);
@@ -312,8 +312,8 @@ public class JobsExecutorService : IJobsExecutorService
                             .Where(w =>
                                 machineFlows.Any(flow => flow.MachineId == w.ClientId) &&
                                 (
-                                    w.Status == MachineStatusTypeEnum.Online ||
-                                    w.Status == MachineStatusTypeEnum.Idle)
+                                    w.Status == MachineStatusEnum.Online ||
+                                    w.Status == MachineStatusEnum.Idle)
                                 )
                             .FirstOrDefault();
 
@@ -391,7 +391,7 @@ public class JobsExecutorService : IJobsExecutorService
             }
 
             // Ensure the machine is currently running the job.
-            if (clientDataStore.Status != MachineStatusTypeEnum.Running)
+            if (clientDataStore.Status != MachineStatusEnum.Running)
             {
                 _logger.LogWarning(
                     "Machine {MachineId} is not in the Running state for job {JobId}. Current status: {Status}.",

@@ -3,7 +3,7 @@ namespace AspNetToolkit.Enums;
 /// <summary>
 /// Enum representing the status of the machine.
 /// </summary>
-public enum MachineStatusTypeEnum
+public enum MachineStatusEnum
 {
     /// <summary>
     /// represents the free status of the machine

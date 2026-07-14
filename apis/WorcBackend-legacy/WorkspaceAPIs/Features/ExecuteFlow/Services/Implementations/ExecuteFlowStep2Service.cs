@@ -110,7 +110,7 @@ public class ExecuteFlowStep2Service : IExecuteFlowStep2Service
                 else
                 {
                     var safeUser = job.Machine?.Hostname?.Trim().ToLower() ?? "unknown";
-                    var osId = job.Machine?.OSId;
+                    var osId = job.Machine?.OsID;
                     var shortOsId = !string.IsNullOrEmpty(osId) && osId.Length >= 4
                         ? osId.Substring(0, 4).ToLower()
                         : "xxxx";

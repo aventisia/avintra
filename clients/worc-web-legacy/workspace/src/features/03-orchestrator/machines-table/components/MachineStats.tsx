@@ -76,8 +76,10 @@ export const MachineStats = ({ data }: MachineStatsProps) => {
       offline: statusCounts.offline,
       running: statusCounts.running,
       idle: statusCounts.idle,
-      linux: statuses.count((x) => x.type === MachineOsTypesEnum.Linux),
-      agents: statuses.sum((x) => x.agentCount ?? 0),
+      linux: statuses.count(
+        (x) => x.operatingSystem === MachineOsTypesEnum.Linux,
+      ),
+      agents: statuses.sum((x) => x.flowVersionCount ?? 0),
       dev: environmentCounts.dev,
       uat: environmentCounts.uat,
       prod: environmentCounts.prod,
@@ -111,7 +113,7 @@ export const MachineStats = ({ data }: MachineStatsProps) => {
     <div className="my-4 grid grid-cols-3 gap-3">
       <StatsCard
         title="Machines"
-        description={`${stats?.agents} Agents`}
+        description={`${stats?.agents} Flow Versions`}
         mainText={data?.length}
         icon={<Monitor stroke="var(--primary)" className="h-10 w-10" />}
       />
