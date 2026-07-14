@@ -1,7 +1,4 @@
-import { readFile } from "@tauri-apps/plugin-fs";
 import { create } from "zustand";
-
-import { IS_TAURI } from "@/constants/constants";
 
 export interface LocalFile {
   id: string;
@@ -11,16 +8,6 @@ export interface LocalFile {
   extension: string;
   blobUrl: string;
   originalFile: File | null;
-}
-
-function isLocalPath(url: string): boolean {
-  return (
-    !url.startsWith("http://") &&
-    !url.startsWith("https://") &&
-    !url.startsWith("blob:") &&
-    !url.startsWith("data:") &&
-    !url.startsWith("asset://")
-  );
 }
 
 const EXT_TO_MIME: Record<string, string> = {
@@ -35,32 +22,6 @@ const EXT_TO_MIME: Record<string, string> = {
 
 function inferMime(extension: string): string {
   return EXT_TO_MIME[extension.toLowerCase()] ?? "application/octet-stream";
-}
-
-/**
- * Converts a local filesystem path to a blob: URL using Tauri's fs plugin.
- * The caller is responsible for revoking the returned URL when done.
- */
-async function localPathToBlobUrl(
-  path: string,
-  extension: string,
-): Promise<string> {
-  const bytes = await readFile(path);
-  const blob = new Blob([bytes], { type: inferMime(extension) });
-  return URL.createObjectURL(blob);
-}
-
-async function toViewableUrl(url: string, extension: string): Promise<string> {
-  if (!isLocalPath(url)) return url;
-
-  if (IS_TAURI) {
-    return localPathToBlobUrl(url, extension);
-  }
-
-  console.warn(
-    `[FileStore] Local path "${url}" cannot be loaded outside Tauri.`,
-  );
-  return url;
 }
 
 function extensionFromName(name: string): string {
@@ -113,7 +74,7 @@ export const useLocalFileStore = create<LocalFileStoreState>((set, get) => ({
           size: 0,
           type: inferMime(extension),
           extension,
-          blobUrl: await toViewableUrl(url, extension),
+          blobUrl: url,
           originalFile: null,
         };
       }),
