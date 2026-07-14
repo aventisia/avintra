@@ -32,7 +32,7 @@ const FileViewerSelect = () => {
 
     switch (fileType) {
       case FILE_TYPE.PDF:
-        return <img src="/assets/PDF.svg" className="size-4 shrink-0" />;
+        return <img src="/workspace/assets/PDF.svg" className="size-4 shrink-0" />;
       case FILE_TYPE.IMAGE:
         return <ImageIcon className="size-4 text-blue-400 shrink-0" />;
 

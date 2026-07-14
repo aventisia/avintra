@@ -2,22 +2,27 @@ import { toast } from "@aventisia/ui/sonner";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { useSearchParams } from "react-router-dom";
 
-import { deleteQueuesWorkItem } from "../apis/queues-table-apis";
+import { updateQueuesWorkItem } from "../apis/queues-table-apis";
 import { DATA_QUERY_KEY } from "../constants";
 
-export const useDeleteWorkItemMutation = () => {
+export const useUpdateWorkItemMutation = () => {
   const queryClient = useQueryClient();
 
   const [searchParams] = useSearchParams();
-  const queueIDParam = searchParams.get("qid");
+  const queueId = searchParams.get("qid");
+  const workItemId = searchParams.get("wid");
 
-  const { mutate: deleteJobMutation, isPending } = useMutation({
-    mutationFn: deleteQueuesWorkItem,
+  return useMutation({
+    mutationFn: updateQueuesWorkItem,
 
     onSuccess: async (res) => {
       queryClient.invalidateQueries({
-        queryKey: [...DATA_QUERY_KEY, queueIDParam],
+        queryKey: [...DATA_QUERY_KEY, queueId],
       }); //
+      queryClient.invalidateQueries({
+        queryKey: [...DATA_QUERY_KEY, workItemId],
+      }); //
+
       toast.success(res.message);
     },
 
@@ -25,6 +30,4 @@ export const useDeleteWorkItemMutation = () => {
       toast.error(error.toString());
     },
   });
-
-  return { deleteJobMutation, isPending };
 };

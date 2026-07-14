@@ -1,3 +1,5 @@
+import { QueueViewTypeEnum } from "../enums/queue-view-type-enum";
+
 /**
  * Represents a data transfer object (DTO) for a queue.
  */
@@ -16,6 +18,8 @@ export interface QueuesTableDto {
    * Gets or sets the name of the queue.
    */
   type?: string;
+
+  viewType?: QueueViewTypeEnum;
   /**
    * Gets or sets the description for the queue.
    */

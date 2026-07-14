@@ -1,6 +1,6 @@
-import { axiosInstance } from "@/react-toolkit/lib/axios-instance";
-
 import { IHttpResponse } from "@aventisia/ui/dtos";
+
+import { axiosInstance } from "@/react-toolkit/lib/axios-instance";
 
 import { QueueWorkItemDto } from "../dtos/queue-work-item-dto";
 import { QueuesTableDto } from "../dtos/queues-table-dto";
@@ -32,37 +32,26 @@ export const getQueuesWorkItemsList = (id: string) => {
   return axiosInstance
     .get<
       IHttpResponse<QueueWorkItemDto[]>
-    >(`${baseAPIURL}/queue-transaction/list/${id}`)
+    >(`${baseAPIURL}/queue/workitem/${id}/list`)
     .then((res) => res.data);
 };
 
 /**
- * Inserts a new queue.
+ * Retrieves list of queues work items.
  */
-export const insertQueuesWorkItems = (dto: QueueWorkItemDto) => {
+export const getQueueWorkItemById = (id: string) => {
   return axiosInstance
-    .post<
-      IHttpResponse<QueueWorkItemDto>
-    >(`${baseAPIURL}/queue-transaction`, dto)
+    .get<IHttpResponse<QueueWorkItemDto>>(`${baseAPIURL}/queue/workitem/${id}`)
     .then((res) => res.data);
 };
 
 /**
  * Updates an existing queue.
  */
-export const updateQueuesWorkItems = (updatedqueue: QueueWorkItemDto) => {
+export const updateQueuesWorkItem = (updatedQueue: QueueWorkItemDto) => {
   return axiosInstance
     .put<
       IHttpResponse<QueueWorkItemDto>
-    >(`${baseAPIURL}/queue-transaction`, updatedqueue)
-    .then((res) => res.data);
-};
-
-/**
- * Deletes a queue by its ID.
- */
-export const deleteQueuesWorkItem = (id: string) => {
-  return axiosInstance
-    .delete<IHttpResponse<boolean>>(`${baseAPIURL}/queue-transaction/${id}`)
+    >(`${baseAPIURL}/queue/workitem`, updatedQueue)
     .then((res) => res.data);
 };

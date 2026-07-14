@@ -20,7 +20,7 @@ export const useMyQueueData = (queueId: string | null, tabValue: TabValue) => {
         ?.map((item) => ({
           rowId: item.id,
           status: item.status,
-          ...(item.payloadData ? JSON.parse(item.payloadData) : {}),
+          ...(item?.workItemData ? JSON.parse(item?.workItemData) : {}),
         })) ?? []
     );
   }, [workItemsRes?.data, tabValue]);

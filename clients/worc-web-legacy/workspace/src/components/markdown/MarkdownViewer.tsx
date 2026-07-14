@@ -1,7 +1,15 @@
+import { cn } from "@aventisia/ui/lib";
+import { FormFieldSizeType } from "@aventisia/ui/types";
 import Markdown, { Components } from "react-markdown";
 import remarkGfm from "remark-gfm";
 
-const MarkdownViewer = ({ textValue }: { textValue: string }) => {
+const MarkdownViewer = ({
+  textValue,
+  size = "sm",
+}: {
+  textValue: string;
+  size?: FormFieldSizeType;
+}) => {
   const components: Components = {
     // Headers with custom styling
     h1: ({ children }) => (
@@ -146,7 +154,14 @@ const MarkdownViewer = ({ textValue }: { textValue: string }) => {
   };
 
   return (
-    <div className="prose-sm prose-slate max-w-none dark:prose-invert">
+    <div
+      className={cn(
+        " prose-slate max-w-none dark:prose-invert",
+        size == "sm" && "prose-sm",
+        size == "xs" && "prose-xs",
+        size == "base" && "prose-base",
+      )}
+    >
       <Markdown remarkPlugins={[remarkGfm]} components={components}>
         {textValue}
       </Markdown>
