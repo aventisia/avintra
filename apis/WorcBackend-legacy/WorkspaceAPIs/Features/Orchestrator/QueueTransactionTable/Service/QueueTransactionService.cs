@@ -640,7 +640,7 @@ public class QueueTransactionService : IQueueTransactionService
                 queueTransaction.PayloadData = queueTransactionDto.PayloadData;
             }
 
-            if (queueTransactionDto.FileUrls.Any() && !queueTransaction.FileUrls.SequenceEqual(queueTransactionDto.FileUrls))
+            if (queueTransactionDto.FileUrls != null)
             {
                 queueTransaction.FileUrls = queueTransactionDto.FileUrls;
             }
