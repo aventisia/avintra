@@ -1,0 +1,26 @@
+meta {
+  name: Insert email campaign request
+  type: http
+  seq: 1
+}
+
+post {
+  url: {{ACCOUNTS_APIS_BASE_URL}}/email-campaign
+  body: none
+  auth: none
+}
+
+body:json {
+  {
+      
+  }
+}
+
+script:pre-request {
+  const { faker } = require('@faker-js/faker');
+
+  req.setBody({
+    cid: faker.string.alphanumeric({ length: 20 }),
+    rid: faker.string.alphanumeric({ length: 20 })
+  })
+}

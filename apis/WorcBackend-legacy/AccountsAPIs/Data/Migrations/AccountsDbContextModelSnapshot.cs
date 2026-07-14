@@ -737,6 +737,36 @@ namespace AccountsAPIs.Data.Migrations
                     b.ToTable("CreditUsages");
                 });
 
+            modelBuilder.Entity("AccountsAPIs.Entities.EmailCampaign", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uuid");
+
+                    b.Property<string>("CampaignID")
+                        .IsRequired()
+                        .HasMaxLength(20)
+                        .HasColumnType("character varying(20)");
+
+                    b.Property<DateTimeOffset>("CreatedOn")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<string>("RecipeintID")
+                        .IsRequired()
+                        .HasMaxLength(20)
+                        .HasColumnType("character varying(20)");
+
+                    b.Property<uint>("Version")
+                        .IsConcurrencyToken()
+                        .ValueGeneratedOnAddOrUpdate()
+                        .HasColumnType("xid")
+                        .HasColumnName("xmin");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("EmailCampaign");
+                });
+
             modelBuilder.Entity("AccountsAPIs.Entities.ObsoletePwd", b =>
                 {
                     b.Property<Guid>("Id")
