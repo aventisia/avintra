@@ -4,6 +4,9 @@ import { useListOptimisticMutation } from "@aventisia/ui/hooks";
 import { useEffect } from "react";
 import { z } from "zod";
 
+import { MachineEnvironmentTypesEnum } from "@/react-toolkit/enums/machine-environment-types-enum";
+import { MachineOsTypesEnum } from "@/react-toolkit/enums/machine-os-types-enum";
+
 import { machineOptimisticMutationFn } from "../../apis/machines-table-apis";
 import { DATA_QUERY_KEY } from "../../constants";
 import {
@@ -47,8 +50,8 @@ export const MachineCrudForm = () => {
     const refinedFormData = refineFormData(formData);
 
     const createPayload: AddMachineDto = {
-      environment: refinedFormData.environment,
-      operatingSystem: refinedFormData.operatingSystem,
+      environment: refinedFormData.environment as MachineEnvironmentTypesEnum,
+      operatingSystem: refinedFormData.operatingSystem as MachineOsTypesEnum,
       osID: refinedFormData.osID,
       username: refinedFormData.username,
       hostname: refinedFormData.hostname,
@@ -57,8 +60,8 @@ export const MachineCrudForm = () => {
 
     const updatePayload: UpdateMachineDto = {
       id: refinedFormData.id,
-      environment: refinedFormData.environment,
-      operatingSystem: refinedFormData.operatingSystem,
+      environment: refinedFormData.environment as MachineEnvironmentTypesEnum,
+      operatingSystem: refinedFormData.operatingSystem as MachineOsTypesEnum,
       osID: refinedFormData.osID,
       username: refinedFormData.username,
       hostname: refinedFormData.hostname,

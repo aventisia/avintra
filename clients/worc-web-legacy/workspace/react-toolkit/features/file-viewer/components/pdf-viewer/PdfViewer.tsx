@@ -40,7 +40,7 @@ const PdfViewer = ({ fileUrl }: PdfViewerProps) => {
 
   return (
     <div ref={parentRef}>
-      <ScrollArea className="h-[calc(100vh-var(--header-height)-3*var(--header-padding)-4rem)] w-full p-2">
+      <ScrollArea className="h-[calc(100vh-4.5rem-var(--header-height)-2*var(--header-padding)-4rem)] w-full p-2">
         <div style={{ position: "relative", width: "100%" }}>
           <Document
             file={fileUrl}
