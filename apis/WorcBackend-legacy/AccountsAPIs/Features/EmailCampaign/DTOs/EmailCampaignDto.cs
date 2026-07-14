@@ -16,4 +16,9 @@ public class EmailCampaignDto
     /// </summary>
     [StringLength(20)]
     public required string Rid { get; set; }
+
+    /// <summary>
+    /// Gets or sets the date and time when the record was created.
+    /// </summary>
+    public DateTimeOffset CreatedOn { get; set; } = DateTimeOffset.UtcNow;
 }
