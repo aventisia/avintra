@@ -6,15 +6,20 @@ import { MachineStatusTypesEnum } from "@/react-toolkit/enums/machine-status-typ
 export const columnDisplayNames: KeyValueLookupType[] = [
   { key: "id", value: "Select Row" },
   { key: "name", value: "Name" },
-  { key: "ipAddress", value: "IP Address" },
-  { key: "hostname", value: "Hostname/Username" },
-  { key: "type", value: "OS Type" },
-  { key: "environment", value: "Environment" },
-  { key: "agentCount", value: "Agents" },
   { key: "status", value: "Status" },
-  { key: "lastModifiedOn", value: "Last Checked In" },
+  { key: "flowVersionCount", value: "Agents" },
+  { key: "lastCheckedIn", value: "Last Checked In" },
+  { key: "environment", value: "Environment" },
+  { key: "operatingSystem", value: "OS Type" },
+  { key: "osID", value: "OS Unique Id" },
+  { key: "username", value: "Username" },
+  { key: "hostname", value: "Hostname" },
+  { key: "isDisabled", value: "Disabled" },
+  { key: "ipAddress", value: "IP Address" },
   { key: "createdBy", value: "Added By" },
-  { key: "createdOn", value: "Added On" },
+  { key: "createdOn", value: "Added At" },
+  { key: "lastModifiedBy", value: "Last Modified By" },
+  { key: "lastModifiedOn", value: "Last Modified At" },
 ];
 
 // Get the column display name for the given column key.

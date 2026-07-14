@@ -17,7 +17,7 @@ export const idProps: InputFieldProps = {
 
 // Machine Type - Only view/edit mode
 export const osTypeProps: SelectFieldProps = {
-  name: "type",
+  name: "operatingSystem",
   label: "OS Type",
   isRequired: true,
   selectOptions: enumToArray(MachineOsTypesEnum),
@@ -34,6 +34,14 @@ export const nameProps: InputFieldProps = {
 // Host Name
 export const hostnameProps: InputFieldProps = {
   name: "hostname",
+  label: "Host Name",
+  isRequired: true,
+  description: "Enter the host name of the machine.",
+};
+
+// Username
+export const usernameProps: InputFieldProps = {
+  name: "username",
   label: "Username",
   isRequired: true,
   description:
@@ -42,7 +50,7 @@ export const hostnameProps: InputFieldProps = {
 
 // Os Unique Id
 export const os_unique_idProps: InputFieldProps = {
-  name: "osId",
+  name: "osID",
   label: "OS Unique ID",
   placeholder: "",
   isRequired: true,

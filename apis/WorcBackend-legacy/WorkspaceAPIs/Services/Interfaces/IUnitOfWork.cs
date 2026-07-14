@@ -14,7 +14,7 @@ public interface IUnitOfWork
     IFlowVersionUserRepo FlowVersionUserRepo { get; }
     IFlowVersionHistoryRepo FlowVersionHistoryRepo { get; }
     IMachineRepo MachineRepo { get; }
-    IMachineFlowRepo MachineFlowRepo { get; }
+    IMachine_FlowVersionRepo Machine_FlowVersionRepo { get; }
     IProjectTemplateRepo ProjectTemplateRepo { get; }
     ITemplateResourceRepo TemplateResourceRepo { get; }
     IQueueRepo QueueRepo { get; }

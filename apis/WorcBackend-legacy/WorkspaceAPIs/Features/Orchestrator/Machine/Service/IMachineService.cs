@@ -6,59 +6,61 @@ namespace WorkspaceAPIs.Services;
 public interface IMachineService
 {
     /// <summary>
-    /// Checks the availability of a machine name.
-    /// </summary>
-    /// <param name="checkAvailabilityDto">The DTO containing the machine name to check.</param>
-    /// <returns>A task that represents the asynchronous operation. The task result contains a <see cref="ServiceResponse{T}"/> object with a <see cref="TrueFalseResultDto"/> indicating whether the machine name is available or not.</returns>
-    Task<ServiceResponse<TrueFalseResultDto>> IsMachineNameAvailableAsync(CheckAvailabilityDto checkAvailabilityDto);
-
-    /// <summary>
-    /// Creates a new machine.
-    /// </summary>
-    /// <param name="machineDto">The machine details.</param>
-    /// <returns>A service response containing the created machine data.</returns>
-    Task<ServiceResponse<MachineDto>> CreateNewMachineAsync(MachineDto machineDto);
-
-    /// <summary>
     /// Retrieves a list of all machines.
     /// </summary>
     /// <returns>A service response containing a collection of machines.</returns>
-    Task<ServiceResponse<IEnumerable<MachineDto>>> GetMachineListAsync();
+    Task<ServiceResponse<IEnumerable<MachineDto>>> GetMachinesAsync();
 
     /// <summary>
-    /// Deletes a specific machine.
-    /// </summary>
-    /// <param name="machineId">The unique identifier of the machine to be deleted.</param>
-    /// <returns>A service response indicating success or failure.</returns>
-    Task<ServiceResponse<bool>> DeleteMachineAsync(Guid machineId);
-
-    /// <summary>
-    /// Retrieves details of a specific machine.
+    /// Retrieves machine by its ID.
     /// </summary>
     /// <param name="machineId">The unique identifier of the machine.</param>
     /// <returns>A service response containing the machine details.</returns>
     Task<ServiceResponse<MachineDto>> GetMachineAsync(Guid machineId);
 
     /// <summary>
-    /// Updates an existing machine.
+    /// Insert a new machine.
     /// </summary>
-    /// <param name="machineDto">The updated machine details.</param>
-    /// <returns>A service response containing the updated machine data.</returns>
-    Task<ServiceResponse<MachineDto>> UpdateMachineAsync(MachineDto machineDto);
+    /// <param name="addMachineDto">The machine details.</param>
+    /// <returns>A service response containing the created machine data.</returns>
+    Task<ServiceResponse<MachineDto>> InsertMachineAsync(AddMachineDto addMachineDto);
 
     /// <summary>
-    /// Deletes multiple machines.
+    /// Updates an existing machine.
+    /// </summary>
+    /// <param name="updateMachineDto">The updated machine details.</param>
+    /// <returns>A service response containing the updated machine data.</returns>
+    Task<ServiceResponse<MachineDto>> UpdateMachineAsync(UpdateMachineDto updateMachineDto);
+
+    /// <summary>
+    /// Deletes a machine by its ID.
+    /// </summary>
+    /// <param name="machineId">The unique identifier of the machine to be deleted.</param>
+    /// <returns>A service response indicating success or failure.</returns>
+    Task<ServiceResponse<bool>> DeleteMachineAsync(Guid machineId);
+
+    /// <summary>
+    /// Delete multiple machines by their IDs.
     /// </summary>
     /// <param name="machineIds">A collection of machine IDs to be deleted.</param>
     /// <returns>A service response indicating success or failure.</returns>
     Task<ServiceResponse<bool>> DeleteMachinesAsync(IEnumerable<Guid> machineIds);
 
     /// <summary>
-    /// Retrieves a list of agents assigned to a machine asynchronously.
+    /// Synchronize machine's flow versions
     /// </summary>
-    /// <param name="osId">The OS ID of the machine for which assigned agents will be retrieved.</param>
-    /// <returns>A service response containing a list of agents assigned to the specified machine.</returns>
-    Task<ServiceResponse<IEnumerable<AssignAgentDto>>> GetAgentsByMachineOSIdAsync(string osId);
+    /// <param name="updateMachineFlowVersionsDto">The machine and flow versions details.</param>
+    /// <returns>A service response indicating whether the operation was successful.</returns>
+    Task<ServiceResponse<bool>> SyncMachineFlowVersionsAsync(UpdateMachineFlowVersionsDto updateMachineFlowVersionsDto);
+
+    // TODO: Need to check
+
+    /// <summary>
+    /// Retrieves a list of flow versions assigned to a machine asynchronously.
+    /// </summary>
+    /// <param name="osId">The OS ID of the machine for which assigned flow versions will be retrieved.</param>
+    /// <returns>A service response containing a list of flow versions assigned to the specified machine.</returns>
+    Task<ServiceResponse<IEnumerable<AssignFlowVersionDto>>> GetFlowVersionsByMachineOSIdAsync(string osId);
 
     /// <summary>
     /// Retrieves a list of machines formatted as select options.
@@ -74,12 +76,4 @@ public interface IMachineService
     /// A <see cref="ServiceResponse{T}"/> containing a collection of <see cref="MachineDto"/> objects matching the search criteria.
     /// </returns>
     Task<ServiceResponse<IEnumerable<MachineDto>>> FindMachinesByKeywordAsync(string searchKey);
-
-    /// <summary>
-    /// Remove a set of agents from a specified machine.
-    /// </summary>
-    /// <param name="machineId">The ID of the machine from whom the agents will be removed.</param>
-    /// <param name="agentIds">A collection of agent IDs to be removed from the machine.</param>
-    /// <returns>A service response indicating whether the operation was successful.</returns>
-    Task<ServiceResponse<bool>> RemoveAgentsFromMachineAsync(Guid machineId, IEnumerable<Guid> agentIds);
 }

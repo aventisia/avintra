@@ -48,7 +48,7 @@ public class AgentTableService : IAgentTableService
                     !w.IsArchived
                 )
                 .Include(i => i.Flow)
-                .Include(i => i.MachineFlows)
+                .Include(i => i.FlowVersionMachines)
                 .Include(i => i.CreatedByUser)
                 .OrderBy(o => o.VersionNumber)
                 .AsNoTracking()
@@ -95,7 +95,7 @@ public class AgentTableService : IAgentTableService
                     )
                     .OrderByDescending(w => w.CreatedOn)
                     .Include(i => i.Flow)
-                    .Include(i => i.MachineFlows)
+                    .Include(i => i.FlowVersionMachines)
                     .Include(i => i.CreatedByUser)
                     .OrderBy(o => o.VersionNumber)
                     .ToListAsync();
@@ -126,7 +126,7 @@ public class AgentTableService : IAgentTableService
                     )
                     .OrderByDescending(w => w.CreatedOn)
                     .Include(i => i.Flow)
-                    .Include(i => i.MachineFlows)
+                    .Include(i => i.FlowVersionMachines)
                     .Include(i => i.CreatedByUser)
                     .OrderBy(o => o.VersionNumber)
                     .ToListAsync();
@@ -229,7 +229,7 @@ public class AgentTableService : IAgentTableService
                     w.IsArchived
                 )
                 .Include(i => i.Flow)
-                .Include(i => i.MachineFlows)
+                .Include(i => i.FlowVersionMachines)
                 .Include(i => i.CreatedByUser)
                 .Include(i => i.LastModifiedByUser)
                 .OrderBy(o => o.VersionNumber)
@@ -271,7 +271,7 @@ public class AgentTableService : IAgentTableService
                     !w.IsArchived
                 )
                 .Include(i => i.Flow)
-                .Include(i => i.MachineFlows)
+                .Include(i => i.FlowVersionMachines)
                 .Include(i => i.CreatedByUser)
                 .OrderBy(o => o.VersionNumber)
                 .AsNoTracking()
@@ -316,7 +316,7 @@ public class AgentTableService : IAgentTableService
                         .GetByConditionAsync(w =>
                             w.Id == agentId
                         )
-                        .Include(a => a.MachineFlows)
+                        .Include(a => a.FlowVersionMachines)
                         .FirstOrDefaultAsync();
 
             if (agent == null)
@@ -345,7 +345,7 @@ public class AgentTableService : IAgentTableService
             }
 
             // Identify machines that are already assigned to the agent.
-            var existingMachineFlows = agent?.MachineFlows?.ToList() ?? new List<MachineFlow>();
+            var existingMachineFlows = agent?.FlowVersionMachines?.ToList() ?? new List<Machine_FlowVersion>();
             var existingMachineIds = existingMachineFlows.Select(mf => mf.MachineId).ToList();
 
             // Identify new machine IDs that are not yet assigned to the agent.
@@ -362,16 +362,14 @@ public class AgentTableService : IAgentTableService
                 return serviceResponse;
             }
 
-            // Create new MachineFlow entries for machines not already assigned.
-            var machineFlowsToAdd = newMachineIds.Select(id => new MachineFlow()
+            // Create new Machine_FlowVersion entries for machines not already assigned.
+            var machineFlowsToAdd = newMachineIds.Select(id => new Machine_FlowVersion()
             {
                 MachineId = id,
-                FlowVersionId = agentId,
-                CreatedByUserId = _userId,
-                LastModifiedByUserId = _userId
+                FlowVersionId = agentId
             }).ToList();
 
-            // Remove existing MachineFlow entries for machines that are no longer assigned.
+            // Remove existing Machine_FlowVersion entries for machines that are no longer assigned.
             var machineFlowsToRemove = existingMachineFlows
                 .Where(mf => removedMachineIds.Contains(mf.MachineId))
                 .ToList();
@@ -379,12 +377,12 @@ public class AgentTableService : IAgentTableService
             // Begin the transaction to insert and remove data.
             if (machineFlowsToAdd.Any())
             {
-                await _unitOfWork.MachineFlowRepo.InsertAsync(machineFlowsToAdd);
+                await _unitOfWork.Machine_FlowVersionRepo.InsertAsync(machineFlowsToAdd);
             }
 
             if (machineFlowsToRemove.Any())
             {
-                _unitOfWork.MachineFlowRepo.Delete(machineFlowsToRemove);
+                _unitOfWork.Machine_FlowVersionRepo.Delete(machineFlowsToRemove);
             }
 
             // Attempt to save the changes to the database.
@@ -434,7 +432,7 @@ public class AgentTableService : IAgentTableService
             // Check if the agent exists and belongs to the current user.
             var agent = await _unitOfWork.FlowVersionRepo
                 .GetByConditionAsync(w => w.Id == agentId)
-                .Include(m => m.MachineFlows)
+                .Include(m => m.FlowVersionMachines)
                 .FirstOrDefaultAsync();
 
             if (agent == null)
@@ -446,7 +444,7 @@ public class AgentTableService : IAgentTableService
             }
 
             // Check if machine flows exist for the provided machine IDs and are assigned to the agent.
-            var machineFlows = await _unitOfWork.MachineFlowRepo
+            var machineFlows = await _unitOfWork.Machine_FlowVersionRepo
                 .GetByConditionAsync(w => machineIds.Contains(w.MachineId) && w.FlowVersionId == agentId)
                 .ToListAsync();
 
@@ -461,7 +459,7 @@ public class AgentTableService : IAgentTableService
             }
 
             // Identify machines to remove that are currently assigned to the agent.
-            var machinesToRemove = machineIds.Intersect(agent.MachineFlows?.Select(mf => mf.MachineId) ?? Enumerable.Empty<Guid>()).ToList();
+            var machinesToRemove = machineIds.Intersect(agent.FlowVersionMachines?.Select(mf => mf.MachineId) ?? Enumerable.Empty<Guid>()).ToList();
 
             if (!machinesToRemove.Any())
             {
@@ -472,7 +470,7 @@ public class AgentTableService : IAgentTableService
             }
 
             // Delete the selected machine flows.
-            _unitOfWork.MachineFlowRepo.Delete(machineFlows);
+            _unitOfWork.Machine_FlowVersionRepo.Delete(machineFlows);
 
             // Attempt to save changes to the database.
             if (!await _unitOfWork.SaveAsync())
@@ -512,7 +510,7 @@ public class AgentTableService : IAgentTableService
             // Check if the agent exists and belongs to the current user.
             var agent = await _unitOfWork.FlowVersionRepo
                 .GetByConditionAsync(w => w.Id == agentId)
-                .Include(a => a.MachineFlows)
+                .Include(a => a.FlowVersionMachines)
                 .FirstOrDefaultAsync();
 
             if (agent == null)
@@ -524,7 +522,7 @@ public class AgentTableService : IAgentTableService
             }
 
             // Retrieve the list of all machine flows.
-            var machines = await _unitOfWork.MachineFlowRepo
+            var machines = await _unitOfWork.Machine_FlowVersionRepo
                 .GetByConditionAsync(w => w.FlowVersionId == agentId)
                 .Include(m => m.Machine)
                 .ProjectToType<AssignMachineDto>()
@@ -539,8 +537,8 @@ public class AgentTableService : IAgentTableService
                 var clientDataStore = clientDataStores.FirstOrDefault(status => status.ClientId == machine.Id);
 
                 // Set the machine's status based on whether a matching status was found
-                machine.Status = clientDataStore != null ? clientDataStore.Status : MachineStatusTypeEnum.Offline;
-                machine.JobId = (clientDataStore?.Status == MachineStatusTypeEnum.Running) ? clientDataStore.JobId : null;
+                machine.Status = clientDataStore != null ? clientDataStore.Status : MachineStatusEnum.Offline;
+                machine.JobId = (clientDataStore?.Status == MachineStatusEnum.Running) ? clientDataStore.JobId : null;
             }
 
             // Return the machines along with their assignment status.
@@ -580,7 +578,7 @@ public class AgentTableService : IAgentTableService
                     w.Flow.Name.ToLower().Contains(searchKey.ToLower())
                 )
                 .Include(i => i.Flow)
-                .Include(i => i.MachineFlows)
+                .Include(i => i.FlowVersionMachines)
                 .Include(i => i.CreatedByUser)
                 .OrderBy(o => o.VersionNumber)
                 .AsNoTracking()

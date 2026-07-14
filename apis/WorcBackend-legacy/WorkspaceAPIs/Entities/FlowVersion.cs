@@ -77,7 +77,7 @@ public class FlowVersion : BaseEntity, IMustHaveTenant
     /// <summary>
     /// Configures the many-to-many relationship between machine flow and flow versions.
     /// </summary>
-    public virtual ICollection<MachineFlow>? MachineFlows { get; set; }
+    public virtual ICollection<Machine_FlowVersion> FlowVersionMachines { get; set; } = new List<Machine_FlowVersion>();
 
     /// <summary>
     /// Configures the many-to-many relationship between queue transactions and flow versions.

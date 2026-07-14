@@ -1,6 +1,6 @@
 import { useQuery } from "@tanstack/react-query";
 
-import { getSearchMachines } from "../../machines-table/apis/machines-table-apis";
+import { findMachinesByKeyword } from "../../machines-table/apis/machines-table-apis";
 
 /**
  * Custom hook to fetch flow users using react query.
@@ -9,7 +9,7 @@ import { getSearchMachines } from "../../machines-table/apis/machines-table-apis
 export const useSearchMachinesList = (query: string) => {
   return useQuery({
     queryKey: ["machines-list", query],
-    queryFn: () => getSearchMachines(query),
+    queryFn: () => findMachinesByKeyword(query),
 
     enabled: !!query,
   });

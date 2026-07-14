@@ -29,7 +29,7 @@ public class AssignMachineDto
     /// <summary>
     /// Gets or sets status of the machine.
     /// </summary>
-    public MachineStatusTypeEnum Status { get; set; }
+    public MachineStatusEnum Status { get; set; }
 
     /// <summary>
     /// Gets or sets the identifier that uniquely represents the operating system.

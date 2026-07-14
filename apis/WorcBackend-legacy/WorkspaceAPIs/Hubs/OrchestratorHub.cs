@@ -55,7 +55,7 @@ public class OrchestratorHub : Hub
                 var machine = await _workspaceInternalDbContext.Machine
                     .Where(w =>
                         w.TenantId == tenantId &&
-                        w.OSId.ToLower() == osId.ToLower() &&
+                        w.OsID.ToLower() == osId.ToLower() &&
                         w.Hostname.ToLower() == hostname.ToLower()
                     )
                     .SingleOrDefaultAsync();
@@ -78,7 +78,7 @@ public class OrchestratorHub : Hub
             // Check whether the client is currently executing a job.
             var existingClientDataStore = await _clientStatusStore.GetClientByIdAsync(clientId);
 
-            if (existingClientDataStore != null && existingClientDataStore.Status == MachineStatusTypeEnum.Running)
+            if (existingClientDataStore != null && existingClientDataStore.Status == MachineStatusEnum.Running)
             {
                 // Retrieve the running job associated with the client.
                 var job = await _workspaceInternalDbContext.Jobs
@@ -108,7 +108,7 @@ public class OrchestratorHub : Hub
                 ClientId = clientId,
                 ConnectionId = connectionId,
                 Type = clientType,
-                Status = MachineStatusTypeEnum.Online,
+                Status = MachineStatusEnum.Online,
                 LastSeen = DateTimeOffset.UtcNow
             };
 
@@ -125,7 +125,7 @@ public class OrchestratorHub : Hub
                     ClientId = userId,
                     ConnectionId = connectionId,
                     Type = ClientTypesEnum.AvintraDesktopApp,
-                    Status = MachineStatusTypeEnum.Online,
+                    Status = MachineStatusEnum.Online,
                     LastSeen = DateTimeOffset.UtcNow
                 };
 
@@ -140,8 +140,8 @@ public class OrchestratorHub : Hub
             // If the client is a machine, handle machine-specific logic (e.g., job assignment)
             if (clientType == ClientTypesEnum.AvintraMachine && !_environmentConfig.OnPremExecutionDisabled)
             {
-                // Retrieve all FlowVersionIds associated with the current machine from the MachineFlow table
-                var flowVersionIds = await _workspaceInternalDbContext.MachineFlow
+                // Retrieve all FlowVersionIds associated with the current machine from the Machine_FlowVersion table
+                var flowVersionIds = await _workspaceInternalDbContext.MachineFlowVersions
                     .Where(w => w.MachineId == clientId && w.TenantId == tenantId)
                     .Select(s => s.FlowVersionId)
                     .ToListAsync();
@@ -169,7 +169,7 @@ public class OrchestratorHub : Hub
                     // Update the machine status to 'Running' as it is now working on the job
                     clientDataStore.AgentId = job.FlowVersionId;
                     clientDataStore.JobId = job.Id;
-                    clientDataStore.Status = MachineStatusTypeEnum.Running;
+                    clientDataStore.Status = MachineStatusEnum.Running;
                     await _clientStatusStore.AddOrUpdateStatusAsync(clientDataStore);
 
                     _logger.LogInformation("Assigned job {JobId} to machine {ClientId}.", job.Id, clientId);
@@ -268,7 +268,7 @@ public class OrchestratorHub : Hub
             // Retrieve agent details from the database and ensure it is published
             var agent = await _workspaceInternalDbContext.FlowVersions
                 .Where(w => w.Id == agentId && w.IsPublished)
-                .Include(i => i.MachineFlows)
+                .Include(i => i.FlowVersionMachines)
                 .Include(i => i.FlowVersionHistories)
                 .SingleOrDefaultAsync();
 
@@ -289,19 +289,19 @@ public class OrchestratorHub : Hub
                 _logger.LogInformation("No machine ID provided. Searching for an available online machine...");
 
                 // Retrieve all machine IDs assigned to this agent
-                var availableMachineIds = agent.MachineFlows?.Select(s => s.MachineId).ToList();
+                var availableMachineIds = agent.FlowVersionMachines?.Select(s => s.MachineId).ToList();
 
                 // Fetch all machine statuses for the current tenant
                 var machines = await _clientStatusStore.GetMachineStatusesAsync(agent.TenantId);
 
                 // Attempt to find an online machine from the list of assigned machines
                 clientDataStore = machines.FirstOrDefault(m =>
-                    availableMachineIds.Contains(m.ClientId) && m.Status == MachineStatusTypeEnum.Online);
+                    availableMachineIds.Contains(m.ClientId) && m.Status == MachineStatusEnum.Online);
 
                 // If no machine found in assigned list, search for any available online machine
                 if (clientDataStore == null)
                 {
-                    clientDataStore = machines.FirstOrDefault(m => m.Status == MachineStatusTypeEnum.Online);
+                    clientDataStore = machines.FirstOrDefault(m => m.Status == MachineStatusEnum.Online);
                 }
 
                 // If no valid machine is found, return an error message
@@ -351,7 +351,7 @@ public class OrchestratorHub : Hub
             }
 
             // If the machine is not online, return an error
-            if (clientDataStore.Status != MachineStatusTypeEnum.Online)
+            if (clientDataStore.Status != MachineStatusEnum.Online)
             {
                 _logger.LogWarning("Machine {MachineId} is not online or unavailable.", machineId);
                 await Clients.Caller.SendAsync("error", "Machine is not online or unavailable.");
@@ -359,10 +359,10 @@ public class OrchestratorHub : Hub
             }
 
             // If the machine is not running an agent, proceed to execute the agent
-            if (clientDataStore.Status != MachineStatusTypeEnum.Running)
+            if (clientDataStore.Status != MachineStatusEnum.Running)
             {
                 // Update machine status to "Running" to indicate the agent execution is in progress
-                clientDataStore.Status = MachineStatusTypeEnum.Running;
+                clientDataStore.Status = MachineStatusEnum.Running;
                 clientDataStore.LastSeen = DateTimeOffset.UtcNow;
                 clientDataStore.AgentId = agentId;
                 clientDataStore.JobId = job.Id;
@@ -440,7 +440,7 @@ public class OrchestratorHub : Hub
     //         }
 
     //         // If the machine is offline or unavailable, return an error
-    //         if (clientDataStore.Status != MachineStatusTypeEnum.Online)
+    //         if (clientDataStore.Status != MachineStatusEnum.Online)
     //         {
     //             _logger.LogWarning("Machine {MachineId} is not online or unavailable.", executionCommandDto.MachineId);
     //             await Clients.Caller.SendAsync("error", "Machine is not online or unavailable.");
@@ -448,10 +448,10 @@ public class OrchestratorHub : Hub
     //         }
 
     //         // If the machine is not running an agent, proceed with agent execution
-    //         if (clientDataStore.Status != MachineStatusTypeEnum.Running)
+    //         if (clientDataStore.Status != MachineStatusEnum.Running)
     //         {
     //             // Update machine status to "Running" to indicate the agent execution is in progress
-    //             clientDataStore.Status = MachineStatusTypeEnum.Running;
+    //             clientDataStore.Status = MachineStatusEnum.Running;
     //             clientDataStore.LastSeen = DateTimeOffset.UtcNow;
     //             clientDataStore.AgentId = executionCommandDto.AgentId;
 

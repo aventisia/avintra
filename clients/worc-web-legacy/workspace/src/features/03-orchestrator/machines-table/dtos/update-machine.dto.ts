@@ -1,0 +1,42 @@
+import type { MachineEnvironmentTypesEnum } from "@/react-toolkit/enums/machine-environment-types-enum";
+import type { MachineOsTypesEnum } from "@/react-toolkit/enums/machine-os-types-enum";
+
+/**
+ * Represents the payload used to update a machine.
+ */
+export interface UpdateMachineDto {
+  /**
+   * Gets or sets the unique identifier of the machine.
+   */
+  id: string;
+
+  /**
+   * Represents the environment of the machine, e.g., Development, UAT, Production.
+   */
+  environment: MachineEnvironmentTypesEnum;
+
+  /**
+   * Represents the operating system of the machine, e.g., Windows or Linux.
+   */
+  operatingSystem: MachineOsTypesEnum;
+
+  /**
+   * Gets or sets the identifier that uniquely represents the operating system (max length 100).
+   */
+  osID: string;
+
+  /**
+   * Represents the username of the machine (max length 255).
+   */
+  username: string;
+
+  /**
+   * Represents the host name of the machine (max length 255).
+   */
+  hostname: string;
+
+  /**
+   * Optional IP address of the machine (supports IPv4 or IPv6, max length 100).
+   */
+  ipAddress?: string;
+}

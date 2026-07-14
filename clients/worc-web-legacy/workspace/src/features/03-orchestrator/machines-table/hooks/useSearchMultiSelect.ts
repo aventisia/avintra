@@ -3,11 +3,8 @@ import { useState } from "react";
 
 import { AgentsTableDto } from "../../agents-table/dtos/agents-table-dto";
 import { useDebounce } from "../../agents-table/hooks/useDebounce";
-import { DATA_QUERY_KEY } from "../constants";
-import { MachinesTableDto } from "../dtos/machines-table-dto";
 import { SelectAgentTableDto } from "../dtos/select-agent-table-dto";
 import { useAssignAgentsStore } from "../stores/assign-agents-store";
-
 import { useSearchAgentsList } from "./useSearchAgentsList";
 import { useUpdateMachineAgentsMutation } from "./useUpdateMachineAgentsMutation";
 
@@ -46,29 +43,21 @@ export const useSearchMultiSelect = () => {
 
   const handleClearAll = () => setSelectedItems([]);
 
-  const machinesData = queryClient.getQueryData<{
-    data: MachinesTableDto[];
-  }>(DATA_QUERY_KEY);
-
-  const machineData = machinesData?.data?.find((v) => v.id == machineId);
-
   const agentsData = queryClient.getQueryData<{
     data: SelectAgentTableDto[];
   }>(["select-agent", machineId]);
 
-  const agentIds =
+  const flowVersionIds =
     agentsData?.data.filter((item) => item.isAssigned).map((v) => v.id) ?? [];
 
   const handleSubmit = async () => {
     setIsSubmitting(true);
     try {
       const mergedUniqueIds = Array.from(
-        new Set([...agentIds, ...selectedItems.map((v) => v.id)]),
+        new Set([...flowVersionIds, ...selectedItems.map((v) => v.id)]),
       );
 
-      if (machineData) {
-        updateAgents({ ...machineData, agentIds: mergedUniqueIds });
-      }
+      updateAgents({ machineId, flowVersionIds: mergedUniqueIds });
     } finally {
       handleClearAll();
       setView("Agents");

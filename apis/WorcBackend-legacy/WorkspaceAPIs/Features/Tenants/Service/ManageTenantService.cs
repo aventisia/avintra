@@ -86,7 +86,7 @@ public class ManageTenantService : IManageTenantService
             if (!await DeleteEntitiesAsync(_unitOfWork.QueueRepo, q => q.TenantId == tenantIdToBeDeleted, nameof(Queue), tenantIdToBeDeleted))
                 return serviceResponse;
 
-            // Delete MachineFlow - DeleteBehavior.Cascade set with Machine
+            // Delete Machine_FlowVersion - DeleteBehavior.Cascade set with Machine
 
             // Delete Machine
             if (!await DeleteEntitiesAsync(_unitOfWork.MachineRepo, m => m.TenantId == tenantIdToBeDeleted, nameof(Machine), tenantIdToBeDeleted))

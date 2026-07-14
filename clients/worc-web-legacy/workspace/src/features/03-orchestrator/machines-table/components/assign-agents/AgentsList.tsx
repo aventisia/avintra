@@ -1,10 +1,10 @@
 import { NoContentMessage } from "@aventisia/ui";
 import {
-  CommandInput,
   Command,
-  CommandList,
-  CommandItem,
   CommandEmpty,
+  CommandInput,
+  CommandItem,
+  CommandList,
 } from "@aventisia/ui/command";
 import { ScrollArea } from "@aventisia/ui/scroll";
 import { BotIcon } from "lucide-react";
@@ -13,20 +13,19 @@ import { useShallow } from "zustand/react/shallow";
 import { SelectAgentTableDto } from "../../dtos/select-agent-table-dto";
 import { useFetchSelectTableAgents } from "../../hooks/useFetchSelectAgents";
 import { useAssignAgentsStore } from "../../stores/assign-agents-store";
-
-import { AgentsListItemActions } from "./assign-agent-item-actions";
 import { ExecutionAction } from "./ExecutionAction";
+import { AgentsListItemActions } from "./assign-agent-item-actions";
 
 const AgentsList = () => {
-  const { osId, machineId } = useAssignAgentsStore(
+  const { osID, machineId } = useAssignAgentsStore(
     useShallow((s) => ({
       machineId: s.machineId,
-      osId: s.osId,
+      osID: s.osID,
     })),
   );
 
   // Use OS id to only to fetch agents list for all other crud operations and query keys machine id is used
-  const { data } = useFetchSelectTableAgents({ osId, machineId });
+  const { data } = useFetchSelectTableAgents({ osID, machineId });
 
   return (
     <Command>

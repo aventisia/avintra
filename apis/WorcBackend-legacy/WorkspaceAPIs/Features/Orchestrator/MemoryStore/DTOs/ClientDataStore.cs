@@ -33,7 +33,7 @@ public class ClientDataStore
     /// <summary>
     /// Gets or sets the current status of the machine (e.g., Online, Offline, Running, Idle).
     /// </summary>
-    public MachineStatusTypeEnum Status { get; set; }
+    public MachineStatusEnum Status { get; set; }
 
     /// <summary>
     /// Gets or sets the timestamp of the last update to the machine's status.

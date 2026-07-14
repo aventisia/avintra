@@ -914,10 +914,10 @@ namespace WorkspaceAPIs.Data.Migrations
 
                     b.Property<string>("Hostname")
                         .IsRequired()
-                        .HasMaxLength(100)
-                        .HasColumnType("character varying(100)");
+                        .HasMaxLength(255)
+                        .HasColumnType("character varying(255)");
 
-                    b.Property<string>("IPAddress")
+                    b.Property<string>("IpAddress")
                         .HasMaxLength(100)
                         .HasColumnType("character varying(100)");
 
@@ -938,9 +938,14 @@ namespace WorkspaceAPIs.Data.Migrations
                         .HasMaxLength(256)
                         .HasColumnType("character varying(256)");
 
-                    b.Property<string>("OSId")
+                    b.Property<string>("OperatingSystem")
                         .IsRequired()
                         .HasColumnType("text");
+
+                    b.Property<string>("OsID")
+                        .IsRequired()
+                        .HasMaxLength(100)
+                        .HasColumnType("character varying(100)");
 
                     b.Property<string>("Status")
                         .IsRequired()
@@ -949,9 +954,10 @@ namespace WorkspaceAPIs.Data.Migrations
                     b.Property<Guid>("TenantId")
                         .HasColumnType("uuid");
 
-                    b.Property<string>("Type")
+                    b.Property<string>("Username")
                         .IsRequired()
-                        .HasColumnType("text");
+                        .HasMaxLength(255)
+                        .HasColumnType("character varying(255)");
 
                     b.Property<uint>("Version")
                         .IsConcurrencyToken()
@@ -965,56 +971,28 @@ namespace WorkspaceAPIs.Data.Migrations
 
                     b.HasIndex("LastModifiedByUserId");
 
-                    b.ToTable("Machine");
+                    b.HasIndex("Name")
+                        .IsUnique();
+
+                    b.ToTable("Machines");
                 });
 
-            modelBuilder.Entity("WorkspaceAPIs.Entities.MachineFlow", b =>
+            modelBuilder.Entity("WorkspaceAPIs.Entities.Machine_FlowVersion", b =>
                 {
-                    b.Property<Guid>("Id")
-                        .ValueGeneratedOnAdd()
+                    b.Property<Guid>("MachineId")
                         .HasColumnType("uuid");
-
-                    b.Property<Guid>("CreatedByUserId")
-                        .HasColumnType("uuid");
-
-                    b.Property<DateTimeOffset>("CreatedOn")
-                        .HasColumnType("timestamp with time zone");
 
                     b.Property<Guid>("FlowVersionId")
-                        .HasColumnType("uuid");
-
-                    b.Property<bool>("IsDisabled")
-                        .HasColumnType("boolean");
-
-                    b.Property<Guid>("LastModifiedByUserId")
-                        .HasColumnType("uuid");
-
-                    b.Property<DateTimeOffset>("LastModifiedOn")
-                        .HasColumnType("timestamp with time zone");
-
-                    b.Property<Guid>("MachineId")
                         .HasColumnType("uuid");
 
                     b.Property<Guid>("TenantId")
                         .HasColumnType("uuid");
 
-                    b.Property<uint>("Version")
-                        .IsConcurrencyToken()
-                        .ValueGeneratedOnAddOrUpdate()
-                        .HasColumnType("xid")
-                        .HasColumnName("xmin");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("CreatedByUserId");
+                    b.HasKey("MachineId", "FlowVersionId");
 
                     b.HasIndex("FlowVersionId");
 
-                    b.HasIndex("LastModifiedByUserId");
-
-                    b.HasIndex("MachineId");
-
-                    b.ToTable("MachineFlow");
+                    b.ToTable("Machine_FlowVersion");
                 });
 
             modelBuilder.Entity("WorkspaceAPIs.Entities.Notification", b =>
@@ -2555,37 +2533,21 @@ namespace WorkspaceAPIs.Data.Migrations
                     b.Navigation("LastModifiedByUser");
                 });
 
-            modelBuilder.Entity("WorkspaceAPIs.Entities.MachineFlow", b =>
+            modelBuilder.Entity("WorkspaceAPIs.Entities.Machine_FlowVersion", b =>
                 {
-                    b.HasOne("WorkspaceAPIs.Entities.WorkspaceUser", "CreatedByUser")
-                        .WithMany()
-                        .HasForeignKey("CreatedByUserId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
                     b.HasOne("WorkspaceAPIs.Entities.FlowVersion", "FlowVersion")
-                        .WithMany("MachineFlows")
+                        .WithMany("FlowVersionMachines")
                         .HasForeignKey("FlowVersionId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.HasOne("WorkspaceAPIs.Entities.WorkspaceUser", "LastModifiedByUser")
-                        .WithMany()
-                        .HasForeignKey("LastModifiedByUserId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
                     b.HasOne("WorkspaceAPIs.Entities.Machine", "Machine")
-                        .WithMany("MachineFlows")
+                        .WithMany("MachineFlowVersions")
                         .HasForeignKey("MachineId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.Navigation("CreatedByUser");
-
                     b.Navigation("FlowVersion");
-
-                    b.Navigation("LastModifiedByUser");
 
                     b.Navigation("Machine");
                 });
@@ -3025,11 +2987,11 @@ namespace WorkspaceAPIs.Data.Migrations
 
                     b.Navigation("FlowVersionHistories");
 
+                    b.Navigation("FlowVersionMachines");
+
                     b.Navigation("FlowVersionUsers");
 
                     b.Navigation("Jobs");
-
-                    b.Navigation("MachineFlows");
 
                     b.Navigation("QueueFlowVersions");
 
@@ -3050,7 +3012,7 @@ namespace WorkspaceAPIs.Data.Migrations
 
             modelBuilder.Entity("WorkspaceAPIs.Entities.Machine", b =>
                 {
-                    b.Navigation("MachineFlows");
+                    b.Navigation("MachineFlowVersions");
                 });
 
             modelBuilder.Entity("WorkspaceAPIs.Entities.Notification", b =>

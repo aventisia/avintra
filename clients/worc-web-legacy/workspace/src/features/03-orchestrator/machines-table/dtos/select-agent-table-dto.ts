@@ -1,84 +1,89 @@
+import type { ExecutionStateType } from "@/features/execute-flow/types/execution-state-type";
+
 /**
- * data transfer object for select agent to assign to the machine.
+ * Data transfer object for selecting flow versions to assign to a machine.
  *
  * @export
- * @interface AssignAgentDto
+ * @interface SelectAgentTableDto
  */
 export interface SelectAgentTableDto {
   /**
-   * Gets or sets Id of the machine flow.
+   * Gets or sets the flow version identifier.
    * @type { string}
-   * @memberof AssignAgentDto
+   * @memberof SelectAgentTableDto
    */
   id: string;
   /**
-   * Gets or sets Id of the tenant.
+   * Gets or sets the tenant identifier.
    * @type { string}
-   * @memberof AssignAgentDto
+   * @memberof SelectAgentTableDto
    */
   tenantId: string;
   /**
-   * </summary>
+   * Gets or sets the machine identifier.
    * @type { string}
-   * @memberof AssignAgentDto
+   * @memberof SelectAgentTableDto
    */
   machineId: string;
   /**
-   * Gets or sets the name of the flow.
+   * Gets or sets the flow name.
    * @type { string}
-   * @memberof AssignAgentDto
+   * @memberof SelectAgentTableDto
    */
   name: string;
   /**
    * Note: It's important to have this property nullable because we need to differentiate between true, false, and null.
    * @type { boolean}
-   * @memberof AssignAgentDto
+   * @memberof SelectAgentTableDto
    */
   isDisabled: boolean;
   /**
    * This property is intended for use in responses only and should not be included in requests.
    * @type { string}
-   * @memberof AssignAgentDto
+   * @memberof SelectAgentTableDto
    */
   createdBy: string;
   /**
    * This property is intended for use in responses only and should not be included in requests.
    * @type { Date}
-   * @memberof AssignAgentDto
+   * @memberof SelectAgentTableDto
    */
   createdOn: Date;
   /**
    * This property is intended for use in responses only and should not be included in requests.
    * @type { string}
-   * @memberof AssignAgentDto
+   * @memberof SelectAgentTableDto
    */
   lastModifiedBy: string;
   /**
    * This property is intended for use in responses only and should not be included in requests.
    * @type { Date}
-   * @memberof AssignAgentDto
+   * @memberof SelectAgentTableDto
    */
   lastModifiedOn: Date;
   /**
    * Gets or sets initials of the user who created the record
    * @type { string}
-   * @memberof AssignAgentDto
+   * @memberof SelectAgentTableDto
    */
   createdByUserInitials: string;
   /**
-   * Gets or sets the version number of a flow version record
+   * Gets or sets the flow version number.
    * @type { number}
-   * @memberof AssignAgentDto
+   * @memberof SelectAgentTableDto
    */
   versionNumber: number;
   /**
    * Gets or sets a value indicating whether the flow version is assigned.
    * @type { boolean}
-   * @memberof AssignAgentDto
+   * @memberof SelectAgentTableDto
    */
   isAssigned: boolean;
 
-  status: string;
+  /**
+   * Gets or sets the execution status of the flow version on the selected machine.
+   */
+  status: ExecutionStateType;
 
   jobId?: string;
 }

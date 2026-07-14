@@ -10,39 +10,32 @@ public class MachineController : BaseApiController
         _machineService = machineService;
     }
 
-    // Checks the availability of a machine name.
-    [HttpPost("is-available")]
-    public async Task<ActionResult<ServiceResponse<TrueFalseResultDto>>> IsMachineNameAvailableAsync([FromBody] CheckAvailabilityDto checkAvailabilityDto)
-    {
-        return ResultHelper(await _machineService.IsMachineNameAvailableAsync(checkAvailabilityDto));
-    }
-
-    // Insert new machine
-    [HttpPost]
-    public async Task<ActionResult<ServiceResponse<MachineDto>>> CreateNewMachine(MachineDto machineDto)
-    {
-        return ResultHelper(await _machineService.CreateNewMachineAsync(machineDto));
-    }
-
-    // Update an exiting machine
-    [HttpPut]
-    public async Task<ActionResult<ServiceResponse<MachineDto>>> UpdateMachine(MachineDto machineDto)
-    {
-        return ResultHelper(await _machineService.UpdateMachineAsync(machineDto));
-    }
-
     // Retrieves list of machines.
     [HttpGet("list")]
-    public async Task<ActionResult<ServiceResponse<IEnumerable<MachineDto>>>> GetMachineList()
+    public async Task<ActionResult<ServiceResponse<IEnumerable<MachineDto>>>> GetMachines()
     {
-        return ResultHelper(await _machineService.GetMachineListAsync());
+        return ResultHelper(await _machineService.GetMachinesAsync());
     }
 
-    // Deletes a machine by its ID.
+    // Retrieve machine by its ID.
     [HttpGet("{machineId}")]
     public async Task<ActionResult<ServiceResponse<MachineDto>>> GetMachine(Guid machineId)
     {
         return ResultHelper(await _machineService.GetMachineAsync(machineId));
+    }
+
+    // Insert new machine
+    [HttpPost]
+    public async Task<ActionResult<ServiceResponse<MachineDto>>> InsertMachine([FromBody] AddMachineDto addMachineDto)
+    {
+        return ResultHelper(await _machineService.InsertMachineAsync(addMachineDto));
+    }
+
+    // Update an exiting machine
+    [HttpPut]
+    public async Task<ActionResult<ServiceResponse<MachineDto>>> UpdateMachine([FromBody] UpdateMachineDto updateMachineDto)
+    {
+        return ResultHelper(await _machineService.UpdateMachineAsync(updateMachineDto));
     }
 
     // Deletes a machine by its ID.
@@ -52,27 +45,37 @@ public class MachineController : BaseApiController
         return ResultHelper(await _machineService.DeleteMachineAsync(machineId));
     }
 
-    // Delete multiple machines by their IDs.
+    // Deletes multiple machines by their IDs.
     [HttpPost("delete-multiple")]
-    public async Task<ActionResult<ServiceResponse<bool>>> DeleteMachinesAsync([FromBody] IEnumerable<Guid> machineIds)
+    public async Task<ActionResult<ServiceResponse<bool>>> DeleteMachines([FromBody] IEnumerable<Guid> machineIds)
     {
         return ResultHelper(await _machineService.DeleteMachinesAsync(machineIds));
     }
 
-    // Retrieve agent list by machine os ID.
-    [HttpGet("{osId}/agents")]
-    public async Task<ActionResult<ServiceResponse<IEnumerable<AssignAgentDto>>>> GetAgentsByMachineOSId(string osId)
+    // Synchronize machine's flow versions
+    [HttpPost("sync-flow-versions")]
+    public async Task<ActionResult<ServiceResponse<bool>>> SyncMachineFlowVersions([FromBody] UpdateMachineFlowVersionsDto updateMachineFlowVersionsDto)
     {
-        return ResultHelper(await _machineService.GetAgentsByMachineOSIdAsync(osId));
+        return ResultHelper(await _machineService.SyncMachineFlowVersionsAsync(updateMachineFlowVersionsDto));
     }
 
+    // TODO: Need to check later. This endpoint should be in the TenantUser/FlowVersionController, not in the MachineController. It is used to retrieve the list of flow versions associated with a specific machine for the TenantUser role.
+    // Retrieve flow version list by machine os ID.
+    [HttpGet("{osId}/flow-versions")]
+    public async Task<ActionResult<ServiceResponse<IEnumerable<AssignFlowVersionDto>>>> GetFlowVersionsByMachineOSId(string osId)
+    {
+        return ResultHelper(await _machineService.GetFlowVersionsByMachineOSIdAsync(osId));
+    }
+
+    // TODO: Need to check later
     // Retrieve the select-option list of machines
     [HttpGet("select-option")]
-    public async Task<ActionResult<ServiceResponse<IEnumerable<SelectOptionDto>>>> GetAgentToSelectOptionAsync()
+    public async Task<ActionResult<ServiceResponse<IEnumerable<SelectOptionDto>>>> GetMachineToSelectOption()
     {
         return ResultHelper(await _machineService.GetMachineToSelectOptionAsync());
     }
 
+    // TODO: Need to check later
     // Searches for machines based on the specified search keyword.
     [HttpGet("search/{searchKey}")]
     public async Task<ActionResult<ServiceResponse<IEnumerable<MachineDto>>>> FindMachinesByKeyword(string searchKey)
@@ -80,10 +83,4 @@ public class MachineController : BaseApiController
         return ResultHelper(await _machineService.FindMachinesByKeywordAsync(searchKey));
     }
 
-    // Removes multiple agents from a specific machine using the machineId and a list of agentIds.
-    [HttpPost("{machineId}/remove-agents")]
-    public async Task<ActionResult<ServiceResponse<bool>>> RemoveAgentsFromMachine(Guid machineId, [FromBody] IEnumerable<Guid> agentIds)
-    {
-        return ResultHelper(await _machineService.RemoveAgentsFromMachineAsync(machineId, agentIds));
-    }
 }

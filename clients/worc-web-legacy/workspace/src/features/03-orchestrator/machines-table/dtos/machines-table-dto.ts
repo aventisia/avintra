@@ -19,41 +19,49 @@ export interface MachinesTableDto {
   tenantId?: string;
 
   /**
-   * Gets or sets the name of the machine. Max-100
+   * Gets or sets the machine name. Max-255.
    */
   name: string;
 
   /**
-   * Gets or sets the host name of the machine. Max-100
+   * Gets or sets the machine IP address. Max-100.
    */
   ipAddress?: string;
 
   /**
-   * Gets or sets the name of the machine. Max-100
+   * Gets or sets the host name of the machine. Max-255.
    */
-  hostname?: string;
-
-  osId?: string;
+  hostname: string;
 
   /**
-   * Gets or sets the type of machine os.
+   * Gets or sets the desktop app username on the machine. Max-255.
    */
-  type: MachineOsTypesEnum;
+  username: string;
 
   /**
-   * Gets or sets the status of the machine. Max-100
+   * Gets or sets the unique operating system identifier of the machine. Max-100.
+   */
+  osID: string;
+
+  /**
+   * Gets or sets the operating system type of the machine.
+   */
+  operatingSystem: MachineOsTypesEnum;
+
+  /**
+   * Gets or sets the status of the machine.
    */
   status: MachineStatusTypesEnum;
 
   /**
-   * Gets or sets the environment of the machine. Max-100
+   * Gets or sets the environment of the machine.
    */
   environment: MachineEnvironmentTypesEnum;
 
   /**
-   * Gets or sets the environment of the machine. Max-100
+   * Gets or sets the currently running flow version task, if any.
    */
-  currentTask: string;
+  currentTask?: string;
 
   /**
    * Represents the availability of the machine for another task. True if available, False if not.
@@ -66,9 +74,14 @@ export interface MachinesTableDto {
   lastCheckedIn?: Date;
 
   /**
-   * Represents the license to select the agent to the machine
+   * Gets or sets the machine connection identifier.
    */
-  licenseId: string;
+  connectionId?: string;
+
+  /**
+   * Represents the license used for assignment controls in UI, when available.
+   */
+  licenseId?: string;
 
   /**
    * Gets or sets a flag indicating whether the user record is disabled.
@@ -97,12 +110,17 @@ export interface MachinesTableDto {
   lastModifiedOn?: Date;
 
   /**
-   * Gets the count of the agents assigned to the machine.
+   * Gets or sets initials of the user who created the machine record.
    */
-  agentCount?: number;
+  createdByUserInitials?: string;
 
   /**
-   * Gets the count of the agents assigned to the machine.
+   * Gets the count of the flow versions assigned to the machine.
    */
-  agentIds?: string[];
+  flowVersionCount?: number;
+
+  /**
+   * Gets the identifiers of the flow versions assigned to the machine.
+   */
+  flowVersionIds?: string[];
 }

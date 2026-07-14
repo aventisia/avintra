@@ -2,7 +2,7 @@ import { toast } from "@aventisia/ui/sonner";
 import { useQuery } from "@tanstack/react-query";
 import { useEffect } from "react";
 
-import { getMachineAgents } from "../apis/machines-table-apis";
+import { getFlowVersionsByMachineOSId } from "../apis/machines-table-apis";
 
 /**
  * Custom hook to fetch agents using react query.
@@ -10,15 +10,15 @@ import { getMachineAgents } from "../apis/machines-table-apis";
  */
 export const useFetchSelectTableAgents = ({
   machineId,
-  osId,
+  osID,
 }: {
-  osId: string;
+  osID: string;
   machineId: string;
 }) => {
   // Get agents using react query
   const { data, isFetching, isLoading, isError, error } = useQuery({
     queryKey: ["select-agent", machineId],
-    queryFn: () => getMachineAgents(osId),
+    queryFn: () => getFlowVersionsByMachineOSId(osID),
   });
 
   // Show toast on fetch error

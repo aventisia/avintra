@@ -51,10 +51,11 @@ export const useDefineMachineForm = () => {
     defaultValues: {
       id: "",
       name: "",
-      type: "",
-      osId: "",
+      operatingSystem: "",
+      osID: "",
       environment: "",
       ipAddress: "",
+      username: "",
       hostname: "",
       isDisabled: false,
       createdBy: userSession?.firstName + " " + userSession?.lastName,
@@ -86,12 +87,14 @@ export const useDefineMachineForm = () => {
     form.reset({
       id: rowId,
       name: machineData?.name ?? "",
-      type: machineData?.type ?? MachineOsTypesEnum.Windows,
+      operatingSystem:
+        machineData?.operatingSystem ?? MachineOsTypesEnum.Windows,
       environment:
         machineData?.environment ?? MachineEnvironmentTypesEnum.Development,
       ipAddress: machineData?.ipAddress ?? "0.0.0.0",
+      username: machineData?.username ?? "",
       hostname: machineData?.hostname ?? "",
-      osId: machineData?.osId ?? "",
+      osID: machineData?.osID ?? "",
 
       isDisabled: machineData?.isDisabled,
       createdBy:
@@ -110,7 +113,7 @@ export const useDefineMachineForm = () => {
 
     // Focus the name field after reset.
     setTimeout(() => {
-      form.setFocus("name", { shouldSelect: false });
+      form.setFocus("hostname", { shouldSelect: false });
     }, 0);
   }, [rowId, form, queryClient, userSession]);
 

@@ -12,43 +12,43 @@ public class MachineFlowController : BaseApiController
 
     // Insert new machine flow
     [HttpPost]
-    public async Task<ActionResult<ServiceResponse<MachineDto>>> InsertMachineFlowAsync(MachineFlowDto machineFlowDto)
+    public async Task<ActionResult<ServiceResponse<MachineFlowDto>>> InsertMachineFlowAsync(MachineFlowDto machineFlowDto)
     {
         return ResultHelper(await _machineFlowService.InsertMachineFlowAsync(machineFlowDto));
     }
 
     // Update an exiting machine flow
     [HttpPut]
-    public async Task<ActionResult<ServiceResponse<MachineDto>>> UpdateMachineAsync(MachineFlowDto machineFlowDto)
+    public async Task<ActionResult<ServiceResponse<MachineFlowDto>>> UpdateMachineAsync(MachineFlowDto machineFlowDto)
     {
         return ResultHelper(await _machineFlowService.UpdateMachineAsync(machineFlowDto));
     }
 
     // Retrieves list of machine flows.
     [HttpGet("list/{machineId}")]
-    public async Task<ActionResult<ServiceResponse<IEnumerable<MachineDto>>>> GetMachineList(Guid? machineId)
+    public async Task<ActionResult<ServiceResponse<IEnumerable<MachineFlowDto>>>> GetMachineList(Guid? machineId)
     {
         return ResultHelper(await _machineFlowService.GetMachineFlowsAsync(machineId));
     }
 
-    // Deletes a machine flow by its ID.
-    [HttpGet("{machineFlowId}")]
-    public async Task<ActionResult<ServiceResponse<MachineDto>>> GetMachineFlowAsync(Guid machineFlowId)
+    // Retrieves a machine flow using composite keys.
+    [HttpGet("{machineId}/{flowVersionId}")]
+    public async Task<ActionResult<ServiceResponse<MachineFlowDto>>> GetMachineFlowAsync(Guid machineId, Guid flowVersionId)
     {
-        return ResultHelper(await _machineFlowService.GetMachineFlowAsync(machineFlowId));
+        return ResultHelper(await _machineFlowService.GetMachineFlowAsync(machineId, flowVersionId));
     }
 
-    // Deletes a machine flow by its ID.
-    [HttpDelete("{machineFlowId}")]
-    public async Task<ActionResult<ServiceResponse<bool>>> DeleteMachineFlowAsync(Guid machineFlowId)
+    // Deletes a machine flow using composite keys.
+    [HttpDelete("{machineId}/{flowVersionId}")]
+    public async Task<ActionResult<ServiceResponse<bool>>> DeleteMachineFlowAsync(Guid machineId, Guid flowVersionId)
     {
-        return ResultHelper(await _machineFlowService.DeleteMachineFlowAsync(machineFlowId));
+        return ResultHelper(await _machineFlowService.DeleteMachineFlowAsync(machineId, flowVersionId));
     }
 
-    // Delete multiple machine flows by their IDs.
+    // Delete multiple machine flows by their composite keys.
     [HttpPost("delete-multiple")]
-    public async Task<ActionResult<ServiceResponse<bool>>> DeleteMachineFlowsAsync([FromBody] IEnumerable<Guid> machineFlowIds)
+    public async Task<ActionResult<ServiceResponse<bool>>> DeleteMachineFlowsAsync([FromBody] IEnumerable<MachineFlowKeyDto> machineFlowKeys)
     {
-        return ResultHelper(await _machineFlowService.DeleteMachineFlowsAsync(machineFlowIds));
+        return ResultHelper(await _machineFlowService.DeleteMachineFlowsAsync(machineFlowKeys));
     }
 }

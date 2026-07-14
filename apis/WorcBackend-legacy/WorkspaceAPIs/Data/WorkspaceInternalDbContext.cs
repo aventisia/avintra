@@ -20,10 +20,12 @@ namespace WorkspaceAPIs.Data
         {
             base.OnModelCreating(modelBuilder);
 
+            modelBuilder.Entity<Machine_FlowVersion>().HasKey(mf => new { mf.MachineId, mf.FlowVersionId });
+
             // Enum configurations to store enums as strings in the database for easy readability
             modelBuilder.Entity<Flow>().Property(e => e.Type).HasConversion(new EnumToStringConverter<FlowTypesEnum>());
-            modelBuilder.Entity<Machine>().Property(e => e.Type).HasConversion(new EnumToStringConverter<MachineTypeEnum>());
-            modelBuilder.Entity<Machine>().Property(e => e.Status).HasConversion(new EnumToStringConverter<MachineStatusTypeEnum>());
+            modelBuilder.Entity<Machine>().Property(e => e.OperatingSystem).HasConversion(new EnumToStringConverter<OsTypesEnum>());
+            modelBuilder.Entity<Machine>().Property(e => e.Status).HasConversion(new EnumToStringConverter<MachineStatusEnum>());
             modelBuilder.Entity<Machine>().Property(e => e.Environment).HasConversion(new EnumToStringConverter<EnvironmentTypesEnum>());
             modelBuilder.Entity<TimeTrigger>().Property(e => e.Frequency).HasConversion(new EnumToStringConverter<TriggerFrequencyTypesEnum>());
             modelBuilder.Entity<Trigger>().Property(e => e.TriggerType).HasConversion(new EnumToStringConverter<TriggerTypesEnum>());
@@ -40,7 +42,7 @@ namespace WorkspaceAPIs.Data
         public DbSet<FlowVersion> FlowVersions { get; set; }
         public DbSet<FlowVersionHistory> FlowVersionHistories { get; set; }
         public DbSet<Machine> Machine { get; set; }
-        public DbSet<MachineFlow> MachineFlow { get; set; }
+        public DbSet<Machine_FlowVersion> MachineFlowVersions { get; set; }
         public DbSet<Job> Jobs { get; set; }
         public DbSet<TimeTrigger> TimeTriggers { get; set; }
         public DbSet<TimeTriggersFlowVersion> TimeTriggersFlowVersions { get; set; }

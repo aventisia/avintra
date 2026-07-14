@@ -1,16 +1,21 @@
 /** Column visibility initial state for the projects table. */
 export const columnVisibilityState = {
-  id: false,
+  id: true,
   name: true,
-  type: true,
-  agentCount: true,
-  environment: true,
   status: true,
-  hostname: false,
-  ipAddress: false,
+  flowVersionCount: true,
   lastCheckedIn: true,
+  environment: false,
+  operatingSystem: false,
+  osID: false,
+  username: false,
+  hostname: false,
+  isDisabled: false,
+  ipAddress: false,
   createdBy: false,
   createdOn: false,
+  lastModifiedBy: false,
+  lastModifiedOn: false,
 };
 
 export const agentSelectTableColumnVisibilityState = {

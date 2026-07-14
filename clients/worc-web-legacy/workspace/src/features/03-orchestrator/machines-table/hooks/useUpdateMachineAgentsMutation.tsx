@@ -1,7 +1,7 @@
 import { toast } from "@aventisia/ui/sonner";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 
-import { updateMachine } from "../apis/machines-table-apis";
+import { syncMachineFlowVersions } from "../apis/machines-table-apis";
 import { DATA_QUERY_KEY } from "../constants";
 import { useAssignAgentsStore } from "../stores/assign-agents-store";
 
@@ -13,7 +13,7 @@ export const useUpdateMachineAgentsMutation = () => {
   }));
 
   return useMutation({
-    mutationFn: updateMachine,
+    mutationFn: syncMachineFlowVersions,
 
     onSuccess: (httpResponse) => {
       toast.success(httpResponse?.message ?? "Machine updated successfully.", {

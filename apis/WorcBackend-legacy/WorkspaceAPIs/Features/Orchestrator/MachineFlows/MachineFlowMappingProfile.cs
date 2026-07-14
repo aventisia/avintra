@@ -5,7 +5,8 @@ public class MachineFlowMappingProfile : IRegister
     public void Register(TypeAdapterConfig config)
     {
         // Mapping to get machine flow records
-        config.NewConfig<MachineFlow, MachineFlowDto>()
+        config.NewConfig<Machine_FlowVersion, MachineFlowDto>()
+            .Map(dest => dest.Id, src => src.FlowVersionId)
             .Map(dest => dest.Name,
                 src => src.FlowVersion != null
                     ? src.FlowVersion.Flow.Name
@@ -14,24 +15,14 @@ public class MachineFlowMappingProfile : IRegister
                 src => src.FlowVersion != null
                     ? src.FlowVersion.VersionNumber
                     : 0)
-            .Map(dest => dest.CreatedBy,
-                src => src.CreatedByUser != null
-                    ? src.CreatedByUser.FirstName + " " + src.CreatedByUser.LastName
-                    : null)
-            .Map(dest => dest.LastModifiedBy,
-                src => src.LastModifiedByUser != null
-                    ? src.LastModifiedByUser.FirstName + " " + src.LastModifiedByUser.LastName
-                    : null)
-            .Map(dest => dest.CreatedByUserInitials, 
-                src => src.CreatedByUser != null
-                    ? src.CreatedByUser.FirstName.First() + "" + src.CreatedByUser.LastName.First()
-                    : null);
+            .Map(dest => dest.CreatedBy, src => (string?)null)
+            .Map(dest => dest.LastModifiedBy, src => (string?)null)
+            .Map(dest => dest.CreatedByUserInitials, src => (string?)null)
+            .Map(dest => dest.CreatedOn, src => (DateTimeOffset?)null)
+            .Map(dest => dest.LastModifiedOn, src => (DateTimeOffset?)null);
 
         // Mapping for inserting or updating machine flow record
-        config.NewConfig<MachineFlowDto, MachineFlow>()
-            .Ignore(dest => dest.Id)
-            .Ignore(dest => dest.CreatedOn)
-            .Ignore(dest => dest.LastModifiedOn)
+        config.NewConfig<MachineFlowDto, Machine_FlowVersion>()
             .Ignore(dest => dest.TenantId)
             .IgnoreNullValues(true);
     }
