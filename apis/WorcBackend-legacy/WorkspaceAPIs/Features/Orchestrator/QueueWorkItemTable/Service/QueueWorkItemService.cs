@@ -699,8 +699,7 @@ public class QueueWorkItemService : IQueueWorkItemService
                 queueWorkItem.Description = queueWorkItemDto.Description;
             }
 
-            if (queueWorkItemDto.FileUrls.Any() &&
-                !queueWorkItem.FileUrls.SequenceEqual(queueWorkItemDto.FileUrls))
+            if (queueWorkItemDto.FileUrls != null)
             {
                 queueWorkItem.FileUrls = queueWorkItemDto.FileUrls;
             }
