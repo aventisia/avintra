@@ -22,7 +22,7 @@ public class EmailCampaign
     /// Gets or sets the recipient ID. Max-20 characters.
     /// </summary>
     [MaxLength(20)]
-    public required string RecipeintID { get; set; }
+    public required string RecipientID { get; set; }
 
     /// <summary>
     /// Gets or sets the date and time when the record was created.

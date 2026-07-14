@@ -1,0 +1,10 @@
+meta {
+  name: Get email campaign records
+  type: http
+  seq: 2
+}
+
+get {
+  url: {{ACCOUNTS_APIS_BASE_URL}}/email-campaign?campaignId=&startDate=&endDate=
+  auth: none
+}

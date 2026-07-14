@@ -751,7 +751,7 @@ namespace AccountsAPIs.Data.Migrations
                     b.Property<DateTimeOffset>("CreatedOn")
                         .HasColumnType("timestamp with time zone");
 
-                    b.Property<string>("RecipeintID")
+                    b.Property<string>("RecipientID")
                         .IsRequired()
                         .HasMaxLength(20)
                         .HasColumnType("character varying(20)");

@@ -12,6 +12,16 @@ public class EmailCampaignController : BaseApiController
     }
 
     [AllowAnonymous]
+    [HttpGet]
+    public async Task<ActionResult<ServiceResponse<IEnumerable<EmailCampaignDto>>>> GetEmailCampaignRecords(
+        [FromQuery] DateTimeOffset? startDate,
+        [FromQuery] DateTimeOffset? endDate,
+        [FromQuery] string? campaignID)
+    {
+        return ResultHelper(await _emailCampaignService.GetEmailCampaignsAsync(startDate, endDate, campaignID));
+    }
+
+    [AllowAnonymous]
     [HttpPost]
     public async Task<ActionResult<ServiceResponse<bool>>> InsertEmailCampaign([FromBody] EmailCampaignDto emailCampaignDto)
     {
