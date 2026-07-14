@@ -33,22 +33,18 @@ public class QueueUserService : IQueueUserService
         try
         {
             // Attempt to retrieve the list of users in the specified queue
-            var queueUsers = await _unitOfWork.QueueUserRepo
-                .GetByConditionAsync(q => q.UserId == _userId)
-                .OrderByDescending(q => q.CreatedOn)
-                .Include(i => i.Queue)
-                    .ThenInclude(i2 => i2.CreatedByUser)
-                .Include(i => i.Queue)
-                    .ThenInclude(i2 => i2.LastModifiedByUser)
+            var queues = await _unitOfWork.QueueRepo
+                .GetByConditionAsync(w => w.QueueUsers != null && w.QueueUsers.Any(a => a.UserId == _userId))
+                .Include(i => i.QueueTransactions)
+                .Include(i => i.CreatedByUser)
                 .Include(i => i.LastModifiedByUser)
                 .ToListAsync();
-            var queues = queueUsers.Select(s => s.Queue).ToList();
 
             // On successful retrieval of queue users
             serviceResponse.Data = queues.Adapt<List<QueuesTableDto>>();
             serviceResponse.StatusCode = 200;
             serviceResponse.Message = "Queues retrieved successfully.";
-            _logger.LogInformation($"Fetched {queueUsers.Count} users for User ID: {_userId}");
+            _logger.LogInformation($"Fetched {queues.Count} users for User ID: {_userId}");
         }
         catch (Exception ex)
         {
