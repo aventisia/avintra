@@ -7,8 +7,8 @@ public class QueueTableMappingProfile : IRegister
         // Mapping for queue record or records.
         config.NewConfig<Queue, QueuesTableDto>()
             .Map(dest => dest.InProgress, src => src.QueueTransactions != null ? src.QueueTransactions.Count(c => c.Status == QueueTransactionStatusTypesEnum.InProgress) : 0)
-            .Map(dest => dest.Completed, src => src.QueueTransactions != null ? src.QueueTransactions.Count(c => c.Status == QueueTransactionStatusTypesEnum.Failed) : 0)
-            .Map(dest => dest.Failed, src => src.QueueTransactions != null ? src.QueueTransactions.Count(c => c.Status == QueueTransactionStatusTypesEnum.Completed) : 0)
+            .Map(dest => dest.Completed, src => src.QueueTransactions != null ? src.QueueTransactions.Count(c => c.Status == QueueTransactionStatusTypesEnum.Completed) : 0)
+            .Map(dest => dest.Failed, src => src.QueueTransactions != null ? src.QueueTransactions.Count(c => c.Status == QueueTransactionStatusTypesEnum.Failed) : 0)
             .Map(dest => dest.Pending, src => src.QueueTransactions != null ? src.QueueTransactions.Count(c => c.Status == QueueTransactionStatusTypesEnum.Pending) : 0)
             .Map(dest => dest.Total, src => src.QueueTransactions != null ? src.QueueTransactions.Count() : 0)
             .Map(dest => dest.InputSchema, src => System.Text.Json.JsonSerializer.Deserialize<List<QueueSchemaDefinitionDto>>(src.InputSchema ?? "[]", new JsonSerializerOptions { PropertyNameCaseInsensitive = true }))
