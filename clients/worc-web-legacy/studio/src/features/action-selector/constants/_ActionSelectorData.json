@@ -12,9 +12,9 @@
         "actions": [
           {
             "type": "activityNode",
-            "name": "MoveWorkItemActivity",
-            "label": "Move Work Item",
-            "description": "Moves a work item from one queue to another.",
+            "name": "RouteWorkItemActivity",
+            "label": "Route Work Item",
+            "description": "Routes a work item from one queue to another.",
             "docsLink": "https://docs.aventisia.com",
             "img": "/assets/Queue.svg",
             "supportedPlatforms": ["cloud", "windows"],
@@ -70,6 +70,15 @@
             "name": "CreateWorkItemActivity",
             "label": "Create Work Item",
             "description": "Creates a new work item in the specified queue.",
+            "docsLink": "https://docs.aventisia.com",
+            "img": "/assets/Queue.svg",
+            "supportedPlatforms": ["cloud", "windows"]
+          },
+          {
+            "type": "activityNode",
+            "name": "GetNextQueueWorkItemActivity",
+            "label": "Get Next Work Item",
+            "description": "Retrieves the next available work item from the selected queue based on the specified status, sorting, and filtering criteria..",
             "docsLink": "https://docs.aventisia.com",
             "img": "/assets/Queue.svg",
             "supportedPlatforms": ["cloud", "windows"]
