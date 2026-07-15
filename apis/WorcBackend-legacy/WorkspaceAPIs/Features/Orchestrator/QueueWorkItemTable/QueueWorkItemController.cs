@@ -27,6 +27,13 @@ public class QueueWorkItemController : BaseApiController
         return ResultHelper(await _queueWorkItemService.GetQueueWorkItemsAsync(queueFilterRequestDto));
     }
 
+    // Retrieves the first available work item from the specified queue and updates its status
+    [HttpPut("next")]
+    public async Task<ActionResult<ServiceResponse<QueueWorkItemDto>>> GetNextQueueWorkItem([FromBody] QueueFilterRequestDto queueFilterRequestDto)
+    {
+        return ResultHelper(await _queueWorkItemService.GetNextQueueWorkItemAsync(queueFilterRequestDto));
+    }
+
     // Retrieves a specific queue work item by its ID.
     [HttpGet("{queueWorkItemId}")]
     public async Task<ActionResult<ServiceResponse<QueuesTableDto>>> GetQueueWorkItemById(Guid queueWorkItemId)
@@ -56,11 +63,11 @@ public class QueueWorkItemController : BaseApiController
         return ResultHelper(await _queueWorkItemService.UpdateWorkItemAsync(queueWorkItemDto));
     }
 
-    // Move an existing workitem from its current queue to a destination queue
-    [HttpPut("move")]
-    public async Task<ActionResult<ServiceResponse<bool>>> MoveWorkItem([FromBody] MoveQueueWorkItemRequestDto moveQueueWorkItemRequestDto)
+    // Routes an existing work item to a specified destination queue
+    [HttpPut("route")]
+    public async Task<ActionResult<ServiceResponse<bool>>> RouteWorkItem([FromBody] RouteQueueWorkItemRequestDto routeQueueWorkItemRequestDto)
     {
-        return ResultHelper(await _queueWorkItemService.MoveWorkItemAsync(moveQueueWorkItemRequestDto));
+        return ResultHelper(await _queueWorkItemService.RouteWorkItemAsync(routeQueueWorkItemRequestDto));
     }
 
     // Remove a specific work item from the queue

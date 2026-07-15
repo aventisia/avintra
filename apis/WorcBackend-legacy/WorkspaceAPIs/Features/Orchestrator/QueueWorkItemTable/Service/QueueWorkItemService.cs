@@ -7,12 +7,13 @@ public class QueueWorkItemService : IQueueWorkItemService
     private readonly Guid _userId;
     private readonly string _username;
     private readonly IStringEncryptionService _stringEncryptionService;
+    private readonly IQueueTransactionEventService _queueTransactionEventService;
     private static readonly SemaphoreSlim _semaphore = new SemaphoreSlim(1, 1);
 
     public QueueWorkItemService(
         ILogger<QueueWorkItemService> logger,
         IUnitOfWork unitOfWork,
-        IHttpContextAccessor httpContextAccessor, IStringEncryptionService stringEncryptionService)
+        IHttpContextAccessor httpContextAccessor, IStringEncryptionService stringEncryptionService, IQueueTransactionEventService queueTransactionEventService)
     {
         // Extract the user ID from the HTTP context (user's UID)
         _userId = Guid.Parse(httpContextAccessor.HttpContext?.User?.FindFirstValue("uid") ?? Guid.Empty.ToString());
@@ -21,6 +22,7 @@ public class QueueWorkItemService : IQueueWorkItemService
         _logger = logger;
         _unitOfWork = unitOfWork;
         _stringEncryptionService = stringEncryptionService;
+        _queueTransactionEventService = queueTransactionEventService;
     }
 
     // Retrieve all workitems for a specific queue
@@ -251,6 +253,168 @@ public class QueueWorkItemService : IQueueWorkItemService
         finally
         {
             _semaphore.Release();
+        }
+
+        return serviceResponse;
+    }
+
+    // Retrieves and claims the next available work item from a specific queue
+    public async Task<ServiceResponse<QueueWorkItemDto>> GetNextQueueWorkItemAsync(QueueFilterRequestDto queueFilterRequestDto)
+    {
+        // Initialize ServiceResponse with failed response
+        var serviceResponse = new ServiceResponse<QueueWorkItemDto>
+        {
+            Data = null,
+            Message = "Failed to retrieve the next work item. Please try again later."
+        };
+
+        try
+        {
+            // Retrieve the queue based on name or ID
+            var queue = await _unitOfWork.QueueRepo
+                .GetByConditionAsync(w =>
+                    !string.IsNullOrEmpty(queueFilterRequestDto.QueueName)
+                        ? w.Name.ToLower() == queueFilterRequestDto.QueueName.ToLower()
+                        : w.Id == queueFilterRequestDto.QueueId)
+                .FirstOrDefaultAsync();
+
+            if (queue == null)
+            {
+                _logger.LogWarning("Queue not found for Queue ID: {QueueId}", queueFilterRequestDto.QueueId);
+                serviceResponse.Message = "Queue not found.";
+                return serviceResponse;
+            }
+
+            // Ensure only one worker can claim a work item at a time
+            await _semaphore.WaitAsync();
+
+            try
+            {
+                // Retrieve pending work items from the queue
+                var workItems = await _unitOfWork.QueueTransactionRepo
+                    .GetByConditionAsync(w =>
+                        w.QueueId == queue.Id &&
+                        (queueFilterRequestDto.Status == null ||
+                         w.Status == queueFilterRequestDto.Status))
+                    .Include(w => w.Queue)
+                    .ToListAsync();
+
+                if (!workItems.Any())
+                {
+                    serviceResponse.Message = "No available work items found.";
+                    return serviceResponse;
+                }
+
+                // Apply payload filtering logic
+                var filteredItems = workItems
+                    .Where(w => !string.IsNullOrWhiteSpace(w.PayloadData))
+                    .Select(w => new
+                    {
+                        Transaction = w,
+                        Payload = JObject.Parse(w.PayloadData!)
+                    })
+                    .ToList();
+
+                if (queueFilterRequestDto.Conditions.Any())
+                {
+                    filteredItems = filteredItems.Where(item =>
+                    {
+                        foreach (var condition in queueFilterRequestDto.Conditions)
+                        {
+                            var fieldValue = item.Payload[condition.Field]?.ToString();
+                            var compareValue = condition.Value;
+                            var comparisonOperator = condition.ComparisonOperator?.Trim().ToLowerInvariant();
+
+                            if (string.IsNullOrWhiteSpace(fieldValue))
+                                return false;
+
+                            bool isMatch = comparisonOperator switch
+                            {
+                                // -------- STRING OPERATORS --------
+                                "equalto" => string.Equals(fieldValue, compareValue, StringComparison.OrdinalIgnoreCase),
+                                "notequalto" => !string.Equals(fieldValue, compareValue, StringComparison.OrdinalIgnoreCase),
+                                "contains" => fieldValue.Contains(compareValue, StringComparison.OrdinalIgnoreCase),
+                                "doesnotcontain" => !fieldValue.Contains(compareValue, StringComparison.OrdinalIgnoreCase),
+                                "startswith" => fieldValue.StartsWith(compareValue, StringComparison.OrdinalIgnoreCase),
+                                "endswith" => fieldValue.EndsWith(compareValue, StringComparison.OrdinalIgnoreCase),
+
+                                // -------- NUMERIC OPERATORS --------
+                                "greaterthan" => decimal.TryParse(fieldValue, out var number1) && decimal.TryParse(compareValue, out var number2) && number1 > number2,
+                                "lessthan" => decimal.TryParse(fieldValue, out var number1) && decimal.TryParse(compareValue, out var number2) && number1 < number2,
+                                "greaterthanorequal" => decimal.TryParse(fieldValue, out var number1) && decimal.TryParse(compareValue, out var number2) && number1 >= number2,
+                                "lessthanorequal" => decimal.TryParse(fieldValue, out var number1) && decimal.TryParse(compareValue, out var number2) && number1 <= number2,
+
+                                // -------- DATE OPERATORS --------
+                                "dateafter" => DateTimeOffset.TryParse(fieldValue, out var date1) && DateTimeOffset.TryParse(compareValue, out var date2) && date1 > date2,
+                                "datebefore" => DateTimeOffset.TryParse(fieldValue, out var date1) && DateTimeOffset.TryParse(compareValue, out var date2) && date1 < date2,
+                                "dateonorafter" => DateTimeOffset.TryParse(fieldValue, out var date1) && DateTimeOffset.TryParse(compareValue, out var date2) && date1 >= date2,
+                                "dateonorbefore" => DateTimeOffset.TryParse(fieldValue, out var date1) && DateTimeOffset.TryParse(compareValue, out var date2) && date1 <= date2,
+
+                                "isnull" => string.IsNullOrWhiteSpace(fieldValue),
+                                "isnotnull" => !string.IsNullOrWhiteSpace(fieldValue),
+                                _ => true
+                            };
+                            if (!isMatch)
+                                return false;
+                        }
+
+                        return true;
+
+                    }).ToList();
+                }
+
+                // Select the next work item based on queue priority order
+                var nextWorkItem = filteredItems
+                    .OrderByDescending(o => o.Transaction.CreatedOn)
+                    .Select(s => s.Transaction)
+                    .FirstOrDefault();
+
+                if (nextWorkItem == null)
+                {
+                    serviceResponse.Message = "No work item matched the provided criteria.";
+                    return serviceResponse;
+                }
+
+                if (nextWorkItem.Status == QueueTransactionStatusTypesEnum.Pending)
+                {
+                    // Update the work item status to indicate it has been assigned for processing
+                    nextWorkItem.Status = QueueTransactionStatusTypesEnum.InProgress;
+
+                    _unitOfWork.QueueTransactionRepo.Update(nextWorkItem);
+
+                    if (!await _unitOfWork.SaveAsync())
+                    {
+                        _logger.LogError(
+                            "Failed to update status for claimed work item {WorkItemId}.",
+                            nextWorkItem.Id);
+
+                        return serviceResponse;
+                    }
+                    await _queueTransactionEventService.CreateQueueTransactionEventAsync(new QueueTransactionEventDto()
+                    {
+                        QueueTransactionId = nextWorkItem.Id,
+                        EventType = QueueTransactionEventEnum.StatusChange,
+                        Data = string.Empty,
+                    });
+
+                }
+
+                serviceResponse.Data = nextWorkItem.Adapt<QueueWorkItemDto>();
+                serviceResponse.StatusCode = 200;
+                serviceResponse.Message = "Next work item retrieved successfully.";
+            }
+
+            finally
+            {
+                _semaphore.Release();
+            }
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(
+                ex,
+                "Error occurred while claiming next work item for Queue ID: {QueueId}",
+                queueFilterRequestDto?.QueueId);
         }
 
         return serviceResponse;
@@ -735,8 +899,8 @@ public class QueueWorkItemService : IQueueWorkItemService
         return serviceResponse;
     }
 
-    // Moves a work item from its current queue to the specified destination queue.
-    public async Task<ServiceResponse<bool>> MoveWorkItemAsync(MoveQueueWorkItemRequestDto moveQueueWorkItemRequestDto)
+    // Routes an existing work item to a specified destination queue.
+    public async Task<ServiceResponse<bool>> RouteWorkItemAsync(RouteQueueWorkItemRequestDto routeQueueWorkItemRequestDto)
     {
         // Initialize the service response with a failure status.
         var serviceResponse = new ServiceResponse<bool>
@@ -749,13 +913,13 @@ public class QueueWorkItemService : IQueueWorkItemService
         {
             // Retrieve the work item to be moved, including its source queue information
             var workItem = await _unitOfWork.QueueTransactionRepo
-                .GetByConditionAsync(w => w.Id == moveQueueWorkItemRequestDto.Id)
+                .GetByConditionAsync(w => w.Id == routeQueueWorkItemRequestDto.Id)
                 .Include(i => i.Queue)
                 .SingleOrDefaultAsync();
 
             if (workItem == null)
             {
-                _logger.LogWarning("Work item {WorkItemId} was not found.", moveQueueWorkItemRequestDto.Id);
+                _logger.LogWarning("Work item {WorkItemId} was not found.", routeQueueWorkItemRequestDto.Id);
                 serviceResponse.Message = "Work item not found.";
                 return serviceResponse;
             }
@@ -763,13 +927,13 @@ public class QueueWorkItemService : IQueueWorkItemService
             // Retrieve the destination queue and its existing transactions
             var destinationQueue = await _unitOfWork.QueueRepo
                 .GetByConditionAsync(w =>
-                    w.Name.ToLower() == moveQueueWorkItemRequestDto.QueueName.ToLower())
+                    w.Name.ToLower() == routeQueueWorkItemRequestDto.QueueName.ToLower())
                 .Include(i => i.QueueTransactions)
                 .FirstOrDefaultAsync();
 
             if (destinationQueue == null)
             {
-                _logger.LogWarning("Destination queue '{QueueName}' was not found.", moveQueueWorkItemRequestDto.QueueName);
+                _logger.LogWarning("Destination queue '{QueueName}' was not found.", routeQueueWorkItemRequestDto.QueueName);
                 serviceResponse.Message = "Destination queue not found.";
                 return serviceResponse;
             }
@@ -809,16 +973,14 @@ public class QueueWorkItemService : IQueueWorkItemService
                 return serviceResponse;
             }
 
-            // Parse the work item payload for validation against the destination schema
-            var array = workItem.PayloadData.TrimStart().StartsWith("[")
-                ? JArray.Parse(workItem.PayloadData)
-                : new JArray { JObject.Parse(workItem.PayloadData) };
+            // Parse the work item payload as a JSON object and wrap it in an array for validation
+            var payloadArray = new JArray(JObject.Parse(workItem.PayloadData));
 
-            var movedItems = new List<QueueTransaction>();
+            // var movedItems = new List<QueueTransaction>();
             var hasErrors = false;
 
             // Validate and transform the payload
-            foreach (var item in array)
+            foreach (var item in payloadArray)
             {
                 var obj = item as JObject;
 
@@ -878,18 +1040,8 @@ public class QueueWorkItemService : IQueueWorkItemService
                         serializedPayload = _stringEncryptionService.EncryptString(serializedPayload);
                     }
 
-                    var newWorkItem = new QueueTransaction
-                    {
-                        QueueId = destinationQueue.Id,
-                        PayloadData = serializedPayload,
-                        Status = QueueTransactionStatusTypesEnum.Pending,
-                        Description = workItem.Description,
-                        CreatedBy = string.IsNullOrWhiteSpace(workItem.CreatedBy)
-                            ? _username
-                            : workItem.CreatedBy
-                    };
-
-                    movedItems.Add(newWorkItem);
+                    // Update payload only if schema transformation modifies the data
+                    workItem.PayloadData = serializedPayload;
                 }
             }
 
@@ -902,14 +1054,11 @@ public class QueueWorkItemService : IQueueWorkItemService
                 return serviceResponse;
             }
 
-            // Insert the validated work item into the destination queue
-            if (movedItems.Any())
-            {
-                await _unitOfWork.QueueTransactionRepo.InsertAsync(movedItems);
-            }
+            // Update the existing work item to point to the destination queue
+            workItem.QueueId = destinationQueue.Id;
 
-            // Remove the work item from the source queue to complete the move operation
-            _unitOfWork.QueueTransactionRepo.Delete(workItem);
+            // Mark the existing work item as updated
+            _unitOfWork.QueueTransactionRepo.Update(workItem);
 
 
             if (!await _unitOfWork.SaveAsync())
@@ -922,6 +1071,13 @@ public class QueueWorkItemService : IQueueWorkItemService
                 return serviceResponse;
             }
 
+            await _queueTransactionEventService.CreateQueueTransactionEventAsync(new QueueTransactionEventDto()
+            {
+                QueueTransactionId = workItem.Id,
+                EventType = QueueTransactionEventEnum.QueueTransactionRouted,
+                Data = string.Empty,
+            });
+
             serviceResponse.StatusCode = 200;
             serviceResponse.Data = true;
             serviceResponse.Message = "Work item moved successfully.";
@@ -933,8 +1089,8 @@ public class QueueWorkItemService : IQueueWorkItemService
             _logger.LogError(
                 ex,
                 "An error occurred while moving work item {WorkItemId} to queue '{DestinationQueue}'.",
-                moveQueueWorkItemRequestDto.Id,
-                moveQueueWorkItemRequestDto.QueueName);
+                routeQueueWorkItemRequestDto.Id,
+                routeQueueWorkItemRequestDto.QueueName);
         }
 
         return serviceResponse;

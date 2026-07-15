@@ -20,6 +20,14 @@ public interface IQueueWorkItemService
     Task<ServiceResponse<IEnumerable<QueueWorkItemDto>>> GetQueueWorkItemsAsync(QueueFilterRequestDto queueFilterRequestDto);
 
     /// <summary>
+    /// Retrieves the next available work item from the specified queue and updates its status to indicate processing.
+    /// </summary>
+    /// <param name="queueFilterRequestDto">The filter criteria used to identify the target queue and determine the next work item to be retrieved.</param>
+    /// <returns>A task containing the service response with the retrieved queue work item.</returns>
+    /// <remarks>This method selects the next eligible work item based on the provided filter criteria, claims the item for processing, and updates its status accordingly.</remarks>
+    Task<ServiceResponse<QueueWorkItemDto>> GetNextQueueWorkItemAsync(QueueFilterRequestDto queueFilterRequestDto);
+
+    /// <summary>
     /// Retrieves the details of a specific queue work item by its unique identifier.
     /// </summary>
     /// <param name="queueWorkItemId">The ID of the queue work item to fetch.</param>
@@ -41,13 +49,13 @@ public interface IQueueWorkItemService
     Task<ServiceResponse<QueueWorkItemDto>> UpdateWorkItemAsync(QueueWorkItemDto queueWorkItemDto);
 
     /// <summary>
-    /// Moves a work item from its current queue to the specified destination queue.
+    /// Routes an existing work item to a specified destination queue.
     /// </summary>
-    /// <param name="moveQueueWorkItemRequestDto"> Contains the work item identifier and the destination queue information. </param>
+    /// <param name="routeQueueWorkItemRequestDto"> Contains the work item identifier and the destination queue information. </param>
     /// <returns>
-    /// A response indicating whether the work item was successfully moved.
+    /// A response indicating whether the work item was successfully route.
     /// </returns>
-    Task<ServiceResponse<bool>> MoveWorkItemAsync(MoveQueueWorkItemRequestDto moveQueueWorkItemRequestDto);
+    Task<ServiceResponse<bool>> RouteWorkItemAsync(RouteQueueWorkItemRequestDto routeQueueWorkItemRequestDto);
 
     /// <summary>
     /// Delete a work item from the queue.

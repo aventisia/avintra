@@ -1,0 +1,32 @@
+meta {
+  name: Get next queue workitem
+  type: http
+  seq: 14
+}
+
+post {
+  url: {{WORKSPACE_APIS_BASE_URL}}/queue/workitem/next
+  body: json
+  auth: none
+}
+
+body:json {
+  {
+    "queueName": "{{QUEUE_NAME}}",
+    "status": "Pending",
+    "queuePriority": [
+      {
+        "field": "Location",
+        "OrderBy": "Descending"
+      }
+    ],
+    "conditions": [
+      {
+        "field": "Id",
+        "comparisonOperator": "GreaterThan",
+        "value": "0"
+      }
+    ]
+  }
+  
+}
