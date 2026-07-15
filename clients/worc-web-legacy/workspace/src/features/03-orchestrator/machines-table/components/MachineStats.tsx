@@ -3,8 +3,8 @@ import Enumerable from "linq";
 import { Monitor, MonitorCheck, MonitorCog } from "lucide-react";
 import { useEffect, useState } from "react";
 
-import { MachineEnvironmentTypesEnum } from "@/react-toolkit/enums/machine-environment-types-enum";
-import { MachineOsTypesEnum } from "@/react-toolkit/enums/machine-os-types-enum";
+import { EnvironmentTypesEnum } from "@/react-toolkit/enums/machine-environment-types-enum";
+import { OsTypesEnum } from "@/react-toolkit/enums/machine-os-types-enum";
 import { MachineStatusTypesEnum } from "@/react-toolkit/enums/machine-status-types-enum";
 
 import type { MachinesTableDto } from "../dtos/machines-table-dto";
@@ -48,13 +48,11 @@ export const MachineStats = ({ data }: MachineStatsProps) => {
     // Count environments and distinct environments
     const environmentCounts = {
       dev: statuses.count(
-        (x) => x.environment === MachineEnvironmentTypesEnum.Development,
+        (x) => x.environment === EnvironmentTypesEnum.Development,
       ),
-      uat: statuses.count(
-        (x) => x.environment === MachineEnvironmentTypesEnum.UAT,
-      ),
+      uat: statuses.count((x) => x.environment === EnvironmentTypesEnum.UAT),
       prod: statuses.count(
-        (x) => x.environment === MachineEnvironmentTypesEnum.Production,
+        (x) => x.environment === EnvironmentTypesEnum.Production,
       ),
     };
 
@@ -76,9 +74,7 @@ export const MachineStats = ({ data }: MachineStatsProps) => {
       offline: statusCounts.offline,
       running: statusCounts.running,
       idle: statusCounts.idle,
-      linux: statuses.count(
-        (x) => x.operatingSystem === MachineOsTypesEnum.Linux,
-      ),
+      linux: statuses.count((x) => x.operatingSystem === OsTypesEnum.Linux),
       agents: statuses.sum((x) => x.flowVersionCount ?? 0),
       dev: environmentCounts.dev,
       uat: environmentCounts.uat,
@@ -92,17 +88,17 @@ export const MachineStats = ({ data }: MachineStatsProps) => {
   const environmentParts = [
     stats && stats.dev > 0 && (
       <>
-        <span className="font-medium text-xs">{stats.dev}</span> dev
+        <span className="font-medium text-xs">{stats.dev}</span> Development
       </>
     ),
     stats && stats.uat > 0 && (
       <>
-        <span className="font-medium text-xs">{stats.uat}</span> uat
+        <span className="font-medium text-xs">{stats.uat}</span> UAT
       </>
     ),
     stats && stats.prod > 0 && (
       <>
-        <span className="font-medium text-xs">{stats.prod}</span> prod
+        <span className="font-medium text-xs">{stats.prod}</span> Production
       </>
     ),
   ].filter(Boolean) as JSX.Element[];
@@ -167,8 +163,7 @@ export const MachineStats = ({ data }: MachineStatsProps) => {
         content={data?.length}
         footer={
           <>
-            <span className="font-medium text-xs">{stats?.agents}</span> Flow
-            Versions
+            <span className="font-medium text-xs">{stats?.agents}</span> Agents
           </>
         }
       />

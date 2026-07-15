@@ -8,13 +8,11 @@ import { useAssignAgentsStore } from "../../stores/assign-agents-store";
 interface DTEditRowActionProps {
   rowId: string;
   osID: string;
-  size?: "sm" | "md";
 }
 
 export const AssignAgentRowAction: React.FC<DTEditRowActionProps> = ({
   rowId,
   osID,
-  size = "md",
 }) => {
   const { setOpen, setMachineId, setOsID } = useAssignAgentsStore(
     useShallow((s) => ({
@@ -27,8 +25,6 @@ export const AssignAgentRowAction: React.FC<DTEditRowActionProps> = ({
   // Return the Edit or View dropdown menu item
   return (
     <SimpleDDMenuItem
-      size={size}
-      className=""
       content="Agents"
       Icon={BotIcon}
       onClick={() => {

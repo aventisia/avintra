@@ -16,9 +16,10 @@ public static class MachineHelpers
             _ => environment.ToString().ToLowerInvariant()
         };
 
+        var normalizedUsername = username.Trim().ToLowerInvariant();
         var osToken = operatingSystem.ToString().ToLowerInvariant();
         var normalizedOsId = osId.Trim().ToLowerInvariant();
 
-        return $"[{username.Trim()}]_{environmentToken}_{osToken}_{normalizedOsId}";
+        return $"[{normalizedUsername}]_{environmentToken}_{osToken}_{normalizedOsId}";
     }
 }

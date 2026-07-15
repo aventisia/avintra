@@ -1,5 +1,5 @@
-import type { MachineEnvironmentTypesEnum } from "@/react-toolkit/enums/machine-environment-types-enum";
-import type { MachineOsTypesEnum } from "@/react-toolkit/enums/machine-os-types-enum";
+import type { EnvironmentTypesEnum } from "@/react-toolkit/enums/machine-environment-types-enum";
+import type { OsTypesEnum } from "@/react-toolkit/enums/machine-os-types-enum";
 import type { MachineStatusTypesEnum } from "@/react-toolkit/enums/machine-status-types-enum";
 
 /**
@@ -46,7 +46,7 @@ export interface MachinesTableDto {
   /**
    * Gets or sets the operating system type of the machine.
    */
-  operatingSystem: MachineOsTypesEnum;
+  operatingSystem: OsTypesEnum;
 
   /**
    * Gets or sets the status of the machine.
@@ -56,7 +56,7 @@ export interface MachinesTableDto {
   /**
    * Gets or sets the environment of the machine.
    */
-  environment: MachineEnvironmentTypesEnum;
+  environment: EnvironmentTypesEnum;
 
   /**
    * Gets or sets the currently running flow version task, if any.

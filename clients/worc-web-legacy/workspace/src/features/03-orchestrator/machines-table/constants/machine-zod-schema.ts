@@ -1,49 +1,29 @@
 import {
-  flexibleNameError,
-  flexibleNameRegex,
-  maxLenError,
+  ipAddressError,
+  ipv4Regex,
+  ipv6Regex,
   reqError,
 } from "@aventisia/ui/utils";
 import { z } from "zod";
 
-import { ipv4Regex, ipv6Regex } from ".";
-
 /**
- * Represents the Zod object's item schema for a machine name.
- */
-export const machineNameSchema = z
-  .string()
-  .min(1, { message: reqError("Machine Name") })
-  .max(255, { message: maxLenError("Machine Name", 255) })
-  .regex(flexibleNameRegex, {
-    message: flexibleNameError("Machine name"),
-  });
-
-const ipAddressSchema = z
-  .string()
-  .refine(
-    (value) =>
-      value.length === 0 || ipv4Regex.test(value) || ipv6Regex.test(value),
-    "Invalid IP address. Must be a valid IPv4 or IPv6 address.",
-  );
-
-/**
- * Represents the Zod schema for a machine.
+ * Represents the Zod schema to add/update machine.
  */
 export const machineZodSchema = z.object({
   id: z.string(),
-  name: machineNameSchema.optional().default(""),
-  operatingSystem: z.string().min(1, { message: reqError("Machine OS Type") }),
-  environment: z.string().min(1, { message: reqError("Environment Type") }),
-  ipAddress: ipAddressSchema,
-  hostname: z.string().min(1, { message: reqError("Hostname") }),
-  username: z.string().min(1, { message: reqError("Username") }),
-  osID: z.string().min(1, { message: reqError("OS Unique Id") }),
 
+  environment: z.string().min(1, { message: reqError("Environment") }),
+  operatingSystem: z.string().min(1, { message: reqError("OS Type") }),
+  osID: z.string().min(1, { message: reqError("OS Unique Id") }),
+  username: z.string().min(1, { message: reqError("Username") }),
+  hostname: z.string().min(1, { message: reqError("Hostname") }),
+  ipAddress: z
+    .string()
+    .refine(
+      (value) =>
+        value.length === 0 || ipv4Regex.test(value) || ipv6Regex.test(value),
+      `${ipAddressError}`,
+    ),
+  name: z.string().default(""), // Read-only preview for UI purposes only. Backend generates final name.
   isDisabled: z.boolean().default(false),
-  // Read (view) only fields
-  createdBy: z.string(),
-  createdOn: z.date(),
-  lastModifiedBy: z.string(),
-  lastModifiedOn: z.date(),
 });
