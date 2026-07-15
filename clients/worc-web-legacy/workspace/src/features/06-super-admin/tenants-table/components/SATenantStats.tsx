@@ -1,7 +1,6 @@
-import { StatsCard } from "@/react-toolkit/ui/card/StatsCard";
-
+import { StatsCard } from "@aventisia/ui/cards";
 import { ClockIcon, CoinsIcon, UsersIcon } from "lucide-react";
-import { useMemo } from "react";
+import { Fragment, useMemo } from "react";
 
 import { TenantsTableDto } from "../dtos/tenants-table-dto";
 import { formatSecondsToCompactDuration, round2 } from "../utils";
@@ -66,44 +65,67 @@ export const SATenantStats = ({ data }: StatsProps) => {
     obj: Record<string, number>,
     options?: { isTime?: boolean; isCredit?: boolean },
   ) => {
-    return Object.entries(obj)
-      .map(([plan, value]) => {
-        if (options?.isTime) {
-          return `${plan}: ${formatSecondsToCompactDuration(value)}`;
-        }
+    const parts = Object.entries(obj).map(([plan, value]) => {
+      if (options?.isTime) {
+        return {
+          plan,
+          value: formatSecondsToCompactDuration(value),
+        };
+      }
 
-        if (options?.isCredit) {
-          return `${plan}: ${round2(value)}`;
-        }
+      if (options?.isCredit) {
+        return {
+          plan,
+          value: round2(value),
+        };
+      }
 
-        return `${plan}: ${value}`; // normal (users, tenants)
-      })
-      .join(" | ");
+      return {
+        plan,
+        value,
+      };
+    });
+
+    if (!parts.length) {
+      return "No plan data available";
+    }
+
+    return (
+      <>
+        {parts.map((part, index) => (
+          <Fragment key={part.plan}>
+            {index > 0 && ", "}
+            <span className="font-medium text-xs">{part.value}</span>{" "}
+            {part.plan}
+          </Fragment>
+        ))}
+      </>
+    );
   };
   return (
-    <div className="my-4 grid grid-cols-3 gap-3">
+    <div className="mb-2 grid grid-cols-3 gap-4">
       {/*  Total Tenants */}
       <StatsCard
+        icon={<UsersIcon className="size-7" />}
         title="Total Tenants"
-        mainText={stats.tenants}
-        description={formatBreakdown(stats.tenantsByPlan)}
-        icon={<UsersIcon stroke="var(--primary)" className="h-10 w-10" />}
+        content={stats.tenants}
+        footer={formatBreakdown(stats.tenantsByPlan)}
       />
 
       {/*  Consumed Credits */}
       <StatsCard
+        icon={<CoinsIcon className="size-7" />}
         title="Consumed Credits"
-        mainText={round2(stats.consumedCredits)}
-        description={formatBreakdown(stats.creditsByPlan, { isCredit: true })}
-        icon={<CoinsIcon stroke="var(--primary)" className="h-10 w-10" />}
+        content={round2(stats.consumedCredits)}
+        footer={formatBreakdown(stats.creditsByPlan, { isCredit: true })}
       />
 
       {/*  Execution Time */}
       <StatsCard
+        icon={<ClockIcon className="size-7" />}
         title="Execution Time"
-        mainText={stats.executionLabel}
-        description={formatBreakdown(stats.executionByPlan, { isTime: true })}
-        icon={<ClockIcon stroke="var(--primary)" className="h-10 w-10" />}
+        content={stats.executionLabel}
+        footer={formatBreakdown(stats.executionByPlan, { isTime: true })}
       />
     </div>
   );

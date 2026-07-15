@@ -1,3 +1,4 @@
+import { StatsCard } from "@aventisia/ui/cards";
 import Enumerable from "linq";
 import { Monitor, MonitorCheck, MonitorCog } from "lucide-react";
 import { useEffect, useState } from "react";
@@ -5,7 +6,6 @@ import { useEffect, useState } from "react";
 import { MachineEnvironmentTypesEnum } from "@/react-toolkit/enums/machine-environment-types-enum";
 import { MachineOsTypesEnum } from "@/react-toolkit/enums/machine-os-types-enum";
 import { MachineStatusTypesEnum } from "@/react-toolkit/enums/machine-status-types-enum";
-import { StatsCard } from "@/react-toolkit/ui/card/StatsCard";
 
 import type { MachinesTableDto } from "../dtos/machines-table-dto";
 
@@ -89,45 +89,100 @@ export const MachineStats = ({ data }: MachineStatsProps) => {
   }, [data]);
 
   // Create environment description with count > 0
-  const environmentDescription =
-    [
-      stats && stats.dev > 0 && `${stats.dev} Development`,
-      stats && stats.uat > 0 && `${stats.uat} UAT`,
-      stats && stats.prod > 0 && `${stats.prod} Production`,
-    ]
-      .filter(Boolean)
-      .join(", ") || "No environments with machines";
+  const environmentParts = [
+    stats && stats.dev > 0 && (
+      <>
+        <span className="font-medium text-xs">{stats.dev}</span> dev
+      </>
+    ),
+    stats && stats.uat > 0 && (
+      <>
+        <span className="font-medium text-xs">{stats.uat}</span> uat
+      </>
+    ),
+    stats && stats.prod > 0 && (
+      <>
+        <span className="font-medium text-xs">{stats.prod}</span> prod
+      </>
+    ),
+  ].filter(Boolean) as JSX.Element[];
+
+  const environmentDescription: JSX.Element | string =
+    environmentParts.length > 0 ? (
+      <>
+        {environmentParts.map((part, i) => (
+          <span key={i}>
+            {i > 0 && ", "}
+            {part}
+          </span>
+        ))}
+      </>
+    ) : (
+      "No environments with machines"
+    );
 
   // Create status description with count > 0
-  const statusDescription =
-    [
-      stats && stats.idle > 0 && `${stats.idle} idle`,
-      stats && stats.online > 0 && `${stats.online} online`,
-      stats && stats.offline > 0 && `${stats.offline} Offline`,
-      stats && stats.running > 0 && `${stats.running} Running`,
-    ]
-      .filter(Boolean)
-      .join(", ") || "No machines in these statuses";
+  const statusParts = [
+    stats && stats.idle > 0 && (
+      <>
+        <span className="font-medium text-xs">{stats.idle}</span> idle
+      </>
+    ),
+    stats && stats.online > 0 && (
+      <>
+        <span className="font-medium text-xs">{stats.online}</span> online
+      </>
+    ),
+    stats && stats.offline > 0 && (
+      <>
+        <span className="font-medium text-xs">{stats.offline}</span> Offline
+      </>
+    ),
+    stats && stats.running > 0 && (
+      <>
+        <span className="font-medium text-xs">{stats.running}</span> Running
+      </>
+    ),
+  ].filter(Boolean) as JSX.Element[];
+
+  const statusDescription: JSX.Element | string =
+    statusParts.length > 0 ? (
+      <>
+        {statusParts.map((part, i) => (
+          <span key={i}>
+            {i > 0 && ", "}
+            {part}
+          </span>
+        ))}
+      </>
+    ) : (
+      "No machines in these statuses"
+    );
 
   return (
-    <div className="my-4 grid grid-cols-3 gap-3">
+    <div className="mb-2 grid grid-cols-3 gap-4">
       <StatsCard
+        icon={<Monitor className="size-7" />}
         title="Machines"
-        description={`${stats?.agents} Flow Versions`}
-        mainText={data?.length}
-        icon={<Monitor stroke="var(--primary)" className="h-10 w-10" />}
+        content={data?.length}
+        footer={
+          <>
+            <span className="font-medium text-xs">{stats?.agents}</span> Flow
+            Versions
+          </>
+        }
       />
       <StatsCard
+        icon={<MonitorCog className="size-7" />}
         title="Environments"
-        description={environmentDescription}
-        mainText={stats?.distinctEnvironments ?? 0} // Display distinct environments count
-        icon={<MonitorCog stroke="var(--primary)" className="h-10 w-10" />}
+        content={stats?.distinctEnvironments ?? 0} // Display distinct environments count
+        footer={environmentDescription}
       />
       <StatsCard
+        icon={<MonitorCheck className="size-7" />}
         title="Statuses"
-        description={statusDescription}
-        mainText={stats?.distinctStatuses ?? 0} // Display distinct statuses count
-        icon={<MonitorCheck stroke="var(--primary)" className="h-10 w-10" />}
+        content={stats?.distinctStatuses ?? 0} // Display distinct statuses count
+        footer={statusDescription}
       />
     </div>
   );
