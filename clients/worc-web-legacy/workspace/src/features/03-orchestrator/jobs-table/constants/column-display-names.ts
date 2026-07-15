@@ -1,21 +1,26 @@
 import { KeyValueLookupType } from "@aventisia/ui/types";
 
-import { JobStatusEnum } from "../enums/job-status-enum";
+import { JobStatusEnum } from "..";
 
 /** Array of column names and their corresponding display names. */
 export const columnDisplayNames: KeyValueLookupType[] = [
   { key: "id", value: "Select Row" },
-  { key: "name", value: "Agent Name" },
+  { key: "flowName", value: "Agent" },
   { key: "status", value: "Status" },
-  { key: "startTime", value: "Start Time" },
-  { key: "endTime", value: "End Time" },
+  { key: "startTimeStamp", value: "Started At" },
+  { key: "endTimeStamp", value: "Ended At" },
   { key: "duration", value: "Duration" },
-  { key: "isPublished", value: "Is Published" },
-  { key: "retryCount", value: "Retry Count" },
-  { key: "versionNumber", value: "Version" },
-  { key: "executedBy", value: "Executed By" },
-  { key: "executedOn", value: "Executed On" },
-  { key: "createdOn", value: "Created On" },
+  { key: "creditsConsumed", value: "Credits" },
+  { key: "remarks", value: "Remarks" },
+  { key: "isFlowVersionPublished", value: "Is Published" },
+  { key: "retryCount", value: "Retry #" },
+  { key: "triggerType", value: "Trigger Type" },
+  { key: "priority", value: "Priority" },
+  { key: "createdByName", value: "Created By" },
+  { key: "createdAt", value: "Created At" },
+  { key: "executionLocation", value: "Execution Location" },
+  { key: "flowVersionId", value: "Agent ID" },
+  { key: "remarks", value: "Remarks" },
 ];
 
 // Get the column display name for the given column key.
@@ -24,10 +29,11 @@ export const getColumnName = (key: string): string => {
   return column?.value ?? key;
 };
 
+// TODO: We need to set the color for each status in the html to avoid tailwind css purging the unused classes
 export const statusColor: { [key in JobStatusEnum]: string } = {
   [JobStatusEnum.Completed]: "bg-green-200 text-green-700",
   [JobStatusEnum.Running]: "bg-slate-200 text-slate-600",
-  [JobStatusEnum.Abort]: "bg-orange-200 text-orange-600",
+  [JobStatusEnum.Aborted]: "bg-orange-200 text-orange-600",
   [JobStatusEnum.Canceled]: "bg-orange-200 text-orange-600",
   [JobStatusEnum.Cleanup]: "bg-slate-200 text-slate-600",
   [JobStatusEnum.Paused]: "bg-slate-200 text-slate-600",

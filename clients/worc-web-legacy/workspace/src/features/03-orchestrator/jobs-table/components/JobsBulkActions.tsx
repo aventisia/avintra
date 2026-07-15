@@ -10,12 +10,10 @@ import {
 } from "@aventisia/ui/hooks";
 import { Table } from "@tanstack/react-table";
 
-import { jobOptimisticMutationFn } from "../apis/jobs-table-apis";
-import { DATA_QUERY_KEY } from "../constants";
-import { JobsTableDto } from "../dtos/jobs-table-dto";
+import { DATA_QUERY_KEY, JobsTableRowDto, jobOptimisticMutationFn } from "..";
 
 interface JobsBulkActionsProps {
-  table: Table<JobsTableDto>;
+  table: Table<JobsTableRowDto>;
 }
 
 export function JobsBulkActions({ table }: JobsBulkActionsProps) {
@@ -31,8 +29,8 @@ export function JobsBulkActions({ table }: JobsBulkActionsProps) {
   // Get mutation function to delete the jobs
   const { mutate: deleteJobs } = useListOptimisticMutation<
     string[],
-    JobsTableDto | boolean,
-    JobsTableDto
+    JobsTableRowDto | boolean,
+    JobsTableRowDto
   >(selectedRowIds, jobOptimisticMutationFn, DATA_QUERY_KEY);
 
   return (
@@ -45,13 +43,11 @@ export function JobsBulkActions({ table }: JobsBulkActionsProps) {
             onClick={() => {
               showDefaultAlertDialog({
                 confirmActionFn: () => {
-                  // Delete selected jobs
                   deleteJobs({
                     payload: selectedRowIds,
                     crudAction: "delete-multiple",
                   });
 
-                  // Remove selection
                   table.toggleAllRowsSelected(false);
                 },
                 alertType: "delete-multiple",

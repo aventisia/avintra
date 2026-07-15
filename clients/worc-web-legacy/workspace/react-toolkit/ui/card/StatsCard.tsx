@@ -25,15 +25,15 @@ export const StatsCard = ({
       >
         {icon}
       </div>
-      <div>
-        <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-1">
+      <div className="-mb-1.5">
+        <CardHeader className="flex pt-4 pb-0 flex-row items-center justify-between space-y-0">
           <CardTitle className="text-sm font-medium tracking-wide">
             {title}
           </CardTitle>
         </CardHeader>
         <CardContent>
-          <div className="text-2xl font-bold">{mainText}</div>
-          <div className="text-xs text-muted-foreground">{description}</div>
+          <div className="text-xl font-bold">{mainText}</div>
+          <div className="text-2xs text-muted-foreground">{description}</div>
         </CardContent>
       </div>
     </Card>

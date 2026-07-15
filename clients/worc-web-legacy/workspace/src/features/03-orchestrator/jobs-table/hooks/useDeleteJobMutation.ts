@@ -1,7 +1,7 @@
 import { toast } from "@aventisia/ui/sonner";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 
-import { deleteJob } from "../apis/jobs-table-apis";
+import { deleteJob } from "..";
 
 export const useDeleteJobMutation = () => {
   const queryClient = useQueryClient();

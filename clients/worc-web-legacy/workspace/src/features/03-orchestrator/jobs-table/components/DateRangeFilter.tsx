@@ -13,11 +13,11 @@ import { useCallback, useEffect, useRef, useState } from "react";
 import { useSearchParams } from "react-router-dom";
 
 import {
+  DateRange,
   paramsToRange,
   rangeToParams,
-} from "../constants/date-range-selector-utils";
-import { DateRange } from "../stores/date-range-store";
-import { useDateRangePickerStore } from "../stores/date-range-store";
+  useDateRangePickerStore,
+} from "..";
 
 export const DateRangeFilter = () => {
   const [searchParams, setSearchParams] = useSearchParams();

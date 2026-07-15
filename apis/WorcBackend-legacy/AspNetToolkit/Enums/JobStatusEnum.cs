@@ -2,6 +2,9 @@ namespace AspNetToolkit.Enums;
 
 public enum JobStatusEnum
 {
+    // TODO: Need to remove once migration reached main branch and deployed to production.
+    Abort, 
+    
     /// <summary>
     /// Indicates that the job has been created but has not started running yet.
     /// </summary>
@@ -24,7 +27,7 @@ public enum JobStatusEnum
     /// Immediately terminates the job and processes.
     /// </summary>
     [Description("Aborted")]
-    Abort,
+    Aborted,
 
     /// <summary>
     /// Indicates that the job failed during execution.
@@ -33,7 +36,7 @@ public enum JobStatusEnum
     Failed,
 
     /// <summary>
-    /// Indicates that the job was canceled before completion.
+    /// Indicates that the job was canceled before even starting the execution.
     /// </summary>
     [Description("Canceled")]
     Canceled,

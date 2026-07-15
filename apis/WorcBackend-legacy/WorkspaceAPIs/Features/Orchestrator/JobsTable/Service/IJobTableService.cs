@@ -11,53 +11,38 @@ public interface IJobTableService
     /// <param name="startDate">The optional start date filter.</param>
     /// <param name="endDate">The optional end date filter.</param>
     /// <returns>A task representing the service response with the job details.</returns>
-    Task<ServiceResponse<IEnumerable<JobTableDto>>> GetJobsAsync(DateTimeOffset? startDate, DateTimeOffset? endDate, bool includeLogs);
+    Task<ServiceResponse<IEnumerable<JobTableRowDto>>> GetJobsAsync(DateTimeOffset? startDate, DateTimeOffset? endDate);
 
     /// <summary>
-    /// Retrieves a list of all job logs between optional start and end date filters.
-    /// </summary>
-    /// <param name="startDate">The optional start date filter.</param>
-    /// <param name="endDate">The optional end date filter.</param>
-    /// <returns>A task representing the service response with the job log details.</returns>
-    Task<ServiceResponse<IEnumerable<JobTableDto>>> GetJobLogsAsync(DateTimeOffset? startDate, DateTimeOffset? endDate);
-
-    /// <summary>
-    /// Fetches a job by its unique identifier.
+    /// Get job by its ID.
     /// </summary>
     /// <param name="jobId">The identifier of the job to retrieve.</param>
     /// <returns>A task representing the service response containing the details of the job.</returns>
-    Task<ServiceResponse<JobTableDto>> GetJobByIdAsync(Guid jobId);
+    Task<ServiceResponse<JobRecordDto>> GetJobAsync(Guid jobId);
 
     /// <summary>
-    /// Fetches a job detail by its unique identifier.
+    /// Inserts a new job.
     /// </summary>
-    /// <param name="jobId">The identifier of the job to retrieve.</param>
-    /// <returns>A task representing the service response containing the details of the job.</returns>
-    Task<ServiceResponse<JobDetailDto>> GetJobDetailByIdAsync(Guid jobId);
-
-    /// <summary>
-    /// Creates a new job with the provided data.
-    /// </summary>
-    /// <param name="jobTableDto">The data needed to create the new job.</param>
+    /// <param name="jobInsertDto">The data needed to create the new job.</param>
     /// <returns>A task representing the service response containing the details of the newly created job.</returns>
-    Task<ServiceResponse<JobTableDto>> InsertJobAsync(JobTableDto jobTableDto);
+    Task<ServiceResponse<JobRecordDto>> InsertJobAsync(JobInsertDto jobInsertDto);
 
     /// <summary>
-    /// Modifies an existing job with the provided data.
+    /// Updates an existing job.
     /// </summary>
-    /// <param name="jobTableDto">The data required to update the job.</param>
+    /// <param name="jobUpdateDto">The data required to update the job.</param>
     /// <returns>A task representing the service response containing the updated job details.</returns>
-    Task<ServiceResponse<JobTableDto>> UpdateJobAsync(JobTableDto jobTableDto);
+    Task<ServiceResponse<JobRecordDto>> UpdateJobAsync(JobUpdateDto jobUpdateDto);
 
     /// <summary>
-    /// Removes a job by its identifier.
+    /// Deletes a job by its ID.
     /// </summary>
     /// <param name="jobId">The identifier of the job to be deleted.</param>
     /// <returns>A task representing the service response indicating whether the job was successfully deleted.</returns>
     Task<ServiceResponse<bool>> DeleteJobAsync(Guid jobId);
 
     /// <summary>
-    /// Removes multiple jobs by their identifiers.
+    /// Deletes multiple jobs by their IDs.
     /// </summary>
     /// <param name="jobIds">The list of identifiers of the jobs to delete.</param>
     /// <returns>A task representing the service response indicating whether the jobs were successfully deleted.</returns>
@@ -67,30 +52,46 @@ public interface IJobTableService
     Task<ServiceResponse<bool>> DeleteJobsAsync(IEnumerable<Guid> jobIds);
 
     /// <summary>
-    /// Retries a failed job.
+    /// Exports jobs data into a CSV file
     /// </summary>
-    /// <param name="jobId">The identifier of the job to retry.</param>
-    /// <returns>A task representing the service response indicating whether the job retry was successful.</returns>
-    Task<ServiceResponse<bool>> RetryJobAsync(Guid jobId);
-
-    /// <summary>
-    /// Cancels a running job.
-    /// </summary>
-    /// <param name="jobId">The identifier of the job to cancel.</param>
-    /// <returns>A task representing the service response indicating whether the job cancellation was successful.</returns>
-    Task<ServiceResponse<bool>> CancelJobAsync(Guid jobId);
-
-    /// <summary>
-    /// Terminates the execution of a job on a machine, based on the provided job ID, operating system ID or flow version ID.
-    /// </summary>
-    /// <param name="jobExecutionDto">The details of the job execution, including the OS ID and flow version ID.</param>
-    /// <returns>A service response that indicates whether the job abortion was successful or not.</returns>
-    Task<ServiceResponse<bool>> AbortJobExecutionAsync(JobExecutionDto jobExecutionDto);
-
-    /// <summary>
-    /// Exports job data as a CSV file based on the filters specified in the provided request DTO.
-    /// </summary>
-    /// <param name="exportJobRequestDto">The DTO containing optional filters such as job priority, status, agent IDs, machine IDs, and date range to filter the job data.</param>
+    /// <param name="exportJobsReqDto">DTO for exporting jobs data request. This DTO contains optional filters such as list of job priorities, list of job statuses etc. to filter the job data.</param>
     /// <returns>A service response containing the CSV file stream of the filtered job data.</returns>
-    Task<ServiceResponse<FileStreamResult>> ExportJobsAsync(ExportJobRequestDto exportJobRequestDto);
+    Task<ServiceResponse<FileStreamResult>> ExportJobsAsync(ExportJobsReqDto exportJobsReqDto);
+
+    // TODO: Need to check this
+    // /// <summary>
+    // /// Retrieves a list of all job logs between optional start and end date filters.
+    // /// </summary>
+    // /// <param name="startDate">The optional start date filter.</param>
+    // /// <param name="endDate">The optional end date filter.</param>
+    // /// <returns>A task representing the service response with the job log details.</returns>
+    // Task<ServiceResponse<IEnumerable<JobTableDto>>> GetJobLogsAsync(DateTimeOffset? startDate, DateTimeOffset? endDate);
+
+    // /// <summary>
+    // /// Retries a failed job.
+    // /// </summary>
+    // /// <param name="jobId">The identifier of the job to retry.</param>
+    // /// <returns>A task representing the service response indicating whether the job retry was successful.</returns>
+    // Task<ServiceResponse<bool>> RetryJobAsync(Guid jobId);
+
+    // /// <summary>
+    // /// Cancels a running job.
+    // /// </summary>
+    // /// <param name="jobId">The identifier of the job to cancel.</param>
+    // /// <returns>A task representing the service response indicating whether the job cancellation was successful.</returns>
+    // Task<ServiceResponse<bool>> CancelJobAsync(Guid jobId);
+
+    // /// <summary>
+    // /// Terminates the execution of a running job using its identifier.
+    // /// </summary>
+    // /// <param name="jobAbortRequestDto">The job abort request payload.</param>
+    // /// <returns>A service response that indicates whether the job abortion was successful or not.</returns>
+    // Task<ServiceResponse<bool>> AbortJobExecutionAsync(JobAbortRequestDto jobAbortRequestDto);
+
+    // /// <summary>
+    // /// Exports job data as a CSV file based on the filters specified in the provided request DTO.
+    // /// </summary>
+    // /// <param name="exportJobRequestDto">The DTO containing optional filters such as job priority, status, agent IDs, machine IDs, and date range to filter the job data.</param>
+    // /// <returns>A service response containing the CSV file stream of the filtered job data.</returns>
+    // Task<ServiceResponse<FileStreamResult>> ExportJobsAsync(ExportJobRequestDto exportJobRequestDto);
 }

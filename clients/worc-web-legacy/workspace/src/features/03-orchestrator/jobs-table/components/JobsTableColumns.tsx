@@ -5,14 +5,17 @@ import { cn } from "@aventisia/ui/lib";
 import { ColumnDef } from "@tanstack/react-table";
 import { format } from "date-fns";
 
-import { TABLE_KEY } from "../constants";
-import { getColumnName, statusColor } from "../constants/column-display-names";
-import { JobsTableDto } from "../dtos/jobs-table-dto";
-import { formatSecondsToCompactDuration } from "../utils";
-import { JobsTableCellLink } from "./JobsTableCellLink";
-import { JobRowActions } from "./jobs-row-actions/JobRowActions";
+import {
+  JobRowActions,
+  JobsTableCellLink,
+  JobsTableRowDto,
+  TABLE_KEY,
+  formatSecondsToCompactDuration,
+  getColumnName,
+  statusColor,
+} from "..";
 
-export const jobsTableColumns: ColumnDef<JobsTableDto>[] = [
+export const jobsTableColumns: ColumnDef<JobsTableRowDto>[] = [
   {
     id: "id",
     accessorKey: "id",
@@ -37,40 +40,41 @@ export const jobsTableColumns: ColumnDef<JobsTableDto>[] = [
     ),
     enableSorting: false,
   },
-
   {
-    accessorKey: "name",
+    accessorKey: "flowName",
     header: ({ column }) => (
       <DTColumnHeader
         tableKey={TABLE_KEY}
         column={column}
-        title={getColumnName("name")}
+        title={getColumnName("flowName")}
       />
     ),
-    cell: ({ row }) => {
-      const isHistoryTab = !["Running", "Created"].includes(
-        row.getValue("status"),
-      );
-      if (isHistoryTab)
-        return (
-          <div className="flex max-w-80 items-center gap-3 ">
-            <JobsTableCellLink
-              rowId={row.original.id ?? ""}
-              versionId={row.original.flowVersionId ?? ""}
-              cellValue={row.getValue("name")}
-            />
-            <p className="bg-muted border text-nowrap py-1 px-1.5  text-2xs leading-none  text-primary rounded-full">
-              v{row.original.versionNumber ?? 0}
-            </p>
-          </div>
-        );
-      else
-        return (
-          <div className="w-auto truncate font-medium">
-            {row.getValue("name")}
-          </div>
-        );
-    },
+    cell: ({ row }) => (
+      <div className="flex max-w-80 items-center gap-3">
+        <JobsTableCellLink
+          jobId={row.original.id}
+          flowVersionId={row.original.flowVersionId}
+          flowName={row.original.flowName}
+          flowVersionNumber={row.original.flowVersionNumber}
+        />
+      </div>
+    ),
+  },
+  {
+    accessorKey: "flowVersionNumber",
+    enableHiding: false,
+    header: ({ column }) => (
+      <DTColumnHeader
+        tableKey={TABLE_KEY}
+        column={column}
+        title={getColumnName("flowVersionNumber") ?? 0}
+      />
+    ),
+    cell: ({ row }) => (
+      <div className="w-auto truncate font-medium">
+        {row.getValue("flowVersionNumber") ?? "-"}
+      </div>
+    ),
   },
   {
     accessorKey: "status",
@@ -103,82 +107,178 @@ export const jobsTableColumns: ColumnDef<JobsTableDto>[] = [
     },
   },
   {
-    id: "isPublished",
-    accessorKey: "isPublished",
-    header: ({ column }) => (
-      <DTColumnHeader
-        tableKey={TABLE_KEY}
-        column={column}
-        title={getColumnName("isPublished")}
-      />
-    ),
-    cell: ({ row }) => (
-      <div className="w-auto truncate font-medium">
-        {row.getValue("isPublished") == true ? "Yes" : "No"}
-      </div>
-    ),
-  },
-
-  {
-    accessorKey: "startTime",
+    accessorKey: "startTimeStamp",
     header: ({ column }) => (
       <DTColumnHeader
         tableKey={TABLE_KEY}
         className="w-[7rem]"
         column={column}
-        title={getColumnName("startTime")}
+        title={getColumnName("startTimeStamp")}
       />
     ),
     cell: ({ row }) => (
       <div className="w-auto truncate font-medium">
-        {row.getValue("startTime")
-          ? format(row.getValue("startTime"), "dd MMM yyyy h:mm:ss a")
-          : "NA"}
+        {row.getValue("startTimeStamp")
+          ? format(
+              new Date(row.getValue("startTimeStamp")),
+              "dd MMM yyyy h:mm:ss a",
+            )
+          : "-"}
       </div>
     ),
   },
-
   {
-    accessorKey: "endTime",
+    accessorKey: "endTimeStamp",
     header: ({ column }) => (
       <DTColumnHeader
         tableKey={TABLE_KEY}
         className="w-[7rem]"
         column={column}
-        title={getColumnName("endTime")}
+        title={getColumnName("endTimeStamp")}
       />
     ),
     cell: ({ row }) => (
       <div className="w-auto truncate font-medium">
-        {row.getValue("endTime")
-          ? format(row.getValue("endTime"), "dd MMM yyyy h:mm:ss a")
-          : "NA"}
+        {row.getValue("endTimeStamp")
+          ? format(
+              new Date(row.getValue("endTimeStamp")),
+              "dd MMM yyyy h:mm:ss a",
+            )
+          : "-"}
       </div>
     ),
   },
-
   {
     accessorKey: "duration",
     header: ({ column }) => (
       <DTColumnHeader
         tableKey={TABLE_KEY}
         column={column}
-        title={getColumnName("duration") ?? 0}
+        title={getColumnName("duration")}
       />
     ),
     cell: ({ row }) => {
-      const duration = row.getValue<number>("duration");
-
+      const duration = Number(row.getValue("duration"));
       return (
         <div className="w-auto truncate font-medium">
-          {row.getValue("duration")
-            ? formatSecondsToCompactDuration(duration)
-            : "NA"}
+          {duration > 0 ? formatSecondsToCompactDuration(duration) : "-"}
         </div>
       );
     },
   },
+  {
+    accessorKey: "creditsConsumed",
+    header: ({ column }) => (
+      <DTColumnHeader
+        tableKey={TABLE_KEY}
+        column={column}
+        title={getColumnName("creditsConsumed") ?? 0}
+      />
+    ),
+    cell: ({ row }) => (
+      <div className="w-auto truncate font-medium">
+        {row.getValue("creditsConsumed") ?? "-"}
+      </div>
+    ),
+  },
+  {
+    accessorKey: "remarks",
+    header: ({ column }) => (
+      <DTColumnHeader
+        tableKey={TABLE_KEY}
+        column={column}
+        title={getColumnName("remarks")}
+      />
+    ),
+    cell: ({ row }) => (
+      <div
+        title={row.getValue("remarks") ?? ""}
+        className="max-w-36 truncate font-medium"
+      >
+        {row.getValue("remarks") ?? "-"}
+      </div>
+    ),
+  },
+  {
+    accessorKey: "triggerType",
+    header: ({ column }) => (
+      <DTColumnHeader
+        tableKey={TABLE_KEY}
+        column={column}
+        title={getColumnName("triggerType")}
+      />
+    ),
+    cell: ({ row }) => (
+      <div className="w-auto truncate font-medium">
+        {row.getValue("triggerType") ?? "-"}
+      </div>
+    ),
+  },
+  {
+    accessorKey: "createdByName",
+    header: ({ column }) => (
+      <DTColumnHeader
+        tableKey={TABLE_KEY}
+        column={column}
+        title={getColumnName("createdByName")}
+      />
+    ),
+    cell: ({ row }) => (
+      <div className="max-w-40 truncate font-medium">
+        {row.getValue("createdByName") ?? "-"}
+      </div>
+    ),
+  },
+  {
+    accessorKey: "createdAt",
+    header: ({ column }) => (
+      <DTColumnHeader
+        tableKey={TABLE_KEY}
+        className="w-[7rem]"
+        column={column}
+        title={getColumnName("createdAt")}
+      />
+    ),
+    cell: ({ row }) => (
+      <div className="w-auto truncate font-medium">
+        {row.getValue("createdAt")
+          ? format(new Date(row.getValue("createdAt")), "dd MMM yyyy h:mm:ss a")
+          : "-"}
+      </div>
+    ),
+  },
 
+  {
+    accessorKey: "executionLocation",
+    header: ({ column }) => (
+      <DTColumnHeader
+        tableKey={TABLE_KEY}
+        column={column}
+        title={getColumnName("executionLocation")}
+      />
+    ),
+    cell: ({ row }) => (
+      <div className="max-w-40 truncate font-medium">
+        {row.getValue("executionLocation") ?? "-"}
+      </div>
+    ),
+  },
+  {
+    id: "isFlowVersionPublished",
+    accessorKey: "isFlowVersionPublished",
+    header: ({ column }) => (
+      <DTColumnHeader
+        tableKey={TABLE_KEY}
+        column={column}
+        title={getColumnName("isFlowVersionPublished")}
+      />
+    ),
+    cell: ({ row }) => (
+      <div className="w-auto truncate font-medium">
+        {row.getValue("isFlowVersionPublished") === true ? "Yes" : "No"}
+      </div>
+    ),
+  },
   {
     accessorKey: "retryCount",
     header: ({ column }) => (
@@ -194,52 +294,18 @@ export const jobsTableColumns: ColumnDef<JobsTableDto>[] = [
       </div>
     ),
   },
-
   {
-    accessorKey: "executedBy",
+    accessorKey: "priority",
     header: ({ column }) => (
       <DTColumnHeader
         tableKey={TABLE_KEY}
         column={column}
-        title={getColumnName("executedBy")}
+        title={getColumnName("priority")}
       />
     ),
     cell: ({ row }) => (
       <div className="w-auto truncate font-medium">
-        {row.getValue("executedBy") ? row.getValue("executedBy") : "NA"}
-      </div>
-    ),
-  },
-  {
-    accessorKey: "executedOn",
-    header: ({ column }) => (
-      <DTColumnHeader
-        tableKey={TABLE_KEY}
-        column={column}
-        title={getColumnName("executedOn")}
-      />
-    ),
-    cell: ({ row }) => (
-      <div className="w-auto truncate font-medium">
-        {row.getValue("executedOn") ? row.getValue("executedOn") : "NA"}
-      </div>
-    ),
-  },
-  {
-    accessorKey: "createdOn",
-    header: ({ column }) => (
-      <DTColumnHeader
-        tableKey={TABLE_KEY}
-        className="w-[7rem]"
-        column={column}
-        title={getColumnName("createdOn")}
-      />
-    ),
-    cell: ({ row }) => (
-      <div className="w-auto truncate font-medium">
-        {row.getValue("createdOn")
-          ? format(row.getValue("createdOn"), "dd MMM yyyy h:mm:ss a")
-          : "NA"}
+        {row.getValue("priority") ?? "-"}
       </div>
     ),
   },
@@ -247,10 +313,7 @@ export const jobsTableColumns: ColumnDef<JobsTableDto>[] = [
     id: "actions",
     cell: ({ row }) => (
       // Render the job row actions component
-      <JobRowActions
-        status={row.original.status}
-        rowId={row.original?.id ?? "rowid"}
-      />
+      <JobRowActions status={row.original.status} rowId={row.original.id} />
     ),
   },
 ];

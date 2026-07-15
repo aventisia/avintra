@@ -1,31 +1,20 @@
-import { DataTableRowActions } from "@aventisia/ui/data-table";
+import { DTRowAction, DataTableRowActions } from "@aventisia/ui/data-table";
+import { DropdownMenuSeparator } from "@aventisia/ui/dropdown-menu";
 
-import { JobStatusEnum } from "../../enums/job-status-enum";
-
-import { JobRowAbortAction } from "./JobRowAbortAction";
-import { JobRowDeleteAction } from "./JobRowDeleteAction";
+import { JobRowDeleteAction, JobStatusEnum } from "../..";
 
 interface JobRowActionsProps {
   rowId: string;
-  status: JobStatusEnum;
+  status?: JobStatusEnum;
 }
 
-export const JobRowActions = ({ rowId, status }: JobRowActionsProps) => {
+export const JobRowActions = ({ rowId }: JobRowActionsProps) => {
   return (
-    // Dropdown menu for JObs table row action */}
     <DataTableRowActions>
-      {/* Abort action for any running jobs*/}
-      {status === JobStatusEnum.Running ? (
-        <JobRowAbortAction rowId={rowId} />
-      ) : (
-        <></>
-      )}
-      {/* Delete action for any scheduled jobs*/}
-      {status === JobStatusEnum.Created ? (
-        <JobRowDeleteAction rowId={rowId} />
-      ) : (
-        <></>
-      )}
+      <DTRowAction rowId={rowId} crudAction="read" />
+      <DTRowAction rowId={rowId} crudAction="update" />
+      <DropdownMenuSeparator />
+      <JobRowDeleteAction rowId={rowId} />
     </DataTableRowActions>
   );
 };

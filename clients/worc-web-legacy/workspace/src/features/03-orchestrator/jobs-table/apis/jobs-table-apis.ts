@@ -1,55 +1,89 @@
-import { IHttpResponse, IOptimisticMutation } from "@aventisia/ui/dtos";
+import { IHttpResponse } from "@aventisia/ui/dtos";
+import { IOptimisticMutation } from "@aventisia/ui/dtos";
 
 import { axiosInstance } from "@/react-toolkit/lib/axios-instance";
 
-import { JobDetailsDto } from "../dtos/job-details-dto";
-import { JobsTableDto } from "../dtos/jobs-table-dto";
+import { JobInsertDto, JobRecordDto, JobUpdateDto, JobsTableRowDto } from "..";
 
-const baseAPIURL: string = `${import.meta.env.VITE_WORKSPACE_API_PATH}/job`;
+const baseApiUrl: string = `${import.meta.env.VITE_WORKSPACE_API_PATH}/job`;
 
 /**
- * Retrieves list of Jobs.
+ * Retrieves a list of jobs based on optional start and end date filters.
  */
-export const getJobs = (startDate: string = "", endDate: string = "") => {
+const getJobs = (startDate: string = "", endDate: string = "") => {
   return axiosInstance
     .get<
-      IHttpResponse<JobsTableDto[]>
-    >(`${baseAPIURL}/list?startDate=${startDate}&endDate=${endDate}`)
+      IHttpResponse<JobsTableRowDto[]>
+    >(`${baseApiUrl}/list?startDate=${startDate}&endDate=${endDate}`)
     .then((res) => res.data);
 };
 
 /**
- * Retrieves Job data.
+ * Get job by its ID.
  */
-export const getJobById = (id?: string) => {
+const getJob = (jobID?: string) => {
   return axiosInstance
-    .get<IHttpResponse<JobDetailsDto>>(`${baseAPIURL}/${id}`)
+    .get<IHttpResponse<JobRecordDto>>(`${baseApiUrl}/${jobID}`)
+    .then((res) => res.data);
+};
+
+/**
+ * Inserts a new job.
+ * 
+ * NOTE: From frontend CRUD dialog, We should only use this method to create job for
+ * published flow version since the execution location is decided by the
+ * backend based on the user's desktop app for unpublished flow version. 
+ * Also, since all jobs which are created manually, will have the mannual 
+ * trigger type set by default so createdByName and CreatedById will be set 
+ * automatically by the backend based on the logged in user.
+ */
+const insertJob = (jobInsertDto: JobInsertDto) => {
+  return axiosInstance
+    .post<IHttpResponse<JobsTableRowDto>>(`${baseApiUrl}`, jobInsertDto)
+    .then((res) => res.data);
+};
+
+/**
+ * Updates an existing job.
+ */
+const updateJob = (jobUpdateDto: JobUpdateDto) => {
+  return axiosInstance
+    .put<IHttpResponse<JobsTableRowDto>>(`${baseApiUrl}`, jobUpdateDto)
     .then((res) => res.data);
 };
 
 /**
  * Deletes a Job by its ID.
  */
-export const deleteJob = (id: string) => {
+const deleteJob = (jobID: string) => {
   return axiosInstance
-    .delete<IHttpResponse<boolean>>(`${baseAPIURL}/${id}`)
+    .delete<IHttpResponse<boolean>>(`${baseApiUrl}/${jobID}`)
     .then((res) => res.data);
 };
 
 /**
- * Deletes multiple Jobs(with created Status only) by their IDs.
+ * Deletes multiple Jobs by their IDs.
  */
-export const deleteJobs = (ids: string[]) => {
+const deleteJobs = (ids: string[]) => {
   return axiosInstance
-    .post<IHttpResponse<boolean>>(`${baseAPIURL}/delete-multiple`, ids)
+    .post<IHttpResponse<boolean>>(`${baseApiUrl}/delete-multiple`, ids)
     .then((res) => res.data);
 };
 
-export const jobOptimisticMutationFn = ({
+/**
+ * Performs optimistic mutations for jobs table CRUD actions.
+ */
+const jobOptimisticMutationFn = ({
   payload,
   crudAction,
-}: IOptimisticMutation<JobsTableDto | string | string[]>) => {
+}: IOptimisticMutation<JobInsertDto | JobUpdateDto | string | string[]>) => {
   switch (crudAction) {
+    case "create":
+      return insertJob(payload as JobInsertDto);
+    case "update":
+      return updateJob(payload as JobUpdateDto);
+    case "delete":
+      return deleteJob(payload as string);
     case "delete-multiple":
       return deleteJobs(payload as string[]);
     default:
@@ -57,11 +91,12 @@ export const jobOptimisticMutationFn = ({
   }
 };
 
-/**
- * Abort a Job by its ID.
- */
-export const abortJobExecution = (id: string) => {
-  return axiosInstance
-    .post<IHttpResponse<JobsTableDto>>(`${baseAPIURL}/abort`, { id })
-    .then((res) => res.data);
+export {
+  getJobs,
+  getJob,
+  insertJob,
+  updateJob,
+  deleteJob,
+  deleteJobs,
+  jobOptimisticMutationFn,
 };

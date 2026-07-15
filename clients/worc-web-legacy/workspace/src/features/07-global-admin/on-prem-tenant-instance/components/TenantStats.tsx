@@ -1,8 +1,8 @@
-import NewAgentIcon from "@/components/NewAgentIcon";
-import { formatSecondsToCompactDuration } from "@/features/03-orchestrator/jobs-table/utils";
-import { StatsCard } from "@/react-toolkit/ui/card/StatsCard";
-
 import { BadgeCheckIcon, ClockIcon, UsersIcon } from "lucide-react";
+
+import NewAgentIcon from "@/components/NewAgentIcon";
+import { formatSecondsToCompactDuration } from "@/features/03-orchestrator/jobs-table/utils/format-time-utils";
+import { StatsCard } from "@/react-toolkit/ui/card/StatsCard";
 
 import { useFetchTenantStatistics } from "../hooks/useFetchTenantStatistics";
 import { useTenantRoute } from "../hooks/useTenantRoute";

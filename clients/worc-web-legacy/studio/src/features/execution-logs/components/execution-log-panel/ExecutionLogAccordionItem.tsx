@@ -68,7 +68,7 @@ export default function ExecutionLogAccordionItem({
       >
         <div className="flex items-center gap-0 h-[1.1rem]">
           <div className="flex items-center gap-1.5 h-[1.1rem]">
-            {entry.status == JobStatusEnum["Abort"] && (
+            {entry.status == JobStatusEnum["Aborted"] && (
               <CircleStopIcon className="h-3.5 w-3.5 text-orange-500" />
             )}
 

@@ -57,7 +57,7 @@ public class EmailTriggerService : IEmailTriggerService
             {
                 emailTriggers = await _unitOfWork.TriggerRepo
                     .GetByConditionAsync(w =>
-                        w.TriggerType == TriggerTypesEnum.EmailTrigger &&
+                        w.TriggerType == TriggerTypesEnum.Email &&
                         w.CreatedByUserId == _userId)
                     .OrderByDescending(o => o.CreatedOn)
                     .Include(i => i.CreatedByUser)
@@ -209,7 +209,7 @@ public class EmailTriggerService : IEmailTriggerService
             // Validate duplicate trigger by name (case-insensitive)
             var existingTrigger = await _unitOfWork.TriggerRepo
                 .GetByConditionAsync(w =>
-                    w.TriggerType == TriggerTypesEnum.EmailTrigger &&
+                    w.TriggerType == TriggerTypesEnum.Email &&
                     w.Name.ToLower() == emailTriggerDto.Name.ToLower()
                 )
                 .FirstOrDefaultAsync();
@@ -265,7 +265,7 @@ public class EmailTriggerService : IEmailTriggerService
             newEmailTrigger.Metadata = JsonDocument.Parse(System.Text.Json.JsonSerializer.Serialize(subscription.Data, jsonOptions));
 
             // Set the TriggerType explicitly
-            newEmailTrigger.TriggerType = TriggerTypesEnum.EmailTrigger;
+            newEmailTrigger.TriggerType = TriggerTypesEnum.Email;
 
             // Set audit fields: created and last modified by current user
             newEmailTrigger.CreatedByUserId = _userId;
@@ -397,7 +397,7 @@ public class EmailTriggerService : IEmailTriggerService
             // Check for duplicate name among other triggers
             var duplicateTrigger = await _unitOfWork.TriggerRepo
                 .GetByConditionAsync(w =>
-                    w.TriggerType == TriggerTypesEnum.EmailTrigger &&
+                    w.TriggerType == TriggerTypesEnum.Email &&
                     w.Name.ToLower() == emailTriggerDto.Name.ToLower() &&
                     w.Id != emailTriggerDto.Id
                 )

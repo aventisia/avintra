@@ -1,9 +1,9 @@
-import { formatSecondsToCompactDuration } from "@/features/03-orchestrator/jobs-table/utils";
-
 import { DTColumnHeader } from "@aventisia/ui/data-table";
 import { getEnumValueByKey } from "@aventisia/ui/utils";
 import { ColumnDef } from "@tanstack/react-table";
 import { format } from "date-fns";
+
+import { formatSecondsToCompactDuration } from "@/features/03-orchestrator/jobs-table/utils/format-time-utils";
 
 import { TABLE_KEY, formatNumber } from "../constants";
 import { getColumnName } from "../constants/column-display-names";

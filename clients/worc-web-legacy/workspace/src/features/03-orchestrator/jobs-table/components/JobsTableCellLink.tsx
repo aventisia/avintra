@@ -1,31 +1,30 @@
-import { buttonVariants } from "@aventisia/ui/buttons";
-import { cn } from "@aventisia/ui/lib";
 import { NavLink } from "react-router-dom";
 
 interface JobsTableCellLinkProps {
-  /** The ID of the job to open execution log. */
-  rowId: string;
-  versionId: string;
-
-  /** The cell value to display. */
-  cellValue: string;
+  jobId: string;
+  flowVersionId: string;
+  flowName: string;
+  flowVersionNumber: string;
 }
 
 export const JobsTableCellLink = ({
-  rowId,
-  versionId,
-  cellValue,
+  jobId,
+  flowVersionId,
+  flowName,
+  flowVersionNumber,
 }: JobsTableCellLinkProps) => {
   // Return the component
   return (
     <NavLink
-      to={`${window.location.origin}${import.meta.env.VITE_STUDIO_PATH}execution-log?v=${versionId}&j=${rowId}`}
-      className={cn(
-        buttonVariants({ variant: "link" }),
-        "h-auto w-auto cursor-pointer truncate inline-block  font-medium text-foreground hover:text-primary",
-      )}
+      to={`${window.location.origin}${import.meta.env.VITE_STUDIO_PATH}execution-log?v=${flowVersionId}&j=${jobId}`}
+      className="group inline-flex h-auto w-auto cursor-pointer truncate font-medium text-foreground hover:text-primary"
     >
-      {cellValue}
+      <span className="inline-flex items-center gap-1 border-b-[0.1rem] border-transparent group-hover:border-primary">
+        <span>{flowName}</span>
+        <span className="bg-slate-100 border group-hover:text-primary text-2xs rounded-xl px-1.5 py-[1px] text-muted-foreground">
+          {flowVersionNumber}
+        </span>
+      </span>
     </NavLink>
   );
 };

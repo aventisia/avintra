@@ -4,32 +4,53 @@ public class JobTableMappingProfile : IRegister
 {
     public void Register(TypeAdapterConfig config)
     {
-        // Mapping for job record or records.
-        config.NewConfig<Job, JobTableDto>()
-            .Map(dest => dest.VersionNumber, src => src.FlowVersion != null ? src.FlowVersion.VersionNumber : 0)
-            .Map(dest => dest.Name, src => src.FlowVersion != null ? src.FlowVersion.Flow.Name : null);
+        // TODO: Remove the mapping for some properties once the properties names are in sync in Job entity
 
-        config.NewConfig<Job, JobDetailDto>()
-            .Map(dest => dest.FlowId, src => src.FlowVersion != null ? src.FlowVersion.FlowId : Guid.Empty)
-            .Map(dest => dest.Name, src => src.FlowVersion != null ? src.FlowVersion.Flow.Name : null)
-            .Map(dest => dest.ReactFlowObject, src => src.FlowVersion != null ? src.FlowVersion.ReactFlowObject : null)
-            .Map(dest => dest.FlowVariablesObject, src => src.FlowVersion != null ? src.FlowVersion.FlowVariablesObject : null)
-            .Map(dest => dest.InputOutputObject, src => src.FlowVersion != null ? src.FlowVersion.InputOutputObject : null)
-            .Map(dest => dest.VersionNumber, src => src.FlowVersion != null ? src.FlowVersion.VersionNumber : 0)
-            .Map(dest => dest.Type, src => src.FlowVersion != null && src.FlowVersion.Flow != null ? src.FlowVersion.Flow.Type : FlowTypesEnum.Agent); // Keep actual flow type when available; fallback for safety.
+        // Mapping Job -> JobTableRowDto
+        config.NewConfig<Job, JobTableRowDto>()
+            .Map(dest => dest.FlowName, src => src.FlowVersion != null && src.FlowVersion.Flow != null ? src.FlowVersion.Flow.Name : "FLOW_NAME_NOT_FOUND")
+            .Map(dest => dest.FlowVersionNumber, src => src.FlowVersion != null ? $"v{src.FlowVersion.VersionNumber}" : "VERSION_NUMBER_NOT_FOUND")
+            .Map(dest => dest.IsFlowVersionPublished, src => src.FlowVersion != null ? src.FlowVersion.IsPublished : false)
+            .Map(dest => dest.CreatedByName, src => src.ExecutedBy)
+            .Map(dest => dest.CreatedAt, src => src.CreatedOn)
+            .Map(dest => dest.ExecutionLocation, src => src.ExecutedOn)
+            .Map(dest => dest.Remarks, src => src.Remark)
+            .Map(dest => dest.StartTimeStamp, src => src.StartTime)
+            .Map(dest => dest.EndTimeStamp, src => src.EndTime);
 
-        // Mapping for inserting or updating a job record.
-        config.NewConfig<JobTableDto, Job>()
-            .Ignore(dest => dest.Id)
-            .Ignore(dest => dest.RetryCount)
-            .Ignore(dest => dest.TenantId)
-            .Ignore(dest => dest.CreatedOn)
-            .Ignore(dest => dest.TriggerType)
+        // Mapping Job -> JobRecordDto
+        config.NewConfig<Job, JobRecordDto>()
+            .Map(dest => dest.FlowName, src => src.FlowVersion != null && src.FlowVersion.Flow != null ? src.FlowVersion.Flow.Name : "FLOW_NAME_NOT_FOUND")
+            .Map(dest => dest.FlowVersionNumber, src => src.FlowVersion != null ? $"v{src.FlowVersion.VersionNumber}" : "VERSION_NUMBER_NOT_FOUND")
+            .Map(dest => dest.FlowType, src => src.FlowVersion != null && src.FlowVersion.Flow != null ? src.FlowVersion.Flow.Type : FlowTypesEnum.Agent)
+            .Map(dest => dest.IsFlowVersionPublished, src => src.FlowVersion != null ? src.FlowVersion.IsPublished : false)
+            .Map(dest => dest.CreatedByName, src => src.ExecutedBy)
+            .Map(dest => dest.CreatedById, src => src.RefId)
+            .Map(dest => dest.CreatedAt, src => src.CreatedOn)
+            .Map(dest => dest.ExecutionLocation, src => src.ExecutedOn)
+            .Map(dest => dest.Remarks, src => src.Remark)
+            .Map(dest => dest.StartTimeStamp, src => src.StartTime)
+            .Map(dest => dest.EndTimeStamp, src => src.EndTime);
+        // TODO: JobInputData, JobOutputData, LastNodeLog mapping will be handled in the service layer as they are stored as JSON strings in the database and need to be deserialized into JsonDocument objects.
+
+        // Mapping JobInsertDto -> Job
+        config.NewConfig<JobInsertDto, Job>()
+            .Map(dest => dest.ExecutedBy, src => src.CreatedByName)
+            .Map(dest => dest.RefId, src => src.CreatedById)
+            .Map(dest => dest.ExecutedOn, src => src.ExecutionLocation)
             .IgnoreNullValues(true);
+        // TODO: JobInputData, FlowVersionHistoryId, RetryCount mapping will be handled in the service layer as it is stored as a JSON string in the database and needs to be serialized from JsonDocument.
 
-        config.NewConfig<Job, ExportJobResponseDto>()
-            .Map(dest => dest.CreatedOn, src => src.CreatedOn.Date.ToString("dd/MM/yyyy"))
-            .Map(dest => dest.Name, src => src.FlowVersion != null && src.FlowVersion.Flow != null ? src.FlowVersion.Flow.Name : string.Empty)
-            .Map(dest => dest.MachineName, src => src.Machine != null ? src.Machine.Name : string.Empty);
+        // Mapping JobUpdateDto -> Job
+        config.NewConfig<JobUpdateDto, Job>()
+            .Map(dest => dest.Remark, src => src.Remarks)
+            .IgnoreNullValues(true);
+        // TODO: JobOutputData mapping will be handled in the service layer as it is stored as a JSON string in the database and needs to be serialized from JsonDocument.
+
+        // TODO: Need to check this
+        // config.NewConfig<Job, ExportJobResponseDto>()
+        //     .Map(dest => dest.CreatedOn, src => src.CreatedOn.Date.ToString("dd/MM/yyyy"))
+        //     .Map(dest => dest.Name, src => src.FlowVersion != null && src.FlowVersion.Flow != null ? src.FlowVersion.Flow.Name : string.Empty)
+        //     .Map(dest => dest.MachineName, src => src.Machine != null ? src.Machine.Name : string.Empty);
     }
 }
