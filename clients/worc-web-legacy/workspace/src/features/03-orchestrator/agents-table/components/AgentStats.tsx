@@ -1,11 +1,11 @@
-import NewAgentIcon from "@/components/NewAgentIcon";
-import { FlowTypesEnum } from "@/react-toolkit/enums/flow-types-enum";
-import { StatsCard } from "@/react-toolkit/ui/card/StatsCard";
-
+import { StatsCard } from "@aventisia/ui/cards";
 import Enumerable from "linq";
 import { Monitor } from "lucide-react";
 import { useEffect, useState } from "react";
 import { BsRobot } from "react-icons/bs";
+
+import NewAgentIcon from "@/components/NewAgentIcon";
+import { FlowTypesEnum } from "@/react-toolkit/enums/flow-types-enum";
 
 import type { AgentsTableDto } from "../dtos/agents-table-dto";
 
@@ -37,24 +37,24 @@ export const AgentStats = ({ data }: StatsProps) => {
   }, [data]);
 
   return (
-    <div className="my-4 grid grid-cols-3 gap-3">
+    <div className="mb-2 grid grid-cols-3 gap-4">
       <StatsCard
         key="Total Published Agents"
+        icon={<NewAgentIcon className="size-7" />}
         title={"Total Published Agents"}
-        mainText={data?.length}
-        icon={<NewAgentIcon className="h-10 w-10 text-primary" />}
+        content={data?.length}
       />
       <StatsCard
-        title={"Total Machines"}
         key={"Total Machines"}
-        mainText={stats?.totalMachineCount ?? 0}
-        icon={<Monitor stroke="var(--primary)" className="h-10 w-10" />}
+        icon={<Monitor stroke="var(--primary)" className="size-7" />}
+        title={"Total Machines"}
+        content={stats?.totalMachineCount ?? 0}
       />
       <StatsCard
-        title={"Total Active Machines"}
         key={"Total Active Machines"}
-        mainText={stats?.active ?? 0}
-        icon={<BsRobot fill="var(--primary)" className="h-10 w-10" />}
+        icon={<BsRobot fill="var(--primary)" className="size-7" />}
+        title={"Total Active Machines"}
+        content={stats?.active ?? 0}
       />
     </div>
   );

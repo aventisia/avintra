@@ -66,7 +66,13 @@ export const MachinesTable = () => {
               <div className="flex items-center gap-2">
                 <DTSearchBox
                   table={table}
-                  searchColumns={["name", "status", "username", "environment", "operatingSystem"]}
+                  searchColumns={[
+                    "name",
+                    "status",
+                    "username",
+                    "environment",
+                    "operatingSystem",
+                  ]}
                   placeholder="Search by name, status, username, env, or OS..."
                 />
                 <DTViewOptions
@@ -89,7 +95,11 @@ export const MachinesTable = () => {
           </MachineCrudDialog>
 
           {/* Data table Pagination component */}
-          <DTPagination table={table} />
+          <DTPagination
+            table={table}
+            singularLabel="machine"
+            pluralLabel="machines"
+          />
 
           {/* Bulk actions for data table */}
           <MachinesBulkActions table={table} />

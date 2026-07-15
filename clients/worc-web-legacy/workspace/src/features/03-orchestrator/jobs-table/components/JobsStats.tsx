@@ -1,8 +1,8 @@
+import { StatsCard } from "@aventisia/ui/cards";
 import { Clock10Icon, MonitorPlayIcon } from "lucide-react";
 import { useMemo } from "react";
 
 import NewAgentIcon from "@/components/NewAgentIcon";
-import { StatsCard } from "@/react-toolkit/ui/card/StatsCard";
 
 import {
   JobStatusEnum,
@@ -71,12 +71,13 @@ export const JobsStats = ({ data }: StatsProps) => {
   }, [data]);
 
   return (
-    <div className="my-4 grid grid-cols-3 gap-3">
+    <div className="mb-2 grid grid-cols-3 gap-4">
       {/* Total Jobs */}
       <StatsCard
+        icon={<MonitorPlayIcon className="size-7" />}
         title="Total Jobs"
-        mainText={stats.jobs}
-        description={
+        content={stats.jobs}
+        footer={
           <>
             <span className="font-medium text-xs">{stats.completed}</span>{" "}
             Completed,{" "}
@@ -86,29 +87,27 @@ export const JobsStats = ({ data }: StatsProps) => {
             Killed
           </>
         }
-        icon={<MonitorPlayIcon className="size-8 stroke-primary" />}
       />
 
       {/* Active Agents */}
       <StatsCard
+        icon={<NewAgentIcon className="size-7 " />}
         title="Total Agents"
-        mainText={stats.agents}
-        description="Distinct agents that have executed jobs"
-        icon={<NewAgentIcon className="size-8 text-primary stroke-primary " />}
+        content={stats.agents}
+        footer="Distinct agents that have executed jobs"
       />
 
       {/* Execution Time */}
       <StatsCard
+        icon={<Clock10Icon className="size-7" />}
         title="Execution Time"
-        mainText={stats.totalExecutionLabel}
-        description={
+        content={stats.totalExecutionLabel}
+        footer={
           <>
             Avg. <span className="font-medium text-xs">{stats.avgLabel}</span>{" "}
             per job
           </>
         }
-        // description={`Avg ${stats.avgLabel} per job`}
-        icon={<Clock10Icon className="size-8 stroke-primary" />}
       />
     </div>
   );

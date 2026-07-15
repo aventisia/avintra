@@ -1,9 +1,9 @@
-import NewAgentIcon from "@/components/NewAgentIcon";
-import NewChatIcon from "@/components/NewChatIcon";
-import { StatsCard } from "@/react-toolkit/ui/card/StatsCard";
-
+import { StatsCard } from "@aventisia/ui/cards";
 import { MessageCircleMoreIcon } from "lucide-react";
 import { useMemo } from "react";
+
+import NewAgentIcon from "@/components/NewAgentIcon";
+import NewChatIcon from "@/components/NewChatIcon";
 
 import { AdminConversationDto } from "../dtos/conversations-table-dto";
 
@@ -23,7 +23,9 @@ export const ConversationsStats = ({ data }: StatsProps) => {
 
     const conversations = data.length;
 
-    const uniqueAgents = new Set(data.map((x) => x.flowVersionId).filter(Boolean));
+    const uniqueAgents = new Set(
+      data.map((x) => x.flowVersionId).filter(Boolean),
+    );
 
     const totalExchanges = data.reduce(
       (acc, x) => acc + (x.totalExchange ?? 0),
@@ -37,28 +39,26 @@ export const ConversationsStats = ({ data }: StatsProps) => {
   }, [data]);
 
   return (
-    <div className="my-4 grid grid-cols-3 gap-3">
+    <div className="mb-2 grid grid-cols-3 gap-4">
       {/* Total conversations */}
       <StatsCard
+        icon={<NewChatIcon className="  size-7" />}
         title="Total Conversations"
-        mainText={stats.conversations}
-        icon={<NewChatIcon className=" text-primary h-9 w-9" />}
+        content={stats.conversations}
       />
 
       {/* Active Agents */}
       <StatsCard
+        icon={<NewAgentIcon className="size-7  " />}
         title="Total Agents"
-        mainText={stats.agents}
-        icon={<NewAgentIcon className="h-9 w-9 text-primary stroke-primary " />}
+        content={stats.agents}
       />
 
       {/* Total exchanges */}
       <StatsCard
+        icon={<MessageCircleMoreIcon className="size-7" />}
         title="Total Exchanges"
-        mainText={stats.totalExchanges}
-        icon={
-          <MessageCircleMoreIcon stroke="var(--primary)" className="h-9 w-9" />
-        }
+        content={stats.totalExchanges}
       />
     </div>
   );

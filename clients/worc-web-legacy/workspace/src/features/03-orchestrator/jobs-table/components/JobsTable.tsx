@@ -165,7 +165,7 @@ export const JobsTable = () => {
           </JobCrudDialog>
           {tabValue === "Scheduled" && <JobsBulkActions table={table} />}{" "}
           {/* Data table Pagination component */}
-          <DTPagination table={table} />
+          <DTPagination table={table} singularLabel="job" pluralLabel="jobs" />
         </div>
       ) : (
         // Show data table skeleton while fetching the jobs data
