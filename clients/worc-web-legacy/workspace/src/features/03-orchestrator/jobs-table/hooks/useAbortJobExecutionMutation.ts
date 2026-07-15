@@ -1,23 +1,5 @@
-import { toast } from "@aventisia/ui/sonner";
-import { useMutation, useQueryClient } from "@tanstack/react-query";
-
-import { abortJobExecution } from "../apis/jobs-table-apis";
-
+// The abort job execution endpoint is not available in the current backend.
+// This hook is intentionally left as a no-op stub.
 export const useAbortJobExecutionMutation = () => {
-  const queryClient = useQueryClient();
-
-  const { mutate: abortJobMutation, isPending } = useMutation({
-    mutationFn: abortJobExecution,
-
-    onSuccess: async (res) => {
-      queryClient.invalidateQueries({ queryKey: ["jobs"] }); // Jobs list
-      toast.success(res.message);
-    },
-
-    onError: (error) => {
-      toast.error(error.toString());
-    },
-  });
-
-  return { abortJobMutation, isPending };
+  return { abortJobMutation: undefined, isPending: false };
 };

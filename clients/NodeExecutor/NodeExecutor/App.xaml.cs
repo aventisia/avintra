@@ -16,7 +16,7 @@ namespace NodeExecutor
             string appBaseUrl = e.Args.Length > 0 ? e.Args[0] : "https://avintra.aventisia.com";
             string wsPort = e.Args.Length > 1 ? e.Args[1] : "9001";
             string agentId = e.Args.Length > 2 ? e.Args[2] : Guid.Empty.ToString();
-            string agentName = e.Args.Length > 3 ? e.Args[3] : "Agent Name";
+            string agentName = e.Args.Length > 3 ? e.Args[3] : "AGENT_NAME_NOT_FOUND";
             string inputArgumentsJson = e.Args.Length > 4 ? e.Args[4] : "{}";
             string accessToken = e.Args.Length > 5 ? e.Args[5] : "";
 

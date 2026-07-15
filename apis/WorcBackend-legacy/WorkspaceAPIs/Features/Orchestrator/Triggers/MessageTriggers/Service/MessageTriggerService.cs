@@ -54,7 +54,7 @@ public class MessageTriggerService : IMessageTriggerService
                 // Retrieve owned triggers only
                 messageTriggers = await _unitOfWork.TriggerRepo
                     .GetByConditionAsync(w =>
-                        w.TriggerType == TriggerTypesEnum.MessageTrigger &&
+                        w.TriggerType == TriggerTypesEnum.Message &&
                         w.CreatedByUserId == _userId)
                     .OrderByDescending(o => o.CreatedOn)
                     .Include(i => i.CreatedByUser)
@@ -82,7 +82,7 @@ public class MessageTriggerService : IMessageTriggerService
                 // Retrieve tenant-wide or explicitly shared message triggers
                 messageTriggers = await _unitOfWork.TriggerRepo
                     .GetByConditionAsync(w =>
-                        w.TriggerType == TriggerTypesEnum.MessageTrigger &&
+                        w.TriggerType == TriggerTypesEnum.Message &&
                         w.CreatedByUserId != _userId &&
                         (
                             w.IsTenantWideAccess || resourceAccess.Keys.Contains(w.Id)
@@ -202,7 +202,7 @@ public class MessageTriggerService : IMessageTriggerService
         {
             // Validate duplicate trigger by name (case-insensitive)
             var existingTrigger = await _unitOfWork.TriggerRepo
-                .GetByConditionAsync(w => w.TriggerType == TriggerTypesEnum.MessageTrigger && w.Name.ToLower() == messageTriggerDto.Name.ToLower())
+                .GetByConditionAsync(w => w.TriggerType == TriggerTypesEnum.Message && w.Name.ToLower() == messageTriggerDto.Name.ToLower())
                 .FirstOrDefaultAsync();
 
             if (existingTrigger != null)
@@ -258,7 +258,7 @@ public class MessageTriggerService : IMessageTriggerService
             newMessageTrigger.Metadata = JsonDocument.Parse(System.Text.Json.JsonSerializer.Serialize(subscription.Data, jsonOptions));
 
             // Set the TriggerType explicitly
-            newMessageTrigger.TriggerType = TriggerTypesEnum.MessageTrigger;
+            newMessageTrigger.TriggerType = TriggerTypesEnum.Message;
 
             // Set audit fields: created and last modified by current user
             newMessageTrigger.CreatedByUserId = _userId;
@@ -387,7 +387,7 @@ public class MessageTriggerService : IMessageTriggerService
             // Check for duplicate name among other triggers
             var duplicateTrigger = await _unitOfWork.TriggerRepo
                 .GetByConditionAsync(w =>
-                    w.TriggerType == TriggerTypesEnum.MessageTrigger &&
+                    w.TriggerType == TriggerTypesEnum.Message &&
                     w.Name.ToLower() == messageTriggerDto.Name.ToLower() &&
                     w.Id != messageTriggerDto.Id
                 )
@@ -603,7 +603,7 @@ public class MessageTriggerService : IMessageTriggerService
         {
             // Retrieve the message trigger
             var messageTrigger = await _unitOfWork.TriggerRepo
-                .GetByConditionAsync(w => w.Id == messageTriggerId && w.TriggerType == TriggerTypesEnum.MessageTrigger)
+                .GetByConditionAsync(w => w.Id == messageTriggerId && w.TriggerType == TriggerTypesEnum.Message)
                 .SingleOrDefaultAsync();
 
             // Check existence
@@ -696,7 +696,7 @@ public class MessageTriggerService : IMessageTriggerService
         {
             // Retrieve triggers that match provided IDs
             var messageTriggers = await _unitOfWork.TriggerRepo
-                .GetByConditionAsync(w => messageTriggerIds.Contains(w.Id) && w.TriggerType == TriggerTypesEnum.MessageTrigger)
+                .GetByConditionAsync(w => messageTriggerIds.Contains(w.Id) && w.TriggerType == TriggerTypesEnum.Message)
                 .ToListAsync();
 
             // Check if any triggers were found
@@ -796,7 +796,7 @@ public class MessageTriggerService : IMessageTriggerService
         {
             // Check repository for existing trigger with the same name
             var triggerExists = await _unitOfWork.TriggerRepo
-                .GetByConditionAsync(w => w.TriggerType == TriggerTypesEnum.MessageTrigger && w.Name.ToLower() == checkAvailabilityDto.UserInput.Trim().ToLower())
+                .GetByConditionAsync(w => w.TriggerType == TriggerTypesEnum.Message && w.Name.ToLower() == checkAvailabilityDto.UserInput.Trim().ToLower())
                 .FirstOrDefaultAsync();
 
             if (triggerExists != null)

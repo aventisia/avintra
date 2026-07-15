@@ -35,7 +35,7 @@ public class TimeTriggerService(
             {
                 timeTriggers = await _unitOfWork.TriggerRepo
                     .GetByConditionAsync(w =>
-                        w.TriggerType == TriggerTypesEnum.TimeTrigger &&
+                        w.TriggerType == TriggerTypesEnum.Time &&
                         w.CreatedByUserId == _userId
                     )
                     .Include(i => i.CreatedByUser)
@@ -64,7 +64,7 @@ public class TimeTriggerService(
                 // Retrieve tenant-wide or explicitly shared triggers
                 timeTriggers = await _unitOfWork.TriggerRepo
                     .GetByConditionAsync(w =>
-                        w.TriggerType == TriggerTypesEnum.TimeTrigger &&
+                        w.TriggerType == TriggerTypesEnum.Time &&
                         (
                             w.IsTenantWideAccess || resourceAccess.Keys.Contains(w.Id)
                         )
@@ -186,7 +186,7 @@ public class TimeTriggerService(
         {
             // Validate trigger name uniqueness
             var triggerAlreadyExists = await _unitOfWork.TriggerRepo
-                .GetByConditionAsync(w => w.TriggerType == TriggerTypesEnum.TimeTrigger && w.Name.ToLower() == checkAvailabilityDto.UserInput.Trim().ToLower())
+                .GetByConditionAsync(w => w.TriggerType == TriggerTypesEnum.Time && w.Name.ToLower() == checkAvailabilityDto.UserInput.Trim().ToLower())
                 .FirstOrDefaultAsync();
 
             // Trigger already exists
@@ -244,7 +244,7 @@ public class TimeTriggerService(
 
             // Validate duplicate trigger by name (case-insensitive)
             var existingTrigger = await _unitOfWork.TriggerRepo
-                .GetByConditionAsync(w => w.TriggerType == TriggerTypesEnum.TimeTrigger && w.Name.ToLower() == timeTriggerDto.Name.ToLower())
+                .GetByConditionAsync(w => w.TriggerType == TriggerTypesEnum.Time && w.Name.ToLower() == timeTriggerDto.Name.ToLower())
                 .FirstOrDefaultAsync();
 
             if (existingTrigger != null)
@@ -295,7 +295,7 @@ public class TimeTriggerService(
             newTimeTrigger.Metadata = JsonDocument.Parse(System.Text.Json.JsonSerializer.Serialize(model, jsonOptions));
 
             // Set the TriggerType explicitly
-            newTimeTrigger.TriggerType = TriggerTypesEnum.TimeTrigger;
+            newTimeTrigger.TriggerType = TriggerTypesEnum.Time;
 
             // Set audit fields: created and last modified by current user
             newTimeTrigger.CreatedByUserId = _userId;
@@ -438,7 +438,7 @@ public class TimeTriggerService(
             // Check for duplicate name among other triggers
             var duplicateTrigger = await _unitOfWork.TriggerRepo
                 .GetByConditionAsync(w =>
-                    w.TriggerType == TriggerTypesEnum.TimeTrigger &&
+                    w.TriggerType == TriggerTypesEnum.Time &&
                     w.Name.ToLower() == timeTriggerDto.Name.ToLower() &&
                     w.Id != timeTriggerDto.Id
                 )
@@ -717,7 +717,7 @@ public class TimeTriggerService(
         {
             // Try to get time trigger
             var trigger = await _unitOfWork.TriggerRepo
-                .GetByConditionAsync(w => w.Id == timeTriggerId && w.TriggerType == TriggerTypesEnum.TimeTrigger)
+                .GetByConditionAsync(w => w.Id == timeTriggerId && w.TriggerType == TriggerTypesEnum.Time)
                 .FirstOrDefaultAsync();
 
             // Trigger does not exist
@@ -792,7 +792,7 @@ public class TimeTriggerService(
         {
             // Validate time triggers existence
             var timeTriggers = await _unitOfWork.TriggerRepo
-                .GetByConditionAsync(w => timeTriggerIds.Contains(w.Id) && w.TriggerType == TriggerTypesEnum.TimeTrigger)
+                .GetByConditionAsync(w => timeTriggerIds.Contains(w.Id) && w.TriggerType == TriggerTypesEnum.Time)
                 .ToListAsync();
 
             // Triggers do not exist

@@ -107,9 +107,7 @@ const AppHeader: React.FC = () => {
             </div>
             <SaveFlow />
             <div className="flex items-center">
-              <Tooltip content="More">
-                <HeaderActionMenu />
-              </Tooltip>
+              <HeaderActionMenu />
             </div>
           </div>
         ) : (

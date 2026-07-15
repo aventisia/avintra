@@ -22,7 +22,7 @@ public class WebhookCallbackService : IWebhookCallbackService
         {
             // Load the linked webhook trigger to get the callback URL
             var trigger = await _dbContext.Triggers
-                .FirstOrDefaultAsync(t => t.Id == job.RefId.Value && t.TriggerType == TriggerTypesEnum.WebhookTrigger);
+                .FirstOrDefaultAsync(t => t.Id == job.RefId.Value && t.TriggerType == TriggerTypesEnum.Webhook);
 
             if (trigger == null)
                 return;

@@ -46,7 +46,7 @@ public class TimeTriggerExecutionJob : IJob
 
             // Fetch active TimeTriggers
             var triggersQuery = await _workspaceInternalDbContext.Triggers
-                .Where(w => w.TriggerType == TriggerTypesEnum.TimeTrigger && !w.IsDisabled)
+                .Where(w => w.TriggerType == TriggerTypesEnum.Time && !w.IsDisabled)
                 .Include(t => t.TriggerFlowVersions)
                 .ToListAsync();
 
@@ -144,7 +144,7 @@ public class TimeTriggerExecutionJob : IJob
                             TenantId = timeTriggerflowVersion.TenantId,
                             FlowVersionId = timeTriggerflowVersion.FlowVersionId,
                             FlowVersionHistoryId = latestFlowVersionHistoryId,
-                            TriggerType = TriggerTypesEnum.TimeTrigger,
+                            TriggerType = TriggerTypesEnum.Time,
                             RefId = timeTriggerflowVersion.TriggerId,
                             Priority = JobPriorityEnum.Normal,
                             Status = JobStatusEnum.Created,

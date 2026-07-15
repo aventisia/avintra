@@ -9,6 +9,7 @@ public class JobTableService : IJobTableService
     private readonly IWebhookCallbackService _webhookCallbackService;
     private readonly EnvironmentConfig _environmentConfig;
     private readonly Guid _userId;
+    private readonly string _userMachine;
 
     public JobTableService(
         ILogger<JobTableService> logger,
@@ -22,6 +23,9 @@ public class JobTableService : IJobTableService
         // Set the user ID from the HTTP context
         _userId = Guid.Parse(httpContextAccessor.HttpContext?.User?.FindFirstValue("uid") ?? Guid.Empty.ToString());
 
+        // Fetch the custom header: X-User-Machine (only set if running inside Tauri Desktop App)
+        _userMachine = httpContextAccessor.HttpContext?.Request?.Headers["X-User-Machine"].FirstOrDefault() ?? string.Empty;
+
         _logger = logger;
         _unitOfWork = unitOfWork;
         _currentTenantService = currentTenantService;
@@ -30,958 +34,888 @@ public class JobTableService : IJobTableService
         _environmentConfig = environmentConfig;
     }
 
-    // Retrieves a list of jobs within the specified date range, or defaults to the last 7 days if no dates are provided.
-    public async Task<ServiceResponse<IEnumerable<JobTableDto>>> GetJobsAsync(DateTimeOffset? startDate, DateTimeOffset? endDate, bool includeLogs)
+    // Retrieves a list of all jobs between optional start and end date filters.
+    public async Task<ServiceResponse<IEnumerable<JobTableRowDto>>> GetJobsAsync(DateTimeOffset? startDate, DateTimeOffset? endDate)
     {
         // Initialize the response with a default error message.
-        var serviceResponse = new ServiceResponse<IEnumerable<JobTableDto>>
-        {
-            Data = null,
-            Message = "Failed to retrieve jobs. Please try again later."
-        };
+        var serviceResponse = ServiceResponse<IEnumerable<JobTableRowDto>>.Create(message: "Failed to retrieve jobs list. Please try again later.");
 
         try
         {
-            // If no date filters are provided, default to the last 7 days.
-            if (!startDate.HasValue || !endDate.HasValue)
-            {
-                startDate = DateTime.UtcNow.Date.AddDays(-6);
-                endDate = DateTime.UtcNow.Date;
-            }
+            // Resolve date range
+            var dateRange = JobsTableHelpers.ResolveDateRange(startDate, endDate);
 
-            // Fetch jobs from the repository with the provided date filters.
+            // Return if start date greater than the end date
+            if (dateRange.StartDate > dateRange.EndDate)
+                return serviceResponse.Failure("Start date cannot be greater than end date.", 400);
+
+            // Retrieve the list of records
             var jobs = await _unitOfWork.JobRepo
-                .GetByConditionAsync(w =>
-                    w.CreatedOn.Date >= startDate.Value &&
-                    w.CreatedOn.Date <= endDate.Value
-                )
-                .Include(i => i.FlowVersion)
-                    .ThenInclude(i2 => i2.Flow)
-                .OrderByDescending(o => o.CreatedOn)
-                .ProjectToType<JobTableDto>()
-                .ToListAsync();
+                        .GetByConditionAsync(w =>
+                            w.CreatedOn >= dateRange.StartDate.Date &&
+                            w.CreatedOn < dateRange.EndDate.Date.AddDays(1)
+                        )
+                        // When we use ProjectToType then we don't have to explicitly include the related entities (FlowVersion and Flow) because the mapping configuration will handle it. However, if you want to include them for other reasons (like eager loading), you can uncomment the following lines.
+                        //.Include(i => i.FlowVersion)
+                        //.ThenInclude(i2 => i2.Flow)
+                        .OrderByDescending(o => o.CreatedOn)
+                        .ProjectToType<JobTableRowDto>()
+                        .ToListAsync();
 
-            // If the 'includeLogs' flag is false, clear the 'NodeExecutionLogs' for each job
-            if (!includeLogs)
-            {
-                jobs.ForEach(fe =>
-                {
-                    fe.NodeExecutionLogs = string.Empty;
-                    fe.InputArgumentsJson = string.Empty;
-                    fe.OutputDataJson = string.Empty;
-                });
-            }
-
-            // If jobs are successfully retrieved, update the response.
-            serviceResponse.Data = jobs;
-            serviceResponse.StatusCode = 200;
-            serviceResponse.Message = "Jobs retrieved successfully.";
-
-            _logger.LogInformation("Successfully retrieved {JobCount} jobs between {StartDate} and {EndDate}.", jobs.Count, startDate, endDate);
+            // Log and set the response
+            _logger.LogInformation("Successfully retrieved {JobCount} jobs between {StartDate} and {EndDate}.", jobs.Count, dateRange.StartDate, dateRange.EndDate);
+            return serviceResponse.Success(jobs);
         }
         catch (Exception ex)
         {
-            _logger.LogError("Error occurred while retrieving jobs: {ErrorDetails}", ex.ToString());
+            _logger.LogError(ex, "An error occurred while retrieving jobs list between {StartDate} and {EndDate}.", startDate, endDate);
             return serviceResponse;
         }
-
-        return serviceResponse;
     }
 
-    // Retrieves a list of job execution logs, excluding those with a 'Created' or 'Running' status, within the specified date range.
-    public async Task<ServiceResponse<IEnumerable<JobTableDto>>> GetJobLogsAsync(DateTimeOffset? startDate, DateTimeOffset? endDate)
+    // Get job by its ID.
+    public async Task<ServiceResponse<JobRecordDto>> GetJobAsync(Guid jobId)
     {
         // Initialize the response with a default error message.
-        var serviceResponse = new ServiceResponse<IEnumerable<JobTableDto>>
-        {
-            Data = null,
-            Message = "Failed to retrieve job logs. Please try again later."
-        };
+        var serviceResponse = ServiceResponse<JobRecordDto>.Create(message: "Failed to retrieve job record. Please try again later.");
 
         try
         {
-            // If no date filters are provided, default to the last 7 days.
-            if (!startDate.HasValue || !endDate.HasValue)
+            // Retrieve the record
+            var jobRecord = await _unitOfWork.JobRepo
+                        .GetByConditionAsync(w => w.Id == jobId)
+                        .Include(i => i.FlowVersion)
+                        .ThenInclude(i2 => i2.Flow)
+                        .FirstOrDefaultAsync(); // Since primary key (jobId) included in where clause, FirstOrDefaultAsync is appropriate here
+
+            // If record not found, log and return
+            if (jobRecord == null)
             {
-                startDate = DateTime.UtcNow.Date.AddDays(-6);
-                endDate = DateTime.UtcNow.Date;
+                _logger.LogWarning($"Job record not found for Job ID: {jobId}");
+                return serviceResponse.Failure("Job not found.", 404);
             }
 
-            // Fetch job execution logs, excluding 'Created' and 'Running' statuses.
-            var jobLogs = await _unitOfWork.JobRepo
-                .GetByConditionAsync(w =>
-                    w.Status != JobStatusEnum.Created &&
-                    w.Status != JobStatusEnum.Running &&
-                    w.CreatedOn.Date >= startDate.Value && w.CreatedOn.Date <= endDate.Value
-                )
-                .Include(i => i.FlowVersion)
-                    .ThenInclude(i2 => i2.Flow)
-                .OrderByDescending(o => o.CreatedOn)
-                .ProjectToType<JobTableDto>()
-                .ToListAsync();
+            // Map the retrieved Job entity to JobRecordDto
+            var jobRecordDto = jobRecord.Adapt<JobRecordDto>();
 
-            // If job logs are successfully retrieved, update the response.
-            serviceResponse.Data = jobLogs;
-            serviceResponse.StatusCode = 200;
-            serviceResponse.Message = "Job logs retrieved successfully.";
+            // TODO: For now, JobInputData, JobOutputData mapping will be handled in the service layer as they are stored as JSON strings in the database
+            // Once the JobInputData, JobOutputData are stored as JsonDocument objects in the database, we can remove this mapping from the service layer and handle it in the mapping profile.
+            // We can use ProjectToType<JobRecordDto>() once JobInputData and JobOutputData are stored in JsonDocument
+            jobRecordDto.JobInputData = JobsTableHelpers.ParseJsonOrNull(jobRecord.InputArgumentsJson);
+            jobRecordDto.JobOutputData = JobsTableHelpers.ParseJsonOrNull(jobRecord.OutputDataJson);
 
-            _logger.LogInformation("Successfully retrieved {JobLogCount} job logs between {StartDate} and {EndDate}.", jobLogs.Count, startDate, endDate); // Log success with count and date range
+            // TODO: Once we start saving the Execution log in its own table then we can fetch
+            // the last node execution log and set it in the JobRecordDto. For now, we will set it to null.
+            jobRecordDto.LastNodeLog = null;
+
+            // Log and set the response
+            _logger.LogInformation($"Job record retrieved successfully for Job ID: {jobId}");
+            return serviceResponse.Success(jobRecordDto);
         }
         catch (Exception ex)
         {
-            _logger.LogError("Error occurred while retrieving job logs: {ErrorDetails}", ex.ToString());
+            _logger.LogError(ex, "Error retrieving job record for Job ID {jobId}.", jobId);
             return serviceResponse;
         }
-
-        return serviceResponse;
     }
 
-    // Retrieves a specific job by its ID for the current user.
-    public async Task<ServiceResponse<JobTableDto>> GetJobByIdAsync(Guid jobId)
+    // Inserts a new job.
+    public async Task<ServiceResponse<JobRecordDto>> InsertJobAsync(JobInsertDto jobInsertDto)
     {
-        // Initialize ServiceResponse with an error message.
-        var serviceResponse = new ServiceResponse<JobTableDto>
-        {
-            Data = null,
-            Message = "Failed to retrieve the job. Please try again."
-        };
+        // Initialize the response with a default error message.
+        var serviceResponse = ServiceResponse<JobRecordDto>.Create(message: "Failed to create the job. Please try again.");
 
         try
         {
-            // Fetch a specific job created by the current user
-            var job = await _unitOfWork.JobRepo
-                                        .GetByConditionAsync(w =>
-                                            w.Id == jobId
-                                        )
-                                        .ProjectToType<JobTableDto>()
-                                        .FirstOrDefaultAsync();
-
-            // Success - set the response with retrieved job
-            serviceResponse.Data = job;
-            serviceResponse.StatusCode = 200;
-            serviceResponse.Message = "Job retrieved successfully.";
-        }
-        catch (Exception ex)
-        {
-            _logger.LogError(ex.ToString());
-            return serviceResponse;
-        }
-
-        return serviceResponse;
-    }
-
-    // Retrieves the details of a specific job by its ID for the current user.
-    public async Task<ServiceResponse<JobDetailDto>> GetJobDetailByIdAsync(Guid jobId)
-    {
-        var serviceResponse = new ServiceResponse<JobDetailDto>
-        {
-            Data = null,
-            Message = "Failed to retrieve job details. Please try again later."
-        };
-
-        try
-        {
-            // Attempt to fetch the job details from the repository
-            var job = await _unitOfWork.JobRepo
-                .GetByConditionAsync(w => w.Id == jobId)
-                .Include(i => i.FlowVersion)
-                    .ThenInclude(i2 => i2.Flow)
-                .OrderByDescending(w => w.CreatedOn)
-                .ProjectToType<JobDetailDto>()
-                .SingleOrDefaultAsync();
-
-            // If job not found, log and return a "not found" response
-            if (job == null)
-            {
-                _logger.LogWarning($"Job not found for Job ID: {jobId}");
-                serviceResponse.Message = "Job not found.";
-                serviceResponse.StatusCode = 404; // Not Found
-                return serviceResponse;
-            }
-
-            // If job is found, log success and return job details
-            _logger.LogInformation($"Job details retrieved successfully for Job ID: {jobId}");
-
-            serviceResponse.Data = job;
-            serviceResponse.StatusCode = 200; // OK
-            serviceResponse.Message = "Job details retrieved successfully.";
-        }
-        catch (Exception ex)
-        {
-            // Log the error and return a failed response
-            _logger.LogError($"Error retrieving job details for Job ID {jobId}: {ex}");
-        }
-
-        return serviceResponse;
-    }
-
-    // Adds a new job.
-    public async Task<ServiceResponse<JobTableDto>> InsertJobAsync(JobTableDto jobTableDto)
-    {
-        // Initialize ServiceResponse with an error message.
-        var serviceResponse = new ServiceResponse<JobTableDto>
-        {
-            Data = null,
-            Message = "Failed to add the job. Please try again."
-        };
-
-        try
-        {
-            // Check if execution is disabled in the current environment.
+            // CANNOT CREATE THE JOB: Execution is disabled for the on-prem tenant
             if (_environmentConfig.OnPremExecutionDisabled)
             {
-                // Set the service response message to inform the user about execution being disabled.
-                serviceResponse.Message = "Execution is currently disabled. Please contact Aventisia Support for assistance.";
-                _logger.LogError("Execution is currently disabled in this environment. Job processing cannot be performed.");
-                return serviceResponse;
+                _logger.LogError("Execution is currently disabled for the tenant. Please contact Aventisia Support for assistance.");
+                return serviceResponse.Failure("Execution is currently disabled. Please contact Aventisia Support for assistance.", 503);
             }
 
-            // Retrieve the flow version associated with the job using the FlowVersionId from the DTO.
+            // Retrieve the FlowVersion record
             var flowVersion = await _unitOfWork.FlowVersionRepo
-                    .GetByConditionAsync(w => w.Id == jobTableDto.FlowVersionId)
-                    .Include(i => i.FlowVersionHistories)
-                    .AsNoTracking()
-                    .FirstOrDefaultAsync();
+                                .GetByConditionAsync(w => w.Id == jobInsertDto.FlowVersionId)
+                                .Include(i => i.FlowVersionHistories)
+                                .Select(s => new
+                                {
+                                    FlowName = s.Flow != null ? s.Flow.Name : "FLOW_NAME_NOT_FOUND",
+                                    FlowType = s.Flow != null ? s.Flow.Type : FlowTypesEnum.Agent,
+                                    FlowVersionNumber = s.VersionNumber,
+                                    IsFlowVersionPublished = s.IsPublished,
+                                    FlowVersionHistoryId = s.FlowVersionHistories
+                                                                .OrderByDescending(o => o.CreatedOn)
+                                                                .Select(s2 => s2.Id)
+                                                                .FirstOrDefault()
+                                })
+                                .AsNoTracking()
+                                .FirstOrDefaultAsync();
 
+            // If FlowVersion record not found, log and return
             if (flowVersion == null)
             {
-                // If the flow version is not found, log the event and return an error message.
-                _logger.LogError("Flow version not found with ID: {FlowVersionId}", jobTableDto.FlowVersionId);
-                serviceResponse.Message = "The flow version was not found.";
-                return serviceResponse;
+                _logger.LogError("Flow version not found with FlowVersion ID: {FlowVersionId}", jobInsertDto.FlowVersionId);
+                return serviceResponse.Failure("The flow version was not found.", 404);
             }
+            
+            // TODO: Need to check this
+            // Machine? machine = null;
+            // // If the OSId is provided, attempt to find a matching machine.
+            // if (!string.IsNullOrEmpty(jobInsertDto.OSId))
+            // {
+            //     machine = await _unitOfWork.MachineRepo
+            //         .GetByConditionAsync(w =>
+            //             w.OSId.ToLower() == jobInsertDto.OSId.ToLower())
+            //         .FirstOrDefaultAsync();
+
+            //     // Log the outcome of the machine search.
+            //     if (machine != null)
+            //     {
+            //         // If a machine is found, assign its ID to the job DTO.
+            //         jobInsertDto.MachineId = machine.Id;
+            //         _logger.LogInformation("Machine found with ID: {MachineId}", machine.Id);
+            //     }
+            //     else
+            //     {
+            //         _logger.LogWarning("No machine found with OSId: {OSId}", jobInsertDto.OSId);
+            //     }
+            // }
 
             // Trim the string properties in the DTO to remove any leading/trailing spaces (if applicable).
-            jobTableDto = TrimDtoStringPropsUtil.TrimDtoStringProps(jobTableDto);
+            jobInsertDto = TrimDtoStringPropsUtil.TrimDtoStringProps(jobInsertDto);
 
-            Machine? machine = null;
-            // If the OSId is provided, attempt to find a matching machine.
-            if (!string.IsNullOrEmpty(jobTableDto.OSId))
+            // Default mapping
+            var newJob = jobInsertDto.Adapt<Job>();
+            newJob.RetryCount = 0; // Default retry count to 0, will be updated below if JobId is provided
+
+            // Manual mapping: Set RetryCount (if JobId is provided)
+            if (jobInsertDto.JobId.HasValue)
             {
-                machine = await _unitOfWork.MachineRepo
-                    .GetByConditionAsync(w =>
-                        w.OsID.ToLower() == jobTableDto.OSId.ToLower())
-                    .FirstOrDefaultAsync();
+                // Find the existing job with the same JobId and FlowVersionId to determine the retry count
+                var existingJobs = await _unitOfWork.JobRepo
+                                .GetByConditionAsync(w => w.Id == jobInsertDto.JobId && w.FlowVersionId == jobInsertDto.FlowVersionId)
+                                .CountAsync();
 
-                // Log the outcome of the machine search.
-                if (machine != null)
+                // If no existing job found, log and return
+                if (existingJobs == 0)
                 {
-                    // If a machine is found, assign its ID to the job DTO.
-                    jobTableDto.MachineId = machine.Id;
-                    _logger.LogInformation("Machine found with ID: {MachineId}", machine.Id);
+                    _logger.LogError("No existing job found with Job ID: {JobId} and FlowVersion ID: {FlowVersionId}", jobInsertDto.JobId, jobInsertDto.FlowVersionId);
+                    return serviceResponse.Failure("No existing job found.", 404);
                 }
-                else
-                {
-                    _logger.LogWarning("No machine found with OSId: {OSId}", jobTableDto.OSId);
-                }
+
+                newJob.RetryCount = existingJobs;
             }
 
-            // Convert the incoming DTO into a new Job entity
-            var newJob = new Job()
+            // Manual mapping: Set the FlowVersionHistoryId
+            newJob.FlowVersionHistoryId = flowVersion.FlowVersionHistoryId;
+
+            // Manual mapping: Set CreatedByName and CreatedById
+            if (jobInsertDto.TriggerType == TriggerTypesEnum.Manual)
             {
-                TenantId = _currentTenantService.CurrentTenantId,
-                FlowVersionId = jobTableDto.FlowVersionId,
-                TriggerType = jobTableDto.TriggerType,
-                MachineId = jobTableDto.MachineId,
-                Priority = jobTableDto.Priority,
-                Status = JobStatusEnum.Created,
-                CreatedOn = DateTimeOffset.UtcNow,
-                IsPublished = flowVersion.IsPublished,
-                FlowVersionHistoryId = flowVersion.FlowVersionHistories
-                    .OrderByDescending(o => o.CreatedOn)
-                    .Select(s => (Guid?)s.Id)
-                    .FirstOrDefault()
-            };
+                // Retrieve user record
+                var userRecord = await _unitOfWork.WorkspaceUserRepo
+                                    .GetByConditionAsync(w => w.Id == _userId)
+                                    .FirstOrDefaultAsync();
 
-            // If the flow version is NOT published, allow the caller to explicitly control job execution details
-            if (!flowVersion.IsPublished)
-            {
-                newJob.Status = jobTableDto.Status;
-                newJob.StartTime = jobTableDto.StartTime;
-                newJob.EndTime = jobTableDto.EndTime;
-                newJob.NodeExecutionLogs = jobTableDto.NodeExecutionLogs;
-
-                // Attempt to resolve workspace user (applicable for UI-based executions)
-                var user = await _unitOfWork.WorkspaceUserRepo
-                    .GetByConditionAsync(w => w.Id == _userId)
-                    .SingleOrDefaultAsync();
-
-                // Manual execution (Agent Builder / UI)
-                if (newJob.TriggerType == TriggerTypesEnum.ManualTrigger)
+                // If user not found, log and return
+                if (userRecord == null)
                 {
-                    newJob.ExecutedBy = user != null
-                        ? $"{user.FirstName} {user.LastName}"
-                        : "Agent Builder";
-
-                    newJob.ExecutedOn = "Agent Builder (desktop)";
+                    _logger.LogError("User not found with ID: {UserId}. For manual trigger, user must exist", _userId);
+                    return serviceResponse.Failure("The user was not found. For manual trigger, user must exist", 404);
                 }
+
+                // TODO: Property name to be changed CreatedByName = [Full name - email]
+                newJob.ExecutedBy = $"{userRecord.FirstName} {userRecord.LastName} - {userRecord.UserName}";
+
+                // TODO: Property name to be changed CreatedById = [User Id]
+                newJob.RefId = userRecord.Id;
             }
 
-            // Insert the new job into the repository
+            // Manual mapping: Set the ExecutionLocation for unpublished flow
+            if (!flowVersion.IsFlowVersionPublished)
+            {
+                // TODO: Property name to be changed ExecutionLocation 
+                newJob.ExecutedOn = !string.IsNullOrEmpty(_userMachine) ? _userMachine : "Agent Builder (web)";
+            }
+
+            // TODO: Mannual mapping till the time JobInputData is stored as JsonDocument in the database
+            newJob.InputArgumentsJson = jobInsertDto.JobInputData != null ? jobInsertDto.JobInputData.RootElement.GetRawText() : null;
+
+            // Insert job
             await _unitOfWork.JobRepo.InsertAsync(newJob);
 
-            // Check if changes were successfully saved
+            // Insert-Job failed, log and return
             if (!await _unitOfWork.SaveAsync())
             {
                 _logger.LogInformation("Failed to save changes while inserting new job.");
-                return serviceResponse;
+                return serviceResponse.Failure("Something went wrong. Please try again", 500);
             }
 
+            // Map newJob to JobRecordDto for the response
+            var jobRecordDto = newJob.Adapt<JobRecordDto>();
+            jobRecordDto.FlowName = flowVersion.FlowName;
+            jobRecordDto.FlowType = flowVersion.FlowType;
+            jobRecordDto.FlowVersionNumber = $"v{flowVersion.FlowVersionNumber}";
+            jobRecordDto.IsFlowVersionPublished = flowVersion.IsFlowVersionPublished;
+
+            // TODO: Need to check this. 
             // If the flow version is published, trigger the job execution.
-            if (newJob.IsPublished)
+            if (flowVersion.IsFlowVersionPublished)
             {
                 // Execute the job asynchronously.
                 await _jobsExecutorService.ExecuteJobCommandAsync(newJob);
             }
 
-            newJob = await _unitOfWork.JobRepo
-                .GetByConditionAsync(w => w.Id == newJob.Id)
-                .Include(i => i.FlowVersion)
-                    .ThenInclude(i2 => i2.Flow)
-                .SingleOrDefaultAsync();
-
-            // Success - return the created job
-            serviceResponse.Data = newJob.Adapt<JobTableDto>();
-            serviceResponse.StatusCode = 200;
-            serviceResponse.Message = "Job created successfully.";
+            // Return Success response
+            return serviceResponse.Success(jobRecordDto);
         }
         catch (Exception ex)
         {
-            _logger.LogError(ex.ToString());
+            _logger.LogError(ex, "Error occurred while inserting new job.");
             return serviceResponse;
         }
-
-        return serviceResponse;
     }
 
     // Updates an existing job.
-    public async Task<ServiceResponse<JobTableDto>> UpdateJobAsync(JobTableDto jobTableDto)
+    public async Task<ServiceResponse<JobRecordDto>> UpdateJobAsync(JobUpdateDto jobUpdateDto)
     {
-        // Initialize ServiceResponse with an error message.
-        var serviceResponse = new ServiceResponse<JobTableDto>
-        {
-            Data = null,
-            Message = "Failed to update the job. Please try again."
-        };
+        // Initialize the response with a default error message.
+        var serviceResponse = ServiceResponse<JobRecordDto>.Create(message: "Failed to update the job. Please try again.");
 
         try
         {
-
-            // Fetch the job that needs to be updated
+            // Retrieve the record
             var job = await _unitOfWork.JobRepo
-                                        .GetByConditionAsync(w =>
-                                            w.Id == jobTableDto.Id &&
-                                            w.FlowVersionId == jobTableDto.FlowVersionId
-                                        )
-                                        .Include(i => i.Machine)
-                                        .SingleOrDefaultAsync();
-
-            // If the job does not exist, return error message
-            if (job == null)
-            {
-                _logger.LogInformation("Job does not exist.");
-                serviceResponse.Message = "Job does not exist.";
-                return serviceResponse;
-            }
-
-            // Retrieve the flow version associated with the job using the FlowVersionId from the DTO.
-            var flowVersion = await _unitOfWork.FlowVersionRepo
-                    .GetByConditionAsync(w => w.Id == job.FlowVersionId)
-                    .AsNoTracking()
-                    .FirstOrDefaultAsync();
-
-            if (flowVersion == null)
-            {
-                // If the flow version is not found, log the event and return an error message.
-                _logger.LogError("Flow version not found with ID: {FlowVersionId}", job.FlowVersionId);
-                serviceResponse.Message = "The flow version was not found.";
-                return serviceResponse;
-            }
-
-            // Checks if the job status is the same as the stored status (no change).
-            bool isStatusUnchanged = job.Status == jobTableDto.Status;
-
-            // Trim the string properties in the DTO
-            jobTableDto = TrimDtoStringPropsUtil.TrimDtoStringProps(jobTableDto);
-
-            // Map the updated values from DTO to the job entity
-            jobTableDto.Adapt(job);
-            job.IsPublished = flowVersion.IsPublished;
-
-            // Populate "ExecutedBy" only if it has not already been set.
-            //
-            // Attribution rules:
-            // 1. ManualTrigger (non-published) → current authenticated user name or Agent Builder fallback.
-            // 2. API, Email, Event, Message, Queue, Time, Webhook → trigger name (prefixed for traceability).
-            // 3. All other trigger types → constructed machine identity (OS username + OS ID).
-            //
-            // NOTE: This mapping should be reviewed whenever new TriggerTypesEnum values are introduced.
-            if (string.IsNullOrWhiteSpace(job.ExecutedBy))
-            {
-                // Attempt to resolve workspace user (applicable for UI-based executions)
-                var user = await _unitOfWork.WorkspaceUserRepo
-                    .GetByConditionAsync(w => w.Id == _userId)
-                    .SingleOrDefaultAsync();
-
-                // Manual execution (Agent Builder / UI)
-                if (job.TriggerType == TriggerTypesEnum.ManualTrigger && !job.IsPublished)
-                {
-                    job.ExecutedBy = user != null
-                        ? $"{user.FirstName} {user.LastName}"
-                        : "Agent Builder";
-
-                    job.ExecutedOn = job.Machine != null
-                        ? job.Machine.Name ?? "Agent Builder (web)"
-                        : "Agent Builder (desktop)";
-                }
-                // Trigger-based execution
-                else if (
-                    job.TriggerType == TriggerTypesEnum.APITrigger ||
-                    job.TriggerType == TriggerTypesEnum.EmailTrigger ||
-                    job.TriggerType == TriggerTypesEnum.EventTrigger ||
-                    job.TriggerType == TriggerTypesEnum.MessageTrigger ||
-                    job.TriggerType == TriggerTypesEnum.QueueTrigger ||
-                    job.TriggerType == TriggerTypesEnum.TimeTrigger ||
-                    job.TriggerType == TriggerTypesEnum.WebhookTrigger)
-                {
-                    var trigger = await _unitOfWork.TriggerRepo
-                        .GetByConditionAsync(w => w.Id == job.RefId)
+                        .GetByConditionAsync(w => w.Id == jobUpdateDto.Id)
+                        .Include(i => i.FlowVersion)
+                            .ThenInclude(i2 => i2.Flow)
+                        .Include(i => i.Machine)
                         .FirstOrDefaultAsync();
 
-                    job.ExecutedBy = trigger != null
-                        ? $"trigger_{trigger.Name}"
-                        : "trigger_Unknown";
-
-                    job.ExecutedOn = job.Machine != null
-                        ? $"machine_{job.Machine.Name}"
-                        : "Web Server";
-                }
-                // Machine-based execution (default fallback)
-                else
-                {
-                    var safeUser = job.Machine?.Hostname?.Trim().ToLower() ?? "unknown";
-                    var osId = job.Machine?.OsID;
-                    var shortOsId = !string.IsNullOrEmpty(osId) && osId.Length >= 4
-                        ? osId.Substring(0, 4).ToLower()
-                        : "xxxx";
-
-                    var machineIdentity = $"{safeUser}_{shortOsId}";
-                    job.ExecutedOn = $"machine_{safeUser}_{shortOsId}"; ;
-                    job.ExecutedBy = user != null
-                        ? $"{user.FirstName} {user.LastName}"
-                        : "Unknown User";
-                }
-            }
-
-            // Update job execution timestamps only for published flow versions.
-            if (job.IsPublished)
+            // If record not found, log and return
+            if (job == null)
             {
-                // If the job status is "Running", set the StartTime to the current UTC time.
-                if (job.Status == JobStatusEnum.Running)
-                    job.StartTime = DateTimeOffset.UtcNow;
-
-                // If the job status is "Canceled", "Abort", "Completed", or "Failed", the EndTime to the current UTC time.
-                if (job.Status == JobStatusEnum.Canceled ||
-                    job.Status == JobStatusEnum.Abort ||
-                    job.Status == JobStatusEnum.Completed ||
-                    job.Status == JobStatusEnum.Failed)
-                    job.EndTime = DateTimeOffset.UtcNow;
+                _logger.LogInformation("Job not found to update with Job ID: {JobId}", jobUpdateDto.Id);
+                return serviceResponse.Failure("Job not found.", 404);
             }
 
-            // Update the job in the repository
+            // Trim the string properties in the DTO
+            jobUpdateDto = TrimDtoStringPropsUtil.TrimDtoStringProps(jobUpdateDto);
+
+            // Default mapping
+            jobUpdateDto.Adapt(job);
+
+            // TODO: Need to check this.
+            // // Checks if the job status is the same as the stored status (no change).
+            // bool isStatusUnchanged = job.Status == jobUpdateDto.Status;
+
+            // // Map the updated values from DTO to the job entity
+            // jobUpdateDto.Adapt(job);
+            // job.IsPublished = job.FlowVersion.IsPublished;
+
+            // // Populate "ExecutedBy" only if it has not already been set.
+            // //
+            // // Attribution rules:
+            // // 1. ManualTrigger (non-published) → current authenticated user name or Agent Builder fallback.
+            // // 2. API, Email, Event, Message, Queue, Time, Webhook → trigger name (prefixed for traceability).
+            // // 3. All other trigger types → constructed machine identity (OS username + OS ID).
+            // //
+            // // NOTE: This mapping should be reviewed whenever new TriggerTypesEnum values are introduced.
+            // if (string.IsNullOrWhiteSpace(job.ExecutedBy))
+            // {
+            //     // Attempt to resolve workspace user (applicable for UI-based executions)
+            //     var user = await _unitOfWork.WorkspaceUserRepo
+            //         .GetByConditionAsync(w => w.Id == _userId)
+            //         .SingleOrDefaultAsync();
+
+            //     // Manual execution (Agent Builder / UI)
+            //     if (job.TriggerType == TriggerTypesEnum.Manual && !job.IsPublished)
+            //     {
+            //         job.ExecutedBy = user != null
+            //             ? $"{user.FirstName} {user.LastName}"
+            //             : "Agent Builder";
+
+            //         job.ExecutedOn = job.Machine != null
+            //             ? job.Machine.Name ?? "Agent Builder (web)"
+            //             : "Agent Builder (desktop)";
+            //     }
+            //     // Trigger-based execution
+            //     else if (
+            //         job.TriggerType == TriggerTypesEnum.Api ||
+            //         job.TriggerType == TriggerTypesEnum.Email ||
+            //         job.TriggerType == TriggerTypesEnum.Event ||
+            //         job.TriggerType == TriggerTypesEnum.Message ||
+            //         job.TriggerType == TriggerTypesEnum.Queue ||
+            //         job.TriggerType == TriggerTypesEnum.Time ||
+            //         job.TriggerType == TriggerTypesEnum.Webhook)
+            //     {
+            //         var trigger = await _unitOfWork.TriggerRepo
+            //             .GetByConditionAsync(w => w.Id == job.RefId)
+            //             .FirstOrDefaultAsync();
+
+            //         job.ExecutedBy = trigger != null
+            //             ? $"trigger_{trigger.Name}"
+            //             : "trigger_Unknown";
+
+            //         job.ExecutedOn = job.Machine != null
+            //             ? $"machine_{job.Machine.Name}"
+            //             : "Web Server";
+            //     }
+            //     // Machine-based execution (default fallback)
+            //     else
+            //     {
+            //         var safeUser = job.Machine?.Hostname?.Trim().ToLower() ?? "unknown";
+            //         var osId = job.Machine?.OSId;
+            //         var shortOsId = !string.IsNullOrEmpty(osId) && osId.Length >= 4
+            //             ? osId.Substring(0, 4).ToLower()
+            //             : "xxxx";
+
+            //         job.ExecutedOn = $"machine_{safeUser}_{shortOsId}";
+            //         job.ExecutedBy = user != null
+            //             ? $"{user.FirstName} {user.LastName}"
+            //             : "Unknown User";
+            //     }
+            // }
+
+            // // Update job execution timestamps only for published flow versions.
+            // if (job.IsPublished)
+            // {
+            //     // If the job status is "Running", set the StartTime to the current UTC time.
+            //     if (job.Status == JobStatusEnum.Running)
+            //         job.StartTime = DateTimeOffset.UtcNow;
+
+            //     // If the job status is "Canceled", "Abort", "Completed", or "Failed", the EndTime to the current UTC time.
+            //     if (job.Status == JobStatusEnum.Canceled ||
+            //         job.Status == JobStatusEnum.Abort ||
+            //         job.Status == JobStatusEnum.Completed ||
+            //         job.Status == JobStatusEnum.Failed)
+            //         job.EndTime = DateTimeOffset.UtcNow;
+            // }
+
+            // Update the record
             _unitOfWork.JobRepo.Update(job);
 
-            // Check if changes were successfully saved
+            // Update-Job failed, log and return
             if (!await _unitOfWork.SaveAsync())
             {
-                _logger.LogInformation("Failed to save changes while updating job.");
-                return serviceResponse;
+                _logger.LogInformation("Failed to save changes while updating the job.");
+                return serviceResponse.Failure("Something went wrong. Please try again.", 500);
             }
 
-            // If the job status has changed (i.e., it differs from the previously stored status), proceed with the action.
-            if (!isStatusUnchanged && job.IsPublished)
-            {
-                // Create a new ExecutionCommandDto to determine which action to trigger based on job status.
-                var executionCommand = new ExecutionCommandDto()
-                {
-                    JobId = job.Id,
-                    MachineId = job.MachineId ?? Guid.Empty,
-                    AgentId = job.FlowVersionId,
-                    TenantId = job.TenantId
-                };
+            // Return success response
+            return serviceResponse.Success(job.Adapt<JobRecordDto>());
 
-                // Switch statement to set the correct execution command based on the job's current status.
-                switch (job.Status)
-                {
-                    case JobStatusEnum.Completed:
-                        executionCommand.Command = ExecutionCommandTypesEnum.Cleanup;
-                        break;
+            // TODO: Need to check this
+            // // If the job status has changed (i.e., it differs from the previously stored status), proceed with the action.
+            // if (!isStatusUnchanged && job.IsPublished)
+            // {
+            //     // Create a new ExecutionCommandDto to determine which action to trigger based on job status.
+            //     var executionCommand = new ExecutionCommandDto()
+            //     {
+            //         JobId = job.Id,
+            //         MachineId = job.MachineId ?? Guid.Empty,
+            //         AgentId = job.FlowVersionId,
+            //         TenantId = job.TenantId
+            //     };
 
-                    case JobStatusEnum.Failed:
-                    case JobStatusEnum.Canceled:
-                        executionCommand.Command = ExecutionCommandTypesEnum.Cancel;
-                        break;
+            //     // Switch statement to set the correct execution command based on the job's current status.
+            //     switch (job.Status)
+            //     {
+            //         case JobStatusEnum.Completed:
+            //             executionCommand.Command = ExecutionCommandTypesEnum.Cleanup;
+            //             break;
 
-                    case JobStatusEnum.Abort:
-                        executionCommand.Command = ExecutionCommandTypesEnum.Abort;
-                        break;
+            //         case JobStatusEnum.Failed:
+            //         case JobStatusEnum.Canceled:
+            //             executionCommand.Command = ExecutionCommandTypesEnum.Cancel;
+            //             break;
 
-                    case JobStatusEnum.Paused:
-                        executionCommand.Command = ExecutionCommandTypesEnum.Pause;
-                        break;
+            //         case JobStatusEnum.Abort:
+            //             executionCommand.Command = ExecutionCommandTypesEnum.Abort;
+            //             break;
 
-                    case JobStatusEnum.Resumed:
-                        executionCommand.Command = ExecutionCommandTypesEnum.Resume;
-                        break;
+            //         case JobStatusEnum.Paused:
+            //             executionCommand.Command = ExecutionCommandTypesEnum.Pause;
+            //             break;
 
-                    case JobStatusEnum.Retrying:
-                    case JobStatusEnum.Running:
-                        executionCommand.Command = ExecutionCommandTypesEnum.Execute;
-                        break;
+            //         case JobStatusEnum.Resumed:
+            //             executionCommand.Command = ExecutionCommandTypesEnum.Resume;
+            //             break;
 
-                    default:
-                        executionCommand.Command = ExecutionCommandTypesEnum.Cleanup;
-                        break;
-                }
+            //         case JobStatusEnum.Retrying:
+            //         case JobStatusEnum.Running:
+            //             executionCommand.Command = ExecutionCommandTypesEnum.Execute;
+            //             break;
 
-                // Trigger the appropriate execution command for the job.
-                await _jobsExecutorService.TriggerExecutionAsync(executionCommand);
-            }
+            //         default:
+            //             executionCommand.Command = ExecutionCommandTypesEnum.Cleanup;
+            //             break;
+            //     }
 
-            // TODO: Populate and send custom response data (e.g., job result, status details, timestamps) to the callback URL            // Fire webhook callback if this is a webhook-triggered job that has reached a terminal state
-            if (job.TriggerType == TriggerTypesEnum.WebhookTrigger &&
-                (job.Status == JobStatusEnum.Completed ||
-                 job.Status == JobStatusEnum.Failed ||
-                 job.Status == JobStatusEnum.Canceled))
-            {
-                _ = Task.Run(async () =>
-                {
-                    try { await _webhookCallbackService.SendCallbackAsync(job); }
-                    catch (Exception cbEx) { _logger.LogError(cbEx, "Webhook callback error for job {JobId}.", job.Id); }
-                });
-            }
+            //     // Trigger the appropriate execution command for the job.
+            //     await _jobsExecutorService.TriggerExecutionAsync(executionCommand);
+            // }
 
-            // Success - return the updated job
-            serviceResponse.Data = job.Adapt<JobTableDto>();
-            serviceResponse.StatusCode = 200;
-            serviceResponse.Message = "Job updated successfully.";
+            // // Fire webhook callback if this is a webhook-triggered job that has reached a terminal state.
+            // if (job.TriggerType == TriggerTypesEnum.Webhook &&
+            //     (job.Status == JobStatusEnum.Completed ||
+            //      job.Status == JobStatusEnum.Failed ||
+            //      job.Status == JobStatusEnum.Canceled))
+            // {
+            //     _ = Task.Run(async () =>
+            //     {
+            //         try { await _webhookCallbackService.SendCallbackAsync(job); }
+            //         catch (Exception cbEx) { _logger.LogError(cbEx, "Webhook callback error for job {JobId}.", job.Id); }
+            //     });
+            // }
         }
         catch (Exception ex)
         {
-            _logger.LogError(ex.ToString());
+            _logger.LogError(ex, "An error occurred while updating the job with ID {JobId}.", jobUpdateDto.Id);
             return serviceResponse;
         }
-
-        return serviceResponse;
     }
 
     // Deletes a job by its ID.
     public async Task<ServiceResponse<bool>> DeleteJobAsync(Guid jobId)
     {
-        // Initialize ServiceResponse with an error message.
-        var serviceResponse = new ServiceResponse<bool>
-        {
-            Data = false,
-            Message = "Failed to delete the job. Please try again."
-        };
+        // Initialize the response with a default error message.
+        var serviceResponse = ServiceResponse<bool>.Create(message: "Failed to delete the job. Please try again.");
 
         try
         {
-            // Fetch the job to be deleted
+            // Retrieve the record
             var job = await _unitOfWork.JobRepo
-                                        .GetByConditionAsync(w =>
-                                            w.Id == jobId)
-                                        .SingleOrDefaultAsync();
+                        .GetByConditionAsync(w => w.Id == jobId)
+                        .FirstOrDefaultAsync();
 
-            // If the job does not exist, return error message
+            // If record not found, log and return
             if (job == null)
             {
-                _logger.LogInformation("Job does not exist.");
-                serviceResponse.Message = "Job does not exist.";
-                return serviceResponse;
+                _logger.LogInformation("Job not found for deletion with Job ID: {JobId}", jobId);
+                return serviceResponse.Failure("Job not found.", 404);
             }
 
-            // Delete the job from the repository
+            // CANNOT DELETE THE JOB: Job is not in 'Created' status
+            if (job.Status != JobStatusEnum.Created)
+            {
+                _logger.LogInformation("Cannot delete job with ID {JobId} as it is currently in progress.", jobId);
+                return serviceResponse.Failure("Cannot delete a job that is currently in progress.", 400);
+            }
+
+            // Delete the record
             _unitOfWork.JobRepo.Delete(job);
 
-            // Check if changes were successfully saved
+            // Delete-Job failed, log and return
             if (!await _unitOfWork.SaveAsync())
             {
-                _logger.LogInformation("Failed to save changes while deleting job.");
-                return serviceResponse;
+                _logger.LogInformation("Failed to save changes while deleting the job.");
+                return serviceResponse.Failure("Something went wrong. Please try again.", 500);
             }
 
-            // Success - return confirmation
-            serviceResponse.Data = true;
-            serviceResponse.StatusCode = 200;
-            serviceResponse.Message = "Job deleted successfully.";
+            // Return success response
+            return serviceResponse.Success(true);
         }
         catch (Exception ex)
         {
-            _logger.LogError(ex.ToString());
+            _logger.LogError(ex, "An error occurred while deleting the job with ID {JobId}.", jobId);
             return serviceResponse;
         }
-
-        return serviceResponse;
     }
 
-    // Deletes multiple jobs by their IDs.
+    // Delete multiple jobs by their IDs.
     public async Task<ServiceResponse<bool>> DeleteJobsAsync(IEnumerable<Guid> jobIds)
     {
-        // Initialize ServiceResponse with an error message.
-        var serviceResponse = new ServiceResponse<bool>
-        {
-            Data = false,
-            Message = "Failed to delete the jobs. Please try again."
-        };
+        // Initialize the response with a default error message.
+        var serviceResponse = ServiceResponse<bool>.Create(message: "Failed to delete the jobs. Please try again.");
 
         try
         {
-            // Fetch the jobs to be deleted
+            // Retrieve the records
             var jobs = await _unitOfWork.JobRepo
-                                            .GetByConditionAsync(w =>
-                                                jobIds.Contains(w.Id))
-                                            .ToListAsync();
+                        .GetByConditionAsync(w => jobIds.Contains(w.Id))
+                        .ToListAsync();
 
-            // If no jobs found, return error message
+            // If records not found, log and return
             if (jobs.Count == 0)
             {
-                _logger.LogInformation("Jobs do not exist.");
-                serviceResponse.Message = "Jobs do not exist.";
-                return serviceResponse;
+                _logger.LogInformation("Jobs not found for deletion with Job IDs: {JobIds}", string.Join(", ", jobIds));
+                return serviceResponse.Failure("Jobs not found.", 404);
             }
 
-            // Delete the jobs from the repository
+            // CANNOT DELETE THE JOB: Job is not in 'Created' status
+            if (jobs.Any(j => j.Status != JobStatusEnum.Created))
+            {
+                _logger.LogInformation("Cannot delete jobs with IDs {JobIds} as some are currently in progress.", string.Join(", ", jobIds));
+                return serviceResponse.Failure("Cannot delete jobs that are currently in progress.", 400);
+            }
+
+            // Delete the records
             _unitOfWork.JobRepo.Delete(jobs);
 
-            // Check if changes were successfully saved
+            // Delete-Jobs failed, log and return
             if (!await _unitOfWork.SaveAsync())
             {
-                _logger.LogInformation("Failed to save changes while deleting jobs.");
-                return serviceResponse;
+                _logger.LogInformation("Failed to save changes while deleting the jobs with IDs {JobIds}.", string.Join(", ", jobIds));
+                return serviceResponse.Failure("Something went wrong. Please try again.", 500);
             }
 
-            // Success - return confirmation with the count of deleted jobs
-            serviceResponse.Data = true;
-            serviceResponse.StatusCode = 200;
-            serviceResponse.Message = $"{jobIds.Count()} jobs deleted successfully.";
+            // Return success response
+            return serviceResponse.Success(true);
         }
         catch (Exception ex)
         {
-            _logger.LogError(ex.ToString());
+            _logger.LogError(ex, "An error occurred while deleting the jobs with IDs {JobIds}.", string.Join(", ", jobIds));
             return serviceResponse;
         }
-
-        return serviceResponse;
     }
 
-    // Retries a failed job.
-    public async Task<ServiceResponse<bool>> RetryJobAsync(Guid jobId)
+    // Exports jobs data into a CSV file 
+    public async Task<ServiceResponse<FileStreamResult>> ExportJobsAsync(ExportJobsReqDto exportJobsReqDto)
     {
-        var serviceResponse = new ServiceResponse<bool>
-        {
-            Data = false,
-            Message = "Failed to retry job. Please try again."
-        };
+        // Initialize the response with a default error message.
+        var serviceResponse = ServiceResponse<FileStreamResult>.Create(message: "Failed to export jobs data. Please try again.");
 
         try
         {
-            // Retrieve the job to retry
-            var job = await _unitOfWork.JobRepo
-                                        .GetByConditionAsync(w =>
-                                            w.Id == jobId)
-                                        .SingleOrDefaultAsync();
+            // Resolve date range
+            var dateRange = JobsTableHelpers.ResolveDateRange(exportJobsReqDto.StartDate, exportJobsReqDto.EndDate);
 
-            // Job does not exist
-            if (job == null)
-            {
-                _logger.LogInformation($"Job with ID {jobId} does not exist or is not owned by the current user.");
-                serviceResponse.Message = "Job does not exist or cannot be retried.";
-                return serviceResponse;
-            }
-
-            // // Check if job is already running or completed
-            if (job.Status != JobStatusEnum.Failed)
-            {
-                _logger.LogInformation($"Job with ID {jobId} cannot be retried because it is not in a failed state.");
-                serviceResponse.Message = "Job cannot be retried because it is not in a failed state.";
-                return serviceResponse;
-            }
-
-            // Reset the job status and set other necessary properties for retry
-            job.Status = JobStatusEnum.Running;
-            job.RetryCount++;
-
-            // Update job in the repository
-            _unitOfWork.JobRepo.Update(job);
-
-            // Save changes
-            if (!await _unitOfWork.SaveAsync())
-            {
-                _logger.LogError($"Failed to save changes while retrying job with ID {jobId}.");
-                return serviceResponse;
-            }
-
-            // Successfully retried the job
-            serviceResponse.Data = true;
-            serviceResponse.StatusCode = 200;
-            serviceResponse.Message = "Job retried successfully.";
-        }
-        catch (Exception ex)
-        {
-            _logger.LogError(ex.ToString());
-            return serviceResponse;
-        }
-
-        return serviceResponse;
-    }
-
-    // Cancels a running job.
-    public async Task<ServiceResponse<bool>> CancelJobAsync(Guid jobId)
-    {
-        var serviceResponse = new ServiceResponse<bool>
-        {
-            Data = false,
-            Message = "Failed to cancel job. Please try again."
-        };
-
-        try
-        {
-            // Retrieve the job to cancel
-            var job = await _unitOfWork.JobRepo
-                                        .GetByConditionAsync(w => w.Id == jobId)
-                                        .SingleOrDefaultAsync();
-
-            // Job does not exist
-            if (job == null)
-            {
-                _logger.LogInformation($"Job with ID {jobId} does not exist or is not owned by the current user.");
-                serviceResponse.Message = "Job does not exist or cannot be canceled.";
-                return serviceResponse;
-            }
-
-            // Check if job is already completed or canceled
-            if (job.Status == JobStatusEnum.Completed || job.Status == JobStatusEnum.Canceled)
-            {
-                _logger.LogInformation($"Job with ID {jobId} cannot be canceled because it is already completed or canceled.");
-                serviceResponse.Message = "Job cannot be canceled because it is already completed or canceled.";
-                return serviceResponse;
-            }
-
-            // Set job status to canceled
-            job.Status = JobStatusEnum.Canceled;
-            job.EndTime = DateTimeOffset.UtcNow;
-
-            // Update job in the repository
-            _unitOfWork.JobRepo.Update(job);
-
-            // Save changes
-            if (!await _unitOfWork.SaveAsync())
-            {
-                _logger.LogError($"Failed to save changes while canceling job with ID {jobId}.");
-                return serviceResponse;
-            }
-
-            // Successfully canceled the job
-            serviceResponse.Data = true;
-            serviceResponse.StatusCode = 200;
-            serviceResponse.Message = "Job canceled successfully.";
-        }
-        catch (Exception ex)
-        {
-            _logger.LogError(ex.ToString());
-            return serviceResponse;
-        }
-
-        return serviceResponse;
-    }
-
-    // Aborts the job execution on a machine based on the provided job execution details.
-    public async Task<ServiceResponse<bool>> AbortJobExecutionAsync(JobExecutionDto jobExecutionDto)
-    {
-        var serviceResponse = new ServiceResponse<bool>
-        {
-            Data = false,
-            Message = "Failed to abort job execution. Please try again later."
-        };
-
-        try
-        {
-            // Validate the job ID to ensure it is not empty.
-            if (jobExecutionDto.Id == Guid.Empty)
-            {
-                _logger.LogWarning("Invalid Job ID received: {JobId}. The Job ID must not be empty.", jobExecutionDto.Id);
-                serviceResponse.Message = "Job ID cannot be empty.";
-                return serviceResponse;
-            }
-
-            // Retrieve the job details based on the provided Job ID.
-            var job = await _unitOfWork.JobRepo
-                .GetByConditionAsync(w => w.Id == jobExecutionDto.Id)
-                .SingleOrDefaultAsync();
-
-            if (job == null)
-            {
-                // Log and return failure if no job is found with the provided Job ID.
-                _logger.LogWarning("No job found with ID: {JobId}.", jobExecutionDto.Id);
-                serviceResponse.Message = "Job not found or not assigned to any machine.";
-                return serviceResponse;
-            }
-
-            // If the job is not running, log a warning and return failure.
-            if (job.Status != JobStatusEnum.Running)
-            {
-                _logger.LogWarning("Job with ID: {JobId} is not currently running. Current status: {JobStatus}.", jobExecutionDto.Id, job.Status);
-                serviceResponse.Message = "Job is not currently running, cannot abort.";
-                return serviceResponse;
-            }
-
-            // Change the job status to "Abort" to indicate that it's being canceled.
-            job.Status = JobStatusEnum.Abort;
-            job.EndTime = DateTimeOffset.UtcNow;
-
-            // Update job in the repository
-            _unitOfWork.JobRepo.Update(job);
-
-            // Try to save the changes to the database.
-            if (!await _unitOfWork.SaveAsync())
-            {
-                // Log and return failure if the database save operation fails.
-                _logger.LogError("Failed to save changes while aborting job with ID: {JobId}.", jobExecutionDto.Id);
-                return serviceResponse;
-            }
-
-            // Create a new execution command to abort the job on the machine.
-            var executionCommand = new ExecutionCommandDto
-            {
-                JobId = job.Id,
-                MachineId = job.MachineId ?? Guid.Empty,
-                AgentId = job.FlowVersionId,
-                TenantId = job.TenantId,
-                Command = ExecutionCommandTypesEnum.Abort
-            };
-
-            // Trigger the command to stop the job execution on the machine.
-            await _jobsExecutorService.TriggerExecutionAsync(executionCommand);
-
-            // Return a success response indicating that the job execution was aborted.
-            serviceResponse.Data = true;
-            serviceResponse.StatusCode = 200;
-            serviceResponse.Message = "Job execution has been successfully aborted.";
-
-            _logger.LogInformation("Job execution for Job ID: {JobId} has been successfully aborted.", jobExecutionDto.Id);
-        }
-        catch (Exception ex)
-        {
-            // Log any unexpected exceptions that occur during the process.
-            _logger.LogError(ex, "An unexpected error occurred while attempting to abort job execution for Job ID: {JobId}.", jobExecutionDto.Id);
-        }
-
-        // Return the final response to the caller.
-        return serviceResponse;
-    }
-
-    public async Task<ServiceResponse<FileStreamResult>> ExportJobsAsync(ExportJobRequestDto exportJobRequestDto)
-    {
-        // Initialize ServiceResponse with a failure response
-        var serviceResponse = new ServiceResponse<FileStreamResult>
-        {
-            Data = null,
-            Message = "Failed to export job data. Please try again."
-        };
-
-        try
-        {
-            // Check if StartDate or EndDate are not provided (null)
-            if (!exportJobRequestDto.StartDate.HasValue || !exportJobRequestDto.EndDate.HasValue)
-            {
-                // Set default values if dates are missing
-                exportJobRequestDto.EndDate = DateTime.UtcNow.Date;
-                exportJobRequestDto.StartDate = DateTime.UtcNow.Date.AddDays(-6);
-            }
+            // Return if start date greater than the end date
+            if (dateRange.StartDate > dateRange.EndDate)
+                return serviceResponse.Failure("Start date cannot be greater than end date.", 400);
 
             // Initialize the base query with date filter
-            var jobQuery = _unitOfWork.JobRepo
-                .GetByConditionAsync(w =>
-                    w.CreatedOn.Date >= exportJobRequestDto.StartDate.Value.Date &&
-                    w.CreatedOn.Date <= exportJobRequestDto.EndDate.Value.Date
-                )
-                .OrderByDescending(o => o.CreatedOn)
-                .AsQueryable();
+            var jobsExportQuery = _unitOfWork.JobRepo
+                                    .GetByConditionAsync(w =>
+                                        w.StartTime >= dateRange.StartDate.Date &&
+                                        w.StartTime < dateRange.EndDate.Date.AddDays(1)
+                                    )
+                                    .OrderByDescending(o => o.StartTime)
+                                    .AsQueryable();
 
-            // Apply filters based on optional criteria in the request DTO
-
-            // Filter by Job Status if specified
-            if (exportJobRequestDto.Status.HasValue)
+            // Filter Statuses
+            if (exportJobsReqDto.Statuses?.Any() == true)
             {
-                jobQuery = jobQuery.Where(w => w.Status == exportJobRequestDto.Status.Value);
+                jobsExportQuery = jobsExportQuery.Where(w => exportJobsReqDto.Statuses.Contains(w.Status));
             }
 
-            // Filter by Job Priority if specified
-            if (exportJobRequestDto.Priority.HasValue)
+            // Filter FlowVersionIds
+            if (exportJobsReqDto.FlowVersionIds?.Any() == true)
             {
-                jobQuery = jobQuery.Where(w => w.Priority == exportJobRequestDto.Priority.Value);
+                jobsExportQuery = jobsExportQuery.Where(w => exportJobsReqDto.FlowVersionIds.Contains(w.FlowVersionId));
             }
 
-            // Filter by Machine IDs if provided
-            if (exportJobRequestDto.MachineIds?.Any() == true)
+            // Filter TriggerTypes
+            if (exportJobsReqDto.TriggerTypes?.Any() == true)
             {
-                jobQuery = jobQuery.Where(w => w.MachineId != null && exportJobRequestDto.MachineIds.Contains(w.MachineId ?? Guid.Empty));
+                jobsExportQuery = jobsExportQuery.Where(w => exportJobsReqDto.TriggerTypes.Contains(w.TriggerType));
             }
 
-            // Filter by Agent IDs if provided
-            if (exportJobRequestDto.AgentIds?.Any() == true)
+            // TODO: Rename ExecutedOn to ExecutionLocation later Filter ExecutionLocations
+            if (exportJobsReqDto.ExecutionLocations?.Any() == true)
             {
-                jobQuery = jobQuery.Where(w => exportJobRequestDto.AgentIds.Contains(w.FlowVersionId));
+                jobsExportQuery = jobsExportQuery.Where(w => exportJobsReqDto.ExecutionLocations.Contains(w.ExecutedOn));
             }
 
-            // Fetch and map filtered jobs to DTOs for export
-            var jobs = await jobQuery
-                .Include(i => i.Machine)
-                .Include(i => i.FlowVersion)
-                    .ThenInclude(i2 => i2.Flow)
-                .ProjectToType<ExportJobResponseDto>()
-                .ToListAsync();
-
-            // Log the count of jobs being exported
-            _logger.LogInformation("Exporting {Count} job(s) based on applied filters.", jobs.Count);
-
-            // Convert the retrieved data to CSV byte array for file export
-            var csvBytes = CsvDataExporterUtil.ExportToCsvBytes(jobs, new List<string>
+            // Filter IncludePublishedFlows
+            // NOTE: If both IncludePublishedFlows and IncludeUnpublishedFlows are false or true then do not apply any filter
+            if (exportJobsReqDto.IncludePublishedFlows && !exportJobsReqDto.IncludeUnpublishedFlows)
             {
-                "Job Name",
-                "Priority",
-                "Trigger Type",
-                "Start Time",
-                "End Time",
-                "Duration",
-                "Retry",
-                "Current Status",
-                "Machine Name",
-                "Created On",
-            });
+                jobsExportQuery = jobsExportQuery.Where(w => w.FlowVersion.IsPublished);
+            }
+            else if (exportJobsReqDto.IncludeUnpublishedFlows && !exportJobsReqDto.IncludePublishedFlows)
+            {
+                jobsExportQuery = jobsExportQuery.Where(w => !w.FlowVersion.IsPublished);
+            }
 
-            var stream = new MemoryStream(csvBytes);
+            // Filter FlowTypes
+            if (exportJobsReqDto.FlowTypes?.Any() == true)
+            {
+                jobsExportQuery = jobsExportQuery.Where(w => exportJobsReqDto.FlowTypes.Contains(w.FlowVersion.Flow.Type));
+            }
+
+            // Filter Priorities
+            if (exportJobsReqDto.Priorities?.Any() == true)
+            {
+                jobsExportQuery = jobsExportQuery.Where(w => exportJobsReqDto.Priorities.Contains(w.Priority));
+            }
+
+            // Fetch the filtered jobs and project them to JobTableRowDto for CSV export
+            var jobsToExport = await jobsExportQuery
+                            .Include(i => i.FlowVersion)
+                                .ThenInclude(i2 => i2.Flow)
+                            .ProjectToType<JobTableRowDto>()
+                            .ToListAsync();
+
+            // Convert the retrieved data to CSV format and store it in a memory stream
+            var jobsMemoryStream = CsvDataExporterUtil.ExportToCsvMemoryStream(jobsToExport);
 
             // Prepare the file result for export
-            var fileResult = new FileStreamResult(stream, "text/csv")
+            var jobsCsvData = new FileStreamResult(jobsMemoryStream, "text/csv")
             {
-                FileDownloadName = $"job-data-{DateTime.UtcNow:dd-MM-yyyy}.csv"
+                FileDownloadName = $"jobs-data-{DateTime.UtcNow:dd-MMM-yyyy}.csv"
             };
 
-            // Update the service response with the file stream
-            serviceResponse.Data = fileResult;
-            serviceResponse.StatusCode = 200;
-            serviceResponse.Message = "Job data exported successfully.";
-
-            _logger.LogInformation("Job export completed. File generated: {FileName}", fileResult.FileDownloadName);
+            // Log and return the success response with the CSV file
+            _logger.LogInformation("Jobs data exported. File generated: {FileName}", jobsCsvData.FileDownloadName);
+            return serviceResponse.Success(jobsCsvData);
         }
         catch (Exception ex)
         {
             _logger.LogError(ex, "An error occurred while exporting job data.");
-            serviceResponse.Message = "An error occurred while processing the export. Please try again later.";
+            return serviceResponse.Failure("An error occurred while processing the export. Please try again later.", 500);
         }
-
-        return serviceResponse;
     }
+
+    // TODO: Need to check this
+    // // Retrieves a list of job execution logs, excluding those with a 'Created' or 'Running' status, within the specified date range.
+    // public async Task<ServiceResponse<IEnumerable<JobTableDto>>> GetJobLogsAsync(DateTimeOffset? startDate, DateTimeOffset? endDate)
+    // {
+    //     // Initialize the response with a default error message.
+    //     var serviceResponse = new ServiceResponse<IEnumerable<JobTableDto>>
+    //     {
+    //         Data = null,
+    //         Message = "Failed to retrieve job logs. Please try again later."
+    //     };
+
+    //     try
+    //     {
+    //         var dateRange = ResolveDateRange(startDate, endDate);
+
+    //         // Fetch job execution logs, excluding 'Created' and 'Running' statuses.
+    //         var jobLogs = await _unitOfWork.JobRepo
+    //             .GetByConditionAsync(w =>
+    //                 w.Status != JobStatusEnum.Created &&
+    //                 w.Status != JobStatusEnum.Running &&
+    //                 w.CreatedOn >= dateRange.StartDate.Date && w.CreatedOn < dateRange.EndDate.Date.AddDays(1)
+    //             )
+    //             .Include(i => i.FlowVersion)
+    //                 .ThenInclude(i2 => i2.Flow)
+    //             .OrderByDescending(o => o.CreatedOn)
+    //             .ProjectToType<JobTableDto>()
+    //             .ToListAsync();
+
+    //         // If job logs are successfully retrieved, update the response.
+    //         serviceResponse.Data = jobLogs;
+    //         serviceResponse.StatusCode = 200;
+    //         serviceResponse.Message = "Job logs retrieved successfully.";
+
+    //         _logger.LogInformation("Successfully retrieved {JobLogCount} job logs between {StartDate} and {EndDate}.", jobLogs.Count, dateRange.StartDate, dateRange.EndDate); // Log success with count and date range
+    //     }
+    //     catch (Exception ex)
+    //     {
+    //         _logger.LogError("Error occurred while retrieving job logs: {ErrorDetails}", ex.ToString());
+    //         return serviceResponse;
+    //     }
+
+    //     return serviceResponse;
+    // }
+
+    // // Retries a failed job.
+    // public async Task<ServiceResponse<bool>> RetryJobAsync(Guid jobId)
+    // {
+    //     var serviceResponse = new ServiceResponse<bool>
+    //     {
+    //         Data = false,
+    //         Message = "Failed to retry job. Please try again."
+    //     };
+
+    //     try
+    //     {
+    //         // Retrieve the job to retry
+    //         var job = await _unitOfWork.JobRepo
+    //                                     .GetByConditionAsync(w =>
+    //                                         w.Id == jobId)
+    //                                     .SingleOrDefaultAsync();
+
+    //         // Job does not exist
+    //         if (job == null)
+    //         {
+    //             _logger.LogInformation($"Job with ID {jobId} does not exist or is not owned by the current user.");
+    //             serviceResponse.Message = "Job does not exist or cannot be retried.";
+    //             return serviceResponse;
+    //         }
+
+    //         // // Check if job is already running or completed
+    //         if (job.Status != JobStatusEnum.Failed)
+    //         {
+    //             _logger.LogInformation($"Job with ID {jobId} cannot be retried because it is not in a failed state.");
+    //             serviceResponse.Message = "Job cannot be retried because it is not in a failed state.";
+    //             return serviceResponse;
+    //         }
+
+    //         // Reset the job status and set other necessary properties for retry
+    //         job.Status = JobStatusEnum.Running;
+    //         job.RetryCount++;
+
+    //         // Update job in the repository
+    //         _unitOfWork.JobRepo.Update(job);
+
+    //         // Save changes
+    //         if (!await _unitOfWork.SaveAsync())
+    //         {
+    //             _logger.LogError($"Failed to save changes while retrying job with ID {jobId}.");
+    //             return serviceResponse;
+    //         }
+
+    //         // Successfully retried the job
+    //         serviceResponse.Data = true;
+    //         serviceResponse.StatusCode = 200;
+    //         serviceResponse.Message = "Job retried successfully.";
+    //     }
+    //     catch (Exception ex)
+    //     {
+    //         _logger.LogError(ex.ToString());
+    //         return serviceResponse;
+    //     }
+
+    //     return serviceResponse;
+    // }
+
+    // // Cancels a running job.
+    // public async Task<ServiceResponse<bool>> CancelJobAsync(Guid jobId)
+    // {
+    //     var serviceResponse = new ServiceResponse<bool>
+    //     {
+    //         Data = false,
+    //         Message = "Failed to cancel job. Please try again."
+    //     };
+
+    //     try
+    //     {
+    //         // Retrieve the job to cancel
+    //         var job = await _unitOfWork.JobRepo
+    //                                     .GetByConditionAsync(w => w.Id == jobId)
+    //                                     .SingleOrDefaultAsync();
+
+    //         // Job does not exist
+    //         if (job == null)
+    //         {
+    //             _logger.LogInformation($"Job with ID {jobId} does not exist or is not owned by the current user.");
+    //             serviceResponse.Message = "Job does not exist or cannot be canceled.";
+    //             return serviceResponse;
+    //         }
+
+    //         // Check if job is already completed or canceled
+    //         if (job.Status == JobStatusEnum.Completed || job.Status == JobStatusEnum.Canceled)
+    //         {
+    //             _logger.LogInformation($"Job with ID {jobId} cannot be canceled because it is already completed or canceled.");
+    //             serviceResponse.Message = "Job cannot be canceled because it is already completed or canceled.";
+    //             return serviceResponse;
+    //         }
+
+    //         // Set job status to canceled
+    //         job.Status = JobStatusEnum.Canceled;
+    //         job.EndTime = DateTimeOffset.UtcNow;
+
+    //         // Update job in the repository
+    //         _unitOfWork.JobRepo.Update(job);
+
+    //         // Save changes
+    //         if (!await _unitOfWork.SaveAsync())
+    //         {
+    //             _logger.LogError($"Failed to save changes while canceling job with ID {jobId}.");
+    //             return serviceResponse;
+    //         }
+
+    //         // Successfully canceled the job
+    //         serviceResponse.Data = true;
+    //         serviceResponse.StatusCode = 200;
+    //         serviceResponse.Message = "Job canceled successfully.";
+    //     }
+    //     catch (Exception ex)
+    //     {
+    //         _logger.LogError(ex.ToString());
+    //         return serviceResponse;
+    //     }
+
+    //     return serviceResponse;
+    // }
+
+    // // Aborts the job execution on a machine based on the provided job execution details.
+    // public async Task<ServiceResponse<bool>> AbortJobExecutionAsync(JobAbortRequestDto jobAbortRequestDto)
+    // {
+    //     var serviceResponse = new ServiceResponse<bool>
+    //     {
+    //         Data = false,
+    //         Message = "Failed to abort job execution. Please try again later."
+    //     };
+
+    //     try
+    //     {
+    //         // Validate the job ID to ensure it is not empty.
+    //         if (jobAbortRequestDto.Id == Guid.Empty)
+    //         {
+    //             _logger.LogWarning("Invalid Job ID received: {JobId}. The Job ID must not be empty.", jobAbortRequestDto.Id);
+    //             serviceResponse.Message = "Job ID cannot be empty.";
+    //             return serviceResponse;
+    //         }
+
+    //         // Retrieve the job details based on the provided Job ID.
+    //         var job = await _unitOfWork.JobRepo
+    //             .GetByConditionAsync(w => w.Id == jobAbortRequestDto.Id)
+    //             .SingleOrDefaultAsync();
+
+    //         if (job == null)
+    //         {
+    //             // Log and return failure if no job is found with the provided Job ID.
+    //             _logger.LogWarning("No job found with ID: {JobId}.", jobAbortRequestDto.Id);
+    //             serviceResponse.Message = "Job not found or not assigned to any machine.";
+    //             return serviceResponse;
+    //         }
+
+    //         // If the job is not running, log a warning and return failure.
+    //         if (job.Status != JobStatusEnum.Running)
+    //         {
+    //             _logger.LogWarning("Job with ID: {JobId} is not currently running. Current status: {JobStatus}.", jobAbortRequestDto.Id, job.Status);
+    //             serviceResponse.Message = "Job is not currently running, cannot abort.";
+    //             return serviceResponse;
+    //         }
+
+    //         // Change the job status to "Abort" to indicate that it's being canceled.
+    //         job.Status = JobStatusEnum.Abort;
+    //         job.EndTime = DateTimeOffset.UtcNow;
+
+    //         // Update job in the repository
+    //         _unitOfWork.JobRepo.Update(job);
+
+    //         // Try to save the changes to the database.
+    //         if (!await _unitOfWork.SaveAsync())
+    //         {
+    //             // Log and return failure if the database save operation fails.
+    //             _logger.LogError("Failed to save changes while aborting job with ID: {JobId}.", jobAbortRequestDto.Id);
+    //             return serviceResponse;
+    //         }
+
+    //         // Create a new execution command to abort the job on the machine.
+    //         var executionCommand = new ExecutionCommandDto
+    //         {
+    //             JobId = job.Id,
+    //             MachineId = job.MachineId ?? Guid.Empty,
+    //             AgentId = job.FlowVersionId,
+    //             TenantId = job.TenantId,
+    //             Command = ExecutionCommandTypesEnum.Abort
+    //         };
+
+    //         // Trigger the command to stop the job execution on the machine.
+    //         await _jobsExecutorService.TriggerExecutionAsync(executionCommand);
+
+    //         // Return a success response indicating that the job execution was aborted.
+    //         serviceResponse.Data = true;
+    //         serviceResponse.StatusCode = 200;
+    //         serviceResponse.Message = "Job execution has been successfully aborted.";
+
+    //         _logger.LogInformation("Job execution for Job ID: {JobId} has been successfully aborted.", jobAbortRequestDto.Id);
+    //     }
+    //     catch (Exception ex)
+    //     {
+    //         // Log any unexpected exceptions that occur during the process.
+    //         _logger.LogError(ex, "An unexpected error occurred while attempting to abort job execution for Job ID: {JobId}.", jobAbortRequestDto.Id);
+    //     }
+
+    //     // Return the final response to the caller.
+    //     return serviceResponse;
+    // }
 }

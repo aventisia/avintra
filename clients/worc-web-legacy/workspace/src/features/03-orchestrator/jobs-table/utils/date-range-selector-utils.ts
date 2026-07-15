@@ -1,6 +1,6 @@
-import { format, parseISO, isValid } from "date-fns";
+import { format, isValid, parseISO } from "date-fns";
 
-import type { DateRange } from "../stores/date-range-store";
+import type { DateRange } from "..";
 
 export const DATE_FORMAT = "yyyy-MM-dd";
 

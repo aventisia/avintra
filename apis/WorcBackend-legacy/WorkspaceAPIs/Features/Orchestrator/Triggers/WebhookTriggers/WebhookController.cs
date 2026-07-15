@@ -52,7 +52,7 @@ public class WebhookController : BaseApiController
             return PlainTextError(404, "Trigger not found.");
         }
 
-        if (trigger.TriggerType != TriggerTypesEnum.WebhookTrigger)
+        if (trigger.TriggerType != TriggerTypesEnum.Webhook)
         {
             _logger.LogWarning("Webhook fire rejected: trigger {TriggerId} is not a webhook trigger.", triggerId);
             return PlainTextError(404, "Trigger not found.");
@@ -137,7 +137,7 @@ public class WebhookController : BaseApiController
             Id = Guid.NewGuid(),
             TenantId = tenantId,
             FlowVersionId = flowVersionId.Value,
-            TriggerType = TriggerTypesEnum.WebhookTrigger,
+            TriggerType = TriggerTypesEnum.Webhook,
             RefId = triggerId,
             Status = JobStatusEnum.Created,
             Priority = JobPriorityEnum.Normal,
@@ -192,7 +192,7 @@ public class WebhookController : BaseApiController
 
         // ── 2. Load job ──────────────────────────────────────────────────────
         var job = await _dbContext.Jobs.FirstOrDefaultAsync(j => j.Id == jobId);
-        if (job == null || job.TenantId != tenantId || job.TriggerType != TriggerTypesEnum.WebhookTrigger)
+        if (job == null || job.TenantId != tenantId || job.TriggerType != TriggerTypesEnum.Webhook)
             return PlainTextError(404, "Job not found.");
 
         // ── 3. Validate API key against the linked trigger ──────────────────

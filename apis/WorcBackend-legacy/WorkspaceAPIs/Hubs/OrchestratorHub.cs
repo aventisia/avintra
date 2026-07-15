@@ -332,7 +332,7 @@ public class OrchestratorHub : Hub
                 Status = JobStatusEnum.Created,
                 Priority = JobPriorityEnum.Normal,
                 TenantId = tenantId,
-                TriggerType = TriggerTypesEnum.ManualTrigger,
+                TriggerType = TriggerTypesEnum.Manual,
                 FlowVersionHistoryId = agent.FlowVersionHistories
                     .OrderByDescending(o => o.CreatedOn)
                     .Select(s => (Guid?)s.Id)

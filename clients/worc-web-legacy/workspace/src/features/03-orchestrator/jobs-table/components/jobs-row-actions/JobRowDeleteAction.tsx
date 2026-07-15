@@ -1,14 +1,26 @@
 import { DeleteDDMenuItem } from "@aventisia/ui/dropdown-menu";
-import { useShowAlertHandler } from "@aventisia/ui/hooks";
+import {
+  useListOptimisticMutation,
+  useShowAlertHandler,
+} from "@aventisia/ui/hooks";
 
-import { useDeleteJobMutation } from "../../hooks/useDeleteJobMutation";
+import {
+  DATA_QUERY_KEY,
+  JobsTableRowDto,
+  jobOptimisticMutationFn,
+} from "../..";
 
 interface JobRowDeleteActionProps {
   rowId: string;
 }
 
 export const JobRowDeleteAction = ({ rowId }: JobRowDeleteActionProps) => {
-  const { deleteJobMutation } = useDeleteJobMutation();
+  const { mutate: deleteJob } = useListOptimisticMutation<
+    string,
+    JobsTableRowDto | boolean,
+    JobsTableRowDto
+  >([rowId], jobOptimisticMutationFn, DATA_QUERY_KEY);
+
   // Get showAlert handler
   const { showDefaultAlertDialog } = useShowAlertHandler();
 
@@ -17,7 +29,11 @@ export const JobRowDeleteAction = ({ rowId }: JobRowDeleteActionProps) => {
     <DeleteDDMenuItem
       onClick={() => {
         showDefaultAlertDialog({
-          confirmActionFn: () => deleteJobMutation(rowId),
+          confirmActionFn: () =>
+            deleteJob({
+              payload: rowId,
+              crudAction: "delete",
+            }),
           alertType: "delete-record",
           additionalText: "job",
         });

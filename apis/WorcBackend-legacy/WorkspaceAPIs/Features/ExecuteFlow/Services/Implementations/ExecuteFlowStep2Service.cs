@@ -76,7 +76,7 @@ public class ExecuteFlowStep2Service : IExecuteFlowStep2Service
                     .SingleOrDefaultAsync();
 
                 // Manual execution (Agent Builder / UI)
-                if (job.TriggerType == TriggerTypesEnum.ManualTrigger && !job.IsPublished)
+                if (job.TriggerType == TriggerTypesEnum.Manual && !job.IsPublished)
                 {
                     job.ExecutedBy = user != null
                         ? $"{user.FirstName} {user.LastName}"
@@ -86,13 +86,13 @@ public class ExecuteFlowStep2Service : IExecuteFlowStep2Service
                 }
                 // Trigger-based execution
                 else if (
-                    job.TriggerType == TriggerTypesEnum.APITrigger ||
-                    job.TriggerType == TriggerTypesEnum.EmailTrigger ||
-                    job.TriggerType == TriggerTypesEnum.EventTrigger ||
-                    job.TriggerType == TriggerTypesEnum.MessageTrigger ||
-                    job.TriggerType == TriggerTypesEnum.QueueTrigger ||
-                    job.TriggerType == TriggerTypesEnum.TimeTrigger ||
-                    job.TriggerType == TriggerTypesEnum.WebhookTrigger)
+                    job.TriggerType == TriggerTypesEnum.Api ||
+                    job.TriggerType == TriggerTypesEnum.Email ||
+                    job.TriggerType == TriggerTypesEnum.Event ||
+                    job.TriggerType == TriggerTypesEnum.Message ||
+                    job.TriggerType == TriggerTypesEnum.Queue ||
+                    job.TriggerType == TriggerTypesEnum.Time ||
+                    job.TriggerType == TriggerTypesEnum.Webhook)
                 {
                     var trigger = await unitOfWork.TriggerRepo
                         .GetByConditionAsync(w => w.Id == job.RefId)
@@ -470,7 +470,7 @@ public class ExecuteFlowStep2Service : IExecuteFlowStep2Service
         return status switch
         {
             FlowExecutionStatus.Completed => JobStatusEnum.Completed,
-            FlowExecutionStatus.Aborted => JobStatusEnum.Abort, // TODO: Consider changing this to Aborted to align with FlowExecutionStatus enum naming
+            FlowExecutionStatus.Aborted => JobStatusEnum.Aborted,
             _ => JobStatusEnum.Failed,
         };
     }

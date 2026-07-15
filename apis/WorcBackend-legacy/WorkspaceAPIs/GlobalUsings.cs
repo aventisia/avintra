@@ -24,6 +24,7 @@ global using WorkspaceAPIs.Enums;
 global using WorkspaceAPIs.Jobs;
 global using WorkspaceAPIs.Hubs;
 global using WorkspaceAPIs.Attributes;
+global using WorkspaceAPIs.Helpers;
 
 global using WorkspaceAPIs.Features.CloudConnectors;
 global using WorkspaceAPIs.Features.CloudConnectors.M365;

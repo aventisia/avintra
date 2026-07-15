@@ -4,9 +4,7 @@ import { format } from "date-fns";
 import { useEffect } from "react";
 import { useShallow } from "zustand/react/shallow";
 
-import { getJobs } from "../apis/jobs-table-apis";
-import { DATA_QUERY_KEY } from "../constants";
-import { useDateRangePickerStore } from "../stores/date-range-store";
+import { DATA_QUERY_KEY, getJobs, useDateRangePickerStore } from "..";
 
 /**
  * Custom hook to fetch jobs using react query.

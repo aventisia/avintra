@@ -41,7 +41,7 @@ public class WebhookTriggerService : IWebhookTriggerService
                 // Retrieve only owned webhook triggers
                 triggers = await _unitOfWork.TriggerRepo
                     .GetByConditionAsync(w =>
-                        w.TriggerType == TriggerTypesEnum.WebhookTrigger &&
+                        w.TriggerType == TriggerTypesEnum.Webhook &&
                         w.CreatedByUserId == _userId)
                     .OrderByDescending(o => o.CreatedOn)
                     .Include(i => i.CreatedByUser)
@@ -121,7 +121,7 @@ public class WebhookTriggerService : IWebhookTriggerService
         try
         {
             var trigger = await _unitOfWork.TriggerRepo
-                .GetByConditionAsync(w => w.Id == triggerId && w.TriggerType == TriggerTypesEnum.WebhookTrigger)
+                .GetByConditionAsync(w => w.Id == triggerId && w.TriggerType == TriggerTypesEnum.Webhook)
                 .Include(i => i.CreatedByUser)
                 .Include(i => i.LastModifiedByUser)
                 .Include(i => i.TriggerFlowVersions)
@@ -186,7 +186,7 @@ public class WebhookTriggerService : IWebhookTriggerService
             // Duplicate name check
             var existing = await _unitOfWork.TriggerRepo
                 .GetByConditionAsync(w =>
-                    w.TriggerType == TriggerTypesEnum.WebhookTrigger &&
+                    w.TriggerType == TriggerTypesEnum.Webhook &&
                     w.Name.ToLower() == dto.Name.ToLower())
                 .FirstOrDefaultAsync();
 
@@ -213,7 +213,7 @@ public class WebhookTriggerService : IWebhookTriggerService
             };
 
             var newTrigger = dto.Adapt<Trigger>();
-            newTrigger.TriggerType = TriggerTypesEnum.WebhookTrigger;
+            newTrigger.TriggerType = TriggerTypesEnum.Webhook;
             newTrigger.Timezone = string.Empty;
             newTrigger.Metadata = SerializeMetadata(model);
             newTrigger.CreatedByUserId = _userId;
@@ -305,7 +305,7 @@ public class WebhookTriggerService : IWebhookTriggerService
         try
         {
             var trigger = await _unitOfWork.TriggerRepo
-                .GetByConditionAsync(w => w.Id == dto.Id && w.TriggerType == TriggerTypesEnum.WebhookTrigger)
+                .GetByConditionAsync(w => w.Id == dto.Id && w.TriggerType == TriggerTypesEnum.Webhook)
                 .Include(i => i.TriggerFlowVersions)
                 .SingleOrDefaultAsync();
 
@@ -338,7 +338,7 @@ public class WebhookTriggerService : IWebhookTriggerService
             // Duplicate name check among other triggers
             var duplicate = await _unitOfWork.TriggerRepo
                 .GetByConditionAsync(w =>
-                    w.TriggerType == TriggerTypesEnum.WebhookTrigger &&
+                    w.TriggerType == TriggerTypesEnum.Webhook &&
                     w.Name.ToLower() == dto.Name.ToLower() &&
                     w.Id != dto.Id)
                 .FirstOrDefaultAsync();
@@ -486,7 +486,7 @@ public class WebhookTriggerService : IWebhookTriggerService
         try
         {
             var trigger = await _unitOfWork.TriggerRepo
-                .GetByConditionAsync(w => w.Id == triggerId && w.TriggerType == TriggerTypesEnum.WebhookTrigger)
+                .GetByConditionAsync(w => w.Id == triggerId && w.TriggerType == TriggerTypesEnum.Webhook)
                 .SingleOrDefaultAsync();
 
             if (trigger == null)
@@ -551,7 +551,7 @@ public class WebhookTriggerService : IWebhookTriggerService
         try
         {
             var triggers = await _unitOfWork.TriggerRepo
-                .GetByConditionAsync(t => triggerIds.Contains(t.Id) && t.TriggerType == TriggerTypesEnum.WebhookTrigger)
+                .GetByConditionAsync(t => triggerIds.Contains(t.Id) && t.TriggerType == TriggerTypesEnum.Webhook)
                 .ToListAsync();
 
             if (triggers == null || triggers.Count == 0)
@@ -616,7 +616,7 @@ public class WebhookTriggerService : IWebhookTriggerService
         {
             var exists = await _unitOfWork.TriggerRepo
                 .GetByConditionAsync(w =>
-                    w.TriggerType == TriggerTypesEnum.WebhookTrigger &&
+                    w.TriggerType == TriggerTypesEnum.Webhook &&
                     w.Name.ToLower() == checkAvailabilityDto.UserInput.Trim().ToLower())
                 .FirstOrDefaultAsync();
 
@@ -652,7 +652,7 @@ public class WebhookTriggerService : IWebhookTriggerService
         try
         {
             var trigger = await _unitOfWork.TriggerRepo
-                .GetByConditionAsync(w => w.Id == triggerId && w.TriggerType == TriggerTypesEnum.WebhookTrigger)
+                .GetByConditionAsync(w => w.Id == triggerId && w.TriggerType == TriggerTypesEnum.Webhook)
                 .SingleOrDefaultAsync();
 
             if (trigger == null)

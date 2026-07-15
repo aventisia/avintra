@@ -11,5 +11,5 @@ public interface IExecuteFlowStep1Service
     /// </summary>
     /// <param name="requestDto"> Contains the flow execution request details including input data and flow version reference. </param>
     /// <param name="triggerType"> Specifies how the flow is triggered (e.g., ManualTrigger or WebhookTrigger). Defaults to ManualTrigger. </param>
-    Task<ServiceResponse<ExecuteFlowResponseDto>> ExecuteFlowAsync(ExecuteFlowRequestDto requestDto, TriggerTypesEnum triggerType = TriggerTypesEnum.ManualTrigger);
+    Task<ServiceResponse<ExecuteFlowResponseDto>> ExecuteFlowAsync(ExecuteFlowRequestDto requestDto, TriggerTypesEnum triggerType = TriggerTypesEnum.Manual);
 }

@@ -28,24 +28,11 @@ public static class WorkspaceDbInitialSeed
             // TODO: Machine entity: Remove this temporary migration code after all legacy data is migrated
             //await UpdateMachineTableAsync(workspaceDbContext);
 
-            // Migrate existing Job records to populate FlowVersionHistoryId using the latest FlowVersionHistory for each FlowVersion.
-            await UpdateJobFlowVersionHistoryAsync(workspaceDbContext);
+            // TODO: Remove once reached the main branch and deployed to production.
+            await UpdateJobStatus_Abort2Aborted(workspaceDbContext);
 
-            // TODO: Remove this temporary migration code after all legacy user mapping data
-            // (FlowUser, FlowVersionUser, and QueueUser) has been successfully migrated
-            // to ResourceShare in all environments.
-
-            // Remove duplicate records from all configured entities
-            await RemoveDuplicateRecordsAsync(workspaceDbContext);
-
-            // Migrate legacy FlowUser records to ResourceShare records.
-            await MigrateFlowUsersToResourceSharesAsync(workspaceDbContext);
-
-            // Migrate ResourceShare records back to FlowVersionUser records.
-            await MigrateResourceSharesToFlowVersionUsersAsync(workspaceDbContext);
-
-            // Migrate ResourceShare records back to QueueUser records.
-            await MigrateResourceSharesToQueueUsersAsync(workspaceDbContext);
+            // TODO: Remove once reached the main branch and deployed to production.
+            await UpdateTriggerType_RemoveTriggerSuffix(workspaceDbContext);
         }
         catch (Exception ex)
         {
@@ -77,18 +64,19 @@ public static class WorkspaceDbInitialSeed
         // This section seems misplaced and should be removed, as it references 'jobs' which is not defined in this method.
     }
 
-    private static async Task UpdateJobFlowVersionHistoryAsync(WorkspaceDbContext workspaceDbContext)
+    // TODO: Remove once reached the main branch and deployed to production.
+    private static async Task UpdateJobStatus_Abort2Aborted(WorkspaceDbContext workspaceDbContext)
     {
-        // Load jobs that do not have a FlowVersionHistoryId assigned.
+        // Load jobs that have Abort status
         var jobs = await workspaceDbContext.Jobs.IgnoreQueryFilters()
-            .Where(w => w.FlowVersionHistoryId == null)
+            .Where(w => w.Status == JobStatusEnum.Abort)
             .ToListAsync();
 
-        long updatedCount = 0;
-        // Assign the latest FlowVersionHistoryId to each job.
+        // Update the status of each job to Aborted
+        int updatedCount = 0;
         foreach (var job in jobs)
         {
-            // Fetch the latest FlowVersionHistory for the job's FlowVersionId.
+           // Fetch the latest FlowVersionHistory for the job's FlowVersionId.
             var latestFlowVersionHistory = await workspaceDbContext.FlowVersionHistories.IgnoreQueryFilters()
                 .Where(fvh => fvh.FlowVersionId == job.FlowVersionId)
                 .OrderByDescending(fvh => fvh.CreatedOn)
@@ -103,245 +91,94 @@ public static class WorkspaceDbInitialSeed
 
         Console.WriteLine($"Info: Updating {updatedCount} Job records with the latest FlowVersionHistoryId...");
         await workspaceDbContext.SaveChangesAsync();
-        Console.WriteLine("Info: Job FlowVersionHistory migration completed successfully.");
+        Console.WriteLine($"Info: Updated {jobs.Count} Job records from 'Abort' to 'Aborted' status.");
     }
 
-    private static async Task UpdateResourceShareAccessLevelsAsync(
-        WorkspaceDbContext workspaceDbContext)
+    // TODO: Remove once reached the main branch and deployed to production.
+    private static async Task UpdateTriggerType_RemoveTriggerSuffix(WorkspaceDbContext workspaceDbContext)
     {
-        // Load all ResourceShare records.
-        // Access levels "Delete" and "FullAccess" are being deprecated and must be migrated.
-        var resourceShares = await workspaceDbContext.ResourceShares
-            .ToListAsync();
+        // Load triggers that have the "Trigger" suffix
+        var triggers = await workspaceDbContext.Triggers.IgnoreQueryFilters().ToListAsync();
 
-        var updatedCount = 0;
-
-        foreach (var resourceShare in resourceShares)
+        // Update the type of each trigger by removing the "Trigger" suffix
+        foreach (var trigger in triggers)
         {
-            // Replace deprecated "Delete" access with "View".
-            if (resourceShare.AccessLevel == ResourceAccessTypeEnum.Delete)
+            switch (trigger.TriggerType)
             {
-                resourceShare.AccessLevel = ResourceAccessTypeEnum.View;
-                updatedCount++;
+                case TriggerTypesEnum.ManualTrigger:
+                    trigger.TriggerType = TriggerTypesEnum.Manual;
+                    break;
+                case TriggerTypesEnum.APITrigger:
+                    trigger.TriggerType = TriggerTypesEnum.Api;
+                    break;
+                case TriggerTypesEnum.WebhookTrigger:
+                    trigger.TriggerType = TriggerTypesEnum.Webhook;
+                    break;
+                case TriggerTypesEnum.QueueTrigger:
+                    trigger.TriggerType = TriggerTypesEnum.Queue;
+                    break;
+                case TriggerTypesEnum.EventTrigger:
+                    trigger.TriggerType = TriggerTypesEnum.Event;
+                    break;
+                case TriggerTypesEnum.TimeTrigger:
+                    trigger.TriggerType = TriggerTypesEnum.Time;
+                    break;
+                case TriggerTypesEnum.EmailTrigger:
+                    trigger.TriggerType = TriggerTypesEnum.Email;
+                    break;
+                case TriggerTypesEnum.MessageTrigger:
+                    trigger.TriggerType = TriggerTypesEnum.Message;
+                    break;
+                default:
+                    // If the trigger type does not have a "Trigger" suffix, do nothing
+                    break;
             }
-            // Replace deprecated "FullAccess" access with "Owner".
-            else if (resourceShare.AccessLevel == ResourceAccessTypeEnum.FullAccess)
+        }
+
+        // Save changes to the database
+        await workspaceDbContext.SaveChangesAsync();
+        Console.WriteLine($"Info: Updated {triggers.Count} Trigger records by removing 'Trigger' suffix.");
+
+        // Load jobs that have the "Trigger" suffix in their TriggerType
+        var jobs = await workspaceDbContext.Jobs.IgnoreQueryFilters().ToListAsync();
+
+        // Update the TriggerType of each job by removing the "Trigger" suffix
+        foreach (var job in jobs)
+        {
+            switch (job.TriggerType)
             {
-                resourceShare.AccessLevel = ResourceAccessTypeEnum.Owner;
-                updatedCount++;
+                case TriggerTypesEnum.ManualTrigger:
+                    job.TriggerType = TriggerTypesEnum.Manual;
+                    break;
+                case TriggerTypesEnum.APITrigger:
+                    job.TriggerType = TriggerTypesEnum.Api;
+                    break;
+                case TriggerTypesEnum.WebhookTrigger:
+                    job.TriggerType = TriggerTypesEnum.Webhook;
+                    break;
+                case TriggerTypesEnum.QueueTrigger:
+                    job.TriggerType = TriggerTypesEnum.Queue;
+                    break;
+                case TriggerTypesEnum.EventTrigger:
+                    job.TriggerType = TriggerTypesEnum.Event;
+                    break;
+                case TriggerTypesEnum.TimeTrigger:
+                    job.TriggerType = TriggerTypesEnum.Time;
+                    break;
+                case TriggerTypesEnum.EmailTrigger:
+                    job.TriggerType = TriggerTypesEnum.Email;
+                    break;
+                case TriggerTypesEnum.MessageTrigger:
+                    job.TriggerType = TriggerTypesEnum.Message;
+                    break;
+                default:
+                    // If the trigger type does not have a "Trigger" suffix, do nothing
+                    break;
             }
         }
 
-        // Persist changes only when records have been updated.
-        if (updatedCount > 0)
-        {
-            Console.WriteLine($"Info: Updating {updatedCount} ResourceShare records to the new access model...");
-            await workspaceDbContext.SaveChangesAsync();
-            Console.WriteLine("Info: ResourceShare access level migration completed successfully.");
-        }
-    }
-
-    private static async Task RemoveDuplicateRecordsAsync(WorkspaceDbContext workspaceDbContext)
-    {
-        // STEP 1: Identify duplicates using ROW_NUMBER logic
-        // Keep only the first record per (UserId, ResourceId)
-        var duplicateResourceShareIds = (await workspaceDbContext.ResourceShares
-            .ToListAsync())
-            .GroupBy(x => new { x.UserId, x.ResourceId })
-            .SelectMany(g => g.OrderBy(x => x.Id).Skip(1))
-            .Select(x => x.Id)
-            .ToList();
-
-        if (duplicateResourceShareIds.Any())
-        {
-            Console.WriteLine($"Info: Deleting {duplicateResourceShareIds.Count} duplicate ResourceShares...");
-
-            // STEP 2: Delete only by IDs
-            var duplicates = workspaceDbContext.ResourceShares
-                .Where(w => duplicateResourceShareIds.Contains(w.Id));
-
-            workspaceDbContext.ResourceShares.RemoveRange(duplicates);
-            await workspaceDbContext.SaveChangesAsync();
-
-            Console.WriteLine("Info: Duplicate ResourceShares removed.");
-        }
-
-        // STEP 1: Identify duplicates using ROW_NUMBER logic
-        // Keep only the first record per (UserId, QueueId)
-        var duplicateQueueUserIds = (await workspaceDbContext.QueueUsers
-            .ToListAsync())
-            .GroupBy(g => new { g.UserId, g.QueueId })
-            .SelectMany(sm => sm
-                .OrderBy(o => o.Id)
-                .Skip(1))
-            .Select(s => s.Id)
-            .ToList();
-
-        if (duplicateQueueUserIds.Any())
-        {
-            Console.WriteLine($"Info: Deleting {duplicateQueueUserIds.Count} duplicate QueueUsers...");
-
-            // STEP 2: Delete only by IDs
-            var duplicateQueueUsers = workspaceDbContext.QueueUsers
-                .Where(w => duplicateQueueUserIds.Contains(w.Id));
-
-            workspaceDbContext.QueueUsers.RemoveRange(duplicateQueueUsers);
-            await workspaceDbContext.SaveChangesAsync();
-
-            Console.WriteLine("Info: Duplicate QueueUsers removed.");
-        }
-
-        // STEP 1: Identify duplicates using ROW_NUMBER logic
-        // Keep only the first record per (UserId, FlowVersionId)
-        var duplicateFlowVersionIds = (await workspaceDbContext.FlowVersionUsers
-            .ToListAsync())
-            .GroupBy(g => new { g.UserId, g.FlowVersionId })
-            .SelectMany(sm => sm
-                .OrderBy(o => o.Id)
-                .Skip(1))
-            .Select(s => s.Id)
-            .ToList();
-
-        if (duplicateFlowVersionIds.Any())
-        {
-            Console.WriteLine($"Info: Deleting {duplicateFlowVersionIds.Count} duplicate FlowVersionUsers...");
-
-            // STEP 2: Delete only by IDs
-            var duplicateFlowVersions = workspaceDbContext.FlowVersionUsers
-                .Where(w => duplicateFlowVersionIds.Contains(w.Id));
-
-            workspaceDbContext.FlowVersionUsers.RemoveRange(duplicateFlowVersions);
-            await workspaceDbContext.SaveChangesAsync();
-
-            Console.WriteLine("Info: Duplicate FlowVersionUsers removed.");
-        }
-    }
-
-    // Temporary data migration that converts legacy FlowUser records into ResourceShare records and removes the old FlowUser entries.
-    // Remove this method after all environments have been migrated.
-    private static async Task MigrateFlowUsersToResourceSharesAsync(WorkspaceDbContext workspaceDbContext)
-    {
-        // Fetch all existing FlowUser records that need to be migrated.
-        var flowUsers = await workspaceDbContext.FlowUsers.ToListAsync();
-
-        // Nothing to migrate.
-        if (!flowUsers.Any())
-        {
-            return;
-        }
-
-        Console.WriteLine($"Info: Migrating {flowUsers.Count} FlowUsers to ResourceShares...");
-
-        var existingKeys = (await workspaceDbContext.ResourceShares
-            .Where(w => w.ResourceType == ResourceTypeEnum.Flow)
-            .Select(s => new { s.UserId, s.ResourceId })
-            .ToListAsync())
-            .Select(s => $"{s.UserId}:{s.ResourceId}")
-            .ToHashSet();
-
-        // Convert FlowUser records into ResourceShare records.
-        var resourceShares = flowUsers
-        .Where(w => !existingKeys.Contains($"{w.UserId}:{w.FlowId}"))
-        .Select(s => new ResourceShare
-        {
-            UserId = s.UserId,
-            ResourceId = s.FlowId,
-            ResourceType = ResourceTypeEnum.Flow,
-            AccessLevel = Enum.TryParse<ResourceAccessTypeEnum>(
-                s.Type.ToString(),
-                out var accessLevel)
-                ? accessLevel
-                : ResourceAccessTypeEnum.View,
-            TenantId = s.TenantId
-        }).ToList();
-
-        // Insert the new ResourceShare records.
-        await workspaceDbContext.ResourceShares.AddRangeAsync(resourceShares);
+        // Save changes to the database
         await workspaceDbContext.SaveChangesAsync();
-
-        // Remove the legacy FlowUser records after successful migration.
-        workspaceDbContext.FlowUsers.RemoveRange(flowUsers);
-        await workspaceDbContext.SaveChangesAsync();
-
-        Console.WriteLine("Info: Successfully migrated FlowUsers to ResourceShares and removed old FlowUser records.");
-    }
-
-    // Temporary data migration that converts ResourceShare records for FlowVersions  back into FlowVersionUser records and removes the ResourceShare entries.
-    // Remove this method after all environments have been migrated.
-    private static async Task MigrateResourceSharesToFlowVersionUsersAsync(WorkspaceDbContext workspaceDbContext)
-    {
-        // Fetch ResourceShare records that represent FlowVersion shares.
-        var resourceShares = await workspaceDbContext.ResourceShares
-            .Where(w => w.ResourceType == ResourceTypeEnum.FlowVersion)
-            .ToListAsync();
-
-        // Nothing to migrate.
-        if (!resourceShares.Any())
-        {
-            return;
-        }
-
-        Console.WriteLine($"Info: Migrating {resourceShares.Count} ResourceShares to FlowVersionUsers...");
-
-        // Convert ResourceShare records into FlowVersionUser records.
-        var flowVersionUsers = resourceShares.Select(s => new FlowVersionUser
-        {
-            UserId = s.UserId,
-            FlowVersionId = s.ResourceId,
-            TenantId = s.TenantId
-        }).ToList();
-
-        // Insert the new FlowVersionUser records.
-        await workspaceDbContext.FlowVersionUsers.AddRangeAsync(flowVersionUsers);
-        await workspaceDbContext.SaveChangesAsync();
-
-        // Remove the ResourceShare records after successful migration.
-        workspaceDbContext.ResourceShares.RemoveRange(resourceShares);
-        await workspaceDbContext.SaveChangesAsync();
-
-        Console.WriteLine("Info: Successfully migrated ResourceShares to FlowVersionUsers and removed old ResourceShare records.");
-    }
-
-    // Temporary data migration that converts ResourceShare records back into QueueUser records and removes the ResourceShare entries.
-    // Remove this method after all environments have been migrated.
-    private static async Task MigrateResourceSharesToQueueUsersAsync(WorkspaceDbContext workspaceDbContext)
-    {
-        // Fetch ResourceShare records that represent Queue shares.
-        var resourceShares = await workspaceDbContext.ResourceShares
-            .Where(rs => rs.ResourceType == ResourceTypeEnum.Queue)
-            .ToListAsync();
-
-        // Nothing to migrate.
-        if (!resourceShares.Any())
-        {
-            return;
-        }
-
-        Console.WriteLine($"Info: Migrating {resourceShares.Count} ResourceShares to QueueUsers...");
-
-        // Convert ResourceShare records into QueueUser records.
-        var queueUsers = resourceShares.Select(s => new QueueUser
-        {
-            UserId = s.UserId,
-            QueueId = s.ResourceId,
-            AccessType = Enum.TryParse<QueueWorkItemAccessTypesEnum>(
-                s.AccessLevel.ToString(),
-                out var accessType)
-                ? accessType
-                : QueueWorkItemAccessTypesEnum.View,
-            TenantId = s.TenantId,
-            CreatedByUserId = s.UserId,
-            LastModifiedByUserId = s.UserId
-        }).ToList();
-
-        // Insert the new QueueUser records.
-        await workspaceDbContext.QueueUsers.AddRangeAsync(queueUsers);
-        await workspaceDbContext.SaveChangesAsync();
-
-        // Remove the ResourceShare records after successful migration.
-        workspaceDbContext.ResourceShares.RemoveRange(resourceShares);
-        await workspaceDbContext.SaveChangesAsync();
-
-        Console.WriteLine("Info: Successfully migrated ResourceShares to QueueUsers and removed old ResourceShare records.");
+        Console.WriteLine($"Info: Updated {jobs.Count} Job records by removing 'Trigger' suffix.");
     }
 }
