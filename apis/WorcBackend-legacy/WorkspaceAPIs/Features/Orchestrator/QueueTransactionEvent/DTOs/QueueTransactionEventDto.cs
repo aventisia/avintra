@@ -19,7 +19,7 @@ public class QueueTransactionEventDto
     /// Gets or sets the event payload data.
     /// </summary>
     // TODO: Replace string with a strongly typed object or JSON document (e.g., JsonDocument/JsonNode) the event payload schema is finalized.
-    public required string Data { get; set; }
+    public string Data { get; set; } = string.Empty;
 
     /// <summary>
     /// Gets or sets the unique identifier of the associated queue transaction.

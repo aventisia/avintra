@@ -157,6 +157,45 @@ public class QueueTransactionEventService : IQueueTransactionEventService
                 return serviceResponse;
             }
 
+            // Capture the existing status before applying any event-based updates
+            var previousStatus = queueTransaction.Status;
+
+            // Apply status transition based on the queue transaction event type
+            switch (queueTransactionEvent.EventType)
+            {
+                case QueueTransactionEventEnum.StatusChange:
+
+                    // Update the transaction status to InProgress when a pending transaction starts processing
+                    if (queueTransaction.Status == QueueTransactionStatusTypesEnum.Pending)
+                    {
+                        queueTransaction.Status = QueueTransactionStatusTypesEnum.InProgress;
+                    }
+
+                    break;
+
+                case QueueTransactionEventEnum.Closed:
+
+                    // Mark the transaction as completed when the queue transaction is closed
+                    queueTransaction.Status = QueueTransactionStatusTypesEnum.Completed;
+
+                    break;
+            }
+
+            // Persist changes only when the transaction status has been modified
+            if (previousStatus != queueTransaction.Status)
+            {
+                _unitOfWork.QueueTransactionRepo.Update(queueTransaction);
+
+                if (!await _unitOfWork.SaveAsync())
+                {
+                    _logger.LogError(
+                        "Failed to update queue transaction status for QueueTransactionId {QueueTransactionId}.",
+                        queueTransactionEventDto.QueueTransactionId);
+
+                    return serviceResponse;
+                }
+            }
+
             // Build the successful response.
             serviceResponse.Data = queueTransactionEvent.Adapt<QueueTransactionEventDto>();
             serviceResponse.StatusCode = 200;
