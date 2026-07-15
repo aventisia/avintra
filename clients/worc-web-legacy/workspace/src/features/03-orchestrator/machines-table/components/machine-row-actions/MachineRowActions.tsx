@@ -11,20 +11,11 @@ interface MachineRowActionsProps {
 
 export const MachineRowActions = ({ rowId, osID }: MachineRowActionsProps) => {
   return (
-    // Dropdown menu for machine table row action */}
-    <DataTableRowActions>
-      <AssignAgentRowAction rowId={rowId} osID={osID} />
-
-      {/* View the machine details */}
-      {/* <DTRowAction rowId={rowId} crudAction="read" /> */}
-
-      {/* Edit machine details */}
+    <DataTableRowActions className="!max-w-10">
+      <DTRowAction rowId={rowId} crudAction="read" />
       <DTRowAction rowId={rowId} crudAction="update" />
-
-      {/* DropdownMenuSeparator component */}
+      <AssignAgentRowAction rowId={rowId} osID={osID} />
       <DropdownMenuSeparator />
-
-      {/* Triggers Machine delete alert dialog  */}
       <MachineRowDeleteAction rowId={rowId} />
     </DataTableRowActions>
   );

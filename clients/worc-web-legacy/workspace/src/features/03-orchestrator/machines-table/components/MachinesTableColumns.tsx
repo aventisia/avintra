@@ -1,12 +1,12 @@
 import { Checkbox } from "@aventisia/ui";
 import { Badge } from "@aventisia/ui/badge";
 import { DTColumnHeader } from "@aventisia/ui/data-table";
-import { dateFormatter } from "@aventisia/ui/utils";
-import { ColumnDef } from "@tanstack/react-table";
+import { dateFormatter, maskIP } from "@aventisia/ui/utils";
+import type { ColumnDef } from "@tanstack/react-table";
 
 import { TABLE_KEY } from "../constants";
 import { getColumnName, statusColor } from "../constants/column-display-names";
-import { MachinesTableDto } from "../dtos/machines-table-dto";
+import type { MachinesTableDto } from "../dtos/machines-table-dto";
 import { MachineRowActions } from "./machine-row-actions/MachineRowActions";
 
 const formatDateValue = (value: unknown) => {
@@ -53,7 +53,10 @@ export const machinesTableColumns: ColumnDef<MachinesTableDto>[] = [
       />
     ),
     cell: ({ row }) => (
-      <div title={row.getValue("name")} className="w-auto max-w-60 truncate font-medium">
+      <div
+        title={row.getValue("name")}
+        className="w-auto max-w-60 truncate font-medium"
+      >
         {row.getValue("name")}
       </div>
     ),
@@ -94,7 +97,11 @@ export const machinesTableColumns: ColumnDef<MachinesTableDto>[] = [
         title={getColumnName("lastCheckedIn")}
       />
     ),
-    cell: ({ row }) => formatDateValue(row.getValue("lastCheckedIn")),
+    cell: ({ row }) => {
+      const formattedDate = formatDateValue(row.getValue("lastCheckedIn"));
+      if (!formattedDate || formattedDate === "01 Jan 001") return "-";
+      return formattedDate;
+    },
   },
   {
     accessorKey: "environment",
@@ -130,7 +137,7 @@ export const machinesTableColumns: ColumnDef<MachinesTableDto>[] = [
     cell: ({ row }) => (
       <div
         title={row.getValue("osID")}
-        className="w-auto max-w-40 truncate font-medium"
+        className="w-auto max-w-32 truncate font-medium"
       >
         {row.getValue("osID")}
       </div>
@@ -192,7 +199,11 @@ export const machinesTableColumns: ColumnDef<MachinesTableDto>[] = [
         title={getColumnName("ipAddress")}
       />
     ),
-    cell: ({ row }) => row.getValue("ipAddress") || "-",
+    cell: ({ row }) => {
+      const ipAddress = row.getValue<string>("ipAddress");
+      if (!ipAddress || ipAddress === "0.0.0.0") return "-";
+      return maskIP(ipAddress);
+    },
   },
   {
     accessorKey: "createdBy",
@@ -204,7 +215,10 @@ export const machinesTableColumns: ColumnDef<MachinesTableDto>[] = [
       />
     ),
     cell: ({ row }) => (
-      <div title={row.getValue("createdBy")} className="w-auto max-w-40 truncate font-medium">
+      <div
+        title={row.getValue("createdBy")}
+        className="w-auto max-w-40 truncate font-medium"
+      >
         {row.getValue("createdBy")}
       </div>
     ),
@@ -231,7 +245,10 @@ export const machinesTableColumns: ColumnDef<MachinesTableDto>[] = [
       />
     ),
     cell: ({ row }) => (
-      <div title={row.getValue("lastModifiedBy")} className="w-auto max-w-40 truncate font-medium">
+      <div
+        title={row.getValue("lastModifiedBy")}
+        className="w-auto max-w-40 truncate font-medium"
+      >
         {row.getValue("lastModifiedBy")}
       </div>
     ),

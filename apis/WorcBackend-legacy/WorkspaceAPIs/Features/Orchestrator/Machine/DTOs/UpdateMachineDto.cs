@@ -44,4 +44,9 @@ public class UpdateMachineDto
     /// </summary>
     [StringLength(100)]
     public string? IpAddress { get; set; }
+
+    /// <summary>
+    /// Gets or sets a flag indicating whether the machine is disabled.
+    /// </summary>
+    public bool? IsDisabled { get; set; }
 }

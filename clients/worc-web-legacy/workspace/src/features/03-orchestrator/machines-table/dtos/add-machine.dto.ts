@@ -1,5 +1,5 @@
-import type { MachineEnvironmentTypesEnum } from "@/react-toolkit/enums/machine-environment-types-enum";
-import type { MachineOsTypesEnum } from "@/react-toolkit/enums/machine-os-types-enum";
+import type { EnvironmentTypesEnum } from "@/react-toolkit/enums/machine-environment-types-enum";
+import type { OsTypesEnum } from "@/react-toolkit/enums/machine-os-types-enum";
 
 /**
  * Represents the payload used to add a machine.
@@ -8,12 +8,12 @@ export interface AddMachineDto {
   /**
    * Represents the environment of the machine, e.g., Development, UAT, Production.
    */
-  environment: MachineEnvironmentTypesEnum;
+  environment: EnvironmentTypesEnum;
 
   /**
    * Represents the operating system of the machine, e.g., Windows or Linux.
    */
-  operatingSystem: MachineOsTypesEnum;
+  operatingSystem: OsTypesEnum;
 
   /**
    * Gets or sets the identifier that uniquely represents the operating system (max length 100).

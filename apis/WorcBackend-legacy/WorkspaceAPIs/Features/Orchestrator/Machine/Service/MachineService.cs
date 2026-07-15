@@ -150,7 +150,7 @@ public class MachineService : IMachineService
             // Default mapping
             var newMachine = addMachineDto.Adapt<Machine>();
             newMachine.Name = MachineHelpers.BuildMachineName(newMachine.Environment, newMachine.OperatingSystem, newMachine.OsID, newMachine.Username);
-            newMachine.Status = MachineStatusEnum.Idle;
+            newMachine.Status = MachineStatusEnum.Offline;
             newMachine.CreatedByUserId = _userId;
             newMachine.LastModifiedByUserId = _userId;
 

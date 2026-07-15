@@ -14,7 +14,7 @@
   "dependencies": {
     "@assistant-ui/react": "^0.12.21",
     "@assistant-ui/react-markdown": "^0.12.7",
-    "@aventisia/ui": "^0.0.82",
+    "@aventisia/ui": "^0.0.84",
     "@codemirror/lang-json": "^6.0.2",
     "@heroicons/react": "^2.1.5",
     "@hookform/resolvers": "^3.9.0",

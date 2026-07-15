@@ -1,5 +1,5 @@
-import { MachineEnvironmentTypesEnum } from "@/react-toolkit/enums/machine-environment-types-enum";
-import type { MachineOsTypesEnum } from "@/react-toolkit/enums/machine-os-types-enum";
+import { EnvironmentTypesEnum } from "@/react-toolkit/enums/machine-environment-types-enum";
+import type { OsTypesEnum } from "@/react-toolkit/enums/machine-os-types-enum";
 import { MachineStatusTypesEnum } from "@/react-toolkit/enums/machine-status-types-enum";
 
 /**
@@ -23,8 +23,8 @@ export interface AssignMachineDto {
   createdBy: string;
   createdOn: Date;
   lastModifiedBy: string;
-  type?: MachineOsTypesEnum;
-  environment?: MachineEnvironmentTypesEnum;
+  type?: OsTypesEnum;
+  environment?: EnvironmentTypesEnum;
   lastModifiedOn: Date;
   isAssigned: boolean;
   osId?: string;

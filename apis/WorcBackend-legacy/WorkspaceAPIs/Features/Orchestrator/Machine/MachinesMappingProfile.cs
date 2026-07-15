@@ -18,13 +18,17 @@ public class MachinesMappingProfile : IRegister
 
         // For - Insert new machine
         config.NewConfig<AddMachineDto, Machine>()
-                .Ignore(dest => dest.Id)
-                .Ignore(dest => dest.Name)
-                .Ignore(dest => dest.Status)
-                .Ignore(dest => dest.CreatedOn)
-                .Ignore(dest => dest.LastModifiedOn)
-                .Ignore(dest => dest.TenantId)
-                .IgnoreNullValues(true);
+            .Map(dest => dest.OsID, src => src.OsID.Trim().ToLowerInvariant())
+            .Map(dest => dest.Username, src => src.Username.Trim().ToLowerInvariant())
+            .Map(dest => dest.Hostname, src => src.Hostname.Trim().ToLowerInvariant())
+            .Map(dest => dest.IpAddress, src => src.IpAddress != null ? src.IpAddress.Trim().ToLowerInvariant() : null)
+            .Ignore(dest => dest.Id)
+            .Ignore(dest => dest.Name)
+            .Ignore(dest => dest.Status)
+            .Ignore(dest => dest.CreatedOn)
+            .Ignore(dest => dest.LastModifiedOn)
+            .Ignore(dest => dest.TenantId)
+            .IgnoreNullValues(true);
 
         // For - Update existing machine
         config.NewConfig<UpdateMachineDto, Machine>()
