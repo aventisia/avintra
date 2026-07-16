@@ -30,7 +30,7 @@ public class QueueTableController : BaseApiController
 
     // Searches for queues by name.
     [HttpGet("search/{queueName}")]
-    public async Task<ActionResult<ServiceResponse<IEnumerable<QueuesTableDto>>>> SearchQueuesAsync(string queueName, [FromQuery] bool isPersonal)
+    public async Task<ActionResult<ServiceResponse<IEnumerable<QueuesTableDto>>>> SearchQueuesAsync(string queueName, [FromQuery] bool isPersonal = true)
     {
         return ResultHelper(await _queueTableService.SearchQueuesAsync(queueName, isPersonal));
     }

@@ -165,7 +165,7 @@ public class QueueTableService : IQueueTableService
                 queues = await _unitOfWork.QueueRepo
                     .GetByConditionAsync(w =>
                         w.CreatedByUserId == _userId &&
-                        w.Name.ToLower() == queueName.ToLower()
+                        w.Name.ToLower().Contains(queueName.ToLower())
                     )
                     .Include(i => i.QueueTransactions)
                     .Include(i => i.CreatedByUser)
@@ -189,7 +189,7 @@ public class QueueTableService : IQueueTableService
                 // Retrieve all accessible queues
                 queues = await _unitOfWork.QueueRepo
                     .GetByConditionAsync(w =>
-                        w.Name.ToLower() == queueName.ToLower() &&
+                        w.Name.ToLower().Contains(queueName.ToLower()) &&
                         (
                             w.CreatedByUserId == _userId ||
                             w.IsTenantWideAccess ||

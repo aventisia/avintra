@@ -1056,10 +1056,10 @@ public class QueueWorkItemService : IQueueWorkItemService
 
             // Update the existing work item to point to the destination queue
             workItem.QueueId = destinationQueue.Id;
-
+            workItem.Queue = null;
+            
             // Mark the existing work item as updated
             _unitOfWork.QueueTransactionRepo.Update(workItem);
-
 
             if (!await _unitOfWork.SaveAsync())
             {
@@ -1075,7 +1075,7 @@ public class QueueWorkItemService : IQueueWorkItemService
             {
                 QueueTransactionId = workItem.Id,
                 EventType = QueueTransactionEventEnum.QueueTransactionRouted,
-                Data = string.Empty,
+                Data = destinationQueue.Name,
             });
 
             serviceResponse.StatusCode = 200;
