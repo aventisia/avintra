@@ -1,4 +1,4 @@
-import { Sidebar } from "@aventisia/ui/layout";
+// import { Sidebar } from "@aventisia/ui/layout";
 import { cn } from "@aventisia/ui/lib";
 import { ScrollArea } from "@aventisia/ui/scroll";
 import { useBaseLayoutStore } from "@aventisia/ui/stores";
@@ -34,6 +34,7 @@ import AppBanner from "./AppBanner";
 import AppHeader from "./AppHeader";
 import { AppLoader } from "./AppLoader";
 import { AppRedirectPage } from "./AppRedirectPage";
+import { Sidebar } from "./Sidebar";
 import { getSidebarMenuBasedOnPermissions } from "./sidebar-menu-sections";
 
 export const AppLayout = () => {
