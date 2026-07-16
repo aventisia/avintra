@@ -1,5 +1,8 @@
 import type { SelectFieldProps, TextareaFieldProps } from "@aventisia/ui/form";
 import { InputFieldProps, SwitchFieldProps } from "@aventisia/ui/form";
+import { enumToArray } from "@aventisia/ui/utils";
+
+import { QueueViewTypeEnum } from "../enums/queue-view-type-enum";
 
 // queue Id
 export const idProps: InputFieldProps = {
@@ -32,6 +35,14 @@ export const typeProps: SelectFieldProps = {
     { label: "Agent", value: "Agent" },
     { label: "User", value: "User" },
   ],
+};
+
+export const viewTypeProps: SelectFieldProps = {
+  name: "viewType",
+  label: "Queue Type",
+  isRequired: true,
+  selectOptions: enumToArray(QueueViewTypeEnum),
+  defaultValue:QueueViewTypeEnum.DocumentProcessing
 };
 
 // Description

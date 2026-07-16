@@ -1,11 +1,11 @@
-import { axiosInstance } from "@/react-toolkit/lib/axios-instance";
-
 import {
   CheckAvailabilityDto,
   IHttpResponse,
   IOptimisticMutation,
   TrueFalseResultDto,
 } from "@aventisia/ui/dtos";
+
+import { axiosInstance } from "@/react-toolkit/lib/axios-instance";
 
 import { QueueWorkItemDto } from "../../work-items-table/dtos/queue-work-item-dto";
 import { QueuesTableDto } from "../dtos/queues-table-dto";
@@ -15,7 +15,7 @@ const baseAPIURL: string = `${import.meta.env.VITE_WORKSPACE_API_PATH}/queue`;
 /**
  * Retrieves list of queues.
  */
-export const getQueues = ({ isPersonal = true }: { isPersonal: boolean }) => {
+const getQueues = ({ isPersonal = true }: { isPersonal: boolean }) => {
   const path = isPersonal ? `list` : `list/shared`;
   return axiosInstance
     .get<IHttpResponse<QueuesTableDto[]>>(`${baseAPIURL}/${path}`)
@@ -25,7 +25,7 @@ export const getQueues = ({ isPersonal = true }: { isPersonal: boolean }) => {
 /**
  * Checks the availability of a queue name.
  */
-export const isNameAvailable = (postObj: CheckAvailabilityDto) => {
+const isNameAvailable = (postObj: CheckAvailabilityDto) => {
   return axiosInstance
     .post<
       IHttpResponse<TrueFalseResultDto>
@@ -36,7 +36,7 @@ export const isNameAvailable = (postObj: CheckAvailabilityDto) => {
 /**
  * Inserts a new queue.
  */
-export const insertQueue = (newqueue: QueuesTableDto) => {
+const insertQueue = (newqueue: QueuesTableDto) => {
   return axiosInstance
     .post<IHttpResponse<QueuesTableDto>>(`${baseAPIURL}`, newqueue)
     .then((res) => res.data);
@@ -45,7 +45,7 @@ export const insertQueue = (newqueue: QueuesTableDto) => {
 /**
  * Inserts a new work item.
  */
-export const uploadWorkItem = (workitem: QueueWorkItemDto) => {
+const uploadWorkItem = (workitem: QueueWorkItemDto) => {
   return axiosInstance
     .post<
       IHttpResponse<QueueWorkItemDto>
@@ -56,7 +56,7 @@ export const uploadWorkItem = (workitem: QueueWorkItemDto) => {
 /**
  * assign agents to the queue.
  */
-// export const addTrigger = (assignAgentDto: AssignAgentDto) => {
+//  const addTrigger = (assignAgentDto: AssignAgentDto) => {
 //   return axiosInstance
 //     .post<
 //       IHttpResponse<boolean>
@@ -67,7 +67,7 @@ export const uploadWorkItem = (workitem: QueueWorkItemDto) => {
 /**
  * Updates an existing queue.
  */
-export const updateQueue = (updatedqueue: QueuesTableDto) => {
+const updateQueue = (updatedqueue: QueuesTableDto) => {
   return axiosInstance
     .put<IHttpResponse<QueuesTableDto>>(`${baseAPIURL}`, updatedqueue)
     .then((res) => res.data);
@@ -76,7 +76,7 @@ export const updateQueue = (updatedqueue: QueuesTableDto) => {
 /**
  * Deletes a queue by its ID.
  */
-export const deleteQueue = (id: string) => {
+const deleteQueue = (id: string) => {
   return axiosInstance
     .delete<IHttpResponse<boolean>>(`${baseAPIURL}/${id}`)
     .then((res) => res.data);
@@ -85,9 +85,15 @@ export const deleteQueue = (id: string) => {
 /**
  * Deletes multiple queues by their IDs.
  */
-export const deleteQueues = (ids: string[]) => {
+const deleteQueues = (ids: string[]) => {
   return axiosInstance
     .post<IHttpResponse<boolean>>(`${baseAPIURL}/delete-multiple`, ids)
+    .then((res) => res.data);
+};
+
+const searchQueues = (query: string = "") => {
+  return axiosInstance
+    .get<IHttpResponse<QueuesTableDto[]>>(`${baseAPIURL}/search/${query}`)
     .then((res) => res.data);
 };
 
@@ -98,7 +104,7 @@ export const deleteQueues = (ids: string[]) => {
  * @returns {Promise<any>} - A promise that resolves to the result of the mutation.
  * @throws {Error} - If an invalid action type is provided.
  */
-export const queueOptimisticMutationFn = ({
+const queueOptimisticMutationFn = ({
   payload,
   crudAction,
 }: IOptimisticMutation<QueuesTableDto | string | string[]>) => {
@@ -114,4 +120,16 @@ export const queueOptimisticMutationFn = ({
     default:
       throw new Error("Invalid action type");
   }
+};
+
+export {
+  getQueues,
+  isNameAvailable,
+  searchQueues,
+  insertQueue,
+  updateQueue,
+  deleteQueue,
+  deleteQueues,
+  queueOptimisticMutationFn,
+  uploadWorkItem,
 };

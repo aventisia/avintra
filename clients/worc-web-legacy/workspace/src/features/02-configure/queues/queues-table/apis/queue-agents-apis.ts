@@ -1,6 +1,6 @@
-import { axiosInstance } from "@/react-toolkit/lib/axios-instance";
-
 import { IHttpResponse } from "@aventisia/ui/dtos";
+
+import { axiosInstance } from "@/react-toolkit/lib/axios-instance";
 
 import { QueueAgentsDto } from "../dtos/queue-agents-dto";
 
@@ -9,7 +9,7 @@ const baseAPIURL: string = `${import.meta.env.VITE_WORKSPACE_API_PATH}/queue-age
 /**
  * Retrieves list of queue agents.
  */
-export const getQueueAgents = (queueId: string) => {
+const getQueueAgents = (queueId: string) => {
   return axiosInstance
     .get<IHttpResponse<QueueAgentsDto[]>>(`${baseAPIURL}/${queueId}/list`)
     .then((res) => res.data);
@@ -18,7 +18,7 @@ export const getQueueAgents = (queueId: string) => {
 /**
  * Inserts(Assign) a new queue agent.
  */
-export const insertQueueAgent = (queueAgent: QueueAgentsDto) => {
+const insertQueueAgent = (queueAgent: QueueAgentsDto) => {
   return axiosInstance
     .post<IHttpResponse<QueueAgentsDto>>(`${baseAPIURL}`, queueAgent)
     .then((res) => res.data);
@@ -27,7 +27,7 @@ export const insertQueueAgent = (queueAgent: QueueAgentsDto) => {
 /**
  * Updates an existing queue agent.
  */
-export const updateQueueAgent = (updatedAgent: QueueAgentsDto) => {
+const updateQueueAgent = (updatedAgent: QueueAgentsDto) => {
   return axiosInstance
     .put<IHttpResponse<QueueAgentsDto>>(`${baseAPIURL}`, updatedAgent)
     .then((res) => res.data);
@@ -36,8 +36,10 @@ export const updateQueueAgent = (updatedAgent: QueueAgentsDto) => {
 /**
  * Deletes(removes) a queue agent by its ID.
  */
-export const deleteQueueAgent = (id: string) => {
+const deleteQueueAgent = (id: string) => {
   return axiosInstance
     .delete<IHttpResponse<boolean>>(`${baseAPIURL}/${id}`)
     .then((res) => res.data);
 };
+
+export { getQueueAgents, insertQueueAgent, updateQueueAgent, deleteQueueAgent };
