@@ -43,8 +43,6 @@ export const WorkItemDetails = () => {
 
   const backToList = useQueueBackLink();
 
-  const { data: queues } = useFetchQueues({ onlyUserQueues: false });
-
   const { data } = useFetchQueuesWorkItemData(workItemId ?? "");
 
   const { data: myQueues } = useFetchQueues({ onlyUserQueues: true });
@@ -140,29 +138,31 @@ export const WorkItemDetails = () => {
         </h2>
 
         <div className="flex items-center gap-2">
-          <SearchableSelect
-            options={
-              queues?.data
-                ?.filter((q) => myCurrentQueue?.routeToQueues?.includes(q.id))
-                ?.map((q) => ({
-                  value: q.name,
-                  label: q.name,
-                })) ?? []
-            }
-            placeholder="Route to..."
-            onValueChange={(value) => {
-              showCustomAlertDialog({
-                confirmActionFn: () => {
-                  routeWorkItem({ id: workItemId ?? "", queueName: value });
-                },
-                title: "Route Work Item",
-                description: `Are you sure you want to route the work item to ${value} ?`,
-                isDestructive: false,
-              });
-            }}
-            className="w-60"
-            size="sm"
-          />
+          {myCurrentQueue?.routeToQueues &&
+            data?.data?.status !==
+              QueueTransactionStatusTypesEnum.Completed && (
+              <SearchableSelect
+                options={
+                  myCurrentQueue?.routeToQueues?.map((queueName) => ({
+                    value: queueName,
+                    label: queueName,
+                  })) ?? []
+                }
+                placeholder="Route to..."
+                onValueChange={(value) => {
+                  showCustomAlertDialog({
+                    confirmActionFn: () => {
+                      routeWorkItem({ id: workItemId ?? "", queueName: value });
+                    },
+                    title: "Route Work Item",
+                    description: `Are you sure you want to route the work item to ${value} ?`,
+                    isDestructive: false,
+                  });
+                }}
+                className="w-60"
+                size="sm"
+              />
+            )}
           {data?.data?.status !== QueueTransactionStatusTypesEnum.Completed && (
             <Button
               size="xs"

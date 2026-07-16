@@ -11,17 +11,24 @@ import { QueueTransactionStatusTypesEnum } from "../../../enums/queue-work-item-
 import WorkflowTimeline from "../email-type-work-item/WorkflowTimeline";
 
 export default function FileWorkItem({ data }: { data?: QueueWorkItemDto }) {
-  const { addFileUrls } = useLocalFileStore(
+  const { addFileUrls, clearAllFiles } = useLocalFileStore(
     useShallow((state) => ({
       addFileUrls: state.addFileUrls,
+      clearAllFiles: state.clearAllFiles,
     })),
   );
 
   useEffect(() => {
     if (!data?.fileUrls) return;
 
-    addFileUrls(Array.isArray(data.fileUrls) ? data.fileUrls : [data.fileUrls]);
-  }, [addFileUrls, data?.fileUrls]);
+    addFileUrls(data.fileUrls);
+
+    return () => {
+      clearAllFiles();
+    };
+
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [data?.fileUrls]);
 
   return (
     <div className="grid gap-3 grid-cols-2">
