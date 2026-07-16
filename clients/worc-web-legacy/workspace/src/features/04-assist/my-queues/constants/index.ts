@@ -5,6 +5,8 @@ import { QueueTransactionStatusTypesEnum } from "../enums/queue-work-item-status
  */
 const DATA_QUERY_KEY = ["my-queues"];
 
+const EVENT_QUERY_KEY = "queue-work-item-events";
+
 /**
  * The heading for the queues table.
  */
@@ -19,4 +21,4 @@ export const statusColor: { [key: string]: string } = {
   [QueueTransactionStatusTypesEnum.Failed]: "bg-red-200 text-red-600",
 };
 
-export { DATA_QUERY_KEY, TABLE_HEADING, TABLE_KEY };
+export { DATA_QUERY_KEY, TABLE_HEADING, TABLE_KEY, EVENT_QUERY_KEY };

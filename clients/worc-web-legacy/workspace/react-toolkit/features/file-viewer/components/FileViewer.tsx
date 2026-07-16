@@ -97,7 +97,7 @@ export default function FileViewer() {
           {fileType === FILE_TYPE.UNSUPPORTED ? (
             <UnsupportedViewer extension={activeFile.extension} />
           ) : (
-            <Viewer fileUrl={activeFile.blobUrl} />
+            <Viewer fileUrl={activeFile.url} />
           )}
         </>
       )}
