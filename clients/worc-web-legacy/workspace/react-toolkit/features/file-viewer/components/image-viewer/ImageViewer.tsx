@@ -67,7 +67,7 @@ const ImageViewer = ({ fileUrl }: ImageViewerProps) => {
 
   return (
     <div
-      className="flex h-full w-full select-none items-center justify-center overflow-hidden"
+      className="flex h-full w-full p-2 select-none items-center justify-center overflow-hidden"
       style={{ cursor }}
       onPointerDown={handlePointerDown}
       onPointerMove={handlePointerMove}

@@ -1,4 +1,4 @@
-import { QueueWorkItemStatusEnum } from "@/react-toolkit/enums/queue-work-item-status-enum";
+import { QueueTransactionStatusTypesEnum } from "../enum/queue-work-item-status-enum";
 
 export interface QueueWorkItemDto {
   /**
@@ -17,15 +17,16 @@ export interface QueueWorkItemDto {
    * Gets or sets the current status of the queue transaction (e.g., Pending, In Progress, Completed, Failed).
    */
 
-  status?: QueueWorkItemStatusEnum;
+  status?: QueueTransactionStatusTypesEnum;
 
-  remarks?: string;
-
+  fileUrls?: string[];
   /**
    * Gets or sets the payload data associated with this transaction, which may include relevant details for processing.
    */
 
   payloadData?: string;
+
+  workItemData?: string;
 
   /**
    * Gets or sets the identifier for the queue to which this transaction belongs.
