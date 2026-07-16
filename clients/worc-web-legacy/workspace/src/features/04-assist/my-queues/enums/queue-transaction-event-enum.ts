@@ -1,11 +1,16 @@
 export enum QueueTransactionEventEnum {
   CommentAdded = "CommentAdded",
 
+  StatusChange = "StatusChange",
+
+  Closed = "Closed",
+
+  QueueTransactionRouted = "QueueTransactionRouted",
+
+  // TODO: Add future queue transaction events to this enum as needed.
   CommentRemoved = "CommentRemoved",
 
   CommentUpdated = "CommentUpdated",
-
-  StatusChanged = "StatusChanged",
 
   DescriptionUpdated = "DescriptionUpdated",
 

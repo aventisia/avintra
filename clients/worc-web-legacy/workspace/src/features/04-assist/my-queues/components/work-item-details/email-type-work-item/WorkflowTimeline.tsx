@@ -8,7 +8,7 @@ import {
   CornerUpRight,
   MessageSquare,
   Pencil,
-  PlusCircle,
+  // PlusCircle,
 } from "lucide-react";
 import { useState } from "react";
 
@@ -50,14 +50,14 @@ const TimelineIcon = ({ type }: { type: QueueTransactionEventEnum }) => {
     "relative z-10 flex h-8 w-8 items-center justify-center rounded-full border bg-background ring-4 ring-background shadow-sm";
 
   switch (type) {
-    case QueueTransactionEventEnum.StatusChanged:
-    case QueueTransactionEventEnum.DescriptionUpdated:
+    case QueueTransactionEventEnum.StatusChange:
+      // case QueueTransactionEventEnum.DescriptionUpdated:
       return (
         <div className={cn(baseStyles, "border-gray-200 text-gray-500")}>
           <Pencil className="h-3.5 w-3.5" />
         </div>
       );
-    case QueueTransactionEventEnum.QueueTransactionCompleted:
+    case QueueTransactionEventEnum.Closed:
       return (
         <div
           className={cn(
@@ -68,7 +68,7 @@ const TimelineIcon = ({ type }: { type: QueueTransactionEventEnum }) => {
           <CheckCircle2 className="h-4 w-4" />
         </div>
       );
-    case QueueTransactionEventEnum.AssignedUserChanged:
+    case QueueTransactionEventEnum.QueueTransactionRouted:
       return (
         <div
           className={cn(baseStyles, "border-blue-200 bg-blue-50 text-blue-600")}
@@ -76,14 +76,14 @@ const TimelineIcon = ({ type }: { type: QueueTransactionEventEnum }) => {
           <CornerUpRight className="h-3.5 w-3.5" />
         </div>
       );
-    case QueueTransactionEventEnum.QueueTransactionCreated:
-      return (
-        <div
-          className={cn(baseStyles, "border-blue-200 bg-blue-50 text-blue-600")}
-        >
-          <PlusCircle className="h-3.5 w-3.5" />
-        </div>
-      );
+    // case QueueTransactionEventEnum.QueueTransactionCreated:
+    //   return (
+    //     <div
+    //       className={cn(baseStyles, "border-blue-200 bg-blue-50 text-blue-600")}
+    //     >
+    //       <PlusCircle className="h-3.5 w-3.5" />
+    //     </div>
+    //   );
     default:
       return (
         <div className={cn(baseStyles, "border-gray-200 text-gray-500")}>
@@ -131,14 +131,13 @@ const TimelineEvent = ({ item }: { item: QueueTransactionEventDto }) => {
               </span>
             </div>
             <div className="bg-muted/30 hover:bg-muted/50 relative rounded-lg border px-2.5 py-1 text-sm leading-relaxed shadow-sm transition-all">
-              <div className="bg-muted/30 absolute -left-1.5 top-3 h-3 w-3 rotate-45 border-l border-t content-['']" />
               <MarkdownViewer textValue={item.data} size="xs" />
             </div>
           </div>
         )}
 
         {/* TYPE: STATUS CHANGE */}
-        {item.eventType === QueueTransactionEventEnum.StatusChanged && (
+        {item.eventType === QueueTransactionEventEnum.StatusChange && (
           <div className="flex flex-col gap-1">
             <div className="flex flex-wrap items-center gap-x-2 text-sm">
               <span className="font-semibold">{authorName}</span>
@@ -159,16 +158,19 @@ const TimelineEvent = ({ item }: { item: QueueTransactionEventDto }) => {
         )}
 
         {/* TYPE: MOVE / ASSIGNED */}
-        {item.eventType === QueueTransactionEventEnum.AssignedUserChanged && (
+        {item.eventType ===
+          QueueTransactionEventEnum.QueueTransactionRouted && (
           <div className="flex flex-col gap-1">
             <div className="flex items-center gap-2 text-sm">
               <span className="font-semibold">{authorName}</span>
-              <span className="text-muted-foreground">assigned to</span>
-              {item.data && (
+              <span className="text-muted-foreground">
+                routed the work item to
+              </span>
+              {
                 <Badge variant="default" className="bg-blue-200 text-blue-700">
-                  {item.data}
+                  {item.data || "Queue"}
                 </Badge>
-              )}
+              }
             </div>
             <span className="pl-0.5 text-xs text-muted-foreground">
               {formatTimelineDate(item.createdOn)}
@@ -177,13 +179,12 @@ const TimelineEvent = ({ item }: { item: QueueTransactionEventDto }) => {
         )}
 
         {/* TYPE: COMPLETE */}
-        {item.eventType ===
-          QueueTransactionEventEnum.QueueTransactionCompleted && (
+        {item.eventType === QueueTransactionEventEnum.Closed && (
           <div className="flex flex-col gap-1">
             <div className="flex items-center gap-2 py-1 text-sm">
               <span className="font-semibold">{authorName}</span>
               <span className="font-medium text-green-600">
-                marked this workitem as completed
+                marked this workitem as closed
               </span>
             </div>
             <span className="text-xs text-muted-foreground">
@@ -195,9 +196,9 @@ const TimelineEvent = ({ item }: { item: QueueTransactionEventDto }) => {
         {/* FALLBACK FOR OTHER EVENTS (Created, DescriptionUpdated, etc.) */}
         {![
           QueueTransactionEventEnum.CommentAdded,
-          QueueTransactionEventEnum.StatusChanged,
-          QueueTransactionEventEnum.AssignedUserChanged,
-          QueueTransactionEventEnum.QueueTransactionCompleted,
+          QueueTransactionEventEnum.StatusChange,
+          QueueTransactionEventEnum.QueueTransactionRouted,
+          QueueTransactionEventEnum.Closed,
         ].includes(item.eventType) && (
           <div className="flex flex-col gap-1">
             <div className="flex flex-wrap items-center gap-x-2 text-sm">
@@ -235,6 +236,7 @@ export default function WorkflowTimeline({
 
   const { data: events = [], isLoading } =
     useFetchQueueWorkItemEvents(workItemId);
+
   const { mutate: addEvent, isPending } = useInsertQueueWorkItemEvent();
 
   // Fail safe: If no ID is passed, don't attempt to render or fetch
@@ -271,7 +273,10 @@ export default function WorkflowTimeline({
             {events.length > 0 ? (
               <>
                 <div
-                  className="absolute bottom-0 left-6 top-2 w-0.5 bg-gray-100"
+                  className={cn(
+                    "absolute bottom-0 left-6 top-2 w-0.5 bg-gray-100 ",
+                    isCompleted && "bottom-12",
+                  )}
                   aria-hidden="true"
                 />
                 <div className="space-y-10">
@@ -290,7 +295,7 @@ export default function WorkflowTimeline({
         {!isCompleted && (
           <div className="relative flex gap-x-5 pl-2 pt-2">
             <div className="flex-none">
-  <TimelineIcon type={QueueTransactionEventEnum.CommentAdded} />
+              <TimelineIcon type={QueueTransactionEventEnum.CommentAdded} />
             </div>
 
             <div className="min-w-0 flex-1 rounded-lg border p-2">

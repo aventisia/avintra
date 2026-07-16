@@ -1,5 +1,6 @@
 import { Badge } from "@aventisia/ui/badge";
 import { DTColumnHeader } from "@aventisia/ui/data-table";
+import { KeyValueLookupType } from "@aventisia/ui/types";
 import { ColumnDef } from "@tanstack/react-table";
 
 import { TABLE_KEY, statusColor } from "../constants";
@@ -13,18 +14,28 @@ export const generateDTColumns = (
 ): ColumnDef<WorkItemRow>[] =>
   fields.map((field) => ({
     accessorKey: field.name,
+
     header: ({ column }) => (
       <DTColumnHeader
         tableKey={TABLE_KEY}
         column={column}
         title={field.name.charAt(0).toUpperCase() + field.name.slice(1)}
+        className="max-w-40"
       />
     ),
     cell: (info) => (
-      <div className="truncate font-medium">
+      <div className="w-40 truncate font-medium">
         {String(info.getValue() ?? "-")}
       </div>
     ),
+  }));
+
+export const generateColumnsDisplayName = (
+  fields: InputSchemaField[],
+): KeyValueLookupType[] =>
+  fields.map((field) => ({
+    key: field.name,
+    value: field.name.charAt(0).toUpperCase() + field.name.slice(1),
   }));
 
 export const buildColumns = (

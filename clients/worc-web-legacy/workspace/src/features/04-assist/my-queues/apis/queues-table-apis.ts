@@ -10,7 +10,7 @@ const baseAPIURL: string = `${import.meta.env.VITE_WORKSPACE_API_PATH}`;
 /**
  * Retrieves list of queues.
  */
-export const getQueues = () => {
+const getQueues = () => {
   return axiosInstance
     .get<IHttpResponse<QueuesTableDto[]>>(`${baseAPIURL}/queue/list`)
     .then((res) => res.data);
@@ -19,7 +19,7 @@ export const getQueues = () => {
 /**
  * Retrieves list of my queues.
  */
-export const getMyQueues = () => {
+const getMyQueues = () => {
   return axiosInstance
     .get<IHttpResponse<QueuesTableDto[]>>(`${baseAPIURL}/queue-user/my-queues`)
     .then((res) => res.data);
@@ -28,7 +28,7 @@ export const getMyQueues = () => {
 /**
  * Retrieves list of queues work items.
  */
-export const getQueuesWorkItemsList = (id: string) => {
+const getQueuesWorkItemsList = (id: string) => {
   return axiosInstance
     .get<
       IHttpResponse<QueueWorkItemDto[]>
@@ -39,7 +39,7 @@ export const getQueuesWorkItemsList = (id: string) => {
 /**
  * Retrieves list of queues work items.
  */
-export const getQueueWorkItemById = (id: string) => {
+const getQueueWorkItemById = (id: string) => {
   return axiosInstance
     .get<IHttpResponse<QueueWorkItemDto>>(`${baseAPIURL}/queue/workitem/${id}`)
     .then((res) => res.data);
@@ -48,10 +48,27 @@ export const getQueueWorkItemById = (id: string) => {
 /**
  * Updates an existing queue.
  */
-export const updateQueuesWorkItem = (updatedQueue: QueueWorkItemDto) => {
+const updateQueuesWorkItem = (updatedQueue: QueueWorkItemDto) => {
   return axiosInstance
     .put<
       IHttpResponse<QueueWorkItemDto>
     >(`${baseAPIURL}/queue/workitem`, updatedQueue)
     .then((res) => res.data);
+};
+
+const routeQueuesWorkItem = (payload: { id: string; queueName: string }) => {
+  return axiosInstance
+    .put<
+      IHttpResponse<QueueWorkItemDto>
+    >(`${baseAPIURL}/queue/workitem/route`, payload)
+    .then((res) => res.data);
+};
+
+export {
+  getQueues,
+  getMyQueues,
+  getQueuesWorkItemsList,
+  getQueueWorkItemById,
+  updateQueuesWorkItem,
+  routeQueuesWorkItem,
 };

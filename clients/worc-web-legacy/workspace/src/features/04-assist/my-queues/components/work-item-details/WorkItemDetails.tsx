@@ -7,68 +7,101 @@ import {
   BreadcrumbSeparator,
 } from "@aventisia/ui/breadcrumb";
 import { Button } from "@aventisia/ui/buttons";
+import { useShowAlertHandler } from "@aventisia/ui/hooks";
 import { useEffect, useState } from "react";
-import { NavLink, useNavigate } from "react-router-dom";
+import { NavLink } from "react-router-dom";
+import { useShallow } from "zustand/react/shallow";
 
+import { SearchableSelect } from "@/components/searchable-select/SearchableSelect";
+import { useUserSessionStore } from "@/react-toolkit/stores/user-session-store";
+
+import { QueuesTableDto } from "../../dtos/queues-table-dto";
+import { QueueTransactionEventEnum } from "../../enums/queue-transaction-event-enum";
 import { QueueViewTypeEnum } from "../../enums/queue-view-type-enum";
-// import { SearchableSelect } from "@/components/searchable-select/SearchableSelect";
-
 import { QueueTransactionStatusTypesEnum } from "../../enums/queue-work-item-status-enum";
 import { useFetchQueues } from "../../hooks/useFetchQueues";
 import { useFetchQueuesWorkItemData } from "../../hooks/useFetchQueuesWorkItemData";
 import { useMyQueueParams } from "../../hooks/useMyQueueParams";
 import { useQueueBackLink } from "../../hooks/useQueueBackLink";
-import { useUpdateWorkItemMutation } from "../../hooks/useUpdateWorkItemMutation";
+import { useInsertQueueWorkItemEvent } from "../../hooks/useQueueTransactionEvents";
+import { useRouteWorkItemMutation } from "../../hooks/useRouteWorkItemMutation";
 import { EmailWorkItem } from "./email-type-work-item/EmailWorkItem";
 import FileWorkItem from "./file-type-work-item/FileWorkItem";
 
 export const WorkItemDetails = () => {
-  const navigate = useNavigate();
   const { queueName, workItemId, queueId } = useMyQueueParams();
-  const { data: myQueues } = useFetchQueues({ onlyUserQueues: true });
+  const [myCurrentQueue, setMyCurrentQueue] = useState<QueuesTableDto>();
 
-  const [workItemType, setWorkItemtype] = useState<QueueViewTypeEnum>(
-    QueueViewTypeEnum.DocumentProcessing,
+  // Get user session
+  const { userSession } = useUserSessionStore(
+    useShallow((state) => ({
+      userSession: state.userSession,
+    })),
   );
 
-  //   const { data: queues } = useFetchQueues({ onlyUserQueues: false });
+  const { showCustomAlertDialog } = useShowAlertHandler();
+
   const backToList = useQueueBackLink();
+
+  const { data: queues } = useFetchQueues({ onlyUserQueues: false });
+
   const { data } = useFetchQueuesWorkItemData(workItemId ?? "");
 
-  // Bring in the mutation hook to log the completion event
-  const { mutate: closeWorkItem, isPending: isClosing } =
-    useUpdateWorkItemMutation();
+  const { data: myQueues } = useFetchQueues({ onlyUserQueues: true });
+
+  const { mutate: routeWorkItem } = useRouteWorkItemMutation();
+
+  const { mutate: addEvent, isPending } = useInsertQueueWorkItemEvent();
 
   const handleClose = () => {
     if (!workItemId) return;
 
-    closeWorkItem(
-      {
-        id: workItemId,
-        queueId: queueId ?? "",
-        status: QueueTransactionStatusTypesEnum.Completed,
-      },
-      {
-        onSuccess: () => {
-          // On successful close, take the user back to the queues list
-          navigate(backToList);
-        },
-      },
-    );
+    addEvent({
+      id: crypto.randomUUID(),
+      queueTransactionId: workItemId || "",
+      eventType: QueueTransactionEventEnum.Closed,
+      data: "",
+      createdOn: new Date().toISOString(),
+      createdBy: userSession?.firstName + " " + userSession?.lastName,
+    });
   };
 
   useEffect(() => {
-    const viewType = myQueues?.data.find(
-      (item) => item.id == queueId,
-    )?.viewType;
-    if (viewType) {
-      setWorkItemtype(viewType);
+    const queue = myQueues?.data.find((item) => item.id == queueId);
+    if (queue) {
+      setMyCurrentQueue(queue);
     }
+
     return () => {};
   }, [myQueues?.data, queueId]);
 
+  // On Load of WorkItem detail if it is in pending state move to in progress
+  useEffect(() => {
+    if (!workItemId) return;
+
+    if (data?.data.status !== QueueTransactionStatusTypesEnum.Pending) return;
+    else {
+      addEvent({
+        id: crypto.randomUUID(),
+        queueTransactionId: workItemId || "",
+        eventType: QueueTransactionEventEnum.StatusChange,
+        data: "In Progress",
+        createdOn: new Date().toISOString(),
+        createdBy: userSession?.firstName + " " + userSession?.lastName,
+      });
+    }
+
+    return () => {};
+  }, [
+    addEvent,
+    data?.data.status,
+    userSession?.firstName,
+    userSession?.lastName,
+    workItemId,
+  ]);
+
   const renderWorkItemComponent = () => {
-    switch (workItemType) {
+    switch (myCurrentQueue?.viewType) {
       case QueueViewTypeEnum.EmailProcessing:
         return <EmailWorkItem />;
       case QueueViewTypeEnum.DocumentProcessing:
@@ -107,25 +140,48 @@ export const WorkItemDetails = () => {
         </h2>
 
         <div className="flex items-center gap-2">
-          {/* <SearchableSelect
+          <SearchableSelect
             options={
-              queues?.data?.map((q) => ({
-                value: q.id,
-                label: q.name,
-              })) ?? []
+              queues?.data
+                ?.filter((q) => myCurrentQueue?.routeToQueues?.includes(q.id))
+                ?.map((q) => ({
+                  value: q.name,
+                  label: q.name,
+                })) ?? []
             }
             placeholder="Route to..."
-            onValueChange={() => {}}
+            onValueChange={(value) => {
+              showCustomAlertDialog({
+                confirmActionFn: () => {
+                  routeWorkItem({ id: workItemId ?? "", queueName: value });
+                },
+                title: "Route Work Item",
+                description: `Are you sure you want to route the work item to ${value} ?`,
+                isDestructive: false,
+              });
+            }}
             className="w-60"
             size="sm"
-          /> */}
-          <Button
-            size="xs"
-            onClick={handleClose}
-            disabled={isClosing || !workItemId}
-          >
-            {isClosing ? "Closing..." : "Close"}
-          </Button>
+          />
+          {data?.data?.status !== QueueTransactionStatusTypesEnum.Completed && (
+            <Button
+              size="xs"
+              onClick={() => {
+                showCustomAlertDialog({
+                  confirmActionFn: handleClose,
+                  title: "Close Work Item",
+                  description: "Are you sure you want to close the work item?",
+                  isDestructive: false,
+                });
+              }}
+              disabled={isPending}
+            >
+              {isPending &&
+              data?.data.status !== QueueTransactionStatusTypesEnum.Pending
+                ? "Closing..."
+                : "Close"}
+            </Button>
+          )}
         </div>
       </div>
 

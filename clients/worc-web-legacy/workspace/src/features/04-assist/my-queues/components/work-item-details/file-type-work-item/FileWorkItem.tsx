@@ -11,12 +11,15 @@ import { QueueTransactionStatusTypesEnum } from "../../../enums/queue-work-item-
 import WorkflowTimeline from "../email-type-work-item/WorkflowTimeline";
 
 export default function FileWorkItem({ data }: { data?: QueueWorkItemDto }) {
-  const addFileUrls = useLocalFileStore(
-    useShallow((state) => state.addFileUrls),
+  const { addFileUrls } = useLocalFileStore(
+    useShallow((state) => ({
+      addFileUrls: state.addFileUrls,
+    })),
   );
 
   useEffect(() => {
     if (!data?.fileUrl) return;
+
     addFileUrls(Array.isArray(data.fileUrl) ? data.fileUrl : [data.fileUrl]);
   }, [addFileUrls, data?.fileUrl]);
 
@@ -32,7 +35,12 @@ export default function FileWorkItem({ data }: { data?: QueueWorkItemDto }) {
             <div className="flex items-center justify-between px-1 pb-2">
               <h3 className="text-xs font-semibold">Extracted Output</h3>
             </div>
-            <JsonEditor value={data?.workItemData} />
+            <JsonEditor
+              value={data?.workItemData}
+              disabled={
+                data?.status == QueueTransactionStatusTypesEnum.Completed
+              }
+            />
           </div>
 
           {data?.id && (

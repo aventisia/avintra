@@ -2,6 +2,7 @@ import {
   DTHeading,
   DTPagination,
   DTSearchBox,
+  DTViewOptions,
   DataTable,
 } from "@aventisia/ui/data-table";
 import { useDataTable, useDocumentTitle } from "@aventisia/ui/hooks";
@@ -16,7 +17,7 @@ import { useMyQueueData } from "../../hooks/useMyQueueData";
 import { useMyQueueParams } from "../../hooks/useMyQueueParams";
 import { TABS, TabValue } from "../../types/my-queue-types";
 import { generateColumnVisibility } from "../../utils/my-queue-utils";
-import { buildColumns } from "../my-queue-column";
+import { buildColumns, generateColumnsDisplayName } from "../my-queue-column";
 
 export const MyQueueWokItemTable = () => {
   useDocumentTitle(TABLE_HEADING);
@@ -44,6 +45,10 @@ export const MyQueueWokItemTable = () => {
   }, [queueId, queues, setQueueId, setQueueName, updateParams]);
 
   const columns = useMemo(() => buildColumns(inputSchema), [inputSchema]);
+  const columnsDisplayName = useMemo(
+    () => generateColumnsDisplayName(inputSchema),
+    [inputSchema],
+  );
 
   const columnVisibility = useMemo(
     () => ({
@@ -80,6 +85,11 @@ export const MyQueueWokItemTable = () => {
         </div>
         <div className="flex items-center gap-2">
           <DTSearchBox searchColumns={["rowId"]} table={table} />
+          <DTViewOptions
+            table={table}
+            tableKey="My_QUEUE"
+            columnDisplayNames={columnsDisplayName}
+          />
           <Tabs
             value={tabValue}
             onValueChange={(v) => {
