@@ -58,7 +58,7 @@ const EmptyState = () => (
 
 //  Main component
 
-export default function FileViewer() {
+export default function FileViewer({ allowDelete }: { allowDelete?: boolean }) {
   const { files, activeFileId } = useLocalFileStore(
     useShallow((s) => ({ files: s.files, activeFileId: s.activeFileId })),
   );
@@ -92,6 +92,7 @@ export default function FileViewer() {
           <FileViewerHeader
             controlPanel={ControlPanel ? <ControlPanel /> : undefined}
             pageControl={PageControl ? <PageControl /> : undefined}
+            allowDelete={allowDelete}
           />
 
           {fileType === FILE_TYPE.UNSUPPORTED ? (

@@ -5,11 +5,13 @@ interface FileViewerHeaderProps {
   /** The type-specific control panel to render in the center slot */
   controlPanel?: React.ReactNode;
   pageControl?: React.ReactNode;
+  allowDelete?: boolean;
 }
 
 const FileViewerHeader = ({
   controlPanel,
   pageControl,
+  allowDelete = true,
 }: FileViewerHeaderProps) => (
   <header className="flex h-16 shrink-0 items-center justify-between border-b px-4 gap-4">
     {/* Left slot: file selector */}
@@ -32,7 +34,7 @@ const FileViewerHeader = ({
         </div>
       )}
 
-      <FileDeleteButton />
+      {allowDelete && <FileDeleteButton />}
     </div>
   </header>
 );

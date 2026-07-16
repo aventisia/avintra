@@ -18,15 +18,15 @@ export default function FileWorkItem({ data }: { data?: QueueWorkItemDto }) {
   );
 
   useEffect(() => {
-    if (!data?.fileUrl) return;
+    if (!data?.fileUrls) return;
 
-    addFileUrls(Array.isArray(data.fileUrl) ? data.fileUrl : [data.fileUrl]);
-  }, [addFileUrls, data?.fileUrl]);
+    addFileUrls(Array.isArray(data.fileUrls) ? data.fileUrls : [data.fileUrls]);
+  }, [addFileUrls, data?.fileUrls]);
 
   return (
     <div className="grid gap-3 grid-cols-2">
       <div className="border h-fit rounded-lg">
-        <FileViewer />
+        <FileViewer allowDelete={false} />
       </div>
 
       <ScrollArea className="h-[calc(100vh-4.5rem-var(--header-height)-2*var(--header-padding))] border rounded-lg bg-background p-3">

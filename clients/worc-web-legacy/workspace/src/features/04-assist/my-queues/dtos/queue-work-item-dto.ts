@@ -19,12 +19,13 @@ export interface QueueWorkItemDto {
 
   status?: QueueTransactionStatusTypesEnum;
 
-  fileUrl?: string | string[];
+  fileUrls?: string[];
   /**
    * Gets or sets the payload data associated with this transaction, which may include relevant details for processing.
    */
 
   payloadData?: string;
+
   workItemData?: string;
 
   /**
