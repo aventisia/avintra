@@ -11,7 +11,7 @@ public interface IJobTableService
     /// <param name="startDate">The optional start date filter.</param>
     /// <param name="endDate">The optional end date filter.</param>
     /// <returns>A task representing the service response with the job details.</returns>
-    Task<ServiceResponse<IEnumerable<JobTableRowDto>>> GetJobsAsync(DateTimeOffset? startDate, DateTimeOffset? endDate);
+    Task<ServiceResponse<IEnumerable<JobsTableRowDto>>> GetJobsAsync(DateTimeOffset? startDate, DateTimeOffset? endDate);
 
     /// <summary>
     /// Get job by its ID.

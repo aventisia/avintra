@@ -3,14 +3,14 @@ import Enumerable from "linq";
 import { Monitor, MonitorCheck, MonitorCog } from "lucide-react";
 import { useEffect, useState } from "react";
 
-import { EnvironmentTypesEnum } from "@/react-toolkit/enums/machine-environment-types-enum";
-import { OsTypesEnum } from "@/react-toolkit/enums/machine-os-types-enum";
+import { EnvironmentTypesEnum } from "@/react-toolkit/enums/environment-types-enum";
 import { MachineStatusTypesEnum } from "@/react-toolkit/enums/machine-status-types-enum";
+import { OsTypesEnum } from "@/react-toolkit/enums/os-types-enum";
 
-import type { MachinesTableDto } from "../dtos/machines-table-dto";
+import type { MachinesTableRowDto } from "../dtos/machines-table-row-dto";
 
 type MachineStatsProps = {
-  data: MachinesTableDto[];
+  data: MachinesTableRowDto[];
 };
 
 type MachineStatusDetails = {

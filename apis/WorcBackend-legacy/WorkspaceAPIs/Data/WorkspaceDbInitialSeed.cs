@@ -51,7 +51,7 @@ public static class WorkspaceDbInitialSeed
         foreach (var machine in machines)
         {
             // Update the MachineName for each machine record
-            machine.Name = MachineHelpers.BuildMachineName(
+            machine.Name = MachinesTableHelpers.BuildMachineName(
                 machine.Environment,
                 machine.OperatingSystem,
                 machine.OsID,
@@ -76,7 +76,7 @@ public static class WorkspaceDbInitialSeed
         int updatedCount = 0;
         foreach (var job in jobs)
         {
-           // Fetch the latest FlowVersionHistory for the job's FlowVersionId.
+            // Fetch the latest FlowVersionHistory for the job's FlowVersionId.
             var latestFlowVersionHistory = await workspaceDbContext.FlowVersionHistories.IgnoreQueryFilters()
                 .Where(fvh => fvh.FlowVersionId == job.FlowVersionId)
                 .OrderByDescending(fvh => fvh.CreatedOn)

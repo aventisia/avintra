@@ -1,6 +1,6 @@
 namespace WorkspaceAPIs.Helpers;
 
-public static class MachineHelpers
+public static class MachinesTableHelpers
 {
     public static string BuildMachineName(
         EnvironmentTypesEnum environment,

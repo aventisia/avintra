@@ -1,12 +1,10 @@
 import { DeleteDDMenuItem } from "@aventisia/ui/dropdown-menu";
-import {
-  useListOptimisticMutation,
-  useShowAlertHandler,
-} from "@aventisia/ui/hooks";
+import { useShowAlertHandler } from "@aventisia/ui/hooks";
+import { useTableRowOptimisticMutation } from "@aventisia/ui/hooks";
 
-import { machineOptimisticMutationFn } from "../../apis/machines-table-apis";
+import { deleteMachine } from "../../apis/machines-table-apis";
 import { DATA_QUERY_KEY } from "../../constants";
-import { MachinesTableDto } from "../../dtos/machines-table-dto";
+import { MachinesTableRowDto } from "../../dtos/machines-table-row-dto";
 
 interface MachineRowDeleteActionProps {
   rowId: string;
@@ -19,22 +17,18 @@ export const MachineRowDeleteAction = ({
   const { showCustomAlertDialog } = useShowAlertHandler();
 
   // Get mutation function to delete the machine
-  const { mutate: deleteMachine } = useListOptimisticMutation<
+  const { mutate } = useTableRowOptimisticMutation<
     string,
-    MachinesTableDto | boolean,
-    MachinesTableDto
-  >([rowId], machineOptimisticMutationFn, DATA_QUERY_KEY);
+    boolean,
+    MachinesTableRowDto
+  >("delete", [rowId], deleteMachine, DATA_QUERY_KEY);
 
   // Return Delete alert dialog trigger
   return (
     <DeleteDDMenuItem
       onClick={() => {
         showCustomAlertDialog({
-          confirmActionFn: () =>
-            deleteMachine({
-              payload: rowId,
-              crudAction: "delete",
-            }),
+          confirmActionFn: () => mutate(rowId),
           confirmBtnText: "Yes, delete machine",
           title: "Delete Machine?",
           description:

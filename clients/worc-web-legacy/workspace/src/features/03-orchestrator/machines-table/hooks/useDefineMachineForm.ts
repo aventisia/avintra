@@ -6,12 +6,12 @@ import { useForm, useWatch } from "react-hook-form";
 import { z } from "zod";
 import { useShallow } from "zustand/react/shallow";
 
-import { EnvironmentTypesEnum } from "@/react-toolkit/enums/machine-environment-types-enum";
-import { OsTypesEnum } from "@/react-toolkit/enums/machine-os-types-enum";
+import { EnvironmentTypesEnum } from "@/react-toolkit/enums/environment-types-enum";
+import { OsTypesEnum } from "@/react-toolkit/enums/os-types-enum";
 
 import { DATA_QUERY_KEY } from "../constants";
 import { machineZodSchema } from "../constants/machine-zod-schema";
-import { MachinesTableDto } from "../dtos/machines-table-dto";
+import { MachinesTableRowDto } from "../dtos/machines-table-row-dto";
 import { buildMachineNamePreview } from "../utils/build-machine-name-util";
 
 /**
@@ -38,6 +38,7 @@ export const useDefineMachineForm = () => {
   /* IMPORTANT NOTE: It is important to set default value to all fields to avoid error - "A component is changing an uncontrolled input to be controlled". */
   const form = useForm<z.infer<typeof machineZodSchema>>({
     resolver: zodResolver(machineZodSchema),
+    mode: "onChange",
     defaultValues: {
       id: "",
       environment: EnvironmentTypesEnum.Development,
@@ -45,7 +46,7 @@ export const useDefineMachineForm = () => {
       osID: "",
       username: "",
       hostname: "",
-      ipAddress: "0.0.0.0",
+      ipAddress: "",
       isDisabled: false,
       name: "",
     },
@@ -53,14 +54,14 @@ export const useDefineMachineForm = () => {
 
   // Destructor form values and methods
   const {
-    formState: { isDirty },
+    formState: { isDirty, isValid },
   } = form;
 
   // Fetch machine data when rowId changes
   useEffect(() => {
     // Get machines data from query client
     const machinesData = queryClient.getQueryData<{
-      data: MachinesTableDto[];
+      data: MachinesTableRowDto[];
     }>(DATA_QUERY_KEY);
 
     // Get machine data by id
@@ -74,7 +75,7 @@ export const useDefineMachineForm = () => {
       osID: machineData?.osID ?? "",
       username: machineData?.username ?? "",
       hostname: machineData?.hostname ?? "",
-      ipAddress: machineData?.ipAddress ?? "0.0.0.0",
+      ipAddress: machineData?.ipAddress ?? "",
       isDisabled: machineData?.isDisabled ?? false,
       name: machineData?.name ?? "",
     });
@@ -115,6 +116,7 @@ export const useDefineMachineForm = () => {
   return {
     form,
     isDirty,
+    isValid,
     rowId,
     crudAction,
     setShowDialog,

@@ -35,10 +35,10 @@ public class JobTableService : IJobTableService
     }
 
     // Retrieves a list of all jobs between optional start and end date filters.
-    public async Task<ServiceResponse<IEnumerable<JobTableRowDto>>> GetJobsAsync(DateTimeOffset? startDate, DateTimeOffset? endDate)
+    public async Task<ServiceResponse<IEnumerable<JobsTableRowDto>>> GetJobsAsync(DateTimeOffset? startDate, DateTimeOffset? endDate)
     {
         // Initialize the response with a default error message.
-        var serviceResponse = ServiceResponse<IEnumerable<JobTableRowDto>>.Create(message: "Failed to retrieve jobs list. Please try again later.");
+        var serviceResponse = ServiceResponse<IEnumerable<JobsTableRowDto>>.Create("Failed to fetch jobs", 500);
 
         try
         {
@@ -47,7 +47,7 @@ public class JobTableService : IJobTableService
 
             // Return if start date greater than the end date
             if (dateRange.StartDate > dateRange.EndDate)
-                return serviceResponse.Failure("Start date cannot be greater than end date.", 400);
+                return serviceResponse.Update("Invalid date range", 400);
 
             // Retrieve the list of records
             var jobs = await _unitOfWork.JobRepo
@@ -59,12 +59,11 @@ public class JobTableService : IJobTableService
                         //.Include(i => i.FlowVersion)
                         //.ThenInclude(i2 => i2.Flow)
                         .OrderByDescending(o => o.CreatedOn)
-                        .ProjectToType<JobTableRowDto>()
+                        .ProjectToType<JobsTableRowDto>()
                         .ToListAsync();
 
-            // Log and set the response
-            _logger.LogInformation("Successfully retrieved {JobCount} jobs between {StartDate} and {EndDate}.", jobs.Count, dateRange.StartDate, dateRange.EndDate);
-            return serviceResponse.Success(jobs);
+            // Task successful
+            return serviceResponse.Update(null, 200, jobs);
         }
         catch (Exception ex)
         {
@@ -77,7 +76,7 @@ public class JobTableService : IJobTableService
     public async Task<ServiceResponse<JobRecordDto>> GetJobAsync(Guid jobId)
     {
         // Initialize the response with a default error message.
-        var serviceResponse = ServiceResponse<JobRecordDto>.Create(message: "Failed to retrieve job record. Please try again later.");
+        var serviceResponse = ServiceResponse<JobRecordDto>.Create("Failed to fetch job", 500);
 
         try
         {
@@ -90,10 +89,7 @@ public class JobTableService : IJobTableService
 
             // If record not found, log and return
             if (jobRecord == null)
-            {
-                _logger.LogWarning($"Job record not found for Job ID: {jobId}");
-                return serviceResponse.Failure("Job not found.", 404);
-            }
+                return serviceResponse.Update("Job not found.", 404);
 
             // Map the retrieved Job entity to JobRecordDto
             var jobRecordDto = jobRecord.Adapt<JobRecordDto>();
@@ -108,9 +104,8 @@ public class JobTableService : IJobTableService
             // the last node execution log and set it in the JobRecordDto. For now, we will set it to null.
             jobRecordDto.LastNodeLog = null;
 
-            // Log and set the response
-            _logger.LogInformation($"Job record retrieved successfully for Job ID: {jobId}");
-            return serviceResponse.Success(jobRecordDto);
+            // Task successful
+            return serviceResponse.Update(null, 200, jobRecordDto);
         }
         catch (Exception ex)
         {
@@ -123,16 +118,13 @@ public class JobTableService : IJobTableService
     public async Task<ServiceResponse<JobRecordDto>> InsertJobAsync(JobInsertDto jobInsertDto)
     {
         // Initialize the response with a default error message.
-        var serviceResponse = ServiceResponse<JobRecordDto>.Create(message: "Failed to create the job. Please try again.");
+        var serviceResponse = ServiceResponse<JobRecordDto>.Create("Failed to create job", 500);
 
         try
         {
             // CANNOT CREATE THE JOB: Execution is disabled for the on-prem tenant
             if (_environmentConfig.OnPremExecutionDisabled)
-            {
-                _logger.LogError("Execution is currently disabled for the tenant. Please contact Aventisia Support for assistance.");
-                return serviceResponse.Failure("Execution is currently disabled. Please contact Aventisia Support for assistance.", 503);
-            }
+                return serviceResponse.Update("Execution is currently disabled. Please contact Aventisia Support.", 503);
 
             // Retrieve the FlowVersion record
             var flowVersion = await _unitOfWork.FlowVersionRepo
@@ -154,11 +146,8 @@ public class JobTableService : IJobTableService
 
             // If FlowVersion record not found, log and return
             if (flowVersion == null)
-            {
-                _logger.LogError("Flow version not found with FlowVersion ID: {FlowVersionId}", jobInsertDto.FlowVersionId);
-                return serviceResponse.Failure("The flow version was not found.", 404);
-            }
-            
+                return serviceResponse.Update("Agent not found.", 404);
+
             // TODO: Need to check this
             // Machine? machine = null;
             // // If the OSId is provided, attempt to find a matching machine.
@@ -199,10 +188,7 @@ public class JobTableService : IJobTableService
 
                 // If no existing job found, log and return
                 if (existingJobs == 0)
-                {
-                    _logger.LogError("No existing job found with Job ID: {JobId} and FlowVersion ID: {FlowVersionId}", jobInsertDto.JobId, jobInsertDto.FlowVersionId);
-                    return serviceResponse.Failure("No existing job found.", 404);
-                }
+                    return serviceResponse.Update("No existing job found.", 404);
 
                 newJob.RetryCount = existingJobs;
             }
@@ -220,10 +206,7 @@ public class JobTableService : IJobTableService
 
                 // If user not found, log and return
                 if (userRecord == null)
-                {
-                    _logger.LogError("User not found with ID: {UserId}. For manual trigger, user must exist", _userId);
-                    return serviceResponse.Failure("The user was not found. For manual trigger, user must exist", 404);
-                }
+                    return serviceResponse.Update("User not found.", 404);
 
                 // TODO: Property name to be changed CreatedByName = [Full name - email]
                 newJob.ExecutedBy = $"{userRecord.FirstName} {userRecord.LastName} - {userRecord.UserName}";
@@ -247,10 +230,7 @@ public class JobTableService : IJobTableService
 
             // Insert-Job failed, log and return
             if (!await _unitOfWork.SaveAsync())
-            {
-                _logger.LogInformation("Failed to save changes while inserting new job.");
-                return serviceResponse.Failure("Something went wrong. Please try again", 500);
-            }
+                return serviceResponse.Update("Failed to save changes.", 500);
 
             // Map newJob to JobRecordDto for the response
             var jobRecordDto = newJob.Adapt<JobRecordDto>();
@@ -268,7 +248,7 @@ public class JobTableService : IJobTableService
             }
 
             // Return Success response
-            return serviceResponse.Success(jobRecordDto);
+            return serviceResponse.Update("Job created", 201, jobRecordDto);
         }
         catch (Exception ex)
         {
@@ -281,7 +261,7 @@ public class JobTableService : IJobTableService
     public async Task<ServiceResponse<JobRecordDto>> UpdateJobAsync(JobUpdateDto jobUpdateDto)
     {
         // Initialize the response with a default error message.
-        var serviceResponse = ServiceResponse<JobRecordDto>.Create(message: "Failed to update the job. Please try again.");
+        var serviceResponse = ServiceResponse<JobRecordDto>.Create("Failed to update job", 500);
 
         try
         {
@@ -295,10 +275,7 @@ public class JobTableService : IJobTableService
 
             // If record not found, log and return
             if (job == null)
-            {
-                _logger.LogInformation("Job not found to update with Job ID: {JobId}", jobUpdateDto.Id);
-                return serviceResponse.Failure("Job not found.", 404);
-            }
+                return serviceResponse.Update("Job not found.", 404);
 
             // Trim the string properties in the DTO
             jobUpdateDto = TrimDtoStringPropsUtil.TrimDtoStringProps(jobUpdateDto);
@@ -398,13 +375,10 @@ public class JobTableService : IJobTableService
 
             // Update-Job failed, log and return
             if (!await _unitOfWork.SaveAsync())
-            {
-                _logger.LogInformation("Failed to save changes while updating the job.");
-                return serviceResponse.Failure("Something went wrong. Please try again.", 500);
-            }
+                return serviceResponse.Update("Failed to save changes.", 500);
 
             // Return success response
-            return serviceResponse.Success(job.Adapt<JobRecordDto>());
+            return serviceResponse.Update("Job updated", 200, job.Adapt<JobRecordDto>());
 
             // TODO: Need to check this
             // // If the job status has changed (i.e., it differs from the previously stored status), proceed with the action.
@@ -481,7 +455,7 @@ public class JobTableService : IJobTableService
     public async Task<ServiceResponse<bool>> DeleteJobAsync(Guid jobId)
     {
         // Initialize the response with a default error message.
-        var serviceResponse = ServiceResponse<bool>.Create(message: "Failed to delete the job. Please try again.");
+        var serviceResponse = ServiceResponse<bool>.Create("Failed to delete job", 500);
 
         try
         {
@@ -492,30 +466,21 @@ public class JobTableService : IJobTableService
 
             // If record not found, log and return
             if (job == null)
-            {
-                _logger.LogInformation("Job not found for deletion with Job ID: {JobId}", jobId);
-                return serviceResponse.Failure("Job not found.", 404);
-            }
+                return serviceResponse.Update("Job not found.", 404);
 
             // CANNOT DELETE THE JOB: Job is not in 'Created' status
             if (job.Status != JobStatusEnum.Created)
-            {
-                _logger.LogInformation("Cannot delete job with ID {JobId} as it is currently in progress.", jobId);
-                return serviceResponse.Failure("Cannot delete a job that is currently in progress.", 400);
-            }
+                return serviceResponse.Update("Only jobs in created status can be deleted.", 400);
 
             // Delete the record
             _unitOfWork.JobRepo.Delete(job);
 
             // Delete-Job failed, log and return
             if (!await _unitOfWork.SaveAsync())
-            {
-                _logger.LogInformation("Failed to save changes while deleting the job.");
-                return serviceResponse.Failure("Something went wrong. Please try again.", 500);
-            }
+                return serviceResponse.Update("Failed to save changes.", 500);
 
             // Return success response
-            return serviceResponse.Success(true);
+            return serviceResponse.Update("Job deleted", 200, true);
         }
         catch (Exception ex)
         {
@@ -528,7 +493,7 @@ public class JobTableService : IJobTableService
     public async Task<ServiceResponse<bool>> DeleteJobsAsync(IEnumerable<Guid> jobIds)
     {
         // Initialize the response with a default error message.
-        var serviceResponse = ServiceResponse<bool>.Create(message: "Failed to delete the jobs. Please try again.");
+        var serviceResponse = ServiceResponse<bool>.Create("Failed to delete jobs", 500);
 
         try
         {
@@ -539,30 +504,21 @@ public class JobTableService : IJobTableService
 
             // If records not found, log and return
             if (jobs.Count == 0)
-            {
-                _logger.LogInformation("Jobs not found for deletion with Job IDs: {JobIds}", string.Join(", ", jobIds));
-                return serviceResponse.Failure("Jobs not found.", 404);
-            }
+                return serviceResponse.Update("Jobs not found.", 404);
 
             // CANNOT DELETE THE JOB: Job is not in 'Created' status
             if (jobs.Any(j => j.Status != JobStatusEnum.Created))
-            {
-                _logger.LogInformation("Cannot delete jobs with IDs {JobIds} as some are currently in progress.", string.Join(", ", jobIds));
-                return serviceResponse.Failure("Cannot delete jobs that are currently in progress.", 400);
-            }
+                return serviceResponse.Update("Only jobs in created status can be deleted.", 400);
 
             // Delete the records
             _unitOfWork.JobRepo.Delete(jobs);
 
             // Delete-Jobs failed, log and return
             if (!await _unitOfWork.SaveAsync())
-            {
-                _logger.LogInformation("Failed to save changes while deleting the jobs with IDs {JobIds}.", string.Join(", ", jobIds));
-                return serviceResponse.Failure("Something went wrong. Please try again.", 500);
-            }
+                return serviceResponse.Update("Failed to save changes.", 500);
 
             // Return success response
-            return serviceResponse.Success(true);
+            return serviceResponse.Update("Jobs deleted", 200, true);
         }
         catch (Exception ex)
         {
@@ -575,7 +531,7 @@ public class JobTableService : IJobTableService
     public async Task<ServiceResponse<FileStreamResult>> ExportJobsAsync(ExportJobsReqDto exportJobsReqDto)
     {
         // Initialize the response with a default error message.
-        var serviceResponse = ServiceResponse<FileStreamResult>.Create(message: "Failed to export jobs data. Please try again.");
+        var serviceResponse = ServiceResponse<FileStreamResult>.Create("Failed to export jobs data.", 500);
 
         try
         {
@@ -584,7 +540,7 @@ public class JobTableService : IJobTableService
 
             // Return if start date greater than the end date
             if (dateRange.StartDate > dateRange.EndDate)
-                return serviceResponse.Failure("Start date cannot be greater than end date.", 400);
+                return serviceResponse.Update("Start date cannot be greater than end date.", 400);
 
             // Initialize the base query with date filter
             var jobsExportQuery = _unitOfWork.JobRepo
@@ -616,7 +572,7 @@ public class JobTableService : IJobTableService
             // TODO: Rename ExecutedOn to ExecutionLocation later Filter ExecutionLocations
             if (exportJobsReqDto.ExecutionLocations?.Any() == true)
             {
-                jobsExportQuery = jobsExportQuery.Where(w => exportJobsReqDto.ExecutionLocations.Contains(w.ExecutedOn));
+                jobsExportQuery = jobsExportQuery.Where(w => exportJobsReqDto.ExecutionLocations.Contains(w.ExecutedOn ?? string.Empty));
             }
 
             // Filter IncludePublishedFlows
@@ -642,11 +598,11 @@ public class JobTableService : IJobTableService
                 jobsExportQuery = jobsExportQuery.Where(w => exportJobsReqDto.Priorities.Contains(w.Priority));
             }
 
-            // Fetch the filtered jobs and project them to JobTableRowDto for CSV export
+            // Fetch the filtered jobs and project them to JobsTableRowDto for CSV export
             var jobsToExport = await jobsExportQuery
                             .Include(i => i.FlowVersion)
                                 .ThenInclude(i2 => i2.Flow)
-                            .ProjectToType<JobTableRowDto>()
+                            .ProjectToType<JobsTableRowDto>()
                             .ToListAsync();
 
             // Convert the retrieved data to CSV format and store it in a memory stream
@@ -660,12 +616,12 @@ public class JobTableService : IJobTableService
 
             // Log and return the success response with the CSV file
             _logger.LogInformation("Jobs data exported. File generated: {FileName}", jobsCsvData.FileDownloadName);
-            return serviceResponse.Success(jobsCsvData);
+            return serviceResponse.Update("Jobs exported", 200, jobsCsvData);
         }
         catch (Exception ex)
         {
             _logger.LogError(ex, "An error occurred while exporting job data.");
-            return serviceResponse.Failure("An error occurred while processing the export. Please try again later.", 500);
+            return serviceResponse.Update("An error occurred while processing the export. Please try again later.", 500);
         }
     }
 

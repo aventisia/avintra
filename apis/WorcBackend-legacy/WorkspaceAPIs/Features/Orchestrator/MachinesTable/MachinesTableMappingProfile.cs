@@ -1,11 +1,11 @@
 namespace WorkspaceAPIs.MappingProfiles;
 
-public class MachinesMappingProfile : IRegister
+public class MachinesTableMappingProfile : IRegister
 {
     public void Register(TypeAdapterConfig config)
     {
         // For - Retrieves list of machines or Retrieve machine by its ID
-        config.NewConfig<Machine, MachineDto>()
+        config.NewConfig<Machine, MachinesTableRowDto>()
             .Map(dest => dest.FlowVersionCount, src => src.MachineFlowVersions != null ? src.MachineFlowVersions.Count : 0)
             .Map(dest => dest.CreatedBy,
                 src => src.CreatedByUser != null

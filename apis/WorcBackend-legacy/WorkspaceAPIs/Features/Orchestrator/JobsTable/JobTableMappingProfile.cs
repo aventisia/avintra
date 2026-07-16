@@ -6,8 +6,8 @@ public class JobTableMappingProfile : IRegister
     {
         // TODO: Remove the mapping for some properties once the properties names are in sync in Job entity
 
-        // Mapping Job -> JobTableRowDto
-        config.NewConfig<Job, JobTableRowDto>()
+        // Mapping Job -> JobsTableRowDto
+        config.NewConfig<Job, JobsTableRowDto>()
             .Map(dest => dest.FlowName, src => src.FlowVersion != null && src.FlowVersion.Flow != null ? src.FlowVersion.Flow.Name : "FLOW_NAME_NOT_FOUND")
             .Map(dest => dest.FlowVersionNumber, src => src.FlowVersion != null ? $"v{src.FlowVersion.VersionNumber}" : "VERSION_NUMBER_NOT_FOUND")
             .Map(dest => dest.IsFlowVersionPublished, src => src.FlowVersion != null ? src.FlowVersion.IsPublished : false)

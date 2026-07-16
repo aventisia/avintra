@@ -1,46 +1,52 @@
 import { SubmitButton } from "@aventisia/ui/buttons";
 import { Form, InputField, SelectField, SwitchField } from "@aventisia/ui/form";
-import { useListOptimisticMutation } from "@aventisia/ui/hooks";
+import { useTableRowOptimisticMutation } from "@aventisia/ui/hooks";
 import { useEffect } from "react";
+import { useWatch } from "react-hook-form";
 import { z } from "zod";
 
-import { EnvironmentTypesEnum } from "@/react-toolkit/enums/machine-environment-types-enum";
-import { OsTypesEnum } from "@/react-toolkit/enums/machine-os-types-enum";
+import { EnvironmentTypesEnum } from "@/react-toolkit/enums/environment-types-enum";
+import { OsTypesEnum } from "@/react-toolkit/enums/os-types-enum";
 
-import { machineOptimisticMutationFn } from "../../apis/machines-table-apis";
+import { insertOrUpdateMachine } from "../../apis/machines-table-apis";
 import { DATA_QUERY_KEY } from "../../constants";
 import {
   environmentTypeProps,
+  getOsUniqueIdProps,
   hostnameProps,
   idProps,
   ipAddressProps,
   isDisabledProps,
   nameProps,
   osTypeProps,
-  os_unique_idProps,
   usernameProps,
 } from "../../constants/machine-form-field-props";
 import { machineZodSchema } from "../../constants/machine-zod-schema";
 import type { AddMachineDto } from "../../dtos/add-machine.dto";
-import { MachinesTableDto } from "../../dtos/machines-table-dto";
+import { MachinesTableRowDto } from "../../dtos/machines-table-row-dto";
 import type { UpdateMachineDto } from "../../dtos/update-machine.dto";
 import { useDefineMachineForm } from "../../hooks/useDefineMachineForm";
 
 export const MachineCrudForm = () => {
   // Define machine form
-  const { form, rowId, crudAction, isDirty, setShowDialog } =
+  const { form, rowId, crudAction, isDirty, isValid, setShowDialog } =
     useDefineMachineForm();
+
+  const operatingSystem = useWatch({
+    control: form.control,
+    name: "operatingSystem",
+  });
 
   // Define optimistic mutation to crete or update the machine
   const {
     mutate: mutateMachine,
     isPending,
     isSuccess,
-  } = useListOptimisticMutation<
+  } = useTableRowOptimisticMutation<
     AddMachineDto | UpdateMachineDto,
-    MachinesTableDto | boolean,
-    MachinesTableDto
-  >([rowId], machineOptimisticMutationFn, DATA_QUERY_KEY);
+    MachinesTableRowDto,
+    MachinesTableRowDto
+  >(crudAction, [rowId], insertOrUpdateMachine, DATA_QUERY_KEY);
 
   // Define submit handler
   const onSubmit = (formData: z.infer<typeof machineZodSchema>) => {
@@ -55,16 +61,12 @@ export const MachineCrudForm = () => {
 
     // Create or update the machine
     mutateMachine({
-      payload:
-        crudAction === "create"
-          ? machinePayload
-          : ({
-              id: formData.id,
-              ...machinePayload,
-              isDisabled: formData.isDisabled,
-            } as UpdateMachineDto),
-      crudAction: crudAction,
-    });
+      ...(crudAction === "update" && {
+        id: rowId,
+        isDisabled: formData.isDisabled,
+      }),
+      ...machinePayload,
+    } as AddMachineDto | UpdateMachineDto);
   };
 
   // Close dialog and reset form when mutation is successful
@@ -91,7 +93,7 @@ export const MachineCrudForm = () => {
       </div>
 
       {/* OS Id */}
-      <InputField {...os_unique_idProps} />
+      <InputField {...getOsUniqueIdProps(operatingSystem)} />
 
       {/* Username */}
       <InputField {...usernameProps} />
@@ -115,7 +117,7 @@ export const MachineCrudForm = () => {
           primaryText={crudAction === "create" ? "Add" : "Save changes"}
           secondaryText="Adding..."
           isPending={isPending}
-          disabled={!isDirty}
+          disabled={!isDirty || !isValid || isPending}
         />
       </div>
     </Form>

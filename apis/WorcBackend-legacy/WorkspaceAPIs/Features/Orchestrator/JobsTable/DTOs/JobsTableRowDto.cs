@@ -4,7 +4,7 @@ namespace WorkspaceAPIs.DTOs;
 /// Represents a single row in the jobs table, providing a summary of job record for display purposes.
 /// NOTE: Same dto is being used for CSV export of jobs data. Display attributes are used to define the column names in the exported CSV file.
 /// </summary>
-public class JobTableRowDto
+public class JobsTableRowDto
 {
     /// <summary>
     /// Gets or sets the unique identifier for the job.

@@ -42,7 +42,7 @@ public class FlowBuilderService : IFlowBuilderService
         try
         {
             // TODO: Implement access control logic to ensure the user has permission to access the specified subFlowIds.
-            
+
             // Fetch the parent flow version details based on the provided parentFlowVersionId
             var parentFlowVersion = await _unitOfWork.FlowVersionRepo
                 .GetByConditionAsync(w => w.Id == parentFlowVersionId)
@@ -279,7 +279,7 @@ public class FlowBuilderService : IFlowBuilderService
 
             // Validate: Flow version is already published
             if (flowVersion.IsPublished == true)
-                return serviceResponse.Update(400, "Flow is already published.");
+                return serviceResponse.Update("Flow is already published.", 400);
 
             // TODO: Bug When there is a call block or call agent node exists then parsed flow is empty
             // Validate flow graph for unpublished flow versions

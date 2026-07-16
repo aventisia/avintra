@@ -1,11 +1,13 @@
-import type { EnvironmentTypesEnum } from "@/react-toolkit/enums/machine-environment-types-enum";
-import type { OsTypesEnum } from "@/react-toolkit/enums/machine-os-types-enum";
+import type { EnvironmentTypesEnum } from "@/react-toolkit/enums/environment-types-enum";
 import type { MachineStatusTypesEnum } from "@/react-toolkit/enums/machine-status-types-enum";
+import type { OsTypesEnum } from "@/react-toolkit/enums/os-types-enum";
 
 /**
  * Represents a data transfer object (DTO) for a machine.
+ * NOTE: Same DTO will be used for table row, machine record and exporting machine data to CSV.
+ * Display attributes are used to define the column names for the exported CSV file.
  */
-export interface MachinesTableDto {
+export interface MachinesTableRowDto {
   /**
    * Gets or sets the primary key of the machine record.
    *
