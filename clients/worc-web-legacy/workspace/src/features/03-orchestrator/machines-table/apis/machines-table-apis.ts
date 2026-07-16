@@ -1,7 +1,6 @@
 import {
   CheckAvailabilityDto,
   IHttpResponse,
-  IOptimisticMutation,
   TrueFalseResultDto,
 } from "@aventisia/ui/dtos";
 import { ISelectOption } from "@aventisia/ui/types";
@@ -9,9 +8,9 @@ import { ISelectOption } from "@aventisia/ui/types";
 import { axiosInstance } from "@/react-toolkit/lib/axios-instance";
 
 import { AssignMachineDto } from "../../agents-table/dtos/assign-machine-dto";
-import type { UpdateMachineFlowVersionsDto } from "../dtos/assign-agent-dto";
 import type { AddMachineDto } from "../dtos/add-machine.dto";
-import { MachinesTableDto } from "../dtos/machines-table-dto";
+import type { UpdateMachineFlowVersionsDto } from "../dtos/assign-agent-dto";
+import { MachinesTableRowDto } from "../dtos/machines-table-row-dto";
 import type { SelectAgentTableDto } from "../dtos/select-agent-table-dto";
 import type { UpdateMachineDto } from "../dtos/update-machine.dto";
 
@@ -22,7 +21,7 @@ const baseAPIURL: string = `${import.meta.env.VITE_WORKSPACE_API_PATH}/machine`;
  */
 const getMachines = () => {
   return axiosInstance
-    .get<IHttpResponse<MachinesTableDto[]>>(`${baseAPIURL}/list`)
+    .get<IHttpResponse<MachinesTableRowDto[]>>(`${baseAPIURL}/list`)
     .then((res) => res.data);
 };
 
@@ -31,16 +30,16 @@ const getMachines = () => {
  */
 const getMachine = (machineId: string) => {
   return axiosInstance
-    .get<IHttpResponse<MachinesTableDto>>(`${baseAPIURL}/${machineId}`)
+    .get<IHttpResponse<MachinesTableRowDto>>(`${baseAPIURL}/${machineId}`)
     .then((res) => res.data);
 };
 
 /**
- * Inserts a new machine.
+ * Inserts a new machine
  */
 const insertMachine = (addMachineDto: AddMachineDto) => {
   return axiosInstance
-    .post<IHttpResponse<MachinesTableDto>>(`${baseAPIURL}`, addMachineDto)
+    .post<IHttpResponse<MachinesTableRowDto>>(`${baseAPIURL}`, addMachineDto)
     .then((res) => res.data);
 };
 
@@ -49,7 +48,7 @@ const insertMachine = (addMachineDto: AddMachineDto) => {
  */
 const updateMachine = (updateMachineDto: UpdateMachineDto) => {
   return axiosInstance
-    .put<IHttpResponse<MachinesTableDto>>(`${baseAPIURL}`, updateMachineDto)
+    .put<IHttpResponse<MachinesTableRowDto>>(`${baseAPIURL}`, updateMachineDto)
     .then((res) => res.data);
 };
 
@@ -67,7 +66,7 @@ const deleteMachine = (id: string) => {
  */
 const deleteMachines = (ids: string[]) => {
   return axiosInstance
-    .post<IHttpResponse<boolean>>(`${baseAPIURL}/delete-multiple`, ids)
+    .post<IHttpResponse<number>>(`${baseAPIURL}/delete-multiple`, ids)
     .then((res) => res.data);
 };
 
@@ -82,6 +81,14 @@ const syncMachineFlowVersions = (
       IHttpResponse<boolean>
     >(`${baseAPIURL}/sync-flow-versions`, updateMachineFlowVersionsDto)
     .then((res) => res.data);
+};
+
+/**
+ * For insert or update machine optimistic mutation
+ */
+const insertOrUpdateMachine = (mutateObj: AddMachineDto | UpdateMachineDto) => {
+  if ("id" in mutateObj) return updateMachine(mutateObj as UpdateMachineDto);
+  else return insertMachine(mutateObj as AddMachineDto);
 };
 
 /**
@@ -110,7 +117,9 @@ const getMachineSelectOptions = () => {
  */
 const findMachinesByKeyword = (searchKey: string) => {
   return axiosInstance
-    .get<IHttpResponse<MachinesTableDto[]>>(`${baseAPIURL}/search/${searchKey}`)
+    .get<
+      IHttpResponse<MachinesTableRowDto[]>
+    >(`${baseAPIURL}/search/${searchKey}`)
     .then((res) => {
       const adaptedData: AssignMachineDto[] = (res.data?.data ?? []).map(
         (machine) => ({
@@ -144,7 +153,7 @@ const findMachinesByKeyword = (searchKey: string) => {
 
 /**
  * Retrieves list of select options to assign an agent to a new machine.
- * @deprecated Uses a separate agent endpoint; not part of MachineController.
+ * @deprecated Uses a separate agent endpoint; not part of MachinesTableController.
  */
 const getNewMachineAgents = () => {
   return axiosInstance
@@ -156,7 +165,7 @@ const getNewMachineAgents = () => {
 
 /**
  * Checks the availability of a machine name.
- * @deprecated No matching backend endpoint in MachineController.
+ * @deprecated No matching backend endpoint in MachinesTableController.
  */
 const isMachineNameAvailable = (postObj: CheckAvailabilityDto) => {
   return axiosInstance
@@ -164,36 +173,6 @@ const isMachineNameAvailable = (postObj: CheckAvailabilityDto) => {
       IHttpResponse<TrueFalseResultDto>
     >(`${baseAPIURL}/is-available`, postObj)
     .then((res) => res.data);
-};
-
-/**
- * Performs an optimistic mutation on a machine based on the provided CRUD action.
- * Maps MachinesTableDto payload to the appropriate request DTO for each action.
- *
- * @param {IOptimisticMutation<MachinesTableDto | string | string[]>} options - The options for the optimistic mutation.
- * @returns {Promise<any>} - A promise that resolves to the result of the mutation.
- * @throws {Error} - If an invalid action type is provided.
- */
-const machineOptimisticMutationFn = ({
-  payload,
-  crudAction,
-}: IOptimisticMutation<
-  AddMachineDto | UpdateMachineDto | string | string[]
->) => {
-  switch (crudAction) {
-    case "create": {
-      return insertMachine(payload as AddMachineDto);
-    }
-    case "update": {
-      return updateMachine(payload as UpdateMachineDto);
-    }
-    case "delete":
-      return deleteMachine(payload as string);
-    case "delete-multiple":
-      return deleteMachines(payload as string[]);
-    default:
-      throw new Error("Invalid action type");
-  }
 };
 
 export {
@@ -204,10 +183,10 @@ export {
   deleteMachine,
   deleteMachines,
   syncMachineFlowVersions,
+  insertOrUpdateMachine,
   getFlowVersionsByMachineOSId,
   getMachineSelectOptions,
   findMachinesByKeyword,
   getNewMachineAgents,
   isMachineNameAvailable,
-  machineOptimisticMutationFn,
 };

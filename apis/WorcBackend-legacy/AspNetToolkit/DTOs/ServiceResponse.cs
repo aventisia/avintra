@@ -28,7 +28,7 @@ public class ServiceResponse<T>
     /// <summary>
     /// Creates a new response instance with the given values.
     /// </summary>
-    public static ServiceResponse<T> Create(T? data = default, int statusCode = 400, string message = "Something went wrong")
+    public static ServiceResponse<T> Create(string message, int statusCode, T? data = default)
     {
         return new ServiceResponse<T>
         {
@@ -39,31 +39,9 @@ public class ServiceResponse<T>
     }
 
     /// <summary>
-    /// Creates a successful response instance.
-    /// </summary>
-    public ServiceResponse<T> Success(T? data, string message = "Success", int statusCode = 200)
-    {
-        StatusCode = statusCode;
-        Message = message;
-        Data = data;
-        return this;
-    }
-
-    /// <summary>
-    /// Creates a failure response instance.
-    /// </summary>
-    public ServiceResponse<T> Failure(string message = "Something went wrong", int statusCode = 400, T? data = default)
-    {
-        StatusCode = statusCode;
-        Message = message;
-        Data = data;
-        return this;
-    }
-
-    /// <summary>
     /// Updates the current response instance and returns it for fluent usage.
     /// </summary>
-    public ServiceResponse<T> Update(int statusCode, string message, T? data = default)
+    public ServiceResponse<T> Update(string? message, int statusCode, T? data = default)
     {
         StatusCode = statusCode;
         Message = message;

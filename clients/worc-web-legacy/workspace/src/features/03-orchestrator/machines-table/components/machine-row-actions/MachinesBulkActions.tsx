@@ -4,23 +4,21 @@ import {
   DTBulkDeleteAction,
   DTSelectionInfo,
 } from "@aventisia/ui/data-table";
-import {
-  useListOptimisticMutation,
-  useShowAlertHandler,
-} from "@aventisia/ui/hooks";
+import { useTableRowOptimisticMutation } from "@aventisia/ui/hooks";
+import { useShowAlertHandler } from "@aventisia/ui/hooks";
 import { Table } from "@tanstack/react-table";
 
-import { machineOptimisticMutationFn } from "../../apis/machines-table-apis";
+import { deleteMachines } from "../../apis/machines-table-apis";
 import { DATA_QUERY_KEY } from "../../constants";
-import { MachinesTableDto } from "../../dtos/machines-table-dto";
+import { MachinesTableRowDto } from "../../dtos/machines-table-row-dto";
 
 interface MachinesBulkActionsProps {
-  table: Table<MachinesTableDto>;
+  table: Table<MachinesTableRowDto>;
 }
 
 export function MachinesBulkActions({ table }: MachinesBulkActionsProps) {
   // Get showAlert handler
-  const { showDefaultAlertDialog } = useShowAlertHandler();
+  const { showCustomAlertDialog } = useShowAlertHandler();
 
   // Get rowIds of selected rows
   const selectedRowIds = table
@@ -28,12 +26,16 @@ export function MachinesBulkActions({ table }: MachinesBulkActionsProps) {
     .rows.map((row) => row.original.id)
     .filter((id): id is string => id !== undefined);
 
+  // Construct entity name for alert dialog
+  const entityName =
+    selectedRowIds.length > 1 ? `${selectedRowIds.length} machines` : `machine`;
+
   // Get mutation function to delete the machine
-  const { mutate: deleteMachines } = useListOptimisticMutation<
+  const { mutate } = useTableRowOptimisticMutation<
     string[],
-    MachinesTableDto | boolean,
-    MachinesTableDto
-  >(selectedRowIds, machineOptimisticMutationFn, DATA_QUERY_KEY);
+    number,
+    MachinesTableRowDto
+  >("delete-multiple", selectedRowIds, deleteMachines, DATA_QUERY_KEY);
 
   // TODO: Rollback selection if there is an error
 
@@ -45,20 +47,17 @@ export function MachinesBulkActions({ table }: MachinesBulkActionsProps) {
           <Separator orientation="vertical" className="h-6 w-[0.5px]" />
           <DTBulkDeleteAction
             onClick={() => {
-              // Show alert dialog to confirm delete
-              showDefaultAlertDialog({
+              showCustomAlertDialog({
                 confirmActionFn: () => {
                   // Delete selected machines
-                  deleteMachines({
-                    payload: selectedRowIds,
-                    crudAction: "delete-multiple",
-                  });
+                  mutate(selectedRowIds);
 
                   // Remove selection
                   table.toggleAllRowsSelected(false);
                 },
-                alertType: "delete-multiple",
-                additionalText: `${selectedRowIds.length} ${selectedRowIds.length > 1 ? "machines" : "machine"}`,
+                confirmBtnText: `Yes, delete ${entityName}`,
+                title: `Delete ${entityName}?`,
+                description: `Are you sure you want to delete selected ${entityName}? This action will unassign any agents connected to selected ${entityName}, which may affect your workflows.`,
               });
             }}
           />

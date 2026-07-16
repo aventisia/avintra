@@ -1,6 +1,6 @@
-import { EnvironmentTypesEnum } from "@/react-toolkit/enums/machine-environment-types-enum";
-import type { OsTypesEnum } from "@/react-toolkit/enums/machine-os-types-enum";
+import { EnvironmentTypesEnum } from "@/react-toolkit/enums/environment-types-enum";
 import { MachineStatusTypesEnum } from "@/react-toolkit/enums/machine-status-types-enum";
+import type { OsTypesEnum } from "@/react-toolkit/enums/os-types-enum";
 
 /**
  * data transfer object for getting the machine data to select and assign to agent.

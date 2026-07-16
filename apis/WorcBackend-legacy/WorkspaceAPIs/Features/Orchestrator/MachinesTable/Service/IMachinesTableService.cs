@@ -3,34 +3,34 @@ namespace WorkspaceAPIs.Services;
 /// <summary>
 /// Service interface for managing machine-related operations.
 /// </summary>
-public interface IMachineService
+public interface IMachinesTableService
 {
     /// <summary>
     /// Retrieves a list of all machines.
     /// </summary>
     /// <returns>A service response containing a collection of machines.</returns>
-    Task<ServiceResponse<IEnumerable<MachineDto>>> GetMachinesAsync();
+    Task<ServiceResponse<IEnumerable<MachinesTableRowDto>>> GetMachinesAsync();
 
     /// <summary>
     /// Retrieves machine by its ID.
     /// </summary>
     /// <param name="machineId">The unique identifier of the machine.</param>
     /// <returns>A service response containing the machine details.</returns>
-    Task<ServiceResponse<MachineDto>> GetMachineAsync(Guid machineId);
+    Task<ServiceResponse<MachinesTableRowDto>> GetMachineAsync(Guid machineId);
 
     /// <summary>
     /// Insert a new machine.
     /// </summary>
     /// <param name="addMachineDto">The machine details.</param>
     /// <returns>A service response containing the created machine data.</returns>
-    Task<ServiceResponse<MachineDto>> InsertMachineAsync(AddMachineDto addMachineDto);
+    Task<ServiceResponse<MachinesTableRowDto>> InsertMachineAsync(AddMachineDto addMachineDto);
 
     /// <summary>
     /// Updates an existing machine.
     /// </summary>
     /// <param name="updateMachineDto">The updated machine details.</param>
     /// <returns>A service response containing the updated machine data.</returns>
-    Task<ServiceResponse<MachineDto>> UpdateMachineAsync(UpdateMachineDto updateMachineDto);
+    Task<ServiceResponse<MachinesTableRowDto>> UpdateMachineAsync(UpdateMachineDto updateMachineDto);
 
     /// <summary>
     /// Deletes a machine by its ID.
@@ -43,8 +43,8 @@ public interface IMachineService
     /// Delete multiple machines by their IDs.
     /// </summary>
     /// <param name="machineIds">A collection of machine IDs to be deleted.</param>
-    /// <returns>A service response indicating success or failure.</returns>
-    Task<ServiceResponse<bool>> DeleteMachinesAsync(IEnumerable<Guid> machineIds);
+    /// <returns>A service response containing the number of machines deleted.</returns>
+    Task<ServiceResponse<long>> DeleteMachinesAsync(IEnumerable<Guid> machineIds);
 
     /// <summary>
     /// Synchronize machine's flow versions
@@ -73,7 +73,7 @@ public interface IMachineService
     /// </summary>
     /// <param name="searchKey">The keyword used to search machine details (e.g., name or identifier).</param>
     /// <returns>
-    /// A <see cref="ServiceResponse{T}"/> containing a collection of <see cref="MachineDto"/> objects matching the search criteria.
+    /// A <see cref="ServiceResponse{T}"/> containing a collection of <see cref="MachinesTableRowDto"/> objects matching the search criteria.
     /// </returns>
-    Task<ServiceResponse<IEnumerable<MachineDto>>> FindMachinesByKeywordAsync(string searchKey);
+    Task<ServiceResponse<IEnumerable<MachinesTableRowDto>>> FindMachinesByKeywordAsync(string searchKey);
 }

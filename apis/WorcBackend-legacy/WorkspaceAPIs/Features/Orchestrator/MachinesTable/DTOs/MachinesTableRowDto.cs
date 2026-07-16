@@ -3,11 +3,16 @@ namespace WorkspaceAPIs.DTOs;
 /// <summary>
 /// Represents machine data returned by machine APIs.
 /// </summary>
-public class MachineDto
+/// <remarks>
+/// Same DTO will be used for table row, machine record and exporting machine data to CSV. 
+/// Display attributes are used to define the column names for the exported CSV file.
+/// </remarks>
+public class MachinesTableRowDto
 {
     /// <summary>
     /// Gets or sets the unique identifier of the machine.
     /// </summary>
+    [Display(Name = "Machine ID")]
     public Guid Id { get; set; }
 
     /// <summary>
@@ -23,12 +28,14 @@ public class MachineDto
     /// <summary>
     /// Represents the operating system of the machine, e.g., Windows, Linux.
     /// </summary>
+    [Display(Name = "Operating System")]
     public required OsTypesEnum OperatingSystem { get; set; }
 
     /// <summary>
     /// Gets or sets the identifier that uniquely represents the operating system (max length 100).
     /// </summary>
     [StringLength(100)]
+    [Display(Name = "OS Unique ID")]
     public required string OsID { get; set; }
 
     /// <summary>
@@ -47,11 +54,13 @@ public class MachineDto
     /// Optional IP address of the machine (supports IPv4 or IPv6, max length 100).
     /// </summary>
     [StringLength(100)]
+    [Display(Name = "IP Address")]
     public string? IpAddress { get; set; }
 
     /// <summary>
     /// Represents the timestamp of when the machine was last checked in.
     /// </summary>
+    [Display(Name = "Last Checked In")]
     public DateTime LastCheckedIn { get; set; }
 
     /// <summary>
@@ -62,34 +71,40 @@ public class MachineDto
     /// <summary>
     /// Gets or sets the number of flow versions associated with the machine.
     /// </summary>
+    [Display(Name = "Agents")]
     public int FlowVersionCount { get; set; } = 0;
 
     /// <summary>
     /// Gets or sets a flag indicating whether the user record is disabled.
     /// </summary>
+    [Display(Name = "Is Disabled")]
     public bool IsDisabled { get; set; }
 
     /// <summary>
     /// Gets or sets the username of the user who created the user record. 
     /// This property is intended for use in responses only and should not be included in requests.
     /// </summary>
+    [Display(Name = "Created By")]
     public required string CreatedBy { get; set; }
 
     /// <summary>
     /// Gets or sets the date and time when the user record was created. 
     /// This property is intended for use in responses only and should not be included in requests.
     /// </summary>
+    [Display(Name = "Created At")]
     public DateTimeOffset CreatedOn { get; set; }
 
     /// <summary>
     /// Gets or sets the username of the user who last modified the user record.
     /// This property is intended for use in responses only and should not be included in requests.
     /// </summary>
+    [Display(Name = "Last Modified By")]
     public required string LastModifiedBy { get; set; }
 
     /// <summary>
     /// Gets or sets the date and time when the user record was last modified. 
     /// This property is intended for use in responses only and should not be included in requests.
     /// </summary>
+    [Display(Name = "Last Modified At")]
     public DateTimeOffset LastModifiedOn { get; set; }
 }

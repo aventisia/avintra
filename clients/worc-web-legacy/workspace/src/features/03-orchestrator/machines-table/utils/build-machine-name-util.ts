@@ -1,4 +1,4 @@
-import { EnvironmentTypesEnum } from "@/react-toolkit/enums/machine-environment-types-enum";
+import { EnvironmentTypesEnum } from "@/react-toolkit/enums/environment-types-enum";
 
 const getEnvironmentToken = (environment: string) => {
   switch (environment) {

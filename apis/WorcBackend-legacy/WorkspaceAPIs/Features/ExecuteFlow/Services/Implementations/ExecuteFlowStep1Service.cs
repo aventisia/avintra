@@ -43,7 +43,7 @@ public class ExecuteFlowStep1Service : IExecuteFlowStep1Service
         // the word "flow" instead of "flow version" to avoid confusion. We will use flow version in the backend 
         // logic, comments, documentation and database since it is more accurate, but the messages shown to end user 
         // on frontend should flow instead of flow version.
-        var serviceResponse = ServiceResponse<ExecuteFlowResponseDto>.Create(message: "Failed to invoke flow. Please try again.");
+        var serviceResponse = ServiceResponse<ExecuteFlowResponseDto>.Create("Failed to invoke flow. Please try again.", 500);
 
         try
         {
@@ -57,28 +57,28 @@ public class ExecuteFlowStep1Service : IExecuteFlowStep1Service
 
             // Validate: Flow version not found
             if (flowVersion == null)
-                return serviceResponse.Update(404, "Flow was not found.");
+                return serviceResponse.Update("Flow was not found.", 400);
 
             // Validate: Archived flow version cannot be executed
             if (flowVersion.IsArchived)
-                return serviceResponse.Update(400, "Flow is archived and cannot be executed.");
+                return serviceResponse.Update("Flow is archived and cannot be executed.", 400);
 
             // Validate: User is not logged in and flow version is not published. Note: Non-published flow can only be executed
             // by logged in users via platform UI, while published flow can be executed by both logged in users via 
             // platform UI and external systems via API.
             if (flowVersion.IsPublished == false && _userId == Guid.Empty)
-                return serviceResponse.Update(401, "You must be logged in to execute this flow.");
+                return serviceResponse.Update("You must be logged in to execute this flow.", 401);
 
             // Validate: User don't have access to the parent flow
             if (await HasUserAccessToFlowAsync(flowVersion) == false)
-                return serviceResponse.Update(403, "You do not have permission to execute this flow.");
+                return serviceResponse.Update("You do not have permission to execute this flow.", 403);
 
             // Get the parsed ReactFlowObject
             var parsedFlow = ReactFlowHelper.Parse(flowVersion.ReactFlowObject);
 
             // Validate: Invalid react flow object
             if (parsedFlow == null)
-                return serviceResponse.Update(400, "Flow is missing or invalid.");
+                return serviceResponse.Update("Flow is missing or invalid.", 400);
 
             // Validations for unpublished flow versions. For published flow versions, we will skip validations since 
             // published flow versions are non-editable and all validations should have been passed at the time of publishing.
@@ -87,19 +87,19 @@ public class ExecuteFlowStep1Service : IExecuteFlowStep1Service
             {
                 // Validate: Invalid react flow object, return bad request
                 if (parsedFlow == null || parsedFlow.Nodes == null || parsedFlow.Nodes.Count == 0 || parsedFlow.Edges == null || parsedFlow.Edges.Count == 0)
-                    return serviceResponse.Update(400, "Flow is missing or invalid.");
+                    return serviceResponse.Update("Flow is missing or invalid.", 400);
 
                 // Validate: Flow contains one or more executable nodes that are desktop-only
                 if (FlowValidationHelper.DoesFlowContainsAnyDesktopOnlyNode(parsedFlow))
-                    return serviceResponse.Update(400, "Flow contains desktop nodes which cannot be executed via web. Please remove desktop nodes from the flow and try again.");
+                    return serviceResponse.Update("Flow contains desktop nodes which cannot be executed via web. Please remove desktop nodes from the flow and try again.", 400);
 
                 // Validate: Reject flow execution if it contains only support/placeholder nodes
                 if (FlowValidationHelper.IsEmptyFlow(parsedFlow))
-                    return serviceResponse.Update(400, "Flow is empty and cannot be executed.");
+                    return serviceResponse.Update("Flow is empty and cannot be executed.", 400);
 
                 // Validate: Flow graph is invalid (e.g. missing nodes or edges, or edges connecting to non-existing nodes)
                 if (FlowValidationHelper.IsValidFlowGraph(parsedFlow) is string flowGraphValidationError)
-                    return serviceResponse.Update(400, $"Flow graph is invalid: {flowGraphValidationError}");
+                    return serviceResponse.Update($"Flow graph is invalid: {flowGraphValidationError}", 400);
             }
 
             // Insert a new job for the flow execution
@@ -164,10 +164,10 @@ public class ExecuteFlowStep1Service : IExecuteFlowStep1Service
 
                 if (!flowResult.IsSuccess)
                 {
-                    return serviceResponse.Update(200, flowResult.ErrorMessage ?? "Flow execution failed.", executeFlowResponse);
+                    return serviceResponse.Update(flowResult.ErrorMessage ?? "Flow execution failed.", 200, executeFlowResponse);
                 }
 
-                return serviceResponse.Update(200, "Flow execution completed successfully.", executeFlowResponse);
+                return serviceResponse.Update("Flow execution completed successfully.", 200, executeFlowResponse);
             }
             else
             {
@@ -183,7 +183,7 @@ public class ExecuteFlowStep1Service : IExecuteFlowStep1Service
                     JobStatus = newJob.Status,
                     OutputDataJson = null,
                 };
-                return serviceResponse.Update(200, "Flow execution initiated successfully.", executeFlowResponse);
+                return serviceResponse.Update("Flow execution initiated successfully.", 200, executeFlowResponse);
             }
         }
         catch (Exception ex)

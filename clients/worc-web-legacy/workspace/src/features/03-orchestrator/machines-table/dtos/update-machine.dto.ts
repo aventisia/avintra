@@ -1,5 +1,5 @@
-import type { EnvironmentTypesEnum } from "@/react-toolkit/enums/machine-environment-types-enum";
-import type { OsTypesEnum } from "@/react-toolkit/enums/machine-os-types-enum";
+import type { EnvironmentTypesEnum } from "@/react-toolkit/enums/environment-types-enum";
+import type { OsTypesEnum } from "@/react-toolkit/enums/os-types-enum";
 
 /**
  * Represents the payload used to update a machine.

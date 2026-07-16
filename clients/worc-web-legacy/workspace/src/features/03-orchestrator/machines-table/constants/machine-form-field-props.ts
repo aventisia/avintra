@@ -5,8 +5,8 @@ import {
 } from "@aventisia/ui/form";
 import { enumToArray } from "@aventisia/ui/utils";
 
-import { EnvironmentTypesEnum } from "@/react-toolkit/enums/machine-environment-types-enum";
-import { OsTypesEnum } from "@/react-toolkit/enums/machine-os-types-enum";
+import { EnvironmentTypesEnum } from "@/react-toolkit/enums/environment-types-enum";
+import { OsTypesEnum } from "@/react-toolkit/enums/os-types-enum";
 
 // Machine Id
 export const idProps: InputFieldProps = {
@@ -31,15 +31,24 @@ export const osTypeProps: SelectFieldProps = {
   selectOptions: enumToArray(OsTypesEnum),
 };
 
+const osUniqueIdPlaceholders: Record<string, string> = {
+  [OsTypesEnum.Windows]: "9508dd1e-4530-4c37-836c-834ae48c1604",
+  [OsTypesEnum.Linux]: "46cf14985742d9c176a811e04e00c899",
+};
+
 // OS Unique Id
-export const os_unique_idProps: InputFieldProps = {
+export const getOsUniqueIdProps = (
+  operatingSystem: string,
+): InputFieldProps => ({
   name: "osID",
   label: "OS Unique ID",
-  placeholder: "00000000-0000-0000-0000-000000000000",
+  placeholder:
+    osUniqueIdPlaceholders[operatingSystem] ??
+    "00000000-0000-0000-0000-000000000000",
   isRequired: true,
   description:
     "Enter the OS installation ID of the machine that needs to be registered. This can be found on the login screen of the desktop app on the machine.",
-};
+});
 
 // Username
 export const usernameProps: InputFieldProps = {

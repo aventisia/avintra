@@ -15,7 +15,7 @@ public class JobTableController : BaseApiController
 
     // Retrieves a list of jobs based on optional start and end date filters.
     [HttpGet("list")]
-    public async Task<ActionResult<ServiceResponse<IEnumerable<JobTableRowDto>>>> GetJobs(
+    public async Task<ActionResult<ServiceResponse<IEnumerable<JobsTableRowDto>>>> GetJobs(
         [FromQuery] DateTimeOffset? startDate,
         [FromQuery] DateTimeOffset? endDate)
     {
@@ -73,7 +73,7 @@ public class JobTableController : BaseApiController
 
     // TODO: Need to check this
     // [HttpGet("logs/list")]
-    // public async Task<ActionResult<ServiceResponse<IEnumerable<JobTableRowDto>>>> GetJobLogs(
+    // public async Task<ActionResult<ServiceResponse<IEnumerable<JobsTableRowDto>>>> GetJobLogs(
     //     [FromQuery] DateTimeOffset? startDate,
     //     [FromQuery] DateTimeOffset? endDate)
     // {

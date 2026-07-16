@@ -1,7 +1,7 @@
 import { JobPriorityEnum, JobStatusEnum, TriggerTypesEnum } from "..";
 
 /**
- * Represents a single row in the jobs table, providing a summary of job record for display purposes (maps to backend JobTableRowDto).
+ * Represents a single row in the jobs table, providing a summary of job record for display purposes (maps to backend JobsTableRowDto).
  * NOTE: Same dto is being used for CSV export of jobs data.
  */
 export interface JobsTableRowDto {

@@ -6,7 +6,7 @@ import type { ColumnDef } from "@tanstack/react-table";
 
 import { TABLE_KEY } from "../constants";
 import { getColumnName, statusColor } from "../constants/column-display-names";
-import type { MachinesTableDto } from "../dtos/machines-table-dto";
+import type { MachinesTableRowDto } from "../dtos/machines-table-row-dto";
 import { MachineRowActions } from "./machine-row-actions/MachineRowActions";
 
 const formatDateValue = (value: unknown) => {
@@ -19,7 +19,7 @@ const formatDateValue = (value: unknown) => {
  * Array of table columns for the machine table.
  * Each column object contains an accessorKey, header component, and cell component.
  */
-export const machinesTableColumns: ColumnDef<MachinesTableDto>[] = [
+export const machinesTableColumns: ColumnDef<MachinesTableRowDto>[] = [
   {
     accessorKey: "id",
     header: ({ table }) => (
@@ -99,7 +99,7 @@ export const machinesTableColumns: ColumnDef<MachinesTableDto>[] = [
     ),
     cell: ({ row }) => {
       const formattedDate = formatDateValue(row.getValue("lastCheckedIn"));
-      if (!formattedDate || formattedDate === "01 Jan 001") return "-";
+      if (!formattedDate || formattedDate === "01 Jan 0001") return "-";
       return formattedDate;
     },
   },
