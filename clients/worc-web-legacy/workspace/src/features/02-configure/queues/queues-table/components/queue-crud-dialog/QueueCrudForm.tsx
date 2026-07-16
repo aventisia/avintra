@@ -1,8 +1,7 @@
-import { JsonEditorField } from "@/components/json-editor/JsonEditorField";
-
 import { Input } from "@aventisia/ui";
 import { Button, SubmitButton } from "@aventisia/ui/buttons";
 import {
+  AsyncMultiSelectField,
   AutherCard,
   Form,
   FormLabelExt,
@@ -15,13 +14,19 @@ import { useListOptimisticMutation } from "@aventisia/ui/hooks";
 import { useEffect, useRef } from "react";
 import { z } from "zod";
 
-import { queueOptimisticMutationFn } from "../../apis/queues-table-apis";
+import { JsonEditorField } from "@/components/json-editor/JsonEditorField";
+
+import {
+  queueOptimisticMutationFn,
+  searchQueues,
+} from "../../apis/queues-table-apis";
 import {
   descriptionProps,
   idProps,
   isDisabledProps,
   nameProps,
   typeProps,
+  viewTypeProps,
 } from "../../constants/queue-form-field-props";
 import { queueZodSchema } from "../../constants/queue-zod-schema";
 import { QueuesTableDto } from "../../dtos/queues-table-dto";
@@ -224,6 +229,19 @@ export const QueueCrudForm = () => {
         </div>
       </div>
 
+      <AsyncMultiSelectField<string>
+        fetcher={(query) =>
+          searchQueues(query).then((res) => res.data.map((q) => q.name) || [])
+        }
+        filters={undefined}
+        getItemId={(item) => item}
+        getItemLabel={(item) => item}
+        name="routeToQueues"
+        queryKeyBase={"searchQueues"}
+        label="Route Queues"
+      />
+
+      <SelectField {...viewTypeProps} />
       {/* Is Disabled */}
       {crudAction !== "create" && <SwitchField {...isDisabledProps} />}
       {/* AutherCard */}

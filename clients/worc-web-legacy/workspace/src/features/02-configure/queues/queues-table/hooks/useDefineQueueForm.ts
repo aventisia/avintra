@@ -1,6 +1,3 @@
-import { useUserSessionStore } from "@/react-toolkit/stores/user-session-store";
-import { CrudActionTypeConverter } from "@/react-toolkit/utils";
-
 import { useCheckAvailability } from "@aventisia/ui/hooks";
 import { useDTCrudDialogStore } from "@aventisia/ui/stores";
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -9,6 +6,9 @@ import { useEffect, useState } from "react";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
 import { useShallow } from "zustand/react/shallow";
+
+import { useUserSessionStore } from "@/react-toolkit/stores/user-session-store";
+import { CrudActionTypeConverter } from "@/react-toolkit/utils";
 
 import { isNameAvailable } from "../apis/queues-table-apis";
 import { queueNameSchema, queueZodSchema } from "../constants/queue-zod-schema";
@@ -89,6 +89,8 @@ export const useDefineQueueForm = () => {
       // shouldRetryAbandonedItems: false,
       // maximumRetryAttempts: 3,
       inputSchema: "[]",
+      routeToQueues: [],
+      viewType: "DocumentProcessing",
       // outputDataSchemaFile: undefined,
 
       isDisabled: false,
@@ -127,6 +129,8 @@ export const useDefineQueueForm = () => {
       name: queueData?.name,
       description: queueData?.description,
       type: queueData?.type ?? "Agent",
+      routeToQueues: queueData?.routeToQueues ?? [],
+      viewType: queueData?.viewType || "DocumentProcessing",
 
       isUniqueReferencesEnforced: queueData?.isUniqueReferencesEnforced,
       isStoredEncrypted: queueData?.isStoredEncrypted,

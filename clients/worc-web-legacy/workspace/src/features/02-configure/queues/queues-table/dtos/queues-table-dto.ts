@@ -1,11 +1,14 @@
 import { ResourceAccessTypeEnum } from "@/features/resource-share/enums/resource-access-type-enum";
 
+import { QueueTypesEnum } from "../enums/queue-instance-type-enum";
+import { QueueViewTypeEnum } from "../enums/queue-view-type-enum";
+
 /**
  * Represents a data transfer object (DTO) for a queue.
  */
 export interface QueuesTableDto {
   /**
-   * Gets or sets the primary key of the queue record.
+   * Gets or sets the unique identifier of the queue.
    */
   id: string;
 
@@ -15,13 +18,25 @@ export interface QueuesTableDto {
   name: string;
 
   /**
-   * Gets or sets the name of the queue.
+   * Gets or sets the type of the queue.
    */
-  type?: string;
+  type?: QueueTypesEnum;
+
   /**
-   * Gets or sets the description for the queue.
+   * Gets or sets the view type of the queue.
    */
-  description: string;
+  viewType?: QueueViewTypeEnum;
+
+  /**
+   * Gets or sets the list of destination queues
+   * to which items can be routed.
+   */
+  routeToQueues?: string[] | null;
+
+  /**
+   * Gets or sets the description of the queue.
+   */
+  description?: string | null;
 
   /**
    * Whether the queue enforces unique references.
@@ -29,63 +44,37 @@ export interface QueuesTableDto {
   isUniqueReferencesEnforced: boolean;
 
   /**
-   * Whether the queue data is stored encrypted.
+   * Whether queue items are stored encrypted.
    */
   isStoredEncrypted: boolean;
 
   /**
-   * Whether the queue should retry failed items.
+   * Whether failed items should be retried.
    */
   shouldRetryFailedItems: boolean;
 
   /**
-   * Whether the queue should retry abandoned items.
+   * Whether abandoned items should be retried.
    */
   shouldRetryAbandonedItems: boolean;
 
   /**
-   * Maximum number of retry attempts for a work item.
+   * Maximum number of retry attempts.
    */
   maximumRetryAttempts: number;
 
   /**
-   * Access level of the configuration item.
+   * Input schema definition for the queue.
    */
-  accessLevel: ResourceAccessTypeEnum;
+  inputSchema?: InputSchemaField[] | null;
 
   /**
-   * Indicates whether the kb is accessible
-   * to all users within the tenant.
+   * Output schema definition for the queue.
    */
-  isTenantWideAccess: boolean;
+  outputSchema?: string | null;
 
   /**
-   * Whether the queue is disabled.
-   */
-  isDisabled: boolean;
-
-  /**
-   * Username of the user who created the queue.
-   */
-  createdBy: string;
-
-  /**
-   * Timestamp when the queue was created.
-   */
-  createdOn: string | Date;
-
-  /**
-   * Username of the user who last modified the queue.
-   */
-  lastModifiedBy: string;
-
-  /**
-   * Timestamp when the queue was last modified.
-   */
-  lastModifiedOn: string | Date;
-
-  /**
-   * Number of in-progress items.
+   * Number of items currently in progress.
    */
   inProgress: number;
 
@@ -110,14 +99,42 @@ export interface QueuesTableDto {
   total: number;
 
   /**
-   * Input schema definition for the queue.
+   * Indicates whether the queue is accessible
+   * to all users within the tenant.
    */
-  inputSchema: InputSchemaField[];
+  isTenantWideAccess: boolean;
+
+  /**
+   * Access level granted to the user.
+   */
+  accessLevel: ResourceAccessTypeEnum;
+
+  /**
+   * Indicates whether the queue is disabled.
+   */
+  isDisabled?: boolean;
+
+  /**
+   * Username of the creator.
+   */
+  createdBy?: string;
+
+  /**
+   * Creation timestamp.
+   */
+  createdOn?: Date | string;
+
+  /**
+   * Username of the last modifier.
+   */
+  lastModifiedBy?: string;
+
+  /**
+   * Last modification timestamp.
+   */
+  lastModifiedOn?: Date | string;
 }
 
-/**
- * Represents a field in the input schema.
- */
 export interface InputSchemaField {
   name: string;
   description: string;

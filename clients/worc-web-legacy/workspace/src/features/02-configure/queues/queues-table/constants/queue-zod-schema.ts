@@ -77,6 +77,9 @@ export const queueZodSchema = z.object({
   //   ])
   //   .optional(),
   inputSchema: jsonInputSchema,
+
+  routeToQueues: z.array(z.string()).nullable().optional(),
+  viewType: z.string(),
   isDisabled: z.boolean().default(false),
   // Read (view) only fields
   createdBy: z.string(),
