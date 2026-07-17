@@ -1,3 +1,4 @@
+import { LoadingSpinner } from "@aventisia/ui";
 import {
   Select,
   SelectContent,
@@ -50,6 +51,12 @@ const FileViewerSelect = () => {
               {getFileTypeIcon(activeFile.name)}
 
               <span className="truncate">{activeFile.name}</span>
+
+              {activeFile.status === "loading" && (
+                <div className="flex items-center gap-1 whitespace-nowrap text-[11px] font-semibold text-primary">
+                  <LoadingSpinner className="h-3 w-3 text-primary" />
+                </div>
+              )}
             </div>
           )}
         </SelectValue>
