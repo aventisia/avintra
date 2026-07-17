@@ -12,11 +12,13 @@ import WorkflowTimeline from "../email-type-work-item/WorkflowTimeline";
 
 export default function FileWorkItem({
   data,
+  credentialId,
   extractedData,
   setExtractedData,
 }: {
   data?: QueueWorkItemDto;
   extractedData: string | undefined;
+  credentialId?: string;
   setExtractedData: Dispatch<SetStateAction<string | undefined>>;
 }) {
   const { addFileUrls, clearAllFiles } = useLocalFileStore(
@@ -33,6 +35,7 @@ export default function FileWorkItem({
       data.fileUrls.map((url) => ({
         url,
         requiresProxy: true,
+        credentialId,
       })),
     );
 
