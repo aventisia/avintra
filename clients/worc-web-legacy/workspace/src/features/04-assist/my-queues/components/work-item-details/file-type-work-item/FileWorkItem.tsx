@@ -1,5 +1,5 @@
 import { ScrollArea } from "@aventisia/ui/scroll";
-import { useEffect } from "react";
+import { Dispatch, SetStateAction, useEffect } from "react";
 import { useShallow } from "zustand/react/shallow";
 
 import { JsonEditor } from "@/components/json-editor/JsonEditor";
@@ -10,7 +10,15 @@ import { QueueWorkItemDto } from "../../../dtos/queue-work-item-dto";
 import { QueueTransactionStatusTypesEnum } from "../../../enums/queue-work-item-status-enum";
 import WorkflowTimeline from "../email-type-work-item/WorkflowTimeline";
 
-export default function FileWorkItem({ data }: { data?: QueueWorkItemDto }) {
+export default function FileWorkItem({
+  data,
+  extractedData,
+  setExtractedData,
+}: {
+  data?: QueueWorkItemDto;
+  extractedData: string | undefined;
+  setExtractedData: Dispatch<SetStateAction<string | undefined>>;
+}) {
   const { addFileUrls, clearAllFiles } = useLocalFileStore(
     useShallow((state) => ({
       addFileUrls: state.addFileUrls,
@@ -21,7 +29,12 @@ export default function FileWorkItem({ data }: { data?: QueueWorkItemDto }) {
   useEffect(() => {
     if (!data?.fileUrls) return;
 
-    addFileUrls(data.fileUrls);
+    addFileUrls(
+      data.fileUrls.map((url) => ({
+        url,
+        requiresProxy: true,
+      })),
+    );
 
     return () => {
       clearAllFiles();
@@ -29,6 +42,17 @@ export default function FileWorkItem({ data }: { data?: QueueWorkItemDto }) {
 
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [data?.fileUrls]);
+
+  useEffect(() => {
+    if (!data?.workItemData) return;
+
+    setExtractedData(data?.workItemData);
+
+    return () => {
+      setExtractedData("");
+    };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [data?.workItemData]);
 
   return (
     <div className="grid gap-3 grid-cols-2">
@@ -43,19 +67,16 @@ export default function FileWorkItem({ data }: { data?: QueueWorkItemDto }) {
               <h3 className="text-xs font-semibold">Extracted Output</h3>
             </div>
             <JsonEditor
-              value={data?.workItemData}
-              disabled={
-                data?.status == QueueTransactionStatusTypesEnum.Completed
-              }
+              onChange={setExtractedData}
+              value={extractedData}
+              disabled={data?.status == QueueTransactionStatusTypesEnum.Completed}
             />
           </div>
 
           {data?.id && (
             <WorkflowTimeline
               workItemId={data.id}
-              isCompleted={
-                data.status == QueueTransactionStatusTypesEnum.Completed
-              }
+              isCompleted={data.status == QueueTransactionStatusTypesEnum.Completed}
             />
           )}
         </div>

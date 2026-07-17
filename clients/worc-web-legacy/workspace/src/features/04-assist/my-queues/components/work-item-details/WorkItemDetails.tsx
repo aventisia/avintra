@@ -25,12 +25,14 @@ import { useMyQueueParams } from "../../hooks/useMyQueueParams";
 import { useQueueBackLink } from "../../hooks/useQueueBackLink";
 import { useInsertQueueWorkItemEvent } from "../../hooks/useQueueTransactionEvents";
 import { useRouteWorkItemMutation } from "../../hooks/useRouteWorkItemMutation";
+import { useUpdateWorkItemMutation } from "../../hooks/useUpdateWorkItemMutation";
 import { EmailWorkItem } from "./email-type-work-item/EmailWorkItem";
 import FileWorkItem from "./file-type-work-item/FileWorkItem";
 
 export const WorkItemDetails = () => {
   const { queueName, workItemId, queueId } = useMyQueueParams();
   const [myCurrentQueue, setMyCurrentQueue] = useState<QueuesTableDto>();
+  const [extractedData, setExtractedData] = useState<string>();
 
   // Get user session
   const { userSession } = useUserSessionStore(
@@ -43,24 +45,23 @@ export const WorkItemDetails = () => {
 
   const backToList = useQueueBackLink();
 
-  const { data } = useFetchQueuesWorkItemData(workItemId ?? "");
+  const { data: workItemData } = useFetchQueuesWorkItemData(workItemId ?? "");
 
   const { data: myQueues } = useFetchQueues({ onlyUserQueues: true });
 
   const { mutate: routeWorkItem } = useRouteWorkItemMutation();
 
-  const { mutate: addEvent, isPending } = useInsertQueueWorkItemEvent();
+  const { mutate: addEvent } = useInsertQueueWorkItemEvent();
+
+  const { mutate: closeWorkItem, isPending: isClosePending } = useUpdateWorkItemMutation();
 
   const handleClose = () => {
-    if (!workItemId) return;
+    if (!workItemId || !workItemData?.data) return;
 
-    addEvent({
-      id: crypto.randomUUID(),
-      queueTransactionId: workItemId || "",
-      eventType: QueueTransactionEventEnum.Closed,
-      data: "",
-      createdOn: new Date().toISOString(),
-      createdBy: userSession?.firstName + " " + userSession?.lastName,
+    closeWorkItem({
+      ...workItemData?.data,
+      workItemData: extractedData,
+      status: QueueTransactionStatusTypesEnum.Completed,
     });
   };
 
@@ -77,7 +78,7 @@ export const WorkItemDetails = () => {
   useEffect(() => {
     if (!workItemId) return;
 
-    if (data?.data.status !== QueueTransactionStatusTypesEnum.Pending) return;
+    if (workItemData?.data.status !== QueueTransactionStatusTypesEnum.Pending) return;
     else {
       addEvent({
         id: crypto.randomUUID(),
@@ -92,7 +93,7 @@ export const WorkItemDetails = () => {
     return () => {};
   }, [
     addEvent,
-    data?.data.status,
+    workItemData?.data.status,
     userSession?.firstName,
     userSession?.lastName,
     workItemId,
@@ -103,7 +104,13 @@ export const WorkItemDetails = () => {
       case QueueViewTypeEnum.EmailProcessing:
         return <EmailWorkItem />;
       case QueueViewTypeEnum.DocumentProcessing:
-        return <FileWorkItem data={data?.data} />;
+        return (
+          <FileWorkItem
+            data={workItemData?.data}
+            extractedData={extractedData}
+            setExtractedData={setExtractedData}
+          />
+        );
       default:
         return <></>;
     }
@@ -124,13 +131,13 @@ export const WorkItemDetails = () => {
               <BreadcrumbSeparator />
               <BreadcrumbItem>
                 <BreadcrumbPage className="max-w-64 truncate capitalize">
-                  {data?.data.queueName ?? queueName}
+                  {workItemData?.data.queueName ?? queueName}
                 </BreadcrumbPage>
               </BreadcrumbItem>
               <BreadcrumbSeparator />
               <BreadcrumbItem>
                 <BreadcrumbPage className="max-w-64 truncate capitalize">
-                  {(data?.data.id ?? workItemId)?.slice(0, 8) + "..."}
+                  {(workItemData?.data.id ?? workItemId)?.slice(0, 8) + "..."}
                 </BreadcrumbPage>
               </BreadcrumbItem>
             </BreadcrumbList>
@@ -139,8 +146,7 @@ export const WorkItemDetails = () => {
 
         <div className="flex items-center gap-2">
           {myCurrentQueue?.routeToQueues &&
-            data?.data?.status !==
-              QueueTransactionStatusTypesEnum.Completed && (
+            workItemData?.data?.status !== QueueTransactionStatusTypesEnum.Completed && (
               <SearchableSelect
                 options={
                   myCurrentQueue?.routeToQueues?.map((queueName) => ({
@@ -163,7 +169,7 @@ export const WorkItemDetails = () => {
                 size="sm"
               />
             )}
-          {data?.data?.status !== QueueTransactionStatusTypesEnum.Completed && (
+          {workItemData?.data?.status !== QueueTransactionStatusTypesEnum.Completed && (
             <Button
               size="xs"
               onClick={() => {
@@ -174,12 +180,9 @@ export const WorkItemDetails = () => {
                   isDestructive: false,
                 });
               }}
-              disabled={isPending}
+              disabled={isClosePending}
             >
-              {isPending &&
-              data?.data.status !== QueueTransactionStatusTypesEnum.Pending
-                ? "Closing..."
-                : "Close"}
+              {isClosePending ? "Closing..." : "Close"}
             </Button>
           )}
         </div>
